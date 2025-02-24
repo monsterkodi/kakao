@@ -245,6 +245,15 @@ line 3`)
         s.moveCursors('right')
         mul([1,3],[1,4],[1,5])
         s.cloneSelectionAndCursorLines('down')
+        txt(`line 1
+line 1
+line 2
+line 1
+line 2
+line 3
+line 1
+line 2
+line 3`)
     })
 }
 toExport["state"]._section_ = true

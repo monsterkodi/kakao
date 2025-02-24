@@ -29,18 +29,19 @@ function edit
             
         # log y5("insert text ▸#{text}◂")
             
-        text  = kstr.detab text
-        txtls = @seglsForText text  # the text to insert split into segls
-        newls = []                      # list of new lines 
-        newpl = []                      # list of new positions
-        rngs  = @rangesForLinePositions lines posl # list of ranges for lines split by positions
+        text   = kstr.detab text
+        txtls  = @seglsForText text  # the text to insert split into segls
+        newls  = []                      # list of new lines 
+        newpl  = []                      # list of new positions
+        rngs   = @rangesForLinesSplitAtPositions lines posl
         before = []
         
         for rng,idx in rngs
             
             after = @seglsForRange lines rng # all the lines in the current range (after current position)
-                        
-            # log "#{idx} after" after
+            
+            if empty after or empty after[0] 
+                before.push [] if posl[-1][1] >= lines.length
             
             if idx > 0                           # start processing ranges after the first position
                 # log "#{idx} before" before
@@ -72,15 +73,13 @@ function edit
                                 # log "insl ▸#{indent}|#{insl}▪"  
                                 before.push indent.concat(insl)
                     
-                        # lf ">>>#{indent}<<<#{posLineIndent} #{x}" line
-                        
                         if x > posLineIndent
                             newpl.push [last(before).length newls.length+before.length-1]
                             before.push before.pop().concat(after.shift())
                         else
-                            after.unshift indent.concat(after.shift())
+                            after.unshift indent.concat(after.shift()) 
                             before.pop() if text == '\n'
-                            newpl.push [indent.length newls.length+before.length]
+                            newpl.push [indent.length newls.length+before.length] 
                         
                     newls = newls.concat before
                             
@@ -92,10 +91,9 @@ function edit
                     newls = newls.concat before        # add lines from before and ...
                     newls.push line                    #     ... current line to result
             
-            before = after 
-            # log "#{idx} before" before    
+            before = after
             
-        newls = newls.concat before
+        newls = newls.concat before if posl[-1][1] < lines.length
             
         # prof.end 'insert'
         
@@ -282,7 +280,7 @@ function edit
     
     @cloneLineBlockRangesAndMoveRangesAndPositionsInDirection: lines blocks rngs posl dir ->
         
-        if empty blocks or dir == 'down' and blocks[-1][3] >= lines.length-1 or dir == 'up' and blocks[0][1] <= 0
+        if empty blocks or dir == 'down' and blocks[-1][3] > lines.length-1 or dir == 'up' and blocks[0][1] < 0
             ⮐ [lines rngs posl]
         
         newLines = copy lines
@@ -304,6 +302,7 @@ function edit
             text += '\n'
 
             insidx = dir == 'up' ? block[1] : block[3]+1
+
             [newLines posl] = @insertTextAtPositions newLines text [[0 insidx]]
             
             d = block[3]-block[1]+1

@@ -28,7 +28,6 @@ export default {joinLines:function ()
     cursors = this.allCursors()
     lines = this.allLines()
     blocks = util.blockRangesForRangesAndPositions(lines,selections,cursors)
-    console.log(blocks)
     var _b_ = util.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(lines,blocks,selections,cursors,dir); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
 
     this.setLines(lines)

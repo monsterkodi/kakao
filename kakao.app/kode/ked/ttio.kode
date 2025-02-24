@@ -122,12 +122,13 @@ function TTIO extends events
             
     deleteImage: id ->
         
-        @write "\x1b_Gq=1,a=d,d=i,i=#{id}\x1b\\"
+        @write "\x1b_Gq=1,a=d,d=I,i=#{id}\x1b\\"
         
     deleteImagesInRange: start end ->
-                
-        # @write "\x1b_Ga=d,d=r,x=#{start},y=#{end}\x1b\\" # this would be nicer, but for now ...
-        @deleteImage id for id in start...end # workaround for ghostty bug
+        
+        ⮐ lf "range start '#{start}' not a number" if not start is num
+        ⮐ lf "range end '#{end}' not a number" if not end is num
+        @write "\x1b_Gq=2,a=d,d=R,x=#{start},y=#{end}\x1b\\"
     
     sendImageData: data id w h ->
         

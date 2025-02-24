@@ -31,13 +31,20 @@ edit = (function ()
         txtls = this.seglsForText(text)
         newls = []
         newpl = []
-        rngs = this.rangesForLinePositions(lines,posl)
+        rngs = this.rangesForLinesSplitAtPositions(lines,posl)
         before = []
         var list = _k_.list(rngs)
         for (idx = 0; idx < list.length; idx++)
         {
             rng = list[idx]
             after = this.seglsForRange(lines,rng)
+            if (_k_.empty(after) || _k_.empty(after[0]))
+            {
+                if (posl.slice(-1)[0][1] >= lines.length)
+                {
+                    before.push([])
+                }
+            }
             if (idx > 0)
             {
                 var _b_ = posl[idx - 1]; x = _b_[0]; y = _b_[1]
@@ -105,7 +112,10 @@ edit = (function ()
             }
             before = after
         }
-        newls = newls.concat(before)
+        if (posl.slice(-1)[0][1] < lines.length)
+        {
+            newls = newls.concat(before)
+        }
         return [newls,newpl]
     }
 
@@ -380,7 +390,7 @@ edit = (function ()
     {
         var bi, block, d, insidx, newLines, newPosl, newRngs, pos, re, rng, rs, text
 
-        if (_k_.empty(blocks) || dir === 'down' && blocks.slice(-1)[0][3] >= lines.length - 1 || dir === 'up' && blocks[0][1] <= 0)
+        if (_k_.empty(blocks) || dir === 'down' && blocks.slice(-1)[0][3] > lines.length - 1 || dir === 'up' && blocks[0][1] < 0)
         {
             return [lines,rngs,posl]
         }

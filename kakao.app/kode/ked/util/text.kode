@@ -169,13 +169,16 @@ function text
         
     @seglsForRange: lines rng ->
 
-        nl = @numLinesInRange rng 
+        nl = @numLinesInRange rng
         
         ⮐ [lines[rng[1]][rng[0]...rng[2]]] if nl == 1
         
-        lns = [lines[rng[1]][rng[0]..]]
-        lns = lns.concat lines[rng[1]+1...rng[3]] if nl > 2
-        lns = lns.concat [lines[rng[3]][0...rng[2]] ]
+        firstLineIndex = min rng[1] lines.length-1
+        lastLineIndex  = min rng[3] lines.length-1
+
+        lns = [lines[firstLineIndex][rng[0]..]]
+        lns = lns.concat lines[firstLineIndex+1...lastLineIndex] if nl > 2
+        lns = lns.concat [lines[lastLineIndex][0...rng[2]]]
         
     @indexOfLongestLine: lines ->
         

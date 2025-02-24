@@ -240,6 +240,8 @@ line 3
 line 4
 line 5
 line 6`)
+        compare(util.blockRangesForRangesAndPositions(lines,[],[[1,1],[1,2],[1,3]]),[[0,1,6,3]])
+        compare(util.blockRangesForRangesAndPositions(lines,[],[[6,5],[4,3],[2,1]]),[[0,1,6,1],[0,3,6,3],[0,5,6,5]])
     })
     section("isSpanLineRange", function ()
     {
@@ -354,19 +356,20 @@ def`)
             compare(util.seglsForRange(segls,[3,0,1,1]),[[],['4']])
         })
     })
-    section("rangesForLinePositions", function ()
+    section("rangesForLinesSplitAtPositions", function ()
     {
         lines = util.linesForText(`123
 456
 
 abc
 def`)
-        compare(util.rangesForLinePositions(lines,[]),[])
-        compare(util.rangesForLinePositions(lines,[[0,0]]),[[0,0,0,0],[0,0,3,4]])
-        compare(util.rangesForLinePositions(lines,[[1,0]]),[[0,0,1,0],[1,0,3,4]])
-        compare(util.rangesForLinePositions(lines,[[0,2]]),[[0,0,0,2],[0,2,3,4]])
-        compare(util.rangesForLinePositions(lines,[[0,0],[1,0]]),[[0,0,0,0],[0,0,1,0],[1,0,3,4]])
-        compare(util.rangesForLinePositions(lines,[[3,0],[3,1]]),[[0,0,3,0],[3,0,3,1],[3,1,3,4]])
+        compare(util.rangesForLinesSplitAtPositions(lines,[]),[])
+        compare(util.rangesForLinesSplitAtPositions(lines,[[0,0]]),[[0,0,0,0],[0,0,3,4]])
+        compare(util.rangesForLinesSplitAtPositions(lines,[[1,0]]),[[0,0,1,0],[1,0,3,4]])
+        compare(util.rangesForLinesSplitAtPositions(lines,[[0,2]]),[[0,0,0,2],[0,2,3,4]])
+        compare(util.rangesForLinesSplitAtPositions(lines,[[0,0],[1,0]]),[[0,0,0,0],[0,0,1,0],[1,0,3,4]])
+        compare(util.rangesForLinesSplitAtPositions(lines,[[3,0],[3,1]]),[[0,0,3,0],[3,0,3,1],[3,1,3,4]])
+        compare(util.rangesForLinesSplitAtPositions(lines,[[0,5]]),[[0,0,3,4],[3,4,3,4]])
     })
     section("deleteLineRangesAndAdjustPositions", function ()
     {

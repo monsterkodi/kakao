@@ -661,13 +661,17 @@ util = (function ()
         }
     }
 
-    util["rangesForLinePositions"] = function (lines, posl)
+    util["rangesForLinesSplitAtPositions"] = function (lines, posl)
     {
         var idx, pos, rngs
 
         if (_k_.empty(posl))
         {
             return []
+        }
+        if (posl[0][1] >= lines.length)
+        {
+            return [[0,0,lines.slice(-1)[0].length,lines.length - 1],[lines.slice(-1)[0].length,lines.length - 1,lines.slice(-1)[0].length,lines.length - 1]]
         }
         rngs = [[0,0,posl[0][0],posl[0][1]]]
         var list = _k_.list(posl)
@@ -679,7 +683,7 @@ util = (function ()
                 rngs.push([posl[idx - 1][0],posl[idx - 1][1],pos[0],pos[1]])
             }
         }
-        rngs.push([posl.slice(-1)[0][0],posl.slice(-1)[0][1],lines.slice(-1)[0].length,lines.length - 1])
+        rngs.push([pos[0],pos[1],lines.slice(-1)[0].length,lines.length - 1])
         return rngs
     }
 
@@ -765,7 +769,7 @@ util = (function ()
 
     util["blockRangesForRangesAndPositions"] = function (lines, rngs, posl)
     {
-        var blocks, ii, index, indices, numSplice
+        var block, blocks, ii, index, indices
 
         blocks = []
         indices = this.lineIndicesForRangesAndPositions(rngs,posl)
@@ -773,37 +777,19 @@ util = (function ()
         {
             return blocks
         }
-        console.log('▸',indices)
-        ii = indices.length - 1
-        while (ii > 0)
+        block = [0,indices[0],-1,-1]
+        var list = _k_.list(indices)
+        for (ii = 0; ii < list.length; ii++)
         {
-            if (indices[ii - 1] + 1 === indices[ii])
-            {
-                numSplice = -1
-                while (indices[ii - 1] + 1 === indices[ii])
-                {
-                    numSplice += 1
-                    ii -= 1
-                }
-                indices.splice(ii + 1,numSplice)
-            }
-            ii -= 1
-        }
-        console.log('○',indices)
-        ii = 0
-        while (ii < indices.length)
-        {
-            index = indices[ii]
+            index = list[ii]
+            block[3] = index
             if (indices[ii + 1] === index + 1)
             {
-                blocks.push([0,index,lines[indices[ii + 1]].length,indices[ii + 1]])
-                ii += 1
+                continue
             }
-            else
-            {
-                blocks.push([0,index,lines[index].length,index])
-            }
-            ii += 1
+            block[2] = lines[index].length
+            blocks.push(block)
+            block = [0,indices[ii + 1],-1,-1]
         }
         return blocks
     }
