@@ -432,24 +432,27 @@ edit = (function ()
             insidx = (dir === 'up' ? block[1] : block[3] + 1)
             var _d_ = this.insertTextAtPositions(newLines,text,[[0,insidx]]); newLines = _d_[0]; posl = _d_[1]
 
-            d = block[3] - block[1] + 1
-            var list = _k_.list(newPosl)
-            for (var _e_ = 0; _e_ < list.length; _e_++)
+            if (dir === 'down')
             {
-                pos = list[_e_]
-                if (this.rangeContainsPos(block,pos))
+                d = block[3] - block[1] + 1
+                var list = _k_.list(newPosl)
+                for (var _e_ = 0; _e_ < list.length; _e_++)
                 {
-                    pos[1] += d
+                    pos = list[_e_]
+                    if (this.rangeContainsPos(block,pos))
+                    {
+                        pos[1] += d
+                    }
                 }
-            }
-            var list1 = _k_.list(newRngs)
-            for (var _f_ = 0; _f_ < list1.length; _f_++)
-            {
-                rng = list1[_f_]
-                if (this.rangeContainsRange(block,rng))
+                var list1 = _k_.list(newRngs)
+                for (var _f_ = 0; _f_ < list1.length; _f_++)
                 {
-                    rng[1] += d
-                    rng[3] += d
+                    rng = list1[_f_]
+                    if (this.rangeContainsRange(block,rng))
+                    {
+                        rng[1] += d
+                        rng[3] += d
+                    }
                 }
             }
         }

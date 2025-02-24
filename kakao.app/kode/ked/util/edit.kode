@@ -304,17 +304,18 @@ function edit
             insidx = dir == 'up' ? block[1] : block[3]+1
 
             [newLines posl] = @insertTextAtPositions newLines text [[0 insidx]]
-            
-            d = block[3]-block[1]+1
-            
-            for pos in newPosl
-                if @rangeContainsPos block pos
-                    pos[1] += d                
 
-            for rng in newRngs
-                if @rangeContainsRange block rng
-                    rng[1] += d
-                    rng[3] += d
+            if dir == 'down'
+                d = block[3]-block[1]+1
+                
+                for pos in newPosl
+                    if @rangeContainsPos block pos
+                        pos[1] += d                
+    
+                for rng in newRngs
+                    if @rangeContainsRange block rng
+                        rng[1] += d
+                        rng[3] += d
         
         [newLines newRngs newPosl]
         
