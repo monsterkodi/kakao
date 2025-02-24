@@ -195,7 +195,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _183_22_
+        var segls, start, text, _188_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -209,7 +209,12 @@ ked [file]
             this.currentFile = slash.path(process.cwd(),p)
         }
         this.currentFile = await nfs.resolveSymlink(this.currentFile)
-        text = await nfs.read(this.currentFile)
+        text = await nfs.readText(this.currentFile)
+        if (text === undefined)
+        {
+            lf('ked.loadFile: binary?',this.currentFile)
+            text = '○ binary ○'
+        }
         segls = util.seglsForText(text)
         this.editor.state.syntax.ext = slash.ext(this.currentFile)
         this.editor.state.loadSegls(segls)
@@ -383,7 +388,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _312_22_, _313_23_
+        var _317_22_, _318_23_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -392,7 +397,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _318_22_, _319_23_
+        var _323_22_, _324_23_
 
         this.redraw()
         ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

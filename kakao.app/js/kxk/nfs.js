@@ -310,6 +310,18 @@ class NFS
     {
         console.error('todo')
     }
+
+    static async readText (p)
+    {
+        var text
+
+        text = await NFS.read(p)
+        if (text.includes('\ufffd'))
+        {
+            return
+        }
+        return text
+    }
 }
 
 export default NFS;

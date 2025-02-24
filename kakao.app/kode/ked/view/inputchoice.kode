@@ -21,7 +21,9 @@ function inputchoice extends view
 
         @choices.mapscr?.hide()       
 
-        @input.on 'changed' @onInputChanged
+        @input.on   'changed' @onInputChanged
+        @input.on   'submit'  @onInputSubmit
+        @choices.on 'action'  @onChoicesAction
         
     inputIsActive: -> @input.hasFocus() or @input.current().length
         
@@ -77,6 +79,18 @@ function inputchoice extends view
         @choicesFiltered()
         @layout()
         
+    onInputSubmit: text =>
+        
+        @onInputAction text 'submit'
+        
+    onInputAction: text action => lf 'onInputAction' text action
+        
+    #  0000000  000   000   0000000   000   0000000  00000000   0000000  
+    # 000       000   000  000   000  000  000       000       000       
+    # 000       000000000  000   000  000  000       0000000   0000000   
+    # 000       000   000  000   000  000  000       000            000  
+    #  0000000  000   000   0000000   000   0000000  00000000  0000000   
+    
     choicesFiltered: ->
         
     currentChoice: ->
@@ -84,8 +98,12 @@ function inputchoice extends view
         choice = @choices.current() ? @input.current()
         choice = trim choice if choice is str
     
-    onChoiceAction: choice action => lf 'onChoiceAction' choice action
-
+    onChoicesAction: action choice =>
+        
+        switch action
+            'click'
+            'return' ➜ ⮐ @applyChoice choice
+            
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
     # 000   000  0000000    000000000  000000000
@@ -155,26 +173,19 @@ function inputchoice extends view
         switch event.combo
             'tab'       ➜ ⮐ @moveFocus()
             'esc'       ➜ ⮐ @hide()
-            'return'    ➜ ⮐ @applyChoice @currentChoice()
             'up' 'down' ➜ ⮐ @moveSelection event.combo
 
-        if @choices.hasFocus()
-            
-            current = @choices.current()
+        if result = @choices.onKey key event
 
-            switch event.combo
-                'right'  
-                'left' 
-                'delete'
-                'space' ➜ @onChoiceAction current event.combo
-                    
             if event.char
-                # lf 'focus input' event
                 @input.grabFocus()
-            
-        if @input.onKey key event
+            else
+                ⮐ result
+             
+        if result = @input.onKey key event
             @choices.grabFocus() if empty @input.current()
-        # ⮐ true if @choices.onKey key event
+            ⮐ result
+
         true
         
     onMouse: event =>

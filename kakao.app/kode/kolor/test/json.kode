@@ -18,7 +18,6 @@ lang 'json'
 
 ▸ json
     
-    
     rgs = ranges """{ "A Z": 1 }"""
     inc rgs, 2 '"'              ▸ 'punct dictionary'
     inc rgs, 3 'A'              ▸ 'dictionary key'

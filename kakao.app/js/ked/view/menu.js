@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var menu
 
@@ -25,7 +25,8 @@ menu = (function ()
     {
         this.screen = screen
     
-        this["onChoiceAction"] = this["onChoiceAction"].bind(this)
+        this["onInputAction"] = this["onInputAction"].bind(this)
+        this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
@@ -95,6 +96,7 @@ quit`)
         loaded = ((_96_30_=files.loaded) != null ? _96_30_ : [])
         saved = ((_97_29_=files.saved) != null ? _97_29_ : [])
         recent = loaded.concat(saved)
+        recent = kxk.util.uniq(recent)
         recent.reverse()
         recent = recent.slice(0, typeof _k_.min(recent.length,maxRecent) === 'number' ? _k_.min(recent.length,maxRecent) : -1)
         this.choices.set(recent)
@@ -132,12 +134,27 @@ quit`)
         return this.hide()
     }
 
-    menu.prototype["onChoiceAction"] = function (choice, action)
+    menu.prototype["onChoicesAction"] = function (action, choice)
     {
-        if (_k_.in(action,['space','right']))
+        switch (action)
         {
-            return this.applyChoice(choice)
+            case 'space':
+                return this.applyChoice(choice)
+
         }
+
+        return menu.__super__.onChoicesAction.call(this,action,choice)
+    }
+
+    menu.prototype["onInputAction"] = function (text, action)
+    {
+        switch (action)
+        {
+            case 'submit':
+                return this.applyChoice(this.choices.current())
+
+        }
+
     }
 
     menu.prototype["draw"] = function ()

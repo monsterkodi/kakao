@@ -96,6 +96,7 @@ function menu extends inputchoice
         loaded = files.loaded ? []
         saved  = files.saved ? [] 
         recent = loaded.concat saved
+        recent = kxk.util.uniq recent
         recent.reverse()
         # recent = recent[max(0 recent.length-maxRecent)..]
         recent = recent[0...min(recent.length maxRecent)]
@@ -109,11 +110,11 @@ function menu extends inputchoice
         delete @greet
         super()
     
-    # 000  000   000  00000000   000   000  000000000  
-    # 000  0000  000  000   000  000   000     000     
-    # 000  000 0 000  00000000   000   000     000     
-    # 000  000  0000  000        000   000     000     
-    # 000  000   000  000         0000000      000     
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
     
     applyChoice: choice ->
         
@@ -128,9 +129,24 @@ function menu extends inputchoice
         
         @hide()
         
-    onChoiceAction: choice action => 
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
     
-        @applyChoice choice if action in ['space' 'right']
+    onChoicesAction: action choice => 
+    
+        switch action
+            'space' ➜ ⮐ @applyChoice choice
+            
+        super action choice
+        
+    onInputAction: text action =>
+        
+        switch action
+            
+            'submit' ➜ ⮐ @applyChoice @choices.current()
                     
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000

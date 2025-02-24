@@ -31,6 +31,13 @@ function input extends editor
         @state.selectLine 0
         @state.moveCursors 'eol'
 
+    onKey: key event ->
+        
+        switch event.combo
+            'return' ➜ ⮐ @emit 'submit' @current()
+            
+        super key event
+        
     draw: ->
         
         ⮐ if @hidden()

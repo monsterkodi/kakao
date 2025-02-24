@@ -195,6 +195,7 @@ class theme
         '.json':                                '#d0d'   
         '.cast':                                '#b0b'   
         '.js':                                  '#a0a'   
+        '.toml':                                '#909'   
         '.kode':                                '#ff0'   
         '.noon':                                '#0a0'   
         '.png':                                 '#080'   

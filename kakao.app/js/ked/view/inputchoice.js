@@ -28,7 +28,9 @@ inputchoice = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
-        this["onChoiceAction"] = this["onChoiceAction"].bind(this)
+        this["onChoicesAction"] = this["onChoicesAction"].bind(this)
+        this["onInputAction"] = this["onInputAction"].bind(this)
+        this["onInputSubmit"] = this["onInputSubmit"].bind(this)
         this["onInputChanged"] = this["onInputChanged"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
@@ -38,6 +40,8 @@ inputchoice = (function ()
         this.choices = new choices(this.screen,`${this.name}.choices`,features)
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.input.on('changed',this.onInputChanged)
+        this.input.on('submit',this.onInputSubmit)
+        this.choices.on('action',this.onChoicesAction)
     }
 
     inputchoice.prototype["inputIsActive"] = function ()
@@ -68,7 +72,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _60_23_
+        var _62_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         post.emit('focus','editor')
@@ -88,23 +92,40 @@ inputchoice = (function ()
         return this.layout()
     }
 
+    inputchoice.prototype["onInputSubmit"] = function (text)
+    {
+        return this.onInputAction(text,'submit')
+    }
+
+    inputchoice.prototype["onInputAction"] = function (text, action)
+    {
+        return lf('onInputAction',text,action)
+    }
+
     inputchoice.prototype["choicesFiltered"] = function ()
     {}
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _84_36_
+        var choice, _98_36_
 
-        choice = ((_84_36_=this.choices.current()) != null ? _84_36_ : this.input.current())
+        choice = ((_98_36_=this.choices.current()) != null ? _98_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
         }
     }
 
-    inputchoice.prototype["onChoiceAction"] = function (choice, action)
+    inputchoice.prototype["onChoicesAction"] = function (action, choice)
     {
-        return lf('onChoiceAction',choice,action)
+        switch (action)
+        {
+            case 'click':
+            case 'return':
+                return this.applyChoice(choice)
+
+        }
+
     }
 
     inputchoice.prototype["draw"] = function ()
@@ -178,7 +199,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["onKey"] = function (key, event)
     {
-        var current
+        var result
 
         if (this.hidden())
         {
@@ -192,39 +213,30 @@ inputchoice = (function ()
             case 'esc':
                 return this.hide()
 
-            case 'return':
-                return this.applyChoice(this.currentChoice())
-
             case 'up':
             case 'down':
                 return this.moveSelection(event.combo)
 
         }
 
-        if (this.choices.hasFocus())
+        if (result = this.choices.onKey(key,event))
         {
-            current = this.choices.current()
-            switch (event.combo)
-            {
-                case 'right':
-                case 'left':
-                case 'delete':
-                case 'space':
-                    this.onChoiceAction(current,event.combo)
-                    break
-            }
-
             if (event.char)
             {
                 this.input.grabFocus()
             }
+            else
+            {
+                return result
+            }
         }
-        if (this.input.onKey(key,event))
+        if (result = this.input.onKey(key,event))
         {
             if (_k_.empty(this.input.current()))
             {
                 this.choices.grabFocus()
             }
+            return result
         }
         return true
     }

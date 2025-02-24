@@ -11,7 +11,7 @@ class walker
 
     static dotFileExtensions = ['bashrc','bash_history','gitconfig','gitignore_global','lesshst','npmrc','nvimrc','profile','zprofile','zsh_history','zshrc']
 
-    static sourceFileExtensions = walker.indexFileExtensions.concat(walker.dotFileExtensions,['ts','js','mjs','swift','styl','css','pug','html','md','noon','json','txt','log','sh','py','frag','vert','config','lua','gitignore','plist'])
+    static sourceFileExtensions = walker.indexFileExtensions.concat(walker.dotFileExtensions,['ts','js','mjs','swift','styl','css','pug','html','md','noon','json','txt','log','sh','fish','py','frag','vert','config','lua','toml','conf','gitignore','plist'])
 
     constructor (cfg)
     {

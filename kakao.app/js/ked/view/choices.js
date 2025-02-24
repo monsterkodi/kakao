@@ -7,6 +7,9 @@ let kstr = kxk.kstr
 let kseg = kxk.kseg
 let slash = kxk.slash
 let krzl = kxk.krzl
+let post = kxk.post
+
+import util from "../util/util.js"
 
 import editor from "../editor.js"
 import theme from "../theme.js"
@@ -18,11 +21,16 @@ choices = (function ()
     function choices (screen, name, features = [])
     {
         this["onKey"] = this["onKey"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
+        this["clickChoiceAtRow"] = this["clickChoiceAtRow"].bind(this)
+        this["unhover"] = this["unhover"].bind(this)
+        this["hoverChoiceAtRow"] = this["hoverChoiceAtRow"].bind(this)
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,['scrllr'].concat(features))
         this.items = []
+        this.hoverIndex = -1
         this.fuzzied = this.items
         this.filterText = ''
     }
@@ -32,9 +40,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _24_15_
+        var lines, _26_15_
 
-        this.items = ((_24_15_=this.items) != null ? _24_15_ : [])
+        this.items = ((_26_15_=this.items) != null ? _26_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -56,6 +64,11 @@ choices = (function ()
         return this.fuzzied[this.state.mainCursor()[1]]
     }
 
+    choices.prototype["choiceAtRow"] = function (row)
+    {
+        return this.fuzzied[row]
+    }
+
     choices.prototype["hasNext"] = function ()
     {
         return this.state.mainCursor()[1] < this.numFiltered() - 1
@@ -64,6 +77,12 @@ choices = (function ()
     choices.prototype["hasPrev"] = function ()
     {
         return this.state.mainCursor()[1] > 0
+    }
+
+    choices.prototype["select"] = function (row)
+    {
+        this.state.setSelections([util.rangeOfLine(this.state.allLines(),row)])
+        return this.emit('select',this.choiceAtRow(row))
     }
 
     choices.prototype["selectNext"] = function ()
@@ -143,9 +162,79 @@ choices = (function ()
         return this.state.loadLines(lines)
     }
 
+    choices.prototype["hoverChoiceAtRow"] = function (row)
+    {
+        if (this.hoverIndex === row)
+        {
+            return
+        }
+        this.hoverIndex = row
+        this.select(this.hoverIndex)
+        return post.emit('pointer','pointer')
+    }
+
+    choices.prototype["unhover"] = function ()
+    {
+        this.hoverIndex = -1
+        this.state.clearHighlights()
+        return post.emit('pointer','default')
+    }
+
+    choices.prototype["clickChoiceAtRow"] = function (row)
+    {
+        this.hoverIndex = -1
+        return this.emit('action','click',this.choiceAtRow(row))
+    }
+
+    choices.prototype["onMouse"] = function (event)
+    {
+        var col, row
+
+        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+
+        if (this.cells.isInsideEvent(event))
+        {
+            switch (event.type)
+            {
+                case 'press':
+                    return this.clickChoiceAtRow(row)
+
+                case 'move':
+                    return this.hoverChoiceAtRow(row)
+
+                case 'release':
+                    return this.hoverChoiceAtRow(row)
+
+            }
+
+            lf(`mouse ${this.name} ${col} ${row} ${event.type}`)
+            return true
+        }
+        else
+        {
+            this.unhover()
+        }
+        return choices.__super__.onMouse.call(this,event)
+    }
+
     choices.prototype["onKey"] = function (key, event)
     {
-        return choices.__super__.onKey.call(this,key,event)
+        if (!this.hasFocus())
+        {
+            return
+        }
+        switch (event.combo)
+        {
+            case 'right':
+            case 'left':
+            case 'delete':
+            case 'space':
+            case 'return':
+                this.emit('action',event.combo,this.current())
+                break
+        }
+
+        return true
     }
 
     return choices

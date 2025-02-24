@@ -46,6 +46,18 @@ input = (function ()
         return this.state.moveCursors('eol')
     }
 
+    input.prototype["onKey"] = function (key, event)
+    {
+        switch (event.combo)
+        {
+            case 'return':
+                return this.emit('submit',this.current())
+
+        }
+
+        return input.__super__.onKey.call(this,key,event)
+    }
+
     input.prototype["draw"] = function ()
     {
         if (this.hidden())

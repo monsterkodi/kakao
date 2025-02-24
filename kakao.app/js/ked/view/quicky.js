@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var int, quicky
 
@@ -31,9 +31,12 @@ quicky = (function ()
     {
         this.screen = screen
     
-        this["onChoiceAction"] = this["onChoiceAction"].bind(this)
+        this["onChoicesAction"] = this["onChoicesAction"].bind(this)
+        this["onInputAction"] = this["onInputAction"].bind(this)
+        this["onFsColAction"] = this["onFsColAction"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["preview"] = this["preview"].bind(this)
         this["openFileInEditor"] = this["openFileInEditor"].bind(this)
         this["gotoDirOrOpenFile"] = this["gotoDirOrOpenFile"].bind(this)
         this["showFiles"] = this["showFiles"].bind(this)
@@ -43,6 +46,7 @@ quicky = (function ()
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.fscol = new fscol(this.screen,'quicky_fscol')
         this.choices.state.syntax.setRgxs(rgxs)
+        this.choices.on('select',this.preview)
         post.on('quicky.dir',this.gotoDir)
         post.on('quicky.files',this.showFiles)
     }
@@ -95,64 +99,6 @@ quicky = (function ()
         {
             return this.hide()
         }
-    }
-
-    quicky.prototype["showProjectFiles"] = function (currentFile)
-    {
-        this.currentFile = currentFile
-    
-        var ccol, indent, indents, item, items, maxind, weight
-
-        items = prjcts.files(this.currentFile)
-        if (_k_.empty(items))
-        {
-            return this.gotoDir(process.cwd())
-        }
-        this.currentDir = slash.dir(this.currentFile)
-        items = items.map((function (i)
-        {
-            return slash.relative(i,this.currentDir)
-        }).bind(this))
-        this.crumbs.hide()
-        ccol = parseInt(this.screen.cols / 2) - 5
-        maxind = 0
-        indents = []
-        var list = _k_.list(items)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            item = list[_a_]
-            indent = slash.dir(item).length
-            if (indent)
-            {
-                indent += 1
-            }
-            maxind = _k_.max(maxind,indent)
-            indents.push(indent)
-        }
-        items = items.map((function (i, n)
-        {
-            return _k_.rpad(ccol,_k_.lpad(maxind - indents[n]) + i)
-        }).bind(this))
-        weight = function (item)
-        {
-            var p, w
-
-            p = slash.parse(item)
-            w = 0
-            w += item.split('/').length * 256
-            w += kstr.weight(p.name)
-            return w
-        }
-        items.sort(function (a, b)
-        {
-            return weight(a) - weight(b)
-        })
-        this.input.set('')
-        this.choices.set(items)
-        this.choices.state.selectLine(0)
-        this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
-        this.choices.state.setView([0,0])
-        return this.show()
     }
 
     quicky.prototype["gotoDir"] = async function (dir, select)
@@ -231,6 +177,42 @@ quicky = (function ()
         return this.showPathItems(items)
     }
 
+    quicky.prototype["showProjectFiles"] = function (currentFile)
+    {
+        this.currentFile = currentFile
+    
+        var items, weight
+
+        items = prjcts.files(this.currentFile)
+        if (_k_.empty(items))
+        {
+            return this.gotoDir(process.cwd())
+        }
+        this.currentDir = slash.dir(this.currentFile)
+        this.crumbs.hide()
+        this.choices.mapscr.rowOffset = 0
+        weight = function (item)
+        {
+            var p, w
+
+            p = slash.parse(item)
+            w = 0
+            w += item.split('/').length * 256
+            w += kstr.weight(p.name)
+            return w
+        }
+        items.sort(function (a, b)
+        {
+            return weight(a) - weight(b)
+        })
+        items = items.map((function (path)
+        {
+            return {type:'file',path:path,tilde:slash.relative(path,this.currentDir)}
+        }).bind(this))
+        this.showPathItems(items)
+        return this.show()
+    }
+
     quicky.prototype["showPathItems"] = function (items, select)
     {
         var idx, item, selectIndex
@@ -283,50 +265,6 @@ quicky = (function ()
         this.hide()
         post.emit('quicky',file)
         return {redraw:false}
-    }
-
-    quicky.prototype["applyChoice"] = function ()
-    {
-        var current
-
-        switch (this.input.current())
-        {
-            case '/':
-                return this.gotoDir('/')
-
-            case '~':
-                return this.gotoDir('~')
-
-            case '.':
-                return this.gotoDir(this.currentDir)
-
-            case '..':
-                return this.gotoDir(slash.dir(this.currentDir))
-
-        }
-
-        current = this.choices.current()
-        if (_k_.empty(current) && !_k_.empty(this.input.current()))
-        {
-            this.gotoDirOrOpenFile(this.input.current())
-            return {redraw:true}
-        }
-        if ((current != null ? current.path : undefined))
-        {
-            this.gotoDirOrOpenFile(current.path)
-            return {redraw:true}
-        }
-        return this.returnToEditor()
-    }
-
-    quicky.prototype["returnToEditor"] = function ()
-    {
-        this.hide()
-        if (this.choices.numFiltered())
-        {
-            post.emit('quicky',this.currentChoice())
-        }
-        return {redraw:true}
     }
 
     quicky.prototype["moveSelection"] = function (dir)
@@ -418,9 +356,60 @@ quicky = (function ()
         return quicky.__super__.onWheel.call(this,event)
     }
 
-    quicky.prototype["onChoiceAction"] = function (choice, action)
+    quicky.prototype["applyChoice"] = function (choice)
     {
-        var upDir, _382_62_
+        switch (this.input.current())
+        {
+            case '/':
+                return this.gotoDir('/')
+
+            case '~':
+                return this.gotoDir('~')
+
+            case '.':
+                return this.gotoDir(this.currentDir)
+
+            case '..':
+                return this.gotoDir(slash.dir(this.currentDir))
+
+        }
+
+        if (_k_.empty(choice) && !_k_.empty(this.input.current()))
+        {
+            this.gotoDirOrOpenFile(this.input.current())
+            return {redraw:true}
+        }
+        if (_k_.empty(choice))
+        {
+            return {redraw:false}
+        }
+        if (_k_.empty(choice.path))
+        {
+            return {redraw:false}
+        }
+        this.gotoDirOrOpenFile(choice.path)
+        return {redraw:true}
+    }
+
+    quicky.prototype["onFsColAction"] = function (choice, action)
+    {
+        return lf('onFsColAction',action,choice)
+    }
+
+    quicky.prototype["onInputAction"] = function (text, action)
+    {
+        switch (action)
+        {
+            case 'submit':
+                return this.applyChoice(this.choices.current())
+
+        }
+
+    }
+
+    quicky.prototype["onChoicesAction"] = function (action, choice)
+    {
+        var upDir, _365_62_
 
         switch (action)
         {
@@ -438,7 +427,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_382_62_=choice.link) != null ? _382_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_365_62_=choice.link) != null ? _365_62_ : choice.path))
                     }
                 }
                 break
@@ -463,6 +452,7 @@ quicky = (function ()
                 break
         }
 
+        return quicky.__super__.onChoicesAction.call(this,action,choice)
     }
 
     return quicky

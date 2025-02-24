@@ -289,5 +289,11 @@ class NFS
     @isReadable: p ○-> error 'todo'
     @duplicate:  p ○-> error 'todo'
     @trash:      p ○-> error 'todo'
+    
+    @readText: p ○->
         
+        text =○ NFS.read p 
+        ⮐ if text.includes '\ufffd' #unicode replacement character
+        text
+
 export NFS

@@ -171,7 +171,12 @@ function KED
         @currentFile =○ nfs.resolveSymlink @currentFile
         # lf 'ked.loadFile @currentFile' @currentFile
 
-        text =○ nfs.read @currentFile
+        # text =○ nfs.read @currentFile
+        text =○ nfs.readText @currentFile
+        
+        if text == undefined
+            lf 'ked.loadFile: binary?' @currentFile
+            text = '○ binary ○'
         
         segls = util.seglsForText text
         

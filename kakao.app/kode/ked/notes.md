@@ -26,7 +26,7 @@
 #### todo
 ##### todo
 
-- clickable choices
+- darken text around popups?
 
 - unicode mode
     - ~ replacement

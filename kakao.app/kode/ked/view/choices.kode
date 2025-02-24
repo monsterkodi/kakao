@@ -6,7 +6,8 @@
  0000000  000   000   0000000   000   0000000  00000000  0000000
 ###
 
-use ../../kxk ▪ kstr kseg slash krzl
+use ../../kxk ▪ kstr kseg slash krzl post
+use ../util   ◆ util
 use ..        ◆ editor theme
 
 function choices extends editor
@@ -16,6 +17,7 @@ function choices extends editor
         super screen name ['scrllr'].concat(features)
         
         @items = []
+        @hoverIndex = -1
         @fuzzied = @items
         @filterText = ''
         
@@ -32,10 +34,13 @@ function choices extends editor
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
-    current:    -> @fuzzied[@state.mainCursor()[1]]
+    current:     -> @fuzzied[@state.mainCursor()[1]]
+    choiceAtRow: row -> @fuzzied[row]
     
     hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1
     hasPrev:    -> @state.mainCursor()[1] > 0
+    
+    select: row -> @state.setSelections [util.rangeOfLine(@state.allLines() row)]; @emit 'select' @choiceAtRow(row)
     selectNext: -> @state.selectNextLine() ; @frontCursor()
     selectPrev: -> @state.selectPrevLine() ; @frontCursor()
     
@@ -45,6 +50,12 @@ function choices extends editor
     
     extract: item => @key and item is obj ? item[@key] : kseg.str(item)        
         
+    # 000   000  00000000  000   0000000   000   000  000000000  
+    # 000 0 000  000       000  000        000   000     000     
+    # 000000000  0000000   000  000  0000  000000000     000     
+    # 000   000  000       000  000   000  000   000     000     
+    # 00     00  00000000  000   0000000   000   000     000     
+    
     weight: item text =>
 
         itemText = @extract item
@@ -63,6 +74,12 @@ function choices extends editor
                                                                  # has the side-effect of moving directories down
         w
 
+    # 00000000  000  000      000000000  00000000  00000000   
+    # 000       000  000         000     000       000   000  
+    # 000000    000  000         000     0000000   0000000    
+    # 000       000  000         000     000       000   000  
+    # 000       000  0000000     000     00000000  000   000  
+    
     filter: text =>
         
         # lf 'choices.filter' text @items
@@ -88,9 +105,70 @@ function choices extends editor
         # lf 'choices.filter lines' lines
 
         @state.loadLines lines
+
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    hoverChoiceAtRow: row => 
+    
+        ⮐ if @hoverIndex == row
         
+        @hoverIndex = row
+        @select @hoverIndex
+        post.emit 'pointer' 'pointer'
+        
+    unhover: =>
+    
+        @hoverIndex = -1
+        @state.clearHighlights()
+        post.emit 'pointer' 'default'
+        
+    clickChoiceAtRow: row =>
+        
+        @hoverIndex = -1  
+        @emit 'action' 'click' @choiceAtRow(row)
+        
+    onMouse: event =>
+    
+        [col row] = @cells.posForEvent event
+        
+        if @cells.isInsideEvent event
+            
+            switch event.type
+                
+                'press'   ➜ ⮐ @clickChoiceAtRow row 
+                'move'    ➜ ⮐ @hoverChoiceAtRow row
+                'release' ➜ ⮐ @hoverChoiceAtRow row
+                
+            lf "mouse #{@name} #{col} #{row} #{event.type}" 
+            
+            ⮐ true
+        else
+            @unhover()
+    
+        super event
+
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
     onKey: key event =>
         
-        super key event
-        
+        ⮐ if not @hasFocus()
+            
+        switch event.combo
+            'right'  
+            'left' 
+            'delete'
+            'space'  
+            'return' ➜ @emit 'action' event.combo @current() 
+
+        # not calling super here effectively disables all text-editing
+        true
+                        
 export choices
