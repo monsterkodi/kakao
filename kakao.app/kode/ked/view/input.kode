@@ -15,12 +15,9 @@ function input extends editor
 
         super screen name []
 
-        @state.onLinesChanged = @onChange
-    
     hasFocus: -> @state.hasFocus
 
     current:  => kseg.str @state.s.lines[0]
-    onChange: => @emit 'changed' @current()
 
     set: text ->
     
@@ -33,18 +30,27 @@ function input extends editor
 
     onKey: key event ->
         
+        lf "input.onKey #{@name} #{event.combo}" 
+        
         switch event.combo
-            'return' ➜ ⮐ @emit 'submit' @current()
-            
+            'return'    ➜ ⮐ @emit 'action' 'submit' @current()
+            'up' 'down'
+                @set '' 
+                @emit 'action' event.combo 
+                ⮐ 
+
+        before = @current()
+        
         super key event
+        
+        @emit 'action' 'change' @current() if before != @current()
         
     draw: ->
         
         ⮐ if @hidden()
         
-        # lf 'input.draw' @name @state.allLines()
-
         @cells.fill_rect 0 0 -1 -1 ' ' null theme.quicky_frame_bg
+        
         super()
 
 export input

@@ -81,20 +81,51 @@ choices = (function ()
 
     choices.prototype["select"] = function (row)
     {
+        if (row < 0 || row >= this.state.s.lines.length)
+        {
+            return
+        }
         this.state.setSelections([util.rangeOfLine(this.state.allLines(),row)])
         return this.emit('select',this.choiceAtRow(row))
     }
 
+    choices.prototype["moveSelection"] = function (dir)
+    {
+        switch (dir)
+        {
+            case 'down':
+                return this.selectNext()
+
+            case 'up':
+                return this.selectPrev()
+
+        }
+
+    }
+
     choices.prototype["selectNext"] = function ()
     {
-        this.state.selectNextLine()
-        return this.frontCursor()
+        if (this.hasNext())
+        {
+            this.state.selectNextLine()
+            return this.emitSelectionChange()
+        }
     }
 
     choices.prototype["selectPrev"] = function ()
     {
-        this.state.selectPrevLine()
-        return this.frontCursor()
+        if (this.hasPrev())
+        {
+            this.state.selectPrevLine()
+            return this.emitSelectionChange()
+        }
+    }
+
+    choices.prototype["emitSelectionChange"] = function ()
+    {
+        this.grabFocus()
+        this.frontCursor()
+        return this.emit('select',this.choiceAtRow(this.state.allSelections()[0][1]))
     }
 
     choices.prototype["frontCursor"] = function ()
@@ -231,6 +262,10 @@ choices = (function ()
             case 'space':
             case 'return':
                 this.emit('action',event.combo,this.current())
+                break
+            case 'up':
+            case 'down':
+                this.moveSelection(event.combo)
                 break
         }
 

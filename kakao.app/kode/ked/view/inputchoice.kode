@@ -22,8 +22,9 @@ function inputchoice extends view
 
         @choices.mapscr?.hide()       
 
-        @input.on   'changed' @onInputChanged
-        @input.on   'submit'  @onInputSubmit
+        # @input.on   'changed' @onInputChanged
+        # @input.on   'submit'  @onInputSubmit
+        @input.on   'action'  @onInputAction
         @choices.on 'action'  @onChoicesAction
         
     inputIsActive: -> @input.hasFocus() or @input.current().length
@@ -71,8 +72,8 @@ function inputchoice extends view
     # 000  000  0000  000        000   000     000     
     # 000  000   000  000         0000000      000     
     
-    onInputChanged: text =>
-
+    onInputChange: text =>
+        
         ⮐ if text == @choices.filterText
 
         @choices.filter text
@@ -81,11 +82,18 @@ function inputchoice extends view
         @choicesFiltered()
         @layout()
         
-    onInputSubmit: text =>
+    onInputAction: action text =>
         
-        @onInputAction 'submit' text 
+        lf 'input.choice.onInputAction' action text
         
-    onInputAction: action text => lf "inputchoice.onInputAction #{action} #{text} (unhandled?)"
+        switch action
+            
+            'submit' ➜ ⮐ @applyChoice @choices.current()
+            'change' ➜ ⮐ @onInputChange text
+            'up'
+            'down'   ➜ ⮐ @choices.moveSelection action
+    
+        lf "inputchoice.onInputAction #{action} #{text} (unhandled?)"
         
     #  0000000  000   000   0000000   000   0000000  00000000   0000000  
     # 000       000   000  000   000  000  000       000       000       
@@ -137,25 +145,6 @@ function inputchoice extends view
         else
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg
             
-    #  0000000  00000000  000      00000000   0000000  000000000
-    # 000       000       000      000       000          000
-    # 0000000   0000000   000      0000000   000          000
-    #      000  000       000      000       000          000
-    # 0000000   00000000  0000000  00000000   0000000     000
-
-    moveSelection: dir ->
-        
-        switch dir
-            'down'  
-                ⮐ if not @choices.hasNext()
-                @choices.selectNext()
-            'up'    
-                ⮐ if not @choices.hasPrev()
-                @choices.selectPrev()
-
-        @input.set ''
-        @choices.grabFocus()
-        
     moveFocus: ->
         
         if @choices.hasFocus()
@@ -176,7 +165,6 @@ function inputchoice extends view
         switch event.combo
             'tab'       ➜ ⮐ @moveFocus()
             'esc'       ➜ ⮐ @hide()
-            'up' 'down' ➜ ⮐ @moveSelection event.combo
 
         if result = @choices.onKey key event
 

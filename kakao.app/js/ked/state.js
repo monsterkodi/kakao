@@ -174,8 +174,6 @@ state = (function ()
     {
         this.segls = segls
     
-        var _134_23_
-
         if (_k_.empty(this.segls))
         {
             this.segls = [[]]
@@ -183,8 +181,7 @@ state = (function ()
         this.syntax.setSegls(this.segls)
         this.s = this.s.set('lines',this.segls)
         this.r = []
-        this.pushState()
-        return (typeof this.onLinesChanged === "function" ? this.onLinesChanged() : undefined)
+        return this.pushState()
     }
 
     state.prototype["allLines"] = function ()

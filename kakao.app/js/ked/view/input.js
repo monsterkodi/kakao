@@ -14,10 +14,8 @@ input = (function ()
     _k_.extend(input, editor)
     function input (screen, name, features)
     {
-        this["onChange"] = this["onChange"].bind(this)
         this["current"] = this["current"].bind(this)
         input.__super__.constructor.call(this,screen,name,[])
-        this.state.onLinesChanged = this.onChange
     }
 
     input.prototype["hasFocus"] = function ()
@@ -28,11 +26,6 @@ input = (function ()
     input.prototype["current"] = function ()
     {
         return kseg.str(this.state.s.lines[0])
-    }
-
-    input.prototype["onChange"] = function ()
-    {
-        return this.emit('changed',this.current())
     }
 
     input.prototype["set"] = function (text)
@@ -48,14 +41,28 @@ input = (function ()
 
     input.prototype["onKey"] = function (key, event)
     {
+        var before
+
+        lf(`input.onKey ${this.name} ${event.combo}`)
         switch (event.combo)
         {
             case 'return':
-                return this.emit('submit',this.current())
+                return this.emit('action','submit',this.current())
+
+            case 'up':
+            case 'down':
+                this.set('')
+                this.emit('action',event.combo)
+                return
 
         }
 
-        return input.__super__.onKey.call(this,key,event)
+        before = this.current()
+        input.__super__.onKey.call(this,key,event)
+        if (before !== this.current())
+        {
+            return this.emit('action','change',this.current())
+        }
     }
 
     input.prototype["draw"] = function ()

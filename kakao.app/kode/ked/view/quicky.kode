@@ -340,11 +340,7 @@ function quicky extends inputchoice
         
     onInputAction: action text =>
         
-        lf "quicky.onInputAction #{action} #{text}"
-        
-        switch action
-            
-            'submit' ➜ ⮐ @applyChoice @choices.current()
+        super action text
     
     onChoicesAction: action choice =>
             

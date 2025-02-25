@@ -134,9 +134,7 @@ function menu extends inputchoice
             
     onInputAction: action text =>
         
-        switch action
-            
-            'submit' ➜ ⮐ @applyChoice @choices.current()
+        super action text
                     
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000

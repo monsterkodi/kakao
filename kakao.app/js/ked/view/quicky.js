@@ -398,19 +398,12 @@ quicky = (function ()
 
     quicky.prototype["onInputAction"] = function (action, text)
     {
-        lf(`quicky.onInputAction ${action} ${text}`)
-        switch (action)
-        {
-            case 'submit':
-                return this.applyChoice(this.choices.current())
-
-        }
-
+        return quicky.__super__.onInputAction.call(this,action,text)
     }
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _367_62_
+        var upDir, _363_62_
 
         switch (action)
         {
@@ -428,7 +421,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_367_62_=choice.link) != null ? _367_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_363_62_=choice.link) != null ? _363_62_ : choice.path))
                     }
                 }
                 break

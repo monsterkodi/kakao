@@ -137,13 +137,7 @@ quit`)
 
     menu.prototype["onInputAction"] = function (action, text)
     {
-        switch (action)
-        {
-            case 'submit':
-                return this.applyChoice(this.choices.current())
-
-        }
-
+        return menu.__super__.onInputAction.call(this,action,text)
     }
 
     menu.prototype["draw"] = function ()

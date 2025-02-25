@@ -40,21 +40,54 @@ function choices extends editor
     hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1
     hasPrev:    -> @state.mainCursor()[1] > 0
     
-    select: row -> @state.setSelections [util.rangeOfLine(@state.allLines() row)]; @emit 'select' @choiceAtRow(row)
-    selectNext: -> @state.selectNextLine() ; @frontCursor()
-    selectPrev: -> @state.selectPrevLine() ; @frontCursor()
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
     
+    select: row -> 
+        
+        ⮐ if row < 0 or row >= @state.s.lines.length
+    
+        @state.setSelections [util.rangeOfLine(@state.allLines() row)]
+        @emit 'select' @choiceAtRow(row)
+    
+    moveSelection: dir ->
+        
+        switch dir
+            'down' ➜ @selectNext()
+            'up'   ➜ @selectPrev() 
+        
+    selectNext: -> 
+        
+        if @hasNext()
+            @state.selectNextLine() 
+            @emitSelectionChange()
+        
+    selectPrev: -> 
+        
+        if @hasPrev()
+            @state.selectPrevLine()
+            @emitSelectionChange()
+            
+    emitSelectionChange: ->
+            
+        @grabFocus()
+        @frontCursor() 
+        @emit 'select' @choiceAtRow(@state.allSelections()[0][1])
+        
     frontCursor: -> 
         
         @state.setMainCursor 0 @state.mainCursor()[1]
     
-    extract: item => @key and item is obj ? item[@key] : kseg.str(item)        
-        
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     
     # 000000000  0000000   000  000  0000  000000000     000     
     # 000   000  000       000  000   000  000   000     000     
     # 00     00  00000000  000   0000000   000   000     000     
+    
+    extract: item => @key and item is obj ? item[@key] : kseg.str(item)        
     
     weight: item text =>
 
@@ -167,7 +200,9 @@ function choices extends editor
             'delete'
             'space'  
             'return' ➜ @emit 'action' event.combo @current() 
-
+            'up' 
+            'down'   ➜ @moveSelection event.combo
+            
         # not calling super here effectively disables all text-editing
         true
                         

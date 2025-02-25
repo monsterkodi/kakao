@@ -131,8 +131,6 @@ function state
         @r = []
         @pushState()
 
-        @onLinesChanged?()
-
     allLines: => @s.lines.asMutable()
 
     loadLines: lines => 
