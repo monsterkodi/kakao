@@ -29,6 +29,10 @@ class color
 
     static darken (c, f)
     {
+        if (_k_.empty(c))
+        {
+            return [0,0,0]
+        }
         return kstr.darkenColor(c,f)
     }
 

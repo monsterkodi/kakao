@@ -323,6 +323,15 @@ util = (function ()
         }).bind(this))
     }
 
+    util["deltaOfPosToRect"] = function (p, r)
+    {
+        var dx, dy
+
+        dx = p[0] < r[0] ? r[0] - p[0] : p[0] > r[2] ? p[0] - r[2] : _k_.max(r[0] - p[0],p[0] - r[2])
+        dy = p[1] < r[1] ? r[1] - p[1] : p[1] > r[3] ? p[1] - r[3] : _k_.max(r[1] - p[1],p[1] - r[3])
+        return [dx,dy]
+    }
+
     util["isPosInsideRange"] = function (pos, rng)
     {
         if (this.isPosBeforeRange(pos,rng))

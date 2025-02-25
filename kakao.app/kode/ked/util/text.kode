@@ -302,7 +302,7 @@ function text
         
         ⮐ if @isInvalidLineIndex lines y
          
-        if r = kstr.rangeOfClosestWord lines[y] x
+        if r = kseg.spanForClosestWordAtColumn lines[y] x
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
                 

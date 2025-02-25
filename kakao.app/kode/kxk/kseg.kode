@@ -117,7 +117,39 @@ kseg.tailCountWord = a ->
     for i in 0...a.length
         ⮐ i if not /\w+/.test a[a.length-1-i]
     i
+    
+kseg.spanForClosestWordAtColumn = a c ->
+    
+    a = kseg a
+    
+    # log "#{y5 kseg.str(a)} #{c}"
+    
+    segi  = kseg.segiAtWidth a c
+    left  = a[0...segi]
+    right = a[segi..]
+    
+    ls = kseg.tailCount left ' '
+    rs = kseg.headCount right ' '
+
+    lw = kseg.tailCountWord left
+    rw = kseg.headCountWord right
+    
+    ll = left.length
+    rl = right.length
+    
+    # log "#{lw} #{ls} ▪ #{rs} #{rw}"
+    
+    if 
+        ls == ll and rs == rl ➜ s = [c c]                                          # only spaces on both sides
+        ls == rs == 0         ➜ s = [c-lw c+rw]                                    # no spaces left and right
+        ls == ll              ➜ s = [c+rs c+rs+kseg.headCountWord(right[rs..])]    # only spaces to the left
+        rs == rl              ➜ s =  [c-ls-kseg.tailCountWord(left[..ll-ls]) c-ls] # only spaces to the right
+        ls == rs              ➜ s = kseg.spanForClosestWordAtColumn left c-ls      # same amount of spaces on both sides
+        ls < rs               ➜ s = kseg.spanForClosestWordAtColumn left c         # left word is closer
+        ls > rs               ➜ s = kseg.spanForClosestWordAtColumn right 0; s[0] += c; s[1] += c # right word is closer
         
+    s
+    
 kseg.numIndent = a -> kseg.headCount a ' '
         
 kseg.splitAtIndent = a ->

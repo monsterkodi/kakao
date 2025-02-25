@@ -7,6 +7,7 @@
 ###
 
 use ../../kxk ▪ post kstr kseg
+use ../util   ◆ color util
 use ..        ◆ theme
 use           ◆ view cells input choices
 
@@ -56,6 +57,7 @@ function inputchoice extends view
 
         super()
         @choices.grabFocus()
+        redraw:true
 
     hide: => 
         
@@ -72,7 +74,7 @@ function inputchoice extends view
     onInputChanged: text =>
 
         ⮐ if text == @choices.filterText
-        # lf 'inputchoice.onInputChanged' text
+
         @choices.filter text
         @choices.state.selectLine 0
         @choices.state.setMainCursor @choices.state.s.lines[0].length 0
@@ -81,9 +83,9 @@ function inputchoice extends view
         
     onInputSubmit: text =>
         
-        @onInputAction text 'submit'
+        @onInputAction 'submit' text 
         
-    onInputAction: text action => lf 'onInputAction' text action
+    onInputAction: action text => lf "inputchoice.onInputAction #{action} #{text} (unhandled?)"
         
     #  0000000  000   000   0000000   000   0000000  00000000   0000000  
     # 000       000   000  000   000  000  000       000       000       
@@ -102,6 +104,8 @@ function inputchoice extends view
         
         switch action
             'click'
+            'right'
+            'space'
             'return' ➜ ⮐ @applyChoice choice
             
     # 0000000    00000000    0000000   000   000
@@ -132,7 +136,7 @@ function inputchoice extends view
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
         else
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg
-
+            
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000
     # 0000000   0000000   000      0000000   000          000
@@ -149,7 +153,6 @@ function inputchoice extends view
                 ⮐ if not @choices.hasPrev()
                 @choices.selectPrev()
 
-        # lf 'moveSelection' dir @choices.state.mainCursor()[1] @choices.numFiltered()
         @input.set ''
         @choices.grabFocus()
         
@@ -177,7 +180,7 @@ function inputchoice extends view
 
         if result = @choices.onKey key event
 
-            if event.char
+            if event.char and event.char not in ' \n'
                 @input.grabFocus()
             else
                 ⮐ result

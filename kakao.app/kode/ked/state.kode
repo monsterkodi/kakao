@@ -100,7 +100,6 @@ function state
     textOfSelectionOrWordAtCursor: -> 
         
         if @s.selections.length
-            lf 'textOfSelection' @textOfSelection()
             ⮐ @textOfSelection()
         else
             lf 'wordAtCursor' @wordAtCursor()

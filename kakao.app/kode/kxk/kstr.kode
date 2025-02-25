@@ -344,7 +344,7 @@ str.hex = s ->
         
 str.darkenColor = s f=0.5 ->
     
-    s = str.hexColor if not s is str
+    s = str.hexColor(s) if not s is str
     str.hexColor str.hexColor(s).map((v) -> clamp(0 255 parseInt(f*v)))
         
 str.hexColor = s ->

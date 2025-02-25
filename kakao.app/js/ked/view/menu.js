@@ -26,7 +26,6 @@ menu = (function ()
         this.screen = screen
     
         this["onInputAction"] = this["onInputAction"].bind(this)
-        this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
@@ -89,12 +88,12 @@ quit`)
 
     menu.prototype["showRecent"] = function ()
     {
-        var files, loaded, maxRecent, recent, saved, _96_30_, _97_29_
+        var files, loaded, maxRecent, recent, saved, _94_30_, _95_29_
 
         maxRecent = 20
         files = ked_session.get('files',[])
-        loaded = ((_96_30_=files.loaded) != null ? _96_30_ : [])
-        saved = ((_97_29_=files.saved) != null ? _97_29_ : [])
+        loaded = ((_94_30_=files.loaded) != null ? _94_30_ : [])
+        saved = ((_95_29_=files.saved) != null ? _95_29_ : [])
         recent = loaded.concat(saved)
         recent = kxk.util.uniq(recent)
         recent.reverse()
@@ -118,7 +117,8 @@ quit`)
                 post.emit('file.new')
                 break
             case 'about':
-                return this.show(true)
+                this.show(true)
+                return true
 
             case 'quit':
                 post.emit('quit')
@@ -127,26 +127,15 @@ quit`)
                 post.emit('quicky.dir',process.cwd())
                 break
             case 'recent ...':
-                return this.showRecent()
-
+                this.showRecent()
+                break
         }
 
-        return this.hide()
+        this.hide()
+        return true
     }
 
-    menu.prototype["onChoicesAction"] = function (action, choice)
-    {
-        switch (action)
-        {
-            case 'space':
-                return this.applyChoice(choice)
-
-        }
-
-        return menu.__super__.onChoicesAction.call(this,action,choice)
-    }
-
-    menu.prototype["onInputAction"] = function (text, action)
+    menu.prototype["onInputAction"] = function (action, text)
     {
         switch (action)
         {

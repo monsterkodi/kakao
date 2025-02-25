@@ -172,6 +172,21 @@ bbb`),[['a','a','a'],[],['b','b','b']])
         compare(kseg.segiAtWidth(kseg('🧑🧑'),5),2)
         compare(kseg.segiAtWidth(kseg('🧑🧑'),6),2)
     })
+    section("spanForClosestWordAtColumn", function ()
+    {
+        compare(kseg.spanForClosestWordAtColumn(kseg('abc def'),0),[0,3])
+        compare(kseg.spanForClosestWordAtColumn(kseg('abc def'),1),[0,3])
+        compare(kseg.spanForClosestWordAtColumn(kseg('abc def'),2),[0,3])
+        compare(kseg.spanForClosestWordAtColumn(kseg('abc def'),3),[0,3])
+        compare(kseg.spanForClosestWordAtColumn(kseg('abc def'),4),[4,7])
+        compare(kseg.spanForClosestWordAtColumn(kseg('ab  def'),3),[0,2])
+        compare(kseg.spanForClosestWordAtColumn(kseg('ab  def'),4),[4,7])
+        compare(kseg.spanForClosestWordAtColumn(kseg('     '),0),[0,0])
+        compare(kseg.spanForClosestWordAtColumn(kseg('     '),2),[2,2])
+        compare(kseg.spanForClosestWordAtColumn(kseg('     '),3),[3,3])
+        compare(kseg.spanForClosestWordAtColumn(kseg('   xy'),2),[3,5])
+        compare(kseg.spanForClosestWordAtColumn(kseg('xy   '),3),[0,2])
+    })
 }
 toExport["kseg"]._section_ = true
 toExport._test_ = true

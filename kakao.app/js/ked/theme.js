@@ -4,6 +4,22 @@ import color from "./util/color.js"
 
 class theme
 {
+    static editor = '#000'
+
+    static editor_empty = '#000'
+
+    static editor_cursor_main = '#101010'
+
+    static editor_cursor_empty = '#000'
+
+    static editor_cursor_multi = '#f00'
+
+    static editor_cursor_blur = '#666'
+
+    static editor_cursor_bg = '#ff0'
+
+    static editor_cursor_fg = '#000'
+
     static selection_line = '#222'
 
     static selection = '#22a'
@@ -65,22 +81,6 @@ class theme
     static quicky_frame_fg = '#222'
 
     static quicky_frame_bg = '#000'
-
-    static editor = '#000'
-
-    static editor_empty = '#000'
-
-    static editor_cursor_main = '#101010'
-
-    static editor_cursor_empty = '#000'
-
-    static editor_cursor_multi = '#f00'
-
-    static editor_cursor_blur = '#666'
-
-    static editor_cursor_bg = '#ff0'
-
-    static editor_cursor_fg = '#000'
 
     static konsole = '#000'
 

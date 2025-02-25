@@ -556,7 +556,6 @@ editor = (function ()
 
     editor.prototype["onFinderApply"] = function (text)
     {
-        lf('finderApply',text)
         this.state.highlightText(text)
         return this.state.moveCursorToNextHighlight()
     }
@@ -715,7 +714,7 @@ editor = (function ()
                 return this.state.setMainCursor(this.state.s.lines[this.state.s.lines.length - 1].length,this.state.s.lines.length - 1)
 
             case 'alt+d':
-                return this.state.delete('next','alt')
+                return this.state.delete('next',true)
 
             case 'shift+ctrl+k':
             case 'entf':

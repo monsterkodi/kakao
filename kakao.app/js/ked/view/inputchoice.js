@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var inputchoice
 
@@ -6,6 +6,9 @@ import kxk from "../../kxk.js"
 let post = kxk.post
 let kstr = kxk.kstr
 let kseg = kxk.kseg
+
+import color from "../util/color.js"
+import util from "../util/util.js"
 
 import theme from "../theme.js"
 
@@ -23,7 +26,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _22_23_
+        var _23_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -67,12 +70,13 @@ inputchoice = (function ()
     {
         inputchoice.__super__.show.call(this)
     
-        return this.choices.grabFocus()
+        this.choices.grabFocus()
+        return {redraw:true}
     }
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _62_23_
+        var _64_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         post.emit('focus','editor')
@@ -94,12 +98,12 @@ inputchoice = (function ()
 
     inputchoice.prototype["onInputSubmit"] = function (text)
     {
-        return this.onInputAction(text,'submit')
+        return this.onInputAction('submit',text)
     }
 
-    inputchoice.prototype["onInputAction"] = function (text, action)
+    inputchoice.prototype["onInputAction"] = function (action, text)
     {
-        return lf('onInputAction',text,action)
+        return lf(`inputchoice.onInputAction ${action} ${text} (unhandled?)`)
     }
 
     inputchoice.prototype["choicesFiltered"] = function ()
@@ -107,9 +111,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _98_36_
+        var choice, _100_36_
 
-        choice = ((_98_36_=this.choices.current()) != null ? _98_36_ : this.input.current())
+        choice = ((_100_36_=this.choices.current()) != null ? _100_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -121,6 +125,8 @@ inputchoice = (function ()
         switch (action)
         {
             case 'click':
+            case 'right':
+            case 'space':
             case 'return':
                 return this.applyChoice(choice)
 
@@ -221,7 +227,7 @@ inputchoice = (function ()
 
         if (result = this.choices.onKey(key,event))
         {
-            if (event.char)
+            if (event.char && !(_k_.in(event.char,' \n')))
             {
                 this.input.grabFocus()
             }

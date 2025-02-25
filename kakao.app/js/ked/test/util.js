@@ -179,15 +179,16 @@ XYZ`)
     })
     section("rangeOfClosestWordToPos", function ()
     {
-        lines = ['1 2  3   4','   ab  ghij']
+        lines = ['1 2  3   4','   ab ghij']
         compare(util.rangeOfClosestWordToPos(lines,[0,0]),[0,0,1,0])
-        compare(util.rangeOfClosestWordToPos(lines,[1,0]),[2,0,3,0])
+        compare(util.rangeOfClosestWordToPos(lines,[1,0]),[0,0,1,0])
         compare(util.rangeOfClosestWordToPos(lines,[2,0]),[2,0,3,0])
         compare(util.rangeOfClosestWordToPos(lines,[3,0]),[2,0,3,0])
-        compare(util.rangeOfClosestWordToPos(lines,[4,0]),[5,0,6,0])
+        compare(util.rangeOfClosestWordToPos(lines,[4,0]),[2,0,3,0])
+        compare(util.rangeOfClosestWordToPos(lines,[5,0]),[5,0,6,0])
         compare(util.rangeOfClosestWordToPos(lines,[0,1]),[3,1,5,1])
         compare(util.rangeOfClosestWordToPos(lines,[5,1]),[3,1,5,1])
-        compare(util.rangeOfClosestWordToPos(lines,[6,1]),[7,1,11,1])
+        compare(util.rangeOfClosestWordToPos(lines,[6,1]),[6,1,10,1])
     })
     section("rangeOfWordOrWhitespaceLeftToPos", function ()
     {

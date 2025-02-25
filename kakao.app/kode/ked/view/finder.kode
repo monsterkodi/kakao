@@ -6,9 +6,8 @@
     000       000  000   000  0000000    00000000  000   000  
 ###
 
-use ../../kxk ▪ kstr slash post
-use ../util ◆ prjcts walker util
-use         ◆ cells inputchoice
+use ../../kxk ▪ post
+use         ◆ inputchoice
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -30,8 +29,6 @@ function finder extends inputchoice
     
     show: searchText ->
 
-        lf 'finder.show' searchText
-
         @input.set searchText
         @input.selectAll()
         @choices.set []
@@ -45,20 +42,18 @@ function finder extends inputchoice
     # 000   000  000        000        000         000     
     # 000   000  000        000        0000000     000     
     
-    applyChoice: choice ->
+    apply: text ->
         
         @hide()
-        post.emit 'finder.apply' choice
+        post.emit 'finder.apply' text
         redraw:true
+        
+    applyChoice: choice -> @apply choice
+        
+    onInputAction: action text ->
+        
+        switch action
             
-    #  0000000    0000000  000000000  000   0000000   000   000  
-    # 000   000  000          000     000  000   000  0000  000  
-    # 000000000  000          000     000  000   000  000 0 000  
-    # 000   000  000          000     000  000   000  000  0000  
-    # 000   000   0000000     000     000   0000000   000   000  
-    
-    onChoiceAction: choice action =>
-            
-        # lf 'onChoiceAction' choice action
+            'submit' ➜ ⮐ @apply text
 
 export finder

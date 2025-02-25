@@ -3,15 +3,8 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 var finder, int
 
 import kxk from "../../kxk.js"
-let kstr = kxk.kstr
-let slash = kxk.slash
 let post = kxk.post
 
-import prjcts from "../util/prjcts.js"
-import walker from "../util/walker.js"
-import util from "../util/util.js"
-
-import cells from "./cells.js"
 import inputchoice from "./inputchoice.js"
 
 import rgxs from './quicky.json' with { type : "json" }
@@ -24,14 +17,13 @@ finder = (function ()
     {
         this.screen = screen
     
-        this["onChoiceAction"] = this["onChoiceAction"].bind(this)
         finder.__super__.constructor.call(this,this.screen,'finder')
+    
         this.choices.state.syntax.setRgxs(rgxs)
     }
 
     finder.prototype["show"] = function (searchText)
     {
-        lf('finder.show',searchText)
         this.input.set(searchText)
         this.input.selectAll()
         this.choices.set([])
@@ -39,15 +31,28 @@ finder = (function ()
         return this.input.grabFocus()
     }
 
-    finder.prototype["applyChoice"] = function (choice)
+    finder.prototype["apply"] = function (text)
     {
         this.hide()
-        post.emit('finder.apply',choice)
+        post.emit('finder.apply',text)
         return {redraw:true}
     }
 
-    finder.prototype["onChoiceAction"] = function (choice, action)
-    {}
+    finder.prototype["applyChoice"] = function (choice)
+    {
+        return this.apply(choice)
+    }
+
+    finder.prototype["onInputAction"] = function (action, text)
+    {
+        switch (action)
+        {
+            case 'submit':
+                return this.apply(text)
+
+        }
+
+    }
 
     return finder
 })()

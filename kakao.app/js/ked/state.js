@@ -152,7 +152,6 @@ state = (function ()
     {
         if (this.s.selections.length)
         {
-            lf('textOfSelection',this.textOfSelection())
             return this.textOfSelection()
         }
         else
@@ -175,7 +174,7 @@ state = (function ()
     {
         this.segls = segls
     
-        var _135_23_
+        var _134_23_
 
         if (_k_.empty(this.segls))
         {

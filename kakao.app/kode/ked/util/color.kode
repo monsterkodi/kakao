@@ -84,7 +84,9 @@ class color
     
     @rgb:    c   -> kstr.hexColor c
     @hex:    c   -> kstr.hexColor c
-    @darken: c f -> kstr.darkenColor c f
+    @darken: c f -> 
+        ⮐ [0 0 0] if empty c
+        kstr.darkenColor c f
                             
     @bg_rgb: c -> # background
     

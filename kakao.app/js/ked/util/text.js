@@ -507,7 +507,7 @@ text = (function ()
         {
             return
         }
-        if (r = kstr.rangeOfClosestWord(lines[y],x))
+        if (r = kseg.spanForClosestWordAtColumn(lines[y],x))
         {
             if ((0 <= r[0] && r[0] < r[1]))
             {

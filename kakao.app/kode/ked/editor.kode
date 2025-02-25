@@ -409,7 +409,6 @@ function editor extends view
     
     onFinderApply: text => 
     
-        lf 'finderApply' text
         @state.highlightText text
         @state.moveCursorToNextHighlight()
                 
@@ -487,7 +486,7 @@ function editor extends view
             'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
             'ctrl+j'                    ➜ ⮐ @state.setMainCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
             
-            'alt+d'                     ➜ ⮐ @state.delete 'next' 'alt'
+            'alt+d'                     ➜ ⮐ @state.delete 'next' true
             'shift+ctrl+k' 'entf'       ➜ ⮐ @state.delete 'next'
             'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
             'delete'                    ➜ ⮐ @state.delete 'back'

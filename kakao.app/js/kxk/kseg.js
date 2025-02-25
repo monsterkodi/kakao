@@ -231,6 +231,53 @@ kseg.tailCountWord = function (a)
     return i
 }
 
+kseg.spanForClosestWordAtColumn = function (a, c)
+{
+    var left, ll, ls, lw, right, rl, rs, rw, s, segi
+
+    a = kseg(a)
+    segi = kseg.segiAtWidth(a,c)
+    left = a.slice(0, typeof segi === 'number' ? segi : -1)
+    right = a.slice(segi)
+    ls = kseg.tailCount(left,' ')
+    rs = kseg.headCount(right,' ')
+    lw = kseg.tailCountWord(left)
+    rw = kseg.headCountWord(right)
+    ll = left.length
+    rl = right.length
+    if (ls === ll && rs === rl)
+    {
+        s = [c,c]
+    }
+    else if ((ls === rs && rs === 0))
+    {
+        s = [c - lw,c + rw]
+    }
+    else if (ls === ll)
+    {
+        s = [c + rs,c + rs + kseg.headCountWord(right.slice(rs))]
+    }
+    else if (rs === rl)
+    {
+        s = [c - ls - kseg.tailCountWord(left.slice(0, ll - ls)),c - ls]
+    }
+    else if (ls === rs)
+    {
+        s = kseg.spanForClosestWordAtColumn(left,c - ls)
+    }
+    else if (ls < rs)
+    {
+        s = kseg.spanForClosestWordAtColumn(left,c)
+    }
+    else if (ls > rs)
+    {
+        s = kseg.spanForClosestWordAtColumn(right,0)
+        s[0] += c
+        s[1] += c
+    }
+    return s
+}
+
 kseg.numIndent = function (a)
 {
     return kseg.headCount(a,' ')

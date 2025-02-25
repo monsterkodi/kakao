@@ -13,6 +13,8 @@ function cells
 
     @: @screen -> @x = @y = @cols = @rows = 0
     
+    rect: -> [@x @y @x+@cols-1 @y+@rows-1]
+    
     layout: @x @y @cols @rows =>
         
     #  0000000  00000000  000000000  

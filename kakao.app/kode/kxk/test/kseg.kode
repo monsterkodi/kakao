@@ -185,5 +185,22 @@ use .. ◆ kstr kseg
         kseg.segiAtWidth kseg('🧑🧑') 3 ▸ 1
         kseg.segiAtWidth kseg('🧑🧑') 4 ▸ 2
         kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 2
-        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2        
+        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2   
+        
+    ▸ spanForClosestWordAtColumn
+    
+        kseg.spanForClosestWordAtColumn kseg('abc def') 0 ▸ [0 3]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 1 ▸ [0 3]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 2 ▸ [0 3]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 3 ▸ [0 3]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 4 ▸ [4 7]        
+        kseg.spanForClosestWordAtColumn kseg('ab  def') 3 ▸ [0 2]        
+        kseg.spanForClosestWordAtColumn kseg('ab  def') 4 ▸ [4 7]        
+        
+        kseg.spanForClosestWordAtColumn kseg('     ') 0 ▸ [0 0]        
+        kseg.spanForClosestWordAtColumn kseg('     ') 2 ▸ [2 2]        
+        kseg.spanForClosestWordAtColumn kseg('     ') 3 ▸ [3 3]
+        
+        kseg.spanForClosestWordAtColumn kseg('   xy') 2 ▸ [3 5]        
+        kseg.spanForClosestWordAtColumn kseg('xy   ') 3 ▸ [0 2]        
         

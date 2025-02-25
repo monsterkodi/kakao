@@ -338,7 +338,9 @@ function quicky extends inputchoice
         
         lf 'onFsColAction' action choice
         
-    onInputAction: text action =>
+    onInputAction: action text =>
+        
+        lf "quicky.onInputAction #{action} #{text}"
         
         switch action
             

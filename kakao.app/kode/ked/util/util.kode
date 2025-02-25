@@ -178,6 +178,19 @@ function util
     @positionsOutsideRange: posl rng ->
         
         posl.filter (p) => @isPosOutsideRange(p rng)
+        
+    @deltaOfPosToRect: p r ->
+        
+        dx = if
+            p[0] < r[0] ➜ r[0]-p[0]
+            p[0] > r[2] ➜ p[0]-r[2]
+                        ➜ max r[0]-p[0] p[0]-r[2]
+        dy = if
+            p[1] < r[1] ➜ r[1]-p[1]
+            p[1] > r[3] ➜ p[1]-r[3]
+                        ➜ max r[1]-p[1] p[1]-r[3]
+            
+        [dx dy]
                 
     # 00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  0000  000  000        000       

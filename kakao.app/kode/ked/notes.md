@@ -27,6 +27,12 @@
 ##### todo
 
 - darken text around popups?
+- return with single cursor in empty should not append spaces
+- key right in input should activate match
+- crumbs
+    - convert to editor
+    - dissect path
+    - make path chunks clickable
 
 - unicode mode
     - ~ replacement

@@ -441,7 +441,7 @@ str.darkenColor = function (s, f = 0.5)
 {
     if (!(_k_.isStr(s)))
     {
-        s = str.hexColor
+        s = str.hexColor(s)
     }
     return str.hexColor(str.hexColor(s).map(function (v)
     {
