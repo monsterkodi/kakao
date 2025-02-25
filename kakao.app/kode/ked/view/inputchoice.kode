@@ -22,8 +22,6 @@ function inputchoice extends view
 
         @choices.mapscr?.hide()       
 
-        # @input.on   'changed' @onInputChanged
-        # @input.on   'submit'  @onInputSubmit
         @input.on   'action'  @onInputAction
         @choices.on 'action'  @onChoicesAction
         
@@ -62,8 +60,7 @@ function inputchoice extends view
 
     hide: => 
         
-        @choices.mapscr?.hide()        
-        post.emit 'focus' 'editor' 
+        @choices.mapscr?.hide()     
         super()
                             
     # 000  000   000  00000000   000   000  000000000  
@@ -84,7 +81,7 @@ function inputchoice extends view
         
     onInputAction: action text =>
         
-        lf 'input.choice.onInputAction' action text
+        # lf 'input.choice.onInputAction' action text
         
         switch action
             
@@ -93,7 +90,7 @@ function inputchoice extends view
             'up'
             'down'   ➜ ⮐ @choices.moveSelection action
     
-        lf "inputchoice.onInputAction #{action} #{text} (unhandled?)"
+        # lf "inputchoice.onInputAction #{action} #{text} (unhandled?)"
         
     #  0000000  000   000   0000000   000   0000000  00000000   0000000  
     # 000       000   000  000   000  000  000       000       000       
@@ -149,6 +146,7 @@ function inputchoice extends view
         
         if @choices.hasFocus()
             @input.grabFocus()
+            @input.selectAll()
         else
             @choices.grabFocus()
 
@@ -164,7 +162,10 @@ function inputchoice extends view
 
         switch event.combo
             'tab'       ➜ ⮐ @moveFocus()
-            'esc'       ➜ ⮐ @hide()
+            'esc'       
+                @hide()
+                post.emit 'focus' 'editor' 
+                ⮐ 
 
         if result = @choices.onKey key event
 

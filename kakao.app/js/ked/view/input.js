@@ -43,7 +43,6 @@ input = (function ()
     {
         var before
 
-        lf(`input.onKey ${this.name} ${event.combo}`)
         switch (event.combo)
         {
             case 'return':
@@ -51,7 +50,6 @@ input = (function ()
 
             case 'up':
             case 'down':
-                this.set('')
                 this.emit('action',event.combo)
                 return
 

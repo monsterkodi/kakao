@@ -74,10 +74,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _65_23_
+        var _63_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
-        post.emit('focus','editor')
         return inputchoice.__super__.hide.call(this)
     }
 
@@ -96,7 +95,6 @@ inputchoice = (function ()
 
     inputchoice.prototype["onInputAction"] = function (action, text)
     {
-        lf('input.choice.onInputAction',action,text)
         switch (action)
         {
             case 'submit':
@@ -111,7 +109,6 @@ inputchoice = (function ()
 
         }
 
-        return lf(`inputchoice.onInputAction ${action} ${text} (unhandled?)`)
     }
 
     inputchoice.prototype["choicesFiltered"] = function ()
@@ -119,9 +116,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _108_36_
+        var choice, _105_36_
 
-        choice = ((_108_36_=this.choices.current()) != null ? _108_36_ : this.input.current())
+        choice = ((_105_36_=this.choices.current()) != null ? _105_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -179,7 +176,8 @@ inputchoice = (function ()
     {
         if (this.choices.hasFocus())
         {
-            return this.input.grabFocus()
+            this.input.grabFocus()
+            return this.input.selectAll()
         }
         else
         {
@@ -201,7 +199,9 @@ inputchoice = (function ()
                 return this.moveFocus()
 
             case 'esc':
-                return this.hide()
+                this.hide()
+                post.emit('focus','editor')
+                return
 
         }
 

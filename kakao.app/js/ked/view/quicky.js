@@ -209,8 +209,7 @@ quicky = (function ()
         {
             return {type:'file',path:path,tilde:slash.relative(path,this.currentDir)}
         }).bind(this))
-        this.showPathItems(items)
-        return this.show()
+        return this.showPathItems(items)
     }
 
     quicky.prototype["showPathItems"] = function (items, select)
@@ -403,7 +402,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _363_62_
+        var upDir, _356_62_
 
         switch (action)
         {
@@ -421,7 +420,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_363_62_=choice.link) != null ? _363_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_356_62_=choice.link) != null ? _356_62_ : choice.path))
                     }
                 }
                 break

@@ -535,6 +535,7 @@ editor = (function ()
 
     editor.prototype["grabFocus"] = function ()
     {
+        lf(`grabFocus ${this.name}`)
         post.emit('focus',this.name)
         return this.redraw()
     }
@@ -546,6 +547,7 @@ editor = (function ()
 
     editor.prototype["onFocus"] = function (name)
     {
+        lf(`onFocus ${this.name} ${name}`)
         return this.state.hasFocus = (name === this.name)
     }
 

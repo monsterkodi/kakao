@@ -388,6 +388,7 @@ function editor extends view
     
     grabFocus: =>
     
+        lf "grabFocus #{@name}"
         post.emit 'focus' @name
         @redraw()
         
@@ -396,6 +397,8 @@ function editor extends view
         @state.hasFocus
         
     onFocus: name =>
+        
+        lf "onFocus #{@name} #{name}"
         
         @state.hasFocus = (name == @name)
         

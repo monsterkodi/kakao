@@ -30,12 +30,12 @@ function input extends editor
 
     onKey: key event ->
         
-        lf "input.onKey #{@name} #{event.combo}" 
+        # lf "input.onKey #{@name} #{event.combo}" 
         
         switch event.combo
             'return'    ➜ ⮐ @emit 'action' 'submit' @current()
             'up' 'down'
-                @set '' 
+                # @set '' 
                 @emit 'action' event.combo 
                 ⮐ 
 

@@ -25,7 +25,6 @@ menu = (function ()
     {
         this.screen = screen
     
-        this["onInputAction"] = this["onInputAction"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
@@ -133,11 +132,6 @@ quit`)
 
         this.hide()
         return true
-    }
-
-    menu.prototype["onInputAction"] = function (action, text)
-    {
-        return menu.__super__.onInputAction.call(this,action,text)
     }
 
     menu.prototype["draw"] = function ()
