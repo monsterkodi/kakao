@@ -26,7 +26,6 @@
 #### todo
 ##### todo
 
-- darken text around popups?
 - return with single cursor in empty should not append spaces
 - key right in input should activate match
 - crumbs
@@ -41,6 +40,8 @@
         - ~\d+ single character
         - ~\d+n multiple characters
         - ~...*n n times *
+        
+- asccii header cmd+3
 
 - mapscroll
     - add scrollbar handle

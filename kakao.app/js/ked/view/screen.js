@@ -17,6 +17,7 @@ screen = (function ()
         this["get_bg"] = this["get_bg"].bind(this)
         this["get_fg"] = this["get_fg"].bind(this)
         this["get_char"] = this["get_char"].bind(this)
+        this["set_fg_bg"] = this["set_fg_bg"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
@@ -82,6 +83,15 @@ screen = (function ()
         if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {
             return this.c[y][x].fg = fg
+        }
+    }
+
+    screen.prototype["set_fg_bg"] = function (x, y, fg, bg)
+    {
+        if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
+        {
+            this.c[y][x].fg = fg
+            return this.c[y][x].bg = bg
         }
     }
 

@@ -232,6 +232,7 @@ function quicky extends inputchoice
         
         @hide()
         post.emit 'quicky' file
+        post.emit 'focus' 'editor'
         redraw:false
                              
     #  0000000  00000000  000      00000000   0000000  000000000

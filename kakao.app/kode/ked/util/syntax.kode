@@ -16,7 +16,7 @@ function syntax
         
     setExt: @ext =>
     
-    setRgxs: rgxs => @config = matchr.config rgxs
+    setRgxs: rgxs => @config = matchr.config rgxs 'u'
     
     setLines: lines => @setSegls kseg.segls(lines) 
         
@@ -25,7 +25,7 @@ function syntax
         if valid @config
             @diss = []
             for segs in segls
-                dss = matchr.ranges @config kseg.str(segs)
+                dss = matchr.ranges(@config kseg.str(segs) 'u')
                 @diss.push dss
         else
             @diss = kulur.dissect segls @ext
@@ -40,7 +40,12 @@ function syntax
         
     getColor: x y =>
         
-        theme.syntax[@getClass x y] ? '#ff0000'
+        if x is num
+            clss = @getClass x y
+        else
+            clss = x
+        
+        theme.syntax[clss] ? '#ff0000'
         
     getChar: x y char =>
         

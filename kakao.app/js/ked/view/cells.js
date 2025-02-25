@@ -28,6 +28,7 @@ cells = (function ()
         this["isOutsidePos"] = this["isOutsidePos"].bind(this)
         this["isInsidePos"] = this["isInsidePos"].bind(this)
         this["get_char"] = this["get_char"].bind(this)
+        this["set_fg_bg"] = this["set_fg_bg"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
@@ -106,6 +107,14 @@ cells = (function ()
         if (this.inside(x,y))
         {
             return this.screen.set_fg(this.wx(x),this.wy(y),fg)
+        }
+    }
+
+    cells.prototype["set_fg_bg"] = function (x, y, fg, bg)
+    {
+        if (this.inside(x,y))
+        {
+            return this.screen.set_fg_bg(this.wx(x),this.wy(y),fg,bg)
         }
     }
 
@@ -269,7 +278,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _122_16_, _130_20_, _131_20_
+        var bg, fg, x, y, _123_16_, _131_20_, _132_20_
 
         if (x1 < 0)
         {
@@ -288,9 +297,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_122_16_=opt.pad) != null ? _122_16_ : [1,0])
-        fg = ((_130_20_=opt.fg) != null ? _130_20_ : '#888888')
-        bg = ((_131_20_=opt.bg) != null ? _131_20_ : null)
+        opt.pad = ((_123_16_=opt.pad) != null ? _123_16_ : [1,0])
+        fg = ((_131_20_=opt.fg) != null ? _131_20_ : '#888888')
+        bg = ((_132_20_=opt.bg) != null ? _132_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

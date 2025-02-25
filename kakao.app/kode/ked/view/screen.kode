@@ -64,6 +64,12 @@ function screen
         
         if 0 <= x < @cols and 0 <= y < @rows
             @c[y][x].fg = fg
+
+    set_fg_bg: x y fg bg =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].fg = fg
+            @c[y][x].bg = bg
             
     #  0000000   00000000  000000000  
     # 000        000          000     

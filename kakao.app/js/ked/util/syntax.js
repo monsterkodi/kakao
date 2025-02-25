@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var syntax
 
@@ -32,7 +32,7 @@ syntax = (function ()
 
     syntax.prototype["setRgxs"] = function (rgxs)
     {
-        return this.config = matchr.config(rgxs)
+        return this.config = matchr.config(rgxs,'u')
     }
 
     syntax.prototype["setLines"] = function (lines)
@@ -51,7 +51,7 @@ syntax = (function ()
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
                 segs = list[_a_]
-                dss = matchr.ranges(this.config,kseg.str(segs))
+                dss = matchr.ranges(this.config,kseg.str(segs),'u')
                 this.diss.push(dss)
             }
         }
@@ -79,9 +79,17 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var _43_36_
+        var clss, _48_27_
 
-        return ((_43_36_=theme.syntax[this.getClass(x,y)]) != null ? _43_36_ : '#ff0000')
+        if (_k_.isNum(x))
+        {
+            clss = this.getClass(x,y)
+        }
+        else
+        {
+            clss = x
+        }
+        return ((_48_27_=theme.syntax[clss]) != null ? _48_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

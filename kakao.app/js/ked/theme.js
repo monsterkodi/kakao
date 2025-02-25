@@ -82,6 +82,14 @@ class theme
 
     static quicky_frame_bg = '#000'
 
+    static quicky_crumbs = '#44f'
+
+    static quicky_crumbs_empty = '#44f'
+
+    static quicky_crumbs_cursor_main = '#44f'
+
+    static quicky_crumbs_cursor_empty = '#44f'
+
     static konsole = '#000'
 
     static konsole_empty = '#000'

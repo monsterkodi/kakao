@@ -263,6 +263,7 @@ quicky = (function ()
     {
         this.hide()
         post.emit('quicky',file)
+        post.emit('focus','editor')
         return {redraw:false}
     }
 
@@ -402,7 +403,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _356_62_
+        var upDir, _357_62_
 
         switch (action)
         {
@@ -420,7 +421,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_356_62_=choice.link) != null ? _356_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_357_62_=choice.link) != null ? _357_62_ : choice.path))
                     }
                 }
                 break

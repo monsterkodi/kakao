@@ -135,7 +135,7 @@ function state
 
     loadLines: lines => 
     
-        if not lines[0] is str ➜ lf 'state.loadLines' @name lines 
+        if not lines[0] is str ➜ lf 'state.loadLines - first line no segl?' @name lines 
         
         @loadSegls kseg.segls(lines)
     

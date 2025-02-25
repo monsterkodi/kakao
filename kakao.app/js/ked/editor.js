@@ -38,6 +38,7 @@ editor = (function ()
         this["draw"] = this["draw"].bind(this)
         this["layout"] = this["layout"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
+        this.feats.cursor = true
         this.state = new state(this.cells,this.name)
         post.on('focus',this.onFocus)
         if (this.name === 'editor')
@@ -104,7 +105,7 @@ editor = (function ()
 
     editor.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, cursor, emptyColor, fg, highlight, li, line, linel, lines, mainCursor, row, s, selection, si, syntax, view, x, xe, xs, y, _103_42_, _160_41_, _161_44_, _197_15_, _198_15_, _199_15_, _82_26_
+        var bg, c, ch, checkColor, ci, clss, emptyColor, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _112_42_, _115_38_, _126_15_, _127_15_, _128_15_, _84_26_, _85_45_
 
         if (this.hidden())
         {
@@ -115,7 +116,8 @@ editor = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_82_26_=theme[this.name]) != null ? _82_26_ : theme['editor'])
+        bg = ((_84_26_=theme[this.name]) != null ? _84_26_ : theme.editor)
+        emptyColor = ((_85_45_=theme[this.name + '_empty']) != null ? _85_45_ : theme.editor_empty)
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -134,71 +136,130 @@ editor = (function ()
                 {
                     break
                 }
-                fg = syntax.getColor(ci,y)
+                clss = syntax.getClass(ci,y)
+                if (clss === 'invert_bg')
+                {
+                    fg = bg
+                    bg = theme.editor
+                }
+                else
+                {
+                    fg = syntax.getColor(clss)
+                }
                 ch = syntax.getChar(ci,y,line[si])
                 if (ch === "#")
                 {
                     checkColor = true
                 }
                 c += this.cells.add(c,row,ch,fg,bg)
-                x += ((_103_42_=kseg.width(line[si])) != null ? _103_42_ : 1)
-            }
-            emptyColor = theme[this.name + '_empty']
-            if (y === mainCursor[1])
-            {
-                if (linel > 0)
+                x += ((_112_42_=kseg.width(line[si])) != null ? _112_42_ : 1)
+                if (clss === 'invert_bg')
                 {
-                    this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
+                    bg = ((_115_38_=theme[this.name]) != null ? _115_38_ : theme.editor)
                 }
-                this.cells.bg_fill(_k_.max(0,linel),row,-1,row,theme[this.name + '_cursor_empty'])
             }
-            else
-            {
-                if (linel > 0)
-                {
-                    this.cells.bg_rect(0,row,linel,row,theme[this.name])
-                }
-                this.cells.bg_fill(_k_.max(0,linel),row,-1,row,emptyColor)
-            }
+            this.drawRowBackground(row,linel,emptyColor)
             if (checkColor)
             {
                 this.drawColors(line,row,linel,emptyColor)
             }
         }
-        if (lines.length - view[1] < this.cells.rows)
+        this.drawTrailingRows()
+        this.drawHighlights()
+        this.drawSelections(lines)
+        this.drawCursors()
+        ;(this.scroll != null ? this.scroll.draw() : undefined)
+        ;(this.gutter != null ? this.gutter.draw() : undefined)
+        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
+        return editor.__super__.draw.call(this)
+    }
+
+    editor.prototype["drawRowBackground"] = function (row, linel, emptyColor)
+    {
+        if (row + view[1] === this.state.mainCursor()[1])
         {
-            for (var _c_ = row = lines.length - view[1], _d_ = this.cells.rows; (_c_ <= _d_ ? row < this.cells.rows : row > this.cells.rows); (_c_ <= _d_ ? ++row : --row))
+            if (linel > 0)
             {
-                this.cells.bg_fill(0,row,-1,row,emptyColor)
+                this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
+            }
+            if (linel < this.cells.cols)
+            {
+                return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,theme[this.name + '_cursor_empty'])
             }
         }
+        else
+        {
+            if (linel > 0)
+            {
+                this.cells.bg_rect(0,row,linel,row,theme[this.name])
+            }
+            return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,emptyColor)
+        }
+    }
+
+    editor.prototype["drawTrailingRows"] = function ()
+    {
+        var emptyColor, row, vl, _160_45_
+
+        vl = this.state.s.lines.length - this.state.s.view[1]
+        if (vl >= this.cells.rows)
+        {
+            return
+        }
+        emptyColor = ((_160_45_=theme[this.name + '_empty']) != null ? _160_45_ : theme.editor_empty)
+        for (var _a_ = row = vl, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
+        {
+            this.cells.bg_fill(0,row,-1,row,emptyColor)
+        }
+    }
+
+    editor.prototype["drawHighlights"] = function ()
+    {
+        var bg, highlight, vx, vy, x, y
+
         bg = theme.highlight
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
         }
-        var list = _k_.list(s.highlights)
-        for (var _e_ = 0; _e_ < list.length; _e_++)
+        var _a_ = this.state.s.view; vx = _a_[0]; vy = _a_[1]
+
+        var list = _k_.list(this.state.s.highlights)
+        for (var _b_ = 0; _b_ < list.length; _b_++)
         {
-            highlight = list[_e_]
-            y = highlight[1] - view[1]
+            highlight = list[_b_]
+            y = highlight[1] - vy
             if (y >= this.cells.rows)
             {
                 break
             }
-            for (var _f_ = x = highlight[0], _10_ = highlight[2]; (_f_ <= _10_ ? x < highlight[2] : x > highlight[2]); (_f_ <= _10_ ? ++x : --x))
+            for (var _c_ = x = highlight[0], _d_ = highlight[2]; (_c_ <= _d_ ? x < highlight[2] : x > highlight[2]); (_c_ <= _d_ ? ++x : --x))
             {
-                this.cells.set_bg(x - view[0],y,bg)
-                this.cells.set_char(x - view[0],y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - view[0],y) + '\x1b[4:0m')
+                this.cells.set_bg(x - vx,y,bg)
+                this.cells.set_char(x - vx,y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - vx,y) + '\x1b[4:0m')
             }
         }
-        var list1 = _k_.list(s.selections)
-        for (var _11_ = 0; _11_ < list1.length; _11_++)
+    }
+
+    editor.prototype["drawSelections"] = function (lines)
+    {
+        var bg, li, linebg, selection, spanbg, x, xe, xs, y
+
+        spanbg = theme.selection
+        linebg = theme.selection_line
+        if (!this.cells.screen.t.hasFocus)
         {
-            selection = list1[_11_]
-            for (var _12_ = li = selection[1], _13_ = selection[3]; (_12_ <= _13_ ? li <= selection[3] : li >= selection[3]); (_12_ <= _13_ ? ++li : --li))
+            spanbg = color.darken(spanbg)
+            linebg = linebg
+        }
+        var list = _k_.list(this.state.s.selections)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            selection = list[_a_]
+            bg = (util.isSpanLineRange(lines,selection) ? spanbg : linebg)
+            for (var _b_ = li = selection[1], _c_ = selection[3]; (_b_ <= _c_ ? li <= selection[3] : li >= selection[3]); (_b_ <= _c_ ? ++li : --li))
             {
-                y = li - view[1]
+                y = li - this.state.s.view[1]
                 if (y >= this.cells.rows)
                 {
                     break
@@ -219,47 +280,46 @@ editor = (function ()
                 {
                     xe = kseg.width(lines[li])
                 }
-                bg = (util.isSpanLineRange(lines,selection) ? theme.selection : theme.selection_line)
-                if (!this.cells.screen.t.hasFocus)
+                for (var _d_ = x = xs, _e_ = xe; (_d_ <= _e_ ? x < xe : x > xe); (_d_ <= _e_ ? ++x : --x))
                 {
-                    bg = color.darken(bg)
-                }
-                for (var _14_ = x = xs, _15_ = xe; (_14_ <= _15_ ? x < xe : x > xe); (_14_ <= _15_ ? ++x : --x))
-                {
-                    this.cells.set_bg(x - view[0],y,bg)
+                    this.cells.set_bg(x - this.state.s.view[0],y,bg)
                 }
             }
         }
-        fg = ((_160_41_=theme[this.name + '_cursor_fg']) != null ? _160_41_ : theme['editor_cursor_fg'])
-        bg = ((_161_44_=theme[this.name + '_cursor_multi']) != null ? _161_44_ : theme['editor_cursor_multi'])
+    }
+
+    editor.prototype["drawCursors"] = function ()
+    {
+        var bg, cursor, fcb, fg, mainCursor, s, x, y, _236_44_, _237_44_, _250_46_, _252_37_
+
+        s = this.state.s
+        mainCursor = this.state.mainCursor()
+        fg = ((_236_44_=theme[this.name + '_cursor_fg']) != null ? _236_44_ : theme.editor_cursor_fg)
+        bg = ((_237_44_=theme[this.name + '_cursor_multi']) != null ? _237_44_ : theme.editor_cursor_multi)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
         }
-        var list2 = _k_.list(s.cursors)
-        for (var _16_ = 0; _16_ < list2.length; _16_++)
+        var list = _k_.list(s.cursors)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            cursor = list2[_16_]
+            cursor = list[_a_]
             if (_k_.eql(cursor, mainCursor))
             {
                 continue
             }
             if (this.isCursorVisible(cursor))
             {
-                x = cursor[0] - view[0]
-                y = cursor[1] - view[1]
-                this.cells.set_bg(x,y,bg)
-                this.cells.set_fg(x,y,fg)
+                this.cells.set_fg_bg(cursor[0] - s.view[0],cursor[1] - s.view[1],fg,bg)
             }
         }
-        if (this.isCursorVisible())
+        if (this.isCursorVisible(mainCursor))
         {
-            fg = theme[this.name + '_cursor_fg']
-            fg = (fg != null ? fg : theme['editor' + '_cursor_fg'])
-            bg = theme[this.name + ((this.hasFocus() ? '_cursor_bg' : '_cursor_blur'))]
-            bg = (bg != null ? bg : theme['editor' + ((this.hasFocus() ? '_cursor_bg' : '_cursor_blur'))])
-            x = mainCursor[0] - view[0]
-            y = mainCursor[1] - view[1]
+            fg = ((_250_46_=theme[this.name + '_cursor_fg']) != null ? _250_46_ : theme.editor_cursor_fg)
+            fcb = (this.hasFocus() ? '_cursor_bg' : '_cursor_blur')
+            bg = ((_252_37_=theme[this.name + fcb]) != null ? _252_37_ : theme['editor' + fcb])
+            var _b_ = [mainCursor[0] - s.view[0],mainCursor[1] - s.view[1]]; x = _b_[0]; y = _b_[1]
+
             if (s.cursors.length <= 1)
             {
                 if (this.isCursorInEmpty())
@@ -275,13 +335,8 @@ editor = (function ()
             {
                 bg = color.darken(bg)
             }
-            this.cells.set_bg(x,y,bg)
-            this.cells.set_fg(x,y,fg)
+            return this.cells.set_fg_bg(x,y,fg,bg)
         }
-        ;(this.scroll != null ? this.scroll.draw() : undefined)
-        ;(this.gutter != null ? this.gutter.draw() : undefined)
-        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
-        return editor.__super__.draw.call(this)
     }
 
     editor.prototype["drawColors"] = function (line, row, linel, emptyColor)
@@ -319,9 +374,9 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _229_30_, _229_39_, _230_30_, _240_41_, _308_31_
+        var col, row, start, x, y, _292_30_, _292_39_, _293_30_, _303_41_, _371_31_
 
-        if (((_229_30_=this.mapscr) != null ? typeof (_229_39_=_229_30_.onMouse) === "function" ? _229_39_(event) : undefined : undefined))
+        if (((_292_30_=this.mapscr) != null ? typeof (_292_39_=_292_30_.onMouse) === "function" ? _292_39_(event) : undefined : undefined))
         {
             return true
         }

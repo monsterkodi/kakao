@@ -193,7 +193,7 @@ state = (function ()
     {
         if (!(_k_.isStr(lines[0])))
         {
-            lf('state.loadLines',this.name,lines)
+            lf('state.loadLines - first line no segl?',this.name,lines)
         }
         return this.loadSegls(kseg.segls(lines))
     }
