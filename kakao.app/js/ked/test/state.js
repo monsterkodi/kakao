@@ -6,7 +6,7 @@ let kseg = kxk.kseg
 
 import util from "../util/util.js"
 
-import state from "../state.js"
+import state from "../edit/state.js"
 
 
 global.lf = function (...args)

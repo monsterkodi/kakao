@@ -6,10 +6,10 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../kxk ◆ events matchr kstr kseg post
-use ./util ◆ util color
-use ./view ◆ view scroll gutter mapscr mapview
-use        ◆ state theme
+use ../../kxk ▪ events matchr kstr kseg post
+use ../util   ◆ color theme util
+use ../view   ◆ view scroll gutter mapscr mapview
+use           ◆ state 
 
 function editor extends view
 
@@ -197,7 +197,7 @@ function editor extends view
         linebg = theme.selection_line
         if not @cells.screen.t.hasFocus
             spanbg = color.darken spanbg
-            linebg = linebg
+            linebg = color.darken linebg
         
         for selection in @state.s.selections
                 
@@ -451,7 +451,6 @@ function editor extends view
     
     grabFocus: =>
     
-        lf "grabFocus #{@name}"
         post.emit 'focus' @name
         @redraw()
         
@@ -460,8 +459,6 @@ function editor extends view
         @state.hasFocus
         
     onFocus: name =>
-        
-        lf "onFocus #{@name} #{name}"
         
         @state.hasFocus = (name == @name)
         
@@ -487,8 +484,6 @@ function editor extends view
     onKey: key event =>
         
         ⮐ if not @hasFocus()
-        
-        # lc 'key' key
         
         if @state.s.cursors.length == 1
             

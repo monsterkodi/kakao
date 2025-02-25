@@ -5,7 +5,7 @@ var floor, pow, scroll
 import kxk from "../../kxk.js"
 let post = kxk.post
 
-import theme from "../theme.js"
+import theme from "../util/theme.js"
 
 import view from "./view.js"
 

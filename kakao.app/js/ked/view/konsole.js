@@ -2,8 +2,9 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var konsole
 
-import editor from "./editor.js"
-import theme from "./theme.js"
+import theme from "../util/theme.js"
+
+import editor from "../edit/editor.js"
 
 
 konsole = (function ()

@@ -6,8 +6,7 @@
  0000000  00000000  0000000  0000000  0000000   
 ###
 
-use ..      ◆ theme
-use ../util ◆ util color
+use ../util ◆ util color theme
 
 function cells
 

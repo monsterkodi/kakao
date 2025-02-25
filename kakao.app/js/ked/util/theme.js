@@ -1,6 +1,6 @@
 var ext, key, value
 
-import color from "./util/color.js"
+import color from "./color.js"
 
 class theme
 {

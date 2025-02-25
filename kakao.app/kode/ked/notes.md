@@ -27,9 +27,10 @@
 ##### todo
 
 - return with single cursor in empty should not append spaces
+- fix multicursor delete backwards in empty space
 - key right in input should activate match
+
 - crumbs
-    - convert to editor
     - dissect path
     - make path chunks clickable
 

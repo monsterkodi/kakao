@@ -5,8 +5,9 @@ var input
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
 
-import editor from "../editor.js"
-import theme from "../theme.js"
+import theme from "../util/theme.js"
+
+import editor from "../edit/editor.js"
 
 
 input = (function ()

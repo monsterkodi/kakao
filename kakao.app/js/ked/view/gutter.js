@@ -3,8 +3,7 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 var gutter
 
 import color from "../util/color.js"
-
-import theme from "../theme.js"
+import theme from "../util/theme.js"
 
 import view from "./view.js"
 

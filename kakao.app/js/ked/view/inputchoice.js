@@ -8,9 +8,8 @@ let kstr = kxk.kstr
 let kseg = kxk.kseg
 
 import color from "../util/color.js"
+import theme from "../util/theme.js"
 import util from "../util/util.js"
-
-import theme from "../theme.js"
 
 import view from "./view.js"
 import cells from "./cells.js"
@@ -26,7 +25,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _23_23_
+        var _22_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -74,7 +73,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _63_23_
+        var _62_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -116,9 +115,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _105_36_
+        var choice, _104_36_
 
-        choice = ((_105_36_=this.choices.current()) != null ? _105_36_ : this.input.current())
+        choice = ((_104_36_=this.choices.current()) != null ? _104_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

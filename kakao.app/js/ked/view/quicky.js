@@ -12,10 +12,10 @@ import nfs from "../../kxk/nfs.js"
 
 import prjcts from "../util/prjcts.js"
 import walker from "../util/walker.js"
+import theme from "../util/theme.js"
 import util from "../util/util.js"
 
-import editor from "../editor.js"
-import theme from "../theme.js"
+import editor from "../edit/editor.js"
 
 import inputchoice from "./inputchoice.js"
 import crumbs from "./crumbs.js"

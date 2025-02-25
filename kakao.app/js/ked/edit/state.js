@@ -2,9 +2,13 @@ var _k_ = {isArr: function (o) {return Array.isArray(o)}, isNum: function (o) {r
 
 var state
 
-import immutable from "../kxk/immutable.js"
-import kstr from "../kxk/kstr.js"
-import kseg from "../kxk/kseg.js"
+import kxk from "../../kxk.js"
+let immutable = kxk.immutable
+let kstr = kxk.kstr
+let kseg = kxk.kseg
+
+import util from "../util/util.js"
+import syntax from "../util/syntax.js"
 
 import del from "./act/del.js"
 import insert from "./act/insert.js"
@@ -12,9 +16,6 @@ import select from "./act/select.js"
 import join from "./act/join.js"
 import indent from "./act/indent.js"
 import multi from "./act/multi.js"
-
-import util from "./util/util.js"
-import syntax from "./util/syntax.js"
 
 import child_process from "child_process"
 import os from "os"

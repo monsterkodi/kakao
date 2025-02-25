@@ -8,7 +8,7 @@ import kseg from "../../kxk/kseg.js"
 
 import kulur from "../../kolor/kulur.js"
 
-import theme from "../theme.js"
+import theme from "./theme.js"
 
 
 syntax = (function ()

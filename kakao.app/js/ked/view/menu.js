@@ -8,10 +8,10 @@ let slash = kxk.slash
 let post = kxk.post
 let noon = kxk.noon
 
+import theme from "../util/theme.js"
 import util from "../util/util.js"
 
-import editor from "../editor.js"
-import theme from "../theme.js"
+import editor from "../edit/editor.js"
 
 import cells from "./cells.js"
 import greeter from "./greeter.js"

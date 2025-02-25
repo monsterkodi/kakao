@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ▪ kstr slash post noon
-use ../util   ◆ util
-use ..        ◆ editor theme
+use ../util   ◆ theme util
+use ../edit   ◆ editor 
 use           ◆ cells greeter inputchoice
 
 function menu extends inputchoice

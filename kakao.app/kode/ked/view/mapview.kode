@@ -8,8 +8,7 @@
 ###
 
 use ../../kxk ▪ kstr post
-use ../util ◆ prof syntax color util
-use ..      ◆ theme 
+use ../util ◆ prof syntax color theme util
 use         ◆ view
 
 {floor, pow} = Math

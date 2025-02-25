@@ -11,13 +11,7 @@ let post = kxk.post
 
 import nfs from "../kxk/nfs.js"
 
-import screen from "./view/screen.js"
-import cells from "./view/cells.js"
-import status from "./view/status.js"
-import quicky from "./view/quicky.js"
-import menu from "./view/menu.js"
-import finder from "./view/finder.js"
-
+import ttio from "./util/ttio.js"
 import logfile from "./util/logfile.js"
 import util from "./util/util.js"
 import prjcts from "./util/prjcts.js"
@@ -26,10 +20,16 @@ import color from "./util/color.js"
 import help from "./util/help.js"
 import julia from "./util/julia.js"
 
-import ttio from "./ttio.js"
-import editor from "./editor.js"
-import state from "./state.js"
-import konsole from "./konsole.js"
+import screen from "./view/screen.js"
+import cells from "./view/cells.js"
+import status from "./view/status.js"
+import quicky from "./view/quicky.js"
+import menu from "./view/menu.js"
+import finder from "./view/finder.js"
+import konsole from "./view/konsole.js"
+
+import editor from "./edit/editor.js"
+import state from "./edit/state.js"
 
 
 KED = (function ()

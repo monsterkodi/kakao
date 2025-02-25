@@ -6,7 +6,7 @@
    000        000     000   0000000   
 ###
 
-use ../kxk ◆ events post kstr
+use ../../kxk ◆ events post kstr
 
 int = parseInt
 

@@ -5,11 +5,11 @@ var greeter
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 
-import util from "../util/util.js"
+import theme from "../util/theme.js"
 import help from "../util/help.js"
+import util from "../util/util.js"
 
-import editor from "../editor.js"
-import theme from "../theme.js"
+import editor from "../edit/editor.js"
 
 import view from "./view.js"
 

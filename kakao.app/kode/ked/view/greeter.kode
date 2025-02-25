@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ▪ kstr
-use ../util ◆ util help
-use ..      ◆ editor theme
+use ../util ◆ theme help util 
+use ../edit ◆ editor 
 use         ◆ view
 
 function greeter extends view

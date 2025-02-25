@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ post
-use ..        ◆ theme 
+use ../util   ◆ theme
 use           ◆ view
 
 {floor, pow} = Math

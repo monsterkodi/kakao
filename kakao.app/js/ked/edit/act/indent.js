@@ -1,6 +1,6 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-import util from "../util/util.js"
+import util from "../../util/util.js"
 
 export default {indentSelectedLines:function ()
 {

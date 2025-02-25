@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ▪ kstr kseg slash krzl post
-use ../util   ◆ util
-use ..        ◆ editor theme
+use ../util   ◆ theme util
+use ../edit   ◆ editor 
 
 function choices extends editor
 

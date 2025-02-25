@@ -9,10 +9,10 @@ let slash = kxk.slash
 let krzl = kxk.krzl
 let post = kxk.post
 
+import theme from "../util/theme.js"
 import util from "../util/util.js"
 
-import editor from "../editor.js"
-import theme from "../theme.js"
+import editor from "../edit/editor.js"
 
 
 choices = (function ()

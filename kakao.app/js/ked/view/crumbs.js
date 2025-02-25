@@ -5,8 +5,9 @@ var crumbs
 import kxk from "../../kxk.js"
 let slash = kxk.slash
 
-import editor from "../editor.js"
-import theme from "../theme.js"
+import theme from "../util/theme.js"
+
+import editor from "../edit/editor.js"
 
 import rgxs from './crumbs.json' with { type : "json" }
 
@@ -38,9 +39,9 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var _34_14_
+        var _35_14_
 
-        this.path = ((_34_14_=this.path) != null ? _34_14_ : '')
+        this.path = ((_35_14_=this.path) != null ? _35_14_ : '')
         return this.state.loadLines(['' + this.path + _k_.lpad(this.cells.cols - 1 - this.path.length,'')])
     }
 

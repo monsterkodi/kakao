@@ -2,9 +2,10 @@ var _k_ = {max: function () { var m = -Infinity; for (var a of arguments) { if (
 
 var knob
 
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
 
-import theme from "../theme.js"
+import theme from "../util/theme.js"
 
 
 knob = (function ()

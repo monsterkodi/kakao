@@ -2,10 +2,9 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var cells
 
-import theme from "../theme.js"
-
 import util from "../util/util.js"
 import color from "../util/color.js"
+import theme from "../util/theme.js"
 
 
 cells = (function ()
@@ -278,7 +277,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _123_16_, _131_20_, _132_20_
+        var bg, fg, x, y, _122_16_, _130_20_, _131_20_
 
         if (x1 < 0)
         {
@@ -297,9 +296,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_123_16_=opt.pad) != null ? _123_16_ : [1,0])
-        fg = ((_131_20_=opt.fg) != null ? _131_20_ : '#888888')
-        bg = ((_132_20_=opt.bg) != null ? _132_20_ : null)
+        opt.pad = ((_122_16_=opt.pad) != null ? _122_16_ : [1,0])
+        fg = ((_130_20_=opt.fg) != null ? _130_20_ : '#888888')
+        bg = ((_131_20_=opt.bg) != null ? _131_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

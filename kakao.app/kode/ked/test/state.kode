@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ kseg
 use ../util   ◆ util
-use ..        ◆ state
+use ../edit   ◆ state
 
 global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
 

@@ -8,8 +8,8 @@
 
 use ../../kxk ▪ kstr slash post noon
 use ../../kxk ◆ nfs
-use ../util   ◆ prjcts walker util
-use ..        ◆ editor theme
+use ../util   ◆ prjcts walker theme util
+use ../edit   ◆ editor 
 use           ◆ inputchoice crumbs fscol 
 
 import rgxs from './quicky.json' with { type: "json" }

@@ -7,8 +7,7 @@
 ###
 
 use ../../kxk ▪ post kstr kseg
-use ../util   ◆ color util
-use ..        ◆ theme
+use ../util   ◆ color theme util
 use           ◆ view cells input choices
 
 function inputchoice extends view

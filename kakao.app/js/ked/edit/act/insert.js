@@ -1,9 +1,10 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-import kstr from "../../kxk/kstr.js"
+import kxk from "../../../kxk.js"
+let kstr = kxk.kstr
 
-import util from "../util/util.js"
-import prof from "../util/prof.js"
+import util from "../../util/util.js"
+import prof from "../../util/prof.js"
 
 export default {insert:function (text)
 {

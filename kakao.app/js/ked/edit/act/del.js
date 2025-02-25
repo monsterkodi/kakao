@@ -1,10 +1,10 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
-import kxk from "../../kxk.js"
+import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
-import util from "../util/util.js"
+import util from "../../util/util.js"
 
 export default {delete:function (type, jump)
 {

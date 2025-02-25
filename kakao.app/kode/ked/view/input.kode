@@ -7,7 +7,8 @@
 ###
 
 use ../../kxk ▪ kseg
-use .. ◆ editor theme
+use ../util ◆ theme
+use ../edit ◆ editor 
 
 function input extends editor
 

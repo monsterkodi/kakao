@@ -10,9 +10,9 @@
 
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
-use ./view ◆ screen cells status quicky menu finder
-use ./util ◆ logfile util prjcts session color help julia
-use        ◆ ttio editor state konsole
+use ./util ◆ ttio logfile util prjcts session color help julia 
+use ./view ◆ screen cells status quicky menu finder konsole
+use ./edit ◆ editor state 
 
 function KED
 

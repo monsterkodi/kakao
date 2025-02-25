@@ -8,7 +8,7 @@
 
 use ../../kxk   ◆ matchr kstr kseg
 use ../../kolor ◆ kulur
-use    ..       ◆ theme
+use             ◆ theme
 
 function syntax
 

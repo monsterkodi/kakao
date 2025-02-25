@@ -6,8 +6,8 @@
 000   000  000   000   0000000   0000000  
 ###
 
-use ../../kxk ◆ post
-use .. ◆ theme
+use ../../kxk ▪ post
+use ../util   ◆ theme
 
 function knob
 

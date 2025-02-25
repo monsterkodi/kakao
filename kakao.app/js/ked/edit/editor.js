@@ -2,23 +2,24 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var editor
 
-import events from "../kxk/events.js"
-import matchr from "../kxk/matchr.js"
-import kstr from "../kxk/kstr.js"
-import kseg from "../kxk/kseg.js"
-import post from "../kxk/post.js"
+import kxk from "../../kxk.js"
+let events = kxk.events
+let matchr = kxk.matchr
+let kstr = kxk.kstr
+let kseg = kxk.kseg
+let post = kxk.post
 
-import util from "./util/util.js"
-import color from "./util/color.js"
+import color from "../util/color.js"
+import theme from "../util/theme.js"
+import util from "../util/util.js"
 
-import view from "./view/view.js"
-import scroll from "./view/scroll.js"
-import gutter from "./view/gutter.js"
-import mapscr from "./view/mapscr.js"
-import mapview from "./view/mapview.js"
+import view from "../view/view.js"
+import scroll from "../view/scroll.js"
+import gutter from "../view/gutter.js"
+import mapscr from "../view/mapscr.js"
+import mapview from "../view/mapview.js"
 
 import state from "./state.js"
-import theme from "./theme.js"
 
 
 editor = (function ()
@@ -250,7 +251,7 @@ editor = (function ()
         if (!this.cells.screen.t.hasFocus)
         {
             spanbg = color.darken(spanbg)
-            linebg = linebg
+            linebg = color.darken(linebg)
         }
         var list = _k_.list(this.state.s.selections)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -590,7 +591,6 @@ editor = (function ()
 
     editor.prototype["grabFocus"] = function ()
     {
-        lf(`grabFocus ${this.name}`)
         post.emit('focus',this.name)
         return this.redraw()
     }
@@ -602,7 +602,6 @@ editor = (function ()
 
     editor.prototype["onFocus"] = function (name)
     {
-        lf(`onFocus ${this.name} ${name}`)
         return this.state.hasFocus = (name === this.name)
     }
 

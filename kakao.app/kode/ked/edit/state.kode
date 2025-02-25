@@ -6,9 +6,9 @@
 0000000      000     000   000     000     00000000
 ###
 
-use ../kxk  ◆ immutable kstr kseg
-use  ./act  ◆ del insert select join indent multi
-use  ./util ◆ util syntax
+use ../../kxk ▪ immutable kstr kseg
+use ../util   ◆ util syntax
+use ./act     ◆ del insert select join indent multi
 use child_process os
 
 function state

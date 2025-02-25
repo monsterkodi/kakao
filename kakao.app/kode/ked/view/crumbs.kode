@@ -7,7 +7,8 @@
 ###
 
 use ../../kxk ▪ slash
-use ..        ◆ editor theme
+use ../util   ◆ theme
+use ../edit   ◆ editor
 
 import rgxs from './crumbs.json' with { type: "json" }
 

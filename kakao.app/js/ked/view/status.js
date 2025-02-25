@@ -2,11 +2,10 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var status
 
-import theme from "../theme.js"
-
 import view from "./view.js"
 
 import color from "../util/color.js"
+import theme from "../util/theme.js"
 import util from "../util/util.js"
 
 
