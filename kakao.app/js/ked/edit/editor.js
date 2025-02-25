@@ -357,7 +357,7 @@ editor = (function ()
         {
             if (!(_k_.in(key,['shift','ctrl','alt','cmd'])))
             {
-                return lfc('editor.onKey?',key)
+                return lf('editor.onKey?',key)
             }
         }
     }

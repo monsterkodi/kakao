@@ -26,7 +26,7 @@
 #### todo
 ##### todo
 
-- fix recent
+- fix recent files menu
 - return with single cursor in empty should not append spaces
 - fix multicursor delete backwards in empty space
 - fix insert after wide unicode segments
@@ -35,6 +35,7 @@
 - crumbs
     - dissect path
     - make path chunks clickable
+    - rounded path separation (time for meta?)
 
 - unicode mode
     - ~ replacement

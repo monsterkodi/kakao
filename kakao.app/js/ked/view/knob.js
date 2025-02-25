@@ -71,7 +71,7 @@ knob = (function ()
     {
         var fg
 
-        fg = (this.hover ? theme.scroll_knob : theme.konsole)
+        fg = (this.hover ? theme.scroll_knob : theme.editor)
         return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
     }
 

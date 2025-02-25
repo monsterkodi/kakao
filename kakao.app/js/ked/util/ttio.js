@@ -43,7 +43,6 @@ TTIO = (function ()
         {
             process.stdin.setRawMode(true)
         }
-        lf('▸▸▸')
         this.write('\x1b[?1000h')
         this.write('\x1b[?1002h')
         this.write('\x1b[?1003h')
@@ -85,7 +84,6 @@ TTIO = (function ()
         this.write('\x1b[?2004l')
         this.write('\x1b[?1049l')
         this.showCursor()
-        lf('◂◂◂')
         return this.restore()
     }
 
@@ -792,7 +790,7 @@ TTIO = (function ()
                         this.emitMouseEvent(event)
                         continue
                     }
-                    lfc('unhandled mouse event?',csi)
+                    lf('unhandled mouse event?',csi)
                     continue
                 }
                 if (event = this.parseKitty(csi,data))

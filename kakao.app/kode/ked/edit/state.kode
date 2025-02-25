@@ -6,11 +6,11 @@
 0000000      000     000   000     000     00000000
 ###
 
+use child_process os
 use ../../kxk ▪ immutable kstr kseg
 use ../util   ◆ util syntax
 use ./act     ◆ del insert select join indent multi
 use           ◆ keys
-use child_process os
 
 function state
 

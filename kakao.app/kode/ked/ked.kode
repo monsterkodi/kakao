@@ -11,7 +11,7 @@
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
 use ./util ◆ ttio logfile util prjcts session color help julia 
-use ./view ◆ screen cells status quicky menu finder konsole
+use ./view ◆ screen cells status quicky menu finder
 use ./edit ◆ editor state 
 
 function KED
@@ -29,16 +29,12 @@ function KED
         
         process.on 'uncaughtException' @onException
             
-        @viewSizes = konsole: [0 0]
-        
         @logfile = new logfile
         @session = new session
         global.ked_session = @session
         @session.on 'loaded' @onSessionLoaded
                     
         @t = new ttio
-        
-        global.lfc = args... => lf.apply null args; if global.lc? ➜ global.lc.apply null args 
         
         @julia   = new julia
         
@@ -48,11 +44,9 @@ function KED
         @quicky  = new quicky   @screen 
         @finder  = new finder   @screen 
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
-        # @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'mapscr' 'knob']
-        @konsole = new konsole  @screen 'konsole' ['scroll' 'gutter' 'knob']
         @status  = new status   @screen @editor.state
         
-        lfc "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked #{@version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
+        lf "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{kstr.now()} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
 
         @editor.state.hasFocus = true
         
@@ -64,9 +58,9 @@ function KED
         post.on 'file.new'      @newFile
         post.on 'quit'          @quit
         
-        @mouseHandlers = [@finder @quicky @menu @konsole @editor]
-        @wheelHandlers = [@finder @quicky @menu @konsole @editor]
-        @keyHandlers   = [@finder @quicky @menu @konsole @editor]
+        @mouseHandlers = [@finder @quicky @menu @editor]
+        @wheelHandlers = [@finder @quicky @menu @editor]
+        @keyHandlers   = [@finder @quicky @menu @editor]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -102,16 +96,13 @@ function KED
         
         w = @t.cols()
         h = @t.rows()
-        k = @viewSizes.konsole[1]
         
         if true # status at top
-            @status.layout  0  0     w     1
-            @editor.layout  0  1     w h-k-1    
-            @konsole.layout 0  h-k-1 w   k
+            @status.layout  0  0     w    1
+            @editor.layout  0  1     w  h-1    
         else # status at bottom
-            @status.layout  0  h-1   w     1
-            @editor.layout  0  0     w h-k-1    
-            @konsole.layout 0  h-k-1 w   k
+            @status.layout  0  h-1   w    1
+            @editor.layout  0  0     w  h-1    
     
     quit: msg ○=>
         
@@ -211,7 +202,7 @@ function KED
             @redraw()
             @saveSessionFile @currentFile 'saved'
             
-    saveAs: => lfc 'saveAs'
+    saveAs: => lf 'saveAs'
 
     saveSessionFile: file type ->
         
@@ -315,13 +306,11 @@ function KED
         @viewSizes[name] = [x min(y @screen.rows-1)]
         
         @editor.mapscr?.onResize()
-        @konsole.mapscr?.onResize()
         
     onResize: cols rows size => 
         
         @redraw()
         @editor.mapscr?.onResize()
-        @konsole.mapscr?.onResize()
     
     # 00000000   00000000  0000000    00000000    0000000   000   000  
     # 000   000  000       000   000  000   000  000   000  000 0 000  
@@ -347,7 +336,6 @@ function KED
         if not @menu.greet
             @editor.draw()
             @status.draw()
-            @konsole.draw()
             
         @menu.draw()
         @quicky.draw()

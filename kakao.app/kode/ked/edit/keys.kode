@@ -6,7 +6,7 @@
 000   000  00000000     000     0000000 
 ###
 
-keys = key event -> # will be bound to state
+handleKey = key event -> # will be bound to state
 
     if @s.cursors.length == 1
         
@@ -34,9 +34,9 @@ keys = key event -> # will be bound to state
                 
         'alt+left'                          ➜ ⮐ @moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
         'alt+right'                         ➜ ⮐ @moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
+        
         'shift+alt+right'                   ➜ ⮐ @moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
         'shift+alt+left'                    ➜ ⮐ @moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
-                
         'shift+up'                          ➜ ⮐ @moveCursorsAndSelect 'up'
         'shift+down'                        ➜ ⮐ @moveCursorsAndSelect 'down'
         'shift+left'                        ➜ ⮐ @moveCursorsAndSelect 'left'
@@ -110,4 +110,4 @@ keys = key event -> # will be bound to state
         
     'unhandled'
 
-export keys
+export handleKey

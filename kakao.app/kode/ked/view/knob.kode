@@ -56,7 +56,7 @@ function knob
                 
     draw: =>
         
-        fg = @hover ? theme.scroll_knob : theme.konsole
+        fg = @hover ? theme.scroll_knob : theme.editor
         @cells.set parseInt(@cells.cols/2) 0 '●' fg
 
 export knob

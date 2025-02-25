@@ -32,7 +32,7 @@ function session extends events
         @dir  = slash.absolute "~/.config/ked/sessions/"
         @file = slash.path @dir "#{@name}.noon"
         
-        # lf 'session' @file
+        lf "session #{m7 @name}" 
         
         @loadAndMergeRecentSession()
         @cleanSessionFiles()
@@ -122,8 +122,8 @@ function session extends events
             result =○ nfs.write @file text
             if result.error
                 lf 'session.save failed!' @file result
-            # else
-                # lf 'session.saved' result @data
+            else
+                lf "session.saved #{m7 @name}" result @data
 
         catch err
             lf "session -- can't save to '#{@file}':" err
@@ -139,7 +139,7 @@ function session extends events
         file =○ @newestSessionFile()
         ⮐ if empty file
         recent =○ noon.read(file)
-        # lf "loadAndMergeRecent #{file}" recent  
+        lf "loadAndMergeRecent #{m7 @name} #{file}" recent  
         @set 'files' recent.files if valid recent.files # probably should actually merge here instead of overriding!
         
         @emit 'loaded'

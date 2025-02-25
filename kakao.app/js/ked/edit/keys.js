@@ -1,7 +1,7 @@
-var keys
+var handleKey
 
 
-keys = function (key, event)
+handleKey = function (key, event)
 {
     if (this.s.cursors.length === 1)
     {
@@ -254,4 +254,4 @@ keys = function (key, event)
 
     return 'unhandled'
 }
-export default keys;
+export default handleKey;

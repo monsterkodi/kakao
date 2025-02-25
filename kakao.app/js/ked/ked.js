@@ -26,7 +26,6 @@ import status from "./view/status.js"
 import quicky from "./view/quicky.js"
 import menu from "./view/menu.js"
 import finder from "./view/finder.js"
-import konsole from "./view/konsole.js"
 
 import editor from "./edit/editor.js"
 import state from "./edit/state.js"
@@ -61,31 +60,19 @@ ked [file]
     version    log version       = false
     `,{preHelp:help.header(),version:this.version})
         process.on('uncaughtException',this.onException)
-        this.viewSizes = {konsole:[0,0]}
         this.logfile = new logfile
         this.session = new session
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
         this.t = new ttio
-        global.lfc = (function (...args)
-        {
-            var _41_64_
-
-            lf.apply(null,args)
-            if ((global.lc != null))
-            {
-                return global.lc.apply(null,args)
-            }
-        }).bind(this)
         this.julia = new julia
         this.screen = new screen(this.t)
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
-        this.konsole = new konsole(this.screen,'konsole',['scroll','gutter','knob'])
         this.status = new status(this.screen,this.editor.state)
-        lfc(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ked ${this.version} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
+        lf(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${kstr.now()} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
         this.editor.state.hasFocus = true
         post.on('redraw',this.redraw)
         post.on('window.focus',this.redraw)
@@ -94,9 +81,9 @@ ked [file]
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
         post.on('quit',this.quit)
-        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.konsole,this.editor]
-        this.wheelHandlers = [this.finder,this.quicky,this.menu,this.konsole,this.editor]
-        this.keyHandlers = [this.finder,this.quicky,this.menu,this.konsole,this.editor]
+        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor]
+        this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor]
+        this.keyHandlers = [this.finder,this.quicky,this.menu,this.editor]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -127,28 +114,25 @@ ked [file]
 
     KED.prototype["layout"] = function ()
     {
-        var h, k, w
+        var h, w
 
         w = this.t.cols()
         h = this.t.rows()
-        k = this.viewSizes.konsole[1]
         if (true)
         {
             this.status.layout(0,0,w,1)
-            this.editor.layout(0,1,w,h - k - 1)
-            return this.konsole.layout(0,h - k - 1,w,k)
+            return this.editor.layout(0,1,w,h - 1)
         }
         else
         {
             this.status.layout(0,h - 1,w,1)
-            this.editor.layout(0,0,w,h - k - 1)
-            return this.konsole.layout(0,h - k - 1,w,k)
+            return this.editor.layout(0,0,w,h - 1)
         }
     }
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _121_10_
+        var _112_10_
 
         await this.session.save()
         lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -170,7 +154,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _143_22_
+        var _134_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -195,7 +179,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _188_22_
+        var segls, start, text, _179_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -243,7 +227,7 @@ ked [file]
 
     KED.prototype["saveAs"] = function ()
     {
-        return lfc('saveAs')
+        return lf('saveAs')
     }
 
     KED.prototype["saveSessionFile"] = function (file, type)
@@ -388,20 +372,18 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _317_22_, _318_23_
+        var _308_22_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
-        ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
-        return (this.konsole.mapscr != null ? this.konsole.mapscr.onResize() : undefined)
+        return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
     }
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _323_22_, _324_23_
+        var _313_22_
 
         this.redraw()
-        ;(this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
-        return (this.konsole.mapscr != null ? this.konsole.mapscr.onResize() : undefined)
+        return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
     }
 
     KED.prototype["redraw"] = function ()
@@ -422,7 +404,6 @@ ked [file]
         {
             this.editor.draw()
             this.status.draw()
-            this.konsole.draw()
         }
         this.menu.draw()
         this.quicky.draw()

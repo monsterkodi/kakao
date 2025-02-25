@@ -21,7 +21,7 @@ function TTIO extends events
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
             
-        lf '▸▸▸' 
+        # lf '▸▸▸' 
 
         @write '\x1b[?1000h'    # mouse events
         @write '\x1b[?1002h'    # cell motion tracking
@@ -66,7 +66,7 @@ function TTIO extends events
         @write '\x1b[?2004l' # end bracketed paste mode
         @write '\x1b[?1049l' # end scrollback screen buffer
         @showCursor()
-        lf '◂◂◂'
+        # lf '◂◂◂'
         @restore()
     
     clear: =>
@@ -412,7 +412,7 @@ function TTIO extends events
 
         if csi.endsWith 'M'
             
-            # lfc 'mouse' csi (code & 0b11100000) (code & 0b11)
+            # lf 'mouse' csi (code & 0b11100000) (code & 0b11)
 
             event.type = switch code & 0b11100000
                 32  ➜ ((code & 0b11) == 3) ? 'move' : 'drag'
@@ -468,7 +468,7 @@ function TTIO extends events
                
             event.count = @lastClick.count
         
-            # lfc 'mouse' event
+            # lf 'mouse' event
         
         @emit 'mouse' event
                 
@@ -577,7 +577,7 @@ function TTIO extends events
                         @emitMouseEvent event
                         continue
                         
-                    lfc 'unhandled mouse event?' csi
+                    lf 'unhandled mouse event?' csi
                     continue 
                     
                 if event = @parseKitty csi data

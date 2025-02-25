@@ -51,7 +51,7 @@ class prjcts
         
         file = slash.absolute file process.cwd()
         
-        # lfc 'prjcts.index ●' file
+        # lf 'prjcts.index ●' file
         
         exists =○ nfs.exists file
         
@@ -92,7 +92,7 @@ class prjcts
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            # lfc 'prjcts indexed' prjPath @projects
+            # lf 'prjcts indexed' prjPath @projects
 
             post.emit 'prjcts.project.indexed' prjPath
         

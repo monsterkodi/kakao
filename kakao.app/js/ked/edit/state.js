@@ -2,6 +2,9 @@ var _k_ = {isArr: function (o) {return Array.isArray(o)}, isNum: function (o) {r
 
 var state
 
+import child_process from "child_process"
+import os from "os"
+
 import kxk from "../../kxk.js"
 let immutable = kxk.immutable
 let kstr = kxk.kstr
@@ -18,9 +21,6 @@ import indent from "./act/indent.js"
 import multi from "./act/multi.js"
 
 import keys from "./keys.js"
-
-import child_process from "child_process"
-import os from "os"
 
 
 state = (function ()

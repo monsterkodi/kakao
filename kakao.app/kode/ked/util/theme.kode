@@ -59,13 +59,6 @@ class theme
     @quicky_crumbs_empty:   '#44f'     
     @quicky_crumbs_cursor_main:  '#44f'
     @quicky_crumbs_cursor_empty: '#44f'
-    @konsole:               '#000'  
-    @konsole_empty:         '#000'     
-    @konsole_cursor_main:   '#101010'  
-    @konsole_cursor_empty:  '#000'     
-    @konsole_cursor_blur:   '#666'     
-    @konsole_cursor_bg:     '#ff0'     
-    @konsole_cursor_fg:     '#000'     
     @text:                  '#fff'     
 
     #  0000000  000   000  000   000  000000000   0000000   000   000  
