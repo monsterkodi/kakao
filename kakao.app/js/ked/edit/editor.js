@@ -1,30 +1,24 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
 import kxk from "../../kxk.js"
-let events = kxk.events
-let matchr = kxk.matchr
-let kstr = kxk.kstr
-let kseg = kxk.kseg
 let post = kxk.post
 
-import color from "../util/color.js"
-import theme from "../util/theme.js"
 import util from "../util/util.js"
 
-import view from "../view/view.js"
 import scroll from "../view/scroll.js"
 import gutter from "../view/gutter.js"
 import mapscr from "../view/mapscr.js"
 import mapview from "../view/mapview.js"
 
 import state from "./state.js"
+import draw from "./draw.js"
 
 
 editor = (function ()
 {
-    _k_.extend(editor, view)
+    _k_.extend(editor, draw)
     function editor (screen, name, features)
     {
         this["onKey"] = this["onKey"].bind(this)
@@ -36,10 +30,8 @@ editor = (function ()
         this["isCursorInEmpty"] = this["isCursorInEmpty"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["draw"] = this["draw"].bind(this)
         this["layout"] = this["layout"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
-        this.feats.cursor = true
         this.state = new state(this.cells,this.name)
         post.on('focus',this.onFocus)
         if (this.name === 'editor')
@@ -104,280 +96,11 @@ editor = (function ()
         return this.state.initView()
     }
 
-    editor.prototype["draw"] = function ()
-    {
-        var bg, c, ch, checkColor, ci, clss, emptyColor, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _112_42_, _115_38_, _126_15_, _127_15_, _128_15_, _84_26_, _85_45_
-
-        if (this.hidden())
-        {
-            return
-        }
-        syntax = this.state.syntax
-        s = this.state.s
-        view = s.view.asMutable()
-        lines = this.state.allLines()
-        mainCursor = this.state.mainCursor()
-        bg = ((_84_26_=theme[this.name]) != null ? _84_26_ : theme.editor)
-        emptyColor = ((_85_45_=theme[this.name + '_empty']) != null ? _85_45_ : theme.editor_empty)
-        for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
-        {
-            y = row + view[1]
-            if (y >= lines.length)
-            {
-                break
-            }
-            line = lines[y]
-            linel = kseg.width(line) - view[0]
-            x = c = 0
-            while (x < this.cells.cols)
-            {
-                ci = x + view[0]
-                si = kseg.segiAtWidth(line,ci)
-                if (si >= line.length)
-                {
-                    break
-                }
-                clss = syntax.getClass(ci,y)
-                if (clss === 'invert_bg')
-                {
-                    fg = bg
-                    bg = theme.editor
-                }
-                else
-                {
-                    fg = syntax.getColor(clss)
-                }
-                ch = syntax.getChar(ci,y,line[si])
-                if (ch === "#")
-                {
-                    checkColor = true
-                }
-                c += this.cells.add(c,row,ch,fg,bg)
-                x += ((_112_42_=kseg.width(line[si])) != null ? _112_42_ : 1)
-                if (clss === 'invert_bg')
-                {
-                    bg = ((_115_38_=theme[this.name]) != null ? _115_38_ : theme.editor)
-                }
-            }
-            this.drawRowBackground(row,linel,emptyColor)
-            if (checkColor)
-            {
-                this.drawColors(line,row,linel,emptyColor)
-            }
-        }
-        this.drawTrailingRows()
-        this.drawHighlights()
-        this.drawSelections(lines)
-        this.drawCursors()
-        ;(this.scroll != null ? this.scroll.draw() : undefined)
-        ;(this.gutter != null ? this.gutter.draw() : undefined)
-        ;(this.mapscr != null ? this.mapscr.draw() : undefined)
-        return editor.__super__.draw.call(this)
-    }
-
-    editor.prototype["drawRowBackground"] = function (row, linel, emptyColor)
-    {
-        if (row + view[1] === this.state.mainCursor()[1])
-        {
-            if (linel > 0)
-            {
-                this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
-            }
-            if (linel < this.cells.cols)
-            {
-                return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,theme[this.name + '_cursor_empty'])
-            }
-        }
-        else
-        {
-            if (linel > 0)
-            {
-                this.cells.bg_rect(0,row,linel,row,theme[this.name])
-            }
-            return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,emptyColor)
-        }
-    }
-
-    editor.prototype["drawTrailingRows"] = function ()
-    {
-        var emptyColor, row, vl, _160_45_
-
-        vl = this.state.s.lines.length - this.state.s.view[1]
-        if (vl >= this.cells.rows)
-        {
-            return
-        }
-        emptyColor = ((_160_45_=theme[this.name + '_empty']) != null ? _160_45_ : theme.editor_empty)
-        for (var _a_ = row = vl, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
-        {
-            this.cells.bg_fill(0,row,-1,row,emptyColor)
-        }
-    }
-
-    editor.prototype["drawHighlights"] = function ()
-    {
-        var bg, highlight, vx, vy, x, y
-
-        bg = theme.highlight
-        if (!this.cells.screen.t.hasFocus)
-        {
-            bg = color.darken(bg)
-        }
-        var _a_ = this.state.s.view; vx = _a_[0]; vy = _a_[1]
-
-        var list = _k_.list(this.state.s.highlights)
-        for (var _b_ = 0; _b_ < list.length; _b_++)
-        {
-            highlight = list[_b_]
-            y = highlight[1] - vy
-            if (y >= this.cells.rows)
-            {
-                break
-            }
-            for (var _c_ = x = highlight[0], _d_ = highlight[2]; (_c_ <= _d_ ? x < highlight[2] : x > highlight[2]); (_c_ <= _d_ ? ++x : --x))
-            {
-                this.cells.set_bg(x - vx,y,bg)
-                this.cells.set_char(x - vx,y,color.ul_rgb('ffffff') + '\x1b[4:1m' + this.cells.get_char(x - vx,y) + '\x1b[4:0m')
-            }
-        }
-    }
-
-    editor.prototype["drawSelections"] = function (lines)
-    {
-        var bg, li, linebg, selection, spanbg, x, xe, xs, y
-
-        spanbg = theme.selection
-        linebg = theme.selection_line
-        if (!this.cells.screen.t.hasFocus)
-        {
-            spanbg = color.darken(spanbg)
-            linebg = color.darken(linebg)
-        }
-        var list = _k_.list(this.state.s.selections)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            selection = list[_a_]
-            bg = (util.isSpanLineRange(lines,selection) ? spanbg : linebg)
-            for (var _b_ = li = selection[1], _c_ = selection[3]; (_b_ <= _c_ ? li <= selection[3] : li >= selection[3]); (_b_ <= _c_ ? ++li : --li))
-            {
-                y = li - this.state.s.view[1]
-                if (y >= this.cells.rows)
-                {
-                    break
-                }
-                if (li === selection[1])
-                {
-                    xs = selection[0]
-                }
-                else
-                {
-                    xs = 0
-                }
-                if (li === selection[3])
-                {
-                    xe = selection[2]
-                }
-                else
-                {
-                    xe = kseg.width(lines[li])
-                }
-                for (var _d_ = x = xs, _e_ = xe; (_d_ <= _e_ ? x < xe : x > xe); (_d_ <= _e_ ? ++x : --x))
-                {
-                    this.cells.set_bg(x - this.state.s.view[0],y,bg)
-                }
-            }
-        }
-    }
-
-    editor.prototype["drawCursors"] = function ()
-    {
-        var bg, cursor, fcb, fg, mainCursor, s, x, y, _236_44_, _237_44_, _250_46_, _252_37_
-
-        s = this.state.s
-        mainCursor = this.state.mainCursor()
-        fg = ((_236_44_=theme[this.name + '_cursor_fg']) != null ? _236_44_ : theme.editor_cursor_fg)
-        bg = ((_237_44_=theme[this.name + '_cursor_multi']) != null ? _237_44_ : theme.editor_cursor_multi)
-        if (!this.cells.screen.t.hasFocus)
-        {
-            bg = color.darken(bg)
-        }
-        var list = _k_.list(s.cursors)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            cursor = list[_a_]
-            if (_k_.eql(cursor, mainCursor))
-            {
-                continue
-            }
-            if (this.isCursorVisible(cursor))
-            {
-                this.cells.set_fg_bg(cursor[0] - s.view[0],cursor[1] - s.view[1],fg,bg)
-            }
-        }
-        if (this.isCursorVisible(mainCursor))
-        {
-            fg = ((_250_46_=theme[this.name + '_cursor_fg']) != null ? _250_46_ : theme.editor_cursor_fg)
-            fcb = (this.hasFocus() ? '_cursor_bg' : '_cursor_blur')
-            bg = ((_252_37_=theme[this.name + fcb]) != null ? _252_37_ : theme['editor' + fcb])
-            var _b_ = [mainCursor[0] - s.view[0],mainCursor[1] - s.view[1]]; x = _b_[0]; y = _b_[1]
-
-            if (s.cursors.length <= 1)
-            {
-                if (this.isCursorInEmpty())
-                {
-                    bg = color.darken(bg,0.7)
-                }
-                else if (' ' === this.cells.get_char(x,y))
-                {
-                    bg = color.darken(bg,0.8)
-                }
-            }
-            if (!this.cells.screen.t.hasFocus)
-            {
-                bg = color.darken(bg)
-            }
-            return this.cells.set_fg_bg(x,y,fg,bg)
-        }
-    }
-
-    editor.prototype["drawColors"] = function (line, row, linel, emptyColor)
-    {
-        var clr, cx, dta, idx, rng, rngs
-
-        if (rngs = kstr.colorRanges(kseg.str(line)))
-        {
-            cx = _k_.max(0,linel) + 1
-            var list = _k_.list(rngs)
-            for (idx = 0; idx < list.length; idx++)
-            {
-                rng = list[idx]
-                clr = color.rgb(rng.color)
-                dta = 4
-                if (idx === 0)
-                {
-                    this.cells.set(cx,row,'',clr,emptyColor)
-                    cx += 1
-                    dta--
-                }
-                if (idx === rngs.length - 1)
-                {
-                    dta--
-                }
-                this.cells.bg_rect(cx,row,cx + dta,row,rng.match)
-                cx += dta
-                if (idx === rngs.length - 1)
-                {
-                    this.cells.set(cx,row,'',clr,emptyColor)
-                }
-            }
-        }
-    }
-
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _292_30_, _292_39_, _293_30_, _303_41_, _371_31_
+        var col, row, start, x, y, _153_31_, _74_30_, _74_39_, _75_30_, _85_41_
 
-        if (((_292_30_=this.mapscr) != null ? typeof (_292_39_=_292_30_.onMouse) === "function" ? _292_39_(event) : undefined : undefined))
+        if (((_74_30_=this.mapscr) != null ? typeof (_74_39_=_74_30_.onMouse) === "function" ? _74_39_(event) : undefined : undefined))
         {
             return true
         }

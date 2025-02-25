@@ -1,0 +1,235 @@
+###
+0000000    00000000    0000000   000   000
+000   000  000   000  000   000  000 0 000
+000   000  0000000    000000000  000000000
+000   000  000   000  000   000  000   000
+0000000    000   000  000   000  00     00
+###
+
+use ../../kxk ▪ kseg kstr 
+use ../util   ◆ color theme util
+use ../view   ◆ view
+
+function draw extends view
+
+    @: screen name features ->
+        
+        super screen name features
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: =>
+        
+        ⮐ if @hidden()
+                
+        syntax     = @state.syntax
+        s          = @state.s
+        view       = s.view.asMutable()
+        lines      = @state.allLines()
+        mainCursor = @state.mainCursor()
+        
+        bg = theme[@name] ? theme.editor
+        emptyColor = theme[@name + '_empty'] ? theme.editor_empty
+        
+        for row in 0...@cells.rows
+            
+            y = row+view[1]
+            break if y >= lines.length
+            
+            line  = lines[y]
+            linel = kseg.width(line) - view[0]
+            
+            x = c = 0
+            while x < @cells.cols
+                
+                ci = x+view[0]
+                si = kseg.segiAtWidth line ci
+                break if si >= line.length
+                
+                clss = syntax.getClass ci y
+                if clss == 'invert_bg'
+                    fg = bg
+                    bg = theme.editor
+                else
+                    fg = syntax.getColor clss
+                ch = syntax.getChar ci y line[si]
+                if ch == "#" ➜ checkColor = true
+
+                c += @cells.add c row ch fg bg
+                x += kseg.width(line[si]) ? 1
+                
+                if clss == 'invert_bg'
+                    bg = theme[@name] ? theme.editor 
+                    
+            @drawRowBackground row linel emptyColor
+                    
+            @drawColors line row linel emptyColor if checkColor
+
+        @drawTrailingRows()        
+        @drawHighlights()
+        @drawSelections lines                                
+        @drawCursors()        
+
+        @scroll?.draw()
+        @gutter?.draw()
+        @mapscr?.draw()
+        
+        super()
+        
+    # 00000000    0000000   000   000       0000000     0000000    0000000  000   000   0000000   00000000   0000000    
+    # 000   000  000   000  000 0 000       000   000  000   000  000       000  000   000        000   000  000   000  
+    # 0000000    000   000  000000000       0000000    000000000  000       0000000    000  0000  0000000    000   000  
+    # 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
+    # 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
+    
+    drawRowBackground: row linel emptyColor ->
+        
+        if row+view[1] == @state.mainCursor()[1]
+            if linel > 0
+                @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
+            if linel < @cells.cols
+                @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
+        else
+            if linel > 0
+                @cells.bg_rect 0 row linel row theme[@name]
+            @cells.bg_fill max(0 linel) row -1 row emptyColor
+            
+    # 000000000  00000000    0000000   000  000      000  000   000   0000000   
+    #    000     000   000  000   000  000  000      000  0000  000  000        
+    #    000     0000000    000000000  000  000      000  000 0 000  000  0000  
+    #    000     000   000  000   000  000  000      000  000  0000  000   000  
+    #    000     000   000  000   000  000  0000000  000  000   000   0000000   
+    
+    drawTrailingRows: -> # fill empty rows below last line
+        
+        vl = @state.s.lines.length - @state.s.view[1]
+        ⮐ if vl >= @cells.rows 
+        emptyColor = theme[@name + '_empty'] ? theme.editor_empty
+        for row in vl...@cells.rows
+            @cells.bg_fill 0 row -1 row emptyColor            
+                
+    # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
+    # 000   000  000  000        000   000  000      000  000        000   000     000     000       
+    # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     0000000   
+    # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
+    # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
+    
+    drawHighlights: ->
+                            
+        bg = theme.highlight
+        bg = color.darken bg if not @cells.screen.t.hasFocus
+        
+        [vx vy] = @state.s.view
+        
+        for highlight in @state.s.highlights
+            
+            y = highlight[1]-vy
+            
+            break if y >= @cells.rows
+                
+            for x in highlight[0]...highlight[2]
+                
+                @cells.set_bg x-vx y bg
+                @cells.set_char x-vx y color.ul_rgb('ffffff')+'\x1b[4:1m'+@cells.get_char(x-vx y)+'\x1b[4:0m'
+                    
+    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
+    # 000       000       000      000       000          000     000  000   000  0000  000  000       
+    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  0000000   
+    #      000  000       000      000       000          000     000  000   000  000  0000       000  
+    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000   
+    
+    drawSelections: lines ->
+        
+        spanbg = theme.selection
+        linebg = theme.selection_line
+        if not @cells.screen.t.hasFocus
+            spanbg = color.darken spanbg
+            linebg = color.darken linebg
+        
+        for selection in @state.s.selections
+                
+            bg = util.isSpanLineRange(lines selection) ? spanbg : linebg
+            
+            for li in selection[1]..selection[3]
+                
+                y = li-@state.s.view[1]
+                
+                break if y >= @cells.rows
+                
+                if li == selection[1]
+                    xs = selection[0]
+                else
+                    xs = 0
+                    
+                if li == selection[3]
+                    xe = selection[2]
+                else
+                    xe = kseg.width(lines[li])
+                
+                for x in xs...xe
+                    @cells.set_bg x-@state.s.view[0] y bg 
+            
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
+    # 000       000   000  000   000  000       000   000  000   000  000       
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
+    # 000       000   000  000   000       000  000   000  000   000       000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+    
+    drawCursors: ->
+        
+        s = @state.s
+        mainCursor = @state.mainCursor()
+
+        fg = theme[@name + '_cursor_fg'   ] ? theme.editor_cursor_fg
+        bg = theme[@name + '_cursor_multi'] ? theme.editor_cursor_multi
+        bg = color.darken bg if not @cells.screen.t.hasFocus
+        
+        for cursor in s.cursors
+ 
+            continue if cursor eql mainCursor
+            
+            if @isCursorVisible cursor
+             
+                @cells.set_fg_bg cursor[0]-s.view[0] cursor[1]-s.view[1] fg bg
+                        
+        if @isCursorVisible mainCursor
+             
+            fg  = theme[@name + '_cursor_fg'] ? theme.editor_cursor_fg
+            fcb = @hasFocus() ? '_cursor_bg' : '_cursor_blur'
+            bg  = theme[@name + fcb] ? theme['editor' + fcb]
+             
+            [x y] = [mainCursor[0]-s.view[0] mainCursor[1]-s.view[1]]
+             
+            if s.cursors.length <= 1
+                if @isCursorInEmpty()
+                    bg = color.darken bg 0.7
+                else if ' ' == @cells.get_char(x y)
+                    bg = color.darken bg 0.8
+                     
+            bg = color.darken bg if not @cells.screen.t.hasFocus
+                 
+            @cells.set_fg_bg x y fg bg
+
+    #  0000000   0000000   000       0000000   00000000    0000000  
+    # 000       000   000  000      000   000  000   000  000       
+    # 000       000   000  000      000   000  0000000    0000000   
+    # 000       000   000  000      000   000  000   000       000  
+    #  0000000   0000000   0000000   0000000   000   000  0000000   
+    
+    drawColors: line row linel emptyColor ->
+        
+        if rngs = kstr.colorRanges kseg.str(line)
+            cx = max(0 linel)+1
+            for rng,idx in rngs
+                clr = color.rgb rng.color
+                dta = 4
+                if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
+                if idx == rngs.length-1 ➜ dta--
+                @cells.bg_rect cx row cx+dta row rng.match; cx += dta
+                if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
+
+export draw
