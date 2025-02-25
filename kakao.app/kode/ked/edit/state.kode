@@ -9,6 +9,7 @@
 use ../../kxk ▪ immutable kstr kseg
 use ../util   ◆ util syntax
 use ./act     ◆ del insert select join indent multi
+use           ◆ keys
 use child_process os
 
 function state
@@ -20,6 +21,8 @@ function state
         for act in [del insert select join indent multi]
             for k,v of act
                 @[k] = v.bind @
+                
+        @handleKey = keys.bind @
 
         @syntax = new syntax
         @hasFocus = false

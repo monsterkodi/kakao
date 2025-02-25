@@ -9,7 +9,7 @@
 use ../../kxk ▪ post
 use ../util   ◆ util
 use ../view   ◆ scroll gutter mapscr mapview
-use           ◆ state draw
+use           ◆ state draw 
 
 function editor extends draw
 
@@ -266,106 +266,8 @@ function editor extends draw
     onKey: key event =>
         
         ⮐ if not @hasFocus()
-        
-        if @state.s.cursors.length == 1
-            
-            switch key
-                                
-                'ctrl+alt+up'               ➜ ⮐ @state.moveCursors 'up'    count:8
-                'ctrl+alt+down'             ➜ ⮐ @state.moveCursors 'down'  count:8
-                'ctrl+alt+left'             ➜ ⮐ @state.moveCursors 'left'  count:8
-                'ctrl+alt+right'            ➜ ⮐ @state.moveCursors 'right' count:8
-        
-                'shift+ctrl+alt+up'         ➜ ⮐ @state.moveCursors 'up'    count:16
-                'shift+ctrl+alt+down'       ➜ ⮐ @state.moveCursors 'down'  count:16
-                'shift+ctrl+alt+left'       ➜ ⮐ @state.moveCursors 'left'  count:16
-                'shift+ctrl+alt+right'      ➜ ⮐ @state.moveCursors 'right' count:16
-        
-        switch key
 
-            'up'                        ➜ ⮐ @state.moveCursors 'up'   
-            'down'                      ➜ ⮐ @state.moveCursors 'down' 
-            'left'                      ➜ ⮐ @state.moveCursors 'left' 
-            'right'                     ➜ ⮐ @state.moveCursors 'right'
-            
-            'cmd+left'  'ctrl+left'     ➜ ⮐ @state.moveCursors ['bos' 'ind_bol']
-            'cmd+right' 'ctrl+right'    ➜ ⮐ @state.moveCursors ['eos' 'ind_eol']
-            
-            'alt+left'                  ➜ ⮐ @state.moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
-            'alt+right'                 ➜ ⮐ @state.moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
-            'shift+alt+right'           ➜ ⮐ @state.moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
-            'shift+alt+left'            ➜ ⮐ @state.moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
-            
-            'shift+up'                  ➜ ⮐ @state.moveCursorsAndSelect 'up'
-            'shift+down'                ➜ ⮐ @state.moveCursorsAndSelect 'down'
-            'shift+left'                ➜ ⮐ @state.moveCursorsAndSelect 'left'
-            'shift+right'               ➜ ⮐ @state.moveCursorsAndSelect 'right'
-            'shift+cmd+right'           ➜ ⮐ @state.moveCursorsAndSelect 'ind_eol'
-            'shift+cmd+left'            ➜ ⮐ @state.moveCursorsAndSelect 'ind_bol'
-            'shift+ctrl+h'              ➜ ⮐ @state.moveCursorsAndSelect 'bof'
-            'shift+ctrl+j'              ➜ ⮐ @state.moveCursorsAndSelect 'eof'
-                        
-            'shift+alt+cmd+up'          ➜ ⮐ @state.moveMainCursorInDirection 'up'    keep:true # 'paint' cursors
-            'shift+alt+cmd+down'        ➜ ⮐ @state.moveMainCursorInDirection 'down'  keep:true # 'paint' cursors
-            'shift+alt+cmd+left'        ➜ ⮐ @state.moveMainCursorInDirection 'left'  keep:true # 'paint' cursors
-            'shift+alt+cmd+right'       ➜ ⮐ @state.moveMainCursorInDirection 'right' keep:true # 'paint' cursors
-            
-            'alt+up'                    ➜ ⮐ @state.moveSelectionOrCursorLines 'up'
-            'alt+down'                  ➜ ⮐ @state.moveSelectionOrCursorLines 'down'
-            'shift+alt+up'              ➜ ⮐ @state.cloneSelectionAndCursorLines 'up'
-            'shift+alt+down'            ➜ ⮐ @state.cloneSelectionAndCursorLines 'down'
-
-            'cmd+up'   'ctrl+up'               ➜ ⮐ @state.expandCursors   'up'
-            'cmd+down' 'ctrl+down'             ➜ ⮐ @state.expandCursors   'down'
-            'shift+cmd+up'   'shift+ctrl+up'   ➜ ⮐ @state.contractCursors 'up'
-            'shift+cmd+down' 'shift+ctrl+down' ➜ ⮐ @state.contractCursors 'down'
-
-            'pageup'                    ➜ ⮐ @state.singleCursorPage 'up'
-            'pagedown'                  ➜ ⮐ @state.singleCursorPage 'down'
-
-            'home'                      ➜ ⮐ @state.singleCursorAtIndentOrStartOfLine()
-            'end'                       ➜ ⮐ @state.singleCursorAtEndOfLine()
-            
-            'ctrl+h'                    ➜ ⮐ @state.setMainCursor 0 0
-            'ctrl+j'                    ➜ ⮐ @state.setMainCursor @state.s.lines[@state.s.lines.length-1].length @state.s.lines.length-1
-            
-            'alt+d'                     ➜ ⮐ @state.delete 'next' true
-            'shift+ctrl+k' 'entf'       ➜ ⮐ @state.delete 'next'
-            'ctrl+k'                    ➜ ⮐ @state.delete 'eol'
-            'delete'                    ➜ ⮐ @state.delete 'back'
-            'ctrl+delete'               ➜ ⮐ @state.delete 'back' true
-            'cmd+delete'                ➜ ⮐ @state.delete 'back' true
-            
-            'shift+tab'                 ➜ ⮐ @state.deindentSelectedOrCursorLines()
-            'tab'                       ➜ ⮐ @state.insert '\t'
-                                    
-            'alt+x' 'cmd+x' 'ctrl+x'    ➜ ⮐ @state.cut()     
-            'alt+c' 'cmd+c' 'ctrl+c'    ➜ ⮐ @state.copy()        
-            'alt+v' 'cmd+v' 'ctrl+v'    ➜ ⮐ @state.paste()
-                           
-            'cmd+z' 'ctrl+z'            ➜ ⮐ @state.undo()
-            'shift+cmd+z'
-            'cmd+y' 'ctrl+y'            ➜ ⮐ @state.redo()
-                        
-            'cmd+a'       'ctrl+a'       ➜ ⮐ @state.selectAllLines()
-            'cmd+j'       'ctrl+j'       ➜ ⮐ @state.joinLines()
-            'cmd+l'       'ctrl+l'       ➜ ⮐ @state.selectMoreLines()
-            'shift+cmd+l' 'shift+ctrl+l' ➜ ⮐ @state.selectLessLines()
-
-            
-            'cmd+e' 'ctrl+e'             ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
-            'cmd+d' 'ctrl+d'             ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
-            'cmd+g' 'ctrl+g'             ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectNextHighlight()
-            
-            'shift+cmd+e' 'shift+ctrl+e' ➜ ⮐ @state.highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
-            'shift+cmd+d' 'shift+ctrl+d' ➜ ⮐ @state.selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
-            'shift+cmd+g' 'shift+ctrl+g' ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectPrevHighlight()
-
-            'alt+cmd+d' 'alt+ctrl+d'    ➜ ⮐ @state.selectWordAtCursor_highlightSelection_selectAllHighlights()
-
-            'cmd+/' 'ctrl+/'            ➜ ⮐ @state.toggleCommentAtSelectionOrCursorLines()
-            
-            'esc'                       ➜ ⮐ @state.clearCursorsHighlightsAndSelections()
+        ⮐ if @state.handleKey(key event) != 'unhandled'
 
         if valid event.char
             @state.insert event.char

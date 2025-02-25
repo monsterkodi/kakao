@@ -26,8 +26,10 @@
 #### todo
 ##### todo
 
+- fix recent
 - return with single cursor in empty should not append spaces
 - fix multicursor delete backwards in empty space
+- fix insert after wide unicode segments
 - key right in input should activate match
 
 - crumbs

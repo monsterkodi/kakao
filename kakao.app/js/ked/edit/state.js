@@ -17,6 +17,8 @@ import join from "./act/join.js"
 import indent from "./act/indent.js"
 import multi from "./act/multi.js"
 
+import keys from "./keys.js"
+
 import child_process from "child_process"
 import os from "os"
 
@@ -64,6 +66,7 @@ state = (function ()
                 this[k] = v.bind(this)
             }
         }
+        this.handleKey = keys.bind(this)
         this.syntax = new syntax
         this.hasFocus = false
         this.s = immutable({lines:[[]],selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
