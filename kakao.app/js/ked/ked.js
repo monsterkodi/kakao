@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }};_k_.b8=_k_.k.F256(_k_.k.b(8));_k_.w2=_k_.k.F256(_k_.k.w(2))
 
 var KED
 
@@ -19,6 +19,7 @@ import session from "./util/session.js"
 import color from "./util/color.js"
 import help from "./util/help.js"
 import julia from "./util/julia.js"
+import frecent from "./util/frecent.js"
 
 import screen from "./view/screen.js"
 import cells from "./view/cells.js"
@@ -72,7 +73,7 @@ ked [file]
         this.finder = new finder(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
         this.status = new status(this.screen,this.editor.state)
-        lf(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${kstr.now()} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`)
+        console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
         post.on('redraw',this.redraw)
         post.on('window.focus',this.redraw)
@@ -118,24 +119,16 @@ ked [file]
 
         w = this.t.cols()
         h = this.t.rows()
-        if (true)
-        {
-            this.status.layout(0,0,w,1)
-            return this.editor.layout(0,1,w,h - 1)
-        }
-        else
-        {
-            this.status.layout(0,h - 1,w,1)
-            return this.editor.layout(0,0,w,h - 1)
-        }
+        this.status.layout(0,0,w,1)
+        return this.editor.layout(0,1,w,h - 1)
     }
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _112_10_
+        var _109_10_
 
         await this.session.save()
-        lf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+        console.log(_k_.w2(`┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`))
         ;(this.t != null ? this.t.quit() : undefined)
         return this.logfile.close(function ()
         {
@@ -154,7 +147,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _134_22_
+        var _131_22_
 
         delete this.currentFile
         this.status.file = ''
@@ -179,7 +172,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _179_22_
+        var segls, start, text, _176_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -196,7 +189,7 @@ ked [file]
         text = await nfs.readText(this.currentFile)
         if (text === undefined)
         {
-            lf('ked.loadFile: binary?',this.currentFile)
+            console.log('ked.loadFile: binary?',this.currentFile)
             text = '○ binary ○'
         }
         segls = util.seglsForText(text)
@@ -227,24 +220,13 @@ ked [file]
 
     KED.prototype["saveAs"] = function ()
     {
-        return lf('saveAs')
+        console.log('saveAs')
     }
 
     KED.prototype["saveSessionFile"] = function (file, type)
     {
-        var filesLoaded, index, key, maxFilesLoaded
-
-        key = `files▸${type}`
-        filesLoaded = this.session.get(key,[])
-        index = filesLoaded.indexOf(this.currentFile)
-        if (index >= 0)
-        {
-            filesLoaded.splice(index,1)
-        }
-        filesLoaded.push(this.currentFile)
-        maxFilesLoaded = 10
-        filesLoaded = filesLoaded.slice(_k_.max(0,filesLoaded.length - maxFilesLoaded))
-        return this.session.set(key,filesLoaded)
+        frecent.fileAction(file,type)
+        return this.session.set('files▸recent',frecent.store('file'))
     }
 
     KED.prototype["onPaste"] = function (text)
@@ -372,7 +354,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _308_22_
+        var _300_22_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -380,7 +362,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _313_22_
+        var _305_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

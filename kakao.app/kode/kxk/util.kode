@@ -209,10 +209,14 @@ util =
     
     uuid: -> crypto.randomUUID()
     
-    sessionId: -> # perplexity gave this to me :)
+    sessionId: ->
+    
+        now       = new Date()
+        year      = now.getFullYear()
+        yearStart = new Date(year 0 1)
+        seconds   = Math.floor((now.getTime() - yearStart.getTime()) / 522).toString(36)
+        (year-2025).toString(36) + lpad(5 seconds '0')
         
-        (Date.now().toString(36) + Math.random().toString(36).substring(2 5)).slice(-8)
-
     # 00     00   0000000   000000000  000   000    
     # 000   000  000   000     000     000   000    
     # 000000000  000000000     000     000000000    

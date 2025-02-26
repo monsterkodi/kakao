@@ -26,12 +26,16 @@
 #### todo
 ##### todo
 
-- fix recent files menu
 - return with single cursor in empty should not append spaces
 - fix multicursor delete backwards in empty space
 - fix insert after wide unicode segments
 - key right in input should activate match
-
+          
+- quicky
+    - on mouse move: only change selection if over nonspace
+        - to prevent switching when moving to second column
+    - make second browser column items clickable
+          
 - crumbs
     - dissect path
     - make path chunks clickable

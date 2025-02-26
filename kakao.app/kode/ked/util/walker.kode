@@ -87,7 +87,7 @@ class walker
                         @cfg.file item.path if @cfg.file is func
                         
                 if @cfg.files.length > @cfg.maxFiles
-                    lf 'maxFiles reached'
+                    log 'maxFiles reached'
                     break
                     
         @running = false

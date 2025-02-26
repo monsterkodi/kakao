@@ -17,6 +17,7 @@
 
 use ../../kxk ◆ noon events slash post nfs sds
 use ../../kxk/util ▪ isEqual defaults sessionId
+use ◆ frecent
 
 function session extends events
 
@@ -31,8 +32,6 @@ function session extends events
         
         @dir  = slash.absolute "~/.config/ked/sessions/"
         @file = slash.path @dir "#{@name}.noon"
-        
-        lf "session #{m7 @name}" 
         
         @loadAndMergeRecentSession()
         @cleanSessionFiles()
@@ -58,7 +57,7 @@ function session extends events
     
     set: key value =>
         
-        # lf "session[#{@name}].set" key value
+        # log "session[#{@name}].set" key value
 
         ⮐ if not key is str
         ⮐ if @get(key) eql value
@@ -121,29 +120,40 @@ function session extends events
 
             result =○ nfs.write @file text
             if result.error
-                lf 'session.save failed!' @file result
+                log 'session.save failed!' @file result
             else
-                lf "session.saved #{m7 @name}" result @data
+                log "session.save #{m7 @name}" result @data
 
         catch err
-            lf "session -- can't save to '#{@file}':" err
+            log "session -- can't save to '#{@file}':" err
+    
+    # 00     00  00000000  00000000    0000000   00000000        00000000   00000000   0000000  00000000  000   000  000000000  
+    # 000   000  000       000   000  000        000             000   000  000       000       000       0000  000     000     
+    # 000000000  0000000   0000000    000  0000  0000000         0000000    0000000   000       0000000   000 0 000     000     
+    # 000 0 000  000       000   000  000   000  000             000   000  000       000       000       000  0000     000     
+    # 000   000  00000000  000   000   0000000   00000000        000   000  00000000   0000000  00000000  000   000     000     
+
+    loadAndMergeRecentSession: ○=>
+        
+        file =○ @newestSessionFile()
+        
+        if valid file
             
+            recent =○ noon.read file
+            lf "loadAndMergeRecent #{m7 @name} #{g5 slash.name(file)}"
+            if valid recent.files
+                if valid recent.files.recent
+                    frecent.buckets['file'] = recent.files.recent
+                @set 'files' recent.files  # probably should actually merge here instead of overriding!
+        
+        @emit 'loaded'
+    
     # 00000000  000  000      00000000   0000000  
     # 000       000  000      000       000       
     # 000000    000  000      0000000   0000000   
     # 000       000  000      000            000  
     # 000       000  0000000  00000000  0000000   
-    
-    loadAndMergeRecentSession: ○=>
-        
-        file =○ @newestSessionFile()
-        ⮐ if empty file
-        recent =○ noon.read(file)
-        lf "loadAndMergeRecent #{m7 @name} #{file}" recent  
-        @set 'files' recent.files if valid recent.files # probably should actually merge here instead of overriding!
-        
-        @emit 'loaded'
-    
+
     newestSessionFile: ○=>
         
         files =○ @listSessionFiles()

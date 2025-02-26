@@ -10,7 +10,7 @@
 
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
-use ./util ◆ ttio logfile util prjcts session color help julia 
+use ./util ◆ ttio logfile util prjcts session color help julia frecent
 use ./view ◆ screen cells status quicky menu finder
 use ./edit ◆ editor state 
 
@@ -46,7 +46,7 @@ function KED
         @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
         @status  = new status   @screen @editor.state
         
-        lf "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{kstr.now()} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" 
+        log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
 
         @editor.state.hasFocus = true
         
@@ -97,18 +97,15 @@ function KED
         w = @t.cols()
         h = @t.rows()
         
-        if true # status at top
-            @status.layout  0  0     w    1
-            @editor.layout  0  1     w  h-1    
-        else # status at bottom
-            @status.layout  0  h-1   w    1
-            @editor.layout  0  0     w  h-1    
+        @status.layout  0  0  w    1
+        @editor.layout  0  1  w  h-1    
     
     quit: msg ○=>
         
         ○ @session.save()
         
-        lf "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" 
+        log w2("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+        
         @t?.quit()
         @logfile.close ->
             error msg if msg?
@@ -166,7 +163,7 @@ function KED
         text =○ nfs.readText @currentFile
         
         if text == undefined
-            lf 'ked.loadFile: binary?' @currentFile
+            log 'ked.loadFile: binary?' @currentFile
             text = '○ binary ○'
         
         segls = util.seglsForText text
@@ -202,18 +199,13 @@ function KED
             @redraw()
             @saveSessionFile @currentFile 'saved'
             
-    saveAs: => lf 'saveAs'
+    saveAs: => log 'saveAs'
 
     saveSessionFile: file type ->
         
-        key = "files▸#{type}"
-        filesLoaded = @session.get key []
-        index = filesLoaded.indexOf @currentFile
-        filesLoaded.splice index 1 if index >= 0
-        filesLoaded.push @currentFile
-        maxFilesLoaded = 10
-        filesLoaded = filesLoaded[max(0 filesLoaded.length-maxFilesLoaded)..]
-        @session.set key filesLoaded
+        frecent.fileAction file type
+                
+        @session.set 'files▸recent' frecent.store('file')
     
     # 00000000    0000000    0000000  000000000  00000000  
     # 000   000  000   000  000          000     000       

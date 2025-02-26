@@ -9,6 +9,7 @@ let post = kxk.post
 let noon = kxk.noon
 
 import theme from "../util/theme.js"
+import frecent from "../util/frecent.js"
 import util from "../util/util.js"
 
 import editor from "../edit/editor.js"
@@ -68,9 +69,9 @@ quit`)
         {
             items.splice(items.length - 2,0,'about')
         }
-        if (_k_.empty(global.ked_session.get('files')))
+        if (_k_.empty(global.ked_session.get('files▸recent')))
         {
-            items.splice(2,1)
+            items.splice(items.indexOf('recent ...'),1)
         }
         ccol = parseInt(this.screen.cols / 2) - 5
         this.input.set('')
@@ -87,15 +88,10 @@ quit`)
 
     menu.prototype["showRecent"] = function ()
     {
-        var files, loaded, maxRecent, recent, saved, _94_30_, _95_29_
+        var maxRecent, recent
 
         maxRecent = 20
-        files = ked_session.get('files',[])
-        loaded = ((_94_30_=files.loaded) != null ? _94_30_ : [])
-        saved = ((_95_29_=files.saved) != null ? _95_29_ : [])
-        recent = loaded.concat(saved)
-        recent = kxk.util.uniq(recent)
-        recent.reverse()
+        recent = frecent.list('file')
         recent = recent.slice(0, typeof _k_.min(recent.length,maxRecent) === 'number' ? _k_.min(recent.length,maxRecent) : -1)
         this.choices.set(recent)
         this.hide()

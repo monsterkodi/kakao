@@ -26,7 +26,7 @@ class NFS
         
         dir =○ NFS.resolveSymlink dir
         
-        # lf 'nfs.listdir' dir
+        # log 'nfs.listdir' dir
         
         dirents =○ fsp.readdir dir withFileTypes:true
         
@@ -41,7 +41,7 @@ class NFS
                 resolved =○ fsp.readlink absPath
                 if not slash.isAbsolute resolved
                     resolved = slash.path dir resolved
-                # lf 'symlink' absPath resolved
+                # log 'symlink' absPath resolved
                 isDir =○ @isDir resolved
             
             if isDir # is it a good idea to hardcode this here?
@@ -50,7 +50,7 @@ class NFS
             else 
                 continue if file in ['.DS_Store' '.localized']
             
-            # lf 'isDir' isDir absPath dirent
+            # log 'isDir' isDir absPath dirent
             
             opt.found.push
                 type: isDir ? 'dir' : 'file'

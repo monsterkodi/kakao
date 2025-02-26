@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ kstr slash post noon
-use ../util   ◆ theme util
+use ../util   ◆ theme frecent util
 use ../edit   ◆ editor 
 use           ◆ cells greeter inputchoice
 
@@ -67,7 +67,7 @@ function menu extends inputchoice
 
         items.splice items.length-2 0 'about' if not @greet
         
-        items.splice 2 1 if empty global.ked_session.get 'files'
+        items.splice items.indexOf('recent ...') 1 if empty global.ked_session.get 'files▸recent'
             
         ccol = int(@screen.cols/2) - 5
 
@@ -90,12 +90,8 @@ function menu extends inputchoice
     showRecent: ->
         
         maxRecent = 20
-        files  = ked_session.get 'files' []
-        loaded = files.loaded ? []
-        saved  = files.saved ? [] 
-        recent = loaded.concat saved
-        recent = kxk.util.uniq recent
-        recent.reverse()
+        
+        recent = frecent.list 'file'
 
         recent = recent[0...min(recent.length maxRecent)]
         @choices.set recent

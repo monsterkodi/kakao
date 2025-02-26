@@ -393,7 +393,7 @@ quicky = (function ()
 
     quicky.prototype["onFsColAction"] = function (choice, action)
     {
-        return lf('onFsColAction',action,choice)
+        console.log('onFsColAction',action,choice)
     }
 
     quicky.prototype["onInputAction"] = function (action, text)

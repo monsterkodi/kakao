@@ -335,7 +335,7 @@ function quicky extends inputchoice
     
     onFsColAction: choice action =>
         
-        lf 'onFsColAction' action choice
+        log 'onFsColAction' action choice
         
     onInputAction: action text =>
         

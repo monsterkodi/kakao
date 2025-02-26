@@ -44,7 +44,7 @@ fscol = (function ()
         }
         catch (err)
         {
-            lf('list error',dir,String(err))
+            console.log('list error',dir,String(err))
             return
         }
         var list = _k_.list(items)

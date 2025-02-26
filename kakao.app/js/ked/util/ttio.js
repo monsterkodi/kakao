@@ -145,11 +145,11 @@ TTIO = (function ()
     {
         if (!(_k_.isNum(start)))
         {
-            return lf(`range start '${start}' not a number`)
+            return console.log(`range start '${start}' not a number`)
         }
         if (!(_k_.isNum(end)))
         {
-            return lf(`range end '${end}' not a number`)
+            return console.log(`range end '${end}' not a number`)
         }
         return this.write(`\x1b_Gq=2,a=d,d=R,x=${start},y=${end}\x1b\\`)
     }
@@ -227,10 +227,10 @@ TTIO = (function ()
         {
             if (_k_.in(':3u',csi))
             {
-                lf('?????',data.length)
+                console.log('?????',data.length)
                 for (var _a_ = di = 1, _b_ = data.length; (_a_ <= _b_ ? di < data.length : di > data.length); (_a_ <= _b_ ? ++di : --di))
                 {
-                    lf(`${di} 0x${data[di].toString(16)} ${String.fromCodePoint(data[di])}`)
+                    console.log(`${di} 0x${data[di].toString(16)} ${String.fromCodePoint(data[di])}`)
                 }
             }
             return
@@ -463,7 +463,7 @@ TTIO = (function ()
         {
             return event
         }
-        lf('---- esc',esc)
+        console.log('---- esc',esc)
         return null
     }
 
@@ -723,7 +723,7 @@ TTIO = (function ()
         }
         if (seq.length > 1)
         {
-            lf(`multiseq ${seq.length}`)
+            console.log(`multiseq ${seq.length}`)
         }
         return seqs
     }
@@ -738,14 +738,14 @@ TTIO = (function ()
             if (dataStr.endsWith('\x1b[201~'))
             {
                 this.pasteBuffer += data.slice(0, -6).toString('utf8')
-                lf('tty paste end',_k_.noon((this.pasteBuffer)))
+                console.log('tty paste end',_k_.noon((this.pasteBuffer)))
                 this.emit('paste',kstr.clean(this.pasteBuffer))
                 delete this.pasteBuffer
             }
             else
             {
                 this.pasteBuffer += dataStr
-                lf('tty paste cont',_k_.noon((this.pasteBuffer)))
+                console.log('tty paste cont',_k_.noon((this.pasteBuffer)))
             }
             return
         }
@@ -773,12 +773,12 @@ TTIO = (function ()
                 if (csi.startsWith('200~'))
                 {
                     this.pasteBuffer = data.slice(6).toString('utf8')
-                    lf('tty paste start',_k_.noon((this.pasteBuffer)))
+                    console.log('tty paste start',_k_.noon((this.pasteBuffer)))
                     continue
                 }
                 if (csi.startsWith('201~'))
                 {
-                    lf('tty paste end',_k_.noon((this.pasteBuffer)))
+                    console.log('tty paste end',_k_.noon((this.pasteBuffer)))
                     this.emit('paste',kstr.clean(this.pasteBuffer))
                     delete this.pasteBuffer
                     continue
@@ -790,7 +790,7 @@ TTIO = (function ()
                         this.emitMouseEvent(event)
                         continue
                     }
-                    lf('unhandled mouse event?',csi)
+                    console.log('unhandled mouse event?',csi)
                     continue
                 }
                 if (event = this.parseKitty(csi,data))
@@ -868,16 +868,16 @@ TTIO = (function ()
                 text = data.toString('utf8')
                 if (text.length > 1)
                 {
-                    lf('paste?',text)
+                    console.log('paste?',text)
                     continue
                 }
             }
-            lf("unhandled sequence:",seq)
+            console.log("unhandled sequence:",seq)
             for (var _b_ = i = 0, _c_ = data.length; (_b_ <= _c_ ? i < data.length : i > data.length); (_b_ <= _c_ ? ++i : --i))
             {
-                lf(`${i} 0x${data[i].toString(16)} ▸${(data[i] === 0x1b ? 'esc' : String.fromCodePoint(data[i]))}◂`)
+                console.log(`${i} 0x${data[i].toString(16)} ▸${(data[i] === 0x1b ? 'esc' : String.fromCodePoint(data[i]))}◂`)
             }
-            lf(`${data.length} bytes ▪`)
+            console.log(`${data.length} bytes ▪`)
         }
     }
 

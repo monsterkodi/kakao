@@ -52,7 +52,7 @@ function edit
                 
                 if x > line.length ➜ line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces if pos is in empty space
                                         
-                # lf 'line' line line.length x txtls
+                # log 'line' line line.length x txtls
                 
                 if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
                     

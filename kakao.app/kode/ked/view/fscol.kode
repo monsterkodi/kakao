@@ -32,7 +32,7 @@ function fscol extends choices
         try
             items =○ nfs.list dir recursive:false
         catch err
-            lf 'list error' dir String(err)
+            log 'list error' dir String(err)
             ⮐ 
 
         for item in items

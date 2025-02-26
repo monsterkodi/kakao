@@ -160,7 +160,7 @@ state = (function ()
         }
         else
         {
-            lf('wordAtCursor',this.wordAtCursor())
+            console.log('wordAtCursor',this.wordAtCursor())
             return this.wordAtCursor()
         }
     }
@@ -197,7 +197,7 @@ state = (function ()
     {
         if (!(_k_.isStr(lines[0])))
         {
-            lf('state.loadLines - first line no segl?',this.name,lines)
+            console.log('state.loadLines - first line no segl?',this.name,lines)
         }
         return this.loadSegls(kseg.segls(lines))
     }
@@ -338,7 +338,7 @@ state = (function ()
 
             case 'linux':
                 text = child_process.execSync('xsel -o --clipboard')
-                lf('paste\n',_k_.noon((text.toString("utf8"))))
+                console.log('paste\n',_k_.noon((text.toString("utf8"))))
                 return this.insert(text.toString("utf8"))
 
             case 'win32':

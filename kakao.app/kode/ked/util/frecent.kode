@@ -1,0 +1,60 @@
+###
+    00000000  00000000   00000000   0000000  00000000  000   000  000000000  
+    000       000   000  000       000       000       0000  000     000     
+    000000    0000000    0000000   000       0000000   000 0 000     000     
+    000       000   000  000       000       000       000  0000     000     
+    000       000   000  00000000   0000000  00000000  000   000     000     
+###
+
+use ../../kxk ▪ kstr pretty
+
+int = parseInt
+
+function frecent
+
+    @buckets: file:{}
+    
+    @now: -> Date.now()
+        
+    @frecent: item -> 
+        
+        dx = @now() - item.time
+        int(10000 * item.rank * (3.75/((0.0001 * dx + 1) + 0.25)))
+        
+    @sample: key delta bucket ->
+        
+        @buckets[bucket][key] ?= rank:1 time:@now()
+        
+        rec = @buckets[bucket][key]
+        
+        rec.rank += delta
+        rec.time  = @now()
+
+        log b8('sampled') + ' ' + r5(key)
+        for bi in @list(bucket)
+            item = @buckets[bucket][bi]
+            log bi item pretty.age(item.time) @frecent(item)
+        
+    @list: bucket ->
+        
+        bkt = @buckets[bucket]
+        lst = Object.keys bkt
+        lst.sort (a b) => @frecent(bkt[b]) - @frecent(bkt[a])
+        lst
+        
+    @store: bucket ->
+        
+        lst = {}
+        for i in @list bucket
+            lst[i] = @buckets[bucket][i]
+        lst
+        
+    @fileAction: file action ->
+        
+        delta = switch action
+            'loaded' ➜ 1
+            'saved'  ➜ 10
+        
+        @sample file delta 'file'
+
+export frecent

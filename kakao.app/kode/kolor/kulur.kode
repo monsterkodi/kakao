@@ -1538,7 +1538,7 @@ syntax = arg ->
 dissect = segls ext='kode' ->
     
     ⮐ [] if empty segls
-    # lf 'kulur.dissect' segls
+    # log 'kulur.dissect' segls
     segls = kseg.segls segls
     
     parse(segls ext).map (l) -> l.chunks

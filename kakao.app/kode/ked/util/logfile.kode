@@ -13,7 +13,7 @@ function logfile
     @: ->
         
         @stream = fs.createWriteStream 'ked.log' flags:'w' autoClose:false
-        
+                
         global.lf = args... => 
             
             if args.length and args[0] is str
@@ -25,6 +25,8 @@ function logfile
                 @write noon(obj) if args.length > 1
             else        
                 @write "▾\n"+noon(args)
+                
+        console.log = global.lf
         
     write: txt ->
         
@@ -34,7 +36,7 @@ function logfile
         
     close: cb ->
         
-        @stream.end '▪'
+        @stream.end r4('▪\n')
         @stream.close cb
         
 export logfile

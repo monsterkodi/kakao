@@ -117,7 +117,7 @@ class walker
                 }
                 if (this.cfg.files.length > this.cfg.maxFiles)
                 {
-                    lf('maxFiles reached')
+                    console.log('maxFiles reached')
                     break
                 }
             }

@@ -105,7 +105,7 @@ function state
         if @s.selections.length
             ⮐ @textOfSelection()
         else
-            lf 'wordAtCursor' @wordAtCursor()
+            log 'wordAtCursor' @wordAtCursor()
             ⮐ @wordAtCursor()
 
     # 000      000  000   000  00000000   0000000
@@ -138,7 +138,7 @@ function state
 
     loadLines: lines => 
     
-        if not lines[0] is str ➜ lf 'state.loadLines - first line no segl?' @name lines 
+        if not lines[0] is str ➜ log 'state.loadLines - first line no segl?' @name lines 
         
         @loadSegls kseg.segls(lines)
     
@@ -259,7 +259,7 @@ function state
 
                 text = child_process.execSync('xsel -o --clipboard')
 
-                lf 'paste\n' noon(text.toString("utf8"))
+                log 'paste\n' noon(text.toString("utf8"))
 
                 @insert text.toString("utf8")
 

@@ -273,6 +273,6 @@ function editor extends draw
             @state.insert event.char
         else
             if key not in ['shift' 'ctrl' 'alt' 'cmd'] 
-                lf 'editor.onKey?' key
+                log 'editor.onKey?' key
 
 export editor

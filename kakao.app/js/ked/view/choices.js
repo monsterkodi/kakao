@@ -238,7 +238,7 @@ choices = (function ()
 
             }
 
-            lf(`mouse ${this.name} ${col} ${row} ${event.type}`)
+            console.log(`mouse ${this.name} ${col} ${row} ${event.type}`)
             return true
         }
         else

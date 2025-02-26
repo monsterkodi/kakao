@@ -19,7 +19,7 @@ function julia
 
     @: ->
         
-        # lf 'julia' symbols
+        # log 'julia' symbols
         
         # prof.end 'julia'
 

@@ -176,7 +176,7 @@ function choices extends editor
                 'move'    ➜ ⮐ @hoverChoiceAtRow row
                 'release' ➜ ⮐ @hoverChoiceAtRow row
                 
-            lf "mouse #{@name} #{col} #{row} #{event.type}" 
+            log "mouse #{@name} #{col} #{row} #{event.type}" 
             
             ⮐ true
         else
