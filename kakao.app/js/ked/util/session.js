@@ -24,10 +24,10 @@ session = (function ()
     {
         var _29_20_, _31_30_
 
-        this["cleanSessionFiles"] = this["cleanSessionFiles"].bind(this)
-        this["listSessionFiles"] = this["listSessionFiles"].bind(this)
+        this["cleanSessions"] = this["cleanSessions"].bind(this)
+        this["listSessions"] = this["listSessions"].bind(this)
         this["newestSessionFile"] = this["newestSessionFile"].bind(this)
-        this["loadAndMergeRecentSession"] = this["loadAndMergeRecentSession"].bind(this)
+        this["loadAndMerge"] = this["loadAndMerge"].bind(this)
         this["save"] = this["save"].bind(this)
         this["load"] = this["load"].bind(this)
         this["reload"] = this["reload"].bind(this)
@@ -43,8 +43,8 @@ session = (function ()
         this.sep = ((_31_30_=opt.separator) != null ? _31_30_ : '▸')
         this.dir = slash.absolute("~/.config/ked/sessions/")
         this.file = slash.path(this.dir,`${this.name}.noon`)
-        this.loadAndMergeRecentSession()
-        this.cleanSessionFiles()
+        this.loadAndMerge()
+        this.cleanSessions()
         return session.__super__.constructor.apply(this, arguments)
     }
 
@@ -165,7 +165,7 @@ session = (function ()
         }
     }
 
-    session.prototype["loadAndMergeRecentSession"] = async function ()
+    session.prototype["loadAndMerge"] = async function ()
     {
         var file, recent
 
@@ -173,7 +173,7 @@ session = (function ()
         if (!_k_.empty(file))
         {
             recent = await noon.read(file)
-            lf(`loadAndMergeRecent ${_k_.m7(this.name)} ${_k_.g5(slash.name(file))}`)
+            lf(`loadAndMerge ${_k_.m7(this.name)} ${_k_.g5(slash.name(file))}`)
             if (!_k_.empty(recent.files))
             {
                 if (!_k_.empty(recent.files.recent))
@@ -190,11 +190,11 @@ session = (function ()
     {
         var files
 
-        files = await this.listSessionFiles()
+        files = await this.listSessions()
         return files.slice(-1)[0]
     }
 
-    session.prototype["listSessionFiles"] = async function ()
+    session.prototype["listSessions"] = async function ()
     {
         var f, files
 
@@ -202,12 +202,12 @@ session = (function ()
         return (function () { var r_a_ = []; var list = _k_.list(files); for (var _b_ = 0; _b_ < list.length; _b_++)  { f = list[_b_];r_a_.push(f.path)  } return r_a_ }).bind(this)()
     }
 
-    session.prototype["cleanSessionFiles"] = async function ()
+    session.prototype["cleanSessions"] = async function ()
     {
         var file, files, maxFiles
 
         maxFiles = 10
-        files = await this.listSessionFiles()
+        files = await this.listSessions()
         var list = _k_.list(files.slice(0, files.length - maxFiles))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
