@@ -125,7 +125,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _109_10_
+        var _108_10_
 
         await this.session.save()
         console.log(_k_.w2(`┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`))
@@ -172,7 +172,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _176_22_
+        var segls, start, text, _173_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -189,7 +189,6 @@ ked [file]
         text = await nfs.readText(this.currentFile)
         if (text === undefined)
         {
-            console.log('ked.loadFile: binary?',this.currentFile)
             text = '○ binary ○'
         }
         segls = util.seglsForText(text)
@@ -354,7 +353,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _300_22_
+        var _295_22_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -362,7 +361,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _305_22_
+        var _300_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

@@ -75,7 +75,6 @@ function KED
             
     onSessionLoaded: => 
     
-        # lf 'ked.onSessionLoaded' @currentFile
         @menu.show true if empty @currentFile
                         
     # 00000000   000   000  000   000  
@@ -107,6 +106,7 @@ function KED
         log w2("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         
         @t?.quit()
+        
         @logfile.close ->
             error msg if msg?
             process.exit msg? ? 1 : 0
@@ -157,13 +157,10 @@ function KED
             @currentFile = slash.path process.cwd() p
 
         @currentFile =○ nfs.resolveSymlink @currentFile
-        # lf 'ked.loadFile @currentFile' @currentFile
 
-        # text =○ nfs.read @currentFile
         text =○ nfs.readText @currentFile
         
         if text == undefined
-            log 'ked.loadFile: binary?' @currentFile
             text = '○ binary ○'
         
         segls = util.seglsForText text
@@ -247,8 +244,6 @@ function KED
     # 000   000  00000000     000     
     
     onKey: key event =>
-        
-        #lf 'ked.onKey' key noon(event)
         
         switch key
             
@@ -340,6 +335,6 @@ function KED
 export KED.run
 
 ◆main
-    # log '◆ main'
+
     KED.run()
 

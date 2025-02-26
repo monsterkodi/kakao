@@ -21,8 +21,6 @@ function TTIO extends events
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
             
-        # lf '▸▸▸' 
-
         @write '\x1b[?1000h'    # mouse events
         @write '\x1b[?1002h'    # cell motion tracking
         @write '\x1b[?1003h'    # mouse move events
@@ -66,7 +64,6 @@ function TTIO extends events
         @write '\x1b[?2004l' # end bracketed paste mode
         @write '\x1b[?1049l' # end scrollback screen buffer
         @showCursor()
-        # lf '◂◂◂'
         @restore()
     
     clear: =>
@@ -99,10 +96,6 @@ function TTIO extends events
             
             @setCursor cx cy
             
-            ###
-                C=1 don't move cursor policy
-            ###
-            
             @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement+1},X=#{rx},Y=#{ry},C=1\x1b\\"
 
     placeImageStretched: id x y w h px py ->
@@ -113,10 +106,6 @@ function TTIO extends events
         ry = py % @cellsz[1]
         
         @setCursor cx cy
-        
-        ###
-            C=1 don't move cursor policy
-        ###
         
         @write "\x1b_Gq=1,a=p,i=#{id},X=#{rx},Y=#{ry},r=#{cx+w},c=#{cy+h},C=1\x1b\\"
             
@@ -185,7 +174,6 @@ function TTIO extends events
     # 000   000  000     000        000        000     
     #
     # https://sw.kovidgoyal.net/kitty/keyboard-protocol/
-    #
     # doesn't work in terminal.app
     
     parseKitty: csi data ->
@@ -216,7 +204,7 @@ function TTIO extends events
             
         if csi[-1] == 'u'
             code = parseInt csi
-            # log 'csi:' csi code
+
             ⮐ if empty code
 
             key = switch code
@@ -242,8 +230,6 @@ function TTIO extends events
         
         splt = csi[0..-2].split ';'
            
-        # log 'csi' csi
-
         if splt.length > 1
             
             type = 'repeat'  if splt[1].endsWith ':2'
@@ -271,7 +257,6 @@ function TTIO extends events
             type:   type
             char:   char
             
-        # lf 'kitty' event
         event
         
     #  0000000   0000000  000  
@@ -380,7 +365,7 @@ function TTIO extends events
     onPointer: style =>
         
         if style != @pointerStyle
-            # lf 'pointerStyle' style
+
             @pointerStyle = style
             @setPointerStyle @pointerStyle
 
@@ -440,7 +425,6 @@ function TTIO extends events
                 1 ➜ 'middle'
                 2 ➜ 'right'
 
-        #lf 'mouse----' csi noon(event)                
         event
             
     emitMouseEvent: event =>
@@ -468,8 +452,6 @@ function TTIO extends events
                
             event.count = @lastClick.count
         
-            # lf 'mouse' event
-        
         @emit 'mouse' event
                 
     # 00000000    0000000   00000000    0000000  00000000  
@@ -489,7 +471,6 @@ function TTIO extends events
                 data[s] == 0x1b and data[s+1] == 0x5b ➜ 'csi'
                 data[s] == 0x1b                       ➜ 'esc'
                                                       ➜ 'raw'
-                                                      
             e = s+1
             
             while e < data.length
@@ -540,8 +521,6 @@ function TTIO extends events
             esc  = seq.esc
             raw  = seq.raw
         
-            # lf 'seq' seq.type seq.data.length csi esc raw
-            
             if csi
                 
                 if csi.startsWith('4;') and csi.endsWith('t') # screen size in pixels
@@ -609,12 +588,8 @@ function TTIO extends events
                         @emit 'key' event.combo event
                         continue
                         
-                switch esc
-                    '\\' ➜ continue # probably end of kitty graphics message
-                    
-                if esc.startsWith '_G'
-                    # lf esc
-                    continue
+                continue if esc == '\\' # probably end of kitty graphics message
+                continue if esc.startsWith '_G'
                     
             else # not a csi or esc sequence
     

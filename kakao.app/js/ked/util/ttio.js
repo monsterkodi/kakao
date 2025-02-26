@@ -655,11 +655,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _450_23_
+        var diff, _434_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_450_23_=this.lastClick) != null ? _450_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_434_23_=this.lastClick) != null ? _434_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -730,7 +730,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _522_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _503_23_
 
         if ((this.pasteBuffer != null))
         {
@@ -843,13 +843,10 @@ TTIO = (function ()
                         continue
                     }
                 }
-                switch (esc)
+                if (esc === '\\')
                 {
-                    case '\\':
-                        continue
-                        break
+                    continue
                 }
-
                 if (esc.startsWith('_G'))
                 {
                     continue
