@@ -47,7 +47,7 @@ statusfile = (function ()
             ch = list[x]
             if (_k_.in(ch,''))
             {
-                this.cells.set(x,0,ch,bg,'#000')
+                this.cells.set(x,0,ch,bg,theme.status_empty)
             }
             else
             {

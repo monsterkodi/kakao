@@ -20,6 +20,7 @@ crumbs = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["show"] = this["show"].bind(this)
         crumbs.__super__.constructor.call(this,screen,name)
+        this.color = {bgl:'#000',bgr:'#000'}
     }
 
     crumbs.prototype["layout"] = function (x, y, w, h)
@@ -58,10 +59,10 @@ crumbs = (function ()
             if (_k_.in(ch,''))
             {
                 fg = bg
-                bg = (si > 0 ? colors[si - 1] : '#000')
+                bg = (si > 0 ? colors[si - 1] : this.color.bgl)
                 if (x === this.rounded.length - 1)
                 {
-                    bg = '#000'
+                    bg = this.color.bgr
                 }
                 this.cells.set(x,0,ch,fg,bg)
             }
@@ -102,13 +103,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _90_14_
+        var padding, _92_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_90_14_=this.path) != null ? _90_14_ : '')
+        this.path = ((_92_14_=this.path) != null ? _92_14_ : '')
         this.split = slash.split(this.path)
         if (!(_k_.in(this.split[0],'~/')))
         {

@@ -325,7 +325,7 @@ text = (function ()
         return maxIndex
     }
 
-    text["maxLineWidth"] = function (lines)
+    text["widthOfLines"] = function (lines)
     {
         return lines[this.indexOfLongestLine(lines)].length
     }

@@ -20,7 +20,7 @@ complete = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onEditorLayout"] = this["onEditorLayout"].bind(this)
         this.name = this.editor.name + '_complete'
-        this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`)
+        this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
         this.choices.scroll.handle = '▐'
         this.choices.scroll.color.bg = theme.editor_complete_choices
@@ -146,7 +146,7 @@ complete = (function ()
         {
             return
         }
-        mlw = util.maxLineWidth(this.words)
+        mlw = util.widthOfLines(this.words)
         h = _k_.min(8,this.words.length)
         x = this.editor.cells.x + cx - this.turd.length
         y = this.editor.cells.y + cy + 1

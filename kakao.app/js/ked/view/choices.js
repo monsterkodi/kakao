@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var choices
 
@@ -29,10 +29,10 @@ choices = (function ()
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
-        choices.__super__.constructor.call(this,screen,name,['scrllr'].concat(features))
+        choices.__super__.constructor.call(this,screen,name,features)
         this.items = []
         this.focusable = true
-        this.frontRoundOffset = -1
+        this.frontRoundOffset = 0
         this.hoverIndex = -1
         this.fuzzied = this.items
         this.filterText = ''
@@ -97,7 +97,7 @@ choices = (function ()
             {
                 this.cells.set_bg(x - this.state.s.view[0],y,bg)
             }
-            this.cells.set_unsafe(-this.state.s.view[0] + this.frontRoundOffset,y,'',bg,theme.choices_bg)
+            this.cells.set(this.frontRoundOffset - this.state.s.view[0],y,'',bg,theme.choices_bg)
             this.cells.set(x - this.state.s.view[0],y,'',bg,theme.choices_bg)
         }
     }
@@ -114,7 +114,14 @@ choices = (function ()
 
     choices.prototype["current"] = function ()
     {
-        return this.fuzzied[this.state.mainCursor()[1]]
+        var cc
+
+        cc = this.fuzzied[this.state.mainCursor()[1]]
+        if (_k_.isStr(cc))
+        {
+            cc = _k_.trim(cc)
+        }
+        return cc
     }
 
     choices.prototype["choiceAtRow"] = function (row)

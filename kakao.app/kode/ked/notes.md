@@ -26,7 +26,11 @@
 #### todo
 ##### todo
     
-- completion suggestions 
+- completion
+    - fix current color 
+
+- quicky
+    - fix project files padding
 
 - editing fixes
     - fix insert after wide unicode segments

@@ -16,6 +16,8 @@ function crumbs extends view
 
         super screen name
         
+        @color = bgl:'#000' bgr:'#000'
+        
     layout: x y w h ->
     
         super x y w h  
@@ -49,8 +51,8 @@ function crumbs extends view
             
             if ch in ''
                 fg = bg
-                bg = si > 0 ? colors[si-1] : '#000'
-                bg = '#000' if x == @rounded.length-1
+                bg = si > 0 ? colors[si-1] : @color.bgl
+                bg = @color.bgr if x == @rounded.length-1
                 @cells.set x 0 ch fg bg
             else
                 if si == @hoverIndex

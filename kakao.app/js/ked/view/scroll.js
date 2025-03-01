@@ -16,23 +16,23 @@ pow = Math.pow
 scroll = (function ()
 {
     _k_.extend(scroll, view)
-    function scroll (screen, state)
+    function scroll (screen, state, side = 'left')
     {
         this.state = state
+        this.side = side
     
         this["draw"] = this["draw"].bind(this)
         this["scrollTo"] = this["scrollTo"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         scroll.__super__.constructor.call(this,screen,this.state.owner() + '.scroll')
         this.color = {dot:theme.scroll_dot,knob:theme.scroll}
+        this.handle = (this.side === 'right' ? '▐' : '▌')
         if (this.name === 'editor.scroll')
         {
-            this.handle = '▌'
             this.color.bg = theme.gutter
         }
         else
         {
-            this.handle = '┃'
             this.color.bg = theme.editor
         }
     }

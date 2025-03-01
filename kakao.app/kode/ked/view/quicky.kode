@@ -10,7 +10,7 @@ use ../../kxk ▪ kstr slash post noon
 use ../../kxk ◆ nfs
 use ../util   ◆ prjcts walker theme util
 use ../edit   ◆ editor 
-use           ◆ inputchoice crumbs fscol 
+use           ◆ inputchoice crumbs fscol
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -20,7 +20,7 @@ function quicky extends inputchoice
 
     @: @screen ->
 
-        super @screen 'quicky' ['mapview']
+        super @screen 'quicky' ['mapview' 'scrllr']
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
         @fscol  = new fscol   @screen 'quicky_fscol'
@@ -104,9 +104,6 @@ function quicky extends inputchoice
     gotoDir: dir select ○=>
         
         dir = process.cwd() if empty dir
-
-        # lf 'quicky.gotoDir' dir
-        
         dir = slash.untilde dir
         
         try
@@ -137,7 +134,7 @@ function quicky extends inputchoice
         items.sort (a b) -> weight(a) - weight(b)
         
         parent = slash.dir @currentDir
-        # if valid parent
+
         items.unshift
             type: 'dir'
             file: slash.name(parent)
@@ -157,11 +154,11 @@ function quicky extends inputchoice
     # 0000000   000   000   0000000   00     00        000       000  0000000  00000000  0000000   
     
     showFiles: files =>
-        
-        items = files.map (path) -> path:path type:'file' tilde:slash.file(path)
+                                                               #  pad
+        items = files.map (path) -> path:path type:'file' tilde:' ' + slash.file(path) 
         @crumbs.hide()
         @choices.mapscr.rowOffset = 0
-        @choices.frontRoundOffset = -1
+        @choices.frontRoundOffset = 0
         @showPathItems items
         
     showProjectFiles: @currentFile ->
@@ -184,10 +181,12 @@ function quicky extends inputchoice
             w += kstr.weight p.name
             w
 
-        items.sort (a b) -> weight(a) - weight(b)
-        
-        items = items.map (path) => type:'file' path:path tilde:slash.relative(path @currentDir)
+        items.sort (a b) -> weight(a) - weight(b)            
+                                                               #  pad
+        items = items.map (path) => type:'file' path:path tilde:' ' + slash.relative(path @currentDir)
 
+        @choices.mapscr.rowOffset = 0
+        @choices.frontRoundOffset = 0
         @showPathItems items
         
     # 00000000    0000000   000000000  000   000        000  000000000  00000000  00     00   0000000  
@@ -260,8 +259,6 @@ function quicky extends inputchoice
 
         @choices.moveSelection dir
         
-        # @preview @choices.current()
-            
     # 00000000   00000000   00000000  000   000  000  00000000  000   000  
     # 000   000  000   000  000       000   000  000  000       000 0 000  
     # 00000000   0000000    0000000    000 000   000  0000000   000000000  

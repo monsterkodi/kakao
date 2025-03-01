@@ -133,7 +133,7 @@ inputchoice = (function ()
             case 'right':
             case 'space':
             case 'return':
-                return this.applyChoice(choice)
+                return this.applyChoice(this.choices.current())
 
         }
 

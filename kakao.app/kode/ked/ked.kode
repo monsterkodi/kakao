@@ -122,11 +122,13 @@ function KED
     newFile: =>
         
         delete @currentFile
-        @status.file = ''
+
+        @status.setFile ''
     
         @editor.state.syntax.ext = 'txt'
         @editor.state.loadLines ['']
         @t.setCursor 0 0
+        @t.setTitle 'kėd'
         
         @editor.mapscr?.reload()
 

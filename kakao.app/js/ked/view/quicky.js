@@ -43,7 +43,7 @@ quicky = (function ()
         this["showFiles"] = this["showFiles"].bind(this)
         this["gotoDir"] = this["gotoDir"].bind(this)
         this["layout"] = this["layout"].bind(this)
-        quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview'])
+        quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview','scrllr'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.fscol = new fscol(this.screen,'quicky_fscol')
         this.crumbs.padLast = true
@@ -175,11 +175,11 @@ quicky = (function ()
 
         items = files.map(function (path)
         {
-            return {path:path,type:'file',tilde:slash.file(path)}
+            return {path:path,type:'file',tilde:' ' + slash.file(path)}
         })
         this.crumbs.hide()
         this.choices.mapscr.rowOffset = 0
-        this.choices.frontRoundOffset = -1
+        this.choices.frontRoundOffset = 0
         return this.showPathItems(items)
     }
 
@@ -213,8 +213,10 @@ quicky = (function ()
         })
         items = items.map((function (path)
         {
-            return {type:'file',path:path,tilde:slash.relative(path,this.currentDir)}
+            return {type:'file',path:path,tilde:' ' + slash.relative(path,this.currentDir)}
         }).bind(this))
+        this.choices.mapscr.rowOffset = 0
+        this.choices.frontRoundOffset = 0
         return this.showPathItems(items)
     }
 
@@ -418,7 +420,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _371_62_
+        var upDir, _368_62_
 
         switch (action)
         {
@@ -436,7 +438,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_371_62_=choice.link) != null ? _371_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_368_62_=choice.link) != null ? _368_62_ : choice.path))
                     }
                 }
                 break

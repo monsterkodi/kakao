@@ -20,6 +20,7 @@ fscol = (function ()
     {
         fscol.__super__.constructor.call(this,screen,name)
     
+        this.frontRoundOffset = 1
         this.state.syntax.setRgxs(rgxs)
     }
 

@@ -147,13 +147,14 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _131_22_
+        var _133_22_
 
         delete this.currentFile
-        this.status.file = ''
+        this.status.setFile('')
         this.editor.state.syntax.ext = 'txt'
         this.editor.state.loadLines([''])
         this.t.setCursor(0,0)
+        this.t.setTitle('kėd')
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         return this.redraw()
     }
@@ -172,7 +173,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _173_22_
+        var segls, start, text, _175_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -353,7 +354,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _295_22_
+        var _297_22_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -361,7 +362,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _300_22_
+        var _302_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

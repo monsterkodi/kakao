@@ -14,11 +14,11 @@ function choices extends editor
 
     @: screen name features=[] ->
 
-        super screen name ['scrllr'].concat(features)
+        super screen name features
         
         @items = []
         @focusable = true
-        @frontRoundOffset = -1
+        @frontRoundOffset = 0
         @hoverIndex = -1
         @fuzzied = @items
         @filterText = ''
@@ -73,13 +73,18 @@ function choices extends editor
             for x in xs...xe
                 @cells.set_bg x-@state.s.view[0] y bg
 
-            @cells.set_unsafe -@state.s.view[0]+@frontRoundOffset y '' bg theme.choices_bg
+            @cells.set @frontRoundOffset-@state.s.view[0] y '' bg theme.choices_bg
             @cells.set x-@state.s.view[0] y '' bg theme.choices_bg
 
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
-    current:     -> @fuzzied[@state.mainCursor()[1]]
+    current: -> 
+    
+        cc = @fuzzied[@state.mainCursor()[1]]
+        cc = trim cc if cc is str
+        cc
+        
     choiceAtRow: row -> @fuzzied[row]
     
     hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1

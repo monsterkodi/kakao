@@ -15,7 +15,7 @@ function complete
         
         @name = @editor.name + '_complete'
         
-        @choices = new choices_class @editor.cells.screen "#{@name}_choices"
+        @choices = new choices_class @editor.cells.screen "#{@name}_choices" ['scrllr']
         @choices.focusable = false
         
         @choices.scroll.handle = '▐'
@@ -126,7 +126,7 @@ function complete
         
         ⮐ if @words.length <= 1
         
-        mlw = util.maxLineWidth @words
+        mlw = util.widthOfLines @words
         
         h = min 8 @words.length
         x  = @editor.cells.x+cx-@turd.length

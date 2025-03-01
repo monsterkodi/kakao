@@ -39,7 +39,7 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === mainCursor[1] ? (this.state.hasFocus ? theme.editor_cursor_bg : theme.editor_cursor_blur) : hasCursor ? theme.editor_cursor_multi : spansel ? theme.selection : selected ? theme.selection_line : highlighted ? theme.highlight : theme.linenr
+                    fg = y === mainCursor[1] ? (this.state.hasFocus ? theme.editor_cursor_bg : theme.editor_cursor_blur) : hasCursor ? theme.editor_cursor_multi : spansel ? theme.editor_selection : selected ? theme.editor_selection_line : highlighted ? theme.editor_highlight : theme.linenr
                     if ((selected || hasCursor || highlighted) && !this.cells.screen.t.hasFocus)
                     {
                         fg = color.darken(fg)

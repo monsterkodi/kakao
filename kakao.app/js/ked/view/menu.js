@@ -36,7 +36,7 @@ menu = (function ()
     {
         var c, gh, gw, h, ih, iz, scx, scy, w, x, y
 
-        w = 15
+        w = this.width + 2 + 1
         c = this.choices.numChoices()
         ih = (this.inputIsActive() ? 2 : 0)
         iz = _k_.max(0,ih - 1)
@@ -50,7 +50,7 @@ menu = (function ()
 
         this.greeter.layout(parseInt(scx - gw / 2),_k_.max(0,parseInt(y - gh - 1 + ih)))
         this.input.layout(x + 2,y + 1,w - 4,iz)
-        this.choices.layout(x + 2,y + 1 + ih,w - 3,c)
+        this.choices.layout(x + 1,y + 1 + ih,w - 2,c)
         return this.cells.layout(x,y,w,h)
     }
 
@@ -73,7 +73,12 @@ quit`)
         {
             items.splice(items.indexOf('recent ...'),1)
         }
+        items = items.map(function (i)
+        {
+            return ' ' + i
+        })
         ccol = parseInt(this.screen.cols / 2) - 5
+        this.width = util.widthOfLines(items)
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)
@@ -106,6 +111,7 @@ quit`)
 
     menu.prototype["applyChoice"] = function (choice)
     {
+        console.log(`applyChoice ▸${choice}◂`)
         switch (choice)
         {
             case 'new':

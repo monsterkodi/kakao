@@ -27,7 +27,7 @@ function menu extends inputchoice
     
     layout: =>
 
-        w = 15
+        w = @width+2+1 # 2 for frame, 1 for right 
         c = @choices.numChoices()
         
         ih = @inputIsActive() ? 2 : 0
@@ -44,7 +44,7 @@ function menu extends inputchoice
         
         @greeter.layout  int(scx-gw/2)  max(0 int(y-gh-1+ih))
         @input.layout    x+2   y+1      w-4  iz
-        @choices.layout  x+2   y+1+ih   w-3  c
+        @choices.layout  x+1   y+1+ih   w-2  c
         @cells.layout    x     y        w    h
 
     #  0000000  000   000   0000000   000   000
@@ -64,13 +64,16 @@ function menu extends inputchoice
             new
             quit
             """
-
-        items.splice items.length-2 0 'about' if not @greet
         
+        items.splice items.length-2 0 'about' if not @greet
         items.splice items.indexOf('recent ...') 1 if empty global.ked_session.get 'files▸recent'
+        
+        items = items.map (i) -> ' ' + i # padding for  
             
         ccol = int(@screen.cols/2) - 5
 
+        @width = util.widthOfLines items
+        
         @input.set ''
         @choices.set items
         @choices.state.selectLine 0
@@ -111,6 +114,8 @@ function menu extends inputchoice
     # 000   000  000        000        0000000     000     
     
     applyChoice: choice ->
+        
+        log "applyChoice ▸#{choice}◂"
         
         switch choice
             'new'        ➜ post.emit 'file.new'

@@ -41,11 +41,11 @@ editor = (function ()
         }
         if (this.feats.scrllr)
         {
-            this.scroll = new scroll(this.screen,this.state)
+            this.scroll = new scroll(this.screen,this.state,'right')
         }
         if (this.feats.scroll)
         {
-            this.scroll = new scroll(this.screen,this.state)
+            this.scroll = new scroll(this.screen,this.state,'left')
         }
         if (this.feats.gutter)
         {

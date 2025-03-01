@@ -25,6 +25,9 @@ function status extends view
         @crumbs     = new crumbs     @screen 'status_crumbs'
         @statusfile = new statusfile @screen 'status_file'
         
+        @crumbs.color.bgl = theme.gutter
+        @crumbs.color.bgr = theme.status_empty
+        
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction
         
@@ -88,7 +91,6 @@ function status extends view
         cols   = @cells.cols
         fnl    = @file.length
         dt     = @drawTime
-        dtl    = dt.length
         rdo    = @state.hasRedo()
         dty    = @state.isDirty()
         
@@ -103,7 +105,7 @@ function status extends view
         colno = rpad @gutter-1 "#{cursor[0]+1}"
         for ci in 1...@gutter
             fg = cursor[0] ? 'status_fg' : 'column_fg'
-            fg = 'status_empty' if util.isLinesPosOutside @state.s.lines cursor 
+            fg = 'status_col_empty' if util.isLinesPosOutside @state.s.lines cursor 
             add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_col'
         add '' 'status_col' 'gutter' # column number end
               
@@ -114,44 +116,46 @@ function status extends view
         x += @statusfile.rounded.length
         
         # dirty and redo indicators
-        add '' 'status_dark'  'gutter'
+        add '' 'status_dark'  'status_empty'
         add '' 'status_dirty' 'status_dark' if dty
         add ' ' 'status_dirty' 'status_dark' if dty
         add '' 'status_redo'  'status_dark' if rdo
-             
-        if @state.s.selections.length
-
-            sel = " #{@state.s.selections.length} sel "
-             
-            for i in 0...sel.length
-                add sel[i] (i<sel.length-4) ? 'status_sel' : 'status_fg_dim' 'status_dark'
-
+        add ' ' 'status_dark'  'status_dark'
+        
         if @state.s.cursors.length > 1
 
-            cur = " #{@state.s.cursors.length} cur "
+            cur = "#{@state.s.cursors.length}♦"
              
             for i in 0...cur.length
-                add cur[i] (i<cur.length-4) ? 'status_cur' : 'status_fg_dim' 'status_dark'
+                add cur[i] (i<cur.length-1) ? 'status_cur' : color.darken(theme.status_cur) 'status_dark'
+                
+        if @state.s.selections.length
+
+            sel = "#{@state.s.selections.length}≡"
+             
+            for i in 0...sel.length
+                add sel[i] (i<sel.length-1) ? 'status_sel' : color.darken(theme.status_sel) 'status_dark'
 
         if @state.s.highlights.length
 
-            hil = " #{@state.s.highlights.length} hil "
+            hil = "#{@state.s.highlights.length}❇"
              
             for i in 0...hil.length
-                add hil[i] (i<hil.length-4) ? 'status_hil' : 'status_fg_dim' 'status_dark'
-                
+                add hil[i] (i<hil.length-1) ? 'status_hil' : color.darken(theme.status_hil) 'status_dark'
+               
+        dtl = dt.length
         if cols-dtl-2 >= x
 
             for ci in x...cols-dtl-2
                 add ' ' null 'status_dark'
             
-            add '' 'status' 'status_dark'
+            add '' 'status_time' 'status_dark'
              
             for i in 0...dtl
                 fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
-                add dt[i] fg 'status'
+                add dt[i] fg 'status_time'
              
-            add '' 'status' 'editor_empty'
+            add '' 'status_time' 'status_empty'
     
         else # fill the remaining space
             for ci in x...cols-dtl-2

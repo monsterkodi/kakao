@@ -8,10 +8,6 @@ class theme
 
     static editor_empty = '#000'
 
-    static editor_cursor_main = '#101010'
-
-    static editor_cursor_empty = '#000'
-
     static editor_cursor_multi = '#f00'
 
     static editor_cursor_blur = '#666'
@@ -22,15 +18,17 @@ class theme
 
     static editor_selection_line = '#222'
 
-    static editor_selection = '#22a'
+    static editor_selection = '#44a'
 
-    static editor_highlight = '#222'
+    static editor_highlight = '#030'
+
+    static editor_highlight_ul = '#0a0'
 
     static linenr = '#1a1a1a'
 
     static gutter_fully_selected = '#161616'
 
-    static gutter_selected = '#118'
+    static gutter_selected = '#228'
 
     static gutter = '#0a0a0a'
 
@@ -38,9 +36,13 @@ class theme
 
     static column_fg = '#000'
 
-    static status = '#222'
+    static status_time = '#222'
 
     static status_col = '#111'
+
+    static status_col_empty = '#770'
+
+    static status_empty = '#151515'
 
     static status_dark = '#1a1a1a'
 
@@ -52,13 +54,11 @@ class theme
 
     static status_redo = '#0d0'
 
-    static status_empty = '#f84'
+    static status_cur = '#f00'
 
     static status_sel = '#88f'
 
-    static status_hil = '#888'
-
-    static status_cur = '#f00'
+    static status_hil = '#0a0'
 
     static scroll = '#1a1a1a'
 

@@ -24,8 +24,8 @@ function editor extends draw
         if @name == 'editor'
             post.on 'finder.apply' @onFinderApply 
         
-        if @feats.scrllr   ➜ @scroll   = new scroll   @screen @state
-        if @feats.scroll   ➜ @scroll   = new scroll   @screen @state
+        if @feats.scrllr   ➜ @scroll   = new scroll   @screen @state 'right'
+        if @feats.scroll   ➜ @scroll   = new scroll   @screen @state 'left'
         if @feats.gutter   ➜ @gutter   = new gutter   @screen @state
         if @feats.mapscr   ➜ @mapscr   = new mapscr   @screen @state; @mapscr.show()
         if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state

@@ -35,6 +35,8 @@ status = (function ()
         this.drawTime = ''
         this.crumbs = new crumbs(this.screen,'status_crumbs')
         this.statusfile = new statusfile(this.screen,'status_file')
+        this.crumbs.color.bgl = theme.gutter
+        this.crumbs.color.bgr = theme.status_empty
         this.crumbs.on('action',this.onCrumbsAction)
         this.statusfile.on('action',this.onFileAction)
     }
@@ -112,7 +114,6 @@ status = (function ()
         cols = this.cells.cols
         fnl = this.file.length
         dt = this.drawTime
-        dtl = dt.length
         rdo = this.state.hasRedo()
         dty = this.state.isDirty()
         set = (function (x, char, fg, bg)
@@ -139,7 +140,7 @@ status = (function ()
             fg = (cursor[0] ? 'status_fg' : 'column_fg')
             if (util.isLinesPosOutside(this.state.s.lines,cursor))
             {
-                fg = 'status_empty'
+                fg = 'status_col_empty'
             }
             add(((ci - 1 < colno.length) ? colno[ci - 1] : ' '),fg,'status_col')
         }
@@ -148,7 +149,7 @@ status = (function ()
         this.statusfile.draw()
         x += this.crumbs.rounded.length
         x += this.statusfile.rounded.length
-        add('','status_dark','gutter')
+        add('','status_dark','status_empty')
         if (dty)
         {
             add('','status_dirty','status_dark')
@@ -161,43 +162,45 @@ status = (function ()
         {
             add('','status_redo','status_dark')
         }
-        if (this.state.s.selections.length)
-        {
-            sel = ` ${this.state.s.selections.length} sel `
-            for (var _c_ = i = 0, _d_ = sel.length; (_c_ <= _d_ ? i < sel.length : i > sel.length); (_c_ <= _d_ ? ++i : --i))
-            {
-                add(sel[i],((i < sel.length - 4) ? 'status_sel' : 'status_fg_dim'),'status_dark')
-            }
-        }
+        add(' ','status_dark','status_dark')
         if (this.state.s.cursors.length > 1)
         {
-            cur = ` ${this.state.s.cursors.length} cur `
-            for (var _e_ = i = 0, _f_ = cur.length; (_e_ <= _f_ ? i < cur.length : i > cur.length); (_e_ <= _f_ ? ++i : --i))
+            cur = `${this.state.s.cursors.length}♦`
+            for (var _c_ = i = 0, _d_ = cur.length; (_c_ <= _d_ ? i < cur.length : i > cur.length); (_c_ <= _d_ ? ++i : --i))
             {
-                add(cur[i],((i < cur.length - 4) ? 'status_cur' : 'status_fg_dim'),'status_dark')
+                add(cur[i],((i < cur.length - 1) ? 'status_cur' : color.darken(theme.status_cur)),'status_dark')
+            }
+        }
+        if (this.state.s.selections.length)
+        {
+            sel = `${this.state.s.selections.length}≡`
+            for (var _e_ = i = 0, _f_ = sel.length; (_e_ <= _f_ ? i < sel.length : i > sel.length); (_e_ <= _f_ ? ++i : --i))
+            {
+                add(sel[i],((i < sel.length - 1) ? 'status_sel' : color.darken(theme.status_sel)),'status_dark')
             }
         }
         if (this.state.s.highlights.length)
         {
-            hil = ` ${this.state.s.highlights.length} hil `
+            hil = `${this.state.s.highlights.length}❇`
             for (var _10_ = i = 0, _11_ = hil.length; (_10_ <= _11_ ? i < hil.length : i > hil.length); (_10_ <= _11_ ? ++i : --i))
             {
-                add(hil[i],((i < hil.length - 4) ? 'status_hil' : 'status_fg_dim'),'status_dark')
+                add(hil[i],((i < hil.length - 1) ? 'status_hil' : color.darken(theme.status_hil)),'status_dark')
             }
         }
+        dtl = dt.length
         if (cols - dtl - 2 >= x)
         {
             for (var _12_ = ci = x, _13_ = cols - dtl - 2; (_12_ <= _13_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_12_ <= _13_ ? ++ci : --ci))
             {
                 add(' ',null,'status_dark')
             }
-            add('','status','status_dark')
+            add('','status_time','status_dark')
             for (var _14_ = i = 0, _15_ = dtl; (_14_ <= _15_ ? i < dtl : i > dtl); (_14_ <= _15_ ? ++i : --i))
             {
                 fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
-                add(dt[i],fg,'status')
+                add(dt[i],fg,'status_time')
             }
-            return add('','status','editor_empty')
+            return add('','status_time','status_empty')
         }
         else
         {

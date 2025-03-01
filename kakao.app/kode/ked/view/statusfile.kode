@@ -41,7 +41,7 @@ function statusfile extends view
         
         for ch,x in @rounded
             if ch in ''
-                @cells.set x 0 ch bg '#000'
+                @cells.set x 0 ch bg theme.status_empty
             else
                 fg = color.darken fg if ch == '.' 
                 

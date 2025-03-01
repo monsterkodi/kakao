@@ -18,6 +18,7 @@ function fscol extends choices
         
         super screen name
         
+        @frontRoundOffset = 1
         @state.syntax.setRgxs rgxs
         
     show: dir -> 

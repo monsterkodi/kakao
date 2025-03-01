@@ -14,7 +14,7 @@ use           ◆ view
 
 function scroll extends view
 
-    @: screen @state -> 
+    @: screen @state @side='left'-> 
     
         super screen @state.owner() + '.scroll'
         
@@ -22,10 +22,12 @@ function scroll extends view
             dot:  theme.scroll_dot
             knob: theme.scroll
             
+        @handle = @side == 'right' ? '▐' : '▌' 
+            
         if @name == 'editor.scroll' # future me hate?
-            @handle = '▌' ; @color.bg = theme.gutter
+            @color.bg = theme.gutter
         else
-            @handle = '┃' ; @color.bg = theme.editor 
+            @color.bg = theme.editor 
     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
