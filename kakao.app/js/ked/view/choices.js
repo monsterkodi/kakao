@@ -22,14 +22,15 @@ choices = (function ()
     {
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["clickChoiceAtRow"] = this["clickChoiceAtRow"].bind(this)
+        this["clickChoiceAtIndex"] = this["clickChoiceAtIndex"].bind(this)
         this["unhover"] = this["unhover"].bind(this)
-        this["hoverChoiceAtRow"] = this["hoverChoiceAtRow"].bind(this)
+        this["hoverChoiceAtIndex"] = this["hoverChoiceAtIndex"].bind(this)
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,['scrllr'].concat(features))
         this.items = []
+        this.focusable = true
         this.hoverIndex = -1
         this.fuzzied = this.items
         this.filterText = ''
@@ -40,9 +41,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _26_15_
+        var lines, _27_15_
 
-        this.items = ((_26_15_=this.items) != null ? _26_15_ : [])
+        this.items = ((_27_15_=this.items) != null ? _27_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -89,6 +90,11 @@ choices = (function ()
         return this.emit('select',this.choiceAtRow(row))
     }
 
+    choices.prototype["selectFirst"] = function ()
+    {
+        return this.select(0)
+    }
+
     choices.prototype["moveSelection"] = function (dir)
     {
         switch (dir)
@@ -123,7 +129,10 @@ choices = (function ()
 
     choices.prototype["emitSelectionChange"] = function ()
     {
-        this.grabFocus()
+        if (this.focusable)
+        {
+            this.grabFocus()
+        }
         this.frontCursor()
         return this.emit('select',this.choiceAtRow(this.state.allSelections()[0][1]))
     }
@@ -193,13 +202,13 @@ choices = (function ()
         return this.state.loadLines(lines)
     }
 
-    choices.prototype["hoverChoiceAtRow"] = function (row)
+    choices.prototype["hoverChoiceAtIndex"] = function (index)
     {
-        if (this.hoverIndex === row)
+        if (this.hoverIndex === index)
         {
             return
         }
-        this.hoverIndex = row
+        this.hoverIndex = index
         this.select(this.hoverIndex)
         return post.emit('pointer','pointer')
     }
@@ -211,10 +220,10 @@ choices = (function ()
         return post.emit('pointer','default')
     }
 
-    choices.prototype["clickChoiceAtRow"] = function (row)
+    choices.prototype["clickChoiceAtIndex"] = function (index)
     {
         this.hoverIndex = -1
-        return this.emit('action','click',this.choiceAtRow(row))
+        return this.emit('action','click',this.fuzzied[index])
     }
 
     choices.prototype["onMouse"] = function (event)
@@ -223,22 +232,21 @@ choices = (function ()
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        if (this.cells.isInsideEvent(event))
+        if (this.cells.isInsideEvent(event) && this.state.isValidLineIndex(row) && kseg.width(this.state.s.lines[row]) >= col)
         {
             switch (event.type)
             {
                 case 'press':
-                    return this.clickChoiceAtRow(row)
+                    return this.clickChoiceAtIndex(row + this.state.s.view[1])
 
                 case 'move':
-                    return this.hoverChoiceAtRow(row)
+                    return this.hoverChoiceAtIndex(row + this.state.s.view[1])
 
                 case 'release':
-                    return this.hoverChoiceAtRow(row)
+                    return this.hoverChoiceAtIndex(row + this.state.s.view[1])
 
             }
 
-            console.log(`mouse ${this.name} ${col} ${row} ${event.type}`)
             return true
         }
         else
@@ -275,4 +283,5 @@ choices = (function ()
     return choices
 })()
 
+global.choices_class = choices
 export default choices;

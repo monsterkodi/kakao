@@ -71,7 +71,7 @@ ked [file]
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
-        this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr'])
+        this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr','complete'])
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
@@ -82,7 +82,7 @@ ked [file]
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
         post.on('quit',this.quit)
-        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor]
+        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor,this.status]
         this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor]
         this.keyHandlers = [this.finder,this.quicky,this.menu,this.editor]
         this.t.on('key',this.onKey)
@@ -177,12 +177,12 @@ ked [file]
         start = process.hrtime()
         if (slash.isAbsolute(p))
         {
-            this.status.file = slash.tilde(p)
+            this.status.setFile(slash.tilde(p))
             this.currentFile = slash.absolute(p)
         }
         else
         {
-            this.status.file = slash.normalize(p)
+            this.status.setFile(slash.normalize(p))
             this.currentFile = slash.path(process.cwd(),p)
         }
         this.currentFile = await nfs.resolveSymlink(this.currentFile)
@@ -328,17 +328,17 @@ ked [file]
         }
     }
 
-    KED.prototype["onQuicky"] = async function (event)
+    KED.prototype["onQuicky"] = async function (path)
     {
         var exists, file
 
-        if (slash.isAbsolute(event))
+        if (slash.isAbsolute(path))
         {
-            file = event
+            file = path
         }
         else
         {
-            file = slash.absolute(event,slash.dir(this.currentFile))
+            file = slash.absolute(path,slash.dir(this.currentFile))
         }
         if (slash.samePath(file,this.currentFile))
         {

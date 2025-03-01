@@ -298,6 +298,9 @@ export default {allCursors:function ()
 },wordAtCursor:function ()
 {
     return util.wordAtPos(this.allLines(),this.mainCursor())
+},turdBeforeCursor:function ()
+{
+    return util.turdBeforePos(this.allLines(),this.mainCursor())
 },setMainCursorAndSelect:function (x, y)
 {
     this.setSelections(util.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])

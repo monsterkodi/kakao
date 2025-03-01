@@ -29,18 +29,11 @@ function screen
         
         w = kseg.width char
         if w > 1
-
             @set x   y char fg bg
             @set x+1 y null fg bg
-            
-            # lf @c[0][5..11] if y == 0
-            
             ⮐ 2
         else
             @set x y char fg bg
-            
-            # lf @c[0][5..11] if y == 0
-            
             ⮐ 1
     
     set: x y char fg bg =>

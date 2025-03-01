@@ -121,8 +121,8 @@ function session extends events
             result =○ nfs.write @file text
             if result.error
                 log 'session.save failed!' @file result
-            else
-                log "session.save #{m7 @name}" result @data
+            # else
+                # log "session.save #{m7 @name}" result @data
 
         catch err
             log "session -- can't save to '#{@file}':" err

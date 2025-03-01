@@ -96,6 +96,7 @@ inputchoice = (function ()
     {
         switch (action)
         {
+            case 'right':
             case 'submit':
                 return this.applyChoice(this.choices.current())
 
@@ -239,6 +240,10 @@ inputchoice = (function ()
         if (this.choices.onMouse(event))
         {
             return true
+        }
+        if (event.type === 'press' && this.cells.isOutsideEvent(event))
+        {
+            this.hide()
         }
         return true
     }

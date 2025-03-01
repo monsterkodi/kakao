@@ -1,8 +1,8 @@
 
 latex_symbols
 
-    sqrt           \u221A
-    cbrt           \u221B
+    sqrt           √
+    cbrt           ∛
     female         ♀
     mars           ♂
     pprime         ″
@@ -364,7 +364,6 @@ latex_symbols
     guilsinglright             ›
     guillemotleft              «
     guillemotright             »
-    nolinebreak                \u2060
     pes                        ₧
     dddot                      ⃛
     ddddot                     ⃜
@@ -923,38 +922,33 @@ latex_symbols
     annuity                      ⃧  # combining annuity symbol
     threeunderdot                ⃨  # combining triple underdot
     widebridgeabove              ⃩  # combining wide bridge above
-    underrightharpoondown        \u20ec  # combining rightwards harpoon with barb downwards
-    underleftharpoondown         \u20ed  # combining leftwards harpoon with barb downwards
-    underleftarrow               \u20ee  # combining left arrow below
-    underrightarrow              \u20ef  # combining right arrow below
-    asteraccent                  \u20f0  # combining asterisk above
-    blackboard_C                 ℂ  # /bbb c, open face c
-    eulermascheroni              ℇ  # euler-mascheroni constant U+2107
-    script_g                     ℊ  # /scr g, script letter g
+    blackboard_C                 ℂ  # open face c
+    eulermascheroni              ℇ  # euler-mascheroni constant
+    script_g                     ℊ  # script letter g
     script_H                     ℋ  # hamiltonian (script capital h)
-    frak_H                       ℌ  # /frak h, upper case h
-    blackboard_H                 ℍ  # /bbb h, open face h
+    frak_H                       ℌ  # upper case h
+    blackboard_H                 ℍ  # open face h
     planck                       ℎ  # planck constant
-    script_I                     ℐ  # /scr i, script letter i
+    script_I                     ℐ  # script letter i
     script_L                     ℒ  # lagrangian (script capital l)
-    blackboard_N                 ℕ  # /bbb n, open face n
-    blackboard_P                 ℙ  # /bbb p, open face p
-    blackboard_Q                 ℚ  # /bbb q, open face q
-    script_R                     ℛ  # /scr r, script letter r
-    blackboard_R                 ℝ  # /bbb r, open face r
-    blackboard_Z                 ℤ  # /bbb z, open face z
-    frak_Z                       ℨ  # /frak z, upper case z
+    blackboard_N                 ℕ  # open face n
+    blackboard_P                 ℙ  # open face p
+    blackboard_Q                 ℚ  # open face q
+    script_R                     ℛ  # script letter r
+    blackboard_R                 ℝ  # open face r
+    blackboard_Z                 ℤ  # open face z
+    frak_Z                       ℨ  # upper case z
     turnediota                   ℩  # turned iota
     Angstrom                     Å  # angstrom capital a, ring
     script_B                     ℬ  # bernoulli function (script capital b)
     frak_C                       ℭ  # black-letter capital c
-    script_e                     ℯ  # /scr e, script letter e
-    script_E                     ℰ  # /scr e, script letter e
-    script_F                     ℱ  # /scr f, script letter f
+    script_e                     ℯ  # script letter e
+    script_E                     ℰ  # script letter e
+    script_F                     ℱ  # script letter f
     Finv                         Ⅎ  # turned capital f
     script_M                     ℳ  # physics m-matrix (script capital m)
     script_o                     ℴ  # order of (script small o)
-    blackboard_pi                \u213c  # double-struck small pi
+    blackboard_pi                ℼ  # double-struck small pi
     blackboard_gamma             ℽ  # double-struck small gamma
     blackboard_Gamma             ℾ  # double-struck capital gamma
     sansLturned                  ⅂  # turned sans-serif capital l
@@ -1009,10 +1003,10 @@ latex_symbols
     nVrightarrow                 ⇻  # rightwards arrow with double vertical stroke
     nVleftrightarrow             ⇼  # left right arrow with double vertical stroke
     leftrightarrowtriangle       ⇿  # left right open-headed arrow
-    increment                    ∆  # laplacian (delta; nabla\string^2)
+    increment                    ∆  # laplacian delta
     smallin                      ∊  # set membership (small set membership)
     nni                          ∌  # negated contains, variant
-    smallni                      ∍  # /ni /owns r: contains (small contains as member)
+    smallni                      ∍  # owns r contains (small contains as member)
     QED                          ∎  # end of proof
     vysmblkcircle                ∙  # bullet operator
     fourthroot                   ∜  # fourth root
@@ -1059,7 +1053,7 @@ latex_symbols
     bagmember                    ⋿  # z notation bag membership
     diameter                     ⌀  # diameter sign
     house                        ⌂  # house
-    vardoublebarwedge            ⌆  # /doublebarwedge b: logical and, double bar above [perspective (double bar over small wedge)]
+    vardoublebarwedge            ⌆  # logical and, double bar above [perspective (double bar over small wedge)]
     invnot                       ⌐  # reverse not
     sqlozenge                    ⌑  # square lozenge
     profline                     ⌒  # profile of a line
@@ -1081,21 +1075,21 @@ latex_symbols
     lvboxline                    ⎸  # left vertical box line
     rvboxline                    ⎹  # right vertical box line
     varcarriagereturn            ⏎  # return symbol
-    trapezium                    \u23e2  # white trapezium
-    benzenr                      \u23e3  # benzene ring with circle
-    strns                        \u23e4  # straightness
-    fltns                        \u23e5  # flatness
-    accurrent                    \u23e6  # ac current
-    elinters                     \u23e7  # electrical intersection
+    trapezium                    ⏢  # white trapezium
+    benzenr                      ⏣  # benzene ring with circle
+    strns                        ⏤  # straightness
+    fltns                        ⏥  # flatness
+    accurrent                    ⏦  # ac current
+    elinters                     ⏧  # electrical intersection
     blanksymbol                  ␢  # blank symbol
     blockuphalf                  ▀  # upper half block
     blocklowhalf                 ▄  # lower half block
     blockfull                    █  # full block
     blocklefthalf                ▌  # left half block
     blockrighthalf               ▐  # right half block
-    blockqtrshaded               ░  # 25\% shaded block
-    blockhalfshaded              ▒  # 50\% shaded block
-    blockthreeqtrshaded          ▓  # 75\% shaded block
+    blockqtrshaded               ░  # 25% shaded block
+    blockhalfshaded              ▒  # 50% shaded block
+    blockthreeqtrshaded          ▓  # 75% shaded block
     squoval                      ▢  # white square with rounded corners
     blackinwhitesquare           ▣  # white square containing black small square
     squarehfill                  ▤  # square, horizontal rule filled
@@ -1104,7 +1098,7 @@ latex_symbols
     squarenwsefill               ▧  # square, nw-to-se rule filled
     squareneswfill               ▨  # square, ne-to-sw rule filled
     squarecrossfill              ▩  # square with diagonal crosshatch fill
-    smblksquare                  ▪  # /blacksquare - sq bullet, filled
+    smblksquare                  ▪  # blacksquare - sq bullet, filled
     smwhtsquare                  ▫  # white small square
     hrectangleblack              ▬  # black rectangle
     hrectangle                   ▭  # horizontal rectangle, open
@@ -1179,7 +1173,7 @@ latex_symbols
     vardiamondsuit               ♦  # filled diamond (card suit)
     varclubsuit                  ♧  # club, white (card suit)
     twonotes                     ♫  # beamed eighth notes
-    acidfree                     \u267e  # permanent paper sign
+    acidfree                     ♾  # permanent paper sign
     dicei                        ⚀  # die face-1
     diceii                       ⚁  # die face-2
     diceiii                      ⚂  # die face-3
@@ -1190,20 +1184,20 @@ latex_symbols
     circledtwodots               ⚇  # white circle with two dots
     blackcircledrightdot         ⚈  # black circle with white dot right
     blackcircledtwodots          ⚉  # black circle with two white dots
-    hermaphrodite                \u26a5  # male and female sign
-    mdwhtcircle                  \u26aa  # medium white circle
-    mdblkcircle                  \u26ab  # medium black circle
-    mdsmwhtcircle                \u26ac  # medium small white circle
-    neuter                       \u26b2  # neuter
+    hermaphrodite                ⚥  # male and female sign
+    mdwhtcircle                  ⚪ # medium white circle
+    mdblkcircle                  ⚫ # medium black circle
+    mdsmwhtcircle                ⚬  # medium small white circle
+    neuter                       ⚲  # neuter
     circledstar                  ✪  # circled white star
     varstar                      ✶  # six pointed black star
     dingasterisk                 ✽  # heavy teardrop-spoked asterisk
     draftingarrow                ➛  # right arrow with bold head (drafting)
-    threedangle                  \u27c0  # three dimensional angle
-    whiteinwhitetriangle         \u27c1  # white triangle containing small white triangle
-    perp                         \u27c2  # perpendicular
-    bsolhsub                     \u27c8  # reverse solidus preceding subset
-    suphsol                      \u27c9  # superset preceding solidus
+    threedangle                  ⟀  # three dimensional angle
+    whiteinwhitetriangle         ⟁  # white triangle containing small white triangle
+    perp                         ⟂  # perpendicular
+    bsolhsub                     ⟈  # reverse solidus preceding subset
+    suphsol                      ⟉  # superset preceding solidus
     wedgedot                     ⟑  # and with dot
     veedot                       ⟇  # or with dot
     upin                         ⟒  # element of opening upwards
@@ -1436,72 +1430,72 @@ latex_symbols
     gggnest                      ⫸  # stacked very much greater-than
     leqqslant                    ⫹  # double-line slanted less-than or equal to
     geqqslant                    ⫺  # double-line slanted greater-than or equal to
-    squaretopblack               \u2b12  # square with top half black
-    squarebotblack               \u2b13  # square with bottom half black
-    squareurblack                \u2b14  # square with upper right diagonal half black
-    squarellblack                \u2b15  # square with lower left diagonal half black
-    diamondleftblack             \u2b16  # diamond with left half black
-    diamondrightblack            \u2b17  # diamond with right half black
-    diamondtopblack              \u2b18  # diamond with top half black
-    diamondbotblack              \u2b19  # diamond with bottom half black
-    dottedsquare                 \u2b1a  # dotted square
-    lgblksquare                  \u2b1b  # black large square
-    lgwhtsquare                  \u2b1c  # white large square
-    vysmblksquare                \u2b1d  # black very small square
-    vysmwhtsquare                \u2b1e  # white very small square
-    pentagonblack                \u2b1f  # black pentagon
-    pentagon                     \u2b20  # white pentagon
-    varhexagon                   \u2b21  # white hexagon
-    varhexagonblack              \u2b22  # black hexagon
-    hexagonblack                 \u2b23  # horizontal black hexagon
-    lgblkcircle                  \u2b24  # black large circle
-    mdblkdiamond                 \u2b25  # black medium diamond
-    mdwhtdiamond                 \u2b26  # white medium diamond
-    mdblklozenge                 \u2b27  # black medium lozenge
-    mdwhtlozenge                 \u2b28  # white medium lozenge
-    smblkdiamond                 \u2b29  # black small diamond
-    smblklozenge                 \u2b2a  # black small lozenge
-    smwhtlozenge                 \u2b2b  # white small lozenge
-    blkhorzoval                  \u2b2c  # black horizontal ellipse
-    whthorzoval                  \u2b2d  # white horizontal ellipse
-    blkvertoval                  \u2b2e  # black vertical ellipse
-    whtvertoval                  \u2b2f  # white vertical ellipse
-    circleonleftarrow            \u2b30  # left arrow with small circle
-    leftthreearrows              \u2b31  # three leftwards arrows
-    leftarrowonoplus             \u2b32  # left arrow with circled plus
-    longleftsquigarrow           \u2b33  # long leftwards squiggle arrow
-    nvtwoheadleftarrow           \u2b34  # leftwards two-headed arrow with vertical stroke
-    nVtwoheadleftarrow           \u2b35  # leftwards two-headed arrow with double vertical stroke
-    twoheadmapsfrom              \u2b36  # leftwards two-headed arrow from bar
-    twoheadleftdbkarrow          \u2b37  # leftwards two-headed triple-dash arrow
-    leftdotarrow                 \u2b38  # leftwards arrow with dotted stem
-    nvleftarrowtail              \u2b39  # leftwards arrow with tail with vertical stroke
-    nVleftarrowtail              \u2b3a  # leftwards arrow with tail with double vertical stroke
-    twoheadleftarrowtail         \u2b3b  # leftwards two-headed arrow with tail
-    nvtwoheadleftarrowtail       \u2b3c  # leftwards two-headed arrow with tail with vertical stroke
-    nVtwoheadleftarrowtail       \u2b3d  # leftwards two-headed arrow with tail with double vertical stroke
-    leftarrowx                   \u2b3e  # leftwards arrow through x
-    leftcurvedarrow              \u2b3f  # wave arrow pointing directly left
-    equalleftarrow               \u2b40  # equals sign above leftwards arrow
-    bsimilarleftarrow            \u2b41  # reverse tilde operator above leftwards arrow
-    leftarrowbackapprox          \u2b42  # leftwards arrow above reverse almost equal to
-    rightarrowgtr                \u2b43  # rightwards arrow through greater-than
-    leftarrowless                \u2977  # leftwards arrow through less-than
-    rightarrowsupset             \u2b44  # rightwards arrow through superset
-    leftarrowsubset              \u297a  # leftwards arrow through subset
-    LLeftarrow                   \u2b45  # leftwards quadruple arrow
-    RRightarrow                  \u2b46  # rightwards quadruple arrow
-    bsimilarrightarrow           \u2b47  # reverse tilde operator above rightwards arrow
-    rightarrowbackapprox         \u2b48  # rightwards arrow above reverse almost equal to
-    similarleftarrow             \u2b49  # tilde operator above leftwards arrow
-    leftarrowapprox              \u2b4a  # leftwards arrow above almost equal to
-    leftarrowbsimilar            \u2b4b  # leftwards arrow above reverse tilde operator
-    rightarrowbsimilar           \u2b4c  # righttwards arrow above reverse tilde operator
-    medwhitestar                 \u2b50  # white medium star
-    medblackstar                 \u2b51  # black medium star
-    smwhitestar                  \u2b52  # white small star
-    rightpentagonblack           \u2b53  # black right-pointing pentagon
-    rightpentagon                \u2b54  # white right-pointing pentagon
+    squaretopblack               ⬒   # square with top half black
+    squarebotblack               ⬓   # square with bottom half black
+    squareurblack                ⬔   # square with upper right diagonal half black
+    squarellblack                ⬕   # square with lower left diagonal half black
+    diamondleftblack             ⬖   # diamond with left half black
+    diamondrightblack            ⬗   # diamond with right half black
+    diamondtopblack              ⬘   # diamond with top half black
+    diamondbotblack              ⬙   # diamond with bottom half black
+    dottedsquare                 ⬚   # dotted square
+    lgblksquare                  ⬛   # black large square
+    lgwhtsquare                  ⬜   # white large square
+    vysmblksquare                ⬝   # black very small square
+    vysmwhtsquare                ⬞   # white very small square
+    pentagonblack                ⬟   # black pentagon
+    pentagon                     ⬠   # white pentagon
+    varhexagon                   ⬡   # white hexagon
+    varhexagonblack              ⬢   # black hexagon
+    hexagonblack                 ⬣   # horizontal black hexagon
+    lgblkcircle                  ⬤   # black large circle
+    mdblkdiamond                 ⬥   # black medium diamond
+    mdwhtdiamond                 ⬦   # white medium diamond
+    mdblklozenge                 ⬧   # black medium lozenge
+    mdwhtlozenge                 ⬨   # white medium lozenge
+    smblkdiamond                 ⬩   # black small diamond
+    smblklozenge                 ⬪   # black small lozenge
+    smwhtlozenge                 ⬫   # white small lozenge
+    blkhorzoval                  ⬬   # black horizontal ellipse
+    whthorzoval                  ⬭   # white horizontal ellipse
+    blkvertoval                  ⬮   # black vertical ellipse
+    whtvertoval                  ⬯   # white vertical ellipse
+    circleonleftarrow            ⬰   # left arrow with small circle
+    leftthreearrows              ⬱   # three leftwards arrows
+    leftarrowonoplus             ⬲   # left arrow with circled plus
+    longleftsquigarrow           ⬳   # long leftwards squiggle arrow
+    nvtwoheadleftarrow           ⬴   # leftwards two-headed arrow with vertical stroke
+    nVtwoheadleftarrow           ⬵   # leftwards two-headed arrow with double vertical stroke
+    twoheadmapsfrom              ⬶   # leftwards two-headed arrow from bar
+    twoheadleftdbkarrow          ⬷   # leftwards two-headed triple-dash arrow
+    leftdotarrow                 ⬸   # leftwards arrow with dotted stem
+    nvleftarrowtail              ⬹   # leftwards arrow with tail with vertical stroke
+    nVleftarrowtail              ⬺   # leftwards arrow with tail with double vertical stroke
+    twoheadleftarrowtail         ⬻   # leftwards two-headed arrow with tail
+    nvtwoheadleftarrowtail       ⬼   # leftwards two-headed arrow with tail with vertical stroke
+    nVtwoheadleftarrowtail       ⬽   # leftwards two-headed arrow with tail with double vertical stroke
+    leftarrowx                   ⬾   # leftwards arrow through x
+    leftcurvedarrow              ⬿   # wave arrow pointing directly left
+    equalleftarrow               ⭀   # equals sign above leftwards arrow
+    bsimilarleftarrow            ⭁   # reverse tilde operator above leftwards arrow
+    leftarrowbackapprox          ⭂   # leftwards arrow above reverse almost equal to
+    rightarrowgtr                ⭃   # rightwards arrow through greater-than
+    leftarrowless                ⥷   # leftwards arrow through less-than
+    rightarrowsupset             ⭄   # rightwards arrow through superset
+    leftarrowsubset              ⥺   # leftwards arrow through subset
+    LLeftarrow                   ⭅   # leftwards quadruple arrow
+    RRightarrow                  ⭆   # rightwards quadruple arrow
+    bsimilarrightarrow           ⭇   # reverse tilde operator above rightwards arrow
+    rightarrowbackapprox         ⭈   # rightwards arrow above reverse almost equal to
+    similarleftarrow             ⭉   # tilde operator above leftwards arrow
+    leftarrowapprox              ⭊   # leftwards arrow above almost equal to
+    leftarrowbsimilar            ⭋   # leftwards arrow above reverse tilde operator
+    rightarrowbsimilar           ⭌   # righttwards arrow above reverse tilde operator
+    medwhitestar                 ⭐  # white medium star
+    medblackstar                 ⭑   # black medium star
+    smwhitestar                  ⭒   # white small star
+    rightpentagonblack           ⭓   # black right-pointing pentagon
+    rightpentagon                ⭔   # white right-pointing pentagon
     postalmark                   〒  # postal mark
     
     bold_A    𝐀  # mathematical bold capital a
@@ -1589,7 +1583,7 @@ latex_symbols
     italic_e    𝑒  # mathematical italic small e
     italic_f    𝑓  # mathematical italic small f
     italic_g    𝑔  # mathematical italic small g
-    italic_h    ℎ   # mathematical italic small h (planck constant)
+    italic_h    ℎ  # mathematical italic small h planck constant
     italic_i    𝑖  # mathematical italic small i
     italic_j    𝑗  # mathematical italic small j
     italic_k    𝑘  # mathematical italic small k
@@ -1687,7 +1681,7 @@ latex_symbols
     script_i    𝒾  # mathematical script small i
     script_j    𝒿  # mathematical script small j
     script_k    𝓀  # mathematical script small k
-    script_l    \U1d4c1  # mathematical script small l
+    script_l    𝓁  # mathematical script small l
     script_m    𝓂  # mathematical script small m
     script_n    𝓃  # mathematical script small n
     script_p    𝓅  # mathematical script small p
@@ -1759,7 +1753,7 @@ latex_symbols
     frak_E    𝔈  # mathematical fraktur capital e
     frak_F    𝔉  # mathematical fraktur capital f
     frak_G    𝔊  # mathematical fraktur capital g
-    frak_I    ℑ   # black-letter capital i (manual addition)
+    frak_I    ℑ  # mathematical fraktur capital i 
     frak_J    𝔍  # mathematical fraktur capital j
     frak_K    𝔎  # mathematical fraktur capital k
     frak_L    𝔏  # mathematical fraktur capital l
@@ -1768,7 +1762,7 @@ latex_symbols
     frak_O    𝔒  # mathematical fraktur capital o
     frak_P    𝔓  # mathematical fraktur capital p
     frak_Q    𝔔  # mathematical fraktur capital q
-    frak_R    ℜ   # black-letter capital r (manual addition)
+    frak_R    ℜ  # mathematical fraktur capital r
     frak_S    𝔖  # mathematical fraktur capital s
     frak_T    𝔗  # mathematical fraktur capital t
     frak_U    𝔘  # mathematical fraktur capital u
@@ -2159,8 +2153,8 @@ latex_symbols
     mono_x    𝚡  # mathematical monospace small x
     mono_y    𝚢  # mathematical monospace small y
     mono_z    𝚣  # mathematical monospace small z
-    italic_imath                 \U1d6a4  # mathematical italic small dotless i
-    italic_jmath                 \U1d6a5  # mathematical italic small dotless j
+    italic_imath                 𝚤  # mathematical italic small dotless i
+    italic_jmath                 𝚥  # mathematical italic small dotless j
     bold_Alpha                   𝚨  # mathematical bold capital alpha
     bold_Beta                    𝚩  # mathematical bold capital beta
     bold_Gamma                   𝚪  # mathematical bold capital gamma
@@ -2451,8 +2445,8 @@ latex_symbols
     bolditalicsans_phi           𝟇  # mathematical sans-serif bold italic phi symbol
     bolditalicsans_varrho        𝟈  # mathematical sans-serif bold italic rho symbol
     bolditalicsans_varpi         𝟉  # mathematical sans-serif bold italic pi symbol
-    bold_Digamma                 \U1d7ca  # mathematical bold capital digamma
-    bold_digamma                 \U1d7cb  # mathematical bold small digamma
+    bold_Digamma                 𝟊  # mathematical bold capital digamma
+    bold_digamma                 𝟋  # mathematical bold small digamma
     bold_zero                    𝟎  # mathematical bold digit 0
     bold_one                     𝟏  # mathematical bold digit 1
     bold_two                     𝟐  # mathematical bold digit 2
@@ -2514,7 +2508,7 @@ latex_symbols
     underleftrightarrow          ͍  # underleftrightarrow accent
     leftwavearrow                ↜  # left arrow-wavy
     rightwavearrow               ↝  # right arrow-wavy
-    varbarwedge                  ⌅  # /barwedge b: logical and, bar above [projective (bar over small wedge)]
+    varbarwedge                  ⌅  # logical and bar above
     smallblacktriangleright      ▸  # right triangle, filled
     smallblacktriangleleft       ◂  # left triangle, filled
     leftmoon                     ☾  # last quarter moon

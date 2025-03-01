@@ -16,10 +16,7 @@ function frecent
     
     @now: -> Date.now()
         
-    @frecent: item -> 
-        
-        dx = @now() - item.time
-        int(10000 * item.rank * (3.75/((0.0001 * dx + 1) + 0.25)))
+    @frecent: item -> item.rank / (1+@now()-item.time)
         
     @sample: key delta bucket ->
         
@@ -30,10 +27,10 @@ function frecent
         rec.rank += delta
         rec.time  = @now()
 
-        log b8('sampled') + ' ' + r5(key)
+        # log b8('sampled') + ' ' + r5(key)
         for bi in @list(bucket)
             item = @buckets[bucket][bi]
-            log bi item pretty.age(item.time) @frecent(item)
+            # log bi item pretty.age(item.time) @frecent(item)
         
     @list: bucket ->
         

@@ -318,7 +318,10 @@ class NFS
         text = await NFS.read(p)
         if (text.includes('\ufffd'))
         {
-            return
+            if (text.slice(0, 33).includes('\x00'))
+            {
+                return
+            }
         }
         return text
     }

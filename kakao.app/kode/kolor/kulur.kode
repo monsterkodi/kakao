@@ -1516,7 +1516,7 @@ syntax = arg ->
     arg ?= {}
     text = arg.text
     ext  = arg.ext ? 'coffee'
-    # numbers = arg.numbers ? false
+
     lines = text.split NEWLINE
     rngs  = parse(lines ext).map (l) -> l.chunks
     
@@ -1525,7 +1525,7 @@ syntax = arg ->
         line = lines[index]
         if ext == 'js' and line.startsWith '//# source'
             continue
-        # clines.push kolorizeChunks(rngs[index] numbers and index+1)
+
         clines.push kolorizeChunks(rngs[index])
     clines.join '\n'
     
@@ -1538,7 +1538,7 @@ syntax = arg ->
 dissect = segls ext='kode' ->
     
     ⮐ [] if empty segls
-    # log 'kulur.dissect' segls
+
     segls = kseg.segls segls
     
     parse(segls ext).map (l) -> l.chunks

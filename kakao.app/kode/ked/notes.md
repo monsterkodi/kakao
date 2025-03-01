@@ -25,21 +25,15 @@
 ### todo
 #### todo
 ##### todo
+    
+- completion suggestions 
 
-- return with single cursor in empty should not append spaces
-- fix multicursor delete backwards in empty space
-- fix insert after wide unicode segments
-- key right in input should activate match
-          
-- quicky
-    - on mouse move: only change selection if over nonspace
-        - to prevent switching when moving to second column
-    - make second browser column items clickable
-          
-- crumbs
-    - dissect path
-    - make path chunks clickable
-    - rounded path separation (time for meta?)
+- editing fixes
+    - fix insert after wide unicode segments
+    - multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
+    - alt+cmd+d should work inside selection: highlight word at cursor inside
+    - alt+cmd+e add word at cursor to highlights
+    - shift+ctrl+left|right|up|down rectangular selection
 
 - unicode mode
     - ~ replacement
@@ -49,7 +43,10 @@
         - ~\d+n multiple characters
         - ~...*n n times *
         
-- asccii header cmd+3
+- ascii header mode
+    - cmd+3 create header for selection or cursor word
+    - switch automatically if cursor inside
+    - change 0 to █ or ░
 
 - mapscroll
     - add scrollbar handle
@@ -62,46 +59,28 @@
     - merge cursor positions from last session by default?  
     - clean recent files (check for existance)
     
-- config
+- config | prefs
     - similar to session, but loads and merges (to handle multiple instances)
-    - index & source & text files 
+    - index- & source- & text-file extensions
     - index files per project?
 
 - quick open cmd+p
     - merge with macro?
 
 - find and search
-    - each multiline editor has its own knobbed finder at bottom
-    - heach finder has a search toggle, which searches in in all files
+    - each finder has a search toggle, which searches in in all files
         - opens the search result panel, if not open already
         - the finder of the search result panel is set to the search parameters:
             - if executed via shortcut: selected or cursor word
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
 
-- cutting multiple lines with main cursor at start of next line 
-    - moves it one down too much
-
-- multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
-- alt+cmd+d should work inside selection: highlight word at cursor inside
-- alt+cmd+e add word at cursor to highlights
-- shift+ctrl+left|right|up|down rectangular selection
-
-- status 
-    - clamp file path to half screen width 
-
 - nvim style min-distance from top and bottom of screen when moving main cursor?
-
-- completion
 
 - macro
     - unicode palette
     
 - funclist
-    
-- ascii header mode
-    - switch automatically if cursor inside
-    - change 0 to █ or ░
     
 - file watcher
 

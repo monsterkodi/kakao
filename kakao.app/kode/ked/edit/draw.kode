@@ -71,7 +71,10 @@ function draw extends view
 
         @drawTrailingRows()        
         @drawHighlights()
-        @drawSelections lines                                
+        @drawSelections lines 
+        
+        @complete?.draw()
+        
         @drawCursors()        
 
         @scroll?.draw()
@@ -120,7 +123,7 @@ function draw extends view
     
     drawHighlights: ->
                             
-        bg = theme.highlight
+        bg = theme[@name + '_highlight'] ? theme.editor_highlight
         bg = color.darken bg if not @cells.screen.t.hasFocus
         
         [vx vy] = @state.s.view
@@ -144,8 +147,9 @@ function draw extends view
     
     drawSelections: lines ->
         
-        spanbg = theme.selection
-        linebg = theme.selection_line
+        spanbg = theme[@name + '_selection'     ] ? theme.editor_selection
+        linebg = theme[@name + '_selection_line'] ? theme.editor_selection_line
+        
         if not @cells.screen.t.hasFocus
             spanbg = color.darken spanbg
             linebg = color.darken linebg

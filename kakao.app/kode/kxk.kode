@@ -18,6 +18,7 @@ for exp in "$ setStyle getStyle stopEvent".split(' ') ➜ kxk[exp] = eval "dom.#
 for exp,utl of util ➜ kxk[exp] = utl # export all utility functions
     
 kxk.isElement = elem.isElement
+kxk.kutil = util
     
 export kxk
     

@@ -154,10 +154,6 @@ session = (function ()
             {
                 console.log('session.save failed!',this.file,result)
             }
-            else
-            {
-                console.log(`session.save ${_k_.m7(this.name)}`,result,this.data)
-            }
         }
         catch (err)
         {

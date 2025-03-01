@@ -31,20 +31,26 @@ function input extends editor
 
     onKey: key event ->
         
-        # lf "input.onKey #{@name} #{event.combo}" 
+        log "input.onKey #{@name} #{event.combo}" 
         
         switch event.combo
             'return'    ➜ ⮐ @emit 'action' 'submit' @current()
             'up' 'down'
-                # @set '' 
                 @emit 'action' event.combo 
                 ⮐ 
+            'right'
+                if @state.mainCursor()[0] >= @current().length
+                    @emit 'action' 'right'
+                    ⮐ 
 
         before = @current()
-        
-        super key event
+        log "before #{before} #{key}"
+        sr = super key event
+        log "after #{@current()} #{key}"
         
         @emit 'action' 'change' @current() if before != @current()
+        
+        sr
         
     draw: ->
         

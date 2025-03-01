@@ -50,7 +50,8 @@ function edit
                 if valid before ➜ line = before.pop() # pop the last line from before the current position
                 else              line = newls.pop()  # or the last of the already generated lines
                 
-                if x > line.length ➜ line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces if pos is in empty space
+                if x > line.length and text != '\n'   # if pos is in empty space 
+                    line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces 
                                         
                 # log 'line' line line.length x txtls
                 
@@ -110,43 +111,45 @@ function edit
         lines = copy lines
         posl  = clone posl
         
-        # ⮐ [lines posl] if lines eql ['']
+        ⮐ [lines posl] if empty rngs
         
         for ri in rngs.length-1..0
-            rng = rngs[ri]
             
-            if rng[2] == 0 and rng[3] > rng[1]
-                rng = [rng[0] rng[1] lines[rng[3]-1].length rng[3]-1]
+            rng = rngs[ri]
             
             posl = @adjustPositionsForDeletedLineRange posl lines rng
             
             if rng[1] == rng[3] # single line range
+                
                 if rng[0] == 0 and rng[2] == lines[rng[1]].length
                     lines.splice rng[1] 1
                 else
                     lines.splice rng[1] 1 lines[rng[1]][0...rng[0]].concat(lines[rng[1]][rng[2]..])   
-            else # range spans multiple lines
+                    
+            else                # range spans multiple lines
                         
-                if rng[2] == lines[rng[3]].length # range ends at end of last line
-                    lines.splice rng[3] 1 
+                if rng[2] == lines[rng[3]].length                   # range ends at end of last line
+                    lines.splice rng[3] 1                           #   remove last line
                 else
-                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]
-                    partialLast = true
-                    
-                if rng[3]-rng[1] >= 2 # more than 2 lines in range
-                    lines.splice rng[1]+1 rng[3]-rng[1]-1 # remove middle lines
-                    
-                if rng[0] == 0 # range starts at start of first line
-                    lines.splice rng[1] 1
+                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]   #   remove head of last line 
+                    partialLast = true                              #   and remember to join it with head of first line
+                                                                    
+                if rng[3]-rng[1] >= 2                               # more than 2 lines in range
+                    lines.splice rng[1]+1 rng[3]-rng[1]-1           #   remove middle lines
+                                                                    
+                if rng[0] == 0                                      # range starts at start of first line
+                    lines.splice rng[1] 1                           #   remove first line
                 else
-                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]]
+                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]] #   remove tail of first line
                     
-                    if partialLast
-                        lines.splice rng[1] 2 lines[rng[1]].concat(lines[rng[1]+1])
+                    if partialLast                                  #   when only part of last line was removed 
+                        lines.splice rng[1] 2 lines[rng[1]].concat(lines[rng[1]+1]) # join head of first with tail of last line
                
         [lines posl]
         
     @adjustPositionsForDeletedLineRange: posl lines rng ->
+        
+        ⮐ posl if empty posl
         
         for pi in posl.length-1..0
             pos = posl[pi]
@@ -229,7 +232,7 @@ function edit
         
     @rangeForJoiningLine: lines idx -> [lines[idx].length idx 0 idx+1]
         
-    @rangesForJoiningLines: lines idxs -> idxs.map (idx) -> @rangeForJoiningLine lines idx
+    @rangesForJoiningLines: lines idxs -> idxs.map (idx) => @rangeForJoiningLine lines idx
     
     # 00     00   0000000   000   000  00000000         000      000  000   000  00000000   0000000  
     # 000   000  000   000  000   000  000              000      000  0000  000  000       000       

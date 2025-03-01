@@ -6,8 +6,11 @@
 0000000      000     000   000     000      0000000   0000000   
 ###
 
-use         ◆ view
-use ../util ◆ color theme util
+use ../../kxk ▪ post slash
+use ../util   ◆ color theme util
+use           ◆ view crumbs statusfile
+
+int = parseInt
 
 function status extends view
 
@@ -15,9 +18,59 @@ function status extends view
 
         super screen 'status'
         
-        @gutter = 4
-        @file = ''
+        @gutter   = 4
+        @file     = ''
         @drawTime = ''
+           
+        @crumbs     = new crumbs     @screen 'status_crumbs'
+        @statusfile = new statusfile @screen 'status_file'
+        
+        @crumbs.on     'action' @onCrumbsAction
+        @statusfile.on 'action' @onFileAction
+        
+    onCrumbsAction: action path =>
+        
+        switch action
+            'click' ➜ post.emit 'quicky.dir' path
+
+    onFileAction: action file =>
+        
+        switch action
+            'click' ➜ post.emit 'quicky.dir' slash.dir(file) file
+            
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+
+        ⮐ if @hidden()
+        ⮐ true if @crumbs.onMouse event
+        ⮐ true if @statusfile.onMouse event
+        super event
+        
+    #  0000000  00000000  000000000        00000000  000  000      00000000  
+    # 000       000          000           000       000  000      000       
+    # 0000000   0000000      000           000000    000  000      0000000   
+    #      000  000          000           000       000  000      000       
+    # 0000000   00000000     000           000       000  0000000  00000000  
+    
+    setFile: @file => 
+        
+        @crumbs.set slash.dir(@file)
+        @statusfile.set @file
+        
+    layout: x y w h =>
+        
+        super x y w h
+        
+        cw = int w/2
+        
+        @crumbs.layout x+@gutter+1 y cw 1
+        @crumbs.layout x+@gutter+1 y @crumbs.rounded.length 1
+        @statusfile.layout x+@gutter+1+@crumbs.rounded.length y @statusfile.rounded.length 1
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -27,6 +80,8 @@ function status extends view
     
     draw: =>
         
+        ⮐ if @hidden()
+                
         x      = 0
         y      = 0
         cursor = @state.mainCursor()
@@ -44,46 +99,26 @@ function status extends view
             1
         add = char fg bg => x += set x char fg bg
         
-        # draw the left edge of the status bar
-        
-        add '' 'status_dark' 'gutter'
-        
-        # draw the column number
-        
+        add '' 'status_col' 'gutter' # column number ...
         colno = rpad @gutter-1 "#{cursor[0]+1}"
         for ci in 1...@gutter
             fg = cursor[0] ? 'status_fg' : 'column_fg'
             fg = 'status_empty' if util.isLinesPosOutside @state.s.lines cursor 
-            add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_dark'
-
-        # draw the separator after the column number
-            
-        add '' 'status' 'status_dark'
+            add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_col'
+        add '' 'status_col' 'gutter' # column number end
               
-        # draw the dirty indicator
+        @crumbs.draw() # dir path
+        @statusfile.draw() # file
         
-        add dty ? '' : '' dty ? 'status_dirty' : 'status_dark' 'status'
+        x += @crumbs.rounded.length
+        x += @statusfile.rounded.length
         
-        # draw the file name
-        
-        add ' ' 'status_fg' 'status'
-        
-        mx = @cells.cols-3
-        x += @cells.draw_path x mx y @file theme.status
-
-        # draw the redo indicator
-        
-        add ' ' 'status_fg' 'status'
-        rcol = rdo ? 'status_redo' : dty ? 'status_dirty' : 'status_dark'
-        add rdo ? '' : '' rcol 'status'
+        # dirty and redo indicators
+        add '' 'status_dark'  'gutter'
+        add '' 'status_dirty' 'status_dark' if dty
+        add ' ' 'status_dirty' 'status_dark' if dty
+        add '' 'status_redo'  'status_dark' if rdo
              
-        # draw the right edge of the file name section
-        
-        add '' 'status' 'status_dark'
-        add ' ' null 'status_dark'
-        
-        # draw the selection count 
-        
         if @state.s.selections.length
 
             sel = " #{@state.s.selections.length} sel "
@@ -91,8 +126,6 @@ function status extends view
             for i in 0...sel.length
                 add sel[i] (i<sel.length-4) ? 'status_sel' : 'status_fg_dim' 'status_dark'
 
-        # draw the cursor count 
-            
         if @state.s.cursors.length > 1
 
             cur = " #{@state.s.cursors.length} cur "
@@ -100,8 +133,6 @@ function status extends view
             for i in 0...cur.length
                 add cur[i] (i<cur.length-4) ? 'status_cur' : 'status_fg_dim' 'status_dark'
 
-        # draw the highlight count
-                
         if @state.s.highlights.length
 
             hil = " #{@state.s.highlights.length} hil "
@@ -109,10 +140,8 @@ function status extends view
             for i in 0...hil.length
                 add hil[i] (i<hil.length-4) ? 'status_hil' : 'status_fg_dim' 'status_dark'
                 
-        # draw the time if there's enough space
-        
         if cols-dtl-2 >= x
-            # fill the space up to the time
+
             for ci in x...cols-dtl-2
                 add ' ' null 'status_dark'
             
@@ -122,12 +151,9 @@ function status extends view
                 fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
                 add dt[i] fg 'status'
              
-            # draw the final edge of the status bar
-            
             add '' 'status' 'editor_empty'
     
-        else
-            # fill the remaining space
+        else # fill the remaining space
             for ci in x...cols-dtl-2
                 add ' ' null 'status_dark'
             

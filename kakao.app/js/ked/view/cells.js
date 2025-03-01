@@ -230,6 +230,10 @@ cells = (function ()
         {
             y2 = this.rows + y2
         }
+        if (x1 > x2)
+        {
+            return
+        }
         for (var _a_ = row = y1, _b_ = y2; (_a_ <= _b_ ? row <= y2 : row >= y2); (_a_ <= _b_ ? ++row : --row))
         {
             if (row < this.rows)
@@ -277,7 +281,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _122_16_, _130_20_, _131_20_
+        var bg, fg, x, y, _124_16_, _132_20_, _133_20_
 
         if (x1 < 0)
         {
@@ -296,9 +300,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_122_16_=opt.pad) != null ? _122_16_ : [1,0])
-        fg = ((_130_20_=opt.fg) != null ? _130_20_ : '#888888')
-        bg = ((_131_20_=opt.bg) != null ? _131_20_ : null)
+        opt.pad = ((_124_16_=opt.pad) != null ? _124_16_ : [1,0])
+        fg = ((_132_20_=opt.fg) != null ? _132_20_ : '#888888')
+        bg = ((_133_20_=opt.bg) != null ? _133_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

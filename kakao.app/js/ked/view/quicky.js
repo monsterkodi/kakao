@@ -34,6 +34,7 @@ quicky = (function ()
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["onInputAction"] = this["onInputAction"].bind(this)
         this["onFsColAction"] = this["onFsColAction"].bind(this)
+        this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["preview"] = this["preview"].bind(this)
@@ -45,8 +46,11 @@ quicky = (function ()
         quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.fscol = new fscol(this.screen,'quicky_fscol')
+        this.crumbs.padLast = true
         this.choices.state.syntax.setRgxs(rgxs)
         this.choices.on('select',this.preview)
+        this.crumbs.on('action',this.onCrumbsAction)
+        this.fscol.on('action',this.onFsColAction)
         post.on('quicky.dir',this.gotoDir)
         post.on('quicky.files',this.showFiles)
     }
@@ -159,7 +163,7 @@ quicky = (function ()
         })
         parent = slash.dir(this.currentDir)
         items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? ' ..' : '')})
-        select = items[1].path
+        select = (select != null ? select : items[1].path)
         this.choices.mapscr.rowOffset = 1
         return this.showPathItems(items,select)
     }
@@ -220,6 +224,7 @@ quicky = (function ()
         selectIndex = 0
         if (select)
         {
+            select = slash.untilde(select)
             var list = _k_.list(items)
             for (idx = 0; idx < list.length; idx++)
             {
@@ -234,7 +239,7 @@ quicky = (function ()
         this.preview(items[selectIndex])
         this.choices.set(items,'tilde')
         this.choices.state.selectLine(selectIndex)
-        this.choices.state.setMainCursor(this.choices.state.s.lines[selectIndex].length,selectIndex)
+        this.choices.state.setMainCursor(0,selectIndex)
         this.choices.state.setView([0,0])
         this.show()
         return this.choices.grabFocus()
@@ -286,8 +291,7 @@ quicky = (function ()
         }
 
         this.hideMap()
-        quicky.__super__.moveSelection.call(this,dir)
-        return this.preview(this.choices.current())
+        return this.choices.moveSelection(dir)
     }
 
     quicky.prototype["choicesFiltered"] = function ()
@@ -337,6 +341,10 @@ quicky = (function ()
             return
         }
         if (this.fscol.onMouse(event))
+        {
+            return true
+        }
+        if (this.crumbs.onMouse(event))
         {
             return true
         }
@@ -391,9 +399,14 @@ quicky = (function ()
         return {redraw:true}
     }
 
-    quicky.prototype["onFsColAction"] = function (choice, action)
+    quicky.prototype["onCrumbsAction"] = function (action, path)
     {
-        console.log('onFsColAction',action,choice)
+        return this.onChoicesAction(action,{tilde:path,path:slash.untilde(path)})
+    }
+
+    quicky.prototype["onFsColAction"] = function (action, choice)
+    {
+        return this.onChoicesAction(action,choice)
     }
 
     quicky.prototype["onInputAction"] = function (action, text)
@@ -403,7 +416,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _357_62_
+        var upDir, _369_62_
 
         switch (action)
         {
@@ -421,7 +434,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_357_62_=choice.link) != null ? _357_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_369_62_=choice.link) != null ? _369_62_ : choice.path))
                     }
                 }
                 break

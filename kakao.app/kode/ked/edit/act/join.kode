@@ -22,7 +22,7 @@ export
         
         idxs = util.lineIndicesForPositions @allCursors()
         rngs = util.rangesForJoiningLines @allLines() idxs
-        
+
         @deleteRanges rngs @allCursors()
         
     moveSelectionOrCursorLines: dir ->

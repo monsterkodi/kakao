@@ -189,6 +189,8 @@ function text
                 maxLength = line.length
                 maxIndex  = index
         maxIndex
+        
+    @maxLineWidth: lines -> lines[@indexOfLongestLine lines].length
 
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
@@ -283,6 +285,16 @@ function text
         if r = kstr.rangeOfClosestChunk lines[y] x
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
+                
+    @rangeOfChunkLeftToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if @isInvalidLineIndex lines y
+        
+        if r = kstr.rangeOfClosestChunk lines[y][0...x] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
         
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
@@ -295,11 +307,16 @@ function text
         if rng = @rangeOfClosestWordToPos lines pos
             ⮐ kseg.str @segsForLineSpan(lines rng)
         ''
+        
+    @turdBeforePos: lines pos ->
+        
+        if rng = @rangeOfChunkLeftToPos lines pos
+            ⮐ kseg.str @segsForLineSpan(lines rng)
+        ''
     
     @rangeOfClosestWordToPos: lines pos ->
         
         [x y] = pos
-        
         ⮐ if @isInvalidLineIndex lines y
          
         if r = kseg.spanForClosestWordAtColumn lines[y] x

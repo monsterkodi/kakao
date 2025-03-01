@@ -89,6 +89,8 @@ function cells
         y1 = @rows + y1 if y1 < 0
         y2 = @rows + y2 if y2 < 0
         
+        ⮐ if x1 > x2
+        
         for row in y1..y2
             if row < @rows
                 for col in x1..x2

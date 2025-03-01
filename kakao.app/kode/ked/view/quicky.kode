@@ -24,9 +24,14 @@ function quicky extends inputchoice
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
         @fscol  = new fscol   @screen 'quicky_fscol'
+        
+        @crumbs.padLast = true
 
         @choices.state.syntax.setRgxs rgxs
         @choices.on 'select' @preview
+        
+        @crumbs.on 'action' @onCrumbsAction
+        @fscol.on  'action' @onFsColAction
 
         post.on 'quicky.dir'   @gotoDir
         post.on 'quicky.files' @showFiles
@@ -139,7 +144,7 @@ function quicky extends inputchoice
             path: parent
             tilde: parent ? ' ..' : ''
             
-        select = items[1].path
+        select ?= items[1].path
                
         @choices.mapscr.rowOffset = 1
         @showPathItems items select
@@ -196,6 +201,7 @@ function quicky extends inputchoice
         selectIndex = 0
         
         if select
+            select = slash.untilde select
             for item,idx in items
                 if slash.samePath item.path select
                     selectIndex = idx
@@ -204,8 +210,9 @@ function quicky extends inputchoice
         @preview items[selectIndex]
         
         @choices.set items 'tilde'
+        
         @choices.state.selectLine selectIndex
-        @choices.state.setMainCursor @choices.state.s.lines[selectIndex].length selectIndex
+        @choices.state.setMainCursor 0 selectIndex
         @choices.state.setView [0 0]
         
         @show()
@@ -249,9 +256,9 @@ function quicky extends inputchoice
         
         @hideMap()
 
-        super dir
+        @choices.moveSelection dir
         
-        @preview @choices.current()
+        # @preview @choices.current()
             
     # 00000000   00000000   00000000  000   000  000  00000000  000   000  
     # 000   000  000   000  000       000   000  000  000       000 0 000  
@@ -294,6 +301,7 @@ function quicky extends inputchoice
 
         ⮐ if @hidden()
         ⮐ true if @fscol.onMouse event
+        ⮐ true if @crumbs.onMouse event
         super event
 
     onWheel: event =>
@@ -333,9 +341,13 @@ function quicky extends inputchoice
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    onFsColAction: choice action =>
+    onCrumbsAction: action path =>
         
-        log 'onFsColAction' action choice
+        @onChoicesAction action tilde:path path:slash.untilde(path)
+    
+    onFsColAction: action choice =>
+        
+        @onChoicesAction action choice
         
     onInputAction: action text =>
         

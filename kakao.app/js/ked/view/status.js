@@ -1,13 +1,20 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}}
 
-var status
+var int, status
 
-import view from "./view.js"
+import kxk from "../../kxk.js"
+let post = kxk.post
+let slash = kxk.slash
 
 import color from "../util/color.js"
 import theme from "../util/theme.js"
 import util from "../util/util.js"
 
+import view from "./view.js"
+import crumbs from "./crumbs.js"
+import statusfile from "./statusfile.js"
+
+int = parseInt
 
 status = (function ()
 {
@@ -17,16 +24,88 @@ status = (function ()
         this.state = state
     
         this["draw"] = this["draw"].bind(this)
+        this["layout"] = this["layout"].bind(this)
+        this["setFile"] = this["setFile"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
+        this["onFileAction"] = this["onFileAction"].bind(this)
+        this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         status.__super__.constructor.call(this,screen,'status')
         this.gutter = 4
         this.file = ''
         this.drawTime = ''
+        this.crumbs = new crumbs(this.screen,'status_crumbs')
+        this.statusfile = new statusfile(this.screen,'status_file')
+        this.crumbs.on('action',this.onCrumbsAction)
+        this.statusfile.on('action',this.onFileAction)
+    }
+
+    status.prototype["onCrumbsAction"] = function (action, path)
+    {
+        switch (action)
+        {
+            case 'click':
+                return post.emit('quicky.dir',path)
+
+        }
+
+    }
+
+    status.prototype["onFileAction"] = function (action, file)
+    {
+        switch (action)
+        {
+            case 'click':
+                return post.emit('quicky.dir',slash.dir(file),file)
+
+        }
+
+    }
+
+    status.prototype["onMouse"] = function (event)
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        if (this.crumbs.onMouse(event))
+        {
+            return true
+        }
+        if (this.statusfile.onMouse(event))
+        {
+            return true
+        }
+        return status.__super__.onMouse.call(this,event)
+    }
+
+    status.prototype["setFile"] = function (file)
+    {
+        this.file = file
+    
+        this.crumbs.set(slash.dir(this.file))
+        return this.statusfile.set(this.file)
+    }
+
+    status.prototype["layout"] = function (x, y, w, h)
+    {
+        status.__super__.layout.call(this,x,y,w,h)
+    
+        var cw
+
+        cw = parseInt(w / 2)
+        this.crumbs.layout(x + this.gutter + 1,y,cw,1)
+        this.crumbs.layout(x + this.gutter + 1,y,this.crumbs.rounded.length,1)
+        return this.statusfile.layout(x + this.gutter + 1 + this.crumbs.rounded.length,y,this.statusfile.rounded.length,1)
     }
 
     status.prototype["draw"] = function ()
     {
-        var add, ci, colno, cols, cur, cursor, dt, dtl, dty, fg, fnl, hil, i, mx, rcol, rdo, sel, set, x, y
+        var add, ci, colno, cols, cur, cursor, dt, dtl, dty, fg, fnl, hil, i, rdo, sel, set, x, y
 
+        if (this.hidden())
+        {
+            return
+        }
         x = 0
         y = 0
         cursor = this.state.mainCursor()
@@ -53,7 +132,7 @@ status = (function ()
         {
             return x += set(x,char,fg,bg)
         }).bind(this)
-        add('','status_dark','gutter')
+        add('','status_col','gutter')
         colno = _k_.rpad(this.gutter - 1,`${cursor[0] + 1}`)
         for (var _a_ = ci = 1, _b_ = this.gutter; (_a_ <= _b_ ? ci < this.gutter : ci > this.gutter); (_a_ <= _b_ ? ++ci : --ci))
         {
@@ -62,18 +141,26 @@ status = (function ()
             {
                 fg = 'status_empty'
             }
-            add(((ci - 1 < colno.length) ? colno[ci - 1] : ' '),fg,'status_dark')
+            add(((ci - 1 < colno.length) ? colno[ci - 1] : ' '),fg,'status_col')
         }
-        add('','status','status_dark')
-        add((dty ? '' : ''),(dty ? 'status_dirty' : 'status_dark'),'status')
-        add(' ','status_fg','status')
-        mx = this.cells.cols - 3
-        x += this.cells.draw_path(x,mx,y,this.file,theme.status)
-        add(' ','status_fg','status')
-        rcol = (rdo ? 'status_redo' : (dty ? 'status_dirty' : 'status_dark'))
-        add((rdo ? '' : ''),rcol,'status')
-        add('','status','status_dark')
-        add(' ',null,'status_dark')
+        add('','status_col','gutter')
+        this.crumbs.draw()
+        this.statusfile.draw()
+        x += this.crumbs.rounded.length
+        x += this.statusfile.rounded.length
+        add('','status_dark','gutter')
+        if (dty)
+        {
+            add('','status_dirty','status_dark')
+        }
+        if (dty)
+        {
+            add(' ','status_dirty','status_dark')
+        }
+        if (rdo)
+        {
+            add('','status_redo','status_dark')
+        }
         if (this.state.s.selections.length)
         {
             sel = ` ${this.state.s.selections.length} sel `

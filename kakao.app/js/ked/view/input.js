@@ -42,8 +42,9 @@ input = (function ()
 
     input.prototype["onKey"] = function (key, event)
     {
-        var before
+        var before, sr
 
+        console.log(`input.onKey ${this.name} ${event.combo}`)
         switch (event.combo)
         {
             case 'return':
@@ -54,14 +55,24 @@ input = (function ()
                 this.emit('action',event.combo)
                 return
 
+            case 'right':
+                if (this.state.mainCursor()[0] >= this.current().length)
+                {
+                    this.emit('action','right')
+                    return
+                }
+                break
         }
 
         before = this.current()
-        input.__super__.onKey.call(this,key,event)
+        console.log(`before ${before} ${key}`)
+        sr = input.__super__.onKey.call(this,key,event)
+        console.log(`after ${this.current()} ${key}`)
         if (before !== this.current())
         {
-            return this.emit('action','change',this.current())
+            this.emit('action','change',this.current())
         }
+        return sr
     }
 
     input.prototype["draw"] = function ()

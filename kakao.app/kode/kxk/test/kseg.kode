@@ -19,6 +19,12 @@ use .. ◆ kstr kseg
     
         kseg hello ▸ ['h' 'e' 'l' 'l' 'o' '\n' 'w' 'o' 'r' 'l' 'd']
         
+    #  0000000  00000000   0000000   000       0000000  
+    # 000       000       000        000      000       
+    # 0000000   0000000   000  0000  000      0000000   
+    #      000  000       000   000  000           000  
+    # 0000000   00000000   0000000   0000000  0000000   
+    
     ▸ segls
     
         kseg.segls hello ▸ [['h' 'e' 'l' 'l' 'o'] ['w' 'o' 'r' 'l' 'd']]
@@ -29,12 +35,24 @@ use .. ◆ kstr kseg
             bbb
             """ ▸ [['a' 'a' 'a'] [] ['b' 'b' 'b']]
             
+    #  0000000  000000000  00000000   
+    # 000          000     000   000  
+    # 0000000      000     0000000    
+    #      000     000     000   000  
+    # 0000000      000     000   000  
+    
     ▸ str
     
         kseg.str kseg('hello') ▸ 'hello'
         kseg.str kseg('hello\world') ▸ 'hello\world'
         kseg.str kseg.segls(hello) ▸ hello
         
+    #       000   0000000   000  000   000  
+    #       000  000   000  000  0000  000  
+    #       000  000   000  000  000 0 000  
+    # 000   000  000   000  000  000  0000  
+    #  0000000    0000000   000  000   000  
+    
     ▸ join
         
         kseg.join 'hello' '!' '?'   ▸ kseg 'hello!?'
@@ -43,6 +61,12 @@ use .. ◆ kstr kseg
         kseg.join kseg.segls('hello') kseg.segls('world') ▸ kseg.segls("hello\nworld")
         kseg.join kseg.segls('hello') kseg('world') ▸ kseg.segls('hello').concat kseg('world') # attention! result is mixed for mixed input!
     
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
     ▸ lines
         
         kseg.lines ''    ▸ lines:['']   segls:[[]]
@@ -50,33 +74,81 @@ use .. ◆ kstr kseg
         kseg.lines 'a'   ▸ lines:['a']  segls:[['a']]
         kseg.lines hello ▸ lines:kstr.lines(hello) segls:[kseg('hello') kseg('world')]
 
+    # 0000000    00000000  000000000   0000000   0000000    
+    # 000   000  000          000     000   000  000   000  
+    # 000   000  0000000      000     000000000  0000000    
+    # 000   000  000          000     000   000  000   000  
+    # 0000000    00000000     000     000   000  0000000    
+    
     ▸ detab
     
         kseg.detab(kseg("ta\tb\tb\ty")) ▸ kseg("ta  b   b   y")
     
+    #  0000000  000   000  000   000  000   000  000   000   0000000  
+    # 000       000   000  000   000  0000  000  000  000   000       
+    # 000       000000000  000   000  000 0 000  0000000    0000000   
+    # 000       000   000  000   000  000  0000  000  000        000  
+    #  0000000  000   000   0000000   000   000  000   000  0000000   
+    
     ▸ chunks
     
-        kseg.chunks 'a' ▸ [index:0 segl:['a']]
+        kseg.chunks 'a'      ▸ [index:0 segl:['a']]
+        kseg.chunks ' a'     ▸ [index:1 segl:['a']]
+        kseg.chunks 'ab cd'  ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
         kseg.chunks 'ab\ncd' ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
         
+        kseg.chunks kseg('a')      ▸ [index:0 segl:['a']]
+        kseg.chunks kseg(' a')     ▸ [index:1 segl:['a']]
+        kseg.chunks kseg('ab cd')  ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        kseg.chunks kseg('ab\ncd') ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+
+        kseg.chunks kseg.segls('a')      ▸ [index:0 segl:['a']]
+        kseg.chunks kseg.segls(' a')     ▸ [index:1 segl:['a']]
+        kseg.chunks kseg.segls('ab cd')  ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        kseg.chunks kseg.segls('ab\ncd') ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        
+    #  0000000  000000000   0000000   00000000   000000000   0000000  000   000  000  000000000  000   000  
+    # 000          000     000   000  000   000     000     000       000 0 000  000     000     000   000  
+    # 0000000      000     000000000  0000000       000     0000000   000000000  000     000     000000000  
+    #      000     000     000   000  000   000     000          000  000   000  000     000     000   000  
+    # 0000000      000     000   000  000   000     000     0000000   00     00  000     000     000   000  
+    
     ▸ startsWith
     
         kseg.startsWith kseg('something') 'some' ▸ true
         kseg.startsWith kseg('something') 'Some' ▸ false
         kseg.startsWith kseg('something') 'son'  ▸ false
         
+    #  0000000  00000000   000      000  000000000  
+    # 000       000   000  000      000     000     
+    # 0000000   00000000   000      000     000     
+    #      000  000        000      000     000     
+    # 0000000   000        0000000  000     000     
+    
     ▸ splitAtIndent
     
         kseg.splitAtIndent kseg('something') ▸ [kseg('') kseg('something')]
         kseg.splitAtIndent kseg('  some')    ▸ [kseg('  ') kseg('some')]
         kseg.splitAtIndent kseg('    more')  ▸ [kseg('    ') kseg('more')]
         
+    # 00000000   00000000  00000000   00000000   0000000   000000000  
+    # 000   000  000       000   000  000       000   000     000     
+    # 0000000    0000000   00000000   0000000   000000000     000     
+    # 000   000  000       000        000       000   000     000     
+    # 000   000  00000000  000        00000000  000   000     000     
+    
     ▸ repeat
     
         kseg.repeat 4      ▸ kseg "    "
         kseg.repeat 4 '*'  ▸ kseg "****"
         kseg.repeat 2 '◂▸' ▸ kseg "◂▸◂▸"
         
+    # 000   000  000  0000000    000000000  000   000  
+    # 000 0 000  000  000   000     000     000   000  
+    # 000000000  000  000   000     000     000000000  
+    # 000   000  000  000   000     000     000   000  
+    # 00     00  000  0000000       000     000   000  
+    
     ▸ width 
     
         kseg.width null          ▸ 0
@@ -109,6 +181,12 @@ use .. ◆ kstr kseg
         
         kseg.width kseg("hello world") ▸ 11
         
+    # 000000000  00000000   000  00     00  
+    #    000     000   000  000  000   000  
+    #    000     0000000    000  000000000  
+    #    000     000   000  000  000 0 000  
+    #    000     000   000  000  000   000  
+    
     ▸ trim
     
         kseg.trim ' '            ▸ kseg ''
@@ -120,6 +198,12 @@ use .. ◆ kstr kseg
         kseg.trim '  字的模块    '          ▸ kseg '字的模块'
         kseg.trim '  🧑‍🌾   '       ▸ kseg '🧑‍🌾'
         
+    # 000   000  00000000   0000000   0000000    
+    # 000   000  000       000   000  000   000  
+    # 000000000  0000000   000000000  000   000  
+    # 000   000  000       000   000  000   000  
+    # 000   000  00000000  000   000  0000000    
+    
     ▸ headCount
     
         kseg.headCount ' x ' ' ' ▸ 1
@@ -131,6 +215,12 @@ use .. ◆ kstr kseg
         kseg.headCountWord '🧑‍🌾' ▸  0
         kseg.headCountWord 'xx🧑‍🌾' ▸  2
         
+    # 000000000   0000000   000  000      
+    #    000     000   000  000  000      
+    #    000     000000000  000  000      
+    #    000     000   000  000  000      
+    #    000     000   000  000  0000000  
+    
     ▸ tailCount
 
         kseg.tailCount ' x ' ' ' ▸ 1
@@ -142,6 +232,12 @@ use .. ◆ kstr kseg
         kseg.tailCountWord '🧑‍🌾' ▸  0
         kseg.tailCountWord '🧑‍🌾xx' ▸  2
         
+    # 000  000   000  0000000    00000000  000   000  000000000  
+    # 000  0000  000  000   000  000       0000  000     000     
+    # 000  000 0 000  000   000  0000000   000 0 000     000     
+    # 000  000  0000  000   000  000       000  0000     000     
+    # 000  000   000  0000000    00000000  000   000     000     
+    
     ▸ numIndent
     
         kseg.numIndent 'a' ▸ 0
@@ -149,6 +245,12 @@ use .. ◆ kstr kseg
         kseg.numIndent '   b' ▸ 3
         kseg.numIndent kseg('   ') ▸ 3
                 
+    # 000  000   000  0000000    00000000  000   000  
+    # 000  0000  000  000   000  000        000 000   
+    # 000  000 0 000  000   000  0000000     00000    
+    # 000  000  0000  000   000  000        000 000   
+    # 000  000   000  0000000    00000000  000   000  
+    
     ▸ indexAtWidth
     
         kseg.indexAtWidth kseg('')    0 ▸ 0
@@ -167,6 +269,12 @@ use .. ◆ kstr kseg
         kseg.indexAtWidth kseg('🧑🧑') 4 ▸ 2
         kseg.indexAtWidth kseg('🧑🧑') 5 ▸ 2
         kseg.indexAtWidth kseg('🧑🧑') 6 ▸ 2
+    
+    #  0000000  00000000   0000000   000  
+    # 000       000       000        000  
+    # 0000000   0000000   000  0000  000  
+    #      000  000       000   000  000  
+    # 0000000   00000000   0000000   000  
     
     ▸ segiAtWidth
     
@@ -187,6 +295,12 @@ use .. ◆ kstr kseg
         kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 2
         kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2   
         
+    #  0000000  000       0000000    0000000  00000000   0000000  000000000  000   000   0000000   00000000   0000000    
+    # 000       000      000   000  000       000       000          000     000 0 000  000   000  000   000  000   000  
+    # 000       000      000   000  0000000   0000000   0000000      000     000000000  000   000  0000000    000   000  
+    # 000       000      000   000       000  000            000     000     000   000  000   000  000   000  000   000  
+    #  0000000  0000000   0000000   0000000   00000000  0000000      000     00     00   0000000   000   000  0000000    
+    
     ▸ spanForClosestWordAtColumn
     
         kseg.spanForClosestWordAtColumn kseg('abc def') 0 ▸ [0 3]        

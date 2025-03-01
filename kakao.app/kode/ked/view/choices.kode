@@ -17,6 +17,7 @@ function choices extends editor
         super screen name ['scrllr'].concat(features)
         
         @items = []
+        @focusable = true
         @hoverIndex = -1
         @fuzzied = @items
         @filterText = ''
@@ -52,6 +53,8 @@ function choices extends editor
     
         @state.setSelections [util.rangeOfLine(@state.allLines() row)]
         @emit 'select' @choiceAtRow(row)
+        
+    selectFirst: -> @select 0
     
     moveSelection: dir ->
         
@@ -73,7 +76,7 @@ function choices extends editor
             
     emitSelectionChange: ->
             
-        @grabFocus()
+        @grabFocus() if @focusable
         @frontCursor() 
         @emit 'select' @choiceAtRow(@state.allSelections()[0][1])
         
@@ -145,11 +148,11 @@ function choices extends editor
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    hoverChoiceAtRow: row => 
+    hoverChoiceAtIndex: index => 
     
-        ⮐ if @hoverIndex == row
+        ⮐ if @hoverIndex == index
         
-        @hoverIndex = row
+        @hoverIndex = index
         @select @hoverIndex
         post.emit 'pointer' 'pointer'
         
@@ -159,25 +162,23 @@ function choices extends editor
         @state.clearHighlights()
         post.emit 'pointer' 'default'
         
-    clickChoiceAtRow: row =>
+    clickChoiceAtIndex: index =>
         
         @hoverIndex = -1  
-        @emit 'action' 'click' @choiceAtRow(row)
+        @emit 'action' 'click' @fuzzied[index]
         
     onMouse: event =>
     
         [col row] = @cells.posForEvent event
         
-        if @cells.isInsideEvent event
+        if @cells.isInsideEvent(event) and @state.isValidLineIndex(row) and kseg.width(@state.s.lines[row]) >= col
             
             switch event.type
                 
-                'press'   ➜ ⮐ @clickChoiceAtRow row 
-                'move'    ➜ ⮐ @hoverChoiceAtRow row
-                'release' ➜ ⮐ @hoverChoiceAtRow row
+                'press'   ➜ ⮐ @clickChoiceAtIndex row + @state.s.view[1] 
+                'move'    ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
+                'release' ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
                 
-            log "mouse #{@name} #{col} #{row} #{event.type}" 
-            
             ⮐ true
         else
             @unhover()
@@ -205,5 +206,6 @@ function choices extends editor
             
         # not calling super here effectively disables all text-editing
         true
-                        
+         
+global.choices_class = choices # hack to prevent import recursion
 export choices

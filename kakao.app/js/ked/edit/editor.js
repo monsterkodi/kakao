@@ -14,6 +14,7 @@ import mapview from "../view/mapview.js"
 
 import state from "./state.js"
 import draw from "./draw.js"
+import complete from "./complete.js"
 
 
 editor = (function ()
@@ -59,11 +60,15 @@ editor = (function ()
         {
             this.mapscr = new mapview(this.screen,this.state)
         }
+        if (this.feats.complete)
+        {
+            this.complete = new complete(this)
+        }
     }
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr
+        var g, m, r, s, sl, sr, _65_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -93,18 +98,23 @@ editor = (function ()
             this.mapscr.layout(x + w - sr - 10,y,m,r)
         }
         this.cells.layout(x + sl + g,y,w - s - g - m,h)
+        ;(this.complete != null ? this.complete.onEditorLayout() : undefined)
         return this.state.initView()
     }
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _153_31_, _74_30_, _74_39_, _75_30_, _85_41_
+        var col, row, start, x, y, _157_31_, _77_30_, _77_39_, _78_30_, _79_32_, _89_41_
 
-        if (((_74_30_=this.mapscr) != null ? typeof (_74_39_=_74_30_.onMouse) === "function" ? _74_39_(event) : undefined : undefined))
+        if (((_77_30_=this.mapscr) != null ? typeof (_77_39_=_77_30_.onMouse) === "function" ? _77_39_(event) : undefined : undefined))
         {
             return true
         }
         if ((this.scroll != null ? this.scroll.onMouse(event) : undefined))
+        {
+            return true
+        }
+        if ((this.complete != null ? this.complete.onMouse(event) : undefined))
         {
             return true
         }
@@ -223,7 +233,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var col, row, start, steps, x, y
+        var col, row, start, steps, x, y, _205_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -284,6 +294,13 @@ editor = (function ()
         {
             return
         }
+        if ((this.complete != null))
+        {
+            if (this.complete.onWheel(event))
+            {
+                return
+            }
+        }
         switch (event.dir)
         {
             case 'up':
@@ -336,22 +353,34 @@ editor = (function ()
     editor.prototype["onFinderApply"] = function (text)
     {
         this.state.highlightText(text)
-        return this.state.moveCursorToNextHighlight()
+        this.state.moveCursorToNextHighlight()
+        return this.grabFocus()
     }
 
     editor.prototype["onKey"] = function (key, event)
     {
+        var _276_20_, _280_21_, _285_21_
+
         if (!this.hasFocus())
         {
             return
         }
+        if ((this.complete != null))
+        {
+            if (this.complete.handleKey(key,event) !== 'unhandled')
+            {
+                return
+            }
+        }
         if (this.state.handleKey(key,event) !== 'unhandled')
         {
+            ;(this.complete != null ? this.complete.hide() : undefined)
             return
         }
         if (!_k_.empty(event.char))
         {
-            return this.state.insert(event.char)
+            this.state.insert(event.char)
+            return (this.complete != null ? this.complete.word(this.state.turdBeforeCursor()) : undefined)
         }
         else
         {

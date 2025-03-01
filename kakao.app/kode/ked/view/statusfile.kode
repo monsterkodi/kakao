@@ -1,0 +1,97 @@
+###
+ 0000000  000000000   0000000   000000000  000   000   0000000  00000000  000  000      00000000  
+000          000     000   000     000     000   000  000       000       000  000      000       
+0000000      000     000000000     000     000   000  0000000   000000    000  000      0000000   
+     000     000     000   000     000     000   000       000  000       000  000      000       
+0000000      000     000   000     000      0000000   0000000   000       000  0000000  00000000  
+###
+
+use ../../kxk ▪ slash post
+use ../util   ◆ color theme
+use ../view   ◆ view
+
+function statusfile extends view
+
+    @: screen name ->
+
+        super screen name
+        
+        @rounded = ''
+        
+    layout: x y w h ->
+    
+        super x y w h  
+        
+        @adjustText()
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: -> 
+        
+        ⮐ if @hidden()
+    
+        super()
+            
+        bg = @hover ? '#44a' : theme.quicky_crumbs 
+        fg = theme.syntax["#{@pars.ext} file"] ? theme.syntax.file
+        
+        for ch,x in @rounded
+            if ch in ''
+                @cells.set x 0 ch bg '#000'
+            else
+                fg = color.darken fg if ch == '.' 
+                
+                @cells.set x 0 ch fg bg 
+                
+    #  0000000   0000000          000  000   000   0000000  000000000  
+    # 000   000  000   000        000  000   000  000          000     
+    # 000000000  000   000        000  000   000  0000000      000     
+    # 000   000  000   000  000   000  000   000       000     000     
+    # 000   000  0000000     0000000    0000000   0000000      000     
+    
+    adjustText: ->
+        
+        @file ?= ''
+        
+        @pars = slash.parse @file
+        
+        @rounded = '' + @pars.name + '.' + @pars.ext + ''
+            
+    set: file ->
+    
+        @file = trim file
+        @adjustText()
+        
+    show: file => @set file; @cells.rows = 1
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+        
+        @hover = @cells.isInsideEvent event
+        
+        ⮐ if not @hover
+
+        switch event.type
+            
+            'press' 
+                
+                @emit 'action' 'click' @file
+                delete @hover
+                ⮐ true
+                
+            'move'
+                
+                post.emit 'pointer' 'pointer'
+                
+        false
+    
+export statusfile

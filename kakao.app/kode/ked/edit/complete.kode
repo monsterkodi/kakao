@@ -1,0 +1,162 @@
+###
+ 0000000   0000000   00     00  00000000   000      00000000  000000000  00000000
+000       000   000  000   000  000   000  000      000          000     000     
+000       000   000  000000000  00000000   000      0000000      000     0000000 
+000       000   000  000 0 000  000        000      000          000     000     
+ 0000000   0000000   000   000  000        0000000  00000000     000     00000000
+###
+
+use ../../kxk ▪ kseg kutil
+use ../util   ◆ theme util
+
+function complete
+
+    @: @editor ->
+        
+        @name = @editor.name + '_complete'
+        
+        @choices = new choices_class @editor.cells.screen "#{@name}_choices"
+        @choices.focusable = false
+        @visible = false
+        
+    hide:   -> @visible = false
+    hidden: -> not @visible
+        
+    onEditorLayout: =>
+        
+        ⮐ if @hidden()
+        
+        # log "complete.onEditorLayout #{@name}"
+        
+    handleKey: key event ->
+        
+        ⮐ 'unhandled' if @hidden() or empty @words
+        
+        switch key
+            'tab'
+            'right'
+            'return' ➜ ⮐ @apply()
+            'up'
+            'down' 
+                if @words.length > 1
+                    ⮐ @moveSelection key
+            'esc'
+                ⮐ @hide()
+        
+        'unhandled'
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+        
+        ⮐ if @hidden()
+        
+        @choices.onMouse event
+
+    onWheel: event => 
+        
+        ⮐ if @hidden()
+        
+        @choices.onWheel event
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    moveSelection: dir ->
+        
+        @choices.moveSelection dir
+        
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    apply: ->
+        
+        @editor.state.insert @choices.current()[@turd.length..]
+        @hide()
+        
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
+    word: @turd ->
+        
+        ⮐ if empty @turd
+                
+        @words = kseg.chunks(@editor.state.allLines()).map (chunk) -> kseg.str chunk.segl
+        @words = kutil.uniq @words
+        @words = @words.filter (w) => w.startsWith(@turd) and w != @turd
+        @words.sort()
+        
+        if empty @words
+            log "#{@name} ▸#{@turd}◂ no completion" 
+            @visible = false
+            ⮐ 
+        
+        log "#{@name} ▸#{@turd}◂" @words
+        
+        @visible = true
+        
+        mc = @editor.state.mainCursor()
+        
+        head = @words[0]
+        
+        cx = mc[0] - @editor.state.s.view[0]
+        cy = mc[1] - @editor.state.s.view[1]
+        
+        for ch,ci in head[@turd.length..]
+            @editor.cells.set cx+ci cy ch '#fff' theme.selection
+        
+        ⮐ if @words.length <= 1
+        
+        mlw = util.maxLineWidth @words
+        
+        # log "mlw #{mlw}" @words
+        
+        h = min 8 @words.length
+        x  = @editor.cells.x+cx-@turd.length
+        y  = @editor.cells.y+cy+1
+        
+        @choices.layout x y mlw+1 h # why +2 here? shouldn't +1 be enough?
+        @choices.set @words
+        @choices.selectFirst()
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: ->
+        
+        ⮐ if @hidden() or empty @words
+
+        mc = @editor.state.mainCursor()
+
+        cx = mc[0] - @editor.state.s.view[0]
+        cy = mc[1] - @editor.state.s.view[1]
+        
+        for ch,ci in @choices.current()[@turd.length..]
+            bg = theme[@editor.name + '_selection'] ? theme.editor_selection
+            @editor.cells.set cx+ci cy ch '#fff' bg
+        
+        ⮐ if @words.length <= 1
+        
+        x  = @editor.cells.x+cx-@turd.length
+        y  = @editor.cells.y+cy+1
+
+        @choices.layout x y @choices.cells.cols+1 @choices.cells.rows
+        @choices.draw()
+
+export complete

@@ -90,8 +90,11 @@ export default {delete:function (type, jump)
                             dc = 1
                         }
                     }
-                    segi = kseg.indexAtWidth(line,x)
-                    line = kseg.join(line.slice(0, segi - dc),line.slice(segi))
+                    if (x <= kseg.width(line))
+                    {
+                        segi = kseg.indexAtWidth(line,x)
+                        line = kseg.join(line.slice(0, segi - dc),line.slice(segi))
+                    }
                 }
                 break
             case 'next':
@@ -147,6 +150,7 @@ export default {delete:function (type, jump)
     {
         return
     }
+    posl = (posl != null ? posl : this.allCursors())
     if (!this.beginIndex)
     {
         this.pushState()

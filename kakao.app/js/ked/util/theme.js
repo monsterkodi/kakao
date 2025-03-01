@@ -20,13 +20,11 @@ class theme
 
     static editor_cursor_fg = '#000'
 
-    static selection_line = '#222'
+    static editor_selection_line = '#222'
 
-    static selection = '#22a'
+    static editor_selection = '#22a'
 
-    static highlight = '#222'
-
-    static cursor = '#ff0'
+    static editor_highlight = '#222'
 
     static linenr = '#1a1a1a'
 
@@ -42,19 +40,13 @@ class theme
 
     static status = '#222'
 
+    static status_col = '#111'
+
     static status_dark = '#1a1a1a'
 
-    static scroll = '#1a1a1a'
-
-    static scroll_empty = '#000'
-
-    static scroll_dot = '#222'
-
-    static scroll_knob = '#44f'
-
-    static scroll_doth = '#88f'
-
     static status_fg = '#888'
+
+    static status_fg_dim = '#333'
 
     static status_dirty = '#fa0'
 
@@ -68,11 +60,19 @@ class theme
 
     static status_cur = '#f00'
 
+    static scroll = '#1a1a1a'
+
+    static scroll_empty = '#000'
+
+    static scroll_dot = '#222'
+
+    static scroll_knob = '#44f'
+
+    static scroll_doth = '#88f'
+
     static file = '#ff0'
 
     static dir = '#88f'
-
-    static status_fg_dim = '#333'
 
     static quicky = '#333'
 
@@ -82,13 +82,21 @@ class theme
 
     static quicky_frame_bg = '#000'
 
-    static quicky_crumbs = '#44f'
+    static quicky_crumbs = '#222'
 
-    static quicky_crumbs_empty = '#44f'
+    static quicky_crumbs_empty = '#222'
 
-    static quicky_crumbs_cursor_main = '#44f'
+    static quicky_crumbs_cursor_main = '#222'
 
-    static quicky_crumbs_cursor_empty = '#44f'
+    static quicky_crumbs_cursor_empty = '#222'
+
+    static editor_complete_choices = '#006'
+
+    static editor_complete_choices_empty = '#006'
+
+    static editor_complete_choices_selection_line = '#44f'
+
+    static editor_complete_choices_cursor_blur = '#88f'
 
     static text = '#fff'
 

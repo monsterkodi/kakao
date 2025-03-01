@@ -83,7 +83,7 @@ function inputchoice extends view
         # lf 'input.choice.onInputAction' action text
         
         switch action
-            
+            'right'
             'submit' ➜ ⮐ @applyChoice @choices.current()
             'change' ➜ ⮐ @onInputChange text
             'up'
@@ -179,13 +179,29 @@ function inputchoice extends view
 
         true
         
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
     onMouse: event =>
 
         ⮐ if @hidden()
         ⮐ true if @input.onMouse   event
         ⮐ true if @choices.onMouse event
+        
+        if event.type == 'press' and @cells.isOutsideEvent(event)
+            @hide()
+        
         true
 
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
     onWheel: event =>
 
         ⮐ if @hidden()

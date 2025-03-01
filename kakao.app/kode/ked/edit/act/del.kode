@@ -32,7 +32,7 @@ export
             for cursor in cursors
                 rng = util.rangeOfWhitespaceLeftToPos lines cursor
                 minBeforeWs = min minBeforeWs rng[2]-rng[0]
-            
+                
         for ci in cursors.length-1..0
             
             cursor = cursors[ci]
@@ -72,8 +72,9 @@ export
                             else
                                 dc = 1
 
-                        segi = kseg.indexAtWidth line x
-                        line = kseg.join line[0...segi-dc] line[segi..]
+                        if x <= kseg.width(line)
+                            segi = kseg.indexAtWidth line x
+                            line = kseg.join line[0...segi-dc] line[segi..]
 
                 'next' 
                     if x == kseg.width(lines[y])
@@ -114,9 +115,12 @@ export
         
         ⮐ if empty rngs
         
-        @pushState() if not @beginIndex
+        posl ?= @allCursors()
         
+        @pushState() if not @beginIndex
+
         [lines cursors] = util.deleteLineRangesAndAdjustPositions @allLines() rngs posl
+
         @deselect()
         @clearHighlights()
         @setLines   lines

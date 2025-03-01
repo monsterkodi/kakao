@@ -9,7 +9,7 @@
 use ../../kxk ▪ post
 use ../util   ◆ util
 use ../view   ◆ scroll gutter mapscr mapview
-use           ◆ state draw 
+use           ◆ state draw complete
 
 function editor extends draw
 
@@ -24,11 +24,12 @@ function editor extends draw
         if @name == 'editor'
             post.on 'finder.apply' @onFinderApply 
         
-        if @feats.scrllr  ➜ @scroll = new scroll  @screen @state
-        if @feats.scroll  ➜ @scroll = new scroll  @screen @state
-        if @feats.gutter  ➜ @gutter = new gutter  @screen @state
-        if @feats.mapscr  ➜ @mapscr = new mapscr  @screen @state; @mapscr.show()
-        if @feats.mapview ➜ @mapscr = new mapview @screen @state
+        if @feats.scrllr   ➜ @scroll   = new scroll   @screen @state
+        if @feats.scroll   ➜ @scroll   = new scroll   @screen @state
+        if @feats.gutter   ➜ @gutter   = new gutter   @screen @state
+        if @feats.mapscr   ➜ @mapscr   = new mapscr   @screen @state; @mapscr.show()
+        if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state
+        if @feats.complete ➜ @complete = new complete @
                 
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
@@ -57,10 +58,12 @@ function editor extends draw
         if @mapscr
             m = @mapscr.visible() ? 10 : 0
             r = @mapscr.visible() ? h : 0
-            # lf 'editor.layout.mapscr' @name @mapscr.visible() x+w-sr-10 y m r
             @mapscr.layout x+w-sr-10   y   m   r
             
         @cells.layout x+sl+g  y   w-s-g-m    h
+        
+        @complete?.onEditorLayout()
+        
         @state.initView()
                 
     # 00     00   0000000   000   000   0000000  00000000  
@@ -71,9 +74,10 @@ function editor extends draw
     
     onMouse: event =>
         
-        ⮐ true if @mapscr?.onMouse? event
-        ⮐ true if @scroll?.onMouse  event
-        ⮐ true if super             event
+        ⮐ true if @mapscr?.onMouse?  event
+        ⮐ true if @scroll?.onMouse   event
+        ⮐ true if @complete?.onMouse event
+        ⮐ true if super              event
         
         [col row] = @cells.posForEvent event
         
@@ -193,13 +197,14 @@ function editor extends draw
                 if @state.select start [x y]
                     @redraw()
                 ⮐ 
-                
         
         [col row] = @cells.posForEvent event
         
-                
         ⮐ if not @cells.isInsideEvent event
-                
+
+        if @complete?
+            ⮐ if @complete.onWheel event
+        
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
             
@@ -252,10 +257,11 @@ function editor extends draw
     
     redraw: => post.emit 'redraw'
     
-    onFinderApply: text => 
+    onFinderApply: text =>
     
         @state.highlightText text
         @state.moveCursorToNextHighlight()
+        @grabFocus()
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -266,11 +272,17 @@ function editor extends draw
     onKey: key event =>
         
         ⮐ if not @hasFocus()
+        
+        if @complete?
+            ⮐ if @complete.handleKey(key event) != 'unhandled'
 
-        ⮐ if @state.handleKey(key event) != 'unhandled'
+        if @state.handleKey(key event) != 'unhandled'
+            @complete?.hide()
+            ⮐ 
 
         if valid event.char
             @state.insert event.char
+            @complete?.word @state.turdBeforeCursor()
         else
             if key not in ['shift' 'ctrl' 'alt' 'cmd'] 
                 log 'editor.onKey?' key

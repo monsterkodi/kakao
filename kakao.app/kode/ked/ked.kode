@@ -43,7 +43,7 @@ function KED
         @menu    = new menu     @screen        
         @quicky  = new quicky   @screen 
         @finder  = new finder   @screen 
-        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' ]
+        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete']
         @status  = new status   @screen @editor.state
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -58,7 +58,7 @@ function KED
         post.on 'file.new'      @newFile
         post.on 'quit'          @quit
         
-        @mouseHandlers = [@finder @quicky @menu @editor]
+        @mouseHandlers = [@finder @quicky @menu @editor @status]
         @wheelHandlers = [@finder @quicky @menu @editor]
         @keyHandlers   = [@finder @quicky @menu @editor]
         
@@ -150,10 +150,10 @@ function KED
         start = process.hrtime()
         
         if slash.isAbsolute p
-            @status.file = slash.tilde  p
+            @status.setFile slash.tilde(p)
             @currentFile = slash.absolute p
         else
-            @status.file = slash.normalize p
+            @status.setFile slash.normalize(p)
             @currentFile = slash.path process.cwd() p
 
         @currentFile =○ nfs.resolveSymlink @currentFile
@@ -269,12 +269,12 @@ function KED
     # 000 0000   000   000  000  000       000  000      000     
     #  00000 00   0000000   000   0000000  000   000     000     
     
-    onQuicky: event ○=>
+    onQuicky: path ○=>
         
-        if slash.isAbsolute event
-            file = event
+        if slash.isAbsolute path
+            file = path
         else
-            file = slash.absolute event slash.dir(@currentFile)
+            file = slash.absolute path slash.dir(@currentFile)
         
         ⮐ if slash.samePath file @currentFile
             

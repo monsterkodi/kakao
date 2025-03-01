@@ -57,7 +57,7 @@ edit = (function ()
                 {
                     line = newls.pop()
                 }
-                if (x > line.length)
+                if (x > line.length && text !== '\n')
                 {
                     line = line.concat(_k_.lpad(x - line.length).split(''))
                 }
@@ -125,13 +125,13 @@ edit = (function ()
 
         lines = _k_.copy(lines)
         posl = _k_.clone(posl)
+        if (_k_.empty(rngs))
+        {
+            return [lines,posl]
+        }
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
             rng = rngs[ri]
-            if (rng[2] === 0 && rng[3] > rng[1])
-            {
-                rng = [rng[0],rng[1],lines[rng[3] - 1].length,rng[3] - 1]
-            }
             posl = this.adjustPositionsForDeletedLineRange(posl,lines,rng)
             if (rng[1] === rng[3])
             {
@@ -180,6 +180,10 @@ edit = (function ()
     {
         var pi, pos
 
+        if (_k_.empty(posl))
+        {
+            return posl
+        }
         for (var _a_ = pi = posl.length - 1, _b_ = 0; (_a_ <= _b_ ? pi <= 0 : pi >= 0); (_a_ <= _b_ ? ++pi : --pi))
         {
             pos = posl[pi]
@@ -306,10 +310,10 @@ edit = (function ()
 
     edit["rangesForJoiningLines"] = function (lines, idxs)
     {
-        return idxs.map(function (idx)
+        return idxs.map((function (idx)
         {
             return this.rangeForJoiningLine(lines,idx)
-        })
+        }).bind(this))
     }
 
     edit["moveLineRangesAndPositionsAtIndicesInDirection"] = function (lines, rngs, posl, indices, dir)

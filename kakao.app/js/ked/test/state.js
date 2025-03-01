@@ -255,6 +255,32 @@ line 1
 line 2
 line 3`)
     })
+    section("deleteRanges", function ()
+    {
+        text = `line 1
+line 2
+line 3`
+        s.loadLines(util.linesForText(text))
+        s.deleteRanges([[0,0,2,0]])
+        txt(`ne 1
+line 2
+line 3`)
+        s.deleteRanges([[2,0,2,1]])
+        txt(`nene 2
+line 3`)
+        s.deleteRanges([[6,0,0,1]])
+        txt(`nene 2line 3`)
+    })
+    section("joinLines", function ()
+    {
+        text = `line 1
+line 2
+line 3`
+        s.loadLines(util.linesForText(text))
+        s.joinLines()
+        txt(`line 1line 2
+line 3`)
+    })
 }
 toExport["state"]._section_ = true
 toExport._test_ = true

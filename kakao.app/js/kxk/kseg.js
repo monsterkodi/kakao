@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.b6=_k_.k.F256(_k_.k.b(6))
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.b6=_k_.k.F256(_k_.k.b(6))
 
 var dumptable, intable, kseg, segmenter, wcwidth, wcwidth_ambiguous, wcwidth_combining, wcwidth_doublewidth, wcwidth_emoji_width, wcwidth_nonprint, wcwidth_private, wcwidth_singlewidth
 
@@ -32,6 +32,33 @@ kseg.lines = function (s)
         return kseg(l)
     })
     return {lines:lines,segls:segls}
+}
+
+kseg.segl = function (any)
+{
+    var a, segls
+
+    if (_k_.isStr(any))
+    {
+        return kseg(any)
+    }
+    else if (_k_.isStr(any[0]))
+    {
+        return any
+    }
+    else
+    {
+        segls = []
+        var list = _k_.list(any)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            a = list[_a_]
+            segls = segls.concat(a)
+            segls.push('\n')
+        }
+        segls.pop()
+        return segls
+    }
 }
 
 kseg.segls = function (s)
@@ -79,9 +106,9 @@ kseg.join = function (...args)
 
     r = []
     var list = _k_.list(args)
-    for (var _a_ = 0; _a_ < list.length; _a_++)
+    for (var _b_ = 0; _b_ < list.length; _b_++)
     {
-        a = list[_a_]
+        a = list[_b_]
         r = r.concat(kseg(a))
     }
     return r
@@ -113,13 +140,17 @@ kseg.detab = function (a, tw = 4)
     return a
 }
 
-kseg.chunks = function (a)
+kseg.chunks = function (any)
 {
     var chunk, chunks, g, i, spaces
 
+    if (_k_.empty(any))
+    {
+        return []
+    }
     chunks = []
     spaces = true
-    var list = _k_.list(a)
+    var list = _k_.list(kseg.segl(any))
     for (i = 0; i < list.length; i++)
     {
         g = list[i]
@@ -191,7 +222,7 @@ kseg.tailCount = function (a, c)
 {
     var i
 
-    for (var _d_ = i = 0, _e_ = a.length; (_d_ <= _e_ ? i < a.length : i > a.length); (_d_ <= _e_ ? ++i : --i))
+    for (var _e_ = i = 0, _f_ = a.length; (_e_ <= _f_ ? i < a.length : i > a.length); (_e_ <= _f_ ? ++i : --i))
     {
         if (a[a.length - 1 - i] !== c)
         {
@@ -221,7 +252,7 @@ kseg.tailCountWord = function (a)
 {
     var i
 
-    for (var _10_ = i = 0, _11_ = a.length; (_10_ <= _11_ ? i < a.length : i > a.length); (_10_ <= _11_ ? ++i : --i))
+    for (var _11_ = i = 0, _12_ = a.length; (_11_ <= _12_ ? i < a.length : i > a.length); (_11_ <= _12_ ? ++i : --i))
     {
         if (!/\w+/.test(a[a.length - 1 - i]))
         {
@@ -301,7 +332,7 @@ kseg.repeat = function (n, s = ' ')
     }
     s = kseg(s)
     a = []
-    for (var _12_ = i = 0, _13_ = n; (_12_ <= _13_ ? i < n : i > n); (_12_ <= _13_ ? ++i : --i))
+    for (var _13_ = i = 0, _14_ = n; (_13_ <= _14_ ? i < n : i > n); (_13_ <= _14_ ? ++i : --i))
     {
         a = a.concat(s)
     }
@@ -375,9 +406,9 @@ kseg.width = function (s)
     }
     w = 0
     var list = _k_.list(kseg(s))
-    for (var _14_ = 0; _14_ < list.length; _14_++)
+    for (var _15_ = 0; _15_ < list.length; _15_++)
     {
-        seg = list[_14_]
+        seg = list[_15_]
         w += wcwidth(seg.codePointAt(0))
     }
     return w
@@ -460,11 +491,11 @@ dumptable = function (table)
     var c, item, s
 
     var list = _k_.list(table)
-    for (var _15_ = 0; _15_ < list.length; _15_++)
+    for (var _16_ = 0; _16_ < list.length; _16_++)
     {
-        item = list[_15_]
+        item = list[_16_]
         s = _k_.b6(item[0].toString(16)) + '-' + _k_.b6(item[1].toString(16))
-        for (var _16_ = c = item[0], _17_ = item[1]; (_16_ <= _17_ ? c <= item[1] : c >= item[1]); (_16_ <= _17_ ? ++c : --c))
+        for (var _17_ = c = item[0], _18_ = item[1]; (_17_ <= _18_ ? c <= item[1] : c >= item[1]); (_17_ <= _18_ ? ++c : --c))
         {
             s += String.fromCodePoint(c)
         }

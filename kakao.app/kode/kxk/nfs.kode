@@ -293,7 +293,9 @@ class NFS
     @readText: p ○->
         
         text =○ NFS.read p 
-        ⮐ if text.includes '\ufffd' #unicode replacement character
+        if text.includes '\ufffd' #unicode replacement character
+            if text[0..32].includes '\x00'
+                ⮐
         text
 
 export NFS

@@ -57,4 +57,5 @@ for (exp in util)
     kxk[exp] = utl
 }
 kxk.isElement = elem.isElement
+kxk.kutil = util
 export default kxk;
