@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var c, cells, l, line, lines, rect, segls, spans
+var c, cells, l, line, lines, rect, segls, spans, words
 
 import util from "../util/util.js"
 
@@ -473,6 +473,21 @@ line 2`)
         lines = ['a','b','c','d','e']
         compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'up'),[['b','c','d','a','e'],[],[[0,0],[0,1],[0,2]]])
         compare(util.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'down'),[['a','e','b','c','d'],[],[[0,2],[0,3],[0,4]]])
+    })
+    section("cleanWordsForCompletion", function ()
+    {
+        words = util.linesForText(`Alice
+Alice!
+Alice!"
+Alice)--
+Alice,
+Alice,)
+Alice.
+Alice:
+Alice;
+Alice’s
+Alice’s,`)
+        compare(util.cleanWordsForCompletion(words),['Alice','Alice’s'])
     })
 }
 toExport["util"]._section_ = true

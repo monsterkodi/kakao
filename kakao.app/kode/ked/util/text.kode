@@ -6,7 +6,7 @@
    000     00000000  000   000     000   
 ###
 
-use ../../kxk ▪ kstr kseg
+use ../../kxk ▪ kstr kutil kseg
 
 function text
 
@@ -413,5 +413,23 @@ function text
             
         ⮐ 0 if pos[0] + dx < 0
         dx
+        
+    ###
+     0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
+    000       000   000  000   000  000   000  000      000          000     000  000   000  0000  000  
+    000       000   000  000000000  00000000   000      0000000      000     000  000   000  000 0 000  
+    000       000   000  000 0 000  000        000      000          000     000  000   000  000  0000  
+     0000000   0000000   000   000  000        0000000  00000000     000     000   0000000   000   000  
+    
+    list of strings -> list of strings
+    ###
+    
+    @cleanWordsForCompletion: words ->
+        
+        segls = []
+        for segl in kseg.segls words
+            wi = kseg.tailCountTurd segl
+            segls.push segl[0...segl.length-wi]
+        kutil.uniq segls.map(kseg.str)
                 
 export text

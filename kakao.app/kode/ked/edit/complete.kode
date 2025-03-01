@@ -103,6 +103,7 @@ function complete
         @words = kseg.chunks(@editor.state.allLines()).map (chunk) -> kseg.str chunk.segl
         @words = kutil.uniq @words
         @words = @words.filter (w) => w.startsWith(@turd) and w != @turd
+        @words = util.cleanWordsForCompletion @words
         @words.sort()
         
         if empty @words
@@ -110,7 +111,7 @@ function complete
             @visible = false
             ⮐ 
         
-        log "#{@name} ▸#{@turd}◂" @words
+        # log "#{@name} ▸#{@turd}◂" @words
         
         @visible = true
         

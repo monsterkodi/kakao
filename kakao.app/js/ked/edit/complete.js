@@ -123,6 +123,7 @@ complete = (function ()
         {
             return w.startsWith(this.turd) && w !== this.turd
         }).bind(this))
+        this.words = util.cleanWordsForCompletion(this.words)
         this.words.sort()
         if (_k_.empty(this.words))
         {
@@ -130,7 +131,6 @@ complete = (function ()
             this.visible = false
             return
         }
-        console.log(`${this.name} ▸${this.turd}◂`,this.words)
         this.visible = true
         mc = this.editor.state.mainCursor()
         head = this.words[0]
@@ -157,7 +157,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, x, y, _155_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, x, y, _156_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -170,7 +170,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_155_52_=theme[this.editor.name + '_selection']) != null ? _155_52_ : theme.editor_selection)
+            bg = ((_156_52_=theme[this.editor.name + '_selection']) != null ? _156_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

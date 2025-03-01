@@ -61,42 +61,42 @@ kseg.segl = function (any)
     }
 }
 
-kseg.segls = function (s)
+kseg.segls = function (any)
 {
-    if (_k_.isStr(s))
+    if (_k_.isStr(any))
     {
-        return kseg.lines(s).segls
+        return kseg.lines(any).segls
     }
-    else if (_k_.isArr(s))
+    else if (_k_.isArr(any))
     {
-        if (_k_.isStr(s[0]))
+        if (_k_.isStr(any[0]))
         {
-            return s.map(kseg)
+            return any.map(kseg)
         }
-        else if (_k_.isArr(s[0]))
+        else if (_k_.isArr(any[0]))
         {
-            return s
+            return any
         }
     }
 }
 
-kseg.str = function (a)
+kseg.str = function (any)
 {
-    if (_k_.empty(a))
+    if (_k_.empty(any))
     {
         return ''
     }
-    if (!(_k_.isArr(a)))
+    if (!(_k_.isArr(any)))
     {
-        return a
+        return any
     }
-    if (_k_.isStr(a[0]))
+    if (_k_.isStr(any[0]))
     {
-        return a.join('')
+        return any.join('')
     }
     else
     {
-        return a.map(kseg.str).join('\n')
+        return any.map(kseg.str).join('\n')
     }
 }
 
@@ -262,6 +262,36 @@ kseg.tailCountWord = function (a)
     return i
 }
 
+kseg.headCountTurd = function (a)
+{
+    var i, s
+
+    var list = _k_.list(a)
+    for (i = 0; i < list.length; i++)
+    {
+        s = list[i]
+        if (/[\s\w]+/.test(s))
+        {
+            return i
+        }
+    }
+    return i
+}
+
+kseg.tailCountTurd = function (a)
+{
+    var i
+
+    for (var _14_ = i = 0, _15_ = a.length; (_14_ <= _15_ ? i < a.length : i > a.length); (_14_ <= _15_ ? ++i : --i))
+    {
+        if (/[\s\w]+/.test(a[a.length - 1 - i]))
+        {
+            return i
+        }
+    }
+    return i
+}
+
 kseg.spanForClosestWordAtColumn = function (a, c)
 {
     var left, ll, ls, lw, right, rl, rs, rw, s, segi
@@ -332,7 +362,7 @@ kseg.repeat = function (n, s = ' ')
     }
     s = kseg(s)
     a = []
-    for (var _13_ = i = 0, _14_ = n; (_13_ <= _14_ ? i < n : i > n); (_13_ <= _14_ ? ++i : --i))
+    for (var _16_ = i = 0, _17_ = n; (_16_ <= _17_ ? i < n : i > n); (_16_ <= _17_ ? ++i : --i))
     {
         a = a.concat(s)
     }
@@ -351,19 +381,6 @@ kseg.trim = function (s)
     hc = kseg.headCount(s,' ')
     tc = kseg.tailCount(s,' ')
     return s.slice(hc, s.length - tc)
-}
-
-kseg.indexAtWidth = function (segs, w)
-{
-    var i, s
-
-    i = s = 0
-    while (s < w && i < segs.length)
-    {
-        s += kseg.width(segs[i])
-        i += 1
-    }
-    return i
 }
 
 kseg.segiAtWidth = function (segs, w)
@@ -406,12 +423,25 @@ kseg.width = function (s)
     }
     w = 0
     var list = _k_.list(kseg(s))
-    for (var _15_ = 0; _15_ < list.length; _15_++)
+    for (var _18_ = 0; _18_ < list.length; _18_++)
     {
-        seg = list[_15_]
+        seg = list[_18_]
         w += wcwidth(seg.codePointAt(0))
     }
     return w
+}
+
+kseg.indexAtWidth = function (segs, w)
+{
+    var i, s
+
+    i = s = 0
+    while (s < w && i < segs.length)
+    {
+        s += kseg.width(segs[i])
+        i += 1
+    }
+    return i
 }
 wcwidth_private = [[0x00e000,0x00f8ff],[0x0f0000,0x0ffffd],[0x100000,0x10fffd]]
 wcwidth_nonprint = [[0x0000,0x001f],[0x007f,0x009f],[0x00ad,0x00ad],[0x070f,0x070f],[0x180b,0x180e],[0x200b,0x200f],[0x2028,0x2029],[0x202a,0x202e],[0x206a,0x206f],[0xd800,0xdfff],[0xfeff,0xfeff],[0xfff9,0xfffb],[0xfffe,0xffff]]
@@ -491,11 +521,11 @@ dumptable = function (table)
     var c, item, s
 
     var list = _k_.list(table)
-    for (var _16_ = 0; _16_ < list.length; _16_++)
+    for (var _19_ = 0; _19_ < list.length; _19_++)
     {
-        item = list[_16_]
+        item = list[_19_]
         s = _k_.b6(item[0].toString(16)) + '-' + _k_.b6(item[1].toString(16))
-        for (var _17_ = c = item[0], _18_ = item[1]; (_17_ <= _18_ ? c <= item[1] : c >= item[1]); (_17_ <= _18_ ? ++c : --c))
+        for (var _1a_ = c = item[0], _1b_ = item[1]; (_1a_ <= _1b_ ? c <= item[1] : c >= item[1]); (_1a_ <= _1b_ ? ++c : --c))
         {
             s += String.fromCodePoint(c)
         }

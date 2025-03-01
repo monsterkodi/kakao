@@ -4,6 +4,7 @@ var text
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
+let kutil = kxk.kutil
 let kseg = kxk.kseg
 
 
@@ -715,6 +716,21 @@ text = (function ()
             return 0
         }
         return dx
+    }
+
+    text["cleanWordsForCompletion"] = function (words)
+    {
+        var segl, segls, wi
+
+        segls = []
+        var list = _k_.list(kseg.segls(words))
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            segl = list[_a_]
+            wi = kseg.tailCountTurd(segl)
+            segls.push(segl.slice(0, segl.length - wi))
+        }
+        return kutil.uniq(segls.map(kseg.str))
     }
 
     return text

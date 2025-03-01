@@ -48,19 +48,20 @@ greeter = (function ()
 
     greeter.prototype["draw"] = function ()
     {
-        var c1, c2, c3, cell, f, row, x, y
+        var c1, c2, c3, cell, duration, f, row, x, y
 
         if (this.hidden())
         {
             return
         }
         this.show()
+        duration = 240
         this.a += 1
-        if (this.a > 120)
+        if (this.a > duration)
         {
             this.a = 0
         }
-        f = 0.75 + 0.25 * Math.cos(2 * Math.PI * (1 - this.a / 120))
+        f = 0.75 + 0.25 * Math.cos(2 * Math.PI * (1 - this.a / duration))
         c1 = [0,parseInt(f * 255),0]
         c2 = [parseInt(f * 120),parseInt(f * 120),parseInt(f * 255)]
         c3 = [parseInt(f * 255),parseInt(f * 160),0]

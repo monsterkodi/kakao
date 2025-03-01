@@ -10,6 +10,11 @@ use ◆ kstr
 
 segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'
 
+###
+    converts string s into array of strings
+    each sub-string contains the bytes of exactly one grapheme
+###
+
 kseg = s ->
     
     ⮐ [] if empty s
@@ -17,6 +22,19 @@ kseg = s ->
     
     Array.from(segmenter.segment(s)).map (r) -> r.segment
     
+###
+    000      000  000   000  00000000   0000000  
+    000      000  0000  000  000       000       
+    000      000  000 0 000  0000000   0000000   
+    000      000  000  0000  000            000  
+    0000000  000  000   000  00000000  0000000   
+
+    converts string s into an object with two properties:
+        
+        lines: list of strings         # s split into lines
+        segls: list of list of strings # graphemes for each line
+###
+
 kseg.lines = s ->
     
     lines = kstr.lines s
@@ -26,6 +44,23 @@ kseg.lines = s ->
     lines: lines
     segls: segls
     
+###
+     0000000  00000000   0000000   000      
+    000       000       000        000      
+    0000000   0000000   000  0000  000      
+         000  000       000   000  000      
+    0000000   00000000   0000000   0000000 
+    
+    converts any into a list of strings
+    
+    any can be:
+        a string
+        a list of strings
+        a list of list of strings
+        
+    joins lists and inserts '\n' in the last case
+###
+
 kseg.segl = any ->
     
     if any is str
@@ -40,23 +75,67 @@ kseg.segl = any ->
         segls.pop()
         segls
     
-kseg.segls = s -> 
+###
+     0000000  00000000   0000000   000       0000000  
+    000       000       000        000      000       
+    0000000   0000000   000  0000  000      0000000   
+         000  000       000   000  000           000  
+    0000000   00000000   0000000   0000000  0000000   
+    
+    converts any into a list of list of strings
+    
+    any can be:
+        a string
+        a list of strings
+        
+    anything else is returned unchanged
+###
+
+kseg.segls = any -> 
 
     if 
-        s is str ➜ kseg.lines(s).segls
-        s is arr 
+        any is str ➜ kseg.lines(any).segls
+        any is arr 
             if 
-                s[0] is str ➜ s.map(kseg)
-                s[0] is arr ➜ s
+                any[0] is str ➜ any.map(kseg)
+                any[0] is arr ➜ any
     
-kseg.str = a ->
+###
+     0000000  000000000  00000000   
+    000          000     000   000  
+    0000000      000     0000000    
+         000     000     000   000  
+    0000000      000     000   000  
+    
+    converts any into a string
+    
+    any can be:
+        a list of strings
+        a list of list of strings
+        
+    anything else is returned unchanged
+###
 
-    ⮐ '' if empty a
-    ⮐ a if not a is arr
-    if a[0] is str
-        a.join ''
+kseg.str = any ->
+
+    ⮐ '' if empty any
+    ⮐ any if not any is arr
+    if any[0] is str
+        any.join ''
     else
-        a.map(kseg.str).join('\n')
+        any.map(kseg.str).join('\n')
+
+###
+          000   0000000   000  000   000  
+          000  000   000  000  0000  000  
+          000  000   000  000  000 0 000  
+    000   000  000   000  000  000  0000  
+     0000000    0000000   000  000   000  
+     
+    returns list of graphemes for all arguments
+        
+    args can be strings and/or grapheme lists
+###
 
 kseg.join = args... ->
         
@@ -65,6 +144,16 @@ kseg.join = args... ->
         r = r.concat kseg(a)
     r
     
+###
+    0000000    00000000  000000000   0000000   0000000    
+    000   000  000          000     000   000  000   000  
+    000   000  0000000      000     000000000  0000000    
+    000   000  000          000     000   000  000   000  
+    0000000    00000000     000     000   000  0000000    
+    
+    replaces tabs with up to 4 spaces in list of graphemes a
+###
+
 kseg.detab = a tw=4 ->
     
     ⮐ a if not a is arr
@@ -80,6 +169,25 @@ kseg.detab = a tw=4 ->
             i += 1
     a
     
+###
+     0000000  000   000  000   000  000   000  000   000   0000000  
+    000       000   000  000   000  0000  000  000  000   000       
+    000       000000000  000   000  000 0 000  0000000    0000000   
+    000       000   000  000   000  000  0000  000  000        000  
+     0000000  000   000   0000000   000   000  000   000  0000000   
+     
+    splits any into a list of chunks
+
+    each chunk has 2 properties:
+        index: int              # start index in the grapheme list of any
+        segl:  list of strings  # list of graphemes without any whitespace
+    
+    any can be:
+        a string
+        a list of strings
+        a list of list of strings
+###
+
 kseg.chunks = any ->
     
     ⮐ [] if empty any
@@ -104,6 +212,18 @@ kseg.chunks = any ->
         
     chunks
     
+###
+     0000000  000000000   0000000   00000000   000000000   0000000        000   000  000  000000000  000   000  
+    000          000     000   000  000   000     000     000             000 0 000  000     000     000   000  
+    0000000      000     000000000  0000000       000     0000000         000000000  000     000     000000000  
+         000     000     000   000  000   000     000          000        000   000  000     000     000   000  
+    0000000      000     000   000  000   000     000     0000000         00     00  000     000     000   000  
+    
+    check if a list of graphemes starts with prefix
+        
+    prefix can be string or grapheme list
+###
+
 kseg.startsWith = a prefix ->
     
     ⮐ false if a.length < prefix.length
@@ -113,6 +233,20 @@ kseg.startsWith = a prefix ->
     segs = kseg prefix
     a[0...segs.length] eql segs
     
+###
+     0000000   0000000   000   000  000   000  000000000  
+    000       000   000  000   000  0000  000     000     
+    000       000   000  000   000  000 0 000     000     
+    000       000   000  000   000  000  0000     000     
+     0000000   0000000    0000000   000   000     000     
+    
+    number of graphemes at the start or end of a grapheme list
+    
+    head|tailCount:     number of graphemes contained in c
+    head|tailCountWord: number of graphemes in word character set
+    head|tailCountTurd: number of graphemes not in word or ws set
+###
+
 kseg.headCount = a c ->
     
     for s,i in a
@@ -136,7 +270,30 @@ kseg.tailCountWord = a ->
     for i in 0...a.length
         ⮐ i if not /\w+/.test a[a.length-1-i]
     i
+
+kseg.headCountTurd = a ->
     
+    for s,i in a
+        ⮐ i if /[\s\w]+/.test s
+    i
+    
+kseg.tailCountTurd = a ->
+    
+    for i in 0...a.length
+        ⮐ i if /[\s\w]+/.test a[a.length-1-i]
+    i
+    
+###
+    000   000   0000000   00000000   0000000    
+    000 0 000  000   000  000   000  000   000  
+    000000000  000   000  0000000    000   000  
+    000   000  000   000  000   000  000   000  
+    00     00   0000000   000   000  0000000    
+    
+    start and end position of word
+    closest to index c in a grapheme list
+###
+
 kseg.spanForClosestWordAtColumn = a c ->
     
     a = kseg a
@@ -169,6 +326,12 @@ kseg.spanForClosestWordAtColumn = a c ->
         
     s
     
+# 000  000   000  0000000    00000000  000   000  000000000  
+# 000  0000  000  000   000  000       0000  000     000     
+# 000  000 0 000  000   000  0000000   000 0 000     000     
+# 000  000  0000  000   000  000       000  0000     000     
+# 000  000   000  0000000    00000000  000   000     000     
+
 kseg.numIndent = a -> kseg.headCount a ' '
         
 kseg.splitAtIndent = a ->
@@ -176,6 +339,12 @@ kseg.splitAtIndent = a ->
     i = kseg.numIndent a
     [a[0...i] a[i..]]
     
+# 00000000   00000000  00000000   00000000   0000000   000000000  
+# 000   000  000       000   000  000       000   000     000     
+# 0000000    0000000   00000000   0000000   000000000     000     
+# 000   000  000       000        000       000   000     000     
+# 000   000  00000000  000        00000000  000   000     000     
+
 kseg.repeat = n s=' ' ->
     
     ⮐ [] if n <= 0
@@ -185,6 +354,12 @@ kseg.repeat = n s=' ' ->
         a = a.concat s
     a
     
+# 000000000  00000000   000  00     00  
+#    000     000   000  000  000   000  
+#    000     0000000    000  000000000  
+#    000     000   000  000  000 0 000  
+#    000     000   000  000  000   000  
+
 kseg.trim = s ->
     
     ⮐ [] if empty s
@@ -194,19 +369,12 @@ kseg.trim = s ->
     s[hc..s.length-tc]
 
 ### 
-    segment index at column w 
+     0000000  00000000   0000000   000  
+    000       000       000        000  
+    0000000   0000000   000  0000  000  
+         000  000       000   000  000  
+    0000000   00000000   0000000   000  
     
-    ⮐ start of next segment if column is inside
-###
-kseg.indexAtWidth = segs w ->
-
-    i = s = 0
-    while s < w and i < segs.length
-        s += kseg.width segs[i]
-        i += 1    
-    i
-
-### 
     segment index at column w 
     
     ⮐ start of segment if column is inside
@@ -229,6 +397,12 @@ kseg.widthAtSegi = segs segi ->
     kseg.width segs[0...segi]
     
 ###
+    000   000  000  0000000    000000000  000   000  
+    000 0 000  000  000   000     000     000   000  
+    000000000  000  000   000     000     000000000  
+    000   000  000  000   000     000     000   000  
+    00     00  000  0000000       000     000   000  
+    
     number of columns occupied by string or segment list s
 ###
 kseg.width = s ->
@@ -243,6 +417,19 @@ kseg.width = s ->
         w += wcwidth seg.codePointAt(0)                    
     w
 
+### 
+    segment index at column w 
+    
+    ⮐ start of next segment if column is inside
+###
+kseg.indexAtWidth = segs w ->
+
+    i = s = 0
+    while s < w and i < segs.length
+        s += kseg.width segs[i]
+        i += 1    
+    i
+    
 # https://github.com/joshuarubin/wcwidth9            
             
 wcwidth_private = [

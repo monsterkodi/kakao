@@ -8,6 +8,7 @@ let kstr = kxk.kstr
 
 import color from "../util/color.js"
 import theme from "../util/theme.js"
+import prof from "../util/prof.js"
 import util from "../util/util.js"
 
 import view from "../view/view.js"
@@ -164,10 +165,11 @@ draw = (function ()
 
     draw.prototype["drawSelections"] = function (lines)
     {
-        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _151_50_, _152_50_
+        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _153_50_, _154_50_
 
-        spanbg = ((_151_50_=theme[this.name + '_selection']) != null ? _151_50_ : theme.editor_selection)
-        linebg = ((_152_50_=theme[this.name + '_selection_line']) != null ? _152_50_ : theme.editor_selection_line)
+        prof.start('selection')
+        spanbg = ((_153_50_=theme[this.name + '_selection']) != null ? _153_50_ : theme.editor_selection)
+        linebg = ((_154_50_=theme[this.name + '_selection_line']) != null ? _154_50_ : theme.editor_selection_line)
         if (!this.cells.screen.t.hasFocus)
         {
             spanbg = color.darken(spanbg)
@@ -207,16 +209,17 @@ draw = (function ()
                 }
             }
         }
+        return prof.end('selection')
     }
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fcb, fg, mainCursor, s, x, y, _192_44_, _193_44_, _206_46_, _208_37_
+        var bg, cursor, fcb, fg, mainCursor, s, x, y, _196_44_, _197_44_, _210_46_, _212_37_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_192_44_=theme[this.name + '_cursor_fg']) != null ? _192_44_ : theme.editor_cursor_fg)
-        bg = ((_193_44_=theme[this.name + '_cursor_multi']) != null ? _193_44_ : theme.editor_cursor_multi)
+        fg = ((_196_44_=theme[this.name + '_cursor_fg']) != null ? _196_44_ : theme.editor_cursor_fg)
+        bg = ((_197_44_=theme[this.name + '_cursor_multi']) != null ? _197_44_ : theme.editor_cursor_multi)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -236,9 +239,9 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_206_46_=theme[this.name + '_cursor_fg']) != null ? _206_46_ : theme.editor_cursor_fg)
+            fg = ((_210_46_=theme[this.name + '_cursor_fg']) != null ? _210_46_ : theme.editor_cursor_fg)
             fcb = (this.hasFocus() ? '_cursor_bg' : '_cursor_blur')
-            bg = ((_208_37_=theme[this.name + fcb]) != null ? _208_37_ : theme['editor' + fcb])
+            bg = ((_212_37_=theme[this.name + fcb]) != null ? _212_37_ : theme['editor' + fcb])
             var _b_ = [mainCursor[0] - s.view[0],mainCursor[1] - s.view[1]]; x = _b_[0]; y = _b_[1]
 
             if (s.cursors.length <= 1)
