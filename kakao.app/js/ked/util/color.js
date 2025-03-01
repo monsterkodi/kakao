@@ -187,7 +187,7 @@ class color
                     }
                 }
                 scl = strength * 0.014
-                scl = scl * randRange(0.96,1.04)
+                scl = scl * randRange(0.98,1.02)
                 sum = sum.map(function (v)
                 {
                     return _k_.clamp(0,255,parseInt(scl * v))

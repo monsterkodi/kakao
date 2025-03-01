@@ -18,10 +18,14 @@ function scroll extends view
     
         super screen @state.owner() + '.scroll'
         
+        @color = 
+            dot:  theme.scroll_dot
+            knob: theme.scroll
+            
         if @name == 'editor.scroll' # future me hate?
-            @handle = '▌' ; @bg = theme.gutter
+            @handle = '▌' ; @color.bg = theme.gutter
         else
-            @handle = '┃' ; @bg = theme.editor 
+            @handle = '┃' ; @color.bg = theme.editor 
     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -105,13 +109,13 @@ function scroll extends view
         
         for row in 0...rows
 
-            fg = @bg
+            fg = @color.bg
 
             if       
                 lnum < rows     ➜
-                row == nc       ➜ fg = @hover ? theme.scroll_doth : theme.scroll_dot
-                ns <= row <= ne ➜ fg = @hover ? theme.scroll_knob : theme.scroll
+                row == nc       ➜ fg = @hover ? theme.scroll_doth : @color.dot
+                ns <= row <= ne ➜ fg = @hover ? theme.scroll_knob : @color.knob
                 
-            @cells.set 0 row @handle fg @bg
+            @cells.set 0 row @handle fg @color.bg
 
 export scroll

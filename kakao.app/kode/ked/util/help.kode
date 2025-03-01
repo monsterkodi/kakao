@@ -12,7 +12,11 @@ function help
 
     @header: -> '\n' + color.linesForCells(@headerCells()).join('\n') + '\n'
         
-    @headerCells: ->
+    @headerCells: color1 color2 color3 ->
+    
+        color1 ?= [0 255 0]
+        color2 ?= [120 120 255]
+        color3 ?= [255 160 0]
         
         h = """
             
@@ -42,23 +46,23 @@ function help
         for c in kcells
             switch c.cell.char
                 ' ' ➜ c.cell.fg = [0 0 0]
-                    ➜ c.cell.fg = [0 255 0]
+                    ➜ c.cell.fg = color1
                                 
         ecells = util.cellsInRect cells 20 0 35 cells.length-1
         for c in ecells
             switch c.cell.char
                 ' ' ➜ c.cell.fg = [0 0 0]
-                    ➜ c.cell.fg = [120 120 255]
+                    ➜ c.cell.fg = color2
              
         dcells = util.cellsInRect cells 36 0 cells[0].length-1 cells.length-1
         for c in dcells
             switch c.cell.char
                 ' ' ➜ c.cell.fg = [0 0 0]
-                    ➜ c.cell.fg = [255 160 0]
+                    ➜ c.cell.fg = color3
 
         color.glowEffect cells
         color.dimCellsColor     util.cellsWithChar(cells '○') 'fg' 0.26
-        color.variateCellsColor util.cellsWithChar(cells '○') 'fg' 0.3
+        color.variateCellsColor util.cellsWithChar(cells '○') 'fg' 0.15
         cells
 
 ###

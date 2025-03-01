@@ -159,7 +159,7 @@ class color
                         sum[vi] += nbc.cell.fg[vi]*df
                     
                 scl = strength * 0.014
-                scl = scl * randRange(0.96 1.04)
+                scl = scl * randRange(0.98 1.02)
                 sum = sum.map (v) -> clamp 0 255 int(scl * v)
                 cell.bg = sum
         cells

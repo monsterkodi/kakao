@@ -17,6 +17,12 @@ function complete
         
         @choices = new choices_class @editor.cells.screen "#{@name}_choices"
         @choices.focusable = false
+        
+        @choices.scroll.handle = '▐'
+        @choices.scroll.color.bg   = theme.editor_complete_choices
+        @choices.scroll.color.knob = theme.editor_complete_choices_scroll
+        @choices.scroll.color.dot  = theme.editor_complete_choices_scroll
+        
         @visible = false
         
     hide:   -> @visible = false
@@ -122,13 +128,11 @@ function complete
         
         mlw = util.maxLineWidth @words
         
-        # log "mlw #{mlw}" @words
-        
         h = min 8 @words.length
         x  = @editor.cells.x+cx-@turd.length
         y  = @editor.cells.y+cy+1
         
-        @choices.layout x y mlw+1 h # why +2 here? shouldn't +1 be enough?
+        @choices.layout x y mlw+1 h
         @choices.set @words
         @choices.selectFirst()
         
@@ -153,10 +157,17 @@ function complete
         
         ⮐ if @words.length <= 1
         
-        x  = @editor.cells.x+cx-@turd.length
-        y  = @editor.cells.y+cy+1
+        x = @editor.cells.x+cx-@turd.length
+        y = @editor.cells.y+cy+2
+        w = @choices.cells.cols+1
+        h = @choices.cells.rows
+        
+        fx = cx-@turd.length
+        fy = cy+1
 
-        @choices.layout x y @choices.cells.cols+1 @choices.cells.rows
+        @editor.cells.draw_frame fx-1 fy fx+w fy+h+1 fg:theme.editor_complete_choices bg:'#000'
+        
+        @choices.layout x y w h
         @choices.draw()
 
 export complete

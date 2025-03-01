@@ -147,6 +147,7 @@ function quicky extends inputchoice
         select ?= items[1].path
                
         @choices.mapscr.rowOffset = 1
+        @choices.frontRoundOffset = 1
         @showPathItems items select
     
     #  0000000  000   000   0000000   000   000        00000000  000  000      00000000   0000000  
@@ -160,6 +161,7 @@ function quicky extends inputchoice
         items = files.map (path) -> path:path type:'file' tilde:slash.file(path)
         @crumbs.hide()
         @choices.mapscr.rowOffset = 0
+        @choices.frontRoundOffset = -1
         @showPathItems items
         
     showProjectFiles: @currentFile ->

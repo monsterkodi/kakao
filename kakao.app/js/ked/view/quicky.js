@@ -165,6 +165,7 @@ quicky = (function ()
         items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? ' ..' : '')})
         select = (select != null ? select : items[1].path)
         this.choices.mapscr.rowOffset = 1
+        this.choices.frontRoundOffset = 1
         return this.showPathItems(items,select)
     }
 
@@ -178,6 +179,7 @@ quicky = (function ()
         })
         this.crumbs.hide()
         this.choices.mapscr.rowOffset = 0
+        this.choices.frontRoundOffset = -1
         return this.showPathItems(items)
     }
 
@@ -416,7 +418,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _369_62_
+        var upDir, _371_62_
 
         switch (action)
         {
@@ -434,7 +436,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_369_62_=choice.link) != null ? _369_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_371_62_=choice.link) != null ? _371_62_ : choice.path))
                     }
                 }
                 break

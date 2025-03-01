@@ -22,6 +22,10 @@ complete = (function ()
         this.name = this.editor.name + '_complete'
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`)
         this.choices.focusable = false
+        this.choices.scroll.handle = '▐'
+        this.choices.scroll.color.bg = theme.editor_complete_choices
+        this.choices.scroll.color.knob = theme.editor_complete_choices_scroll
+        this.choices.scroll.color.dot = theme.editor_complete_choices_scroll
         this.visible = false
     }
 
@@ -153,7 +157,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, mc, x, y, _151_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, x, y, _155_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -166,7 +170,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_151_52_=theme[this.editor.name + '_selection']) != null ? _151_52_ : theme.editor_selection)
+            bg = ((_155_52_=theme[this.editor.name + '_selection']) != null ? _155_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)
@@ -174,8 +178,13 @@ complete = (function ()
             return
         }
         x = this.editor.cells.x + cx - this.turd.length
-        y = this.editor.cells.y + cy + 1
-        this.choices.layout(x,y,this.choices.cells.cols + 1,this.choices.cells.rows)
+        y = this.editor.cells.y + cy + 2
+        w = this.choices.cells.cols + 1
+        h = this.choices.cells.rows
+        fx = cx - this.turd.length
+        fy = cy + 1
+        this.editor.cells.draw_frame(fx - 1,fy,fx + w,fy + h + 1,{fg:theme.editor_complete_choices,bg:'#000'})
+        this.choices.layout(x,y,w,h)
         return this.choices.draw()
     }
 

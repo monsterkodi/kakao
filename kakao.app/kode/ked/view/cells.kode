@@ -27,12 +27,13 @@ function cells
     
     inside: x y -> 0 <= x < @cols and 0 <= y < @rows
     
-    add:       x y char fg bg => if @inside(x y) ➜ @screen.add       @wx(x) @wy(y) char fg bg else Infinity
-    set:       x y char fg bg => if @inside(x y) ➜ @screen.set       @wx(x) @wy(y) char fg bg
-    set_char:  x y char       => if @inside(x y) ➜ @screen.set_char  @wx(x) @wy(y) char
-    set_bg:    x y bg         => if @inside(x y) ➜ @screen.set_bg    @wx(x) @wy(y) bg
-    set_fg:    x y fg         => if @inside(x y) ➜ @screen.set_fg    @wx(x) @wy(y) fg
-    set_fg_bg: x y fg bg      => if @inside(x y) ➜ @screen.set_fg_bg @wx(x) @wy(y) fg bg
+    add:        x y char fg bg => if @inside(x y) ➜ @screen.add       @wx(x) @wy(y) char fg bg else Infinity
+    set:        x y char fg bg => if @inside(x y) ➜ @screen.set       @wx(x) @wy(y) char fg bg
+    set_unsafe: x y char fg bg =>                   @screen.set        @x+x   @y+y  char fg bg
+    set_char:   x y char       => if @inside(x y) ➜ @screen.set_char  @wx(x) @wy(y) char
+    set_bg:     x y bg         => if @inside(x y) ➜ @screen.set_bg    @wx(x) @wy(y) bg
+    set_fg:     x y fg         => if @inside(x y) ➜ @screen.set_fg    @wx(x) @wy(y) fg
+    set_fg_bg:  x y fg bg      => if @inside(x y) ➜ @screen.set_fg_bg @wx(x) @wy(y) fg bg
     
     #  0000000   00000000  000000000  
     # 000        000          000     

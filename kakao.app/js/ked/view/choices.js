@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
 
 var choices
 
@@ -9,6 +9,7 @@ let slash = kxk.slash
 let krzl = kxk.krzl
 let post = kxk.post
 
+import color from "../util/color.js"
 import theme from "../util/theme.js"
 import util from "../util/util.js"
 
@@ -31,6 +32,7 @@ choices = (function ()
         choices.__super__.constructor.call(this,screen,name,['scrllr'].concat(features))
         this.items = []
         this.focusable = true
+        this.frontRoundOffset = -1
         this.hoverIndex = -1
         this.fuzzied = this.items
         this.filterText = ''
@@ -41,13 +43,63 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _27_15_
+        var lines, _28_15_
 
-        this.items = ((_27_15_=this.items) != null ? _27_15_ : [])
+        this.items = ((_28_15_=this.items) != null ? _28_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
         return this.state.loadLines(lines)
+    }
+
+    choices.prototype["drawCursors"] = function ()
+    {}
+
+    choices.prototype["drawSelections"] = function (lines)
+    {
+        var bg, li, selection, x, xe, xs, y
+
+        if (_k_.empty(this.state.s.selections))
+        {
+            return
+        }
+        bg = theme.choices_current
+        if (!this.cells.screen.t.hasFocus)
+        {
+            bg = color.darken(bg)
+        }
+        selection = this.state.s.selections[0]
+        for (var _a_ = li = selection[1], _b_ = selection[3]; (_a_ <= _b_ ? li <= selection[3] : li >= selection[3]); (_a_ <= _b_ ? ++li : --li))
+        {
+            y = li - this.state.s.view[1]
+            if (y >= this.cells.rows)
+            {
+                break
+            }
+            if (li === selection[1])
+            {
+                xs = selection[0]
+            }
+            else
+            {
+                xs = 0
+            }
+            if (li === selection[3])
+            {
+                xe = selection[2]
+            }
+            else
+            {
+                xe = kseg.width(lines[li])
+            }
+            xs = _k_.max(0,xs + this.frontRoundOffset)
+            for (var _c_ = x = xs, _d_ = xe; (_c_ <= _d_ ? x < xe : x > xe); (_c_ <= _d_ ? ++x : --x))
+            {
+                this.cells.set_bg(x - this.state.s.view[0],y,bg)
+            }
+            this.cells.set_unsafe(-this.state.s.view[0] + this.frontRoundOffset,y,'',bg,theme.choices_bg)
+            this.cells.set(x - this.state.s.view[0],y,'',bg,theme.choices_bg)
+        }
     }
 
     choices.prototype["numChoices"] = function ()
@@ -139,7 +191,7 @@ choices = (function ()
 
     choices.prototype["frontCursor"] = function ()
     {
-        return this.state.setMainCursor(0,this.state.mainCursor()[1])
+        return this.state.setMainCursor(0,this.state.allSelections()[0][1])
     }
 
     choices.prototype["extract"] = function (item)
@@ -210,6 +262,7 @@ choices = (function ()
         }
         this.hoverIndex = index
         this.select(this.hoverIndex)
+        this.frontCursor()
         return post.emit('pointer','pointer')
     }
 

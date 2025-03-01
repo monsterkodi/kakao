@@ -16,10 +16,13 @@ help = (function ()
         return '\n' + color.linesForCells(this.headerCells()).join('\n') + '\n'
     }
 
-    help["headerCells"] = function ()
+    help["headerCells"] = function (color1, color2, color3)
     {
         var c, cells, dcells, ecells, h, kcells
 
+        color1 = (color1 != null ? color1 : [0,255,0])
+        color2 = (color2 != null ? color2 : [120,120,255])
+        color3 = (color3 != null ? color3 : [255,160,0])
         h = `
 
 
@@ -51,7 +54,7 @@ help = (function ()
                     c.cell.fg = [0,0,0]
                     break
                 default:
-                    c.cell.fg = [0,255,0]
+                    c.cell.fg = color1
             }
 
         }
@@ -66,7 +69,7 @@ help = (function ()
                     c.cell.fg = [0,0,0]
                     break
                 default:
-                    c.cell.fg = [120,120,255]
+                    c.cell.fg = color2
             }
 
         }
@@ -81,13 +84,13 @@ help = (function ()
                     c.cell.fg = [0,0,0]
                     break
                 default:
-                    c.cell.fg = [255,160,0]
+                    c.cell.fg = color3
             }
 
         }
         color.glowEffect(cells)
         color.dimCellsColor(util.cellsWithChar(cells,'○'),'fg',0.26)
-        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.3)
+        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.15)
         return cells
     }
 

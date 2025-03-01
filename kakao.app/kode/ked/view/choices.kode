@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ kstr kseg slash krzl post
-use ../util   ◆ theme util
+use ../util   ◆ color theme util
 use ../edit   ◆ editor 
 
 function choices extends editor
@@ -18,6 +18,7 @@ function choices extends editor
         
         @items = []
         @focusable = true
+        @frontRoundOffset = -1
         @hoverIndex = -1
         @fuzzied = @items
         @filterText = ''
@@ -31,6 +32,49 @@ function choices extends editor
         lines = @key ? @items.map(@extract) : @items
         
         @state.loadLines lines
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    drawCursors: ->
+        
+    drawSelections: lines ->
+        
+        ⮐ if empty @state.s.selections
+        
+        bg = theme.choices_current
+        
+        if not @cells.screen.t.hasFocus
+            bg = color.darken bg
+        
+        selection = @state.s.selections[0]
+                
+        for li in selection[1]..selection[3]
+            
+            y = li-@state.s.view[1]
+            
+            break if y >= @cells.rows
+            
+            if li == selection[1]
+                xs = selection[0]
+            else
+                xs = 0
+                
+            if li == selection[3]
+                xe = selection[2]
+            else
+                xe = kseg.width lines[li]
+            
+            xs = max 0 xs+@frontRoundOffset
+            
+            for x in xs...xe
+                @cells.set_bg x-@state.s.view[0] y bg
+
+            @cells.set_unsafe -@state.s.view[0]+@frontRoundOffset y '' bg theme.choices_bg
+            @cells.set x-@state.s.view[0] y '' bg theme.choices_bg
 
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
@@ -82,7 +126,7 @@ function choices extends editor
         
     frontCursor: -> 
         
-        @state.setMainCursor 0 @state.mainCursor()[1]
+        @state.setMainCursor 0 @state.allSelections()[0][1]
     
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     
@@ -154,6 +198,7 @@ function choices extends editor
         
         @hoverIndex = index
         @select @hoverIndex
+        @frontCursor()
         post.emit 'pointer' 'pointer'
         
     unhover: =>

@@ -90,9 +90,15 @@ class theme
 
     static quicky_crumbs_cursor_empty = '#222'
 
+    static choices_bg = '#000'
+
+    static choices_current = '#222'
+
     static editor_complete_choices = '#006'
 
     static editor_complete_choices_empty = '#006'
+
+    static editor_complete_choices_scroll = '#22a'
 
     static editor_complete_choices_selection_line = '#44f'
 

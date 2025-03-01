@@ -66,8 +66,12 @@ class theme
     @quicky_crumbs_cursor_main:  '#222'
     @quicky_crumbs_cursor_empty: '#222'
     
+    @choices_bg:            '#000'
+    @choices_current:       '#222'
+    
     @editor_complete_choices:       '#006'
     @editor_complete_choices_empty: '#006'
+    @editor_complete_choices_scroll: '#22a'
     @editor_complete_choices_selection_line: '#44f'
     @editor_complete_choices_cursor_blur: '#88f'
     

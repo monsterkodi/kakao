@@ -6,10 +6,12 @@
      0000000   000   000  00000000  00000000     000     00000000  000   000  
 ###
 
-use ../../kxk ▪ kstr
+use ../../kxk ▪ kstr post
 use ../util ◆ theme help util 
 use ../edit ◆ editor 
 use         ◆ view
+
+int = parseInt
 
 function greeter extends view
 
@@ -19,6 +21,7 @@ function greeter extends view
         
         @header  = help.headerCells()
         @name    = 'greeter'
+        @a       = 0
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -42,14 +45,26 @@ function greeter extends view
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000  00     00
 
-    draw: ->
-
+    draw: =>
+        
         ⮐ if @hidden()
         
         @show()
         
+        @a += 1
+        @a = 0 if @a > 120
+        f = 0.75 + 0.25 * Math.cos(2 * Math.PI * (1-@a/120))
+        
+        c1 = [0 int(f * 255) 0]
+        c2 = [int(f * 120) int(f * 120) int(f * 255)]
+        c3 = [int(f * 255) int(f * 160) 0]
+        
+        @header = help.headerCells c1 c2 c3
+        
         for row,y in @header
             for cell,x in row
                 @cells.set x y cell.char cell.fg cell.bg
+                
+        post.emit 'redraw'
 
 export greeter
