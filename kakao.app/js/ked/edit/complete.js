@@ -63,6 +63,9 @@ complete = (function ()
             case 'return':
                 return this.apply()
 
+            case 'esc':
+                return this.hide()
+
             case 'up':
             case 'down':
                 if (this.words.length > 1)
@@ -70,9 +73,6 @@ complete = (function ()
                     return this.moveSelection(key)
                 }
                 break
-            case 'esc':
-                return this.hide()
-
         }
 
         return 'unhandled'
@@ -187,7 +187,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _180_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _179_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -201,7 +201,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_180_52_=theme[this.editor.name + '_selection']) != null ? _180_52_ : theme.editor_selection)
+            bg = ((_179_52_=theme[this.editor.name + '_selection']) != null ? _179_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

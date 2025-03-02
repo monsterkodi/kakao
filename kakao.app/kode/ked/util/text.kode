@@ -286,7 +286,7 @@ function text
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
                 
-    @rangeOfChunkLeftToPos: lines pos ->
+    @rangeOfClosestChunkLeftToPos: lines pos ->
         
         [x y] = pos
         
@@ -296,7 +296,7 @@ function text
             if 0 <= r[0] < r[1]
                 ⮐ [r[0] y r[1] y]
 
-    @rangeOfChunkRightToPos: lines pos ->
+    @rangeOfClosestChunkRightToPos: lines pos ->
         
         [x y] = pos
         
@@ -320,15 +320,17 @@ function text
         
     @chunkBeforePos: lines pos ->
         
-        if rng = @rangeOfChunkLeftToPos lines pos
-            ⮐ kseg.str @segsForLineSpan(lines rng)
-        ''
+        before = lines[pos[1]][0...pos[0]]
+        if tcc = kseg.tailCountChunk before
+            ⮐ kseg.str before[before.length-tcc..]
+        ''    
         
     @chunkAfterPos: lines pos ->
         
-        if rng = @rangeOfChunkRightToPos lines pos
-            ⮐ kseg.str @segsForLineSpan(lines rng)
-        ''
+        after = lines[pos[1]][pos[0]..]
+        if hcc = kseg.headCountChunk after
+            ⮐ kseg.str after[0...hcc]
+        ''    
     
     @rangeOfClosestWordToPos: lines pos ->
         

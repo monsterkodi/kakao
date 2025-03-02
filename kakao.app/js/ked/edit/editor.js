@@ -384,6 +384,7 @@ editor = (function ()
             {
                 if (_k_.empty(this.state.chunkAfterCursor()))
                 {
+                    console.log(`complete ${this.state.chunkBeforeCursor()}`)
                     return this.complete.word(this.state.chunkBeforeCursor())
                 }
             }

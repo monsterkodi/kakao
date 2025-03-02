@@ -492,7 +492,7 @@ text = (function ()
         }
     }
 
-    text["rangeOfChunkLeftToPos"] = function (lines, pos)
+    text["rangeOfClosestChunkLeftToPos"] = function (lines, pos)
     {
         var r, x, y
 
@@ -511,7 +511,7 @@ text = (function ()
         }
     }
 
-    text["rangeOfChunkRightToPos"] = function (lines, pos)
+    text["rangeOfClosestChunkRightToPos"] = function (lines, pos)
     {
         var r, x, y
 
@@ -543,22 +543,24 @@ text = (function ()
 
     text["chunkBeforePos"] = function (lines, pos)
     {
-        var rng
+        var before, tcc
 
-        if (rng = this.rangeOfChunkLeftToPos(lines,pos))
+        before = lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
+        if (tcc = kseg.tailCountChunk(before))
         {
-            return kseg.str(this.segsForLineSpan(lines,rng))
+            return kseg.str(before.slice(before.length - tcc))
         }
         return ''
     }
 
     text["chunkAfterPos"] = function (lines, pos)
     {
-        var rng
+        var after, hcc
 
-        if (rng = this.rangeOfChunkRightToPos(lines,pos))
+        after = lines[pos[1]].slice(pos[0])
+        if (hcc = kseg.headCountChunk(after))
         {
-            return kseg.str(this.segsForLineSpan(lines,rng))
+            return kseg.str(after.slice(0, typeof hcc === 'number' ? hcc : -1))
         }
         return ''
     }

@@ -195,7 +195,7 @@ state = (function ()
 
     state.prototype["loadLines"] = function (lines)
     {
-        if (!(_k_.isStr(lines[0])))
+        if (!_k_.empty(lines) && !(_k_.isStr(lines[0])))
         {
             console.log('state.loadLines - first line no segl?',this.name,lines)
         }

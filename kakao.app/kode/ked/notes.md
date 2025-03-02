@@ -29,7 +29,9 @@
 
 - quicky
     - move scroll to the left
-    - fix project files sorting
+    - fix 
+        - project files sorting
+        - not closing when chosen file is already open 
     
 - status
     - move dirty and redo into statusfile 

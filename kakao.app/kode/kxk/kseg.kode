@@ -242,9 +242,10 @@ kseg.startsWith = a prefix ->
     
     number of graphemes at the start or end of a grapheme list
     
-    head|tailCount:     number of graphemes contained in c
-    head|tailCountWord: number of graphemes in word character set
-    head|tailCountTurd: number of graphemes not in word or ws set
+    head|tailCount:      number of graphemes contained in c
+    head|tailCountWord:  number of graphemes in word character set
+    head|tailCountTurd:  number of graphemes not in word or ws set
+    head|tailCountChunk: number of graphemes not in ws set
 ###
 
 kseg.headCount = a c ->
@@ -281,6 +282,18 @@ kseg.tailCountTurd = a ->
     
     for i in 0...a.length
         ⮐ i if /[\s\w]+/.test a[a.length-1-i]
+    i
+
+kseg.headCountChunk = a ->
+    
+    for s,i in a
+        ⮐ i if /[\s]+/.test s
+    i
+    
+kseg.tailCountChunk = a ->
+    
+    for i in 0...a.length
+        ⮐ i if /[\s]+/.test a[a.length-1-i]
     i
     
 ###

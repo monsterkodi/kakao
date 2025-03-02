@@ -292,6 +292,36 @@ kseg.tailCountTurd = function (a)
     return i
 }
 
+kseg.headCountChunk = function (a)
+{
+    var i, s
+
+    var list = _k_.list(a)
+    for (i = 0; i < list.length; i++)
+    {
+        s = list[i]
+        if (/[\s]+/.test(s))
+        {
+            return i
+        }
+    }
+    return i
+}
+
+kseg.tailCountChunk = function (a)
+{
+    var i
+
+    for (var _17_ = i = 0, _18_ = a.length; (_17_ <= _18_ ? i < a.length : i > a.length); (_17_ <= _18_ ? ++i : --i))
+    {
+        if (/[\s]+/.test(a[a.length - 1 - i]))
+        {
+            return i
+        }
+    }
+    return i
+}
+
 kseg.spanForClosestWordAtColumn = function (a, c)
 {
     var left, ll, ls, lw, right, rl, rs, rw, s, segi
@@ -362,7 +392,7 @@ kseg.repeat = function (n, s = ' ')
     }
     s = kseg(s)
     a = []
-    for (var _16_ = i = 0, _17_ = n; (_16_ <= _17_ ? i < n : i > n); (_16_ <= _17_ ? ++i : --i))
+    for (var _19_ = i = 0, _1a_ = n; (_19_ <= _1a_ ? i < n : i > n); (_19_ <= _1a_ ? ++i : --i))
     {
         a = a.concat(s)
     }
@@ -423,9 +453,9 @@ kseg.width = function (s)
     }
     w = 0
     var list = _k_.list(kseg(s))
-    for (var _18_ = 0; _18_ < list.length; _18_++)
+    for (var _1b_ = 0; _1b_ < list.length; _1b_++)
     {
-        seg = list[_18_]
+        seg = list[_1b_]
         w += wcwidth(seg.codePointAt(0))
     }
     return w
@@ -521,11 +551,11 @@ dumptable = function (table)
     var c, item, s
 
     var list = _k_.list(table)
-    for (var _19_ = 0; _19_ < list.length; _19_++)
+    for (var _1c_ = 0; _1c_ < list.length; _1c_++)
     {
-        item = list[_19_]
+        item = list[_1c_]
         s = _k_.b6(item[0].toString(16)) + '-' + _k_.b6(item[1].toString(16))
-        for (var _1a_ = c = item[0], _1b_ = item[1]; (_1a_ <= _1b_ ? c <= item[1] : c >= item[1]); (_1a_ <= _1b_ ? ++c : --c))
+        for (var _1d_ = c = item[0], _1e_ = item[1]; (_1d_ <= _1e_ ? c <= item[1] : c >= item[1]); (_1d_ <= _1e_ ? ++c : --c))
         {
             s += String.fromCodePoint(c)
         }

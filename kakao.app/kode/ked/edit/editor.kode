@@ -284,6 +284,7 @@ function editor extends draw
             @state.insert event.char
             if @complete?
                 if empty @state.chunkAfterCursor()
+                    log "complete #{@state.chunkBeforeCursor()}"
                     @complete.word @state.chunkBeforeCursor() 
         else
             if key not in ['shift' 'ctrl' 'alt' 'cmd'] 

@@ -45,12 +45,11 @@ function complete
             'tab'
             'right'
             'return' ➜ ⮐ @apply()
+            'esc'    ➜ ⮐ @hide()
             'up'
             'down' 
                 if @words.length > 1
                     ⮐ @moveSelection key
-            'esc'
-                ⮐ @hide()
         
         'unhandled'
     
