@@ -44,7 +44,6 @@ input = (function ()
     {
         var before, sr
 
-        console.log(`input.onKey ${this.name} ${event.combo}`)
         switch (event.combo)
         {
             case 'return':
@@ -65,9 +64,7 @@ input = (function ()
         }
 
         before = this.current()
-        console.log(`before ${before} ${key}`)
         sr = input.__super__.onKey.call(this,key,event)
-        console.log(`after ${this.current()} ${key}`)
         if (before !== this.current())
         {
             this.emit('action','change',this.current())

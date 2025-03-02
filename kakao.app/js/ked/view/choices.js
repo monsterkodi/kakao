@@ -34,6 +34,7 @@ choices = (function ()
         this.focusable = true
         this.rounded = true
         this.frontRoundOffset = 0
+        this.hoverForSubmenu = false
         this.hoverIndex = -1
         this.fuzzied = this.items
         this.filterText = ''
@@ -44,9 +45,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _29_15_
+        var lines, _30_15_
 
-        this.items = ((_29_15_=this.items) != null ? _29_15_ : [])
+        this.items = ((_30_15_=this.items) != null ? _30_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -287,20 +288,23 @@ choices = (function ()
         this.hoverIndex = index
         this.select(this.hoverIndex)
         this.frontCursor()
-        return post.emit('pointer','pointer')
+        post.emit('pointer','pointer')
+        return true
     }
 
     choices.prototype["unhover"] = function ()
     {
         this.hoverIndex = -1
-        this.state.clearHighlights()
-        return post.emit('pointer','default')
+        this.state.deselect()
+        post.emit('pointer','default')
+        return true
     }
 
     choices.prototype["clickChoiceAtIndex"] = function (index)
     {
         this.hoverIndex = -1
-        return this.emit('action','click',this.fuzzied[index])
+        this.emit('action','click',this.fuzzied[index])
+        return true
     }
 
     choices.prototype["onMouse"] = function (event)
@@ -309,28 +313,29 @@ choices = (function ()
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        if (this.cells.isInsideEvent(event) && this.state.isValidLineIndex(row) && kseg.width(this.state.s.lines[row]) >= col)
+        if (this.cells.isInsideEvent(event))
         {
-            switch (event.type)
+            if (this.state.isValidLineIndex(row))
             {
-                case 'press':
-                    return this.clickChoiceAtIndex(row + this.state.s.view[1])
+                if (this.hoverForSubmenu && event.type === 'move' && col > kseg.width(this.state.s.lines[row]))
+                {
+                    return
+                }
+                switch (event.type)
+                {
+                    case 'press':
+                        return this.clickChoiceAtIndex(row + this.state.s.view[1])
 
-                case 'move':
-                    return this.hoverChoiceAtIndex(row + this.state.s.view[1])
+                    case 'move':
+                        return this.hoverChoiceAtIndex(row + this.state.s.view[1])
 
-                case 'release':
-                    return this.hoverChoiceAtIndex(row + this.state.s.view[1])
+                    case 'release':
+                        return this.hoverChoiceAtIndex(row + this.state.s.view[1])
+
+                }
 
             }
-
-            return true
         }
-        else
-        {
-            this.unhover()
-        }
-        return choices.__super__.onMouse.call(this,event)
     }
 
     choices.prototype["onKey"] = function (key, event)

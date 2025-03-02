@@ -105,7 +105,7 @@ function editor extends draw
                         
                     @dragStart = copy @state.s.selections[0]
                     
-                    true
+                    ⮐ true
                     
                 else
                     
@@ -208,8 +208,6 @@ function editor extends draw
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
             
-        @redraw()
-
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
     # 000       000   000  0000000    0000000   000   000  0000000    

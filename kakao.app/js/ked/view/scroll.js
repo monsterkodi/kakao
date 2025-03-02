@@ -39,16 +39,17 @@ scroll = (function ()
 
     scroll.prototype["onMouse"] = function (event)
     {
-        var col, row
+        var col, inside, row
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        this.hover = this.cells.isInsideEvent(event)
+        inside = this.cells.isInsideEvent(event)
         switch (event.type)
         {
             case 'press':
-                if (this.hover)
+                if (inside)
                 {
+                    this.hover = inside
                     this.doDrag = true
                     post.emit('pointer','grabbing')
                     return this.scrollTo(row)
@@ -69,15 +70,24 @@ scroll = (function ()
             case 'release':
                 if (this.doDrag)
                 {
-                    post.emit('pointer','pointer')
+                    this.hover = inside
+                    if (this.hover)
+                    {
+                        post.emit('pointer','pointer')
+                    }
                     delete this.doDrag
                     return true
                 }
                 break
             case 'move':
-                if (this.hover)
+                if (this.hover !== inside)
                 {
-                    post.emit('pointer','pointer')
+                    this.hover = inside
+                    if (this.hover)
+                    {
+                        post.emit('pointer','pointer')
+                    }
+                    return true
                 }
                 break
         }

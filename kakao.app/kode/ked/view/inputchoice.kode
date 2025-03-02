@@ -110,7 +110,7 @@ function inputchoice extends view
             'click'
             'right'
             'space'
-            'return' ➜ ⮐ @applyChoice @choices.current() #@applyChoice choice
+            'return' ➜ ⮐ @applyChoice @choices.current()
             
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
@@ -191,10 +191,13 @@ function inputchoice extends view
         ⮐ true if @input.onMouse   event
         ⮐ true if @choices.onMouse event
         
-        if event.type == 'press' and @cells.isOutsideEvent(event)
-            @hide()
+        inside = @cells.isInsideEvent event
         
-        true
+        if event.type == 'press' and not inside
+            @hide()
+            ⮐ true
+            
+        if inside ➜ ⮐ redraw:false 
 
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -208,6 +211,8 @@ function inputchoice extends view
 
         ⮐ true if @input.onWheel event
         ⮐ true if @choices.onWheel event
-        true
+        
+        inside = @cells.isInsideEvent event
+        if inside ➜ ⮐ redraw:false 
         
 export inputchoice

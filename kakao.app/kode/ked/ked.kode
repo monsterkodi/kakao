@@ -170,7 +170,8 @@ function KED
         @editor.state.syntax.ext = slash.ext @currentFile
         @editor.state.loadSegls segls
         
-        @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        @status.time = process.hrtime(start)[1]
+        @status.drawTime = kstr.time BigInt(@status.time)
         
         @editor.mapscr?.reload()
         
@@ -228,16 +229,19 @@ function KED
         if event.type == 'wheel'
 
             for handler in @wheelHandlers
-                if handler.onWheel event
-                    break
-        
-        else
-        
-            for handler in @mouseHandlers
-                if handler.onMouse event
-                    break
+                if res = handler.onWheel event
+                    if res.redraw != false
+                        # log "redraw on wheel for #{handler.name}" 
+                        @redraw()
+                    ⮐ 
+            ⮐ 
 
-        @redraw()                
+        for handler in @mouseHandlers
+            if res = handler.onMouse event
+                if res.redraw != false
+                    # log "redraw on #{event.type} for #{handler.name}" 
+                    @redraw()
+                ⮐ 
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -332,7 +336,9 @@ function KED
         
         @screen.render()
         
-        @status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        @status.time = process.hrtime(start)[1]
+        @status.drawTime = kstr.time BigInt(@status.time)
+        # log "○ #{@status.drawTime}"
         
 export KED.run
 

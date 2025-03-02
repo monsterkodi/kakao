@@ -141,13 +141,17 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, path, row, si
+        var col, index, path, row, si, _132_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
         if (this.cells.isOutsideEvent(event))
         {
-            delete this.hoverIndex
+            if ((this.hoverIndex != null))
+            {
+                delete this.hoverIndex
+                return true
+            }
             return
         }
         switch (event.type)
@@ -168,10 +172,15 @@ crumbs = (function ()
                 return true
 
             case 'move':
-                this.hoverIndex = this.splitIndexAtCol(col)
-                if ((0 <= this.hoverIndex && this.hoverIndex < this.split.length))
+                index = this.splitIndexAtCol(col)
+                if (this.hoverIndex !== index)
                 {
-                    post.emit('pointer','pointer')
+                    this.hoverIndex = index
+                    if ((0 <= this.hoverIndex && this.hoverIndex < this.split.length))
+                    {
+                        post.emit('pointer','pointer')
+                    }
+                    return true
                 }
                 break
         }

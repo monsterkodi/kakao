@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var int, status
 
@@ -65,19 +65,11 @@ status = (function ()
 
     status.prototype["onMouse"] = function (event)
     {
-        if (this.hidden())
-        {
-            return
-        }
-        if (this.crumbs.onMouse(event))
-        {
-            return true
-        }
-        if (this.statusfile.onMouse(event))
-        {
-            return true
-        }
-        return status.__super__.onMouse.call(this,event)
+        var cret, sret
+
+        cret = this.crumbs.onMouse(event)
+        sret = this.statusfile.onMouse(event)
+        return sret || cret
     }
 
     status.prototype["setFile"] = function (file)
@@ -102,7 +94,7 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var add, ci, colno, cols, cur, cursor, dt, dtl, dty, fg, fnl, hil, i, rdo, sel, set, x, y
+        var add, ch, ci, colno, cols, cur, cursor, dt, dty, fg, fnl, hil, i, rdo, sel, set, x, y
 
         if (this.hidden())
         {
@@ -187,28 +179,18 @@ status = (function ()
                 add(hil[i],((i < hil.length - 1) ? 'status_hil' : color.darken(theme.status_hil)),'status_dark')
             }
         }
-        dtl = dt.length
-        if (cols - dtl - 2 >= x)
+        for (var _12_ = ci = x, _13_ = cols; (_12_ <= _13_ ? ci < cols : ci > cols); (_12_ <= _13_ ? ++ci : --ci))
         {
-            for (var _12_ = ci = x, _13_ = cols - dtl - 2; (_12_ <= _13_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_12_ <= _13_ ? ++ci : --ci))
-            {
-                add(' ',null,'status_dark')
-            }
-            add('','status_time','status_dark')
-            for (var _14_ = i = 0, _15_ = dtl; (_14_ <= _15_ ? i < dtl : i > dtl); (_14_ <= _15_ ? ++i : --i))
-            {
-                fg = (i < dtl - 3 ? 'status_fg' : 'status_fg_dim')
-                add(dt[i],fg,'status_time')
-            }
-            return add('','status_time','status_empty')
+            add(' ',null,'status_dark')
         }
-        else
+        ci = _k_.clamp(0,3,parseInt((this.time / (1000 * 1000) - 16) / 8))
+        ch = ' •'[ci]
+        fg = ['#222','#000','#080','#ff0'][ci]
+        if (_k_.in(ch,''))
         {
-            for (var _16_ = ci = x, _17_ = cols - dtl - 2; (_16_ <= _17_ ? ci < cols - dtl - 2 : ci > cols - dtl - 2); (_16_ <= _17_ ? ++ci : --ci))
-            {
-                add(' ',null,'status_dark')
-            }
+            console.log(`${ch} ${this.drawTime}`)
         }
+        return set(cols - 2,ch,fg,'status_dark')
     }
 
     return status

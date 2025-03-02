@@ -18,8 +18,8 @@ fscol = (function ()
     _k_.extend(fscol, choices)
     function fscol (screen, name)
     {
+        this["onMouse"] = this["onMouse"].bind(this)
         fscol.__super__.constructor.call(this,screen,name)
-    
         this.frontRoundOffset = 1
         this.state.syntax.setRgxs(rgxs)
     }
@@ -33,6 +33,23 @@ fscol = (function ()
     fscol.prototype["isCursorVisible"] = function ()
     {
         return false
+    }
+
+    fscol.prototype["onMouse"] = function (event)
+    {
+        var col, row
+
+        if (this.hidden())
+        {
+            return
+        }
+        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+
+        if (this.hoverIndex >= 0 && (this.cells.isOutsideEvent(event) || this.state.isInvalidLineIndex(row)))
+        {
+            return this.unhover()
+        }
+        return fscol.__super__.onMouse.call(this,event)
     }
 
     fscol.prototype["listDir"] = async function (dir)

@@ -27,6 +27,17 @@ function fscol extends choices
         @listDir dir
         
     isCursorVisible: -> false
+    
+    onMouse: event =>
+        
+        ⮐ if @hidden()
+        
+        [col row] = @cells.posForEvent event
+        
+        if @hoverIndex >= 0 and (@cells.isOutsideEvent(event) or @state.isInvalidLineIndex(row))
+            ⮐ @unhover()
+            
+        super event
         
     listDir: dir ○->
         

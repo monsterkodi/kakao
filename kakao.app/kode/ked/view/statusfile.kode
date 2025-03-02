@@ -76,22 +76,22 @@ function statusfile extends view
     
     onMouse: event =>
         
-        @hover = @cells.isInsideEvent event
+        inside = @cells.isInsideEvent event
         
-        ⮐ if not @hover
-
         switch event.type
             
             'press' 
-                
-                @emit 'action' 'click' @file
-                delete @hover
-                ⮐ true
+                if inside
+                    @emit 'action' 'click' @file
+                    delete @hover
+                    ⮐ true
                 
             'move'
                 
-                post.emit 'pointer' 'pointer'
-                
+                if inside != @hover
+                    @hover = inside
+                    post.emit 'pointer' 'pointer' if @hover
+                    ⮐ true
         false
     
 export statusfile

@@ -38,13 +38,14 @@ function scroll extends view
     onMouse: event =>
         
         [col row] = @cells.posForEvent event
-        @hover = @cells.isInsideEvent event
+        inside = @cells.isInsideEvent event 
         
         switch event.type
             
             'press'
             
-                if @hover
+                if inside
+                    @hover = inside
                     @doDrag = true
                     post.emit 'pointer''grabbing' 
                     ⮐ @scrollTo row
@@ -61,13 +62,17 @@ function scroll extends view
             'release'
             
                 if @doDrag
-                    post.emit 'pointer''pointer' 
+                    @hover = inside
+                    post.emit 'pointer''pointer' if @hover
                     delete @doDrag 
                     ⮐ true
                     
             'move'
             
-                post.emit 'pointer''pointer' if @hover
+                if @hover != inside
+                    @hover = inside
+                    post.emit 'pointer''pointer' if @hover
+                    ⮐ true
             
         false
         

@@ -31,7 +31,7 @@ function input extends editor
 
     onKey: key event ->
         
-        log "input.onKey #{@name} #{event.combo}" 
+        # log "input.onKey #{@name} #{event.combo}" 
         
         switch event.combo
             'return'    ➜ ⮐ @emit 'action' 'submit' @current()
@@ -44,9 +44,8 @@ function input extends editor
                     ⮐ 
 
         before = @current()
-        log "before #{before} #{key}"
+
         sr = super key event
-        log "after #{@current()} #{key}"
         
         @emit 'action' 'change' @current() if before != @current()
         

@@ -451,6 +451,8 @@ function TTIO extends events
                @lastClick.time  = process.hrtime()
                
             event.count = @lastClick.count
+            
+            # log 'emitMouse' event
         
         @emit 'mouse' event
                 

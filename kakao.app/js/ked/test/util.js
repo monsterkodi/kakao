@@ -490,6 +490,20 @@ Alice’s,`)
         compare(util.cleanWordsForCompletion(words),['Alice','Alice’s'])
         compare(util.cleanWordsForCompletion(['"#fff"']),['"#fff"'])
     })
+    section("indentLineRangesAndPositionsAtIndices", function ()
+    {
+        lines = util.seglsForText(`◆1
+    ◆2
+        ◆3`)
+        compare(util.indentLineRangesAndPositionsAtIndices(lines,[[0,0,1,1]],[[0,1],[1,1]],[0,1]),[[kseg('    ◆1'),kseg('        ◆2'),kseg('        ◆3')],[[4,0,5,1]],[[4,1],[5,1]]])
+    })
+    section("deindentLineRangesAndPositionsAtIndices", function ()
+    {
+        lines = util.seglsForText(`◆1
+    ◆2
+        ◆3`)
+        compare(util.deindentLineRangesAndPositionsAtIndices(lines,[[0,1,1,2]],[[0,1],[1,2]],[1,2]),[[kseg('◆1'),kseg('◆2'),kseg('    ◆3')],[[0,1,0,2]],[[0,1],[0,2]]])
+    })
 }
 toExport["util"]._section_ = true
 toExport._test_ = true

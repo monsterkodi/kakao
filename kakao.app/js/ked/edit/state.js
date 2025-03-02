@@ -374,6 +374,10 @@ state = (function ()
         view[1] += sy
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
         view[0] = _k_.max(0,view[0])
+        if (_k_.eql(view, this.s.view))
+        {
+            return
+        }
         return this.setView(view)
     }
 

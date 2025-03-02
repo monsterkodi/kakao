@@ -229,6 +229,8 @@ inputchoice = (function ()
 
     inputchoice.prototype["onMouse"] = function (event)
     {
+        var inside
+
         if (this.hidden())
         {
             return
@@ -241,15 +243,22 @@ inputchoice = (function ()
         {
             return true
         }
-        if (event.type === 'press' && this.cells.isOutsideEvent(event))
+        inside = this.cells.isInsideEvent(event)
+        if (event.type === 'press' && !inside)
         {
             this.hide()
+            return true
         }
-        return true
+        if (inside)
+        {
+            return {redraw:false}
+        }
     }
 
     inputchoice.prototype["onWheel"] = function (event)
     {
+        var inside
+
         if (this.hidden())
         {
             return
@@ -262,7 +271,11 @@ inputchoice = (function ()
         {
             return true
         }
-        return true
+        inside = this.cells.isInsideEvent(event)
+        if (inside)
+        {
+            return {redraw:false}
+        }
     }
 
     return inputchoice

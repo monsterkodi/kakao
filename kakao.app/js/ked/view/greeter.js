@@ -26,7 +26,7 @@ greeter = (function ()
         greeter.__super__.constructor.call(this,screen,'greeter')
         this.header = help.headerCells()
         this.name = 'greeter'
-        this.a = 0
+        this.a = 120
     }
 
     greeter.prototype["show"] = function (doShow = true)
@@ -54,7 +54,6 @@ greeter = (function ()
         {
             return
         }
-        this.show()
         duration = 480
         this.a += 1
         if (this.a > duration)
@@ -74,7 +73,6 @@ greeter = (function ()
                 this.cells.set(x,y,cell.char,cell.fg,cell.bg)
             }
         }
-        return post.emit('redraw')
     }
 
     return greeter

@@ -99,7 +99,9 @@ function complete
     
     word: @turd ->
         
-        ⮐ if empty @turd
+        if empty @turd
+            @visible = false
+            ⮐ 
                 
         @words = kseg.chunks(@editor.state.allLines()).map (chunk) -> kseg.str chunk.segl
         @words = kutil.uniq @words
@@ -108,7 +110,7 @@ function complete
         @words.sort()
         
         if empty @words
-            log "#{@name} ▸#{@turd}◂ no completion" 
+            # log "#{@name} ▸#{@turd}◂ no completion" 
             @visible = false
             ⮐ 
         
@@ -154,6 +156,7 @@ function complete
         cy = mc[1] - @editor.state.s.view[1]
         
         word = @choices.current()
+        
         if empty word
             word = @words[0]
         
@@ -163,8 +166,8 @@ function complete
         
         ⮐ if @words.length <= 1
         
-        x = @editor.cells.x+cx-@turd.length
-        y = @editor.cells.y+cy+2
+        x = cx+@editor.cells.x-@turd.length
+        y = cy+@editor.cells.y+2
         w = @choices.cells.cols+1
         h = @choices.cells.rows
         

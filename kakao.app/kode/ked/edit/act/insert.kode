@@ -26,15 +26,10 @@ export
         cursors = @allCursors()
         lines   = @allLines()
 
-        # prof.start @name 'insert'
-        
         [lines cursors] = util.insertTextAtPositions lines text cursors
-        
-        # prof.time @name 'insert' 'text'
         
         @clearHighlights()
         @setLines   lines
         @setCursors cursors #-1
 
-        # prof.end @name 'insert' 'set'
         

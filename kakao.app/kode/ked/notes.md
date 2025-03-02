@@ -1,11 +1,6 @@
 
-
-            ┏━━━━━━━┳━━━━━┳━━━━━━━━━┳━━━━━━━━━━┓
-            ┃       ┃     ┃         ┃          ┃
-            ┃ shelf ┃     ┃ browser ┃          ┃
-            ┃       ┃     ┃         ┃          ┃
-            ┣━━━━┳━━┻━┳━━━┻┳━━━━┳━━━┻┳━━━━┳━━━━┫
-            ┃    ┃    ┃    ┃tabs┃    ┃    ┃    ┃
+              crumbs file tabs
+            ┏━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┓
             ┣━━━━┻━━┳━┻━━━━┻━━━━┻━━┳━┻┳━━━┻━━━━┫
             ┃       ┃              ┃  ┃        ┃
             ┃ fscol ┃    editor    ┃  ┃ search ┃
@@ -17,8 +12,7 @@
             ┃       ┃              ┃  ┃        ┃
             ┣━━━━━━━┻━━━━━━━━━━━━━━┻━━┻━━━━━━━━┫
             ┃          help+log+keys           ┃
-            ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-            ┗━━━━━━━━━━━━ status ━━━━━━━━━━━━━━┛
+            ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # todo
 ## todo
@@ -28,16 +22,22 @@
     
 - completion
     - fix frame at bol
+    - fix turd issues
+    - allow completion before closing )]}
 
 - quicky
-    - fix project files padding
+    - move scroll to the left
+    - fix project files sorting
 
-- editing fixes
-    - fix insert after wide unicode segments
-    - multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
-    - alt+cmd+d should work inside selection: highlight word at cursor inside
-    - alt+cmd+e add word at cursor to highlights
-    - shift+ctrl+left|right|up|down rectangular selection
+- editing
+    - more tests
+    - fix
+        - insert after wide unicode segments
+    - add
+        - multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
+        - alt+cmd+e add word at cursor to highlights
+        - alt+cmd+d should work inside selection: highlight word at cursor inside
+        - shift+ctrl+left|right|up|down rectangular selection
 
 - unicode mode
     - ~ replacement

@@ -126,8 +126,12 @@ function crumbs extends view
         
         [col row] = @cells.posForEvent event
         
+        # log "crumbs.onMouse event #{@name} #{col} #{row} #{@cells.isOutsideEvent event}"
+        
         if @cells.isOutsideEvent event
-            delete @hoverIndex
+            if @hoverIndex?
+                delete @hoverIndex
+                ⮐ true
             ⮐ 
 
         switch event.type
@@ -144,11 +148,13 @@ function crumbs extends view
                 ⮐ true
                 
             'move'
-                
-                @hoverIndex = @splitIndexAtCol col
-                if 0 <= @hoverIndex < @split.length
-                    post.emit 'pointer' 'pointer'
-                    
+            
+                index = @splitIndexAtCol col
+                if @hoverIndex != index
+                    @hoverIndex = index
+                    if 0 <= @hoverIndex < @split.length
+                        post.emit 'pointer' 'pointer'
+                    ⮐ true
         false
-    
+                    
 export crumbs

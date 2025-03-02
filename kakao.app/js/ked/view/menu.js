@@ -136,6 +136,9 @@ quit`)
         return true
     }
 
+    menu.prototype["onWheel"] = function ()
+    {}
+
     menu.prototype["draw"] = function ()
     {
         if (this.hidden())

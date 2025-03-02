@@ -113,6 +113,7 @@ complete = (function ()
 
         if (_k_.empty(this.turd))
         {
+            this.visible = false
             return
         }
         this.words = kseg.chunks(this.editor.state.allLines()).map(function (chunk)
@@ -128,7 +129,6 @@ complete = (function ()
         this.words.sort()
         if (_k_.empty(this.words))
         {
-            console.log(`${this.name} ▸${this.turd}◂ no completion`)
             this.visible = false
             return
         }
@@ -158,7 +158,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _161_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _164_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -176,15 +176,15 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_161_52_=theme[this.editor.name + '_selection']) != null ? _161_52_ : theme.editor_selection)
+            bg = ((_164_52_=theme[this.editor.name + '_selection']) != null ? _164_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)
         {
             return
         }
-        x = this.editor.cells.x + cx - this.turd.length
-        y = this.editor.cells.y + cy + 2
+        x = cx + this.editor.cells.x - this.turd.length
+        y = cy + this.editor.cells.y + 2
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
         fx = cx - this.turd.length

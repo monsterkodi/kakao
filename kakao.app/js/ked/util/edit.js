@@ -521,7 +521,7 @@ edit = (function ()
         {
             return [lines,rngs,posl]
         }
-        newLines = _k_.copy(lines)
+        newLines = lines
         newRngs = _k_.copy(rngs)
         newPosl = _k_.copy(posl)
         var list = _k_.list(indices)
@@ -533,7 +533,7 @@ edit = (function ()
             if (indent.length)
             {
                 sc = _k_.min(4,indent.length)
-                newLines.splice(index,1,indent.slice(sc) + line)
+                newLines.splice(index,1,kseg.join(indent.slice(sc),line))
                 var list1 = _k_.list(newPosl)
                 for (var _c_ = 0; _c_ < list1.length; _c_++)
                 {
@@ -575,7 +575,7 @@ edit = (function ()
             index = list[_a_]
             var _b_ = this.splitLineIndent(newLines[index]); indent = _b_[0]; line = _b_[1]
 
-            newLines[index] = _k_.lpad(4,' ') + newLines[index]
+            newLines[index] = kseg.join(kseg.repeat(4),newLines[index])
             var list1 = _k_.list(newPosl)
             for (var _c_ = 0; _c_ < list1.length; _c_++)
             {

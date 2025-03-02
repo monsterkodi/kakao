@@ -20,6 +20,7 @@ function choices extends editor
         @focusable = true
         @rounded   = true
         @frontRoundOffset = 0
+        @hoverForSubmenu = false
         @hoverIndex = -1
         @fuzzied = @items
         @filterText = ''
@@ -176,8 +177,6 @@ function choices extends editor
     
     filter: text =>
         
-        # lf 'choices.filter' text @items
-
         ⮐ if empty @items
 
         ⮐ if text == @filterText
@@ -196,8 +195,6 @@ function choices extends editor
 
         lines = [''] if empty lines
         
-        # lf 'choices.filter lines' lines
-
         @state.loadLines lines
 
     # 00     00   0000000   000   000   0000000  00000000  
@@ -214,36 +211,37 @@ function choices extends editor
         @select @hoverIndex
         @frontCursor()
         post.emit 'pointer' 'pointer'
+        true
         
     unhover: =>
     
         @hoverIndex = -1
-        @state.clearHighlights()
+        @state.deselect()
         post.emit 'pointer' 'default'
+        true
         
     clickChoiceAtIndex: index =>
         
         @hoverIndex = -1  
         @emit 'action' 'click' @fuzzied[index]
+        true
         
     onMouse: event =>
     
         [col row] = @cells.posForEvent event
         
-        if @cells.isInsideEvent(event) and @state.isValidLineIndex(row) and kseg.width(@state.s.lines[row]) >= col
+        if @cells.isInsideEvent(event) 
             
-            switch event.type
+            if @state.isValidLineIndex(row)
                 
-                'press'   ➜ ⮐ @clickChoiceAtIndex row + @state.s.view[1] 
-                'move'    ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
-                'release' ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
+                ⮐ if @hoverForSubmenu and event.type == 'move' and col > kseg.width(@state.s.lines[row])
                 
-            ⮐ true
-        else
-            @unhover()
-    
-        super event
-
+                switch event.type
+                    
+                    'press'   ➜ ⮐ @clickChoiceAtIndex row + @state.s.view[1] 
+                    'move'    ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
+                    'release' ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
+                    
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

@@ -730,7 +730,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _503_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _505_23_
 
         if ((this.pasteBuffer != null))
         {

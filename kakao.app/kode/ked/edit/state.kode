@@ -290,6 +290,8 @@ function state
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
         view[0] = max 0 view[0]
+        
+        ⮐ if view eql @s.view
 
         @setView view
 

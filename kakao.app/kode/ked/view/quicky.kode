@@ -283,8 +283,10 @@ function quicky extends inputchoice
             
         if item.type == 'dir' and not item.tilde.endsWith '..'
             @fscol.show item.path
+            @choices.hoverForSubmenu = true
         else
             @fscol.hide()
+            @choices.hoverForSubmenu = false
             
         post.emit 'redraw'
             
@@ -346,8 +348,10 @@ function quicky extends inputchoice
     
     onFsColAction: action choice =>
         
-        @onChoicesAction action choice
-        
+        switch action
+            
+            'click' ➜ ⮐ @applyChoice choice
+                
     onInputAction: action text =>
         
         super action text

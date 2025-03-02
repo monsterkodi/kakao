@@ -372,7 +372,7 @@ function edit
         
         ⮐ [lines rngs posl] if empty indices  
         
-        newLines = copy lines
+        newLines = lines
         newRngs  = copy rngs
         newPosl  = copy posl
         
@@ -383,7 +383,7 @@ function edit
             if indent.length
                 
                 sc = min 4 indent.length
-                newLines.splice index 1 indent[sc..] + line
+                newLines.splice index 1 kseg.join(indent[sc..] line)
                 
                 for pos in newPosl
                     if pos[1] == index 
@@ -414,7 +414,7 @@ function edit
             
             [indent line] = @splitLineIndent newLines[index]
         
-            newLines[index] = lpad(4 ' ') + newLines[index]
+            newLines[index] = kseg.join kseg.repeat(4) newLines[index]
             
             for pos in newPosl
                 if pos[1] == index 

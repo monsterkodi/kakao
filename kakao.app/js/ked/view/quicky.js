@@ -325,10 +325,12 @@ quicky = (function ()
         if (item.type === 'dir' && !item.tilde.endsWith('..'))
         {
             this.fscol.show(item.path)
+            this.choices.hoverForSubmenu = true
         }
         else
         {
             this.fscol.hide()
+            this.choices.hoverForSubmenu = false
         }
         return post.emit('redraw')
     }
@@ -410,7 +412,13 @@ quicky = (function ()
 
     quicky.prototype["onFsColAction"] = function (action, choice)
     {
-        return this.onChoicesAction(action,choice)
+        switch (action)
+        {
+            case 'click':
+                return this.applyChoice(choice)
+
+        }
+
     }
 
     quicky.prototype["onInputAction"] = function (action, text)
@@ -420,7 +428,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _368_62_
+        var upDir, _372_62_
 
         switch (action)
         {
@@ -438,7 +446,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_368_62_=choice.link) != null ? _368_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_372_62_=choice.link) != null ? _372_62_ : choice.path))
                     }
                 }
                 break

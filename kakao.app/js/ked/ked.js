@@ -173,7 +173,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _175_22_
+        var segls, start, text, _176_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -195,7 +195,8 @@ ked [file]
         segls = util.seglsForText(text)
         this.editor.state.syntax.ext = slash.ext(this.currentFile)
         this.editor.state.loadSegls(segls)
-        this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        this.status.time = process.hrtime(start)[1]
+        this.status.drawTime = kstr.time(BigInt(this.status.time))
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         this.redraw()
         prjcts.index(this.currentFile)
@@ -237,7 +238,7 @@ ked [file]
 
     KED.prototype["onMouse"] = function (event)
     {
-        var handler
+        var handler, res
 
         if (event.type === 'wheel')
         {
@@ -245,25 +246,30 @@ ked [file]
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
                 handler = list[_a_]
-                if (handler.onWheel(event))
+                if (res = handler.onWheel(event))
                 {
-                    break
+                    if (res.redraw !== false)
+                    {
+                        this.redraw()
+                    }
+                    return
                 }
             }
+            return
         }
-        else
+        var list1 = _k_.list(this.mouseHandlers)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
-            var list1 = _k_.list(this.mouseHandlers)
-            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            handler = list1[_b_]
+            if (res = handler.onMouse(event))
             {
-                handler = list1[_b_]
-                if (handler.onMouse(event))
+                if (res.redraw !== false)
                 {
-                    break
+                    this.redraw()
                 }
+                return
             }
         }
-        return this.redraw()
     }
 
     KED.prototype["onKey"] = function (key, event)
@@ -354,7 +360,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _297_22_
+        var _301_22_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -362,7 +368,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _302_22_
+        var _306_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -391,7 +397,8 @@ ked [file]
         this.quicky.draw()
         this.finder.draw()
         this.screen.render()
-        return this.status.drawTime = kstr.time(BigInt(process.hrtime(start)[1]))
+        this.status.time = process.hrtime(start)[1]
+        return this.status.drawTime = kstr.time(BigInt(this.status.time))
     }
 
     return KED

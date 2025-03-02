@@ -158,7 +158,7 @@ editor = (function ()
                         this.state.selectLine(y)
                     }
                     this.dragStart = _k_.copy(this.state.s.selections[0])
-                    true
+                    return true
                 }
                 else
                 {
@@ -307,11 +307,10 @@ editor = (function ()
             case 'down':
             case 'left':
             case 'right':
-                this.state.scrollView(event.dir,steps)
-                break
+                return this.state.scrollView(event.dir,steps)
+
         }
 
-        return this.redraw()
     }
 
     editor.prototype["isCursorInEmpty"] = function (cursor)
@@ -359,7 +358,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _276_20_, _280_21_, _285_24_
+        var _274_20_, _278_21_, _283_24_
 
         if (!this.hasFocus())
         {

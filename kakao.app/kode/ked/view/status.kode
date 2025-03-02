@@ -49,10 +49,10 @@ function status extends view
     
     onMouse: event =>
 
-        ⮐ if @hidden()
-        ⮐ true if @crumbs.onMouse event
-        ⮐ true if @statusfile.onMouse event
-        super event
+        cret = @crumbs.onMouse event
+        sret = @statusfile.onMouse event
+        
+        sret or cret
         
     #  0000000  00000000  000000000        00000000  000  000      00000000  
     # 000       000          000           000       000  000      000       
@@ -142,24 +142,15 @@ function status extends view
              
             for i in 0...hil.length
                 add hil[i] (i<hil.length-1) ? 'status_hil' : color.darken(theme.status_hil) 'status_dark'
-               
-        dtl = dt.length
-        if cols-dtl-2 >= x
-
-            for ci in x...cols-dtl-2
-                add ' ' null 'status_dark'
+                
+        for ci in x...cols
+            add ' ' null 'status_dark'
             
-            add '' 'status_time' 'status_dark'
+        ci = clamp 0 3 int((@time/(1000*1000)-16)/8)
+        ch = ' •'[ci]
+        fg = ['#222' '#000' '#080' '#ff0'][ci]
+        log "#{ch} #{@drawTime}" if ch in ''
+        set cols-2 ch fg 'status_dark'
              
-            for i in 0...dtl
-                fg = i < dtl-3 ? 'status_fg' : 'status_fg_dim'
-                add dt[i] fg 'status_time'
-             
-            add '' 'status_time' 'status_empty'
-    
-        else # fill the remaining space
-            for ci in x...cols-dtl-2
-                add ' ' null 'status_dark'
-            
 export status
 

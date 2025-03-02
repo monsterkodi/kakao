@@ -83,20 +83,29 @@ statusfile = (function ()
 
     statusfile.prototype["onMouse"] = function (event)
     {
-        this.hover = this.cells.isInsideEvent(event)
-        if (!this.hover)
-        {
-            return
-        }
+        var inside
+
+        inside = this.cells.isInsideEvent(event)
         switch (event.type)
         {
             case 'press':
-                this.emit('action','click',this.file)
-                delete this.hover
-                return true
-
+                if (inside)
+                {
+                    this.emit('action','click',this.file)
+                    delete this.hover
+                    return true
+                }
+                break
             case 'move':
-                post.emit('pointer','pointer')
+                if (inside !== this.hover)
+                {
+                    this.hover = inside
+                    if (this.hover)
+                    {
+                        post.emit('pointer','pointer')
+                    }
+                    return true
+                }
                 break
         }
 
