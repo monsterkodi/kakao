@@ -511,6 +511,25 @@ text = (function ()
         }
     }
 
+    text["rangeOfChunkRightToPos"] = function (lines, pos)
+    {
+        var r, x, y
+
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        if (this.isInvalidLineIndex(lines,y))
+        {
+            return
+        }
+        if (r = kstr.rangeOfClosestChunk(lines[y].slice(x),x))
+        {
+            if ((0 <= r[0] && r[0] < r[1]))
+            {
+                return [r[0],y,r[1],y]
+            }
+        }
+    }
+
     text["wordAtPos"] = function (lines, pos)
     {
         var rng
@@ -522,11 +541,22 @@ text = (function ()
         return ''
     }
 
-    text["turdBeforePos"] = function (lines, pos)
+    text["chunkBeforePos"] = function (lines, pos)
     {
         var rng
 
         if (rng = this.rangeOfChunkLeftToPos(lines,pos))
+        {
+            return kseg.str(this.segsForLineSpan(lines,rng))
+        }
+        return ''
+    }
+
+    text["chunkAfterPos"] = function (lines, pos)
+    {
+        var rng
+
+        if (rng = this.rangeOfChunkRightToPos(lines,pos))
         {
             return kseg.str(this.segsForLineSpan(lines,rng))
         }
@@ -720,15 +750,22 @@ text = (function ()
 
     text["cleanWordsForCompletion"] = function (words)
     {
-        var segl, segls, wi
+        var segl, segls, tc
 
         segls = []
         var list = _k_.list(kseg.segls(words))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             segl = list[_a_]
-            wi = kseg.tailCountTurd(segl)
-            segls.push(segl.slice(0, segl.length - wi))
+            tc = kseg.tailCountTurd(segl)
+            if (tc === 1 && segl[0] === segl.slice(-1)[0])
+            {
+                segls.push(segl)
+            }
+            else
+            {
+                segls.push(segl.slice(0, segl.length - tc))
+            }
         }
         return kutil.uniq(segls.map(kseg.str))
     }

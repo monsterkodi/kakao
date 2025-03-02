@@ -151,7 +151,7 @@ class theme
         # 000 0 000  000   000    
         # 000   000  0000000      
         
-        'text h1':                              '#0f0'   
+        'text h1':                              '#0c0'   
         'text h2':                              '#0a0'   
         'text h3':                              '#080'   
         'text h4':                              '#aaf'   
@@ -209,7 +209,7 @@ class theme
         '.cast':                                '#b0b'   
         '.js':                                  '#a0a'   
         '.toml':                                '#909'   
-        '.kode':                                '#ff0'   
+        '.kode':                                '#fa0'   
         '.noon':                                '#0a0'   
         '.png':                                 '#080'   
         '.gif':                                 '#070'   

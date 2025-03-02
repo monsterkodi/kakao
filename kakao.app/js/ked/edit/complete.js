@@ -22,6 +22,7 @@ complete = (function ()
         this.name = this.editor.name + '_complete'
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
+        this.choices.rounded = false
         this.choices.scroll.handle = '▐'
         this.choices.scroll.color.bg = theme.editor_complete_choices
         this.choices.scroll.color.knob = theme.editor_complete_choices_scroll
@@ -157,7 +158,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, x, y, _156_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _161_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -166,11 +167,16 @@ complete = (function ()
         mc = this.editor.state.mainCursor()
         cx = mc[0] - this.editor.state.s.view[0]
         cy = mc[1] - this.editor.state.s.view[1]
-        var list = _k_.list(this.choices.current().slice(this.turd.length))
+        word = this.choices.current()
+        if (_k_.empty(word))
+        {
+            word = this.words[0]
+        }
+        var list = _k_.list(word.slice(this.turd.length))
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_156_52_=theme[this.editor.name + '_selection']) != null ? _156_52_ : theme.editor_selection)
+            bg = ((_161_52_=theme[this.editor.name + '_selection']) != null ? _161_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

@@ -25,7 +25,7 @@ draw = (function ()
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, emptyColor, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _35_26_, _36_45_, _63_42_, _66_38_, _76_17_, _80_15_, _81_15_, _82_15_
+        var bg, c, ch, checkColor, ci, clss, emptyColor, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _38_26_, _39_45_, _66_42_, _69_38_, _78_17_, _82_15_, _83_15_, _84_15_
 
         if (this.hidden())
         {
@@ -36,8 +36,8 @@ draw = (function ()
         view = s.view.asMutable()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
-        bg = ((_35_26_=theme[this.name]) != null ? _35_26_ : theme.editor)
-        emptyColor = ((_36_45_=theme[this.name + '_empty']) != null ? _36_45_ : theme.editor_empty)
+        bg = ((_38_26_=theme[this.name]) != null ? _38_26_ : theme.editor)
+        emptyColor = ((_39_45_=theme[this.name + '_empty']) != null ? _39_45_ : theme.editor_empty)
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -72,10 +72,10 @@ draw = (function ()
                     checkColor = true
                 }
                 c += this.cells.add(c,row,ch,fg,bg)
-                x += ((_63_42_=kseg.width(line[si])) != null ? _63_42_ : 1)
+                x += ((_66_42_=kseg.width(line[si])) != null ? _66_42_ : 1)
                 if (clss === 'invert_bg')
                 {
-                    bg = ((_66_38_=theme[this.name]) != null ? _66_38_ : theme.editor)
+                    bg = ((_69_38_=theme[this.name]) != null ? _69_38_ : theme.editor)
                 }
             }
             this.drawRowBackground(row,linel,emptyColor)
@@ -120,14 +120,14 @@ draw = (function ()
 
     draw.prototype["drawTrailingRows"] = function ()
     {
-        var emptyColor, row, vl, _114_45_
+        var emptyColor, row, vl, _118_45_
 
         vl = this.state.s.lines.length - this.state.s.view[1]
         if (vl >= this.cells.rows)
         {
             return
         }
-        emptyColor = ((_114_45_=theme[this.name + '_empty']) != null ? _114_45_ : theme.editor_empty)
+        emptyColor = ((_118_45_=theme[this.name + '_empty']) != null ? _118_45_ : theme.editor_empty)
         for (var _a_ = row = vl, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             this.cells.bg_fill(0,row,-1,row,emptyColor)
@@ -136,10 +136,10 @@ draw = (function ()
 
     draw.prototype["drawHighlights"] = function ()
     {
-        var bg, highlight, ul, vx, vy, x, y, _126_41_, _127_44_
+        var bg, highlight, ul, vx, vy, x, y, _130_41_, _131_44_
 
-        bg = ((_126_41_=theme[this.name + '_highlight']) != null ? _126_41_ : theme.editor_highlight)
-        ul = ((_127_44_=theme[this.name + '_highlight_ul']) != null ? _127_44_ : theme.editor_highlight_ul)
+        bg = ((_130_41_=theme[this.name + '_highlight']) != null ? _130_41_ : theme.editor_highlight)
+        ul = ((_131_44_=theme[this.name + '_highlight_ul']) != null ? _131_44_ : theme.editor_highlight_ul)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -165,11 +165,10 @@ draw = (function ()
 
     draw.prototype["drawSelections"] = function (lines)
     {
-        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _153_50_, _154_50_
+        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _157_50_, _158_50_
 
-        prof.start('selection')
-        spanbg = ((_153_50_=theme[this.name + '_selection']) != null ? _153_50_ : theme.editor_selection)
-        linebg = ((_154_50_=theme[this.name + '_selection_line']) != null ? _154_50_ : theme.editor_selection_line)
+        spanbg = ((_157_50_=theme[this.name + '_selection']) != null ? _157_50_ : theme.editor_selection)
+        linebg = ((_158_50_=theme[this.name + '_selection_line']) != null ? _158_50_ : theme.editor_selection_line)
         if (!this.cells.screen.t.hasFocus)
         {
             spanbg = color.darken(spanbg)
@@ -209,17 +208,16 @@ draw = (function ()
                 }
             }
         }
-        return prof.end('selection')
     }
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fcb, fg, mainCursor, s, x, y, _196_44_, _197_44_, _210_46_, _212_37_
+        var bg, cursor, fcb, fg, mainCursor, s, x, y, _200_44_, _201_44_, _214_46_, _216_37_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_196_44_=theme[this.name + '_cursor_fg']) != null ? _196_44_ : theme.editor_cursor_fg)
-        bg = ((_197_44_=theme[this.name + '_cursor_multi']) != null ? _197_44_ : theme.editor_cursor_multi)
+        fg = ((_200_44_=theme[this.name + '_cursor_fg']) != null ? _200_44_ : theme.editor_cursor_fg)
+        bg = ((_201_44_=theme[this.name + '_cursor_multi']) != null ? _201_44_ : theme.editor_cursor_multi)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -239,9 +237,9 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_210_46_=theme[this.name + '_cursor_fg']) != null ? _210_46_ : theme.editor_cursor_fg)
+            fg = ((_214_46_=theme[this.name + '_cursor_fg']) != null ? _214_46_ : theme.editor_cursor_fg)
             fcb = (this.hasFocus() ? '_cursor_bg' : '_cursor_blur')
-            bg = ((_212_37_=theme[this.name + fcb]) != null ? _212_37_ : theme['editor' + fcb])
+            bg = ((_216_37_=theme[this.name + fcb]) != null ? _216_37_ : theme['editor' + fcb])
             var _b_ = [mainCursor[0] - s.view[0],mainCursor[1] - s.view[1]]; x = _b_[0]; y = _b_[1]
 
             if (s.cursors.length <= 1)

@@ -630,3 +630,5 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
         
         util.cleanWordsForCompletion words ▸ ['Alice' 'Alice’s']
         
+        util.cleanWordsForCompletion ['"#fff"'] ▸ ['"#fff"']
+        

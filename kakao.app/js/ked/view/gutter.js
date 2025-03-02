@@ -4,6 +4,7 @@ var gutter
 
 import color from "../util/color.js"
 import theme from "../util/theme.js"
+import prof from "../util/prof.js"
 
 import view from "./view.js"
 

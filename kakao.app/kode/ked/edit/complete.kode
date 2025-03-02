@@ -17,6 +17,7 @@ function complete
         
         @choices = new choices_class @editor.cells.screen "#{@name}_choices" ['scrllr']
         @choices.focusable = false
+        @choices.rounded   = false
         
         @choices.scroll.handle = '▐'
         @choices.scroll.color.bg   = theme.editor_complete_choices
@@ -152,7 +153,11 @@ function complete
         cx = mc[0] - @editor.state.s.view[0]
         cy = mc[1] - @editor.state.s.view[1]
         
-        for ch,ci in @choices.current()[@turd.length..]
+        word = @choices.current()
+        if empty word
+            word = @words[0]
+        
+        for ch,ci in word[@turd.length..]
             bg = theme[@editor.name + '_selection'] ? theme.editor_selection
             @editor.cells.set cx+ci cy ch '#fff' bg
         

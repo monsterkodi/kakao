@@ -488,6 +488,7 @@ Alice;
 Alice’s
 Alice’s,`)
         compare(util.cleanWordsForCompletion(words),['Alice','Alice’s'])
+        compare(util.cleanWordsForCompletion(['"#fff"']),['"#fff"'])
     })
 }
 toExport["util"]._section_ = true

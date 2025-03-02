@@ -26,7 +26,7 @@ prof = (function ()
             }
             key += ' '
         }
-        lf(_k_.r5(`prof! ${_k_.g5(key)} doesn't match ${_k_.b8(Object.keys(prof.tils).join(' '))}`))
+        console.log(_k_.r5(`prof! ${_k_.g5(key)} doesn't match ${_k_.b8(Object.keys(prof.tils).join(' '))}`))
         return ['',[],'']
     }
 
@@ -49,7 +49,7 @@ prof = (function ()
         if (!_k_.empty(til))
         {
             til.push(process.hrtime())
-            return lf(key,_k_.lpad(5,rst),prof.tstr(til,-2))
+            console.log(key,_k_.lpad(5,rst),prof.tstr(til,-2))
         }
     }
 
@@ -62,7 +62,7 @@ prof = (function ()
         if (!_k_.empty(til))
         {
             prof.time.apply(prof,[key,rst])
-            return lf(key,_k_.lpad(5),prof.tstr(til,0))
+            console.log(key,_k_.lpad(5),prof.tstr(til,0))
         }
     }
 

@@ -18,6 +18,7 @@ function choices extends editor
         
         @items = []
         @focusable = true
+        @rounded   = true
         @frontRoundOffset = 0
         @hoverIndex = -1
         @fuzzied = @items
@@ -44,6 +45,8 @@ function choices extends editor
     drawSelections: lines ->
         
         ⮐ if empty @state.s.selections
+        
+        ⮐ super lines if not @rounded
         
         bg = theme.choices_current
         
@@ -124,14 +127,20 @@ function choices extends editor
             @emitSelectionChange()
             
     emitSelectionChange: ->
+        
+        ⮐ if empty @state.s.selections
             
         @grabFocus() if @focusable
         @frontCursor() 
-        @emit 'select' @choiceAtRow(@state.allSelections()[0][1])
+        @emit 'select' @choiceAtRow(@state.s.selections[0][1])
         
     frontCursor: -> 
         
-        @state.setMainCursor 0 @state.allSelections()[0][1]
+        if empty @state.s.selections
+            log 'empty selections?' @state.s.selections
+            @state.setMainCursor 0 0
+        else
+            @state.setMainCursor 0 @state.s.selections[0][1]
     
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     

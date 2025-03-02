@@ -401,21 +401,21 @@ export
         
         for selection in @s.selections
             if selection[1] <= y <= selection[3]
-                ⮐ util.isFullLineRange(@allLines() selection)
+                ⮐ util.isFullLineRange(@s.lines selection)
         false
         
     isPartiallySelectedLine: y ->
         
         for selection in @s.selections
             if selection[1] <= y <= selection[3]
-                ⮐ not util.isFullLineRange(@allLines() selection)
+                ⮐ not util.isFullLineRange(@s.lines selection)
         false
         
     isSpanSelectedLine: y ->
         
         for selection in @s.selections
             if selection[1] <= y <= selection[3]
-                span = util.isSpanLineRange(@allLines() selection)
+                span = util.isSpanLineRange(@s.lines selection)
                 ⮐ true if span
             ⮐ false if selection[1] > y
         false

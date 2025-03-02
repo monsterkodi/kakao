@@ -32,6 +32,7 @@ choices = (function ()
         choices.__super__.constructor.call(this,screen,name,features)
         this.items = []
         this.focusable = true
+        this.rounded = true
         this.frontRoundOffset = 0
         this.hoverIndex = -1
         this.fuzzied = this.items
@@ -43,9 +44,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _28_15_
+        var lines, _29_15_
 
-        this.items = ((_28_15_=this.items) != null ? _28_15_ : [])
+        this.items = ((_29_15_=this.items) != null ? _29_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -62,6 +63,10 @@ choices = (function ()
         if (_k_.empty(this.state.s.selections))
         {
             return
+        }
+        if (!this.rounded)
+        {
+            return choices.__super__.drawSelections.call(this,lines)
         }
         bg = theme.choices_current
         if (!this.cells.screen.t.hasFocus)
@@ -188,17 +193,29 @@ choices = (function ()
 
     choices.prototype["emitSelectionChange"] = function ()
     {
+        if (_k_.empty(this.state.s.selections))
+        {
+            return
+        }
         if (this.focusable)
         {
             this.grabFocus()
         }
         this.frontCursor()
-        return this.emit('select',this.choiceAtRow(this.state.allSelections()[0][1]))
+        return this.emit('select',this.choiceAtRow(this.state.s.selections[0][1]))
     }
 
     choices.prototype["frontCursor"] = function ()
     {
-        return this.state.setMainCursor(0,this.state.allSelections()[0][1])
+        if (_k_.empty(this.state.s.selections))
+        {
+            console.log('empty selections?',this.state.s.selections)
+            return this.state.setMainCursor(0,0)
+        }
+        else
+        {
+            return this.state.setMainCursor(0,this.state.s.selections[0][1])
+        }
     }
 
     choices.prototype["extract"] = function (item)

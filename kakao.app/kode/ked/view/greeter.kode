@@ -51,16 +51,12 @@ function greeter extends view
         
         @show()
         
-        duration = 240
+        duration = 480
         @a += 1
         @a = 0 if @a > duration
-        f = 0.75 + 0.25 * Math.cos(2 * Math.PI * (1-@a/duration))
+        f = 0.4 + 0.6 * Math.abs(Math.sin(2 * Math.PI * @a / duration))
         
-        c1 = [0 int(f * 255) 0]
-        c2 = [int(f * 120) int(f * 120) int(f * 255)]
-        c3 = [int(f * 255) int(f * 160) 0]
-        
-        @header = help.headerCells c1 c2 c3
+        @header = help.headerCells f
         
         for row,y in @header
             for cell,x in row

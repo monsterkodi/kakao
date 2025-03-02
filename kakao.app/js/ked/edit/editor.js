@@ -359,7 +359,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _276_20_, _280_21_, _285_21_
+        var _276_20_, _280_21_, _285_24_
 
         if (!this.hasFocus())
         {
@@ -380,7 +380,13 @@ editor = (function ()
         if (!_k_.empty(event.char))
         {
             this.state.insert(event.char)
-            return (this.complete != null ? this.complete.word(this.state.turdBeforeCursor()) : undefined)
+            if ((this.complete != null))
+            {
+                if (_k_.empty(this.state.chunkAfterCursor()))
+                {
+                    return this.complete.word(this.state.chunkBeforeCursor())
+                }
+            }
         }
         else
         {

@@ -566,7 +566,7 @@ edit = (function ()
         {
             return [lines,rngs,posl]
         }
-        newLines = _k_.copy(lines)
+        newLines = lines
         newRngs = _k_.copy(rngs)
         newPosl = _k_.copy(posl)
         var list = _k_.list(indices)

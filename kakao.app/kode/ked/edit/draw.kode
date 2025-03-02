@@ -25,6 +25,9 @@ function draw extends view
     draw: =>
         
         ⮐ if @hidden()
+        
+        # prof.start 'draw' if @name == 'editor'
+        # ● draw
                 
         syntax     = @state.syntax
         s          = @state.s
@@ -72,14 +75,15 @@ function draw extends view
         @drawTrailingRows()        
         @drawHighlights()
         @drawSelections lines 
-        
         @complete?.draw()
         
         @drawCursors()        
-
+        
         @scroll?.draw()
         @gutter?.draw()
         @mapscr?.draw()
+        
+        # prof.end 'draw'   if @name == 'editor'
         
         super()
         
@@ -148,7 +152,7 @@ function draw extends view
     
     drawSelections: lines ->
         
-        prof.start 'selection'
+        # prof.start 'selection'
         
         spanbg = theme[@name + '_selection'     ] ? theme.editor_selection
         linebg = theme[@name + '_selection_line'] ? theme.editor_selection_line
@@ -180,7 +184,7 @@ function draw extends view
                 for x in xs...xe
                     @cells.set_bg x-@state.s.view[0] y bg 
                     
-        prof.end 'selection'
+        # prof.end 'selection'
             
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
     # 000       000   000  000   000  000       000   000  000   000  000       

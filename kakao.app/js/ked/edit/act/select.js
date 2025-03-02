@@ -456,7 +456,7 @@ export default {select:function (from, to)
         selection = list[_11_]
         if ((selection[1] <= y && y <= selection[3]))
         {
-            return util.isFullLineRange(this.allLines(),selection)
+            return util.isFullLineRange(this.s.lines,selection)
         }
     }
     return false
@@ -470,7 +470,7 @@ export default {select:function (from, to)
         selection = list[_12_]
         if ((selection[1] <= y && y <= selection[3]))
         {
-            return !util.isFullLineRange(this.allLines(),selection)
+            return !util.isFullLineRange(this.s.lines,selection)
         }
     }
     return false
@@ -484,7 +484,7 @@ export default {select:function (from, to)
         selection = list[_13_]
         if ((selection[1] <= y && y <= selection[3]))
         {
-            span = util.isSpanLineRange(this.allLines(),selection)
+            span = util.isSpanLineRange(this.s.lines,selection)
             if (span)
             {
                 return true

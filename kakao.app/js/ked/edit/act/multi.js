@@ -297,10 +297,13 @@ export default {allCursors:function ()
     }
 },wordAtCursor:function ()
 {
-    return util.wordAtPos(this.allLines(),this.mainCursor())
-},turdBeforeCursor:function ()
+    return util.wordAtPos(this.s.lines,this.mainCursor())
+},chunkBeforeCursor:function ()
 {
-    return util.turdBeforePos(this.allLines(),this.mainCursor())
+    return util.chunkBeforePos(this.s.lines,this.mainCursor())
+},chunkAfterCursor:function ()
+{
+    return util.chunkAfterPos(this.s.lines,this.mainCursor())
 },setMainCursorAndSelect:function (x, y)
 {
     this.setSelections(util.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])

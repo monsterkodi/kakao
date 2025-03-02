@@ -27,7 +27,7 @@
 ##### todo
     
 - completion
-    - fix current color 
+    - fix frame at bol
 
 - quicky
     - fix project files padding

@@ -282,7 +282,9 @@ function editor extends draw
 
         if valid event.char
             @state.insert event.char
-            @complete?.word @state.turdBeforeCursor()
+            if @complete?
+                if empty @state.chunkAfterCursor()
+                    @complete.word @state.chunkBeforeCursor() 
         else
             if key not in ['shift' 'ctrl' 'alt' 'cmd'] 
                 log 'editor.onKey?' key
