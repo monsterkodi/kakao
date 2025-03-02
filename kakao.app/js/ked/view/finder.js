@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
 
-var finder, int
+var finder
 
 import kxk from "../../kxk.js"
 let post = kxk.post
@@ -8,7 +8,6 @@ let post = kxk.post
 import inputchoice from "./inputchoice.js"
 
 import rgxs from './quicky.json' with { type : "json" }
-int = parseInt
 
 finder = (function ()
 {

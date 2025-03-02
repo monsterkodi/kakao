@@ -13,50 +13,74 @@ function knob
 
     @: @cells @name ->
         
+        @framePos = 'right'
+        @maxWidth = 42
+        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
+    resizePointer: ->
+        
+        switch @framePos
+            'right' 'left' ➜ 'ew-resize'
+            'top' 'bottom' ➜ 'ns-resize'
+    
     onMouse: event =>
         
         [col row] = @cells.posForEvent event
+        
+        changed = @hover
+        @hover = switch @framePos
+            'top'   ➜ row == 0
+            'right' ➜ col == @cells.cols-1
+        changed = changed != @hover
         
         switch event.type
             
             'press'
             
-                if row == 0
+                if @hover
                     post.emit 'pointer' 'grabbing'
                     @doDrag = true
                     ⮐ true
                     
             'drag'
             
-                if @doDrag and row
+                if @doDrag
+                    @hover = true
+                    size = switch @framePos
+                        
+                        'top'   ➜ [@cells.cols max(0 @cells.rows - row)]
+                        'right' ➜ [clamp(0 @maxWidth col) @cells.rows]
+                    
                     post.emit 'pointer' 'grabbing'
-                    post.emit 'view.size' @name @cells.cols max(0 @cells.rows - row)
+                    post.emit 'view.size' @name size
                     ⮐ true
                 
             'release'
             
                 if @doDrag
                     @hover = row == 0
-                    post.emit 'pointer' 'ns-resize' if @hover
+                    post.emit 'pointer' @resizePointer() if @hover
                     delete @doDrag
                     ⮐ true
             
             'move'
             
-                @hover = row == 0
-                post.emit 'pointer' 'ns-resize' if @hover
+                post.emit 'pointer' @resizePointer() if @hover
                 
-        false
+        changed
                 
     draw: =>
+
+        fg = @hover ? theme.scroll_knob : theme.gutter # theme.editor
         
-        fg = @hover ? theme.scroll_knob : theme.editor
-        @cells.set parseInt(@cells.cols/2) 0 '●' fg
+        switch @framePos
+            'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
+            'right' ➜ @cells.set @cells.cols-1 int(@cells.rows/2) '' fg
+            
 
 export knob

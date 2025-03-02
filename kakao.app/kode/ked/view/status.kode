@@ -10,8 +10,6 @@ use ../../kxk ▪ post slash
 use ../util   ◆ color theme util
 use           ◆ view crumbs statusfile
 
-int = parseInt
-
 function status extends view
 
     @: screen @state ->
@@ -51,6 +49,16 @@ function status extends view
 
         cret = @crumbs.onMouse event
         sret = @statusfile.onMouse event
+        
+        [col row] = @cells.posForEvent event
+        if row == 0 and col < 4
+            switch event.type 
+                'move'  ➜ post.emit 'pointer' 'ew-resize'
+                'press' 
+                    if event.count > 1
+                        post.emit 'funcol.toggle'
+                    else
+                        post.emit 'funcol.resize'
         
         sret or cret
         

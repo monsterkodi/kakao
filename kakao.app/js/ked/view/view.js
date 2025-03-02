@@ -23,6 +23,8 @@ view = (function ()
         var f, feature
 
         this["draw"] = this["draw"].bind(this)
+        this["onKey"] = this["onKey"].bind(this)
+        this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onViewShow"] = this["onViewShow"].bind(this)
         this.cells = new cells(this.screen)
@@ -75,17 +77,17 @@ view = (function ()
 
     view.prototype["hidden"] = function ()
     {
-        return this.cells.rows <= 0
+        return !this.visible()
     }
 
     view.prototype["invisible"] = function ()
     {
-        return this.cells.rows <= 0
+        return !this.visible()
     }
 
     view.prototype["visible"] = function ()
     {
-        return this.cells.rows > 0
+        return this.cells.rows > 0 && this.cells.cols > 0
     }
 
     view.prototype["toggle"] = function ()
@@ -102,9 +104,19 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _65_13_
+        var _58_27_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
+    }
+
+    view.prototype["onWheel"] = function (event)
+    {
+        console.log(`view.onWheel ${this.name}`)
+    }
+
+    view.prototype["onKey"] = function (key, event)
+    {
+        console.log(`view.onKey ${this.name}`)
     }
 
     view.prototype["layout"] = function (x, y, w, h)
@@ -114,7 +126,7 @@ view = (function ()
 
     view.prototype["draw"] = function ()
     {
-        var _75_18_
+        var _70_18_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

@@ -27,10 +27,12 @@ import status from "./view/status.js"
 import quicky from "./view/quicky.js"
 import menu from "./view/menu.js"
 import finder from "./view/finder.js"
+import funcol from "./view/funcol.js"
 
 import editor from "./edit/editor.js"
 import state from "./edit/state.js"
 
+global.int = parseInt
 
 KED = (function ()
 {
@@ -65,6 +67,7 @@ ked [file]
         this.session = new session
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
+        this.viewSizes = {funcol:[20,0]}
         this.t = new ttio
         this.julia = new julia
         this.screen = new screen(this.t)
@@ -72,6 +75,7 @@ ked [file]
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
         this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr','complete'])
+        this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
@@ -82,9 +86,9 @@ ked [file]
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
         post.on('quit',this.quit)
-        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor,this.status]
-        this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor]
-        this.keyHandlers = [this.finder,this.quicky,this.menu,this.editor]
+        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor,this.status,this.funcol]
+        this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
+        this.keyHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -115,17 +119,19 @@ ked [file]
 
     KED.prototype["layout"] = function ()
     {
-        var h, w
+        var fcw, h, w
 
         w = this.t.cols()
         h = this.t.rows()
-        this.status.layout(0,0,w,1)
-        return this.editor.layout(0,1,w,h - 1)
+        fcw = this.viewSizes.funcol[0]
+        this.funcol.layout(0,0,fcw,h)
+        this.status.layout(fcw,0,w - fcw,1)
+        return this.editor.layout(fcw,1,w - fcw,h - 1)
     }
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _108_10_
+        var _114_10_
 
         await this.session.save()
         console.log(_k_.w2(`┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`))
@@ -147,7 +153,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _133_22_
+        var _139_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -173,7 +179,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _176_22_
+        var segls, start, text, _182_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -359,17 +365,19 @@ ked [file]
         }
     }
 
-    KED.prototype["onViewSize"] = function (name, x, y)
+    KED.prototype["onViewSize"] = function (name, pos)
     {
-        var _303_22_
+        var x, y
 
-        this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
-        return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
+        var _a_ = pos; x = _a_[0]; y = _a_[1]
+
+        this.viewSizes[name] = [_k_.min(x,this.screen.cols - 1),_k_.min(y,this.screen.rows - 1)]
+        return this.redraw()
     }
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _308_22_
+        var _316_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -393,6 +401,7 @@ ked [file]
         {
             this.editor.draw()
             this.status.draw()
+            this.funcol.draw()
         }
         this.menu.draw()
         this.quicky.draw()

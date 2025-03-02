@@ -12,8 +12,6 @@ use ../util   ◆ util syntax
 use ./act     ◆ del insert select join indent multi
 use           ◆ keys
 
-int = parseInt
-
 function state
 
     @: @cells name ->

@@ -6,7 +6,7 @@
  0000000   0000000   000   000  000        0000000  00000000     000     00000000
 ###
 
-use ../../kxk ▪ kseg kutil
+use ../../kxk ▪ kseg kutil post
 use ../util   ◆ theme util
 
 function complete
@@ -63,7 +63,13 @@ function complete
         
         ⮐ if @hidden()
         
-        @choices.onMouse event
+        cret = @choices.onMouse event
+        
+        if not cret and event.type in ['press' 'drag' 'release']
+            @hide()
+            ⮐ 
+        
+        cret
 
     onWheel: event => 
         
@@ -90,6 +96,7 @@ function complete
     apply: ->
         
         @editor.state.insert @currentWord()[@turd.length..]
+        post.emit 'focus' 'editor'
         @hide()
         
     onChoicesAction: action choice=>

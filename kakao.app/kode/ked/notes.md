@@ -1,16 +1,16 @@
 
-              crumbs file tabs
+              crumbs file tabs status
             ┏━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┓
-            ┣━━━━┻━━┳━┻━━━━┻━━━━┻━━┳━┻┳━━━┻━━━━┫
-            ┃       ┃              ┃  ┃        ┃
-            ┃ fscol ┃    editor    ┃  ┃ search ┃
-            ┃ funcs ┃              ┃  ┃        ┃
-            ┃       ┃              ┃  ┃        ┃
-            ┃       ┃              ┃  ┃        ┃
-            ┃       ┃              ┃  ┃        ┃
-            ┃       ┃              ┃  ┃        ┃
-            ┃       ┃              ┃  ┃        ┃
-            ┣━━━━━━━┻━━━━━━━━━━━━━━┻━━┻━━━━━━━━┫
+            ┣━━━━┻━━┳━┻━━━━┻━━━━┻━━━━┻━━━━┻━━━━┫
+            ┃       ┃             ▴            ┃
+            ┃ fscol ┃    editor   search       ┃
+            ┃ funcs ┃             results      ┃
+            ┃       ┃                          ┃
+            ┃       ┃                          ┃
+            ┃       ┃                          ┃
+            ┃       ┃                          ┃
+            ┃       ┃                          ┃
+            ┣━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┫
             ┃          help+log+keys           ┃
             ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
@@ -18,10 +18,10 @@
 ## todo
 ### todo
 #### todo
-##### todo 
+##### todo    
 
 - funclist
-
+       
 - ascii header mode
     - cmd+3 create header for selection or cursor word
     - switch automatically if cursor inside
@@ -33,6 +33,8 @@
     - allow completion inside chunks in some cases
         - before closing )]}
         - after . :
+        
+- surround
 
 - quicky
     
@@ -43,6 +45,7 @@
     - more tests
     - fix
         - insert after wide unicode segments
+        - clear selection after copy?
     - add
         - multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
         - alt+cmd+e add word at cursor to highlights
@@ -83,7 +86,6 @@
 
 - macro
     - unicode palette
-    
     
 - file watcher
 

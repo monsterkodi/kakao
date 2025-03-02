@@ -45,7 +45,7 @@ function mapscr extends mapview
         
         view = @state.s.view.asMutable()
         
-        view[1] = parseInt (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
+        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
         
         view[1] -= 6 # offset so that clicking inside a header scrolls it into view
         

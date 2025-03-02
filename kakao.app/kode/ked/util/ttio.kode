@@ -8,8 +8,6 @@
 
 use ../../kxk ◆ events post kstr
 
-int = parseInt
-
 function TTIO extends events
 
     @: ->
@@ -203,7 +201,7 @@ function TTIO extends events
         char = ''
             
         if csi[-1] == 'u'
-            code = parseInt csi
+            code = int csi
 
             ⮐ if empty code
 
@@ -236,11 +234,11 @@ function TTIO extends events
             type = 'release' if splt[1].endsWith(':3') # and csi != '27;9:3u'
             
             if splt.length > 2
-                code = parseInt splt[2]
+                code = int splt[2]
                 if valid code
                     char = String.fromCodePoint code
             
-            mbit = parseInt(splt[1])-1
+            mbit = int(splt[1])-1
             if mbit & 0x1 ➜ mods.push 'shift'
             if mbit & 0x4 ➜ mods.push 'ctrl'
             if mbit & 0x2 ➜ mods.push 'alt'
@@ -375,12 +373,12 @@ function TTIO extends events
     
     parseMouse: csi =>
                 
-        [code px py] = csi[1..-2].split(';').map (s) -> parseInt s
+        [code px py] = csi[1..-2].split(';').map (s) -> int s
         
         ⮐ if empty @cellsz
         
-        cx = parseInt px/@cellsz[0]
-        cy = parseInt py/@cellsz[1]        
+        cx = int px/@cellsz[0]
+        cy = int py/@cellsz[1]        
         
         event =
             type:   'release'
@@ -527,9 +525,9 @@ function TTIO extends events
                 
                 if csi.startsWith('4;') and csi.endsWith('t') # screen size in pixels
                     
-                    pxs = csi[2..-2].split(';').map (p) -> parseInt(p)
+                    pxs = csi[2..-2].split(';').map (p) -> int(p)
                     @pixels = [pxs[1] pxs[0]]
-                    @cellsz = [parseInt(@pixels[0]/@cols()) parseInt(@pixels[1]/@rows())]
+                    @cellsz = [int(@pixels[0]/@cols()) int(@pixels[1]/@rows())]
     
                     @emit 'resize' @cols() @rows() @pixels @cellsz
                     

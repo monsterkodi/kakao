@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, rpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s+=c} return s}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var int, status
+var status
 
 import kxk from "../../kxk.js"
 let post = kxk.post
@@ -14,7 +14,6 @@ import view from "./view.js"
 import crumbs from "./crumbs.js"
 import statusfile from "./statusfile.js"
 
-int = parseInt
 
 status = (function ()
 {
@@ -65,10 +64,32 @@ status = (function ()
 
     status.prototype["onMouse"] = function (event)
     {
-        var cret, sret
+        var col, cret, row, sret
 
         cret = this.crumbs.onMouse(event)
         sret = this.statusfile.onMouse(event)
+        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+
+        if (row === 0 && col < 4)
+        {
+            switch (event.type)
+            {
+                case 'move':
+                    post.emit('pointer','ew-resize')
+                    break
+                case 'press':
+                    if (event.count > 1)
+                    {
+                        post.emit('funcol.toggle')
+                    }
+                    else
+                    {
+                        post.emit('funcol.resize')
+                    }
+                    break
+            }
+
+        }
         return sret || cret
     }
 

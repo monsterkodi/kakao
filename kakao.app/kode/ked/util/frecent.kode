@@ -8,8 +8,6 @@
 
 use ../../kxk ▪ kstr pretty
 
-int = parseInt
-
 function frecent
 
     @buckets: file:{}

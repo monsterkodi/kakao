@@ -16,8 +16,6 @@ function view extends events
 
     @: @screen @name features ->
         
-        # lf "view #{c4 @name}"
-        
         @cells = new cells @screen
         @feats = {}
         @feats[f] = true for f in features
@@ -31,7 +29,6 @@ function view extends events
     onViewShow: viewName =>
                 
         if viewName != @name and @visible() and viewName in popups# and @name in popups
-            # lf "hide #{c4 @name} for #{c6 viewName}"
             @hide() 
                 
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
@@ -42,17 +39,15 @@ function view extends events
   
     show: -> 
         
-        # lf "view.show #{c6 @name}"
         post.emit 'view.show' @name
         @layout()
         redraw:true
         
     hide:      -> @cells.rows = 0; redraw:true
-    hidden:    -> @cells.rows <= 0 #or @cells.cols <= 0
-    invisible: -> @cells.rows <= 0 #or @cells.cols <= 0
-    visible:   -> @cells.rows > 0 #and @cells.cols > 0
+    hidden:    -> not @visible()
+    invisible: -> not @visible()
+    visible:   -> @cells.rows > 0 and @cells.cols > 0
     toggle:    -> if @hidden() then @show() else @hide()
-    # toggle: => post.emit 'view.size' @name @cells.cols (@cells.rows ? 0 : 10) 
                 
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -60,9 +55,9 @@ function view extends events
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event =>
-    
-        @knob?.onMouse event
+    onMouse: event => @knob?.onMouse event
+    onWheel: event => log "view.onWheel #{@name}"
+    onKey: key event => log "view.onKey #{@name}"
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  

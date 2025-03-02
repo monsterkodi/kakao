@@ -8,8 +8,6 @@
 
 use ◆ util color
 
-int = parseInt
-
 function help
 
     @header: -> '\n' + color.linesForCells(@headerCells()).join('\n') + '\n'

@@ -1,10 +1,11 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var complete
 
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
 let kutil = kxk.kutil
+let post = kxk.post
 
 import theme from "../util/theme.js"
 import util from "../util/util.js"
@@ -80,11 +81,19 @@ complete = (function ()
 
     complete.prototype["onMouse"] = function (event)
     {
+        var cret
+
         if (this.hidden())
         {
             return
         }
-        return this.choices.onMouse(event)
+        cret = this.choices.onMouse(event)
+        if (!cret && _k_.in(event.type,['press','drag','release']))
+        {
+            this.hide()
+            return
+        }
+        return cret
     }
 
     complete.prototype["onWheel"] = function (event)
@@ -104,6 +113,7 @@ complete = (function ()
     complete.prototype["apply"] = function ()
     {
         this.editor.state.insert(this.currentWord().slice(this.turd.length))
+        post.emit('focus','editor')
         return this.hide()
     }
 
@@ -187,7 +197,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _179_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _186_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -201,7 +211,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_179_52_=theme[this.editor.name + '_selection']) != null ? _179_52_ : theme.editor_selection)
+            bg = ((_186_52_=theme[this.editor.name + '_selection']) != null ? _186_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

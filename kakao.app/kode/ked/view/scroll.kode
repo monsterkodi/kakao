@@ -87,7 +87,7 @@ function scroll extends view
         
         view = @state.s.view.asMutable()
         
-        view[1] = parseInt floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        view[1] = int floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
         
         maxY = @state.s.lines.length - @cells.rows
         
@@ -109,9 +109,9 @@ function scroll extends view
         rows = @cells.rows
         lnum = @state.s.lines.length
         
-        kh = parseInt floor(pow((rows) 2) / lnum)
-        kp = parseInt floor((rows-kh-1) * @state.s.view[1] / (lnum-rows))
-        nc = parseInt floor((rows-1)    * @state.s.view[1] / (lnum-rows))
+        kh = int floor(pow((rows) 2) / lnum)
+        kp = int floor((rows-kh-1) * @state.s.view[1] / (lnum-rows))
+        nc = int floor((rows-1)    * @state.s.view[1] / (lnum-rows))
         ns = kp
         ne = kp+kh
         

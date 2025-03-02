@@ -1,11 +1,10 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var help, int
+var help
 
 import util from "./util.js"
 import color from "./color.js"
 
-int = parseInt
 
 help = (function ()
 {

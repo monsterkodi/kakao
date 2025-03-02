@@ -11,8 +11,6 @@ use         ◆ inputchoice
 
 import rgxs from './quicky.json' with { type: "json" }
 
-int = parseInt
-
 function finder extends inputchoice
 
     @: @screen ->

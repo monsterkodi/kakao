@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var int, quicky
+var quicky
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -22,7 +22,6 @@ import crumbs from "./crumbs.js"
 import fscol from "./fscol.js"
 
 import rgxs from './quicky.json' with { type : "json" }
-int = parseInt
 
 quicky = (function ()
 {
@@ -450,7 +449,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _411_62_
+        var upDir, _409_62_
 
         switch (action)
         {
@@ -468,7 +467,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_411_62_=choice.link) != null ? _411_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_409_62_=choice.link) != null ? _409_62_ : choice.path))
                     }
                 }
                 break

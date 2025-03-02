@@ -78,8 +78,6 @@ use ◆ util
 #ansi.log256Colors()
 #process.exit 0
 
-int = s -> parseInt s
-
 class color
     
     @rgb:    c   -> kstr.hexColor c

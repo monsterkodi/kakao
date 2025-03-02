@@ -14,8 +14,6 @@ use           ◆ inputchoice crumbs fscol
 
 import rgxs from './quicky.json' with { type: "json" }
 
-int = parseInt
-
 function quicky extends inputchoice
 
     @: @screen ->

@@ -11,8 +11,6 @@ use ../util ◆ theme help util
 use ../edit ◆ editor 
 use         ◆ view
 
-int = parseInt
-
 function greeter extends view
 
     @: screen ->
