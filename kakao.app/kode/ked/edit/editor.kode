@@ -203,10 +203,12 @@ function editor extends draw
         ⮐ if not @cells.isInsideEvent event
 
         if @complete?
-            ⮐ if @complete.onWheel event
+            ⮐ true if @complete.onWheel event
         
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
+            
+        true
             
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  

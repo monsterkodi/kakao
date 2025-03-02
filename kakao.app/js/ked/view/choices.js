@@ -40,14 +40,19 @@ choices = (function ()
         this.filterText = ''
     }
 
+    choices.prototype["clear"] = function ()
+    {
+        return this.set([])
+    }
+
     choices.prototype["set"] = function (items, key)
     {
         this.items = items
         this.key = key
     
-        var lines, _30_15_
+        var lines, _32_15_
 
-        this.items = ((_30_15_=this.items) != null ? _30_15_ : [])
+        this.items = ((_32_15_=this.items) != null ? _32_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)

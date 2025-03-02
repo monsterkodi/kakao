@@ -16,6 +16,7 @@ complete = (function ()
     {
         this.editor = editor
     
+        this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onEditorLayout"] = this["onEditorLayout"].bind(this)
@@ -27,6 +28,7 @@ complete = (function ()
         this.choices.scroll.color.bg = theme.editor_complete_choices
         this.choices.scroll.color.knob = theme.editor_complete_choices_scroll
         this.choices.scroll.color.dot = theme.editor_complete_choices_scroll
+        this.choices.on('action',this.onChoicesAction)
         this.visible = false
     }
 
@@ -101,8 +103,32 @@ complete = (function ()
 
     complete.prototype["apply"] = function ()
     {
-        this.editor.state.insert(this.choices.current().slice(this.turd.length))
+        this.editor.state.insert(this.currentWord().slice(this.turd.length))
         return this.hide()
+    }
+
+    complete.prototype["onChoicesAction"] = function (action, choice)
+    {
+        switch (action)
+        {
+            case 'click':
+                return this.apply()
+
+        }
+
+        console.log(`onChoicesAction ${action} ${choice}`)
+    }
+
+    complete.prototype["currentWord"] = function ()
+    {
+        var word
+
+        word = this.choices.current()
+        if (_k_.empty(word))
+        {
+            word = this.words[0]
+        }
+        return word
     }
 
     complete.prototype["word"] = function (turd)
@@ -145,20 +171,23 @@ complete = (function ()
         }
         if (this.words.length <= 1)
         {
-            return
+            return this.choices.clear()
         }
-        mlw = util.widthOfLines(this.words)
-        h = _k_.min(8,this.words.length)
-        x = this.editor.cells.x + cx - this.turd.length
-        y = this.editor.cells.y + cy + 1
-        this.choices.layout(x,y,mlw + 1,h)
-        this.choices.set(this.words)
-        return this.choices.selectFirst()
+        else
+        {
+            mlw = util.widthOfLines(this.words)
+            h = _k_.min(8,this.words.length)
+            x = this.editor.cells.x + cx - this.turd.length
+            y = this.editor.cells.y + cy + 1
+            this.choices.layout(x,y,mlw + 1,h)
+            this.choices.set(this.words)
+            return this.choices.selectFirst()
+        }
     }
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _164_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _180_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -167,29 +196,25 @@ complete = (function ()
         mc = this.editor.state.mainCursor()
         cx = mc[0] - this.editor.state.s.view[0]
         cy = mc[1] - this.editor.state.s.view[1]
-        word = this.choices.current()
-        if (_k_.empty(word))
-        {
-            word = this.words[0]
-        }
+        word = this.currentWord()
         var list = _k_.list(word.slice(this.turd.length))
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_164_52_=theme[this.editor.name + '_selection']) != null ? _164_52_ : theme.editor_selection)
+            bg = ((_180_52_=theme[this.editor.name + '_selection']) != null ? _180_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)
         {
             return
         }
-        x = cx + this.editor.cells.x - this.turd.length
+        fx = cx - this.turd.length - 1
+        x = fx + 1 + this.editor.cells.x
         y = cy + this.editor.cells.y + 2
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
-        fx = cx - this.turd.length
         fy = cy + 1
-        this.editor.cells.draw_frame(fx - 1,fy,fx + w,fy + h + 1,{fg:theme.editor_complete_choices,bg:'#000'})
+        this.editor.cells.draw_frame(fx,fy,fx + w + 1,fy + h + 1,{fg:theme.editor_complete_choices,bg:'#000'})
         this.choices.layout(x,y,w,h)
         return this.choices.draw()
     }

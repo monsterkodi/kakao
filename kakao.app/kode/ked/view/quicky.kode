@@ -20,7 +20,7 @@ function quicky extends inputchoice
 
     @: @screen ->
 
-        super @screen 'quicky' ['mapview' 'scrllr']
+        super @screen 'quicky' ['mapview' 'scroll']
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
         @fscol  = new fscol   @screen 'quicky_fscol'

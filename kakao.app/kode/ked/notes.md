@@ -18,18 +18,23 @@
 ## todo
 ### todo
 #### todo
-##### todo
-    
+##### todo 
+      
 - completion
-    - fix frame at bol
-    - fix turd issues
-    - allow completion before closing )]}
+    - fix
+        - turd missing completions
+    - allow completion inside chunks in some cases
+        - before closing )]}
+        - after . :
 
 - quicky
     - move scroll to the left
     - fix project files sorting
+    
+- status
+    - move dirty and redo into statusfile 
 
-- editing
+- editing 
     - more tests
     - fix
         - insert after wide unicode segments
@@ -52,7 +57,7 @@
     - switch automatically if cursor inside
     - change 0 to █ or ░
 
-- mapscroll
+- mapscroll 
     - add scrollbar handle
     - update on line changes
     - fix scrolling to bottom for long files

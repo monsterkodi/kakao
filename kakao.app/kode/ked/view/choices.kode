@@ -25,6 +25,8 @@ function choices extends editor
         @fuzzied = @items
         @filterText = ''
         
+    clear: -> @set []
+        
     set: @items @key ->
         
         @items ?= []

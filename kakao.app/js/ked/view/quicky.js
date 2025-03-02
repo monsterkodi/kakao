@@ -43,7 +43,7 @@ quicky = (function ()
         this["showFiles"] = this["showFiles"].bind(this)
         this["gotoDir"] = this["gotoDir"].bind(this)
         this["layout"] = this["layout"].bind(this)
-        quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview','scrllr'])
+        quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview','scroll'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.fscol = new fscol(this.screen,'quicky_fscol')
         this.crumbs.padLast = true

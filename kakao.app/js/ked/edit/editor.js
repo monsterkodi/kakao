@@ -298,7 +298,7 @@ editor = (function ()
         {
             if (this.complete.onWheel(event))
             {
-                return
+                return true
             }
         }
         switch (event.dir)
@@ -307,10 +307,11 @@ editor = (function ()
             case 'down':
             case 'left':
             case 'right':
-                return this.state.scrollView(event.dir,steps)
-
+                this.state.scrollView(event.dir,steps)
+                break
         }
 
+        return true
     }
 
     editor.prototype["isCursorInEmpty"] = function (cursor)
@@ -358,7 +359,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _274_20_, _278_21_, _283_24_
+        var _276_20_, _280_21_, _285_24_
 
         if (!this.hasFocus())
         {

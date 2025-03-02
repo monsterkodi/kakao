@@ -24,6 +24,8 @@ function complete
         @choices.scroll.color.knob = theme.editor_complete_choices_scroll
         @choices.scroll.color.dot  = theme.editor_complete_choices_scroll
         
+        @choices.on 'action' @onChoicesAction
+        
         @visible = false
         
     hide:   -> @visible = false
@@ -88,14 +90,28 @@ function complete
     
     apply: ->
         
-        @editor.state.insert @choices.current()[@turd.length..]
+        @editor.state.insert @currentWord()[@turd.length..]
         @hide()
+        
+    onChoicesAction: action choice=>
+        
+        switch action
+            'click' ➜ ⮐ @apply()
+            
+        log "onChoicesAction #{action} #{choice}"
         
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
     # 000000000  000   000  0000000    000   000  
     # 000   000  000   000  000   000  000   000  
     # 00     00   0000000   000   000  0000000    
+
+    currentWord: ->
+        
+        word = @choices.current()
+        if empty word
+            word = @words[0]
+        word
     
     word: @turd ->
         
@@ -128,17 +144,18 @@ function complete
         for ch,ci in head[@turd.length..]
             @editor.cells.set cx+ci cy ch '#fff' theme.selection
         
-        ⮐ if @words.length <= 1
-        
-        mlw = util.widthOfLines @words
-        
-        h = min 8 @words.length
-        x  = @editor.cells.x+cx-@turd.length
-        y  = @editor.cells.y+cy+1
-        
-        @choices.layout x y mlw+1 h
-        @choices.set @words
-        @choices.selectFirst()
+        if @words.length <= 1
+            @choices.clear()
+        else
+            mlw = util.widthOfLines @words
+            
+            h = min 8 @words.length
+            x  = @editor.cells.x+cx-@turd.length
+            y  = @editor.cells.y+cy+1
+            
+            @choices.layout x y mlw+1 h
+            @choices.set @words
+            @choices.selectFirst()
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -155,10 +172,9 @@ function complete
         cx = mc[0] - @editor.state.s.view[0]
         cy = mc[1] - @editor.state.s.view[1]
         
-        word = @choices.current()
-        
-        if empty word
-            word = @words[0]
+        word = @currentWord()
+                    
+        # log "complete #{word} #{@choices.current()} #{@words.length}" @words
         
         for ch,ci in word[@turd.length..]
             bg = theme[@editor.name + '_selection'] ? theme.editor_selection
@@ -166,15 +182,15 @@ function complete
         
         ⮐ if @words.length <= 1
         
-        x = cx+@editor.cells.x-@turd.length
+        fx = cx-@turd.length-1
+        x = fx+1+@editor.cells.x
         y = cy+@editor.cells.y+2
         w = @choices.cells.cols+1
         h = @choices.cells.rows
         
-        fx = cx-@turd.length
         fy = cy+1
 
-        @editor.cells.draw_frame fx-1 fy fx+w fy+h+1 fg:theme.editor_complete_choices bg:'#000'
+        @editor.cells.draw_frame fx fy fx+w+1 fy+h+1 fg:theme.editor_complete_choices bg:'#000'
         
         @choices.layout x y w h
         @choices.draw()

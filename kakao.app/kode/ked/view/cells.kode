@@ -100,25 +100,46 @@ function cells
                         @set_char col row ' '
                         
     fill_rect: x1 y1 x2 y2 char fg bg =>
-    
-        x1 = @cols + x1 if x1 < 0
+        
+        x1 = clamp 0 @cols-1 x1
+        y1 = clamp 0 @rows-1 y1
         x2 = @cols + x2 if x2 < 0
-
-        y1 = @rows + y1 if y1 < 0
         y2 = @rows + y2 if y2 < 0
         
         for row in y1..y2
-            # if row < @rows
-                for col in x1..x2
-                    # if col < @cols
-                        @set col row char fg bg
-    
+            for col in x1..x2
+                @set col row char fg bg
+                
+    fill_row: row x1 x2 char fg bg =>
+        
+        ⮐ if x1 < 0 and x2 < 0
+
+        x1 = clamp 0 @cols-1 x1
+        x2 = clamp 0 @cols-1 x2
+        
+        ⮐ if x2 < x1
+        
+        for col in x1..x2
+            @set col row char fg bg
+
+    fill_col: col y1 y2 char fg bg =>
+        
+        ⮐ if y1 < 0 and y2 < 0
+
+        y1 = clamp 0 @rows-1 y1
+        y2 = clamp 0 @rows-1 y2
+        
+        ⮐ if y2 < y1
+        
+        for row in y1..y2
+            @set col row char fg bg
+            
     draw_frame: x1 y1 x2 y2 opt =>
 
-        x1 = @cols + x1 if x1 < 0
+        ⮐ if x1 < 0 and x2 < 0
+        ⮐ if y1 < 0 and y2 < 0
+        
         x2 = @cols + x2 if x2 < 0
-
-        y1 = @rows + y1 if y1 < 0
         y2 = @rows + y2 if y2 < 0
         
         opt ?= {}
@@ -138,19 +159,19 @@ function cells
         @set  x1  y2 '╰' fg bg
         @set  x2  y2 '╯' fg bg
         
-        @fill_rect x1+1 y1 x2-1 y1 '─' fg bg
-        @fill_rect x1+1 y2 x2-1 y2 '─' fg bg
-        @fill_rect x1 y1+1 x1 y2-1 '│' fg bg
-        @fill_rect x2 y1+1 x2 y2-1 '│' fg bg
+        @fill_row y1 x1+1 x2-1 '─' fg bg
+        @fill_row y2 x1+1 x2-1 '─' fg bg
+        @fill_col x1 y1+1 y2-1 '│' fg bg
+        @fill_col x2 y1+1 y2-1 '│' fg bg
         
-        for x in 0...opt.pad[0] # horizontal padding todo:verical
-            @fill_rect x1+1+x y1+1 x1+1+x y2-1 ' ' fg bg
-            @fill_rect x2-1-x y1+1 x2-1-x y2-1 ' ' fg bg
+        for x in 0...opt.pad[0] # horizontal padding
+            @fill_col x1+1+x y1+1 y2-1 ' ' fg bg
+            @fill_col x2-1-x y1+1 y2-1 ' ' fg bg
         
         for y in opt.hdiv
             @set  x1  y '├' fg bg
             @set  x2  y '┤' fg bg
-            @fill_rect x1+1 y x2-1 y '─' fg bg
+            @fill_row y x1+1 x2-1 '─' fg bg
         
     draw_path: x mx y pth bg ->
 

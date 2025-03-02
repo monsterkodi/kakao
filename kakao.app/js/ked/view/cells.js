@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var cells
 
@@ -14,6 +14,8 @@ cells = (function ()
         this.screen = screen
     
         this["draw_frame"] = this["draw_frame"].bind(this)
+        this["fill_col"] = this["fill_col"].bind(this)
+        this["fill_row"] = this["fill_row"].bind(this)
         this["fill_rect"] = this["fill_rect"].bind(this)
         this["bg_fill"] = this["bg_fill"].bind(this)
         this["bg_rect"] = this["bg_rect"].bind(this)
@@ -260,17 +262,11 @@ cells = (function ()
     {
         var col, row
 
-        if (x1 < 0)
-        {
-            x1 = this.cols + x1
-        }
+        x1 = _k_.clamp(0,this.cols - 1,x1)
+        y1 = _k_.clamp(0,this.rows - 1,y1)
         if (x2 < 0)
         {
             x2 = this.cols + x2
-        }
-        if (y1 < 0)
-        {
-            y1 = this.rows + y1
         }
         if (y2 < 0)
         {
@@ -285,42 +281,82 @@ cells = (function ()
         }
     }
 
+    cells.prototype["fill_row"] = function (row, x1, x2, char, fg, bg)
+    {
+        var col
+
+        if (x1 < 0 && x2 < 0)
+        {
+            return
+        }
+        x1 = _k_.clamp(0,this.cols - 1,x1)
+        x2 = _k_.clamp(0,this.cols - 1,x2)
+        if (x2 < x1)
+        {
+            return
+        }
+        for (var _a_ = col = x1, _b_ = x2; (_a_ <= _b_ ? col <= x2 : col >= x2); (_a_ <= _b_ ? ++col : --col))
+        {
+            this.set(col,row,char,fg,bg)
+        }
+    }
+
+    cells.prototype["fill_col"] = function (col, y1, y2, char, fg, bg)
+    {
+        var row
+
+        if (y1 < 0 && y2 < 0)
+        {
+            return
+        }
+        y1 = _k_.clamp(0,this.rows - 1,y1)
+        y2 = _k_.clamp(0,this.rows - 1,y2)
+        if (y2 < y1)
+        {
+            return
+        }
+        for (var _a_ = row = y1, _b_ = y2; (_a_ <= _b_ ? row <= y2 : row >= y2); (_a_ <= _b_ ? ++row : --row))
+        {
+            this.set(col,row,char,fg,bg)
+        }
+    }
+
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _125_16_, _133_20_, _134_20_
+        var bg, fg, x, y, _146_16_, _154_20_, _155_20_
 
-        if (x1 < 0)
+        if (x1 < 0 && x2 < 0)
         {
-            x1 = this.cols + x1
+            return
+        }
+        if (y1 < 0 && y2 < 0)
+        {
+            return
         }
         if (x2 < 0)
         {
             x2 = this.cols + x2
-        }
-        if (y1 < 0)
-        {
-            y1 = this.rows + y1
         }
         if (y2 < 0)
         {
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_125_16_=opt.pad) != null ? _125_16_ : [1,0])
-        fg = ((_133_20_=opt.fg) != null ? _133_20_ : '#888888')
-        bg = ((_134_20_=opt.bg) != null ? _134_20_ : null)
+        opt.pad = ((_146_16_=opt.pad) != null ? _146_16_ : [1,0])
+        fg = ((_154_20_=opt.fg) != null ? _154_20_ : '#888888')
+        bg = ((_155_20_=opt.bg) != null ? _155_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)
         this.set(x2,y2,'╯',fg,bg)
-        this.fill_rect(x1 + 1,y1,x2 - 1,y1,'─',fg,bg)
-        this.fill_rect(x1 + 1,y2,x2 - 1,y2,'─',fg,bg)
-        this.fill_rect(x1,y1 + 1,x1,y2 - 1,'│',fg,bg)
-        this.fill_rect(x2,y1 + 1,x2,y2 - 1,'│',fg,bg)
+        this.fill_row(y1,x1 + 1,x2 - 1,'─',fg,bg)
+        this.fill_row(y2,x1 + 1,x2 - 1,'─',fg,bg)
+        this.fill_col(x1,y1 + 1,y2 - 1,'│',fg,bg)
+        this.fill_col(x2,y1 + 1,y2 - 1,'│',fg,bg)
         for (var _a_ = x = 0, _b_ = opt.pad[0]; (_a_ <= _b_ ? x < opt.pad[0] : x > opt.pad[0]); (_a_ <= _b_ ? ++x : --x))
         {
-            this.fill_rect(x1 + 1 + x,y1 + 1,x1 + 1 + x,y2 - 1,' ',fg,bg)
-            this.fill_rect(x2 - 1 - x,y1 + 1,x2 - 1 - x,y2 - 1,' ',fg,bg)
+            this.fill_col(x1 + 1 + x,y1 + 1,y2 - 1,' ',fg,bg)
+            this.fill_col(x2 - 1 - x,y1 + 1,y2 - 1,' ',fg,bg)
         }
         var list = _k_.list(opt.hdiv)
         for (var _c_ = 0; _c_ < list.length; _c_++)
@@ -328,7 +364,7 @@ cells = (function ()
             y = list[_c_]
             this.set(x1,y,'├',fg,bg)
             this.set(x2,y,'┤',fg,bg)
-            this.fill_rect(x1 + 1,y,x2 - 1,y,'─',fg,bg)
+            this.fill_row(y,x1 + 1,x2 - 1,'─',fg,bg)
         }
     }
 
