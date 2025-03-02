@@ -19,6 +19,13 @@
 ### todo
 #### todo
 ##### todo 
+
+- funclist
+
+- ascii header mode
+    - cmd+3 create header for selection or cursor word
+    - switch automatically if cursor inside
+    - change 0 to █ or ░
       
 - completion
     - fix
@@ -28,10 +35,6 @@
         - after . :
 
 - quicky
-    - move scroll to the left
-    - fix 
-        - project files sorting
-        - not closing when chosen file is already open 
     
 - status
     - move dirty and redo into statusfile 
@@ -53,11 +56,6 @@
         - ~\d+ single character
         - ~\d+n multiple characters
         - ~...*n n times *
-        
-- ascii header mode
-    - cmd+3 create header for selection or cursor word
-    - switch automatically if cursor inside
-    - change 0 to █ or ░
 
 - mapscroll 
     - add scrollbar handle
@@ -68,15 +66,12 @@
 - session
     - save main cursor positions per file and apply on load
     - merge cursor positions from last session by default?  
-    - clean recent files (check for existance)
+    - clean recent files (check for existence)
     
 - config | prefs
     - similar to session, but loads and merges (to handle multiple instances)
     - index- & source- & text-file extensions
     - index files per project?
-
-- quick open cmd+p
-    - merge with macro?
 
 - find and search
     - each finder has a search toggle, which searches in in all files
@@ -86,12 +81,9 @@
             - if executed from a finder: the finder's setting 
                 - original finder can be closed and thus 'moves' to the search result pane
 
-- nvim style min-distance from top and bottom of screen when moving main cursor?
-
 - macro
     - unicode palette
     
-- funclist
     
 - file watcher
 

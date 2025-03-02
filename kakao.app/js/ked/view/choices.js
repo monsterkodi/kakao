@@ -123,11 +123,16 @@ choices = (function ()
         return this.fuzzied.length
     }
 
+    choices.prototype["currentIndex"] = function ()
+    {
+        return this.state.mainCursor()[1]
+    }
+
     choices.prototype["current"] = function ()
     {
         var cc
 
-        cc = this.fuzzied[this.state.mainCursor()[1]]
+        cc = this.fuzzied[this.currentIndex()]
         if (_k_.isStr(cc))
         {
             cc = _k_.trim(cc)
@@ -314,10 +319,11 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, row
+        var col, row, sret
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
+        sret = choices.__super__.onMouse.call(this,event)
         if (this.cells.isInsideEvent(event))
         {
             if (this.state.isValidLineIndex(row))
@@ -329,18 +335,19 @@ choices = (function ()
                 switch (event.type)
                 {
                     case 'press':
-                        return this.clickChoiceAtIndex(row + this.state.s.view[1])
-
+                        sret |= this.clickChoiceAtIndex(row + this.state.s.view[1])
+                        break
                     case 'move':
-                        return this.hoverChoiceAtIndex(row + this.state.s.view[1])
-
+                        sret |= this.hoverChoiceAtIndex(row + this.state.s.view[1])
+                        break
                     case 'release':
-                        return this.hoverChoiceAtIndex(row + this.state.s.view[1])
-
+                        sret |= this.hoverChoiceAtIndex(row + this.state.s.view[1])
+                        break
                 }
 
             }
         }
+        return sret
     }
 
     choices.prototype["onKey"] = function (key, event)

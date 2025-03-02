@@ -349,6 +349,7 @@ ked [file]
         }
         if (slash.samePath(file,this.currentFile))
         {
+            this.redraw()
             return
         }
         exists = await nfs.fileExists(file)
@@ -360,7 +361,7 @@ ked [file]
 
     KED.prototype["onViewSize"] = function (name, x, y)
     {
-        var _301_22_
+        var _303_22_
 
         this.viewSizes[name] = [x,_k_.min(y,this.screen.rows - 1)]
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -368,7 +369,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _306_22_
+        var _308_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

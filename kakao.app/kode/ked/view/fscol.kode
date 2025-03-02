@@ -16,7 +16,7 @@ function fscol extends choices
 
     @: screen name ->
         
-        super screen name
+        super screen name ['scrllr']
         
         @frontRoundOffset = 1
         @state.syntax.setRgxs rgxs

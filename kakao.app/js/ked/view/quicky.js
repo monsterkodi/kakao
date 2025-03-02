@@ -75,7 +75,7 @@ quicky = (function ()
         cw = w - 3 - fw
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
-        this.choices.layout(x + 2,y + 1 + ih + cr,cw,ch)
+        this.choices.layout(x + 1,y + 1 + ih + cr,cw,ch)
         this.fscol.layout(x + 2 + cw,y + 1 + ih + cr,fw,fh)
         return this.cells.layout(x,y,w,h)
     }
@@ -87,10 +87,30 @@ quicky = (function ()
             return
         }
         this.layout()
-        this.drawFrame()
         this.crumbs.draw()
         this.fscol.draw()
-        return this.drawChoices()
+        this.drawChoices()
+        return this.drawFrame()
+    }
+
+    quicky.prototype["drawFrame"] = function ()
+    {
+        quicky.__super__.drawFrame.call(this)
+    
+        var bg, fg, x, y
+
+        if (this.fscol.visible())
+        {
+            fg = theme.quicky_frame_fg
+            bg = theme.quicky_frame_bg
+            x = this.choices.cells.cols + 2
+            this.cells.fill_col(x,2,this.cells.rows - 2,'│',fg,bg)
+            this.cells.set(x,this.cells.rows - 1,'┴',fg,bg)
+            y = this.choices.currentIndex() + 2
+            this.cells.fill_row(y,this.choices.current().tilde.length + 2,x - 2,' ',bg,fg)
+            this.cells.set(x - 1,y,'',fg,bg)
+            return this.cells.set(x,y,'┤',fg,bg)
+        }
     }
 
     quicky.prototype["toggle"] = function (currentFile)
@@ -197,16 +217,18 @@ quicky = (function ()
         this.currentDir = slash.dir(this.currentFile)
         this.crumbs.hide()
         this.choices.mapscr.rowOffset = 0
-        weight = function (item)
+        weight = (function (item)
         {
-            var p, w
+            var p, r, w
 
             p = slash.parse(item)
+            r = slash.relative(item,this.currentFile)
             w = 0
-            w += item.split('/').length * 256
+            w += r.split('../').length * 256
+            w += r.split('/').length * 128
             w += kstr.weight(p.name)
             return w
-        }
+        }).bind(this)
         items.sort(function (a, b)
         {
             return weight(a) - weight(b)
@@ -273,7 +295,7 @@ quicky = (function ()
         this.hide()
         post.emit('quicky',file)
         post.emit('focus','editor')
-        return {redraw:false}
+        return {redraw:true}
     }
 
     quicky.prototype["moveSelection"] = function (dir)
@@ -428,7 +450,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _372_62_
+        var upDir, _411_62_
 
         switch (action)
         {
@@ -446,7 +468,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_372_62_=choice.link) != null ? _372_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_411_62_=choice.link) != null ? _411_62_ : choice.path))
                     }
                 }
                 break

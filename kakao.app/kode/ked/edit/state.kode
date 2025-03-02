@@ -12,6 +12,8 @@ use ../util   ◆ util syntax
 use ./act     ◆ del insert select join indent multi
 use           ◆ keys
 
+int = parseInt
+
 function state
 
     @: @cells name ->
@@ -71,7 +73,10 @@ function state
     # 000       000   000  000   000       000  000   000  000   000       000
     #  0000000   0000000   000   000  0000000    0000000   000   000  0000000
 
-    setCursors: cursors main ->
+    setCursors: cursors opt ->
+        
+        opt ?= {}
+        main = opt.main
 
         if main is arr ➜ main = util.indexOfPosInPositions main cursors
         if main is num and main < 0 ➜ main = cursors.length+main
@@ -96,7 +101,7 @@ function state
 
         @s = @s.set 'main' main
 
-        @adjustViewForMainCursor()
+        @adjustViewForMainCursor opt
         @swapState()
         @
             
@@ -135,6 +140,8 @@ function state
         @pushState()
 
     allLines: => @s.lines.asMutable()
+    
+    linesInView: => @s.lines[@s.view[1]...@s.view[1]+@cells.rows]
 
     loadLines: lines => 
     
@@ -267,11 +274,11 @@ function state
 
                 @insert child_process.execSync("#{◆dir}/../../bin/utf8clip.exe").toString("utf8")
 
-    #  0000000   0000000  00000000    0000000   000      000
-    # 000       000       000   000  000   000  000      000
-    # 0000000   000       0000000    000   000  000      000
-    #      000  000       000   000  000   000  000      000
-    # 0000000    0000000  000   000   0000000   0000000  0000000
+    #  0000000   0000000  00000000    0000000   000      000          000   000  000  00000000  000   000  
+    # 000       000       000   000  000   000  000      000          000   000  000  000       000 0 000  
+    # 0000000   000       0000000    000   000  000      000           000 000   000  0000000   000000000  
+    #      000  000       000   000  000   000  000      000             000     000  000       000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000          0      000  00000000  00     00  
 
     scrollView: dir steps=1 =>
 
@@ -289,28 +296,46 @@ function state
         view[1] += sy
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
-        view[0] = max 0 view[0]
+        
+        maxOffsetX = max 0 util.widthOfLines(@s.lines)-@cells.cols
+        
+        view[0] = clamp 0 maxOffsetX view[0]
         
         ⮐ if view eql @s.view
 
         @setView view
 
-    adjustViewForMainCursor: =>
+    #  0000000   0000000          000  000   000   0000000  000000000       000   000  000  00000000  000   000  
+    # 000   000  000   000        000  000   000  000          000          000   000  000  000       000 0 000  
+    # 000000000  000   000        000  000   000  0000000      000           000 000   000  0000000   000000000  
+    # 000   000  000   000  000   000  000   000       000     000             000     000  000       000   000  
+    # 000   000  0000000     0000000    0000000   0000000      000              0      000  00000000  00     00  
+    
+    adjustViewForMainCursor: opt =>
 
         [x y] = @mainCursor()
 
         view = @s.view.asMutable()
+        
+        opt ?= {}
+        
+        if opt.adjust == 'topBotDelta'
+            topBotDelta = min 6 int(@cells.rows/4)
+        else
+            topBotDelta = 0
 
-        if y >= view[1] + @cells.rows - 1
-            view[1] = y - @cells.rows + 1
-        else if y < view[1]
-            view[1] = y
+        if y >= view[1] + @cells.rows - 1 - topBotDelta
+            view[1] = y - @cells.rows + 1 + topBotDelta
+        else if y < view[1] + topBotDelta
+            view[1] = y - topBotDelta
 
         if view[1] > 0 and @s.lines.length < @cells.rows
             view[1] = 0
 
         view[0] = max 0 x - @cells.cols + 1
 
+        ⮐ if view eql @s.view
+        
         @setView view
 
     initView: =>

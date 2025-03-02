@@ -67,7 +67,7 @@ function quicky extends inputchoice
         
         @input.layout    x+2      y+1        w-4   iz
         @crumbs.layout   x+2      y+1+ih     w-4   cr
-        @choices.layout  x+2      y+1+ih+cr  cw    ch
+        @choices.layout  x+1      y+1+ih+cr  cw    ch
         @fscol.layout    x+2+cw   y+1+ih+cr  fw    fh
         @cells.layout    x        y          w     h
 
@@ -82,10 +82,30 @@ function quicky extends inputchoice
         ⮐ if @hidden()
          
         @layout()
-        @drawFrame()
         @crumbs.draw()
         @fscol.draw()
         @drawChoices()
+        @drawFrame()
+        
+    drawFrame: ->
+        
+        super()
+        
+        if @fscol.visible()
+            
+            fg = theme.quicky_frame_fg
+            bg = theme.quicky_frame_bg
+            
+            x = @choices.cells.cols+2
+            @cells.fill_col x 2 @cells.rows-2 '│' fg bg
+            @cells.set      x   @cells.rows-1 '┴' fg bg
+            
+            y = @choices.currentIndex()+2
+            # @cells.fill_row y @choices.current().tilde.length+3 x-1 '─' fg bg
+            # @cells.set      x y '┤' fg bg
+            @cells.fill_row y @choices.current().tilde.length+2 x-2 ' ' bg fg
+            @cells.set      x-1 y '' fg bg 
+            @cells.set      x y '┤' fg bg
         
     # 000000000   0000000    0000000    0000000   000      00000000  
     #    000     000   000  000        000        000      000       
@@ -161,6 +181,12 @@ function quicky extends inputchoice
         @choices.frontRoundOffset = 0
         @showPathItems items
         
+    # 00000000   00000000    0000000         000  00000000   0000000  000000000  00000000  000  000      00000000   0000000  
+    # 000   000  000   000  000   000        000  000       000          000     000       000  000      000       000       
+    # 00000000   0000000    000   000        000  0000000   000          000     000000    000  000      0000000   0000000   
+    # 000        000   000  000   000  000   000  000       000          000     000       000  000      000            000  
+    # 000        000   000   0000000    0000000   00000000   0000000     000     000       000  0000000  00000000  0000000   
+    
     showProjectFiles: @currentFile ->
 
         items = prjcts.files @currentFile
@@ -172,14 +198,21 @@ function quicky extends inputchoice
         @crumbs.hide()
         @choices.mapscr.rowOffset = 0
         
-        weight = item ->
+        weight = item =>
 
             p = slash.parse item
+            
+            r = slash.relative item @currentFile
+            
+            # log 'rel' r
 
             w = 0
-            w += item.split('/').length * 256
+            w += r.split('../').length * 256
+            w += r.split('/').length * 128
             w += kstr.weight p.name
             w
+
+        # log 'items' items
 
         items.sort (a b) -> weight(a) - weight(b)            
                                                                #  pad
@@ -236,12 +269,18 @@ function quicky extends inputchoice
             if isFile
                 @openFileInEditor path
                             
+    #  0000000   00000000   00000000  000   000     000  000   000     00000000  0000000    000  000000000   0000000   00000000   
+    # 000   000  000   000  000       0000  000     000  0000  000     000       000   000  000     000     000   000  000   000  
+    # 000   000  00000000   0000000   000 0 000     000  000 0 000     0000000   000   000  000     000     000   000  0000000    
+    # 000   000  000        000       000  0000     000  000  0000     000       000   000  000     000     000   000  000   000  
+    #  0000000   000        00000000  000   000     000  000   000     00000000  0000000    000     000      0000000   000   000  
+    
     openFileInEditor: file =>
         
         @hide()
         post.emit 'quicky' file
         post.emit 'focus' 'editor'
-        redraw:false
+        redraw:true
                              
     #  0000000  00000000  000      00000000   0000000  000000000
     # 000       000       000      000       000          000

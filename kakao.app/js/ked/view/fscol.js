@@ -19,7 +19,7 @@ fscol = (function ()
     function fscol (screen, name)
     {
         this["onMouse"] = this["onMouse"].bind(this)
-        fscol.__super__.constructor.call(this,screen,name)
+        fscol.__super__.constructor.call(this,screen,name,['scrllr'])
         this.frontRoundOffset = 1
         this.state.syntax.setRgxs(rgxs)
     }

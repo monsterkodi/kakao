@@ -49,8 +49,6 @@ function greeter extends view
         
         ⮐ if @hidden()
         
-        # @show()
-        
         duration = 480
         @a += 1
         @a = 0 if @a > duration
@@ -62,6 +60,6 @@ function greeter extends view
             for cell,x in row
                 @cells.set x y cell.char cell.fg cell.bg
                 
-        # post.emit 'redraw'
+        post.emit 'redraw'
 
 export greeter

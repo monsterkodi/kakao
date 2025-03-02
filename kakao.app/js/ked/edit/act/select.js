@@ -401,7 +401,7 @@ export default {select:function (from, to)
     var _e_ = util.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _e_[0]; selections = _e_[1]
 
     this.setSelections(selections)
-    return this.setCursors(cursors,-1)
+    return this.setCursors(cursors,{main:-1})
 },selectLessLines:function ()
 {
     var cursors, lines, selections
@@ -412,7 +412,7 @@ export default {select:function (from, to)
     var _f_ = util.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
 
     this.setSelections(selections)
-    return this.setCursors(cursors,-1)
+    return this.setCursors(cursors,{main:-1})
 },textOfSelection:function ()
 {
     return util.textForLineRanges(this.allLines(),this.allSelections())

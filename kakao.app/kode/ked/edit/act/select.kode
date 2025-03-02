@@ -350,7 +350,7 @@ export
         [cursors selections] = util.addLinesBelowPositionsToRanges lines cursors selections
         
         @setSelections selections
-        @setCursors cursors -1
+        @setCursors cursors main:-1
 
     # 000      00000000   0000000   0000000  
     # 000      000       000       000       
@@ -367,7 +367,7 @@ export
         [cursors selections] = util.removeLinesAtPositionsFromRanges lines cursors selections
         
         @setSelections selections
-        @setCursors cursors -1
+        @setCursors cursors main:-1
                 
     # 000000000  00000000  000   000  000000000  
     #    000     000        000 000      000     

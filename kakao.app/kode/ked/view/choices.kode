@@ -85,9 +85,10 @@ function choices extends editor
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
+    currentIndex: -> @state.mainCursor()[1]
     current: -> 
     
-        cc = @fuzzied[@state.mainCursor()[1]]
+        cc = @fuzzied[@currentIndex()]
         cc = trim cc if cc is str
         cc
         
@@ -232,6 +233,9 @@ function choices extends editor
     
         [col row] = @cells.posForEvent event
         
+        # log "choices.onMouse #{@cells.isInsideEvent(event)}"
+        sret = super event
+        
         if @cells.isInsideEvent(event) 
             
             if @state.isValidLineIndex(row)
@@ -240,9 +244,11 @@ function choices extends editor
                 
                 switch event.type
                     
-                    'press'   ➜ ⮐ @clickChoiceAtIndex row + @state.s.view[1] 
-                    'move'    ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
-                    'release' ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1]
+                    'press'   ➜ sret |= @clickChoiceAtIndex row + @state.s.view[1] 
+                    'move'    ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1]
+                    'release' ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1]
+                    
+        sret
                     
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   

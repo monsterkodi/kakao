@@ -73,6 +73,7 @@ greeter = (function ()
                 this.cells.set(x,y,cell.char,cell.fg,cell.bg)
             }
         }
+        return post.emit('redraw')
     }
 
     return greeter

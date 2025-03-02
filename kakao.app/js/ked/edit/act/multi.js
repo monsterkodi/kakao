@@ -23,7 +23,7 @@ export default {allCursors:function ()
         newCursors.push([c[0],c[1] + dy])
     }
     mc = util.traversePositionsInDirection(newCursors,this.mainCursor(),dir)
-    return this.setCursors(newCursors,mc)
+    return this.setCursors(newCursors,{main:mc})
 },contractCursors:function (dir)
 {
     var add, c, cursors, nbdn, nbup, newCursors, solo
@@ -63,7 +63,7 @@ export default {allCursors:function ()
     pos = util.pos(x,y)
     cursors = this.allCursors()
     cursors.push(pos)
-    return this.setCursors(cursors,-1)
+    return this.setCursors(cursors,{main:-1})
 },addCursors:function (cursors)
 {
     return this.setCursors(this.allCursors().concat(cursors))
@@ -73,7 +73,7 @@ export default {allCursors:function ()
 
     outside = util.positionsOutsideRange(this.allCursors(),rng)
     outside.push(util.endOfRange(rng))
-    return this.setCursors(outside,-1)
+    return this.setCursors(outside,{main:-1})
 },moveCursors:function (dir, opt)
 {
     var c, cursors, ind, line, lines, _100_22_, _99_18_
@@ -154,7 +154,7 @@ export default {allCursors:function ()
         }
 
     }
-    this.setCursors(cursors,this.s.main)
+    this.setCursors(cursors,{main:this.s.main,adjust:'topBotDelta'})
     return true
 },setMainCursor:function (x, y)
 {
@@ -197,7 +197,7 @@ export default {allCursors:function ()
         cursors.push([x,y])
         main = cursors.length - 1
     }
-    return this.setCursors(cursors,main)
+    return this.setCursors(cursors,{main:main})
 },mainCursor:function ()
 {
     return this.s.cursors[this.s.main].asMutable()
@@ -307,7 +307,7 @@ export default {allCursors:function ()
 },setMainCursorAndSelect:function (x, y)
 {
     this.setSelections(util.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
-    return this.setCursors([[x,y]])
+    return this.setCursors([[x,y]],{adjust:'topBotDelta'})
 },moveCursorsAndSelect:function (dir, opt)
 {
     var cursors, selections
@@ -315,5 +315,5 @@ export default {allCursors:function ()
     var _11_ = util.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir,opt); selections = _11_[0]; cursors = _11_[1]
 
     this.setSelections(selections)
-    return this.setCursors(cursors)
+    return this.setCursors(cursors,{adjust:'topBotDelta'})
 }}

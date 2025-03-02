@@ -30,6 +30,6 @@ export
         
         @clearHighlights()
         @setLines   lines
-        @setCursors cursors #-1
+        @setCursors cursors
 
         

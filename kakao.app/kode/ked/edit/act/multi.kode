@@ -37,7 +37,7 @@ export
             newCursors.push [c[0] c[1]+dy]
 
         mc = util.traversePositionsInDirection newCursors @mainCursor() dir
-        @setCursors newCursors mc
+        @setCursors newCursors main:mc
         
     contractCursors: dir ->
         
@@ -67,7 +67,7 @@ export
         pos = util.pos x y
         cursors = @allCursors()
         cursors.push pos
-        @setCursors cursors -1
+        @setCursors cursors main:-1
         
     addCursors: cursors ->
         
@@ -77,7 +77,7 @@ export
         
         outside = util.positionsOutsideRange @allCursors() rng
         outside.push util.endOfRange(rng)
-        @setCursors outside -1
+        @setCursors outside main:-1
         
     # 00     00   0000000   000   000  00000000  
     # 000   000  000   000  000   000  000       
@@ -122,7 +122,7 @@ export
                 'ind_eol'   ➜ ind  = util.numIndent(line); c[0] = c[0] < ind ? ind : kseg.width(line)
                 'ind_bol'   ➜ ind  = util.numIndent(line); c[0] = c[0] > ind ? ind : 0
  
-        @setCursors cursors @s.main
+        @setCursors cursors main:@s.main adjust:'topBotDelta'
         true
         
     #  0000000  000   000  00000000    0000000   0000000   00000000   
@@ -169,7 +169,7 @@ export
             cursors.push [x y]
             main = cursors.length-1
         
-        @setCursors cursors main
+        @setCursors cursors main:main
                 
     mainCursor: -> @s.cursors[@s.main].asMutable()
     
@@ -262,12 +262,12 @@ export
     setMainCursorAndSelect: x y ->
         
         @setSelections util.extendLineRangesFromPositionToPosition @allLines() @allSelections() @mainCursor() [x y]
-        @setCursors [[x y]]
+        @setCursors [[x y]] adjust:'topBotDelta'
     
     moveCursorsAndSelect: dir opt ->
         
         [selections cursors] = util.extendLineRangesByMovingPositionsInDirection @allLines() @allSelections() @allCursors() dir opt
         
         @setSelections selections
-        @setCursors cursors
+        @setCursors cursors adjust:'topBotDelta'
 

@@ -282,7 +282,9 @@ function KED
         else
             file = slash.absolute path slash.dir(@currentFile)
         
-        ⮐ if slash.samePath file @currentFile
+        if slash.samePath file @currentFile
+            @redraw()
+            ⮐ 
             
         exists =○ nfs.fileExists file
         if exists
