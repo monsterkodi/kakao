@@ -163,6 +163,20 @@ complete = (function ()
         }).bind(this))
         this.words = util.cleanWordsForCompletion(this.words)
         this.words.sort()
+        if (_k_.in(this.turd,'rt'))
+        {
+            console.log(`@turd ${this.turd}`)
+            switch (this.turd)
+            {
+                case 'r':
+                    this.words.unshift('r⮐ ')
+                    break
+                case 't':
+                    this.words.unshift('t➜')
+                    break
+            }
+
+        }
         if (_k_.empty(this.words))
         {
             this.visible = false
@@ -197,7 +211,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _186_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _192_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -211,7 +225,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_186_52_=theme[this.editor.name + '_selection']) != null ? _186_52_ : theme.editor_selection)
+            bg = ((_192_52_=theme[this.editor.name + '_selection']) != null ? _192_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

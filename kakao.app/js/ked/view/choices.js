@@ -32,12 +32,12 @@ choices = (function ()
         choices.__super__.constructor.call(this,screen,name,features)
         this.color.bg = theme.choices_bg
         this.color.current = theme.choices_current
-        this.items = []
         this.focusable = true
-        this.rounded = true
+        this.roundedSelections = true
         this.frontRoundOffset = 0
-        this.hoverForSubmenu = false
         this.hoverIndex = -1
+        this.hoverForSubmenu = false
+        this.items = []
         this.fuzzied = this.items
         this.filterText = ''
     }
@@ -52,9 +52,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _35_15_
+        var lines, _36_15_
 
-        this.items = ((_35_15_=this.items) != null ? _35_15_ : [])
+        this.items = ((_36_15_=this.items) != null ? _36_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -64,55 +64,38 @@ choices = (function ()
     choices.prototype["drawCursors"] = function ()
     {}
 
-    choices.prototype["drawSelections"] = function (lines)
+    choices.prototype["drawSelections"] = function ()
     {
-        var bg, li, selection, x, xe, xs, y
+        var bg, li, sel, x, xs, y
 
         if (_k_.empty(this.state.s.selections))
         {
             return
         }
-        if (!this.rounded)
+        if (!this.roundedSelections)
         {
-            return choices.__super__.drawSelections.call(this,lines)
+            return choices.__super__.drawSelections.call(this)
         }
         bg = this.color.current
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
         }
-        selection = this.state.s.selections[0]
-        for (var _a_ = li = selection[1], _b_ = selection[3]; (_a_ <= _b_ ? li <= selection[3] : li >= selection[3]); (_a_ <= _b_ ? ++li : --li))
+        sel = this.state.s.selections[0]
+        li = sel[1]
+        y = li - this.state.s.view[1]
+        if (y >= this.cells.rows)
         {
-            y = li - this.state.s.view[1]
-            if (y >= this.cells.rows)
-            {
-                break
-            }
-            if (li === selection[1])
-            {
-                xs = selection[0]
-            }
-            else
-            {
-                xs = 0
-            }
-            if (li === selection[3])
-            {
-                xe = selection[2]
-            }
-            else
-            {
-                xe = kseg.width(lines[li])
-            }
-            xs = _k_.max(0,xs + this.frontRoundOffset)
-            for (var _c_ = x = xs, _d_ = xe; (_c_ <= _d_ ? x < xe : x > xe); (_c_ <= _d_ ? ++x : --x))
-            {
-                this.cells.set_bg(x - this.state.s.view[0],y,bg)
-            }
-            this.cells.set(this.frontRoundOffset - this.state.s.view[0],y,'',bg,this.color.bg)
-            this.cells.set(x - this.state.s.view[0],y,'',bg,this.color.bg)
+            return
         }
+        xs = _k_.max(0,sel[0] + this.frontRoundOffset)
+        xs = _k_.max(xs,kseg.headCount(this.state.s.lines[li],' '))
+        for (var _a_ = x = xs, _b_ = sel[2]; (_a_ <= _b_ ? x < sel[2] : x > sel[2]); (_a_ <= _b_ ? ++x : --x))
+        {
+            this.cells.set_bg(x - this.state.s.view[0],y,bg)
+        }
+        this.cells.set(xs - 1 + this.frontRoundOffset - this.state.s.view[0],y,'',bg,this.color.bg)
+        return this.cells.set(x - this.state.s.view[0],y,'',bg,this.color.bg)
     }
 
     choices.prototype["numChoices"] = function ()
@@ -291,7 +274,7 @@ choices = (function ()
         return this.state.loadLines(lines)
     }
 
-    choices.prototype["hoverChoiceAtIndex"] = function (index)
+    choices.prototype["hoverChoiceAtIndex"] = function (index, event)
     {
         if (this.hoverIndex === index)
         {
@@ -301,6 +284,7 @@ choices = (function ()
         this.select(this.hoverIndex)
         this.frontCursor()
         post.emit('pointer','pointer')
+        this.emitAction('hover',this.current(),event)
         return true
     }
 
@@ -312,10 +296,10 @@ choices = (function ()
         return true
     }
 
-    choices.prototype["clickChoiceAtIndex"] = function (index)
+    choices.prototype["clickChoiceAtIndex"] = function (index, event)
     {
         this.hoverIndex = -1
-        this.emitAction('click',this.fuzzied[index])
+        this.emitAction('click',this.fuzzied[index],event)
         return true
     }
 
@@ -337,13 +321,10 @@ choices = (function ()
                 switch (event.type)
                 {
                     case 'press':
-                        sret |= this.clickChoiceAtIndex(row + this.state.s.view[1])
+                        sret |= this.clickChoiceAtIndex(row + this.state.s.view[1],event)
                         break
                     case 'move':
-                        sret |= this.hoverChoiceAtIndex(row + this.state.s.view[1])
-                        break
-                    case 'release':
-                        sret |= this.hoverChoiceAtIndex(row + this.state.s.view[1])
+                        sret |= this.hoverChoiceAtIndex(row + this.state.s.view[1],event)
                         break
                 }
 
@@ -352,9 +333,9 @@ choices = (function ()
         return sret
     }
 
-    choices.prototype["emitAction"] = function (action, arg)
+    choices.prototype["emitAction"] = function (action, arg, event)
     {
-        return this.emit('action',action,arg)
+        return this.emit('action',action,arg,event)
     }
 
     choices.prototype["onKey"] = function (key, event)
@@ -370,7 +351,7 @@ choices = (function ()
             case 'delete':
             case 'space':
             case 'return':
-                this.emitAction(event.combo,this.current())
+                this.emitAction(event.combo,this.current(),event)
                 break
             case 'up':
             case 'down':

@@ -19,12 +19,13 @@ function choices extends editor
         @color.bg      = theme.choices_bg
         @color.current = theme.choices_current
         
-        @items = []
         @focusable = true
-        @rounded   = true
+        @roundedSelections = true
         @frontRoundOffset = 0
-        @hoverForSubmenu = false
         @hoverIndex = -1
+        @hoverForSubmenu = false
+        
+        @items = []
         @fuzzied = @items
         @filterText = ''
         
@@ -48,42 +49,31 @@ function choices extends editor
     
     drawCursors: ->
         
-    drawSelections: lines ->
+    drawSelections: ->
         
         ⮐ if empty @state.s.selections
         
-        ⮐ super lines if not @rounded
+        ⮐ super() if not @roundedSelections
         
         bg = @color.current
-        
         if not @cells.screen.t.hasFocus
             bg = color.darken bg
         
-        selection = @state.s.selections[0]
+        sel = @state.s.selections[0]
                 
-        for li in selection[1]..selection[3]
-            
-            y = li-@state.s.view[1]
-            
-            break if y >= @cells.rows
-            
-            if li == selection[1]
-                xs = selection[0]
-            else
-                xs = 0
-                
-            if li == selection[3]
-                xe = selection[2]
-            else
-                xe = kseg.width lines[li]
-            
-            xs = max 0 xs+@frontRoundOffset
-            
-            for x in xs...xe
-                @cells.set_bg x-@state.s.view[0] y bg
+        li = sel[1]
+        y  = li-@state.s.view[1]
+        
+        ⮐ if y >= @cells.rows
+        
+        xs = max 0 sel[0]+@frontRoundOffset
+        xs = max xs kseg.headCount(@state.s.lines[li] ' ')
+        
+        for x in xs...sel[2]
+            @cells.set_bg x-@state.s.view[0] y bg
 
-            @cells.set @frontRoundOffset-@state.s.view[0] y '' bg @color.bg
-            @cells.set x-@state.s.view[0] y '' bg @color.bg
+        @cells.set xs-1+@frontRoundOffset-@state.s.view[0] y '' bg @color.bg
+        @cells.set x-@state.s.view[0] y '' bg @color.bg
 
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
@@ -172,8 +162,7 @@ function choices extends editor
         w += 10 * matchOrLevenshtein(p.name)    # high focus on file name
         w += 5  * matchOrLevenshtein(p.dir)     # lesser focus on dir
         w += valid p.ext ? (0.1 * matchOrLevenshtein(p.ext)) : 4 # low weight for extensions
-                                                                 # has the side-effect of moving directories down
-        w
+        w                                                        # has the side-effect of moving directories down
 
     # 00000000  000  000      000000000  00000000  00000000   
     # 000       000  000         000     000       000   000  
@@ -209,7 +198,7 @@ function choices extends editor
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    hoverChoiceAtIndex: index => 
+    hoverChoiceAtIndex: index event => 
     
         ⮐ if @hoverIndex == index
         
@@ -217,6 +206,7 @@ function choices extends editor
         @select @hoverIndex
         @frontCursor()
         post.emit 'pointer' 'pointer'
+        @emitAction 'hover' @current() event
         true
         
     unhover: =>
@@ -226,10 +216,10 @@ function choices extends editor
         post.emit 'pointer' 'default'
         true
         
-    clickChoiceAtIndex: index =>
+    clickChoiceAtIndex: index event =>
         
         @hoverIndex = -1  
-        @emitAction 'click' @fuzzied[index]
+        @emitAction 'click' @fuzzied[index] event
         true
         
     onMouse: event =>
@@ -246,10 +236,8 @@ function choices extends editor
                 
                 switch event.type
                     
-                    'press'   ➜ sret |= @clickChoiceAtIndex row + @state.s.view[1] 
-                    'move'    ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1]
-                    'release' ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1]
-                    
+                    'press' ➜ sret |= @clickChoiceAtIndex row + @state.s.view[1] event
+                    'move'  ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1] event
         sret
         
     #  0000000    0000000  000000000  000   0000000   000   000  
@@ -258,9 +246,9 @@ function choices extends editor
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    emitAction: action arg ->
+    emitAction: action arg event ->
         
-        @emit 'action' action arg
+        @emit 'action' action arg event
                     
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -273,11 +261,13 @@ function choices extends editor
         ⮐ if not @hasFocus()
             
         switch event.combo
+        
             'right'  
             'left' 
             'delete'
             'space'  
-            'return' ➜ @emitAction event.combo @current() 
+            'return' ➜ @emitAction event.combo @current() event
+            
             'up' 
             'down'   ➜ @moveSelection event.combo
             

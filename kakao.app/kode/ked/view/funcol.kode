@@ -23,6 +23,7 @@ function funcol extends view
         @dirtree.color.empty        = @dirtree.color.bg
         @dirtree.color.cursor_main  = @dirtree.color.bg
         @dirtree.color.cursor_empty = @dirtree.color.bg
+        @dirtree.scroll.color.bg    = @dirtree.color.bg
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle

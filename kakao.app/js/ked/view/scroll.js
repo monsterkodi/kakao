@@ -24,17 +24,9 @@ scroll = (function ()
         this["draw"] = this["draw"].bind(this)
         this["scrollTo"] = this["scrollTo"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        scroll.__super__.constructor.call(this,screen,this.state.owner() + '.scroll')
-        this.color = {dot:theme.scroll_dot,knob:theme.scroll}
+        scroll.__super__.constructor.call(this,screen,this.state.owner() + '_scroll')
+        this.color = {bg:theme.gutter,dot:theme.scroll_dot,knob:theme.scroll,hover:{dot:theme.scroll_doth,knob:theme.scroll_knob}}
         this.handle = (this.side === 'right' ? '▐' : '▌')
-        if (this.name === 'editor.scroll')
-        {
-            this.color.bg = theme.gutter
-        }
-        else
-        {
-            this.color.bg = theme.editor
-        }
     }
 
     scroll.prototype["onMouse"] = function (event)
@@ -130,11 +122,11 @@ scroll = (function ()
             }
             else if (row === nc)
             {
-                fg = (this.hover ? theme.scroll_doth : this.color.dot)
+                fg = (this.hover ? this.color.hover.dot : this.color.dot)
             }
             else if ((ns <= row && row <= ne))
             {
-                fg = (this.hover ? theme.scroll_knob : this.color.knob)
+                fg = (this.hover ? this.color.hover.knob : this.color.knob)
             }
             this.cells.set(0,row,this.handle,fg,this.color.bg)
         }

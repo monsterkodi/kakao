@@ -78,7 +78,7 @@ function draw extends view
 
         @drawTrailingRows()        
         @drawHighlights()
-        @drawSelections lines 
+        @drawSelections()
         @complete?.draw()
         
         @drawCursors()        
@@ -154,7 +154,7 @@ function draw extends view
     #      000  000       000      000       000          000     000  000   000  000  0000       000  
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000   
     
-    drawSelections: lines ->
+    drawSelections: ->
         
         # prof.start 'selection'
         
@@ -167,7 +167,7 @@ function draw extends view
         
         for selection in @state.s.selections
                 
-            bg = util.isSpanLineRange(lines selection) ? spanbg : linebg
+            bg = util.isSpanLineRange(@state.s.lines selection) ? spanbg : linebg
             
             for li in selection[1]..selection[3]
                 
@@ -183,7 +183,7 @@ function draw extends view
                 if li == selection[3]
                     xe = selection[2]
                 else
-                    xe = kseg.width(lines[li])
+                    xe = kseg.width(@state.s.lines[li])
                 
                 for x in xs...xe
                     @cells.set_bg x-@state.s.view[0] y bg 

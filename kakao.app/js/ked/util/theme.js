@@ -66,8 +66,6 @@ class theme
 
     static scroll = '#1a1a1a'
 
-    static scroll_empty = '#000'
-
     static scroll_dot = '#222'
 
     static scroll_knob = '#44f'

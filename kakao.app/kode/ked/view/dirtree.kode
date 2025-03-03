@@ -22,6 +22,200 @@ function dirtree extends choices
         @state.syntax.setRgxs rgxs
         
         @frontRoundOffset = 0
+            
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    emitAction: action arg event  ->
+        
+        c = arg
+                
+        switch c.type
+            
+            'dir' 
+                
+                switch action
+                    
+                    'click'
+                    'space'
+            
+                        c.open = not c.open                
+                        if c.open ➜ @openDir(c redraw:true) else @closeDir c
+                        ⮐ 
+                        
+                    'right'
+                    
+                        if not c.open ➜ @openDir(c redraw:true)
+                        ⮐ 
+                        
+                    'left'
+                    
+                        @selectParent() if not c.open
+                        @closeDir(c redraw:true) if c.open
+                        ⮐ 
+                
+            'file'
+
+                switch action
+                    
+                    'right'
+                    'space'
+                        
+                        ⮐ post.emit 'quicky' c.path
+                        
+                    'click'
+                    'return'
+                    
+                        ⮐ post.emit 'file.open' c.path
+                        
+                    'left'
+                    
+                        @selectParent()
+                        ⮐ 
+                        
+                    'hover'
+                    
+                        @grabFocus()
+                        if valid event.mods
+                            post.emit 'quicky' c.path
+                        ⮐ 
+        
+        super action arg event
+        
+    #  0000000   00000000   00000000  000   000  0000000    000  00000000   
+    # 000   000  000   000  000       0000  000  000   000  000  000   000  
+    # 000   000  00000000   0000000   000 0 000  000   000  000  0000000    
+    # 000   000  000        000       000  0000  000   000  000  000   000  
+    #  0000000   000        00000000  000   000  0000000    000  000   000  
+    
+    openDir: dirItem opt ○->
+        
+        opt ?= {}
+        
+        dirItem.open = true
+        
+        items =○ @dirItems dirItem.path 'dirtree.openDir'
+        
+        dirItem.tilde = dirItem.tilde.replace icons.dir_close icons.dir_open 
+            
+        depth = (dirItem.depth ? 0) + 1
+        
+        for item in items
+            item.depth = depth
+            item.tilde = lpad(1+depth*2) + @symbolName(item)
+        
+        items.sort (a b) => @weight(a) - @weight(b)
+        
+        index = @items.indexOf dirItem
+        
+        kutil.insert @items index+1 items
+        
+        @set @items index
+        
+        post.emit 'redraw' if opt.redraw
+        
+    #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
+    # 000       000      000   000  000       000       000   000  000  000   000  
+    # 000       000      000   000  0000000   0000000   000   000  000  0000000    
+    # 000       000      000   000       000  000       000   000  000  000   000  
+    #  0000000  0000000   0000000   0000000   00000000  0000000    000  000   000  
+    
+    closeDir: dirItem opt ->
+        
+        opt ?= {}
+        
+        dirItem.open = false
+        
+        dirItem.tilde = dirItem.tilde.replace icons.dir_open icons.dir_close
+        
+        index = @items.indexOf dirItem
+        
+        numChildren = 0
+        while @items[index+numChildren+1].path.startsWith dirItem.path
+            numChildren += 1
+        
+        kutil.replace @items index+1 numChildren []
+        
+        @set @items index
+        
+        post.emit 'redraw' if opt.redraw
+        
+    # 00000000    0000000    0000000   000000000  
+    # 000   000  000   000  000   000     000     
+    # 0000000    000   000  000   000     000     
+    # 000   000  000   000  000   000     000     
+    # 000   000   0000000    0000000      000     
+    
+    setRoot: path ○=>
+        
+        dir = slash.untilde path
+        
+        items =○ @dirItems dir 'dirtree.setRoot'
+        
+        @currentRoot = dir
+                
+        for item in items
+            item.tilde = ' ' + @symbolName(item)
+
+        items.sort (a b) => @weight(a) - @weight(b)
+                    
+        select ?= items[1].path                    
+        
+        @set items 
+        
+    dirItems: dir info ○=>
+        
+        try
+            items =○ nfs.list dir recursive:false
+        catch err
+            error "list error -- #{info}" err
+            ⮐ 
+
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: items index=0-> 
+        
+        super items 'tilde'
+        
+        @state.selectLine index
+        @state.setMainCursor 0 index
+        @state.setView [0 0]
+        
+    selectParent: ->
+    
+        log 'selectParent' @current()
+        index = @items.indexOf @current()
+        index -= 1
+        @state.selectLine index
+        @state.setMainCursor 0 index
+            
+    # 000   000  00000000  000   0000000   000   000  000000000  
+    # 000 0 000  000       000  000        000   000     000     
+    # 000000000  0000000   000  000  0000  000000000     000     
+    # 000   000  000       000  000   000  000   000     000     
+    # 00     00  00000000  000   0000000   000   000     000     
+    
+    weight: item ->
+
+        p = slash.parse item.path
+
+        w = 0
+        w += 10000 if item.type == 'file'
+        w += kstr.weight(p.file)
+        w
+
+    #  0000000  000   000  00     00  0000000     0000000   000      
+    # 000        000 000   000   000  000   000  000   000  000      
+    # 0000000     00000    000000000  0000000    000   000  000      
+    #      000     000     000 0 000  000   000  000   000  000      
+    # 0000000      000     000   000  0000000     0000000   0000000  
     
     symbol: item ->
                           
@@ -47,139 +241,5 @@ function dirtree extends choices
                 name = slash.file item.path
         
         @symbol(item) + ' ' + name
-        
-    emitAction: action arg ->
-        
-        # log "dirtree.emitAction #{action}" arg @current()
-        
-        c = arg
-                
-        switch c.type
-            
-            'dir' 
-                
-                switch action
-                    
-                    'click'
-                    'space'
-            
-                        c.open = not c.open                
-                        if c.open ➜ @openDir c else @closeDir c
-                        ⮐ 
-                        
-                    'right'
-                    
-                        @openDir c if not c.open
-                
-            'file'
-
-                switch action
-                        
-                    'right'
-                    'click'
-                    'space'
-                        
-                        ⮐ post.emit 'quicky' c.path
-        
-        super action arg
-        
-    #  0000000   00000000   00000000  000   000  0000000    000  00000000   
-    # 000   000  000   000  000       0000  000  000   000  000  000   000  
-    # 000   000  00000000   0000000   000 0 000  000   000  000  0000000    
-    # 000   000  000        000       000  0000  000   000  000  000   000  
-    #  0000000   000        00000000  000   000  0000000    000  000   000  
-    
-    openDir: dirItem ○->
-        
-        dirItem.open = true
-        
-        try
-            items =○ nfs.list dirItem.path recursive:false
-        catch err
-            error 'list error' err
-            ⮐ 
-        
-        dirItem.tilde = dirItem.tilde.replace icons.dir_close icons.dir_open 
-            
-        depth = (dirItem.depth ? 0) + 1
-        
-        for item in items
-            item.depth = depth
-            item.tilde = lpad(1+depth*2) + @symbolName(item) #(@symbol(item)+' ')) + slash.file(item.path)
-        
-        items.sort (a b) => @weight(a) - @weight(b)
-        
-        index = @items.indexOf dirItem
-        
-        kutil.insert @items index+1 items
-        
-        @set @items 'tilde'        
-        
-    #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
-    # 000       000      000   000  000       000       000   000  000  000   000  
-    # 000       000      000   000  0000000   0000000   000   000  000  0000000    
-    # 000       000      000   000       000  000       000   000  000  000   000  
-    #  0000000  0000000   0000000   0000000   00000000  0000000    000  000   000  
-    
-    closeDir: dirItem ->
-        
-        dirItem.tilde = dirItem.tilde.replace icons.dir_open icons.dir_close
-        
-        index = @items.indexOf dirItem
-        
-        numChildren = 0
-        while @items[index+numChildren+1].path.startsWith dirItem.path
-            numChildren += 1
-        
-        kutil.replace @items index+1 numChildren []
-        
-        @set @items 'tilde'
-        
-    # 00000000    0000000    0000000   000000000  
-    # 000   000  000   000  000   000     000     
-    # 0000000    000   000  000   000     000     
-    # 000   000  000   000  000   000     000     
-    # 000   000   0000000    0000000      000     
-    
-    setRoot: path ○=>
-        
-        dir = slash.untilde path
-        
-        try
-            items =○ nfs.list dir recursive:false
-        catch err
-            error 'list error' err
-            ⮐ 
-
-        @currentRoot = dir
-                
-        for item in items
-            item.tilde = ' ' + @symbolName(item)
-
-        items.sort (a b) => @weight(a) - @weight(b)
-                    
-        select ?= items[1].path                    
-        
-        @set items 'tilde'
-        
-        selectIndex = 0
-        @state.selectLine selectIndex
-        @state.setMainCursor 0 selectIndex
-        @state.setView [0 0]
-        
-    # 000   000  00000000  000   0000000   000   000  000000000  
-    # 000 0 000  000       000  000        000   000     000     
-    # 000000000  0000000   000  000  0000  000000000     000     
-    # 000   000  000       000  000   000  000   000     000     
-    # 00     00  00000000  000   0000000   000   000     000     
-    
-    weight: item ->
-
-        p = slash.parse item.path
-
-        w = 0
-        w += 10000 if item.type == 'file'
-        w += kstr.weight(p.file)
-        w
 
 export dirtree

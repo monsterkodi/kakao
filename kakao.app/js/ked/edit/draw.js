@@ -91,7 +91,7 @@ draw = (function ()
         }
         this.drawTrailingRows()
         this.drawHighlights()
-        this.drawSelections(lines)
+        this.drawSelections()
         ;(this.complete != null ? this.complete.draw() : undefined)
         this.drawCursors()
         ;(this.scroll != null ? this.scroll.draw() : undefined)
@@ -167,7 +167,7 @@ draw = (function ()
         }
     }
 
-    draw.prototype["drawSelections"] = function (lines)
+    draw.prototype["drawSelections"] = function ()
     {
         var bg, li, linebg, selection, spanbg, x, xe, xs, y, _161_50_, _162_50_
 
@@ -182,7 +182,7 @@ draw = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             selection = list[_a_]
-            bg = (util.isSpanLineRange(lines,selection) ? spanbg : linebg)
+            bg = (util.isSpanLineRange(this.state.s.lines,selection) ? spanbg : linebg)
             for (var _b_ = li = selection[1], _c_ = selection[3]; (_b_ <= _c_ ? li <= selection[3] : li >= selection[3]); (_b_ <= _c_ ? ++li : --li))
             {
                 y = li - this.state.s.view[1]
@@ -204,7 +204,7 @@ draw = (function ()
                 }
                 else
                 {
-                    xe = kseg.width(lines[li])
+                    xe = kseg.width(this.state.s.lines[li])
                 }
                 for (var _d_ = x = xs, _e_ = xe; (_d_ <= _e_ ? x < xe : x > xe); (_d_ <= _e_ ? ++x : --x))
                 {

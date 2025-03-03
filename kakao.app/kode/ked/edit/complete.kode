@@ -131,6 +131,12 @@ function complete
         @words = util.cleanWordsForCompletion @words
         @words.sort()
         
+        if @turd in 'rt'
+            log "@turd #{@turd}"
+            switch @turd
+                'r' ➜ @words.unshift 'r⮐ '
+                't' ➜ @words.unshift 't➜'
+        
         if empty @words
             # log "#{@name} ▸#{@turd}◂ no completion" 
             @visible = false

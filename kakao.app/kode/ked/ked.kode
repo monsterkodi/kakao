@@ -10,9 +10,9 @@
 
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
-use ./util ◆ ttio logfile util prjcts session color help julia frecent
-use ./view ◆ screen cells status quicky menu finder funcol
-use ./edit ◆ editor state 
+use ./util ◆ ttio logfile util prjcts session help julia frecent
+use ./view ◆ screen status quicky menu finder funcol
+use ./edit ◆ editor
 
 global.int = parseInt # this should go into kode instead
 
@@ -20,7 +20,7 @@ function KED
 
     @: ->
 
-        @version = '0.0.5'
+        @version = '0.1.0'
         args = karg """
             
             ked [file]
@@ -35,7 +35,7 @@ function KED
         @session = new session
         global.ked_session = @session
         @session.on 'loaded' @onSessionLoaded
-        @viewSizes = funcol:[40 0]
+        @viewSizes = funcol:[30 0]
                     
         @t = new ttio
         
@@ -60,6 +60,7 @@ function KED
         post.on 'view.size'     @onViewSize
         post.on 'quicky'        @onQuicky
         post.on 'file.new'      @newFile
+        post.on 'file.open'     @openFile
         post.on 'quit'          @quit
         
         @mouseHandlers = [@finder @quicky @menu @editor @status @funcol]
@@ -188,6 +189,17 @@ function KED
         
         @saveSessionFile @currentFile 'loaded'        
         @
+        
+    #  0000000   00000000   00000000  000   000  
+    # 000   000  000   000  000       0000  000  
+    # 000   000  00000000   0000000   000 0 000  
+    # 000   000  000        000       000  0000  
+    #  0000000   000        00000000  000   000  
+    
+    openFile: path =>
+        
+        @loadFile path
+        @editor.grabFocus()
             
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       
@@ -201,7 +213,7 @@ function KED
         
         if valid @currentFile
             ○ nfs.write @currentFile text
-            @editor.state.clearHistory() # lazy way to 'undirty' would be nicer to be able to undo after save!
+            @editor.state.clearHistory() # lazy way to 'undirty' :> no undo after save :(
             @redraw()
             @saveSessionFile @currentFile 'saved'
             

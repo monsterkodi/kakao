@@ -16,13 +16,11 @@ import logfile from "./util/logfile.js"
 import util from "./util/util.js"
 import prjcts from "./util/prjcts.js"
 import session from "./util/session.js"
-import color from "./util/color.js"
 import help from "./util/help.js"
 import julia from "./util/julia.js"
 import frecent from "./util/frecent.js"
 
 import screen from "./view/screen.js"
-import cells from "./view/cells.js"
 import status from "./view/status.js"
 import quicky from "./view/quicky.js"
 import menu from "./view/menu.js"
@@ -30,7 +28,6 @@ import finder from "./view/finder.js"
 import funcol from "./view/funcol.js"
 
 import editor from "./edit/editor.js"
-import state from "./edit/state.js"
 
 global.int = parseInt
 
@@ -50,13 +47,14 @@ KED = (function ()
         this["onPaste"] = this["onPaste"].bind(this)
         this["saveAs"] = this["saveAs"].bind(this)
         this["saveFile"] = this["saveFile"].bind(this)
+        this["openFile"] = this["openFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["newFile"] = this["newFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.0.5'
+        this.version = '0.1.0'
         args = karg(`
 ked [file]
     options                      **
@@ -67,7 +65,7 @@ ked [file]
         this.session = new session
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
-        this.viewSizes = {funcol:[40,0]}
+        this.viewSizes = {funcol:[30,0]}
         this.t = new ttio
         this.julia = new julia
         this.screen = new screen(this.t)
@@ -85,6 +83,7 @@ ked [file]
         post.on('view.size',this.onViewSize)
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
+        post.on('file.open',this.openFile)
         post.on('quit',this.quit)
         this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor,this.status,this.funcol]
         this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
@@ -131,7 +130,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _114_10_
+        var _115_10_
 
         await this.session.save()
         console.log(_k_.w2(`┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`))
@@ -153,7 +152,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _139_22_
+        var _140_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -179,7 +178,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _182_22_
+        var segls, start, text, _183_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -209,6 +208,12 @@ ked [file]
         this.t.setTitle(slash.name(this.status.file))
         this.saveSessionFile(this.currentFile,'loaded')
         return this
+    }
+
+    KED.prototype["openFile"] = function (path)
+    {
+        this.loadFile(path)
+        return this.editor.grabFocus()
     }
 
     KED.prototype["saveFile"] = async function ()
@@ -377,7 +382,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _316_22_
+        var _328_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

@@ -32,6 +32,7 @@ funcol = (function ()
         this.dirtree.color.empty = this.dirtree.color.bg
         this.dirtree.color.cursor_main = this.dirtree.color.bg
         this.dirtree.color.cursor_empty = this.dirtree.color.bg
+        this.dirtree.scroll.color.bg = this.dirtree.color.bg
         post.on('funcol.resize',this.onFuncolResize)
         post.on('funcol.toggle',this.onFuncolToggle)
         this.setRoot(process.cwd())
