@@ -18,6 +18,9 @@ function fscol extends choices
         
         super screen name ['scrllr']
         
+        @dirOpenSymbol  = ''
+        @dirCloseSymbol = ''
+        
         @frontRoundOffset = 1
         @state.syntax.setRgxs rgxs
         
@@ -50,16 +53,16 @@ function fscol extends choices
 
         for item in items
             item.tilde = slash.file item.path
-            item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
+            item.tilde = ((item.type == 'dir') ? (@dirCloseSymbol + ' ') : '  ') + item.tilde
 
-        weight = item ->
+        weight = item =>
 
             p = slash.parse item.path
 
             w = 0
-            ⮐ w if item.tilde == ' ..'
+            ⮐ w if item.tilde == @dirCloseSymbol + ' ..'
             w += 10000 if item.type == 'file'
-            w += 1000  if item.tilde.startsWith ' .'
+            w += 1000  if item.tilde.startsWith @dirCloseSymbol + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']
             w += kstr.weight(p.file)
             w

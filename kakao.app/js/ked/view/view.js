@@ -28,6 +28,7 @@ view = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onViewShow"] = this["onViewShow"].bind(this)
         this.cells = new cells(this.screen)
+        this.color = {}
         this.feats = {}
         var list = _k_.list(features)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -104,7 +105,7 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _58_27_
+        var _59_27_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
@@ -126,7 +127,7 @@ view = (function ()
 
     view.prototype["draw"] = function ()
     {
-        var _70_18_
+        var _71_18_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

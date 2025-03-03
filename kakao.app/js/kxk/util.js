@@ -257,14 +257,20 @@ util = {isEqual:function (a, b)
             return Number(pa) - Number(pb)
         }
     })
+},replace:function (array, index, numToRemove, arrayToInsert)
+{
+    return array.splice.apply(array,[index,numToRemove].concat(arrayToInsert))
+},insert:function (array, index, arrayToInsert)
+{
+    return util.replace(array,index,0,arrayToInsert)
 },defaults:function (obj, def)
 {
-    var key, val, _166_21_
+    var key, val, _172_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_166_21_=obj[key]) != null ? _166_21_ : val)
+        obj[key] = ((_172_21_=obj[key]) != null ? _172_21_ : val)
     }
     return obj
 },pickBy:function (obj, pred)

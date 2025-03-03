@@ -19,16 +19,19 @@ draw = (function ()
     _k_.extend(draw, view)
     function draw (screen, name, features)
     {
-        var _20_28_
+        var _19_54_, _20_54_
 
         this["draw"] = this["draw"].bind(this)
         draw.__super__.constructor.call(this,screen,name,features)
-        this.color = {bg:((_20_28_=theme[this.name]) != null ? _20_28_ : theme.editor)}
+        this.color.bg = ((_19_54_=theme[this.name]) != null ? _19_54_ : theme.editor)
+        this.color.empty = ((_20_54_=theme[this.name + '_empty']) != null ? _20_54_ : theme.editor_empty)
+        this.color.cursor_main = theme[this.name + '_cursor_main']
+        this.color.cursor_empty = theme[this.name + '_cursor_empty']
     }
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, emptyColor, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _43_45_, _70_42_, _73_38_, _82_17_, _86_15_, _87_15_, _88_15_
+        var bg, c, ch, checkColor, ci, clss, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _70_42_, _82_17_, _86_15_, _87_15_, _88_15_
 
         if (this.hidden())
         {
@@ -40,7 +43,6 @@ draw = (function ()
         lines = this.state.allLines()
         mainCursor = this.state.mainCursor()
         bg = this.color.bg
-        emptyColor = ((_43_45_=theme[this.name + '_empty']) != null ? _43_45_ : theme.editor_empty)
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = row + view[1]
@@ -63,7 +65,7 @@ draw = (function ()
                 if (clss === 'invert_bg')
                 {
                     fg = bg
-                    bg = theme.editor
+                    bg = this.color.bg
                 }
                 else
                 {
@@ -78,13 +80,13 @@ draw = (function ()
                 x += ((_70_42_=kseg.width(line[si])) != null ? _70_42_ : 1)
                 if (clss === 'invert_bg')
                 {
-                    bg = ((_73_38_=theme[this.name]) != null ? _73_38_ : theme.editor)
+                    bg = this.color.bg
                 }
             }
-            this.drawRowBackground(row,linel,emptyColor)
+            this.drawRowBackground(row,linel)
             if (checkColor)
             {
-                this.drawColors(line,row,linel,emptyColor)
+                this.drawColorPills(line,row,linel,this.color.empty)
             }
         }
         this.drawTrailingRows()
@@ -98,42 +100,41 @@ draw = (function ()
         return draw.__super__.draw.call(this)
     }
 
-    draw.prototype["drawRowBackground"] = function (row, linel, emptyColor)
+    draw.prototype["drawRowBackground"] = function (row, linel)
     {
         if (row + view[1] === this.state.mainCursor()[1])
         {
             if (linel > 0)
             {
-                this.cells.bg_rect(0,row,linel,row,theme[this.name + '_cursor_main'])
+                this.cells.bg_rect(0,row,linel,row,this.color.cursor_main)
             }
             if (linel < this.cells.cols)
             {
-                return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,theme[this.name + '_cursor_empty'])
+                return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,this.color.cursor_empty)
             }
         }
         else
         {
             if (linel > 0)
             {
-                this.cells.bg_rect(0,row,linel,row,theme[this.name])
+                this.cells.bg_rect(0,row,linel,row,this.color.bg)
             }
-            return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,emptyColor)
+            return this.cells.bg_fill(_k_.max(0,linel),row,-1,row,this.color.empty)
         }
     }
 
     draw.prototype["drawTrailingRows"] = function ()
     {
-        var emptyColor, row, vl, _122_45_
+        var row, vl
 
         vl = this.state.s.lines.length - this.state.s.view[1]
         if (vl >= this.cells.rows)
         {
             return
         }
-        emptyColor = ((_122_45_=theme[this.name + '_empty']) != null ? _122_45_ : theme.editor_empty)
         for (var _a_ = row = vl, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
-            this.cells.bg_fill(0,row,-1,row,emptyColor)
+            this.cells.bg_fill(0,row,-1,row,this.color.empty)
         }
     }
 
@@ -264,7 +265,7 @@ draw = (function ()
         }
     }
 
-    draw.prototype["drawColors"] = function (line, row, linel, emptyColor)
+    draw.prototype["drawColorPills"] = function (line, row, linel)
     {
         var clr, cx, dta, idx, rng, rngs
 
@@ -279,7 +280,7 @@ draw = (function ()
                 dta = 4
                 if (idx === 0)
                 {
-                    this.cells.set(cx,row,'',clr,emptyColor)
+                    this.cells.set(cx,row,'',clr,this.color.empty)
                     cx += 1
                     dta--
                 }
@@ -291,7 +292,7 @@ draw = (function ()
                 cx += dta
                 if (idx === rngs.length - 1)
                 {
-                    this.cells.set(cx,row,'',clr,emptyColor)
+                    this.cells.set(cx,row,'',clr,this.color.empty)
                 }
             }
         }

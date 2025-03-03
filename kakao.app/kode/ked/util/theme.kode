@@ -27,10 +27,10 @@ class theme
     @editor_highlight:      '#030'     
     @editor_highlight_ul:   '#0a0'     
     
-    @funcol:                '#161616'  
-    @resize_column:         '#222'     
-    
+    @funcol:                '#111'     
     @gutter:                '#0a0a0a'  
+    
+    @resize_column:         '#222'     
     @gutter_fully_selected: '#161616'  
     @linenr:                '#1a1a1a'  
     @column:                '#222'     

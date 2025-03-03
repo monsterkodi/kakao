@@ -27,8 +27,11 @@ funcol = (function ()
         this["onFuncolResize"] = this["onFuncolResize"].bind(this)
         funcol.__super__.constructor.call(this,screen,name,features)
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
-        this.dirtree = new dirtree(screen,`${this.name}_dirtree`)
+        this.dirtree = new dirtree(screen,`${this.name}_dirtree`,['scroll'])
         this.dirtree.color.bg = theme.funcol
+        this.dirtree.color.empty = this.dirtree.color.bg
+        this.dirtree.color.cursor_main = this.dirtree.color.bg
+        this.dirtree.color.cursor_empty = this.dirtree.color.bg
         post.on('funcol.resize',this.onFuncolResize)
         post.on('funcol.toggle',this.onFuncolToggle)
         this.setRoot(process.cwd())

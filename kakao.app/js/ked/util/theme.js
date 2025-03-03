@@ -24,11 +24,11 @@ class theme
 
     static editor_highlight_ul = '#0a0'
 
-    static funcol = '#161616'
-
-    static resize_column = '#222'
+    static funcol = '#111'
 
     static gutter = '#0a0a0a'
+
+    static resize_column = '#222'
 
     static gutter_fully_selected = '#161616'
 

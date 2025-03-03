@@ -9,4 +9,5 @@
 \.\.                    .  dir  
 \s\.                    .  dir
 \/                      .  dir_punct
-                       .  dir_punct
+[⏷⏵]                .  dir
+

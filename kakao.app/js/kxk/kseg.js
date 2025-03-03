@@ -3,6 +3,7 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 var dumptable, intable, kseg, segmenter, wcwidth, wcwidth_ambiguous, wcwidth_combining, wcwidth_doublewidth, wcwidth_emoji_width, wcwidth_nonprint, wcwidth_private, wcwidth_singlewidth
 
 import kstr from "./kstr.js"
+import util from "./util.js"
 
 segmenter = new Intl.Segmenter("en-US",{granularity:'grapheme'})
 
@@ -116,7 +117,7 @@ kseg.join = function (...args)
 
 kseg.detab = function (a, tw = 4)
 {
-    var args, i, n
+    var i, n
 
     if (!(_k_.isArr(a)))
     {
@@ -128,8 +129,7 @@ kseg.detab = function (a, tw = 4)
         if (a[i] === '\t')
         {
             n = tw - (i % tw)
-            args = [i,1].concat(_k_.rpad(n).split(''))
-            a.splice.apply(a,args)
+            util.replace(a,i,1,_k_.rpad(n).split(''))
             i += n
         }
         else

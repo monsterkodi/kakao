@@ -17,6 +17,7 @@ function view extends events
     @: @screen @name features ->
         
         @cells = new cells @screen
+        @color = {}
         @feats = {}
         @feats[f] = true for f in features
         

@@ -6,7 +6,7 @@
 000   000  0000000   00000000   0000000 
 ###
 
-use ◆ kstr
+use ◆ kstr util
 
 segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'
 
@@ -162,8 +162,7 @@ kseg.detab = a tw=4 ->
     while i < a.length
         if a[i] == '\t'
             n = tw-(i%tw)
-            args = [i 1].concat(rpad(n).split(''))
-            a.splice.apply a args
+            util.replace a i 1 rpad(n).split('')
             i += n
         else
             i += 1

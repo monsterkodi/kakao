@@ -20,6 +20,8 @@ fscol = (function ()
     {
         this["onMouse"] = this["onMouse"].bind(this)
         fscol.__super__.constructor.call(this,screen,name,['scrllr'])
+        this.dirOpenSymbol = ''
+        this.dirCloseSymbol = ''
         this.frontRoundOffset = 1
         this.state.syntax.setRgxs(rgxs)
     }
@@ -75,15 +77,15 @@ fscol = (function ()
         {
             item = list[_a_]
             item.tilde = slash.file(item.path)
-            item.tilde = (((item.type === 'dir') ? ' ' : '  ')) + item.tilde
+            item.tilde = (((item.type === 'dir') ? (this.dirCloseSymbol + ' ') : '  ')) + item.tilde
         }
-        weight = function (item)
+        weight = (function (item)
         {
             var p, w
 
             p = slash.parse(item.path)
             w = 0
-            if (item.tilde === ' ..')
+            if (item.tilde === this.dirCloseSymbol + ' ..')
             {
                 return w
             }
@@ -91,7 +93,7 @@ fscol = (function ()
             {
                 w += 10000
             }
-            if (item.tilde.startsWith(' .'))
+            if (item.tilde.startsWith(this.dirCloseSymbol + ' .'))
             {
                 w += 1000
             }
@@ -101,7 +103,7 @@ fscol = (function ()
             }
             w += kstr.weight(p.file)
             return w
-        }
+        }).bind(this)
         items.sort(function (a, b)
         {
             return weight(a) - weight(b)

@@ -16,8 +16,10 @@ function draw extends view
         
         super screen name features
         
-        @color = 
-            bg:theme[@name] ? theme.editor
+        @color.bg           = theme[@name]            ? theme.editor
+        @color.empty        = theme[@name + '_empty'] ? theme.editor_empty
+        @color.cursor_main  = theme[@name + '_cursor_main']
+        @color.cursor_empty = theme[@name + '_cursor_empty']
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -38,9 +40,7 @@ function draw extends view
         lines      = @state.allLines()
         mainCursor = @state.mainCursor()
         
-        # bg = theme[@name] ? theme.editor
         bg = @color.bg
-        emptyColor = theme[@name + '_empty'] ? theme.editor_empty
         
         for row in 0...@cells.rows
             
@@ -60,7 +60,7 @@ function draw extends view
                 clss = syntax.getClass ci y
                 if clss == 'invert_bg'
                     fg = bg
-                    bg = theme.editor
+                    bg = @color.bg
                 else
                     fg = syntax.getColor clss
                 ch = syntax.getChar ci y line[si]
@@ -70,11 +70,11 @@ function draw extends view
                 x += kseg.width(line[si]) ? 1
                 
                 if clss == 'invert_bg'
-                    bg = theme[@name] ? theme.editor 
+                    bg = @color.bg
                     
-            @drawRowBackground row linel emptyColor
+            @drawRowBackground row linel
                     
-            @drawColors line row linel emptyColor if checkColor
+            @drawColorPills line row linel @color.empty if checkColor
 
         @drawTrailingRows()        
         @drawHighlights()
@@ -97,17 +97,17 @@ function draw extends view
     # 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
     # 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
     
-    drawRowBackground: row linel emptyColor ->
+    drawRowBackground: row linel ->
         
         if row+view[1] == @state.mainCursor()[1]
             if linel > 0
-                @cells.bg_rect 0 row linel row theme[@name + '_cursor_main']
+                @cells.bg_rect 0 row linel row @color.cursor_main
             if linel < @cells.cols
-                @cells.bg_fill max(0 linel) row -1 row theme[@name + '_cursor_empty']
+                @cells.bg_fill max(0 linel) row -1 row @color.cursor_empty
         else
             if linel > 0
-                @cells.bg_rect 0 row linel row theme[@name]
-            @cells.bg_fill max(0 linel) row -1 row emptyColor
+                @cells.bg_rect 0 row linel row @color.bg
+            @cells.bg_fill max(0 linel) row -1 row @color.empty
             
     # 000000000  00000000    0000000   000  000      000  000   000   0000000   
     #    000     000   000  000   000  000  000      000  0000  000  000        
@@ -119,9 +119,9 @@ function draw extends view
         
         vl = @state.s.lines.length - @state.s.view[1]
         ⮐ if vl >= @cells.rows 
-        emptyColor = theme[@name + '_empty'] ? theme.editor_empty
+
         for row in vl...@cells.rows
-            @cells.bg_fill 0 row -1 row emptyColor            
+            @cells.bg_fill 0 row -1 row @color.empty         
                 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       
@@ -231,22 +231,22 @@ function draw extends view
                  
             @cells.set_fg_bg x y fg bg
 
-    #  0000000   0000000   000       0000000   00000000    0000000  
-    # 000       000   000  000      000   000  000   000  000       
-    # 000       000   000  000      000   000  0000000    0000000   
-    # 000       000   000  000      000   000  000   000       000  
-    #  0000000   0000000   0000000   0000000   000   000  0000000   
+    #  0000000   0000000   000       0000000   00000000   00000000   000  000      000       0000000  
+    # 000       000   000  000      000   000  000   000  000   000  000  000      000      000       
+    # 000       000   000  000      000   000  0000000    00000000   000  000      000      0000000   
+    # 000       000   000  000      000   000  000   000  000        000  000      000           000  
+    #  0000000   0000000   0000000   0000000   000   000  000        000  0000000  0000000  0000000   
     
-    drawColors: line row linel emptyColor ->
+    drawColorPills: line row linel ->
         
         if rngs = kstr.colorRanges kseg.str(line)
             cx = max(0 linel)+1
             for rng,idx in rngs
                 clr = color.rgb rng.color
                 dta = 4
-                if idx == 0             ➜ @cells.set cx row '' clr emptyColor; cx += 1; dta--
+                if idx == 0             ➜ @cells.set cx row '' clr @color.empty; cx += 1; dta--
                 if idx == rngs.length-1 ➜ dta--
                 @cells.bg_rect cx row cx+dta row rng.match; cx += dta
-                if idx == rngs.length-1 ➜ @cells.set cx row '' clr emptyColor
+                if idx == rngs.length-1 ➜ @cells.set cx row '' clr @color.empty
 
 export draw

@@ -22,6 +22,9 @@ function quicky extends inputchoice
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
         @fscol  = new fscol   @screen 'quicky_fscol'
+
+        @dirOpenSymbol  = ''
+        @dirCloseSymbol = ''
         
         @crumbs.padLast = true
 
@@ -131,21 +134,21 @@ function quicky extends inputchoice
         @currentDir = dir
         @crumbs.show @currentDir
             
-        weight = item ->
+        weight = item =>
 
             p = slash.parse item.path
 
             w = 0
-            ⮐ w if item.tilde == ' ..'
+            ⮐ w if item.tilde == @dirCloseSymbol + ' ..'
             w += 10000 if item.type == 'file'
-            w += 1000  if item.tilde.startsWith ' .'
+            w += 1000  if item.tilde.startsWith @dirCloseSymbol + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']
             w += kstr.weight(p.file)
             w
         
         for item in items
             item.tilde = slash.relative item.path @currentDir
-            item.tilde = ((item.type == 'dir') ? ' ' : '  ') + item.tilde
+            item.tilde = ((item.type == 'dir') ? (@dirCloseSymbol + ' ') : '  ') + item.tilde
 
         items.sort (a b) -> weight(a) - weight(b)
         
@@ -155,7 +158,7 @@ function quicky extends inputchoice
             type: 'dir'
             file: slash.name(parent)
             path: parent
-            tilde: parent ? ' ..' : ''
+            tilde: parent ? (@dirCloseSymbol + ' ..') : ''
             
         select ?= items[1].path
                
@@ -248,11 +251,11 @@ function quicky extends inputchoice
         @show()
         @choices.grabFocus()
         
-    # 00000000  000  000      00000000   0000000   00000000   0000000    000  00000000   
-    # 000       000  000      000       000   000  000   000  000   000  000  000   000  
-    # 000000    000  000      0000000   000   000  0000000    000   000  000  0000000    
-    # 000       000  000      000       000   000  000   000  000   000  000  000   000  
-    # 000       000  0000000  00000000   0000000   000   000  0000000    000  000   000  
+    # 00000000  000  000      00000000       0000000   00000000       0000000    000  00000000   
+    # 000       000  000      000           000   000  000   000      000   000  000  000   000  
+    # 000000    000  000      0000000       000   000  0000000        000   000  000  0000000    
+    # 000       000  000      000           000   000  000   000      000   000  000  000   000  
+    # 000       000  0000000  00000000       0000000   000   000      0000000    000  000   000  
     
     gotoDirOrOpenFile: path ○=>
         

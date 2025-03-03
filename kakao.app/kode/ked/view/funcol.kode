@@ -17,9 +17,12 @@ function funcol extends view
         super screen name features
         
         @crumbs  = new crumbs  screen "#{@name}_crumbs"
-        @dirtree = new dirtree screen "#{@name}_dirtree"        
+        @dirtree = new dirtree screen "#{@name}_dirtree" ['scroll']       
         
-        @dirtree.color.bg = theme.funcol
+        @dirtree.color.bg           = theme.funcol
+        @dirtree.color.empty        = @dirtree.color.bg
+        @dirtree.color.cursor_main  = @dirtree.color.bg
+        @dirtree.color.cursor_empty = @dirtree.color.bg
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle

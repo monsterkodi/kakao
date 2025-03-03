@@ -153,6 +153,12 @@ util =
                 pa.localeCompare pb, 'en' sensitivity:'variant' caseFirst:'upper' numeric:true
             else 
                 Number(pa) - Number(pb)
+                
+    replace: array index numToRemove arrayToInsert ->
+        
+        array.splice.apply array [index numToRemove].concat(arrayToInsert)
+        
+    insert: array index arrayToInsert -> util.replace array index 0 arrayToInsert
         
     #  0000000   0000000          000  00000000   0000000  000000000  
     # 000   000  000   000        000  000       000          000     

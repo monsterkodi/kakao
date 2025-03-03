@@ -6,7 +6,7 @@
 0000000    000  000   000     000     000   000  00000000  00000000
 ###
 
-use ../../kxk ▪ kstr slash post noon
+use ../../kxk ▪ kutil kstr slash post noon
 use ../../kxk ◆ nfs
 use ../util   ◆ prjcts util
 use           ◆ choices crumbs
@@ -21,8 +21,80 @@ function dirtree extends choices
                         
         @state.syntax.setRgxs rgxs
         
-        # ⏵⏷
+        @dirOpenSymbol  = '' # '' '' '⏷' 
+        @dirCloseSymbol = '' # '' '' '⏵' 
         
+    clickChoiceAtIndex: index =>
+        
+        super index
+        
+        c = @current()
+        
+        switch c.type
+            
+            'dir' 
+                c.open = not c.open                
+                if c.open ➜ @openDir c else @closeDir c
+            
+        @set @items 'tilde'
+        
+    #  0000000   00000000   00000000  000   000  0000000    000  00000000   
+    # 000   000  000   000  000       0000  000  000   000  000  000   000  
+    # 000   000  00000000   0000000   000 0 000  000   000  000  0000000    
+    # 000   000  000        000       000  0000  000   000  000  000   000  
+    #  0000000   000        00000000  000   000  0000000    000  000   000  
+    
+    openDir: dirItem ○->
+        
+        try
+            items =○ nfs.list dirItem.path recursive:false
+        catch err
+            error 'list error' err
+            ⮐ 
+        
+        dirItem.tilde = dirItem.tilde.replace @dirCloseSymbol @dirOpenSymbol 
+            
+        depth = (dirItem.depth ? 1) + 1
+        
+        for item in items
+            item.depth = depth
+            item.tilde = slash.file item.path
+            item.tilde = lpad(depth * 2 ((item.type == 'dir') ? (@dirCloseSymbol+' ') : '  ')) + item.tilde
+        
+        items.sort (a b) => @weight(a) - @weight(b)
+        
+        index = @items.indexOf dirItem
+        
+        kutil.insert @items index+1 items
+        
+        @set @items 'tilde'        
+        
+    #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
+    # 000       000      000   000  000       000       000   000  000  000   000  
+    # 000       000      000   000  0000000   0000000   000   000  000  0000000    
+    # 000       000      000   000       000  000       000   000  000  000   000  
+    #  0000000  0000000   0000000   0000000   00000000  0000000    000  000   000  
+    
+    closeDir: dirItem ->
+        
+        dirItem.tilde = dirItem.tilde.replace @dirOpenSymbol @dirCloseSymbol
+        
+        index = @items.indexOf dirItem
+        
+        numChildren = 0
+        while @items[index+numChildren+1].path.startsWith dirItem.path
+            numChildren += 1
+        
+        kutil.replace @items index+1 numChildren []
+        
+        @set @items 'tilde'
+        
+    # 00000000    0000000    0000000   000000000  
+    # 000   000  000   000  000   000     000     
+    # 0000000    000   000  000   000     000     
+    # 000   000  000   000  000   000     000     
+    # 000   000   0000000    0000000      000     
+    
     setRoot: path ○=>
         
         dir = slash.untilde path
@@ -33,26 +105,13 @@ function dirtree extends choices
             error 'list error' err
             ⮐ 
 
-        # log g5("dirtree.setRoot") dir
-        
         @currentRoot = dir
-        
-        weight = item ->
-
-            p = slash.parse item.path
-
-            w = 0
-            w += 10000 if item.type == 'file'
-            # w += 1000  if item.tilde.startsWith ' .'
-            # w += 1     if slash.ext(item.tilde) in ['js' 'json']
-            w += kstr.weight(p.file)
-            w
-        
+                
         for item in items
             item.tilde = slash.relative item.path @currentRoot
-            item.tilde = ((item.type == 'dir') ? '⏵ ' : '  ') + item.tilde
+            item.tilde = ((item.type == 'dir') ? (@dirCloseSymbol+' ') : '  ') + item.tilde
 
-        items.sort (a b) -> weight(a) - weight(b)
+        items.sort (a b) => @weight(a) - @weight(b)
                     
         select ?= items[1].path
                
@@ -64,5 +123,20 @@ function dirtree extends choices
         @state.selectLine selectIndex
         @state.setMainCursor 0 selectIndex
         @state.setView [0 0]
+        
+    # 000   000  00000000  000   0000000   000   000  000000000  
+    # 000 0 000  000       000  000        000   000     000     
+    # 000000000  0000000   000  000  0000  000000000     000     
+    # 000   000  000       000  000   000  000   000     000     
+    # 00     00  00000000  000   0000000   000   000     000     
+    
+    weight: item ->
+
+        p = slash.parse item.path
+
+        w = 0
+        w += 10000 if item.type == 'file'
+        w += kstr.weight(p.file)
+        w
 
 export dirtree
