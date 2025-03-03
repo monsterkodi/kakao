@@ -99,7 +99,6 @@ quit`)
         recent = frecent.list('file')
         recent = recent.slice(0, typeof _k_.min(recent.length,maxRecent) === 'number' ? _k_.min(recent.length,maxRecent) : -1)
         this.choices.set(recent)
-        this.hide()
         return post.emit('quicky.files',recent)
     }
 
@@ -111,16 +110,15 @@ quit`)
 
     menu.prototype["applyChoice"] = function (choice)
     {
-        console.log(`applyChoice ▸${choice}◂`)
         switch (choice)
         {
             case 'new':
+                this.hide()
                 post.emit('file.new')
                 break
             case 'about':
                 this.show(true)
-                return true
-
+                break
             case 'quit':
                 post.emit('quit')
                 break
@@ -132,7 +130,6 @@ quit`)
                 break
         }
 
-        this.hide()
         return true
     }
 

@@ -233,7 +233,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var col, row, start, steps, x, y, _205_20_
+        var col, inside, row, start, steps, x, y, _204_25_, _205_25_, _206_25_, _210_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -290,7 +290,11 @@ editor = (function ()
         }
         var _b_ = this.cells.posForEvent(event); col = _b_[0]; row = _b_[1]
 
-        if (!this.cells.isInsideEvent(event))
+        inside = this.cells.isInsideEvent(event)
+        inside |= (this.scroll != null ? this.scroll.cells.isInsideEvent(event) : undefined)
+        inside |= (this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined)
+        inside |= (this.mapscr != null ? this.mapscr.cells.isInsideEvent(event) : undefined)
+        if (!inside)
         {
             return
         }
@@ -359,7 +363,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _276_20_, _280_21_, _285_24_
+        var _281_20_, _285_21_, _290_24_
 
         if (!this.hasFocus())
         {

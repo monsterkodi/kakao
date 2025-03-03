@@ -67,7 +67,7 @@ ked [file]
         this.session = new session
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
-        this.viewSizes = {funcol:[20,0]}
+        this.viewSizes = {funcol:[40,0]}
         this.t = new ttio
         this.julia = new julia
         this.screen = new screen(this.t)

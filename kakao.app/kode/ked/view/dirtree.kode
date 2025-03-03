@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ kutil kstr slash post noon
 use ../../kxk ◆ nfs
-use ../util   ◆ prjcts util
+use ../util   ◆ prjcts icons util
 use           ◆ choices crumbs
 
 import rgxs from './quicky.json' with { type: "json" }
@@ -21,22 +21,67 @@ function dirtree extends choices
                         
         @state.syntax.setRgxs rgxs
         
-        @dirOpenSymbol  = '' # '' '' '⏷' 
-        @dirCloseSymbol = '' # '' '' '⏵' 
+        @frontRoundOffset = 0
+    
+    symbol: item ->
+                          
+        switch item.type
+            'file' 
+                ⮐ icons[slash.ext(item.path)] ? icons.file
+            'dir'
+                ⮐ item.open ? icons.dir_open : icons.dir_close
+                
+    symbolName: item -> 
         
-    clickChoiceAtIndex: index =>
+        switch slash.ext item.path
+            'kode'
+            'noon'
+            'json'
+            'pug'
+            'styl'
+            'html'
+            'js'
+            'md'
+                name = slash.name item.path
+            else
+                name = slash.file item.path
         
-        super index
+        @symbol(item) + ' ' + name
         
-        c = @current()
+    emitAction: action arg ->
         
+        # log "dirtree.emitAction #{action}" arg @current()
+        
+        c = arg
+                
         switch c.type
             
             'dir' 
-                c.open = not c.open                
-                if c.open ➜ @openDir c else @closeDir c
+                
+                switch action
+                    
+                    'click'
+                    'space'
             
-        @set @items 'tilde'
+                        c.open = not c.open                
+                        if c.open ➜ @openDir c else @closeDir c
+                        ⮐ 
+                        
+                    'right'
+                    
+                        @openDir c if not c.open
+                
+            'file'
+
+                switch action
+                        
+                    'right'
+                    'click'
+                    'space'
+                        
+                        ⮐ post.emit 'quicky' c.path
+        
+        super action arg
         
     #  0000000   00000000   00000000  000   000  0000000    000  00000000   
     # 000   000  000   000  000       0000  000  000   000  000  000   000  
@@ -46,20 +91,21 @@ function dirtree extends choices
     
     openDir: dirItem ○->
         
+        dirItem.open = true
+        
         try
             items =○ nfs.list dirItem.path recursive:false
         catch err
             error 'list error' err
             ⮐ 
         
-        dirItem.tilde = dirItem.tilde.replace @dirCloseSymbol @dirOpenSymbol 
+        dirItem.tilde = dirItem.tilde.replace icons.dir_close icons.dir_open 
             
-        depth = (dirItem.depth ? 1) + 1
+        depth = (dirItem.depth ? 0) + 1
         
         for item in items
             item.depth = depth
-            item.tilde = slash.file item.path
-            item.tilde = lpad(depth * 2 ((item.type == 'dir') ? (@dirCloseSymbol+' ') : '  ')) + item.tilde
+            item.tilde = lpad(1+depth*2) + @symbolName(item) #(@symbol(item)+' ')) + slash.file(item.path)
         
         items.sort (a b) => @weight(a) - @weight(b)
         
@@ -77,7 +123,7 @@ function dirtree extends choices
     
     closeDir: dirItem ->
         
-        dirItem.tilde = dirItem.tilde.replace @dirOpenSymbol @dirCloseSymbol
+        dirItem.tilde = dirItem.tilde.replace icons.dir_open icons.dir_close
         
         index = @items.indexOf dirItem
         
@@ -108,14 +154,11 @@ function dirtree extends choices
         @currentRoot = dir
                 
         for item in items
-            item.tilde = slash.relative item.path @currentRoot
-            item.tilde = ((item.type == 'dir') ? (@dirCloseSymbol+' ') : '  ') + item.tilde
+            item.tilde = ' ' + @symbolName(item)
 
         items.sort (a b) => @weight(a) - @weight(b)
                     
-        select ?= items[1].path
-               
-        @frontRoundOffset = 1
+        select ?= items[1].path                    
         
         @set items 'tilde'
         

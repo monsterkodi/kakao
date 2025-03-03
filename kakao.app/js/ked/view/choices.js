@@ -315,7 +315,7 @@ choices = (function ()
     choices.prototype["clickChoiceAtIndex"] = function (index)
     {
         this.hoverIndex = -1
-        this.emit('action','click',this.fuzzied[index])
+        this.emitAction('click',this.fuzzied[index])
         return true
     }
 
@@ -352,6 +352,11 @@ choices = (function ()
         return sret
     }
 
+    choices.prototype["emitAction"] = function (action, arg)
+    {
+        return this.emit('action',action,arg)
+    }
+
     choices.prototype["onKey"] = function (key, event)
     {
         if (!this.hasFocus())
@@ -365,7 +370,7 @@ choices = (function ()
             case 'delete':
             case 'space':
             case 'return':
-                this.emit('action',event.combo,this.current())
+                this.emitAction(event.combo,this.current())
                 break
             case 'up':
             case 'down':

@@ -205,30 +205,38 @@ class theme
         'dir':                                  '#66d'   
         'punct dir':                            '#55a'   
         'dir_punct':                            '#226'   
-                                                         
-        '.text':                                '#aaf'   
-        '.md':                                  '#f4f'   
-        '.json':                                '#d0d'   
-        '.cast':                                '#b0b'   
-        '.js':                                  '#a0a'   
-        '.toml':                                '#909'   
-        '.kode':                                '#fa0'   
-        '.noon':                                '#0a0'   
-        '.png':                                 '#080'   
-        '.gif':                                 '#070'   
-        '.jpg':                                 '#060'   
-        '.jpeg':                                '#060'   
-        '.bmp':                                 '#050'   
-        '.tiff':                                '#040'   
-        '.image':                               '#030'   
+        'file_text':                            '#aaf'   
+        'file_styl':                            '#f08'   
+        'file_pug':                             '#a5a'   
+        'file_html':                            '#838'   
+        'file_md':                              '#f4f'   
+        'file_json':                            '#d0d'   
+        'file_plist':                           '#c0c'   
+        'file_cast':                            '#b0b'   
+        'file_js':                              '#a0a'   
+        'file_toml':                            '#909'   
+        'file_kode':                            '#dc0'   
+        'file_noon':                            '#f3a'   
+        'file_cpp':                             '#cbb'   
+        'file_mm':                              '#0d0'   
+        'file_h':                               '#090'   
+        'file_png':                             '#0a0'   
+        'file_gif':                             '#070'   
+        'file_jpg':                             '#060'   
+        'file_icns':                            '#060'   
+        'file_jpeg':                            '#060'   
+        'file_bmp':                             '#050'   
+        'file_tiff':                            '#040'   
+        'file_image':                           '#030'   
         
 
 for key,value of theme.syntax
-    if key[0] == '.'
-        theme.syntax[key+'_ext'] = color.darken value 0.2
-        ext = key[1..]
-        theme.syntax[ext+' file']  = value
-        theme.syntax[ext+' ext']   = color.darken value 0.6
-        theme.syntax['punct '+ext] = color.darken value 0.3
-        
+    if key.startsWith 'file_'
+        ext = key[5..]
+        theme.syntax['file_ext_'+ext]  = color.darken value 0.4
+        theme.syntax['file_icon_'+ext] = color.darken value 0.6
+        # theme.syntax[ext+' file']  = value
+        # theme.syntax[ext+' ext']   = color.darken value 0.6
+        # theme.syntax['punct '+ext] = color.darken value 0.3
+
 export theme

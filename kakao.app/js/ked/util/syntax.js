@@ -79,7 +79,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _48_27_
+        var clss, _49_27_
 
         if (_k_.isNum(x))
         {
@@ -89,7 +89,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_48_27_=theme.syntax[clss]) != null ? _48_27_ : '#ff0000')
+        return ((_49_27_=theme.syntax[clss]) != null ? _49_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

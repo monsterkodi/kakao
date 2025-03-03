@@ -27,6 +27,7 @@ function syntax
             for segs in segls
                 dss = matchr.ranges(@config kseg.str(segs) 'u')
                 @diss.push dss
+            # log '○ syntax.setSegls' noon(@diss)
         else
             @diss = kulur.dissect segls @ext
             # log '● syntax.setSegls' noon(@diss)

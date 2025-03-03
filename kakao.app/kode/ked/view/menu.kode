@@ -95,11 +95,10 @@ function menu extends inputchoice
         maxRecent = 20
         
         recent = frecent.list 'file'
-
         recent = recent[0...min(recent.length maxRecent)]
+        
         @choices.set recent
 
-        @hide()
         post.emit 'quicky.files' recent
         
     hide: => 
@@ -115,16 +114,15 @@ function menu extends inputchoice
     
     applyChoice: choice ->
         
-        log "applyChoice ▸#{choice}◂"
+        # log "applyChoice ▸#{choice}◂"
         
         switch choice
-            'new'        ➜ post.emit 'file.new'
-            'about'      ➜ @show true ; ⮐ true # reopen with greeting header
+            'new'        ➜ @hide(); post.emit 'file.new'
+            'about'      ➜ @show true          # reopen with greeting header
             'quit'       ➜ post.emit 'quit'                    
             'open ...'   ➜ post.emit 'quicky.dir' process.cwd()
             'recent ...' ➜ @showRecent()
             
-        @hide()
         true
         
     onWheel: ->

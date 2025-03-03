@@ -12,6 +12,7 @@ let noon = kxk.noon
 import nfs from "../../kxk/nfs.js"
 
 import prjcts from "../util/prjcts.js"
+import icons from "../util/icons.js"
 import util from "../util/util.js"
 
 import choices from "./choices.js"
@@ -25,35 +26,96 @@ dirtree = (function ()
     function dirtree (screen, name, features)
     {
         this["setRoot"] = this["setRoot"].bind(this)
-        this["clickChoiceAtIndex"] = this["clickChoiceAtIndex"].bind(this)
         dirtree.__super__.constructor.call(this,screen,name,features)
         this.state.syntax.setRgxs(rgxs)
-        this.dirOpenSymbol = ''
-        this.dirCloseSymbol = ''
+        this.frontRoundOffset = 0
     }
 
-    dirtree.prototype["clickChoiceAtIndex"] = function (index)
+    dirtree.prototype["symbol"] = function (item)
     {
-        dirtree.__super__.clickChoiceAtIndex.call(this,index)
-    
+        var _30_51_
+
+        switch (item.type)
+        {
+            case 'file':
+                return ((_30_51_=icons[slash.ext(item.path)]) != null ? _30_51_ : icons.file)
+
+            case 'dir':
+                return (item.open ? icons.dir_open : icons.dir_close)
+
+        }
+
+    }
+
+    dirtree.prototype["symbolName"] = function (item)
+    {
+        var name
+
+        switch (slash.ext(item.path))
+        {
+            case 'kode':
+            case 'noon':
+            case 'json':
+            case 'pug':
+            case 'styl':
+            case 'html':
+            case 'js':
+            case 'md':
+                name = slash.name(item.path)
+                break
+            default:
+                name = slash.file(item.path)
+        }
+
+        return this.symbol(item) + ' ' + name
+    }
+
+    dirtree.prototype["emitAction"] = function (action, arg)
+    {
         var c
 
-        c = this.current()
+        c = arg
         switch (c.type)
         {
             case 'dir':
-                c.open = !c.open
-                c.open ? this.openDir(c) : this.closeDir(c)
+                switch (action)
+                {
+                    case 'click':
+                    case 'space':
+                        c.open = !c.open
+                        c.open ? this.openDir(c) : this.closeDir(c)
+                        return
+
+                    case 'right':
+                        if (!c.open)
+                        {
+                            this.openDir(c)
+                        }
+                        break
+                }
+
+                break
+            case 'file':
+                switch (action)
+                {
+                    case 'right':
+                    case 'click':
+                    case 'space':
+                        return post.emit('quicky',c.path)
+
+                }
+
                 break
         }
 
-        return this.set(this.items,'tilde')
+        return dirtree.__super__.emitAction.call(this,action,arg)
     }
 
     dirtree.prototype["openDir"] = async function (dirItem)
     {
-        var depth, index, item, items, _57_31_
+        var depth, index, item, items, _104_31_
 
+        dirItem.open = true
         try
         {
             items = await nfs.list(dirItem.path,{recursive:false})
@@ -63,15 +125,14 @@ dirtree = (function ()
             console.error('list error',err)
             return
         }
-        dirItem.tilde = dirItem.tilde.replace(this.dirCloseSymbol,this.dirOpenSymbol)
-        depth = (((_57_31_=dirItem.depth) != null ? _57_31_ : 1)) + 1
+        dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
+        depth = (((_104_31_=dirItem.depth) != null ? _104_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
             item.depth = depth
-            item.tilde = slash.file(item.path)
-            item.tilde = _k_.lpad(depth * 2,(((item.type === 'dir') ? (this.dirCloseSymbol + ' ') : '  '))) + item.tilde
+            item.tilde = _k_.lpad(1 + depth * 2) + this.symbolName(item)
         }
         items.sort((function (a, b)
         {
@@ -86,7 +147,7 @@ dirtree = (function ()
     {
         var index, numChildren
 
-        dirItem.tilde = dirItem.tilde.replace(this.dirOpenSymbol,this.dirCloseSymbol)
+        dirItem.tilde = dirItem.tilde.replace(icons.dir_open,icons.dir_close)
         index = this.items.indexOf(dirItem)
         numChildren = 0
         while (this.items[index + numChildren + 1].path.startsWith(dirItem.path))
@@ -116,15 +177,13 @@ dirtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
-            item.tilde = slash.relative(item.path,this.currentRoot)
-            item.tilde = (((item.type === 'dir') ? (this.dirCloseSymbol + ' ') : '  ')) + item.tilde
+            item.tilde = ' ' + this.symbolName(item)
         }
         items.sort((function (a, b)
         {
             return this.weight(a) - this.weight(b)
         }).bind(this))
         select = (select != null ? select : items[1].path)
-        this.frontRoundOffset = 1
         this.set(items,'tilde')
         selectIndex = 0
         this.state.selectLine(selectIndex)

@@ -1,15 +1,71 @@
 {
-  "([^\\/]+)(\\.noon)": [
-    ".noon",
-    ".noon_ext"
+  "([^\\/\\s]+)(\\.noon)": [
+    "file_noon",
+    "file_ext_noon"
   ],
-  "([^\\/]+)(\\.kode)": [
-    ".kode",
-    ".kode_ext"
+  "([^\\/\\s]+)(\\.kode)": [
+    "file_kode",
+    "file_ext_kode"
   ],
-  "([^\\/]+)(\\.md)": [
-    ".md",
-    ".md_ext"
+  "([^\\/\\s]+)(\\.html)": [
+    "file_html",
+    "file_ext_html"
+  ],
+  "([^\\/\\s]+)(\\.md)": [
+    "file_md",
+    "file_ext_md"
+  ],
+  "([^\\/\\s]+)(\\.json)": [
+    "file_json",
+    "file_ext_json"
+  ],
+  "([^\\/\\s]+)(\\.js)": [
+    "file_js",
+    "file_ext_js"
+  ],
+  "([^\\/\\s]+)(\\.pug)": [
+    "file_pug",
+    "file_ext_pug"
+  ],
+  "([^\\/\\s]+)(\\.styl)": [
+    "file_styl",
+    "file_ext_styl"
+  ],
+  "([^\\/\\s]+)(\\.plist)": [
+    "file_plist",
+    "file_ext_plist"
+  ],
+  "([^\\/\\s]+)(\\.py)": [
+    "file_py",
+    "file_ext_py"
+  ],
+  "([^\\/\\s]+)(\\.png)": [
+    "file_png",
+    "file_ext_png"
+  ],
+  "([^\\/\\s]+)(\\.icns)": [
+    "file_icns",
+    "file_ext_icns"
+  ],
+  "([^\\/\\s]+)(\\.cpp)": [
+    "file_cpp",
+    "file_ext_cpp"
+  ],
+  "([^\\/\\s]+)(\\.h)": [
+    "file_h",
+    "file_ext_h"
+  ],
+  "([^\\/\\s]+)(\\.mm)": [
+    "file_mm",
+    "file_ext_mm"
+  ],
+  "([^\\/\\s]+)(\\.log)": [
+    "file_log",
+    "file_ext_log"
+  ],
+  "([^\\/\\s]+)(\\.txt)": [
+    "file_txt",
+    "file_ext_txt"
   ],
   "(\\/)([\\w\\.\\-]+)(\\/)": [
     "dir_punct",
@@ -20,12 +76,13 @@
     "file",
     "ext"
   ],
-  "([\\w\\s\\-]+)$": [
-    "dir_leaf"
-  ],
   "([\\w\\-]+|~)(\\/)": [
     "dir",
     "dir_punct"
+  ],
+  "([⏷⏵])([\\.\\w\\s\\-]+)$": [
+    "dir",
+    "dir_leaf"
   ],
   "\\.\\.": [
     "dir"
@@ -36,7 +93,190 @@
   "\\/": [
     "dir_punct"
   ],
-  "[⏷⏵]": [
+  "[⏷⏵]": [
     "dir"
+  ],
+  "[]": [
+    "file_icon_text"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_noon",
+    "file_noon"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_kode",
+    "file_kode"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_md",
+    "file_md"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_styl",
+    "file_styl"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_json",
+    "file_json"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_js",
+    "file_js"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_html",
+    "file_html"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_css",
+    "file_css"
+  ],
+  "()(\\s?[^\\/\\s]*)": [
+    "file_icon_pug",
+    "file_pug"
+  ],
+  "[]": [
+    "file_icon_png"
+  ],
+  "[]": [
+    "file_icon_sh"
+  ],
+  "[]": [
+    "file_icon_c"
+  ],
+  "[]": [
+    "file_icon_cpp"
+  ],
+  "[]": [
+    "file_icon_clj"
+  ],
+  "[]": [
+    "file_icon_cljs"
+  ],
+  "[]": [
+    "file_icon_coffee"
+  ],
+  "[]": [
+    "file_icon_cs"
+  ],
+  "[]": [
+    "file_icon_d"
+  ],
+  "[]": [
+    "file_icon_dart"
+  ],
+  "[]": [
+    "file_icon_sql"
+  ],
+  "[]": [
+    "file_icon_diff"
+  ],
+  "[]": [
+    "file_icon_elm"
+  ],
+  "[]": [
+    "file_icon_erl"
+  ],
+  "[]": [
+    "file_icon_ex"
+  ],
+  "[]": [
+    "file_icon_fs"
+  ],
+  "[]": [
+    "file_icon_go"
+  ],
+  "[]": [
+    "file_icon_h"
+  ],
+  "[]": [
+    "file_icon_hbs"
+  ],
+  "[]": [
+    "file_icon_hs"
+  ],
+  "[]": [
+    "file_icon_ini"
+  ],
+  "[]": [
+    "file_icon_java"
+  ],
+  "[]": [
+    "file_icon_jl"
+  ],
+  "[]": [
+    "file_icon_tsx"
+  ],
+  "[]": [
+    "file_icon_less"
+  ],
+  "[]": [
+    "file_icon_lua"
+  ],
+  "[λ]": [
+    "file_icon_ml"
+  ],
+  "[]": [
+    "file_icon_mm"
+  ],
+  "[]": [
+    "file_icon_nix"
+  ],
+  "[]": [
+    "file_icon_php"
+  ],
+  "[]": [
+    "file_icon_pl"
+  ],
+  "[]": [
+    "file_icon_plist"
+  ],
+  "[]": [
+    "file_icon_pp"
+  ],
+  "[]": [
+    "file_icon_py"
+  ],
+  "[ﳒ]": [
+    "file_icon_r"
+  ],
+  "[]": [
+    "file_icon_rb"
+  ],
+  "[]": [
+    "file_icon_rs"
+  ],
+  "[]": [
+    "file_icon_rss"
+  ],
+  "[]": [
+    "file_icon_sass"
+  ],
+  "[]": [
+    "file_icon_scala"
+  ],
+  "[]": [
+    "file_icon_suo"
+  ],
+  "[ﲹ]": [
+    "file_icon_sol"
+  ],
+  "[]": [
+    "file_icon_swift"
+  ],
+  "[ﭨ]": [
+    "file_icon_tex"
+  ],
+  "[]": [
+    "file_icon_ts"
+  ],
+  "[]": [
+    "file_icon_vim"
+  ],
+  "[﵂]": [
+    "file_icon_vue"
+  ],
+  "[]": [
+    "file_icon_xul"
   ]
 }

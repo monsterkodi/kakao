@@ -155,9 +155,9 @@ function status extends view
             add ' ' null 'status_dark'
             
         ci = clamp 0 3 int((@time/(1000*1000)-16)/8)
-        ch = ' •'[ci]
+        ch = ' •'[ci] # 
         fg = ['#222' '#000' '#080' '#ff0'][ci]
-        log "#{ch} #{@drawTime}" if ch in ''
+        log "#{ch} #{@drawTime}" if ch in ''
         set cols-2 ch fg 'status_dark'
              
 export status

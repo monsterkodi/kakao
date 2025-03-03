@@ -1,18 +1,18 @@
 
               crumbs file tabs status
-            ┏━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┓
-            ┣━━━━┻━━┳━┻━━━━┻━━━━┻━━━━┻━━━━┻━━━━┫
-            ┃       ┃             ▴            ┃
-            ┃ fscol ┃    editor   search       ┃
-            ┃ funcs ┃             results      ┃
-            ┃       ┃                          ┃
-            ┃       ┃                          ┃
-            ┃       ┃                          ┃
-            ┃       ┃                          ┃
-            ┃       ┃                          ┃
-            ┣━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-            ┃          help+log+keys           ┃
-            ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+            ┏━━━━━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━━━┓
+            ┣━━━━━━━━╋━━━━┻━━━━┻━━━━┻━━━━┻━━━━━━┫
+            ┃        ┃             ▴            ┃
+            ┃ dirtee ┃    editor   search       ┃
+            ┃        ┃             results      ┃
+            ┣━━━━━━━━┫                          ┃
+            ┃        ┃                          ┃
+            ┃ funcs  ┃                          ┃
+            ┃        ┃                          ┃
+            ┃        ┃                          ┃
+            ┃        ┣━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+            ┃        ┃ help+log+keys            ┃
+            ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # todo
 ## todo
@@ -20,6 +20,7 @@
 #### todo
 ##### todo    
 
+- dirtree
 - funclist
        
 - ascii header mode
@@ -37,6 +38,8 @@
 - surround
 
 - quicky
+    - fix 
+        - clamp long relative parent dirs
     
 - status
     - move dirty and redo into statusfile 

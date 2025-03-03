@@ -200,7 +200,12 @@ function editor extends draw
         
         [col row] = @cells.posForEvent event
         
-        ⮐ if not @cells.isInsideEvent event
+        inside = @cells.isInsideEvent event
+        inside |= @scroll?.cells.isInsideEvent(event)
+        inside |= @gutter?.cells.isInsideEvent(event)
+        inside |= @mapscr?.cells.isInsideEvent(event)
+        
+        ⮐ if not inside
 
         if @complete?
             ⮐ true if @complete.onWheel event

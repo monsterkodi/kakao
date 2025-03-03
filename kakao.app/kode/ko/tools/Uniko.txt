@@ -1,41 +1,34 @@
 kode         ➜ ■ ▪ ◆ ● ▸ ⮐
-icons        🛠🔨🔧👁🖌🖍💀🔥💩
+icons        🛠🔨🔧👁🖌🖍💀🔥💩💣
 key          ⌗ ⌘ ⏎ ⌃ ⌥ ⌂ ↑ ↓ ← → ↩ ↖ ↘ ⇞ ⇟ ⌫ ⌦
 ok           ☑ ✓ ✔ ⎷       
 fail         ☒ ✗ ✘ ⨉ ⨯ ✖     
 file                            
 folder                  floppy          ﬚ ﴖ 
-gear          漣  ⛭ ⛯ ⚙  煉     search        ⚲     ⌕
+gear          漣 ⛭ ⛯ ⚙  煉    search        ⚲     ⌕
 edit                     lock                    key        
 time               ⏱     date               
-info           ℹ              warn              ⟁ 卑 喝                   
-home           ﮟ ﳎ ﳏ ﳐ         trash          﫧 﫨         legal      ⚖
+info           ℹ              warn             ⟁ 卑喝                 
+home           ﮟ ﳎ ﳏ ﳐ         trash          﫧﫨        legal      ⚖
 tool         ⚒                bug            ﴫ           at         
 keyboard        ⌨             term            ﲵ         mouse                       
 light           ﯦ ﯧ           diode           ﲍ         day       ☼  
-sound        ♪ ♫ ♬ ﭵ ﱘ ﱙ        volume       ﱛ ﱜ ﱝ  墳 婢     record      
+sound        ♪ ♫ ♬ ﭵ ﱘ ﱙ        volume       ﱛ ﱜ ﱝ  墳婢    record      
 bell                    heart        ❤      ❣   beat       﫵  勞
-pin             ﭏ ﭐ           flag         ⚐ ⚑           shield     廬 聯 賓 輦 
-power         襤 拉               flash        ⚡ ↯    ﭹ 
+pin             ﭏ ﭐ           flag         ⚐ ⚑           shield     廬聯賓輦 
+power         襤拉              flash        ⚡↯    ﭹ     anchor         
 github                        branch           練
 logo                        os             者 
-speak                        
 clipboard                 operation           
 db             ⛀ ⛁ ⛂ ⛃         box                 ﰩ     
 bookmark                 exit         﫻 﫼         
-hand           﨓 﨑 晴 塚             body     ⛹    רּ שּ תּ וֹ בֿ    
 font          ﮜ    ﭨ        chart              ﭬ ﭭ 
-playback     ⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭       
-link                        anchor         
-recycle       ♻ ♲ ♺             cycle           累 菱 磻 復 ⟲ ⟳ ⥀ ⥁ ↺ ↻ 北  
-question     ‼ ⁇ ⁈ ⁉  
-
-alphabet     𝒜  𝒞𝒟    𝒢  𝒥  𝒦    𝒩𝒪𝒫𝒬  𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵
-             𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩
-             𝒶𝒷𝒸𝒹  𝒻  𝒽𝒾𝒿𝓀𝓁𝓂𝓃  𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏
-             𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃
-             𝔄𝔅  𝔇𝔈𝔉𝔊    𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔  𝔖𝔗𝔘𝔙𝔚𝔛𝔜
-             𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷
+playback     ⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭       question     ‼ ⁇ ⁈ ⁉  
+link                        recycle       ♻ ♲ ♺        
+cycle           累 菱 磻 復 ⟲ ⟳ ⥀ ⥁ ↺ ↻ 北  
+body            ⛹    רּ שּ תּ וֹ בֿ    
+hand           﨓﨑晴塚            body
+speak                        
 
 subscript    ₀₁₂₃₄₅₆₇₈₉ ₊₋₌₍₎ ₐₑ     ₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥ ₓ                          
 superscript  ⁰¹²³⁴⁵⁶⁷⁸⁹ ⁺⁻⁼⁽⁾ ᵅᵇᶜᵈᵉᶠᶢʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ ᵃᵋ

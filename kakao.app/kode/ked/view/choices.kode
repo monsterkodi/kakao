@@ -229,7 +229,7 @@ function choices extends editor
     clickChoiceAtIndex: index =>
         
         @hoverIndex = -1  
-        @emit 'action' 'click' @fuzzied[index]
+        @emitAction 'click' @fuzzied[index]
         true
         
     onMouse: event =>
@@ -251,6 +251,16 @@ function choices extends editor
                     'release' ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1]
                     
         sret
+        
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    emitAction: action arg ->
+        
+        @emit 'action' action arg
                     
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -267,7 +277,7 @@ function choices extends editor
             'left' 
             'delete'
             'space'  
-            'return' ➜ @emit 'action' event.combo @current() 
+            'return' ➜ @emitAction event.combo @current() 
             'up' 
             'down'   ➜ @moveSelection event.combo
             

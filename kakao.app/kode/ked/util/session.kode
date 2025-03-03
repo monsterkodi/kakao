@@ -140,7 +140,7 @@ function session extends events
         if valid file
             
             recent =○ noon.read file
-            log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
+            # log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
             if valid recent.files
                 if valid recent.files.recent
                     frecent.buckets['file'] = recent.files.recent

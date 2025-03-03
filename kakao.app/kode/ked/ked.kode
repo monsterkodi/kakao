@@ -35,7 +35,7 @@ function KED
         @session = new session
         global.ked_session = @session
         @session.on 'loaded' @onSessionLoaded
-        @viewSizes = funcol:[20 0]
+        @viewSizes = funcol:[40 0]
                     
         @t = new ttio
         

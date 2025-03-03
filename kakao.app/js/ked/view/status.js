@@ -205,9 +205,9 @@ status = (function ()
             add(' ',null,'status_dark')
         }
         ci = _k_.clamp(0,3,parseInt((this.time / (1000 * 1000) - 16) / 8))
-        ch = ' •'[ci]
+        ch = ' •'[ci]
         fg = ['#222','#000','#080','#ff0'][ci]
-        if (_k_.in(ch,''))
+        if (_k_.in(ch,''))
         {
             console.log(`${ch} ${this.drawTime}`)
         }
