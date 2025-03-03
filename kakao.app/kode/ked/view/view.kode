@@ -6,13 +6,15 @@
     0      000  00000000  00     00
 ###
 
-use ../../kxk ◆ events kstr post
+use ../../kxk ▪ events kstr post kutil
 use   ../view ◆ cells 
 use           ◆ knob
 
 popups = ['quicky' 'menu']
 
 function view extends events
+
+    @currentPopup: null
 
     @: @screen @name features ->
         
@@ -26,11 +28,19 @@ function view extends events
                 'knob' ➜ @knob = new knob @cells @name
                 
         post.on 'view.show' @onViewShow if @name in popups
+        post.on 'view.hide' @onViewHide if @name in popups
+        
+    onViewHide: viewName =>
+        
+        if viewName == view.currentPopup
+            view.currentPopup = null
         
     onViewShow: viewName =>
                 
-        if viewName != @name and @visible() and viewName in popups# and @name in popups
-            @hide() 
+        if viewName in popups
+            view.currentPopup = viewName            
+            if viewName != @name and @visible()# and @name in popups
+                @hide() 
                 
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
     # 000   000  000  000       000  000   000  000  000      000     000      000 000   
@@ -44,7 +54,7 @@ function view extends events
         @layout()
         redraw:true
         
-    hide:      -> @cells.rows = 0; redraw:true
+    hide:      -> post.emit 'view.hide' @name; @cells.rows = 0; redraw:true
     hidden:    -> not @visible()
     invisible: -> not @visible()
     visible:   -> @cells.rows > 0 and @cells.cols > 0

@@ -206,6 +206,7 @@ class theme
         'dir_punct':                            '#226'   
         'file_text':                            '#aaf'   
         'file_styl':                            '#f08'   
+        'file_css':                             '#a04'   
         'file_pug':                             '#a5a'   
         'file_html':                            '#838'   
         'file_md':                              '#f4f'   

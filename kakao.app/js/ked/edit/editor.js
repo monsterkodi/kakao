@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var editor
 
@@ -11,6 +11,7 @@ import scroll from "../view/scroll.js"
 import gutter from "../view/gutter.js"
 import mapscr from "../view/mapscr.js"
 import mapview from "../view/mapview.js"
+import view from "../view/view.js"
 
 import state from "./state.js"
 import draw from "./draw.js"
@@ -104,7 +105,7 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _157_31_, _77_30_, _77_39_, _78_30_, _79_32_, _89_41_
+        var col, row, start, x, y, _162_31_, _77_30_, _77_39_, _78_30_, _79_32_, _89_41_
 
         if (((_77_30_=this.mapscr) != null ? typeof (_77_39_=_77_30_.onMouse) === "function" ? _77_39_(event) : undefined : undefined))
         {
@@ -219,6 +220,11 @@ editor = (function ()
             case 'move':
                 if (this.cells.isInsideEvent(event))
                 {
+                    if (!this.hasFocus() && _k_.empty(view.currentPopup) || view.currentPopup === this.name)
+                    {
+                        console.log(`${this.name} grab focus`)
+                        this.grabFocus()
+                    }
                     post.emit('pointer','text')
                 }
                 else if ((this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
@@ -233,7 +239,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var col, inside, row, start, steps, x, y, _204_25_, _205_25_, _206_25_, _210_20_
+        var col, inside, row, start, steps, x, y, _209_25_, _210_25_, _211_25_, _215_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -363,7 +369,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _281_20_, _285_21_, _290_24_
+        var _286_20_, _290_21_, _295_24_
 
         if (!this.hasFocus())
         {

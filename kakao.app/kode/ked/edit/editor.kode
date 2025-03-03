@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post
 use ../util   ◆ util
-use ../view   ◆ scroll gutter mapscr mapview
+use ../view   ◆ scroll gutter mapscr mapview view
 use           ◆ state draw complete
 
 function editor extends draw
@@ -153,6 +153,11 @@ function editor extends draw
             'move'
                 
                 if @cells.isInsideEvent event
+                    
+                    if not @hasFocus() and empty view.currentPopup or view.currentPopup == @name
+                        log "#{@name} grab focus"
+                        @grabFocus()
+                    
                     post.emit 'pointer' 'text'
                 else if @gutter?.cells.isInsideEvent event
                     post.emit 'pointer' 'vertical-text'

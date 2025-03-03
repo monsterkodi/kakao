@@ -2,9 +2,11 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var popups, view
 
-import events from "../../kxk/events.js"
-import kstr from "../../kxk/kstr.js"
-import post from "../../kxk/post.js"
+import kxk from "../../kxk.js"
+let events = kxk.events
+let kstr = kxk.kstr
+let post = kxk.post
+let kutil = kxk.kutil
 
 import cells from "./cells.js"
 
@@ -15,6 +17,7 @@ popups = ['quicky','menu']
 view = (function ()
 {
     _k_.extend(view, events)
+    view["currentPopup"] = null
     function view (screen, name, features)
     {
         this.screen = screen
@@ -27,6 +30,7 @@ view = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onViewShow"] = this["onViewShow"].bind(this)
+        this["onViewHide"] = this["onViewHide"].bind(this)
         this.cells = new cells(this.screen)
         this.color = {}
         this.feats = {}
@@ -52,14 +56,30 @@ view = (function ()
         {
             post.on('view.show',this.onViewShow)
         }
+        if (_k_.in(this.name,popups))
+        {
+            post.on('view.hide',this.onViewHide)
+        }
         return view.__super__.constructor.apply(this, arguments)
+    }
+
+    view.prototype["onViewHide"] = function (viewName)
+    {
+        if (viewName === view.currentPopup)
+        {
+            return view.currentPopup = null
+        }
     }
 
     view.prototype["onViewShow"] = function (viewName)
     {
-        if (viewName !== this.name && this.visible() && _k_.in(viewName,popups))
+        if (_k_.in(viewName,popups))
         {
-            return this.hide()
+            view.currentPopup = viewName
+            if (viewName !== this.name && this.visible())
+            {
+                return this.hide()
+            }
         }
     }
 
@@ -72,6 +92,7 @@ view = (function ()
 
     view.prototype["hide"] = function ()
     {
+        post.emit('view.hide',this.name)
         this.cells.rows = 0
         return {redraw:true}
     }
@@ -105,7 +126,7 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _59_27_
+        var _69_27_
 
         return (this.knob != null ? this.knob.onMouse(event) : undefined)
     }
@@ -127,7 +148,7 @@ view = (function ()
 
     view.prototype["draw"] = function ()
     {
-        var _71_18_
+        var _81_18_
 
         return (this.knob != null ? this.knob.draw() : undefined)
     }

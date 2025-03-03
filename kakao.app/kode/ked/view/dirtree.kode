@@ -49,11 +49,12 @@ function dirtree extends choices
                     'right'
                     
                         if not c.open ➜ @openDir(c redraw:true)
+                        else @selectNext()
                         ⮐ 
                         
                     'left'
                     
-                        @selectParent() if not c.open
+                        @selectOpenSiblingAboveOrParent() if not c.open
                         @closeDir(c redraw:true) if c.open
                         ⮐ 
                 
@@ -61,21 +62,11 @@ function dirtree extends choices
 
                 switch action
                     
-                    'right'
-                    'space'
-                        
-                        ⮐ post.emit 'quicky' c.path
-                        
+                    'right'  ➜ ⮐ @selectNext()
+                    'left'   ➜ ⮐ @selectParent()
+                    'space'  ➜ ⮐ post.emit 'quicky' c.path
                     'click'
-                    'return'
-                    
-                        ⮐ post.emit 'file.open' c.path
-                        
-                    'left'
-                    
-                        @selectParent()
-                        ⮐ 
-                        
+                    'return' ➜ ⮐ post.emit 'file.open' c.path
                     'hover'
                     
                         @grabFocus()
@@ -182,17 +173,27 @@ function dirtree extends choices
     
     set: items index=0-> 
         
+        oldTop = @state.s.view[1]
         super items 'tilde'
-        
+        @state.setView [0 oldTop]
         @state.selectLine index
         @state.setMainCursor 0 index
-        @state.setView [0 0]
+        
+    selectOpenSiblingAboveOrParent: ->
+    
+        index = @fuzzied.indexOf @current()
+        index -= 1
+        while index > 0 and @fuzzied[index].depth >= @current().depth and not @fuzzied[index].open
+            index -= 1
+        @state.selectLine index
+        @state.setMainCursor 0 index
         
     selectParent: ->
     
-        log 'selectParent' @current()
-        index = @items.indexOf @current()
+        index = @fuzzied.indexOf @current()
         index -= 1
+        while index > 0 and @fuzzied[index].depth >= @current().depth
+            index -= 1
         @state.selectLine index
         @state.setMainCursor 0 index
             

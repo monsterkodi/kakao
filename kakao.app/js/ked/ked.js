@@ -178,7 +178,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _183_22_
+        var segls, start, text, _185_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -192,6 +192,7 @@ ked [file]
             this.currentFile = slash.path(process.cwd(),p)
         }
         this.currentFile = await nfs.resolveSymlink(this.currentFile)
+        global.ked_editor_file = this.currentFile
         text = await nfs.readText(this.currentFile)
         if (text === undefined)
         {
@@ -382,7 +383,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _328_22_
+        var _330_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

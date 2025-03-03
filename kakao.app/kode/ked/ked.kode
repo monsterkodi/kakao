@@ -166,6 +166,8 @@ function KED
             @currentFile = slash.path process.cwd() p
 
         @currentFile =○ nfs.resolveSymlink @currentFile
+        
+        global.ked_editor_file = @currentFile
 
         text =○ nfs.readText @currentFile
         

@@ -331,8 +331,10 @@ function state
             view[1] = 0
 
         view[0] = max 0 x - @cells.cols + 1
-
+        
         ⮐ if view eql @s.view
+        
+        log "adjusted #{@s.view[1]} ▸ #{view[1]}" 
         
         @setView view
 
