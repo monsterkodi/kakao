@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ kstr slash post noon
 use ../../kxk ◆ nfs
-use ../util   ◆ prjcts walker theme util
+use ../util   ◆ prjcts walker theme icons util
 use ../edit   ◆ editor 
 use           ◆ inputchoice crumbs fscol
 
@@ -23,9 +23,6 @@ function quicky extends inputchoice
         @crumbs = new crumbs  @screen 'quicky_crumbs'
         @fscol  = new fscol   @screen 'quicky_fscol'
 
-        @dirOpenSymbol  = ''
-        @dirCloseSymbol = ''
-        
         @crumbs.padLast = true
 
         @choices.state.syntax.setRgxs rgxs
@@ -139,16 +136,16 @@ function quicky extends inputchoice
             p = slash.parse item.path
 
             w = 0
-            ⮐ w if item.tilde == @dirCloseSymbol + ' ..'
+            ⮐ w if item.tilde == icons.dir + ' ..'
             w += 10000 if item.type == 'file'
-            w += 1000  if item.tilde.startsWith @dirCloseSymbol + ' .'
+            w += 1000  if item.tilde.startsWith icons.dir + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']
             w += kstr.weight(p.file)
             w
         
         for item in items
             item.tilde = slash.relative item.path @currentDir
-            item.tilde = ((item.type == 'dir') ? (@dirCloseSymbol + ' ') : '  ') + item.tilde
+            item.tilde = ((item.type == 'dir') ? (icons.dir + ' ') : '  ') + item.tilde
 
         items.sort (a b) -> weight(a) - weight(b)
         
@@ -158,7 +155,7 @@ function quicky extends inputchoice
             type: 'dir'
             file: slash.name(parent)
             path: parent
-            tilde: parent ? (@dirCloseSymbol + ' ..') : ''
+            tilde: parent ? (icons.dir + ' ..') : ''
             
         select ?= items[1].path
                

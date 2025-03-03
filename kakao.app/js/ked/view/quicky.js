@@ -13,6 +13,7 @@ import nfs from "../../kxk/nfs.js"
 import prjcts from "../util/prjcts.js"
 import walker from "../util/walker.js"
 import theme from "../util/theme.js"
+import icons from "../util/icons.js"
 import util from "../util/util.js"
 
 import editor from "../edit/editor.js"
@@ -45,8 +46,6 @@ quicky = (function ()
         quicky.__super__.constructor.call(this,this.screen,'quicky',['mapview','scroll'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.fscol = new fscol(this.screen,'quicky_fscol')
-        this.dirOpenSymbol = ''
-        this.dirCloseSymbol = ''
         this.crumbs.padLast = true
         this.choices.state.syntax.setRgxs(rgxs)
         this.choices.on('select',this.preview)
@@ -152,7 +151,7 @@ quicky = (function ()
 
             p = slash.parse(item.path)
             w = 0
-            if (item.tilde === this.dirCloseSymbol + ' ..')
+            if (item.tilde === icons.dir + ' ..')
             {
                 return w
             }
@@ -160,7 +159,7 @@ quicky = (function ()
             {
                 w += 10000
             }
-            if (item.tilde.startsWith(this.dirCloseSymbol + ' .'))
+            if (item.tilde.startsWith(icons.dir + ' .'))
             {
                 w += 1000
             }
@@ -176,14 +175,14 @@ quicky = (function ()
         {
             item = list[_a_]
             item.tilde = slash.relative(item.path,this.currentDir)
-            item.tilde = (((item.type === 'dir') ? (this.dirCloseSymbol + ' ') : '  ')) + item.tilde
+            item.tilde = (((item.type === 'dir') ? (icons.dir + ' ') : '  ')) + item.tilde
         }
         items.sort(function (a, b)
         {
             return weight(a) - weight(b)
         })
         parent = slash.dir(this.currentDir)
-        items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? (this.dirCloseSymbol + ' ..') : '')})
+        items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? (icons.dir + ' ..') : '')})
         select = (select != null ? select : items[1].path)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 1
@@ -451,7 +450,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _410_62_
+        var upDir, _407_62_
 
         switch (action)
         {
@@ -469,7 +468,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_410_62_=choice.link) != null ? _410_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_407_62_=choice.link) != null ? _407_62_ : choice.path))
                     }
                 }
                 break

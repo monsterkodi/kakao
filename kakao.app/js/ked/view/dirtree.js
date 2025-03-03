@@ -55,11 +55,23 @@ dirtree = (function ()
                         }
                         else
                         {
-                            this.selectNext()
+                            this.selectNextKeepOffset()
                         }
                         return
 
                     case 'left':
+                        if (c.open)
+                        {
+                            this.closeDir(c,{redraw:true})
+                        }
+                        else
+                        {
+                            this.selectPrevKeepOffset()
+                        }
+                        return
+
+                    case 'delete':
+                    case 'esc':
                         if (!c.open)
                         {
                             this.selectOpenSiblingAboveOrParent()
@@ -76,10 +88,14 @@ dirtree = (function ()
             case 'file':
                 switch (action)
                 {
-                    case 'right':
-                        return this.selectNext()
-
                     case 'left':
+                        return this.selectPrevKeepOffset()
+
+                    case 'right':
+                        return this.selectNextKeepOffset()
+
+                    case 'delete':
+                    case 'esc':
                         return this.selectParent()
 
                     case 'space':
@@ -107,13 +123,13 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _95_31_
+        var depth, index, item, items, _106_31_
 
         opt = (opt != null ? opt : {})
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_95_31_=dirItem.depth) != null ? _95_31_ : 0)) + 1
+        depth = (((_106_31_=dirItem.depth) != null ? _106_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -202,6 +218,18 @@ dirtree = (function ()
         return this.state.setMainCursor(0,index)
     }
 
+    dirtree.prototype["selectPrevKeepOffset"] = function ()
+    {
+        this.selectPrev()
+        return this.state.setView([0,this.state.s.view[1] - 1])
+    }
+
+    dirtree.prototype["selectNextKeepOffset"] = function ()
+    {
+        this.selectNext()
+        return this.state.setView([0,this.state.s.view[1] + 1])
+    }
+
     dirtree.prototype["selectOpenSiblingAboveOrParent"] = function ()
     {
         var index
@@ -246,12 +274,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _225_51_
+        var _252_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_225_51_=icons[slash.ext(item.path)]) != null ? _225_51_ : icons.file)
+                return ((_252_51_=icons[slash.ext(item.path)]) != null ? _252_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

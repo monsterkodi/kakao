@@ -346,10 +346,11 @@ choices = (function ()
         }
         switch (event.combo)
         {
-            case 'right':
+            case 'esc':
             case 'left':
-            case 'delete':
+            case 'right':
             case 'space':
+            case 'delete':
             case 'return':
                 this.emitAction(event.combo,this.current(),event)
                 break

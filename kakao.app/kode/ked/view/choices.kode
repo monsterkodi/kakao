@@ -262,10 +262,11 @@ function choices extends editor
             
         switch event.combo
         
-            'right'  
+            'esc'
             'left' 
-            'delete'
+            'right'  
             'space'  
+            'delete'
             'return' ➜ @emitAction event.combo @current() event
             
             'up' 

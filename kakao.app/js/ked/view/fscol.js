@@ -9,6 +9,8 @@ let kstr = kxk.kstr
 
 import nfs from "../../kxk/nfs.js"
 
+import icons from "../util/icons.js"
+
 import choices from "./choices.js"
 
 import rgxs from './quicky.json' with { type : "json" }
@@ -20,8 +22,6 @@ fscol = (function ()
     {
         this["onMouse"] = this["onMouse"].bind(this)
         fscol.__super__.constructor.call(this,screen,name,['scrllr'])
-        this.dirOpenSymbol = ''
-        this.dirCloseSymbol = ''
         this.frontRoundOffset = 1
         this.state.syntax.setRgxs(rgxs)
     }
@@ -77,7 +77,7 @@ fscol = (function ()
         {
             item = list[_a_]
             item.tilde = slash.file(item.path)
-            item.tilde = (((item.type === 'dir') ? (this.dirCloseSymbol + ' ') : '  ')) + item.tilde
+            item.tilde = (((item.type === 'dir') ? (icons.dir + ' ') : '  ')) + item.tilde
         }
         weight = (function (item)
         {
@@ -85,7 +85,7 @@ fscol = (function ()
 
             p = slash.parse(item.path)
             w = 0
-            if (item.tilde === this.dirCloseSymbol + ' ..')
+            if (item.tilde === icons.dir + ' ..')
             {
                 return w
             }
@@ -93,7 +93,7 @@ fscol = (function ()
             {
                 w += 10000
             }
-            if (item.tilde.startsWith(this.dirCloseSymbol + ' .'))
+            if (item.tilde.startsWith(icons.dir + ' .'))
             {
                 w += 1000
             }

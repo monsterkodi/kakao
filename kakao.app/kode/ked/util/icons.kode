@@ -8,9 +8,9 @@
 
 icons = 
          
-    dir:        ''
-    dir_close:  ''
-    dir_open:   ''
+    dir:        ''
+    dir_close:  ''
+    dir_open:   ''
           
     gear:       '' 
     robot:      'ﮧ'

@@ -49,10 +49,17 @@ function dirtree extends choices
                     'right'
                     
                         if not c.open ➜ @openDir(c redraw:true)
-                        else @selectNext()
+                        else @selectNextKeepOffset()
+                        ⮐ 
+
+                    'left'
+                    
+                        if c.open ➜ @closeDir(c redraw:true)
+                        else @selectPrevKeepOffset()
                         ⮐ 
                         
-                    'left'
+                    'delete'
+                    'esc'
                     
                         @selectOpenSiblingAboveOrParent() if not c.open
                         @closeDir(c redraw:true) if c.open
@@ -62,8 +69,12 @@ function dirtree extends choices
 
                 switch action
                     
-                    'right'  ➜ ⮐ @selectNext()
-                    'left'   ➜ ⮐ @selectParent()
+                    'left'   ➜ ⮐ @selectPrevKeepOffset()
+                    'right'  ➜ ⮐ @selectNextKeepOffset()
+                    
+                    'delete'
+                    'esc'    ➜ ⮐ @selectParent()
+                    
                     'space'  ➜ ⮐ post.emit 'quicky' c.path
                     'click'
                     'return' ➜ ⮐ post.emit 'file.open' c.path
@@ -178,6 +189,22 @@ function dirtree extends choices
         @state.setView [0 oldTop]
         @state.selectLine index
         @state.setMainCursor 0 index
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    selectPrevKeepOffset: ->
+        
+        @selectPrev()
+        @state.setView [0 @state.s.view[1]-1]
+
+    selectNextKeepOffset: ->
+        
+        @selectNext()
+        @state.setView [0 @state.s.view[1]+1]
         
     selectOpenSiblingAboveOrParent: ->
     
