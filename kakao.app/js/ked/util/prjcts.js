@@ -49,7 +49,7 @@ class prjcts
                 }
             }
         }
-        lf('missing prj?',path)
+        console.log('missing prj?',path)
         return null
     }
 
@@ -59,7 +59,7 @@ class prjcts
 
         if (!(_k_.isStr(file)))
         {
-            lf('prjcts.index file not a str?',file)
+            console.log('prjcts.index file not a str?',file)
             return
         }
         if (file.startsWith('untitled-'))

@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post slash
 use ../util   ◆ color theme util
-use           ◆ view crumbs
+use           ◆ view crumbs dirtree
 
 function funcol extends view
 
@@ -16,12 +16,37 @@ function funcol extends view
         
         super screen name features
         
+        @crumbs  = new crumbs  screen "#{@name}_crumbs"
+        @dirtree = new dirtree screen "#{@name}_dirtree"        
+        
+        @dirtree.color.bg = theme.funcol
+        
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
+        
+        @setRoot process.cwd()
+        
+    setRoot: path ->
+    
+        path = slash.tilde path
+        @crumbs.set path
+        @dirtree.setRoot path
+        
+    layout: x y w h ->
+        
+        @crumbs.layout  x y   w   1
+        @dirtree.layout x y+1 w h-1
+        
+        super x y w h
         
     draw: ->
         
         ⮐ if @hidden()
+        
+        @cells.fill_rect 0 0 -1 -1 ' ' null theme.funcol
+        
+        @crumbs.draw()
+        @dirtree.draw()
     
         super()
         
@@ -34,7 +59,13 @@ function funcol extends view
     onFuncolResize: => @knob.doDrag = true
     onFuncolToggle: => 
         
-        post.emit 'view.size' @name [(@hidden() ? @knob.maxWidth : 0) 0]
+        post.emit 'view.size' @name [(@hidden() ? int(@knob.maxWidth/3) : 0) 0]
+        
+    onMouse: event =>
+        
+        ⮐ true if super event
+        ⮐ true if @crumbs.onMouse event
+        ⮐ true if @dirtree.onMouse event
     
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -45,6 +76,7 @@ function funcol extends view
     onWheel: event =>
         
         ⮐ if @hidden()
+        ⮐ true if @dirtree.onWheel event
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -55,5 +87,6 @@ function funcol extends view
     onKey: key event => 
         
         ⮐ if @hidden()
+        ⮐ true if @dirtree.onKey key event
 
 export funcol

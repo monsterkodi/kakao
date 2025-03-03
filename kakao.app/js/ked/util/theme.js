@@ -24,15 +24,19 @@ class theme
 
     static editor_highlight_ul = '#0a0'
 
-    static linenr = '#1a1a1a'
+    static funcol = '#161616'
 
-    static gutter_fully_selected = '#161616'
-
-    static gutter_selected = '#228'
+    static resize_column = '#222'
 
     static gutter = '#0a0a0a'
 
+    static gutter_fully_selected = '#161616'
+
+    static linenr = '#1a1a1a'
+
     static column = '#222'
+
+    static gutter_selected = '#228'
 
     static column_fg = '#000'
 

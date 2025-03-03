@@ -130,7 +130,7 @@ function mapscr extends mapview
         
         ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
         
-        # lf 'mapscr' @cells.cols @cells.rows 
+        # log 'mapscr' @cells.cols @cells.rows 
         # t.placeImageStretched @knobId @cells.x @cells.y 2 3 0 0
         
         super()

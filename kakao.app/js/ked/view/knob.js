@@ -18,7 +18,7 @@ knob = (function ()
         this["draw"] = this["draw"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this.framePos = 'right'
-        this.maxWidth = 42
+        this.maxWidth = 68
     }
 
     knob.prototype["resizePointer"] = function ()
@@ -117,14 +117,18 @@ knob = (function ()
     {
         var fg
 
-        fg = (this.hover ? theme.scroll_knob : theme.gutter)
+        fg = (this.hover ? theme.resize_column : theme.gutter)
         switch (this.framePos)
         {
             case 'top':
                 return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
 
             case 'right':
-                return this.cells.set(this.cells.cols - 1,parseInt(this.cells.rows / 2),'',fg)
+                if (!this.hover)
+                {
+                    return
+                }
+                return this.cells.fill_col(this.cells.cols - 1,0,this.cells.rows - 1,'|',fg,theme.gutter)
 
         }
 

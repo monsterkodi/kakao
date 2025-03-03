@@ -27,6 +27,7 @@ function fscol extends choices
         @listDir dir
         
     isCursorVisible: -> false
+    visible: -> @cells.rows > 0 
     
     onMouse: event =>
         

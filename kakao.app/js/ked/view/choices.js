@@ -30,6 +30,8 @@ choices = (function ()
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,features)
+        this.color.bg = theme.choices_bg
+        this.color.current = theme.choices_current
         this.items = []
         this.focusable = true
         this.rounded = true
@@ -50,9 +52,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _32_15_
+        var lines, _35_15_
 
-        this.items = ((_32_15_=this.items) != null ? _32_15_ : [])
+        this.items = ((_35_15_=this.items) != null ? _35_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -74,7 +76,7 @@ choices = (function ()
         {
             return choices.__super__.drawSelections.call(this,lines)
         }
-        bg = theme.choices_current
+        bg = this.color.current
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -108,8 +110,8 @@ choices = (function ()
             {
                 this.cells.set_bg(x - this.state.s.view[0],y,bg)
             }
-            this.cells.set(this.frontRoundOffset - this.state.s.view[0],y,'',bg,theme.choices_bg)
-            this.cells.set(x - this.state.s.view[0],y,'',bg,theme.choices_bg)
+            this.cells.set(this.frontRoundOffset - this.state.s.view[0],y,'',bg,this.color.bg)
+            this.cells.set(x - this.state.s.view[0],y,'',bg,this.color.bg)
         }
     }
 

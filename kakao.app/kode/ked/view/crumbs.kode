@@ -18,6 +18,8 @@ function crumbs extends view
         
         @color = bgl:'#000' bgr:'#000'
         
+    visible: -> 
+        
     layout: x y w h ->
     
         super x y w h  
@@ -115,7 +117,8 @@ function crumbs extends view
         @adjustText()
         
     show: path => @set slash.tilde(path); @cells.rows = 1
-    
+    visible: -> @cells.rows > 0 
+        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   

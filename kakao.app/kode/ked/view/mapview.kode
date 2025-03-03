@@ -23,7 +23,7 @@ function mapview extends view
         @rowOffset = 0
         @images = []
         
-        # lf 'mapview' @state.name @imgId.toString(2)
+        # log 'mapview' @state.name @imgId.toString(2)
         
         @pixelsPerRow = 4
         @pixelsPerCol = 2
@@ -63,12 +63,12 @@ function mapview extends view
     
         resized = x != @cells.x or y != @cells.y or w != @cells.cols or h != @cells.rows
         super x y w h
-        # lf "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{r3 @hidden()}"
+        # log "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{r3 @hidden()}"
         ⮐ if @hidden()
         if @redraw or resized
             @createImages() if @redraw
             delete @redraw
-            # lf "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{@redraw} #{resized}"
+            # log "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{@redraw} #{resized}"
             # setImmediate @drawImages
             @drawImages()
                 
@@ -80,7 +80,7 @@ function mapview extends view
         @syntax.setExt ext 
         @syntax.setSegls @segls
         
-        # lf "mapview.setSegls #{y6 @name}"
+        # log "mapview.setSegls #{y6 @name}"
         @redraw = true        
     
     # 000  00     00   0000000    0000000   00000000   0000000  
@@ -101,7 +101,7 @@ function mapview extends view
         w = @cells.cols * t.cellsz[0]
         bytes = w*3
         
-        # lf  "mapview.createImages #{b7 @name} #{@cells.cols} #{@cells.rows} #{bytes}"  
+        # log  "mapview.createImages #{b7 @name} #{@cells.cols} #{@cells.rows} #{bytes}"  
         ⮐ if bytes <= 0
         
         lines  = @getSegls()
@@ -149,7 +149,7 @@ function mapview extends view
                 
         # prof.end @state.name+'.map'
             
-        # lf "mapview.createImages #{b7 @name} #{b6 @images.length} #{lines.length} #{@cells.rows}-#{@rowOffset}*#{t.cellsz[1]}/#{y} = #{(@cells.rows-@rowOffset) * t.cellsz[1] / @pixelsPerRow} #{y}"  
+        # log "mapview.createImages #{b7 @name} #{b6 @images.length} #{lines.length} #{@cells.rows}-#{@rowOffset}*#{t.cellsz[1]}/#{y} = #{(@cells.rows-@rowOffset) * t.cellsz[1] / @pixelsPerRow} #{y}"  
                         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -163,7 +163,7 @@ function mapview extends view
         
         ⮐ if empty t.pixels or @hidden()
         
-        # lf "mapview.drawImages #{r5 @name} #{b8 @images.length}"  
+        # log "mapview.drawImages #{r5 @name} #{b8 @images.length}"  
         for id,y in @images
             # t.placeImage id @cells.x @cells.y 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
             t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow

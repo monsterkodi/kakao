@@ -32,7 +32,7 @@ class prjcts
             for prjPath,project of prjcts.projects
                 if path.startsWith prjPath
                     return prjPath
-        lf 'missing prj?' path
+        log 'missing prj?' path
         null
         
     # 000  000   000  0000000    00000000  000   000  
@@ -44,14 +44,14 @@ class prjcts
     @index: file ○=>
         
         if not file is str
-            lf 'prjcts.index file not a str?' file
+            log 'prjcts.index file not a str?' file
             return
             
         ⮐ if file.startsWith 'untitled-'
         
         file = slash.absolute file process.cwd()
         
-        # lf 'prjcts.index ●' file
+        # log 'prjcts.index ●' file
         
         exists =○ nfs.exists file
         
@@ -59,13 +59,13 @@ class prjcts
         
         prjPath =○ nfs.prj file
         
-        # lf 'prjcts.index ▪' prjPath
+        # log 'prjcts.index ▪' prjPath
         
         prjPath = null if prjPath == '/'
         
         prjPath ?= slash.dir file
         
-        # lf 'prjcts.index ▸' prjPath
+        # log 'prjcts.index ▸' prjPath
         
         if @indexing
             ⮐ if @indexing == prjPath
@@ -84,7 +84,7 @@ class prjcts
             maxFiles:    10000
             file:        (f) => post.emit 'prjcts.file.indexed' f
                   
-        # lf 'start walker'
+        # log 'start walker'
         result =○ walk.start()
         
         if result
@@ -92,14 +92,14 @@ class prjcts
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            # lf 'prjcts indexed' prjPath @projects
+            # log 'prjcts indexed' prjPath @projects
 
             post.emit 'prjcts.project.indexed' prjPath
         
         delete @indexing
         
         if valid @queue
-            # lf 'dequeue' @queue[0]
+            # log 'dequeue' @queue[0]
             ○ @index @queue.shift()
             
 export prjcts

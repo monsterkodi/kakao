@@ -455,7 +455,7 @@ TTIO = (function ()
                 return this.keyEventForCombo('f4')
 
             default:
-                lf('esc',esc.charCodeAt(0),esc.length)
+                console.log('esc',esc.charCodeAt(0),esc.length)
         }
 
         if (event = this.keyEventForChar(esc))
@@ -654,11 +654,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _432_23_
+        var diff, _426_23_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_432_23_=this.lastClick) != null ? _432_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_426_23_=this.lastClick) != null ? _426_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -729,7 +729,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _503_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _497_23_
 
         if ((this.pasteBuffer != null))
         {

@@ -81,8 +81,6 @@ function TTIO extends events
     
     placeImage: id x y px py sx sy ->
         
-        # lf '.'
-        
         for placement in 0...sy
             
             pl = py + placement
@@ -298,7 +296,7 @@ function TTIO extends events
             'OQ' ➜ ⮐ @keyEventForCombo('f2')
             'OR' ➜ ⮐ @keyEventForCombo('f3')
             'OS' ➜ ⮐ @keyEventForCombo('f4')   
-                 ➜ lf 'esc' esc.charCodeAt(0) esc.length
+                 ➜ log 'esc' esc.charCodeAt(0) esc.length
             
         ⮐  event if event = @keyEventForChar esc
             
@@ -313,7 +311,7 @@ function TTIO extends events
     
     parseRaw: raw =>
         
-        # lf '---- raw' '0x'+Number(raw[0]).toString(16) #'a'.charCodeAt(0)
+        # log '---- raw' '0x'+Number(raw[0]).toString(16) #'a'.charCodeAt(0)
         
         if raw.length == 1
                                 
@@ -335,8 +333,6 @@ function TTIO extends events
                 raw[0] -= 128
                 ⮐ parseEsc raw.toString 'utf8'
                 
-        # lf '---! raw' raw
-        
     keyEventForChar: char =>
         
         if char.length
@@ -395,8 +391,6 @@ function TTIO extends events
 
         if csi.endsWith 'M'
             
-            # lf 'mouse' csi (code & 0b11100000) (code & 0b11)
-
             event.type = switch code & 0b11100000
                 32  ➜ ((code & 0b11) == 3) ? 'move' : 'drag'
                 64  ➜ 'wheel'

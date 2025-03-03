@@ -35,7 +35,6 @@ function text
                             ➜ l.push lines[y]
          
         s = kseg.str l
-        # lf 'textForLineRange' rng s
         s
 
     @seglsForLineRange: lines rng ->
@@ -56,7 +55,6 @@ function text
                             
             l.push '\n' if y < rng[3]
         
-        # lf 'seglsForLineRange' rng l
         l
         
     @segsForLineSpan: lines span ->

@@ -139,7 +139,7 @@ quicky = (function ()
         }
         catch (err)
         {
-            lf('list error',err)
+            console.log('list error',err)
             return
         }
         this.currentDir = dir
@@ -449,7 +449,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _409_62_
+        var upDir, _407_62_
 
         switch (action)
         {
@@ -467,7 +467,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_409_62_=choice.link) != null ? _409_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_407_62_=choice.link) != null ? _407_62_ : choice.path))
                     }
                 }
                 break

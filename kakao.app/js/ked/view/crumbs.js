@@ -23,6 +23,9 @@ crumbs = (function ()
         this.color = {bgl:'#000',bgr:'#000'}
     }
 
+    crumbs.prototype["visible"] = function ()
+    {}
+
     crumbs.prototype["layout"] = function (x, y, w, h)
     {
         crumbs.__super__.layout.call(this,x,y,w,h)
@@ -103,13 +106,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _92_14_
+        var padding, _94_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_92_14_=this.path) != null ? _92_14_ : '')
+        this.path = ((_94_14_=this.path) != null ? _94_14_ : '')
         this.split = slash.split(this.path)
         if (!(_k_.in(this.split[0],'~/')))
         {
@@ -139,9 +142,14 @@ crumbs = (function ()
         return this.cells.rows = 1
     }
 
+    crumbs.prototype["visible"] = function ()
+    {
+        return this.cells.rows > 0
+    }
+
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _132_26_
+        var col, index, path, row, si, _135_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 

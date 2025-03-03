@@ -27,7 +27,7 @@ class walker
         @cfg.ignoreExt   ?= ['asar']
         @cfg.includeExt  ?= walker.sourceFileExtensions # this should be set by prjcts instead
         
-        # lf 'walker' @cfg walker.sourceFileExtensions
+        # log 'walker' @cfg walker.sourceFileExtensions
         
     ignore: p -> #lf 'ignore' p; true
       
@@ -41,7 +41,7 @@ class walker
         
         dir = @cfg.root
         
-        # lf 'walker.start' dir
+        # log 'walker.start' dir
         
         @running = true
         
@@ -51,13 +51,13 @@ class walker
             
             listDir = toWalk.shift()
             
-            # lf 'walk dir' listDir
+            # log 'walk dir' listDir
         
             items = ○ nfs.list listDir recursive:false
-            # lf 'walker items' listDir items
+            # log 'walker items' listDir items
             
             for item in items
-                # lf 'item' item
+                # log 'item' item
                 file = item.file
                 ext = slash.ext file
                 p = item.path
@@ -92,7 +92,7 @@ class walker
                     
         @running = false
         @cfg.done? @
-        # lf 'walker done' #@cfg
+        # log 'walker done' #@cfg
         @cfg
                 
     stop: ->

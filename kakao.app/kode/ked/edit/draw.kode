@@ -16,6 +16,9 @@ function draw extends view
         
         super screen name features
         
+        @color = 
+            bg:theme[@name] ? theme.editor
+        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -35,7 +38,8 @@ function draw extends view
         lines      = @state.allLines()
         mainCursor = @state.mainCursor()
         
-        bg = theme[@name] ? theme.editor
+        # bg = theme[@name] ? theme.editor
+        bg = @color.bg
         emptyColor = theme[@name + '_empty'] ? theme.editor_empty
         
         for row in 0...@cells.rows

@@ -14,7 +14,7 @@ function knob
     @: @cells @name ->
         
         @framePos = 'right'
-        @maxWidth = 42
+        @maxWidth = 68
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -75,12 +75,13 @@ function knob
         changed
                 
     draw: =>
-
-        fg = @hover ? theme.scroll_knob : theme.gutter # theme.editor
+        
+        fg = @hover ? theme.resize_column : theme.gutter # theme.editor
         
         switch @framePos
             'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
-            'right' ➜ @cells.set @cells.cols-1 int(@cells.rows/2) '' fg
-            
+            'right'
+                ⮐ if not @hover
+                @cells.fill_col @cells.cols-1 0 @cells.rows-1 '|' fg theme.gutter
 
 export knob

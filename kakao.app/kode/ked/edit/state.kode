@@ -57,7 +57,7 @@ function state
 
     set: item arg =>
 
-        # lf item noon(arg) if item=='selections'
+        # log item noon(arg) if item=='selections'
         @s = @s.set item arg
         @swapState()
         @
@@ -121,7 +121,7 @@ function state
         
         if empty lines ➜ lines = ['']
             
-        # if not lines[0] is str ➜ lf 'state.setLines' @name lines
+        # if not lines[0] is str ➜ log 'state.setLines' @name lines
             
         @setSegls kseg.segls(lines)
         
@@ -129,7 +129,7 @@ function state
         
         if empty @segls ➜ @segls = [[]]
         
-        # lf 'state.setSegls' @name @segls
+        # log 'state.setSegls' @name @segls
             
         @syntax.setSegls @segls
         
@@ -211,11 +211,11 @@ function state
     #  0000000   0000000      000
 
     cut: =>
-        # lf 'state.cut'
+        # log 'state.cut'
         @copy()
         if empty @s.selections
             @selectCursorLines()
-            # lf 'state.cut' @allSelections()
+            # log 'state.cut' @allSelections()
         @deleteSelection()
 
     #  0000000   0000000   00000000   000   000

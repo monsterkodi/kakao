@@ -169,7 +169,7 @@ session = (function ()
         if (!_k_.empty(file))
         {
             recent = await noon.read(file)
-            lf(`loadAndMerge ${_k_.m7(this.name)} ${_k_.g5(slash.name(file))}`)
+            console.log(`loadAndMerge ${_k_.m7(this.name)} ${_k_.g5(slash.name(file))}`)
             if (!_k_.empty(recent.files))
             {
                 if (!_k_.empty(recent.files.recent))

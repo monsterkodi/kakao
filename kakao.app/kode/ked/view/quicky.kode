@@ -99,8 +99,6 @@ function quicky extends inputchoice
             @cells.set      x   @cells.rows-1 '┴' fg bg
             
             y = @choices.currentIndex()+2
-            # @cells.fill_row y @choices.current().tilde.length+3 x-1 '─' fg bg
-            # @cells.set      x y '┤' fg bg
             @cells.fill_row y @choices.current().tilde.length+2 x-2 ' ' bg fg
             @cells.set      x-1 y '' fg bg 
             @cells.set      x y '┤' fg bg
@@ -127,7 +125,7 @@ function quicky extends inputchoice
         try
             items =○ nfs.list dir recursive:false
         catch err
-            lf 'list error' err
+            log 'list error' err
             ⮐ 
 
         @currentDir = dir

@@ -29,7 +29,7 @@ function syntax
                 @diss.push dss
         else
             @diss = kulur.dissect segls @ext
-            # lf '● syntax.setSegls' noon(@diss)
+            # log '● syntax.setSegls' noon(@diss)
             
     getClass: x y =>
         

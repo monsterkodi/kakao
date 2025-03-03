@@ -35,6 +35,11 @@ fscol = (function ()
         return false
     }
 
+    fscol.prototype["visible"] = function ()
+    {
+        return this.cells.rows > 0
+    }
+
     fscol.prototype["onMouse"] = function (event)
     {
         var col, row

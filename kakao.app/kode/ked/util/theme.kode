@@ -27,11 +27,14 @@ class theme
     @editor_highlight:      '#030'     
     @editor_highlight_ul:   '#0a0'     
     
-    @linenr:                '#1a1a1a'  
-    @gutter_fully_selected: '#161616'  
-    @gutter_selected:       '#228'     
+    @funcol:                '#161616'  
+    @resize_column:         '#222'     
+    
     @gutter:                '#0a0a0a'  
+    @gutter_fully_selected: '#161616'  
+    @linenr:                '#1a1a1a'  
     @column:                '#222'     
+    @gutter_selected:       '#228'     
     @column_fg:             '#000'  
 
     @status_time:           '#222'     

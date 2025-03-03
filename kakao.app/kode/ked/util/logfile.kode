@@ -14,7 +14,7 @@ function logfile
         
         @stream = fs.createWriteStream 'ked.log' flags:'w' autoClose:false
                 
-        global.lf = args... => 
+        console.log = args... => 
             
             if args.length and args[0] is str
                 if args.length > 2
@@ -26,7 +26,10 @@ function logfile
             else        
                 @write "▾\n"+noon(args)
                 
-        console.log = global.lf
+        console.error = args... => 
+            
+            @write r5(args.map((a) -> noon(a)).join(' '))
+            # log r5(args.map((a) -> noon(a)).join(' '))
         
     write: txt ->
         

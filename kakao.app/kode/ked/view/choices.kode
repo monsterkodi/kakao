@@ -16,6 +16,9 @@ function choices extends editor
 
         super screen name features
         
+        @color.bg      = theme.choices_bg
+        @color.current = theme.choices_current
+        
         @items = []
         @focusable = true
         @rounded   = true
@@ -51,7 +54,7 @@ function choices extends editor
         
         ⮐ super lines if not @rounded
         
-        bg = theme.choices_current
+        bg = @color.current
         
         if not @cells.screen.t.hasFocus
             bg = color.darken bg
@@ -79,8 +82,8 @@ function choices extends editor
             for x in xs...xe
                 @cells.set_bg x-@state.s.view[0] y bg
 
-            @cells.set @frontRoundOffset-@state.s.view[0] y '' bg theme.choices_bg
-            @cells.set x-@state.s.view[0] y '' bg theme.choices_bg
+            @cells.set @frontRoundOffset-@state.s.view[0] y '' bg @color.bg
+            @cells.set x-@state.s.view[0] y '' bg @color.bg
 
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
