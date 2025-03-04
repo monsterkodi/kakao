@@ -423,7 +423,6 @@ state = (function ()
         {
             return
         }
-        console.log(`adjusted ${this.s.view[1]} ▸ ${view[1]}`)
         return this.setView(view)
     }
 

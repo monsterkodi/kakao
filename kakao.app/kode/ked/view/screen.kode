@@ -47,7 +47,13 @@ function screen
 
         if 0 <= x < @cols and 0 <= y < @rows
             @c[y][x].char = char
-        
+
+    set_ch_fg: x y char fg =>
+
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].char = char
+            @c[y][x].fg   = fg
+            
     set_bg: x y bg =>
         
         if 0 <= x < @cols and 0 <= y < @rows
@@ -76,13 +82,13 @@ function screen
             ⮐ @c[y][x].char
         ''
 
-    get_fg: x y fg =>
+    get_fg: x y =>
         
         if 0 <= x < @cols and 0 <= y < @rows
             ⮐ @c[y][x].fg
         []
 
-    get_bg: x y fg =>
+    get_bg: x y =>
         
         if 0 <= x < @cols and 0 <= y < @rows
             ⮐ @c[y][x].bg

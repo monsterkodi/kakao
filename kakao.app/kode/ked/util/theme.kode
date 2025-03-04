@@ -69,7 +69,10 @@ class theme
     @quicky_crumbs_cursor_empty: '#222'
     
     @choices_bg:            '#000'
-    @choices_current:       '#222'
+    @choices_current:       '#228'     
+
+    @dirtree_current_blur:  '#222'     
+    @dirtree_open_file:     '#1a1a1a'  
     
     @editor_complete_choices:                '#006'
     @editor_complete_choices_empty:          '#006'

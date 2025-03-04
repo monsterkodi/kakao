@@ -1,9 +1,10 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 var dirtree
 
 import kxk from "../../kxk.js"
 let kutil = kxk.kutil
+let kseg = kxk.kseg
 let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
@@ -11,6 +12,7 @@ let noon = kxk.noon
 
 import nfs from "../../kxk/nfs.js"
 
+import theme from "../util/theme.js"
 import prjcts from "../util/prjcts.js"
 import icons from "../util/icons.js"
 import util from "../util/util.js"
@@ -30,6 +32,49 @@ dirtree = (function ()
         dirtree.__super__.constructor.call(this,screen,name,features)
         this.state.syntax.setRgxs(rgxs)
         this.frontRoundOffset = 0
+    }
+
+    dirtree.prototype["drawSelections"] = function ()
+    {
+        var bg, current, li, x, xs, y
+
+        current = this.color.current
+        this.color.current = (this.hasFocus() ? current : theme.dirtree_current_blur)
+        if (li = this.indexOfOpenFile())
+        {
+            bg = theme.gutter
+            y = li - this.state.s.view[1]
+            if (y < this.cells.rows && li < this.state.s.lines.length)
+            {
+                xs = kseg.headCount(this.state.s.lines[li],' ')
+                this.cells.set(xs - 1 - this.state.s.view[0],y,'',bg,this.color.bg)
+                for (var _a_ = x = xs, _b_ = this.cells.cols; (_a_ <= _b_ ? x < this.cells.cols : x > this.cells.cols); (_a_ <= _b_ ? ++x : --x))
+                {
+                    this.cells.set_bg(x - this.state.s.view[0],y,bg)
+                }
+            }
+        }
+        dirtree.__super__.drawSelections.call(this)
+        return this.color.current = current
+    }
+
+    dirtree.prototype["indexOfOpenFile"] = function ()
+    {
+        var idx, item, _49_44_
+
+        if (!(global.ked_editor_file != null))
+        {
+            return
+        }
+        var list = _k_.list(this.fuzzied)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (item.path === ked_editor_file)
+            {
+                return idx
+            }
+        }
     }
 
     dirtree.prototype["emitAction"] = function (action, arg, event)
@@ -123,13 +168,13 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _106_31_
+        var depth, index, item, items, _134_31_
 
         opt = (opt != null ? opt : {})
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_106_31_=dirItem.depth) != null ? _106_31_ : 0)) + 1
+        depth = (((_134_31_=dirItem.depth) != null ? _134_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -274,12 +319,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _252_51_
+        var _280_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_252_51_=icons[slash.ext(item.path)]) != null ? _252_51_ : icons.file)
+                return ((_280_51_=icons[slash.ext(item.path)]) != null ? _280_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

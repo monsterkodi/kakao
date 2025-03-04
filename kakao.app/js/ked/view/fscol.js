@@ -22,7 +22,7 @@ fscol = (function ()
     {
         this["onMouse"] = this["onMouse"].bind(this)
         fscol.__super__.constructor.call(this,screen,name,['scrllr'])
-        this.frontRoundOffset = 1
+        this.frontRoundOffset = 2
         this.state.syntax.setRgxs(rgxs)
     }
 

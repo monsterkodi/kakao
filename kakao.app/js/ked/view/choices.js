@@ -66,7 +66,7 @@ choices = (function ()
 
     choices.prototype["drawSelections"] = function ()
     {
-        var bg, li, sel, x, xs, y
+        var fg, li, sel, x, xs, y
 
         if (_k_.empty(this.state.s.selections))
         {
@@ -76,10 +76,10 @@ choices = (function ()
         {
             return choices.__super__.drawSelections.call(this)
         }
-        bg = this.color.current
+        fg = this.color.current
         if (!this.cells.screen.t.hasFocus)
         {
-            bg = color.darken(bg)
+            fg = color.darken(fg)
         }
         sel = this.state.s.selections[0]
         li = sel[1]
@@ -88,14 +88,17 @@ choices = (function ()
         {
             return
         }
-        xs = _k_.max(0,sel[0] + this.frontRoundOffset)
-        xs = _k_.max(xs,kseg.headCount(this.state.s.lines[li],' '))
+        xs = _k_.max(sel[0],kseg.headCount(this.state.s.lines[li],' '))
+        if (xs === 0)
+        {
+            xs += this.frontRoundOffset
+        }
+        this.cells.set_ch_fg(xs - 1 - this.state.s.view[0],y,'',fg)
         for (var _a_ = x = xs, _b_ = sel[2]; (_a_ <= _b_ ? x < sel[2] : x > sel[2]); (_a_ <= _b_ ? ++x : --x))
         {
-            this.cells.set_bg(x - this.state.s.view[0],y,bg)
+            this.cells.set_bg(x - this.state.s.view[0],y,fg)
         }
-        this.cells.set(xs - 1 + this.frontRoundOffset - this.state.s.view[0],y,'',bg,this.color.bg)
-        return this.cells.set(x - this.state.s.view[0],y,'',bg,this.color.bg)
+        return this.cells.set_ch_fg(x - this.state.s.view[0],y,'',fg)
     }
 
     choices.prototype["numChoices"] = function ()
@@ -146,7 +149,7 @@ choices = (function ()
         {
             return
         }
-        this.state.setSelections([util.rangeOfLine(this.state.allLines(),row)])
+        this.state.setSelections([util.rangeOfLine(this.state.s.lines,row)])
         return this.emit('select',this.choiceAtRow(row))
     }
 
@@ -290,6 +293,7 @@ choices = (function ()
 
     choices.prototype["unhover"] = function ()
     {
+        console.log(`${this.name} unhover`)
         this.hoverIndex = -1
         this.state.deselect()
         post.emit('pointer','default')

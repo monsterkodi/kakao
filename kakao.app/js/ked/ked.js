@@ -26,8 +26,7 @@ import quicky from "./view/quicky.js"
 import menu from "./view/menu.js"
 import finder from "./view/finder.js"
 import funcol from "./view/funcol.js"
-
-import editor from "./edit/editor.js"
+import fileeditor from "./view/fileeditor.js"
 
 global.int = parseInt
 
@@ -72,7 +71,7 @@ ked [file]
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
-        this.editor = new editor(this.screen,'editor',['scroll','gutter','mapscr','complete'])
+        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
@@ -130,7 +129,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _115_10_
+        var _114_10_
 
         await this.session.save()
         console.log(_k_.w2(`┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`))
@@ -152,7 +151,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _140_22_
+        var _139_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -178,7 +177,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _185_22_
+        var segls, start, text, _184_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -383,7 +382,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _330_22_
+        var _329_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

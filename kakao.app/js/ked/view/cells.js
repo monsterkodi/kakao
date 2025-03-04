@@ -28,10 +28,13 @@ cells = (function ()
         this["isInsideScreen"] = this["isInsideScreen"].bind(this)
         this["isOutsidePos"] = this["isOutsidePos"].bind(this)
         this["isInsidePos"] = this["isInsidePos"].bind(this)
+        this["get_fg"] = this["get_fg"].bind(this)
+        this["get_bg"] = this["get_bg"].bind(this)
         this["get_char"] = this["get_char"].bind(this)
         this["set_fg_bg"] = this["set_fg_bg"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
+        this["set_ch_fg"] = this["set_ch_fg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
         this["set_unsafe"] = this["set_unsafe"].bind(this)
         this["set"] = this["set"].bind(this)
@@ -101,6 +104,14 @@ cells = (function ()
         }
     }
 
+    cells.prototype["set_ch_fg"] = function (x, y, char, fg)
+    {
+        if (this.inside(x,y))
+        {
+            return this.screen.set_ch_fg(this.wx(x),this.wy(y),char,fg)
+        }
+    }
+
     cells.prototype["set_bg"] = function (x, y, bg)
     {
         if (this.inside(x,y))
@@ -128,6 +139,16 @@ cells = (function ()
     cells.prototype["get_char"] = function (x, y)
     {
         return this.screen.get_char(this.wx(x),this.wy(y))
+    }
+
+    cells.prototype["get_bg"] = function (x, y)
+    {
+        return this.screen.get_bg(this.wx(x),this.wy(y))
+    }
+
+    cells.prototype["get_fg"] = function (x, y)
+    {
+        return this.screen.get_fg(this.wx(x),this.wy(y))
     }
 
     cells.prototype["isInsidePos"] = function (x, y)
@@ -323,7 +344,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _146_16_, _154_20_, _155_20_
+        var bg, fg, x, y, _149_16_, _157_20_, _158_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -342,9 +363,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_146_16_=opt.pad) != null ? _146_16_ : [1,0])
-        fg = ((_154_20_=opt.fg) != null ? _154_20_ : '#888888')
-        bg = ((_155_20_=opt.bg) != null ? _155_20_ : null)
+        opt.pad = ((_149_16_=opt.pad) != null ? _149_16_ : [1,0])
+        fg = ((_157_20_=opt.fg) != null ? _157_20_ : '#888888')
+        bg = ((_158_20_=opt.bg) != null ? _158_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

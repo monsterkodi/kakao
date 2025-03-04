@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post
 use ../util   ◆ util
-use ../view   ◆ scroll gutter mapscr mapview view
+use ../view   ◆ scroll mapview view
 use           ◆ state draw complete
 
 function editor extends draw
@@ -20,14 +20,9 @@ function editor extends draw
         @state = new state @cells @name
         
         post.on 'focus' @onFocus
-        
-        if @name == 'editor'
-            post.on 'finder.apply' @onFinderApply 
-        
+                
         if @feats.scrllr   ➜ @scroll   = new scroll   @screen @state 'right'
         if @feats.scroll   ➜ @scroll   = new scroll   @screen @state 'left'
-        if @feats.gutter   ➜ @gutter   = new gutter   @screen @state
-        if @feats.mapscr   ➜ @mapscr   = new mapscr   @screen @state; @mapscr.show()
         if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state
         if @feats.complete ➜ @complete = new complete @
                 
@@ -78,90 +73,7 @@ function editor extends draw
         ⮐ true if @scroll?.onMouse   event
         ⮐ true if @complete?.onMouse event
         ⮐ true if super              event
-        
-        [col row] = @cells.posForEvent event
-        
-        switch event.type
-            
-            'press'
-            
-                if @cells.isOutsideEvent event
-                    ⮐ if not @gutter?.cells.isInsideEvent event
                         
-                if event.count > 1
-
-                    @state.deselect() if not event.shift
-                    
-                    x = col + @state.s.view[0]
-                    y = row + @state.s.view[1]
-                    
-                    if event.count == 2
-                        if event.alt
-                            @state.selectChunk x y
-                        else
-                            @state.selectWord x y
-                    else
-                        @state.selectLine y
-                        
-                    @dragStart = copy @state.s.selections[0]
-                    
-                    ⮐ true
-                    
-                else
-                    
-                    x = col + @state.s.view[0]
-                    y = row + @state.s.view[1]
-                    
-                    @dragStart = [x y x]
-                                        
-                    @state.deselect() if not event.shift
-                    @state.clearCursors() if not event.alt
-
-                    if event.alt
-                        @state.addCursor x y
-                    else
-                        if event.shift and @state.s.cursors.length == 1
-                            @state.setMainCursorAndSelect x y
-                        else
-                            @state.setMainCursor x y
-                    
-                    @grabFocus()
-                    
-                    ⮐ true
-                    
-            'drag'
-            
-                if @dragStart
-                    
-                    x = col + @state.s.view[0]
-                    y = row + @state.s.view[1]
-                    
-                    start = [@dragStart[0] @dragStart[1]]
-                    
-                    if y < @dragStart[1] 
-                        start = [@dragStart[2] @dragStart[1]]
-                    
-                    if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd util.rangeFromStartToEnd(start [x y])
-                    else             @state.select start [x y]
-                        
-                    ⮐ true
-                    
-            'release'
-            
-                delete @dragStart
-                
-            'move'
-                
-                if @cells.isInsideEvent event
-                    
-                    if not @hasFocus() and empty view.currentPopup or view.currentPopup == @name
-                        log "#{@name} grab focus"
-                        @grabFocus()
-                    
-                    post.emit 'pointer' 'text'
-                else if @gutter?.cells.isInsideEvent event
-                    post.emit 'pointer' 'vertical-text'
-                
         false
                 
     # 000   000  000   000  00000000  00000000  000      
@@ -173,39 +85,8 @@ function editor extends draw
     onWheel: event =>
         
         ⮐ if event.cell[1] >= @cells.y + @cells.rows
-        
-        if @name == 'editor' # this sucks! consider a separate main editor class
-        
-            steps  = 1 # should be 4 if not using a mouse pad -> config
-            steps *= 2 if event.shift
-            steps *= 2 if event.ctrl
-            steps *= 2 if event.alt
-            
-            if @dragStart
                 
-                [x y] = @state.mainCursor()
-                
-                switch event.dir
-                    'up'    ➜ y -= steps    
-                    'down'  ➜ y += steps    
-                    'left'  ➜ x -= 1    
-                    'right' ➜ x += 1    
-                    
-                y = clamp 0 @state.s.lines.length-1 y
-                x = clamp 0 @state.s.lines[y].length-1 x
-                
-                start = [@dragStart[0] @dragStart[1]]
-                
-                if y < @dragStart[1] 
-                    start = [@dragStart[2] @dragStart[1]]
-                
-                if @state.select start [x y]
-                    @redraw()
-                ⮐ 
-        
-        [col row] = @cells.posForEvent event
-        
-        inside = @cells.isInsideEvent event
+        inside = @cells.isInsideEvent(event)
         inside |= @scroll?.cells.isInsideEvent(event)
         inside |= @gutter?.cells.isInsideEvent(event)
         inside |= @mapscr?.cells.isInsideEvent(event)
@@ -213,10 +94,10 @@ function editor extends draw
         ⮐ if not inside
 
         if @complete?
-            ⮐ true if @complete.onWheel event
-        
+            ⮐ true if @complete.onWheel(event)
+
         switch event.dir
-            'up' 'down' 'left' 'right' ➜ @state.scrollView event.dir steps
+            'up' 'down' 'left' 'right' ➜ @state.scrollView(event.dir)
             
         true
             
@@ -266,13 +147,7 @@ function editor extends draw
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
     redraw: => post.emit 'redraw'
-    
-    onFinderApply: text =>
-    
-        @state.highlightText text
-        @state.moveCursorToNextHighlight()
-        @grabFocus()
-                
+                    
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

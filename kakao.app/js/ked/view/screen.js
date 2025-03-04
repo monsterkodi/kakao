@@ -20,6 +20,7 @@ screen = (function ()
         this["set_fg_bg"] = this["set_fg_bg"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
+        this["set_ch_fg"] = this["set_ch_fg"].bind(this)
         this["set_char"] = this["set_char"].bind(this)
         this["set"] = this["set"].bind(this)
         this["add"] = this["add"].bind(this)
@@ -70,6 +71,15 @@ screen = (function ()
         }
     }
 
+    screen.prototype["set_ch_fg"] = function (x, y, char, fg)
+    {
+        if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
+        {
+            this.c[y][x].char = char
+            return this.c[y][x].fg = fg
+        }
+    }
+
     screen.prototype["set_bg"] = function (x, y, bg)
     {
         if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
@@ -104,7 +114,7 @@ screen = (function ()
         return ''
     }
 
-    screen.prototype["get_fg"] = function (x, y, fg)
+    screen.prototype["get_fg"] = function (x, y)
     {
         if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {
@@ -113,7 +123,7 @@ screen = (function ()
         return []
     }
 
-    screen.prototype["get_bg"] = function (x, y, fg)
+    screen.prototype["get_bg"] = function (x, y)
     {
         if ((0 <= x && x < this.cols) && (0 <= y && y < this.rows))
         {

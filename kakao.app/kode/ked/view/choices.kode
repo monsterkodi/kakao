@@ -55,9 +55,9 @@ function choices extends editor
         
         ⮐ super() if not @roundedSelections
         
-        bg = @color.current
+        fg = @color.current
         if not @cells.screen.t.hasFocus
-            bg = color.darken bg
+            fg = color.darken fg
         
         sel = @state.s.selections[0]
                 
@@ -66,14 +66,15 @@ function choices extends editor
         
         ⮐ if y >= @cells.rows
         
-        xs = max 0 sel[0]+@frontRoundOffset
-        xs = max xs kseg.headCount(@state.s.lines[li] ' ')
+        xs = max sel[0] kseg.headCount(@state.s.lines[li] ' ')
+        xs += @frontRoundOffset if xs == 0
+
+        @cells.set_ch_fg xs-1-@state.s.view[0] y '' fg
         
         for x in xs...sel[2]
-            @cells.set_bg x-@state.s.view[0] y bg
+            @cells.set_bg x-@state.s.view[0] y fg
 
-        @cells.set xs-1+@frontRoundOffset-@state.s.view[0] y '' bg @color.bg
-        @cells.set x-@state.s.view[0] y '' bg @color.bg
+        @cells.set_ch_fg x-@state.s.view[0] y '' fg
 
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
@@ -100,7 +101,7 @@ function choices extends editor
         
         ⮐ if row < 0 or row >= @state.s.lines.length
     
-        @state.setSelections [util.rangeOfLine(@state.allLines() row)]
+        @state.setSelections [util.rangeOfLine(@state.s.lines row)]
         @emit 'select' @choiceAtRow(row)
         
     selectFirst: -> @select 0
@@ -210,6 +211,8 @@ function choices extends editor
         true
         
     unhover: =>
+        
+        log "#{@name} unhover"
     
         @hoverIndex = -1
         @state.deselect()

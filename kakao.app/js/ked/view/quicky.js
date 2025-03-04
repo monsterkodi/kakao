@@ -185,7 +185,7 @@ quicky = (function ()
         items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? (icons.dir + ' ..') : '')})
         select = (select != null ? select : items[1].path)
         this.choices.mapscr.rowOffset = 1
-        this.choices.frontRoundOffset = 1
+        this.choices.frontRoundOffset = 2
         return this.showPathItems(items,select)
     }
 

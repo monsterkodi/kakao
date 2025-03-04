@@ -11,8 +11,7 @@
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
 use ./util ◆ ttio logfile util prjcts session help julia frecent
-use ./view ◆ screen status quicky menu finder funcol
-use ./edit ◆ editor
+use ./view ◆ screen status quicky menu finder funcol fileeditor
 
 global.int = parseInt # this should go into kode instead
 
@@ -43,12 +42,12 @@ function KED
         
         @screen  = new screen @t
         
-        @menu    = new menu     @screen        
-        @quicky  = new quicky   @screen 
-        @finder  = new finder   @screen 
-        @editor  = new editor   @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete']
-        @funcol  = new funcol   @screen 'funcol'  ['scroll' 'knob']
-        @status  = new status   @screen @editor.state
+        @menu    = new menu       @screen        
+        @quicky  = new quicky     @screen 
+        @finder  = new finder     @screen 
+        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete']
+        @funcol  = new funcol     @screen 'funcol'  ['scroll' 'knob']
+        @status  = new status     @screen @editor.state
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
 
