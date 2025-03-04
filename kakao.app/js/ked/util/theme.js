@@ -94,7 +94,7 @@ class theme
 
     static choices_bg = '#000'
 
-    static choices_current = '#228'
+    static choices_current = '#44a'
 
     static dirtree_current_blur = '#222'
 

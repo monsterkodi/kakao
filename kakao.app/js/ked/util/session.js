@@ -24,6 +24,7 @@ session = (function ()
     {
         var _29_20_, _31_30_
 
+        this["recentFiles"] = this["recentFiles"].bind(this)
         this["cleanSessions"] = this["cleanSessions"].bind(this)
         this["listSessions"] = this["listSessions"].bind(this)
         this["newestSessionFile"] = this["newestSessionFile"].bind(this)
@@ -209,6 +210,11 @@ session = (function ()
             file = list[_a_]
             await nfs.remove(file)
         }
+    }
+
+    session.prototype["recentFiles"] = function ()
+    {
+        return Object.keys(this.get('files▸recent'))
     }
 
     return session

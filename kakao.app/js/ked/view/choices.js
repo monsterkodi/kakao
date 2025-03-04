@@ -309,7 +309,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, row, sret
+        var col, dx, dy, row, sret
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
@@ -320,7 +320,12 @@ choices = (function ()
             {
                 if (this.hoverForSubmenu && event.type === 'move' && col > kseg.width(this.state.s.lines[row]))
                 {
-                    return
+                    dx = Math.abs(event.delta[0])
+                    dy = Math.abs(event.delta[1])
+                    if (dx * 2 >= dy)
+                    {
+                        return
+                    }
                 }
                 switch (event.type)
                 {

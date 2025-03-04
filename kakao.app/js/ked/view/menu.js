@@ -104,6 +104,7 @@ quit`)
 
     menu.prototype["hide"] = function ()
     {
+        this.greeter.hide()
         delete this.greet
         return menu.__super__.hide.call(this)
     }
@@ -120,6 +121,7 @@ quit`)
                 this.show(true)
                 break
             case 'quit':
+                this.greeter.hide()
                 post.emit('quit')
                 break
             case 'open ...':

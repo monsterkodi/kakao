@@ -74,6 +74,12 @@ function knob
                 
         changed
                 
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
     draw: =>
         
         fg = @hover ? theme.resize_column : theme.gutter # theme.editor
@@ -82,6 +88,6 @@ function knob
             'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
             'right'
                 ⮐ if not @hover
-                @cells.fill_col @cells.cols-1 0 @cells.rows-1 '|' fg theme.gutter
+                @cells.fill_col @cells.cols-1 0 @cells.rows-1 '|' fg theme.funcol
 
 export knob

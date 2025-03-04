@@ -23,34 +23,33 @@ function dirtree extends choices
         
         @frontRoundOffset = 0
         
-    drawSelections: ->
+    # 00000000    0000000    0000000   000000000  
+    # 000   000  000   000  000   000     000     
+    # 0000000    000   000  000   000     000     
+    # 000   000  000   000  000   000     000     
+    # 000   000   0000000    0000000      000     
+    
+    setRoot: path opt ○=>
         
-        current = @color.current
+        opt ?= {}
         
-        @color.current = @hasFocus() ? current : theme.dirtree_current_blur
+        dir = slash.untilde path
         
-        if li = @indexOfOpenFile()
-            # bg = theme.dirtree_open_file
-            bg = theme.gutter
-            y  = li-@state.s.view[1]
-            if y < @cells.rows and li < @state.s.lines.length
-                xs = kseg.headCount(@state.s.lines[li] ' ')
-                @cells.set xs-1-@state.s.view[0] y '' bg @color.bg
-                for x in xs...@cells.cols
-                    @cells.set_bg x-@state.s.view[0] y bg
-                # @cells.set x-@state.s.view[0] y '' bg @color.bg
+        items =○ @dirItems dir 'dirtree.setRoot'
         
-        super()
+        @currentRoot = dir
                 
-        @color.current = current
+        for item in items
+            item.tilde = ' ' + @symbolName(item)
+
+        items.sort (a b) => @weight(a) - @weight(b)
+                    
+        select ?= items[1].path                    
         
-    indexOfOpenFile: ->
+        @set items 
         
-        ⮐ if not global.ked_editor_file?
-        
-        for item,idx in @fuzzied
-            ⮐ idx if item.path == ked_editor_file
-            
+        post.emit 'redraw' if opt.redraw
+                    
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
     # 000000000  000          000     000  000   000  000 0 000  
@@ -60,6 +59,13 @@ function dirtree extends choices
     emitAction: action arg event  ->
         
         c = arg
+        
+        if action == 'hover'
+                    
+            @grabFocus()
+            if valid event.mods and c.type == 'file'
+                post.emit 'quicky' c.path
+            ⮐ 
                 
         switch c.type
             
@@ -92,6 +98,8 @@ function dirtree extends choices
                         @selectOpenSiblingAboveOrParent() if not c.open
                         @closeDir(c redraw:true) if c.open
                         ⮐ 
+                        
+                    'return' ➜ ⮐  post.emit 'cwd' c.path
                 
             'file'
 
@@ -104,14 +112,9 @@ function dirtree extends choices
                     'esc'    ➜ ⮐ @selectParent()
                     
                     'space'  ➜ ⮐ post.emit 'quicky' c.path
+                    
                     'click'
                     'return' ➜ ⮐ post.emit 'file.open' c.path
-                    'hover'
-                    
-                        @grabFocus()
-                        if valid event.mods
-                            post.emit 'quicky' c.path
-                        ⮐ 
         
         super action arg event
         
@@ -172,30 +175,7 @@ function dirtree extends choices
         @set @items index
         
         post.emit 'redraw' if opt.redraw
-        
-    # 00000000    0000000    0000000   000000000  
-    # 000   000  000   000  000   000     000     
-    # 0000000    000   000  000   000     000     
-    # 000   000  000   000  000   000     000     
-    # 000   000   0000000    0000000      000     
-    
-    setRoot: path ○=>
-        
-        dir = slash.untilde path
-        
-        items =○ @dirItems dir 'dirtree.setRoot'
-        
-        @currentRoot = dir
                 
-        for item in items
-            item.tilde = ' ' + @symbolName(item)
-
-        items.sort (a b) => @weight(a) - @weight(b)
-                    
-        select ?= items[1].path                    
-        
-        @set items 
-        
     dirItems: dir info ○=>
         
         try
@@ -251,6 +231,34 @@ function dirtree extends choices
             index -= 1
         @state.selectLine index
         @state.setMainCursor 0 index
+        
+    drawSelections: ->
+        
+        current = @color.current
+        
+        @color.current = @hasFocus() ? current : theme.dirtree_current_blur
+        
+        if li = @indexOfOpenFile()
+            # bg = theme.dirtree_open_file
+            bg = theme.gutter
+            y  = li-@state.s.view[1]
+            if y < @cells.rows and li < @state.s.lines.length
+                xs = kseg.headCount(@state.s.lines[li] ' ')
+                @cells.set xs-1-@state.s.view[0] y '' bg @color.bg
+                for x in xs...@cells.cols
+                    @cells.set_bg x-@state.s.view[0] y bg
+                # @cells.set x-@state.s.view[0] y '' bg @color.bg
+        
+        super()
+                
+        @color.current = current
+        
+    indexOfOpenFile: ->
+        
+        ⮐ if not global.ked_editor_file?
+        
+        for item,idx in @fuzzied
+            ⮐ idx if item.path == ked_editor_file
             
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     

@@ -34,46 +34,29 @@ dirtree = (function ()
         this.frontRoundOffset = 0
     }
 
-    dirtree.prototype["drawSelections"] = function ()
+    dirtree.prototype["setRoot"] = async function (path, opt)
     {
-        var bg, current, li, x, xs, y
+        var dir, item, items, select
 
-        current = this.color.current
-        this.color.current = (this.hasFocus() ? current : theme.dirtree_current_blur)
-        if (li = this.indexOfOpenFile())
+        opt = (opt != null ? opt : {})
+        dir = slash.untilde(path)
+        items = await this.dirItems(dir,'dirtree.setRoot')
+        this.currentRoot = dir
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            bg = theme.gutter
-            y = li - this.state.s.view[1]
-            if (y < this.cells.rows && li < this.state.s.lines.length)
-            {
-                xs = kseg.headCount(this.state.s.lines[li],' ')
-                this.cells.set(xs - 1 - this.state.s.view[0],y,'',bg,this.color.bg)
-                for (var _a_ = x = xs, _b_ = this.cells.cols; (_a_ <= _b_ ? x < this.cells.cols : x > this.cells.cols); (_a_ <= _b_ ? ++x : --x))
-                {
-                    this.cells.set_bg(x - this.state.s.view[0],y,bg)
-                }
-            }
+            item = list[_a_]
+            item.tilde = ' ' + this.symbolName(item)
         }
-        dirtree.__super__.drawSelections.call(this)
-        return this.color.current = current
-    }
-
-    dirtree.prototype["indexOfOpenFile"] = function ()
-    {
-        var idx, item, _49_44_
-
-        if (!(global.ked_editor_file != null))
+        items.sort((function (a, b)
         {
-            return
-        }
-        var list = _k_.list(this.fuzzied)
-        for (idx = 0; idx < list.length; idx++)
+            return this.weight(a) - this.weight(b)
+        }).bind(this))
+        select = (select != null ? select : items[1].path)
+        this.set(items)
+        if (opt.redraw)
         {
-            item = list[idx]
-            if (item.path === ked_editor_file)
-            {
-                return idx
-            }
+            return post.emit('redraw')
         }
     }
 
@@ -82,6 +65,15 @@ dirtree = (function ()
         var c
 
         c = arg
+        if (action === 'hover')
+        {
+            this.grabFocus()
+            if (!_k_.empty(event.mods) && c.type === 'file')
+            {
+                post.emit('quicky',c.path)
+            }
+            return
+        }
         switch (c.type)
         {
             case 'dir':
@@ -127,6 +119,9 @@ dirtree = (function ()
                         }
                         return
 
+                    case 'return':
+                        return post.emit('cwd',c.path)
+
                 }
 
                 break
@@ -150,14 +145,6 @@ dirtree = (function ()
                     case 'return':
                         return post.emit('file.open',c.path)
 
-                    case 'hover':
-                        this.grabFocus()
-                        if (!_k_.empty(event.mods))
-                        {
-                            post.emit('quicky',c.path)
-                        }
-                        return
-
                 }
 
                 break
@@ -168,13 +155,13 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _134_31_
+        var depth, index, item, items, _137_31_
 
         opt = (opt != null ? opt : {})
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_134_31_=dirItem.depth) != null ? _134_31_ : 0)) + 1
+        depth = (((_137_31_=dirItem.depth) != null ? _137_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -214,27 +201,6 @@ dirtree = (function ()
         {
             return post.emit('redraw')
         }
-    }
-
-    dirtree.prototype["setRoot"] = async function (path)
-    {
-        var dir, item, items, select
-
-        dir = slash.untilde(path)
-        items = await this.dirItems(dir,'dirtree.setRoot')
-        this.currentRoot = dir
-        var list = _k_.list(items)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            item = list[_a_]
-            item.tilde = ' ' + this.symbolName(item)
-        }
-        items.sort((function (a, b)
-        {
-            return this.weight(a) - this.weight(b)
-        }).bind(this))
-        select = (select != null ? select : items[1].path)
-        return this.set(items)
     }
 
     dirtree.prototype["dirItems"] = async function (dir, info)
@@ -303,6 +269,49 @@ dirtree = (function ()
         return this.state.setMainCursor(0,index)
     }
 
+    dirtree.prototype["drawSelections"] = function ()
+    {
+        var bg, current, li, x, xs, y
+
+        current = this.color.current
+        this.color.current = (this.hasFocus() ? current : theme.dirtree_current_blur)
+        if (li = this.indexOfOpenFile())
+        {
+            bg = theme.gutter
+            y = li - this.state.s.view[1]
+            if (y < this.cells.rows && li < this.state.s.lines.length)
+            {
+                xs = kseg.headCount(this.state.s.lines[li],' ')
+                this.cells.set(xs - 1 - this.state.s.view[0],y,'',bg,this.color.bg)
+                for (var _a_ = x = xs, _b_ = this.cells.cols; (_a_ <= _b_ ? x < this.cells.cols : x > this.cells.cols); (_a_ <= _b_ ? ++x : --x))
+                {
+                    this.cells.set_bg(x - this.state.s.view[0],y,bg)
+                }
+            }
+        }
+        dirtree.__super__.drawSelections.call(this)
+        return this.color.current = current
+    }
+
+    dirtree.prototype["indexOfOpenFile"] = function ()
+    {
+        var idx, item, _258_44_
+
+        if (!(global.ked_editor_file != null))
+        {
+            return
+        }
+        var list = _k_.list(this.fuzzied)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (item.path === ked_editor_file)
+            {
+                return idx
+            }
+        }
+    }
+
     dirtree.prototype["weight"] = function (item)
     {
         var p, w
@@ -319,12 +328,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _280_51_
+        var _288_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_280_51_=icons[slash.ext(item.path)]) != null ? _280_51_ : icons.file)
+                return ((_288_51_=icons[slash.ext(item.path)]) != null ? _288_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

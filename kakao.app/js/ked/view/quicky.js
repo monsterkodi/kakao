@@ -6,6 +6,7 @@ import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
+let kutil = kxk.kutil
 let noon = kxk.noon
 
 import nfs from "../../kxk/nfs.js"
@@ -107,8 +108,8 @@ quicky = (function ()
             this.cells.fill_col(x,2,this.cells.rows - 2,'│',fg,bg)
             this.cells.set(x,this.cells.rows - 1,'┴',fg,bg)
             y = this.choices.currentIndex() + 2
-            this.cells.fill_row(y,this.choices.current().tilde.length + 2,x - 2,' ',bg,fg)
-            this.cells.set(x - 1,y,'',fg,bg)
+            this.cells.fill_row(y,this.choices.current().tilde.length + 2,x - 2,' ',bg,this.choices.color.current)
+            this.cells.set(x - 1,y,'',this.choices.color.current,bg)
             return this.cells.set(x,y,'┤',fg,bg)
         }
     }
@@ -210,33 +211,52 @@ quicky = (function ()
         var items, weight
 
         items = prjcts.files(this.currentFile)
+        items = items.concat(ked_session.recentFiles())
         if (_k_.empty(items))
         {
             return this.gotoDir(process.cwd())
         }
+        items = kutil.uniq(items)
         this.currentDir = slash.dir(this.currentFile)
+        if (_k_.empty(this.currentDir))
+        {
+            this.currentDir = process.cwd()
+        }
         this.crumbs.hide()
         this.choices.mapscr.rowOffset = 0
         weight = (function (item)
         {
-            var p, r, w
+            var i, p, s, t, w
 
-            p = slash.parse(item)
-            r = slash.relative(item,this.currentFile)
+            t = item.tilde
+            p = slash.parse(t)
             w = 0
-            w += r.split('../').length * 256
-            w += r.split('/').length * 128
-            w += kstr.weight(p.name)
+            w += (t.split('../').length - 1) * 1024 * 4
+            var list = _k_.list(slash.split(p.dir))
+            for (i = 0; i < list.length; i++)
+            {
+                s = list[i]
+                w += kstr.weight(s) / ((i + 1) * (i + 1))
+            }
+            console.log(`${w} ${t.split('../').length} ${t}`)
             return w
         }).bind(this)
+        items = items.map((function (path)
+        {
+            var prs, rel
+
+            rel = slash.relative(path,this.currentDir)
+            if (slash.isAbsolute(rel))
+            {
+                prs = slash.parse(rel)
+                rel = slash.join(slash.split(prs.dir).slice(-2),prs.file)
+            }
+            return {type:'file',path:path,tilde:' ' + rel}
+        }).bind(this))
         items.sort(function (a, b)
         {
             return weight(a) - weight(b)
         })
-        items = items.map((function (path)
-        {
-            return {type:'file',path:path,tilde:' ' + slash.relative(path,this.currentDir)}
-        }).bind(this))
         this.choices.mapscr.rowOffset = 0
         this.choices.frontRoundOffset = 0
         return this.showPathItems(items)
@@ -450,7 +470,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _407_62_
+        var upDir, _433_62_
 
         switch (action)
         {
@@ -468,7 +488,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_407_62_=choice.link) != null ? _407_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_433_62_=choice.link) != null ? _433_62_ : choice.path))
                     }
                 }
                 break

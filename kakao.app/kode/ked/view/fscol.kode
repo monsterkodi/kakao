@@ -46,7 +46,9 @@ function fscol extends choices
         try
             items =○ nfs.list dir recursive:false
         catch err
-            log 'list error' dir String(err)
+            # error "nfs.list #{dir} #{err}"
+            @clear()
+            post.emit 'redraw'
             ⮐ 
 
         for item in items
@@ -69,7 +71,6 @@ function fscol extends choices
         
         items.unshift(tilde:'')
             
-        selectIndex = 0
         @set items 'tilde'
         @state.setView [0 0]
         

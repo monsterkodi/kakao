@@ -79,7 +79,6 @@ scroll = (function ()
                     {
                         post.emit('pointer','pointer')
                     }
-                    return true
                 }
                 break
         }

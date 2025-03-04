@@ -103,6 +103,7 @@ function menu extends inputchoice
         
     hide: => 
     
+        @greeter.hide()
         delete @greet
         super()
     
@@ -119,7 +120,7 @@ function menu extends inputchoice
         switch choice
             'new'        ➜ @hide(); post.emit 'file.new'
             'about'      ➜ @show true          # reopen with greeting header
-            'quit'       ➜ post.emit 'quit'                    
+            'quit'       ➜ @greeter.hide(); post.emit 'quit'                    
             'open ...'   ➜ post.emit 'quicky.dir' process.cwd()
             'recent ...' ➜ @showRecent()
             

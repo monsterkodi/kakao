@@ -235,7 +235,10 @@ function choices extends editor
             
             if @state.isValidLineIndex(row)
                 
-                ⮐ if @hoverForSubmenu and event.type == 'move' and col > kseg.width(@state.s.lines[row])
+                if @hoverForSubmenu and event.type == 'move' and col > kseg.width(@state.s.lines[row])
+                    dx = Math.abs event.delta[0]
+                    dy = Math.abs event.delta[1]
+                    ⮐ if dx*2 >= dy
                 
                 switch event.type
                     

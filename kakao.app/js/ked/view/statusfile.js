@@ -66,7 +66,7 @@ statusfile = (function ()
 
         this.file = ((_58_14_=this.file) != null ? _58_14_ : '')
         this.pars = slash.parse(this.file)
-        return this.rounded = '' + this.pars.name + '.' + this.pars.ext + ''
+        return this.rounded = '' + this.pars.file + ''
     }
 
     statusfile.prototype["set"] = function (file)

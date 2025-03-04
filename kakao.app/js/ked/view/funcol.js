@@ -25,9 +25,12 @@ funcol = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onFuncolToggle"] = this["onFuncolToggle"].bind(this)
         this["onFuncolResize"] = this["onFuncolResize"].bind(this)
+        this["setRoot"] = this["setRoot"].bind(this)
+        this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         funcol.__super__.constructor.call(this,screen,name,features)
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
         this.dirtree = new dirtree(screen,`${this.name}_dirtree`,['scroll'])
+        this.crumbs.on('action',this.onCrumbsAction)
         this.dirtree.color.bg = theme.funcol
         this.dirtree.color.empty = this.dirtree.color.bg
         this.dirtree.color.cursor_main = this.dirtree.color.bg
@@ -35,14 +38,23 @@ funcol = (function ()
         this.dirtree.scroll.color.bg = this.dirtree.color.bg
         post.on('funcol.resize',this.onFuncolResize)
         post.on('funcol.toggle',this.onFuncolToggle)
+        post.on('cwd',this.setRoot)
         this.setRoot(process.cwd())
+    }
+
+    funcol.prototype["onCrumbsAction"] = function (action, path)
+    {
+        if (action === 'click')
+        {
+            return this.setRoot(path)
+        }
     }
 
     funcol.prototype["setRoot"] = function (path)
     {
         path = slash.tilde(path)
         this.crumbs.set(path)
-        return this.dirtree.setRoot(path)
+        return this.dirtree.setRoot(path,{redraw:true})
     }
 
     funcol.prototype["layout"] = function (x, y, w, h)

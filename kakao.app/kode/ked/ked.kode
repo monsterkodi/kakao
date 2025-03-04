@@ -75,7 +75,8 @@ function KED
         if valid args.options
             @loadFile args.options[0]
         else
-            @newFile()
+            # @newFile()
+            @menu.show true
             
     onSessionLoaded: => 
     
@@ -107,17 +108,26 @@ function KED
     
     quit: msg ○=>
         
+        clearImmediate @redrawId
+        
+        @quitting = true
+        
         ○ @session.save()
         
         log w2("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+
+        error "#{msg}" noon(msg) if msg?
         
         @t?.quit()
         
         @logfile.close ->
-            error msg if msg?
+            
+            process.stderr.write "#{msg}" if msg?
             process.exit msg? ? 1 : 0
                 
-    onException: err => @quit err
+    onException: err => 
+        
+        @quit err
 
     # 000   000  00000000  000   000  
     # 0000  000  000       000 0 000  
@@ -335,12 +345,16 @@ function KED
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
     redraw: =>    
+        
+        ⮐ if @quitting
 
         clearImmediate @redrawId
         @redrawId = setImmediate @draw
                                       
     draw: =>
-              
+            
+        ⮐ if @quitting
+        
         start = process.hrtime()
         
         @status.gutter = @editor.state.gutterWidth()

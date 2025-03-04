@@ -72,7 +72,6 @@ function scroll extends view
                     @hover = inside
                     if @hover
                         post.emit 'pointer''pointer' 
-                    ⮐ true
             
         false
         

@@ -56,10 +56,9 @@ function statusfile extends view
     adjustText: ->
         
         @file ?= ''
-        
         @pars = slash.parse @file
         
-        @rounded = '' + @pars.name + '.' + @pars.ext + ''
+        @rounded = '' + @pars.file + ''
             
     set: file ->
     

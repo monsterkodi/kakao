@@ -444,7 +444,11 @@ function TTIO extends events
                
             event.count = @lastClick.count
             
-            # log 'emitMouse' event
+        @lastPixels ?= []
+        if @lastPixels.length >= 4
+            event.delta = [event.pixel[0]-@lastPixels[0][0] event.pixel[1]-@lastPixels[0][1]]
+        @lastPixels.push event.pixel
+        @lastPixels.shift() if @lastPixels.length > 4
         
         @emit 'mouse' event
                 

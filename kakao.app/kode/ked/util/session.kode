@@ -170,5 +170,9 @@ function session extends events
         files =○ @listSessions()
         for file in files[0...files.length-maxFiles]
             ○ nfs.remove file
+            
+    recentFiles: =>
+        
+        Object.keys @get('files▸recent')
         
 export session

@@ -19,6 +19,8 @@ function funcol extends view
         @crumbs  = new crumbs  screen "#{@name}_crumbs"
         @dirtree = new dirtree screen "#{@name}_dirtree" ['scroll']       
         
+        @crumbs.on 'action' @onCrumbsAction
+        
         @dirtree.color.bg           = theme.funcol
         @dirtree.color.empty        = @dirtree.color.bg
         @dirtree.color.cursor_main  = @dirtree.color.bg
@@ -27,14 +29,20 @@ function funcol extends view
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
+        post.on 'cwd'           @setRoot
         
         @setRoot process.cwd()
         
-    setRoot: path ->
+    onCrumbsAction: action path =>
+
+        if action == 'click'
+            @setRoot path
+        
+    setRoot: path =>
     
         path = slash.tilde path
         @crumbs.set path
-        @dirtree.setRoot path
+        @dirtree.setRoot path redraw:true
         
     layout: x y w h ->
         

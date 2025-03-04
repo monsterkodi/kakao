@@ -61,7 +61,7 @@ fscol = (function ()
 
     fscol.prototype["listDir"] = async function (dir)
     {
-        var item, items, selectIndex, weight
+        var item, items, weight
 
         try
         {
@@ -69,7 +69,8 @@ fscol = (function ()
         }
         catch (err)
         {
-            console.log('list error',dir,String(err))
+            this.clear()
+            post.emit('redraw')
             return
         }
         var list = _k_.list(items)
@@ -109,7 +110,6 @@ fscol = (function ()
             return weight(a) - weight(b)
         })
         items.unshift({tilde:''})
-        selectIndex = 0
         this.set(items,'tilde')
         this.state.setView([0,0])
         return post.emit('redraw')

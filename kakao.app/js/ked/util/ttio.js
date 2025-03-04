@@ -654,7 +654,7 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _426_23_
+        var diff, _426_23_, _447_20_
 
         if (event.type === 'press')
         {
@@ -680,6 +680,16 @@ TTIO = (function ()
                 this.lastClick.time = process.hrtime()
             }
             event.count = this.lastClick.count
+        }
+        this.lastPixels = ((_447_20_=this.lastPixels) != null ? _447_20_ : [])
+        if (this.lastPixels.length >= 4)
+        {
+            event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
+        }
+        this.lastPixels.push(event.pixel)
+        if (this.lastPixels.length > 4)
+        {
+            this.lastPixels.shift()
         }
         return this.emit('mouse',event)
     }
@@ -729,7 +739,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _497_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _501_23_
 
         if ((this.pasteBuffer != null))
         {

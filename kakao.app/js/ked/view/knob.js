@@ -128,7 +128,7 @@ knob = (function ()
                 {
                     return
                 }
-                return this.cells.fill_col(this.cells.cols - 1,0,this.cells.rows - 1,'|',fg,theme.gutter)
+                return this.cells.fill_col(this.cells.cols - 1,0,this.cells.rows - 1,'|',fg,theme.funcol)
 
         }
 
