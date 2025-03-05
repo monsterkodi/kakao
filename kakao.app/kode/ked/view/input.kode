@@ -12,9 +12,9 @@ use ../edit ◆ editor
 
 function input extends editor
 
-    @: screen name features ->
+    @: screen name ->
 
-        super screen name []
+        super screen name
 
     hasFocus: -> @state.hasFocus
 

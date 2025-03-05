@@ -11,6 +11,7 @@ import theme from "../util/theme.js"
 import util from "../util/util.js"
 
 import view from "./view.js"
+import knob from "./knob.js"
 import crumbs from "./crumbs.js"
 import dirtree from "./dirtree.js"
 
@@ -28,6 +29,8 @@ funcol = (function ()
         this["setRoot"] = this["setRoot"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         funcol.__super__.constructor.call(this,screen,name,features)
+        this.pointerType = 'pointer'
+        this.knob = new knob(screen,`${this.name}_knob`)
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
         this.dirtree = new dirtree(screen,`${this.name}_dirtree`,['scroll'])
         this.crumbs.on('action',this.onCrumbsAction)
@@ -61,6 +64,7 @@ funcol = (function ()
     {
         this.crumbs.layout(x,y,w,1)
         this.dirtree.layout(x,y + 1,w,h - 1)
+        this.knob.layout(x + w - 1,y + 1,1,h - 1)
         return funcol.__super__.layout.call(this,x,y,w,h)
     }
 
@@ -73,6 +77,7 @@ funcol = (function ()
         this.cells.fill_rect(0,0,-1,-1,' ',null,theme.funcol)
         this.crumbs.draw()
         this.dirtree.draw()
+        this.knob.draw()
         return funcol.__super__.draw.call(this)
     }
 
@@ -88,17 +93,27 @@ funcol = (function ()
 
     funcol.prototype["onMouse"] = function (event)
     {
-        if (funcol.__super__.onMouse.call(this,event))
+        var ret
+
+        ret = funcol.__super__.onMouse.call(this,event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if (this.crumbs.onMouse(event))
+        ret = this.knob.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if (this.dirtree.onMouse(event))
+        ret = this.crumbs.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
+        }
+        ret = this.dirtree.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
         }
     }
 
@@ -108,10 +123,7 @@ funcol = (function ()
         {
             return
         }
-        if (this.dirtree.onWheel(event))
-        {
-            return true
-        }
+        return this.dirtree.onWheel(event)
     }
 
     funcol.prototype["onKey"] = function (key, event)
@@ -120,10 +132,7 @@ funcol = (function ()
         {
             return
         }
-        if (this.dirtree.onKey(key,event))
-        {
-            return true
-        }
+        return this.dirtree.onKey(key,event)
     }
 
     return funcol

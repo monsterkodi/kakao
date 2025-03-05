@@ -32,6 +32,7 @@ choices = (function ()
         choices.__super__.constructor.call(this,screen,name,features)
         this.color.bg = theme.choices_bg
         this.color.current = theme.choices_current
+        this.pointerType = 'pointer'
         this.focusable = true
         this.roundedSelections = true
         this.frontRoundOffset = 0
@@ -52,9 +53,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _36_15_
+        var lines, _37_15_
 
-        this.items = ((_36_15_=this.items) != null ? _36_15_ : [])
+        this.items = ((_37_15_=this.items) != null ? _37_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -281,41 +282,49 @@ choices = (function ()
     {
         if (this.hoverIndex === index)
         {
-            return
+            return true
         }
         this.hoverIndex = index
         this.select(this.hoverIndex)
         this.frontCursor()
         post.emit('pointer','pointer')
         this.emitAction('hover',this.current(),event)
-        return true
+        return {redraw:true}
     }
 
     choices.prototype["unhover"] = function ()
     {
-        console.log(`${this.name} unhover`)
         this.hoverIndex = -1
         this.state.deselect()
         post.emit('pointer','default')
-        return true
+        return {redraw:true}
     }
 
     choices.prototype["clickChoiceAtIndex"] = function (index, event)
     {
         this.hoverIndex = -1
         this.emitAction('click',this.fuzzied[index],event)
-        return true
+        return {redraw:true}
     }
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, row, sret
+        var col, dx, dy, ret, row, _233_21_
 
-        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
-
-        sret = choices.__super__.onMouse.call(this,event)
-        if (this.cells.isInsideEvent(event))
+        ret = choices.__super__.onMouse.call(this,event)
+        if ((ret != null ? ret.redraw : undefined))
         {
+            return ret
+        }
+        ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
+        if (ret)
+        {
+            return ret
+        }
+        if (this.hover)
+        {
+            var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+
             if (this.state.isValidLineIndex(row))
             {
                 if (this.hoverForSubmenu && event.type === 'move' && col > kseg.width(this.state.s.lines[row]))
@@ -330,16 +339,16 @@ choices = (function ()
                 switch (event.type)
                 {
                     case 'press':
-                        sret |= this.clickChoiceAtIndex(row + this.state.s.view[1],event)
-                        break
+                        return this.clickChoiceAtIndex(row + this.state.s.view[1],event)
+
                     case 'move':
-                        sret |= this.hoverChoiceAtIndex(row + this.state.s.view[1],event)
-                        break
+                        return this.hoverChoiceAtIndex(row + this.state.s.view[1],event)
+
                 }
 
             }
         }
-        return sret
+        return this.hover
     }
 
     choices.prototype["emitAction"] = function (action, arg, event)

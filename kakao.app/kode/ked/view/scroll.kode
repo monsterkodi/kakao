@@ -14,9 +14,11 @@ use           ◆ view
 
 function scroll extends view
 
-    @: screen @state @side='left'-> 
+    @: screen @state @side='left' -> 
     
         super screen @state.owner() + '_scroll'
+        
+        @pointerType = 'pointer'
         
         @color = 
             bg:       theme.gutter
@@ -37,14 +39,14 @@ function scroll extends view
     onMouse: event =>
         
         [col row] = @cells.posForEvent event
-        inside = @cells.isInsideEvent event 
+        
+        super event
         
         switch event.type
             
             'press'
             
-                if inside
-                    @hover = inside
+                if @hover
                     @doDrag = true
                     post.emit 'pointer''grabbing' 
                     ⮐ @scrollTo row
@@ -55,25 +57,20 @@ function scroll extends view
                     @hover = true
                     post.emit 'pointer''grab' 
                     ⮐ @scrollTo row 
-                else
-                    @hover = false
+                    
+                @hover = false
                 
             'release'
             
                 if @doDrag
-                    @hover = inside
                     post.emit 'pointer''pointer' if @hover
                     delete @doDrag 
                     ⮐ true
-                    
-            'move'
-
-                if @hover != inside
-                    @hover = inside
-                    if @hover
-                        post.emit 'pointer''pointer' 
-            
-        false
+        @hover
+        
+    isActive: ->
+        
+        @state.s.lines.length > @cells.rows
         
     #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
     # 000       000       000   000  000   000  000      000         000     000   000  
@@ -91,10 +88,12 @@ function scroll extends view
         
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
+
+        ⮐ if view eql @state.s.view
         
         @state.setView view
-        
-        true
+
+        redraw:true
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  

@@ -199,9 +199,8 @@ inputchoice = (function ()
                 return this.moveFocus()
 
             case 'esc':
-                this.hide()
                 post.emit('focus','editor')
-                return
+                return this.hide()
 
         }
 
@@ -229,47 +228,48 @@ inputchoice = (function ()
 
     inputchoice.prototype["onMouse"] = function (event)
     {
-        var inside
+        var ret
 
         if (this.hidden())
         {
             return
         }
-        if (this.input.onMouse(event))
+        ret = this.input.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if (this.choices.onMouse(event))
+        ret = this.choices.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        inside = this.cells.isInsideEvent(event)
-        if (event.type === 'press' && !inside)
+        inputchoice.__super__.onMouse.call(this,event)
+        if (event.type === 'press' && !this.hover)
         {
-            this.hide()
-            return true
+            post.emit('focus','editor')
+            return this.hide()
         }
-        if (inside)
-        {
-            return {redraw:false}
-        }
+        return false
     }
 
     inputchoice.prototype["onWheel"] = function (event)
     {
-        var inside
+        var inside, ret
 
         if (this.hidden())
         {
             return
         }
-        if (this.input.onWheel(event))
+        ret = this.input.onWheel(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if (this.choices.onWheel(event))
+        ret = this.choices.onWheel(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
         inside = this.cells.isInsideEvent(event)
         if (inside)

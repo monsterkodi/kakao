@@ -6,14 +6,12 @@
     0      000  00000000  00     00
 ###
 
-use ../../kxk ▪ events kstr post kutil
+use ../../kxk ▪ events post
 use   ../view ◆ cells 
-use           ◆ knob
-
-popups = ['quicky' 'menu']
 
 function view extends events
 
+    @popups: ['quicky' 'menu']
     @currentPopup: null
 
     @: @screen @name features ->
@@ -22,13 +20,9 @@ function view extends events
         @color = {}
         @feats = {}
         @feats[f] = true for f in features
-        
-        for feature in features
-            switch feature
-                'knob' ➜ @knob = new knob @cells @name
-                
-        post.on 'view.show' @onViewShow if @name in popups
-        post.on 'view.hide' @onViewHide if @name in popups
+                        
+        post.on 'view.show' @onViewShow if @name in view.popups
+        post.on 'view.hide' @onViewHide if @name in view.popups
         
     onViewHide: viewName =>
         
@@ -37,9 +31,9 @@ function view extends events
         
     onViewShow: viewName =>
                 
-        if viewName in popups
+        if viewName in view.popups
             view.currentPopup = viewName            
-            if viewName != @name and @visible()# and @name in popups
+            if viewName != @name and @visible()
                 @hide() 
                 
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
@@ -66,8 +60,27 @@ function view extends events
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event => @knob?.onMouse event
+    onMouse: event => @handleHover event
     onWheel: event => log "view.onWheel #{@name}"
+    
+    onMouseLeave: => post.emit 'redraw'
+    onMouseEnter: => 
+        
+        if @pointerType 
+            post.emit 'pointer' @pointerType
+            post.emit 'redraw'
+        
+    handleHover: event =>
+        
+        inside = @cells.isInsideEvent event
+        if @hover and not inside
+            @hover = inside
+            @onMouseLeave()
+        else if inside and not @hover
+            @hover = inside
+            @onMouseEnter()
+        @hover
+    
     onKey: key event => log "view.onKey #{@name}"
         
     # 0000000    00000000    0000000   000   000  
@@ -78,6 +91,6 @@ function view extends events
     
     layout: x y w h -> @cells.layout x y w h 
     
-    draw: => @knob?.draw() 
+    draw: => 
         
 export view

@@ -69,10 +69,11 @@ function editor extends draw
     
     onMouse: event =>
         
-        ⮐ true if @mapscr?.onMouse?  event
-        ⮐ true if @scroll?.onMouse   event
-        ⮐ true if @complete?.onMouse event
-        ⮐ true if super              event
+        super event
+        
+        ret = @mapscr?.onMouse(event)   ; ⮐ ret if ret?.redraw
+        ret = @scroll?.onMouse(event)   ; ⮐ ret if ret?.redraw
+        ret = @complete?.onMouse(event) ; ⮐ ret if ret?.redraw
                         
         false
                 
@@ -99,7 +100,7 @@ function editor extends draw
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state.scrollView(event.dir)
             
-        true
+        redraw:true
             
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  

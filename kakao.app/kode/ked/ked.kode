@@ -11,7 +11,7 @@
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
 use ./util ◆ ttio logfile util prjcts session help julia frecent
-use ./view ◆ screen status quicky menu finder funcol fileeditor
+use ./view ◆ view screen status quicky menu finder funcol fileeditor
 
 global.int = parseInt # this should go into kode instead
 
@@ -57,6 +57,7 @@ function KED
         post.on 'window.focus'  @redraw
         post.on 'window.blur'   @redraw
         post.on 'view.size'     @onViewSize
+        post.on 'view.resize'   @onViewResize
         post.on 'quicky'        @onQuicky
         post.on 'file.new'      @newFile
         post.on 'file.open'     @openFile
@@ -258,19 +259,24 @@ function KED
         if event.type == 'wheel'
 
             for handler in @wheelHandlers
-                if res = handler.onWheel event
-                    if res.redraw != false
+                if ret = handler.onWheel event
+                    if ret.redraw == true
                         # log "redraw on wheel for #{handler.name}" 
                         @redraw()
                     ⮐ 
             ⮐ 
 
+        redraw = false
         for handler in @mouseHandlers
-            if res = handler.onMouse event
-                if res.redraw != false
+            if ret = handler.onMouse event
+                # log "ret #{handler.name}" ret
+                if ret.redraw == true
                     # log "redraw on #{event.type} for #{handler.name}" 
-                    @redraw()
-                ⮐ 
+                    redraw = true
+                # log "break #{event.type} for #{handler.name}"
+                break if event.type != 'move' or handler.name in view.popups
+                
+        @redraw() if redraw
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -332,6 +338,13 @@ function KED
         @viewSizes[name] = [min(x @screen.cols-1) min(y @screen.rows-1)]
         @redraw()
         # @editor.mapscr?.onResize()
+        
+    onViewResize: name side delta =>
+        
+        idx = (side == 'right') ? 0 : 1
+        @viewSizes[name][idx] += delta
+        @viewSizes[name][idx] = max 0 @viewSizes[name][idx]
+        @redraw()
         
     onResize: cols rows size => 
         

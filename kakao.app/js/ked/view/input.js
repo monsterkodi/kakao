@@ -13,10 +13,10 @@ import editor from "../edit/editor.js"
 input = (function ()
 {
     _k_.extend(input, editor)
-    function input (screen, name, features)
+    function input (screen, name)
     {
         this["current"] = this["current"].bind(this)
-        input.__super__.constructor.call(this,screen,name,[])
+        input.__super__.constructor.call(this,screen,name)
     }
 
     input.prototype["hasFocus"] = function ()

@@ -160,11 +160,13 @@ function inputchoice extends view
         ⮐ if @hidden()
 
         switch event.combo
-            'tab'       ➜ ⮐ @moveFocus()
-            'esc'       
-                @hide()
-                post.emit 'focus' 'editor' 
-                ⮐ 
+            
+            'tab' ➜ ⮐ @moveFocus()
+            
+            'esc'     
+
+                post.emit 'focus' 'editor'
+                ⮐ @hide()
 
         if result = @choices.onKey key event
 
@@ -188,16 +190,17 @@ function inputchoice extends view
     onMouse: event =>
 
         ⮐ if @hidden()
-        ⮐ true if @input.onMouse   event
-        ⮐ true if @choices.onMouse event
         
-        inside = @cells.isInsideEvent event
+        ret = @input.onMouse   event ; ⮐ ret if ret?.redraw
+        ret = @choices.onMouse event ; ⮐ ret if ret?.redraw
         
-        if event.type == 'press' and not inside
-            @hide()
-            ⮐ true
+        super event
+        
+        if event.type == 'press' and not @hover
+            post.emit 'focus' 'editor'
+            ⮐ @hide()
             
-        if inside ➜ ⮐ redraw:false 
+        false
 
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -209,8 +212,8 @@ function inputchoice extends view
 
         ⮐ if @hidden()
 
-        ⮐ true if @input.onWheel event
-        ⮐ true if @choices.onWheel event
+        ret = @input.onWheel   event ; ⮐ ret if ret?.redraw
+        ret = @choices.onWheel event ; ⮐ ret if ret?.redraw
         
         inside = @cells.isInsideEvent event
         if inside ➜ ⮐ redraw:false 

@@ -19,6 +19,7 @@ function choices extends editor
         @color.bg      = theme.choices_bg
         @color.current = theme.choices_current
         
+        @pointerType = 'pointer'
         @focusable = true
         @roundedSelections = true
         @frontRoundOffset = 0
@@ -201,37 +202,39 @@ function choices extends editor
     
     hoverChoiceAtIndex: index event => 
     
-        ⮐ if @hoverIndex == index
+        ⮐ true if @hoverIndex == index
         
         @hoverIndex = index
         @select @hoverIndex
         @frontCursor()
         post.emit 'pointer' 'pointer'
         @emitAction 'hover' @current() event
-        true
+        redraw:true
         
     unhover: =>
         
-        log "#{@name} unhover"
-    
         @hoverIndex = -1
         @state.deselect()
         post.emit 'pointer' 'default'
-        true
+        redraw:true
         
     clickChoiceAtIndex: index event =>
         
         @hoverIndex = -1  
         @emitAction 'click' @fuzzied[index] event
-        true
+        redraw:true
         
     onMouse: event =>
+        
+        # log "choices #{r6 @name} onMouse"
     
-        [col row] = @cells.posForEvent event
+        ret = super event; ⮐ ret if ret?.redraw
         
-        sret = super event
+        ret = @mapscr?.onMouse event; ⮐ ret if ret # mapview doesn't do mouse yet, just to prevent clickthrough to editor
         
-        if @cells.isInsideEvent(event) 
+        if @hover
+            
+            [col row] = @cells.posForEvent event
             
             if @state.isValidLineIndex(row)
                 
@@ -242,9 +245,9 @@ function choices extends editor
                 
                 switch event.type
                     
-                    'press' ➜ sret |= @clickChoiceAtIndex row + @state.s.view[1] event
-                    'move'  ➜ sret |= @hoverChoiceAtIndex row + @state.s.view[1] event
-        sret
+                    'press' ➜ ⮐ @clickChoiceAtIndex row + @state.s.view[1] event
+                    'move'  ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1] event
+        @hover
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  

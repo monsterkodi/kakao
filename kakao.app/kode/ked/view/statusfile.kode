@@ -16,6 +16,8 @@ function statusfile extends view
 
         super screen name
         
+        @pointerType = 'pointer'
+        
         @rounded = ''
         
     layout: x y w h ->
@@ -75,22 +77,15 @@ function statusfile extends view
     
     onMouse: event =>
         
-        inside = @cells.isInsideEvent event
+        super event
         
         switch event.type
             
             'press' 
-                if inside
+                
+                if @hover
                     @emit 'action' 'click' @file
-                    delete @hover
-                    ⮐ true
-                
-            'move'
-                
-                if inside != @hover
-                    @hover = inside
-                    post.emit 'pointer' 'pointer' if @hover
-                    ⮐ true
-        false
+                    ⮐ redraw:true                
+        @hover
     
 export statusfile

@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ post slash
 use ../util   ◆ color theme util
-use           ◆ view crumbs dirtree
+use           ◆ view knob crumbs dirtree
 
 function funcol extends view
 
@@ -16,6 +16,9 @@ function funcol extends view
         
         super screen name features
         
+        @pointerType = 'pointer'
+        
+        @knob    = new knob    screen "#{@name}_knob"
         @crumbs  = new crumbs  screen "#{@name}_crumbs"
         @dirtree = new dirtree screen "#{@name}_dirtree" ['scroll']       
         
@@ -46,8 +49,9 @@ function funcol extends view
         
     layout: x y w h ->
         
-        @crumbs.layout  x y   w   1
-        @dirtree.layout x y+1 w h-1
+        @crumbs.layout  x     y   w   1
+        @dirtree.layout x     y+1 w h-1
+        @knob.layout    x+w-1 y+1 1 h-1
         
         super x y w h
         
@@ -59,6 +63,7 @@ function funcol extends view
         
         @crumbs.draw()
         @dirtree.draw()
+        @knob.draw()
     
         super()
         
@@ -75,10 +80,11 @@ function funcol extends view
         
     onMouse: event =>
         
-        ⮐ true if super event
-        ⮐ true if @crumbs.onMouse event
-        ⮐ true if @dirtree.onMouse event
-    
+        ret = super event            ; ⮐ ret if ret?.redraw
+        ret = @knob.onMouse event    ; ⮐ ret if ret?.redraw
+        ret = @crumbs.onMouse event  ; ⮐ ret if ret?.redraw
+        ret = @dirtree.onMouse event ; ⮐ ret if ret?.redraw
+        
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
     # 000000000  000000000  0000000   0000000   000      
@@ -88,7 +94,7 @@ function funcol extends view
     onWheel: event =>
         
         ⮐ if @hidden()
-        ⮐ true if @dirtree.onWheel event
+        @dirtree.onWheel event
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -99,6 +105,6 @@ function funcol extends view
     onKey: key event => 
         
         ⮐ if @hidden()
-        ⮐ true if @dirtree.onKey key event
+        @dirtree.onKey key event
 
 export funcol

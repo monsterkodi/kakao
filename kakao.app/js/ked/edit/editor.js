@@ -89,30 +89,31 @@ editor = (function ()
 
     editor.prototype["onMouse"] = function (event)
     {
-        var _72_30_, _72_39_, _73_30_, _74_32_
+        editor.__super__.onMouse.call(this,event)
+    
+        var ret, _74_21_, _75_21_, _76_23_
 
-        if (((_72_30_=this.mapscr) != null ? typeof (_72_39_=_72_30_.onMouse) === "function" ? _72_39_(event) : undefined : undefined))
+        ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if ((this.scroll != null ? this.scroll.onMouse(event) : undefined))
+        ret = (this.scroll != null ? this.scroll.onMouse(event) : undefined)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if ((this.complete != null ? this.complete.onMouse(event) : undefined))
+        ret = (this.complete != null ? this.complete.onMouse(event) : undefined)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
-        }
-        if (editor.__super__.onMouse.call(this,event))
-        {
-            return true
+            return ret
         }
         return false
     }
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, _90_25_, _91_25_, _92_25_, _96_20_
+        var inside, _91_25_, _92_25_, _93_25_, _97_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -143,7 +144,7 @@ editor = (function ()
                 break
         }
 
-        return true
+        return {redraw:true}
     }
 
     editor.prototype["isCursorInEmpty"] = function (cursor)
@@ -184,7 +185,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _161_20_, _165_21_, _170_24_
+        var _162_20_, _166_21_, _171_24_
 
         if (!this.hasFocus())
         {

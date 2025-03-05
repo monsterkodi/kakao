@@ -238,7 +238,6 @@ quicky = (function ()
                 s = list[i]
                 w += kstr.weight(s) / ((i + 1) * (i + 1))
             }
-            console.log(`${w} ${t.split('../').length} ${t}`)
             return w
         }).bind(this)
         items = items.map((function (path)
@@ -384,30 +383,42 @@ quicky = (function ()
 
     quicky.prototype["onMouse"] = function (event)
     {
+        var ret
+
         if (this.hidden())
         {
             return
         }
-        if (this.fscol.onMouse(event))
+        ret = this.crumbs.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        if (this.crumbs.onMouse(event))
+        ret = this.fscol.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
-        return quicky.__super__.onMouse.call(this,event)
+        ret = quicky.__super__.onMouse.call(this,event)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
+        }
+        return this.hover
     }
 
     quicky.prototype["onWheel"] = function (event)
     {
+        var ret
+
         if (this.hidden())
         {
             return
         }
-        if (this.fscol.onWheel(event))
+        ret = this.fscol.onWheel(event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
         return quicky.__super__.onWheel.call(this,event)
     }
@@ -449,7 +460,13 @@ quicky = (function ()
 
     quicky.prototype["onCrumbsAction"] = function (action, path)
     {
-        return this.onChoicesAction(action,{tilde:path,path:slash.untilde(path)})
+        switch (action)
+        {
+            case 'click':
+                return this.applyChoice({tilde:path,path:slash.untilde(path)})
+
+        }
+
     }
 
     quicky.prototype["onFsColAction"] = function (action, choice)
@@ -470,7 +487,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _433_62_
+        var upDir, _420_62_
 
         switch (action)
         {
@@ -488,7 +505,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_433_62_=choice.link) != null ? _433_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_420_62_=choice.link) != null ? _420_62_ : choice.path))
                     }
                 }
                 break

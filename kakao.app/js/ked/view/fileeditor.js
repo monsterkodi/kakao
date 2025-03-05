@@ -44,25 +44,19 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, row, start, x, y, _121_31_, _48_41_
+        var col, ret, row, start, x, y, _118_31_, _66_41_
 
-        if (fileeditor.__super__.onMouse.call(this,event))
+        ret = fileeditor.__super__.onMouse.call(this,event)
+        if ((ret != null ? ret.redraw : undefined))
         {
-            return true
+            return ret
         }
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
         switch (event.type)
         {
             case 'press':
-                if (this.cells.isOutsideEvent(event))
-                {
-                    if (!(this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
-                    {
-                        return
-                    }
-                }
-                if (event.count > 1)
+                if (event.count > 1 && this.hover)
                 {
                     if (!event.shift)
                     {
@@ -86,9 +80,9 @@ fileeditor = (function ()
                         this.state.selectLine(y)
                     }
                     this.dragStart = _k_.copy(this.state.s.selections[0])
-                    return true
+                    return {redraw:true}
                 }
-                else
+                else if (this.hover || (this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
                 {
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
@@ -117,7 +111,7 @@ fileeditor = (function ()
                         }
                     }
                     this.grabFocus()
-                    return true
+                    return {redraw:true}
                 }
                 break
             case 'drag':
@@ -138,28 +132,29 @@ fileeditor = (function ()
                     {
                         this.state.select(start,[x,y])
                     }
-                    return true
+                    return {redraw:true}
                 }
                 break
             case 'release':
-                return delete this.dragStart
-
+                delete this.dragStart
+                break
             case 'move':
-                if (this.cells.isInsideEvent(event))
+                if (this.hover)
                 {
                     if (!this.hasFocus() && _k_.empty(view.currentPopup) || view.currentPopup === this.name)
                     {
                         this.grabFocus()
                     }
-                    return post.emit('pointer','text')
+                    post.emit('pointer','text')
                 }
                 else if ((this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
                 {
-                    return post.emit('pointer','vertical-text')
+                    post.emit('pointer','vertical-text')
                 }
                 break
         }
 
+        return this.hover
     }
 
     fileeditor.prototype["onWheel"] = function (event)

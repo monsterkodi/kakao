@@ -8,13 +8,18 @@
 
 use ../../kxk ▪ post
 use ../util   ◆ theme
+use           ◆ view
 
-function knob
+function knob extends view
 
-    @: @cells @name ->
+    @: screen name ->
         
-        @framePos = 'right'
+        super screen name
+        
+        @parentName = @name[0...-5]
+        @frameSide = 'right'
         @maxWidth = 68
+        @pointerType = @resizePointer()
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -24,19 +29,13 @@ function knob
     
     resizePointer: ->
         
-        switch @framePos
+        switch @frameSide
             'right' 'left' ➜ 'ew-resize'
             'top' 'bottom' ➜ 'ns-resize'
     
     onMouse: event =>
         
-        [col row] = @cells.posForEvent event
-        
-        changed = @hover
-        @hover = switch @framePos
-            'top'   ➜ row == 0
-            'right' ➜ col == @cells.cols-1
-        changed = changed != @hover
+        super event
         
         switch event.type
             
@@ -45,35 +44,33 @@ function knob
                 if @hover
                     post.emit 'pointer' 'grabbing'
                     @doDrag = true
-                    ⮐ true
+                    ⮐ redraw:true
                     
             'drag'
             
                 if @doDrag
                     @hover = true
-                    size = switch @framePos
-                        
-                        'top'   ➜ [@cells.cols max(0 @cells.rows - row)]
-                        'right' ➜ [clamp(0 @maxWidth col) @cells.rows]
+                    
+                    [col row] = @cells.posForEvent event
+                    
+                    size = switch @frameSide
+                        'top'   ➜ row
+                        'right' ➜ col
                     
                     post.emit 'pointer' 'grabbing'
-                    post.emit 'view.size' @name size
-                    ⮐ true
+                    post.emit 'view.resize' @parentName @frameSide size
+                    ⮐ redraw:true
+                    
+                @hover = false
                 
             'release'
             
                 if @doDrag
-                    @hover = row == 0
                     post.emit 'pointer' @resizePointer() if @hover
                     delete @doDrag
-                    ⮐ true
+                    ⮐ redraw:true
+        @hover
             
-            'move'
-            
-                post.emit 'pointer' @resizePointer() if @hover
-                
-        changed
-                
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -82,12 +79,12 @@ function knob
     
     draw: =>
         
-        fg = @hover ? theme.resize_column : theme.gutter # theme.editor
+        fg = @hover ? theme.resize_column : theme.gutter
         
-        switch @framePos
+        switch @frameSide
             'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
             'right'
                 ⮐ if not @hover
-                @cells.fill_col @cells.cols-1 0 @cells.rows-1 '|' fg theme.funcol
+                @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funcol
 
 export knob

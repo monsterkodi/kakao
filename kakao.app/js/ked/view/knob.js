@@ -1,4 +1,4 @@
-var _k_ = {max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
 
 var knob
 
@@ -7,23 +7,26 @@ let post = kxk.post
 
 import theme from "../util/theme.js"
 
+import view from "./view.js"
+
 
 knob = (function ()
 {
-    function knob (cells, name)
+    _k_.extend(knob, view)
+    function knob (screen, name)
     {
-        this.cells = cells
-        this.name = name
-    
         this["draw"] = this["draw"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this.framePos = 'right'
+        knob.__super__.constructor.call(this,screen,name)
+        this.parentName = this.name.slice(0, -5)
+        this.frameSide = 'right'
         this.maxWidth = 68
+        this.pointerType = this.resizePointer()
     }
 
     knob.prototype["resizePointer"] = function ()
     {
-        switch (this.framePos)
+        switch (this.frameSide)
         {
             case 'right':
             case 'left':
@@ -39,25 +42,10 @@ knob = (function ()
 
     knob.prototype["onMouse"] = function (event)
     {
-        var changed, col, row, size
+        knob.__super__.onMouse.call(this,event)
+    
+        var col, row, size
 
-        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
-
-        changed = this.hover
-        this.hover = ((function ()
-        {
-            switch (this.framePos)
-            {
-                case 'top':
-                    return row === 0
-
-                case 'right':
-                    return col === this.cells.cols - 1
-
-            }
-
-        }).bind(this))()
-        changed = changed !== this.hover
         switch (event.type)
         {
             case 'press':
@@ -65,52 +53,48 @@ knob = (function ()
                 {
                     post.emit('pointer','grabbing')
                     this.doDrag = true
-                    return true
+                    return {redraw:true}
                 }
                 break
             case 'drag':
                 if (this.doDrag)
                 {
                     this.hover = true
+                    var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+
                     size = ((function ()
                     {
-                        switch (this.framePos)
+                        switch (this.frameSide)
                         {
                             case 'top':
-                                return [this.cells.cols,_k_.max(0,this.cells.rows - row)]
+                                return row
 
                             case 'right':
-                                return [_k_.clamp(0,this.maxWidth,col),this.cells.rows]
+                                return col
 
                         }
 
                     }).bind(this))()
                     post.emit('pointer','grabbing')
-                    post.emit('view.size',this.name,size)
-                    return true
+                    post.emit('view.resize',this.parentName,this.frameSide,size)
+                    return {redraw:true}
                 }
+                this.hover = false
                 break
             case 'release':
                 if (this.doDrag)
                 {
-                    this.hover = row === 0
                     if (this.hover)
                     {
                         post.emit('pointer',this.resizePointer())
                     }
                     delete this.doDrag
-                    return true
-                }
-                break
-            case 'move':
-                if (this.hover)
-                {
-                    post.emit('pointer',this.resizePointer())
+                    return {redraw:true}
                 }
                 break
         }
 
-        return changed
+        return this.hover
     }
 
     knob.prototype["draw"] = function ()
@@ -118,7 +102,7 @@ knob = (function ()
         var fg
 
         fg = (this.hover ? theme.resize_column : theme.gutter)
-        switch (this.framePos)
+        switch (this.frameSide)
         {
             case 'top':
                 return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
@@ -128,7 +112,7 @@ knob = (function ()
                 {
                     return
                 }
-                return this.cells.fill_col(this.cells.cols - 1,0,this.cells.rows - 1,'|',fg,theme.funcol)
+                return this.cells.fill_col(0,0,this.cells.rows - 1,'|',fg,theme.funcol)
 
         }
 

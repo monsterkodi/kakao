@@ -1,32 +1,31 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var popups, view
+var view
 
 import kxk from "../../kxk.js"
 let events = kxk.events
-let kstr = kxk.kstr
 let post = kxk.post
-let kutil = kxk.kutil
 
 import cells from "./cells.js"
 
-import knob from "./knob.js"
-
-popups = ['quicky','menu']
 
 view = (function ()
 {
     _k_.extend(view, events)
+    view["popups"] = ['quicky','menu']
     view["currentPopup"] = null
     function view (screen, name, features)
     {
         this.screen = screen
         this.name = name
     
-        var f, feature
+        var f
 
         this["draw"] = this["draw"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
+        this["handleHover"] = this["handleHover"].bind(this)
+        this["onMouseEnter"] = this["onMouseEnter"].bind(this)
+        this["onMouseLeave"] = this["onMouseLeave"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onViewShow"] = this["onViewShow"].bind(this)
@@ -40,23 +39,11 @@ view = (function ()
             f = list[_a_]
             this.feats[f] = true
         }
-        var list1 = _k_.list(features)
-        for (var _b_ = 0; _b_ < list1.length; _b_++)
-        {
-            feature = list1[_b_]
-            switch (feature)
-            {
-                case 'knob':
-                    this.knob = new knob(this.cells,this.name)
-                    break
-            }
-
-        }
-        if (_k_.in(this.name,popups))
+        if (_k_.in(this.name,view.popups))
         {
             post.on('view.show',this.onViewShow)
         }
-        if (_k_.in(this.name,popups))
+        if (_k_.in(this.name,view.popups))
         {
             post.on('view.hide',this.onViewHide)
         }
@@ -73,7 +60,7 @@ view = (function ()
 
     view.prototype["onViewShow"] = function (viewName)
     {
-        if (_k_.in(viewName,popups))
+        if (_k_.in(viewName,view.popups))
         {
             view.currentPopup = viewName
             if (viewName !== this.name && this.visible())
@@ -126,14 +113,44 @@ view = (function ()
 
     view.prototype["onMouse"] = function (event)
     {
-        var _69_27_
-
-        return (this.knob != null ? this.knob.onMouse(event) : undefined)
+        return this.handleHover(event)
     }
 
     view.prototype["onWheel"] = function (event)
     {
         console.log(`view.onWheel ${this.name}`)
+    }
+
+    view.prototype["onMouseLeave"] = function ()
+    {
+        return post.emit('redraw')
+    }
+
+    view.prototype["onMouseEnter"] = function ()
+    {
+        if (this.pointerType)
+        {
+            post.emit('pointer',this.pointerType)
+            return post.emit('redraw')
+        }
+    }
+
+    view.prototype["handleHover"] = function (event)
+    {
+        var inside
+
+        inside = this.cells.isInsideEvent(event)
+        if (this.hover && !inside)
+        {
+            this.hover = inside
+            this.onMouseLeave()
+        }
+        else if (inside && !this.hover)
+        {
+            this.hover = inside
+            this.onMouseEnter()
+        }
+        return this.hover
     }
 
     view.prototype["onKey"] = function (key, event)
@@ -147,11 +164,7 @@ view = (function ()
     }
 
     view.prototype["draw"] = function ()
-    {
-        var _81_18_
-
-        return (this.knob != null ? this.knob.draw() : undefined)
-    }
+    {}
 
     return view
 })()

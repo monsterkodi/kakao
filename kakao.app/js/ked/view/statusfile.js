@@ -20,6 +20,7 @@ statusfile = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["show"] = this["show"].bind(this)
         statusfile.__super__.constructor.call(this,screen,name)
+        this.pointerType = 'pointer'
         this.rounded = ''
     }
 
@@ -32,7 +33,7 @@ statusfile = (function ()
 
     statusfile.prototype["draw"] = function ()
     {
-        var bg, ch, fg, x, _40_47_
+        var bg, ch, fg, x, _42_47_
 
         if (this.hidden())
         {
@@ -40,7 +41,7 @@ statusfile = (function ()
         }
         statusfile.__super__.draw.call(this)
         bg = (this.hover ? '#44a' : theme.quicky_crumbs)
-        fg = ((_40_47_=theme.syntax[`${this.pars.ext} file`]) != null ? _40_47_ : theme.syntax.file)
+        fg = ((_42_47_=theme.syntax[`${this.pars.ext} file`]) != null ? _42_47_ : theme.syntax.file)
         var list = _k_.list(this.rounded)
         for (x = 0; x < list.length; x++)
         {
@@ -62,9 +63,9 @@ statusfile = (function ()
 
     statusfile.prototype["adjustText"] = function ()
     {
-        var _58_14_
+        var _60_14_
 
-        this.file = ((_58_14_=this.file) != null ? _58_14_ : '')
+        this.file = ((_60_14_=this.file) != null ? _60_14_ : '')
         this.pars = slash.parse(this.file)
         return this.rounded = '' + this.pars.file + ''
     }
@@ -83,33 +84,20 @@ statusfile = (function ()
 
     statusfile.prototype["onMouse"] = function (event)
     {
-        var inside
-
-        inside = this.cells.isInsideEvent(event)
+        statusfile.__super__.onMouse.call(this,event)
+    
         switch (event.type)
         {
             case 'press':
-                if (inside)
+                if (this.hover)
                 {
                     this.emit('action','click',this.file)
-                    delete this.hover
-                    return true
-                }
-                break
-            case 'move':
-                if (inside !== this.hover)
-                {
-                    this.hover = inside
-                    if (this.hover)
-                    {
-                        post.emit('pointer','pointer')
-                    }
-                    return true
+                    return {redraw:true}
                 }
                 break
         }
 
-        return false
+        return this.hover
     }
 
     return statusfile

@@ -20,6 +20,7 @@ crumbs = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["show"] = this["show"].bind(this)
         crumbs.__super__.constructor.call(this,screen,name)
+        this.pointerType = 'pointer'
         this.color = {bgl:'#000',bgr:'#000'}
     }
 
@@ -106,13 +107,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _94_14_
+        var padding, _96_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_94_14_=this.path) != null ? _94_14_ : '')
+        this.path = ((_96_14_=this.path) != null ? _96_14_ : '')
         this.split = slash.split(this.path)
         if (!(_k_.in(this.split[0],'~/')))
         {
@@ -149,11 +150,12 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _135_26_
+        var col, index, path, row, si, _137_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        if (this.cells.isOutsideEvent(event))
+        crumbs.__super__.onMouse.call(this,event)
+        if (!this.hover)
         {
             if ((this.hoverIndex != null))
             {
@@ -174,26 +176,23 @@ crumbs = (function ()
                     {
                         path = '/' + path
                     }
+                    console.log(`crumbs ${this.name} click ${path}`)
                     this.emit('action','click',path)
                     delete this.hoverIndex
                 }
-                return true
+                return {redraw:true}
 
             case 'move':
                 index = this.splitIndexAtCol(col)
                 if (this.hoverIndex !== index)
                 {
                     this.hoverIndex = index
-                    if ((0 <= this.hoverIndex && this.hoverIndex < this.split.length))
-                    {
-                        post.emit('pointer','pointer')
-                    }
-                    return true
+                    return {redraw:true}
                 }
                 break
         }
 
-        return false
+        return this.hover
     }
 
     return crumbs

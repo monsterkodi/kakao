@@ -17,8 +17,8 @@ function fileeditor extends editor
         
         super screen name features
         
-        if @feats.gutter   ➜ @gutter   = new gutter   @screen @state
-        if @feats.mapscr   ➜ @mapscr   = new mapscr   @screen @state; @mapscr.show()
+        if @feats.gutter   ➜ @gutter = new gutter @screen @state
+        if @feats.mapscr   ➜ @mapscr = new mapscr @screen @state; @mapscr.show()
         
         post.on 'finder.apply' @onFinderApply 
 
@@ -36,7 +36,7 @@ function fileeditor extends editor
     
     onMouse: event =>
         
-        ⮐ true if super event
+        ret = super event ; ⮐ ret if ret?.redraw
         
         [col row] = @cells.posForEvent event
         
@@ -44,10 +44,7 @@ function fileeditor extends editor
             
             'press'
             
-                if @cells.isOutsideEvent event
-                    ⮐ if not @gutter?.cells.isInsideEvent event
-                        
-                if event.count > 1
+                if event.count > 1 and @hover
 
                     @state.deselect() if not event.shift
                     
@@ -64,9 +61,9 @@ function fileeditor extends editor
                         
                     @dragStart = copy @state.s.selections[0]
                     
-                    ⮐ true
+                    ⮐ redraw:true
                     
-                else
+                else if @hover or @gutter?.cells.isInsideEvent(event)
                     
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
@@ -86,7 +83,7 @@ function fileeditor extends editor
                     
                     @grabFocus()
                     
-                    ⮐ true
+                    ⮐ redraw:true
                     
             'drag'
             
@@ -103,7 +100,7 @@ function fileeditor extends editor
                     if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd util.rangeFromStartToEnd(start [x y])
                     else             @state.select start [x y]
                         
-                    ⮐ true
+                    ⮐ redraw:true
                     
             'release'
             
@@ -111,7 +108,7 @@ function fileeditor extends editor
                 
             'move'
             
-                if @cells.isInsideEvent event
+                if @hover
                     
                     if not @hasFocus() and empty view.currentPopup or view.currentPopup == @name
                         @grabFocus()
@@ -121,6 +118,7 @@ function fileeditor extends editor
                 else if @gutter?.cells.isInsideEvent event
                     
                     post.emit 'pointer' 'vertical-text'
+        @hover
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      

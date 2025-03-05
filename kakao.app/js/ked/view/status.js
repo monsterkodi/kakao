@@ -32,6 +32,7 @@ status = (function ()
         this.gutter = 4
         this.file = ''
         this.drawTime = ''
+        this.pointerType = 'default'
         this.crumbs = new crumbs(this.screen,'status_crumbs')
         this.statusfile = new statusfile(this.screen,'status_file')
         this.crumbs.color.bgl = theme.gutter
@@ -68,9 +69,18 @@ status = (function ()
 
         cret = this.crumbs.onMouse(event)
         sret = this.statusfile.onMouse(event)
+        if (sret || cret)
+        {
+            return sret || cret
+        }
+        status.__super__.onMouse.call(this,event)
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        if (row === 0 && col < 4)
+        if (this.hover)
+        {
+            post.emit('pointer',this.pointerType)
+        }
+        if (this.hover && (0 <= col && col < 4))
         {
             switch (event.type)
             {
@@ -86,11 +96,12 @@ status = (function ()
                     {
                         post.emit('funcol.resize')
                     }
-                    break
+                    return {redraw:true}
+
             }
 
         }
-        return sret || cret
+        return this.hover
     }
 
     status.prototype["setFile"] = function (file)

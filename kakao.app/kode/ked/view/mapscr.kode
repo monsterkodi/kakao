@@ -18,6 +18,8 @@ function mapscr extends mapview
         
         super screen state
         
+        @pointerType = 'pointer'
+        
         screen.t.on 'preResize' @clearImages
         post.on 'greet' @clearImages
         
@@ -54,9 +56,11 @@ function mapscr extends mapview
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
         
+        ⮐ if view eql @state.s.view
+        
         @state.setView view
         
-        true
+        redraw:true
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -66,14 +70,13 @@ function mapscr extends mapview
     
     onMouse: event =>
         
-        [sx  sy]  = event.cell
-        [col row] = @cells.posForEvent event
+        super event
         
         switch event.type
             
             'press'
             
-                if @cells.isInsideScreen sx sy
+                if @hover
                     @doDrag = true
                     post.emit 'pointer''grabbing'
                     ⮐ @scrollToPixel event.pixel
@@ -83,21 +86,16 @@ function mapscr extends mapview
                 if @doDrag
                     post.emit 'pointer''grab'
                     ⮐ @scrollToPixel event.pixel
+                    
+                @hover = false
                 
             'release'
             
                 if @doDrag
                     delete @doDrag 
-                    @hover = @cells.isInsideScreen sx sy
                     post.emit 'pointer''pointer' if @hover
                     ⮐ true
-            
-            'move'
-            
-                @hover = @cells.isInsideScreen sx sy
-                post.emit 'pointer''pointer' if @hover
-                    
-        false
+        @hover
         
     clearImages: =>
         

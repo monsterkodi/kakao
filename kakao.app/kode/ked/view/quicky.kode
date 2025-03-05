@@ -200,31 +200,15 @@ function quicky extends inputchoice
         @crumbs.hide()
         @choices.mapscr.rowOffset = 0
         
-        # weight = item =>
-
-            # p = slash.parse item
-#             
-            # r = slash.relative item @currentFile
-#             
-            # w = 0
-            # w += r.split('../').length * 256
-            # w += r.split('/').length * 128
-            # w += kstr.weight p.name
-            # w
-            
         weight = item =>
 
             t = item.tilde
             p = slash.parse t
 
             w = 0
-            # w += 1     if slash.ext(item.tilde) in ['js' 'json']
             w += (t.split('../').length-1) * 1024 * 4
-            # w += (t.split('/').length-1) * 128 
-            # w += kstr.weight(p.dir) * 128  
             for s,i in slash.split(p.dir)
                 w += kstr.weight(s) / ((i+1)*(i+1))
-            log "#{w} #{t.split('../').length} #{t}"
             w
 
         # log 'items' items
@@ -362,14 +346,15 @@ function quicky extends inputchoice
     onMouse: event =>
 
         ⮐ if @hidden()
-        ⮐ true if @fscol.onMouse event
-        ⮐ true if @crumbs.onMouse event
-        super event
+        ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
+        ret = @fscol.onMouse event  ; ⮐ ret if ret?.redraw
+        ret = super event           ; ⮐ ret if ret?.redraw
+        @hover
 
     onWheel: event =>
         
         ⮐ if @hidden()
-        ⮐ true if @fscol.onWheel event
+        ret = @fscol.onWheel event ; ⮐ ret if ret?.redraw
         super event
                 
     #  0000000   00000000   00000000   000      000   000  
@@ -393,7 +378,7 @@ function quicky extends inputchoice
             
         if empty choice      ➜ ⮐ redraw:false 
         if empty choice.path ➜ ⮐ redraw:false 
-        
+
         @gotoDirOrOpenFile choice.path 
         redraw:true
         
@@ -404,8 +389,10 @@ function quicky extends inputchoice
     # 000   000   0000000     000     000   0000000   000   000  
     
     onCrumbsAction: action path =>
-        
-        @onChoicesAction action tilde:path path:slash.untilde(path)
+
+        switch action
+            
+            'click' ➜ ⮐ @applyChoice tilde:path path:slash.untilde(path)
     
     onFsColAction: action choice =>
         

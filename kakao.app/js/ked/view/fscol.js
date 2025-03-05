@@ -44,7 +44,7 @@ fscol = (function ()
 
     fscol.prototype["onMouse"] = function (event)
     {
-        var col, row
+        var col, ret, row
 
         if (this.hidden())
         {
@@ -52,11 +52,12 @@ fscol = (function ()
         }
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        if (this.hoverIndex >= 0 && (this.cells.isOutsideEvent(event) || this.state.isInvalidLineIndex(row)))
+        ret = fscol.__super__.onMouse.call(this,event)
+        if (this.hoverIndex >= 0 && (!(this.hover) || this.state.isInvalidLineIndex(row)))
         {
             return this.unhover()
         }
-        return fscol.__super__.onMouse.call(this,event)
+        return ret
     }
 
     fscol.prototype["listDir"] = async function (dir)
