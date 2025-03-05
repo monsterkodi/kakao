@@ -21,8 +21,10 @@ function dirtree extends choices
                         
         @state.syntax.setRgxs rgxs
         
-        @frontRoundOffset = 0
+        post.on 'session.merge' @onSessionMerge
         
+        @frontRoundOffset = 0
+                
     # 00000000    0000000    0000000   000000000  
     # 000   000  000   000  000   000     000     
     # 0000000    000   000  000   000     000     
@@ -39,16 +41,55 @@ function dirtree extends choices
         
         @currentRoot = dir
                 
+        ⮐ if empty items
+        
         for item in items
             item.tilde = ' ' + @symbolName(item)
 
         items.sort (a b) => @weight(a) - @weight(b)
                     
-        select ?= items[1].path                    
+        select ?= items[min(1 items.length-1)].path                   
         
-        @set items 
+        @set items
+        
+        @restoreSessionState()
         
         post.emit 'redraw' if opt.redraw
+        
+    # 00000000   00000000   0000000  000000000   0000000   00000000   00000000  
+    # 000   000  000       000          000     000   000  000   000  000       
+    # 0000000    0000000   0000000      000     000   000  0000000    0000000   
+    # 000   000  000            000     000     000   000  000   000  000       
+    # 000   000  00000000  0000000      000      0000000   000   000  00000000  
+        
+    restoreSessionState: ->
+        
+        state = ked_session.get @name {}
+
+        ⮐ if empty state.open
+        
+        for key,value of state.open
+            
+            if key.startsWith @currentRoot
+                
+                @openDir @itemForPath(key) redraw:true
+        
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
+    onSessionMerge: recent => @setState recent[@name]    
+        
+    setState: state =>
+        
+        ⮐ if empty state
+        ⮐ if not state is obj
+        
+        log "dirtree.setState" state
+        
+        ked_session.set @name state
                     
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
@@ -100,7 +141,7 @@ function dirtree extends choices
                         ⮐ 
                         
                     'doubleclick'
-                    'return' ➜ ⮐  post.emit 'cwd' c.path
+                    'return' ➜ ⮐  post.emit 'funcol.root' c.path
                 
             'file'
 
@@ -127,6 +168,8 @@ function dirtree extends choices
     
     openDir: dirItem opt ○->
         
+        ⮐ if empty dirItem
+        
         opt ?= {}
         
         dirItem.open = true
@@ -149,6 +192,8 @@ function dirtree extends choices
         
         @set @items index
         
+        ked_session.set "#{@name}▸open▸#{dirItem.path}" '✔'
+        
         post.emit 'redraw' if opt.redraw
         
     #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
@@ -158,6 +203,8 @@ function dirtree extends choices
     #  0000000  0000000   0000000   0000000   00000000  0000000    000  000   000  
     
     closeDir: dirItem opt ->
+        
+        ⮐ if empty dirItem
         
         opt ?= {}
         
@@ -175,8 +222,16 @@ function dirtree extends choices
         
         @set @items index
         
+        ked_session.del "#{@name}▸open▸#{dirItem.path}"
+        
         post.emit 'redraw' if opt.redraw
                 
+    # 000  000000000  00000000  00     00   0000000  
+    # 000     000     000       000   000  000       
+    # 000     000     0000000   000000000  0000000   
+    # 000     000     000       000 0 000       000  
+    # 000     000     00000000  000   000  0000000   
+    
     dirItems: dir info ○=>
         
         try
@@ -260,6 +315,16 @@ function dirtree extends choices
         
         for item,idx in @fuzzied
             ⮐ idx if item.path == ked_editor_file
+            
+    itemForPath: p ->
+        
+        for item,idx in @items
+            ⮐ item if slash.samePath item.path p
+
+    itemIndexForPath: p ->
+        
+        for item,idx in @items
+            ⮐ idx if slash.samePath item.path p
             
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     

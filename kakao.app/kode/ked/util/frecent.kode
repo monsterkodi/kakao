@@ -6,7 +6,7 @@
     000       000   000  00000000   0000000  00000000  000   000     000     
 ###
 
-use ../../kxk ▪ kstr pretty
+use ../../kxk ▪ kstr pretty post
 
 function frecent
 
@@ -24,6 +24,7 @@ function frecent
         
         rec.rank += delta
         rec.time  = @now()
+        rec.score = @frecent rec # just for debugging purpose, is calced on the fly
 
         # log b8('sampled') + ' ' + r5(key)
         for bi in @list(bucket)
@@ -51,5 +52,23 @@ function frecent
             'saved'  ➜ 10
         
         @sample file delta 'file'
+        
+# 00     00  00000000  00000000    0000000   00000000  
+# 000   000  000       000   000  000        000       
+# 000000000  0000000   0000000    000  0000  0000000   
+# 000 0 000  000       000   000  000   000  000       
+# 000   000  00000000  000   000   0000000   00000000  
+
+post.on 'session.merge' (recent) ->
+    
+    if valid recent.files
+        if valid recent.files.recent
+            # log """frecent.on session.merge #{g5 "#{noon(recent.files.recent)}"}"""
+            maxRecent = 60
+            newRecent = {}
+            for file in Object.keys(recent.files.recent)[0...maxRecent]
+                newRecent[file] = recent.files.recent[file]
+            frecent.buckets['file'] = newRecent
+            recent.files.recent = newRecent
 
 export frecent

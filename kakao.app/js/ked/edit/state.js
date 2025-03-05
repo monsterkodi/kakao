@@ -21,6 +21,7 @@ import indent from "./act/indent.js"
 import multi from "./act/multi.js"
 
 import keys from "./keys.js"
+import mode from "./mode.js"
 
 
 state = (function ()
@@ -57,6 +58,8 @@ state = (function ()
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
         this.name = name + '.state'
+        this.allowedModes = {}
+        this.activeModes = []
         var list = [del,insert,select,join,indent,multi]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -72,6 +75,30 @@ state = (function ()
         this.hasFocus = false
         this.s = immutable({lines:[[]],selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
         this.clearHistory()
+    }
+
+    state.prototype["toggleMode"] = function (name)
+    {
+        if (this.allowedModes[name])
+        {
+            return mode.toggle(this,name)
+        }
+    }
+
+    state.prototype["startMode"] = function (name)
+    {
+        if (this.allowedModes[name])
+        {
+            return mode.start(this,name)
+        }
+    }
+
+    state.prototype["stopMode"] = function (name)
+    {
+        if (this.allowedModes[name])
+        {
+            return mode.stop(this,name)
+        }
     }
 
     state.prototype["owner"] = function ()

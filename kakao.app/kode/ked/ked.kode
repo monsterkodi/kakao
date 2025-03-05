@@ -32,9 +32,12 @@ function KED
             
         @logfile = new logfile
         @session = new session
+        
         global.ked_session = @session
+        
         @session.on 'loaded' @onSessionLoaded
-        @viewSizes = funcol:[30 0]
+        
+        @viewSizes = funcol:[20 0]
                     
         @t = new ttio
         
@@ -45,7 +48,7 @@ function KED
         @menu    = new menu       @screen        
         @quicky  = new quicky     @screen 
         @finder  = new finder     @screen 
-        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete']
+        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete' 'salter' 'uniko' 'vimple' 'unype']
         @funcol  = new funcol     @screen 'funcol'  ['scroll' 'knob']
         @status  = new status     @screen @editor.state
         
@@ -78,10 +81,14 @@ function KED
         else
             @menu.show true
             
-    onSessionLoaded: => 
-    
-        @menu.show true if empty @currentFile
-                        
+    onSessionLoaded: =>
+        
+        if empty @currentFile
+            @menu.show true 
+            # if root = ked_session.get 'funcol▸root'
+                # log "load last session root #{root}"
+                # post.emit 'funcol.root' root
+                            
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
     # 0000000    000   000  000 0 000  

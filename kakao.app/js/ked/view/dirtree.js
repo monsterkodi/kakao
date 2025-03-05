@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 var dirtree
 
@@ -28,9 +28,12 @@ dirtree = (function ()
     function dirtree (screen, name, features)
     {
         this["dirItems"] = this["dirItems"].bind(this)
+        this["setState"] = this["setState"].bind(this)
+        this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["setRoot"] = this["setRoot"].bind(this)
         dirtree.__super__.constructor.call(this,screen,name,features)
         this.state.syntax.setRgxs(rgxs)
+        post.on('session.merge',this.onSessionMerge)
         this.frontRoundOffset = 0
     }
 
@@ -42,6 +45,10 @@ dirtree = (function ()
         dir = slash.untilde(path)
         items = await this.dirItems(dir,'dirtree.setRoot')
         this.currentRoot = dir
+        if (_k_.empty(items))
+        {
+            return
+        }
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -52,12 +59,51 @@ dirtree = (function ()
         {
             return this.weight(a) - this.weight(b)
         }).bind(this))
-        select = (select != null ? select : items[1].path)
+        select = (select != null ? select : items[_k_.min(1,items.length - 1)].path)
         this.set(items)
+        this.restoreSessionState()
         if (opt.redraw)
         {
             return post.emit('redraw')
         }
+    }
+
+    dirtree.prototype["restoreSessionState"] = function ()
+    {
+        var key, state, value
+
+        state = ked_session.get(this.name,{})
+        if (_k_.empty(state.open))
+        {
+            return
+        }
+        for (key in state.open)
+        {
+            value = state.open[key]
+            if (key.startsWith(this.currentRoot))
+            {
+                this.openDir(this.itemForPath(key),{redraw:true})
+            }
+        }
+    }
+
+    dirtree.prototype["onSessionMerge"] = function (recent)
+    {
+        return this.setState(recent[this.name])
+    }
+
+    dirtree.prototype["setState"] = function (state)
+    {
+        if (_k_.empty(state))
+        {
+            return
+        }
+        if (!(_k_.isObj(state)))
+        {
+            return
+        }
+        console.log("dirtree.setState",state)
+        return ked_session.set(this.name,state)
     }
 
     dirtree.prototype["emitAction"] = function (action, arg, event)
@@ -121,7 +167,7 @@ dirtree = (function ()
 
                     case 'doubleclick':
                     case 'return':
-                        return post.emit('cwd',c.path)
+                        return post.emit('funcol.root',c.path)
 
                 }
 
@@ -156,13 +202,17 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _138_31_
+        var depth, index, item, items, _181_31_
 
+        if (_k_.empty(dirItem))
+        {
+            return
+        }
         opt = (opt != null ? opt : {})
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_138_31_=dirItem.depth) != null ? _138_31_ : 0)) + 1
+        depth = (((_181_31_=dirItem.depth) != null ? _181_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -177,6 +227,7 @@ dirtree = (function ()
         index = this.items.indexOf(dirItem)
         kutil.insert(this.items,index + 1,items)
         this.set(this.items,index)
+        ked_session.set(`${this.name}▸open▸${dirItem.path}`,'✔')
         if (opt.redraw)
         {
             return post.emit('redraw')
@@ -187,6 +238,10 @@ dirtree = (function ()
     {
         var index, numChildren
 
+        if (_k_.empty(dirItem))
+        {
+            return
+        }
         opt = (opt != null ? opt : {})
         dirItem.open = false
         dirItem.tilde = dirItem.tilde.replace(icons.dir_open,icons.dir_close)
@@ -198,6 +253,7 @@ dirtree = (function ()
         }
         kutil.replace(this.items,index + 1,numChildren,[])
         this.set(this.items,index)
+        ked_session.del(`${this.name}▸open▸${dirItem.path}`)
         if (opt.redraw)
         {
             return post.emit('redraw')
@@ -296,7 +352,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _259_44_
+        var idx, item, _314_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -307,6 +363,36 @@ dirtree = (function ()
         {
             item = list[idx]
             if (item.path === ked_editor_file)
+            {
+                return idx
+            }
+        }
+    }
+
+    dirtree.prototype["itemForPath"] = function (p)
+    {
+        var idx, item
+
+        var list = _k_.list(this.items)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (slash.samePath(item.path,p))
+            {
+                return item
+            }
+        }
+    }
+
+    dirtree.prototype["itemIndexForPath"] = function (p)
+    {
+        var idx, item
+
+        var list = _k_.list(this.items)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (slash.samePath(item.path,p))
             {
                 return idx
             }
@@ -329,12 +415,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _289_51_
+        var _354_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_289_51_=icons[slash.ext(item.path)]) != null ? _289_51_ : icons.file)
+                return ((_354_51_=icons[slash.ext(item.path)]) != null ? _354_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

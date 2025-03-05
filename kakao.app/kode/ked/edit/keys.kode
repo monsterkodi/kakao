@@ -101,6 +101,12 @@ handleKey = key event -> # will be bound to state
         'shift+cmd+d' 'shift+ctrl+d'        ➜ ⮐ @selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
         'shift+cmd+g' 'shift+ctrl+g'        ➜ ⮐ @selectWordAtCursor_highlightSelection_selectPrevHighlight()
     
+        'alt+y'                             ➜ ⮐ @toggleMode 'unype'
+        'alt+r'                             ➜ ⮐ @toggleMode 'record'
+        'alt+u'                             ➜ ⮐ @toggleMode 'uniko'
+        'alt+;'                             ➜ ⮐ @toggleMode 'vimple'
+        'alt+3'                             ➜ ⮐ @toggleMode 'salter'
+        
         'cmd+3' 'ctrl+3'                    ➜ ⮐ @insertAsciiHeaderForSelectionOrWordAtCursor()
         'alt+cmd+d' 'alt+ctrl+d'            ➜ ⮐ @selectWordAtCursor_highlightSelection_selectAllHighlights()
         

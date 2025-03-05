@@ -32,15 +32,29 @@ function funcol extends view
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
-        post.on 'cwd'           @setRoot
+        post.on 'funcol.root'   @setRoot
         
-        @setRoot process.cwd()
+        post.on 'session.merge' @onSessionMerge
+        
+        root = ked_session.get 'funcol▸root' process.cwd()
+        log "funcol.root: #{r7 root}"
+        @setRoot root
         
     onCrumbsAction: action path =>
 
         if action == 'click'
             @setRoot path
+            
+    onSessionMerge: recent =>
         
+        log "funcol onSessionMerge #{noon recent.funcol}"
+        
+        ⮐ if empty recent.funcol
+        
+        if root = recent.funcol.root
+            log "funcol set recent root #{root}"
+            @setRoot root
+            
     setRoot: path =>
     
         ⮐ if empty path
@@ -48,6 +62,9 @@ function funcol extends view
         path = slash.tilde path
         @crumbs.set path
         @dirtree.setRoot path redraw:true
+        
+        log "funcol.setRoot: #{b7 path}"
+        ked_session.set 'funcol▸root' path
         
     layout: x y w h ->
         

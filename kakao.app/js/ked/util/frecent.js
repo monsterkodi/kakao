@@ -1,10 +1,11 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var frecent
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 let pretty = kxk.pretty
+let post = kxk.post
 
 
 frecent = (function ()
@@ -31,6 +32,7 @@ frecent = (function ()
         rec = this.buckets[bucket][key]
         rec.rank += delta
         rec.time = this.now()
+        rec.score = this.frecent(rec)
         var list = _k_.list(this.list(bucket))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -89,4 +91,25 @@ frecent = (function ()
     return frecent
 })()
 
+post.on('session.merge',function (recent)
+{
+    var file, maxRecent, newRecent
+
+    if (!_k_.empty(recent.files))
+    {
+        if (!_k_.empty(recent.files.recent))
+        {
+            maxRecent = 60
+            newRecent = {}
+            var list = _k_.list(Object.keys(recent.files.recent).slice(0, typeof maxRecent === 'number' ? maxRecent : -1))
+            for (var _a_ = 0; _a_ < list.length; _a_++)
+            {
+                file = list[_a_]
+                newRecent[file] = recent.files.recent[file]
+            }
+            frecent.buckets['file'] = newRecent
+            return recent.files.recent = newRecent
+        }
+    }
+})
 export default frecent;

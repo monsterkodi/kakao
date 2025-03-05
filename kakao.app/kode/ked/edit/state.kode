@@ -10,13 +10,16 @@ use child_process os
 use ../../kxk ▪ immutable kstr kseg
 use ../util   ◆ util syntax
 use ./act     ◆ del insert select join indent multi
-use           ◆ keys
+use           ◆ keys mode
 
 function state
 
     @: @cells name ->
 
         @name = name + '.state'
+        
+        @allowedModes = {}
+        @activeModes = []
 
         for act in [del insert select join indent multi]
             for k,v of act
@@ -36,6 +39,10 @@ function state
             view:        [0 0]
             
         @clearHistory()
+
+    toggleMode: name -> mode.toggle @ name if @allowedModes[name]
+    startMode: name -> mode.start @ name if @allowedModes[name]
+    stopMode: name -> mode.stop @ name if @allowedModes[name]
         
     owner: -> 
         

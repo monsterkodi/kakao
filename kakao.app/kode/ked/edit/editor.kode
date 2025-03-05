@@ -9,7 +9,7 @@
 use ../../kxk ▪ post
 use ../util   ◆ util
 use ../view   ◆ scroll mapview view
-use           ◆ state draw complete
+use           ◆ state draw complete mode
 
 function editor extends draw
 
@@ -25,7 +25,10 @@ function editor extends draw
         if @feats.scroll   ➜ @scroll   = new scroll   @screen @state 'left'
         if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state
         if @feats.complete ➜ @complete = new complete @
-                
+            
+        for m in mode.names()            
+            if @feats[m] ➜ @state.allowedModes[m] = true
+                        
     # 000  000   000  000  000000000  
     # 000  0000  000  000     000     
     # 000  000 0 000  000     000     

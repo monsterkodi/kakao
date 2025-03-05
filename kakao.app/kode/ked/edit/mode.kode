@@ -1,0 +1,126 @@
+###
+00     00   0000000   0000000    00000000
+000   000  000   000  000   000  000     
+000000000  000   000  000   000  0000000 
+000 0 000  000   000  000   000  000     
+000   000   0000000   0000000    00000000
+
+    the class stores modes per editor state
+    the objects handle input and text insertion
+
+    vimple   simple vi
+    salter   ascii-header 
+    uniko    unicode drawing
+    unype    unicode type writer
+    record   
+
+###
+
+function mode
+
+    @active: {} # maps editor state names to active mode instances
+    @modes: {}  # maps mode names to mode subclasses
+
+    @: @name -> # log "mode: #{@name}"
+    
+    @names: -> Object.keys mode.modes
+
+    #  ███████  █████████   ███████   ████████   █████████
+    # ███          ███     ███   ███  ███   ███     ███   
+    # ███████      ███     █████████  ███████       ███   
+    #      ███     ███     ███   ███  ███   ███     ███   
+    # ███████      ███     ███   ███  ███   ███     ███   
+    
+    @toggle: state name ->
+        
+        if @isActive state name
+            @stop state name
+        else
+            @start state name
+
+    @start: state name ->
+    
+        ⮐ if @isActive state name
+        
+        log "mode.start #{name}"
+        
+        @active[state.name] ?= []
+        @active[state.name].push new mode.modes[name]
+        
+        log "mode.start" @active[state.name].map((m) -> m.name)
+            
+    @stop: state name ->
+        
+        log "mode.stop #{name}"
+        
+        @active.splice @active[state.name].indexOf(@get(name)) 1
+        
+        log "mode.stop" @active[state.name].map((m) -> m.name)
+
+    #  ███████    ███████  █████████  ███  ███   ███  ████████
+    # ███   ███  ███          ███     ███  ███   ███  ███     
+    # █████████  ███          ███     ███   ███ ███   ███████ 
+    # ███   ███  ███          ███     ███     ███     ███     
+    # ███   ███   ███████     ███     ███      █      ████████
+
+    @isActive: state name -> valid @get(state name)
+        
+    @get: state name ->
+        
+        for m in @active[state.name]
+            ⮐ m if m.name == name
+            
+# ███   ███  ███  ██     ██  ████████   ███      ████████
+# ███   ███  ███  ███   ███  ███   ███  ███      ███     
+#  ███ ███   ███  █████████  ████████   ███      ███████ 
+#    ███     ███  ███ █ ███  ███        ███      ███     
+#     █      ███  ███   ███  ███        ███████  ████████
+
+function vimple extends mode
+    
+    @: -> super 'vimple'
+
+#  ███████   ███████   ███      █████████  ████████  ████████ 
+# ███       ███   ███  ███         ███     ███       ███   ███
+# ███████   █████████  ███         ███     ███████   ███████  
+#      ███  ███   ███  ███         ███     ███       ███   ███
+# ███████   ███   ███  ███████     ███     ████████  ███   ███
+
+function salter extends mode
+
+    @: -> super 'salter'
+
+# ███   ███  ███   ███  ███  ███   ███   ███████ 
+# ███   ███  ████  ███  ███  ███  ███   ███   ███
+# ███   ███  ███ █ ███  ███  ███████    ███   ███
+# ███   ███  ███  ████  ███  ███  ███   ███   ███
+#  ███████   ███   ███  ███  ███   ███   ███████ 
+
+function uniko extends mode
+
+    @: -> super 'uniko'
+    
+# ███   ███  ███   ███  ███   ███  ████████   ████████
+# ███   ███  ████  ███   ███ ███   ███   ███  ███     
+# ███   ███  ███ █ ███    █████    ████████   ███████ 
+# ███   ███  ███  ████     ███     ███        ███     
+#  ███████   ███   ███     ███     ███        ████████
+
+function unype extends mode
+
+    @: -> super 'unype'
+    
+    insert: char -> char
+
+function record extends mode
+
+    @: -> super 'record'
+    
+mode.modes = 
+    vimple: vimple
+    salter: salter
+    uniko:  uniko
+    unype:  unype
+    record: record
+    
+export mode

@@ -22,10 +22,14 @@
 #### todo
 ##### todo    
 
-- funclist
+- modes!!! 
+- file watcher!!!
+    - houston, we have some problems ;)
 
-- multicursor
-    - travel along columns on up and down
+- dirtree
+    - state restore 
+    - git status
+    - searchable?
        
 - ascii header mode
     - cmd+3 create header for selection or cursor word
@@ -35,21 +39,23 @@
 - completion
     - fix
         - turd missing completions
+        - completions with leading turd
     - allow completion inside chunks in some cases
         - before closing )]}
         - after . :
         
-- dirtree
-    - git status
-    - searchable?
+- funclist
+        
+- multicursor
+    - travel along columns on up and down
         
 - surround
 
 - quicky
+    - file icons and ext removal
     - fix 
         - clamp long relative parent dirs
     - click in mapview to jump to line
-    - file icons?
     
 - status
     - move dirty and redo into statusfile 
@@ -101,7 +107,6 @@
 - macro
     - unicode palette
     
-- file watcher
 
 ### nice to have
     

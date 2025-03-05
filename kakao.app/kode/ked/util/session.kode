@@ -13,6 +13,8 @@
     
         - main cursor positions per file
         - recent file history
+        - dirtree
+            - root
 ###
 
 use ../../kxk ◆ noon events slash post nfs sds
@@ -140,11 +142,14 @@ function session extends events
         if valid file
             
             recent =○ noon.read file
-            # log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
-            if valid recent.files
-                if valid recent.files.recent
-                    frecent.buckets['file'] = recent.files.recent
-                @set 'files' recent.files  # probably should actually merge here instead of overriding!
+            
+            log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
+                
+            post.emit 'session.merge' recent
+            
+            log 'post merge:' recent
+            
+            @set 'files' recent.files # probably should actually merge here instead of overriding!
         
         @emit 'loaded'
     
@@ -173,6 +178,6 @@ function session extends events
             
     recentFiles: =>
         
-        Object.keys @get('files▸recent')
+        Object.keys @get('files▸recent' {}) 
         
 export session

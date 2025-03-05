@@ -66,7 +66,8 @@ function menu extends inputchoice
             """
         
         items.splice items.length-2 0 'about' if not @greet
-        items.splice items.indexOf('recent ...') 1 if empty global.ked_session.get 'files▸recent'
+        # items.splice items.indexOf('recent ...') 1 if empty ked_session.get('files▸recent')
+        items.splice items.indexOf('recent ...') 1 if empty ked_session.recentFiles()
         
         items = items.map (i) -> ' ' + i # padding for  
             
@@ -91,11 +92,8 @@ function menu extends inputchoice
     # 000   000  00000000   0000000  00000000  000   000     000     
     
     showRecent: ->
-        
-        maxRecent = 20
-        
+                
         recent = frecent.list 'file'
-        recent = recent[0...min(recent.length maxRecent)]
         
         @choices.set recent
 

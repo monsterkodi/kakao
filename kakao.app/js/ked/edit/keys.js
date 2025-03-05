@@ -239,6 +239,21 @@ handleKey = function (key, event)
         case 'shift+ctrl+g':
             return this.selectWordAtCursor_highlightSelection_selectPrevHighlight()
 
+        case 'alt+y':
+            return this.toggleMode('unype')
+
+        case 'alt+r':
+            return this.toggleMode('record')
+
+        case 'alt+u':
+            return this.toggleMode('uniko')
+
+        case 'alt+;':
+            return this.toggleMode('vimple')
+
+        case 'alt+3':
+            return this.toggleMode('salter')
+
         case 'cmd+3':
         case 'ctrl+3':
             return this.insertAsciiHeaderForSelectionOrWordAtCursor()

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var editor
 
@@ -14,6 +14,7 @@ import view from "../view/view.js"
 import state from "./state.js"
 import draw from "./draw.js"
 import complete from "./complete.js"
+import mode from "./mode.js"
 
 
 editor = (function ()
@@ -21,6 +22,8 @@ editor = (function ()
     _k_.extend(editor, draw)
     function editor (screen, name, features)
     {
+        var m
+
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["onFocus"] = this["onFocus"].bind(this)
@@ -49,11 +52,20 @@ editor = (function ()
         {
             this.complete = new complete(this)
         }
+        var list = _k_.list(mode.names())
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (this.feats[m])
+            {
+                this.state.allowedModes[m] = true
+            }
+        }
     }
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _60_17_
+        var g, m, r, s, sl, sr, _63_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -91,7 +103,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _74_21_, _75_21_, _76_23_
+        var ret, _77_21_, _78_21_, _79_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -113,7 +125,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, _91_25_, _92_25_, _93_25_, _97_20_
+        var inside, _100_20_, _94_25_, _95_25_, _96_25_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -185,7 +197,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _162_20_, _166_21_, _171_24_
+        var _165_20_, _169_21_, _174_24_
 
         if (!this.hasFocus())
         {

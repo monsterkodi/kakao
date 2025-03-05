@@ -66,14 +66,14 @@ ked [file]
         this.session = new session
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
-        this.viewSizes = {funcol:[30,0]}
+        this.viewSizes = {funcol:[20,0]}
         this.t = new ttio
         this.julia = new julia
         this.screen = new screen(this.t)
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
-        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete'])
+        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete','salter','uniko','vimple','unype'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
@@ -132,7 +132,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _121_10_
+        var _128_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -160,7 +160,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _149_22_
+        var _156_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -186,7 +186,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _194_22_
+        var segls, start, text, _201_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -408,7 +408,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _351_22_
+        var _358_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
