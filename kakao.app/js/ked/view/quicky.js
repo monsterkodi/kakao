@@ -88,16 +88,15 @@ quicky = (function ()
             return
         }
         this.layout()
+        this.drawFrame()
         this.crumbs.draw()
         this.fscol.draw()
         this.drawChoices()
-        return this.drawFrame()
+        return this.drawAdditions()
     }
 
-    quicky.prototype["drawFrame"] = function ()
+    quicky.prototype["drawAdditions"] = function ()
     {
-        quicky.__super__.drawFrame.call(this)
-    
         var bg, fg, x, y
 
         if (this.fscol.visible())
@@ -107,10 +106,14 @@ quicky = (function ()
             x = this.choices.cells.cols + 2
             this.cells.fill_col(x,2,this.cells.rows - 2,'│',fg,bg)
             this.cells.set(x,this.cells.rows - 1,'┴',fg,bg)
-            y = this.choices.currentIndex() + 2
-            this.cells.fill_row(y,this.choices.current().tilde.length + 2,x - 2,' ',bg,this.choices.color.current)
-            this.cells.set(x - 1,y,'',this.choices.color.current,bg)
-            return this.cells.set(x,y,'┤',fg,bg)
+            x = this.choices.cells.cols - 1
+            y = this.choices.currentIndex() - this.choices.state.s.view[1]
+            this.choices.cells.fill_row(y,this.choices.current().tilde.length,x - 1,' ',bg,this.choices.color.current)
+            this.choices.cells.set(x,y,'',this.choices.color.current,bg)
+            if ((0 <= y && y < this.choices.cells.rows))
+            {
+                return this.choices.cells.set_unsafe(x + 1,y,'┤',fg,bg)
+            }
         }
     }
 
@@ -487,7 +490,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _420_62_
+        var upDir, _418_62_
 
         switch (action)
         {
@@ -505,7 +508,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_420_62_=choice.link) != null ? _420_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_418_62_=choice.link) != null ? _418_62_ : choice.path))
                     }
                 }
                 break

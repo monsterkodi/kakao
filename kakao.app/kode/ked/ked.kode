@@ -19,7 +19,7 @@ function KED
 
     @: ->
 
-        @version = '0.1.0'
+        @version = '0.2.0'
         args = karg """
             
             ked [file]
@@ -76,7 +76,6 @@ function KED
         if valid args.options
             @loadFile args.options[0]
         else
-            # @newFile()
             @menu.show true
             
     onSessionLoaded: => 

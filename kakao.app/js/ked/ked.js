@@ -55,7 +55,7 @@ KED = (function ()
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.1.0'
+        this.version = '0.2.0'
         args = karg(`
 ked [file]
     options                      **
@@ -132,7 +132,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _122_10_
+        var _121_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -160,7 +160,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _150_22_
+        var _149_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -186,7 +186,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _195_22_
+        var segls, start, text, _194_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -409,7 +409,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _352_22_
+        var _351_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

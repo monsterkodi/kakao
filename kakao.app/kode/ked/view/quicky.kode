@@ -80,14 +80,13 @@ function quicky extends inputchoice
         ⮐ if @hidden()
          
         @layout()
+        @drawFrame()
         @crumbs.draw()
         @fscol.draw()
         @drawChoices()
-        @drawFrame()
+        @drawAdditions()
         
-    drawFrame: ->
-        
-        super()
+    drawAdditions: ->
         
         if @fscol.visible()
             
@@ -97,11 +96,12 @@ function quicky extends inputchoice
             x = @choices.cells.cols+2
             @cells.fill_col x 2 @cells.rows-2 '│' fg bg
             @cells.set      x   @cells.rows-1 '┴' fg bg
-            
-            y = @choices.currentIndex()+2
-            @cells.fill_row y @choices.current().tilde.length+2 x-2 ' ' bg @choices.color.current
-            @cells.set      x-1 y '' @choices.color.current bg 
-            @cells.set      x y '┤' fg bg
+
+            x = @choices.cells.cols-1
+            y = @choices.currentIndex()-@choices.state.s.view[1]
+            @choices.cells.fill_row     y @choices.current().tilde.length x-1 ' ' bg @choices.color.current
+            @choices.cells.set          x y '' @choices.color.current bg 
+            @choices.cells.set_unsafe   x+1 y '┤' fg bg if 0 <= y < @choices.cells.rows
         
     # 000000000   0000000    0000000    0000000   000      00000000  
     #    000     000   000  000        000        000      000       
@@ -211,8 +211,6 @@ function quicky extends inputchoice
                 w += kstr.weight(s) / ((i+1)*(i+1))
             w
 
-        # log 'items' items
-                                                               
         items = items.map (path) => 
         
             rel = slash.relative path @currentDir

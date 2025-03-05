@@ -120,7 +120,7 @@ function scroll extends view
                 lnum < rows     ➜
                 row == nc       ➜ fg = @hover ? @color.hover.dot  : @color.dot
                 ns <= row <= ne ➜ fg = @hover ? @color.hover.knob : @color.knob
-                
+            
             @cells.set 0 row @handle fg @color.bg
 
 export scroll

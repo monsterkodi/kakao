@@ -94,9 +94,9 @@ draw = (function ()
         this.drawSelections()
         ;(this.complete != null ? this.complete.draw() : undefined)
         this.drawCursors()
-        ;(this.scroll != null ? this.scroll.draw() : undefined)
         ;(this.gutter != null ? this.gutter.draw() : undefined)
         ;(this.mapscr != null ? this.mapscr.draw() : undefined)
+        ;(this.scroll != null ? this.scroll.draw() : undefined)
         return draw.__super__.draw.call(this)
     }
 

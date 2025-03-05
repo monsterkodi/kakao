@@ -48,7 +48,6 @@ function fscol extends choices
         try
             items =○ nfs.list dir recursive:false
         catch err
-            # error "nfs.list #{dir} #{err}"
             @clear()
             post.emit 'redraw'
             ⮐ 
