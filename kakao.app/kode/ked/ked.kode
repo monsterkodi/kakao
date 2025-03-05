@@ -168,13 +168,13 @@ function KED
         start = process.hrtime()
         
         if slash.isAbsolute p
-            @status.setFile slash.tilde(p)
             @currentFile = slash.absolute p
         else
-            @status.setFile slash.normalize(p)
             @currentFile = slash.path process.cwd() p
 
         @currentFile =○ nfs.resolveSymlink @currentFile
+        
+        @status.setFile slash.tilde(@currentFile)
         
         global.ked_editor_file = @currentFile
 

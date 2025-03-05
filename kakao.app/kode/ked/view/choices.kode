@@ -224,6 +224,12 @@ function choices extends editor
         @emitAction 'click' @fuzzied[index] event
         redraw:true
         
+    doubleClickChoiceAtIndex: index event =>
+        
+        @hoverIndex = -1  
+        @emitAction 'doubleclick' @fuzzied[index] event
+        redraw:true
+        
     onMouse: event =>
         
         # log "choices #{r6 @name} onMouse"
@@ -245,8 +251,12 @@ function choices extends editor
                 
                 switch event.type
                     
-                    'press' ➜ ⮐ @clickChoiceAtIndex row + @state.s.view[1] event
                     'move'  ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1] event
+                    'press' 
+                        if event.count == 2
+                            ⮐ @doubleClickChoiceAtIndex row + @state.s.view[1] event
+                        else
+                            ⮐ @clickChoiceAtIndex row + @state.s.view[1] event
         @hover
         
     #  0000000    0000000  000000000  000   0000000   000   000  

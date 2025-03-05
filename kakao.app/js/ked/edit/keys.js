@@ -239,6 +239,10 @@ handleKey = function (key, event)
         case 'shift+ctrl+g':
             return this.selectWordAtCursor_highlightSelection_selectPrevHighlight()
 
+        case 'cmd+3':
+        case 'ctrl+3':
+            return this.insertAsciiHeaderForSelectionOrWordAtCursor()
+
         case 'alt+cmd+d':
         case 'alt+ctrl+d':
             return this.selectWordAtCursor_highlightSelection_selectAllHighlights()

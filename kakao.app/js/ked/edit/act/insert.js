@@ -25,4 +25,17 @@ export default {insert:function (text)
     this.clearHighlights()
     this.setLines(lines)
     return this.setCursors(cursors)
+},insertAsciiHeaderForSelectionOrWordAtCursor:function ()
+{
+    var cursors, lines, selections
+
+    selections = this.allSelections()
+    cursors = this.allCursors()
+    lines = this.allLines()
+    var _b_ = util.insertAsciiHeaderForPositionsAndRanges(lines,cursors,selections); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
+
+    this.clearHighlights()
+    this.setLines(lines)
+    this.setSelections(selections)
+    return this.setCursors(cursors)
 }}

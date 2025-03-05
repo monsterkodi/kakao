@@ -1,4 +1,6 @@
 
+
+
               crumbs  file      tabs          status
             ┏━━━━━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━━┓
             ┣━━━━━━━━╋━━━━┻━━━━┻━━━━┻━━━━┻━━┳━┻━━━━━┫
@@ -20,11 +22,10 @@
 #### todo
 ##### todo    
 
-- dirtree
-
-    - searchable?
-    
 - funclist
+
+- multicursor
+    - travel along columns on up and down
        
 - ascii header mode
     - cmd+3 create header for selection or cursor word
@@ -37,6 +38,10 @@
     - allow completion inside chunks in some cases
         - before closing )]}
         - after . :
+        
+- dirtree
+    - git status
+    - searchable?
         
 - surround
 

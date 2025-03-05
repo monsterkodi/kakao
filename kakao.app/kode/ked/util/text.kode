@@ -6,13 +6,20 @@
    000     00000000  000   000     000   
 ###
 
-use ../../kxk ▪ kstr kutil kseg
+use ../../kxk ▪ kstr kutil kseg 
+use ../../kxk ◆ salter
 
 function text
 
     @linesForText: text -> 
         
         kstr.lines text.replace(/\x1b/g '�')
+        
+    @joinLines: lines join='\n'->
+        
+        if lines is str
+            lines = kstr.lines lines
+        lines.join join
         
     @seglsForText: text ->
 
@@ -454,5 +461,25 @@ function text
                 segls.push segl[0...segl.length-tc]
             
         kutil.uniq segls.map(kseg.str)
+        
+    #  0000000    0000000   0000000  000  000  000   000  00000000   0000000   0000000    00000000  00000000   
+    # 000   000  000       000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000000000  0000000   000       000  000  000000000  0000000   000000000  000   000  0000000   0000000    
+    # 000   000       000  000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000   000  0000000    0000000  000  000  000   000  00000000  000   000  0000000    00000000  000   000  
+    
+    @insertAsciiHeaderForPositionsAndRanges: lines posl ranges ->
+        
+        if empty ranges
+            ranges = posl.map (p) => @rangeOfClosestWordToPos(lines p)
+        
+        text = @joinLines @textForLineRanges(lines ranges) ' '
+        
+        salt = salter text '█'
+        
+        salt = '\n' + @joinLines(kstr.lines(salt).map((l) -> "# " + l))
+        
+        [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]-1]]
+        [lines posl []]
                 
 export text

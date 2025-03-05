@@ -191,15 +191,14 @@ ked [file]
         start = process.hrtime()
         if (slash.isAbsolute(p))
         {
-            this.status.setFile(slash.tilde(p))
             this.currentFile = slash.absolute(p)
         }
         else
         {
-            this.status.setFile(slash.normalize(p))
             this.currentFile = slash.path(process.cwd(),p)
         }
         this.currentFile = await nfs.resolveSymlink(this.currentFile)
+        this.status.setFile(slash.tilde(this.currentFile))
         global.ked_editor_file = this.currentFile
         text = await nfs.readText(this.currentFile)
         if (text === undefined)

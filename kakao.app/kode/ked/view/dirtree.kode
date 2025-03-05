@@ -99,6 +99,7 @@ function dirtree extends choices
                         @closeDir(c redraw:true) if c.open
                         ⮐ 
                         
+                    'doubleclick'
                     'return' ➜ ⮐  post.emit 'cwd' c.path
                 
             'file'
@@ -305,5 +306,5 @@ function dirtree extends choices
                 name = slash.file item.path
         
         @symbol(item) + ' ' + name
-
+        
 export dirtree

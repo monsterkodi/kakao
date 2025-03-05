@@ -92,8 +92,7 @@ handleKey = key event -> # will be bound to state
         'cmd+j'       'ctrl+j'              ➜ ⮐ @joinLines()
         'cmd+l'       'ctrl+l'              ➜ ⮐ @selectMoreLines()
         'shift+cmd+l' 'shift+ctrl+l'        ➜ ⮐ @selectLessLines()
-       
-               
+
         'cmd+e' 'ctrl+e'                    ➜ ⮐ @highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
         'cmd+d' 'ctrl+d'                    ➜ ⮐ @selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
         'cmd+g' 'ctrl+g'                    ➜ ⮐ @selectWordAtCursor_highlightSelection_selectNextHighlight()
@@ -102,6 +101,7 @@ handleKey = key event -> # will be bound to state
         'shift+cmd+d' 'shift+ctrl+d'        ➜ ⮐ @selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
         'shift+cmd+g' 'shift+ctrl+g'        ➜ ⮐ @selectWordAtCursor_highlightSelection_selectPrevHighlight()
     
+        'cmd+3' 'ctrl+3'                    ➜ ⮐ @insertAsciiHeaderForSelectionOrWordAtCursor()
         'alt+cmd+d' 'alt+ctrl+d'            ➜ ⮐ @selectWordAtCursor_highlightSelection_selectAllHighlights()
         
         'cmd+/' 'ctrl+/'                    ➜ ⮐ @toggleCommentAtSelectionOrCursorLines()

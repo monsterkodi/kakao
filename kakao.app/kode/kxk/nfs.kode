@@ -74,6 +74,8 @@ class NFS
         stat =○ fsp.lstat p
         if stat.isSymbolicLink()
             r =○ fsp.readlink p
+            if not slash.isAbsolute r
+                r = slash.path slash.dir(p) r
             ⮐ r
         p
     

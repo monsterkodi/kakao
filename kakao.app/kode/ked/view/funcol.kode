@@ -43,6 +43,8 @@ function funcol extends view
         
     setRoot: path =>
     
+        ⮐ if empty path
+    
         path = slash.tilde path
         @crumbs.set path
         @dirtree.setRoot path redraw:true
@@ -102,9 +104,15 @@ function funcol extends view
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKey: key event => 
+    onKey: key event =>
         
-        ⮐ if @hidden()
+        ⮐ if not @dirtree.hasFocus()
+        
+        switch key
+        
+            'cmd+left'
+            'ctrl+left' ➜ ⮐ @setRoot slash.dir(@dirtree.currentRoot)
+            
         @dirtree.onKey key event
 
 export funcol

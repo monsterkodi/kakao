@@ -69,7 +69,6 @@ class theme
     @quicky_crumbs_cursor_empty: '#222'
     
     @choices_bg:            '#000'
-    # @choices_current:       '#22a'     
     @choices_current:       '#44a'     
 
     @dirtree_current_blur:  '#222'     
@@ -143,13 +142,17 @@ class theme
         'function argument':                    '#080'   
         'require':                              '#080'   
         'text require string':                  '#070'   
-        'comment triple header':                '#060'   
         'module require':                       '#050'   
         'punct string interpolation start':     '#050'   
         'punct string interpolation end':       '#050'   
-        'comment header':                       '#040'   
         'punct string double':                  '#040'   
         'punct string single':                  '#030'   
+        'comment triple header highlight':      '#070'   
+        'comment triple header':                '#060'   
+        'comment triple header shadow':         '#050'   
+        'comment header highlight':             '#050'   
+        'comment header':                       '#040'   
+        'comment header shadow':                '#030'   
 
         # 00     00  0000000      
         # 000   000  000   000    

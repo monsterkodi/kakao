@@ -32,4 +32,17 @@ export
         @setLines   lines
         @setCursors cursors
 
+    insertAsciiHeaderForSelectionOrWordAtCursor: ->
+
+        selections = @allSelections()
+        cursors    = @allCursors()
+        lines      = @allLines()
+
+        [lines cursors selections] = util.insertAsciiHeaderForPositionsAndRanges lines cursors selections
+        
+        @clearHighlights()
+        @setLines      lines
+        @setSelections selections
+        @setCursors    cursors
+        
         

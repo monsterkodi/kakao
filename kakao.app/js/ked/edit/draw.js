@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var draw
 
@@ -31,7 +31,7 @@ draw = (function ()
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, fg, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _70_42_, _82_17_, _86_15_, _87_15_, _88_15_
+        var bg, c, ch, checkColor, ci, clss, fg, headerClass, line, linel, lines, mainCursor, row, s, si, syntax, view, x, y, _75_42_, _88_17_, _92_15_, _93_15_, _94_15_
 
         if (this.hidden())
         {
@@ -45,6 +45,8 @@ draw = (function ()
         bg = this.color.bg
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
+            checkColor = false
+            headerClass = null
             y = row + view[1]
             if (y >= lines.length)
             {
@@ -76,8 +78,12 @@ draw = (function ()
                 {
                     checkColor = true
                 }
+                if (_k_.in(ch,'0█') && clss.endsWith('header'))
+                {
+                    headerClass = clss
+                }
                 c += this.cells.add(c,row,ch,fg,bg)
-                x += ((_70_42_=kseg.width(line[si])) != null ? _70_42_ : 1)
+                x += ((_75_42_=kseg.width(line[si])) != null ? _75_42_ : 1)
                 if (clss === 'invert_bg')
                 {
                     bg = this.color.bg
@@ -86,7 +92,11 @@ draw = (function ()
             this.drawRowBackground(row,linel)
             if (checkColor)
             {
-                this.drawColorPills(line,row,linel,this.color.empty)
+                this.drawColorPills(line,row,linel)
+            }
+            if (headerClass)
+            {
+                this.drawAsciiHeader(line,row,headerClass)
             }
         }
         this.drawTrailingRows()
@@ -140,10 +150,10 @@ draw = (function ()
 
     draw.prototype["drawHighlights"] = function ()
     {
-        var bg, highlight, ul, vx, vy, x, y, _134_41_, _135_44_
+        var bg, highlight, ul, vx, vy, x, y, _140_41_, _141_44_
 
-        bg = ((_134_41_=theme[this.name + '_highlight']) != null ? _134_41_ : theme.editor_highlight)
-        ul = ((_135_44_=theme[this.name + '_highlight_ul']) != null ? _135_44_ : theme.editor_highlight_ul)
+        bg = ((_140_41_=theme[this.name + '_highlight']) != null ? _140_41_ : theme.editor_highlight)
+        ul = ((_141_44_=theme[this.name + '_highlight_ul']) != null ? _141_44_ : theme.editor_highlight_ul)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -169,10 +179,10 @@ draw = (function ()
 
     draw.prototype["drawSelections"] = function ()
     {
-        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _161_50_, _162_50_
+        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _167_50_, _168_50_
 
-        spanbg = ((_161_50_=theme[this.name + '_selection']) != null ? _161_50_ : theme.editor_selection)
-        linebg = ((_162_50_=theme[this.name + '_selection_line']) != null ? _162_50_ : theme.editor_selection_line)
+        spanbg = ((_167_50_=theme[this.name + '_selection']) != null ? _167_50_ : theme.editor_selection)
+        linebg = ((_168_50_=theme[this.name + '_selection_line']) != null ? _168_50_ : theme.editor_selection_line)
         if (!this.cells.screen.t.hasFocus)
         {
             spanbg = color.darken(spanbg)
@@ -216,12 +226,12 @@ draw = (function ()
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fcb, fg, mainCursor, s, x, y, _204_44_, _205_44_, _218_46_, _220_37_
+        var bg, cursor, fcb, fg, mainCursor, s, x, y, _210_44_, _211_44_, _224_46_, _226_37_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_204_44_=theme[this.name + '_cursor_fg']) != null ? _204_44_ : theme.editor_cursor_fg)
-        bg = ((_205_44_=theme[this.name + '_cursor_multi']) != null ? _205_44_ : theme.editor_cursor_multi)
+        fg = ((_210_44_=theme[this.name + '_cursor_fg']) != null ? _210_44_ : theme.editor_cursor_fg)
+        bg = ((_211_44_=theme[this.name + '_cursor_multi']) != null ? _211_44_ : theme.editor_cursor_multi)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -241,9 +251,9 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_218_46_=theme[this.name + '_cursor_fg']) != null ? _218_46_ : theme.editor_cursor_fg)
+            fg = ((_224_46_=theme[this.name + '_cursor_fg']) != null ? _224_46_ : theme.editor_cursor_fg)
             fcb = (this.hasFocus() ? '_cursor_bg' : '_cursor_blur')
-            bg = ((_220_37_=theme[this.name + fcb]) != null ? _220_37_ : theme['editor' + fcb])
+            bg = ((_226_37_=theme[this.name + fcb]) != null ? _226_37_ : theme['editor' + fcb])
             var _b_ = [mainCursor[0] - s.view[0],mainCursor[1] - s.view[1]]; x = _b_[0]; y = _b_[1]
 
             if (s.cursors.length <= 1)
@@ -295,6 +305,36 @@ draw = (function ()
                     this.cells.set(cx,row,'',clr,this.color.empty)
                 }
             }
+        }
+    }
+
+    draw.prototype["drawAsciiHeader"] = function (line, row, clss)
+    {
+        var bg, ch, chunk, chunks, fg, x
+
+        chunks = kseg.chunks(line)
+        var list = _k_.list(chunks)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            chunk = list[_a_]
+            if (!(_k_.in(chunk.segl[0],'0█')))
+            {
+                continue
+            }
+            x = chunk.index - this.state.s.view[0]
+            ch = '▎'
+            fg = theme.syntax[clss + ' highlight']
+            bg = theme.syntax[clss]
+            this.cells.set(x,row,ch,fg,bg)
+            if (chunk.segl.length <= 1)
+            {
+                continue
+            }
+            x += chunk.segl.length - 1
+            ch = '▋'
+            fg = theme.syntax[clss]
+            bg = theme.syntax[clss + ' shadow']
+            this.cells.set(x,row,ch,fg,bg)
         }
     }
 

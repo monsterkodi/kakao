@@ -80,6 +80,10 @@ class NFS
         if (stat.isSymbolicLink())
         {
             r = await fsp.readlink(p)
+            if (!slash.isAbsolute(r))
+            {
+                r = slash.path(slash.dir(p),r)
+            }
             return r
         }
         return p

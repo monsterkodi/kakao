@@ -43,6 +43,9 @@ function draw extends view
         bg = @color.bg
         
         for row in 0...@cells.rows
+        
+            checkColor = false
+            headerClass = null
             
             y = row+view[1]
             break if y >= lines.length
@@ -63,8 +66,10 @@ function draw extends view
                     bg = @color.bg
                 else
                     fg = syntax.getColor clss
+                    
                 ch = syntax.getChar ci y line[si]
                 if ch == "#" ➜ checkColor = true
+                if ch in '0█' and clss.endsWith('header') ➜ headerClass = clss
 
                 c += @cells.add c row ch fg bg
                 x += kseg.width(line[si]) ? 1
@@ -74,7 +79,8 @@ function draw extends view
                     
             @drawRowBackground row linel
                     
-            @drawColorPills line row linel @color.empty if checkColor
+            @drawColorPills line row linel if checkColor
+            @drawAsciiHeader line row headerClass if headerClass
 
         @drawTrailingRows()        
         @drawHighlights()
@@ -248,5 +254,28 @@ function draw extends view
                 if idx == rngs.length-1 ➜ dta--
                 @cells.bg_rect cx row cx+dta row rng.match; cx += dta
                 if idx == rngs.length-1 ➜ @cells.set cx row '' clr @color.empty
+                    
+    drawAsciiHeader: line row clss ->
+        
+        # █ █ █ █ █ █ █ █
+        # █ ▉ ▊ ▋ ▌ ▍ ▏ ▕
+        
+        # log "▸ #{kseg.str line}"
+        
+        chunks = kseg.chunks line
+        for chunk in chunks
+            continue if chunk.segl[0] not in '0█'
+            x = chunk.index-@state.s.view[0]
+            ch = '▎'
+            fg = theme.syntax[clss+' highlight']
+            bg = theme.syntax[clss]
+            @cells.set x row ch fg bg
+            
+            continue if chunk.segl.length <= 1
+            x += chunk.segl.length - 1 
+            ch = '▋' # '▊'
+            fg = theme.syntax[clss]
+            bg = theme.syntax[clss+' shadow']
+            @cells.set x row ch fg bg
 
 export draw

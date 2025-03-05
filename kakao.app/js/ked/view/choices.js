@@ -23,6 +23,7 @@ choices = (function ()
     {
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["doubleClickChoiceAtIndex"] = this["doubleClickChoiceAtIndex"].bind(this)
         this["clickChoiceAtIndex"] = this["clickChoiceAtIndex"].bind(this)
         this["unhover"] = this["unhover"].bind(this)
         this["hoverChoiceAtIndex"] = this["hoverChoiceAtIndex"].bind(this)
@@ -307,9 +308,16 @@ choices = (function ()
         return {redraw:true}
     }
 
+    choices.prototype["doubleClickChoiceAtIndex"] = function (index, event)
+    {
+        this.hoverIndex = -1
+        this.emitAction('doubleclick',this.fuzzied[index],event)
+        return {redraw:true}
+    }
+
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _233_21_
+        var col, dx, dy, ret, row, _239_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -338,12 +346,19 @@ choices = (function ()
                 }
                 switch (event.type)
                 {
-                    case 'press':
-                        return this.clickChoiceAtIndex(row + this.state.s.view[1],event)
-
                     case 'move':
                         return this.hoverChoiceAtIndex(row + this.state.s.view[1],event)
 
+                    case 'press':
+                        if (event.count === 2)
+                        {
+                            return this.doubleClickChoiceAtIndex(row + this.state.s.view[1],event)
+                        }
+                        else
+                        {
+                            return this.clickChoiceAtIndex(row + this.state.s.view[1],event)
+                        }
+                        break
                 }
 
             }

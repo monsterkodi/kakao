@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var funcol
 
@@ -55,6 +55,10 @@ funcol = (function ()
 
     funcol.prototype["setRoot"] = function (path)
     {
+        if (_k_.empty(path))
+        {
+            return
+        }
         path = slash.tilde(path)
         this.crumbs.set(path)
         return this.dirtree.setRoot(path,{redraw:true})
@@ -128,10 +132,18 @@ funcol = (function ()
 
     funcol.prototype["onKey"] = function (key, event)
     {
-        if (this.hidden())
+        if (!this.dirtree.hasFocus())
         {
             return
         }
+        switch (key)
+        {
+            case 'cmd+left':
+            case 'ctrl+left':
+                return this.setRoot(slash.dir(this.dirtree.currentRoot))
+
+        }
+
         return this.dirtree.onKey(key,event)
     }
 

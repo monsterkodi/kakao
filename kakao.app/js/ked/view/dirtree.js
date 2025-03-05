@@ -119,6 +119,7 @@ dirtree = (function ()
                         }
                         return
 
+                    case 'doubleclick':
                     case 'return':
                         return post.emit('cwd',c.path)
 
@@ -155,13 +156,13 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _137_31_
+        var depth, index, item, items, _138_31_
 
         opt = (opt != null ? opt : {})
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_137_31_=dirItem.depth) != null ? _137_31_ : 0)) + 1
+        depth = (((_138_31_=dirItem.depth) != null ? _138_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -295,7 +296,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _258_44_
+        var idx, item, _259_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -328,12 +329,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _288_51_
+        var _289_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_288_51_=icons[slash.ext(item.path)]) != null ? _288_51_ : icons.file)
+                return ((_289_51_=icons[slash.ext(item.path)]) != null ? _289_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)
