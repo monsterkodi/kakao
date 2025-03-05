@@ -294,9 +294,9 @@ function state
         view[1] += sy
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
-        
+
         maxOffsetX = max 0 util.widthOfLines(@s.lines)-@cells.cols
-        
+        maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+1
         view[0] = clamp 0 maxOffsetX view[0]
         
         ⮐ if view eql @s.view

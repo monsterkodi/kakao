@@ -23,7 +23,7 @@ export default {allCursors:function ()
         newCursors.push([c[0],c[1] + dy])
     }
     mc = util.traversePositionsInDirection(newCursors,this.mainCursor(),dir)
-    return this.setCursors(newCursors,{main:mc})
+    return this.setCursors(newCursors,{main:mc,adjust:'topBotDelta'})
 },contractCursors:function (dir)
 {
     var add, c, cursors, nbdn, nbup, newCursors, solo

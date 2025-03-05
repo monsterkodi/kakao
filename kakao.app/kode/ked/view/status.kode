@@ -125,7 +125,7 @@ function status extends view
         add = char fg bg => x += set x char fg bg
         
         add '' 'status_col' 'gutter' # column number ...
-        colno = rpad @gutter-1 "#{cursor[0]+1}"
+        colno = rpad @gutter-1 "#{cursor[0]}"
         for ci in 1...@gutter
             fg = cursor[0] ? 'status_fg' : 'column_fg'
             fg = 'status_col_empty' if util.isLinesPosOutside @state.s.lines cursor 

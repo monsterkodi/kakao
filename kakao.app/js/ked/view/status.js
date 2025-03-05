@@ -158,7 +158,7 @@ status = (function ()
             return x += set(x,char,fg,bg)
         }).bind(this)
         add('','status_col','gutter')
-        colno = _k_.rpad(this.gutter - 1,`${cursor[0] + 1}`)
+        colno = _k_.rpad(this.gutter - 1,`${cursor[0]}`)
         for (var _a_ = ci = 1, _b_ = this.gutter; (_a_ <= _b_ ? ci < this.gutter : ci > this.gutter); (_a_ <= _b_ ? ++ci : --ci))
         {
             fg = (cursor[0] ? 'status_fg' : 'column_fg')

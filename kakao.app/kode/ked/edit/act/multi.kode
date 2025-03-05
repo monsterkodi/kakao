@@ -37,7 +37,7 @@ export
             newCursors.push [c[0] c[1]+dy]
 
         mc = util.traversePositionsInDirection newCursors @mainCursor() dir
-        @setCursors newCursors main:mc
+        @setCursors newCursors main:mc adjust:'topBotDelta'
         
     contractCursors: dir ->
         

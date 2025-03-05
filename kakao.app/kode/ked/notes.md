@@ -1,18 +1,18 @@
 
-              crumbs file tabs status
-            ┏━━━━━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━━━┓
-            ┣━━━━━━━━╋━━━━┻━━━━┻━━━━┻━━━━┻━━━━━━┫
-            ┃        ┃             ▴            ┃
-            ┃ dirtee ┃    editor   search       ┃
-            ┃        ┃             results      ┃
-            ┣━━━━━━━━┫                          ┃
-            ┃        ┃                          ┃
-            ┃ funcs  ┃                          ┃
-            ┃        ┃                          ┃
-            ┃        ┃                          ┃
-            ┃        ┣━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-            ┃        ┃ help+log+keys            ┃
-            ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+              crumbs  file      tabs          status
+            ┏━━━━━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━━┓
+            ┣━━━━━━━━╋━━━━┻━━━━┻━━━━┻━━━━┻━━┳━┻━━━━━┫
+            ┃        ┃             ▴        ┃       ┃
+            ┃ dirtee ┃    editor   search   ┃ funcs ┃
+            ┃        ┃             results  ┃       ┃
+            ┃        ┃                      ┃       ┃
+            ┃        ┃                      ┃       ┃
+            ┃        ┃                      ┃       ┃
+            ┃        ┃                      ┃       ┃
+            ┃        ┃                      ┃       ┃
+            ┃        ┣━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━┫
+            ┃        ┃ help+log+keys                ┃
+            ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # todo
 ## todo
@@ -21,6 +21,9 @@
 ##### todo    
 
 - dirtree
+
+    - searchable?
+    
 - funclist
        
 - ascii header mode
@@ -40,9 +43,12 @@
 - quicky
     - fix 
         - clamp long relative parent dirs
+    - click in mapview to jump to line
+    - file icons?
     
 - status
     - move dirty and redo into statusfile 
+    - relative crumbs when dirtree is open
 
 - editing 
     - more tests
