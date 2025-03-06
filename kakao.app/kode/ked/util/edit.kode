@@ -36,9 +36,13 @@ function edit
         rngs   = @rangesForLinesSplitAtPositions lines posl
         before = []
         
+        # log y5("insert text ▸#{text}◂") rngs
+        
         for rng,idx in rngs
             
             after = @seglsForRange lines rng # all the lines in the current range (after current position)
+            
+            # log "#{idx} #{rng} after" after
             
             if empty after or empty after[0] 
                 before.push [] if posl[-1][1] >= lines.length
@@ -50,7 +54,7 @@ function edit
                 if valid before ➜ line = before.pop() # pop the last line from before the current position
                 else              line = newls.pop()  # or the last of the already generated lines
                 
-                if x > line.length and text != '\n'   # if pos is in empty space 
+                if x > kseg.width(line) and text != '\n'   # if pos is in empty space 
                     line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces 
                                         
                 # log 'line' line line.length x txtls
@@ -61,7 +65,7 @@ function edit
                         # log 'insert multiple lines into multiple cursors (no autoindent)'
                         insertLineIndex = (idx-1) % txtls.length
                         before.push line.concat(txtls[insertLineIndex])
-                        newpl.push [last(before).length newls.length+before.length-1]
+                        newpl.push [kseg.width(last(before)) newls.length+before.length-1]
                         before.push before.pop().concat(after.shift())
                     else                                 # insert into single cursor with autoindent
                         # log 'insert multiple lines into single cursor with autoindent'
@@ -75,22 +79,21 @@ function edit
                                 before.push indent.concat(insl)
                     
                         if x > posLineIndent
-                            newpl.push [last(before).length newls.length+before.length-1]
+                            newpl.push [kseg.width(last(before)) newls.length+before.length-1]
                             before.push before.pop().concat(after.shift())
                         else
                             after.unshift indent.concat(after.shift()) 
                             before.pop() if text == '\n'
-                            newpl.push [indent.length newls.length+before.length] 
+                            newpl.push [kseg.width(indent) newls.length+before.length] 
                         
                     newls = newls.concat before
                             
                 else                                # if text is the only line to insert
-                    # log 'insert single span into split position'
-                    newpl.push [line.length+txtls[0].length newls.length+before.length] # move position to the end of the inserted text
-                    line  = line.concat txtls[0]       # append it and ...
-                    line  = line.concat after.shift()  #     ... first line after to current line
-                    newls = newls.concat before        # add lines from before and ...
-                    newls.push line                    #     ... current line to result
+                    newpl.push [kseg.width(line)+kseg.width(txtls[0]) newls.length+before.length] # move position to the end of the inserted text
+                    line  = line.concat txtls[0]       # append it and first line after to current line
+                    line  = line.concat after.shift()  #               
+                    newls = newls.concat before        # add lines from before and current line to result
+                    newls.push line                    #     
             
             before = after
             

@@ -143,11 +143,11 @@ function session extends events
             
             recent =○ noon.read file
             
-            log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
+            # log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
                 
             post.emit 'session.merge' recent
             
-            log 'post merge:' recent
+            # log 'post merge:' recent
             
             @set 'files' recent.files # probably should actually merge here instead of overriding!
         

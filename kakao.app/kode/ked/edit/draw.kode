@@ -53,11 +53,16 @@ function draw extends view
             line  = lines[y]
             linel = kseg.width(line) - view[0]
             
-            x = c = 0
+            c = 0
+            firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
+            firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
+            c = 1 if firstIndex != firstSegi            # one column to the right 
+            
+            x = 0
             while x < @cells.cols
                 
                 ci = x+view[0]
-                si = kseg.segiAtWidth line ci
+                si = kseg.indexAtWidth line ci
                 break if si >= line.length
                 
                 clss = syntax.getClass ci y
@@ -69,10 +74,11 @@ function draw extends view
                     
                 ch = syntax.getChar ci y line[si]
                 if ch == "#" ➜ checkColor = true
-                if ch in '0█' and clss.endsWith('header') ➜ headerClass = clss
+                else if ch in '0█' and clss.endsWith('header') ➜ headerClass = clss
 
-                c += @cells.add c row ch fg bg
                 x += kseg.width(line[si]) ? 1
+                if x < @cells.cols
+                    c += @cells.add c row ch fg bg
                 
                 if clss == 'invert_bg'
                     bg = @color.bg

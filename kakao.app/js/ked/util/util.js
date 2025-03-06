@@ -4,6 +4,7 @@ var key, mod, util, val
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 import text from "./text.js"
 import edit from "./edit.js"
@@ -56,9 +57,10 @@ util = (function ()
 
     util["cellsForLines"] = function (lines)
     {
-        var cells
+        var cells, width
 
-        cells = this.cells(lines[this.indexOfLongestLine(lines)].length,lines.length)
+        width = this.widthOfLines(lines)
+        cells = this.cells(width,lines.length)
         this.stampLines(cells,lines)
         return cells
     }
@@ -680,7 +682,7 @@ util = (function ()
         }
         if (posl[0][1] >= lines.length)
         {
-            return [[0,0,lines.slice(-1)[0].length,lines.length - 1],[lines.slice(-1)[0].length,lines.length - 1,lines.slice(-1)[0].length,lines.length - 1]]
+            return [[0,0,kseg.width(lines.slice(-1)[0]),lines.length - 1],[kseg.width(lines.slice(-1)[0]),lines.length - 1,kseg.width(lines.slice(-1)[0]),lines.length - 1]]
         }
         rngs = [[0,0,posl[0][0],posl[0][1]]]
         var list = _k_.list(posl)
@@ -692,7 +694,7 @@ util = (function ()
                 rngs.push([posl[idx - 1][0],posl[idx - 1][1],pos[0],pos[1]])
             }
         }
-        rngs.push([pos[0],pos[1],lines.slice(-1)[0].length,lines.length - 1])
+        rngs.push([pos[0],pos[1],kseg.width(lines.slice(-1)[0]),lines.length - 1])
         return rngs
     }
 

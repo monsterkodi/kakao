@@ -6,7 +6,7 @@
  0000000      000     000  0000000
 ###
 
-use ../../kxk ▪ kstr
+use ../../kxk ▪ kstr kseg
 use ◆ text edit
 
 function util
@@ -38,7 +38,8 @@ function util
 
     @cellsForLines: lines ->
         
-        cells = @cells lines[@indexOfLongestLine(lines)].length lines.length
+        width = @widthOfLines lines
+        cells = @cells width lines.length
         
         @stampLines cells lines
 
@@ -342,13 +343,13 @@ function util
     @rangesForLinesSplitAtPositions: lines posl ->
         
         ⮐ [] if empty posl
-        ⮐ [[0 0 lines[-1].length lines.length-1] [lines[-1].length lines.length-1 lines[-1].length lines.length-1]] if posl[0][1] >= lines.length
+        ⮐ [[0 0 kseg.width(lines[-1]) lines.length-1] [kseg.width(lines[-1]) lines.length-1 kseg.width(lines[-1]) lines.length-1]] if posl[0][1] >= lines.length
         rngs = [[0 0 posl[0][0] posl[0][1]]]
         for pos,idx in posl
             rngs.push [posl[idx-1][0] posl[idx-1][1] pos[0] pos[1]] if idx > 0
-        rngs.push [pos[0] pos[1] lines[-1].length lines.length-1]
+        rngs.push [pos[0] pos[1] kseg.width(lines[-1]) lines.length-1]
         rngs
-        
+
     @rangeInRangesContainingPos: rngs pos ->
         
         for rng in rngs

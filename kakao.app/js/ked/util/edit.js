@@ -57,7 +57,7 @@ edit = (function ()
                 {
                     line = newls.pop()
                 }
-                if (x > line.length && text !== '\n')
+                if (x > kseg.width(line) && text !== '\n')
                 {
                     line = line.concat(_k_.lpad(x - line.length).split(''))
                 }
@@ -67,7 +67,7 @@ edit = (function ()
                     {
                         insertLineIndex = (idx - 1) % txtls.length
                         before.push(line.concat(txtls[insertLineIndex]))
-                        newpl.push([_k_.last(before).length,newls.length + before.length - 1])
+                        newpl.push([kseg.width(_k_.last(before)),newls.length + before.length - 1])
                         before.push(before.pop().concat(after.shift()))
                     }
                     else
@@ -86,7 +86,7 @@ edit = (function ()
                         }
                         if (x > posLineIndent)
                         {
-                            newpl.push([_k_.last(before).length,newls.length + before.length - 1])
+                            newpl.push([kseg.width(_k_.last(before)),newls.length + before.length - 1])
                             before.push(before.pop().concat(after.shift()))
                         }
                         else
@@ -96,14 +96,14 @@ edit = (function ()
                             {
                                 before.pop()
                             }
-                            newpl.push([indent.length,newls.length + before.length])
+                            newpl.push([kseg.width(indent),newls.length + before.length])
                         }
                     }
                     newls = newls.concat(before)
                 }
                 else
                 {
-                    newpl.push([line.length + txtls[0].length,newls.length + before.length])
+                    newpl.push([kseg.width(line) + kseg.width(txtls[0]),newls.length + before.length])
                     line = line.concat(txtls[0])
                     line = line.concat(after.shift())
                     newls = newls.concat(before)

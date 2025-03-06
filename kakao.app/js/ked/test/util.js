@@ -1,7 +1,7 @@
 var toExport = {}
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var c, cells, l, line, lines, rect, segls, spans, words
+var c, cells, l, line, lines, rect, segls, spans, text, words
 
 import util from "../util/util.js"
 
@@ -422,6 +422,8 @@ line 2`)
             compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0]]),[kseg.segls('xlixne 1\nline 2'),[[1,0],[4,0]]])
             compare(util.insertTextAtPositions(lines,'x',[[0,0],[2,0],[6,0]]),[kseg.segls('xlixne 1x\nline 2'),[[1,0],[4,0],[9,0]]])
             compare(util.insertTextAtPositions(lines,'z',[[0,0],[2,0],[6,0],[1,1],[2,1],[4,1]]),[kseg.segls('zlizne 1z\nlziznez 2'),[[1,0],[4,0],[9,0],[2,1],[4,1],[7,1]]])
+            compare(util.insertTextAtPositions(lines,'ｔ',[[0,0]]),[kseg.segls('ｔline 1\nline 2'),[[2,0]]])
+            compare(util.insertTextAtPositions(kseg.segls('ｔline 1\nline 2'),'ｔ',[[2,0]]),[kseg.segls('ｔｔline 1\nline 2'),[[4,0]]])
         })
         section("multiple lines into single cursor", function ()
         {
@@ -526,6 +528,12 @@ Alice’s,`)
     ◆2
         ◆3`)
         compare(util.deindentLineRangesAndPositionsAtIndices(lines,[[0,1,1,2]],[[0,1],[1,2]],[1,2]),[[kseg('◆1'),kseg('◆2'),kseg('    ◆3')],[[0,1,0,2]],[[0,1],[0,2]]])
+    })
+    section("", function ()
+    {
+        text = "ｔｈｅ　ｑｕｉｃｋ　ｂｒｏｗｎ　ｆｏｘ　ｊｕｍｐｓ"
+        lines = util.linesForText(text)
+        compare(util.widthOfLines(lines),50)
     })
 }
 toExport["util"]._section_ = true

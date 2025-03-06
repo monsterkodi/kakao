@@ -176,26 +176,33 @@ function text
 
         nl = @numLinesInRange rng
         
-        ⮐ [lines[rng[1]][rng[0]...rng[2]]] if nl == 1
+        if nl == 1
+            bos = kseg.segiAtWidth lines[rng[1]] rng[0]
+            eos = kseg.segiAtWidth lines[rng[1]] rng[2]
+            ⮐ [lines[rng[1]][bos...eos]]
         
         firstLineIndex = min rng[1] lines.length-1
         lastLineIndex  = min rng[3] lines.length-1
 
-        lns = [lines[firstLineIndex][rng[0]..]]
+        segi = kseg.segiAtWidth lines[firstLineIndex] rng[0]
+        lns = [lines[firstLineIndex][segi..]]
         lns = lns.concat lines[firstLineIndex+1...lastLineIndex] if nl > 2
-        lns = lns.concat [lines[lastLineIndex][0...rng[2]]]
-        
+        segi = kseg.indexAtWidth lines[lastLineIndex] rng[2]
+        lns = lns.concat [lines[lastLineIndex][0...segi]]
+                
     @indexOfLongestLine: lines ->
         
         maxIndex = 0
         maxLength = 0
         for line,index in lines
             if line.length > maxLength
-                maxLength = line.length
+                maxLength = kseg.width line
                 maxIndex  = index
         maxIndex
 
-    @widthOfLines: lines -> lines[@indexOfLongestLine lines].length
+    @widthOfLines: lines -> 
+    
+        kseg.width lines[@indexOfLongestLine(lines)]
 
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     

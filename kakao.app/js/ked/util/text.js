@@ -301,21 +301,25 @@ text = (function ()
 
     text["seglsForRange"] = function (lines, rng)
     {
-        var firstLineIndex, lastLineIndex, lns, nl
+        var bos, eos, firstLineIndex, lastLineIndex, lns, nl, segi
 
         nl = this.numLinesInRange(rng)
         if (nl === 1)
         {
-            return [lines[rng[1]].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1)]
+            bos = kseg.segiAtWidth(lines[rng[1]],rng[0])
+            eos = kseg.segiAtWidth(lines[rng[1]],rng[2])
+            return [lines[rng[1]].slice(bos, typeof eos === 'number' ? eos : -1)]
         }
         firstLineIndex = _k_.min(rng[1],lines.length - 1)
         lastLineIndex = _k_.min(rng[3],lines.length - 1)
-        lns = [lines[firstLineIndex].slice(rng[0])]
+        segi = kseg.segiAtWidth(lines[firstLineIndex],rng[0])
+        lns = [lines[firstLineIndex].slice(segi)]
         if (nl > 2)
         {
             lns = lns.concat(lines.slice(firstLineIndex + 1, typeof lastLineIndex === 'number' ? lastLineIndex : -1))
         }
-        return lns = lns.concat([lines[lastLineIndex].slice(0, typeof rng[2] === 'number' ? rng[2] : -1)])
+        segi = kseg.indexAtWidth(lines[lastLineIndex],rng[2])
+        return lns = lns.concat([lines[lastLineIndex].slice(0, typeof segi === 'number' ? segi : -1)])
     }
 
     text["indexOfLongestLine"] = function (lines)
@@ -330,7 +334,7 @@ text = (function ()
             line = list[index]
             if (line.length > maxLength)
             {
-                maxLength = line.length
+                maxLength = kseg.width(line)
                 maxIndex = index
             }
         }
@@ -339,7 +343,7 @@ text = (function ()
 
     text["widthOfLines"] = function (lines)
     {
-        return lines[this.indexOfLongestLine(lines)].length
+        return kseg.width(lines[this.indexOfLongestLine(lines)])
     }
 
     text["joinLineColumns"] = function (lineCols)
@@ -348,7 +352,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/util/text.kode", 207, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/util/text.kode", 214, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

@@ -384,7 +384,7 @@ state = (function ()
 
     state.prototype["scrollView"] = function (dir, steps = 1)
     {
-        var maxOffsetX, sx, sy, view
+        var maxOffsetX, sx, sy, view, width
 
         sx = sy = 0
         switch (dir)
@@ -407,8 +407,9 @@ state = (function ()
         view[0] += sx
         view[1] += sy
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
-        maxOffsetX = _k_.max(0,util.widthOfLines(this.s.lines) - this.cells.cols)
-        maxOffsetX = _k_.max(maxOffsetX,this.mainCursor()[0] - this.cells.cols + 1)
+        width = util.widthOfLines(this.s.lines)
+        maxOffsetX = _k_.max(0,width - this.cells.cols + 2)
+        maxOffsetX = _k_.max(maxOffsetX,this.mainCursor()[0] - this.cells.cols + 2)
         view[0] = _k_.clamp(0,maxOffsetX,view[0])
         if (_k_.eql(view, this.s.view))
         {
@@ -445,7 +446,7 @@ state = (function ()
         {
             view[1] = 0
         }
-        view[0] = _k_.max(0,x - this.cells.cols + 1)
+        view[0] = _k_.max(0,x - this.cells.cols + 2)
         if (_k_.eql(view, this.s.view))
         {
             return

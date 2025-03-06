@@ -301,8 +301,10 @@ function state
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
 
-        maxOffsetX = max 0 util.widthOfLines(@s.lines)-@cells.cols
-        maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+1
+        width = util.widthOfLines @s.lines
+        
+        maxOffsetX = max 0 width-@cells.cols+2
+        maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+2
         view[0] = clamp 0 maxOffsetX view[0]
         
         ⮐ if view eql @s.view
@@ -336,7 +338,7 @@ function state
         if view[1] > 0 and @s.lines.length < @cells.rows
             view[1] = 0
 
-        view[0] = max 0 x - @cells.cols + 1
+        view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
         
         ⮐ if view eql @s.view
         
