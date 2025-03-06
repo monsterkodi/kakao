@@ -107,6 +107,8 @@ function dirtree extends choices
             if valid event.mods and c.type == 'file'
                 post.emit 'quicky' c.path
             ⮐ 
+            
+        # log "dirTree.emitAction #{action}" c
                 
         switch c.type
             
@@ -117,8 +119,8 @@ function dirtree extends choices
                     'click'
                     'space'
             
-                        c.open = not c.open                
-                        if c.open ➜ @openDir(c redraw:true) else @closeDir c
+                        if not c.open ➜ @openDir(c redraw:true) 
+                        else @closeDir c
                         ⮐ 
                         
                     'right'
@@ -169,6 +171,7 @@ function dirtree extends choices
     openDir: dirItem opt ○->
         
         ⮐ if empty dirItem
+        ⮐ if dirItem.open
         
         opt ?= {}
         

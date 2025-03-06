@@ -127,8 +127,14 @@ dirtree = (function ()
                 {
                     case 'click':
                     case 'space':
-                        c.open = !c.open
-                        c.open ? this.openDir(c,{redraw:true}) : this.closeDir(c)
+                        if (!c.open)
+                        {
+                            this.openDir(c,{redraw:true})
+                        }
+                        else
+                        {
+                            this.closeDir(c)
+                        }
                         return
 
                     case 'right':
@@ -202,9 +208,13 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _181_31_
+        var depth, index, item, items, _184_31_
 
         if (_k_.empty(dirItem))
+        {
+            return
+        }
+        if (dirItem.open)
         {
             return
         }
@@ -212,7 +222,7 @@ dirtree = (function ()
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_181_31_=dirItem.depth) != null ? _181_31_ : 0)) + 1
+        depth = (((_184_31_=dirItem.depth) != null ? _184_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -352,7 +362,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _314_44_
+        var idx, item, _317_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -415,12 +425,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _354_51_
+        var _357_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_354_51_=icons[slash.ext(item.path)]) != null ? _354_51_ : icons.file)
+                return ((_357_51_=icons[slash.ext(item.path)]) != null ? _357_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

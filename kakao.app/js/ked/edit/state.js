@@ -59,7 +59,6 @@ state = (function ()
         this["set"] = this["set"].bind(this)
         this.name = name + '.state'
         this.allowedModes = {}
-        this.activeModes = []
         var list = [del,insert,select,join,indent,multi]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {

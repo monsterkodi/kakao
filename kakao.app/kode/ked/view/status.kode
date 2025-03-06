@@ -31,10 +31,14 @@ function status extends view
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction
         
-    onCrumbsAction: action path =>
+    onCrumbsAction: action path event =>
         
         switch action
-            'click' ➜ post.emit 'quicky.dir' path
+            'click'  
+                if valid event.mods
+                    post.emit 'funcol.root' path
+                else
+                    post.emit 'quicky.dir' path
 
     onFileAction: action file =>
         

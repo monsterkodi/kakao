@@ -19,7 +19,6 @@ function state
         @name = name + '.state'
         
         @allowedModes = {}
-        @activeModes = []
 
         for act in [del insert select join indent multi]
             for k,v of act

@@ -6,10 +6,13 @@ let kstr = kxk.kstr
 import util from "../../util/util.js"
 import prof from "../../util/prof.js"
 
+import mode from "../mode.js"
+
 export default {insert:function (text)
 {
     var cursors, lines
 
+    text = mode.insert(this,text)
     if (!_k_.empty(this.s.selections))
     {
         if (text === '\t')

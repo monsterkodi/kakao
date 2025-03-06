@@ -41,13 +41,20 @@ status = (function ()
         this.statusfile.on('action',this.onFileAction)
     }
 
-    status.prototype["onCrumbsAction"] = function (action, path)
+    status.prototype["onCrumbsAction"] = function (action, path, event)
     {
         switch (action)
         {
             case 'click':
-                return post.emit('quicky.dir',path)
-
+                if (!_k_.empty(event.mods))
+                {
+                    return post.emit('funcol.root',path)
+                }
+                else
+                {
+                    return post.emit('quicky.dir',path)
+                }
+                break
         }
 
     }
