@@ -174,7 +174,7 @@ unype = (function ()
     {
         var repl
 
-        if (repl = unype.map['full width'][text])
+        if (repl = unype.map['crazy'][text])
         {
             text = repl
         }
