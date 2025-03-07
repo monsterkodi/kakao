@@ -2,11 +2,11 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var edit
 
-import kxk from "../../kxk.js"
+import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
-import prof from "./prof.js"
+import prof from "../../util/prof.js"
 
 
 edit = (function ()

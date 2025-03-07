@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ drag elem post
 use ../tools  ◆ FuncItems Indexer
-use ../editor ◆ Syntax
+use           ◆ Syntax
 
 function FuncList
 

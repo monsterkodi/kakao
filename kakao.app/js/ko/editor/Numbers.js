@@ -1,4 +1,6 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+
+var Numbers
 
 import kxk from "../../kxk.js"
 let elem = kxk.elem
@@ -6,20 +8,21 @@ let events = kxk.events
 let setStyle = kxk.setStyle
 let $ = kxk.$
 
-class Numbers extends events
+
+Numbers = (function ()
 {
-    constructor (editor)
+    _k_.extend(Numbers, events)
+    function Numbers (editor)
     {
         this.editor = editor
     
-        super()
-    
-        this.updateColor = this.updateColor.bind(this)
-        this.updateColors = this.updateColors.bind(this)
-        this.onFontSizeChange = this.onFontSizeChange.bind(this)
-        this.onClearLines = this.onClearLines.bind(this)
-        this.onLinesShifted = this.onLinesShifted.bind(this)
-        this.onLinesShown = this.onLinesShown.bind(this)
+        this["updateColor"] = this["updateColor"].bind(this)
+        this["updateColors"] = this["updateColors"].bind(this)
+        this["onFontSizeChange"] = this["onFontSizeChange"].bind(this)
+        this["onClearLines"] = this["onClearLines"].bind(this)
+        this["onLinesShifted"] = this["onLinesShifted"].bind(this)
+        this["onLinesShown"] = this["onLinesShown"].bind(this)
+        Numbers.__super__.constructor.call(this)
         this.lineDivs = {}
         this.elem = $('.numbers',this.editor.view)
         this.editor.on('clearLines',this.onClearLines)
@@ -32,7 +35,7 @@ class Numbers extends events
         this.onFontSizeChange()
     }
 
-    onLinesShown (top, bot, num)
+    Numbers.prototype["onLinesShown"] = function (top, bot, num)
     {
         var div, li
 
@@ -47,7 +50,7 @@ class Numbers extends events
         return this.updateLinePositions()
     }
 
-    onLinesShifted (top, bot, num)
+    Numbers.prototype["onLinesShifted"] = function (top, bot, num)
     {
         var divInto, oldBot, oldTop
 
@@ -90,7 +93,7 @@ class Numbers extends events
         return this.updateLinePositions()
     }
 
-    updateLinePositions ()
+    Numbers.prototype["updateLinePositions"] = function ()
     {
         var div, li, y
 
@@ -106,7 +109,7 @@ class Numbers extends events
         }
     }
 
-    addLine (li)
+    Numbers.prototype["addLine"] = function (li)
     {
         var div
 
@@ -117,13 +120,13 @@ class Numbers extends events
         return div
     }
 
-    onClearLines ()
+    Numbers.prototype["onClearLines"] = function ()
     {
         this.lineDivs = {}
         return this.elem.innerHTML = ""
     }
 
-    onFontSizeChange ()
+    Numbers.prototype["onFontSizeChange"] = function ()
     {
         var fsz, _139_13_
 
@@ -132,7 +135,7 @@ class Numbers extends events
         return setStyle('.linenumber','padding-top',`${parseInt(this.editor.size.fontSize / 10)}px`)
     }
 
-    updateColors ()
+    Numbers.prototype["updateColors"] = function ()
     {
         var li
 
@@ -145,7 +148,7 @@ class Numbers extends events
         }
     }
 
-    updateColor (li)
+    Numbers.prototype["updateColor"] = function (li)
     {
         var ci, cls, hi, s, si, _157_35_
 
@@ -179,6 +182,8 @@ class Numbers extends events
         }
         return this.lineDivs[li].className = 'linenumber' + cls
     }
-}
+
+    return Numbers
+})()
 
 export default Numbers;

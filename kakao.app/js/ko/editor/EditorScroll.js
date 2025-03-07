@@ -1,32 +1,35 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+
+var EditorScroll
 
 import kxk from "../../kxk.js"
 let events = kxk.events
 
-class EditorScroll extends events
+
+EditorScroll = (function ()
 {
-    constructor (editor)
+    _k_.extend(EditorScroll, events)
+    function EditorScroll (editor)
     {
         this.editor = editor
     
-        super()
-    
         var _16_46_
 
-        this.setLineHeight = this.setLineHeight.bind(this)
-        this.setNumLines = this.setNumLines.bind(this)
-        this.setViewHeight = this.setViewHeight.bind(this)
-        this.reset = this.reset.bind(this)
-        this.setTop = this.setTop.bind(this)
-        this.by = this.by.bind(this)
-        this.to = this.to.bind(this)
-        this.start = this.start.bind(this)
+        this["setLineHeight"] = this["setLineHeight"].bind(this)
+        this["setNumLines"] = this["setNumLines"].bind(this)
+        this["setViewHeight"] = this["setViewHeight"].bind(this)
+        this["reset"] = this["reset"].bind(this)
+        this["setTop"] = this["setTop"].bind(this)
+        this["by"] = this["by"].bind(this)
+        this["to"] = this["to"].bind(this)
+        this["start"] = this["start"].bind(this)
+        EditorScroll.__super__.constructor.call(this)
         this.lineHeight = ((_16_46_=this.editor.size.lineHeight) != null ? _16_46_ : 0)
         this.viewHeight = -1
         this.init()
     }
 
-    init ()
+    EditorScroll.prototype["init"] = function ()
     {
         this.scroll = 0
         this.offsetTop = 0
@@ -41,7 +44,7 @@ class EditorScroll extends events
         return this.bot = -1
     }
 
-    start (viewHeight, numLines)
+    EditorScroll.prototype["start"] = function (viewHeight, numLines)
     {
         this.viewHeight = viewHeight
         this.numLines = numLines
@@ -53,7 +56,7 @@ class EditorScroll extends events
         return this.by(0)
     }
 
-    calc ()
+    EditorScroll.prototype["calc"] = function ()
     {
         if (this.viewHeight <= 0)
         {
@@ -64,12 +67,12 @@ class EditorScroll extends events
         return this.viewLines = Math.ceil(this.viewHeight / this.lineHeight) + 1
     }
 
-    to (p)
+    EditorScroll.prototype["to"] = function (p)
     {
         return this.by(p - this.scroll)
     }
 
-    by (delta, x)
+    EditorScroll.prototype["by"] = function (delta, x)
     {
         var offset, scroll, top
 
@@ -105,7 +108,7 @@ class EditorScroll extends events
         }
     }
 
-    setTop (top)
+    EditorScroll.prototype["setTop"] = function (top)
     {
         var num, oldBot, oldTop
 
@@ -135,19 +138,19 @@ class EditorScroll extends events
         }
     }
 
-    lineIndexIsInView (li)
+    EditorScroll.prototype["lineIndexIsInView"] = function (li)
     {
         return (this.top <= li && li <= this.bot)
     }
 
-    reset ()
+    EditorScroll.prototype["reset"] = function ()
     {
         this.emit('clearLines')
         this.init()
         return this.updateOffset()
     }
 
-    setViewHeight (h)
+    EditorScroll.prototype["setViewHeight"] = function (h)
     {
         if (this.viewHeight !== h)
         {
@@ -158,7 +161,7 @@ class EditorScroll extends events
         }
     }
 
-    setNumLines (n, opt)
+    EditorScroll.prototype["setNumLines"] = function (n, opt)
     {
         if (this.numLines !== n)
         {
@@ -181,7 +184,7 @@ class EditorScroll extends events
         }
     }
 
-    setLineHeight (h)
+    EditorScroll.prototype["setLineHeight"] = function (h)
     {
         if (this.lineHeight !== h)
         {
@@ -192,12 +195,12 @@ class EditorScroll extends events
         }
     }
 
-    updateOffset ()
+    EditorScroll.prototype["updateOffset"] = function ()
     {
         return this.editor.layers.style.transform = `translate3d(0,-${this.offsetTop}px, 0)`
     }
 
-    cursorToTop (topDist = 7)
+    EditorScroll.prototype["cursorToTop"] = function (topDist = 7)
     {
         var cp, hl, rg, sl
 
@@ -214,7 +217,7 @@ class EditorScroll extends events
         }
     }
 
-    cursorIntoView ()
+    EditorScroll.prototype["cursorIntoView"] = function ()
     {
         var delta
 
@@ -226,7 +229,7 @@ class EditorScroll extends events
         return null
     }
 
-    deltaToEnsureMainCursorIsVisible ()
+    EditorScroll.prototype["deltaToEnsureMainCursorIsVisible"] = function ()
     {
         var cl, maindelta, offset, _232_31_, _232_46_
 
@@ -244,7 +247,7 @@ class EditorScroll extends events
         return maindelta
     }
 
-    updateCursorOffset ()
+    EditorScroll.prototype["updateCursorOffset"] = function ()
     {
         var charWidth, cx, layersWidth, offsetX, scrollLeft
 
@@ -263,10 +266,12 @@ class EditorScroll extends events
         }
     }
 
-    info ()
+    EditorScroll.prototype["info"] = function ()
     {
         return {topbot:`${this.top} .. ${this.bot} = ${this.bot - this.top} / ${this.numLines} lines`,scroll:`${this.scroll} offsetTop ${this.offsetTop} viewHeight ${this.viewHeight} scrollMax ${this.scrollMax} fullLines ${this.fullLines} viewLines ${this.viewLines}`}
     }
-}
+
+    return EditorScroll
+})()
 
 export default EditorScroll;

@@ -5,7 +5,7 @@ var fileeditor
 import kxk from "../../kxk.js"
 let post = kxk.post
 
-import util from "../util/util.js"
+import belt from "../edit/tool/belt.js"
 
 import editor from "../edit/editor.js"
 
@@ -126,7 +126,7 @@ fileeditor = (function ()
                     }
                     if (event.shift)
                     {
-                        this.state.addRangeToSelectionWithMainCursorAtEnd(util.rangeFromStartToEnd(start,[x,y]))
+                        this.state.addRangeToSelectionWithMainCursorAtEnd(belt.rangeFromStartToEnd(start,[x,y]))
                     }
                     else
                     {

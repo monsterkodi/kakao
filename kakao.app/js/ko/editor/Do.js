@@ -1,4 +1,6 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+
+var Do
 
 import kxk from "../../kxk.js"
 let isEqual = kxk.isEqual
@@ -10,16 +12,18 @@ import ranges from "../tools/ranges.js"
 
 import DoState from "./DoState.js"
 
-class Do extends events
+
+Do = (function ()
 {
-    constructor (lines = [])
+    _k_.extend(Do, events)
+    function Do (lines = [])
     {
-        super()
+        Do.__super__.constructor.call(this)
     
         this.setLines(lines)
     }
 
-    tabState ()
+    Do.prototype["tabState"] = function ()
     {
         var c, changes, chg, index, nxt, o, prv
 
@@ -68,7 +72,7 @@ class Do extends events
         return changes
     }
 
-    setTabState (tabState)
+    Do.prototype["setTabState"] = function (tabState)
     {
         var changes, index, key, type, value
 
@@ -101,7 +105,7 @@ class Do extends events
         return this
     }
 
-    static applyStateToText (tabState, text)
+    Do["applyStateToText"] = function (tabState, text)
     {
         var changes, index, key, lines, tmpDo, type, value
 
@@ -134,36 +138,36 @@ class Do extends events
         return tmpDo.text()
     }
 
-    setLines (lines)
+    Do.prototype["setLines"] = function (lines)
     {
         this.state = new DoState(lines)
         this.reset()
         return this.history.push(this.state.s)
     }
 
-    resetHistory ()
+    Do.prototype["resetHistory"] = function ()
     {
         return this.setLines(this.lines())
     }
 
-    reset ()
+    Do.prototype["reset"] = function ()
     {
         this.undos = 0
         this.doCount = 0
         return this.history = []
     }
 
-    start ()
+    Do.prototype["start"] = function ()
     {
         return this.doCount += 1
     }
 
-    isDoing ()
+    Do.prototype["isDoing"] = function ()
     {
         return this.doCount > 0
     }
 
-    end (opt)
+    Do.prototype["end"] = function (opt)
     {
         var changes
 
@@ -180,27 +184,27 @@ class Do extends events
         return null
     }
 
-    change (index, text)
+    Do.prototype["change"] = function (index, text)
     {
         return this.state.changeLine(index,text)
     }
 
-    insert (index, text)
+    Do.prototype["insert"] = function (index, text)
     {
         return this.state.insertLine(index,text)
     }
 
-    delete (index)
+    Do.prototype["delete"] = function (index)
     {
         return this.state.deleteLine(index)
     }
 
-    append (text)
+    Do.prototype["append"] = function (text)
     {
         return this.state.appendLine(text)
     }
 
-    undo ()
+    Do.prototype["undo"] = function ()
     {
         var changes
 
@@ -216,7 +220,7 @@ class Do extends events
         }
     }
 
-    redo ()
+    Do.prototype["redo"] = function ()
     {
         var changes
 
@@ -233,7 +237,7 @@ class Do extends events
         }
     }
 
-    select (newSelections)
+    Do.prototype["select"] = function (newSelections)
     {
         if (newSelections.length)
         {
@@ -246,7 +250,7 @@ class Do extends events
         }
     }
 
-    setCursors (newCursors, opt)
+    Do.prototype["setCursors"] = function (newCursors, opt)
     {
         var mainCursor, mainIndex
 
@@ -287,27 +291,27 @@ class Do extends events
         return this.state.setMain(mainIndex)
     }
 
-    setMain (m)
+    Do.prototype["setMain"] = function (m)
     {
         return this.state.set('main',m)
     }
 
-    setSelections (s)
+    Do.prototype["setSelections"] = function (s)
     {
         return this.state.setSelections(s)
     }
 
-    setHighlights (h)
+    Do.prototype["setHighlights"] = function (h)
     {
         return this.state.setHighlights(h)
     }
 
-    addHighlight (h)
+    Do.prototype["addHighlight"] = function (h)
     {
         return this.state.addHighlight(h)
     }
 
-    cleanCursors (cs)
+    Do.prototype["cleanCursors"] = function (cs)
     {
         var c, ci, p
 
@@ -334,7 +338,7 @@ class Do extends events
         return cs
     }
 
-    hasChanges ()
+    Do.prototype["hasChanges"] = function ()
     {
         var changes
 
@@ -350,7 +354,7 @@ class Do extends events
         return changes.changes.length > 0
     }
 
-    calculateChanges (oldState, newState)
+    Do.prototype["calculateChanges"] = function (oldState, newState)
     {
         var changes, dd, deletes, inserts, newLines, ni, nl, oi, ol, oldLines
 
@@ -440,87 +444,89 @@ class Do extends events
         return {changes:changes,inserts:inserts,deletes:deletes,cursors:oldState.cursors !== newState.cursors,selects:oldState.selections !== newState.selections}
     }
 
-    text ()
+    Do.prototype["text"] = function ()
     {
         return this.state.text()
     }
 
-    line (i)
+    Do.prototype["line"] = function (i)
     {
         return this.state.line(i)
     }
 
-    cursor (i)
+    Do.prototype["cursor"] = function (i)
     {
         return this.state.cursor(i)
     }
 
-    highlight (i)
+    Do.prototype["highlight"] = function (i)
     {
         return this.state.highlight(i)
     }
 
-    selection (i)
+    Do.prototype["selection"] = function (i)
     {
         return this.state.selection(i)
     }
 
-    lines ()
+    Do.prototype["lines"] = function ()
     {
         return this.state.lines()
     }
 
-    cursors ()
+    Do.prototype["cursors"] = function ()
     {
         return this.state.cursors()
     }
 
-    highlights ()
+    Do.prototype["highlights"] = function ()
     {
         return this.state.highlights()
     }
 
-    selections ()
+    Do.prototype["selections"] = function ()
     {
         return this.state.selections()
     }
 
-    numLines ()
+    Do.prototype["numLines"] = function ()
     {
         return this.state.numLines()
     }
 
-    numCursors ()
+    Do.prototype["numCursors"] = function ()
     {
         return this.state.numCursors()
     }
 
-    numSelections ()
+    Do.prototype["numSelections"] = function ()
     {
         return this.state.numSelections()
     }
 
-    numHighlights ()
+    Do.prototype["numHighlights"] = function ()
     {
         return this.state.numHighlights()
     }
 
-    textInRange (r)
+    Do.prototype["textInRange"] = function (r)
     {
         var _386_39_
 
         return (this.state.line(r[0]) != null ? this.state.line(r[0]).slice(r[1][0],r[1][1]) : undefined)
     }
 
-    mainCursor ()
+    Do.prototype["mainCursor"] = function ()
     {
         return this.state.mainCursor()
     }
 
-    rangeForLineAtIndex (i)
+    Do.prototype["rangeForLineAtIndex"] = function (i)
     {
         return [i,[0,this.line(i).length]]
     }
-}
+
+    return Do
+})()
 
 export default Do;

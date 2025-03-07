@@ -8,7 +8,7 @@ let drag = kxk.drag
 let elem = kxk.elem
 let post = kxk.post
 
-import Syntax from "../editor/Syntax.js"
+import Syntax from "./Syntax.js"
 
 
 FileList = (function ()

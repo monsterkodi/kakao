@@ -7,7 +7,8 @@
 ###
 
 use ../../kxk ▪ kseg kutil post
-use ../util   ◆ theme util specs
+use ../util   ◆ theme specs
+use ./tool    ◆ belt
 
 function complete
 
@@ -136,7 +137,7 @@ function complete
         @words = kseg.chunks(@editor.state.allLines()).map (chunk) -> kseg.str chunk.segl
         @words = kutil.uniq @words
         @words = @words.filter (w) => w.startsWith(@turd) and w != @turd
-        @words = util.cleanWordsForCompletion @words
+        @words = belt.cleanWordsForCompletion @words
         @words.sort()
         
         if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O
@@ -159,7 +160,7 @@ function complete
         if @words.length <= 1
             @choices.clear()
         else
-            mlw = max 3 util.widthOfLines(@words)
+            mlw = max 3 belt.widthOfLines(@words)
             
             h = min 8 @words.length
             x  = @editor.cells.x+cx-@turd.length

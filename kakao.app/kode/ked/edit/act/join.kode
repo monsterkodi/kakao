@@ -6,7 +6,7 @@
  0000000    0000000   000  000   000  
 ###
 
-use ../../util ◆ util
+use ../tool ◆ belt
 
 export
 
@@ -20,8 +20,8 @@ export
         
         @moveCursorsToEndOfLines()
         
-        idxs = util.lineIndicesForPositions @allCursors()
-        rngs = util.rangesForJoiningLines @allLines() idxs
+        idxs = belt.lineIndicesForPositions @allCursors()
+        rngs = belt.rangesForJoiningLines @allLines() idxs
 
         @deleteRanges rngs @allCursors()
         
@@ -29,9 +29,9 @@ export
         
         selections = @allSelections()
         cursors    = @allCursors() 
-        indices    = util.lineIndicesForRangesOrPositions selections cursors
+        indices    = belt.lineIndicesForRangesOrPositions selections cursors
         
-        [lines selections cursors] = util.moveLineRangesAndPositionsAtIndicesInDirection @allLines() selections cursors indices dir
+        [lines selections cursors] = belt.moveLineRangesAndPositionsAtIndicesInDirection @allLines() selections cursors indices dir
         
         @setLines lines
         @setSelections selections
@@ -42,9 +42,9 @@ export
         selections = @allSelections()
         cursors    = @allCursors() 
         lines      = @allLines()
-        blocks     = util.blockRangesForRangesAndPositions lines selections cursors
+        blocks     = belt.blockRangesForRangesAndPositions lines selections cursors
         
-        [lines selections cursors] = util.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection lines blocks selections cursors dir
+        [lines selections cursors] = belt.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection lines blocks selections cursors dir
         
         @setLines lines
         @setSelections selections
@@ -54,9 +54,9 @@ export
 
         selections = @allSelections()
         cursors    = @allCursors() 
-        indices    = util.lineIndicesForRangesOrPositions selections cursors
+        indices    = belt.lineIndicesForRangesOrPositions selections cursors
 
-        [lines selections cursors] = util.toggleCommentsInLineRangesAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.toggleCommentsInLineRangesAtIndices @allLines() selections cursors indices
                 
         @setLines lines        
         @setSelections selections

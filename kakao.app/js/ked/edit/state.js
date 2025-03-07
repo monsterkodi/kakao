@@ -10,7 +10,6 @@ let immutable = kxk.immutable
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
-import util from "../util/util.js"
 import syntax from "../util/syntax.js"
 
 import del from "./act/del.js"
@@ -19,6 +18,8 @@ import select from "./act/select.js"
 import join from "./act/join.js"
 import indent from "./act/indent.js"
 import multi from "./act/multi.js"
+
+import belt from "./tool/belt.js"
 
 import keys from "./keys.js"
 import mode from "./mode.js"
@@ -127,12 +128,12 @@ state = (function ()
 
     state.prototype["setSelections"] = function (selections)
     {
-        return this.set('selections',util.mergeLineRanges(this.allLines(),selections))
+        return this.set('selections',belt.mergeLineRanges(this.allLines(),selections))
     }
 
     state.prototype["setHighlights"] = function (highlights)
     {
-        return this.set('highlights',util.normalizeSpans(highlights))
+        return this.set('highlights',belt.normalizeSpans(highlights))
     }
 
     state.prototype["setCursors"] = function (cursors, opt)
@@ -143,7 +144,7 @@ state = (function ()
         main = opt.main
         if (_k_.isArr(main))
         {
-            main = util.indexOfPosInPositions(main,cursors)
+            main = belt.indexOfPosInPositions(main,cursors)
         }
         if (_k_.isNum(main) && main < 0)
         {
@@ -157,7 +158,7 @@ state = (function ()
         {
             mainCursor = this.mainCursor()
         }
-        cursors = util.normalizePositions(cursors,this.s.lines.length - 1)
+        cursors = belt.normalizePositions(cursors,this.s.lines.length - 1)
         this.s = this.s.set('cursors',cursors)
         main = -1
         var list = _k_.list(cursors)
@@ -412,7 +413,7 @@ state = (function ()
         view[0] += sx
         view[1] += sy
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
-        width = util.widthOfLines(this.s.lines)
+        width = belt.widthOfLines(this.s.lines)
         maxOffsetX = _k_.max(0,width - this.cells.cols + 2)
         maxOffsetX = _k_.max(maxOffsetX,this.mainCursor()[0] - this.cells.cols + 2)
         view[0] = _k_.clamp(0,maxOffsetX,view[0])

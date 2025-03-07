@@ -7,7 +7,7 @@
 ###
 
 function specs
-
+    
     @info: 
         
         "○":  trigger:'~' id: 'o'
@@ -23,11 +23,13 @@ function specs
         "■":  trigger:'~' id: 'S'
         "⮐":  trigger:'r' insert: '⮐  '
         "➜":  trigger:'t' insert: '➜ '
+        "▸":  trigger:'>' insert: '▸ '
         
     @trigger: {}
     @inserts: {}
 
 for k,v of specs.info
+
     v.insert = k if empty v.insert
     specs.trigger[v.trigger] ?= []
     specs.trigger[v.trigger].push v.insert

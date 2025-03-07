@@ -3,8 +3,9 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 
-import util from "../../util/util.js"
 import prof from "../../util/prof.js"
+
+import belt from "../tool/belt.js"
 
 import mode from "../mode.js"
 
@@ -23,7 +24,7 @@ export default {insert:function (text)
     }
     cursors = this.allCursors()
     lines = this.allLines()
-    var _a_ = util.insertTextAtPositions(lines,text,cursors); lines = _a_[0]; cursors = _a_[1]
+    var _a_ = belt.insertTextAtPositions(lines,text,cursors); lines = _a_[0]; cursors = _a_[1]
 
     this.clearHighlights()
     this.setLines(lines)
@@ -35,10 +36,22 @@ export default {insert:function (text)
     selections = this.allSelections()
     cursors = this.allCursors()
     lines = this.allLines()
-    var _b_ = util.insertAsciiHeaderForPositionsAndRanges(lines,cursors,selections); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
+    var _b_ = belt.insertAsciiHeaderForPositionsAndRanges(lines,cursors,selections); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
 
     this.clearHighlights()
     this.setLines(lines)
     this.setSelections(selections)
     return this.setCursors(cursors)
+},surroundSelection:function (pair)
+{
+    var lines, selections
+
+    selections = this.allSelections()
+    lines = this.allLines()
+    var _c_ = belt.insertSurroundAtRanges(lines,selections,pair); lines = _c_[0]; selections = _c_[1]
+
+    this.clearHighlights()
+    this.setLines(lines)
+    this.setSelections(selections)
+    return this.setCursors('bos')
 }}

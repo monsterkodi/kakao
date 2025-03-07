@@ -6,9 +6,10 @@
  0000000  000   000   0000000   000   0000000  00000000  0000000
 ###
 
-use ../../kxk ▪ kstr kseg slash krzl post
-use ../util   ◆ color theme util
-use ../edit   ◆ editor 
+use ../../kxk    ▪ kstr kseg slash krzl post
+use ../util      ◆ color theme 
+use ../edit/tool ◆ belt
+use ../edit      ◆ editor
 
 function choices extends editor
 
@@ -107,7 +108,7 @@ function choices extends editor
         
         ⮐ if row < 0 or row >= @state.s.lines.length
     
-        @state.setSelections [util.rangeOfLine(@state.s.lines row)]
+        @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
         @emit 'select' @choiceAtRow(row)
         
     selectFirst: -> @select 0

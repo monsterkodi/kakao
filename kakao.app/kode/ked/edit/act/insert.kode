@@ -7,7 +7,8 @@
 ###
 
 use ../../../kxk ▪ kstr
-use ../../util   ◆ util prof
+use ../../util   ◆ prof
+use ../tool      ◆ belt
 use ..           ◆ mode
 
 export
@@ -29,7 +30,7 @@ export
         cursors = @allCursors()
         lines   = @allLines()
 
-        [lines cursors] = util.insertTextAtPositions lines text cursors
+        [lines cursors] = belt.insertTextAtPositions lines text cursors
         
         @clearHighlights()
         @setLines   lines
@@ -41,11 +42,22 @@ export
         cursors    = @allCursors()
         lines      = @allLines()
 
-        [lines cursors selections] = util.insertAsciiHeaderForPositionsAndRanges lines cursors selections
+        [lines cursors selections] = belt.insertAsciiHeaderForPositionsAndRanges lines cursors selections
         
         @clearHighlights()
         @setLines      lines
         @setSelections selections
         @setCursors    cursors
         
+    surroundSelection: pair ->
+    
+        selections = @allSelections()
+        lines      = @allLines()
+
+        [lines selections] = belt.insertSurroundAtRanges lines selections pair
+
+        @clearHighlights()
+        @setLines      lines
+        @setSelections selections
+        @setCursors 'bos'
         

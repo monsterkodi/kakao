@@ -8,8 +8,9 @@
 
 use child_process os
 use ../../kxk ▪ immutable kstr kseg
-use ../util   ◆ util syntax
+use ../util   ◆ syntax
 use ./act     ◆ del insert select join indent multi
+use ./tool    ◆ belt
 use           ◆ keys mode
 
 function state
@@ -68,8 +69,8 @@ function state
         @swapState()
         @
 
-    setSelections: selections -> @set 'selections' util.mergeLineRanges(@allLines() selections)
-    setHighlights: highlights -> @set 'highlights' util.normalizeSpans(highlights)
+    setSelections: selections -> @set 'selections' belt.mergeLineRanges(@allLines() selections)
+    setHighlights: highlights -> @set 'highlights' belt.normalizeSpans(highlights)
 
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000
     # 000       000   000  000   000  000       000   000  000   000  000
@@ -82,7 +83,7 @@ function state
         opt ?= {}
         main = opt.main
 
-        if main is arr ➜ main = util.indexOfPosInPositions main cursors
+        if main is arr ➜ main = belt.indexOfPosInPositions main cursors
         if main is num and main < 0 ➜ main = cursors.length+main
 
         if main?
@@ -90,7 +91,7 @@ function state
         else
             mainCursor = @mainCursor()
 
-        cursors = util.normalizePositions cursors @s.lines.length-1
+        cursors = belt.normalizePositions cursors @s.lines.length-1
 
         @s = @s.set 'cursors' cursors
 
@@ -304,7 +305,7 @@ function state
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
 
-        width = util.widthOfLines @s.lines
+        width = belt.widthOfLines @s.lines
         
         maxOffsetX = max 0 width-@cells.cols+2
         maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+2

@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ elem events setStyle $
 
-class Numbers extends events
+function Numbers extends events
 
     @: @editor ->
 

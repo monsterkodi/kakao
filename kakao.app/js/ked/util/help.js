@@ -2,8 +2,9 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var help
 
-import util from "./util.js"
 import color from "./color.js"
+
+import belt from "../edit/tool/belt.js"
 
 
 help = (function ()
@@ -39,7 +40,7 @@ help = (function ()
 
 
 `
-        cells = util.cellsForLines(util.indentLines(util.seglsForText(h),5))
+        cells = belt.cellsForLines(belt.indentLines(belt.seglsForText(h),5))
         color1 = [0,255,0]
         color2 = [120,120,255]
         color3 = [255,160,0]
@@ -55,7 +56,7 @@ help = (function ()
         {
             return parseInt(v * f)
         })
-        kcells = util.cellsInRect(cells,0,0,20,cells.length - 1)
+        kcells = belt.cellsInRect(cells,0,0,20,cells.length - 1)
         var list = _k_.list(kcells)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -70,7 +71,7 @@ help = (function ()
             }
 
         }
-        ecells = util.cellsInRect(cells,20,0,35,cells.length - 1)
+        ecells = belt.cellsInRect(cells,20,0,35,cells.length - 1)
         var list1 = _k_.list(ecells)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
@@ -85,7 +86,7 @@ help = (function ()
             }
 
         }
-        dcells = util.cellsInRect(cells,36,0,cells[0].length - 1,cells.length - 1)
+        dcells = belt.cellsInRect(cells,36,0,cells[0].length - 1,cells.length - 1)
         var list2 = _k_.list(dcells)
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
@@ -101,8 +102,8 @@ help = (function ()
 
         }
         color.glowEffect(cells)
-        color.dimCellsColor(util.cellsWithChar(cells,'○'),'fg',0.26)
-        color.variateCellsColor(util.cellsWithChar(cells,'○'),'fg',0.15)
+        color.dimCellsColor(belt.cellsWithChar(cells,'○'),'fg',0.26)
+        color.variateCellsColor(belt.cellsWithChar(cells,'○'),'fg',0.15)
         fc1 = color1.map(function (v)
         {
             return parseInt(v * (0.5 + 0.5 * f))

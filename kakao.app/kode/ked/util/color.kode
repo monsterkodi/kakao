@@ -71,9 +71,9 @@
     
 ###
 
-use ../../kxk ▪ kstr randRange
-use ../../kxk ◆ ansi
-use ◆ util
+use ../../kxk    ▪ kstr randRange
+use ../../kxk    ◆ ansi
+use ../edit/tool ◆ belt
 
 #ansi.log256Colors()
 #process.exit 0
@@ -150,7 +150,7 @@ class color
         
         for row,y in cells
             for cell,x in row
-                nbcs = util.cellNeighborsAtPos cells x y 6 3
+                nbcs = belt.cellNeighborsAtPos cells x y 6 3
                 continue if empty nbcs
                 
                 sum = [0 0 0]

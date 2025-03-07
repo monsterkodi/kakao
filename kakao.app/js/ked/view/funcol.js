@@ -8,7 +8,6 @@ let slash = kxk.slash
 
 import color from "../util/color.js"
 import theme from "../util/theme.js"
-import util from "../util/util.js"
 
 import view from "./view.js"
 import knob from "./knob.js"

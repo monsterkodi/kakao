@@ -40,8 +40,9 @@ function brckts
         
         ⮐ 'unhandled' if empty brckts.surround[event.char]
 
-        if valid @state.s.selection
+        if valid @state.s.selections
             log "#{@name} surround selection #{brckts.surround[event.char]}" 
+            @state.surroundSelection brckts.surround[event.char]
         else # is space or empty or comma,semicolon,etc ahead
             log "#{@name} insert closing #{brckts.surround[event.char]}" 
     

@@ -11,7 +11,8 @@ let post = kxk.post
 
 import color from "../util/color.js"
 import theme from "../util/theme.js"
-import util from "../util/util.js"
+
+import belt from "../edit/tool/belt.js"
 
 import editor from "../edit/editor.js"
 
@@ -54,9 +55,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _37_15_
+        var lines, _38_15_
 
-        this.items = ((_37_15_=this.items) != null ? _37_15_ : [])
+        this.items = ((_38_15_=this.items) != null ? _38_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -159,7 +160,7 @@ choices = (function ()
         {
             return
         }
-        this.state.setSelections([util.rangeOfLine(this.state.s.lines,row)])
+        this.state.setSelections([belt.rangeOfLine(this.state.s.lines,row)])
         return this.emit('select',this.choiceAtRow(row))
     }
 
@@ -325,7 +326,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _244_21_
+        var col, dx, dy, ret, row, _245_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

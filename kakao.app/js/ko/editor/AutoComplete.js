@@ -1,6 +1,6 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
-var jsClass
+var AutoComplete, jsClass
 
 import kxk from "../../kxk.js"
 let elem = kxk.elem
@@ -14,25 +14,26 @@ let $ = kxk.$
 import req from "../tools/req.js"
 
 jsClass = {RegExp:['test','compile','exec','toString'],String:['endsWith','startsWith','split','slice','substring','padEnd','padStart','indexOf','match','trim','trimEnd','trimStart']}
-class AutoComplete extends events
+
+AutoComplete = (function ()
 {
-    constructor (editor)
+    _k_.extend(AutoComplete, events)
+    function AutoComplete (editor)
     {
         this.editor = editor
     
-        super()
-    
         var c, specials
 
-        this.onLinesSet = this.onLinesSet.bind(this)
-        this.onWillDeleteLine = this.onWillDeleteLine.bind(this)
-        this.onLineChanged = this.onLineChanged.bind(this)
-        this.onLineInserted = this.onLineInserted.bind(this)
-        this.onLinesAppended = this.onLinesAppended.bind(this)
-        this.onMouseDown = this.onMouseDown.bind(this)
-        this.onWheel = this.onWheel.bind(this)
-        this.close = this.close.bind(this)
-        this.onEdit = this.onEdit.bind(this)
+        this["onLinesSet"] = this["onLinesSet"].bind(this)
+        this["onWillDeleteLine"] = this["onWillDeleteLine"].bind(this)
+        this["onLineChanged"] = this["onLineChanged"].bind(this)
+        this["onLineInserted"] = this["onLineInserted"].bind(this)
+        this["onLinesAppended"] = this["onLinesAppended"].bind(this)
+        this["onMouseDown"] = this["onMouseDown"].bind(this)
+        this["onWheel"] = this["onWheel"].bind(this)
+        this["close"] = this["close"].bind(this)
+        this["onEdit"] = this["onEdit"].bind(this)
+        AutoComplete.__super__.constructor.call(this)
         this.wordinfo = {}
         this.mthdinfo = {}
         this.matchList = []
@@ -59,7 +60,7 @@ class AutoComplete extends events
         this.editor.on('blur',this.close)
     }
 
-    parseModule (line)
+    AutoComplete.prototype["parseModule"] = function (line)
     {
         var clss, key, match, _72_30_, _74_40_, _76_49_, _79_40_, _81_49_, _87_41_
 
@@ -116,7 +117,7 @@ class AutoComplete extends events
         }
     }
 
-    parseMethod (line)
+    AutoComplete.prototype["parseMethod"] = function (line)
     {
         var i, rgs, _100_44_, _101_60_
 
@@ -135,7 +136,7 @@ class AutoComplete extends events
         }
     }
 
-    completeMethod (info)
+    AutoComplete.prototype["completeMethod"] = function (info)
     {
         var lst, mcnt, mthds, obj
 
@@ -158,7 +159,7 @@ class AutoComplete extends events
         return this.matchList = mthds.slice(1)
     }
 
-    onEdit (info)
+    AutoComplete.prototype["onEdit"] = function (info)
     {
         var d, m, matches, w, words, _135_28_, _157_41_
 
@@ -247,7 +248,7 @@ class AutoComplete extends events
 
     }
 
-    open (info)
+    AutoComplete.prototype["open"] = function (info)
     {
         var c, ci, cr, cursor, index, inner, item, m, p, sibling, sp, spanInfo, wi, ws
 
@@ -317,7 +318,7 @@ class AutoComplete extends events
         }
     }
 
-    close ()
+    AutoComplete.prototype["close"] = function ()
     {
         var c, _248_16_, _254_13_
 
@@ -353,13 +354,13 @@ class AutoComplete extends events
         return this
     }
 
-    onWheel (event)
+    AutoComplete.prototype["onWheel"] = function (event)
     {
         this.list.scrollTop += event.deltaY
         return stopEvent(event)
     }
 
-    onMouseDown (event)
+    AutoComplete.prototype["onMouseDown"] = function (event)
     {
         var index
 
@@ -372,7 +373,7 @@ class AutoComplete extends events
         return stopEvent(event)
     }
 
-    onEnter ()
+    AutoComplete.prototype["onEnter"] = function ()
     {
         var c
 
@@ -393,7 +394,7 @@ class AutoComplete extends events
         return this.close()
     }
 
-    selectedCompletion ()
+    AutoComplete.prototype["selectedCompletion"] = function ()
     {
         if (this.selected >= 0)
         {
@@ -405,7 +406,7 @@ class AutoComplete extends events
         }
     }
 
-    navigate (delta)
+    AutoComplete.prototype["navigate"] = function (delta)
     {
         if (!this.list)
         {
@@ -414,7 +415,7 @@ class AutoComplete extends events
         return this.select(_k_.clamp(-1,this.matchList.length - 1,this.selected + delta))
     }
 
-    select (index)
+    AutoComplete.prototype["select"] = function (index)
     {
         ;(this.list.children[this.selected] != null ? this.list.children[this.selected].classList.remove('selected') : undefined)
         this.selected = index
@@ -435,22 +436,22 @@ class AutoComplete extends events
         }
     }
 
-    prev ()
+    AutoComplete.prototype["prev"] = function ()
     {
         return this.navigate(-1)
     }
 
-    next ()
+    AutoComplete.prototype["next"] = function ()
     {
         return this.navigate(1)
     }
 
-    last ()
+    AutoComplete.prototype["last"] = function ()
     {
         return this.navigate(this.matchList.length - this.selected)
     }
 
-    moveClonesBy (numChars)
+    AutoComplete.prototype["moveClonesBy"] = function (numChars)
     {
         var beforeLength, c, charOffset, ci, offset, spanOffset
 
@@ -475,7 +476,7 @@ class AutoComplete extends events
         return this.span.style.transform = `translatex(${spanOffset}px)`
     }
 
-    parseLinesDelayed (lines, opt)
+    AutoComplete.prototype["parseLinesDelayed"] = function (lines, opt)
     {
         var delay
 
@@ -492,7 +493,7 @@ class AutoComplete extends events
         }
     }
 
-    parseLines (lines, opt)
+    AutoComplete.prototype["parseLines"] = function (lines, opt)
     {
         var count, cursorWord, i, info, l, w, words, _379_27_, _404_37_, _405_35_, _406_36_
 
@@ -564,7 +565,7 @@ class AutoComplete extends events
         }
     }
 
-    cursorWords ()
+    AutoComplete.prototype["cursorWords"] = function ()
     {
         var after, befor, cp, cursr, words
 
@@ -575,32 +576,32 @@ class AutoComplete extends events
         return [this.editor.textsInRanges(befor),this.editor.textInRange(cursr),this.editor.textsInRanges(after)]
     }
 
-    cursorWord ()
+    AutoComplete.prototype["cursorWord"] = function ()
     {
         return this.cursorWords()[1]
     }
 
-    onLinesAppended (lines)
+    AutoComplete.prototype["onLinesAppended"] = function (lines)
     {
         return this.parseLines(lines,{action:'append'})
     }
 
-    onLineInserted (li)
+    AutoComplete.prototype["onLineInserted"] = function (li)
     {
         return this.parseLines([this.editor.line(li)],{action:'insert'})
     }
 
-    onLineChanged (li)
+    AutoComplete.prototype["onLineChanged"] = function (li)
     {
         return this.parseLines([this.editor.line(li)],{action:'change',count:0})
     }
 
-    onWillDeleteLine (line)
+    AutoComplete.prototype["onWillDeleteLine"] = function (line)
     {
         return this.parseLines([line],{action:'delete',count:-1})
     }
 
-    onLinesSet (lines)
+    AutoComplete.prototype["onLinesSet"] = function (lines)
     {
         if (lines.length)
         {
@@ -608,7 +609,7 @@ class AutoComplete extends events
         }
     }
 
-    handleModKeyComboEvent (mod, key, combo, event)
+    AutoComplete.prototype["handleModKeyComboEvent"] = function (mod, key, combo, event)
     {
         var _446_39_, _451_16_
 
@@ -641,6 +642,8 @@ class AutoComplete extends events
         this.close()
         return 'unhandled'
     }
-}
+
+    return AutoComplete
+})()
 
 export default AutoComplete;

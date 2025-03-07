@@ -23,9 +23,10 @@ brckts = (function ()
         {
             return 'unhandled'
         }
-        if (!_k_.empty(this.state.s.selection))
+        if (!_k_.empty(this.state.s.selections))
         {
             console.log(`${this.name} surround selection ${brckts.surround[event.char]}`)
+            this.state.surroundSelection(brckts.surround[event.char])
         }
         else
         {

@@ -1,0 +1,492 @@
+###
+000000000  00000000  000   000  000000000
+   000     000        000 000      000   
+   000     0000000     00000       000   
+   000     000        000 000      000   
+   000     00000000  000   000     000   
+###
+
+use ../../../kxk ▪ kstr kutil kseg 
+use ../../../kxk ◆ salter
+
+function text
+
+    @linesForText: text -> 
+        
+        kstr.lines text.replace(/\x1b/g '�')
+        
+    @joinLines: lines join='\n'->
+        
+        if lines is str
+            lines = kstr.lines lines
+        lines.join join
+        
+    @seglsForText: text ->
+
+        kseg.segls text.replace(/\x1b/g '�')
+        
+    @textForLineRange: lines rng ->
+         
+        ⮐ '' if empty lines or empty rng
+         
+        l = []
+         
+        for y in rng[1]..rng[3]
+            continue if @isInvalidLineIndex lines y
+            if
+                y == rng[1]
+                    if 
+                        y == rng[3] ➜ l.push lines[y][rng[0]...rng[2]]
+                                    ➜ l.push lines[y][rng[0]..]
+                y == rng[3] ➜ l.push lines[y][0...rng[2]]
+                            ➜ l.push lines[y]
+         
+        s = kseg.str l
+        s
+
+    @seglsForLineRange: lines rng ->
+        
+        ⮐ '' if empty lines or empty rng
+        
+        l = []
+        
+        for y in rng[1]..rng[3]
+            continue if @isInvalidLineIndex lines y
+            if
+                y == rng[1]
+                    if 
+                        y == rng[3] ➜ l.push lines[y][rng[0]...rng[2]]
+                                    ➜ l.push lines[y][rng[0]..]
+                y == rng[3] ➜ l.push lines[y][0...rng[2]]
+                            ➜ l.push lines[y]
+                            
+            l.push '\n' if y < rng[3]
+        
+        l
+        
+    @segsForLineSpan: lines span ->
+        
+        l = []
+        ⮐ l if empty lines or empty span
+        y = span[1]
+        ⮐ l if @isInvalidLineIndex lines y
+        lines[y][span[0]...span[2]]
+        
+    @textForLineRanges: lines rngs ->
+        
+        ⮐ '' if empty lines
+        
+        text = ''
+        for rng in rngs
+            text += @textForLineRange lines rng
+            text += '\n'
+        text[0...-1]
+        
+    @lineSpansForText: lines text ->
+        
+        spans = []
+        
+        for line,y in lines
+            line = kseg.str line
+            x2 = 0
+            while true
+                x1 = line.indexOf text x2
+                break if x1 < 0
+                x2 = x1+text.length
+                spans.push [x1 y x2]
+        
+        spans
+        
+    @textFromBolToPos: lines pos -> lines[pos[1]][0...pos[0]]
+    
+    @isOnlyWhitespace: text -> /^\s+$/.test kseg.str(text)
+    
+    # 000  000   000  0000000    00000000  000   000  000000000  
+    # 000  0000  000  000   000  000       0000  000     000     
+    # 000  000 0 000  000   000  0000000   000 0 000     000     
+    # 000  000  0000  000   000  000       000  0000     000     
+    # 000  000   000  0000000    00000000  000   000     000     
+    
+    @numIndent: segs -> kseg.numIndent segs
+        
+    @splitLineIndent: str -> kseg.splitAtIndent str
+        
+    @numIndentOfLines: lines ->
+        
+        for line in lines
+            continue if empty trim line
+            ⮐ @numIndent line
+        0
+        
+    @lineIndentAtPos: lines pos -> 
+
+        @numIndent lines[pos[1]]
+        
+    @indentLines: lines num=4 ->
+        
+        lines.map (l) -> lpad(num).split('').concat l
+        
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
+    @seglRangeAtPos: segls pos ->
+
+        [0 pos[1] segls[pos[1]].length pos[1]]
+        
+    @lineRangeAtPos: lines pos ->
+
+        [0 pos[1] kseg.width(lines[pos[1]]) pos[1]]
+
+    @lineRangesForPositions: lines posl append->
+        
+        rngs = @lineIndicesForPositions(posl).map (y) -> lines[y].length ? [0 y lines[y].length y] : [0 y 0 y+1]
+        if valid rngs and append
+            rngs[-1][2]  = 0 
+            rngs[-1][3] += 1
+        rngs        
+                    
+    @numFullLinesInRange: lines rng ->
+        
+        d = rng[3] - rng[1]
+        
+        if d == 0 
+            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
+        
+        n = 0
+        n += 1   if rng[0] == 0 
+        n += d-2 if d > 1
+        n += 1   if rng[2] == lines[rng[3]].length
+        n
+        
+    @numLinesInRange: rng -> rng[3] - rng[1] + 1
+    
+    @isEmptyLineAtPos: lines pos -> lines[pos[1]].length <= 0
+        
+    @lineRangesInRange: lines rng ->
+        
+        rngs = []
+        for ln in 0...@numLinesInRange(rng)
+            rngs.push @lineRangeAtPos(lines [0 rng[1]+ln])
+        rngs
+        
+    @seglsForRange: lines rng ->
+
+        nl = @numLinesInRange rng
+        
+        if nl == 1
+            bos = kseg.segiAtWidth lines[rng[1]] rng[0]
+            eos = kseg.segiAtWidth lines[rng[1]] rng[2]
+            ⮐ [lines[rng[1]][bos...eos]]
+        
+        firstLineIndex = min rng[1] lines.length-1
+        lastLineIndex  = min rng[3] lines.length-1
+
+        segi = kseg.segiAtWidth lines[firstLineIndex] rng[0]
+        lns = [lines[firstLineIndex][segi..]]
+        lns = lns.concat lines[firstLineIndex+1...lastLineIndex] if nl > 2
+        segi = kseg.indexAtWidth lines[lastLineIndex] rng[2]
+        lns = lns.concat [lines[lastLineIndex][0...segi]]
+                
+    @indexOfLongestLine: lines ->
+        
+        maxIndex = 0
+        maxLength = 0
+        for line,index in lines
+            if line.length > maxLength
+                maxLength = kseg.width line
+                maxIndex  = index
+        maxIndex
+
+    @widthOfLines: lines -> 
+    
+        kseg.width lines[@indexOfLongestLine(lines)]
+
+    #  0000000  00000000   000      000  000000000  
+    # 000       000   000  000      000     000     
+    # 0000000   00000000   000      000     000     
+    #      000  000        000      000     000     
+    # 0000000   000        0000000  000     000   
+    
+    @joinLineColumns: lineCols ->
+        ▴ lineCols[i].length == lineCols[i+1].length for i in 0...lineCols.length-1
+        numLines = lineCols[0].length
+        numCols  = lineCols.length
+        lines = []
+        for lidx in 0...numLines
+            line = ''
+            for cidx in 0...numCols
+                line += lineCols[cidx][lidx]
+            lines.push line
+        lines
+    
+    @splitTextAtCols: text cols -> 
+        
+        spans = []
+        for col,idx in cols
+            prv = idx > 0 ? cols[idx-1] : 0
+            spans.push text[prv...col]
+        spans.push text[col..]
+        spans
+    
+    @splitLinesAtCols: lines cols ->
+
+        cls = []
+        for i in 0..cols.length
+            cls.push []
+        
+        for line in lines 
+            spans = @splitTextAtCols line cols
+            for span,idx in spans
+                cls[idx].push span
+        
+        cls
+    
+    @splitLineRange: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
+        
+        nl = @numLinesInRange rng 
+        ⮐ [rng] if nl == 1
+        
+        split = []
+        
+        split.push [rng[0] rng[1] kseg.width(lines[rng[1]]) rng[1]]
+        
+        if nl > 2
+            for i in 1..nl-2
+                split.push [0 rng[1]+i kseg.width(lines[rng[1]+i]) rng[1]+i]
+        
+        split.push [0 rng[3] rng[2] rng[3]] if includeEmpty or rng[2] > 0
+
+        split
+                            
+    @splitLineRanges: lines rngs includeEmpty=true -> # split list of multi-line-ranges into list of single-line-ranges
+        
+        split = []        
+        for rng in rngs
+            split = split.concat @splitLineRange(lines rng includeEmpty)
+        split
+        
+    @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= kseg.width(lines[pos[1]])
+    @isLinesPosOutside: lines pos -> not @isLinesPosInside lines pos 
+    
+    @isValidLineIndex:   lines li -> 0 <= li < lines.length
+    @isInvalidLineIndex: lines li -> not @isValidLineIndex lines li
+    
+    @isMultiLineRange: lines rng -> rng[1] != rng[3]
+        
+    @isFullLineRange: lines rng -> (0 <= rng[1] <= rng[3] < lines.length) and (rng[0] == 0) and (rng[2] >= lines[rng[3]].length or rng[2] == 0 and rng[1] < rng[3])
+    
+    @isSpanLineRange: lines rng -> (0 <= rng[1] == rng[3] < lines.length) and (rng[0] > 0 or rng[2] < lines[rng[1]].length)
+        
+    @rangeOfLine: lines y -> [0 y kseg.width(lines[y]) y]
+    
+    #  0000000  000   000  000   000  000   000  000   000  
+    # 000       000   000  000   000  0000  000  000  000   
+    # 000       000000000  000   000  000 0 000  0000000    
+    # 000       000   000  000   000  000  0000  000  000   
+    #  0000000  000   000   0000000   000   000  000   000  
+    
+    @rangeOfClosestChunkToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if @isInvalidLineIndex lines y
+         
+        if r = kstr.rangeOfClosestChunk lines[y] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
+                
+    @rangeOfClosestChunkLeftToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if @isInvalidLineIndex lines y
+        
+        if r = kstr.rangeOfClosestChunk lines[y][0...x] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
+
+    @rangeOfClosestChunkRightToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if @isInvalidLineIndex lines y
+        
+        if r = kstr.rangeOfClosestChunk lines[y][x..] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
+                
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
+    @wordAtPos: lines pos ->
+        
+        if rng = @rangeOfClosestWordToPos lines pos
+            ⮐ kseg.str @segsForLineSpan(lines rng)
+        ''
+        
+    @chunkBeforePos: lines pos ->
+        
+        before = lines[pos[1]][0...pos[0]]
+        if tcc = kseg.tailCountChunk before
+            ⮐ kseg.str before[before.length-tcc..]
+        ''    
+        
+    @chunkAfterPos: lines pos ->
+        
+        after = lines[pos[1]][pos[0]..]
+        if hcc = kseg.headCountChunk after
+            ⮐ kseg.str after[0...hcc]
+        ''    
+    
+    @rangeOfClosestWordToPos: lines pos ->
+        
+        [x y] = pos
+        ⮐ if @isInvalidLineIndex lines y
+         
+        if r = kseg.spanForClosestWordAtColumn lines[y] x
+            if 0 <= r[0] < r[1]
+                ⮐ [r[0] y r[1] y]
+                
+    @rangeOfWhitespaceLeftToPos: lines pos ->
+        
+        [x y] = pos
+        
+        y = clamp 0 lines.length-1 y
+        x = clamp 0 lines[y].length x
+        
+        ⮐ [x y x y] if x <= 0
+        
+        segi = kseg.indexAtWidth lines[y] x
+        left = lines[y][0...segi]
+        
+        if tc = kseg.tailCount left ' '
+            ⮐ [segi-tc y segi y]
+            
+        [x y x y]
+
+    @rangeOfWordOrWhitespaceLeftToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if x <= 0 or @isInvalidLineIndex lines y
+        
+        segi = kseg.indexAtWidth lines[y] x
+        left = lines[y][0...segi]
+        
+        if tc = kseg.tailCount left ' '
+            ⮐ [segi-tc y segi y]
+            
+        if tc = kseg.tailCountWord left
+            ⮐ [segi-tc y segi y]
+        
+        [segi-1 y segi y]
+
+    @rangeOfWordOrWhitespaceRightToPos: lines pos ->
+        
+        [x y] = pos
+        
+        ⮐ if x < 0 or @isInvalidLineIndex lines y
+        
+        if r = kstr.rangeOfClosestWord lines[y][x..] 0
+            if 0 == r[0] < r[1]
+                ⮐ [x y r[1]+x y]
+            if r[0] > 0 
+                ⮐ [x y r[0]+x y]
+            
+        [x y lines[y].length y]   
+        
+    @lineChar: line x -> line[x] if 0 <= x < line.length
+        
+    @categoryForChar: char -> 
+        
+        if 
+            empty char      ➜ ⮐ 'empty'
+            /\s+/.test char ➜ ⮐ 'ws'
+            /\w+/.test char ➜ ⮐ 'word'
+            
+        'punct'
+        
+    @jumpDelta: line px dx jump ->
+        
+        if dx > 0
+            ci = px
+            if nc = cat = @categoryForChar @lineChar(line ci)
+                ⮐ dx if cat not in jump
+                while true
+                    ci += dx
+                    nc = @categoryForChar @lineChar(line ci)
+                    break if nc != cat
+                    break if ci <= 0
+                    ⮐ 1 if nc == 'empty'
+            ci - px
+        else
+            ci = px - 1
+            ⮐ 0 if ci < 0
+            if ci >= line.length and 'empty' in jump ➜ ⮐ line.length - ci - 1
+            cat = @categoryForChar @lineChar(line ci)
+            ⮐ dx if cat not in jump
+            while 0 <= ci < line.length and @categoryForChar(@lineChar(line ci)) == cat
+                ci += dx
+            min dx ci - px + 1
+
+    @numCharsFromPosToWordOrPunctInDirection: lines pos dir opt ->
+        
+        dx = dir == 'left' ? -1 : 1
+        
+        if opt?.jump ➜ ⮐ @jumpDelta(lines[pos[1]] pos[0] dx opt.jump)
+            
+        ⮐ 0 if pos[0] + dx < 0
+        dx
+        
+    ###
+     0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
+    000       000   000  000   000  000   000  000      000          000     000  000   000  0000  000  
+    000       000   000  000000000  00000000   000      0000000      000     000  000   000  000 0 000  
+    000       000   000  000 0 000  000        000      000          000     000  000   000  000  0000  
+     0000000   0000000   000   000  000        0000000  00000000     000     000   0000000   000   000  
+    
+    list of strings -> list of strings
+    ###
+    
+    @cleanWordsForCompletion: words ->
+        
+        segls = []
+        
+        for segl in kseg.segls words
+            
+            tc = kseg.tailCountTurd segl
+            
+            if tc == 1 and segl[0] == segl[-1]
+                segls.push segl
+            else
+                segls.push segl[0...segl.length-tc]
+            
+        kutil.uniq segls.map(kseg.str)
+        
+    #  0000000    0000000   0000000  000  000  000   000  00000000   0000000   0000000    00000000  00000000   
+    # 000   000  000       000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000000000  0000000   000       000  000  000000000  0000000   000000000  000   000  0000000   0000000    
+    # 000   000       000  000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000   000  0000000    0000000  000  000  000   000  00000000  000   000  0000000    00000000  000   000  
+    
+    @insertAsciiHeaderForPositionsAndRanges: lines posl ranges ->
+        
+        if empty ranges
+            ranges = posl.map (p) => @rangeOfClosestWordToPos(lines p)
+        
+        text = @joinLines @textForLineRanges(lines ranges) ' '
+        
+        indt = lpad @lineIndentAtPos(lines posl[0])
+        
+        salt = salter(text prepend:indt+'# ') + '\n'
+                
+        [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]]]
+        [lines posl []]
+
+export text

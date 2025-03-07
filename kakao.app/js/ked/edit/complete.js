@@ -8,8 +8,9 @@ let kutil = kxk.kutil
 let post = kxk.post
 
 import theme from "../util/theme.js"
-import util from "../util/util.js"
 import specs from "../util/specs.js"
+
+import belt from "./tool/belt.js"
 
 
 complete = (function ()
@@ -174,7 +175,7 @@ complete = (function ()
         {
             return w.startsWith(this.turd) && w !== this.turd
         }).bind(this))
-        this.words = util.cleanWordsForCompletion(this.words)
+        this.words = belt.cleanWordsForCompletion(this.words)
         this.words.sort()
         if (inserts = specs.trigger[this.turd])
         {
@@ -201,7 +202,7 @@ complete = (function ()
         }
         else
         {
-            mlw = _k_.max(3,util.widthOfLines(this.words))
+            mlw = _k_.max(3,belt.widthOfLines(this.words))
             h = _k_.min(8,this.words.length)
             x = this.editor.cells.x + cx - this.turd.length
             y = this.editor.cells.y + cy + 1
@@ -216,7 +217,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _192_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _193_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -230,7 +231,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_192_52_=theme[this.editor.name + '_selection']) != null ? _192_52_ : theme.editor_selection)
+            bg = ((_193_52_=theme[this.editor.name + '_selection']) != null ? _193_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

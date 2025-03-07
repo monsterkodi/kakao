@@ -6,7 +6,7 @@ let randRange = kxk.randRange
 
 import ansi from "../../kxk/ansi.js"
 
-import util from "./util.js"
+import belt from "../edit/tool/belt.js"
 
 class color
 {
@@ -170,7 +170,7 @@ class color
             for (x = 0; x < list1.length; x++)
             {
                 cell = list1[x]
-                nbcs = util.cellNeighborsAtPos(cells,x,y,6,3)
+                nbcs = belt.cellNeighborsAtPos(cells,x,y,6,3)
                 if (_k_.empty(nbcs))
                 {
                     continue

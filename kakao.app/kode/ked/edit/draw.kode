@@ -7,8 +7,9 @@
 ###
 
 use ../../kxk ▪ kseg kstr 
-use ../util   ◆ color theme prof util
+use ../util   ◆ color theme prof 
 use ../view   ◆ view
+use ./tool    ◆ belt
 use           ◆ mode
 
 function draw extends view
@@ -180,7 +181,7 @@ function draw extends view
         
         for selection in @state.s.selections
                 
-            bg = util.isSpanLineRange(@state.s.lines selection) ? spanbg : linebg
+            bg = belt.isSpanLineRange(@state.s.lines selection) ? spanbg : linebg
             
             for li in selection[1]..selection[3]
                 

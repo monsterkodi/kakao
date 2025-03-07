@@ -39,7 +39,6 @@
     - unicode palette
     
 - funclist
-    
         
 - multicursor
     - travel along columns on up and down
@@ -47,6 +46,7 @@
 - dirtree
     - git status
     - searchable?
+    - set hover highlight to open file when loosing focus
 
 - quicky
     - file icons and ext removal

@@ -1,25 +1,28 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+
+var MapScroll
 
 import kxk from "../../kxk.js"
 let events = kxk.events
 
-class MapScroll extends events
+
+MapScroll = (function ()
 {
-    constructor (cfg)
+    _k_.extend(MapScroll, events)
+    function MapScroll (cfg)
     {
-        super()
-    
         var _16_37_, _17_37_, _18_36_, _19_33_
 
-        this.setLineHeight = this.setLineHeight.bind(this)
-        this.setNumLines = this.setNumLines.bind(this)
-        this.setViewHeight = this.setViewHeight.bind(this)
-        this.deleteLine = this.deleteLine.bind(this)
-        this.insertLine = this.insertLine.bind(this)
-        this.setTop = this.setTop.bind(this)
-        this.by = this.by.bind(this)
-        this.to = this.to.bind(this)
-        this.reset = this.reset.bind(this)
+        this["setLineHeight"] = this["setLineHeight"].bind(this)
+        this["setNumLines"] = this["setNumLines"].bind(this)
+        this["setViewHeight"] = this["setViewHeight"].bind(this)
+        this["deleteLine"] = this["deleteLine"].bind(this)
+        this["insertLine"] = this["insertLine"].bind(this)
+        this["setTop"] = this["setTop"].bind(this)
+        this["by"] = this["by"].bind(this)
+        this["to"] = this["to"].bind(this)
+        this["reset"] = this["reset"].bind(this)
+        MapScroll.__super__.constructor.call(this)
         this.lineHeight = ((_16_37_=cfg.lineHeight) != null ? _16_37_ : 0)
         this.viewHeight = ((_17_37_=cfg.viewHeight) != null ? _17_37_ : 0)
         this.exposeMax = ((_18_36_=cfg.exposeMax) != null ? _18_36_ : -4)
@@ -27,7 +30,7 @@ class MapScroll extends events
         this.init()
     }
 
-    init ()
+    MapScroll.prototype["init"] = function ()
     {
         this.scroll = 0
         this.offsetTop = 0
@@ -43,7 +46,7 @@ class MapScroll extends events
         return this.offsetTop = -1
     }
 
-    calc ()
+    MapScroll.prototype["calc"] = function ()
     {
         this.scrollMax = Math.max(0,this.fullHeight - this.viewHeight)
         this.fullLines = Math.floor(this.viewHeight / this.lineHeight)
@@ -60,23 +63,23 @@ class MapScroll extends events
         return this.exposeHeight = this.exposeNum * this.lineHeight
     }
 
-    info ()
+    MapScroll.prototype["info"] = function ()
     {
         return {topbot:`${this.top} .. ${this.bot} = ${this.bot - this.top} / ${this.numLines} lines`,expose:`${this.exposeTop} .. ${this.exposeBot} = ${this.exposeBot - this.exposeTop} / ${this.exposeNum} px ${this.exposeHeight}`,scroll:`${this.scroll} offsetTop ${this.offsetTop} scrollMax ${this.scrollMax} fullLines ${this.fullLines} viewLines ${this.viewLines} viewHeight ${this.viewHeight}`}
     }
 
-    reset ()
+    MapScroll.prototype["reset"] = function ()
     {
         this.emit('clearLines')
         return this.init()
     }
 
-    to (p)
+    MapScroll.prototype["to"] = function (p)
     {
         return this.by(p - this.scroll)
     }
 
-    by (delta)
+    MapScroll.prototype["by"] = function (delta)
     {
         var offset, scroll, top
 
@@ -102,7 +105,7 @@ class MapScroll extends events
         }
     }
 
-    setTop (top)
+    MapScroll.prototype["setTop"] = function (top)
     {
         var n, num, oldBot, oldTop
 
@@ -164,7 +167,7 @@ class MapScroll extends events
         }
     }
 
-    insertLine (li, oi)
+    MapScroll.prototype["insertLine"] = function (li, oi)
     {
         if (this.lineIndexIsInExpose(oi))
         {
@@ -183,7 +186,7 @@ class MapScroll extends events
         return this.calc()
     }
 
-    deleteLine (li, oi)
+    MapScroll.prototype["deleteLine"] = function (li, oi)
     {
         if (this.lineIndexIsInExpose(oi) || this.numLines < this.exposeNum)
         {
@@ -195,7 +198,7 @@ class MapScroll extends events
         }
     }
 
-    lineIndexIsInView (li)
+    MapScroll.prototype["lineIndexIsInView"] = function (li)
     {
         if ((this.top <= li && li <= this.bot))
         {
@@ -204,7 +207,7 @@ class MapScroll extends events
         return this.bot - this.top + 1 < this.fullLines
     }
 
-    lineIndexIsInExpose (li)
+    MapScroll.prototype["lineIndexIsInExpose"] = function (li)
     {
         if ((this.exposeTop <= li && li <= this.exposeBot))
         {
@@ -213,7 +216,7 @@ class MapScroll extends events
         return this.exposeBot - this.exposeTop + 1 < this.exposeNum
     }
 
-    setViewHeight (h)
+    MapScroll.prototype["setViewHeight"] = function (h)
     {
         if (this.viewHeight !== h)
         {
@@ -223,7 +226,7 @@ class MapScroll extends events
         }
     }
 
-    setNumLines (n)
+    MapScroll.prototype["setNumLines"] = function (n)
     {
         if (this.numLines !== n)
         {
@@ -242,7 +245,7 @@ class MapScroll extends events
         }
     }
 
-    setLineHeight (h)
+    MapScroll.prototype["setLineHeight"] = function (h)
     {
         if (this.lineHeight !== h)
         {
@@ -252,6 +255,8 @@ class MapScroll extends events
             return this.by(0)
         }
     }
-}
+
+    return MapScroll
+})()
 
 export default MapScroll;

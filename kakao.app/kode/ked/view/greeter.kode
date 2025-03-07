@@ -6,10 +6,11 @@
      0000000   000   000  00000000  00000000     000     00000000  000   000  
 ###
 
-use ../../kxk ▪ kstr post
-use ../util ◆ theme help util 
-use ../edit ◆ editor 
-use         ◆ view
+use ../../kxk    ▪ kstr post
+use ../util      ◆ theme help
+use ../edit/tool ◆ belt
+use ../edit      ◆ editor
+use              ◆ view
 
 function greeter extends view
 
@@ -33,7 +34,7 @@ function greeter extends view
         
     layout: x y ->
         
-        [w h] = util.cellSize @header
+        [w h] = belt.cellSize @header
         
         @cells.layout x y w h
 

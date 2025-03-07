@@ -10,7 +10,7 @@ use ../../kxk ▪ isEqual immutable profile events
 use ../tools  ◆ ranges
 use           ◆ DoState
 
-class Do extends events
+function Do extends events
 
     @: lines=[] -> 
         

@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ events
 
-class MapScroll extends events
+function MapScroll extends events
 
     @: cfg ->
 

@@ -6,7 +6,8 @@
 000   000  00000000  0000000  000      
 ###
 
-use ◆ util color
+use ◆ color
+use ../edit/tool ◆ belt
 
 function help
 
@@ -36,7 +37,7 @@ function help
             
             """ 
             
-        cells = util.cellsForLines util.indentLines(util.seglsForText(h) 5)
+        cells = belt.cellsForLines belt.indentLines(belt.seglsForText(h) 5)
     
         color1 = [0 255 0]
         color2 = [120 120 255]
@@ -46,27 +47,27 @@ function help
         fc2 = color2.map (v) -> int v*f
         fc3 = color3.map (v) -> int v*f
         
-        kcells = util.cellsInRect cells 0 0 20 cells.length-1
+        kcells = belt.cellsInRect cells 0 0 20 cells.length-1
         for c in kcells
             switch c.cell.char
                 ' ' ➜ c.cell.fg = [0 0 0]
                     ➜ c.cell.fg = fc1
                                 
-        ecells = util.cellsInRect cells 20 0 35 cells.length-1
+        ecells = belt.cellsInRect cells 20 0 35 cells.length-1
         for c in ecells
             switch c.cell.char
                 ' ' ➜ c.cell.fg = [0 0 0]
                     ➜ c.cell.fg = fc2
              
-        dcells = util.cellsInRect cells 36 0 cells[0].length-1 cells.length-1
+        dcells = belt.cellsInRect cells 36 0 cells[0].length-1 cells.length-1
         for c in dcells
             switch c.cell.char
                 ' ' ➜ c.cell.fg = [0 0 0]
                     ➜ c.cell.fg = fc3
 
         color.glowEffect cells
-        color.dimCellsColor     util.cellsWithChar(cells '○') 'fg' 0.26
-        color.variateCellsColor util.cellsWithChar(cells '○') 'fg' 0.15
+        color.dimCellsColor     belt.cellsWithChar(cells '○') 'fg' 0.26
+        color.variateCellsColor belt.cellsWithChar(cells '○') 'fg' 0.15
 
         fc1 = color1.map (v) -> int v*(0.5+0.5*f)
         fc2 = color2.map (v) -> int v*(0.5+0.5*f)

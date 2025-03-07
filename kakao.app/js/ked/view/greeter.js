@@ -8,7 +8,8 @@ let post = kxk.post
 
 import theme from "../util/theme.js"
 import help from "../util/help.js"
-import util from "../util/util.js"
+
+import belt from "../edit/tool/belt.js"
 
 import editor from "../edit/editor.js"
 
@@ -40,7 +41,7 @@ greeter = (function ()
     {
         var h, w
 
-        var _a_ = util.cellSize(this.header); w = _a_[0]; h = _a_[1]
+        var _a_ = belt.cellSize(this.header); w = _a_[0]; h = _a_[1]
 
         return this.cells.layout(x,y,w,h)
     }

@@ -4,7 +4,7 @@ import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
-import util from "../../util/util.js"
+import belt from "../tool/belt.js"
 
 export default {delete:function (type, jump)
 {
@@ -16,7 +16,7 @@ export default {delete:function (type, jump)
     }
     lines = this.allLines()
     cursors = this.allCursors()
-    if (cursors.length === 1 && _k_.in(type,['back','next']) && util.isLinesPosOutside(lines,cursors[0]))
+    if (cursors.length === 1 && _k_.in(type,['back','next']) && belt.isLinesPosOutside(lines,cursors[0]))
     {
         return this.setMainCursor(kseg.width(lines[cursors[0][1]]),cursors[0][1])
     }
@@ -27,7 +27,7 @@ export default {delete:function (type, jump)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             cursor = list[_a_]
-            rng = util.rangeOfWhitespaceLeftToPos(lines,cursor)
+            rng = belt.rangeOfWhitespaceLeftToPos(lines,cursor)
             minBeforeWs = _k_.min(minBeforeWs,rng[2] - rng[0])
         }
     }
@@ -65,7 +65,7 @@ export default {delete:function (type, jump)
                 {
                     if (jump)
                     {
-                        if (rng = util.rangeOfWordOrWhitespaceLeftToPos(lines,cursor))
+                        if (rng = belt.rangeOfWordOrWhitespaceLeftToPos(lines,cursor))
                         {
                             dc = rng[2] - rng[0]
                         }
@@ -117,7 +117,7 @@ export default {delete:function (type, jump)
                 {
                     if (jump)
                     {
-                        if (rng = util.rangeOfWordOrWhitespaceRightToPos(lines,cursor))
+                        if (rng = belt.rangeOfWordOrWhitespaceRightToPos(lines,cursor))
                         {
                             dc = rng[2] - rng[0]
                             line = kseg.join(line.slice(0, typeof x === 'number' ? x : -1),line.slice(x + dc))
@@ -133,7 +133,7 @@ export default {delete:function (type, jump)
                 break
         }
 
-        util.moveCursorsInSameLineBy(cursors,cursor,-dc)
+        belt.moveCursorsInSameLineBy(cursors,cursor,-dc)
         lines.splice(y,remove,line)
     }
     this.clearHighlights()
@@ -155,7 +155,7 @@ export default {delete:function (type, jump)
     {
         this.pushState()
     }
-    var _e_ = util.deleteLineRangesAndAdjustPositions(this.allLines(),rngs,posl); lines = _e_[0]; cursors = _e_[1]
+    var _e_ = belt.deleteLineRangesAndAdjustPositions(this.allLines(),rngs,posl); lines = _e_[0]; cursors = _e_[1]
 
     this.deselect()
     this.clearHighlights()

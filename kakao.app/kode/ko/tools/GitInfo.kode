@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ▪ linediff post slash ffs kstr
-use ../tools  ◆ Git Projects
 use ../editor ◆ Syntax
+use           ◆ Git Projects
 
 SOURCE_FILE_EXTS = ['kode' 'styl' 'pug' 'h' 'mm' 'cpp' 'noon']
 IGNORE_FILE_EXTS = ['js' 'css' 'json' 'html']

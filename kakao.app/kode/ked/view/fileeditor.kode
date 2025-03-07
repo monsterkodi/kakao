@@ -6,10 +6,10 @@
 000       000  0000000  00000000  00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk ▪ post
-use ../util   ◆ util
-use ../edit   ◆ editor 
-use           ◆ view gutter mapscr 
+use ../../kxk    ▪ post
+use ../edit/tool ◆ belt
+use ../edit      ◆ editor 
+use              ◆ view gutter mapscr 
 
 function fileeditor extends editor
 
@@ -97,7 +97,7 @@ function fileeditor extends editor
                     if y < @dragStart[1] 
                         start = [@dragStart[2] @dragStart[1]]
                     
-                    if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd util.rangeFromStartToEnd(start [x y])
+                    if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd belt.rangeFromStartToEnd(start [x y])
                     else             @state.select start [x y]
                         
                     ⮐ redraw:true

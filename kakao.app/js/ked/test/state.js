@@ -4,7 +4,7 @@ var cells, cur, mul, s, sel, text, txt
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
 
-import util from "../util/util.js"
+import belt from "../edit/tool/belt.js"
 
 import state from "../edit/state.js"
 
@@ -44,7 +44,7 @@ toExport["state"] = function ()
 line 2
 line 3`
     s.syntax.ext = 'kode'
-    s.loadLines(util.linesForText(text))
+    s.loadLines(belt.linesForText(text))
     txt(text)
     section("editing", function ()
     {
@@ -110,7 +110,7 @@ line 3`)
         text = `s = "🧑🌾"
 line 3`
         s.syntax.ext = 'kode'
-        s.loadSegls(util.seglsForText(text))
+        s.loadSegls(belt.seglsForText(text))
         txt(text)
         s.toggleCommentAtSelectionOrCursorLines()
         txt(`# s = "🧑🌾"
@@ -130,7 +130,7 @@ line 3`)
 '🔥'       ▸ 2
 '💩'       ▸ 2`
             s.syntax.ext = 'kode'
-            s.loadSegls(util.seglsForText(text))
+            s.loadSegls(belt.seglsForText(text))
             txt(text)
             s.selectAllLines()
             sel([0,0,14,9])
@@ -186,7 +186,7 @@ line 3`)
     section("empty", function ()
     {
         s.syntax.ext = 'kode'
-        s.loadLines(util.linesForText(''))
+        s.loadLines(belt.linesForText(''))
         txt('')
         cur(0,0)
         s.insert('\n')
@@ -200,7 +200,7 @@ line 3`)
 xxxx         .  2
 xxxx    .       3`
         s.syntax.ext = 'kode'
-        s.loadLines(util.linesForText(text))
+        s.loadLines(belt.linesForText(text))
         s.setMainCursor(16,0)
         s.expandCursors('down')
         s.expandCursors('down')
@@ -224,7 +224,7 @@ xxxx    .       3`
         text = `line 1
 line 2
 line 3`
-        s.loadLines(util.linesForText(text))
+        s.loadLines(belt.linesForText(text))
         s.cloneSelectionAndCursorLines('down')
         txt(`line 1
 line 1
@@ -260,7 +260,7 @@ line 3`)
         text = `line 1
 line 2
 line 3`
-        s.loadLines(util.linesForText(text))
+        s.loadLines(belt.linesForText(text))
         s.deleteRanges([[0,0,2,0]])
         txt(`ne 1
 line 2
@@ -276,7 +276,7 @@ line 3`)
         text = `line 1
 line 2
 line 3`
-        s.loadLines(util.linesForText(text))
+        s.loadLines(belt.linesForText(text))
         s.joinLines()
         txt(`line 1line 2
 line 3`)

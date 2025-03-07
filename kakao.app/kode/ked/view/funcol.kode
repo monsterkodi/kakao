@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ post slash
-use ../util   ◆ color theme util
+use ../util   ◆ color theme
 use           ◆ view knob crumbs dirtree
 
 function funcol extends view

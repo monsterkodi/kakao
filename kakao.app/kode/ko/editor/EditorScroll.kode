@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ events
 
-class EditorScroll extends events
+function EditorScroll extends events
 
     @: @editor ->
 

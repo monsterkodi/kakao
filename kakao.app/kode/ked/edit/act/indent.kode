@@ -6,7 +6,7 @@
 000  000   000  0000000    00000000  000   000     000   
 ###
 
-use ../../util ◆ util
+use ../tool ◆ belt
 
 export
 
@@ -23,9 +23,9 @@ export
         
         selections = @allSelections()
         cursors    = @allCursors() 
-        indices    = util.lineIndicesForRangesOrPositions selections cursors
+        indices    = belt.lineIndicesForRangesOrPositions selections cursors
         
-        [lines selections cursors] = util.indentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.indentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
         
         @setLines lines
         @setSelections selections
@@ -41,9 +41,9 @@ export
         
         selections = @allSelections()
         cursors    = @allCursors() 
-        indices    = util.lineIndicesForRangesOrPositions selections cursors
+        indices    = belt.lineIndicesForRangesOrPositions selections cursors
         
-        [lines selections cursors] = util.deindentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.deindentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
         
         @setLines lines
         @setSelections selections

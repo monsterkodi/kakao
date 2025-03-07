@@ -8,7 +8,7 @@
 
 use ../../kxk ▪ kutil kseg kstr slash post noon
 use ../../kxk ◆ nfs
-use ../util   ◆ theme prjcts icons util
+use ../util   ◆ theme prjcts icons
 use           ◆ choices crumbs
 
 import rgxs from './quicky.json' with { type: "json" }

@@ -10,7 +10,7 @@ let post = kxk.post
 import FuncItems from "../tools/FuncItems.js"
 import Indexer from "../tools/Indexer.js"
 
-import Syntax from "../editor/Syntax.js"
+import Syntax from "./Syntax.js"
 
 
 FuncList = (function ()

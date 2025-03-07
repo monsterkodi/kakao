@@ -4,7 +4,7 @@ import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
-import util from "../../util/util.js"
+import belt from "../tool/belt.js"
 
 export default {select:function (from, to)
 {
@@ -127,8 +127,8 @@ export default {select:function (from, to)
         {
             continue
         }
-        text = util.textForLineRange(lines,rng)
-        spans = spans.concat(util.lineSpansForText(lines,text))
+        text = belt.textForLineRange(lines,rng)
+        spans = spans.concat(belt.lineSpansForText(lines,text))
     }
     return this.setHighlights(spans)
 },highlightText:function (text)
@@ -136,7 +136,7 @@ export default {select:function (from, to)
     var lines, spans
 
     lines = this.allLines()
-    spans = util.lineSpansForText(lines,text)
+    spans = belt.lineSpansForText(lines,text)
     return this.setHighlights(spans)
 },deselectCursorHighlight:function ()
 {
@@ -150,7 +150,7 @@ export default {select:function (from, to)
     {
         return
     }
-    if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
+    if (prev = belt.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
     {
         return this.deselectSpan(prev)
     }
@@ -168,8 +168,8 @@ export default {select:function (from, to)
     for (var _c_ = 0; _c_ < list.length; _c_++)
     {
         span = list[_c_]
-        selections.push(util.rangeForSpan(span))
-        cursors.push(util.endOfSpan(span))
+        selections.push(belt.rangeForSpan(span))
+        cursors.push(belt.endOfSpan(span))
     }
     this.addCursors(cursors)
     return this.setSelections(selections)
@@ -181,10 +181,10 @@ export default {select:function (from, to)
     {
         return
     }
-    if (next = util.nextSpanAfterPos(this.s.highlights,this.mainCursor()))
+    if (next = belt.nextSpanAfterPos(this.s.highlights,this.mainCursor()))
     {
         this.selectSpan(next)
-        return this.setMainCursor(util.endOfSpan(next))
+        return this.setMainCursor(belt.endOfSpan(next))
     }
 },selectPrevHighlight:function ()
 {
@@ -195,28 +195,28 @@ export default {select:function (from, to)
         return
     }
     pos = this.mainCursor()
-    if (prev = util.prevSpanBeforePos(this.s.highlights,pos))
+    if (prev = belt.prevSpanBeforePos(this.s.highlights,pos))
     {
-        if (_k_.eql(util.endOfSpan(prev), pos))
+        if (_k_.eql(belt.endOfSpan(prev), pos))
         {
-            prev = util.prevSpanBeforePos(this.s.highlights,util.startOfSpan(prev))
+            prev = belt.prevSpanBeforePos(this.s.highlights,belt.startOfSpan(prev))
         }
         if (prev)
         {
             this.selectSpan(prev)
-            return this.setMainCursor(util.endOfSpan(prev))
+            return this.setMainCursor(belt.endOfSpan(prev))
         }
     }
 },addCurrentOrNextHighlightToSelection:function ()
 {
     var prev
 
-    if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
+    if (prev = belt.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
     {
-        if (!util.rangesContainSpan(this.s.selections,prev))
+        if (!belt.rangesContainSpan(this.s.selections,prev))
         {
             this.addSpanToSelection(prev)
-            this.addCursor(util.endOfSpan(prev))
+            this.addCursor(belt.endOfSpan(prev))
             return
         }
     }
@@ -225,12 +225,12 @@ export default {select:function (from, to)
 {
     var prev
 
-    if (prev = util.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
+    if (prev = belt.prevSpanBeforePos(this.s.highlights,this.mainCursor()))
     {
-        if (!util.rangesContainSpan(this.s.selections,prev))
+        if (!belt.rangesContainSpan(this.s.selections,prev))
         {
             this.addSpanToSelection(prev)
-            this.addCursor(util.endOfSpan(prev))
+            this.addCursor(belt.endOfSpan(prev))
             return
         }
     }
@@ -243,10 +243,10 @@ export default {select:function (from, to)
     {
         return
     }
-    if (next = util.nextSpanAfterPos(this.s.highlights,this.mainCursor()))
+    if (next = belt.nextSpanAfterPos(this.s.highlights,this.mainCursor()))
     {
         this.addSpanToSelection(next)
-        return this.addCursor(util.endOfSpan(next))
+        return this.addCursor(belt.endOfSpan(next))
     }
 },addPrevHighlightToSelection:function ()
 {
@@ -257,16 +257,16 @@ export default {select:function (from, to)
         return
     }
     pos = this.mainCursor()
-    if (prev = util.prevSpanBeforePos(this.s.highlights,pos))
+    if (prev = belt.prevSpanBeforePos(this.s.highlights,pos))
     {
-        if (_k_.eql(util.endOfSpan(prev), pos))
+        if (_k_.eql(belt.endOfSpan(prev), pos))
         {
-            prev = util.prevSpanBeforePos(this.s.highlights,util.startOfSpan(prev))
+            prev = belt.prevSpanBeforePos(this.s.highlights,belt.startOfSpan(prev))
         }
         if (prev)
         {
             this.addSpanToSelection(prev)
-            return this.addCursor(util.endOfSpan(prev))
+            return this.addCursor(belt.endOfSpan(prev))
         }
     }
 },moveCursorToNextHighlight:function (pos)
@@ -278,9 +278,9 @@ export default {select:function (from, to)
         return
     }
     pos = (pos != null ? pos : this.mainCursor())
-    if (next = util.nextSpanAfterPos(this.s.highlights,pos))
+    if (next = belt.nextSpanAfterPos(this.s.highlights,pos))
     {
-        return this.moveMainCursor(util.endOfSpan(next))
+        return this.moveMainCursor(belt.endOfSpan(next))
     }
 },moveCursorToPrevHighlight:function (pos)
 {
@@ -291,31 +291,31 @@ export default {select:function (from, to)
         return
     }
     pos = (pos != null ? pos : this.mainCursor())
-    if (prev = util.prevSpanBeforePos(this.s.highlights,pos))
+    if (prev = belt.prevSpanBeforePos(this.s.highlights,pos))
     {
-        if (_k_.eql(util.endOfSpan(prev), pos))
+        if (_k_.eql(belt.endOfSpan(prev), pos))
         {
-            prev = util.prevSpanBeforePos(this.s.highlights,util.startOfSpan(prev))
+            prev = belt.prevSpanBeforePos(this.s.highlights,belt.startOfSpan(prev))
         }
         if (prev)
         {
-            return this.moveMainCursor(util.endOfSpan(prev))
+            return this.moveMainCursor(belt.endOfSpan(prev))
         }
     }
 },selectSpan:function (span)
 {
-    return this.setSelections([util.rangeForSpan(span)])
+    return this.setSelections([belt.rangeForSpan(span)])
 },deselectSpan:function (span)
 {
     var index, rng, selection, selections
 
-    rng = util.rangeForSpan(span)
+    rng = belt.rangeForSpan(span)
     selections = this.allSelections()
     var list = _k_.list(selections)
     for (index = 0; index < list.length; index++)
     {
         selection = list[index]
-        if (util.isSameRange(selection,rng))
+        if (belt.isSameRange(selection,rng))
         {
             selections.splice(index,1)
             this.setSelections(selections)
@@ -336,12 +336,12 @@ export default {select:function (from, to)
     return this.setSelections(selections)
 },addSpanToSelection:function (span)
 {
-    return this.addRangeToSelection(util.rangeForSpan(span))
+    return this.addRangeToSelection(belt.rangeForSpan(span))
 },selectChunk:function (x, y)
 {
     var rng
 
-    if (rng = util.rangeOfClosestChunkToPos(this.s.lines,util.pos(x,y)))
+    if (rng = belt.rangeOfClosestChunkToPos(this.s.lines,belt.pos(x,y)))
     {
         this.addRangeToSelectionWithMainCursorAtEnd(rng)
     }
@@ -350,7 +350,7 @@ export default {select:function (from, to)
 {
     var range
 
-    if (range = util.rangeOfClosestWordToPos(this.s.lines,util.pos(x,y)))
+    if (range = belt.rangeOfClosestWordToPos(this.s.lines,belt.pos(x,y)))
     {
         this.addRangeToSelectionWithMainCursorAtEnd(range)
     }
@@ -375,7 +375,7 @@ export default {select:function (from, to)
 {
     var selections
 
-    selections = util.lineRangesForPositions(this.allLines(),this.allCursors())
+    selections = belt.lineRangesForPositions(this.allLines(),this.allCursors())
     _k_.assert("kode/ked/edit/act/select.kode", 324, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
     return this.setSelections(selections)
 },selectAllLines:function ()
@@ -398,7 +398,7 @@ export default {select:function (from, to)
     cursors = this.allCursors()
     selections = this.allSelections()
     lines = this.allLines()
-    var _e_ = util.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _e_[0]; selections = _e_[1]
+    var _e_ = belt.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _e_[0]; selections = _e_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors,{main:-1})
@@ -409,22 +409,22 @@ export default {select:function (from, to)
     cursors = this.allCursors()
     selections = this.allSelections()
     lines = this.allLines()
-    var _f_ = util.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
+    var _f_ = belt.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors,{main:-1})
 },textOfSelection:function ()
 {
-    return util.textForLineRanges(this.allLines(),this.allSelections())
+    return belt.textForLineRanges(this.allLines(),this.allSelections())
 },selectedText:function ()
 {
-    return util.textForLineRanges(this.allLines(),this.allSelections())
+    return belt.textForLineRanges(this.allLines(),this.allSelections())
 },selectionsOrCursorLineRanges:function ()
 {
-    return (!_k_.empty(this.s.selections) ? this.allSelections() : util.lineRangesForPositions(this.allLines(),this.allCursors(),true))
+    return (!_k_.empty(this.s.selections) ? this.allSelections() : belt.lineRangesForPositions(this.allLines(),this.allCursors(),true))
 },textOfSelectionOrCursorLines:function ()
 {
-    return util.textForLineRanges(this.allLines(),this.selectionsOrCursorLineRanges())
+    return belt.textForLineRanges(this.allLines(),this.selectionsOrCursorLineRanges())
 },isSingleLineSelected:function ()
 {
     return this.s.selections.length === 1 && this.s.selections[0][1] === this.s.selections[0][3]
@@ -456,7 +456,7 @@ export default {select:function (from, to)
         selection = list[_11_]
         if ((selection[1] <= y && y <= selection[3]))
         {
-            return util.isFullLineRange(this.s.lines,selection)
+            return belt.isFullLineRange(this.s.lines,selection)
         }
     }
     return false
@@ -470,7 +470,7 @@ export default {select:function (from, to)
         selection = list[_12_]
         if ((selection[1] <= y && y <= selection[3]))
         {
-            return !util.isFullLineRange(this.s.lines,selection)
+            return !belt.isFullLineRange(this.s.lines,selection)
         }
     }
     return false
@@ -484,7 +484,7 @@ export default {select:function (from, to)
         selection = list[_13_]
         if ((selection[1] <= y && y <= selection[3]))
         {
-            span = util.isSpanLineRange(this.s.lines,selection)
+            span = belt.isSpanLineRange(this.s.lines,selection)
             if (span)
             {
                 return true

@@ -15,7 +15,6 @@ import nfs from "../../kxk/nfs.js"
 import theme from "../util/theme.js"
 import prjcts from "../util/prjcts.js"
 import icons from "../util/icons.js"
-import util from "../util/util.js"
 
 import choices from "./choices.js"
 import crumbs from "./crumbs.js"

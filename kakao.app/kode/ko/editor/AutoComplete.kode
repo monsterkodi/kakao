@@ -13,7 +13,7 @@ jsClass =
     RegExp: ['test' 'compile' 'exec' 'toString']
     String: ['endsWith' 'startsWith' 'split' 'slice' 'substring' 'padEnd' 'padStart' 'indexOf' 'match' 'trim' 'trimEnd' 'trimStart']
 
-class AutoComplete extends events
+function AutoComplete extends events
 
     @: @editor ->
 

@@ -9,10 +9,10 @@ let slash = kxk.slash
 let ffs = kxk.ffs
 let kstr = kxk.kstr
 
-import Git from "../tools/Git.js"
-import Projects from "../tools/Projects.js"
-
 import Syntax from "../editor/Syntax.js"
+
+import Git from "./Git.js"
+import Projects from "./Projects.js"
 
 SOURCE_FILE_EXTS = ['kode','styl','pug','h','mm','cpp','noon']
 IGNORE_FILE_EXTS = ['js','css','json','html']
