@@ -5,6 +5,55 @@ var font, salter
 import util from "./util.js"
 import noon from "./noon.js"
 
+
+salter = function (text, opt)
+{
+    var c, cs, rs, s, zs, _14_15_, _15_16_, _16_16_, _17_16_, _18_16_
+
+    opt = (opt != null ? opt : {})
+    opt.char = ((_14_15_=opt.char) != null ? _14_15_ : '█')
+    opt.prefix = ((_15_16_=opt.prefix) != null ? _15_16_ : '')
+    opt.postfix = ((_16_16_=opt.postfix) != null ? _16_16_ : '')
+    opt.prepend = ((_17_16_=opt.prepend) != null ? _17_16_ : '')
+    opt.append = ((_18_16_=opt.append) != null ? _18_16_ : '')
+    s = text.toLowerCase().trim()
+    cs = []
+    var list = _k_.list(s)
+    for (var _a_ = 0; _a_ < list.length; _a_++)
+    {
+        c = list[_a_]
+        if ((font[c] != null))
+        {
+            cs.push(font[c])
+        }
+    }
+    zs = util.zip.apply(null,cs)
+    if (opt.char !== '0')
+    {
+        zs = zs.map(function (j)
+        {
+            return j.map(function (k)
+            {
+                return k.replace(/[0]/g,opt.char)
+            })
+        })
+    }
+    if (opt.prefix || opt.postfix)
+    {
+        zs = zs.map(function (j)
+        {
+            return j.map(function (k)
+            {
+                return opt.prefix + k + opt.postfix
+            })
+        })
+    }
+    rs = zs.map(function (j)
+    {
+        return opt.prepend + j.join('  ') + opt.append
+    })
+    return rs.join('\n')
+}
 font = noon.parse(`0   
     | 000000 |
     |000  000|
@@ -389,32 +438,5 @@ z
     |  000  |
     | 000   |
     |0000000|`)
-
-salter = function (text, char = '0')
-{
-    var c, cs, rs, s, zs
-
-    s = text.toLowerCase().trim()
-    cs = []
-    var list = _k_.list(s)
-    for (var _a_ = 0; _a_ < list.length; _a_++)
-    {
-        c = list[_a_]
-        if ((font[c] != null))
-        {
-            cs.push(font[c])
-        }
-    }
-    zs = util.zip.apply(null,cs)
-    rs = zs.map(function (j)
-    {
-        return j.join('  ')
-    })
-    rs = rs.join('\n')
-    if (char !== '0')
-    {
-        rs = rs.replace(/[0]/g,char)
-    }
-    return rs
-}
+salter.font = font
 export default salter;

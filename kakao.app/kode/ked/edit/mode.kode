@@ -1,9 +1,9 @@
 ###
-00     00   0000000   0000000    00000000
-000   000  000   000  000   000  000     
-000000000  000   000  000   000  0000000 
-000 0 000  000   000  000   000  000     
-000   000   0000000   0000000    00000000
+    00     00   ███████   ███████    ████████  
+    000   000  ███   ███  ███   ███  ███       
+    000000000  ███   ███  ███   ███  ███████   
+    000 0 000  ███   ███  ███   ███  ███       
+    000   000   ███████   ███████    ████████  
 
     the class stores modes per editor state
     the instances handle input and text insertion
@@ -15,7 +15,7 @@
     record   
 ###
 
-use ../../kxk ◆ kseg
+use ../../kxk ◆ kseg salter
 
 import fonts from '../util/fonts.json' with { type: "json" }
 
@@ -113,7 +113,7 @@ function mode
 #    ███     ███  ███ █ ███  ███        ███      ███     
 #     █      ███  ███   ███  ███        ███████  ████████
 
-function vimple extends mode
+function vimpleMode extends mode
     
     @: -> super 'vimple'
 
@@ -123,11 +123,17 @@ function vimple extends mode
 #      ███  ███   ███  ███         ███     ███       ███   ███
 # ███████   ███   ███  ███████     ███     ████████  ███   ███
 
-function salter extends mode
+function salterMode extends mode
+
+    @syms: []
 
     @: @state -> 
     
         super 'salter'
+        
+        if empty salterMode.syms
+            salterMode.syms = Object.keys salter.font
+        
         @start()
     
     start: -> 
@@ -145,7 +151,29 @@ function salter extends mode
     handleKey: key event ->
         
         switch key
-            'esc' ➜ mode.stop @state @name
+            'esc' ➜ ⮐ mode.stop @state @name
+            'delete'
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                ⮐
+            
+        if @state.s.cursors.length != 5 # need to check for alignment as well?
+            mode.stop @state @name
+            ⮐  'unhandled'
+            
+        if salter.font[key]?
+            
+            salt = salter key char:'█' postfix:'  '
+            @state.insert salt
+            ⮐
         
         'unhandled'
 
@@ -155,7 +183,7 @@ function salter extends mode
 # ███   ███  ███  ████  ███  ███  ███   ███   ███
 #  ███████   ███   ███  ███  ███   ███   ███████ 
 
-function uniko extends mode
+function unikoMode extends mode
 
     @: -> super 'uniko'
     
@@ -165,7 +193,7 @@ function uniko extends mode
 # ███   ███  ███  ████     ███     ███        ███     
 #  ███████   ███   ███     ███     ███        ████████
 
-function unype extends mode
+function unypeMode extends mode
     
     @map: {}
     
@@ -173,31 +201,31 @@ function unype extends mode
     
         super 'unype'
         
-        if empty unype.map
+        if empty unypeMode.map
             def = fonts.default.join ' '
             for font,text of fonts
                 continue if font=='default'
-                unype.map[font] = {}
+                unypeMode.map[font] = {}
                 for char,idx in kseg(text.join(' '))
                     if def[idx] != ' '
-                        unype.map[font][def[idx]] = char
-            unype.map['full width'][' '] = '　'
+                        unypeMode.map[font][def[idx]] = char
+            unypeMode.map['full width'][' '] = '　'
     
     insert: text ->
     
-        if repl = unype.map['crazy'][text]
+        if repl = unypeMode.map['crazy'][text]
             text = repl
         text
     
-function record extends mode
+function recordMode extends mode
 
     @: -> super 'record'
     
 mode.modes = 
-    vimple: vimple
-    salter: salter
-    uniko:  uniko
-    unype:  unype
-    record: record
+    vimple: vimpleMode
+    salter: salterMode
+    unype:  unypeMode
+    uniko:  unikoMode
+    record: recordMode
     
 export mode

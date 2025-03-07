@@ -482,11 +482,11 @@ function text
         
         text = @joinLines @textForLineRanges(lines ranges) ' '
         
-        salt = salter text '█'
+        indt = lpad @lineIndentAtPos(lines posl[0])
         
-        salt = '\n' + @joinLines(kstr.lines(salt).map((l) -> "# " + l))
-        
-        [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]-1]]
-        [lines posl []]
+        salt = salter(text prepend:indt+'# ') + '\n'
                 
+        [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]]]
+        [lines posl []]
+
 export text

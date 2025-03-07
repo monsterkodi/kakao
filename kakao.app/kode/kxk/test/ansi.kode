@@ -50,3 +50,13 @@ colors = [
 ▸ ansi
 
     # log noon(ansi.colors())
+    
+    ▸ dissect
+         
+        a = new ansi
+        diss = a.dissect '\x1b[48;5;0m..\x1b[48;5;15m  \x1b[0m'
+        diss[0]             ▸ '..  '
+        diss[1].length      ▸ 2
+        diss[1][1].match    ▸ '  '
+        diss[1][1].start    ▸ 2
+    

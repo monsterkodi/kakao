@@ -5,14 +5,9 @@ import mode from "./mode.js"
 
 handleKey = function (key, event)
 {
-    var res
-
-    if (res = mode.handleKey(this,key,event))
+    if ('unhandled' !== mode.handleKey(this,key,event))
     {
-        if (res !== 'unhandled')
-        {
-            return
-        }
+        return
     }
     if (this.s.cursors.length === 1)
     {

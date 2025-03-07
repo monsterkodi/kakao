@@ -175,16 +175,7 @@ use .. ◆ kstr
     ▸ stripAnsi
          
         kstr.stripAnsi(g5('green')) ▸ 'green'
-         
-    ▸ dissect
-         
-        ansi= new kstr.ansi
-        diss = ansi.dissect '[48;5;0m..[48;5;15m  [0m'
-        diss[0] ▸ '..  '
-        diss[1].length ▸ 2
-        diss[1][1].match ▸ '  '
-        diss[1][1].start ▸ 2
-        
+                 
     # 000000000   0000000   0000000    
     #    000     000   000  000   000  
     #    000     000000000  0000000    
@@ -476,17 +467,17 @@ use .. ◆ kstr
         kstr.hexColor 'rgba(255,100,0,1.1)' ▸ undefined
         kstr.hexColor 'rgba(255,100,0,-1)'  ▸ undefined
         
-    ▸ darkenColor
+    ▸ scaleColor
     
-        kstr.darkenColor 'ffff00' 1    ▸ '#ffff00'
-        kstr.darkenColor 'ffff00' 0.9  ▸ '#e5e500'
-        kstr.darkenColor 'ffff00' 0.8  ▸ '#cccc00'
-        kstr.darkenColor 'ffff00' 0.7  ▸ '#b2b200'
-        kstr.darkenColor 'ffff00' 0.6  ▸ '#999900'
-        kstr.darkenColor 'ffff00'      ▸ '#7f7f00'
-        kstr.darkenColor 'ffff00' 0.4  ▸ '#666600'
-        kstr.darkenColor 'ffff00' 0.3  ▸ '#4c4c00'
-        kstr.darkenColor 'ffff00' 0.2  ▸ '#333300'
-        kstr.darkenColor 'ffff00' 0.1  ▸ '#191900'
-        kstr.darkenColor 'ffff00' 0    ▸ '#000000'
+        kstr.scaleColor 'ffff00' 1    ▸ '#ffff00'
+        kstr.scaleColor 'ffff00' 0.9  ▸ '#e5e500'
+        kstr.scaleColor 'ffff00' 0.8  ▸ '#cccc00'
+        kstr.scaleColor 'ffff00' 0.7  ▸ '#b2b200'
+        kstr.scaleColor 'ffff00' 0.6  ▸ '#999900'
+        kstr.scaleColor 'ffff00'      ▸ '#7f7f00'
+        kstr.scaleColor 'ffff00' 0.4  ▸ '#666600'
+        kstr.scaleColor 'ffff00' 0.3  ▸ '#4c4c00'
+        kstr.scaleColor 'ffff00' 0.2  ▸ '#333300'
+        kstr.scaleColor 'ffff00' 0.1  ▸ '#191900'
+        kstr.scaleColor 'ffff00' 0    ▸ '#000000'
         

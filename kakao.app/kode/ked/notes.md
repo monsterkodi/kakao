@@ -21,14 +21,13 @@
 ##### todo    
 
 - mode
+    - salter mode
+        - switch automatically if cursor inside
 
-- dirtree
-    - mod-click on dir: set funcol root
-    - git status
-    - searchable?
-       
-- ascii header mode
-    - switch automatically if cursor inside
+- unicode mode
+    - replacement
+        
+- surround
       
 - completion
     - fix
@@ -42,13 +41,15 @@
 - macro
     - unype fonts
     - unicode palette
+    
+- dirtree
+    - git status
+    - searchable?
         
 - funclist
         
 - multicursor
     - travel along columns on up and down
-        
-- surround
 
 - quicky
     - file icons and ext removal

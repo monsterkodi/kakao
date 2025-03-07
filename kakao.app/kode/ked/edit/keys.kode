@@ -10,8 +10,7 @@ use ◆ mode
 
 handleKey = key event -> # will be bound to state
 
-    if res = mode.handleKey @ key event
-        ⮐ if res != 'unhandled'
+    ⮐ if 'unhandled' != mode.handleKey @ key event
 
     if @s.cursors.length == 1
         

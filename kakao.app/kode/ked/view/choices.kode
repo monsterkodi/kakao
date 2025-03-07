@@ -74,17 +74,22 @@ function choices extends editor
         
         for x in xs...sel[2]
             @cells.set_bg x-@state.s.view[0] y fg
-
+            @cells.adjustContrastForHighlight x-@state.s.view[0] y fg
+            
         @cells.set_ch_fg x-@state.s.view[0] y '' fg
 
     numChoices:  -> @items.length
     numFiltered: -> @fuzzied.length
 
     currentIndex: -> @state.mainCursor()[1]
-    current: -> 
+    current: opt ->
     
         cc = @fuzzied[@currentIndex()]
-        cc = trim cc if cc is str
+        if cc is str
+            if opt?.trim == 'front'
+                cc = ltrim cc
+            else if opt?.trim != false 
+                cc = trim cc
         cc
         
     choiceAtRow: row -> @fuzzied[row]

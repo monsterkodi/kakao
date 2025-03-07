@@ -1,0 +1,36 @@
+###
+ 0000000  00000000   00000000   0000000   0000000
+000       000   000  000       000       000     
+0000000   00000000   0000000   000       0000000 
+     000  000        000       000            000
+0000000   000        00000000   0000000  0000000 
+###
+
+function specs
+
+    @info: 
+        
+        "○":  trigger:'~' id: 'o'
+        "▪":  trigger:'~' id: 's'
+        "◆":  trigger:'~' id: 'd'
+        "▸":  trigger:'~' id: '>'
+        "▾":  trigger:'~' id: 'v'
+        "▴":  trigger:'~' id: '^'
+        "◂":  trigger:'~' id: '<'
+        "✔":  trigger:'~' id: 'O'
+        "✘":  trigger:'~' id: 'X'
+        "●":  trigger:'~' id: 'c'
+        "■":  trigger:'~' id: 'S'
+        "⮐":  trigger:'r' insert: '⮐  '
+        "➜":  trigger:'t' insert: '➜ '
+        
+    @trigger: {}
+    @inserts: {}
+
+for k,v of specs.info
+    v.insert = k if empty v.insert
+    specs.trigger[v.trigger] ?= []
+    specs.trigger[v.trigger].push v.insert
+    specs.inserts[v.insert] = k
+
+export specs

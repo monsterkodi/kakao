@@ -8,6 +8,7 @@ let post = kxk.post
 
 import color from "../util/color.js"
 import theme from "../util/theme.js"
+import syntax from "../util/syntax.js"
 
 import view from "./view.js"
 
@@ -21,6 +22,8 @@ statusfile = (function ()
         this["show"] = this["show"].bind(this)
         statusfile.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
+        this.syntax = new syntax
+        this.syntax.setExt('noon')
         this.rounded = ''
     }
 
@@ -33,7 +36,7 @@ statusfile = (function ()
 
     statusfile.prototype["draw"] = function ()
     {
-        var bg, ch, fg, x, _42_47_
+        var bg, ch, fg, x
 
         if (this.hidden())
         {
@@ -41,7 +44,6 @@ statusfile = (function ()
         }
         statusfile.__super__.draw.call(this)
         bg = (this.hover ? '#44a' : theme.quicky_crumbs)
-        fg = ((_42_47_=theme.syntax[`${this.pars.ext} file`]) != null ? _42_47_ : theme.syntax.file)
         var list = _k_.list(this.rounded)
         for (x = 0; x < list.length; x++)
         {
@@ -52,21 +54,23 @@ statusfile = (function ()
             }
             else
             {
-                if (ch === '.')
-                {
-                    fg = color.darken(fg)
-                }
+                fg = this.syntax.getColor(x,0)
                 this.cells.set(x,0,ch,fg,bg)
+                if (this.hover)
+                {
+                    this.cells.adjustContrastForHighlight(x,0,bg)
+                }
             }
         }
     }
 
     statusfile.prototype["adjustText"] = function ()
     {
-        var _60_14_
+        var _61_14_
 
-        this.file = ((_60_14_=this.file) != null ? _60_14_ : '')
+        this.file = ((_61_14_=this.file) != null ? _61_14_ : '')
         this.pars = slash.parse(this.file)
+        this.syntax.setLines(['/' + this.pars.file])
         return this.rounded = '' + this.pars.file + ''
     }
 

@@ -342,18 +342,18 @@ str.hex = s ->
     if s is str ➜ ⮐ Number.parseInt s 16
     if s is num ➜ ⮐ Number(s).toString 16
         
-str.darkenColor = s f=0.5 ->
+str.scaleColor = s f=0.5 ->
     
     s = str.hexColor(s) if not s is str
     str.hexColor str.hexColor(s).map((v) -> clamp(0 255 parseInt(f*v)))
-        
+    
 str.hexColor = s ->
     
     if s is arr
         
         h = '#' + s[0..2].map((v) -> lpad 2 str.hex(v) '0').join('')
         if s.length > 3 and s[3] is num
-            h = str.darkenColor h s[3]
+            h = str.scaleColor h s[3]
         ⮐ h
         
     if s is str           
@@ -561,15 +561,9 @@ str.now = ->
 # 000   000  000  0000       000  000
 # 000   000  000   000  0000000   000
 
-STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
-str.stripAnsi = (s) ->
-    s.replace? STRIPANSI, ''
-
-str.ansi2html = s ->
-    ansi.html s
-
+str.stripAnsi = (s) -> ansi.strip s
+str.ansi2html = s -> ansi.html s
 str.ansi = ansi
-
 
 # 000      00000000  000   000  00000000  000   000   0000000  000000000  000   000  00000000  000  000   000  
 # 000      000       000   000  000       0000  000  000          000     000   000  000       000  0000  000  

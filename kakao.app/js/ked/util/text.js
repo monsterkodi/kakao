@@ -789,7 +789,7 @@ text = (function ()
 
     text["insertAsciiHeaderForPositionsAndRanges"] = function (lines, posl, ranges)
     {
-        var salt, text
+        var indt, salt, text
 
         if (_k_.empty(ranges))
         {
@@ -799,12 +799,9 @@ text = (function ()
             }).bind(this))
         }
         text = this.joinLines(this.textForLineRanges(lines,ranges),' ')
-        salt = salter(text,'█')
-        salt = '\n' + this.joinLines(kstr.lines(salt).map(function (l)
-        {
-            return "# " + l
-        }))
-        var _a_ = this.insertTextAtPositions(lines,salt,[[0,posl[0][1] - 1]]); lines = _a_[0]; posl = _a_[1]
+        indt = _k_.lpad(this.lineIndentAtPos(lines,posl[0]))
+        salt = salter(text,{prepend:indt + '# '}) + '\n'
+        var _a_ = this.insertTextAtPositions(lines,salt,[[0,posl[0][1]]]); lines = _a_[0]; posl = _a_[1]
 
         return [lines,posl,[]]
     }

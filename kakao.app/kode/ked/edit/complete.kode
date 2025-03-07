@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ kseg kutil post
-use ../util   ◆ theme util
+use ../util   ◆ theme util specs
 
 function complete
 
@@ -18,6 +18,7 @@ function complete
         @choices = new choices_class @editor.cells.screen "#{@name}_choices" ['scrllr']
         @choices.focusable = false
         @choices.rounded   = false
+        @choices.color.bg  = theme.editor_complete_choices
         
         @choices.scroll.handle = '▐'
         @choices.scroll.color.bg   = theme.editor_complete_choices
@@ -32,7 +33,7 @@ function complete
     hidden: -> not @visible
         
     onEditorLayout: =>
-        
+    
         ⮐ if @hidden()
         
         # log "complete.onEditorLayout #{@name}"
@@ -94,8 +95,15 @@ function complete
     # 000   000  000        000        0000000     000     
     
     apply: ->
+    
+        word = @currentWord()
         
-        @editor.state.insert @currentWord()[@turd.length..]
+        if key = specs.inserts[word]
+            @editor.state.delete 'back'
+            @editor.state.insert word
+        else
+            @editor.state.insert word[@turd.length..]
+                    
         post.emit 'focus' 'editor'
         @hide()
         
@@ -114,7 +122,7 @@ function complete
 
     currentWord: ->
         
-        word = @choices.current()
+        word = @choices.current trim:'front'
         if empty word
             word = @words[0]
         word
@@ -131,20 +139,12 @@ function complete
         @words = util.cleanWordsForCompletion @words
         @words.sort()
         
-        if @turd in 'rt'
-            log "@turd #{@turd}"
-            switch @turd
-                'r' ➜ @words.unshift 'r⮐ '
-                't' ➜ @words.unshift 't➜'
-        
-        if empty @words
-            # log "#{@name} ▸#{@turd}◂ no completion" 
-            @visible = false
-            ⮐ 
-        
-        # log "#{@name} ▸#{@turd}◂" @words
-        
-        @visible = true
+        if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O
+            @words = inserts.concat @words
+
+        @visible = valid @words
+
+        ⮐ if empty @words
         
         mc = @editor.state.mainCursor()
         
@@ -159,14 +159,14 @@ function complete
         if @words.length <= 1
             @choices.clear()
         else
-            mlw = util.widthOfLines @words
+            mlw = max 3 util.widthOfLines(@words)
             
             h = min 8 @words.length
             x  = @editor.cells.x+cx-@turd.length
             y  = @editor.cells.y+cy+1
             
             @choices.layout x y mlw+1 h
-            @choices.set @words
+            @choices.set @words.map((w) -> ' '+w)
             @choices.selectFirst()
         
     # 0000000    00000000    0000000   000   000  
@@ -188,7 +188,7 @@ function complete
                     
         # log "complete #{word} #{@choices.current()} #{@words.length}" @words
         
-        for ch,ci in word[@turd.length..]
+        for ch,ci in word[@turd.length..] # insert the first completion at main cursor
             bg = theme[@editor.name + '_selection'] ? theme.editor_selection
             @editor.cells.set cx+ci cy ch '#fff' bg
         

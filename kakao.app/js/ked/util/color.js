@@ -26,7 +26,16 @@ class color
         {
             return [0,0,0]
         }
-        return kstr.darkenColor(c,f)
+        return kstr.scaleColor(c,f)
+    }
+
+    static brighten (c, f)
+    {
+        if (_k_.empty(c))
+        {
+            return [255,255,255]
+        }
+        return kstr.scaleColor(c,1 + f)
     }
 
     static bg_rgb (c)
@@ -224,6 +233,19 @@ class color
             })
             cell.cell[type] = clr
         }
+    }
+
+    static contrast (c1, c2)
+    {
+        var c, db, dg, dr, v1, v2
+
+        v1 = color.rgb(c1)
+        v2 = color.rgb(c2)
+        dr = (v2[0] - v1[0]) / 256
+        dg = (v2[1] - v1[1]) / 256
+        db = (v2[2] - v1[2]) / 256
+        c = dr + dg + db
+        return 1 + c / 3
     }
 }
 

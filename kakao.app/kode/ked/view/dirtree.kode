@@ -118,7 +118,9 @@ function dirtree extends choices
                     
                     'click'
                     'space'
-            
+                        
+                        if action == 'click' and event.mods ➜ ⮐  post.emit 'funcol.root' c.path
+                        
                         if not c.open ➜ @openDir(c redraw:true) 
                         else @closeDir c
                         ⮐ 

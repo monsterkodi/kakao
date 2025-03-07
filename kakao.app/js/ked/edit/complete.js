@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
 
 var complete
 
@@ -9,6 +9,7 @@ let post = kxk.post
 
 import theme from "../util/theme.js"
 import util from "../util/util.js"
+import specs from "../util/specs.js"
 
 
 complete = (function ()
@@ -25,6 +26,7 @@ complete = (function ()
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
         this.choices.rounded = false
+        this.choices.color.bg = theme.editor_complete_choices
         this.choices.scroll.handle = '▐'
         this.choices.scroll.color.bg = theme.editor_complete_choices
         this.choices.scroll.color.knob = theme.editor_complete_choices_scroll
@@ -112,7 +114,18 @@ complete = (function ()
 
     complete.prototype["apply"] = function ()
     {
-        this.editor.state.insert(this.currentWord().slice(this.turd.length))
+        var key, word
+
+        word = this.currentWord()
+        if (key = specs.inserts[word])
+        {
+            this.editor.state.delete('back')
+            this.editor.state.insert(word)
+        }
+        else
+        {
+            this.editor.state.insert(word.slice(this.turd.length))
+        }
         post.emit('focus','editor')
         return this.hide()
     }
@@ -133,7 +146,7 @@ complete = (function ()
     {
         var word
 
-        word = this.choices.current()
+        word = this.choices.current({trim:'front'})
         if (_k_.empty(word))
         {
             word = this.words[0]
@@ -145,7 +158,7 @@ complete = (function ()
     {
         this.turd = turd
     
-        var ch, ci, cx, cy, h, head, mc, mlw, x, y
+        var ch, ci, cx, cy, h, head, inserts, mc, mlw, x, y
 
         if (_k_.empty(this.turd))
         {
@@ -163,26 +176,15 @@ complete = (function ()
         }).bind(this))
         this.words = util.cleanWordsForCompletion(this.words)
         this.words.sort()
-        if (_k_.in(this.turd,'rt'))
+        if (inserts = specs.trigger[this.turd])
         {
-            console.log(`@turd ${this.turd}`)
-            switch (this.turd)
-            {
-                case 'r':
-                    this.words.unshift('r⮐ ')
-                    break
-                case 't':
-                    this.words.unshift('t➜')
-                    break
-            }
-
+            this.words = inserts.concat(this.words)
         }
+        this.visible = !_k_.empty(this.words)
         if (_k_.empty(this.words))
         {
-            this.visible = false
             return
         }
-        this.visible = true
         mc = this.editor.state.mainCursor()
         head = this.words[0]
         cx = mc[0] - this.editor.state.s.view[0]
@@ -199,12 +201,15 @@ complete = (function ()
         }
         else
         {
-            mlw = util.widthOfLines(this.words)
+            mlw = _k_.max(3,util.widthOfLines(this.words))
             h = _k_.min(8,this.words.length)
             x = this.editor.cells.x + cx - this.turd.length
             y = this.editor.cells.y + cy + 1
             this.choices.layout(x,y,mlw + 1,h)
-            this.choices.set(this.words)
+            this.choices.set(this.words.map(function (w)
+            {
+                return ' ' + w
+            }))
             return this.choices.selectFirst()
         }
     }

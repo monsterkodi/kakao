@@ -414,6 +414,18 @@ cells = (function ()
         return pth.length - si
     }
 
+    cells.prototype["adjustContrastForHighlight"] = function (x, y, highlightColor)
+    {
+        var contrast, ofg
+
+        ofg = this.get_fg(x,y)
+        contrast = color.contrast(highlightColor,ofg)
+        if (contrast < 1.4)
+        {
+            return this.set_fg(x,y,color.brighten(ofg,3 * (1.4 - contrast)))
+        }
+    }
+
     return cells
 })()
 

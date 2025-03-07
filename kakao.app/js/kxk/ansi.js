@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var initStyles, STYLES, toHexString
 
@@ -46,13 +46,25 @@ initStyles = function ()
 }
 class Ansi
 {
+    static strip (s)
+    {
+        var STRIPANSI
+
+        if (!(_k_.isStr(s)))
+        {
+            return s
+        }
+        STRIPANSI = /\x1B[[(?);]{0,2}(;?\d)*./g
+        return s.replace(STRIPANSI,'')
+    }
+
     static html (s)
     {
-        var andi, d, diss, htmlLine, i, l, lines, span, _82_32_
+        var andi, d, diss, htmlLine, i, l, lines, span, _105_32_
 
         andi = new Ansi()
         lines = []
-        var list = ((_82_32_=(s != null ? s.split('\n') : undefined)) != null ? _82_32_ : [])
+        var list = ((_105_32_=(s != null ? s.split('\n') : undefined)) != null ? _105_32_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             l = list[_a_]
@@ -172,7 +184,6 @@ class Ansi
             s += '\x1b[49m\n'
         }
         console.log(s)
-        console.log('???')
     }
 
     dissect (input)

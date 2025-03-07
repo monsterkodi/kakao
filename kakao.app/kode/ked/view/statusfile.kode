@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ slash post
-use ../util   ◆ color theme
+use ../util   ◆ color theme syntax
 use ../view   ◆ view
 
 function statusfile extends view
@@ -17,6 +17,8 @@ function statusfile extends view
         super screen name
         
         @pointerType = 'pointer'
+        @syntax = new syntax
+        @syntax.setExt 'noon'
         
         @rounded = ''
         
@@ -39,15 +41,14 @@ function statusfile extends view
         super()
             
         bg = @hover ? '#44a' : theme.quicky_crumbs 
-        fg = theme.syntax["#{@pars.ext} file"] ? theme.syntax.file
         
         for ch,x in @rounded
             if ch in ''
                 @cells.set x 0 ch bg theme.status_empty
             else
-                fg = color.darken fg if ch == '.' 
-                
+                fg = @syntax.getColor x 0
                 @cells.set x 0 ch fg bg 
+                @cells.adjustContrastForHighlight x 0 bg if @hover
                 
     #  0000000   0000000          000  000   000   0000000  000000000  
     # 000   000  000   000        000  000   000  000          000     
@@ -59,7 +60,7 @@ function statusfile extends view
         
         @file ?= ''
         @pars = slash.parse @file
-        
+        @syntax.setLines ['/'+@pars.file]
         @rounded = '' + @pars.file + ''
             
     set: file ->

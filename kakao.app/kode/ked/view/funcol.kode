@@ -37,7 +37,7 @@ function funcol extends view
         post.on 'session.merge' @onSessionMerge
         
         root = ked_session.get 'funcol▸root' process.cwd()
-        log "funcol.root: #{r7 root}"
+        # log "funcol.root: #{r7 root}"
         @setRoot root
         
     onCrumbsAction: action path =>
@@ -47,12 +47,12 @@ function funcol extends view
             
     onSessionMerge: recent =>
         
-        log "funcol onSessionMerge #{noon recent.funcol}"
+        # log "funcol onSessionMerge #{noon recent.funcol}"
         
         ⮐ if empty recent.funcol
         
         if root = recent.funcol.root
-            log "funcol set recent root #{root}"
+            # log "funcol set recent root #{root}"
             @setRoot root
             
     setRoot: path =>
