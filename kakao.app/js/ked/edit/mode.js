@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
+var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
 
 var mode, record, salter, uniko, unype, vimple
 
@@ -30,7 +30,7 @@ mode = (function ()
         }
         console.log(`mode.start ${name}`)
         this.active[state.name] = ((_43_28_=this.active[state.name]) != null ? _43_28_ : [])
-        this.active[state.name].push(new mode.modes[name])
+        this.active[state.name].push(new mode.modes[name](state))
         console.log("mode.start",this.active[state.name].map(function (m)
         {
             return m.name
@@ -39,8 +39,15 @@ mode = (function ()
 
     mode["stop"] = function (state, name)
     {
+        var m
+
         console.log(`mode.stop ${name}`)
-        this.active[state.name].splice(this.active[state.name].indexOf(this.get(name)),1)
+        m = this.get(state,name)
+        if (_k_.isFunc(m.stop))
+        {
+            m.stop()
+        }
+        this.active[state.name].splice(this.active[state.name].indexOf(m),1)
         console.log("mode.stop",this.active[state.name].map(function (m)
         {
             return m.name
@@ -95,6 +102,25 @@ mode = (function ()
         return text
     }
 
+    mode["handleKey"] = function (state, key, event)
+    {
+        var mode
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            mode = list[_a_]
+            if (_k_.isFunc(mode.handleKey))
+            {
+                if (mode.handleKey(key,event) !== 'unhandled')
+                {
+                    return
+                }
+            }
+        }
+        return 'unhandled'
+    }
+
     return mode
 })()
 
@@ -114,9 +140,39 @@ vimple = (function ()
 salter = (function ()
 {
     _k_.extend(salter, mode)
-    function salter ()
+    function salter (state)
     {
+        this.state = state
+    
         salter.__super__.constructor.call(this,'salter')
+    
+        this.start()
+    }
+
+    salter.prototype["start"] = function ()
+    {
+        this.state.setMainCursor(this.state.mainCursor())
+        this.state.expandCursors('down')
+        this.state.expandCursors('down')
+        this.state.expandCursors('down')
+        return this.state.expandCursors('down')
+    }
+
+    salter.prototype["stop"] = function ()
+    {
+        return this.state.setMainCursor(this.state.mainCursor())
+    }
+
+    salter.prototype["handleKey"] = function (key, event)
+    {
+        switch (key)
+        {
+            case 'esc':
+                mode.stop(this.state,this.name)
+                break
+        }
+
+        return 'unhandled'
     }
 
     return salter

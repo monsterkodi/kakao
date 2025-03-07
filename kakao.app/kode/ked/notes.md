@@ -1,6 +1,4 @@
 
-
-
               crumbs  file      tabs          status
             ┏━━━━━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━━┓
             ┣━━━━━━━━╋━━━━┻━━━━┻━━━━┻━━━━┻━━┳━┻━━━━━┫
@@ -16,28 +14,21 @@
             ┃        ┃ help+log+keys                ┃
             ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-𝖘⊚⫙ϵ 𝜏ϵ𝖘𝜏: 𝛾ϵ𝖘 ⟅⊚⊚𝛋𝖘 𝔭ɼϵ𝜏𝜏𝛾 ⊂ɼ𝕒𝓏𝛾 𝜏⊚ ⫙ϵ ;)
-𝓢◯𝕄ξ ⟙ξ𝓢⟙: 𝚼ξ𝓢 ⎣◯◯𝓚𝓢 Ρℜξ⟙⟙𝚼 ⋐ℜ⩜☡𝚼 ⟙◯ 𝕄ξ ;)
-
 # todo
 ## todo
 ### todo
 #### todo
 ##### todo    
 
-- file watcher
 - mode
 
 - dirtree
-    - mod-click in status crumbs: set funcol root
-    - state restore 
+    - mod-click on dir: set funcol root
     - git status
     - searchable?
        
 - ascii header mode
-    - cmd+3 create header for selection or cursor word
     - switch automatically if cursor inside
-    - change 0 to █ or ░
       
 - completion
     - fix

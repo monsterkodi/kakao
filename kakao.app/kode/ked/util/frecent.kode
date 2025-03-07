@@ -73,6 +73,6 @@ post.on 'session.merge' (recent) ->
             for file in Object.keys(recent.files.recent)[0...maxRecent]
                 newRecent[file] = recent.files.recent[file]
             frecent.buckets['file'] = newRecent
-            recent.files.recent = frecent.list 'file'
+            recent.files.recent = newRecent
 
 export frecent

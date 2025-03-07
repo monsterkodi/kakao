@@ -1,8 +1,19 @@
 var handleKey
 
+import mode from "./mode.js"
+
 
 handleKey = function (key, event)
 {
+    var res
+
+    if (res = mode.handleKey(this,key,event))
+    {
+        if (res !== 'unhandled')
+        {
+            return
+        }
+    }
     if (this.s.cursors.length === 1)
     {
         switch (key)

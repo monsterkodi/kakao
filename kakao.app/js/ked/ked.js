@@ -57,7 +57,7 @@ KED = (function ()
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.3.0'
+        this.version = '0.3.1'
         args = karg(`
 ked [file]
     options                      **

@@ -120,7 +120,7 @@ post.on('session.merge',function (recent)
                 newRecent[file] = recent.files.recent[file]
             }
             frecent.buckets['file'] = newRecent
-            return recent.files.recent = frecent.list('file')
+            return recent.files.recent = newRecent
         }
     }
 })

@@ -41,7 +41,7 @@ function mode
         log "mode.start #{name}"
         
         @active[state.name] ?= []
-        @active[state.name].push new mode.modes[name]
+        @active[state.name].push new mode.modes[name] state
         
         log "mode.start" @active[state.name].map((m) -> m.name)
             
@@ -49,7 +49,10 @@ function mode
         
         log "mode.stop #{name}"
         
-        @active[state.name].splice @active[state.name].indexOf(@get(name)) 1
+        m = @get state name
+        m.stop() if m.stop is func
+        
+        @active[state.name].splice @active[state.name].indexOf(m) 1
         
         log "mode.stop" @active[state.name].map((m) -> m.name)
 
@@ -72,7 +75,6 @@ function mode
         
         for m in @active[state.name]
             ⮐ m if m.name == name
-            
 
     # 000  000   000   0000000  00000000  00000000   000000000  
     # 000  0000  000  000       000       000   000     000     
@@ -91,6 +93,19 @@ function mode
                 text = mode.insert text
         
         text
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    @handleKey: state key event ->
+        
+        for mode in @active[state.name]
+            if mode.handleKey is func
+                ⮐ if mode.handleKey(key event) != 'unhandled'
+        'unhandled'
             
 # ███   ███  ███  ██     ██  ████████   ███      ████████
 # ███   ███  ███  ███   ███  ███   ███  ███      ███     
@@ -110,7 +125,29 @@ function vimple extends mode
 
 function salter extends mode
 
-    @: -> super 'salter'
+    @: @state -> 
+    
+        super 'salter'
+        @start()
+    
+    start: -> 
+    
+        @state.setMainCursor @state.mainCursor()
+        @state.expandCursors 'down'
+        @state.expandCursors 'down'
+        @state.expandCursors 'down'
+        @state.expandCursors 'down'
+            
+    stop: ->
+    
+        @state.setMainCursor @state.mainCursor()
+    
+    handleKey: key event ->
+        
+        switch key
+            'esc' ➜ mode.stop @state @name
+        
+        'unhandled'
 
 # ███   ███  ███   ███  ███  ███   ███   ███████ 
 # ███   ███  ████  ███  ███  ███  ███   ███   ███

@@ -1,18 +1,18 @@
 ```
-    000   000  000000000  000  000      
-    000   000     000     000  000      
-    000   000     000     000  000      
-    000   000     000     000  000      
-     0000000      000     000  0000000  
+     ███   ███  █████████  ███  ███    
+     ███   ███     ███     ███  ███    
+     ███   ███     ███     ███  ███    
+     ███   ███     ███     ███  ███    
+      ███████      ███     ███  ███████
 ```
 
 # util
 
 ## glossary
 
-    range     [x1 y1 x2 y2]
-    span      [x1 y x2]
-    position  [x y]
+    range     [x1 y1 x2 y2]     x1 & x2 grapheme indices or cell cols y1 & y2 lines or cell rows
+    span      [x1 y x2]         as above, for a single line or row
+    position  [x y]             almost always cell coordinates
     
     word      word characters
     turd      non-whitespace and non-word-characters (punctuation)
