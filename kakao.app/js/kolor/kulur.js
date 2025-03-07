@@ -898,9 +898,9 @@ urlPunct = function ()
                         fileext = next.match
                         if (!(_k_.in(fileext,'\\./*+')))
                         {
-                            setValue(-1,fileext + ' file')
-                            addValue(0,fileext)
-                            setValue(1,fileext + ' ext')
+                            setValue(-1,'file_' + fileext)
+                            setValue(0,'file_punct_' + fileext)
+                            setValue(1,'file_ext_' + fileext)
                             return 2
                         }
                     }

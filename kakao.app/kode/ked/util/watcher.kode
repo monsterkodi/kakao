@@ -1,0 +1,71 @@
+###
+000   000   0000000   000000000   0000000  000   000  00000000  00000000 
+000 0 000  000   000     000     000       000   000  000       000   000
+000000000  000000000     000     000       000000000  0000000   0000000  
+000   000  000   000     000     000       000   000  000       000   000
+00     00  000   000     000      0000000  000   000  00000000  000   000
+###
+
+use ../../kxk ▪ watch slash post
+use ../../kxk ◆ nfs
+use fs
+
+function watcher
+
+    @watchers: {}
+
+    @watch: path opt ○->
+        
+        path = slash.untilde path
+                
+        isDir =○ nfs.isDir path
+        
+        opt ?= {}
+        opt.recursive ?= true
+        
+        if isDir 
+            dir = path
+        else
+            prjPath =○ nfs.prj path
+            
+            if empty prjPath
+                log "✘ #{r6 path}"
+                ⮐ 
+                
+            if prjPath != '/'
+                dir = prjPath
+            else
+                dir = slash.dir path
+            
+        if empty watcher.watchers[dir]
+            
+            opt.recursive = false if dir == '/' or dir == slash.untilde '~'
+            
+            # log "○ #{y6 dir}"
+            
+            w = fs.watch dir
+            w.on 'error' (err) => error "watch dir:'#{dir}' error: #{err}"
+            w.on 'change' ((dir) => (change path) => @onChange(change path dir))(dir)
+            watcher.watchers[dir] = w
+        
+            ⮐ if not opt.recursive
+            
+            items =○ nfs.list dir
+            for item in items
+                if item.type == 'dir'
+                    if item.file in ['node_modules' '.git']
+                        continue
+                    watcher.watch item.path
+        
+    @onChange: change path dir ○=>
+        
+        path = slash.path dir path
+        
+        exists =○ nfs.exists path
+        
+        if exists
+            post.emit 'fs.change' path:path change:change   watcher:@
+        else
+            post.emit 'fs.change' path:path change:'remove' watcher:@
+                
+export watcher

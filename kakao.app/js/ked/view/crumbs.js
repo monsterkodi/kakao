@@ -176,7 +176,6 @@ crumbs = (function ()
                     {
                         path = '/' + path
                     }
-                    console.log(`crumbs ${this.name} click ${path}`)
                     this.emit('action','click',path,event)
                     delete this.hoverIndex
                 }

@@ -23,6 +23,7 @@ class NFS
         opt ?= {}
         opt.recursive ?= true
         opt.found ?= []
+        opt.ignoreDirs ?= []
         
         dir =○ NFS.resolveSymlink dir
         
@@ -45,12 +46,13 @@ class NFS
                 isDir =○ @isDir resolved
             
             if isDir # is it a good idea to hardcode this here?
-                continue if file in ['node_modules' '.git'] 
+                continue if file in ['node_modules' '.git']
+                continue if file in opt.ignoreDirs
                 continue if absPath in ['/Users/Shared']
             else 
                 continue if file in ['.DS_Store' '.localized']
             
-            # log 'isDir' isDir absPath dirent
+            # log "nfs.list #{absPath}"
             
             opt.found.push
                 type: isDir ? 'dir' : 'file'

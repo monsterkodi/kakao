@@ -5,12 +5,13 @@
 000  000   000       000   000  
 000   000  00000000  0000000    
 
+
     bun --watch js/ked/ked.js kode/ked/kde.kode
 ###
 
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
-use ./util ◆ ttio logfile util prjcts session help julia frecent
+use ./util ◆ ttio logfile util prjcts session help julia frecent watcher
 use ./view ◆ view screen status quicky menu finder funcol fileeditor
 
 global.int = parseInt # this should go into kode instead
@@ -19,7 +20,7 @@ function KED
 
     @: ->
 
-        @version = '0.2.0'
+        @version = '0.3.0'
         args = karg """
             
             ked [file]
@@ -30,8 +31,8 @@ function KED
         
         process.on 'uncaughtException' @onException
             
-        @logfile = new logfile
         @session = new session
+        @logfile = new logfile @session.name
         
         global.ked_session = @session
         
@@ -65,6 +66,7 @@ function KED
         post.on 'file.new'      @newFile
         post.on 'file.open'     @openFile
         post.on 'quit'          @quit
+        post.on 'fs.change'     @onFileChange
         
         @mouseHandlers = [@finder @quicky @menu @editor @status @funcol]
         @wheelHandlers = [@finder @quicky @menu @editor         @funcol]
@@ -162,6 +164,14 @@ function KED
     # 000      000   000  000000000  000   000  
     # 000      000   000  000   000  000   000  
     # 0000000   0000000   000   000  0000000    
+
+    onFileChange: event =>
+    
+        if event.path == @currentFile
+            log "ked.onFileChange #{event.change} #{@currentFile}" 
+            switch event.change
+                'delete' ➜ @newFile() # todo: load current text into new file
+                'rename' ➜ @reloadFile()
         
     reloadFile: => 
         
@@ -203,6 +213,8 @@ function KED
         @redraw()
         
         prjcts.index @currentFile
+        watcher.watch @currentFile
+        
         @t.setTitle slash.name(@status.file)
         
         @saveSessionFile @currentFile 'loaded'        

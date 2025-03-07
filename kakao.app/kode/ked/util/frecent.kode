@@ -16,7 +16,7 @@ function frecent
         
     @frecent: item -> item.rank / (1+@now()-item.time)
         
-    @sample: key delta bucket ->
+    @sample: bucket key delta ->
         
         @buckets[bucket][key] ?= rank:1 time:@now()
         
@@ -24,18 +24,21 @@ function frecent
         
         rec.rank += delta
         rec.time  = @now()
-        rec.score = @frecent rec # just for debugging purpose, is calced on the fly
-
         # log b8('sampled') + ' ' + r5(key)
         for bi in @list(bucket)
             item = @buckets[bucket][bi]
             # log bi item pretty.age(item.time) @frecent(item)
-        
+
+    @score: bucket ->
+        for pth,rec of @buckets[bucket]
+            rec.score = @frecent rec
+            
     @list: bucket ->
         
+        @score bucket
         bkt = @buckets[bucket]
         lst = Object.keys bkt
-        lst.sort (a b) => @frecent(bkt[b]) - @frecent(bkt[a])
+        lst.sort (a b) => bkt[b].score - bkt[a].score
         lst
         
     @store: bucket ->
@@ -51,7 +54,8 @@ function frecent
             'loaded' ➜ 1
             'saved'  ➜ 10
         
-        @sample file delta 'file'
+        @sample 'file' file delta 
+        @score  'file'
         
 # 00     00  00000000  00000000    0000000   00000000  
 # 000   000  000       000   000  000        000       
@@ -69,6 +73,6 @@ post.on 'session.merge' (recent) ->
             for file in Object.keys(recent.files.recent)[0...maxRecent]
                 newRecent[file] = recent.files.recent[file]
             frecent.buckets['file'] = newRecent
-            recent.files.recent = newRecent
+            recent.files.recent = frecent.list 'file'
 
 export frecent

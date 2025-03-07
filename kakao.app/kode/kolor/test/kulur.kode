@@ -486,9 +486,9 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         inc rgs 14 'com'           ▸ 'url tld'
          
         rgs = ranges "file.coffee"
-        inc rgs 0 'file'           ▸ 'coffee file'
-        inc rgs 4 '.'              ▸ 'punct coffee'
-        inc rgs 5 'coffee'         ▸ 'coffee ext'
+        inc rgs 0 'file'           ▸ 'file_coffee'
+        inc rgs 4 '.'              ▸ 'file_punct_coffee'
+        inc rgs 5 'coffee'         ▸ 'file_ext_coffee'
      
         rgs = ranges "/some/path"
         inc rgs 1 'some'           ▸ 'text dir'

@@ -24,7 +24,7 @@ frecent = (function ()
         return item.rank / (1 + this.now() - item.time)
     }
 
-    frecent["sample"] = function (key, delta, bucket)
+    frecent["sample"] = function (bucket, key, delta)
     {
         var bi, item, rec, _21_30_
 
@@ -32,7 +32,6 @@ frecent = (function ()
         rec = this.buckets[bucket][key]
         rec.rank += delta
         rec.time = this.now()
-        rec.score = this.frecent(rec)
         var list = _k_.list(this.list(bucket))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -41,15 +40,27 @@ frecent = (function ()
         }
     }
 
+    frecent["score"] = function (bucket)
+    {
+        var pth, rec
+
+        for (pth in this.buckets[bucket])
+        {
+            rec = this.buckets[bucket][pth]
+            rec.score = this.frecent(rec)
+        }
+    }
+
     frecent["list"] = function (bucket)
     {
         var bkt, lst
 
+        this.score(bucket)
         bkt = this.buckets[bucket]
         lst = Object.keys(bkt)
         lst.sort((function (a, b)
         {
-            return this.frecent(bkt[b]) - this.frecent(bkt[a])
+            return bkt[b].score - bkt[a].score
         }).bind(this))
         return lst
     }
@@ -85,7 +96,8 @@ frecent = (function ()
             }
 
         }).bind(this))()
-        return this.sample(file,delta,'file')
+        this.sample('file',file,delta)
+        return this.score('file')
     }
 
     return frecent
@@ -108,7 +120,7 @@ post.on('session.merge',function (recent)
                 newRecent[file] = recent.files.recent[file]
             }
             frecent.buckets['file'] = newRecent
-            return recent.files.recent = newRecent
+            return recent.files.recent = frecent.list('file')
         }
     }
 })

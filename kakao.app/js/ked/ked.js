@@ -19,6 +19,7 @@ import session from "./util/session.js"
 import help from "./util/help.js"
 import julia from "./util/julia.js"
 import frecent from "./util/frecent.js"
+import watcher from "./util/watcher.js"
 
 import view from "./view/view.js"
 import screen from "./view/screen.js"
@@ -51,19 +52,20 @@ KED = (function ()
         this["openFile"] = this["openFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
+        this["onFileChange"] = this["onFileChange"].bind(this)
         this["newFile"] = this["newFile"].bind(this)
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.2.0'
+        this.version = '0.3.0'
         args = karg(`
 ked [file]
     options                      **
     version    log version       = false
     `,{preHelp:help.header(),version:this.version})
         process.on('uncaughtException',this.onException)
-        this.logfile = new logfile
         this.session = new session
+        this.logfile = new logfile(this.session.name)
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
         this.viewSizes = {funcol:[20,0]}
@@ -87,6 +89,7 @@ ked [file]
         post.on('file.new',this.newFile)
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
+        post.on('fs.change',this.onFileChange)
         this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor,this.status,this.funcol]
         this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
         this.keyHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
@@ -132,7 +135,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _128_10_
+        var _130_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -160,7 +163,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _156_22_
+        var _158_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -170,6 +173,24 @@ ked [file]
         this.t.setTitle('kėd')
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         return this.redraw()
+    }
+
+    KED.prototype["onFileChange"] = function (event)
+    {
+        if (event.path === this.currentFile)
+        {
+            console.log(`ked.onFileChange ${event.change} ${this.currentFile}`)
+            switch (event.change)
+            {
+                case 'delete':
+                    return this.newFile()
+
+                case 'rename':
+                    return this.reloadFile()
+
+            }
+
+        }
     }
 
     KED.prototype["reloadFile"] = function ()
@@ -186,7 +207,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _201_22_
+        var segls, start, text, _211_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -213,6 +234,7 @@ ked [file]
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         this.redraw()
         prjcts.index(this.currentFile)
+        watcher.watch(this.currentFile)
         this.t.setTitle(slash.name(this.status.file))
         this.saveSessionFile(this.currentFile,'loaded')
         return this
@@ -408,7 +430,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _358_22_
+        var _370_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

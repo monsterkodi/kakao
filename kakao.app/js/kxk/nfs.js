@@ -9,11 +9,12 @@ class NFS
 {
     static async listdir (dir, opt)
     {
-        var absPath, dirent, dirents, file, isDir, resolved, _24_22_, _25_18_
+        var absPath, dirent, dirents, file, isDir, resolved, _24_22_, _25_18_, _26_23_
 
         opt = (opt != null ? opt : {})
         opt.recursive = ((_24_22_=opt.recursive) != null ? _24_22_ : true)
         opt.found = ((_25_18_=opt.found) != null ? _25_18_ : [])
+        opt.ignoreDirs = ((_26_23_=opt.ignoreDirs) != null ? _26_23_ : [])
         dir = await NFS.resolveSymlink(dir)
         dirents = await fsp.readdir(dir,{withFileTypes:true})
         var list = _k_.list(dirents)
@@ -36,6 +37,10 @@ class NFS
             if (isDir)
             {
                 if (_k_.in(file,['node_modules','.git']))
+                {
+                    continue
+                }
+                if (_k_.in(file,opt.ignoreDirs))
                 {
                     continue
                 }

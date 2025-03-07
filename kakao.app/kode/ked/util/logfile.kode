@@ -10,7 +10,7 @@ use fs
 
 function logfile
 
-    @: ->
+    @: @name ->
         
         @stream = fs.createWriteStream 'ked.log' flags:'w' autoClose:false
                 
@@ -29,13 +29,12 @@ function logfile
         console.error = args... => 
             
             @write r5(args.map((a) -> noon(a)).join(' '))
-            # log r5(args.map((a) -> noon(a)).join(' '))
         
     write: txt ->
         
         ⮐ if @stream.closed or not @stream.writable
 
-        @stream.write txt + '\n'
+        @stream.write w3(@name[3..]) + txt + '\n'
         
     close: cb ->
         

@@ -677,9 +677,9 @@ urlPunct = ->
                     if next.start == chunk.start+chunk.length
                         fileext = next.match
                         if fileext not in '\\./*+'
-                            setValue -1 fileext + ' file'
-                            addValue  0 fileext
-                            setValue  1 fileext + ' ext'
+                            setValue -1 'file_'+fileext
+                            setValue  0 'file_punct_'+fileext
+                            setValue  1 'file_ext_'+fileext
                             ⮐ 2
 
         if chunk.match == '/'

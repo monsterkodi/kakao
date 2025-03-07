@@ -196,7 +196,7 @@ session = (function ()
     {
         var file, files, maxFiles
 
-        maxFiles = 10
+        maxFiles = 100
         files = await this.listSessions()
         var list = _k_.list(files.slice(0, files.length - maxFiles))
         for (var _a_ = 0; _a_ < list.length; _a_++)
