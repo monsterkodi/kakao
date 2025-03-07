@@ -10,7 +10,7 @@ import color from "../util/color.js"
 import theme from "../util/theme.js"
 import syntax from "../util/syntax.js"
 
-import view from "./view.js"
+import view from "../view/view.js"
 
 
 statusfile = (function ()

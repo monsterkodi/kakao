@@ -6,7 +6,7 @@ import kxk from "../../kxk.js"
 let events = kxk.events
 let post = kxk.post
 
-import cells from "./cells.js"
+import cells from "../view/cells.js"
 
 
 view = (function ()

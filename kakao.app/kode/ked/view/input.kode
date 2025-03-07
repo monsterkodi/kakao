@@ -8,14 +8,14 @@
 
 use ../../kxk ▪ kseg
 use ../util ◆ theme
-use ../edit ◆ editor 
+use ../edit ◆ editor
 
 function input extends editor
 
     @: screen name ->
-
-        super screen name
-
+        
+        super screen name ['brckts' 'unype']
+        
     hasFocus: -> @state.hasFocus
 
     current:  => kseg.str @state.s.lines[0]

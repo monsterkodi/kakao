@@ -218,7 +218,7 @@ function state
 
     cut: =>
         # log 'state.cut'
-        @copy()
+        @copy deselect:false
         if empty @s.selections
             @selectCursorLines()
             # log 'state.cut' @allSelections()
@@ -230,7 +230,9 @@ function state
     # 000       000   000  000           000
     #  0000000   0000000   000           000
 
-    copy: =>
+    copy: opt =>
+    
+        opt ?= {}
 
         switch os.platform()
 
@@ -250,7 +252,8 @@ function state
                 proc = child_process.spawn "#{◆dir}/../../bin/utf8clip.exe"
                 proc.stdin.write @textOfSelectionOrCursorLines()
                 proc.stdin.end()
-
+                
+        @deselect() if opt.deselect != false
 
     # 00000000    0000000    0000000  000000000  00000000
     # 000   000  000   000  000          000     000

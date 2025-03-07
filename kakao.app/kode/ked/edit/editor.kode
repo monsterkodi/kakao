@@ -25,6 +25,7 @@ function editor extends draw
         if @feats.scroll   ➜ @scroll   = new scroll   @screen @state 'left'
         if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state
         if @feats.complete ➜ @complete = new complete @
+        if @feats.brckts   ➜ mode.start @state 'brckts'
             
         for m in mode.names()            
             if @feats[m] ➜ @state.allowedModes[m] = true

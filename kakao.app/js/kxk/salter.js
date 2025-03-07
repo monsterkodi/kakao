@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var font, salter
 
@@ -8,10 +8,10 @@ import noon from "./noon.js"
 
 salter = function (text, opt)
 {
-    var c, cs, rs, s, zs, _14_15_, _15_16_, _16_16_, _17_16_, _18_16_
+    var c, cs, rs, s, zs, _14_16_, _15_16_, _16_16_, _17_16_, _18_16_
 
     opt = (opt != null ? opt : {})
-    opt.char = ((_14_15_=opt.char) != null ? _14_15_ : '█')
+    opt.char = ((_14_16_=opt.char) != null ? _14_16_ : '█')
     opt.prefix = ((_15_16_=opt.prefix) != null ? _15_16_ : '')
     opt.postfix = ((_16_16_=opt.postfix) != null ? _16_16_ : '')
     opt.prepend = ((_17_16_=opt.prepend) != null ? _17_16_ : '')
@@ -252,6 +252,18 @@ $
     |000  000|
     |00000000|
     | 000000 |
+%
+    |00   00 |
+    |00  00  |
+    |   00   |
+    |  00  00|
+    | 00   00|
+&
+    | 0000   |
+    |00  00  |
+    | 0000 00|
+    |00  000 |
+    | 00000 0|
 :   
     |000|
     |000|
@@ -439,4 +451,9 @@ z
     | 000   |
     |0000000|`)
 salter.font = font
+
+salter.hasChar = function (c)
+{
+    return !_k_.empty(font[c])
+}
 export default salter;

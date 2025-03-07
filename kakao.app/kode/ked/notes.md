@@ -18,15 +18,12 @@
 ## todo
 ### todo
 #### todo
-##### todo    
+##### todo
 
 - mode
     - salter mode
         - switch automatically if cursor inside
 
-- unicode mode
-    - replacement
-        
 - surround
       
 - completion
@@ -39,17 +36,17 @@
         - after . :
 
 - macro
-    - unype fonts
     - unicode palette
     
-- dirtree
-    - git status
-    - searchable?
-        
 - funclist
+    
         
 - multicursor
     - travel along columns on up and down
+
+- dirtree
+    - git status
+    - searchable?
 
 - quicky
     - file icons and ext removal

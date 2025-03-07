@@ -1,0 +1,81 @@
+#  ███████   ███████   ███      █████████  ████████  ████████ 
+# ███       ███   ███  ███         ███     ███       ███   ███
+# ███████   █████████  ███         ███     ███████   ███████  
+#      ███  ███   ███  ███         ███     ███       ███   ███
+# ███████   ███   ███  ███████     ███     ████████  ███   ███
+
+use ../../../kxk ◆ kseg salter
+use ../../util   ◆ theme
+use ..           ◆ mode
+
+function salterMode
+
+    @syms: []
+
+    @: @state -> 
+    
+        @name = 'salter'
+        
+        if empty salterMode.syms
+            salterMode.syms = Object.keys salter.font
+        
+        @start()
+    
+    start: -> 
+    
+        @state.setMainCursor @state.mainCursor()
+        @state.expandCursors 'down'
+        @state.expandCursors 'down'
+        @state.expandCursors 'down'
+        @state.expandCursors 'down'
+            
+    stop: ->
+    
+        @state.setMainCursor @state.mainCursor()
+    
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
+    handleKey: key event ->
+    
+        switch key
+            'esc' ➜ ⮐ mode.stop @state @name
+            'delete'
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                @state.delete 'back' 
+                ⮐
+            
+        if @state.s.cursors.length != 5 # need to check for alignment as well?
+            mode.stop @state @name
+            ⮐  'unhandled'
+            
+        char = valid(event.char) ? event.char : key
+            
+        if salter.hasChar char
+            @state.insert salter(char char:'█' postfix:'  ')
+            ⮐
+        else
+            log ">#{char}<" event
+        
+        'unhandled'
+        
+    themeColor: colorName ->
+    
+        switch colorName
+        
+            'editor_cursor_multi' ➜ ⮐ theme.syntax['comment triple header']
+            
+        theme[colorName]
+
+export salterMode

@@ -9,7 +9,7 @@ let post = kxk.post
 import color from "../util/color.js"
 import theme from "../util/theme.js"
 
-import view from "./view.js"
+import view from "../view/view.js"
 
 
 crumbs = (function ()

@@ -75,7 +75,7 @@ ked [file]
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
-        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete','salter','uniko','vimple','unype'])
+        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete','salter','uniko','vimple','unype','brckts'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))

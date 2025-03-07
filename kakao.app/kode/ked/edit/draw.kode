@@ -9,6 +9,7 @@
 use ../../kxk ▪ kseg kstr 
 use ../util   ◆ color theme prof util
 use ../view   ◆ view
+use           ◆ mode
 
 function draw extends view
 
@@ -212,9 +213,11 @@ function draw extends view
         
         s = @state.s
         mainCursor = @state.mainCursor()
+        
+        fg = theme[@name + '_cursor_fg'] ? theme.editor_cursor_fg
 
-        fg = theme[@name + '_cursor_fg'   ] ? theme.editor_cursor_fg
-        bg = theme[@name + '_cursor_multi'] ? theme.editor_cursor_multi
+        bg = mode.themeColor @state 'editor_cursor_multi'
+
         bg = color.darken bg if not @cells.screen.t.hasFocus
         
         for cursor in s.cursors

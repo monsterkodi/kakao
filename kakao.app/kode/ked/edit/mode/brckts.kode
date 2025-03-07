@@ -1,0 +1,50 @@
+###
+    ███████    ████████    ███████  ███   ███  █████████   ███████
+    ███   ███  ███   ███  ███       ███  ███      ███     ███     
+    ███████    ███████    ███       ███████       ███     ███████ 
+    ███   ███  ███   ███  ███       ███  ███      ███          ███
+    ███████    ███   ███   ███████  ███   ███     ███     ███████ 
+###
+
+use ../../../kxk ◆ kseg
+use ..           ◆ mode
+
+function brckts
+
+    @surround: 
+    
+        '#': ['#{' '}'] # <- this has to come
+        '{': ['{' '}']  # <- before that (does it?)
+        '}': ['{' '}']
+        '[': ['[' ']']
+        ']': ['[' ']']
+        '(': ['(' ')']
+        ')': ['(' ')']
+        '<': ['<' '>']
+        '>': ['<' '>']
+        "'": ["'" "'"]
+        '"': ['"' '"']
+        '*': ['*' '*']
+        
+    @: @state ->
+        
+        @name = 'brckts'
+                        
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
+    handleKey: key event ->
+        
+        ⮐ 'unhandled' if empty brckts.surround[event.char]
+
+        if valid @state.s.selection
+            log "#{@name} surround selection #{brckts.surround[event.char]}" 
+        else # is space or empty or comma,semicolon,etc ahead
+            log "#{@name} insert closing #{brckts.surround[event.char]}" 
+    
+        'unhandled'
+        
+export brckts

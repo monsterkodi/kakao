@@ -52,6 +52,10 @@ editor = (function ()
         {
             this.complete = new complete(this)
         }
+        if (this.feats.brckts)
+        {
+            mode.start(this.state,'brckts')
+        }
         var list = _k_.list(mode.names())
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -65,7 +69,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _63_17_
+        var g, m, r, s, sl, sr, _64_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -103,7 +107,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _77_21_, _78_21_, _79_23_
+        var ret, _78_21_, _79_21_, _80_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -125,7 +129,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, _100_20_, _94_25_, _95_25_, _96_25_
+        var inside, _101_20_, _95_25_, _96_25_, _97_25_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -197,7 +201,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _165_20_, _169_21_, _174_24_
+        var _166_20_, _170_21_, _175_24_
 
         if (!this.hasFocus())
         {

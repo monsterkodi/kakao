@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk ▪ post
-use         ◆ inputchoice
+use           ◆ inputchoice
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -16,7 +16,7 @@ function finder extends inputchoice
     @: @screen ->
 
         super @screen 'finder'
-
+        
         @choices.state.syntax.setRgxs rgxs
 
     #  0000000  000   000   0000000   000   000  

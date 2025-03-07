@@ -49,7 +49,7 @@ function KED
         @menu    = new menu       @screen        
         @quicky  = new quicky     @screen 
         @finder  = new finder     @screen 
-        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete' 'salter' 'uniko' 'vimple' 'unype']
+        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete' 'salter' 'uniko' 'vimple' 'unype' 'brckts']
         @funcol  = new funcol     @screen 'funcol'  ['scroll' 'knob']
         @status  = new status     @screen @editor.state
         

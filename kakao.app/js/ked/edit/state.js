@@ -329,7 +329,7 @@ state = (function ()
 
     state.prototype["cut"] = function ()
     {
-        this.copy()
+        this.copy({deselect:false})
         if (_k_.empty(this.s.selections))
         {
             this.selectCursorLines()
@@ -337,28 +337,33 @@ state = (function ()
         return this.deleteSelection()
     }
 
-    state.prototype["copy"] = function ()
+    state.prototype["copy"] = function (opt)
     {
         var proc
 
+        opt = (opt != null ? opt : {})
         switch (os.platform())
         {
             case 'darwin':
                 proc = child_process.spawn('pbcopy')
-                return proc.stdin.end(this.textOfSelectionOrCursorLines())
-
+                proc.stdin.end(this.textOfSelectionOrCursorLines())
+                break
             case 'linux':
                 proc = child_process.spawn('xsel',['-i','--clipboard'])
                 proc.stdin.write(this.textOfSelectionOrCursorLines())
-                return proc.stdin.end()
-
+                proc.stdin.end()
+                break
             case 'win32':
                 proc = child_process.spawn(`${_k_.dir()}/../../bin/utf8clip.exe`)
                 proc.stdin.write(this.textOfSelectionOrCursorLines())
-                return proc.stdin.end()
-
+                proc.stdin.end()
+                break
         }
 
+        if (opt.deselect !== false)
+        {
+            return this.deselect()
+        }
     }
 
     state.prototype["paste"] = function ()

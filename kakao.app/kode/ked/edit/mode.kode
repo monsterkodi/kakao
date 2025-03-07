@@ -1,24 +1,25 @@
 ###
-    00     00   ███████   ███████    ████████  
-    000   000  ███   ███  ███   ███  ███       
-    000000000  ███   ███  ███   ███  ███████   
-    000 0 000  ███   ███  ███   ███  ███       
-    000   000   ███████   ███████    ████████  
+    ██     ██   ███████   ███████    ████████
+    ███   ███  ███   ███  ███   ███  ███     
+    █████████  ███   ███  ███   ███  ███████ 
+    ███ █ ███  ███   ███  ███   ███  ███     
+    ███   ███   ███████   ███████    ████████
 
     the class stores modes per editor state
     the instances handle input and text insertion
 
-    vimple   simple vi
-    salter   ascii-header 
+    brckts   insert and highlight matching surround 
+    salter   ascii-header         
     uniko    unicode drawing
     unype    unicode type writer
+    vimple   simple vi
     record   
 ###
 
-use ../../kxk ◆ kseg salter
-
-import fonts from '../util/fonts.json' with { type: "json" }
-
+use ../../kxk ◆ kseg
+use ../util   ◆ theme
+use ./mode    ◆ brckts salter unype
+ 
 function mode
 
     @active: {} # maps editor state names to active mode instances
@@ -76,36 +77,46 @@ function mode
         for m in @active[state.name]
             ⮐ m if m.name == name
 
-    # 000  000   000   0000000  00000000  00000000   000000000  
-    # 000  0000  000  000       000       000   000     000     
-    # 000  000 0 000  0000000   0000000   0000000       000     
-    # 000  000  0000       000  000       000   000     000     
-    # 000  000   000  0000000   00000000  000   000     000     
-    
+    # ███  ███   ███   ███████  ████████  ████████   █████████
+    # ███  ████  ███  ███       ███       ███   ███     ███   
+    # ███  ███ █ ███  ███████   ███████   ███████       ███   
+    # ███  ███  ████       ███  ███       ███   ███     ███   
+    # ███  ███   ███  ███████   ████████  ███   ███     ███   
+
     @insert: state text ->
         
-        # log "@mode.insert #{text}"
-        
         for mode in @active[state.name]
-            # log "active #{mode.name}"
             if mode.insert is func
-                # log "and func #{mode.name}"
                 text = mode.insert text
-        
         text
         
-    # 000   000  00000000  000   000  
-    # 000  000   000        000 000   
-    # 0000000    0000000     00000    
-    # 000  000   000          000     
-    # 000   000  00000000     000     
-    
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
     @handleKey: state key event ->
         
         for mode in @active[state.name]
             if mode.handleKey is func
                 ⮐ if mode.handleKey(key event) != 'unhandled'
         'unhandled'
+        
+    # █████████  ███   ███  ████████  ██     ██  ████████   ███████   ███████   ███       ███████   ████████ 
+    #    ███     ███   ███  ███       ███   ███  ███       ███       ███   ███  ███      ███   ███  ███   ███
+    #    ███     █████████  ███████   █████████  ███████   ███       ███   ███  ███      ███   ███  ███████  
+    #    ███     ███   ███  ███       ███ █ ███  ███       ███       ███   ███  ███      ███   ███  ███   ███
+    #    ███     ███   ███  ████████  ███   ███  ████████   ███████   ███████   ███████   ███████   ███   ███
+    
+    @themeColor: state colorName ->
+    
+        for mode in @active[state.name]
+            if mode.themeColor is func
+                ⮐  mode.themeColor colorName
+        
+        # log "themeColor #{colorName} #{theme[colorName]}"
+        theme[colorName]
             
 # ███   ███  ███  ██     ██  ████████   ███      ████████
 # ███   ███  ███  ███   ███  ███   ███  ███      ███     
@@ -113,69 +124,9 @@ function mode
 #    ███     ███  ███ █ ███  ███        ███      ███     
 #     █      ███  ███   ███  ███        ███████  ████████
 
-function vimpleMode extends mode
+function vimple extends mode
     
     @: -> super 'vimple'
-
-#  ███████   ███████   ███      █████████  ████████  ████████ 
-# ███       ███   ███  ███         ███     ███       ███   ███
-# ███████   █████████  ███         ███     ███████   ███████  
-#      ███  ███   ███  ███         ███     ███       ███   ███
-# ███████   ███   ███  ███████     ███     ████████  ███   ███
-
-function salterMode extends mode
-
-    @syms: []
-
-    @: @state -> 
-    
-        super 'salter'
-        
-        if empty salterMode.syms
-            salterMode.syms = Object.keys salter.font
-        
-        @start()
-    
-    start: -> 
-    
-        @state.setMainCursor @state.mainCursor()
-        @state.expandCursors 'down'
-        @state.expandCursors 'down'
-        @state.expandCursors 'down'
-        @state.expandCursors 'down'
-            
-    stop: ->
-    
-        @state.setMainCursor @state.mainCursor()
-    
-    handleKey: key event ->
-        
-        switch key
-            'esc' ➜ ⮐ mode.stop @state @name
-            'delete'
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                @state.delete 'back' 
-                ⮐
-            
-        if @state.s.cursors.length != 5 # need to check for alignment as well?
-            mode.stop @state @name
-            ⮐  'unhandled'
-            
-        if salter.font[key]?
-            
-            salt = salter key char:'█' postfix:'  '
-            @state.insert salt
-            ⮐
-        
-        'unhandled'
 
 # ███   ███  ███   ███  ███  ███   ███   ███████ 
 # ███   ███  ████  ███  ███  ███  ███   ███   ███
@@ -183,49 +134,20 @@ function salterMode extends mode
 # ███   ███  ███  ████  ███  ███  ███   ███   ███
 #  ███████   ███   ███  ███  ███   ███   ███████ 
 
-function unikoMode extends mode
+function uniko extends mode
 
     @: -> super 'uniko'
-    
-# ███   ███  ███   ███  ███   ███  ████████   ████████
-# ███   ███  ████  ███   ███ ███   ███   ███  ███     
-# ███   ███  ███ █ ███    █████    ████████   ███████ 
-# ███   ███  ███  ████     ███     ███        ███     
-#  ███████   ███   ███     ███     ███        ████████
-
-function unypeMode extends mode
-    
-    @map: {}
-    
-    @: -> 
-    
-        super 'unype'
         
-        if empty unypeMode.map
-            def = fonts.default.join ' '
-            for font,text of fonts
-                continue if font=='default'
-                unypeMode.map[font] = {}
-                for char,idx in kseg(text.join(' '))
-                    if def[idx] != ' '
-                        unypeMode.map[font][def[idx]] = char
-            unypeMode.map['full width'][' '] = '　'
-    
-    insert: text ->
-    
-        if repl = unypeMode.map['crazy'][text]
-            text = repl
-        text
-    
-function recordMode extends mode
+function record extends mode
 
     @: -> super 'record'
     
 mode.modes = 
-    vimple: vimpleMode
-    salter: salterMode
-    unype:  unypeMode
-    uniko:  unikoMode
-    record: recordMode
+    brckts: brckts
+    salter: salter
+    unype:  unype
+    uniko:  uniko
+    vimple: vimple
+    record: record
     
 export mode

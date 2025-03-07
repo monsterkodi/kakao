@@ -1,11 +1,15 @@
 var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
 
-var mode, recordMode, salterMode, unikoMode, unypeMode, vimpleMode
+var mode, record, uniko, vimple
 
 import kseg from "../../kxk/kseg.js"
-import salter from "../../kxk/salter.js"
 
-import fonts from '../util/fonts.json' with { type : "json" }
+import theme from "../util/theme.js"
+
+import brckts from "./mode/brckts.js"
+import salter from "./mode/salter.js"
+import unype from "./mode/unype.js"
+
 
 mode = (function ()
 {
@@ -23,14 +27,14 @@ mode = (function ()
 
     mode["start"] = function (state, name)
     {
-        var _43_28_
+        var _44_28_
 
         if (this.isActive(state,name))
         {
             return
         }
         console.log(`mode.start ${name}`)
-        this.active[state.name] = ((_43_28_=this.active[state.name]) != null ? _43_28_ : [])
+        this.active[state.name] = ((_44_28_=this.active[state.name]) != null ? _44_28_ : [])
         this.active[state.name].push(new mode.modes[name](state))
         console.log("mode.start",this.active[state.name].map(function (m)
         {
@@ -122,167 +126,60 @@ mode = (function ()
         return 'unhandled'
     }
 
+    mode["themeColor"] = function (state, colorName)
+    {
+        var mode
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            mode = list[_a_]
+            if (_k_.isFunc(mode.themeColor))
+            {
+                return mode.themeColor(colorName)
+            }
+        }
+        return theme[colorName]
+    }
+
     return mode
 })()
 
 
-vimpleMode = (function ()
+vimple = (function ()
 {
-    _k_.extend(vimpleMode, mode)
-    function vimpleMode ()
+    _k_.extend(vimple, mode)
+    function vimple ()
     {
-        vimpleMode.__super__.constructor.call(this,'vimple')
+        vimple.__super__.constructor.call(this,'vimple')
     }
 
-    return vimpleMode
+    return vimple
 })()
 
 
-salterMode = (function ()
+uniko = (function ()
 {
-    _k_.extend(salterMode, mode)
-    salterMode["syms"] = []
-    function salterMode (state)
+    _k_.extend(uniko, mode)
+    function uniko ()
     {
-        this.state = state
-    
-        salterMode.__super__.constructor.call(this,'salter')
-    
-        if (_k_.empty(salterMode.syms))
-        {
-            salterMode.syms = Object.keys(salter.font)
-        }
-        this.start()
+        uniko.__super__.constructor.call(this,'uniko')
     }
 
-    salterMode.prototype["start"] = function ()
-    {
-        this.state.setMainCursor(this.state.mainCursor())
-        this.state.expandCursors('down')
-        this.state.expandCursors('down')
-        this.state.expandCursors('down')
-        return this.state.expandCursors('down')
-    }
-
-    salterMode.prototype["stop"] = function ()
-    {
-        return this.state.setMainCursor(this.state.mainCursor())
-    }
-
-    salterMode.prototype["handleKey"] = function (key, event)
-    {
-        var salt
-
-        switch (key)
-        {
-            case 'esc':
-                return mode.stop(this.state,this.name)
-
-            case 'delete':
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                this.state.delete('back')
-                return
-
-        }
-
-        if (this.state.s.cursors.length !== 5)
-        {
-            mode.stop(this.state,this.name)
-            return 'unhandled'
-        }
-        if ((salter.font[key] != null))
-        {
-            salt = salter(key,{char:'█',postfix:'  '})
-            this.state.insert(salt)
-            return
-        }
-        return 'unhandled'
-    }
-
-    return salterMode
+    return uniko
 })()
 
 
-unikoMode = (function ()
+record = (function ()
 {
-    _k_.extend(unikoMode, mode)
-    function unikoMode ()
+    _k_.extend(record, mode)
+    function record ()
     {
-        unikoMode.__super__.constructor.call(this,'uniko')
+        record.__super__.constructor.call(this,'record')
     }
 
-    return unikoMode
+    return record
 })()
 
-
-unypeMode = (function ()
-{
-    _k_.extend(unypeMode, mode)
-    unypeMode["map"] = {}
-    function unypeMode ()
-    {
-        unypeMode.__super__.constructor.call(this,'unype')
-    
-        var char, def, font, idx, text
-
-        if (_k_.empty(unypeMode.map))
-        {
-            def = fonts.default.join(' ')
-            for (font in fonts)
-            {
-                text = fonts[font]
-                if (font === 'default')
-                {
-                    continue
-                }
-                unypeMode.map[font] = {}
-                var list = _k_.list(kseg(text.join(' ')))
-                for (idx = 0; idx < list.length; idx++)
-                {
-                    char = list[idx]
-                    if (def[idx] !== ' ')
-                    {
-                        unypeMode.map[font][def[idx]] = char
-                    }
-                }
-            }
-            unypeMode.map['full width'][' '] = '　'
-        }
-    }
-
-    unypeMode.prototype["insert"] = function (text)
-    {
-        var repl
-
-        if (repl = unypeMode.map['crazy'][text])
-        {
-            text = repl
-        }
-        return text
-    }
-
-    return unypeMode
-})()
-
-
-recordMode = (function ()
-{
-    _k_.extend(recordMode, mode)
-    function recordMode ()
-    {
-        recordMode.__super__.constructor.call(this,'record')
-    }
-
-    return recordMode
-})()
-
-mode.modes = {vimple:vimpleMode,salter:salterMode,unype:unypeMode,uniko:unikoMode,record:recordMode}
+mode.modes = {brckts:brckts,salter:salter,unype:unype,uniko:uniko,vimple:vimple,record:record}
 export default mode;

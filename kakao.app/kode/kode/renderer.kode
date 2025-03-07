@@ -350,26 +350,29 @@ class Renderer
                 
                 mod = m.text ? m
     
-                if @file # is this actually doing something meaningful?
-    
+                # log "▸▸use #{noon(m)} @file? #{@file}"
+                
+                # if @file # is this actually doing something meaningful?
+#     
+                    # if mod[0] == '.'
+                        # kodeFile = slash.path slash.dir(@file), mod + '.kode'
+                        # jsFile = slash.path slash.dir(@file), mod + '.js'
+                    # else
+                        # kodeFile = slash.path slash.dir(@file), name + '.kode'
+                        # jsFile = slash.path slash.dir(@file), name + '.js'
+#                                                 
+                    # if mod[0] == '.'
+                        # relFile = slash.relative jsFile, slash.dir(@file)
+                        # if relFile[0] != '.'
+                            # relFile = './' + relFile
+                        # s += " from \"#{relFile}\"\n"
+                    # else
+                        # s += " from \"#{mod}\"\n"
+#                     
+                # else
+                if true
                     if mod[0] == '.'
-                        kodeFile = slash.path slash.dir(@file), mod + '.kode'
-                        jsFile = slash.path slash.dir(@file), mod + '.js'
-                    else
-                        kodeFile = slash.path slash.dir(@file), name + '.kode'
-                        jsFile = slash.path slash.dir(@file), name + '.js'
-                                                
-                    if mod[0] == '.'
-                        relFile = slash.relative jsFile, slash.dir(@file)
-                        if relFile[0] != '.'
-                            relFile = './' + relFile
-                        s += " from \"#{relFile}\"\n"
-                    else
-                        s += " from \"#{mod}\"\n"
-                    
-                else
-                    if mod[0] == '.'
-                        s += " from \"#{slash.swapExt mod, 'js'}\"\n"
+                        s += " from \"#{slash.swapExt mod 'js'}\"\n"
                     else
                         s += " from \"#{mod}\"\n"
         s
