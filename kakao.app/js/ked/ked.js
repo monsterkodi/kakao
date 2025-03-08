@@ -20,14 +20,19 @@ import julia from "./util/julia.js"
 import frecent from "./util/frecent.js"
 import watcher from "./util/watcher.js"
 
-import view from "./view/view.js"
-import screen from "./view/screen.js"
-import status from "./view/status.js"
-import quicky from "./view/quicky.js"
-import menu from "./view/menu.js"
-import finder from "./view/finder.js"
-import funcol from "./view/funcol.js"
-import fileeditor from "./view/fileeditor.js"
+import view from "./view/base/view.js"
+
+import quicky from "./view/menu/quicky.js"
+import menu from "./view/menu/menu.js"
+import finder from "./view/menu/finder.js"
+
+import status from "./view/status/status.js"
+
+import screen from "./view/screen/screen.js"
+
+import funcol from "./view/funcol/funcol.js"
+
+import fileeditor from "./view/editor/fileeditor.js"
 
 import belt from "./edit/tool/belt.js"
 
@@ -136,7 +141,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _131_10_
+        var _136_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -164,7 +169,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _159_22_
+        var _164_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -208,7 +213,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _212_22_
+        var segls, start, text, _217_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -431,7 +436,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _371_22_
+        var _376_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

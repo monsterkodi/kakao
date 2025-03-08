@@ -6,10 +6,11 @@
 00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../kxk ▪ post
-use ../view   ◆ scroll mapview view
-use ./tool    ◆ belt
-use           ◆ state draw complete mode
+use ../../kxk      ▪ post
+use ../view/base   ◆ scroll view
+use ../view/editor ◆ mapview 
+use ./tool         ◆ belt
+use                ◆ state draw complete mode
 
 function editor extends draw
 

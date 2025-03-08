@@ -1,0 +1,176 @@
+
+###
+    00     00   0000000   00000000   000   000  000  00000000  000   000  
+    000   000  000   000  000   000  000   000  000  000       000 0 000  
+    000000000  000000000  00000000    000 000   000  0000000   000000000  
+    000 0 000  000   000  000           000     000  000       000   000  
+    000   000  000   000  000            0      000  00000000  00     00  
+###
+
+use ../../../kxk ▪ kstr post
+use ../../util   ◆ prof syntax color theme
+use ../base      ◆ view
+
+{floor, pow} = Math
+
+function mapview extends view
+
+    @: screen @state ->
+        
+        super screen @state.owner() + '.mapview'
+        
+        @imgId  = kstr.hash(@state.name) & ~0xffff
+        @rowOffset = 0
+        @images = []
+        
+        # log 'mapview' @state.name @imgId.toString(2)
+        
+        @pixelsPerRow = 4
+        @pixelsPerCol = 2
+            
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: doShow=true => 
+        
+        ⮐ @hide() if doShow == false
+        @cells.cols = 10
+
+    hide: => 
+        
+        @clearImages()
+        @cells.cols = 0
+        
+    hidden:  -> @cells.cols <= 0
+    visible: -> @cells.cols > 0
+    
+    reload: -> @createImages(); @drawImages()
+    
+    clearImages: =>
+        
+        ⮐ if empty @images
+        # prof.start "clearImages #{@images.length}"
+        # @cells.screen.t.deleteImagesInRange @images[0] @images[-1]
+        for id in @images
+            @cells.screen.t.deleteImage id
+        # prof.end "clearImages #{@images.length}"
+        @images = []
+                
+    layout: x y w h -> 
+    
+        resized = x != @cells.x or y != @cells.y or w != @cells.cols or h != @cells.rows
+        super x y w h
+        # log "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{r3 @hidden()}"
+        ⮐ if @hidden()
+        if @redraw or resized
+            @createImages() if @redraw
+            delete @redraw
+            # log "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{@redraw} #{resized}"
+            # setImmediate @drawImages
+            @drawImages()
+                
+    getSegls:  => @segls
+    getSyntax: => @syntax
+    setSyntaxSegls: ext @segls => 
+        
+        @syntax = new syntax 
+        @syntax.setExt ext 
+        @syntax.setSegls @segls
+        
+        # log "mapview.setSegls #{y6 @name}"
+        @redraw = true        
+    
+    # 000  00     00   0000000    0000000   00000000   0000000  
+    # 000  000   000  000   000  000        000       000       
+    # 000  000000000  000000000  000  0000  0000000   0000000   
+    # 000  000 0 000  000   000  000   000  000            000  
+    # 000  000   000  000   000   0000000   00000000  0000000   
+    
+    createImages: =>
+        
+        t = @cells.screen.t
+        ⮐ if empty t.cellsz
+        
+        @clearImages()
+
+        # prof.start @state.name+'.map'
+        
+        w = @cells.cols * t.cellsz[0]
+        bytes = w*3
+        
+        # log  "mapview.createImages #{b7 @name} #{@cells.cols} #{@cells.rows} #{bytes}"  
+        ⮐ if bytes <= 0
+        
+        lines  = @getSegls()
+        syntax = @getSyntax()
+        
+        data = Buffer.alloc bytes
+        
+        dataForLine = line =>
+            
+            data.fill 0
+            
+            for x in 0...line.length
+                
+                break if x*@pixelsPerCol > w
+                                    
+                ch = line[x]
+                
+                if valid ch and ch != ' '
+                 
+                    clss = syntax.getClass x y
+                     
+                    if 'header' in clss
+                        if 'triple' in clss
+                            rgb = [27 207 14]
+                        else
+                            rgb = [9 140 0]
+                    else
+                        f = 0.7
+                        rgb = color.rgb syntax.getColor(x y)
+                        rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
+                     
+                    [r g b] = rgb
+                     
+                    for xr in 0..@pixelsPerCol
+                        data[(x*@pixelsPerCol+xr)*3+0] = r
+                        data[(x*@pixelsPerCol+xr)*3+1] = g
+                        data[(x*@pixelsPerCol+xr)*3+2] = b
+                    
+        for line,y in lines
+            
+            dataForLine line
+            @images.push @imgId+y
+            t.sendImageData data @imgId+y w 1
+            break if y > (@cells.rows-@rowOffset) * t.cellsz[1] / @pixelsPerRow
+                
+        # prof.end @state.name+'.map'
+            
+        # log "mapview.createImages #{b7 @name} #{b6 @images.length} #{lines.length} #{@cells.rows}-#{@rowOffset}*#{t.cellsz[1]}/#{y} = #{(@cells.rows-@rowOffset) * t.cellsz[1] / @pixelsPerRow} #{y}"  
+                        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    drawImages: =>
+        
+        t = @cells.screen.t
+        
+        ⮐ if empty t.pixels or @hidden()
+        
+        # log "mapview.drawImages #{r5 @name} #{b8 @images.length}"  
+        for id,y in @images
+            # t.placeImage id @cells.x @cells.y 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
+            t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
+        @
+        
+    draw: ->
+                        
+        @cells.fill_rect 0 0 @cells.cols-1 @cells.rows-1 ' ' null '#000'
+        
+export mapview

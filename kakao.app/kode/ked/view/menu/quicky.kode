@@ -1,0 +1,436 @@
+###
+ 0000000   000   000  000   0000000  000   000  000   000
+000   000  000   000  000  000       000  000    000 000
+000 00 00  000   000  000  000       0000000      00000
+000 0000   000   000  000  000       000  000      000
+ 00000 00   0000000   000   0000000  000   000     000
+###
+
+use ../../../kxk    ▪ kstr slash post kutil noon
+use ../../../kxk    ◆ nfs
+use ../../util      ◆ prjcts walker theme icons
+use ../../edit/tool ◆ belt
+use ../../edit      ◆ editor 
+use ../base         ◆ crumbs 
+use                 ◆ inputchoice fscol
+
+import rgxs from './quicky.json' with { type: "json" }
+
+function quicky extends inputchoice
+
+    @: @screen ->
+
+        super @screen 'quicky' ['mapview' 'scroll']
+
+        @crumbs = new crumbs  @screen 'quicky_crumbs'
+        @fscol  = new fscol   @screen 'quicky_fscol'
+
+        @crumbs.padLast = true
+
+        @choices.state.syntax.setRgxs rgxs
+        @choices.on 'select' @preview
+        
+        @crumbs.on 'action' @onCrumbsAction
+        @fscol.on  'action' @onFsColAction
+
+        post.on 'quicky.dir'   @gotoDir
+        post.on 'quicky.files' @showFiles
+
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
+    layout: =>
+        
+        scx = int @screen.cols/2
+        scy = int @screen.rows/2
+        
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
+        
+        hs = int @screen.rows/2
+        y  = int scy - hs/2 - ih
+        
+        cr = @crumbs.visible() ? 1 : 0
+        ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
+
+        w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
+        x  = int scx-w/2
+        
+        h  = ch + ih + cr + 2
+        
+        fw = @fscol.visible() ? int((w-3)/2) : 0
+        fh = @fscol.visible() ? ch : 0
+        cw = w-3-fw
+        
+        @input.layout    x+2      y+1        w-4   iz
+        @crumbs.layout   x+2      y+1+ih     w-4   cr
+        @choices.layout  x+1      y+1+ih+cr  cw    ch
+        @fscol.layout    x+2+cw   y+1+ih+cr  fw    fh
+        @cells.layout    x        y          w     h
+
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
+    draw: ->
+
+        ⮐ if @hidden()
+         
+        @layout()
+        @drawFrame()
+        @crumbs.draw()
+        @fscol.draw()
+        @drawChoices()
+        @drawAdditions()
+        
+    drawAdditions: ->
+        
+        if @fscol.visible()
+            
+            fg = theme.quicky_frame_fg
+            bg = theme.quicky_frame_bg
+            
+            x = @choices.cells.cols+2
+            @cells.fill_col x 2 @cells.rows-2 '│' fg bg
+            @cells.set      x   @cells.rows-1 '┴' fg bg
+
+            x = @choices.cells.cols-1
+            y = @choices.currentIndex()-@choices.state.s.view[1]
+            @choices.cells.fill_row     y @choices.current().tilde.length x-1 ' ' bg @choices.color.current
+            @choices.cells.set          x y '' @choices.color.current bg 
+            @choices.cells.set_unsafe   x+1 y '┤' fg bg if 0 <= y < @choices.cells.rows
+        
+    # 000000000   0000000    0000000    0000000   000      00000000  
+    #    000     000   000  000        000        000      000       
+    #    000     000   000  000  0000  000  0000  000      0000000   
+    #    000     000   000  000   000  000   000  000      000       
+    #    000      0000000    0000000    0000000   0000000  00000000  
+    
+    toggle: currentFile -> if @hidden() then @showProjectFiles(currentFile) else @hide()
+            
+    #  0000000    0000000   000000000   0000000   0000000    000  00000000   
+    # 000        000   000     000     000   000  000   000  000  000   000  
+    # 000  0000  000   000     000     000   000  000   000  000  0000000    
+    # 000   000  000   000     000     000   000  000   000  000  000   000  
+    #  0000000    0000000      000      0000000   0000000    000  000   000  
+    
+    gotoDir: dir select ○=>
+        
+        dir = process.cwd() if empty dir
+        dir = slash.untilde dir
+        
+        try
+            items =○ nfs.list dir recursive:false
+        catch err
+            log 'list error' err
+            ⮐ 
+
+        @currentDir = dir
+        @crumbs.show @currentDir
+            
+        weight = item =>
+
+            p = slash.parse item.path
+
+            w = 0
+            ⮐ w if item.tilde == icons.dir + ' ..'
+            w += 10000 if item.type == 'file'
+            w += 1000  if item.tilde.startsWith icons.dir + ' .'
+            w += 1     if slash.ext(item.tilde) in ['js' 'json']
+            w += kstr.weight(p.file)
+            w
+        
+        for item in items
+            item.tilde = slash.relative item.path @currentDir
+            item.tilde = ((item.type == 'dir') ? (icons.dir + ' ') : '  ') + item.tilde
+
+        items.sort (a b) -> weight(a) - weight(b)
+        
+        parent = slash.dir @currentDir
+
+        items.unshift
+            type: 'dir'
+            file: slash.name(parent)
+            path: parent
+            tilde: parent ? (icons.dir + ' ..') : ''
+            
+        select ?= items[1].path
+               
+        @choices.mapscr.rowOffset = 1
+        @choices.frontRoundOffset = 2
+        @showPathItems items select
+    
+    #  0000000  000   000   0000000   000   000        00000000  000  000      00000000   0000000  
+    # 000       000   000  000   000  000 0 000        000       000  000      000       000       
+    # 0000000   000000000  000   000  000000000        000000    000  000      0000000   0000000   
+    #      000  000   000  000   000  000   000        000       000  000      000            000  
+    # 0000000   000   000   0000000   00     00        000       000  0000000  00000000  0000000   
+    
+    showFiles: files =>
+                                                               #  pad
+        items = files.map (path) -> path:path type:'file' tilde:' ' + slash.file(path) 
+        @crumbs.hide()
+        @choices.mapscr.rowOffset = 0
+        @choices.frontRoundOffset = 0
+        @showPathItems items
+        
+    # 00000000   00000000    0000000         000  00000000   0000000  000000000  00000000  000  000      00000000   0000000  
+    # 000   000  000   000  000   000        000  000       000          000     000       000  000      000       000       
+    # 00000000   0000000    000   000        000  0000000   000          000     000000    000  000      0000000   0000000   
+    # 000        000   000  000   000  000   000  000       000          000     000       000  000      000            000  
+    # 000        000   000   0000000    0000000   00000000   0000000     000     000       000  0000000  00000000  0000000   
+    
+    showProjectFiles: @currentFile ->
+        
+        items = prjcts.files @currentFile
+        
+        items = items.concat ked_session.recentFiles()
+        
+        ⮐ @gotoDir process.cwd() if empty items
+        
+        items = kutil.uniq items
+        
+        @currentDir = slash.dir @currentFile
+        
+        @currentDir = process.cwd() if empty @currentDir
+        
+        @crumbs.hide()
+        @choices.mapscr.rowOffset = 0
+        
+        weight = item =>
+
+            t = item.tilde
+            p = slash.parse t
+
+            w = 0
+            w += (t.split('../').length-1) * 1024 * 4
+            for s,i in slash.split(p.dir)
+                w += kstr.weight(s) / ((i+1)*(i+1))
+            w
+
+        items = items.map (path) => 
+        
+            rel = slash.relative path @currentDir
+            if slash.isAbsolute rel
+                prs = slash.parse rel
+                rel = slash.join slash.split(prs.dir)[-2..] prs.file
+            
+            type:'file' path:path tilde:' ' + rel
+            
+        items.sort (a b) -> weight(a) - weight(b)            
+
+        @choices.mapscr.rowOffset = 0
+        @choices.frontRoundOffset = 0
+        @showPathItems items
+        
+    # 00000000    0000000   000000000  000   000        000  000000000  00000000  00     00   0000000  
+    # 000   000  000   000     000     000   000        000     000     000       000   000  000       
+    # 00000000   000000000     000     000000000        000     000     0000000   000000000  0000000   
+    # 000        000   000     000     000   000        000     000     000       000 0 000       000  
+    # 000        000   000     000     000   000        000     000     00000000  000   000  0000000   
+    
+    showPathItems: items select ->
+
+        @input.set ''
+        
+        selectIndex = 0
+        
+        if select
+            select = slash.untilde select
+            for item,idx in items
+                if slash.samePath item.path select
+                    selectIndex = idx
+                    break
+                    
+        @preview items[selectIndex]
+        
+        @choices.set items 'tilde'
+        
+        @choices.state.selectLine selectIndex
+        @choices.state.setMainCursor 0 selectIndex
+        @choices.state.setView [0 0]
+        
+        @show()
+        @choices.grabFocus()
+        
+    # 00000000  000  000      00000000       0000000   00000000       0000000    000  00000000   
+    # 000       000  000      000           000   000  000   000      000   000  000  000   000  
+    # 000000    000  000      0000000       000   000  0000000        000   000  000  0000000    
+    # 000       000  000      000           000   000  000   000      000   000  000  000   000  
+    # 000       000  0000000  00000000       0000000   000   000      0000000    000  000   000  
+    
+    gotoDirOrOpenFile: path ○=>
+        
+        isDir =○ nfs.dirExists path
+        
+        if isDir
+            ○ @gotoDir path
+        else
+            isFile =○ nfs.fileExists path
+            if isFile
+                @openFileInEditor path
+                            
+    #  0000000   00000000   00000000  000   000     000  000   000     00000000  0000000    000  000000000   0000000   00000000   
+    # 000   000  000   000  000       0000  000     000  0000  000     000       000   000  000     000     000   000  000   000  
+    # 000   000  00000000   0000000   000 0 000     000  000 0 000     0000000   000   000  000     000     000   000  0000000    
+    # 000   000  000        000       000  0000     000  000  0000     000       000   000  000     000     000   000  000   000  
+    #  0000000   000        00000000  000   000     000  000   000     00000000  0000000    000     000      0000000   000   000  
+    
+    openFileInEditor: file =>
+        
+        @hide()
+        post.emit 'quicky' file
+        post.emit 'focus' 'editor'
+        redraw:true
+                             
+    #  0000000  00000000  000      00000000   0000000  000000000
+    # 000       000       000      000       000          000
+    # 0000000   0000000   000      0000000   000          000
+    #      000  000       000      000       000          000
+    # 0000000   00000000  0000000  00000000   0000000     000
+
+    moveSelection: dir ->
+        
+        switch dir
+            'down' ➜ ⮐ if not @choices.hasNext()
+            'up'   ➜ ⮐ if not @choices.hasPrev()
+        
+        @hideMap()
+
+        @choices.moveSelection dir
+        
+    # 00000000   00000000   00000000  000   000  000  00000000  000   000  
+    # 000   000  000   000  000       000   000  000  000       000 0 000  
+    # 00000000   0000000    0000000    000 000   000  0000000   000000000  
+    # 000        000   000  000          000     000  000       000   000  
+    # 000        000   000  00000000      0      000  00000000  00     00  
+    
+    choicesFiltered: ->
+        
+        @preview @choices.current()
+    
+    preview: item ○=>
+        
+        ⮐ @hideMap() if empty item?.path
+        
+        if item.type == 'file' and slash.ext(item.path) in walker.sourceFileExtensions
+            text =○ nfs.read item.path
+            segls = belt.seglsForText text
+            @choices.mapscr.show()
+            @choices.mapscr.setSyntaxSegls slash.ext(item.path) segls
+        else
+            @hideMap()
+            
+        if item.type == 'dir' and not item.tilde.endsWith '..'
+            @fscol.show item.path
+            @choices.hoverForSubmenu = true
+        else
+            @fscol.hide()
+            @choices.hoverForSubmenu = false
+            
+        post.emit 'redraw'
+            
+    hideMap: -> @choices.mapscr.hide()        
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+
+        ⮐ if @hidden()
+        ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
+        ret = @fscol.onMouse event  ; ⮐ ret if ret?.redraw
+        ret = super event           ; ⮐ ret if ret?.redraw
+        @hover
+
+    onWheel: event =>
+        
+        ⮐ if @hidden()
+        ret = @fscol.onWheel event ; ⮐ ret if ret?.redraw
+        super event
+                
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    applyChoice: choice ->
+        
+        switch @input.current()
+            
+            '/'  ➜ ⮐ @gotoDir '/'
+            '~'  ➜ ⮐ @gotoDir '~'
+            '.'  ➜ ⮐ @gotoDir @currentDir
+            '..' ➜ ⮐ @gotoDir slash.dir(@currentDir)
+            
+        if empty choice and valid @input.current()
+            @gotoDirOrOpenFile @input.current()
+            ⮐ redraw:true
+            
+        if empty choice      ➜ ⮐ redraw:false 
+        if empty choice.path ➜ ⮐ redraw:false 
+
+        @gotoDirOrOpenFile choice.path 
+        redraw:true
+        
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    onCrumbsAction: action path =>
+
+        switch action
+            
+            'click' ➜ ⮐ @applyChoice tilde:path path:slash.untilde(path)
+    
+    onFsColAction: action choice =>
+        
+        switch action
+            
+            'click' ➜ ⮐ @applyChoice choice
+                
+    onInputAction: action text =>
+        
+        super action text
+    
+    onChoicesAction: action choice =>
+            
+        switch action
+            
+            'right' 
+                
+                if choice.path
+                    if choice.tilde == ' ..'
+                        ⮐ @moveSelection 'down'
+                    if choice.type == 'file'
+                        ⮐ post.emit 'quicky' choice.path
+                    else
+                        @hideMap()
+                        ⮐ @gotoDirOrOpenFile choice.link ? choice.path
+                        
+            'left' 'delete'
+                
+                if choice.path
+                    upDir = slash.dir @currentDir
+                    ⮐ if empty upDir
+                    @hideMap()
+                    ⮐ @gotoDir upDir @currentDir
+            'space'            
+                
+                if choice.path and choice.type == 'file'
+                    ⮐ post.emit 'quicky' choice.path
+                    
+        super action choice
+
+export quicky

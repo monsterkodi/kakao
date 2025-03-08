@@ -1,0 +1,472 @@
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+
+var dirtree
+
+import kxk from "../../../kxk.js"
+let kutil = kxk.kutil
+let kseg = kxk.kseg
+let kstr = kxk.kstr
+let slash = kxk.slash
+let post = kxk.post
+let noon = kxk.noon
+
+import nfs from "../../../kxk/nfs.js"
+
+import theme from "../../util/theme.js"
+import prjcts from "../../util/prjcts.js"
+import icons from "../../util/icons.js"
+
+import crumbs from "../base/crumbs.js"
+
+import choices from "../menu/choices.js"
+
+import rgxs from '../menu/quicky.json' with { type : "json" }
+
+dirtree = (function ()
+{
+    _k_.extend(dirtree, choices)
+    function dirtree (screen, name, features)
+    {
+        this["dirItems"] = this["dirItems"].bind(this)
+        this["setState"] = this["setState"].bind(this)
+        this["onSessionMerge"] = this["onSessionMerge"].bind(this)
+        this["setRoot"] = this["setRoot"].bind(this)
+        dirtree.__super__.constructor.call(this,screen,name,features)
+        this.state.syntax.setRgxs(rgxs)
+        post.on('session.merge',this.onSessionMerge)
+        this.frontRoundOffset = 0
+    }
+
+    dirtree.prototype["setRoot"] = async function (path, opt)
+    {
+        var dir, item, items, select
+
+        opt = (opt != null ? opt : {})
+        dir = slash.untilde(path)
+        items = await this.dirItems(dir,'dirtree.setRoot')
+        this.currentRoot = dir
+        if (_k_.empty(items))
+        {
+            return
+        }
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            item.tilde = ' ' + this.symbolName(item)
+        }
+        items.sort((function (a, b)
+        {
+            return this.weight(a) - this.weight(b)
+        }).bind(this))
+        select = (select != null ? select : items[_k_.min(1,items.length - 1)].path)
+        this.set(items)
+        this.restoreSessionState()
+        if (opt.redraw)
+        {
+            return post.emit('redraw')
+        }
+    }
+
+    dirtree.prototype["restoreSessionState"] = function ()
+    {
+        var key, state, value
+
+        state = ked_session.get(this.name,{})
+        if (_k_.empty(state.open))
+        {
+            return
+        }
+        for (key in state.open)
+        {
+            value = state.open[key]
+            if (key.startsWith(this.currentRoot))
+            {
+                this.openDir(this.itemForPath(key),{redraw:true})
+            }
+        }
+    }
+
+    dirtree.prototype["onSessionMerge"] = function (recent)
+    {
+        return this.setState(recent[this.name])
+    }
+
+    dirtree.prototype["setState"] = function (state)
+    {
+        if (_k_.empty(state))
+        {
+            return
+        }
+        if (!(_k_.isObj(state)))
+        {
+            return
+        }
+        console.log("dirtree.setState",state)
+        return ked_session.set(this.name,state)
+    }
+
+    dirtree.prototype["emitAction"] = function (action, arg, event)
+    {
+        var c
+
+        c = arg
+        if (action === 'hover')
+        {
+            this.grabFocus()
+            if (!_k_.empty(event.mods) && c.type === 'file')
+            {
+                post.emit('quicky',c.path)
+            }
+            return
+        }
+        switch (c.type)
+        {
+            case 'dir':
+                switch (action)
+                {
+                    case 'click':
+                    case 'space':
+                        if (action === 'click' && event.mods)
+                        {
+                            return post.emit('funcol.root',c.path)
+                        }
+                        if (!c.open)
+                        {
+                            this.openDir(c,{redraw:true})
+                        }
+                        else
+                        {
+                            this.closeDir(c)
+                        }
+                        return
+
+                    case 'right':
+                        if (!c.open)
+                        {
+                            this.openDir(c,{redraw:true})
+                        }
+                        else
+                        {
+                            this.selectNextKeepOffset()
+                        }
+                        return
+
+                    case 'left':
+                        if (c.open)
+                        {
+                            this.closeDir(c,{redraw:true})
+                        }
+                        else
+                        {
+                            this.selectPrevKeepOffset()
+                        }
+                        return
+
+                    case 'delete':
+                    case 'esc':
+                        if (!c.open)
+                        {
+                            this.selectOpenSiblingAboveOrParent()
+                        }
+                        if (c.open)
+                        {
+                            this.closeDir(c,{redraw:true})
+                        }
+                        return
+
+                    case 'doubleclick':
+                    case 'return':
+                        return post.emit('funcol.root',c.path)
+
+                }
+
+                break
+            case 'file':
+                switch (action)
+                {
+                    case 'left':
+                        return this.selectPrevKeepOffset()
+
+                    case 'right':
+                        return this.selectNextKeepOffset()
+
+                    case 'delete':
+                    case 'esc':
+                        return this.selectParent()
+
+                    case 'space':
+                        return post.emit('quicky',c.path)
+
+                    case 'click':
+                    case 'return':
+                        return post.emit('file.open',c.path)
+
+                }
+
+                break
+        }
+
+        return dirtree.__super__.emitAction.call(this,action,arg,event)
+    }
+
+    dirtree.prototype["openDir"] = async function (dirItem, opt)
+    {
+        var depth, index, item, items, _187_31_
+
+        if (_k_.empty(dirItem))
+        {
+            return
+        }
+        if (dirItem.open)
+        {
+            return
+        }
+        opt = (opt != null ? opt : {})
+        dirItem.open = true
+        items = await this.dirItems(dirItem.path,'dirtree.openDir')
+        dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
+        depth = (((_187_31_=dirItem.depth) != null ? _187_31_ : 0)) + 1
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            item.depth = depth
+            item.tilde = _k_.lpad(1 + depth * 2) + this.symbolName(item)
+        }
+        items.sort((function (a, b)
+        {
+            return this.weight(a) - this.weight(b)
+        }).bind(this))
+        index = this.items.indexOf(dirItem)
+        kutil.insert(this.items,index + 1,items)
+        this.set(this.items,index)
+        ked_session.set(`${this.name}▸open▸${dirItem.path}`,'✔')
+        if (opt.redraw)
+        {
+            return post.emit('redraw')
+        }
+    }
+
+    dirtree.prototype["closeDir"] = function (dirItem, opt)
+    {
+        var index, numChildren
+
+        if (_k_.empty(dirItem))
+        {
+            return
+        }
+        opt = (opt != null ? opt : {})
+        dirItem.open = false
+        dirItem.tilde = dirItem.tilde.replace(icons.dir_open,icons.dir_close)
+        index = this.items.indexOf(dirItem)
+        numChildren = 0
+        while (this.items[index + numChildren + 1].path.startsWith(dirItem.path))
+        {
+            numChildren += 1
+        }
+        kutil.replace(this.items,index + 1,numChildren,[])
+        this.set(this.items,index)
+        ked_session.del(`${this.name}▸open▸${dirItem.path}`)
+        if (opt.redraw)
+        {
+            return post.emit('redraw')
+        }
+    }
+
+    dirtree.prototype["dirItems"] = async function (dir, info)
+    {
+        var items
+
+        try
+        {
+            return items = await nfs.list(dir,{recursive:false})
+        }
+        catch (err)
+        {
+            console.error(`list error -- ${info}`,err)
+            return
+        }
+    }
+
+    dirtree.prototype["set"] = function (items, index = 0)
+    {
+        var oldTop
+
+        oldTop = this.state.s.view[1]
+        dirtree.__super__.set.call(this,items,'tilde')
+        this.state.setView([0,oldTop])
+        this.state.selectLine(index)
+        return this.state.setMainCursor(0,index)
+    }
+
+    dirtree.prototype["selectPrevKeepOffset"] = function ()
+    {
+        this.selectPrev()
+        return this.state.setView([0,this.state.s.view[1] - 1])
+    }
+
+    dirtree.prototype["selectNextKeepOffset"] = function ()
+    {
+        this.selectNext()
+        return this.state.setView([0,this.state.s.view[1] + 1])
+    }
+
+    dirtree.prototype["selectOpenSiblingAboveOrParent"] = function ()
+    {
+        var index
+
+        index = this.fuzzied.indexOf(this.current())
+        index -= 1
+        while (index > 0 && this.fuzzied[index].depth >= this.current().depth && !this.fuzzied[index].open)
+        {
+            index -= 1
+        }
+        this.state.selectLine(index)
+        return this.state.setMainCursor(0,index)
+    }
+
+    dirtree.prototype["selectParent"] = function ()
+    {
+        var index
+
+        index = this.fuzzied.indexOf(this.current())
+        index -= 1
+        while (index > 0 && this.fuzzied[index].depth >= this.current().depth)
+        {
+            index -= 1
+        }
+        this.state.selectLine(index)
+        return this.state.setMainCursor(0,index)
+    }
+
+    dirtree.prototype["drawSelections"] = function ()
+    {
+        var bg, current, li, x, xs, y
+
+        current = this.color.current
+        this.color.current = (this.hasFocus() ? current : theme.dirtree_current_blur)
+        if (li = this.indexOfOpenFile())
+        {
+            bg = theme.gutter
+            y = li - this.state.s.view[1]
+            if (y < this.cells.rows && li < this.state.s.lines.length)
+            {
+                xs = kseg.headCount(this.state.s.lines[li],' ')
+                this.cells.set(xs - 1 - this.state.s.view[0],y,'',bg,this.color.bg)
+                for (var _a_ = x = xs, _b_ = this.cells.cols; (_a_ <= _b_ ? x < this.cells.cols : x > this.cells.cols); (_a_ <= _b_ ? ++x : --x))
+                {
+                    this.cells.set_bg(x - this.state.s.view[0],y,bg)
+                }
+            }
+        }
+        dirtree.__super__.drawSelections.call(this)
+        return this.color.current = current
+    }
+
+    dirtree.prototype["indexOfOpenFile"] = function ()
+    {
+        var idx, item, _320_44_
+
+        if (!(global.ked_editor_file != null))
+        {
+            return
+        }
+        var list = _k_.list(this.fuzzied)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (item.path === ked_editor_file)
+            {
+                return idx
+            }
+        }
+    }
+
+    dirtree.prototype["itemForPath"] = function (p)
+    {
+        var idx, item
+
+        var list = _k_.list(this.items)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (slash.samePath(item.path,p))
+            {
+                return item
+            }
+        }
+    }
+
+    dirtree.prototype["itemIndexForPath"] = function (p)
+    {
+        var idx, item
+
+        var list = _k_.list(this.items)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (slash.samePath(item.path,p))
+            {
+                return idx
+            }
+        }
+    }
+
+    dirtree.prototype["weight"] = function (item)
+    {
+        var p, w
+
+        p = slash.parse(item.path)
+        w = 0
+        if (item.type === 'file')
+        {
+            w += 10000
+        }
+        w += kstr.weight(p.file)
+        return w
+    }
+
+    dirtree.prototype["symbol"] = function (item)
+    {
+        var _360_51_
+
+        switch (item.type)
+        {
+            case 'file':
+                return ((_360_51_=icons[slash.ext(item.path)]) != null ? _360_51_ : icons.file)
+
+            case 'dir':
+                return (item.open ? icons.dir_open : icons.dir_close)
+
+        }
+
+    }
+
+    dirtree.prototype["symbolName"] = function (item)
+    {
+        var name
+
+        switch (slash.ext(item.path))
+        {
+            case 'kode':
+            case 'noon':
+            case 'json':
+            case 'pug':
+            case 'styl':
+            case 'html':
+            case 'js':
+            case 'md':
+                name = slash.name(item.path)
+                break
+            default:
+                name = slash.file(item.path)
+        }
+
+        return this.symbol(item) + ' ' + name
+    }
+
+    return dirtree
+})()
+
+export default dirtree;

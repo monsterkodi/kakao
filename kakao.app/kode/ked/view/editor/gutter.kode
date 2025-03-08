@@ -1,0 +1,57 @@
+###
+ 0000000   000   000  000000000  000000000  00000000  00000000   
+000        000   000     000        000     000       000   000  
+000  0000  000   000     000        000     0000000   0000000    
+000   000  000   000     000        000     000       000   000  
+ 0000000    0000000      000        000     00000000  000   000  
+###
+
+use ../../util ◆ color theme prof 
+use ../base    ◆ view
+
+function gutter extends view
+
+    @: screen @state ->
+        
+        super screen @state.owner() + '.gutter'
+        
+    draw: ->
+        
+        mainCursor = @state.mainCursor()
+        
+        for row in 0...@cells.rows
+                        
+            y = @state.s.view[1] + row
+            lineno = lpad @cells.cols-1 y+1
+            lineno += ' '
+            
+            hasCursor   = @state.isAnyCursorInLine y
+            selected    = @state.isSelectedLine y
+            highlighted = @state.isHighlightedLine y
+            spansel     = @state.isSpanSelectedLine y
+            
+            for c,i in lineno
+                
+                col = i
+                if col < @cells.rows
+                    
+                    fg = if
+                        y == mainCursor[1] ➜ @state.hasFocus ? theme.editor_cursor_bg : theme.editor_cursor_blur
+                        hasCursor          ➜ theme.editor_cursor_multi
+                        spansel            ➜ theme.editor_selection
+                        selected           ➜ theme.editor_selection_line
+                        highlighted        ➜ theme.editor_highlight
+                                           ➜ theme.linenr
+                                           
+                    fg = color.darken fg if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus
+                                                
+                    bg = if 
+                        spansel    ➜ theme.gutter_selected
+                        selected   ➜ theme.gutter_fully_selected
+                                   ➜ theme.gutter
+                                 
+                    bg = color.darken bg if selected and not @cells.screen.t.hasFocus
+                    
+                    @cells.set col row (y<@state.s.lines.length) ? c : ' ' fg bg
+
+export gutter

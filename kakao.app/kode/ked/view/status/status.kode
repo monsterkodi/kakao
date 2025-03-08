@@ -1,0 +1,185 @@
+###
+ 0000000  000000000   0000000   000000000  000   000   0000000  
+000          000     000   000     000     000   000  000       
+0000000      000     000000000     000     000   000  0000000   
+     000     000     000   000     000     000   000       000  
+0000000      000     000   000     000      0000000   0000000   
+###
+
+use ../../../kxk    ▪ post slash
+use ../../edit/tool ◆ belt
+use ../../util      ◆ color theme
+use ../base         ◆ view crumbs 
+use                 ◆ statusfile
+
+function status extends view
+
+    @: screen @state ->
+
+        super screen 'status'
+        
+        @gutter   = 4
+        @file     = ''
+        @drawTime = ''
+        
+        @pointerType = 'default'
+           
+        @crumbs     = new crumbs     @screen 'status_crumbs'
+        @statusfile = new statusfile @screen 'status_file'
+        
+        @crumbs.color.bgl = theme.gutter
+        @crumbs.color.bgr = theme.status_empty
+        
+        @crumbs.on     'action' @onCrumbsAction
+        @statusfile.on 'action' @onFileAction
+        
+    onCrumbsAction: action path event =>
+        
+        switch action
+            'click'  
+                if valid event.mods
+                    post.emit 'funcol.root' path
+                else
+                    post.emit 'quicky.dir' path
+
+    onFileAction: action file =>
+        
+        switch action
+            'click' ➜ post.emit 'quicky.dir' slash.dir(file) file
+            
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+
+        cret = @crumbs.onMouse event
+        sret = @statusfile.onMouse event
+        
+        ⮐ sret or cret if sret or cret
+
+        super event
+        
+        [col row] = @cells.posForEvent event
+        
+        post.emit 'pointer' @pointerType if @hover
+        
+        if @hover and 0 <= col < 4
+            
+            switch event.type 
+                
+                'move' ➜ post.emit 'pointer' 'ew-resize'
+                
+                'press' 
+                    
+                    if event.count > 1
+                        post.emit 'funcol.toggle'
+                    else
+                        post.emit 'funcol.resize'
+                        
+                    ⮐ redraw:true
+                    
+        @hover
+        
+    #  0000000  00000000  000000000        00000000  000  000      00000000  
+    # 000       000          000           000       000  000      000       
+    # 0000000   0000000      000           000000    000  000      0000000   
+    #      000  000          000           000       000  000      000       
+    # 0000000   00000000     000           000       000  0000000  00000000  
+    
+    setFile: @file => 
+        
+        @crumbs.set slash.dir(@file)
+        @statusfile.set @file
+        
+    layout: x y w h =>
+        
+        super x y w h
+        
+        cw = int w/2
+        
+        @crumbs.layout x+@gutter+1 y cw 1
+        @crumbs.layout x+@gutter+1 y @crumbs.rounded.length 1
+        @statusfile.layout x+@gutter+1+@crumbs.rounded.length y @statusfile.rounded.length 1
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: =>
+        
+        ⮐ if @hidden()
+                
+        x      = 0
+        y      = 0
+        cursor = @state.mainCursor()
+        cols   = @cells.cols
+        fnl    = @file.length
+        dt     = @drawTime
+        rdo    = @state.hasRedo()
+        dty    = @state.isDirty()
+        
+        set = x char fg bg => 
+            if valid fg and fg[0] != '#' ➜ fg = theme[fg]
+            if valid bg and bg[0] != '#' ➜ bg = theme[bg]
+            @cells.set x y char fg bg
+            1
+        add = char fg bg => x += set x char fg bg
+        
+        add '' 'status_col' 'gutter' # column number ...
+        colno = rpad @gutter-1 "#{cursor[0]}"
+        for ci in 1...@gutter
+            fg = cursor[0] ? 'status_fg' : 'column_fg'
+            fg = 'status_col_empty' if belt.isLinesPosOutside @state.s.lines cursor 
+            add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_col'
+        add '' 'status_col' 'gutter' # column number end
+              
+        @crumbs.draw() # dir path
+        @statusfile.draw() # file
+        
+        x += @crumbs.rounded.length
+        x += @statusfile.rounded.length
+        
+        # dirty and redo indicators
+        add '' 'status_dark'  'status_empty'
+        add '' 'status_dirty' 'status_dark' if dty
+        add ' ' 'status_dirty' 'status_dark' if dty
+        add '' 'status_redo'  'status_dark' if rdo
+        add ' ' 'status_dark'  'status_dark'
+        
+        if @state.s.cursors.length > 1
+
+            cur = "#{@state.s.cursors.length}♦"
+             
+            for i in 0...cur.length
+                add cur[i] (i<cur.length-1) ? 'status_cur' : color.darken(theme.status_cur) 'status_dark'
+                
+        if @state.s.selections.length
+
+            sel = "#{@state.s.selections.length}≡"
+             
+            for i in 0...sel.length
+                add sel[i] (i<sel.length-1) ? 'status_sel' : color.darken(theme.status_sel) 'status_dark'
+
+        if @state.s.highlights.length
+
+            hil = "#{@state.s.highlights.length}❇"
+             
+            for i in 0...hil.length
+                add hil[i] (i<hil.length-1) ? 'status_hil' : color.darken(theme.status_hil) 'status_dark'
+                
+        for ci in x...cols
+            add ' ' null 'status_dark'
+            
+        ci = clamp 0 3 int((@time/(1000*1000)-16)/8)
+        ch = ' •'[ci] # 
+        fg = ['#222' '#000' '#080' '#ff0'][ci]
+        log "#{ch} #{@drawTime}" if ch in ''
+        set cols-2 ch fg 'status_dark'
+             
+export status
+

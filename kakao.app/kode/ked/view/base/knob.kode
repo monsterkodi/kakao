@@ -1,0 +1,90 @@
+###
+000   000  000   000   0000000   0000000  
+000  000   0000  000  000   000  000   000
+0000000    000 0 000  000   000  0000000  
+000  000   000  0000  000   000  000   000
+000   000  000   000   0000000   0000000  
+###
+
+use ../../../kxk ▪ post
+use ../../util   ◆ theme
+use              ◆ view
+
+function knob extends view
+
+    @: screen name ->
+        
+        super screen name
+        
+        @parentName = @name[0...-5]
+        @frameSide = 'right'
+        @maxWidth = 68
+        @pointerType = @resizePointer()
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    resizePointer: ->
+        
+        switch @frameSide
+            'right' 'left' ➜ 'ew-resize'
+            'top' 'bottom' ➜ 'ns-resize'
+    
+    onMouse: event =>
+        
+        super event
+        
+        switch event.type
+            
+            'press'
+            
+                if @hover
+                    post.emit 'pointer' 'grabbing'
+                    @doDrag = true
+                    ⮐ redraw:true
+                    
+            'drag'
+            
+                if @doDrag
+                    @hover = true
+                    
+                    [col row] = @cells.posForEvent event
+                    
+                    size = switch @frameSide
+                        'top'   ➜ row
+                        'right' ➜ col
+                    
+                    post.emit 'pointer' 'grabbing'
+                    post.emit 'view.resize' @parentName @frameSide size
+                    ⮐ redraw:true
+                    
+                @hover = false
+                
+            'release'
+            
+                if @doDrag
+                    post.emit 'pointer' @resizePointer() if @hover
+                    delete @doDrag
+                    ⮐ redraw:true
+        @hover
+            
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: =>
+        
+        fg = @hover ? theme.resize_column : theme.gutter
+        
+        switch @frameSide
+            'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
+            'right'
+                ⮐ if not @hover
+                @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funcol
+
+export knob

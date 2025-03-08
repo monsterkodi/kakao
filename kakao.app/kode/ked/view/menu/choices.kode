@@ -1,0 +1,304 @@
+###
+ 0000000  000   000   0000000   000   0000000  00000000   0000000
+000       000   000  000   000  000  000       000       000
+000       000000000  000   000  000  000       0000000   0000000
+000       000   000  000   000  000  000       000            000
+ 0000000  000   000   0000000   000   0000000  00000000  0000000
+###
+
+use ../../../kxk    ▪ kstr kseg slash krzl post
+use ../../util      ◆ color theme 
+use ../../edit/tool ◆ belt
+use ../../edit      ◆ editor
+
+function choices extends editor
+
+    @: screen name features=[] ->
+
+        super screen name features
+        
+        @color.bg      = theme.choices_bg
+        @color.current = theme.choices_current
+        
+        @pointerType = 'pointer'
+        @focusable = true
+        @roundedSelections = true
+        @frontRoundOffset = 0
+        @hoverIndex = -1
+        @hoverForSubmenu = false
+        
+        @items = []
+        @fuzzied = @items
+        @filterText = ''
+        
+    clear: -> @set []
+        
+    set: @items @key ->
+        
+        @items ?= []
+        @fuzzied = @items
+        @filterText = ''
+        
+        lines = @key ? @items.map(@extract) : @items
+        
+        @state.loadLines lines
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    drawCursors: ->
+        
+    drawSelections: ->
+        
+        ⮐ if empty @state.s.selections
+        
+        ⮐ super() if not @roundedSelections
+        
+        fg = @color.current
+        if not @cells.screen.t.hasFocus
+            fg = color.darken fg
+        
+        sel = @state.s.selections[0]
+                
+        li = sel[1]
+        y  = li-@state.s.view[1]
+        
+        ⮐ if y >= @cells.rows
+        
+        xs = max sel[0] kseg.headCount(@state.s.lines[li] ' ')
+        xs += @frontRoundOffset if xs == 0
+
+        @cells.set_ch_fg xs-1-@state.s.view[0] y '' fg
+        
+        for x in xs...sel[2]
+            @cells.set_bg x-@state.s.view[0] y fg
+            @cells.adjustContrastForHighlight x-@state.s.view[0] y fg
+            
+        @cells.set_ch_fg x-@state.s.view[0] y '' fg
+
+    numChoices:  -> @items.length
+    numFiltered: -> @fuzzied.length
+
+    currentIndex: -> @state.mainCursor()[1]
+    current: opt ->
+    
+        cc = @fuzzied[@currentIndex()]
+        if cc is str
+            if opt?.trim == 'front'
+                cc = ltrim cc
+            else if opt?.trim != false 
+                cc = trim cc
+        cc
+        
+    choiceAtRow: row -> @fuzzied[row]
+    
+    hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1
+    hasPrev:    -> @state.mainCursor()[1] > 0
+    
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    select: row -> 
+        
+        ⮐ if row < 0 or row >= @state.s.lines.length
+    
+        @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
+        @emit 'select' @choiceAtRow(row)
+        
+    selectFirst: -> @select 0
+    
+    moveSelection: dir ->
+        
+        switch dir
+            'down' ➜ @selectNext()
+            'up'   ➜ @selectPrev() 
+        
+    selectNext: -> 
+        
+        if @hasNext()
+            @state.selectNextLine() 
+            @emitSelectionChange()
+        
+    selectPrev: -> 
+        
+        if @hasPrev()
+            @state.selectPrevLine()
+            @emitSelectionChange()
+            
+    emitSelectionChange: ->
+        
+        ⮐ if empty @state.s.selections
+            
+        @grabFocus() if @focusable
+        @frontCursor() 
+        @emit 'select' @choiceAtRow(@state.s.selections[0][1])
+        
+    frontCursor: -> 
+        
+        if empty @state.s.selections
+            log 'empty selections?' @state.s.selections
+            @state.setMainCursor 0 0
+        else
+            @state.setMainCursor 0 @state.s.selections[0][1]
+    
+    # 000   000  00000000  000   0000000   000   000  000000000  
+    # 000 0 000  000       000  000        000   000     000     
+    # 000000000  0000000   000  000  0000  000000000     000     
+    # 000   000  000       000  000   000  000   000     000     
+    # 00     00  00000000  000   0000000   000   000     000     
+    
+    extract: item => @key and item is obj ? item[@key] : kseg.str(item)        
+    
+    weight: item text =>
+
+        itemText = @extract item
+        p = slash.parse itemText
+        
+        matchOrLevenshtein = t -> 
+            idx = t.indexOf text
+            if idx < 0
+                idx = t.length + kstr.levensthein(t text)
+            idx
+
+        w  = @items.indexOf(item)               # try to keep order of original items
+        w += 10 * matchOrLevenshtein(p.name)    # high focus on file name
+        w += 5  * matchOrLevenshtein(p.dir)     # lesser focus on dir
+        w += valid p.ext ? (0.1 * matchOrLevenshtein(p.ext)) : 4 # low weight for extensions
+        w                                                        # has the side-effect of moving directories down
+
+    # 00000000  000  000      000000000  00000000  00000000   
+    # 000       000  000         000     000       000   000  
+    # 000000    000  000         000     0000000   0000000    
+    # 000       000  000         000     000       000   000  
+    # 000       000  0000000     000     00000000  000   000  
+    
+    filter: text =>
+        
+        ⮐ if empty @items
+
+        ⮐ if text == @filterText
+        
+        ⮐ @set(@items @key) if empty text
+            
+        @filterText = text
+            
+        fuzz = new krzl values:@items extract:@extract
+        
+        @fuzzied = fuzz.filter text
+
+        @fuzzied.sort (a b) => @weight(a text) - @weight(b text)
+        
+        lines = @fuzzied.map @extract
+
+        lines = [''] if empty lines
+        
+        @state.loadLines lines
+
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    hoverChoiceAtIndex: index event => 
+    
+        ⮐ true if @hoverIndex == index
+        
+        @hoverIndex = index
+        @select @hoverIndex
+        @frontCursor()
+        post.emit 'pointer' 'pointer'
+        @emitAction 'hover' @current() event
+        redraw:true
+        
+    unhover: =>
+        
+        @hoverIndex = -1
+        @state.deselect()
+        post.emit 'pointer' 'default'
+        redraw:true
+        
+    clickChoiceAtIndex: index event =>
+        
+        @hoverIndex = -1  
+        @emitAction 'click' @fuzzied[index] event
+        redraw:true
+        
+    doubleClickChoiceAtIndex: index event =>
+        
+        @hoverIndex = -1  
+        @emitAction 'doubleclick' @fuzzied[index] event
+        redraw:true
+        
+    onMouse: event =>
+        
+        # log "choices #{r6 @name} onMouse"
+    
+        ret = super event; ⮐ ret if ret?.redraw
+        
+        ret = @mapscr?.onMouse event; ⮐ ret if ret # mapview doesn't do mouse yet, just to prevent clickthrough to editor
+        
+        if @hover
+            
+            [col row] = @cells.posForEvent event
+            
+            if @state.isValidLineIndex(row)
+                
+                if @hoverForSubmenu and event.type == 'move' and col > kseg.width(@state.s.lines[row])
+                    dx = Math.abs event.delta[0]
+                    dy = Math.abs event.delta[1]
+                    ⮐ if dx*2 >= dy
+                
+                switch event.type
+                    
+                    'move'  ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1] event
+                    'press' 
+                        if event.count == 2
+                            ⮐ @doubleClickChoiceAtIndex row + @state.s.view[1] event
+                        else
+                            ⮐ @clickChoiceAtIndex row + @state.s.view[1] event
+        @hover
+        
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    emitAction: action arg event ->
+        
+        @emit 'action' action arg event
+                    
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event =>
+        
+        ⮐ if not @hasFocus()
+            
+        switch event.combo
+        
+            'esc'
+            'left' 
+            'right'  
+            'space'  
+            'delete'
+            'return' ➜ @emitAction event.combo @current() event
+            
+            'up' 
+            'down'   ➜ @moveSelection event.combo
+            
+        # not calling super here effectively disables all text-editing
+        true
+         
+global.choices_class = choices # hack to prevent import recursion
+export choices

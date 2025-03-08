@@ -10,7 +10,7 @@ import color from "../util/color.js"
 import theme from "../util/theme.js"
 import prof from "../util/prof.js"
 
-import view from "../view/view.js"
+import view from "../view/base/view.js"
 
 import belt from "./tool/belt.js"
 

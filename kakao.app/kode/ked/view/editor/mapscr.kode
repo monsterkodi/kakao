@@ -1,0 +1,136 @@
+
+###
+00     00   0000000   00000000    0000000   0000000  00000000 
+000   000  000   000  000   000  000       000       000   000
+000000000  000000000  00000000   0000000   000       0000000  
+000 0 000  000   000  000             000  000       000   000
+000   000  000   000  000        0000000    0000000  000   000
+###
+
+use ../../../kxk ▪ post
+use              ◆ mapview
+
+{floor, pow} = Math
+
+function mapscr extends mapview
+
+    @: screen state ->
+        
+        super screen state
+        
+        @pointerType = 'pointer'
+        
+        screen.t.on 'preResize' @clearImages
+        post.on 'greet' @clearImages
+        
+    getSegls:  => @state.segls
+    getSyntax: => @state.syntax
+    
+    # 00000000   00000000   0000000  000  0000000  00000000  
+    # 000   000  000       000       000     000   000       
+    # 0000000    0000000   0000000   000    000    0000000   
+    # 000   000  000            000  000   000     000       
+    # 000   000  00000000  0000000   000  0000000  00000000  
+    
+    onResize: =>
+        
+        ⮐ if empty @cells.screen.t.pixels
+        @redraw = true
+        
+    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
+    # 000       000       000   000  000   000  000      000         000     000   000  
+    # 0000000   000       0000000    000   000  000      000         000     000   000  
+    #      000  000       000   000  000   000  000      000         000     000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
+    
+    scrollToPixel: pixel =>
+        
+        view = @state.s.view.asMutable()
+        
+        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
+        
+        view[1] -= 6 # offset so that clicking inside a header scrolls it into view
+        
+        maxY = @state.s.lines.length - @cells.rows
+        
+        view[1] = min maxY view[1] if maxY > 0
+        view[1] = max 0 view[1]
+        
+        ⮐ if view eql @state.s.view
+        
+        @state.setView view
+        
+        redraw:true
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+        
+        super event
+        
+        switch event.type
+            
+            'press'
+            
+                if @hover
+                    @doDrag = true
+                    post.emit 'pointer''grabbing'
+                    ⮐ @scrollToPixel event.pixel
+                    
+            'drag'
+            
+                if @doDrag
+                    post.emit 'pointer''grab'
+                    ⮐ @scrollToPixel event.pixel
+                    
+                @hover = false
+                
+            'release'
+            
+                if @doDrag
+                    delete @doDrag 
+                    post.emit 'pointer''pointer' if @hover
+                    ⮐ true
+        @hover
+        
+    clearImages: =>
+        
+        # @cells.screen.t.deleteImage @knobId if @knobId
+        # delete @knobId
+        
+        super()
+        
+    createImages: =>
+        
+        t = @cells.screen.t
+        ⮐ if empty t.cellsz
+        
+        # w = t.cellsz[0]
+        # data = Buffer.alloc w*3
+#         
+        # for i in 0...w 
+            # data[i*3+0] = 255
+            # data[i*3+1] =  55
+            # data[i*3+2] = 155
+#         
+        # @knobId = @imgId+0xeeee
+        # t.sendImageData data @knobId w 1
+        
+        super()
+        
+    drawImages: ->
+        
+        t = @cells.screen.t
+        
+        ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
+        
+        # log 'mapscr' @cells.cols @cells.rows 
+        # t.placeImageStretched @knobId @cells.x @cells.y 2 3 0 0
+        
+        super()
+        
+export mapscr

@@ -6,11 +6,11 @@
 0000000    000   000  000   000  00     00
 ###
 
-use ../../kxk ▪ kseg kstr 
-use ../util   ◆ color theme prof 
-use ../view   ◆ view
-use ./tool    ◆ belt
-use           ◆ mode
+use ../../kxk    ▪ kseg kstr 
+use ../util      ◆ color theme prof 
+use ../view/base ◆ view
+use ./tool       ◆ belt
+use              ◆ mode
 
 function draw extends view
 

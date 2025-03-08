@@ -1,0 +1,57 @@
+###
+    00000000  000  000   000  0000000    00000000  00000000   
+    000       000  0000  000  000   000  000       000   000  
+    000000    000  000 0 000  000   000  0000000   0000000    
+    000       000  000  0000  000   000  000       000   000  
+    000       000  000   000  0000000    00000000  000   000  
+###
+
+use ../../../kxk ▪ post
+use              ◆ inputchoice
+
+import rgxs from './quicky.json' with { type: "json" }
+
+function finder extends inputchoice
+
+    @: @screen ->
+
+        super @screen 'finder'
+        
+        @choices.state.syntax.setRgxs rgxs
+
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: searchText ->
+
+        @input.set searchText
+        @input.selectAll()
+        @choices.set []
+        
+        @layout()
+        @input.grabFocus()
+        
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    apply: text ->
+        
+        @hide()
+        post.emit 'finder.apply' text
+        redraw:true
+        
+    applyChoice: choice -> @apply choice
+        
+    onInputAction: action text ->
+        
+        switch action
+            
+            'submit' ➜ ⮐ @apply text
+
+export finder

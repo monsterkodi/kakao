@@ -1,0 +1,127 @@
+###
+ 0000000   0000000  00000000   00000000  00000000  000   000  
+000       000       000   000  000       000       0000  000  
+0000000   000       0000000    0000000   0000000   000 0 000  
+     000  000       000   000  000       000       000  0000  
+0000000    0000000  000   000  00000000  00000000  000   000  
+###
+
+use ../../../kxk    ▪ kseg
+use ../../util      ◆ color
+use ../../edit/tool ◆ belt
+
+function screen
+
+    @: @t -> @init()
+    
+    init: =>
+    
+        @rows = @t.rows()
+        @cols = @t.cols()
+        @c = belt.cells @cols @rows 
+                                        
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    add: x y char fg bg =>
+        
+        w = kseg.width char
+        if w > 1
+            @set x   y char fg bg
+            @set x+1 y null fg bg
+            ⮐ 2
+        else
+            @set x y char fg bg
+            ⮐ 1
+    
+    set: x y char fg bg =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].char = char
+            @c[y][x].fg = fg ? []
+            @c[y][x].bg = bg ? []
+            
+    set_char: x y char =>
+
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].char = char
+
+    set_ch_fg: x y char fg =>
+
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].char = char
+            @c[y][x].fg   = fg
+            
+    set_bg: x y bg =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].bg = bg
+
+    set_fg: x y fg =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].fg = fg
+
+    set_fg_bg: x y fg bg =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            @c[y][x].fg = fg
+            @c[y][x].bg = bg
+            
+    #  0000000   00000000  000000000  
+    # 000        000          000     
+    # 000  0000  0000000      000     
+    # 000   000  000          000     
+    #  0000000   00000000     000     
+    
+    get_char: x y =>
+
+        if 0 <= x < @cols and 0 <= y < @rows
+            ⮐ @c[y][x].char
+        ''
+
+    get_fg: x y =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            ⮐ @c[y][x].fg
+        []
+
+    get_bg: x y =>
+        
+        if 0 <= x < @cols and 0 <= y < @rows
+            ⮐ @c[y][x].bg
+        []
+        
+    # 00000000   00000000  000   000  0000000    00000000  00000000   
+    # 000   000  000       0000  000  000   000  000       000   000  
+    # 0000000    0000000   000 0 000  000   000  0000000   0000000    
+    # 000   000  000       000  0000  000   000  000       000   000  
+    # 000   000  00000000  000   000  0000000    00000000  000   000  
+    
+    render: =>
+        
+        @t.setCursor 0 0
+        s = ''
+        pbg = ''
+        pfg = ''
+        for y in 0...@rows
+            for x in 0...@cols
+                char = @c[y][x].char
+                continue if char == null
+                bg = color.bg_rgb @c[y][x].bg
+                if bg != pbg
+                    s += bg
+                    pbg = bg
+                    # char = '○' if char == ' '
+                fg = color.fg_rgb @c[y][x].fg
+                if fg != pfg
+                    s += fg
+                    pfg = fg
+                s += char ? '?'
+            s += '\n' if y != @rows-1
+        @t.write s
+        
+export screen

@@ -9,11 +9,16 @@
     bun --watch js/ked/ked.js kode/ked/kde.kode
 ###
 
-use ../kxk ▪ karg kstr kseg slash post
-use ../kxk ◆ nfs
-use ./util ◆ ttio logfile prjcts session help julia frecent watcher
-use ./view ◆ view screen status quicky menu finder funcol fileeditor
-use ./edit/tool ◆ belt
+use ../kxk        ▪ karg kstr kseg slash post
+use ../kxk        ◆ nfs
+use ./util        ◆ ttio logfile prjcts session help julia frecent watcher
+use ./view/base   ◆ view
+use ./view/menu   ◆ quicky menu finder 
+use ./view/status ◆ status 
+use ./view/screen ◆ screen 
+use ./view/funcol ◆ funcol 
+use ./view/editor ◆ fileeditor
+use ./edit/tool   ◆ belt
 
 global.int = parseInt # this should go into kode instead
 
