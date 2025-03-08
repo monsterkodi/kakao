@@ -6,8 +6,9 @@
 
 use ../../../kxk ◆ kseg salter
 use ../../theme  ◆ theme
+use ../tool      ◆ belt
 use ..           ◆ mode
-
+      
 function salterMode
 
     @syms: []
@@ -20,15 +21,66 @@ function salterMode
             salterMode.syms = Object.keys salter.font
         
         @start()
+
+    ###
+     0000000   0000000   000      000000000  00000000  00000000   
+    000       000   000  000         000     000       000   000  
+    0000000   000000000  000         000     0000000   0000000    
+         000  000   000  000         000     000       000   000  
+    0000000   000   000  0000000     000     00000000  000   000  
+    ###
+    # ███      ███  ███   ███  ████████
+    # ███      ███  ████  ███  ███     
+    # ███      ███  ███ █ ███  ███████ 
+    # ███      ███  ███  ████  ███     
+    # ███████  ███  ███   ███  ████████
+
+    isSalterLine: line ->
+    
+        trimmed = kseg.trim(kseg.trim(kseg.trim(line) '#'))
+        kseg.startsWith(trimmed '0') or kseg.startsWith(trimmed '█')
+        
+    findPositionsForHeaderInsert: lines pos ->
+    
+        y = pos[1]
+        ⮐  if not @isSalterLine lines[y]
+        
+        sy = y
+        while @isSalterLine lines[sy-1]
+            sy -= 1
+            break if y-sy >= 4
+            
+        ey = y
+        while @isSalterLine lines[ey+1]
+            ey += 1
+            break if ey-sy >= 4
+                    
+        posl = []
+        if ey-sy >= 4
+            for y in sy..sy+4
+                posl.push [pos[0] y]
+
+        posl
     
     start: -> 
     
-        @state.setMainCursor @state.mainCursor()
-        @state.expandCursors 'down'
-        @state.expandCursors 'down'
-        @state.expandCursors 'down'
-        @state.expandCursors 'down'
+        cursors = @findPositionsForHeaderInsert @state.s.lines @state.mainCursor()
+        
+        if valid cursors
+            @state.setCursors cursors
             
+        else
+            # if valid trim(belt.textFromPosToEol(@state.s.lines @state.mainCursor()))
+            @state.moveCursors 'eol'
+            @state.singleCursorAtIndentOrStartOfLine()
+            for i in 0...5
+                @state.insert '# \n'
+            @state.moveCursors 'right'
+            @state.moveCursors 'right'
+            @state.moveCursors 'up'
+            for i in 0...4
+                @state.expandCursors 'up'
+        
     stop: ->
     
         @state.setMainCursor @state.mainCursor()

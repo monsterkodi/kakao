@@ -181,6 +181,11 @@ text = (function ()
         return lines[pos[1]].slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
     }
 
+    text["textFromPosToEol"] = function (lines, pos)
+    {
+        return lines[pos[1]].slice(pos[0])
+    }
+
     text["isOnlyWhitespace"] = function (text)
     {
         return /^\s+$/.test(kseg.str(text))
@@ -352,7 +357,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 214, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 215, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

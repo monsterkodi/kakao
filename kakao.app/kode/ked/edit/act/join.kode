@@ -25,6 +25,12 @@ export
 
         @deleteRanges rngs @allCursors()
         
+    # ██     ██   ███████   ███   ███  ████████
+    # ███   ███  ███   ███  ███   ███  ███     
+    # █████████  ███   ███   ███ ███   ███████ 
+    # ███ █ ███  ███   ███     ███     ███     
+    # ███   ███   ███████       █      ████████
+
     moveSelectionOrCursorLines: dir ->
         
         selections = @allSelections()
@@ -37,6 +43,12 @@ export
         @setSelections selections
         @setCursors cursors
         
+    #  ███████  ███       ███████   ███   ███  ████████
+    # ███       ███      ███   ███  ████  ███  ███     
+    # ███       ███      ███   ███  ███ █ ███  ███████ 
+    # ███       ███      ███   ███  ███  ████  ███     
+    #  ███████  ███████   ███████   ███   ███  ████████
+
     cloneSelectionAndCursorLines: dir ->
         
         selections = @allSelections()
@@ -50,6 +62,12 @@ export
         @setSelections selections
         @setCursors cursors
         
+    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
     toggleCommentAtSelectionOrCursorLines: ->
 
         selections = @allSelections()

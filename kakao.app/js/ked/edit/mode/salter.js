@@ -7,6 +7,8 @@ import salter from "../../../kxk/salter.js"
 
 import theme from "../../theme/theme.js"
 
+import belt from "../tool/belt.js"
+
 import mode from "../mode.js"
 
 
@@ -25,13 +27,77 @@ salterMode = (function ()
         this.start()
     }
 
+    salterMode.prototype["isSalterLine"] = function (line)
+    {
+        var trimmed
+
+        trimmed = kseg.trim(kseg.trim(kseg.trim(line),'#'))
+        return kseg.startsWith(trimmed,'0') || kseg.startsWith(trimmed,'█')
+    }
+
+    salterMode.prototype["findPositionsForHeaderInsert"] = function (lines, pos)
+    {
+        var ey, posl, sy, y
+
+        y = pos[1]
+        if (!this.isSalterLine(lines[y]))
+        {
+            return
+        }
+        sy = y
+        while (this.isSalterLine(lines[sy - 1]))
+        {
+            sy -= 1
+            if (y - sy >= 4)
+            {
+                break
+            }
+        }
+        ey = y
+        while (this.isSalterLine(lines[ey + 1]))
+        {
+            ey += 1
+            if (ey - sy >= 4)
+            {
+                break
+            }
+        }
+        posl = []
+        if (ey - sy >= 4)
+        {
+            for (var _a_ = y = sy, _b_ = sy + 4; (_a_ <= _b_ ? y <= sy + 4 : y >= sy + 4); (_a_ <= _b_ ? ++y : --y))
+            {
+                posl.push([pos[0],y])
+            }
+        }
+        return posl
+    }
+
     salterMode.prototype["start"] = function ()
     {
-        this.state.setMainCursor(this.state.mainCursor())
-        this.state.expandCursors('down')
-        this.state.expandCursors('down')
-        this.state.expandCursors('down')
-        return this.state.expandCursors('down')
+        var cursors, i
+
+        cursors = this.findPositionsForHeaderInsert(this.state.s.lines,this.state.mainCursor())
+        if (!_k_.empty(cursors))
+        {
+            return this.state.setCursors(cursors)
+        }
+        else
+        {
+            this.state.moveCursors('eol')
+            this.state.singleCursorAtIndentOrStartOfLine()
+            for (i = 0; i < 5; i++)
+            {
+                this.state.insert('# \n')
+            }
+            this.state.moveCursors('right')
+            this.state.moveCursors('right')
+            this.state.moveCursors('up')
+            for (i = 0; i < 4; i++)
+            {
+                this.state.expandCursors('up')
+            }
+        }
     }
 
     salterMode.prototype["stop"] = function ()

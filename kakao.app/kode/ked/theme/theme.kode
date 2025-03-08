@@ -133,7 +133,6 @@ class theme
         'function':                             '#fa0'   
         'function call':                        '#f80'   
         'punct method':                         '#a60'   
-        'punct function':                       '#840'   
         'punct property':                       '#640'   
         'punct string double triple':           '#0d0'   
         'module require string':                '#0c0'   

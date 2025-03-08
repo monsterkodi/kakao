@@ -1,0 +1,146 @@
+###
+██     ██   ███████   ███  ███   ███  
+███   ███  ███   ███  ███  ████  ███  
+█████████  █████████  ███  ███ █ ███  
+███ █ ███  ███   ███  ███  ███  ████  
+███   ███  ███   ███  ███  ███   ███  
+###
+
+use ../../../kxk ▪ kseg
+use ../tool      ◆ belt
+
+export
+
+    mainCursor: -> @s.cursors[@s.main].asMutable()
+    
+    #  ███████  ████████  █████████
+    # ███       ███          ███   
+    # ███████   ███████      ███   
+    #      ███  ███          ███   
+    # ███████   ████████     ███   
+
+    setMainCursor: x y ->
+        
+        [x y] = belt.pos x y
+        
+        y = clamp 0 @s.lines.length-1 y
+        x = max 0 x
+                        
+        @setCursors [[x y]]
+        
+    # ██     ██   ███████   ███   ███  ████████
+    # ███   ███  ███   ███  ███   ███  ███     
+    # █████████  ███   ███   ███ ███   ███████ 
+    # ███ █ ███  ███   ███     ███     ███     
+    # ███   ███   ███████       █      ████████
+
+    moveMainCursorInDirection: dir opt={} ->
+        
+        mc = belt.positionInDirection @mainCursor() dir
+        
+        if opt.keep
+            @addCursor mc
+        else
+            @moveMainCursor mc
+                        
+    moveMainCursor: x y ->
+                
+        [x y] = belt.pos x y
+        
+        y = clamp 0 @s.lines.length-1 y
+        x = max 0 x
+        
+        mainCursor = @mainCursor()
+        
+        ⮐ if mainCursor eql [x y]
+
+        cursors = @allCursors()
+
+        cursors.splice belt.indexOfPosInPositions(mainCursor cursors) 1
+        
+        main = belt.indexOfPosInPositions [x y] cursors
+        if main < 0
+            cursors.push [x y]
+            main = cursors.length-1
+        
+        @setCursors cursors main:main
+                
+    # ████████   ███████    ███    
+    # ███       ███   ███   ███    
+    # ███████   ███   ███   ███    
+    # ███       ███   ███   ███    
+    # ████████   ███████    ███████
+
+    singleCursorAtEndOfLine: ->
+        
+        rng = belt.lineRangeAtPos @allLines() @mainCursor()
+        mc  = belt.endOfRange rng
+        
+        @deselect()
+        @setCursors [mc]
+        
+    # ███  ███   ███  ███████            ███████     ███████   ███      
+    # ███  ████  ███  ███   ███          ███   ███  ███   ███  ███      
+    # ███  ███ █ ███  ███   ███          ███████    ███   ███  ███      
+    # ███  ███  ████  ███   ███          ███   ███  ███   ███  ███      
+    # ███  ███   ███  ███████    ██████  ███████     ███████   ███████  
+
+    singleCursorAtIndentOrStartOfLine: ->
+        
+        lines = @allLines()
+        mc    = @mainCursor()
+        
+        rng   = belt.lineRangeAtPos  lines mc
+        ind   = belt.lineIndentAtPos lines mc
+        
+        if ind < mc[0]
+            mc[0] = ind
+        else
+            mc  = belt.startOfRange rng
+        
+        @deselect()
+        @setCursors [mc]
+
+    # ████████    ███████    ███████   ████████
+    # ███   ███  ███   ███  ███        ███     
+    # ████████   █████████  ███  ████  ███████ 
+    # ███        ███   ███  ███   ███  ███     
+    # ███        ███   ███   ███████   ████████
+
+    singleCursorPage: dir ->
+
+        mc = @mainCursor()
+        
+        switch dir
+            'up'   ➜  mc[1] -= @cells.rows
+            'down' ➜  mc[1] += @cells.rows
+
+        @deselect()
+        @setCursors [mc]
+                        
+    #  ███████   ███   ███  ███   ███
+    # ███   ███  ████  ███   ███ ███ 
+    # █████████  ███ █ ███    █████  
+    # ███   ███  ███  ████     ███   
+    # ███   ███  ███   ███     ███   
+
+    isAnyCursorInLine: y ->
+        
+        for c in @allCursors()
+            ⮐ true if c[1] == y
+            
+    wordAtCursor:      -> belt.wordAtPos      @s.lines @mainCursor()
+    chunkBeforeCursor: -> belt.chunkBeforePos @s.lines @mainCursor()
+    chunkAfterCursor:  -> belt.chunkAfterPos  @s.lines @mainCursor()
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    setMainCursorAndSelect: x y ->
+        
+        @setSelections belt.extendLineRangesFromPositionToPosition @allLines() @allSelections() @mainCursor() [x y]
+        @setCursors [[x y]] adjust:'topBotDelta'
+    

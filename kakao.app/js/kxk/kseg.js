@@ -399,7 +399,7 @@ kseg.repeat = function (n, s = ' ')
     return a
 }
 
-kseg.trim = function (s)
+kseg.trim = function (s, c = ' ')
 {
     var hc, tc
 
@@ -408,8 +408,8 @@ kseg.trim = function (s)
         return []
     }
     s = kseg(s)
-    hc = kseg.headCount(s,' ')
-    tc = kseg.tailCount(s,' ')
+    hc = kseg.headCount(s,c)
+    tc = kseg.tailCount(s,c)
     return s.slice(hc, s.length - tc)
 }
 

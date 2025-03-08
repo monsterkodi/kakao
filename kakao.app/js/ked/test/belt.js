@@ -3,10 +3,10 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var c, cells, l, line, lines, rect, segls, spans, text, words
 
-import belt from "../edit/tool/belt.js"
-
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
+
+import belt from "../edit/tool/belt.js"
 
 toExport["util"] = function ()
 {

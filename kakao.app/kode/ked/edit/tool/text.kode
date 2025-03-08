@@ -98,6 +98,7 @@ function text
         spans
         
     @textFromBolToPos: lines pos -> lines[pos[1]][0...pos[0]]
+    @textFromPosToEol: lines pos -> lines[pos[1]][pos[0]..]
     
     @isOnlyWhitespace: text -> /^\s+$/.test kseg.str(text)
     

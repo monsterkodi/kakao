@@ -372,12 +372,12 @@ kseg.repeat = n s=' ' ->
 #    000     000   000  000  000 0 000  
 #    000     000   000  000  000   000  
 
-kseg.trim = s ->
+kseg.trim = s c=' ' ->
     
     ⮐ [] if empty s
     s = kseg s
-    hc = kseg.headCount s ' '
-    tc = kseg.tailCount s ' '
+    hc = kseg.headCount s c
+    tc = kseg.tailCount s c
     s[hc..s.length-tc]
 
 ### 

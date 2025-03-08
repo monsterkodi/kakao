@@ -18,6 +18,7 @@ import select from "./act/select.js"
 import join from "./act/join.js"
 import indent from "./act/indent.js"
 import multi from "./act/multi.js"
+import main from "./act/main.js"
 
 import belt from "./tool/belt.js"
 
@@ -60,7 +61,7 @@ state = (function ()
         this["set"] = this["set"].bind(this)
         this.name = name + '.state'
         this.allowedModes = {}
-        var list = [del,insert,select,join,indent,multi]
+        var list = [del,insert,select,join,indent,multi,main]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             act = list[_a_]

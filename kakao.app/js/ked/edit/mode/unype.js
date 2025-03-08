@@ -2,6 +2,8 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var unype
 
+import kseg from "../../../kxk/kseg.js"
+
 import fonts from '../../util/fonts.json' with { type : "json" }
 
 unype = (function ()

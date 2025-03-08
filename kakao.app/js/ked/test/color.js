@@ -1,5 +1,5 @@
 var toExport = {}
-import color from "../util/color.js"
+import color from "../theme/color.js"
 
 toExport["color"] = function ()
 {

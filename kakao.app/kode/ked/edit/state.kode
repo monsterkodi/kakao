@@ -9,7 +9,7 @@
 use child_process os
 use ../../kxk ▪ immutable kstr kseg
 use ../util   ◆ syntax
-use ./act     ◆ del insert select join indent multi
+use ./act     ◆ del insert select join indent multi main
 use ./tool    ◆ belt
 use           ◆ keys mode
 
@@ -21,7 +21,7 @@ function state
         
         @allowedModes = {}
 
-        for act in [del insert select join indent multi]
+        for act in [del insert select join indent multi main]
             for k,v of act
                 @[k] = v.bind @
                 
