@@ -6,11 +6,12 @@
  00000 00   0000000   000   0000000  000   000     000
 ###
 
-use ../../kxk ▪ kstr slash post kutil noon
-use ../../kxk ◆ nfs
-use ../util   ◆ prjcts walker theme icons util
-use ../edit   ◆ editor 
-use           ◆ inputchoice crumbs fscol
+use ../../kxk    ▪ kstr slash post kutil noon
+use ../../kxk    ◆ nfs
+use ../util      ◆ prjcts walker theme icons
+use ../edit/tool ◆ belt
+use ../edit      ◆ editor 
+use              ◆ inputchoice crumbs fscol
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -318,7 +319,7 @@ function quicky extends inputchoice
         
         if item.type == 'file' and slash.ext(item.path) in walker.sourceFileExtensions
             text =○ nfs.read item.path
-            segls = util.seglsForText text
+            segls = belt.seglsForText text
             @choices.mapscr.show()
             @choices.mapscr.setSyntaxSegls slash.ext(item.path) segls
         else

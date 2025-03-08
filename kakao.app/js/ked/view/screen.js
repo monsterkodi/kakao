@@ -4,7 +4,8 @@ import kxk from "../../kxk.js"
 let kseg = kxk.kseg
 
 import color from "../util/color.js"
-import util from "../util/util.js"
+
+import belt from "../edit/tool/belt.js"
 
 
 screen = (function ()
@@ -32,7 +33,7 @@ screen = (function ()
     {
         this.rows = this.t.rows()
         this.cols = this.t.cols()
-        return this.c = util.cells(this.cols,this.rows)
+        return this.c = belt.cells(this.cols,this.rows)
     }
 
     screen.prototype["add"] = function (x, y, char, fg, bg)

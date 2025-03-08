@@ -6,8 +6,9 @@
 0000000    0000000  000   000  00000000  00000000  000   000  
 ###
 
-use ../../kxk ▪ kseg
-use ../util   ◆ color util
+use ../../kxk    ▪ kseg
+use ../util      ◆ color
+use ../edit/tool ◆ belt
 
 function screen
 
@@ -17,7 +18,7 @@ function screen
     
         @rows = @t.rows()
         @cols = @t.cols()
-        @c = util.cells @cols @rows 
+        @c = belt.cells @cols @rows 
                                         
     #  0000000  00000000  000000000  
     # 000       000          000     

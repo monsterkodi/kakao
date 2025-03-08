@@ -7,8 +7,8 @@
 ###
 
 use ../../kxk ▪ post
-use ../util   ◆ util
 use ../view   ◆ scroll mapview view
+use ./tool    ◆ belt
 use           ◆ state draw complete mode
 
 function editor extends draw
@@ -116,7 +116,7 @@ function editor extends draw
         
         cursor ?= @state.mainCursor()
         
-        util.isLinesPosOutside @state.s.lines cursor
+        belt.isLinesPosOutside @state.s.lines cursor
         
     isCursorVisible: cursor =>
         

@@ -6,10 +6,11 @@
     000   000  00000000  000   000   0000000     
 ###
 
-use ../../kxk ▪ kstr slash post noon
-use ../util   ◆ theme frecent util
-use ../edit   ◆ editor 
-use           ◆ cells greeter inputchoice
+use ../../kxk    ▪ kstr slash post noon
+use ../util      ◆ theme frecent
+use ../edit/tool ◆ belt
+use ../edit      ◆ editor 
+use              ◆ cells greeter inputchoice
 
 function menu extends inputchoice
 
@@ -40,7 +41,7 @@ function menu extends inputchoice
         y  = int scy-(c+2)/2
         y -= ih
         
-        [gw gh] = util.cellSize @greeter.header
+        [gw gh] = belt.cellSize @greeter.header
         
         @greeter.layout  int(scx-gw/2)  max(0 int(y-gh-1+ih))
         @input.layout    x+2   y+1      w-4  iz
@@ -57,7 +58,7 @@ function menu extends inputchoice
         
         @greeter.show @greet
         
-        items = util.linesForText
+        items = belt.linesForText
             """
             recent ...
             open ...
@@ -73,7 +74,7 @@ function menu extends inputchoice
             
         ccol = int(@screen.cols/2) - 5
 
-        @width = util.widthOfLines items
+        @width = belt.widthOfLines items
         
         @input.set ''
         @choices.set items

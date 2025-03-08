@@ -11,8 +11,9 @@
 
 use ../kxk ▪ karg kstr kseg slash post
 use ../kxk ◆ nfs
-use ./util ◆ ttio logfile util prjcts session help julia frecent watcher
+use ./util ◆ ttio logfile prjcts session help julia frecent watcher
 use ./view ◆ view screen status quicky menu finder funcol fileeditor
+use ./edit/tool ◆ belt
 
 global.int = parseInt # this should go into kode instead
 
@@ -200,7 +201,7 @@ function KED
         if text == undefined
             text = '○ binary ○'
         
-        segls = util.seglsForText text
+        segls = belt.seglsForText text
         
         @editor.state.syntax.ext = slash.ext @currentFile
         @editor.state.loadSegls segls

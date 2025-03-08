@@ -13,7 +13,6 @@ import nfs from "../kxk/nfs.js"
 
 import ttio from "./util/ttio.js"
 import logfile from "./util/logfile.js"
-import util from "./util/util.js"
 import prjcts from "./util/prjcts.js"
 import session from "./util/session.js"
 import help from "./util/help.js"
@@ -29,6 +28,8 @@ import menu from "./view/menu.js"
 import finder from "./view/finder.js"
 import funcol from "./view/funcol.js"
 import fileeditor from "./view/fileeditor.js"
+
+import belt from "./edit/tool/belt.js"
 
 global.int = parseInt
 
@@ -135,7 +136,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _130_10_
+        var _131_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -163,7 +164,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _158_22_
+        var _159_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -207,7 +208,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _211_22_
+        var segls, start, text, _212_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -226,7 +227,7 @@ ked [file]
         {
             text = '○ binary ○'
         }
-        segls = util.seglsForText(text)
+        segls = belt.seglsForText(text)
         this.editor.state.syntax.ext = slash.ext(this.currentFile)
         this.editor.state.loadSegls(segls)
         this.status.time = process.hrtime(start)[1]
@@ -430,7 +431,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _370_22_
+        var _371_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

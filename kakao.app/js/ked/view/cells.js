@@ -2,7 +2,8 @@ var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h);
 
 var cells
 
-import util from "../util/util.js"
+import belt from "../edit/tool/belt.js"
+
 import color from "../util/color.js"
 import theme from "../util/theme.js"
 
@@ -153,14 +154,14 @@ cells = (function ()
 
     cells.prototype["isInsidePos"] = function (x, y)
     {
-        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+        var _a_ = belt.pos(x,y); x = _a_[0]; y = _a_[1]
 
         return ((0 <= x && x < this.cols)) && ((0 <= y && y < this.rows))
     }
 
     cells.prototype["isOutsidePos"] = function (x, y)
     {
-        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+        var _a_ = belt.pos(x,y); x = _a_[0]; y = _a_[1]
 
         return x < 0 || x >= this.cols || y < 0 || y >= this.rows
     }
@@ -187,14 +188,14 @@ cells = (function ()
 
     cells.prototype["posForScreen"] = function (x, y)
     {
-        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+        var _a_ = belt.pos(x,y); x = _a_[0]; y = _a_[1]
 
         return [x - this.x,y - this.y]
     }
 
     cells.prototype["screenForPos"] = function (x, y)
     {
-        var _a_ = util.pos(x,y); x = _a_[0]; y = _a_[1]
+        var _a_ = belt.pos(x,y); x = _a_[0]; y = _a_[1]
 
         return [x + this.x,y + this.y]
     }
@@ -344,7 +345,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _149_16_, _157_20_, _158_20_
+        var bg, fg, x, y, _150_16_, _158_20_, _159_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -363,9 +364,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_149_16_=opt.pad) != null ? _149_16_ : [1,0])
-        fg = ((_157_20_=opt.fg) != null ? _157_20_ : '#888888')
-        bg = ((_158_20_=opt.bg) != null ? _158_20_ : null)
+        opt.pad = ((_150_16_=opt.pad) != null ? _150_16_ : [1,0])
+        fg = ((_158_20_=opt.fg) != null ? _158_20_ : '#888888')
+        bg = ((_159_20_=opt.bg) != null ? _159_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

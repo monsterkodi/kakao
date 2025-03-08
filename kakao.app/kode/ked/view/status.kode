@@ -6,9 +6,10 @@
 0000000      000     000   000     000      0000000   0000000   
 ###
 
-use ../../kxk ▪ post slash
-use ../util   ◆ color theme util
-use           ◆ view crumbs statusfile
+use ../../kxk    ▪ post slash
+use ../edit/tool ◆ belt
+use ../util      ◆ color theme
+use              ◆ view crumbs statusfile
 
 function status extends view
 
@@ -132,7 +133,7 @@ function status extends view
         colno = rpad @gutter-1 "#{cursor[0]}"
         for ci in 1...@gutter
             fg = cursor[0] ? 'status_fg' : 'column_fg'
-            fg = 'status_col_empty' if util.isLinesPosOutside @state.s.lines cursor 
+            fg = 'status_col_empty' if belt.isLinesPosOutside @state.s.lines cursor 
             add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_col'
         add '' 'status_col' 'gutter' # column number end
               

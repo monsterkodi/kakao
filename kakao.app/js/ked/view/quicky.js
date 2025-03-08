@@ -15,7 +15,8 @@ import prjcts from "../util/prjcts.js"
 import walker from "../util/walker.js"
 import theme from "../util/theme.js"
 import icons from "../util/icons.js"
-import util from "../util/util.js"
+
+import belt from "../edit/tool/belt.js"
 
 import editor from "../edit/editor.js"
 
@@ -358,7 +359,7 @@ quicky = (function ()
         if (item.type === 'file' && _k_.in(slash.ext(item.path),walker.sourceFileExtensions))
         {
             text = await nfs.read(item.path)
-            segls = util.seglsForText(text)
+            segls = belt.seglsForText(text)
             this.choices.mapscr.show()
             this.choices.mapscr.setSyntaxSegls(slash.ext(item.path),segls)
         }
@@ -490,7 +491,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _418_62_
+        var upDir, _419_62_
 
         switch (action)
         {
@@ -508,7 +509,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_418_62_=choice.link) != null ? _418_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_419_62_=choice.link) != null ? _419_62_ : choice.path))
                     }
                 }
                 break

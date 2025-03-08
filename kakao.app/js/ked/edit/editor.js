@@ -5,11 +5,11 @@ var editor
 import kxk from "../../kxk.js"
 let post = kxk.post
 
-import util from "../util/util.js"
-
 import scroll from "../view/scroll.js"
 import mapview from "../view/mapview.js"
 import view from "../view/view.js"
+
+import belt from "./tool/belt.js"
 
 import state from "./state.js"
 import draw from "./draw.js"
@@ -166,7 +166,7 @@ editor = (function ()
     editor.prototype["isCursorInEmpty"] = function (cursor)
     {
         cursor = (cursor != null ? cursor : this.state.mainCursor())
-        return util.isLinesPosOutside(this.state.s.lines,cursor)
+        return belt.isLinesPosOutside(this.state.s.lines,cursor)
     }
 
     editor.prototype["isCursorVisible"] = function (cursor)

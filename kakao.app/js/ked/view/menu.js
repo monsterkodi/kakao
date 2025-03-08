@@ -10,7 +10,8 @@ let noon = kxk.noon
 
 import theme from "../util/theme.js"
 import frecent from "../util/frecent.js"
-import util from "../util/util.js"
+
+import belt from "../edit/tool/belt.js"
 
 import editor from "../edit/editor.js"
 
@@ -46,7 +47,7 @@ menu = (function ()
         x = parseInt(scx - w / 2)
         y = parseInt(scy - (c + 2) / 2)
         y -= ih
-        var _a_ = util.cellSize(this.greeter.header); gw = _a_[0]; gh = _a_[1]
+        var _a_ = belt.cellSize(this.greeter.header); gw = _a_[0]; gh = _a_[1]
 
         this.greeter.layout(parseInt(scx - gw / 2),_k_.max(0,parseInt(y - gh - 1 + ih)))
         this.input.layout(x + 2,y + 1,w - 4,iz)
@@ -61,7 +62,7 @@ menu = (function ()
         var ccol, items
 
         this.greeter.show(this.greet)
-        items = util.linesForText(`recent ...
+        items = belt.linesForText(`recent ...
 open ...
 new
 quit`)
@@ -78,7 +79,7 @@ quit`)
             return ' ' + i
         })
         ccol = parseInt(this.screen.cols / 2) - 5
-        this.width = util.widthOfLines(items)
+        this.width = belt.widthOfLines(items)
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)

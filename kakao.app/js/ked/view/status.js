@@ -6,9 +6,10 @@ import kxk from "../../kxk.js"
 let post = kxk.post
 let slash = kxk.slash
 
+import belt from "../edit/tool/belt.js"
+
 import color from "../util/color.js"
 import theme from "../util/theme.js"
-import util from "../util/util.js"
 
 import view from "./view.js"
 import crumbs from "./crumbs.js"
@@ -169,7 +170,7 @@ status = (function ()
         for (var _a_ = ci = 1, _b_ = this.gutter; (_a_ <= _b_ ? ci < this.gutter : ci > this.gutter); (_a_ <= _b_ ? ++ci : --ci))
         {
             fg = (cursor[0] ? 'status_fg' : 'column_fg')
-            if (util.isLinesPosOutside(this.state.s.lines,cursor))
+            if (belt.isLinesPosOutside(this.state.s.lines,cursor))
             {
                 fg = 'status_col_empty'
             }
