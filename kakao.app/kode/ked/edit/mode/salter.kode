@@ -1,8 +1,8 @@
-#  ███████   ███████   ███      █████████  ████████  ████████ 
-# ███       ███   ███  ███         ███     ███       ███   ███
-# ███████   █████████  ███         ███     ███████   ███████  
-#      ███  ███   ███  ███         ███     ███       ███   ███
-# ███████   ███   ███  ███████     ███     ████████  ███   ███
+#  ███████   ███████   ███    █████████  ████████  ████████ 
+# ███       ███   ███  ███       ███     ███       ███   ███
+# ███████   █████████  ███       ███     ███████   ███████  
+#      ███  ███   ███  ███       ███     ███       ███   ███
+# ███████   ███   ███  ███████   ███     ████████  ███   ███
 
 use ../../../kxk ◆ kseg salter
 use ../../theme  ◆ theme
@@ -10,7 +10,7 @@ use ../tool      ◆ belt
 use ..           ◆ mode
       
 function salterMode
-
+        
     @syms: []
 
     @: @state -> 
@@ -23,11 +23,11 @@ function salterMode
         @start()
 
     ###
-     0000000   0000000   000      000000000  00000000  00000000   
-    000       000   000  000         000     000       000   000  
-    0000000   000000000  000         000     0000000   0000000    
-         000  000   000  000         000     000       000   000  
-    0000000   000   000  0000000     000     00000000  000   000  
+     0000000   0000000   000    000000000  00000000  00000000   
+    000       000   000  000       000     000       000   000  
+    0000000   000000000  000       000     0000000   0000000    
+         000  000   000  000       000     000       000   000  
+    0000000   000   000  0000000   000     00000000  000   000  
     ###
     # ███      ███  ███   ███  ████████
     # ███      ███  ████  ███  ███     
@@ -59,6 +59,32 @@ function salterMode
     stop: ->
     
         @state.setMainCursor @state.mainCursor()
+        
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
+    # 000       000   000  000   000  000       000   000  000   000  000       
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
+    # 000       000   000  000   000       000  000   000  000   000       000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+    
+    @checkCursorsSet: state ->
+
+        ⮐ if not state.allowedModes.salter
+        
+        salt = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
+        if valid salt and state.s.cursors.length == 1 # start the salter mode if the main
+            mode.start state 'salter'                 # cursor moved inside a salted line 
+
+    cursorsSet: ->
+        
+        cursors = belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
+        
+        if valid cursors 
+            if @state.s.cursors eql cursors
+                true
+            else
+                @state.setCursors cursors
+        else
+            mode.stop @state 'salter'
     
     # ███   ███  ████████  ███   ███
     # ███  ███   ███        ███ ███ 
@@ -107,6 +133,12 @@ function salterMode
         
         'unhandled'
         
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
     themeColor: colorName ->
     
         switch colorName

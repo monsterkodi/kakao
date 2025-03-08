@@ -5,8 +5,9 @@
     ███ █ ███  ███   ███  ███   ███  ███     
     ███   ███   ███████   ███████    ████████
 
-    the class stores modes per editor state
-    the instances handle input and text insertion
+    stores modes per editor state
+    
+    modes handle input and text insertion:
 
     brckts   insert and highlight matching surround 
     salter   ascii-header         
@@ -23,10 +24,8 @@ use ./mode    ◆ brckts salter unype
 function mode
 
     @active: {} # maps editor state names to active mode instances
-    @modes: {}  # maps mode names to mode subclasses
+    @modes: {}  # maps mode names to mode classes
 
-    @: @name -> # log "mode: #{@name}"
-    
     @names: -> Object.keys mode.modes
 
     #  ███████  █████████   ███████   ████████   █████████
@@ -44,7 +43,7 @@ function mode
         @active[state.name] ?= []
         @active[state.name].push new mode.modes[name] state
         
-        log "mode.start" @active[state.name].map((m) -> m.name)
+        # log "mode.start" @active[state.name].map((m) -> m.name)
             
     @stop: state name ->
         
@@ -56,7 +55,7 @@ function mode
         
         m.stop() if m.stop is func
         
-        log "mode.stop" @active[state.name].map((m) -> m.name)
+        # log "mode.stop" @active[state.name].map((m) -> m.name)
 
     @toggle: state name ->
         
@@ -86,9 +85,9 @@ function mode
 
     @insert: state text ->
         
-        for mode in @active[state.name]
-            if mode.insert is func
-                text = mode.insert text
+        for m in @active[state.name]
+            if m.insert is func
+                text = m.insert text
         text
         
     # ███   ███  ████████  ███   ███
@@ -99,10 +98,22 @@ function mode
 
     @handleKey: state key event ->
         
-        for mode in @active[state.name]
-            if mode.handleKey is func
-                ⮐ if mode.handleKey(key event) != 'unhandled'
+        for m in @active[state.name]
+            if m.handleKey is func
+                ⮐ if m.handleKey(key event) != 'unhandled'
         'unhandled'
+        
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████   ███████  ████████  █████████
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███  ███       ███       ███          ███   
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████    ███████   ███████   ███████      ███   
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███       ███       ███  ███          ███   
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████   ███████   ████████     ███   
+
+    @cursorsSet: state ->
+    
+        for m in @active[state.name]
+            if m.cursorsSet is func
+                m.cursorsSet()
         
     # █████████  ███   ███  ████████  ██     ██  ████████   ███████   ███████   ███       ███████   ████████ 
     #    ███     ███   ███  ███       ███   ███  ███       ███       ███   ███  ███      ███   ███  ███   ███
@@ -112,9 +123,9 @@ function mode
     
     @themeColor: state colorName ->
     
-        for mode in @active[state.name]
-            if mode.themeColor is func
-                ⮐  mode.themeColor colorName
+        for m in @active[state.name]
+            if m.themeColor is func
+                ⮐  m.themeColor colorName
         
         # log "themeColor #{colorName} #{theme[colorName]}"
         theme[colorName]

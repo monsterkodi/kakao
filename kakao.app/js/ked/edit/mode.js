@@ -13,13 +13,11 @@ import unype from "./mode/unype.js"
 
 mode = (function ()
 {
+    function mode ()
+    {}
+
     mode["active"] = {}
     mode["modes"] = {}
-    function mode (name)
-    {
-        this.name = name
-    }
-
     mode["names"] = function ()
     {
         return Object.keys(mode.modes)
@@ -27,19 +25,15 @@ mode = (function ()
 
     mode["start"] = function (state, name)
     {
-        var _44_28_
+        var _43_28_
 
         if (this.isActive(state,name))
         {
             return
         }
         console.log(`mode.start ${name}`)
-        this.active[state.name] = ((_44_28_=this.active[state.name]) != null ? _44_28_ : [])
-        this.active[state.name].push(new mode.modes[name](state))
-        console.log("mode.start",this.active[state.name].map(function (m)
-        {
-            return m.name
-        }))
+        this.active[state.name] = ((_43_28_=this.active[state.name]) != null ? _43_28_ : [])
+        return this.active[state.name].push(new mode.modes[name](state))
     }
 
     mode["stop"] = function (state, name)
@@ -51,12 +45,8 @@ mode = (function ()
         this.active[state.name].splice(this.active[state.name].indexOf(m),1)
         if (_k_.isFunc(m.stop))
         {
-            m.stop()
+            return m.stop()
         }
-        console.log("mode.stop",this.active[state.name].map(function (m)
-        {
-            return m.name
-        }))
     }
 
     mode["toggle"] = function (state, name)
@@ -93,15 +83,15 @@ mode = (function ()
 
     mode["insert"] = function (state, text)
     {
-        var mode
+        var m
 
         var list = _k_.list(this.active[state.name])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            mode = list[_a_]
-            if (_k_.isFunc(mode.insert))
+            m = list[_a_]
+            if (_k_.isFunc(m.insert))
             {
-                text = mode.insert(text)
+                text = m.insert(text)
             }
         }
         return text
@@ -109,15 +99,15 @@ mode = (function ()
 
     mode["handleKey"] = function (state, key, event)
     {
-        var mode
+        var m
 
         var list = _k_.list(this.active[state.name])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            mode = list[_a_]
-            if (_k_.isFunc(mode.handleKey))
+            m = list[_a_]
+            if (_k_.isFunc(m.handleKey))
             {
-                if (mode.handleKey(key,event) !== 'unhandled')
+                if (m.handleKey(key,event) !== 'unhandled')
                 {
                     return
                 }
@@ -126,17 +116,32 @@ mode = (function ()
         return 'unhandled'
     }
 
-    mode["themeColor"] = function (state, colorName)
+    mode["cursorsSet"] = function (state)
     {
-        var mode
+        var m
 
         var list = _k_.list(this.active[state.name])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            mode = list[_a_]
-            if (_k_.isFunc(mode.themeColor))
+            m = list[_a_]
+            if (_k_.isFunc(m.cursorsSet))
             {
-                return mode.themeColor(colorName)
+                m.cursorsSet()
+            }
+        }
+    }
+
+    mode["themeColor"] = function (state, colorName)
+    {
+        var m
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (_k_.isFunc(m.themeColor))
+            {
+                return m.themeColor(colorName)
             }
         }
         return theme[colorName]

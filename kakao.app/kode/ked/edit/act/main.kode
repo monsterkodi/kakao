@@ -12,6 +12,7 @@ use ../tool      ◆ belt
 export
 
     setMain: m -> 
+        
         @s = @s.set 'main' clamp(0 @s.cursors.length-1 m)
         @adjustViewForMainCursor adjust:'topBotDelta'
         

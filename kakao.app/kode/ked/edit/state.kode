@@ -109,13 +109,10 @@ function state
         @adjustViewForMainCursor opt
         @swapState()
         
-        salt = belt.findPositionsForSaltInsert @s.lines mainCursor
-        if valid salt
-            if cursors.length == 1
-                mode.start @ 'salter'
-        else
-            if mode.isActive @ 'salter'
-                mode.stop @ 'salter'
+        mode.cursorsSet @
+        
+        if not mode.isActive @ 'salter'
+            mode.modes.salter.checkCursorsSet @
         @
             
     textOfSelectionOrWordAtCursor: -> 
@@ -211,8 +208,8 @@ function state
             delete @beginIndex
         @
 
-    pushState: -> @h.push @s;@
-    swapState: -> @h.pop();@pushState()
+    pushState: -> @h.push @s ; @
+    swapState: -> @h.pop() ; @pushState()
 
     isDirty: => @h.length > 1
     hasRedo: => @r.length > 0

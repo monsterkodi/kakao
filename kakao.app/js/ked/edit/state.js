@@ -139,7 +139,7 @@ state = (function ()
 
     state.prototype["setCursors"] = function (cursors, opt)
     {
-        var cur, idx, main, mainCursor, salt
+        var cur, idx, main, mainCursor
 
         opt = (opt != null ? opt : {})
         main = opt.main
@@ -180,20 +180,10 @@ state = (function ()
         this.s = this.s.set('main',main)
         this.adjustViewForMainCursor(opt)
         this.swapState()
-        salt = belt.findPositionsForSaltInsert(this.s.lines,mainCursor)
-        if (!_k_.empty(salt))
+        mode.cursorsSet(this)
+        if (!mode.isActive(this,'salter'))
         {
-            if (cursors.length === 1)
-            {
-                mode.start(this,'salter')
-            }
-        }
-        else
-        {
-            if (mode.isActive(this,'salter'))
-            {
-                mode.stop(this,'salter')
-            }
+            mode.modes.salter.checkCursorsSet(this)
         }
         return this
     }
