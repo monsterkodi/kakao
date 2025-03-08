@@ -8,8 +8,9 @@ let post = kxk.post
 
 import prof from "../../util/prof.js"
 import syntax from "../../util/syntax.js"
-import color from "../../util/color.js"
-import theme from "../../util/theme.js"
+
+import color from "../../theme/color.js"
+import theme from "../../theme/theme.js"
 
 import view from "../base/view.js"
 

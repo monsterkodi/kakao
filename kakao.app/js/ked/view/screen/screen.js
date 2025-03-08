@@ -3,7 +3,7 @@ var screen
 import kxk from "../../../kxk.js"
 let kseg = kxk.kseg
 
-import color from "../../util/color.js"
+import color from "../../theme/color.js"
 
 import belt from "../../edit/tool/belt.js"
 

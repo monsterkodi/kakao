@@ -11,11 +11,11 @@
 
 use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
-use ./util        ◆ ttio logfile prjcts session help julia frecent watcher
+use ./util        ◆ logfile prjcts session help julia frecent watcher
 use ./view/base   ◆ view
 use ./view/menu   ◆ quicky menu finder 
 use ./view/status ◆ status 
-use ./view/screen ◆ screen 
+use ./view/screen ◆ screen ttio
 use ./view/funcol ◆ funcol 
 use ./view/editor ◆ fileeditor
 use ./edit/tool   ◆ belt

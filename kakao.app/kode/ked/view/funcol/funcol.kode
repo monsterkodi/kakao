@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk ▪ post slash
-use ../../util   ◆ color theme
+use ../../theme  ◆ color theme
 use ../base      ◆ view knob crumbs
 use              ◆ dirtree
 

@@ -7,8 +7,8 @@ let post = kxk.post
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
-import color from "../../util/color.js"
-import theme from "../../util/theme.js"
+import color from "../../theme/color.js"
+import theme from "../../theme/theme.js"
 
 import view from "../base/view.js"
 import input from "../base/input.js"

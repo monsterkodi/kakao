@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk    ▪ kstr kseg slash krzl post
-use ../../util      ◆ color theme 
+use ../../theme     ◆ color theme 
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor
 

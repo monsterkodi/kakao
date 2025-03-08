@@ -6,8 +6,9 @@ import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let post = kxk.post
 
-import theme from "../../util/theme.js"
 import help from "../../util/help.js"
+
+import theme from "../../theme/theme.js"
 
 import belt from "../../edit/tool/belt.js"
 

@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk    ▪ kseg
-use ../../util      ◆ color
+use ../../theme     ◆ color
 use ../../edit/tool ◆ belt
 
 function screen

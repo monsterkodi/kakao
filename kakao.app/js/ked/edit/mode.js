@@ -4,7 +4,7 @@ var mode, record, uniko, vimple
 
 import kseg from "../../kxk/kseg.js"
 
-import theme from "../util/theme.js"
+import theme from "../theme/theme.js"
 
 import brckts from "./mode/brckts.js"
 import salter from "./mode/salter.js"

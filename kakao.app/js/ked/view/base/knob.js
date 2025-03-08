@@ -5,7 +5,7 @@ var knob
 import kxk from "../../../kxk.js"
 let post = kxk.post
 
-import theme from "../../util/theme.js"
+import theme from "../../theme/theme.js"
 
 import view from "./view.js"
 

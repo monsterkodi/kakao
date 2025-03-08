@@ -7,7 +7,8 @@
 ###
 
 use ../../../kxk ▪ slash post
-use ../../util   ◆ color theme syntax
+use ../../theme  ◆ color theme 
+use ../../util   ◆ syntax
 use ../base      ◆ view
 
 function statusfile extends view

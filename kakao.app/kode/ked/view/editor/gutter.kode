@@ -6,8 +6,9 @@
  0000000    0000000      000        000     00000000  000   000  
 ###
 
-use ../../util ◆ color theme prof 
-use ../base    ◆ view
+use ../../util  ◆ prof 
+use ../../theme ◆ color theme 
+use ../base     ◆ view
 
 function gutter extends view
 

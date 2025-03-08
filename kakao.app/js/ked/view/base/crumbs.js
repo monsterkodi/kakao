@@ -6,8 +6,8 @@ import kxk from "../../../kxk.js"
 let slash = kxk.slash
 let post = kxk.post
 
-import color from "../../util/color.js"
-import theme from "../../util/theme.js"
+import color from "../../theme/color.js"
+import theme from "../../theme/theme.js"
 
 import view from "./view.js"
 

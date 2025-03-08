@@ -7,8 +7,9 @@
 ###
 
 use ../../kxk ▪ kseg kutil post
-use ../util   ◆ theme specs
+use ../theme  ◆ theme 
 use ./tool    ◆ belt
+use           ◆ specs
 
 function complete
 

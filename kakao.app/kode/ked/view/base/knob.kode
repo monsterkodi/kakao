@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk ▪ post
-use ../../util   ◆ theme
+use ../../theme  ◆ theme
 use              ◆ view
 
 function knob extends view

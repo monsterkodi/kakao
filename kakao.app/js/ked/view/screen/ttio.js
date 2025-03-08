@@ -2,9 +2,9 @@ var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOw
 
 var TTIO
 
-import events from "../../kxk/events.js"
-import post from "../../kxk/post.js"
-import kstr from "../../kxk/kstr.js"
+import events from "../../../kxk/events.js"
+import post from "../../../kxk/post.js"
+import kstr from "../../../kxk/kstr.js"
 
 
 TTIO = (function ()

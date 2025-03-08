@@ -2,7 +2,7 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 
 var help
 
-import color from "./color.js"
+import color from "../theme/color.js"
 
 import belt from "../edit/tool/belt.js"
 

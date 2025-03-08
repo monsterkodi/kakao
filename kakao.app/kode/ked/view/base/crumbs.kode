@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk ▪ slash post
-use ../../util   ◆ color theme
+use ../../theme  ◆ color theme
 use              ◆ view
 
 function crumbs extends view

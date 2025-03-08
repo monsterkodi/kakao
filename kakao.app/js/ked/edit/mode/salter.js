@@ -5,7 +5,7 @@ var salterMode
 import kseg from "../../../kxk/kseg.js"
 import salter from "../../../kxk/salter.js"
 
-import theme from "../../util/theme.js"
+import theme from "../../theme/theme.js"
 
 import mode from "../mode.js"
 

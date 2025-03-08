@@ -11,7 +11,6 @@ let post = kxk.post
 
 import nfs from "../kxk/nfs.js"
 
-import ttio from "./util/ttio.js"
 import logfile from "./util/logfile.js"
 import prjcts from "./util/prjcts.js"
 import session from "./util/session.js"
@@ -29,6 +28,7 @@ import finder from "./view/menu/finder.js"
 import status from "./view/status/status.js"
 
 import screen from "./view/screen/screen.js"
+import ttio from "./view/screen/ttio.js"
 
 import funcol from "./view/funcol/funcol.js"
 

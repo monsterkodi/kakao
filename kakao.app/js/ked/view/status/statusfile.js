@@ -6,8 +6,9 @@ import kxk from "../../../kxk.js"
 let slash = kxk.slash
 let post = kxk.post
 
-import color from "../../util/color.js"
-import theme from "../../util/theme.js"
+import color from "../../theme/color.js"
+import theme from "../../theme/theme.js"
+
 import syntax from "../../util/syntax.js"
 
 import view from "../base/view.js"
@@ -66,9 +67,9 @@ statusfile = (function ()
 
     statusfile.prototype["adjustText"] = function ()
     {
-        var _61_14_
+        var _62_14_
 
-        this.file = ((_61_14_=this.file) != null ? _61_14_ : '')
+        this.file = ((_62_14_=this.file) != null ? _62_14_ : '')
         this.pars = slash.parse(this.file)
         this.syntax.setLines(['/' + this.pars.file])
         return this.rounded = '' + this.pars.file + ''

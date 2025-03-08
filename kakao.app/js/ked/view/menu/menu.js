@@ -8,10 +8,11 @@ let slash = kxk.slash
 let post = kxk.post
 let noon = kxk.noon
 
-import theme from "../../util/theme.js"
 import frecent from "../../util/frecent.js"
 
 import belt from "../../edit/tool/belt.js"
+
+import theme from "../../theme/theme.js"
 
 import cells from "../screen/cells.js"
 

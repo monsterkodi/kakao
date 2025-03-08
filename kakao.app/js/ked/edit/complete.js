@@ -7,10 +7,11 @@ let kseg = kxk.kseg
 let kutil = kxk.kutil
 let post = kxk.post
 
-import theme from "../util/theme.js"
-import specs from "../util/specs.js"
+import theme from "../theme/theme.js"
 
 import belt from "./tool/belt.js"
+
+import specs from "./specs.js"
 
 
 complete = (function ()
@@ -217,7 +218,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _193_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _194_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -231,7 +232,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_193_52_=theme[this.editor.name + '_selection']) != null ? _193_52_ : theme.editor_selection)
+            bg = ((_194_52_=theme[this.editor.name + '_selection']) != null ? _194_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

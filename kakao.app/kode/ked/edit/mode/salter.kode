@@ -5,7 +5,7 @@
 # ███████   ███   ███  ███████     ███     ████████  ███   ███
 
 use ../../../kxk ◆ kseg salter
-use ../../util   ◆ theme
+use ../../theme  ◆ theme
 use ..           ◆ mode
 
 function salterMode

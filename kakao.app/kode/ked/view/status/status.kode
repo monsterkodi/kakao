@@ -8,7 +8,7 @@
 
 use ../../../kxk    ▪ post slash
 use ../../edit/tool ◆ belt
-use ../../util      ◆ color theme
+use ../../theme     ◆ color theme
 use ../base         ◆ view crumbs 
 use                 ◆ statusfile
 

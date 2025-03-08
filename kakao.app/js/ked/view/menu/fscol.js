@@ -9,7 +9,7 @@ let kstr = kxk.kstr
 
 import nfs from "../../../kxk/nfs.js"
 
-import icons from "../../util/icons.js"
+import icons from "../../theme/icons.js"
 
 import choices from "./choices.js"
 

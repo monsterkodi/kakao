@@ -4,8 +4,8 @@ var cells
 
 import belt from "../../edit/tool/belt.js"
 
-import color from "../../util/color.js"
-import theme from "../../util/theme.js"
+import color from "../../theme/color.js"
+import theme from "../../theme/theme.js"
 
 
 cells = (function ()

@@ -17,7 +17,7 @@
 ###
 
 use ../../kxk ◆ kseg
-use ../util   ◆ theme
+use ../theme  ◆ theme
 use ./mode    ◆ brckts salter unype
  
 function mode

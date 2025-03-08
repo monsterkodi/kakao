@@ -12,9 +12,10 @@ let noon = kxk.noon
 
 import nfs from "../../../kxk/nfs.js"
 
-import theme from "../../util/theme.js"
 import prjcts from "../../util/prjcts.js"
-import icons from "../../util/icons.js"
+
+import theme from "../../theme/theme.js"
+import icons from "../../theme/icons.js"
 
 import crumbs from "../base/crumbs.js"
 
@@ -212,7 +213,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _187_31_
+        var depth, index, item, items, _188_31_
 
         if (_k_.empty(dirItem))
         {
@@ -226,7 +227,7 @@ dirtree = (function ()
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_187_31_=dirItem.depth) != null ? _187_31_ : 0)) + 1
+        depth = (((_188_31_=dirItem.depth) != null ? _188_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -366,7 +367,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _320_44_
+        var idx, item, _321_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -429,12 +430,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _360_51_
+        var _361_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_360_51_=icons[slash.ext(item.path)]) != null ? _360_51_ : icons.file)
+                return ((_361_51_=icons[slash.ext(item.path)]) != null ? _361_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

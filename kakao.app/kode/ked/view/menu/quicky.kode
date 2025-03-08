@@ -8,9 +8,10 @@
 
 use ../../../kxk    ▪ kstr slash post kutil noon
 use ../../../kxk    ◆ nfs
-use ../../util      ◆ prjcts walker theme icons
+use ../../util      ◆ prjcts walker 
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
+use ../../theme     ◆ theme icons
 use ../base         ◆ crumbs 
 use                 ◆ inputchoice fscol
 

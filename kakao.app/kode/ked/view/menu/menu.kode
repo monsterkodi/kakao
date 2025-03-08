@@ -7,8 +7,9 @@
 ###
 
 use ../../../kxk    ▪ kstr slash post noon
-use ../../util      ◆ theme frecent
+use ../../util      ◆ frecent
 use ../../edit/tool ◆ belt
+use ../../theme     ◆ theme 
 use ../screen       ◆ cells 
 use                 ◆ greeter inputchoice
 

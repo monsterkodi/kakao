@@ -13,12 +13,13 @@ import nfs from "../../../kxk/nfs.js"
 
 import prjcts from "../../util/prjcts.js"
 import walker from "../../util/walker.js"
-import theme from "../../util/theme.js"
-import icons from "../../util/icons.js"
 
 import belt from "../../edit/tool/belt.js"
 
 import editor from "../../edit/editor.js"
+
+import theme from "../../theme/theme.js"
+import icons from "../../theme/icons.js"
 
 import crumbs from "../base/crumbs.js"
 
@@ -492,7 +493,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _420_62_
+        var upDir, _421_62_
 
         switch (action)
         {
@@ -510,7 +511,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_420_62_=choice.link) != null ? _420_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_421_62_=choice.link) != null ? _421_62_ : choice.path))
                     }
                 }
                 break
