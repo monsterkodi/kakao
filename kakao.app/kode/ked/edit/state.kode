@@ -90,7 +90,7 @@ function state
             mainCursor = copy cursors[clamp 0 cursors.length-1 main]
         else
             mainCursor = @mainCursor()
-
+        
         cursors = belt.normalizePositions cursors @s.lines.length-1
 
         @s = @s.set 'cursors' cursors
@@ -108,6 +108,14 @@ function state
 
         @adjustViewForMainCursor opt
         @swapState()
+        
+        salt = belt.findPositionsForSaltInsert @s.lines mainCursor
+        if valid salt
+            if cursors.length == 1
+                mode.start @ 'salter'
+        else
+            if mode.isActive @ 'salter'
+                mode.stop @ 'salter'
         @
             
     textOfSelectionOrWordAtCursor: -> 

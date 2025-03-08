@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk ▪ kstr kseg
-use ◆ text edit
+use ◆ text edit salt
 
 function belt
 
@@ -452,7 +452,7 @@ function belt
 
 # merge methods of text and edit into this class
         
-for mod in [text edit]
+for mod in [text edit salt]
     for key,val of mod
         belt[key] = val
 

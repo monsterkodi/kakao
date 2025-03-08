@@ -48,11 +48,11 @@ mode = (function ()
 
         console.log(`mode.stop ${name}`)
         m = this.get(state,name)
+        this.active[state.name].splice(this.active[state.name].indexOf(m),1)
         if (_k_.isFunc(m.stop))
         {
             m.stop()
         }
-        this.active[state.name].splice(this.active[state.name].indexOf(m),1)
         console.log("mode.stop",this.active[state.name].map(function (m)
         {
             return m.name

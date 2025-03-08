@@ -34,43 +34,17 @@ function salterMode
     # ███      ███  ███ █ ███  ███████ 
     # ███      ███  ███  ████  ███     
     # ███████  ███  ███   ███  ████████
-
-    isSalterLine: line ->
-    
-        trimmed = kseg.trim(kseg.trim(kseg.trim(line) '#'))
-        kseg.startsWith(trimmed '0') or kseg.startsWith(trimmed '█')
-        
-    findPositionsForHeaderInsert: lines pos ->
-    
-        y = pos[1]
-        ⮐  if not @isSalterLine lines[y]
-        
-        sy = y
-        while @isSalterLine lines[sy-1]
-            sy -= 1
-            break if y-sy >= 4
-            
-        ey = y
-        while @isSalterLine lines[ey+1]
-            ey += 1
-            break if ey-sy >= 4
-                    
-        posl = []
-        if ey-sy >= 4
-            for y in sy..sy+4
-                posl.push [pos[0] y]
-
-        posl
     
     start: -> 
     
-        cursors = @findPositionsForHeaderInsert @state.s.lines @state.mainCursor()
+        cursors = belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
         
         if valid cursors
             @state.setCursors cursors
             
         else
             # if valid trim(belt.textFromPosToEol(@state.s.lines @state.mainCursor()))
+            @state.begin()
             @state.moveCursors 'eol'
             @state.singleCursorAtIndentOrStartOfLine()
             for i in 0...5
@@ -80,6 +54,7 @@ function salterMode
             @state.moveCursors 'up'
             for i in 0...4
                 @state.expandCursors 'up'
+            @state.end()
         
     stop: ->
     
@@ -94,7 +69,9 @@ function salterMode
     handleKey: key event ->
     
         switch key
-            'esc' ➜ ⮐ mode.stop @state @name
+            'esc' 
+                mode.stop @state @name
+                ⮐ 
             'delete'
                 @state.delete 'back' 
                 @state.delete 'back' 
@@ -107,6 +84,14 @@ function salterMode
                 @state.delete 'back' 
                 @state.delete 'back' 
                 ⮐
+            'up'
+                if @state.s.main > 0
+                    @state.setMain @state.s.main-1
+                    ⮐  
+            'down'
+                if @state.s.main < 4
+                    @state.setMain @state.s.main+1
+                    ⮐  
             
         if @state.s.cursors.length != 5 # need to check for alignment as well?
             mode.stop @state @name

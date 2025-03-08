@@ -51,9 +51,10 @@ function mode
         log "mode.stop #{name}"
         
         m = @get state name
-        m.stop() if m.stop is func
         
         @active[state.name].splice @active[state.name].indexOf(m) 1
+        
+        m.stop() if m.stop is func
         
         log "mode.stop" @active[state.name].map((m) -> m.name)
 

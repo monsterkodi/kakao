@@ -8,6 +8,7 @@ let kseg = kxk.kseg
 
 import text from "./text.js"
 import edit from "./edit.js"
+import salt from "./salt.js"
 
 
 belt = (function ()
@@ -836,7 +837,7 @@ belt = (function ()
     return belt
 })()
 
-var list = [text,edit]
+var list = [text,edit,salt]
 for (var _a_ = 0; _a_ < list.length; _a_++)
 {
     mod = list[_a_]

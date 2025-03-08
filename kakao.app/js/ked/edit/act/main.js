@@ -5,7 +5,11 @@ let kseg = kxk.kseg
 
 import belt from "../tool/belt.js"
 
-export default {mainCursor:function ()
+export default {setMain:function (m)
+{
+    this.s = this.s.set('main',_k_.clamp(0,this.s.cursors.length - 1,m))
+    return this.adjustViewForMainCursor({adjust:'topBotDelta'})
+},mainCursor:function ()
 {
     return this.s.cursors[this.s.main].asMutable()
 },setMainCursor:function (x, y)

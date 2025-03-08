@@ -86,7 +86,7 @@ export
     # 000   000   0000000       0      00000000  
     
     moveCursors: dir opt ->
-        
+    
         if dir is arr
 
             switch dir[0]

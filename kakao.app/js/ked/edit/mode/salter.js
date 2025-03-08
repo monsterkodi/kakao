@@ -27,63 +27,18 @@ salterMode = (function ()
         this.start()
     }
 
-    salterMode.prototype["isSalterLine"] = function (line)
-    {
-        var trimmed
-
-        trimmed = kseg.trim(kseg.trim(kseg.trim(line),'#'))
-        return kseg.startsWith(trimmed,'0') || kseg.startsWith(trimmed,'█')
-    }
-
-    salterMode.prototype["findPositionsForHeaderInsert"] = function (lines, pos)
-    {
-        var ey, posl, sy, y
-
-        y = pos[1]
-        if (!this.isSalterLine(lines[y]))
-        {
-            return
-        }
-        sy = y
-        while (this.isSalterLine(lines[sy - 1]))
-        {
-            sy -= 1
-            if (y - sy >= 4)
-            {
-                break
-            }
-        }
-        ey = y
-        while (this.isSalterLine(lines[ey + 1]))
-        {
-            ey += 1
-            if (ey - sy >= 4)
-            {
-                break
-            }
-        }
-        posl = []
-        if (ey - sy >= 4)
-        {
-            for (var _a_ = y = sy, _b_ = sy + 4; (_a_ <= _b_ ? y <= sy + 4 : y >= sy + 4); (_a_ <= _b_ ? ++y : --y))
-            {
-                posl.push([pos[0],y])
-            }
-        }
-        return posl
-    }
-
     salterMode.prototype["start"] = function ()
     {
         var cursors, i
 
-        cursors = this.findPositionsForHeaderInsert(this.state.s.lines,this.state.mainCursor())
+        cursors = belt.findPositionsForSaltInsert(this.state.s.lines,this.state.mainCursor())
         if (!_k_.empty(cursors))
         {
             return this.state.setCursors(cursors)
         }
         else
         {
+            this.state.begin()
             this.state.moveCursors('eol')
             this.state.singleCursorAtIndentOrStartOfLine()
             for (i = 0; i < 5; i++)
@@ -97,6 +52,7 @@ salterMode = (function ()
             {
                 this.state.expandCursors('up')
             }
+            return this.state.end()
         }
     }
 
@@ -112,7 +68,8 @@ salterMode = (function ()
         switch (key)
         {
             case 'esc':
-                return mode.stop(this.state,this.name)
+                mode.stop(this.state,this.name)
+                return
 
             case 'delete':
                 this.state.delete('back')
@@ -127,6 +84,20 @@ salterMode = (function ()
                 this.state.delete('back')
                 return
 
+            case 'up':
+                if (this.state.s.main > 0)
+                {
+                    this.state.setMain(this.state.s.main - 1)
+                    return
+                }
+                break
+            case 'down':
+                if (this.state.s.main < 4)
+                {
+                    this.state.setMain(this.state.s.main + 1)
+                    return
+                }
+                break
         }
 
         if (this.state.s.cursors.length !== 5)

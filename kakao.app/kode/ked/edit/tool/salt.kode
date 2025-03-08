@@ -1,0 +1,51 @@
+###
+ 0000000   0000000   000      000000000
+000       000   000  000         000   
+0000000   000000000  000         000   
+     000  000   000  000         000   
+0000000   000   000  0000000     000   
+###
+
+use ../../../kxk ▪ kstr kseg
+
+function salt
+
+    #  0000000   0000000   000      000000000  00000000  0000000    
+    # 000       000   000  000         000     000       000   000  
+    # 0000000   000000000  000         000     0000000   000   000  
+    #      000  000   000  000         000     000       000   000  
+    # 0000000   000   000  0000000     000     00000000  0000000    
+    
+    @isSaltedLine: line ->
+    
+        trimmed = kseg.trim(kseg.trim(kseg.trim(line) '#'))
+        kseg.startsWith(trimmed '0') or kseg.startsWith(trimmed '█')
+        
+    #  0000000   0000000   000      000000000        000  000   000   0000000  00000000  00000000   000000000  
+    # 000       000   000  000         000           000  0000  000  000       000       000   000     000     
+    # 0000000   000000000  000         000           000  000 0 000  0000000   0000000   0000000       000     
+    #      000  000   000  000         000           000  000  0000       000  000       000   000     000     
+    # 0000000   000   000  0000000     000           000  000   000  0000000   00000000  000   000     000     
+    
+    @findPositionsForSaltInsert: lines pos ->
+    
+        y = pos[1]
+        ⮐  if not @isSaltedLine lines[y]
+        
+        sy = y
+        while @isSaltedLine lines[sy-1]
+            sy -= 1
+            break if y-sy >= 4
+            
+        ey = y
+        while @isSaltedLine lines[ey+1]
+            ey += 1
+            break if ey-sy >= 4
+                    
+        posl = []
+        if ey-sy >= 4
+            for y in sy..sy+4
+                posl.push [pos[0] y]
+        posl
+
+export salt
