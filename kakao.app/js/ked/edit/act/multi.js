@@ -76,7 +76,7 @@ export default {allCursors:function ()
     return this.setCursors(outside,{main:-1})
 },moveCursors:function (dir, opt)
 {
-    var c, cursors, ind, line, lines, _100_22_, _99_18_
+    var c, cursors, ind, line, lines, main, _100_22_, _99_18_
 
     if (_k_.isArr(dir))
     {
@@ -154,7 +154,20 @@ export default {allCursors:function ()
         }
 
     }
-    this.setCursors(cursors,{main:this.s.main,adjust:'topBotDelta'})
+    main = this.s.main
+    switch (dir)
+    {
+        case 'left':
+        case 'up':
+            main = 0
+            break
+        case 'right':
+        case 'down':
+            main = -1
+            break
+    }
+
+    this.setCursors(cursors,{main:main,adjust:'topBotDelta'})
     return true
 },moveCursorsToStartOfSelections:function ()
 {

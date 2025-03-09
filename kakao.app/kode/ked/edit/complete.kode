@@ -30,6 +30,60 @@ function complete
         @choices.on 'action' @onChoicesAction
         
         @visible = false
+
+    complete: ->
+        
+        if empty @editor.state.chunkAfterCursor()
+            @word @editor.state.chunkBeforeCursor() 
+        
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
+    word: @turd ->
+    
+        log "complete.word #{b8 @turd}"
+        
+        if empty @turd
+            @visible = false
+            ⮐ 
+                
+        @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
+        @words = belt.prepareWordsForCompletion @turd @words
+        @words.sort()
+        log "@words #{y6 @words.length}" @words
+        
+        if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
+            @words = inserts.concat @words
+
+        @visible = valid @words
+
+        ⮐ if empty @words
+        
+        mc = @editor.state.mainCursor()
+        
+        head = @words[0]
+        
+        cx = mc[0] - @editor.state.s.view[0]     
+        cy = mc[1] - @editor.state.s.view[1]
+        
+        for ch,ci in head[@turd.length..]
+            @editor.cells.set cx+ci cy ch '#fff' theme.selection
+        
+        if @words.length <= 1
+            @choices.clear()                    
+        else
+            mlw = max 1 belt.widthOfLines(@words)
+            
+            h = min 8 @words.length
+            x  = @editor.cells.x+cx-@turd.length
+            y  = @editor.cells.y+cy+1
+            
+            @choices.layout x y mlw+3 h
+            @choices.set @words.map((w) -> ' '+w)
+            @choices.selectFirst()
         
     hide:   -> @visible = false
     hidden: -> not @visible
@@ -40,6 +94,12 @@ function complete
         
         # log "complete.onEditorLayout #{@name}"
         
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
     handleKey: key event ->
         
         ⮐ 'unhandled' if @hidden() or empty @words
@@ -79,6 +139,7 @@ function complete
         ⮐ if @hidden()
         
         @choices.onWheel event
+        # post.emit 'redraw'
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -107,20 +168,26 @@ function complete
             @editor.state.insert word[@turd.length..]
                     
         post.emit 'focus' 'editor'
-        @hide()
+        @complete()
         
+    #  ███████  ███   ███   ███████   ███   ███████  ████████    ███████          ███████    ███████  █████████  ███  ███   ███
+    # ███       ███   ███  ███   ███  ███  ███       ███        ███              ███   ███  ███          ███     ███  ████  ███
+    # ███       █████████  ███   ███  ███  ███       ███████    ███████          █████████  ███          ███          ███ █ ███
+    # ███       ███   ███  ███   ███  ███  ███       ███             ███         ███   ███  ███          ███          ███  ████
+    #  ███████  ███   ███   ███████   ███   ███████  ████████   ███████          ███   ███   ███████     ███          ███   ███
+
     onChoicesAction: action choice=>
         
         switch action
             'click' ➜ ⮐ @apply()
             
-        log "onChoicesAction #{action} #{choice}"
+        # log "onChoicesAction #{action} #{choice}"
         
-    # 000   000   0000000   00000000   0000000    
-    # 000 0 000  000   000  000   000  000   000  
-    # 000000000  000   000  0000000    000   000  
-    # 000   000  000   000  000   000  000   000  
-    # 00     00   0000000   000   000  0000000    
+    #  ███████  ███   ███  ████████   ████████   ████████  ███   ███  █████████      ███   ███   ███████   ████████   ███████  
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███         ███ █ ███  ███   ███  ███   ███  ███   ███
+    # ███       ███   ███  ███████    ███████    ███████   ███ █ ███     ███         █████████  ███   ███  ███████    ███   ███
+    # ███       ███   ███  ███   ███  ███   ███  ███       ███  ████     ███         ███   ███  ███   ███  ███   ███  ███   ███
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███         ██     ██   ███████   ███   ███  ███████  
 
     currentWord: ->
         
@@ -128,48 +195,6 @@ function complete
         if empty word
             word = @words[0]
         word
-    
-    word: @turd ->
-        
-        if empty @turd
-            @visible = false
-            ⮐ 
-                
-        @words = kseg.chunks(@editor.state.allLines()).map (chunk) -> kseg.str chunk.segl
-        @words = kutil.uniq @words
-        @words = @words.filter (w) => w.startsWith(@turd) and w != @turd
-        @words = belt.cleanWordsForCompletion @words
-        @words.sort()
-        
-        if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O
-            @words = inserts.concat @words
-
-        @visible = valid @words
-
-        ⮐ if empty @words
-        
-        mc = @editor.state.mainCursor()
-        
-        head = @words[0]
-        
-        cx = mc[0] - @editor.state.s.view[0]
-        cy = mc[1] - @editor.state.s.view[1]
-        
-        for ch,ci in head[@turd.length..]
-            @editor.cells.set cx+ci cy ch '#fff' theme.selection
-        
-        if @words.length <= 1
-            @choices.clear()
-        else
-            mlw = max 3 belt.widthOfLines(@words)
-            
-            h = min 8 @words.length
-            x  = @editor.cells.x+cx-@turd.length
-            y  = @editor.cells.y+cy+1
-            
-            @choices.layout x y mlw+1 h
-            @choices.set @words.map((w) -> ' '+w)
-            @choices.selectFirst()
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  

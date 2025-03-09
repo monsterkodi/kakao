@@ -226,7 +226,7 @@ use ../edit/tool ◆ belt
     # 000       000   000  000 0 000  000        000      000          000     000  000   000  000  0000  
     #  0000000   0000000   000   000  000        0000000  00000000     000     000   0000000   000   000  
     
-    ▸ cleanWordsForCompletion
+    ▸ prepareWordsForCompletion
     
         words = belt.linesForText """
             Alice
@@ -242,9 +242,10 @@ use ../edit/tool ◆ belt
             Alice’s,
         """
         
-        belt.cleanWordsForCompletion words ▸ ['Alice' 'Alice’s']
-        
-        belt.cleanWordsForCompletion ['"#fff"'] ▸ ['"#fff"']
+        belt.prepareWordsForCompletion 'A' words ▸ ['Alice' 'Alice’s']
+        belt.prepareWordsForCompletion '"' ['"#fff"'] ▸ ['"#fff"']
+        belt.prepareWordsForCompletion 'f' ['func()'] ▸ ['func' 'func()']
+        belt.prepareWordsForCompletion 'fa' ['f'] ▸ []
         
     ▸ indentLineRangesAndPositionsAtIndices
 

@@ -22,10 +22,8 @@
 
 - mode
     - salter mode
-        - switch automatically if cursor inside
+        - fix delete and other issues
 
-- surround
-      
 - completion
     - fix
         - turd missing completions
@@ -40,9 +38,6 @@
     
 - funclist
         
-- multicursor
-    - travel along columns on up and down
-
 - dirtree
     - git status
     - searchable?

@@ -92,20 +92,31 @@ use .. ◆ kstr kseg
     
     ▸ chunks
     
-        kseg.chunks 'a'      ▸ [index:0 segl:['a']]
-        kseg.chunks ' a'     ▸ [index:1 segl:['a']]
-        kseg.chunks 'ab cd'  ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
-        kseg.chunks 'ab\ncd' ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        kseg.chunks 'a'      ▸ [chunk:'a' index:0 segl:['a']]
+        kseg.chunks ' a'     ▸ [chunk:'a' index:1 segl:['a']]
+        kseg.chunks 'ab cd'  ▸ [{chunk:'ab' index:0 segl:['a' 'b']}, {chunk:'cd' index:3 segl:['c' 'd']}]
+        kseg.chunks 'ab\ncd' ▸ [{chunk:'ab' index:0 segl:['a' 'b']}, {chunk:'cd' index:3 segl:['c' 'd']}]
         
-        kseg.chunks kseg('a')      ▸ [index:0 segl:['a']]
-        kseg.chunks kseg(' a')     ▸ [index:1 segl:['a']]
-        kseg.chunks kseg('ab cd')  ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
-        kseg.chunks kseg('ab\ncd') ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        kseg.chunks kseg('a')      ▸ [chunk:'a'index:0 segl:['a']]
+        kseg.chunks kseg(' a')     ▸ [chunk:'a'index:1 segl:['a']]
+        kseg.chunks kseg('ab cd')  ▸ [{chunk:'ab' index:0 segl:['a' 'b']}, {chunk:'cd' index:3 segl:['c' 'd']}]
+        kseg.chunks kseg('ab\ncd') ▸ [{chunk:'ab' index:0 segl:['a' 'b']}, {chunk:'cd' index:3 segl:['c' 'd']}]
 
-        kseg.chunks kseg.segls('a')      ▸ [index:0 segl:['a']]
-        kseg.chunks kseg.segls(' a')     ▸ [index:1 segl:['a']]
-        kseg.chunks kseg.segls('ab cd')  ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
-        kseg.chunks kseg.segls('ab\ncd') ▸ [{index:0 segl:['a' 'b']}, {index:3 segl:['c' 'd']}]
+        kseg.chunks kseg.segls('a')      ▸ [chunk:'a' index:0 segl:['a']]
+        kseg.chunks kseg.segls(' a')     ▸ [chunk:'a' index:1 segl:['a']]
+        kseg.chunks kseg.segls('ab cd')  ▸ [{chunk:'ab' index:0 segl:['a' 'b']}, {chunk:'cd' index:3 segl:['c' 'd']}]
+        kseg.chunks kseg.segls('ab\ncd') ▸ [{chunk:'ab' index:0 segl:['a' 'b']}, {chunk:'cd' index:3 segl:['c' 'd']}]
+        
+    # 000   000   0000000   00000000   0000000     0000000  
+    # 000 0 000  000   000  000   000  000   000  000       
+    # 000000000  000   000  0000000    000   000  0000000   
+    # 000   000  000   000  000   000  000   000       000  
+    # 00     00   0000000   000   000  0000000    0000000   
+    
+    ▸ words
+    
+        kseg.words 'a' ▸ [word:'a' index:0 segl:['a']]
+        kseg.words 'ab cd'  ▸ [{word:'ab' index:0 segl:['a' 'b']}, {word:'cd' index:3 segl:['c' 'd']}]
         
     #  0000000  000000000   0000000   00000000   000000000   0000000  000   000  000  000000000  000   000  
     # 000          000     000   000  000   000     000     000       000 0 000  000     000     000   000  

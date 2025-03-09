@@ -138,7 +138,7 @@ line2`)
         compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'up'),[['b','c','d','a','e'],[],[[0,0],[0,1],[0,2]]])
         compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'down'),[['a','e','b','c','d'],[],[[0,2],[0,3],[0,4]]])
     })
-    section("cleanWordsForCompletion", function ()
+    section("prepareWordsForCompletion", function ()
     {
         words = belt.linesForText(`Alice
 Alice!
@@ -151,8 +151,10 @@ Alice:
 Alice;
 Alice’s
 Alice’s,`)
-        compare(belt.cleanWordsForCompletion(words),['Alice','Alice’s'])
-        compare(belt.cleanWordsForCompletion(['"#fff"']),['"#fff"'])
+        compare(belt.prepareWordsForCompletion('A',words),['Alice','Alice’s'])
+        compare(belt.prepareWordsForCompletion('"',['"#fff"']),['"#fff"'])
+        compare(belt.prepareWordsForCompletion('f',['func()']),['func','func()'])
+        compare(belt.prepareWordsForCompletion('fa',['f']),[])
     })
     section("indentLineRangesAndPositionsAtIndices", function ()
     {

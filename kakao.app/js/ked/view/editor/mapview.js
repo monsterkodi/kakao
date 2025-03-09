@@ -48,7 +48,7 @@ mapview = (function ()
         {
             return this.hide()
         }
-        return this.cells.cols = 10
+        return this.cells.cols = 11
     }
 
     mapview.prototype["hide"] = function ()

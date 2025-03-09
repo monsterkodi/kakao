@@ -175,41 +175,85 @@ kseg.detab = a tw=4 ->
     000       000   000  000   000  000  0000  000  000        000  
      0000000  000   000   0000000   000   000  000   000  0000000   
      
-    splits any into a list of chunks
+    returns chunks for any
 
-    each chunk has 2 properties:
+    chunk:
+        chunk: string           # string without any whitespace (joined graphemes)
         index: int              # start index in the grapheme list of any
         segl:  list of strings  # list of graphemes without any whitespace
+###
+
+kseg.chunks = any ->
+    
+    kseg.infos any 'chunk' (s) -> s not in ' \t\r\n'
+    
+###
+    000   000   0000000   00000000   0000000     0000000  
+    000 0 000  000   000  000   000  000   000  000       
+    000000000  000   000  0000000    000   000  0000000   
+    000   000  000   000  000   000  000   000       000  
+    00     00   0000000   000   000  0000000    0000000   
+    
+    returns words for any
+
+    word:
+        word: string            # string without any whitespace or punctuation
+        index: int              # index in the grapheme list of any
+        segl:  list of strings  # list of graphemes without any whitespace or punctuation
+###
+
+kseg.words = any ->
+    
+    kseg.infos any 'word' (s) -> /\w+/.test(s)
+    
+###
+    000  000   000  00000000   0000000    0000000  
+    000  0000  000  000       000   000  000       
+    000  000 0 000  000000    000   000  0000000   
+    000  000  0000  000       000   000       000  
+    000  000   000  000        0000000   0000000   
+    
+    list of infos for any, key and a test function
+
+    each info has these properties:
+        key:   string           # string where each grapheme satisfies the test
+        index: int              # index in the grapheme list of any
+        segl:  list of strings  # list of graphemes where each grapheme satisfies the test
     
     any can be:
         a string
         a list of strings
         a list of list of strings
 ###
-
-kseg.chunks = any ->
+    
+kseg.infos = any key test ->
     
     ⮐ [] if empty any
     
-    chunks = []
-    spaces = true
+    infos = []
+    turd = true
     
     for g,i in kseg.segl any
-        if spaces
-            if g not in ' \t\r\n'
-                chunk = index:i segl:[g]
-                spaces = false
+        if turd
+            if test(g)
+                info = {}
+                info[key]  = g
+                info.index = i 
+                info.segl  = [g]
+                turd = false
         else
-            if g in ' \t\r\n'
-                spaces = true
-                chunks.push chunk
+            if not test(g)
+                turd = true
+                info[key] = kseg.str info.segl
+                infos.push info
             else
-                chunk.segl.push g
+                info.segl.push g
                 
-    if not spaces
-        chunks.push chunk
-        
-    chunks
+    if not turd
+        info[key] = kseg.str info.segl
+        infos.push info
+
+    infos
     
 ###
      0000000  000000000   0000000   00000000   000000000   0000000        000   000  000  000000000  000   000  
@@ -371,7 +415,7 @@ kseg.spanForClosestWordAtColumn = a c ->
         ls > rs               ➜ s = kseg.spanForClosestWordAtColumn right 0; s[0] += c; s[1] += c # right word is closer
         
     s
-    
+        
 # 000  000   000  0000000    00000000  000   000  000000000  
 # 000  0000  000  000   000  000       0000  000     000     
 # 000  000 0 000  000   000  0000000   000 0 000     000     

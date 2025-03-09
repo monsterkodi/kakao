@@ -121,8 +121,15 @@ export
                 'ind'       ➜ c[0] = belt.numIndent(line)
                 'ind_eol'   ➜ ind  = belt.numIndent(line); c[0] = c[0] < ind ? ind : kseg.width(line)
                 'ind_bol'   ➜ ind  = belt.numIndent(line); c[0] = c[0] > ind ? ind : 0
- 
-        @setCursors cursors main:@s.main adjust:'topBotDelta'
+
+        main = @s.main 
+        switch dir
+            'left'
+            'up'   ➜ main =  0
+            'right'
+            'down' ➜ main = -1
+    
+        @setCursors cursors main:main adjust:'topBotDelta'
         true
         
     moveCursorsToStartOfSelections: ->

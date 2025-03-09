@@ -142,44 +142,65 @@ kseg.detab = function (a, tw = 4)
 
 kseg.chunks = function (any)
 {
-    var chunk, chunks, g, i, spaces
+    return kseg.infos(any,'chunk',function (s)
+    {
+        return !(_k_.in(s,' \t\r\n'))
+    })
+}
+
+kseg.words = function (any)
+{
+    return kseg.infos(any,'word',function (s)
+    {
+        return /\w+/.test(s)
+    })
+}
+
+kseg.infos = function (any, key, test)
+{
+    var g, i, info, infos, turd
 
     if (_k_.empty(any))
     {
         return []
     }
-    chunks = []
-    spaces = true
+    infos = []
+    turd = true
     var list = _k_.list(kseg.segl(any))
     for (i = 0; i < list.length; i++)
     {
         g = list[i]
-        if (spaces)
+        if (turd)
         {
-            if (!(_k_.in(g,' \t\r\n')))
+            if (test(g))
             {
-                chunk = {index:i,segl:[g]}
-                spaces = false
+                info = {}
+                info[key] = g
+                info.index = i
+                info.segl = [g]
+                turd = false
             }
         }
         else
         {
-            if (_k_.in(g,' \t\r\n'))
+            if (!test(g))
             {
-                spaces = true
-                chunks.push(chunk)
+                turd = true
+                info[key] = kseg.str(info.segl)
+                infos.push(info)
             }
             else
             {
-                chunk.segl.push(g)
+                info.segl.push(g)
             }
         }
     }
-    if (!spaces)
+    if (!turd)
     {
-        chunks.push(chunk)
+        info[key] = kseg.str(info.segl)
+        infos.push(info)
     }
-    return chunks
+    return infos
 }
 
 kseg.startsWith = function (a, prefix)

@@ -38,7 +38,7 @@ function mapview extends view
     show: doShow=true => 
         
         ⮐ @hide() if doShow == false
-        @cells.cols = 10
+        @cells.cols = 11
 
     hide: => 
         

@@ -917,23 +917,51 @@ text = (function ()
         return trimmed[0] === "#"
     }
 
-    text["cleanWordsForCompletion"] = function (words)
+    text["prepareWordsForCompletion"] = function (turd, words)
     {
-        var segl, segls, tc
+        var end, push, segl, segls, tc
 
+        words = words.filter(function (w)
+        {
+            return w.startsWith(turd) && w !== turd
+        })
+        words = kutil.uniq(words)
+        if (_k_.empty(words))
+        {
+            return []
+        }
         segls = []
+        push = function (s)
+        {
+            var ws
+
+            ws = kseg.words(s)
+            if (ws[0] && ws[0].index === 0 && (turd !== ws[0].word && ws[0].word !== s) && ws[0].word.startsWith(turd))
+            {
+                segls.push(ws[0].segl)
+            }
+            return segls.push(s)
+        }
         var list = _k_.list(kseg.segls(words))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             segl = list[_a_]
             tc = kseg.tailCountTurd(segl)
-            if (tc === 1 && segl[0] === segl.slice(-1)[0])
+            if (tc === 0 || tc === 1 && segl[0] === segl.slice(-1)[0])
             {
-                segls.push(segl)
+                push(segl)
             }
             else
             {
-                segls.push(segl.slice(0, segl.length - tc))
+                end = kseg.str(segl.slice(segl.length - tc))
+                if (_k_.in(end,'])}"\'') || _k_.in(end,['()','[]','{}']))
+                {
+                    push(segl)
+                }
+                else
+                {
+                    push(segl.slice(0, segl.length - tc))
+                }
             }
         }
         return kutil.uniq(segls.map(kseg.str))

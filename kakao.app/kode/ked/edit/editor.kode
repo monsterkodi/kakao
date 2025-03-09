@@ -57,9 +57,9 @@ function editor extends draw
             @gutter.layout    x+sl    y   g   h
             
         if @mapscr
-            m = @mapscr.visible() ? 10 : 0
+            m = @mapscr.visible() ? 12 : 0
             r = @mapscr.visible() ? h : 0
-            @mapscr.layout x+w-sr-10   y   m   r
+            @mapscr.layout x+w-sr-12   y   m   r
             
         @cells.layout x+sl+g  y   w-s-g-m    h
         
@@ -101,7 +101,8 @@ function editor extends draw
         ⮐ if not inside
 
         if @complete?
-            ⮐ true if @complete.onWheel(event)
+            if res = @complete.onWheel(event)
+                ⮐  res
 
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state.scrollView(event.dir)
@@ -174,10 +175,7 @@ function editor extends draw
 
         if valid event.char
             @state.insert event.char
-            if @complete?
-                if empty @state.chunkAfterCursor()
-                    # log "complete #{@state.chunkBeforeCursor()}"
-                    @complete.word @state.chunkBeforeCursor() 
+            @complete?.complete()                
         else
             if key not in ['shift' 'ctrl' 'alt' 'cmd'] 
                 log 'editor.onKey?' key

@@ -27,7 +27,7 @@ function brckts
         # '>': ['<' '>'] # html 
         # '*': ['*' '*'] # md   
         
-    @: @state ->
+    @: @state ->      
         
         @name = 'brckts'
                         

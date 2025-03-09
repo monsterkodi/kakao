@@ -25,4 +25,18 @@ function filepos
             @state.setCursors [posview[0..1]]
             @state.setView posview[2..]
             
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
+    handleKey: key event ->
+    
+        switch key
+            'cmd+1' ➜ log 'go back'
+            'cmd+2' ➜ log 'go forward'
+            
+        'unhandled'
+            
 export filepos

@@ -99,9 +99,9 @@ editor = (function ()
         }
         if (this.mapscr)
         {
-            m = (this.mapscr.visible() ? 10 : 0)
+            m = (this.mapscr.visible() ? 12 : 0)
             r = (this.mapscr.visible() ? h : 0)
-            this.mapscr.layout(x + w - sr - 10,y,m,r)
+            this.mapscr.layout(x + w - sr - 12,y,m,r)
         }
         this.cells.layout(x + sl + g,y,w - s - g - m,h)
         ;(this.complete != null ? this.complete.onEditorLayout() : undefined)
@@ -134,7 +134,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, _103_20_, _97_25_, _98_25_, _99_25_
+        var inside, res, _103_20_, _97_25_, _98_25_, _99_25_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -150,9 +150,9 @@ editor = (function ()
         }
         if ((this.complete != null))
         {
-            if (this.complete.onWheel(event))
+            if (res = this.complete.onWheel(event))
             {
-                return true
+                return res
             }
         }
         switch (event.dir)
@@ -206,7 +206,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _168_20_, _172_21_, _177_24_
+        var _169_20_, _173_21_, _178_21_
 
         if (!this.hasFocus())
         {
@@ -227,13 +227,7 @@ editor = (function ()
         if (!_k_.empty(event.char))
         {
             this.state.insert(event.char)
-            if ((this.complete != null))
-            {
-                if (_k_.empty(this.state.chunkAfterCursor()))
-                {
-                    return this.complete.word(this.state.chunkBeforeCursor())
-                }
-            }
+            return (this.complete != null ? this.complete.complete() : undefined)
         }
         else
         {

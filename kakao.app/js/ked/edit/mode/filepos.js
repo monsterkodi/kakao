@@ -32,6 +32,21 @@ filepos = (function ()
         }
     }
 
+    filepos.prototype["handleKey"] = function (key, event)
+    {
+        switch (key)
+        {
+            case 'cmd+1':
+                console.log('go back')
+                break
+            case 'cmd+2':
+                console.log('go forward')
+                break
+        }
+
+        return 'unhandled'
+    }
+
     return filepos
 })()
 
