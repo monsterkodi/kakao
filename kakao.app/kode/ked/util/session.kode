@@ -149,7 +149,8 @@ function session extends events
             
             # log 'post merge:' recent
             
-            @set 'files' recent.files # probably should actually merge here instead of overriding!
+            @set 'files'  recent.files # probably should actually merge here instead of overriding!
+            @set 'editor' recent.editor
         
         @emit 'loaded'
     

@@ -19,6 +19,7 @@ use ./view/screen ◆ screen ttio
 use ./view/funcol ◆ funcol 
 use ./view/editor ◆ fileeditor
 use ./edit/tool   ◆ belt
+use ./edit        ◆ mode
 
 global.int = parseInt # this should go into kode instead
 
@@ -55,7 +56,7 @@ function KED
         @menu    = new menu       @screen        
         @quicky  = new quicky     @screen 
         @finder  = new finder     @screen 
-        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete' 'salter' 'uniko' 'vimple' 'unype' 'brckts']
+        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete' 'salter' 'uniko' 'vimple' 'unype' 'brckts' 'filepos']
         @funcol  = new funcol     @screen 'funcol'  ['scroll' 'knob']
         @status  = new status     @screen @editor.state
         
@@ -86,16 +87,17 @@ function KED
                                     
         if valid args.options
             @loadFile args.options[0]
-        else
-            @menu.show true
+        # else
+            # @menu.show true
             
     onSessionLoaded: =>
         
         if empty @currentFile
-            @menu.show true 
-            # if root = ked_session.get 'funcol▸root'
-                # log "load last session root #{root}"
-                # post.emit 'funcol.root' root
+            
+            if file = ked_session.get "editor▸file"
+                @loadFile file
+            else
+                @menu.show true
                             
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -174,7 +176,7 @@ function KED
     onFileChange: event =>
     
         if event.path == @currentFile
-            log "ked.onFileChange #{event.change} #{@currentFile}" 
+            # log "ked.onFileChange #{event.change} #{@currentFile}" 
             switch event.change
                 'delete' ➜ @newFile() # todo: load current text into new file
                 'rename' ➜ @reloadFile()
@@ -215,6 +217,9 @@ function KED
         @status.drawTime = kstr.time BigInt(@status.time)
         
         @editor.mapscr?.reload()
+        
+        ked_session.set "editor▸file" @currentFile
+        mode.fileLoaded @editor.state @currentFile
         
         @redraw()
         

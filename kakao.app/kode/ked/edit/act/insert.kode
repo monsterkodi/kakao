@@ -27,10 +27,7 @@ export
             ⮐ @indentSelectedLines() if text == '\t'
             @deleteSelection()
                     
-        cursors = @allCursors()
-        lines   = @allLines()
-
-        [lines cursors] = belt.insertTextAtPositions lines text cursors
+        [lines cursors] = belt.insertTextAtPositions @allLines() text @allCursors()
         
         @clearHighlights()
         @setLines   lines
@@ -44,11 +41,7 @@ export
 
     insertAsciiHeaderForSelectionOrWordAtCursor: ->
 
-        selections = @allSelections()
-        cursors    = @allCursors()
-        lines      = @allLines()
-
-        [lines cursors selections] = belt.insertAsciiHeaderForPositionsAndRanges lines cursors selections
+        [lines cursors selections] = belt.insertAsciiHeaderForPositionsAndRanges @allLines() @allCursors() @allSelections()
         
         @clearHighlights()
         @setLines      lines
@@ -62,11 +55,10 @@ export
     # ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
 
     surroundSelection: trigger pair ->
+        
+        log "surroundSelection #{trigger} #{pair}"
     
-        selections = @allSelections()
-        lines      = @allLines()
-
-        [lines posl] = belt.insertSurroundAtRanges lines selections trigger pair
+        [lines posl] = belt.insertSurroundAtRanges @allLines() @allSelections() trigger pair
 
         # @clearHighlights()
         @setLines      lines

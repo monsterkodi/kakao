@@ -73,7 +73,6 @@ function dirtree extends choices
         for key,value of state.open
             
             if key.startsWith @currentRoot
-                log "open #{key}"
                 @openDir @itemForPath(key) redraw:true
         
     #  0000000  000000000   0000000   000000000  00000000  
@@ -89,7 +88,7 @@ function dirtree extends choices
         ⮐ if empty state
         ⮐ if not state is obj
         
-        log "dirtree.setState" state
+        # log "dirtree.setState" state
         
         ked_session.set @name state
                     
@@ -153,16 +152,16 @@ function dirtree extends choices
 
                 switch action
                     
-                    'left'   ➜ ⮐ @selectPrevKeepOffset()
-                    'right'  ➜ ⮐ @selectNextKeepOffset()
+                    'left'   ➜ ⮐  @selectPrevKeepOffset()
+                    'right'  ➜ ⮐  @selectNextKeepOffset()                             
                     
                     'delete'
-                    'esc'    ➜ ⮐ @selectParent()
+                    'esc'    ➜ ⮐  @selectParent()
                     
-                    'space'  ➜ ⮐ post.emit 'quicky' c.path
+                    'space'  ➜ ⮐  post.emit 'quicky' c.path
                     
                     'click'
-                    'return' ➜ ⮐ post.emit 'file.open' c.path
+                    'return' ➜ ⮐  post.emit 'file.open' c.path
         
         super action arg event
         
@@ -192,9 +191,7 @@ function dirtree extends choices
         for item in items
             item.depth = depth
             item.tilde = lpad(1+depth*2) + @symbolName(item)
-            
-            if item.type == 'dir' and state.open[item.path]
-                log "open subitem #{item.path}"
+            if item.type == 'dir' and state.open?[item.path]
                 @openDir item redraw:true
         
         items.sort (a b) => @weight(a) - @weight(b)
@@ -276,11 +273,13 @@ function dirtree extends choices
     selectPrevKeepOffset: ->
         
         @selectPrev()
+        post.emit 'quicky' @current().path if @current().type == 'file'
         @state.setView [0 @state.s.view[1]-1]
 
     selectNextKeepOffset: ->
         
         @selectNext()
+        post.emit 'quicky' @current().path if @current().type == 'file'
         @state.setView [0 @state.s.view[1]+1]
         
     selectOpenSiblingAboveOrParent: ->

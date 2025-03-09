@@ -135,7 +135,7 @@ edit = (function ()
         }
         var _c_ = this.insertTextAtPositions(lines,pair[1],endl); lines = _c_[0]; endl = _c_[1]
 
-        if (trigger === pair[0])
+        if (pair[0][0] === trigger && pair[0] !== pair[1])
         {
             return [lines,begl]
         }
@@ -536,6 +536,21 @@ edit = (function ()
             }
             newLines.splice(index,1,newLine)
         }
+        return [newLines,newRngs,newPosl]
+    }
+
+    edit["toggleCommentTypesInLineRangesAtIndices"] = function (lines, rngs, posl, indices)
+    {
+        var newLines, newPosl, newRngs
+
+        if (_k_.empty(indices))
+        {
+            return [lines,rngs,posl]
+        }
+        newLines = _k_.copy(lines)
+        newRngs = _k_.copy(rngs)
+        newPosl = _k_.copy(posl)
+        console.log(`toggleCommentTypes ${indices}`)
         return [newLines,newRngs,newPosl]
     }
 

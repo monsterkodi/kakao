@@ -83,7 +83,6 @@ dirtree = (function ()
             value = state.open[key]
             if (key.startsWith(this.currentRoot))
             {
-                console.log(`open ${key}`)
                 this.openDir(this.itemForPath(key),{redraw:true})
             }
         }
@@ -104,7 +103,6 @@ dirtree = (function ()
         {
             return
         }
-        console.log("dirtree.setState",state)
         return ked_session.set(this.name,state)
     }
 
@@ -214,7 +212,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _188_31_
+        var depth, index, item, items, state, _187_31_, _194_48_
 
         if (_k_.empty(dirItem))
         {
@@ -228,7 +226,7 @@ dirtree = (function ()
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_188_31_=dirItem.depth) != null ? _188_31_ : 0)) + 1
+        depth = (((_187_31_=dirItem.depth) != null ? _187_31_ : 0)) + 1
         state = ked_session.get(this.name,{})
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -236,9 +234,8 @@ dirtree = (function ()
             item = list[_a_]
             item.depth = depth
             item.tilde = _k_.lpad(1 + depth * 2) + this.symbolName(item)
-            if (item.type === 'dir' && state.open[item.path])
+            if (item.type === 'dir' && (state.open != null ? state.open[item.path] : undefined))
             {
-                console.log(`open subitem ${item.path}`)
                 this.openDir(item,{redraw:true})
             }
         }
@@ -311,12 +308,20 @@ dirtree = (function ()
     dirtree.prototype["selectPrevKeepOffset"] = function ()
     {
         this.selectPrev()
+        if (this.current().type === 'file')
+        {
+            post.emit('quicky',this.current().path)
+        }
         return this.state.setView([0,this.state.s.view[1] - 1])
     }
 
     dirtree.prototype["selectNextKeepOffset"] = function ()
     {
         this.selectNext()
+        if (this.current().type === 'file')
+        {
+            post.emit('quicky',this.current().path)
+        }
         return this.state.setView([0,this.state.s.view[1] + 1])
     }
 
@@ -374,7 +379,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _327_44_
+        var idx, item, _326_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -437,12 +442,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _367_51_
+        var _366_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_367_51_=icons[slash.ext(item.path)]) != null ? _367_51_ : icons.file)
+                return ((_366_51_=icons[slash.ext(item.path)]) != null ? _366_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

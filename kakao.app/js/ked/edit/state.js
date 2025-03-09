@@ -478,6 +478,10 @@ state = (function ()
     state.prototype["setView"] = function (view)
     {
         this.set('view',view)
+        if (this.name === 'editor.state')
+        {
+            ked_session.set("editor▸view",view)
+        }
         return this
     }
 

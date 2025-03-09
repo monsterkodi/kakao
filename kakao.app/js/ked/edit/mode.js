@@ -1,4 +1,4 @@
-var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
+var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var mode, record, uniko, vimple
 
@@ -9,6 +9,7 @@ import theme from "../theme/theme.js"
 import brckts from "./mode/brckts.js"
 import salter from "./mode/salter.js"
 import unype from "./mode/unype.js"
+import filepos from "./mode/filepos.js"
 
 
 mode = (function ()
@@ -181,16 +182,32 @@ mode = (function ()
         }
     }
 
+    mode["fileLoaded"] = function (state, file)
+    {
+        var m
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (_k_.isFunc(m.fileLoaded))
+            {
+                m.fileLoaded(file)
+            }
+        }
+    }
+
     return mode
 })()
 
 
 vimple = (function ()
 {
-    _k_.extend(vimple, mode)
-    function vimple ()
+    function vimple (state)
     {
-        vimple.__super__.constructor.call(this,'vimple')
+        this.state = state
+    
+        this.name = 'vimple'
     }
 
     return vimple
@@ -199,10 +216,11 @@ vimple = (function ()
 
 uniko = (function ()
 {
-    _k_.extend(uniko, mode)
-    function uniko ()
+    function uniko (state)
     {
-        uniko.__super__.constructor.call(this,'uniko')
+        this.state = state
+    
+        this.name = 'uniko'
     }
 
     return uniko
@@ -211,14 +229,15 @@ uniko = (function ()
 
 record = (function ()
 {
-    _k_.extend(record, mode)
-    function record ()
+    function record (state)
     {
-        record.__super__.constructor.call(this,'record')
+        this.state = state
+    
+        this.name = 'record'
     }
 
     return record
 })()
 
-mode.modes = {brckts:brckts,salter:salter,unype:unype,uniko:uniko,vimple:vimple,record:record}
+mode.modes = {brckts:brckts,salter:salter,unype:unype,uniko:uniko,vimple:vimple,record:record,filepos:filepos}
 export default mode;

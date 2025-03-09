@@ -115,6 +115,7 @@ handleKey = key event -> # will be bound to state
         'alt+cmd+d' 'alt+ctrl+d'            ➜ ⮐ @selectWordAtCursor_highlightSelection_selectAllHighlights()
         
         'cmd+/' 'ctrl+/'                    ➜ ⮐ @toggleCommentAtSelectionOrCursorLines()
+        'alt+cmd+/' 'ctrl+alt+/'            ➜ ⮐ @toggleCommentTypeAtSelectionOrCursorLines()
                 
         'esc'                               ➜ ⮐ @clearCursorsHighlightsAndSelections()
         

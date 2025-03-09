@@ -114,10 +114,25 @@ use .. ◆ kstr kseg
     # 0000000      000     000   000  000   000     000     0000000   00     00  000     000     000   000  
     
     ▸ startsWith
+
+        kseg.startsWith kseg('something') ''                ▸ false
+        kseg.startsWith kseg('something') ' '               ▸ false
+        kseg.startsWith kseg('something') 'Some'            ▸ false
+        kseg.startsWith kseg('something') 'son'             ▸ false
+        kseg.startsWith kseg('something') 'somethinga'      ▸ false
+        kseg.startsWith kseg('something') 'some'            ▸ true
+        kseg.startsWith kseg('something') 'something'       ▸ true
+        kseg.startsWith kseg('something') kseg('something') ▸ true
+
+    ▸ endsWith
     
-        kseg.startsWith kseg('something') 'some' ▸ true
-        kseg.startsWith kseg('something') 'Some' ▸ false
-        kseg.startsWith kseg('something') 'son'  ▸ false
+        kseg.endsWith kseg('something') ''                ▸ false
+        kseg.endsWith kseg('something') ' '               ▸ false
+        kseg.endsWith kseg('something') 'asomething'      ▸ false
+        kseg.endsWith kseg('something') 'Thing'           ▸ false
+        kseg.endsWith kseg('something') 'thing'           ▸ true
+        kseg.endsWith kseg('something') 'something'       ▸ true
+        kseg.endsWith kseg('something') kseg('something') ▸ true
         
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     

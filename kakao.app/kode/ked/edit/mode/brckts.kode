@@ -37,17 +37,33 @@ function brckts
     # ███  ███   ███          ███           
     # ███   ███  ████████     ███           
 
-    handleKey: key event ->              
+    handleKey: key event ->
+        
+        if key == 'delete' and empty @state.s.selections
+            pairs = kutil.uniq Object.values(brckts.surround)
+            if valid (rngs = belt.rangesOfPairsSurroundingPositions(@state.s.lines pairs @state.s.cursors))
+                @state.setSelections rngs
+                @state.deleteSelection()
+                ⮐ 
         
         ⮐ 'unhandled' if empty brckts.surround[event.char]
-
-        if valid @state.s.selections
-            @state.surroundSelection event.char brckts.surround[event.char]
-            ⮐  
             
         if event.char == '#'
-            log 'check if inside string'
+
+            ⮐  "unhandled" if valid belt.positionsAndRangesOutsideStrings(@state.s.lines @state.s.selections @state.s.cursors)
+            
+            if valid @state.s.selections
+                ⮐ @state.surroundSelection event.char brckts.surround[event.char]
+            
+            @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
+            @state.moveCursors 'left' 
+            ⮐
+            
         else
+            
+            if valid @state.s.selections
+                ⮐ @state.surroundSelection event.char brckts.surround[event.char]
+            
             # is space or empty or comma,semicolon,etc ahead
             nsegl = belt.segsForPositions @state.s.lines @state.s.cursors
             nsegs = kutil.uniq nsegl

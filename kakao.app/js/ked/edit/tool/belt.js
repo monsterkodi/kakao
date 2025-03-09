@@ -417,7 +417,7 @@ belt = (function ()
 
     belt["isPosAfterRange"] = function (pos, rng)
     {
-        return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] >= rng[2])
+        return pos[1] > rng[3] || (pos[1] === rng[3] && pos[0] > rng[2])
     }
 
     belt["isPosTouchingRange"] = function (pos, rng)
@@ -452,6 +452,11 @@ belt = (function ()
         return this.isPosTouchingRange(pos,rng)
     }
 
+    belt["rangeForPos"] = function (pos)
+    {
+        return [pos[0],pos[1],pos[0],pos[1]]
+    }
+
     belt["rangeForSpan"] = function (span)
     {
         return [span[0],span[1],span[2],span[1]]
@@ -480,6 +485,35 @@ belt = (function ()
     belt["endOfRange"] = function (rng)
     {
         return [rng[2],rng[3]]
+    }
+
+    belt["rangeGrownBy"] = function (rng, delta)
+    {
+        return [rng[0] - delta,rng[1],rng[2] + delta,rng[3]]
+    }
+
+    belt["rangeShrunkenBy"] = function (rng, delta)
+    {
+        return [rng[0] + delta,rng[1],rng[2] - delta,rng[3]]
+    }
+
+    belt["rangesShrunkenBy"] = function (rngs, delta)
+    {
+        return rngs.filter(function (r)
+        {
+            return r[2] - r[0] >= 2 * delta
+        }).map((function (r)
+        {
+            return this.rangeShrunkenBy(r,delta)
+        }).bind(this))
+    }
+
+    belt["rangesGrownBy"] = function (rngs, delta)
+    {
+        return rngs.map((function (r)
+        {
+            return this.rangeGrownBy(r,delta)
+        }).bind(this))
     }
 
     belt["isSameSpan"] = function (a, b)

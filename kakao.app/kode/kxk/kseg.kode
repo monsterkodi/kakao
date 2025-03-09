@@ -231,6 +231,27 @@ kseg.startsWith = a prefix ->
     
     segs = kseg prefix
     a[0...segs.length] eql segs
+
+###
+    00000000  000   000  0000000     0000000        000   000  000  000000000  000   000  
+    000       0000  000  000   000  000             000 0 000  000     000     000   000  
+    0000000   000 0 000  000   000  0000000         000000000  000     000     000000000  
+    000       000  0000  000   000       000        000   000  000     000     000   000  
+    00000000  000   000  0000000    0000000         00     00  000     000     000   000  
+    
+    check if a list of graphemes ends with postfix
+        
+    postfix can be string or grapheme list
+###
+
+kseg.endsWith = a postfix ->
+    
+    ⮐ false if a.length < postfix.length
+    ⮐ false if empty a or empty postfix
+    ⮐ false if not a is arr
+    
+    segs = kseg postfix
+    a[a.length-segs.length..] eql segs
     
 ###
      0000000   0000000   000   000  000   000  000000000  

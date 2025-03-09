@@ -45,4 +45,16 @@ export default {joinLines:function ()
     this.setLines(lines)
     this.setSelections(selections)
     return this.setCursors(cursors)
+},toggleCommentTypeAtSelectionOrCursorLines:function ()
+{
+    var cursors, indices, lines, selections
+
+    selections = this.allSelections()
+    cursors = this.allCursors()
+    indices = belt.lineIndicesForRangesOrPositions(selections,cursors)
+    var _d_ = belt.toggleCommentTypesInLineRangesAtIndices(this.allLines(),selections,cursors,indices); lines = _d_[0]; selections = _d_[1]; cursors = _d_[2]
+
+    this.setLines(lines)
+    this.setSelections(selections)
+    return this.setCursors(cursors)
 }}

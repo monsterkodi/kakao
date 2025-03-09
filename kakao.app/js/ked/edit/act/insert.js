@@ -22,9 +22,7 @@ export default {insert:function (text)
         }
         this.deleteSelection()
     }
-    cursors = this.allCursors()
-    lines = this.allLines()
-    var _a_ = belt.insertTextAtPositions(lines,text,cursors); lines = _a_[0]; cursors = _a_[1]
+    var _a_ = belt.insertTextAtPositions(this.allLines(),text,this.allCursors()); lines = _a_[0]; cursors = _a_[1]
 
     this.clearHighlights()
     this.setLines(lines)
@@ -33,10 +31,7 @@ export default {insert:function (text)
 {
     var cursors, lines, selections
 
-    selections = this.allSelections()
-    cursors = this.allCursors()
-    lines = this.allLines()
-    var _b_ = belt.insertAsciiHeaderForPositionsAndRanges(lines,cursors,selections); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
+    var _b_ = belt.insertAsciiHeaderForPositionsAndRanges(this.allLines(),this.allCursors(),this.allSelections()); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
 
     this.clearHighlights()
     this.setLines(lines)
@@ -44,11 +39,10 @@ export default {insert:function (text)
     return this.setCursors(cursors)
 },surroundSelection:function (trigger, pair)
 {
-    var lines, posl, selections
+    var lines, posl
 
-    selections = this.allSelections()
-    lines = this.allLines()
-    var _c_ = belt.insertSurroundAtRanges(lines,selections,trigger,pair); lines = _c_[0]; posl = _c_[1]
+    console.log(`surroundSelection ${trigger} ${pair}`)
+    var _c_ = belt.insertSurroundAtRanges(this.allLines(),this.allSelections(),trigger,pair); lines = _c_[0]; posl = _c_[1]
 
     this.setLines(lines)
     this.setSelections([])

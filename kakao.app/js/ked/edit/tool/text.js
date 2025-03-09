@@ -9,6 +9,8 @@ let kseg = kxk.kseg
 
 import salter from "../../../kxk/salter.js"
 
+import belt from "./belt.js"
+
 
 text = (function ()
 {
@@ -380,7 +382,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 225, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 226, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length
@@ -791,6 +793,128 @@ text = (function ()
             return 0
         }
         return dx
+    }
+
+    text["isRangeInString"] = function (lines, rng)
+    {
+        var _465_76_
+
+        return (this.rangeOfStringSurroundingRange(lines,rng) != null)
+    }
+
+    text["rangeOfInnerStringSurroundingRange"] = function (lines, rng)
+    {
+        var r, rgs
+
+        if (this.isInvalidLineIndex(lines,rng[1]))
+        {
+            return
+        }
+        rgs = this.rangesOfStringsInText(lines[rng[1]],rng[1])
+        rgs = this.rangesShrunkenBy(rgs,1)
+        var list = _k_.list(rgs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            r = list[_a_]
+            if (this.rangeContainsRange(r,rng))
+            {
+                return r
+            }
+        }
+    }
+
+    text["rangeOfStringSurroundingRange"] = function (lines, rng)
+    {
+        var ir
+
+        if (ir = this.rangeOfInnerStringSurroundingRange(lines,rng))
+        {
+            return this.rangeGrownBy(ir,1)
+        }
+    }
+
+    text["rangesOfStringsInText"] = function (text, li = 0)
+    {
+        var c, cc, i, rngs, ss
+
+        rngs = []
+        ss = -1
+        cc = null
+        for (var _a_ = i = 0, _b_ = text.length; (_a_ <= _b_ ? i < text.length : i > text.length); (_a_ <= _b_ ? ++i : --i))
+        {
+            c = text[i]
+            if (!cc && _k_.in(c,"'\""))
+            {
+                cc = c
+                ss = i
+            }
+            else if (c === cc)
+            {
+                if ((text[i - 1] !== '\\') || (i > 2 && text[i - 2] === '\\'))
+                {
+                    rngs.push([ss,li,i + 1,li])
+                    cc = null
+                    ss = -1
+                }
+            }
+        }
+        return rngs
+    }
+
+    text["positionsAndRangesOutsideStrings"] = function (lines, rngs, posl)
+    {
+        var found, pos, rng
+
+        found = []
+        var list = _k_.list(rngs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            rng = list[_a_]
+            if (!belt.isRangeInString(lines,rng))
+            {
+                found.push(rng)
+            }
+        }
+        var list1 = _k_.list(posl)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            pos = list1[_b_]
+            if (!belt.isRangeInString(lines,belt.rangeForPos(pos)))
+            {
+                found.push(pos)
+            }
+        }
+        return found
+    }
+
+    text["rangesOfPairsSurroundingPositions"] = function (lines, pairs, posl)
+    {
+        var pair, pos, rngs
+
+        rngs = []
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            var list1 = _k_.list(pairs)
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                pair = list1[_b_]
+                if (this.chunkBeforePos(lines,pos).endsWith(pair[0]) && this.chunkAfterPos(lines,pos).startsWith(pair[1]))
+                {
+                    rngs.push([pos[0] - pair[0].length,pos[1],pos[0] + pair[1].length,pos[1]])
+                }
+            }
+        }
+        return rngs
+    }
+
+    text["isCommentLine"] = function (line)
+    {
+        var trimmed
+
+        trimmed = kseg.trim(line)
+        return trimmed[0] === "#"
     }
 
     text["cleanWordsForCompletion"] = function (words)

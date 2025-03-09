@@ -272,6 +272,10 @@ handleKey = function (key, event)
         case 'ctrl+/':
             return this.toggleCommentAtSelectionOrCursorLines()
 
+        case 'alt+cmd+/':
+        case 'ctrl+alt+/':
+            return this.toggleCommentTypeAtSelectionOrCursorLines()
+
         case 'esc':
             return this.clearCursorsHighlightsAndSelections()
 

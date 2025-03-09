@@ -27,6 +27,7 @@ function editor extends draw
         if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state
         if @feats.complete ➜ @complete = new complete @
         if @feats.brckts   ➜ mode.start @state 'brckts'
+        if @feats.filepos  ➜ mode.start @state 'filepos'
             
         for m in mode.names()            
             if @feats[m] ➜ @state.allowedModes[m] = true

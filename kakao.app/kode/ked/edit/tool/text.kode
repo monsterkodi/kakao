@@ -8,6 +8,7 @@
 
 use ../../../kxk ▪ kstr kutil kseg 
 use ../../../kxk ◆ salter
+use              ◆ belt
 
 function text
 
@@ -454,6 +455,90 @@ function text
             
         ⮐ 0 if pos[0] + dx < 0
         dx
+        
+    #  0000000  000000000  00000000   000  000   000   0000000   
+    # 000          000     000   000  000  0000  000  000        
+    # 0000000      000     0000000    000  000 0 000  000  0000  
+    #      000     000     000   000  000  000  0000  000   000  
+    # 0000000      000     000   000  000  000   000   0000000   
+    
+    @isRangeInString: lines rng -> @rangeOfStringSurroundingRange(lines rng)?
+
+    @rangeOfInnerStringSurroundingRange: lines rng ->
+        
+        ⮐ if @isInvalidLineIndex lines rng[1]
+
+        rgs = @rangesOfStringsInText lines[rng[1]] rng[1] 
+        rgs = @rangesShrunkenBy rgs 1
+        for r in rgs
+            ⮐ r if @rangeContainsRange r rng
+
+    @rangeOfStringSurroundingRange: lines rng ->
+
+        if ir = @rangeOfInnerStringSurroundingRange lines rng
+            @rangeGrownBy ir 1
+            
+    @rangesOfStringsInText: text li=0 -> # todo: handle #{}
+        
+        rngs = []
+        ss = -1
+        cc = null
+        for i in 0...text.length
+            c = text[i]
+            if not cc and c in "'\""
+                cc = c
+                ss = i
+            else if c == cc
+                if (text[i-1] != '\\') or (i>2 and text[i-2] == '\\')
+                    rngs.push [ss li i+1 li]
+                    cc = null
+                    ss = -1
+        rngs
+        
+    #  0000000   000   000  000000000   0000000  000  0000000    00000000      0000000  000000000  00000000   
+    # 000   000  000   000     000     000       000  000   000  000          000          000     000   000  
+    # 000   000  000   000     000     0000000   000  000   000  0000000      0000000      000     0000000    
+    # 000   000  000   000     000          000  000  000   000  000               000     000     000   000  
+    #  0000000    0000000      000     0000000   000  0000000    00000000     0000000      000     000   000  
+    
+    @positionsAndRangesOutsideStrings: lines rngs posl ->
+        
+        found = []
+        
+        for rng in rngs
+            if not belt.isRangeInString(lines rng)
+                found.push rng
+                
+        for pos in posl
+            if not belt.isRangeInString(lines belt.rangeForPos(pos))
+                found.push pos
+        found
+        
+    # 00000000    0000000   000  00000000    0000000         0000000  000   000  00000000   00000000   0000000     0000000   
+    # 000   000  000   000  000  000   000  000             000       000   000  000   000  000   000  000   000  000        
+    # 00000000   000000000  000  0000000    0000000         0000000   000   000  0000000    0000000    000   000  000  0000  
+    # 000        000   000  000  000   000       000             000  000   000  000   000  000   000  000   000  000   000  
+    # 000        000   000  000  000   000  0000000         0000000    0000000   000   000  000   000  0000000     0000000   
+    
+    @rangesOfPairsSurroundingPositions: lines pairs posl ->
+        
+        rngs = []
+        for pos in posl
+            for pair in pairs
+                if @chunkBeforePos(lines pos).endsWith(pair[0]) and @chunkAfterPos(lines pos).startsWith(pair[1])
+                    rngs.push [pos[0] - pair[0].length pos[1] pos[0] + pair[1].length pos[1]]
+        rngs
+        
+    #  0000000   0000000   00     00  00     00  00000000  000   000  000000000  
+    # 000       000   000  000   000  000   000  000       0000  000     000     
+    # 000       000   000  000000000  000000000  0000000   000 0 000     000     
+    # 000       000   000  000 0 000  000 0 000  000       000  0000     000     
+    #  0000000   0000000   000   000  000   000  00000000  000   000     000     
+    
+    @isCommentLine: line ->
+    
+        trimmed = kseg.trim(line)
+        trimmed[0] == "#"
         
     ###
      0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  

@@ -57,6 +57,10 @@ editor = (function ()
         {
             mode.start(this.state,'brckts')
         }
+        if (this.feats.filepos)
+        {
+            mode.start(this.state,'filepos')
+        }
         var list = _k_.list(mode.names())
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -70,7 +74,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _65_17_
+        var g, m, r, s, sl, sr, _66_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -108,7 +112,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _79_21_, _80_21_, _81_23_
+        var ret, _80_21_, _81_21_, _82_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -130,7 +134,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, _102_20_, _96_25_, _97_25_, _98_25_
+        var inside, _103_20_, _97_25_, _98_25_, _99_25_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -202,7 +206,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _167_20_, _171_21_, _176_24_
+        var _168_20_, _172_21_, _177_24_
 
         if (!this.hasFocus())
         {

@@ -112,6 +112,7 @@ function state
         
         if not mode.isActive @ 'salter'
             mode.modes.salter.checkCursorsSet @
+                        
         @
             
     textOfSelectionOrWordAtCursor: -> 
@@ -357,6 +358,8 @@ function state
     setView: view =>
 
         @set 'view' view
+        if @name == 'editor.state' # ⟅𝕒𝓏𝛾 ⊂ℜ𝕒☡𝛾
+            ked_session.set "editor▸view" view
         @
 
     rangeForVisibleLines: =>

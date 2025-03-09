@@ -79,4 +79,18 @@ export
         @setLines lines        
         @setSelections selections
         @setCursors cursors
+
+    toggleCommentTypeAtSelectionOrCursorLines: ->
+
+        selections = @allSelections()
+        cursors    = @allCursors() 
+        indices    = belt.lineIndicesForRangesOrPositions selections cursors
+
+        [lines selections cursors] = belt.toggleCommentTypesInLineRangesAtIndices @allLines() selections cursors indices
+                
+        @setLines lines        
+        @setSelections selections
+        @setCursors cursors
+        
+    
         

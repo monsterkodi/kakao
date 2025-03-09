@@ -202,6 +202,26 @@ kseg.startsWith = function (a, prefix)
     return _k_.eql(a.slice(0, typeof segs.length === 'number' ? segs.length : -1), segs)
 }
 
+kseg.endsWith = function (a, postfix)
+{
+    var segs
+
+    if (a.length < postfix.length)
+    {
+        return false
+    }
+    if (_k_.empty(a) || _k_.empty(postfix))
+    {
+        return false
+    }
+    if (!(_k_.isArr(a)))
+    {
+        return false
+    }
+    segs = kseg(postfix)
+    return _k_.eql(a.slice(a.length - segs.length), segs)
+}
+
 kseg.headCount = function (a, c)
 {
     var i, s

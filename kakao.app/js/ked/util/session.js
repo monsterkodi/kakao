@@ -172,6 +172,7 @@ session = (function ()
             recent = await noon.read(file)
             post.emit('session.merge',recent)
             this.set('files',recent.files)
+            this.set('editor',recent.editor)
         }
         return this.emit('loaded')
     }

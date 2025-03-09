@@ -36,6 +36,8 @@ import fileeditor from "./view/editor/fileeditor.js"
 
 import belt from "./edit/tool/belt.js"
 
+import mode from "./edit/mode.js"
+
 global.int = parseInt
 
 KED = (function ()
@@ -81,7 +83,7 @@ ked [file]
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.finder = new finder(this.screen)
-        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete','salter','uniko','vimple','unype','brckts'])
+        this.editor = new fileeditor(this.screen,'editor',['scroll','gutter','mapscr','complete','salter','uniko','vimple','unype','brckts','filepos'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
@@ -108,17 +110,22 @@ ked [file]
         {
             this.loadFile(args.options[0])
         }
-        else
-        {
-            this.menu.show(true)
-        }
     }
 
     KED.prototype["onSessionLoaded"] = function ()
     {
+        var file
+
         if (_k_.empty(this.currentFile))
         {
-            return this.menu.show(true)
+            if (file = ked_session.get("editor▸file"))
+            {
+                return this.loadFile(file)
+            }
+            else
+            {
+                return this.menu.show(true)
+            }
         }
     }
 
@@ -141,7 +148,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _136_10_
+        var _138_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -169,7 +176,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _164_22_
+        var _166_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -185,7 +192,6 @@ ked [file]
     {
         if (event.path === this.currentFile)
         {
-            console.log(`ked.onFileChange ${event.change} ${this.currentFile}`)
             switch (event.change)
             {
                 case 'delete':
@@ -213,7 +219,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p)
     {
-        var segls, start, text, _217_22_
+        var segls, start, text, _219_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -238,6 +244,8 @@ ked [file]
         this.status.time = process.hrtime(start)[1]
         this.status.drawTime = kstr.time(BigInt(this.status.time))
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
+        ked_session.set("editor▸file",this.currentFile)
+        mode.fileLoaded(this.editor.state,this.currentFile)
         this.redraw()
         prjcts.index(this.currentFile)
         watcher.watch(this.currentFile)
@@ -436,7 +444,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _376_22_
+        var _381_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

@@ -1,0 +1,28 @@
+###
+00000000  000  000      00000000  00000000    0000000    0000000
+000       000  000      000       000   000  000   000  000     
+000000    000  000      0000000   00000000   000   000  0000000 
+000       000  000      000       000        000   000       000
+000       000  0000000  00000000  000         0000000   0000000 
+###
+
+function filepos
+
+    @: @state ->
+        
+        @name = 'filepos'
+        
+    cursorsSet: ->
+        
+        if file = ked_session.get 'editor▸file'
+        
+            ked_session.set "editor▸filepos▸#{file}" @state.mainCursor().concat(@state.s.view)
+            
+    fileLoaded: file ->
+        
+        if posview = ked_session.get "editor▸filepos▸#{file}"
+            log "▪ #{posview} #{file}"
+            @state.setCursors [posview[0..1]]
+            @state.setView posview[2..]
+            
+export filepos
