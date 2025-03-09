@@ -1,5 +1,5 @@
 var toExport = {}
-var hello
+var hello, text
 
 import kstr from "../kstr.js"
 import kseg from "../kseg.js"
@@ -196,6 +196,16 @@ bbb`),[['a','a','a'],[],['b','b','b']])
         compare(kseg.spanForClosestWordAtColumn(kseg('     '),3),[3,3])
         compare(kseg.spanForClosestWordAtColumn(kseg('   xy'),2),[3,5])
         compare(kseg.spanForClosestWordAtColumn(kseg('xy   '),3),[0,2])
+    })
+    section("collectGraphemes", function ()
+    {
+        compare(kseg.collectGraphemes(kseg('hello world')),['h','e','l','o',' ','w','r','d'])
+        text = kseg(` 0000000  000       0000000    0000000  00000000   0000000  000000000  000   000   0000000   00000000   0000000    
+000       000      000   000  000       000       000          000     000 0 000  000   000  000   000  000   000  
+000       000      000   000  0000000   0000000   0000000      000     000000000  000   000  0000000    000   000  
+000       000      000   000       000  000            000     000     000   000  000   000  000   000  000   000  
+ 0000000  0000000   0000000   0000000   00000000  0000000      000     00     00   0000000   000   000  0000000    `)
+        compare(kseg.collectGraphemes(text),[' ','0','\n'])
     })
 }
 toExport["kseg"]._section_ = true

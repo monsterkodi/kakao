@@ -158,6 +158,10 @@ function belt
             'left'  ➜ [x-1 y]
             'right' ➜ [x+1 y]
             
+    @movePositionsInDirection: posl dir ->
+        
+        posl.map (p) => @positionInDirection(p dir)
+            
     @traversePositionsInDirection: posl pos dir ->
 
         while next = @neighborPositionInDirection posl pos dir
@@ -192,6 +196,31 @@ function belt
                         ➜ max r[1]-p[1] p[1]-r[3]
             
         [dx dy]
+    
+    @columnPositionsMap: posl ->
+    
+        map = {}
+        for p in posl
+            map[p[0]] ?= []
+            map[p[0]].push p
+        map
+        
+    @neighborPositionGroups: posl ->
+        
+        groups = []
+        for p in posl
+            if groups[-1]?[-1][1] == p[1]-1
+               groups[-1].push p
+            else
+                groups.push [p]
+        groups
+        
+    @positionColumns: posl ->
+    
+        columns = []
+        for key,pl of @columnPositionsMap posl
+            columns = columns.concat @neighborPositionGroups(pl)
+        columns
                 
     # 00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  0000  000  000        000       

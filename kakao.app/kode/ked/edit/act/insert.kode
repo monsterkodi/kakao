@@ -61,15 +61,15 @@ export
     #      ███  ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███
     # ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
 
-    surroundSelection: pair ->
+    surroundSelection: trigger pair ->
     
         selections = @allSelections()
         lines      = @allLines()
 
-        [lines selections] = belt.insertSurroundAtRanges lines selections pair
+        [lines posl] = belt.insertSurroundAtRanges lines selections trigger pair
 
-        @clearHighlights()
+        # @clearHighlights()
         @setLines      lines
-        @setSelections selections
-        @setCursors 'bos'
+        @setSelections []
+        @setCursors    posl
         

@@ -103,7 +103,22 @@ function edit
         
         [newls newpl]  
         
-    @insertSurroundAtRanges: lines rngs pair ->   
+    @insertSurroundAtRanges: lines rngs trigger pair ->
+        
+        begl = @startPositionsOfRanges rngs
+        
+        [lines begl] = @insertTextAtPositions lines pair[0] begl
+        
+        endl = []
+        for pos,idx in begl
+            endl.push [pos[0]+rngs[idx][2]-rngs[idx][0] pos[1]]
+            
+        [lines endl] = @insertTextAtPositions lines pair[1] endl
+        
+        if trigger == pair[0]
+            [lines begl]
+        else
+            [lines endl]
 
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       

@@ -61,7 +61,7 @@ for mod in mods
     
     if tests[mod]
         hdr mod
-        files =○ fs.list(slash.path(◆dir, mod, 'test'))
+        files =○ fs.list(slash.path(◆dir mod 'test'))
         for file in files
             continue if file.type == 'dir' # ignore subdirectories for now
             test =○ import(file.path) # shouldn't the file type be checked here?

@@ -73,7 +73,7 @@ function dirtree extends choices
         for key,value of state.open
             
             if key.startsWith @currentRoot
-                
+                log "open #{key}"
                 @openDir @itemForPath(key) redraw:true
         
     #  0000000  000000000   0000000   000000000  00000000  
@@ -187,9 +187,15 @@ function dirtree extends choices
             
         depth = (dirItem.depth ? 0) + 1
         
+        state = ked_session.get @name {}
+        
         for item in items
             item.depth = depth
             item.tilde = lpad(1+depth*2) + @symbolName(item)
+            
+            if item.type == 'dir' and state.open[item.path]
+                log "open subitem #{item.path}"
+                @openDir item redraw:true
         
         items.sort (a b) => @weight(a) - @weight(b)
         

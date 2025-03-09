@@ -42,16 +42,15 @@ export default {insert:function (text)
     this.setLines(lines)
     this.setSelections(selections)
     return this.setCursors(cursors)
-},surroundSelection:function (pair)
+},surroundSelection:function (trigger, pair)
 {
-    var lines, selections
+    var lines, posl, selections
 
     selections = this.allSelections()
     lines = this.allLines()
-    var _c_ = belt.insertSurroundAtRanges(lines,selections,pair); lines = _c_[0]; selections = _c_[1]
+    var _c_ = belt.insertSurroundAtRanges(lines,selections,trigger,pair); lines = _c_[0]; posl = _c_[1]
 
-    this.clearHighlights()
     this.setLines(lines)
-    this.setSelections(selections)
-    return this.setCursors('bos')
+    this.setSelections([])
+    return this.setCursors(posl)
 }}

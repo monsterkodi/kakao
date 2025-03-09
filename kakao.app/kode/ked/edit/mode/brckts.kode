@@ -6,7 +6,8 @@
     ███████    ███   ███   ███████  ███   ███     ███     ███████ 
 ###
 
-use ../../../kxk ◆ kseg
+use ../../../kxk ▪ kseg kutil
+use ../tool      ◆ belt
 use ..           ◆ mode
 
 function brckts
@@ -20,32 +21,46 @@ function brckts
         ']': ['[' ']']
         '(': ['(' ')']
         ')': ['(' ')']
-        '<': ['<' '>']
-        '>': ['<' '>']
         "'": ["'" "'"]
         '"': ['"' '"']
-        '*': ['*' '*']
+        # '<': ['<' '>'] # html 
+        # '>': ['<' '>'] # html 
+        # '*': ['*' '*'] # md   
         
     @: @state ->
         
         @name = 'brckts'
                         
-    # ███   ███  ████████  ███   ███
-    # ███  ███   ███        ███ ███ 
-    # ███████    ███████     █████  
-    # ███  ███   ███          ███   
-    # ███   ███  ████████     ███   
+    # ███   ███  ████████  ███   ███        
+    # ███  ███   ███        ███ ███         
+    # ███████    ███████     █████          
+    # ███  ███   ███          ███           
+    # ███   ███  ████████     ███           
 
-    handleKey: key event ->
+    handleKey: key event ->              
         
         ⮐ 'unhandled' if empty brckts.surround[event.char]
 
         if valid @state.s.selections
-            log "#{@name} surround selection #{brckts.surround[event.char]}" 
-            @state.surroundSelection brckts.surround[event.char]
-        else # is space or empty or comma,semicolon,etc ahead
-            log "#{@name} insert closing #{brckts.surround[event.char]}" 
-    
+            @state.surroundSelection event.char brckts.surround[event.char]
+            ⮐  
+            
+        if event.char == '#'
+            log 'check if inside string'
+        else
+            # is space or empty or comma,semicolon,etc ahead
+            nsegl = belt.segsForPositions @state.s.lines @state.s.cursors
+            nsegs = kutil.uniq nsegl
+            
+            for seg in nsegs
+                if seg not in [' ' '' undefined '}' ']' ')']
+                    log "skip |#{nsegs}| #{seg}"
+                    ⮐  'unhandled' 
+            
+            @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
+            @state.moveCursors 'left' 
+            ⮐  
+
         'unhandled'
         
 export brckts

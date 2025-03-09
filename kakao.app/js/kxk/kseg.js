@@ -322,6 +322,20 @@ kseg.tailCountChunk = function (a)
     return i
 }
 
+kseg.collectGraphemes = function (a)
+{
+    var g, gs
+
+    gs = new Set
+    var list = _k_.list(a)
+    for (var _19_ = 0; _19_ < list.length; _19_++)
+    {
+        g = list[_19_]
+        gs.add(g)
+    }
+    return Array.from(gs)
+}
+
 kseg.spanForClosestWordAtColumn = function (a, c)
 {
     var left, ll, ls, lw, right, rl, rs, rw, s, segi
@@ -392,7 +406,7 @@ kseg.repeat = function (n, s = ' ')
     }
     s = kseg(s)
     a = []
-    for (var _19_ = i = 0, _1a_ = n; (_19_ <= _1a_ ? i < n : i > n); (_19_ <= _1a_ ? ++i : --i))
+    for (var _1a_ = i = 0, _1b_ = n; (_1a_ <= _1b_ ? i < n : i > n); (_1a_ <= _1b_ ? ++i : --i))
     {
         a = a.concat(s)
     }
@@ -453,9 +467,9 @@ kseg.width = function (s)
     }
     w = 0
     var list = _k_.list(kseg(s))
-    for (var _1b_ = 0; _1b_ < list.length; _1b_++)
+    for (var _1c_ = 0; _1c_ < list.length; _1c_++)
     {
-        seg = list[_1b_]
+        seg = list[_1c_]
         w += wcwidth(seg.codePointAt(0))
     }
     return w
@@ -551,11 +565,11 @@ dumptable = function (table)
     var c, item, s
 
     var list = _k_.list(table)
-    for (var _1c_ = 0; _1c_ < list.length; _1c_++)
+    for (var _1d_ = 0; _1d_ < list.length; _1d_++)
     {
-        item = list[_1c_]
+        item = list[_1d_]
         s = _k_.b6(item[0].toString(16)) + '-' + _k_.b6(item[1].toString(16))
-        for (var _1d_ = c = item[0], _1e_ = item[1]; (_1d_ <= _1e_ ? c <= item[1] : c >= item[1]); (_1d_ <= _1e_ ? ++c : --c))
+        for (var _1e_ = c = item[0], _1f_ = item[1]; (_1e_ <= _1f_ ? c <= item[1] : c >= item[1]); (_1e_ <= _1f_ ? ++c : --c))
         {
             s += String.fromCodePoint(c)
         }

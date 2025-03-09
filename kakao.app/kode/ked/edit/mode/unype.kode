@@ -21,7 +21,7 @@ function unype
         if empty unype.map
             def = fonts.default.join ' '
             for font,text of fonts
-                continue if font=='default'
+                continue if font == 'default'
                 unype.map[font] = {}
                 for char,idx in kseg(text.join(' '))
                     if def[idx] != ' '

@@ -280,6 +280,14 @@ belt = (function ()
 
     }
 
+    belt["movePositionsInDirection"] = function (posl, dir)
+    {
+        return posl.map((function (p)
+        {
+            return this.positionInDirection(p,dir)
+        }).bind(this))
+    }
+
     belt["traversePositionsInDirection"] = function (posl, pos, dir)
     {
         var next
@@ -333,6 +341,55 @@ belt = (function ()
         dx = p[0] < r[0] ? r[0] - p[0] : p[0] > r[2] ? p[0] - r[2] : _k_.max(r[0] - p[0],p[0] - r[2])
         dy = p[1] < r[1] ? r[1] - p[1] : p[1] > r[3] ? p[1] - r[3] : _k_.max(r[1] - p[1],p[1] - r[3])
         return [dx,dy]
+    }
+
+    belt["columnPositionsMap"] = function (posl)
+    {
+        var map, p, _204_22_
+
+        map = {}
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            p = list[_a_]
+            map[p[0]] = ((_204_22_=map[p[0]]) != null ? _204_22_ : [])
+            map[p[0]].push(p)
+        }
+        return map
+    }
+
+    belt["neighborPositionGroups"] = function (posl)
+    {
+        var groups, p
+
+        groups = []
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            p = list[_a_]
+            if ((groups.slice(-1)[0] != null ? groups.slice(-1)[0].slice(-1)[0][1] : undefined) === p[1] - 1)
+            {
+                groups.slice(-1)[0].push(p)
+            }
+            else
+            {
+                groups.push([p])
+            }
+        }
+        return groups
+    }
+
+    belt["positionColumns"] = function (posl)
+    {
+        var columns, key, pl
+
+        columns = []
+        for (key in this.columnPositionsMap(posl))
+        {
+            pl = this.columnPositionsMap(posl)[key]
+            columns = columns.concat(this.neighborPositionGroups(pl))
+        }
+        return columns
     }
 
     belt["isPosInsideRange"] = function (pos, rng)

@@ -17,20 +17,26 @@ salter = text opt ->
     opt.prepend ?= ''
     opt.append  ?= ''
     
-    s = text.toLowerCase().trim()
+    if text != ' '
+        s = text.toLowerCase().trim() 
+    else
+        s = ' '
     
     cs = []
     for c in s
         if font[c]?
             cs.push font[c]
-
+            
     zs = util.zip.apply null cs
     
     if opt.char != '0'
         zs = zs.map (j) -> j.map (k) -> k.replace /[0]/g opt.char
+        
     if opt.prefix or opt.postfix
         zs = zs.map (j) -> j.map (k) -> opt.prefix + k + opt.postfix
+        
     rs = zs.map (j) -> opt.prepend + j.join('  ') + opt.append
+    
     rs.join '\n'
 
 font = noon.parse """

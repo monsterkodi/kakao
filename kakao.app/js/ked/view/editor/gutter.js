@@ -22,7 +22,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _40_101_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
@@ -41,7 +41,7 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === mainCursor[1] ? (this.state.hasFocus ? theme.editor_cursor_bg : theme.editor_cursor_blur) : hasCursor ? theme.editor_cursor_multi : spansel ? theme.editor_selection : selected ? theme.editor_selection_line : highlighted ? theme.editor_highlight : theme.linenr
+                    fg = y === mainCursor[1] ? color.darken(theme.editor_cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? theme.editor_cursor_multi : spansel ? theme.editor_selection : selected ? theme.editor_selection_line : highlighted ? theme.editor_highlight : theme.linenr
                     if ((selected || hasCursor || highlighted) && !this.cells.screen.t.hasFocus)
                     {
                         fg = color.darken(fg)

@@ -12,7 +12,7 @@ class theme
 
     static editor_cursor_blur = '#666'
 
-    static editor_cursor_bg = '#ff0'
+    static editor_cursor_main = '#ff0'
 
     static editor_cursor_fg = '#000'
 

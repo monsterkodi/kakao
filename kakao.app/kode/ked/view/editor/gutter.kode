@@ -37,7 +37,7 @@ function gutter extends view
                 if col < @cells.rows
                     
                     fg = if
-                        y == mainCursor[1] ➜ @state.hasFocus ? theme.editor_cursor_bg : theme.editor_cursor_blur
+                        y == mainCursor[1] ➜ color.darken(theme.editor_cursor_main @state.hasFocus?1:0.5)
                         hasCursor          ➜ theme.editor_cursor_multi
                         spansel            ➜ theme.editor_selection
                         selected           ➜ theme.editor_selection_line

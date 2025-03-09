@@ -1,3 +1,5 @@
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+
 var salt
 
 import kxk from "../../../kxk.js"
@@ -15,7 +17,10 @@ salt = (function ()
         var trimmed
 
         trimmed = kseg.trim(kseg.trim(kseg.trim(line),'#'))
-        return kseg.startsWith(trimmed,'0') || kseg.startsWith(trimmed,'█')
+        if (_k_.in(trimmed[0],'█0'))
+        {
+            return kseg.collectGraphemes(trimmed).length <= 3
+        }
     }
 
     salt["findPositionsForSaltInsert"] = function (lines, pos)

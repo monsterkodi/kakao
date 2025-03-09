@@ -5,7 +5,7 @@
 # ███████   ███   ███  ███████   ███     ████████  ███   ███
 
 use ../../../kxk ◆ kseg salter
-use ../../theme  ◆ theme
+use ../../theme  ◆ color theme
 use ../tool      ◆ belt
 use ..           ◆ mode
       
@@ -37,11 +37,12 @@ function salterMode
     
     start: -> 
     
-        cursors = belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
-        
+        cursors = @findCursors()
+
         if valid cursors
             @state.setCursors cursors
-            
+        if @state.s.cursors.length == 5 and belt.positionColumns(@state.s.cursors).length == 1
+            true
         else
             # if valid trim(belt.textFromPosToEol(@state.s.lines @state.mainCursor()))
             @state.begin()
@@ -58,7 +59,7 @@ function salterMode
         
     stop: ->
     
-        @state.setMainCursor @state.mainCursor()
+        # @state.setMainCursor @state.mainCursor()
         
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
     # 000       000   000  000   000  000       000   000  000   000  000       
@@ -70,13 +71,16 @@ function salterMode
 
         ⮐ if not state.allowedModes.salter
         
-        salt = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
-        if valid salt and state.s.cursors.length == 1 # start the salter mode if the main
-            mode.start state 'salter'                 # cursor moved inside a salted line 
+        cursors = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
+        if valid cursors and state.s.cursors.length == 1 # start the salter mode if the main
+            mode.start state 'salter'                  # cursor moved inside a salted line 
+
+    findCursors:    -> belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
+    isSaltedLine: y -> belt.isSaltedLine @state.s.lines[y]
 
     cursorsSet: ->
         
-        cursors = belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
+        cursors = @findCursors()
         
         if valid cursors 
             if @state.s.cursors eql cursors
@@ -85,6 +89,33 @@ function salterMode
                 @state.setCursors cursors
         else
             mode.stop @state 'salter'
+            
+    postDraw: ->
+
+        for c in @state.s.cursors
+            @state.cells.set_char c[0]-@state.s.view[0] c[1]-@state.s.view[1] ' '
+            
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    deleteSelection: ->
+    
+        cursors = @state.allCursors()
+        lineids = belt.lineIndicesForPositions cursors
+        
+        for idx in lineids
+            ⮐  if not @state.isFullySelectedLine idx
+            
+        @state.moveCursors 'bol'
+        @state.delete 'eol'
+        @state.setCursors lineids.map((idx) -> [0 idx])
+        
+        @state.deselect()
+        mode.start @state 'salter' # 𝜏𝖍𝚒𝖘 𝚒𝖘 ϝ𝓊⊂𝛋ϵ𝒹 𝓊𝔭 𝖘⊚⫙ϵ𝖍⊚⟒, 𝔟𝓊𝜏 𝚒𝜏 𝓢ϵξ⫙𝖘 𝜏⊚ ⟒◯ɼ𝛋 ϝ⊚ɼ ∩⊚⟒
+        true
     
     # ███   ███  ████████  ███   ███
     # ███  ███   ███        ███ ███ 
@@ -95,10 +126,11 @@ function salterMode
     handleKey: key event ->
     
         switch key
-            'esc' 
-                mode.stop @state @name
-                ⮐ 
+            # 'esc' 
+            #     mode.stop @state @name
+            #     ⮐  'unhandled' # to keep deselect functionality 
             'delete'
+                @state.begin()
                 @state.delete 'back' 
                 @state.delete 'back' 
                 @state.delete 'back' 
@@ -109,27 +141,35 @@ function salterMode
                 @state.delete 'back' 
                 @state.delete 'back' 
                 @state.delete 'back' 
+                @state.end()
                 ⮐
             'up'
+                if not @isSaltedLine @state.mainCursor()[1]-1
+                    @state.setCursors [[@state.mainCursor()[0] @state.mainCursor()[1]-1]]
+                    ⮐ 
                 if @state.s.main > 0
                     @state.setMain @state.s.main-1
                     ⮐  
             'down'
+                if not @isSaltedLine @state.mainCursor()[1]+1
+                    @state.setCursors [[@state.mainCursor()[0] @state.mainCursor()[1]+1]]
+                    ⮐ 
                 if @state.s.main < 4
                     @state.setMain @state.s.main+1
                     ⮐  
             
-        if @state.s.cursors.length != 5 # need to check for alignment as well?
-            mode.stop @state @name
-            ⮐  'unhandled'
+        # if @state.s.cursors.length != 5 # need to check for alignment as well?
+        #     mode.stop @state @name
+        #     ⮐  'unhandled'
             
         char = valid(event.char) ? event.char : key
             
         if salter.hasChar char
+            # log "salter char >#{char}<" salter(char char:'█' postfix:'  ')
             @state.insert salter(char char:'█' postfix:'  ')
             ⮐
-        else
-            log ">#{char}<" event
+        # else
+            # log ">#{char}<" event
         
         'unhandled'
         
@@ -140,11 +180,11 @@ function salterMode
     #  0000000   0000000   0000000   0000000   000   000  
     
     themeColor: colorName ->
-    
-        switch colorName
         
-            'editor_cursor_multi' ➜ ⮐ theme.syntax['comment triple header']
-            
+        switch colorName
+            'editor_cursor_multi' ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.2)
+            'editor_cursor_main'  ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.6)
+        
         theme[colorName]
 
 export salterMode

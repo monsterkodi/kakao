@@ -64,7 +64,6 @@ function state
 
     set: item arg =>
 
-        # log item noon(arg) if item=='selections'
         @s = @s.set item arg
         @swapState()
         @
@@ -120,7 +119,6 @@ function state
         if @s.selections.length
             ⮐ @textOfSelection()
         else
-            log 'wordAtCursor' @wordAtCursor()
             ⮐ @wordAtCursor()
 
     # 000      000  000   000  00000000   0000000
@@ -133,16 +131,12 @@ function state
         
         if empty lines ➜ lines = ['']
             
-        # if not lines[0] is str ➜ log 'state.setLines' @name lines
-            
         @setSegls kseg.segls(lines)
         
     setSegls: @segls =>
         
         if empty @segls ➜ @segls = [[]]
         
-        # log 'state.setSegls' @name @segls
-            
         @syntax.setSegls @segls
         
         @s = @s.set 'lines' @segls
@@ -223,11 +217,10 @@ function state
     #  0000000   0000000      000
 
     cut: =>
-        # log 'state.cut'
+
         @copy deselect:false
         if empty @s.selections
             @selectCursorLines()
-            # log 'state.cut' @allSelections()
         @deleteSelection()
 
     #  0000000   0000000   00000000   000   000

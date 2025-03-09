@@ -598,6 +598,19 @@ use ../edit/tool ◆ belt
             ▸ multiple lines into single cursor
              
                 belt.insertTextAtPositions lines 'a\nb' [[4 1]] ▸ [kseg.segls('◆1\n    a\n    b\n    ◆2\n        ◆3') [[4 3]]]
+
+    ▸ insertSurroundAtRanges
+
+        lines = belt.seglsForText """ 
+            line1
+            line2
+            """ 
+    
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] '}' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[5 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] ']' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[5 0] [5 1]]]
+
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] '{' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[2 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '[' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[2 0] [2 1]]]
         
     # 00     00   0000000   000   000  00000000  000      000  000   000  00000000   0000000  
     # 000   000  000   000  000   000  000       000      000  0000  000  000       000       

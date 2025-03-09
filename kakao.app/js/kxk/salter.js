@@ -16,7 +16,14 @@ salter = function (text, opt)
     opt.postfix = ((_16_16_=opt.postfix) != null ? _16_16_ : '')
     opt.prepend = ((_17_16_=opt.prepend) != null ? _17_16_ : '')
     opt.append = ((_18_16_=opt.append) != null ? _18_16_ : '')
-    s = text.toLowerCase().trim()
+    if (text !== ' ')
+    {
+        s = text.toLowerCase().trim()
+    }
+    else
+    {
+        s = ' '
+    }
     cs = []
     var list = _k_.list(s)
     for (var _a_ = 0; _a_ < list.length; _a_++)

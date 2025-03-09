@@ -196,7 +196,6 @@ state = (function ()
         }
         else
         {
-            console.log('wordAtCursor',this.wordAtCursor())
             return this.wordAtCursor()
         }
     }

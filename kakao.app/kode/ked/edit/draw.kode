@@ -96,13 +96,15 @@ function draw extends view
         @drawSelections()
         @complete?.draw()
         
-        @drawCursors()        
+        @drawCursors()
         
         @gutter?.draw()
         @mapscr?.draw()
         @scroll?.draw()
         
         # prof.end 'draw'   if @name == 'editor'
+        
+        mode.postDraw @state
         
         super()
         
@@ -233,8 +235,12 @@ function draw extends view
         if @isCursorVisible mainCursor
              
             fg  = theme[@name + '_cursor_fg'] ? theme.editor_cursor_fg
-            fcb = @hasFocus() ? '_cursor_bg' : '_cursor_blur'
-            bg  = theme[@name + fcb] ? theme['editor' + fcb]
+            
+            # fcb = @hasFocus() ? '_cursor_bg' : '_cursor_blur'
+            # bg  = theme[@name + fcb] ? theme['editor' + fcb]
+            
+            bg = mode.themeColor @state 'editor_cursor_main'
+            if not @hasFocus() ➜ bg = color.darken bg 
              
             [x y] = [mainCursor[0]-s.view[0] mainCursor[1]-s.view[1]]
              

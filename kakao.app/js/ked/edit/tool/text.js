@@ -34,45 +34,6 @@ text = (function ()
         return kseg.segls(text.replace(/\x1b/g,'�'))
     }
 
-    text["textForLineRange"] = function (lines, rng)
-    {
-        var l, s, y
-
-        if (_k_.empty(lines) || _k_.empty(rng))
-        {
-            return ''
-        }
-        l = []
-        for (var _a_ = y = rng[1], _b_ = rng[3]; (_a_ <= _b_ ? y <= rng[3] : y >= rng[3]); (_a_ <= _b_ ? ++y : --y))
-        {
-            if (this.isInvalidLineIndex(lines,y))
-            {
-                continue
-            }
-            if (y === rng[1])
-            {
-                if (y === rng[3])
-                {
-                    l.push(lines[y].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1))
-                }
-                else
-                {
-                    l.push(lines[y].slice(rng[0]))
-                }
-            }
-            else if (y === rng[3])
-            {
-                l.push(lines[y].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
-            }
-            else
-            {
-                l.push(lines[y])
-            }
-        }
-        s = kseg.str(l)
-        return s
-    }
-
     text["seglsForLineRange"] = function (lines, rng)
     {
         var l, y
@@ -130,6 +91,68 @@ text = (function ()
             return l
         }
         return lines[y].slice(span[0], typeof span[2] === 'number' ? span[2] : -1)
+    }
+
+    text["segsForPositions"] = function (lines, posl)
+    {
+        var l, pos, segi
+
+        l = []
+        if (_k_.empty(lines) || _k_.empty(posl))
+        {
+            return l
+        }
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            if (this.isInvalidLineIndex(lines,pos[1]))
+            {
+                return l
+            }
+            segi = kseg.segiAtWidth(lines[pos[1]],pos[0])
+            l.push(lines[pos[1]][segi])
+        }
+        return l
+    }
+
+    text["textForLineRange"] = function (lines, rng)
+    {
+        var l, s, y
+
+        if (_k_.empty(lines) || _k_.empty(rng))
+        {
+            return ''
+        }
+        l = []
+        for (var _a_ = y = rng[1], _b_ = rng[3]; (_a_ <= _b_ ? y <= rng[3] : y >= rng[3]); (_a_ <= _b_ ? ++y : --y))
+        {
+            if (this.isInvalidLineIndex(lines,y))
+            {
+                continue
+            }
+            if (y === rng[1])
+            {
+                if (y === rng[3])
+                {
+                    l.push(lines[y].slice(rng[0], typeof rng[2] === 'number' ? rng[2] : -1))
+                }
+                else
+                {
+                    l.push(lines[y].slice(rng[0]))
+                }
+            }
+            else if (y === rng[3])
+            {
+                l.push(lines[y].slice(0, typeof rng[2] === 'number' ? rng[2] : -1))
+            }
+            else
+            {
+                l.push(lines[y])
+            }
+        }
+        s = kseg.str(l)
+        return s
     }
 
     text["textForLineRanges"] = function (lines, rngs)
@@ -357,7 +380,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 215, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 225, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

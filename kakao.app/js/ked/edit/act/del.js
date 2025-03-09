@@ -6,6 +6,8 @@ let kseg = kxk.kseg
 
 import belt from "../tool/belt.js"
 
+import mode from "../mode.js"
+
 export default {delete:function (type, jump)
 {
     var ci, cursor, cursors, dc, line, lines, minBeforeWs, remove, rng, segi, x, y
@@ -141,6 +143,10 @@ export default {delete:function (type, jump)
     return this.setCursors(cursors)
 },deleteSelection:function ()
 {
+    if (mode.deleteSelection(this))
+    {
+        return
+    }
     return this.deleteRanges(this.allSelections(),this.allCursors())
 },deleteRanges:function (rngs, posl)
 {

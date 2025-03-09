@@ -83,6 +83,7 @@ dirtree = (function ()
             value = state.open[key]
             if (key.startsWith(this.currentRoot))
             {
+                console.log(`open ${key}`)
                 this.openDir(this.itemForPath(key),{redraw:true})
             }
         }
@@ -213,7 +214,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, _188_31_
+        var depth, index, item, items, state, _188_31_
 
         if (_k_.empty(dirItem))
         {
@@ -228,12 +229,18 @@ dirtree = (function ()
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
         depth = (((_188_31_=dirItem.depth) != null ? _188_31_ : 0)) + 1
+        state = ked_session.get(this.name,{})
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
             item.depth = depth
             item.tilde = _k_.lpad(1 + depth * 2) + this.symbolName(item)
+            if (item.type === 'dir' && state.open[item.path])
+            {
+                console.log(`open subitem ${item.path}`)
+                this.openDir(item,{redraw:true})
+            }
         }
         items.sort((function (a, b)
         {
@@ -367,7 +374,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _321_44_
+        var idx, item, _327_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -430,12 +437,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _361_51_
+        var _367_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_361_51_=icons[slash.ext(item.path)]) != null ? _361_51_ : icons.file)
+                return ((_367_51_=icons[slash.ext(item.path)]) != null ? _367_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

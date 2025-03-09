@@ -8,6 +8,7 @@
 
 use ../../../kxk ▪ kstr kseg
 use ../tool      ◆ belt
+use ..           ◆ mode
 
 export
     
@@ -101,6 +102,7 @@ export
             
         @clearHighlights()
         @setLines   lines
+        # log 'del.setCursors' cursors
         @setCursors cursors
             
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
@@ -109,7 +111,11 @@ export
     #      000  000       000      000       000          000     000  000   000  000  0000  
     # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
     
-    deleteSelection: -> @deleteRanges @allSelections() @allCursors()
+    deleteSelection: -> 
+        
+        ⮐ if mode.deleteSelection @
+    
+        @deleteRanges @allSelections() @allCursors()
         
     deleteRanges: rngs posl ->
         

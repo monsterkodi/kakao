@@ -119,8 +119,31 @@ edit = (function ()
         return [newls,newpl]
     }
 
-    edit["insertSurroundAtRanges"] = function (lines, rngs, pair)
-    {}
+    edit["insertSurroundAtRanges"] = function (lines, rngs, trigger, pair)
+    {
+        var begl, endl, idx, pos
+
+        begl = this.startPositionsOfRanges(rngs)
+        var _a_ = this.insertTextAtPositions(lines,pair[0],begl); lines = _a_[0]; begl = _a_[1]
+
+        endl = []
+        var list = _k_.list(begl)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            pos = list[idx]
+            endl.push([pos[0] + rngs[idx][2] - rngs[idx][0],pos[1]])
+        }
+        var _c_ = this.insertTextAtPositions(lines,pair[1],endl); lines = _c_[0]; endl = _c_[1]
+
+        if (trigger === pair[0])
+        {
+            return [lines,begl]
+        }
+        else
+        {
+            return [lines,endl]
+        }
+    }
 
     edit["deleteLineRangesAndAdjustPositions"] = function (lines, rngs, posl)
     {

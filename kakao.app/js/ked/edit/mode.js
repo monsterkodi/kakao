@@ -97,6 +97,25 @@ mode = (function ()
         return text
     }
 
+    mode["deleteSelection"] = function (state)
+    {
+        var m
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (_k_.isFunc(m.deleteSelection))
+            {
+                if (m.deleteSelection())
+                {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     mode["handleKey"] = function (state, key, event)
     {
         var m
@@ -145,6 +164,21 @@ mode = (function ()
             }
         }
         return theme[colorName]
+    }
+
+    mode["postDraw"] = function (state)
+    {
+        var m
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (_k_.isFunc(m.postDraw))
+            {
+                m.postDraw()
+            }
+        }
     }
 
     return mode

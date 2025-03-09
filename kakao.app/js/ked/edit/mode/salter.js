@@ -1,10 +1,11 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isStr: function (o) {return typeof o === 'string' || o instanceof String}}
 
 var salterMode
 
 import kseg from "../../../kxk/kseg.js"
 import salter from "../../../kxk/salter.js"
 
+import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 
 import belt from "../tool/belt.js"
@@ -31,10 +32,14 @@ salterMode = (function ()
     {
         var cursors, i
 
-        cursors = belt.findPositionsForSaltInsert(this.state.s.lines,this.state.mainCursor())
+        cursors = this.findCursors()
         if (!_k_.empty(cursors))
         {
-            return this.state.setCursors(cursors)
+            this.state.setCursors(cursors)
+        }
+        if (this.state.s.cursors.length === 5 && belt.positionColumns(this.state.s.cursors).length === 1)
+        {
+            return true
         }
         else
         {
@@ -57,30 +62,38 @@ salterMode = (function ()
     }
 
     salterMode.prototype["stop"] = function ()
-    {
-        return this.state.setMainCursor(this.state.mainCursor())
-    }
+    {}
 
     salterMode["checkCursorsSet"] = function (state)
     {
-        var salt
+        var cursors
 
         if (!state.allowedModes.salter)
         {
             return
         }
-        salt = belt.findPositionsForSaltInsert(state.s.lines,state.mainCursor())
-        if (!_k_.empty(salt) && state.s.cursors.length === 1)
+        cursors = belt.findPositionsForSaltInsert(state.s.lines,state.mainCursor())
+        if (!_k_.empty(cursors) && state.s.cursors.length === 1)
         {
             return mode.start(state,'salter')
         }
+    }
+
+    salterMode.prototype["findCursors"] = function ()
+    {
+        return belt.findPositionsForSaltInsert(this.state.s.lines,this.state.mainCursor())
+    }
+
+    salterMode.prototype["isSaltedLine"] = function (y)
+    {
+        return belt.isSaltedLine(this.state.s.lines[y])
     }
 
     salterMode.prototype["cursorsSet"] = function ()
     {
         var cursors
 
-        cursors = belt.findPositionsForSaltInsert(this.state.s.lines,this.state.mainCursor())
+        cursors = this.findCursors()
         if (!_k_.empty(cursors))
         {
             if (_k_.eql(this.state.s.cursors, cursors))
@@ -98,17 +111,52 @@ salterMode = (function ()
         }
     }
 
+    salterMode.prototype["postDraw"] = function ()
+    {
+        var c
+
+        var list = _k_.list(this.state.s.cursors)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            c = list[_a_]
+            this.state.cells.set_char(c[0] - this.state.s.view[0],c[1] - this.state.s.view[1],' ')
+        }
+    }
+
+    salterMode.prototype["deleteSelection"] = function ()
+    {
+        var cursors, idx, lineids
+
+        cursors = this.state.allCursors()
+        lineids = belt.lineIndicesForPositions(cursors)
+        var list = _k_.list(lineids)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            idx = list[_a_]
+            if (!this.state.isFullySelectedLine(idx))
+            {
+                return
+            }
+        }
+        this.state.moveCursors('bol')
+        this.state.delete('eol')
+        this.state.setCursors(lineids.map(function (idx)
+        {
+            return [0,idx]
+        }))
+        this.state.deselect()
+        mode.start(this.state,'salter')
+        return true
+    }
+
     salterMode.prototype["handleKey"] = function (key, event)
     {
         var char
 
         switch (key)
         {
-            case 'esc':
-                mode.stop(this.state,this.name)
-                return
-
             case 'delete':
+                this.state.begin()
                 this.state.delete('back')
                 this.state.delete('back')
                 this.state.delete('back')
@@ -119,9 +167,15 @@ salterMode = (function ()
                 this.state.delete('back')
                 this.state.delete('back')
                 this.state.delete('back')
+                this.state.end()
                 return
 
             case 'up':
+                if (!this.isSaltedLine(this.state.mainCursor()[1] - 1))
+                {
+                    this.state.setCursors([[this.state.mainCursor()[0],this.state.mainCursor()[1] - 1]])
+                    return
+                }
                 if (this.state.s.main > 0)
                 {
                     this.state.setMain(this.state.s.main - 1)
@@ -129,6 +183,11 @@ salterMode = (function ()
                 }
                 break
             case 'down':
+                if (!this.isSaltedLine(this.state.mainCursor()[1] + 1))
+                {
+                    this.state.setCursors([[this.state.mainCursor()[0],this.state.mainCursor()[1] + 1]])
+                    return
+                }
                 if (this.state.s.main < 4)
                 {
                     this.state.setMain(this.state.s.main + 1)
@@ -137,20 +196,11 @@ salterMode = (function ()
                 break
         }
 
-        if (this.state.s.cursors.length !== 5)
-        {
-            mode.stop(this.state,this.name)
-            return 'unhandled'
-        }
         char = (!_k_.empty((event.char)) ? event.char : key)
         if (salter.hasChar(char))
         {
             this.state.insert(salter(char,{char:'█',postfix:'  '}))
             return
-        }
-        else
-        {
-            console.log(`>${char}<`,event)
         }
         return 'unhandled'
     }
@@ -160,7 +210,10 @@ salterMode = (function ()
         switch (colorName)
         {
             case 'editor_cursor_multi':
-                return theme.syntax['comment triple header']
+                return color.brighten(theme.syntax['comment triple header'],0.2)
+
+            case 'editor_cursor_main':
+                return color.brighten(theme.syntax['comment triple header'],0.6)
 
         }
 
