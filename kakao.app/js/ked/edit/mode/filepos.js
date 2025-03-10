@@ -26,7 +26,6 @@ filepos = (function ()
 
         if (posview = ked_session.get(`editor▸filepos▸${file}`))
         {
-            console.log(`▪ ${posview} ${file}`)
             this.state.setCursors([posview.slice(0, 2)])
             return this.state.setView(posview.slice(2))
         }

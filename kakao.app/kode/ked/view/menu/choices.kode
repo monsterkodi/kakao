@@ -212,7 +212,6 @@ function choices extends editor
         
         @hoverIndex = index
         @select @hoverIndex
-        @frontCursor()
         post.emit 'pointer' 'pointer'
         @emitAction 'hover' @current() event
         redraw:true

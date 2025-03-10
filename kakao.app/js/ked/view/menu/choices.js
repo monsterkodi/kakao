@@ -296,7 +296,6 @@ choices = (function ()
         }
         this.hoverIndex = index
         this.select(this.hoverIndex)
-        this.frontCursor()
         post.emit('pointer','pointer')
         this.emitAction('hover',this.current(),event)
         return {redraw:true}
@@ -326,7 +325,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _245_21_
+        var col, dx, dy, ret, row, _244_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

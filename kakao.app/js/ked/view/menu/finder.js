@@ -4,10 +4,12 @@ var finder
 
 import kxk from "../../../kxk.js"
 let post = kxk.post
+let kseg = kxk.kseg
+
+import belt from "../../edit/tool/belt.js"
 
 import inputchoice from "./inputchoice.js"
 
-import rgxs from './quicky.json' with { type : "json" }
 
 finder = (function ()
 {
@@ -16,29 +18,34 @@ finder = (function ()
     {
         this.screen = screen
     
-        finder.__super__.constructor.call(this,this.screen,'finder')
-    
-        this.choices.state.syntax.setRgxs(rgxs)
+        finder.__super__.constructor.call(this,this.screen,'finder',['gutter','scroll'])
     }
 
     finder.prototype["show"] = function (editor)
     {
-        var searchText
+        var lines, searchText, state
 
-        searchText = editor.state.textOfSelectionOrWordAtCursor()
+        state = editor.state
+        searchText = state.textOfSelectionOrWordAtCursor()
         console.log(_k_.g4(`${_k_.r6('finder.show')} '${searchText}'`))
-        editor.state.highlightText(searchText)
-        this.choices.set([])
+        state.highlightText(searchText)
+        lines = belt.lineIndicesForSpans(state.s.highlights).map(function (idx)
+        {
+            return {index:idx,line:kseg.str(state.s.lines[idx])}
+        })
+        this.choices.state.syntax.setExt('kode')
+        this.choices.set(lines,'line')
         this.input.set(searchText)
         this.input.selectAll()
         this.layout()
         return this.input.grabFocus()
     }
 
-    finder.prototype["apply"] = function (text)
+    finder.prototype["apply"] = function (choice)
     {
+        console.log(`${this.name}.apply choice`,choice)
+        post.emit('goto.line',choice.index)
         this.hide()
-        post.emit('finder.apply',text)
         return {redraw:true}
     }
 

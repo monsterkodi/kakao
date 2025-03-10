@@ -416,6 +416,10 @@ function belt
         indices.sort()
         indices
         
+    @lineIndicesForSpans: spans ->
+        
+        kxk.util.uniq spans.map((s) -> s[1])
+        
     @lineIndicesForRange: rng ->
         
         indices = []

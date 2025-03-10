@@ -841,6 +841,14 @@ belt = (function ()
         return indices
     }
 
+    belt["lineIndicesForSpans"] = function (spans)
+    {
+        return kxk.util.uniq(spans.map(function (s)
+        {
+            return s[1]
+        }))
+    }
+
     belt["lineIndicesForRange"] = function (rng)
     {
         var indices, li

@@ -8,6 +8,7 @@ let post = kxk.post
 import scroll from "../view/base/scroll.js"
 import view from "../view/base/view.js"
 
+import gutter from "../view/editor/gutter.js"
 import mapview from "../view/editor/mapview.js"
 
 import belt from "./tool/belt.js"
@@ -49,6 +50,10 @@ editor = (function ()
         {
             this.mapscr = new mapview(this.screen,this.state)
         }
+        if (this.feats.gutter)
+        {
+            this.gutter = new gutter(this.screen,this.state)
+        }
         if (this.feats.complete)
         {
             this.complete = new complete(this)
@@ -74,7 +79,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _66_17_
+        var g, m, r, s, sl, sr, _67_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -112,7 +117,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _80_21_, _81_21_, _82_23_
+        var ret, _81_21_, _82_21_, _83_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -134,7 +139,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _103_20_, _97_25_, _98_25_, _99_25_
+        var inside, res, _100_25_, _104_20_, _98_25_, _99_25_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -206,7 +211,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _169_20_, _173_21_, _178_21_
+        var _170_20_, _174_21_, _179_21_
 
         if (!this.hasFocus())
         {

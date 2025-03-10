@@ -283,6 +283,12 @@ use ../edit/tool ◆ belt
         belt.lineIndicesForRangesAndPositions [] [[1 1] [1 2] [1 3]] ▸ [1 2 3]
         belt.lineIndicesForRangesAndPositions [[ 0 0 2 0 ]] [[1 1] [1 2] [1 3]] ▸ [0 1 2 3]
         belt.lineIndicesForRangesAndPositions [[ 0 1 2 2 ]] [[1 6] [1 5] [1 4]] ▸ [1 2 4 5 6]
+        
+    ▸ linesIndicesForSpans
+    
+        belt.lineIndicesForSpans [] ▸ []
+        belt.lineIndicesForSpans [[0 1 0]] ▸ [1]
+        belt.lineIndicesForSpans [[0 1 0] [1 1 1]] ▸ [1]
     
     ▸ blockRangesForRangesAndPositions
     

@@ -21,7 +21,7 @@ function filepos
     fileLoaded: file ->
         
         if posview = ked_session.get "editor▸filepos▸#{file}"
-            log "▪ #{posview} #{file}"
+            # log "filepos.fileLoaded #{posview} #{file}"
             @state.setCursors [posview[0..1]]
             @state.setView posview[2..]
             

@@ -237,7 +237,7 @@ state = (function ()
     {
         if (!_k_.empty(lines) && !(_k_.isStr(lines[0])))
         {
-            console.log('state.loadLines - first line no segl?',this.name,lines)
+            console.error(`${this.name}.loadLines - first line not a string?`,lines[0])
         }
         return this.loadSegls(kseg.segls(lines))
     }

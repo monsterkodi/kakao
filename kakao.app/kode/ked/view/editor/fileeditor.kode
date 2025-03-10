@@ -10,7 +10,7 @@ use ../../../kxk    ▪ post
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
 use ../base         ◆ view 
-use                 ◆ gutter mapscr 
+use                 ◆ mapscr 
 
 function fileeditor extends editor
 
@@ -18,16 +18,20 @@ function fileeditor extends editor
         
         super screen name features
         
-        if @feats.gutter   ➜ @gutter = new gutter @screen @state
         if @feats.mapscr   ➜ @mapscr = new mapscr @screen @state; @mapscr.show()
-        
-        post.on 'finder.apply' @onFinderApply 
+            
+        post.on 'goto.line' @onGotoLine
 
-    onFinderApply: text =>
+    #  0000000    0000000   000000000   0000000       000      000  000   000  00000000  
+    # 000        000   000     000     000   000      000      000  0000  000  000       
+    # 000  0000  000   000     000     000   000      000      000  000 0 000  0000000   
+    # 000   000  000   000     000     000   000      000      000  000  0000  000       
+    #  0000000    0000000      000      0000000       0000000  000  000   000  00000000  
     
-        @state.highlightText text
-        @state.moveCursorToNextHighlight()
-        @grabFocus()
+    onGotoLine: lineIndex column =>
+        
+        column ?= @state.mainCursor()[0]
+        @state.setMainCursor column lineIndex
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

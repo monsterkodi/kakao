@@ -249,6 +249,12 @@ XYZ`)
         compare(belt.lineIndicesForRangesAndPositions([[0,0,2,0]],[[1,1],[1,2],[1,3]]),[0,1,2,3])
         compare(belt.lineIndicesForRangesAndPositions([[0,1,2,2]],[[1,6],[1,5],[1,4]]),[1,2,4,5,6])
     })
+    section("linesIndicesForSpans", function ()
+    {
+        compare(belt.lineIndicesForSpans([]),[])
+        compare(belt.lineIndicesForSpans([[0,1,0]]),[1])
+        compare(belt.lineIndicesForSpans([[0,1,0],[1,1,1]]),[1])
+    })
     section("blockRangesForRangesAndPositions", function ()
     {
         lines = kseg.segls(`line 1

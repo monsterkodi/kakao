@@ -6,19 +6,16 @@
     000       000  000   000  0000000    00000000  000   000  
 ###
 
-use ../../../kxk ▪ post
-use              ◆ inputchoice
-
-import rgxs from './quicky.json' with { type: "json" }
+use ../../../kxk    ▪ post kseg
+use ../../edit/tool ◆ belt
+use                 ◆ inputchoice
 
 function finder extends inputchoice
 
     @: @screen ->
 
-        super @screen 'finder'
+        super @screen 'finder' ['gutter' 'scroll']
         
-        @choices.state.syntax.setRgxs rgxs
-
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  
@@ -27,11 +24,16 @@ function finder extends inputchoice
     
     show: editor ->
         
-        searchText = editor.state.textOfSelectionOrWordAtCursor()
+        state = editor.state
+        
+        searchText = state.textOfSelectionOrWordAtCursor()
         log g4("#{r6 'finder.show'} '#{searchText}'")
-        editor.state.highlightText searchText
-
-        @choices.set []
+        state.highlightText searchText
+        
+        lines = belt.lineIndicesForSpans(state.s.highlights).map((idx) -> index:idx line:kseg.str(state.s.lines[idx]))
+        # log 'lines' b8(kseg.str(lines))
+        @choices.state.syntax.setExt 'kode'
+        @choices.set lines 'line'
         @input.set searchText
         @input.selectAll()
         
@@ -45,10 +47,11 @@ function finder extends inputchoice
     # 000   000  000        000        000         000     
     # 000   000  000        000        0000000     000     
     
-    apply: text ->
+    apply: choice ->
         
+        log "#{@name}.apply choice" choice
+        post.emit 'goto.line' choice.index
         @hide()
-        post.emit 'finder.apply' text
         redraw:true
         
     applyChoice: choice -> @apply choice

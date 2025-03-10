@@ -11,7 +11,6 @@ import editor from "../../edit/editor.js"
 
 import view from "../base/view.js"
 
-import gutter from "./gutter.js"
 import mapscr from "./mapscr.js"
 
 
@@ -22,30 +21,25 @@ fileeditor = (function ()
     {
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["onFinderApply"] = this["onFinderApply"].bind(this)
+        this["onGotoLine"] = this["onGotoLine"].bind(this)
         fileeditor.__super__.constructor.call(this,screen,name,features)
-        if (this.feats.gutter)
-        {
-            this.gutter = new gutter(this.screen,this.state)
-        }
         if (this.feats.mapscr)
         {
             this.mapscr = new mapscr(this.screen,this.state)
             this.mapscr.show()
         }
-        post.on('finder.apply',this.onFinderApply)
+        post.on('goto.line',this.onGotoLine)
     }
 
-    fileeditor.prototype["onFinderApply"] = function (text)
+    fileeditor.prototype["onGotoLine"] = function (lineIndex, column)
     {
-        this.state.highlightText(text)
-        this.state.moveCursorToNextHighlight()
-        return this.grabFocus()
+        column = (column != null ? column : this.state.mainCursor()[0])
+        return this.state.setMainCursor(column,lineIndex)
     }
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _123_31_, _71_41_
+        var col, ret, row, start, x, y, _127_31_, _75_41_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
