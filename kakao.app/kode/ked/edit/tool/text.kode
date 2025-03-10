@@ -560,14 +560,26 @@ function text
         
         ⮐ [] if empty words
         
-        # log "words #{b6 words.length} #{r8(noon(words))}"
+        # log "words #{b6 turd} #{b3 words.length} #{r8(noon(words))}"
         
         segls = []
         
         push = s ->
+            
+            ⮐ if kseg.str(s) == turd
             ws = kseg.words s
-            if ws[0] and ws[0].index == 0 and turd != ws[0].word != s and ws[0].word.startsWith(turd)
-                segls.push ws[0].segl
+            ws = ws.filter (w) -> w.index+w.segl.length > turd.length
+            # log "ws #{b6 turd} #{r5 kseg.str(s)}" ws
+            if valid ws[0] 
+                if ws[0].index == 0 and turd != ws[0].word != s and ws[0].word.startsWith(turd)
+                    segls.push ws[0].segl
+                else
+                    # log "#{r3 ws[0].index-turd.length} #{y6(noon ws[0])}" 
+                    if ws[0].index-turd.length <= 0
+                        segls.push s[0..ws[0].index+ws[0].segl.length]
+                    else if ws[0].index-turd.length > 0
+                        segls.push s[0..turd.length+1]
+                    
             segls.push s
         
         for segl in kseg.segls words
@@ -578,13 +590,15 @@ function text
                 push segl
             else
                 end = kseg.str segl[segl.length-tc..]
-                if end in '])}"\'' or end in ['()' '[]' '{}']
+                if end in '])}"\'' or end[-1] in ')]}' and end[-2] not in ','
                     push segl
                 else
                     # log "shorten |#{g4 end}| #{b8 tc}"
                     push segl[0...segl.length-tc]
             
-        kutil.uniq segls.map(kseg.str)
+        strs = segls.map kseg.str
+        strs.sort()
+        kutil.uniq strs
         
     #  0000000    0000000   0000000  000  000  000   000  00000000   0000000   0000000    00000000  00000000   
     # 000   000  000       000       000  000  000   000  000       000   000  000   000  000       000   000  

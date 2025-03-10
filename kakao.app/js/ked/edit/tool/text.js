@@ -919,7 +919,7 @@ text = (function ()
 
     text["prepareWordsForCompletion"] = function (turd, words)
     {
-        var end, push, segl, segls, tc
+        var end, push, segl, segls, strs, tc
 
         words = words.filter(function (w)
         {
@@ -935,10 +935,32 @@ text = (function ()
         {
             var ws
 
-            ws = kseg.words(s)
-            if (ws[0] && ws[0].index === 0 && (turd !== ws[0].word && ws[0].word !== s) && ws[0].word.startsWith(turd))
+            if (kseg.str(s) === turd)
             {
-                segls.push(ws[0].segl)
+                return
+            }
+            ws = kseg.words(s)
+            ws = ws.filter(function (w)
+            {
+                return w.index + w.segl.length > turd.length
+            })
+            if (!_k_.empty(ws[0]))
+            {
+                if (ws[0].index === 0 && (turd !== ws[0].word && ws[0].word !== s) && ws[0].word.startsWith(turd))
+                {
+                    segls.push(ws[0].segl)
+                }
+                else
+                {
+                    if (ws[0].index - turd.length <= 0)
+                    {
+                        segls.push(s.slice(0, ws[0].index + ws[0].segl.length))
+                    }
+                    else if (ws[0].index - turd.length > 0)
+                    {
+                        segls.push(s.slice(0, turd.length + 1))
+                    }
+                }
             }
             return segls.push(s)
         }
@@ -954,7 +976,7 @@ text = (function ()
             else
             {
                 end = kseg.str(segl.slice(segl.length - tc))
-                if (_k_.in(end,'])}"\'') || _k_.in(end,['()','[]','{}']))
+                if (_k_.in(end,'])}"\'') || _k_.in(end.slice(-1)[0],')]}') && !(_k_.in(end.slice(-2,-1)[0],',')))
                 {
                     push(segl)
                 }
@@ -964,7 +986,9 @@ text = (function ()
                 }
             }
         }
-        return kutil.uniq(segls.map(kseg.str))
+        strs = segls.map(kseg.str)
+        strs.sort()
+        return kutil.uniq(strs)
     }
 
     text["insertAsciiHeaderForPositionsAndRanges"] = function (lines, posl, ranges)

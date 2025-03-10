@@ -39,7 +39,10 @@ complete = (function ()
 
     complete.prototype["complete"] = function ()
     {
-        if (_k_.empty(this.editor.state.chunkAfterCursor()))
+        var after
+
+        after = this.editor.state.chunkAfterCursor()
+        if (_k_.empty(after) || true)
         {
             return this.word(this.editor.state.chunkBeforeCursor())
         }
@@ -62,7 +65,6 @@ complete = (function ()
             return chunk.chunk
         })
         this.words = belt.prepareWordsForCompletion(this.turd,this.words)
-        this.words.sort()
         console.log(`@words ${_k_.y6(this.words.length)}`,this.words)
         if (inserts = specs.trigger[this.turd])
         {
@@ -222,7 +224,7 @@ complete = (function ()
 
     complete.prototype["draw"] = function ()
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _219_52_
+        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _225_52_
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -236,7 +238,7 @@ complete = (function ()
         for (ci = 0; ci < list.length; ci++)
         {
             ch = list[ci]
-            bg = ((_219_52_=theme[this.editor.name + '_selection']) != null ? _219_52_ : theme.editor_selection)
+            bg = ((_225_52_=theme[this.editor.name + '_selection']) != null ? _225_52_ : theme.editor_selection)
             this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
         }
         if (this.words.length <= 1)

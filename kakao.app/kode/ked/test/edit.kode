@@ -243,9 +243,13 @@ use ../edit/tool ◆ belt
         """
         
         belt.prepareWordsForCompletion 'A' words ▸ ['Alice' 'Alice’s']
-        belt.prepareWordsForCompletion '"' ['"#fff"'] ▸ ['"#fff"']
+        belt.prepareWordsForCompletion '"' ['"#fff"'] ▸ ['"#' '"#fff"']
         belt.prepareWordsForCompletion 'f' ['func()'] ▸ ['func' 'func()']
         belt.prepareWordsForCompletion 'fa' ['f'] ▸ []
+        belt.prepareWordsForCompletion 'w' ['word[@turd.length..]'] ▸ ['word' 'word[@turd.length..]']
+        belt.prepareWordsForCompletion 'a.b' ['a.b.c.d'] ▸ ['a.b.' 'a.b.c.d']
+        belt.prepareWordsForCompletion 'word' ['word[@turd.length..]'] ▸ ['word[' 'word[@turd.length..]']
+        belt.prepareWordsForCompletion 'k' ['kseg' 'key'] ▸ ['key' 'kseg']
         
     ▸ indentLineRangesAndPositionsAtIndices
 

@@ -152,9 +152,13 @@ Alice;
 Alice’s
 Alice’s,`)
         compare(belt.prepareWordsForCompletion('A',words),['Alice','Alice’s'])
-        compare(belt.prepareWordsForCompletion('"',['"#fff"']),['"#fff"'])
+        compare(belt.prepareWordsForCompletion('"',['"#fff"']),['"#','"#fff"'])
         compare(belt.prepareWordsForCompletion('f',['func()']),['func','func()'])
         compare(belt.prepareWordsForCompletion('fa',['f']),[])
+        compare(belt.prepareWordsForCompletion('w',['word[@turd.length..]']),['word','word[@turd.length..]'])
+        compare(belt.prepareWordsForCompletion('a.b',['a.b.c.d']),['a.b.','a.b.c.d'])
+        compare(belt.prepareWordsForCompletion('word',['word[@turd.length..]']),['word[','word[@turd.length..]'])
+        compare(belt.prepareWordsForCompletion('k',['kseg','key']),['key','kseg'])
     })
     section("indentLineRangesAndPositionsAtIndices", function ()
     {

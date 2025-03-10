@@ -31,9 +31,16 @@ function complete
         
         @visible = false
 
+    #  0000000   0000000   00     00  00000000   000      00000000  000000000  00000000  
+    # 000       000   000  000   000  000   000  000      000          000     000       
+    # 000       000   000  000000000  00000000   000      0000000      000     0000000   
+    # 000       000   000  000 0 000  000        000      000          000     000       
+    #  0000000   0000000   000   000  000        0000000  00000000     000     00000000  
+    
     complete: ->
         
-        if empty @editor.state.chunkAfterCursor()
+        after = @editor.state.chunkAfterCursor()
+        if empty after or true
             @word @editor.state.chunkBeforeCursor() 
         
     # 000   000   0000000   00000000   0000000    
@@ -52,7 +59,6 @@ function complete
                 
         @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
         @words = belt.prepareWordsForCompletion @turd @words
-        @words.sort()
         log "@words #{y6 @words.length}" @words
         
         if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
