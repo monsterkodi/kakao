@@ -849,6 +849,23 @@ belt = (function ()
         }))
     }
 
+    belt["frontmostSpans"] = function (spans)
+    {
+        var fms, span
+
+        fms = {}
+        var list = _k_.list(spans)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            span = list[_a_]
+            if (!fms[span[1]])
+            {
+                fms[span[1]] = span
+            }
+        }
+        return Object.values(fms)
+    }
+
     belt["lineIndicesForRange"] = function (rng)
     {
         var indices, li

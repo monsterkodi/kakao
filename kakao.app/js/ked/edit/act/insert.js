@@ -26,7 +26,8 @@ export default {insert:function (text)
 
     this.clearHighlights()
     this.setLines(lines)
-    return this.setCursors(cursors)
+    this.setCursors(cursors)
+    return mode.postInsert(this)
 },insertAsciiHeaderForSelectionOrWordAtCursor:function ()
 {
     var cursors, lines, selections

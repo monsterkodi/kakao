@@ -32,6 +32,8 @@ export
         @clearHighlights()
         @setLines   lines
         @setCursors cursors
+        
+        mode.postInsert @
 
     # ███   ███  ████████   ███████   ███████    ████████  ████████ 
     # ███   ███  ███       ███   ███  ███   ███  ███       ███   ███

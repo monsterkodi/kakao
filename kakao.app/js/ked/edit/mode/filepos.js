@@ -1,13 +1,19 @@
 var filepos
 
+import kxk from "../../../kxk.js"
+let post = kxk.post
+
 
 filepos = (function ()
 {
+    filepos["autoStart"] = true
     function filepos (state)
     {
         this.state = state
     
         this.name = 'filepos'
+        this.fileLoaded(ked_session.get("editor▸file"))
+        post.emit('redraw')
     }
 
     filepos.prototype["cursorsSet"] = function ()

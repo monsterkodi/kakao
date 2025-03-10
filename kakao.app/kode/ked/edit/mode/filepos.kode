@@ -6,11 +6,18 @@
 000       000  0000000  00000000  000         0000000   0000000 
 ###
 
+use ../../../kxk ▪ post
+
 function filepos
 
+    @autoStart: true
+    
     @: @state ->
         
         @name = 'filepos'
+        
+        @fileLoaded ked_session.get("editor▸file") # let's see if mode loading is fast enough to not override user nav
+        post.emit 'redraw'
         
     cursorsSet: ->
         

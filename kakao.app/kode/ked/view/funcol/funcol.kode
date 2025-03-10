@@ -64,7 +64,7 @@ function funcol extends view
         @crumbs.set path
         @dirtree.setRoot path redraw:true
         
-        log "funcol.setRoot: #{b7 path}"
+        # log "funcol.setRoot: #{b7 path}"
         ked_session.set 'funcol▸root' path
         
     layout: x y w h ->

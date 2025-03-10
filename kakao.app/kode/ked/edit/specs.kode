@@ -1,38 +1,43 @@
 ###
- 0000000  00000000   00000000   0000000   0000000
-000       000   000  000       000       000     
-0000000   00000000   0000000   000       0000000 
-     000  000        000       000            000
-0000000   000        00000000   0000000  0000000 
+     0000000  00000000   00000000   0000000   0000000
+    000       000   000  000       000       000     
+    0000000   00000000   0000000   000       0000000 
+         000  000        000       000            000
+    0000000   000        00000000   0000000  0000000 
+
+    provides support for quick insertion of certain 
+    unicode symbols (special characters)
 ###
 
 function specs
     
-    @info: 
+    @replex: # auto replacements by replex mode 
         
-        "○":  trigger:'~' id: 'o'
-        "▪":  trigger:'~' id: 's'
-        "◆":  trigger:'~' id: 'd'
-        "▸":  trigger:'~' id: '>'
-        "▾":  trigger:'~' id: 'v'
-        "▴":  trigger:'~' id: '^'
-        "◂":  trigger:'~' id: '<'
-        "✔":  trigger:'~' id: 'O'
-        "✘":  trigger:'~' id: 'X'
-        "●":  trigger:'~' id: 'c'
-        "■":  trigger:'~' id: 'S'
-        "⮐":  trigger:'r' insert: '⮐  '
-        "➜":  trigger:'t' insert: '➜ '
-        "▸":  trigger:'>' insert: '▸ '
+        '~o': '○'
+        '~s': '▪'
+        '~d': '◆'
+        '~>': '▸'
+        '~<': '◂'
+        '~^': '▴'
+        '~v': '▾'
+        '~O': '✔'
+        '~X': '✘'
+        '~c': '●'
+        '~S': '■'
+        '~r': '⮐ '
+        '~t': '➜'
         
-    @trigger: {}
-    @inserts: {}
+    @trigger: # prepended to auto completion
+     
+        '~': [ '○' '▪' '◆' '▸' '▾' '▴' '◂' '✔' '✘' '●' '■' '⮐  ' '➜ ']
+        'r': [ '⮐  ']
+        't': [ '➜ ']
+        '>': [ '▸ ']
+    
+    @inserts: {} # map of inserts, to make check in complete easier
 
-for k,v of specs.info
-
-    v.insert = k if empty v.insert
-    specs.trigger[v.trigger] ?= []
-    specs.trigger[v.trigger].push v.insert
-    specs.inserts[v.insert] = k
+for trigger,vals of specs.trigger
+    for v in vals
+        specs.inserts[v] = v
 
 export specs

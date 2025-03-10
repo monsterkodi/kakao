@@ -127,6 +127,8 @@ export
         
     highlightText: text ->
         
+        ⮐ if empty text
+        
         @setHighlights belt.lineSpansForText(@s.lines text)
     
     deselectCursorHighlight: ->

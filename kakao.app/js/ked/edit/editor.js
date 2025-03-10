@@ -58,14 +58,7 @@ editor = (function ()
         {
             this.complete = new complete(this)
         }
-        if (this.feats.brckts)
-        {
-            mode.start(this.state,'brckts')
-        }
-        if (this.feats.filepos)
-        {
-            mode.start(this.state,'filepos')
-        }
+        mode.autoStartForEditor(this)
         var list = _k_.list(mode.names())
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {

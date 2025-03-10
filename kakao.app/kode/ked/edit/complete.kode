@@ -51,7 +51,7 @@ function complete
     
     word: @turd ->
     
-        log "complete.word #{b8 @turd}"
+        # log "complete.word #{b8 @turd}"
         
         if empty @turd
             @visible = false
@@ -59,7 +59,8 @@ function complete
                 
         @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
         @words = belt.prepareWordsForCompletion @turd @words
-        log "@words #{y6 @words.length}" @words
+        
+        # log "@words #{y6 @words.length}" @words
         
         if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
             @words = inserts.concat @words
@@ -167,7 +168,7 @@ function complete
     
         word = @currentWord()
         
-        if key = specs.inserts[word]
+        if specs.inserts[word]
             @editor.state.delete 'back'
             @editor.state.insert word
         else

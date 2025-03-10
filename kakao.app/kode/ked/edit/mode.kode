@@ -10,23 +10,71 @@
     modes handle input and text insertion:
 
     brckts   insert and highlight matching surround 
-    salter   ascii-header         
-    uniko    unicode drawing
+    replex   replaces certain input strings with others
+    salter   ascii-headers
     unype    unicode type writer
-    vimple   simple vi
-    record   
 ###
 
-use ../../kxk ◆ kseg
+use ../../kxk ▪ kseg slash
+use ../../kxk ◆ nfs
 use ../theme  ◆ theme
-use ./mode    ◆ brckts salter unype filepos
  
 function mode
 
-    @active: {} # maps editor state names to active mode instances
-    @modes:  {} # maps mode names to mode classes
-
+    @active:  {} # maps editor state names to active mode instances
+    @modes:   {} # maps mode names to mode classes
+    @pending: [] # list of editors that requested autostart before modes were loaded
+    
     @names: -> Object.keys mode.modes
+    
+    # 000       0000000    0000000   0000000        00     00   0000000   0000000     000   000  000      00000000   0000000  
+    # 000      000   000  000   000  000   000      000   000  000   000  000   000   000   000  000      000       000       
+    # 000      000   000  000000000  000   000      000000000  000   000  000   000   000   000  000      0000000   0000000   
+    # 000      000   000  000   000  000   000      000 0 000  000   000  000   000   000   000  000      000            000  
+    # 0000000   0000000   000   000  0000000        000   000   0000000   0000000      0000000   0000000  00000000  0000000   
+    
+    @loadModules: ○->
+
+        list =○ nfs.list slash.path(◆dir 'mode')
+        
+        # log 'mode.loadModules' list
+
+        for item in list
+            file = item.path
+            continue if slash.ext(file) != 'js'
+
+            try
+                moduleJS    = './' + slash.relative(file ◆dir)
+                moduleExport =○ import(moduleJS)
+            catch err
+                error "import of #{moduleJS} failed" err
+                continue
+                
+            moduleName  = slash.name file
+            moduleClass = moduleExport.default
+            mode.modes[moduleName] = moduleClass
+            
+        # log 'mode.loadModules - modes' mode.names()
+        
+        while valid mode.pending
+            mode.autoStartForEditor mode.pending.shift()
+        
+    #  0000000   000   000  000000000   0000000    0000000  000000000   0000000   00000000   000000000  
+    # 000   000  000   000     000     000   000  000          000     000   000  000   000     000     
+    # 000000000  000   000     000     000   000  0000000      000     000000000  0000000       000     
+    # 000   000  000   000     000     000   000       000     000     000   000  000   000     000     
+    # 000   000   0000000      000      0000000   0000000      000     000   000  000   000     000     
+    
+    @autoStartForEditor: editor ->
+        
+        if empty mode.modes
+            # log "pending... #{editor.name}"
+            ⮐ mode.pending.push editor
+
+        for name in mode.names()
+            if editor.feats[name] and mode.modes[name].autoStart
+                # log "autostart #{editor.name} #{name}"
+                mode.start editor.state name
 
     #  ███████  █████████   ███████   ████████   █████████
     # ███          ███     ███   ███  ███   ███     ███   
@@ -36,9 +84,9 @@ function mode
     
     @start: state name ->
     
-        ⮐ if @isActive state name
+        # log "mode.start #{name}"
         
-        log "mode.start #{name}"
+        ⮐ if @isActive state name
         
         @active[state.name] ?= []
         @active[state.name].push new mode.modes[name] state
@@ -47,7 +95,7 @@ function mode
             
     @stop: state name ->
         
-        log "mode.stop #{name}"
+        # log "mode.stop #{name}"
         
         m = @get state name
         
@@ -90,6 +138,18 @@ function mode
                 text = m.insert text
         text
         
+    @postInsert: state ->
+        
+        for m in @active[state.name]
+            if m.postInsert is func
+                m.postInsert()
+        
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
     @deleteSelection: state ->
         
         for m in @active[state.name]
@@ -191,19 +251,6 @@ function record
 
     @: @state -> @name = 'record'
     
-# 00     00   0000000   0000000    00000000   0000000  
-# 000   000  000   000  000   000  000       000       
-# 000000000  000   000  000   000  0000000   0000000   
-# 000 0 000  000   000  000   000  000            000  
-# 000   000   0000000   0000000    00000000  0000000   
-
-mode.modes = 
-    brckts:  brckts
-    salter:  salter
-    unype:   unype
-    uniko:   uniko
-    vimple:  vimple
-    record:  record
-    filepos: filepos
+mode.loadModules()
     
 export mode

@@ -13,7 +13,7 @@ function help
 
     @header: -> '\n' + color.linesForCells(@headerCells()).join('\n') + '\n'
         
-    @headerCells: f ->
+    @headerCells: f=1 ->
             
         h = """
             

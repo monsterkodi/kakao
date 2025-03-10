@@ -1,6 +1,6 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var k, specs, v, _34_29_
+var specs, trigger, v, vals
 
 
 specs = (function ()
@@ -8,21 +8,20 @@ specs = (function ()
     function specs ()
     {}
 
-    specs["info"] = {"○":{trigger:'~',id:'o'},"▪":{trigger:'~',id:'s'},"◆":{trigger:'~',id:'d'},"▸":{trigger:'~',id:'>'},"▾":{trigger:'~',id:'v'},"▴":{trigger:'~',id:'^'},"◂":{trigger:'~',id:'<'},"✔":{trigger:'~',id:'O'},"✘":{trigger:'~',id:'X'},"●":{trigger:'~',id:'c'},"■":{trigger:'~',id:'S'},"⮐":{trigger:'r',insert:'⮐  '},"➜":{trigger:'t',insert:'➜ '},"▸":{trigger:'>',insert:'▸ '}}
-    specs["trigger"] = {}
+    specs["replex"] = {'~o':'○','~s':'▪','~d':'◆','~>':'▸','~<':'◂','~^':'▴','~v':'▾','~O':'✔','~X':'✘','~c':'●','~S':'■','~r':'⮐ ','~t':'➜'}
+    specs["trigger"] = {'~':['○','▪','◆','▸','▾','▴','◂','✔','✘','●','■','⮐  ','➜ '],'r':['⮐  '],'t':['➜ '],'>':['▸ ']}
     specs["inserts"] = {}
     return specs
 })()
 
-for (k in specs.info)
+for (trigger in specs.trigger)
 {
-    v = specs.info[k]
-    if (_k_.empty(v.insert))
+    vals = specs.trigger[trigger]
+    var list = _k_.list(vals)
+    for (var _a_ = 0; _a_ < list.length; _a_++)
     {
-        v.insert = k
+        v = list[_a_]
+        specs.inserts[v] = v
     }
-    specs.trigger[v.trigger] = ((_34_29_=specs.trigger[v.trigger]) != null ? _34_29_ : [])
-    specs.trigger[v.trigger].push(v.insert)
-    specs.inserts[v.insert] = k
 }
 export default specs;

@@ -13,6 +13,7 @@ import mode from "../mode.js"
 
 brckts = (function ()
 {
+    brckts["autoStart"] = true
     brckts["surround"] = {'#':['#{','}'],'{':['{','}'],'}':['{','}'],'[':['[',']'],']':['[',']'],'(':['(',')'],')':['(',')'],"'":["'","'"],'"':['"','"']}
     function brckts (state)
     {

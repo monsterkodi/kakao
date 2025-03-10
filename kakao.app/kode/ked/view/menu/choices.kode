@@ -136,7 +136,7 @@ function choices extends editor
         ⮐ if empty @state.s.selections
             
         @grabFocus() if @focusable
-        @frontCursor() 
+        # @frontCursor() 
         @emit 'select' @choiceAtRow(@state.s.selections[0][1])
         
     frontCursor: -> 
@@ -211,6 +211,7 @@ function choices extends editor
         ⮐ true if @hoverIndex == index
         
         @hoverIndex = index
+        @state.setMainCursor 0 index
         @select @hoverIndex
         post.emit 'pointer' 'pointer'
         @emitAction 'hover' @current() event

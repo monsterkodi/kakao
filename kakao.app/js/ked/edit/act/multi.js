@@ -220,19 +220,12 @@ export default {allCursors:function ()
             return true
         }
     }
-},wordAtCursor:function ()
+},chunksBeforeCursors:function ()
 {
-    return belt.wordAtPos(this.s.lines,this.mainCursor())
-},chunkBeforeCursor:function ()
-{
-    return belt.chunkBeforePos(this.s.lines,this.mainCursor())
-},chunkAfterCursor:function ()
-{
-    return belt.chunkAfterPos(this.s.lines,this.mainCursor())
-},setMainCursorAndSelect:function (x, y)
-{
-    this.setSelections(belt.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
-    return this.setCursors([[x,y]],{adjust:'topBotDelta'})
+    return this.s.cursors.map((function (c)
+    {
+        return belt.chunkBeforePos(this.s.lines,c)
+    }).bind(this))
 },moveCursorsAndSelect:function (dir, opt)
 {
     var cursors, selections

@@ -55,9 +55,9 @@ function KED
         
         @menu    = new menu       @screen        
         @quicky  = new quicky     @screen 
-        @finder  = new finder     @screen 
-        @editor  = new fileeditor @screen 'editor'  ['scroll' 'gutter' 'mapscr' 'complete' 'salter' 'uniko' 'vimple' 'unype' 'brckts' 'filepos']
+        @editor  = new fileeditor @screen 'editor'
         @funcol  = new funcol     @screen 'funcol'  ['scroll' 'knob']
+        @finder  = new finder     @screen @editor.state
         @status  = new status     @screen @editor.state
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -324,7 +324,8 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+.' 'alt+m'              ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
-            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor
+            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show()
+            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐ @finder.search()
             'cmd+o' 'ctrl+o'
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
             

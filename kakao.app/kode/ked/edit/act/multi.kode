@@ -173,20 +173,19 @@ export
         for c in @allCursors()
             ⮐ true if c[1] == y
             
-    wordAtCursor:      -> belt.wordAtPos      @s.lines @mainCursor()
-    chunkBeforeCursor: -> belt.chunkBeforePos @s.lines @mainCursor()
-    chunkAfterCursor:  -> belt.chunkAfterPos  @s.lines @mainCursor()
-        
+    #  0000000  000   000  000   000  000   000   0000000  0000000    00000000  00000000   0000000   00000000   00000000  
+    # 000       000   000  0000  000  000  000   000       000   000  000       000       000   000  000   000  000       
+    # 000       000000000  000 0 000  0000000    0000000   0000000    0000000   000000    000   000  0000000    0000000   
+    # 000       000   000  000  0000  000  000        000  000   000  000       000       000   000  000   000  000       
+    #  0000000  000   000  000   000  000   000  0000000   0000000    00000000  000        0000000   000   000  00000000  
+    
+    chunksBeforeCursors: -> @s.cursors.map (c) => belt.chunkBeforePos(@s.lines c)
+            
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
     # 0000000   0000000   000      0000000   000          000     
     #      000  000       000      000       000          000     
     # 0000000   00000000  0000000  00000000   0000000     000     
-    
-    setMainCursorAndSelect: x y ->
-        
-        @setSelections belt.extendLineRangesFromPositionToPosition @allLines() @allSelections() @mainCursor() [x y]
-        @setCursors [[x y]] adjust:'topBotDelta'
     
     moveCursorsAndSelect: dir opt ->
         

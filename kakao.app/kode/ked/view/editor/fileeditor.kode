@@ -14,11 +14,27 @@ use                 ◆ mapscr
 
 function fileeditor extends editor
 
-    @: screen name features ->
+    @: screen name ->
+        
+        features = [
+            'scroll'  # subviews
+            'gutter' 
+            'mapscr' 
+            'complete' 
+            
+            'filepos' # autostart modes
+            'replex' 
+            'brckts' 
+            
+            'unype'   # temporary modes
+            'salter' 
+            'vimple' 
+            'uniko' 
+            ]
         
         super screen name features
         
-        if @feats.mapscr   ➜ @mapscr = new mapscr @screen @state; @mapscr.show()
+        if @feats.mapscr ➜ @mapscr = new mapscr @screen @state; @mapscr.show()
             
         post.on 'goto.line' @onGotoLine
 
@@ -31,7 +47,7 @@ function fileeditor extends editor
     onGotoLine: lineIndex column =>
         
         column ?= @state.mainCursor()[0]
-        @state.setMainCursor column lineIndex
+        @state.setCursors [[column lineIndex]] adjust:'topBotDelta'
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

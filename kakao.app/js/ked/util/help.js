@@ -17,7 +17,7 @@ help = (function ()
         return '\n' + color.linesForCells(this.headerCells()).join('\n') + '\n'
     }
 
-    help["headerCells"] = function (f)
+    help["headerCells"] = function (f = 1)
     {
         var c, cells, color1, color2, color3, dcells, ecells, fc1, fc2, fc3, h, kcells
 

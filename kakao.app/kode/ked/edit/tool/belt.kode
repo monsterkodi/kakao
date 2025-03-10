@@ -420,6 +420,14 @@ function belt
         
         kxk.util.uniq spans.map((s) -> s[1])
         
+    @frontmostSpans: spans ->
+        
+        fms = {}
+        for span in spans
+            if not fms[span[1]]
+                fms[span[1]] = span
+        Object.values fms
+        
     @lineIndicesForRange: rng ->
         
         indices = []

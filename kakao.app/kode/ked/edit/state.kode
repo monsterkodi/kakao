@@ -111,7 +111,7 @@ function state
         mode.cursorsSet @
         
         if not mode.isActive @ 'salter'
-            mode.modes.salter.checkCursorsSet @
+            mode.modes.salter?.checkCursorsSet @
                         
         @
             
@@ -322,7 +322,7 @@ function state
     
     adjustViewForMainCursor: opt =>
         
-        ⮐ if @cells.cols <= 0 or @cells.rows <= 0
+        ⮐  if @cells.cols <= 0 or @cells.rows <= 0
 
         [x y] = @mainCursor()
 
@@ -343,7 +343,8 @@ function state
         if view[1] > 0 and @s.lines.length <= @cells.rows
             view[1] = 0
 
-        view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
+        if not @skipAdjustViewForMainCursor
+            view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
         
         ⮐ if view eql @s.view
         
@@ -361,8 +362,8 @@ function state
     setView: view =>
         
         @set 'view' view
-        if @name == 'editor.state' # ⟅𝕒𝓏𝛾 ⊂ℜ𝕒☡𝛾
-            ked_session.set "editor▸view" view
+        # if @name == 'editor.state' # ⟅𝕒𝓏𝛾 ⊂ℜ𝕒☡𝛾
+            # ked_session.set "editor▸view" view
         @
 
     rangeForVisibleLines: =>

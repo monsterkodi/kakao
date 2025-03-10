@@ -249,7 +249,7 @@ inputchoice = (function ()
             post.emit('focus','editor')
             return this.hide()
         }
-        return false
+        return this.hover
     }
 
     inputchoice.prototype["onWheel"] = function (event)

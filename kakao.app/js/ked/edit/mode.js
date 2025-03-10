@@ -1,15 +1,14 @@
-var _k_ = {isFunc: function (o) {return typeof o === 'function'}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {dir: function () { let url = import.meta.url.substring(7); let si = url.lastIndexOf('/'); return url.substring(0, si); }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 var mode, record, uniko, vimple
 
-import kseg from "../../kxk/kseg.js"
+import kxk from "../../kxk.js"
+let kseg = kxk.kseg
+let slash = kxk.slash
+
+import nfs from "../../kxk/nfs.js"
 
 import theme from "../theme/theme.js"
-
-import brckts from "./mode/brckts.js"
-import salter from "./mode/salter.js"
-import unype from "./mode/unype.js"
-import filepos from "./mode/filepos.js"
 
 
 mode = (function ()
@@ -19,21 +18,74 @@ mode = (function ()
 
     mode["active"] = {}
     mode["modes"] = {}
+    mode["pending"] = []
     mode["names"] = function ()
     {
         return Object.keys(mode.modes)
     }
 
+    mode["loadModules"] = async function ()
+    {
+        var file, item, list, moduleClass, moduleExport, moduleJS, moduleName
+
+        list = await nfs.list(slash.path(_k_.dir(),'mode'))
+        var list1 = _k_.list(list)
+        for (var _a_ = 0; _a_ < list1.length; _a_++)
+        {
+            item = list1[_a_]
+            file = item.path
+            if (slash.ext(file) !== 'js')
+            {
+                continue
+            }
+            try
+            {
+                moduleJS = './' + slash.relative(file,_k_.dir())
+                moduleExport = await import(moduleJS)
+            }
+            catch (err)
+            {
+                console.error(`import of ${moduleJS} failed`,err)
+                continue
+            }
+            moduleName = slash.name(file)
+            moduleClass = moduleExport.default
+            mode.modes[moduleName] = moduleClass
+        }
+        while (!_k_.empty(mode.pending))
+        {
+            mode.autoStartForEditor(mode.pending.shift())
+        }
+    }
+
+    mode["autoStartForEditor"] = function (editor)
+    {
+        var name
+
+        if (_k_.empty(mode.modes))
+        {
+            return mode.pending.push(editor)
+        }
+        var list = _k_.list(mode.names())
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            name = list[_a_]
+            if (editor.feats[name] && mode.modes[name].autoStart)
+            {
+                mode.start(editor.state,name)
+            }
+        }
+    }
+
     mode["start"] = function (state, name)
     {
-        var _43_28_
+        var _91_28_
 
         if (this.isActive(state,name))
         {
             return
         }
-        console.log(`mode.start ${name}`)
-        this.active[state.name] = ((_43_28_=this.active[state.name]) != null ? _43_28_ : [])
+        this.active[state.name] = ((_91_28_=this.active[state.name]) != null ? _91_28_ : [])
         return this.active[state.name].push(new mode.modes[name](state))
     }
 
@@ -41,7 +93,6 @@ mode = (function ()
     {
         var m
 
-        console.log(`mode.stop ${name}`)
         m = this.get(state,name)
         this.active[state.name].splice(this.active[state.name].indexOf(m),1)
         if (_k_.isFunc(m.stop))
@@ -96,6 +147,21 @@ mode = (function ()
             }
         }
         return text
+    }
+
+    mode["postInsert"] = function (state)
+    {
+        var m
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (_k_.isFunc(m.postInsert))
+            {
+                m.postInsert()
+            }
+        }
     }
 
     mode["deleteSelection"] = function (state)
@@ -239,5 +305,5 @@ record = (function ()
     return record
 })()
 
-mode.modes = {brckts:brckts,salter:salter,unype:unype,uniko:uniko,vimple:vimple,record:record,filepos:filepos}
+mode.loadModules()
 export default mode;

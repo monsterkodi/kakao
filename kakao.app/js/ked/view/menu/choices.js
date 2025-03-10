@@ -211,7 +211,6 @@ choices = (function ()
         {
             this.grabFocus()
         }
-        this.frontCursor()
         return this.emit('select',this.choiceAtRow(this.state.s.selections[0][1]))
     }
 
@@ -295,6 +294,7 @@ choices = (function ()
             return true
         }
         this.hoverIndex = index
+        this.state.setMainCursor(0,index)
         this.select(this.hoverIndex)
         post.emit('pointer','pointer')
         this.emitAction('hover',this.current(),event)
@@ -325,7 +325,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _244_21_
+        var col, dx, dy, ret, row, _245_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

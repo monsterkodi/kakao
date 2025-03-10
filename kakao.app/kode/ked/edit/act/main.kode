@@ -122,18 +122,7 @@ export
 
         @deselect()
         @setCursors [mc]
-                        
-    #  ███████   ███   ███  ███   ███
-    # ███   ███  ████  ███   ███ ███ 
-    # █████████  ███ █ ███    █████  
-    # ███   ███  ███  ████     ███   
-    # ███   ███  ███   ███     ███   
-
-    isAnyCursorInLine: y ->
-        
-        for c in @allCursors()
-            ⮐ true if c[1] == y
-            
+                                    
     wordAtCursor:      -> belt.wordAtPos      @s.lines @mainCursor()
     chunkBeforeCursor: -> belt.chunkBeforePos @s.lines @mainCursor()
     chunkAfterCursor:  -> belt.chunkAfterPos  @s.lines @mainCursor()

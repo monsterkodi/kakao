@@ -18,7 +18,7 @@ class prjcts
     @indexing: null
 
     @files: path -> @projects[@dir(path)]?.files ? []
-        
+    
     @dir: path ->
 
         if valid path
@@ -26,12 +26,12 @@ class prjcts
             path = slash.absolute path process.cwd()
             
             if prjPath = @allFiles[path]
-                return prjPath
+                ⮐ prjPath
             if prjcts.projects[path]
-                return @projects[path].dir
+                ⮐ @projects[path].dir
             for prjPath,project of prjcts.projects
                 if path.startsWith prjPath
-                    return prjPath
+                    ⮐ prjPath
         log 'missing prj?' path
         null
         
@@ -92,7 +92,7 @@ class prjcts
             for file in result.files
                 @allFiles[file] = prjPath
                 
-            # log 'prjcts indexed' prjPath @projects
+            # log 'prjcts.index ▪' prjcts.projects
 
             post.emit 'prjcts.project.indexed' prjPath
         

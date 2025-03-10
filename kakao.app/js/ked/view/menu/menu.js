@@ -83,7 +83,6 @@ quit`)
         this.input.set('')
         this.choices.set(items)
         this.choices.state.selectLine(0)
-        this.choices.frontCursor()
         this.choices.state.setView([0,0])
         if (this.greet)
         {

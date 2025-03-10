@@ -20,9 +20,11 @@
 #### todo
 ##### todo
 
-- mode
-    - salter mode
-        - fix delete and other issues
+- finder
+    - has a search toggle, which searches and appends results from prjct files
+    - results can be loaded into a new 'tab' 
+
+- funclist
 
 - completion
     - fix
@@ -33,11 +35,13 @@
         - before closing )]}
         - after . :
 
+- mode
+    - salter mode
+        - fix delete and other issues
+
 - macro
     - unicode palette
-    
-- funclist
-        
+            
 - dirtree
     - git status
     - searchable?
@@ -47,13 +51,13 @@
     - file icons and ext removal
     - prefs mode
         - set preview_on_hover false
-    - fix 
+    - fix prjcts files
         - clamp long relative parent dirs
     - click in mapview to jump to line
     
 - status
     - move dirty and redo into statusfile 
-    - relative crumbs when dirtree is open
+    - relative crumbs when dirtree is open?
 
 - editing 
     - more tests
@@ -67,7 +71,6 @@
         - shift+ctrl+left|right|up|down rectangular selection
 
 - unicode mode
-    - ~ replacement
     - quicky
         - ~\w+ julia search
         - ~\d+ single character
@@ -81,22 +84,17 @@
     - show cursors and selections
     
 - session
-    - save main cursor positions per file and apply on load
-    - merge cursor positions from last session by default?  
     - clean recent files (check for existence)
+    - clean file positions (by age?)?)
     
 - config | prefs
-    - similar to session, but loads and merges (to handle multiple instances)
-    - index- & source- & text-file extensions
+    - similar to a global session
+        - watches, loads and merges (to handle multiple instances)
+    - lists of extensions
+        - index      (parsed for completion)
+        - source     (included in prjct files)
+        - text-files (editable)
     - index files per project?
-
-- find and search
-    - each finder has a search toggle, which searches in in all files
-        - opens the search result panel, if not open already
-        - the finder of the search result panel is set to the search parameters:
-            - if executed via shortcut: selected or cursor word
-            - if executed from a finder: the finder's setting 
-                - original finder can be closed and thus 'moves' to the search result pane
     
 ### nice to have
     

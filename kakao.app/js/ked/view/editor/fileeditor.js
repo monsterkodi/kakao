@@ -17,11 +17,14 @@ import mapscr from "./mapscr.js"
 fileeditor = (function ()
 {
     _k_.extend(fileeditor, editor)
-    function fileeditor (screen, name, features)
+    function fileeditor (screen, name)
     {
+        var features
+
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onGotoLine"] = this["onGotoLine"].bind(this)
+        features = ['scroll','gutter','mapscr','complete','filepos','replex','brckts','unype','salter','vimple','uniko']
         fileeditor.__super__.constructor.call(this,screen,name,features)
         if (this.feats.mapscr)
         {
@@ -34,12 +37,12 @@ fileeditor = (function ()
     fileeditor.prototype["onGotoLine"] = function (lineIndex, column)
     {
         column = (column != null ? column : this.state.mainCursor()[0])
-        return this.state.setMainCursor(column,lineIndex)
+        return this.state.setCursors([[column,lineIndex]],{adjust:'topBotDelta'})
     }
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _127_31_, _75_41_
+        var col, ret, row, start, x, y, _143_31_, _91_41_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

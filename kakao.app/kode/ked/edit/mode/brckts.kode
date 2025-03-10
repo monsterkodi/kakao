@@ -12,6 +12,7 @@ use ..           ◆ mode
 
 function brckts
 
+    @autoStart: true
     @surround: 
     
         '#': ['#{' '}'] # <- this has to come
@@ -29,7 +30,7 @@ function brckts
         
     @: @state ->      
         
-        @name = 'brckts'
+        @name = 'brckts'        
                         
     # ███   ███  ████████  ███   ███        
     # ███  ███   ███        ███ ███         
