@@ -25,13 +25,18 @@ function finder extends inputchoice
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    show: searchText ->
+    show: editor ->
+        
+        searchText = editor.state.textOfSelectionOrWordAtCursor()
+        log g4("#{r6 'finder.show'} '#{searchText}'")
+        editor.state.highlightText searchText
 
+        @choices.set []
         @input.set searchText
         @input.selectAll()
-        @choices.set []
         
         @layout()
+        
         @input.grabFocus()
         
     #  0000000   00000000   00000000   000      000   000  

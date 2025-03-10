@@ -45,7 +45,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _119_31_, _67_41_
+        var col, ret, row, start, x, y, _123_31_, _71_41_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -65,6 +65,7 @@ fileeditor = (function ()
                     }
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
+                    this.state.clearHighlights()
                     if (event.count === 2)
                     {
                         if (event.alt)
@@ -80,6 +81,7 @@ fileeditor = (function ()
                     {
                         this.state.selectLine(y)
                     }
+                    this.state.highlightSelection()
                     this.dragStart = _k_.copy(this.state.s.selections[0])
                     return {redraw:true}
                 }

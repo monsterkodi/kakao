@@ -34,7 +34,7 @@ status = (function ()
         this.gutter = 4
         this.file = ''
         this.drawTime = ''
-        this.pointerType = 'default'
+        this.pointerType = 'pointer'
         this.crumbs = new crumbs(this.screen,'status_crumbs')
         this.statusfile = new statusfile(this.screen,'status_file')
         this.crumbs.color.bgl = theme.gutter
@@ -93,18 +93,8 @@ status = (function ()
         {
             switch (event.type)
             {
-                case 'move':
-                    post.emit('pointer','ew-resize')
-                    break
                 case 'press':
-                    if (event.count > 1)
-                    {
-                        post.emit('funcol.toggle')
-                    }
-                    else
-                    {
-                        post.emit('funcol.resize')
-                    }
+                    post.emit('funcol.toggle')
                     return {redraw:true}
 
             }

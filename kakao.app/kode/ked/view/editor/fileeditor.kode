@@ -52,6 +52,8 @@ function fileeditor extends editor
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
+                    @state.clearHighlights()
+                    
                     if event.count == 2
                         if event.alt
                             @state.selectChunk x y
@@ -59,6 +61,8 @@ function fileeditor extends editor
                             @state.selectWord x y
                     else
                         @state.selectLine y
+                        
+                    @state.highlightSelection()
                         
                     @dragStart = copy @state.s.selections[0]
                     

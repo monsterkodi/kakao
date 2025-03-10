@@ -277,6 +277,10 @@ function dirtree extends choices
         @state.setView [0 @state.s.view[1]-1]
 
     selectNextKeepOffset: ->
+    
+        if @current().type == 'file' and ked_session.get('editor▸file') != @current().path
+            post.emit 'quicky' @current().path
+            ⮐  
         
         @selectNext()
         post.emit 'quicky' @current().path if @current().type == 'file'

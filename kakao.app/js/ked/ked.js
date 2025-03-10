@@ -373,7 +373,7 @@ ked [file]
 
             case 'cmd+f':
             case 'ctrl+f':
-                return this.finder.show(this.editor.state.textOfSelectionOrWordAtCursor())
+                return this.finder.show(this.editor)
 
             case 'cmd+o':
             case 'ctrl+o':

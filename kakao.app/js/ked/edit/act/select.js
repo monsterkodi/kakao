@@ -133,11 +133,7 @@ export default {select:function (from, to)
     return this.setHighlights(spans)
 },highlightText:function (text)
 {
-    var lines, spans
-
-    lines = this.allLines()
-    spans = belt.lineSpansForText(lines,text)
-    return this.setHighlights(spans)
+    return this.setHighlights(belt.lineSpansForText(this.s.lines,text))
 },deselectCursorHighlight:function ()
 {
     var prev
@@ -376,7 +372,7 @@ export default {select:function (from, to)
     var selections
 
     selections = belt.lineRangesForPositions(this.allLines(),this.allCursors())
-    _k_.assert("kode/ked/edit/act/select.kode", 324, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
+    _k_.assert("kode/ked/edit/act/select.kode", 320, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
     return this.setSelections(selections)
 },selectAllLines:function ()
 {

@@ -321,6 +321,8 @@ function state
     # 000   000  0000000     0000000    0000000   0000000      000              0      000  00000000  00     00  
     
     adjustViewForMainCursor: opt =>
+        
+        ⮐ if @cells.cols <= 0 or @cells.rows <= 0
 
         [x y] = @mainCursor()
 
@@ -338,7 +340,7 @@ function state
         else if y < view[1] + topBotDelta
             view[1] = y - topBotDelta
 
-        if view[1] > 0 and @s.lines.length < @cells.rows
+        if view[1] > 0 and @s.lines.length <= @cells.rows
             view[1] = 0
 
         view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
@@ -350,13 +352,14 @@ function state
     initView: =>
 
         view = @s.view.asMutable()
+        
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
         view[0] = max 0 view[0]
 
         @setView view
 
     setView: view =>
-
+        
         @set 'view' view
         if @name == 'editor.state' # ⟅𝕒𝓏𝛾 ⊂ℜ𝕒☡𝛾
             ked_session.set "editor▸view" view

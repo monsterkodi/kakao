@@ -317,6 +317,11 @@ dirtree = (function ()
 
     dirtree.prototype["selectNextKeepOffset"] = function ()
     {
+        if (this.current().type === 'file' && ked_session.get('editor▸file') !== this.current().path)
+        {
+            post.emit('quicky',this.current().path)
+            return
+        }
         this.selectNext()
         if (this.current().type === 'file')
         {
@@ -379,7 +384,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _326_44_
+        var idx, item, _330_44_
 
         if (!(global.ked_editor_file != null))
         {
@@ -442,12 +447,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _366_51_
+        var _370_51_
 
         switch (item.type)
         {
             case 'file':
-                return ((_366_51_=icons[slash.ext(item.path)]) != null ? _366_51_ : icons.file)
+                return ((_370_51_=icons[slash.ext(item.path)]) != null ? _370_51_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

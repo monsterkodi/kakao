@@ -433,6 +433,10 @@ state = (function ()
     {
         var topBotDelta, view, x, y
 
+        if (this.cells.cols <= 0 || this.cells.rows <= 0)
+        {
+            return
+        }
         var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
 
         view = this.s.view.asMutable()
@@ -453,7 +457,7 @@ state = (function ()
         {
             view[1] = y - topBotDelta
         }
-        if (view[1] > 0 && this.s.lines.length < this.cells.rows)
+        if (view[1] > 0 && this.s.lines.length <= this.cells.rows)
         {
             view[1] = 0
         }

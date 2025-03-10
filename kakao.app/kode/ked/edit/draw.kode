@@ -37,20 +37,19 @@ function draw extends view
         # prof.start 'draw' if @name == 'editor'
         # ● draw
                 
-        syntax     = @state.syntax
-        s          = @state.s
-        view       = s.view.asMutable()
-        lines      = @state.allLines()
-        mainCursor = @state.mainCursor()
+        syntax = @state.syntax
+        view   = @state.s.view
+        lines  = @state.s.lines
         
         bg = @color.bg
         
         for row in 0...@cells.rows
-        
+            
             checkColor = false
             headerClass = null
             
             y = row+view[1]
+            
             break if y >= lines.length
             
             line  = lines[y]
@@ -66,7 +65,12 @@ function draw extends view
                 
                 ci = x+view[0]
                 si = kseg.indexAtWidth line ci
-                break if si >= line.length
+                
+                # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
+                
+                if si >= line.length
+                    # log "#{@name} #{r5 'break!'}"
+                    break 
                 
                 clss = syntax.getClass ci y
                 if clss == 'invert_bg'
@@ -88,7 +92,7 @@ function draw extends view
                     
             @drawRowBackground row linel
                     
-            @drawColorPills line row linel if checkColor
+            @drawColorPills  line row linel       if checkColor
             @drawAsciiHeader line row headerClass if headerClass
 
         @drawTrailingRows()        

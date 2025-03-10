@@ -324,7 +324,7 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+.' 'alt+m'              ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
-            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor.state.textOfSelectionOrWordAtCursor()
+            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show @editor
             'cmd+o' 'ctrl+o'
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
             

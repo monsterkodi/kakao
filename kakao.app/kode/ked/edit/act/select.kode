@@ -81,7 +81,6 @@ export
             @selectNextHighlight()
             
         @selectWordAtCursor_highlightSelection()
-
         
     highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight: ->
         # shift+cmd+e shift+ctrl+e
@@ -128,10 +127,7 @@ export
         
     highlightText: text ->
         
-        lines = @allLines()
-        spans = belt.lineSpansForText lines text
-
-        @setHighlights spans
+        @setHighlights belt.lineSpansForText(@s.lines text)
     
     deselectCursorHighlight: ->
         
