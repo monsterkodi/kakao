@@ -64,6 +64,7 @@ function menu extends inputchoice
             recent ...
             open ...
             new
+            help
             quit
             """
         

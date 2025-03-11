@@ -21,7 +21,6 @@ function choices extends editor
         @color.current = theme.choices_current
         
         @pointerType = 'pointer'
-        @focusable = true
         @roundedSelections = true
         @frontRoundOffset = 0
         @hoverIndex = -1
@@ -134,7 +133,7 @@ function choices extends editor
     
         @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
         @state.setMainCursor 0 row
-        # @grabFocus() if @focusable
+        @grabFocus() if @focusable
         @emit 'select' @choiceAtRow(row)
         
     selectFirst: -> @select 0
@@ -144,6 +143,7 @@ function choices extends editor
         switch dir
             'down' ➜ @selectNext()
             'up'   ➜ @selectPrev() 
+        @
         
     selectNext: -> @select @nextRow()
     selectPrev: -> @select @prevRow()
@@ -282,6 +282,10 @@ function choices extends editor
     
     onKey: key event =>
         
+        switch event.combo        
+            'up' 
+            'down'   ➜ ⮐ @moveSelection event.combo
+        
         ⮐ if not @hasFocus()
             
         switch event.combo
@@ -292,10 +296,7 @@ function choices extends editor
             'space'  
             'delete'
             'return' ➜ @emitAction event.combo @current() event
-            
-            'up' 
-            'down'   ➜ @moveSelection event.combo
-            
+                        
         # not calling super here effectively disables all text-editing
         true
          

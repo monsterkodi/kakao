@@ -65,6 +65,7 @@ menu = (function ()
         items = belt.linesForText(`recent ...
 open ...
 new
+help
 quit`)
         if (!this.greet)
         {

@@ -35,7 +35,6 @@ choices = (function ()
         this.color.bg = theme.choices_bg
         this.color.current = theme.choices_current
         this.pointerType = 'pointer'
-        this.focusable = true
         this.roundedSelections = true
         this.frontRoundOffset = 0
         this.hoverIndex = -1
@@ -55,9 +54,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _38_15_
+        var lines, _37_15_
 
-        this.items = ((_38_15_=this.items) != null ? _38_15_ : [])
+        this.items = ((_37_15_=this.items) != null ? _37_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -151,14 +150,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _107_26_
+        var _106_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _108_26_
+        var _107_26_
 
         return (this.prevRow() != null)
     }
@@ -205,6 +204,10 @@ choices = (function ()
         }
         this.state.setSelections([belt.rangeOfLine(this.state.s.lines,row)])
         this.state.setMainCursor(0,row)
+        if (this.focusable)
+        {
+            this.grabFocus()
+        }
         return this.emit('select',this.choiceAtRow(row))
     }
 
@@ -218,13 +221,14 @@ choices = (function ()
         switch (dir)
         {
             case 'down':
-                return this.selectNext()
-
+                this.selectNext()
+                break
             case 'up':
-                return this.selectPrev()
-
+                this.selectPrev()
+                break
         }
 
+        return this
     }
 
     choices.prototype["selectNext"] = function ()
@@ -386,6 +390,14 @@ choices = (function ()
 
     choices.prototype["onKey"] = function (key, event)
     {
+        switch (event.combo)
+        {
+            case 'up':
+            case 'down':
+                return this.moveSelection(event.combo)
+
+        }
+
         if (!this.hasFocus())
         {
             return
@@ -399,10 +411,6 @@ choices = (function ()
             case 'delete':
             case 'return':
                 this.emitAction(event.combo,this.current(),event)
-                break
-            case 'up':
-            case 'down':
-                this.moveSelection(event.combo)
                 break
         }
 

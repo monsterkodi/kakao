@@ -6,17 +6,17 @@
     000       000  000   000  0000000    00000000  000   000  
 ###
 
-use ../../../kxk    ▪ post kseg slash kutil
-use ../../../kxk    ◆ nfs
+use ../../../kxk    ▪ post kseg kutil
 use ../../edit/tool ◆ belt
-use ../../util      ◆ prjcts
 use                 ◆ inputchoice
 
 function finder extends inputchoice
 
-    @: @screen @state ->
+    @: @screen @state name='finder' ->
 
-        super @screen 'finder' ['gutter' 'scroll']
+        super @screen name ['gutter' 'scroll']
+        
+        @choices.state.skipAdjustViewForMainCursor = true
         
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -37,6 +37,23 @@ function finder extends inputchoice
         @choices.layout  x+2   y+3  w-3  cs
         @cells.layout    x     y    w    cs+4
         
+    #  0000000  00000000   0000000   00000000    0000000  000   000  000000000  00000000  000   000  000000000  
+    # 000       000       000   000  000   000  000       000   000     000     000        000 000      000     
+    # 0000000   0000000   000000000  0000000    000       000000000     000     0000000     00000       000     
+    #      000  000       000   000  000   000  000       000   000     000     000        000 000      000     
+    # 0000000   00000000  000   000  000   000   0000000  000   000     000     00000000  000   000     000     
+    
+    searchText: text ->
+        
+        if empty text 
+            text = @state.textOfSelectionOrWordAtCursor()
+            if valid text                
+                @input.set text
+                @input.selectAll()
+            else
+                text = ''
+        text
+        
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  
@@ -46,11 +63,12 @@ function finder extends inputchoice
     show: text ->
         
         if empty text 
-            text = @state.textOfSelectionOrWordAtCursor()
             cursorLine = @state.mainCursor()[1]
-            @input.set text
-            @input.selectAll()
-            
+        
+        text = @searchText text
+        
+        ⮐ if empty text
+                    
         log g4("#{r6 'finder.show'} '#{text}'")
         @state.highlightText text
         
@@ -59,10 +77,11 @@ function finder extends inputchoice
             row:  span[1]
             col:  span[2]
             )
+            
+        # log "#{@name}.show lines #{b8 noon(lines)} #{typeof lines} #{@state.s.highlights} #{empty lines}" 
+        # log "lines #{b8(kseg.str(lines))}" 
         
-        # log 'lines' b8(kseg.str(lines))
-        @choices.state.skipAdjustViewForMainCursor = true
-        @choices.state.syntax.setExt 'kode'
+        @choices.state.syntax.setExt 'kode' # todo: currentFile ext
         @choices.set lines 'line'
         @choices.state.highlightText text
         
@@ -74,60 +93,7 @@ function finder extends inputchoice
         @layout()
         
         @input.grabFocus()
-        
-    #  0000000  00000000   0000000   00000000    0000000  000   000  
-    # 000       000       000   000  000   000  000       000   000  
-    # 0000000   0000000   000000000  0000000    000       000000000  
-    #      000  000       000   000  000   000  000       000   000  
-    # 0000000   00000000  000   000  000   000   0000000  000   000  
-    
-    search: text ○->
-        
-        @show text
-
-        text = @input.current()
-        
-        # log g4("#{r6 'finder.search'} '#{text}'")
-        
-        editorFile = ked_session.get 'editor▸file'
-        
-        dir   = prjcts.dir  editorFile
-        files = prjcts.files editorFile
-        
-        for file in files
-            
-            continue if editorFile == file
-        
-            filet =○ nfs.readText file
-            
-            segls = kseg.segls filet
-            spans = belt.lineSpansForText segls text
-            
-            continue if empty spans
-            
-            front = belt.frontmostSpans spans
-            
-            items = @choices.items ? []
-            
-            items.push line:''
-            items.push
-                line:  slash.relative(file dir)
-                path:  file
-                row:   0
-                col:   0
                 
-            for span in front
-                items.push line:''
-                items.push 
-                    line:  kseg.str(segls[span[1]])
-                    path:  file
-                    row:   span[1]
-                    col:   span[2]
-                
-            @choices.set items 'line'
-            @choices.state.highlightText text
-            post.emit 'redraw'
-        
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
@@ -137,11 +103,14 @@ function finder extends inputchoice
     apply: choice ->
         
         # log "#{@name}.apply choice" choice
-        if choice.path
-            post.emit 'file.open' choice.path choice.row choice.col
-        else
-            log "#{@name}.apply goto.line" choice.row choice.col
-            post.emit 'goto.line' choice.row choice.col
+        if valid choice
+            
+            if choice.path
+                post.emit 'file.open' choice.path choice.row choice.col
+            else
+                log "#{@name}.apply goto.line" choice.row choice.col
+                post.emit 'goto.line' choice.row choice.col
+                
         post.emit 'focus' 'editor'
         @hide()
         redraw:true
@@ -152,12 +121,16 @@ function finder extends inputchoice
         
     onInputAction: action text ->
     
-        # log "input #{action} #{text}"
+        log "#{@name}.onInputAction #{action} ▸#{text}◂"
         
         switch action
             
-            'submit' ➜ ⮐  @apply text
-            'change' ➜ ⮐  @show  text
+            'submit' ➜ ⮐ @apply text
+            'change'
+                if valid text
+                    ⮐ @show text
+                else
+                    ⮐ @choices.clear()
             
         super action text
 

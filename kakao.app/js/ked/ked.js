@@ -30,6 +30,7 @@ import view from "./view/base/view.js"
 import quicky from "./view/menu/quicky.js"
 import menu from "./view/menu/menu.js"
 import finder from "./view/menu/finder.js"
+import searcher from "./view/menu/searcher.js"
 
 import status from "./view/status/status.js"
 
@@ -50,8 +51,6 @@ KED = (function ()
 {
     function KED ()
     {
-        var args
-
         this["draw"] = this["draw"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
@@ -72,13 +71,16 @@ KED = (function ()
         this["quit"] = this["quit"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
         this.version = '0.3.1'
-        args = karg(`
+        this.args = karg(`
 ked [file]
     options                      **
-    version    log version       = false
+    new        start with empty buffer          = false
+    fresh      don't load previous session      = false
+    timeout    session save timeout in ms       = 1000
+    version    log version                      = false
     `,{preHelp:help.header(),version:this.version})
         process.on('uncaughtException',this.onException)
-        this.session = new session
+        this.session = new session(this.args)
         this.logfile = new logfile(this.session.name)
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
@@ -91,6 +93,7 @@ ked [file]
         this.editor = new fileeditor(this.screen,'editor')
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.finder = new finder(this.screen,this.editor.state)
+        this.searcher = new searcher(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
@@ -104,17 +107,25 @@ ked [file]
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
         post.on('fs.change',this.onFileChange)
-        this.mouseHandlers = [this.finder,this.quicky,this.menu,this.editor,this.status,this.funcol]
-        this.wheelHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
-        this.keyHandlers = [this.finder,this.quicky,this.menu,this.editor,this.funcol]
+        this.mouseHandlers = [this.finder,this.searcher,this.quicky,this.menu,this.editor,this.status,this.funcol]
+        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.menu,this.editor,this.funcol]
+        this.keyHandlers = [this.finder,this.searcher,this.quicky,this.menu,this.editor,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
         this.t.on('resize',this.onResize)
         this.t.on('paste',this.onPaste)
-        if (!_k_.empty(args.options))
+        if (!_k_.empty(this.args.options))
         {
-            this.loadFile(args.options[0])
+            this.loadFile(this.args.options[0])
+        }
+        else if (this.args.fresh)
+        {
+            this.menu.show(true)
+        }
+        else if (this.args.new)
+        {
+            this.newFile()
         }
     }
 
@@ -122,6 +133,14 @@ ked [file]
     {
         var file
 
+        if (this.args.fresh)
+        {
+            return
+        }
+        if (this.args.new)
+        {
+            return
+        }
         if (_k_.empty(this.currentFile))
         {
             if (file = ked_session.get("editor▸file"))
@@ -154,7 +173,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _138_10_
+        var _147_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -182,7 +201,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _166_22_
+        var _175_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -225,7 +244,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col)
     {
-        var segls, start, text, _219_22_
+        var segls, start, text, _228_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -325,6 +344,7 @@ ked [file]
             handler = list1[_b_]
             if (ret = handler.onMouse(event))
             {
+                event.handled = true
                 if (ret.redraw === true)
                 {
                     redraw = true
@@ -383,7 +403,7 @@ ked [file]
 
             case 'shift+cmd+f':
             case 'shift+ctrl+f':
-                return this.finder.search()
+                return this.searcher.show()
 
             case 'cmd+o':
             case 'ctrl+o':
@@ -454,7 +474,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _383_22_
+        var _389_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -491,6 +511,7 @@ ked [file]
         this.menu.draw()
         this.quicky.draw()
         this.finder.draw()
+        this.searcher.draw()
         this.screen.render()
         this.status.time = process.hrtime(start)[1]
         return this.status.drawTime = kstr.time(BigInt(this.status.time))

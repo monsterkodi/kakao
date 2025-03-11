@@ -36,6 +36,7 @@ editor = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["layout"] = this["layout"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
+        this.focusable = true
         this.state = new state(this.cells,this.name)
         post.on('focus',this.onFocus)
         if (this.feats.scrllr)
@@ -72,7 +73,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _67_17_
+        var g, m, r, s, sl, sr, _69_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -110,7 +111,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _81_21_, _82_21_, _83_23_
+        var ret, _83_21_, _84_21_, _85_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -132,7 +133,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _100_25_, _104_20_, _98_25_, _99_25_
+        var inside, res, _100_25_, _101_25_, _102_25_, _106_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -204,7 +205,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _170_20_, _174_21_, _179_21_
+        var _172_20_, _176_21_, _181_21_
 
         if (!this.hasFocus())
         {

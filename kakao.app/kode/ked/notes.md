@@ -21,8 +21,9 @@
 ##### todo
 
 - finder
-    - has a search toggle, which searches and appends results from prjct files
-    - results can be loaded into a new 'tab' 
+    - has a search mode, which searches and appends results from prjct files
+    - add ability to load search results into a new 'tab' 
+    - search should highlight after goto
 
 - funclist
 
@@ -34,7 +35,10 @@
     - allow completion inside chunks in some cases
         - before closing )]}
         - after . :
-
+        
+- brckts
+    - fix empty brackets at end of line (check balanced)
+    
 - mode
     - salter mode
         - fix delete and other issues

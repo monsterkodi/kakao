@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 var view
 
@@ -39,6 +39,7 @@ view = (function ()
             f = list[_a_]
             this.feats[f] = true
         }
+        this.focusable = false
         if (_k_.in(this.name,view.popups))
         {
             post.on('view.show',this.onViewShow)
@@ -128,6 +129,10 @@ view = (function ()
 
     view.prototype["onMouseEnter"] = function ()
     {
+        if (this.focusable && _k_.isFunc(this.grabFocus))
+        {
+            this.grabFocus()
+        }
         if (this.pointerType)
         {
             post.emit('pointer',this.pointerType)
@@ -139,15 +144,15 @@ view = (function ()
     {
         var inside
 
-        inside = this.cells.isInsideEvent(event)
+        inside = !event.handled && this.cells.isInsideEvent(event)
         if (this.hover && !inside)
         {
-            this.hover = inside
+            this.hover = false
             this.onMouseLeave()
         }
         else if (inside && !this.hover)
         {
-            this.hover = inside
+            this.hover = true
             this.onMouseEnter()
         }
         return this.hover

@@ -13,7 +13,7 @@ use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
 use ./util        ◆ logfile prjcts session help julia frecent watcher
 use ./view/base   ◆ view
-use ./view/menu   ◆ quicky menu finder 
+use ./view/menu   ◆ quicky menu finder searcher 
 use ./view/status ◆ status 
 use ./view/screen ◆ screen ttio
 use ./view/funcol ◆ funcol 
@@ -28,17 +28,20 @@ function KED
     @: ->
 
         @version = '0.3.1'
-        args = karg """
+        @args = karg """
             
             ked [file]
                 options                      **
-                version    log version       = false
+                new        start with empty buffer          = false
+                fresh      don't load previous session      = false
+                timeout    session save timeout in ms       = 1000
+                version    log version                      = false
                 
             """ preHelp:help.header() version:@version
         
         process.on 'uncaughtException' @onException
             
-        @session = new session
+        @session = new session @args
         @logfile = new logfile @session.name
         
         global.ked_session = @session
@@ -53,12 +56,13 @@ function KED
         
         @screen  = new screen @t
         
-        @menu    = new menu       @screen        
-        @quicky  = new quicky     @screen 
-        @editor  = new fileeditor @screen 'editor'
-        @funcol  = new funcol     @screen 'funcol'  ['scroll' 'knob']
-        @finder  = new finder     @screen @editor.state
-        @status  = new status     @screen @editor.state
+        @menu     = new menu       @screen        
+        @quicky   = new quicky     @screen 
+        @editor   = new fileeditor @screen 'editor'
+        @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
+        @finder   = new finder     @screen @editor.state
+        @searcher = new searcher   @screen @editor.state
+        @status   = new status     @screen @editor.state
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
 
@@ -75,9 +79,9 @@ function KED
         post.on 'quit'          @quit
         post.on 'fs.change'     @onFileChange
         
-        @mouseHandlers = [@finder @quicky @menu @editor @status @funcol]
-        @wheelHandlers = [@finder @quicky @menu @editor         @funcol]
-        @keyHandlers   = [@finder @quicky @menu @editor         @funcol]
+        @mouseHandlers = [@finder @searcher @quicky @menu @editor @status @funcol]
+        @wheelHandlers = [@finder @searcher @quicky @menu @editor         @funcol]
+        @keyHandlers   = [@finder @searcher @quicky @menu @editor         @funcol]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -85,12 +89,17 @@ function KED
         @t.on 'resize' @onResize
         @t.on 'paste'  @onPaste
                                     
-        if valid args.options
-            @loadFile args.options[0]
-        # else
-            # @menu.show true
+        if valid @args.options
+            @loadFile @args.options[0]
+        else if @args.fresh
+            @menu.show true
+        else if @args.new
+            @newFile()
             
     onSessionLoaded: =>
+    
+        ⮐  if @args.fresh
+        ⮐  if @args.new
         
         if empty @currentFile
             
@@ -291,7 +300,6 @@ function KED
             for handler in @wheelHandlers
                 if ret = handler.onWheel event
                     if ret.redraw == true
-                        # log "redraw on wheel for #{handler.name}" 
                         @redraw()
                     ⮐ 
             ⮐ 
@@ -299,11 +307,9 @@ function KED
         redraw = false
         for handler in @mouseHandlers
             if ret = handler.onMouse event
-                # log "ret #{handler.name}" ret
+                event.handled = true
                 if ret.redraw == true
-                    # log "redraw on #{event.type} for #{handler.name}" 
                     redraw = true
-                # log "break #{event.type} for #{handler.name}"
                 break if event.type != 'move' or handler.name in view.popups
                 
         @redraw() if redraw
@@ -326,7 +332,7 @@ function KED
             'alt+.' 'alt+m'              ➜ ⮐ @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show()
-            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐ @finder.search()
+            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐ @searcher.show()
             'cmd+o' 'ctrl+o'
             'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
             
@@ -415,6 +421,7 @@ function KED
         @menu.draw()
         @quicky.draw()
         @finder.draw()
+        @searcher.draw()
         
         @screen.render()
         

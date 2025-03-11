@@ -18,6 +18,8 @@ function editor extends draw
         
         super screen name features
         
+        @focusable = true
+        
         @state = new state @cells @name
         
         post.on 'focus' @onFocus

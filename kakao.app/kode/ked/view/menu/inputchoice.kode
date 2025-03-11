@@ -177,7 +177,9 @@ function inputchoice extends view
                 ⮐ result
              
         if result = @input.onKey key event
-            @choices.grabFocus() if empty @input.current()
+            
+            # @choices.grabFocus() if empty @input.current()
+            
             ⮐ result
 
         true
@@ -194,8 +196,7 @@ function inputchoice extends view
         
         ret = @input.onMouse   event ; ⮐ ret if ret?.redraw
         ret = @choices.onMouse event ; ⮐ ret if ret?.redraw
-        
-        super event
+        ret = super event            ; ⮐ ret if ret?.redraw
         
         if event.type == 'press' and not @hover
             post.emit 'focus' 'editor'

@@ -1,0 +1,74 @@
+###
+ 0000000  00000000   0000000   00000000    0000000  000   000  00000000  00000000 
+000       000       000   000  000   000  000       000   000  000       000   000
+0000000   0000000   000000000  0000000    000       000000000  0000000   0000000  
+     000  000       000   000  000   000  000       000   000  000       000   000
+0000000   00000000  000   000  000   000   0000000  000   000  00000000  000   000
+###
+
+use ../../../kxk    ▪ post kseg slash
+use ../../../kxk    ◆ nfs
+use ../../edit/tool ◆ belt
+use ../../util      ◆ prjcts
+use                 ◆ finder
+
+function searcher extends finder
+
+    @: @screen @state ->
+
+        super @screen @state 'searcher'
+        
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: text ○->
+        
+        text = @searchText text
+        
+        ⮐ if empty text
+        
+        log g4("#{r6 'searcher'} '#{text}'")
+        
+        editorFile = ked_session.get 'editor▸file'
+        
+        dir   = prjcts.dir   editorFile
+        files = prjcts.files editorFile
+        
+        for file in files
+            
+            continue if editorFile == file
+        
+            filet =○ nfs.readText file
+            
+            segls = kseg.segls filet
+            spans = belt.lineSpansForText segls text
+            
+            continue if empty spans
+            
+            front = belt.frontmostSpans spans
+            
+            items = @choices.items ? []
+            
+            items.push line:''
+            items.push
+                line:  slash.relative(file dir)
+                path:  file
+                row:   0
+                col:   0
+                
+            for span in front
+                items.push line:''
+                items.push 
+                    line:  kseg.str(segls[span[1]])
+                    path:  file
+                    row:   span[1]
+                    col:   span[2]
+                
+            @choices.set items 'line'
+            @choices.state.highlightText text
+            post.emit 'redraw'
+
+export searcher
