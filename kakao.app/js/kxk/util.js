@@ -135,6 +135,19 @@ util = {isEqual:function (a, b)
             return v
         }
     }
+},findIndex:function (arr, pred)
+{
+    var i, v
+
+    var list = _k_.list(arr)
+    for (i = 0; i < list.length; i++)
+    {
+        v = list[i]
+        if (pred(v))
+        {
+            return i
+        }
+    }
 },pullAll:function (arr, items, cmp = util.isEqual)
 {
     var index, item
@@ -142,10 +155,10 @@ util = {isEqual:function (a, b)
     if (!_k_.empty(arr) && _k_.isArr(arr))
     {
         var list = _k_.list(items)
-        for (var _12_ = 0; _12_ < list.length; _12_++)
+        for (var _13_ = 0; _13_ < list.length; _13_++)
         {
-            item = list[_12_]
-            for (var _13_ = index = arr.length - 1, _14_ = 0; (_13_ <= _14_ ? index <= 0 : index >= 0); (_13_ <= _14_ ? ++index : --index))
+            item = list[_13_]
+            for (var _14_ = index = arr.length - 1, _15_ = 0; (_14_ <= _15_ ? index <= 0 : index >= 0); (_14_ <= _15_ ? ++index : --index))
             {
                 if (cmp(arr[index],item))
                 {
@@ -161,9 +174,9 @@ util = {isEqual:function (a, b)
 
     result = []
     var list = _k_.list(arr)
-    for (var _15_ = 0; _15_ < list.length; _15_++)
+    for (var _16_ = 0; _16_ < list.length; _16_++)
     {
-        item = list[_15_]
+        item = list[_16_]
         if (!(_k_.in(item,result)))
         {
             result.push(item)
@@ -176,14 +189,14 @@ util = {isEqual:function (a, b)
 
     result = []
     var list = _k_.list(arr)
-    for (var _16_ = 0; _16_ < list.length; _16_++)
+    for (var _17_ = 0; _17_ < list.length; _17_++)
     {
-        item = list[_16_]
+        item = list[_17_]
         add = true
         var list1 = _k_.list(result)
-        for (var _17_ = 0; _17_ < list1.length; _17_++)
+        for (var _18_ = 0; _18_ < list1.length; _18_++)
         {
-            ritem = list1[_17_]
+            ritem = list1[_18_]
             if (util.isEqual(item,ritem))
             {
                 add = false
@@ -210,14 +223,14 @@ util = {isEqual:function (a, b)
     }
     result = []
     var list = _k_.list(arr)
-    for (var _18_ = 0; _18_ < list.length; _18_++)
+    for (var _19_ = 0; _19_ < list.length; _19_++)
     {
-        item = list[_18_]
+        item = list[_19_]
         add = true
         var list1 = _k_.list(result)
-        for (var _19_ = 0; _19_ < list1.length; _19_++)
+        for (var _1a_ = 0; _1a_ < list1.length; _1a_++)
         {
-            ritem = list1[_19_]
+            ritem = list1[_1a_]
             if (prop(item) === prop(ritem))
             {
                 add = false
@@ -265,12 +278,12 @@ util = {isEqual:function (a, b)
     return util.replace(array,index,0,arrayToInsert)
 },defaults:function (obj, def)
 {
-    var key, val, _172_21_
+    var key, val, _173_21_
 
     for (key in def)
     {
         val = def[key]
-        obj[key] = ((_172_21_=obj[key]) != null ? _172_21_ : val)
+        obj[key] = ((_173_21_=obj[key]) != null ? _173_21_ : val)
     }
     return obj
 },pickBy:function (obj, pred)
@@ -324,9 +337,9 @@ util = {isEqual:function (a, b)
 
     result = {}
     var list = _k_.list(pairs)
-    for (var _1a_ = 0; _1a_ < list.length; _1a_++)
+    for (var _1b_ = 0; _1b_ < list.length; _1b_++)
     {
-        pair = list[_1a_]
+        pair = list[_1b_]
         result[pair[0]] = pair[1]
     }
     return result

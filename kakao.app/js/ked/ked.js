@@ -223,7 +223,7 @@ ked [file]
         }
     }
 
-    KED.prototype["loadFile"] = async function (p)
+    KED.prototype["loadFile"] = async function (p, row, col)
     {
         var segls, start, text, _219_22_
 
@@ -251,7 +251,7 @@ ked [file]
         this.status.drawTime = kstr.time(BigInt(this.status.time))
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         ked_session.set("editor▸file",this.currentFile)
-        mode.fileLoaded(this.editor.state,this.currentFile)
+        mode.fileLoaded(this.editor.state,this.currentFile,row,col)
         this.redraw()
         prjcts.index(this.currentFile)
         watcher.watch(this.currentFile)
@@ -260,9 +260,9 @@ ked [file]
         return this
     }
 
-    KED.prototype["openFile"] = function (path)
+    KED.prototype["openFile"] = function (path, row, col)
     {
-        this.loadFile(path)
+        this.loadFile(path,row,col)
         return this.editor.grabFocus()
     }
 
@@ -454,7 +454,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _382_22_
+        var _383_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

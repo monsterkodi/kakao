@@ -6,7 +6,7 @@
     000       000  000   000  0000000    00000000  000   000  
 ###
 
-use ../../../kxk    ▪ post kseg slash
+use ../../../kxk    ▪ post kseg slash kutil
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../util      ◆ prjcts
@@ -47,17 +47,17 @@ function finder extends inputchoice
         
         if empty text 
             text = @state.textOfSelectionOrWordAtCursor()
+            cursorLine = @state.mainCursor()[1]
             @input.set text
             @input.selectAll()
             
         log g4("#{r6 'finder.show'} '#{text}'")
         @state.highlightText text
         
-        # lines = belt.lineIndicesForSpans(@state.s.highlights).map((idx) => index:idx line:kseg.str(@state.s.lines[idx]))
         lines = belt.frontmostSpans(@state.s.highlights).map((span) => 
-            index:  span[1]
-            line:   kseg.str(@state.s.lines[span[1]])
-            col:    span[2]
+            line: kseg.str(@state.s.lines[span[1]])
+            row:  span[1]
+            col:  span[2]
             )
         
         # log 'lines' b8(kseg.str(lines))
@@ -65,7 +65,11 @@ function finder extends inputchoice
         @choices.state.syntax.setExt 'kode'
         @choices.set lines 'line'
         @choices.state.highlightText text
-        @choices.selectFirst()
+        
+        if cursorLine
+            @choices.select kutil.findIndex(lines (l) -> l.row == cursorLine) ? 0
+        else
+            @choices.selectFirst()
         
         @layout()
         
@@ -91,35 +95,38 @@ function finder extends inputchoice
         files = prjcts.files editorFile
         
         for file in files
+            
+            continue if editorFile == file
         
             filet =○ nfs.readText file
             
-            # log "filet #{filet.length}"
             segls = kseg.segls filet
-            # log 'lines.length' lines.length
             spans = belt.lineSpansForText segls text
-            # log 'spans.length' spans.length
-            front = belt.frontmostSpans spans
-            # log 'front.length' front.length
             
-            if valid front
-                items = @choices.items ? []
+            continue if empty spans
+            
+            front = belt.frontmostSpans spans
+            
+            items = @choices.items ? []
+            
+            items.push line:''
+            items.push
+                line:  slash.relative(file dir)
+                path:  file
+                row:   0
+                col:   0
+                
+            for span in front
+                items.push line:''
                 items.push 
-                    line:  slash.relative(file dir)
+                    line:  kseg.str(segls[span[1]])
                     path:  file
-                    row:   0
-                    col:   0
-                    
-                for span in front
-                    items.push 
-                        line:  kseg.str(segls[span[1]])
-                        path:  file
-                        row:   span[1]
-                        col:   span[2]
-                    
-                @choices.set items 'line'
-                @choices.state.highlightText text
-                post.emit 'redraw'
+                    row:   span[1]
+                    col:   span[2]
+                
+            @choices.set items 'line'
+            @choices.state.highlightText text
+            post.emit 'redraw'
         
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -131,9 +138,10 @@ function finder extends inputchoice
         
         # log "#{@name}.apply choice" choice
         if choice.path
-            post.emit 'file.open' choice.path
-        
-        post.emit 'goto.line' choice.index choice.col
+            post.emit 'file.open' choice.path choice.row choice.col
+        else
+            log "#{@name}.apply goto.line" choice.row choice.col
+            post.emit 'goto.line' choice.row choice.col
         post.emit 'focus' 'editor'
         @hide()
         redraw:true

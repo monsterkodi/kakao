@@ -188,7 +188,7 @@ function KED
         else
             @newFile()
         
-    loadFile: p ○=>
+    loadFile: p row col ○=>
         
         start = process.hrtime()
         
@@ -219,11 +219,12 @@ function KED
         @editor.mapscr?.reload()
         
         ked_session.set "editor▸file" @currentFile
-        mode.fileLoaded @editor.state @currentFile
+        
+        mode.fileLoaded @editor.state @currentFile row col
         
         @redraw()
         
-        prjcts.index @currentFile
+        prjcts.index  @currentFile
         watcher.watch @currentFile
         
         @t.setTitle slash.name(@status.file)
@@ -237,9 +238,9 @@ function KED
     # 000   000  000        000       000  0000  
     #  0000000   000        00000000  000   000  
     
-    openFile: path =>
+    openFile: path row col =>
         
-        @loadFile path
+        @loadFile path row col
         @editor.grabFocus()
             
     #  0000000   0000000   000   000  00000000  

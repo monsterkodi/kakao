@@ -26,14 +26,21 @@ filepos = (function ()
         }
     }
 
-    filepos.prototype["fileLoaded"] = function (file)
+    filepos.prototype["fileLoaded"] = function (file, row, col)
     {
         var posview
 
-        if (posview = ked_session.get(`editor▸filepos▸${file}`))
+        if ((row != null))
         {
-            this.state.setCursors([posview.slice(0, 2)])
-            return this.state.setView(posview.slice(2))
+            return post.emit('goto.line',row,col)
+        }
+        else
+        {
+            if (posview = ked_session.get(`editor▸filepos▸${file}`))
+            {
+                this.state.setCursors([posview.slice(0, 2)])
+                return this.state.setView(posview.slice(2))
+            }
         }
     }
 

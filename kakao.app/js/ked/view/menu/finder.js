@@ -6,6 +6,7 @@ import kxk from "../../../kxk.js"
 let post = kxk.post
 let kseg = kxk.kseg
 let slash = kxk.slash
+let kutil = kxk.kutil
 
 import nfs from "../../../kxk/nfs.js"
 
@@ -45,11 +46,12 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var lines
+        var cursorLine, lines, _70_78_
 
         if (_k_.empty(text))
         {
             text = this.state.textOfSelectionOrWordAtCursor()
+            cursorLine = this.state.mainCursor()[1]
             this.input.set(text)
             this.input.selectAll()
         }
@@ -57,20 +59,30 @@ finder = (function ()
         this.state.highlightText(text)
         lines = belt.frontmostSpans(this.state.s.highlights).map((function (span)
         {
-            return {index:span[1],line:kseg.str(this.state.s.lines[span[1]]),col:span[2]}
+            return {line:kseg.str(this.state.s.lines[span[1]]),row:span[1],col:span[2]}
         }).bind(this))
         this.choices.state.skipAdjustViewForMainCursor = true
         this.choices.state.syntax.setExt('kode')
         this.choices.set(lines,'line')
         this.choices.state.highlightText(text)
-        this.choices.selectFirst()
+        if (cursorLine)
+        {
+            this.choices.select(((_70_78_=kutil.findIndex(lines,function (l)
+            {
+                return l.row === cursorLine
+            })) != null ? _70_78_ : 0))
+        }
+        else
+        {
+            this.choices.selectFirst()
+        }
         this.layout()
         return this.input.grabFocus()
     }
 
     finder.prototype["search"] = async function (text)
     {
-        var dir, editorFile, file, files, filet, front, items, segls, span, spans, _106_39_
+        var dir, editorFile, file, files, filet, front, items, segls, span, spans, _110_35_
 
         this.show(text)
         text = this.input.current()
@@ -81,24 +93,31 @@ finder = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             file = list[_a_]
+            if (editorFile === file)
+            {
+                continue
+            }
             filet = await nfs.readText(file)
             segls = kseg.segls(filet)
             spans = belt.lineSpansForText(segls,text)
-            front = belt.frontmostSpans(spans)
-            if (!_k_.empty(front))
+            if (_k_.empty(spans))
             {
-                items = ((_106_39_=this.choices.items) != null ? _106_39_ : [])
-                items.push({line:slash.relative(file,dir),path:file,row:0,col:0})
-                var list1 = _k_.list(front)
-                for (var _b_ = 0; _b_ < list1.length; _b_++)
-                {
-                    span = list1[_b_]
-                    items.push({line:kseg.str(segls[span[1]]),path:file,row:span[1],col:span[2]})
-                }
-                this.choices.set(items,'line')
-                this.choices.state.highlightText(text)
-                post.emit('redraw')
+                continue
             }
+            front = belt.frontmostSpans(spans)
+            items = ((_110_35_=this.choices.items) != null ? _110_35_ : [])
+            items.push({line:''})
+            items.push({line:slash.relative(file,dir),path:file,row:0,col:0})
+            var list1 = _k_.list(front)
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                span = list1[_b_]
+                items.push({line:''})
+                items.push({line:kseg.str(segls[span[1]]),path:file,row:span[1],col:span[2]})
+            }
+            this.choices.set(items,'line')
+            this.choices.state.highlightText(text)
+            post.emit('redraw')
         }
     }
 
@@ -106,9 +125,13 @@ finder = (function ()
     {
         if (choice.path)
         {
-            post.emit('file.open',choice.path)
+            post.emit('file.open',choice.path,choice.row,choice.col)
         }
-        post.emit('goto.line',choice.index,choice.col)
+        else
+        {
+            console.log(`${this.name}.apply goto.line`,choice.row,choice.col)
+            post.emit('goto.line',choice.row,choice.col)
+        }
         post.emit('focus','editor')
         this.hide()
         return {redraw:true}

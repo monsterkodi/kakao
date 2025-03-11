@@ -43,6 +43,8 @@ function choices extends editor
         
         @state.loadLines lines
         
+    extract: item => @key and item is obj ? item[@key] : kseg.str(item)
+        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -95,9 +97,30 @@ function choices extends editor
         
     choiceAtRow: row -> @fuzzied[row]
     
-    hasNext:    -> @state.mainCursor()[1] < @numFiltered()-1
-    hasPrev:    -> @state.mainCursor()[1] > 0
     
+    # 000   000  00000000  000   000  000000000        00000000   00000000   00000000  000   000  
+    # 0000  000  000        000 000      000           000   000  000   000  000       000   000  
+    # 000 0 000  0000000     00000       000           00000000   0000000    0000000    000 000   
+    # 000  0000  000        000 000      000           000        000   000  000          000     
+    # 000   000  00000000  000   000     000           000        000   000  00000000      0      
+
+    hasNext: -> @nextRow()?
+    hasPrev: -> @prevRow()?
+
+    nextRow: ->
+        
+        y = @state.mainCursor()[1]
+        while y < @state.s.lines.length-1
+            y += 1
+            ⮐ y if kseg.trim(@state.s.lines[y]).length
+        
+    prevRow: ->
+
+        y = @state.mainCursor()[1]
+        while y > 0
+            y -= 1
+            ⮐ y if kseg.trim(@state.s.lines[y]).length
+        
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
     # 0000000   0000000   000      0000000   000          000     
@@ -106,9 +129,12 @@ function choices extends editor
     
     select: row -> 
         
+        ⮐ if not row is num
         ⮐ if row < 0 or row >= @state.s.lines.length
     
         @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
+        @state.setMainCursor 0 row
+        # @grabFocus() if @focusable
         @emit 'select' @choiceAtRow(row)
         
     selectFirst: -> @select 0
@@ -119,42 +145,15 @@ function choices extends editor
             'down' ➜ @selectNext()
             'up'   ➜ @selectPrev() 
         
-    selectNext: -> 
-        
-        if @hasNext()
-            @state.selectNextLine() 
-            @emitSelectionChange()
-        
-    selectPrev: -> 
-        
-        if @hasPrev()
-            @state.selectPrevLine()
-            @emitSelectionChange()
-            
-    emitSelectionChange: ->
-        
-        ⮐ if empty @state.s.selections
-            
-        @grabFocus() if @focusable
-        # @frontCursor() 
-        @emit 'select' @choiceAtRow(@state.s.selections[0][1])
-        
-    frontCursor: -> 
-        
-        if empty @state.s.selections
-            log 'empty selections?' @state.s.selections
-            @state.setMainCursor 0 0
-        else
-            @state.setMainCursor 0 @state.s.selections[0][1]
-    
+    selectNext: -> @select @nextRow()
+    selectPrev: -> @select @prevRow()
+                    
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     
     # 000000000  0000000   000  000  0000  000000000     000     
     # 000   000  000       000  000   000  000   000     000     
     # 00     00  00000000  000   0000000   000   000     000     
-    
-    extract: item => @key and item is obj ? item[@key] : kseg.str(item)        
-    
+        
     weight: item text =>
 
         itemText = @extract item

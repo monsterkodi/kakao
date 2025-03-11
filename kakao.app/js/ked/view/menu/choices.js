@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var choices
 
@@ -62,6 +62,11 @@ choices = (function ()
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
         return this.state.loadLines(lines)
+    }
+
+    choices.prototype["extract"] = function (item)
+    {
+        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.str(item))
     }
 
     choices.prototype["drawCursors"] = function ()
@@ -146,21 +151,60 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        return this.state.mainCursor()[1] < this.numFiltered() - 1
+        var _107_26_
+
+        return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        return this.state.mainCursor()[1] > 0
+        var _108_26_
+
+        return (this.prevRow() != null)
+    }
+
+    choices.prototype["nextRow"] = function ()
+    {
+        var y
+
+        y = this.state.mainCursor()[1]
+        while (y < this.state.s.lines.length - 1)
+        {
+            y += 1
+            if (kseg.trim(this.state.s.lines[y]).length)
+            {
+                return y
+            }
+        }
+    }
+
+    choices.prototype["prevRow"] = function ()
+    {
+        var y
+
+        y = this.state.mainCursor()[1]
+        while (y > 0)
+        {
+            y -= 1
+            if (kseg.trim(this.state.s.lines[y]).length)
+            {
+                return y
+            }
+        }
     }
 
     choices.prototype["select"] = function (row)
     {
+        if (!(_k_.isNum(row)))
+        {
+            return
+        }
         if (row < 0 || row >= this.state.s.lines.length)
         {
             return
         }
         this.state.setSelections([belt.rangeOfLine(this.state.s.lines,row)])
+        this.state.setMainCursor(0,row)
         return this.emit('select',this.choiceAtRow(row))
     }
 
@@ -185,51 +229,12 @@ choices = (function ()
 
     choices.prototype["selectNext"] = function ()
     {
-        if (this.hasNext())
-        {
-            this.state.selectNextLine()
-            return this.emitSelectionChange()
-        }
+        return this.select(this.nextRow())
     }
 
     choices.prototype["selectPrev"] = function ()
     {
-        if (this.hasPrev())
-        {
-            this.state.selectPrevLine()
-            return this.emitSelectionChange()
-        }
-    }
-
-    choices.prototype["emitSelectionChange"] = function ()
-    {
-        if (_k_.empty(this.state.s.selections))
-        {
-            return
-        }
-        if (this.focusable)
-        {
-            this.grabFocus()
-        }
-        return this.emit('select',this.choiceAtRow(this.state.s.selections[0][1]))
-    }
-
-    choices.prototype["frontCursor"] = function ()
-    {
-        if (_k_.empty(this.state.s.selections))
-        {
-            console.log('empty selections?',this.state.s.selections)
-            return this.state.setMainCursor(0,0)
-        }
-        else
-        {
-            return this.state.setMainCursor(0,this.state.s.selections[0][1])
-        }
-    }
-
-    choices.prototype["extract"] = function (item)
-    {
-        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.str(item))
+        return this.select(this.prevRow())
     }
 
     choices.prototype["weight"] = function (item, text)
@@ -325,7 +330,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _245_21_
+        var col, dx, dy, ret, row, _244_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

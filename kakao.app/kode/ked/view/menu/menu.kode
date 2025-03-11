@@ -79,8 +79,7 @@ function menu extends inputchoice
         
         @input.set ''
         @choices.set items
-        @choices.state.selectLine 0
-        # @choices.frontCursor()
+        @choices.select 0
         @choices.state.setView [0 0]
         
         post.emit 'greet' if @greet

@@ -16,7 +16,12 @@ function filepos
         
         @name = 'filepos'
         
-        @fileLoaded ked_session.get("editor▸file") # let's see if mode loading is fast enough to not override user nav
+        # since this is a mode, it gets loaded late.
+        # but the editor loads recent files immediately.
+        # fake file loaded here to re-apply view and cursor positions of earlier session.
+        # this shoudn't be a problem as long mode loading is fast enough.
+        
+        @fileLoaded ked_session.get("editor▸file") 
         post.emit 'redraw'
         
     cursorsSet: ->
@@ -25,12 +30,15 @@ function filepos
         
             ked_session.set "editor▸filepos▸#{file}" @state.mainCursor().concat(@state.s.view)
             
-    fileLoaded: file ->
+    fileLoaded: file row col ->
         
-        if posview = ked_session.get "editor▸filepos▸#{file}"
-            # log "filepos.fileLoaded #{posview} #{file}"
-            @state.setCursors [posview[0..1]]
-            @state.setView posview[2..]
+        if row?
+            post.emit 'goto.line' row col
+        else
+            if posview = ked_session.get "editor▸filepos▸#{file}"
+                # log "filepos.fileLoaded #{posview} #{file}"
+                @state.setCursors [posview[0..1]]
+                @state.setView posview[2..]
             
     # ███   ███  ████████  ███   ███
     # ███  ███   ███        ███ ███ 
