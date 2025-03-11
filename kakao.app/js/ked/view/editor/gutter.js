@@ -20,16 +20,24 @@ gutter = (function ()
         gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
     }
 
+    gutter.prototype["lineno"] = function (y)
+    {
+        var lineno
+
+        lineno = _k_.lpad(this.cells.cols - 1,y + 1)
+        lineno += ' '
+        return lineno
+    }
+
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _40_101_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _46_101_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
             y = this.state.s.view[1] + row
-            lineno = _k_.lpad(this.cells.cols - 1,y + 1)
-            lineno += ' '
+            lineno = this.lineno(y)
             hasCursor = this.state.isAnyCursorInLine(y)
             selected = this.state.isSelectedLine(y)
             highlighted = this.state.isHighlightedLine(y)

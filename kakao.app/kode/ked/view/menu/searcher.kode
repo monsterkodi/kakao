@@ -28,19 +28,28 @@ function searcher extends finder
         
         text = @searchText text
         
-        ⮐ if empty text
+        # log g4("#{r6 'searcher'} '#{text}'")
         
-        log g4("#{r6 'searcher'} '#{text}'")
+        if empty text
+            @layout()
+            @input.grabFocus()
+            post.emit 'redraw'
+            ⮐ 
         
         editorFile = ked_session.get 'editor▸file'
         
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
         
-        for file in files
-            
-            continue if editorFile == file
+        @choices.state.setMainCursor 0 0
+        @choices.set [] 'line'
         
+        @layout()
+        @input.grabFocus()
+        post.emit 'redraw'
+        
+        for file,idx in files
+            
             filet =○ nfs.readText file
             
             segls = kseg.segls filet
@@ -49,26 +58,49 @@ function searcher extends finder
             continue if empty spans
             
             front = belt.frontmostSpans spans
-            
-            items = @choices.items ? []
+
+            items = @choices.items ? []            
             
             items.push line:''
             items.push
                 line:  slash.relative(file dir)
+                type:  'file'
                 path:  file
                 row:   0
                 col:   0
                 
             for span in front
-                items.push line:''
+                if items[-1].row != span[1]-1
+                    items.push line:''
                 items.push 
                     line:  kseg.str(segls[span[1]])
                     path:  file
                     row:   span[1]
                     col:   span[2]
-                
+            
+            ⮐  if @hidden()
+            
+            selectedIndex = @choices.state.s.cursors[0][1]
             @choices.set items 'line'
             @choices.state.highlightText text
+            @choices.select selectedIndex
+            
+            @layout()
             post.emit 'redraw'
+        
+    # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███  ███  ████  ███        ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ███  ████
+    # ███  ███   ███  ███         ███████      ███         ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onInputAction: action text ->
+    
+        switch action
+            
+            'submit' ➜ ⮐  @show text
+            'change' ➜ ⮐  
+            
+        super action text
 
 export searcher

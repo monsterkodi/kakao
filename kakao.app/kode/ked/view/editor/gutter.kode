@@ -16,6 +16,12 @@ function gutter extends view
         
         super screen @state.owner() + '.gutter'
         
+    lineno: y ->
+                
+        lineno = lpad @cells.cols-1 y+1
+        lineno += ' '
+        lineno
+        
     draw: ->
         
         mainCursor = @state.mainCursor()
@@ -23,8 +29,8 @@ function gutter extends view
         for row in 0...@cells.rows
                         
             y = @state.s.view[1] + row
-            lineno = lpad @cells.cols-1 y+1
-            lineno += ' '
+            
+            lineno = @lineno y
             
             hasCursor   = @state.isAnyCursorInLine y
             selected    = @state.isSelectedLine y

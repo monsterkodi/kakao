@@ -17,7 +17,25 @@ function finder extends inputchoice
         super @screen name ['gutter' 'scroll']
         
         @choices.state.skipAdjustViewForMainCursor = true
-        
+        @choices.state.syntax.setExt 'kode'
+        @choices.gutter.lineno = @lineno
+
+    # ███      ███  ███   ███  ████████  ███   ███   ███████ 
+    # ███      ███  ████  ███  ███       ████  ███  ███   ███
+    # ███      ███  ███ █ ███  ███████   ███ █ ███  ███   ███
+    # ███      ███  ███  ████  ███       ███  ████  ███   ███
+    # ███████  ███  ███   ███  ████████  ███   ███   ███████ 
+
+    lineno: y =>
+     
+        pad = @choices.gutter.cells.cols-1
+        if 0 <= y < @choices.fuzzied.length
+            if @choices.fuzzied[y].type == 'file'
+                ⮐  lpad(pad '●') + ' '
+            if @choices.fuzzied[y].row is num
+                ⮐  lpad(pad @choices.fuzzied[y].row+1) + ' '
+        lpad pad+1
+    
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
     # 000      000000000    00000    000   000  000   000     000     
@@ -67,31 +85,35 @@ function finder extends inputchoice
         
         text = @searchText text
         
-        ⮐ if empty text
+        # log g4("#{r6 'finder.show'} '#{text}'")
+        
+        if empty text
+            @layout()
+            @input.grabFocus()
+            ⮐ 
                     
-        log g4("#{r6 'finder.show'} '#{text}'")
         @state.highlightText text
         
-        lines = belt.frontmostSpans(@state.s.highlights).map((span) => 
-            line: kseg.str(@state.s.lines[span[1]])
-            row:  span[1]
-            col:  span[2]
-            )
+        items = []
+        front = belt.frontmostSpans @state.s.highlights
+        for span in front
+            if valid items and items[-1].row != span[1]-1
+                items.push line:''
+            items.push
+                line: kseg.str(@state.s.lines[span[1]])
+                row:  span[1]
+                col:  span[2]
             
-        # log "#{@name}.show lines #{b8 noon(lines)} #{typeof lines} #{@state.s.highlights} #{empty lines}" 
-        # log "lines #{b8(kseg.str(lines))}" 
-        
         @choices.state.syntax.setExt 'kode' # todo: currentFile ext
-        @choices.set lines 'line'
+        @choices.set items 'line'
         @choices.state.highlightText text
         
         if cursorLine
-            @choices.select kutil.findIndex(lines (l) -> l.row == cursorLine) ? 0
+            @choices.select kutil.findIndex(items (l) -> l.row == cursorLine) ? 0
         else
             @choices.selectFirst()
         
         @layout()
-        
         @input.grabFocus()
                 
     #  0000000   00000000   00000000   000      000   000  
@@ -102,13 +124,11 @@ function finder extends inputchoice
     
     apply: choice ->
         
-        # log "#{@name}.apply choice" choice
         if valid choice
             
             if choice.path
                 post.emit 'file.open' choice.path choice.row choice.col
             else
-                log "#{@name}.apply goto.line" choice.row choice.col
                 post.emit 'goto.line' choice.row choice.col
                 
         post.emit 'focus' 'editor'
@@ -117,15 +137,32 @@ function finder extends inputchoice
         
     applyChoice: choice -> @apply choice
     
-    onInputChange: text =>
+    #  ███████  ███   ███   ███████   ███   ███████  ████████   ███████   ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███       ███   ███  ███   ███  ███  ███       ███       ███       ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███       █████████  ███   ███  ███  ███       ███████   ███████   █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███       ███   ███  ███   ███  ███  ███       ███            ███  ███   ███  ███          ███     ███  ███   ███  ███  ████
+    #  ███████  ███   ███   ███████   ███   ███████  ████████  ███████   ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onChoicesAction: action choice ->
+    
+        switch action
+            'left' 
+                @input.grabFocus()
+                ⮐  true
+    
+        super action choice
         
+    # ███  ███   ███  ████████   ███   ███  █████████   ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███  ████  ███  ███   ███  ███   ███     ███     ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███  ███ █ ███  ████████   ███   ███     ███     █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███  ███  ████  ███        ███   ███     ███     ███   ███  ███          ███     ███  ███   ███  ███  ████
+    # ███  ███   ███  ███         ███████      ███     ███   ███   ███████     ███     ███   ███████   ███   ███
+
     onInputAction: action text ->
     
-        log "#{@name}.onInputAction #{action} ▸#{text}◂"
-        
         switch action
             
-            'submit' ➜ ⮐ @apply text
+            'submit' ➜ ⮐  @apply @choices.current()
             'change'
                 if valid text
                     ⮐ @show text

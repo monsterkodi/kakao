@@ -20,10 +20,11 @@
 #### todo
 ##### todo
 
-- finder
-    - has a search mode, which searches and appends results from prjct files
+- searcher
+    - convert file path lines to crumbs
+    - should highlight search string after goto
+    - switch syntax theme per file 
     - add ability to load search results into a new 'tab' 
-    - search should highlight after goto
 
 - funclist
 

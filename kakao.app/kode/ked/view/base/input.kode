@@ -14,7 +14,7 @@ function input extends editor
 
     @: screen name ->
         
-        super screen name ['brckts' 'unype']
+        super screen name ['brckts' 'replex' 'unype']
         
     hasFocus: -> @state.hasFocus
 

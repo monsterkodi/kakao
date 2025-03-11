@@ -16,7 +16,7 @@ input = (function ()
     function input (screen, name)
     {
         this["current"] = this["current"].bind(this)
-        input.__super__.constructor.call(this,screen,name,['brckts','unype'])
+        input.__super__.constructor.call(this,screen,name,['brckts','replex','unype'])
     }
 
     input.prototype["hasFocus"] = function ()

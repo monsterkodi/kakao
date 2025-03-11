@@ -112,7 +112,6 @@ function state
         
         if not mode.isActive @ 'salter'
             mode.modes.salter?.checkCursorsSet @
-                        
         @
             
     textOfSelectionOrWordAtCursor: -> 

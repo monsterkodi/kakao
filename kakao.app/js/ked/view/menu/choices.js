@@ -54,9 +54,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _37_15_
+        var lines, _43_15_
 
-        this.items = ((_37_15_=this.items) != null ? _37_15_ : [])
+        this.items = ((_43_15_=this.items) != null ? _43_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -150,14 +150,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _106_26_
+        var _112_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _107_26_
+        var _113_26_
 
         return (this.prevRow() != null)
     }
@@ -334,7 +334,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _244_21_
+        var col, dx, dy, ret, row, _250_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

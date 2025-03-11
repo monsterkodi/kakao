@@ -20,7 +20,6 @@ class theme
     @editor_empty:          '#000'     
     @editor_cursor_multi:   '#f00'     
     @editor_cursor_blur:    '#666'     
-    # @editor_cursor_bg:      '#ff0'     
     @editor_cursor_main:    '#ff0'     
     @editor_cursor_fg:      '#000'     
     @editor_selection_line: '#222'     
