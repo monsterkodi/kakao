@@ -31,8 +31,6 @@ function input extends editor
 
     onKey: key event ->
         
-        # log "input.onKey #{@name} #{event.combo}" 
-        
         switch event.combo
             'return'    ➜ ⮐ @emit 'action' 'submit' @current()
             'up' 'down'

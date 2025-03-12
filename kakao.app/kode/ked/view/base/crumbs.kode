@@ -155,7 +155,6 @@ function crumbs extends view
                     path = slash.path.apply null @split[0..si]
                     path = slash.path @root path
                     path = '/' + path if not path[0] in '~/'
-                    # log "crumbs #{@name} click #{path}"
                     @emit 'action' 'click' path event
                     delete @hoverIndex
                 ⮐ redraw:true

@@ -60,7 +60,7 @@ finder = (function ()
         h = parseInt(this.screen.rows * 3 / 4 - 4)
         cs = _k_.min(h,this.choices.numFiltered())
         this.input.layout(x + 2,y + 1,w - 4,1)
-        this.choices.layout(x + 2,y + 3,w - 3,cs)
+        this.choices.layout(x + 1,y + 3,w - 3,cs)
         return this.cells.layout(x,y,w,cs + 4)
     }
 

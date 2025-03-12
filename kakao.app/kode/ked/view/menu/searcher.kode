@@ -98,7 +98,7 @@ function searcher extends finder
             
             @choices.add
                 ext:   ext
-                line:  '●' #slash.relative(file dir)
+                line:  '●'
                 type:  'file'
                 path:  file
                 row:   0
