@@ -1,0 +1,60 @@
+###
+ 0000000  00000000   0000000   00000000    0000000  000   000  00000000  00000000   00000000  000  000      00000000
+000       000       000   000  000   000  000       000   000  000       000   000  000       000  000      000     
+0000000   0000000   000000000  0000000    000       000000000  0000000   0000000    000000    000  000      0000000 
+     000  000       000   000  000   000  000       000   000  000       000   000  000       000  000      000     
+0000000   00000000  000   000  000   000   0000000  000   000  00000000  000   000  000       000  0000000  00000000
+###
+
+use ../../../kxk ▪ slash
+use ../base      ◆ view crumbs bubble
+
+function searcherfile extends view
+
+    @: @screen @name ->
+
+        super @screen @name
+        
+        @crumbs = new crumbs @screen "#{@name}_crumbs"
+        @bubble = new bubble @screen "#{@name}_bubble"
+
+        @crumbs.dotlessRelative = true
+        @crumbs.on 'action'  @onCrumbsAction
+
+    set: file ->
+        
+        @bubble.set file
+        @crumbs.set slash.dir(file)
+        
+    layout: x y w h ->
+    
+        cw = @crumbs.rounded.length
+        bw = @bubble.rounded.length
+        
+        @crumbs.layout x    y cw 1
+        @bubble.layout x+cw y bw 1
+        @cells.layout  x    y w  1
+        
+    draw: ->
+
+        ⮐ if @hidden()
+        
+        super()
+        
+        @crumbs.draw()
+        @bubble.draw()
+        
+    onMouse: event =>
+
+        ⮐ if @hidden()
+        
+        ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
+        ret = @bubble.onMouse event ; ⮐ ret if ret?.redraw
+        
+        super event
+                
+    onCrumbsAction: action path =>
+        
+        log "#{@name} onCrumbsAction #{action} #{path}" 
+
+export searcherfile

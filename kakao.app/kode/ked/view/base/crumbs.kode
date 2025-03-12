@@ -17,6 +17,7 @@ function crumbs extends view
         super screen name
         
         @pointerType = 'pointer'
+        @rounded = ''
         
         @color = bgl:'#000' bgr:'#000'
         
@@ -37,6 +38,7 @@ function crumbs extends view
     draw: -> 
         
         ⮐ if @hidden()
+        ⮐ if empty @rounded
     
         c = theme.quicky_crumbs
         
@@ -94,10 +96,15 @@ function crumbs extends view
         ⮐ if @hidden()
     
         @path ?= ''
+        
+        if @path == ''
+            @rounded = ''
+            ⮐  
                                   
         @split = slash.split @path
         
-        @split.unshift '/' if @split[0] not in '~/'
+        if not @dotlessRelative
+            @split.unshift '/' if @split[0] not in '~/.'
         
         @root = []
         

@@ -16,6 +16,17 @@ function gutter extends view
         
         super screen @state.owner() + '.gutter'
         
+        @color =
+            gutter:                 theme.gutter
+            gutter_selected:        theme.gutter_selected
+            gutter_fully_selected:  theme.gutter_fully_selected
+            linenr:                 theme.linenr
+            cursor_main:            theme.editor_cursor_main
+            cursor_multi:           theme.editor_cursor_multi
+            selection:              theme.editor_selection
+            selection_line:         theme.editor_selection_line
+            highlight:              theme.editor_highlight
+        
     lineno: y ->
                 
         lineno = lpad @cells.cols-1 y+1
@@ -43,19 +54,19 @@ function gutter extends view
                 if col < @cells.rows
                     
                     fg = if
-                        y == mainCursor[1] ➜ color.darken(theme.editor_cursor_main @state.hasFocus?1:0.5)
-                        hasCursor          ➜ theme.editor_cursor_multi
-                        spansel            ➜ theme.editor_selection
-                        selected           ➜ theme.editor_selection_line
-                        highlighted        ➜ theme.editor_highlight
-                                           ➜ theme.linenr
+                        y == mainCursor[1] ➜ color.darken(@color.cursor_main @state.hasFocus?1:0.5)
+                        hasCursor          ➜ @color.cursor_multi
+                        spansel            ➜ @color.selection
+                        selected           ➜ @color.selection_line
+                        highlighted        ➜ @color.highlight
+                                           ➜ @color.linenr
                                            
                     fg = color.darken fg if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus
                                                 
                     bg = if 
-                        spansel    ➜ theme.gutter_selected
-                        selected   ➜ theme.gutter_fully_selected
-                                   ➜ theme.gutter
+                        spansel    ➜ @color.gutter_selected
+                        selected   ➜ @color.gutter_fully_selected
+                                   ➜ @color.gutter
                                  
                     bg = color.darken bg if selected and not @cells.screen.t.hasFocus
                     

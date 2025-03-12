@@ -18,6 +18,8 @@ gutter = (function ()
         this.state = state
     
         gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
+    
+        this.color = {gutter:theme.gutter,gutter_selected:theme.gutter_selected,gutter_fully_selected:theme.gutter_fully_selected,linenr:theme.linenr,cursor_main:theme.editor_cursor_main,cursor_multi:theme.editor_cursor_multi,selection:theme.editor_selection,selection_line:theme.editor_selection_line,highlight:theme.editor_highlight}
     }
 
     gutter.prototype["lineno"] = function (y)
@@ -31,7 +33,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _46_101_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _57_95_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
@@ -49,12 +51,12 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === mainCursor[1] ? color.darken(theme.editor_cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? theme.editor_cursor_multi : spansel ? theme.editor_selection : selected ? theme.editor_selection_line : highlighted ? theme.editor_highlight : theme.linenr
+                    fg = y === mainCursor[1] ? color.darken(this.color.cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? this.color.cursor_multi : spansel ? this.color.selection : selected ? this.color.selection_line : highlighted ? this.color.highlight : this.color.linenr
                     if ((selected || hasCursor || highlighted) && !this.cells.screen.t.hasFocus)
                     {
                         fg = color.darken(fg)
                     }
-                    bg = spansel ? theme.gutter_selected : selected ? theme.gutter_fully_selected : theme.gutter
+                    bg = spansel ? this.color.gutter_selected : selected ? this.color.gutter_fully_selected : this.color.gutter
                     if (selected && !this.cells.screen.t.hasFocus)
                     {
                         bg = color.darken(bg)

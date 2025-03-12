@@ -31,6 +31,12 @@ function choices extends editor
         @filterText = ''
         
     clear: -> @set []
+    
+    clearEmpty: ->
+    
+        @items = []
+        @fuzzied = @items
+        @state.clearEmpty()
         
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -47,6 +53,11 @@ function choices extends editor
         lines = @key ? @items.map(@extract) : @items
         
         @state.loadLines lines
+        
+    add: item  ->
+    
+        @items.push item
+        @state.addLine item.line item.ext
         
     extract: item => @key and item is obj ? item[@key] : kseg.str(item)
         
@@ -290,7 +301,9 @@ function choices extends editor
         
         switch event.combo        
             'up' 
-            'down'   ➜ ⮐ @moveSelection event.combo
+            'down'   
+                @moveSelection event.combo
+                ⮐  true
         
         ⮐ if not @hasFocus()
             

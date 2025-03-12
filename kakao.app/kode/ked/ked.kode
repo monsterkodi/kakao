@@ -13,7 +13,7 @@ use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
 use ./util        ◆ logfile prjcts session help julia frecent watcher
 use ./view/base   ◆ view
-use ./view/menu   ◆ quicky menu finder searcher 
+use ./view/menu   ◆ quicky fsbrow menu finder searcher 
 use ./view/status ◆ status 
 use ./view/screen ◆ screen ttio
 use ./view/funcol ◆ funcol 
@@ -27,7 +27,7 @@ function KED
 
     @: ->
 
-        @version = '0.3.1'
+        @version = '0.4.0'
         @args = karg """
             
             ked [file]
@@ -58,6 +58,7 @@ function KED
         
         @menu     = new menu       @screen        
         @quicky   = new quicky     @screen 
+        @fsbrow   = new fsbrow     @screen 
         @editor   = new fileeditor @screen 'editor'
         @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
         @finder   = new finder     @screen @editor.state
@@ -79,9 +80,9 @@ function KED
         post.on 'quit'          @quit
         post.on 'fs.change'     @onFileChange
         
-        @mouseHandlers = [@finder @searcher @quicky @menu @editor @status @funcol]
-        @wheelHandlers = [@finder @searcher @quicky @menu @editor         @funcol]
-        @keyHandlers   = [@finder @searcher @quicky @menu @editor         @funcol]
+        @mouseHandlers = [@finder @searcher @quicky @fsbrow @menu @editor @status @funcol]
+        @wheelHandlers = [@finder @searcher @quicky @fsbrow @menu @editor         @funcol]
+        @keyHandlers   = [@finder @searcher @quicky @fsbrow @menu @editor         @funcol]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -330,11 +331,11 @@ function KED
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
             'alt+.' 'alt+m'              ➜ ⮐ @menu.show()
-            'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.toggle @currentFile
+            'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.showProjectFiles @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐ @searcher.show()
             'cmd+o' 'ctrl+o'
-            'cmd+.' 'ctrl+.'             ➜ ⮐ @quicky.gotoDir slash.dir(@currentFile)
+            'cmd+.' 'ctrl+.'             ➜ ⮐ @fsbrow.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers
             break if result = handler.onKey key event
@@ -420,6 +421,7 @@ function KED
             
         @menu.draw()
         @quicky.draw()
+        @fsbrow.draw()
         @finder.draw()
         @searcher.draw()
         

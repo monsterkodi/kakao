@@ -121,7 +121,7 @@ function menu extends inputchoice
             'new'        ➜ @hide(); post.emit 'file.new'
             'about'      ➜ @show true          # reopen with greeting header
             'quit'       ➜ @greeter.hide(); post.emit 'quit'                    
-            'open ...'   ➜ post.emit 'quicky.dir' process.cwd()
+            'open ...'   ➜ post.emit 'fsbrow.dir' process.cwd()
             'recent ...' ➜ @showRecent()
             
         true

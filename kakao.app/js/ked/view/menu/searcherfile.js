@@ -1,0 +1,87 @@
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
+
+var searcherfile
+
+import kxk from "../../../kxk.js"
+let slash = kxk.slash
+
+import view from "../base/view.js"
+import crumbs from "../base/crumbs.js"
+import bubble from "../base/bubble.js"
+
+
+searcherfile = (function ()
+{
+    _k_.extend(searcherfile, view)
+    function searcherfile (screen, name)
+    {
+        this.screen = screen
+        this.name = name
+    
+        this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
+        searcherfile.__super__.constructor.call(this,this.screen,this.name)
+        this.crumbs = new crumbs(this.screen,`${this.name}_crumbs`)
+        this.bubble = new bubble(this.screen,`${this.name}_bubble`)
+        this.crumbs.dotlessRelative = true
+        this.crumbs.on('action',this.onCrumbsAction)
+    }
+
+    searcherfile.prototype["set"] = function (file)
+    {
+        this.bubble.set(file)
+        return this.crumbs.set(slash.dir(file))
+    }
+
+    searcherfile.prototype["layout"] = function (x, y, w, h)
+    {
+        var bw, cw
+
+        cw = this.crumbs.rounded.length
+        bw = this.bubble.rounded.length
+        this.crumbs.layout(x,y,cw,1)
+        this.bubble.layout(x + cw,y,bw,1)
+        return this.cells.layout(x,y,w,1)
+    }
+
+    searcherfile.prototype["draw"] = function ()
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        searcherfile.__super__.draw.call(this)
+        this.crumbs.draw()
+        return this.bubble.draw()
+    }
+
+    searcherfile.prototype["onMouse"] = function (event)
+    {
+        var ret
+
+        if (this.hidden())
+        {
+            return
+        }
+        ret = this.crumbs.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
+        }
+        ret = this.bubble.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
+        }
+        return searcherfile.__super__.onMouse.call(this,event)
+    }
+
+    searcherfile.prototype["onCrumbsAction"] = function (action, path)
+    {
+        console.log(`${this.name} onCrumbsAction ${action} ${path}`)
+    }
+
+    return searcherfile
+})()
+
+export default searcherfile;

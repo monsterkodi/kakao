@@ -49,18 +49,31 @@ choices = (function ()
         return this.set([])
     }
 
+    choices.prototype["clearEmpty"] = function ()
+    {
+        this.items = []
+        this.fuzzied = this.items
+        return this.state.clearEmpty()
+    }
+
     choices.prototype["set"] = function (items, key)
     {
         this.items = items
         this.key = key
     
-        var lines, _43_15_
+        var lines, _49_15_
 
-        this.items = ((_43_15_=this.items) != null ? _43_15_ : [])
+        this.items = ((_49_15_=this.items) != null ? _49_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
         return this.state.loadLines(lines)
+    }
+
+    choices.prototype["add"] = function (item)
+    {
+        this.items.push(item)
+        return this.state.addLine(item.line,item.ext)
     }
 
     choices.prototype["extract"] = function (item)
@@ -150,14 +163,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _112_26_
+        var _123_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _113_26_
+        var _124_26_
 
         return (this.prevRow() != null)
     }
@@ -334,7 +347,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _250_21_
+        var col, dx, dy, ret, row, _261_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -394,7 +407,8 @@ choices = (function ()
         {
             case 'up':
             case 'down':
-                return this.moveSelection(event.combo)
+                this.moveSelection(event.combo)
+                return true
 
         }
 

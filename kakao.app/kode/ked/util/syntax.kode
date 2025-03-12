@@ -12,7 +12,9 @@ use ../theme    ◆ theme
 
 function syntax
 
-    @: -> @ext = 'txt'
+    @: -> @ext = 'txt' ; @diss = []
+        
+    clear: => @diss = []
         
     setExt: @ext =>
     
@@ -31,6 +33,10 @@ function syntax
         else
             @diss = kulur.dissect segls @ext
             # log '● syntax.setSegls' @diss
+            
+    addSegl: segl ext =>
+    
+        @diss = @diss.concat kulur.dissect([segl] ext)
             
     getClass: x y =>
         

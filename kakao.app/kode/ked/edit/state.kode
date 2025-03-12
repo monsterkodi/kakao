@@ -142,6 +142,28 @@ function state
         @s = @s.set 'lines' @segls
         @r = []
         @pushState()
+        
+    clearEmpty: => 
+    
+        @segls = []
+        @syntax.clear()
+        @s = immutable
+            lines:       @segls
+            selections:  []
+            highlights:  []
+            cursors:     [[0 0]]
+            main:        0
+            view:        [0 0]
+        @r = []
+        
+    addLine: line ext ->
+    
+        segl = kseg line
+        @syntax.setExt ext
+        @syntax.addSegl segl ext
+        @segls ?= []
+        @segls.push segl
+        @s = @s.set 'lines' @segls
 
     allLines: => @s.lines.asMutable()
     

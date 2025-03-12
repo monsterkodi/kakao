@@ -7,6 +7,7 @@
 ###
 
 use ../../../kxk    ▪ post kseg kutil
+use ../../theme     ◆ theme
 use ../../edit/tool ◆ belt
 use                 ◆ inputchoice
 
@@ -19,6 +20,7 @@ function finder extends inputchoice
         @choices.state.skipAdjustViewForMainCursor = true
         @choices.state.syntax.setExt 'kode'
         @choices.gutter.lineno = @lineno
+        @choices.gutter.color.highlight = theme.linenr
 
     # ███      ███  ███   ███  ████████  ███   ███   ███████ 
     # ███      ███  ████  ███  ███       ████  ███  ███   ███
@@ -94,22 +96,22 @@ function finder extends inputchoice
                     
         @state.highlightText text
         
-        items = []
+        @choices.clearEmpty()
+        
         front = belt.frontmostSpans @state.s.highlights
         for span in front
-            if valid items and items[-1].row != span[1]-1
-                items.push line:''
-            items.push
-                line: kseg.str(@state.s.lines[span[1]])
+            if @choices.items.length>1 and @choices.items[-1].row != span[1]-1
+                @choices.add line:''
+            @choices.add
+                ext:  'kode' 
+                line: ' ' + kseg.str(@state.s.lines[span[1]])
                 row:  span[1]
                 col:  span[2]
             
-        @choices.state.syntax.setExt 'kode' # todo: currentFile ext
-        @choices.set items 'line'
         @choices.state.highlightText text
         
         if cursorLine
-            @choices.select kutil.findIndex(items (l) -> l.row == cursorLine) ? 0
+            @choices.select kutil.findIndex(@choices.items (l) -> l.row == cursorLine) ? 0
         else
             @choices.selectFirst()
         

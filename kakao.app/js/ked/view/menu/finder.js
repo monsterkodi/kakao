@@ -7,6 +7,8 @@ let post = kxk.post
 let kseg = kxk.kseg
 let kutil = kxk.kutil
 
+import theme from "../../theme/theme.js"
+
 import belt from "../../edit/tool/belt.js"
 
 import inputchoice from "./inputchoice.js"
@@ -26,6 +28,7 @@ finder = (function ()
         this.choices.state.skipAdjustViewForMainCursor = true
         this.choices.state.syntax.setExt('kode')
         this.choices.gutter.lineno = this.lineno
+        this.choices.gutter.color.highlight = theme.linenr
     }
 
     finder.prototype["lineno"] = function (y)
@@ -81,7 +84,7 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, items, span, _112_78_
+        var cursorLine, front, span, _114_87_
 
         if (_k_.empty(text))
         {
@@ -95,27 +98,25 @@ finder = (function ()
             return
         }
         this.state.highlightText(text)
-        items = []
+        this.choices.clearEmpty()
         front = belt.frontmostSpans(this.state.s.highlights)
         var list = _k_.list(front)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             span = list[_a_]
-            if (!_k_.empty(items) && items.slice(-1)[0].row !== span[1] - 1)
+            if (this.choices.items.length > 1 && this.choices.items.slice(-1)[0].row !== span[1] - 1)
             {
-                items.push({line:''})
+                this.choices.add({line:''})
             }
-            items.push({line:kseg.str(this.state.s.lines[span[1]]),row:span[1],col:span[2]})
+            this.choices.add({ext:'kode',line:' ' + kseg.str(this.state.s.lines[span[1]]),row:span[1],col:span[2]})
         }
-        this.choices.state.syntax.setExt('kode')
-        this.choices.set(items,'line')
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_112_78_=kutil.findIndex(items,function (l)
+            this.choices.select(((_114_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _112_78_ : 0))
+            })) != null ? _114_87_ : 0))
         }
         else
         {

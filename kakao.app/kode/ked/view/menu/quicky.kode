@@ -6,36 +6,35 @@
  00000 00   0000000   000   0000000  000   000     000
 ###
 
-use ../../../kxk    ▪ kstr slash post kutil noon
+use ../../../kxk    ▪ kstr slash post kutil
 use ../../../kxk    ◆ nfs
 use ../../util      ◆ prjcts walker 
 use ../../edit/tool ◆ belt
-use ../../edit      ◆ editor 
-use ../../theme     ◆ theme icons
+use ../../theme     ◆ icons
 use ../base         ◆ crumbs 
-use                 ◆ inputchoice fscol
+use                 ◆ inputchoice
 
 import rgxs from './quicky.json' with { type: "json" }
 
 function quicky extends inputchoice
 
-    @: @screen ->
+    @: @screen @name='quicky'->
 
-        super @screen 'quicky' ['mapview' 'scroll']
+        super @screen @name ['mapview' 'scroll']
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
-        @fscol  = new fscol   @screen 'quicky_fscol'
 
         @crumbs.padLast = true
 
         @choices.state.syntax.setRgxs rgxs
         @choices.on 'select' @preview
         
+        @choices.mapscr.rowOffset = 0
+        @choices.frontRoundOffset = 0
+        
         @crumbs.on 'action' @onCrumbsAction
-        @fscol.on  'action' @onFsColAction
 
-        post.on 'quicky.dir'   @gotoDir
-        post.on 'quicky.files' @showFiles
+        post.on 'quicky.files' @showFiles if @name == 'quicky'
 
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -56,20 +55,16 @@ function quicky extends inputchoice
         
         cr = @crumbs.visible() ? 1 : 0
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
-
-        w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
-        x  = int scx-w/2
-        
         h  = ch + ih + cr + 2
-        
-        fw = @fscol.visible() ? int((w-3)/2) : 0
-        fh = @fscol.visible() ? ch : 0
-        cw = w-3-fw
+
+        cw = @choicesWidth
+        w  = cw+2 
+        x  = int scx-w/2
+        log "#{@name} layout #{cw} #{w}"
         
         @input.layout    x+2      y+1        w-4   iz
         @crumbs.layout   x+2      y+1+ih     w-4   cr
         @choices.layout  x+1      y+1+ih+cr  cw    ch
-        @fscol.layout    x+2+cw   y+1+ih+cr  fw    fh
         @cells.layout    x        y          w     h
 
     # 0000000    00000000    0000000   000   000
@@ -85,87 +80,8 @@ function quicky extends inputchoice
         @layout()
         @drawFrame()
         @crumbs.draw()
-        @fscol.draw()
         @drawChoices()
-        @drawAdditions()
-        
-    drawAdditions: ->
-        
-        if @fscol.visible()
-            
-            fg = theme.quicky_frame_fg
-            bg = theme.quicky_frame_bg
-            
-            x = @choices.cells.cols+2
-            @cells.fill_col x 2 @cells.rows-2 '│' fg bg
-            @cells.set      x   @cells.rows-1 '┴' fg bg
-
-            x = @choices.cells.cols-1
-            y = @choices.currentIndex()-@choices.state.s.view[1]
-            @choices.cells.fill_row     y @choices.current().tilde.length x-1 ' ' bg @choices.color.current
-            @choices.cells.set          x y '' @choices.color.current bg 
-            @choices.cells.set_unsafe   x+1 y '┤' fg bg if 0 <= y < @choices.cells.rows
-        
-    # 000000000   0000000    0000000    0000000   000      00000000  
-    #    000     000   000  000        000        000      000       
-    #    000     000   000  000  0000  000  0000  000      0000000   
-    #    000     000   000  000   000  000   000  000      000       
-    #    000      0000000    0000000    0000000   0000000  00000000  
-    
-    toggle: currentFile -> if @hidden() then @showProjectFiles(currentFile) else @hide()
-            
-    #  0000000    0000000   000000000   0000000   0000000    000  00000000   
-    # 000        000   000     000     000   000  000   000  000  000   000  
-    # 000  0000  000   000     000     000   000  000   000  000  0000000    
-    # 000   000  000   000     000     000   000  000   000  000  000   000  
-    #  0000000    0000000      000      0000000   0000000    000  000   000  
-    
-    gotoDir: dir select ○=>
-        
-        dir = process.cwd() if empty dir
-        dir = slash.untilde dir
-        
-        try
-            items =○ nfs.list dir recursive:false
-        catch err
-            log 'list error' err
-            ⮐ 
-
-        @currentDir = dir
-        @crumbs.show @currentDir
-            
-        weight = item =>
-
-            p = slash.parse item.path
-
-            w = 0
-            ⮐ w if item.tilde == icons.dir + ' ..'
-            w += 10000 if item.type == 'file'
-            w += 1000  if item.tilde.startsWith icons.dir + ' .'
-            w += 1     if slash.ext(item.tilde) in ['js' 'json']
-            w += kstr.weight(p.file)
-            w
-        
-        for item in items
-            item.tilde = slash.relative item.path @currentDir
-            item.tilde = ((item.type == 'dir') ? (icons.dir + ' ') : '  ') + item.tilde
-
-        items.sort (a b) -> weight(a) - weight(b)
-        
-        parent = slash.dir @currentDir
-
-        items.unshift
-            type: 'dir'
-            file: slash.name(parent)
-            path: parent
-            tilde: parent ? (icons.dir + ' ..') : ''
-            
-        select ?= items[1].path
-               
-        @choices.mapscr.rowOffset = 1
-        @choices.frontRoundOffset = 2
-        @showPathItems items select
-    
+                
     #  0000000  000   000   0000000   000   000        00000000  000  000      00000000   0000000  
     # 000       000   000  000   000  000 0 000        000       000  000      000       000       
     # 0000000   000000000  000   000  000000000        000000    000  000      0000000   0000000   
@@ -176,9 +92,7 @@ function quicky extends inputchoice
                                                                #  pad
         items = files.map (path) -> path:path type:'file' tilde:' ' + slash.file(path) 
         @crumbs.hide()
-        @choices.mapscr.rowOffset = 0
-        @choices.frontRoundOffset = 0
-        @showPathItems items
+        @calcWidthAndShowPathItems items
         
     # 00000000   00000000    0000000         000  00000000   0000000  000000000  00000000  000  000      00000000   0000000  
     # 000   000  000   000  000   000        000  000       000          000     000       000  000      000       000       
@@ -188,9 +102,10 @@ function quicky extends inputchoice
     
     showProjectFiles: @currentFile ->
         
-        items = prjcts.files @currentFile
+        items  = prjcts.files @currentFile
+        prjDir = prjcts.dir @currentFile
         
-        items = items.concat ked_session.recentFiles()
+        items = items.concat ked_session.recentFiles()[0...10]
         
         ⮐ @gotoDir process.cwd() if empty items
         
@@ -216,7 +131,7 @@ function quicky extends inputchoice
 
         items = items.map (path) => 
         
-            rel = slash.relative path @currentDir
+            rel = slash.relative path prjDir
             if slash.isAbsolute rel
                 prs = slash.parse rel
                 rel = slash.join slash.split(prs.dir)[-2..] prs.file
@@ -225,8 +140,14 @@ function quicky extends inputchoice
             
         items.sort (a b) -> weight(a) - weight(b)            
 
-        @choices.mapscr.rowOffset = 0
-        @choices.frontRoundOffset = 0
+        @calcWidthAndShowPathItems items
+        
+    calcWidthAndShowPathItems: items ->
+    
+        lines = items.map (i) -> i.tilde
+        
+        @choicesWidth = min int(@screen.rows*1.2) 16+belt.widthOfLines(lines)
+    
         @showPathItems items
         
     # 00000000    0000000   000000000  000   000        000  000000000  00000000  00     00   0000000  
@@ -256,26 +177,10 @@ function quicky extends inputchoice
         @choices.state.setMainCursor 0 selectIndex
         @choices.state.setView [0 0]
         
+        log "#{@name} showPathItems #{items.length}"
         @show()
         @choices.grabFocus()
         
-    # 00000000  000  000      00000000       0000000   00000000       0000000    000  00000000   
-    # 000       000  000      000           000   000  000   000      000   000  000  000   000  
-    # 000000    000  000      0000000       000   000  0000000        000   000  000  0000000    
-    # 000       000  000      000           000   000  000   000      000   000  000  000   000  
-    # 000       000  0000000  00000000       0000000   000   000      0000000    000  000   000  
-    
-    gotoDirOrOpenFile: path ○=>
-        
-        isDir =○ nfs.dirExists path
-        
-        if isDir
-            ○ @gotoDir path
-        else
-            isFile =○ nfs.fileExists path
-            if isFile
-                @openFileInEditor path
-                            
     #  0000000   00000000   00000000  000   000     000  000   000     00000000  0000000    000  000000000   0000000   00000000   
     # 000   000  000   000  000       0000  000     000  0000  000     000       000   000  000     000     000   000  000   000  
     # 000   000  00000000   0000000   000 0 000     000  000 0 000     0000000   000   000  000     000     000   000  0000000    
@@ -327,13 +232,6 @@ function quicky extends inputchoice
         else
             @hideMap()
             
-        if item.type == 'dir' and not item.tilde.endsWith '..'
-            @fscol.show item.path
-            @choices.hoverForSubmenu = true
-        else
-            @fscol.hide()
-            @choices.hoverForSubmenu = false
-            
         post.emit 'redraw'
             
     hideMap: -> @choices.mapscr.hide()        
@@ -348,16 +246,9 @@ function quicky extends inputchoice
 
         ⮐ if @hidden()
         ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
-        ret = @fscol.onMouse event  ; ⮐ ret if ret?.redraw
         ret = super event           ; ⮐ ret if ret?.redraw
         @hover
 
-    onWheel: event =>
-        
-        ⮐ if @hidden()
-        ret = @fscol.onWheel event ; ⮐ ret if ret?.redraw
-        super event
-                
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
@@ -368,20 +259,32 @@ function quicky extends inputchoice
         
         switch @input.current()
             
-            '/'  ➜ ⮐ @gotoDir '/'
-            '~'  ➜ ⮐ @gotoDir '~'
-            '.'  ➜ ⮐ @gotoDir @currentDir
-            '..' ➜ ⮐ @gotoDir slash.dir(@currentDir)
+            '/'  ➜ ⮐ @browseDir '/'
+            '~'  ➜ ⮐ @browseDir '~'
+            '.'  ➜ ⮐ @browseDir @currentDir
+            '..' ➜ ⮐ @browseDir slash.dir(@currentDir)
             
-        if empty choice and valid @input.current()
-            @gotoDirOrOpenFile @input.current()
-            ⮐ redraw:true
+        # if empty choice and valid @input.current()
+        #     @gotoDirOrOpenFile @input.current()
+        #     ⮐ redraw:true
             
         if empty choice      ➜ ⮐ redraw:false 
-        if empty choice.path ➜ ⮐ redraw:false 
+        # if empty choice.path ➜ ⮐ redraw:false 
 
-        @gotoDirOrOpenFile choice.path 
+        @openFileInEditor choice.path 
         redraw:true
+        
+    #  0000000    0000000   000000000   0000000   0000000    000  00000000   
+    # 000        000   000     000     000   000  000   000  000  000   000  
+    # 000  0000  000   000     000     000   000  000   000  000  0000000    
+    # 000   000  000   000     000     000   000  000   000  000  000   000  
+    #  0000000    0000000      000      0000000   0000000    000  000   000  
+    
+    browseDir: dir select ○=>
+    
+        log "#{@name} browseDir #{dir}"
+        post.emit 'fsbrow.dir' dir
+        @hide()
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
@@ -395,17 +298,13 @@ function quicky extends inputchoice
             
             'click' ➜ ⮐ @applyChoice tilde:path path:slash.untilde(path)
     
-    onFsColAction: action choice =>
-        
-        switch action
-            
-            'click' ➜ ⮐ @applyChoice choice
-                
     onInputAction: action text =>
         
         super action text
     
     onChoicesAction: action choice =>
+    
+        log "#{@name} onChoicesAction" action choice @currentDir
             
         switch action
             
@@ -420,7 +319,11 @@ function quicky extends inputchoice
                         @hideMap()
                         ⮐ @gotoDirOrOpenFile choice.link ? choice.path
                         
-            'left' 'delete'
+            'left' 
+                
+                ⮐  @choices.select 0
+                
+            'delete'
                 
                 if choice.path
                     upDir = slash.dir @currentDir

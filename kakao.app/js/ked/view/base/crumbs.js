@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var crumbs
 
@@ -21,6 +21,7 @@ crumbs = (function ()
         this["show"] = this["show"].bind(this)
         crumbs.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
+        this.rounded = ''
         this.color = {bgl:'#000',bgr:'#000'}
     }
 
@@ -39,6 +40,10 @@ crumbs = (function ()
         var bg, c, ch, colors, fg, i, si, x
 
         if (this.hidden())
+        {
+            return
+        }
+        if (_k_.empty(this.rounded))
         {
             return
         }
@@ -107,17 +112,25 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _96_14_
+        var padding, _98_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_96_14_=this.path) != null ? _96_14_ : '')
-        this.split = slash.split(this.path)
-        if (!(_k_.in(this.split[0],'~/')))
+        this.path = ((_98_14_=this.path) != null ? _98_14_ : '')
+        if (this.path === '')
         {
-            this.split.unshift('/')
+            this.rounded = ''
+            return
+        }
+        this.split = slash.split(this.path)
+        if (!this.dotlessRelative)
+        {
+            if (!(_k_.in(this.split[0],'~/.')))
+            {
+                this.split.unshift('/')
+            }
         }
         this.root = []
         this.rounded = this.split.join(' ')
@@ -150,7 +163,7 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _137_26_
+        var col, index, path, row, si, _144_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 

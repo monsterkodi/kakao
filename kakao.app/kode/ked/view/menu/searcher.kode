@@ -10,13 +10,42 @@ use ../../../kxk    ▪ post kseg slash
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../util      ◆ prjcts
-use                 ◆ finder
+use                 ◆ finder searcherfile
 
 function searcher extends finder
 
     @: @screen @state ->
 
         super @screen @state 'searcher'
+        
+        @sfils = []
+        
+    layout: =>
+    
+        super()
+        
+        for sfil in @sfils
+            y = @choices.cells.y - @choices.state.s.view[1] + sfil.lineIndex
+            sfil.layout @choices.cells.x y @choices.cells.cols 1
+            
+    draw: ->
+
+        ⮐ if @hidden()
+
+        super()
+        
+        for sfil in @sfils
+            if @choices.state.s.view[1] <= sfil.lineIndex < @choices.state.s.view[1]+@choices.cells.rows
+                sfil.draw()
+            
+    onMouse: event =>
+
+        ⮐ if @hidden()
+        
+        for sfil in @sfils
+            ret = sfil.onMouse event ; ⮐ ret if ret?.redraw
+        
+        super event
         
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -40,9 +69,9 @@ function searcher extends finder
         
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
-        
-        @choices.state.setMainCursor 0 0
-        @choices.set [] 'line'
+
+        @choices.clearEmpty()        
+        @sfils = []
         
         @layout()
         @input.grabFocus()
@@ -58,36 +87,40 @@ function searcher extends finder
             continue if empty spans
             
             front = belt.frontmostSpans spans
-
-            items = @choices.items ? []            
+            ext = slash.ext file
+            @choices.add line:''
             
-            items.push line:''
-            items.push
-                line:  slash.relative(file dir)
+            index = @choices.items.length
+            sfil = new searcherfile @screen "#{@name}_sfil_#{index}"
+            sfil.lineIndex = index
+            sfil.set slash.relative(file dir)            
+            @sfils.push sfil
+            
+            @choices.add
+                ext:   ext
+                line:  '●' #slash.relative(file dir)
                 type:  'file'
                 path:  file
                 row:   0
                 col:   0
                 
             for span in front
-                if items[-1].row != span[1]-1
-                    items.push line:''
-                items.push 
-                    line:  kseg.str(segls[span[1]])
+                if @choices.items[-1].row != span[1]-1
+                    @choices.add line:''
+                @choices.add 
+                    ext:   ext
+                    line:  ' ' + kseg.str(segls[span[1]])
                     path:  file
                     row:   span[1]
                     col:   span[2]
             
             ⮐  if @hidden()
             
-            selectedIndex = @choices.state.s.cursors[0][1]
-            @choices.set items 'line'
             @choices.state.highlightText text
-            @choices.select selectedIndex
             
             @layout()
             post.emit 'redraw'
-        
+                    
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
     # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
     # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███
