@@ -133,12 +133,16 @@ function finder extends inputchoice
     # 000   000  000        000        000         000     
     # 000   000  000        000        0000000     000     
     
+    emitFileOpen: choice -> 
+    
+        post.emit 'file.open' choice.path choice.row choice.col
+    
     apply: choice ->
         
         if valid choice
             
             if choice.path
-                post.emit 'file.open' choice.path choice.row choice.col
+                @emitFileOpen choice
             else
                 post.emit 'goto.line' choice.row choice.col
                 

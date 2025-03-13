@@ -20,14 +20,11 @@
 #### todo
 ##### todo
 
-- searcher
-    - convert file path lines to crumbs
-    - should highlight search string after goto
-    - switch syntax theme per file 
-    - add ability to load search results into a new 'tab' 
-
-- funclist
-
+- brckts
+    - fix empty brackets at end of line (check balanced)
+    - highlight matching brckts
+    - alt+cmd+b select matching brckts
+    
 - completion
     - fix
         - turd missing completions
@@ -37,12 +34,17 @@
         - before closing )]}
         - after . :
         
-- brckts
-    - fix empty brackets at end of line (check balanced)
+- searcher
+    - fix stalls when too many search results are found
+    - add ability to load search results into a new 'tab' 
     
-- mode
-    - salter mode
-        - fix delete and other issues
+- funclist
+
+- salter mode
+    - fix delete and other issues
+
+- style
+    - adjust colors for editor selection similar to funcol and crumbs
 
 - macro
     - unicode palette

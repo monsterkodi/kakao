@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}}
 
 var searcher
 
@@ -87,6 +87,29 @@ searcher = (function ()
         return searcher.__super__.onMouse.call(this,event)
     }
 
+    searcher.prototype["emitFileOpen"] = function (choice)
+    {
+        var onOpen, textToHighlight
+
+        textToHighlight = this.input.current()
+        onOpen = (function (p)
+        {
+            console.log(`file.loaded ${p}`)
+            post.emit('editor.highlight',textToHighlight)
+            return post.removeListener('file.opened',onOpen)
+        }).bind(this)
+        post.on('file.loaded',onOpen)
+        return searcher.__super__.emitFileOpen.call(this,choice)
+    }
+
+    searcher.prototype["highlightTextAndEmitRedraw"] = function (text)
+    {
+        console.log('highlight & redraw')
+        this.layout()
+        this.choices.state.highlightText(text)
+        return post.emit('redraw')
+    }
+
     searcher.prototype["show"] = async function (text)
     {
         var dir, editorFile, ext, file, files, filet, front, idx, index, segls, sfil, span, spans
@@ -102,10 +125,10 @@ searcher = (function ()
         editorFile = ked_session.get('editor▸file')
         dir = prjcts.dir(editorFile)
         files = prjcts.files(editorFile)
+        this.input.grabFocus()
         this.choices.clearEmpty()
         this.sfils = []
         this.layout()
-        this.input.grabFocus()
         post.emit('redraw')
         var list = _k_.list(files)
         for (idx = 0; idx < list.length; idx++)
@@ -114,10 +137,16 @@ searcher = (function ()
             filet = await nfs.readText(file)
             segls = kseg.segls(filet)
             spans = belt.lineSpansForText(segls,text)
+            if (idx === files.length - 1)
+            {
+                this.highlightTextAndEmitRedraw(text)
+            }
             if (_k_.empty(spans))
             {
                 continue
             }
+            _k_.profile('searcher')
+            console.log(`append ${spans.length} results for ${file}`)
             front = belt.frontmostSpans(spans)
             ext = slash.ext(file)
             this.choices.add({line:''})
@@ -137,13 +166,15 @@ searcher = (function ()
                 }
                 this.choices.add({ext:ext,line:' ' + kseg.str(segls[span[1]]),path:file,row:span[1],col:span[2]})
             }
+            _k_.profilend('searcher')
             if (this.hidden())
             {
                 return
             }
-            this.choices.state.highlightText(text)
-            this.layout()
-            post.emit('redraw')
+            if (idx % 10 === 0 || idx === files.length - 1)
+            {
+                this.highlightTextAndEmitRedraw(text)
+            }
         }
     }
 

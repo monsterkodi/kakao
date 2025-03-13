@@ -40,7 +40,7 @@ function editor extends draw
         for m in mode.names()            
             if @feats[m] ➜ @state.allowedModes[m] = true
             
-        log 'allowedModes' @feats @state.allowedModes
+        # log 'allowedModes' @feats @state.allowedModes
                         
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -103,7 +103,7 @@ function editor extends draw
         
         ⮐ if event.cell[1] >= @cells.y + @cells.rows
                 
-        inside = @cells.isInsideEvent(event)
+        inside  = @cells.isInsideEvent(event)
         inside |= @scroll?.cells.isInsideEvent(event)
         inside |= @gutter?.cells.isInsideEvent(event)
         inside |= @mapscr?.cells.isInsideEvent(event)

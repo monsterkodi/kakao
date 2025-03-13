@@ -21,7 +21,7 @@ function logfile
                     obj = args[1..]
                 else if args.length == 2
                     obj = args[1]
-                @write y5("▸ ") + y8(args[0])
+                @write w2("▸ ") + y8(args[0])
                 @write noon(obj) if args.length > 1
             else        
                 @write "▾\n"+noon(args)

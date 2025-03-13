@@ -246,7 +246,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col)
     {
-        var segls, start, text, _229_22_
+        var segls, start, text, _228_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -269,10 +269,10 @@ ked [file]
         this.editor.state.syntax.ext = slash.ext(this.currentFile)
         this.editor.state.loadSegls(segls)
         this.status.time = process.hrtime(start)[1]
-        this.status.drawTime = kstr.time(BigInt(this.status.time))
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         ked_session.set("editor▸file",this.currentFile)
         mode.fileLoaded(this.editor.state,this.currentFile,row,col)
+        post.emit('file.loaded',this.currentFile)
         this.redraw()
         prjcts.index(this.currentFile)
         watcher.watch(this.currentFile)
@@ -476,7 +476,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _390_22_
+        var _391_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -516,8 +516,7 @@ ked [file]
         this.finder.draw()
         this.searcher.draw()
         this.screen.render()
-        this.status.time = process.hrtime(start)[1]
-        return this.status.drawTime = kstr.time(BigInt(this.status.time))
+        return this.status.time = process.hrtime(start)[1]
     }
 
     return KED

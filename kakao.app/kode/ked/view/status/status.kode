@@ -6,7 +6,7 @@
 0000000      000     000   000     000      0000000   0000000   
 ###
 
-use ../../../kxk    ▪ post slash
+use ../../../kxk    ▪ post slash kstr
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ color theme
 use ../base         ◆ view crumbs 
@@ -114,7 +114,6 @@ function status extends view
         cursor = @state.mainCursor()
         cols   = @cells.cols
         fnl    = @file.length
-        dt     = @drawTime
         rdo    = @state.hasRedo()
         dty    = @state.isDirty()
         
@@ -170,10 +169,13 @@ function status extends view
         for ci in x...cols
             add ' ' null 'status_dark'
             
-        ci = clamp 0 3 int((@time/(1000*1000)-16)/8)
+        ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
         ch = ' •'[ci] # 
-        fg = ['#222' '#000' '#080' '#ff0'][ci]
-        log "#{ch} #{@drawTime}" if ch in ''
+        fg = ['#222' '#060' '#f00' '#ff0'][ci]
+        switch ch
+            '•' ➜ log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
+            '' ➜ log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
+            '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
         set cols-2 ch fg 'status_dark'
              
 export status

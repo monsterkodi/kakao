@@ -134,13 +134,18 @@ finder = (function ()
         return this.input.grabFocus()
     }
 
+    finder.prototype["emitFileOpen"] = function (choice)
+    {
+        return post.emit('file.open',choice.path,choice.row,choice.col)
+    }
+
     finder.prototype["apply"] = function (choice)
     {
         if (!_k_.empty(choice))
         {
             if (choice.path)
             {
-                post.emit('file.open',choice.path,choice.row,choice.col)
+                this.emitFileOpen(choice)
             }
             else
             {

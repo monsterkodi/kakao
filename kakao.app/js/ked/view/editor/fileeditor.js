@@ -31,6 +31,7 @@ fileeditor = (function ()
             this.mapscr = new mapscr(this.screen,this.state)
             this.mapscr.show()
         }
+        post.on('editor.highlight',this.state.highlightText)
         post.on('goto.line',this.onGotoLine)
     }
 
@@ -42,7 +43,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _143_31_, _91_41_
+        var col, ret, row, start, x, y, _144_31_, _92_41_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

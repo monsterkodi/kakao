@@ -47,6 +47,32 @@ function searcher extends finder
         
         super event
         
+    emitFileOpen: choice ->
+    
+        textToHighlight = @input.current()
+        onOpen = (p) =>
+        
+            log "file.loaded #{p}"
+            post.emit 'editor.highlight' textToHighlight
+            post.removeListener 'file.opened' onOpen
+    
+        post.on 'file.loaded' onOpen
+        # log "emitFileOpen #{@input.current()}"
+        super choice
+        
+    # ███   ███  ███  ███      ███   ███████   ███   ███  █████████        ████          ███████    ████████    ███████   ███   ███
+    # ███   ███  ███  ███      ███  ███        ███   ███     ███          ██  ██         ███   ███  ███   ███  ███   ███  ███ █ ███
+    # █████████  ███  ███      ███  ███  ████  █████████     ███           ████ ██       ███   ███  ███████    █████████  █████████
+    # ███   ███  ███  ███      ███  ███   ███  ███   ███     ███          ██  ███        ███   ███  ███   ███  ███   ███  ███   ███
+    # ███   ███  ███  ███████  ███   ███████   ███   ███     ███           █████ █       ███████    ███   ███  ███   ███  ██     ██
+
+    highlightTextAndEmitRedraw: text ->
+    
+        log 'highlight & redraw'
+        @layout()
+        @choices.state.highlightText text
+        post.emit 'redraw'
+        
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  
@@ -70,21 +96,28 @@ function searcher extends finder
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
 
+        @input.grabFocus()
         @choices.clearEmpty()        
         @sfils = []
-        
+
         @layout()
-        @input.grabFocus()
         post.emit 'redraw'
-        
+
         for file,idx in files
-            
+                    
             filet =○ nfs.readText file
             
             segls = kseg.segls filet
             spans = belt.lineSpansForText segls text
             
+            if idx == files.length-1
+                @highlightTextAndEmitRedraw text
+            
             continue if empty spans
+            
+            ●▸ searcher
+            
+            log "append #{spans.length} results for #{file}"
             
             front = belt.frontmostSpans spans
             ext = slash.ext file
@@ -114,13 +147,13 @@ function searcher extends finder
                     row:   span[1]
                     col:   span[2]
             
+            ●▪ searcher
+            
             ⮐  if @hidden()
             
-            @choices.state.highlightText text
-            
-            @layout()
-            post.emit 'redraw'
-                    
+            if idx % 10 == 0 or idx == files.length-1
+                @highlightTextAndEmitRedraw text
+                                    
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
     # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
     # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███

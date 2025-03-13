@@ -37,6 +37,8 @@ function salterMode
     
     start: -> 
     
+        # ● salter start
+    
         cursors = @findCursors()
 
         if valid cursors
@@ -68,6 +70,8 @@ function salterMode
     #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
     
     @checkCursorsSet: state ->
+    
+        # ● check cursors set
 
         ⮐ if not state.allowedModes.salter
         
@@ -79,6 +83,8 @@ function salterMode
     isSaltedLine: y -> belt.isSaltedLine @state.s.lines[y]
 
     cursorsSet: ->
+    
+        # ● salter cursors set
         
         cursors = @findCursors()
         

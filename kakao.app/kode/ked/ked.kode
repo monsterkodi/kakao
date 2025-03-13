@@ -224,13 +224,14 @@ function KED
         @editor.state.loadSegls segls
         
         @status.time = process.hrtime(start)[1]
-        @status.drawTime = kstr.time BigInt(@status.time)
         
         @editor.mapscr?.reload()
         
         ked_session.set "editor▸file" @currentFile
         
         mode.fileLoaded @editor.state @currentFile row col
+        
+        post.emit 'file.loaded' @currentFile
         
         @redraw()
         
@@ -406,12 +407,14 @@ function KED
             
         ⮐ if @quitting
         
+        # ● draw
+        
         start = process.hrtime()
         
         @status.gutter = @editor.state.gutterWidth()
         
         @screen.init()
-
+        
         @layout()
         
         if not @menu.greet
@@ -425,11 +428,11 @@ function KED
         @finder.draw()
         @searcher.draw()
         
+        # ●▸ render
         @screen.render()
+        # ●▪ render
         
         @status.time = process.hrtime(start)[1]
-        @status.drawTime = kstr.time BigInt(@status.time)
-        # log "○ #{@status.drawTime}"
         
 export KED.run
 

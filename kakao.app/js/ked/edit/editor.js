@@ -76,7 +76,6 @@ editor = (function ()
                 this.state.allowedModes[m] = true
             }
         }
-        console.log('allowedModes',this.feats,this.state.allowedModes)
     }
 
     editor.prototype["layout"] = function (x, y, w, h)
