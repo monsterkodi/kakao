@@ -5,6 +5,8 @@ var searcherfile
 import kxk from "../../../kxk.js"
 let slash = kxk.slash
 
+import theme from "../../theme/theme.js"
+
 import view from "../base/view.js"
 import crumbs from "../base/crumbs.js"
 import bubble from "../base/bubble.js"
@@ -23,7 +25,10 @@ searcherfile = (function ()
         searcherfile.__super__.constructor.call(this,this.screen,this.name)
         this.crumbs = new crumbs(this.screen,`${this.name}_crumbs`)
         this.bubble = new bubble(this.screen,`${this.name}_bubble`)
-        this.color = {bg:'#000',frame:'#222'}
+        this.crumbs.setColor('empty',theme.finder_bg)
+        this.bubble.setColor('empty',theme.finder_bg)
+        this.setColor('bg',theme.finder_bg)
+        this.setColor('frame',theme.finder_frame)
         this.crumbs.dotlessRelative = true
         this.crumbs.on('action',this.onCrumbsAction)
     }

@@ -26,6 +26,8 @@ function view extends events
         post.on 'view.show' @onViewShow if @name in view.popups
         post.on 'view.hide' @onViewHide if @name in view.popups
         
+    setColor: key color => @color[key] = color
+        
     onViewHide: viewName =>
         
         if viewName == view.currentPopup

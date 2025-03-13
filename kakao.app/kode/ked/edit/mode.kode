@@ -15,7 +15,7 @@
     unype    unicode type writer
 ###
 
-use ../../kxk ▪ kseg slash
+use ../../kxk ▪ kseg slash post
 use ../../kxk ◆ nfs
 use ../theme  ◆ theme
  
@@ -55,6 +55,8 @@ function mode
             mode.modes[moduleName] = moduleClass
             
         # log 'mode.loadModules - modes' mode.names()
+        
+        post.emit 'modes.loaded'
         
         while valid mode.pending
             mode.autoStartForEditor mode.pending.shift()

@@ -16,16 +16,15 @@ function gutter extends view
         
         super screen @state.owner() + '.gutter'
         
-        @color =
-            gutter:                 theme.gutter
-            gutter_selected:        theme.gutter_selected
-            gutter_fully_selected:  theme.gutter_fully_selected
-            linenr:                 theme.linenr
-            cursor_main:            theme.editor_cursor_main
-            cursor_multi:           theme.editor_cursor_multi
-            selection:              theme.editor_selection
-            selection_line:         theme.editor_selection_line
-            highlight:              theme.editor_highlight
+        @setColor 'bg'                     theme.gutter
+        @setColor 'bg_selected'            theme.gutter_selected
+        @setColor 'bg_fully_selected'      theme.gutter_fully_selected
+        @setColor 'linenr'                 theme.linenr
+        @setColor 'cursor_main'            theme.editor_cursor_main
+        @setColor 'cursor_multi'           theme.editor_cursor_multi
+        @setColor 'selection'              theme.editor_selection
+        @setColor 'selection_line'         theme.editor_selection_line
+        @setColor 'highlight'              theme.editor_highlight
         
     lineno: y ->
                 
@@ -64,9 +63,9 @@ function gutter extends view
                     fg = color.darken fg if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus
                                                 
                     bg = if 
-                        spansel    ➜ @color.gutter_selected
-                        selected   ➜ @color.gutter_fully_selected
-                                   ➜ @color.gutter
+                        spansel    ➜ @color.bg_selected
+                        selected   ➜ @color.bg_fully_selected
+                                   ➜ @color.bg
                                  
                     bg = color.darken bg if selected and not @cells.screen.t.hasFocus
                     

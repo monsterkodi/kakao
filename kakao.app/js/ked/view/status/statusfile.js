@@ -22,6 +22,9 @@ statusfile = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["show"] = this["show"].bind(this)
         statusfile.__super__.constructor.call(this,screen,name)
+        this.setColor('bg',theme.status)
+        this.setColor('hover',theme.hover)
+        this.setColor('empty',theme.status_empty)
         this.pointerType = 'pointer'
         this.syntax = new syntax
         this.syntax.setExt('noon')
@@ -44,14 +47,14 @@ statusfile = (function ()
             return
         }
         statusfile.__super__.draw.call(this)
-        bg = (this.hover ? '#44a' : theme.quicky_crumbs)
+        bg = (this.hover ? this.color.hover : this.color.bg)
         var list = _k_.list(this.rounded)
         for (x = 0; x < list.length; x++)
         {
             ch = list[x]
             if (_k_.in(ch,''))
             {
-                this.cells.set(x,0,ch,bg,theme.status_empty)
+                this.cells.set(x,0,ch,bg,this.color.empty)
             }
             else
             {
@@ -67,9 +70,9 @@ statusfile = (function ()
 
     statusfile.prototype["adjustText"] = function ()
     {
-        var _62_14_
+        var _66_14_
 
-        this.file = ((_62_14_=this.file) != null ? _62_14_ : '')
+        this.file = ((_66_14_=this.file) != null ? _66_14_ : '')
         this.pars = slash.parse(this.file)
         this.syntax.setLines(['/' + this.pars.file])
         return this.rounded = '' + this.pars.file + ''

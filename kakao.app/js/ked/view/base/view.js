@@ -30,6 +30,7 @@ view = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onViewShow"] = this["onViewShow"].bind(this)
         this["onViewHide"] = this["onViewHide"].bind(this)
+        this["setColor"] = this["setColor"].bind(this)
         this.cells = new cells(this.screen)
         this.color = {}
         this.feats = {}
@@ -49,6 +50,11 @@ view = (function ()
             post.on('view.hide',this.onViewHide)
         }
         return view.__super__.constructor.apply(this, arguments)
+    }
+
+    view.prototype["setColor"] = function (key, color)
+    {
+        return this.color[key] = color
     }
 
     view.prototype["onViewHide"] = function (viewName)

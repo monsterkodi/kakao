@@ -19,7 +19,15 @@ gutter = (function ()
     
         gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
     
-        this.color = {gutter:theme.gutter,gutter_selected:theme.gutter_selected,gutter_fully_selected:theme.gutter_fully_selected,linenr:theme.linenr,cursor_main:theme.editor_cursor_main,cursor_multi:theme.editor_cursor_multi,selection:theme.editor_selection,selection_line:theme.editor_selection_line,highlight:theme.editor_highlight}
+        this.setColor('bg',theme.gutter)
+        this.setColor('bg_selected',theme.gutter_selected)
+        this.setColor('bg_fully_selected',theme.gutter_fully_selected)
+        this.setColor('linenr',theme.linenr)
+        this.setColor('cursor_main',theme.editor_cursor_main)
+        this.setColor('cursor_multi',theme.editor_cursor_multi)
+        this.setColor('selection',theme.editor_selection)
+        this.setColor('selection_line',theme.editor_selection_line)
+        this.setColor('highlight',theme.editor_highlight)
     }
 
     gutter.prototype["lineno"] = function (y)
@@ -33,7 +41,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _57_95_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _56_95_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
@@ -56,7 +64,7 @@ gutter = (function ()
                     {
                         fg = color.darken(fg)
                     }
-                    bg = spansel ? this.color.gutter_selected : selected ? this.color.gutter_fully_selected : this.color.gutter
+                    bg = spansel ? this.color.bg_selected : selected ? this.color.bg_fully_selected : this.color.bg
                     if (selected && !this.cells.screen.t.hasFocus)
                     {
                         bg = color.darken(bg)

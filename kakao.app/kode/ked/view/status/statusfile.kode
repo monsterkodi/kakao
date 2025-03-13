@@ -17,6 +17,10 @@ function statusfile extends view
 
         super screen name
         
+        @setColor 'bg'     theme.status
+        @setColor 'hover'  theme.hover
+        @setColor 'empty'  theme.status_empty
+        
         @pointerType = 'pointer'
         @syntax = new syntax
         @syntax.setExt 'noon'
@@ -41,11 +45,11 @@ function statusfile extends view
     
         super()
             
-        bg = @hover ? '#44a' : theme.quicky_crumbs 
+        bg = @hover ? @color.hover : @color.bg
         
         for ch,x in @rounded
             if ch in ''
-                @cells.set x 0 ch bg theme.status_empty
+                @cells.set x 0 ch bg @color.empty
             else
                 fg = @syntax.getColor x 0
                 @cells.set x 0 ch fg bg 

@@ -24,7 +24,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _23_23_
+        var _26_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -38,6 +38,8 @@ inputchoice = (function ()
         inputchoice.__super__.constructor.call(this,this.screen,this.name,features)
         this.input = new input(this.screen,`${this.name}_input`)
         this.choices = new choices(this.screen,`${this.name}_choices`,features)
+        this.setColor('bg',theme.quicky_bg)
+        this.setColor('frame',theme.quicky_frame)
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         this.input.on('action',this.onInputAction)
         this.choices.on('action',this.onChoicesAction)
@@ -72,7 +74,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _63_23_
+        var _66_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -115,9 +117,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _105_36_
+        var choice, _108_36_
 
-        choice = ((_105_36_=this.choices.current()) != null ? _105_36_ : this.input.current())
+        choice = ((_108_36_=this.choices.current()) != null ? _108_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -159,8 +161,8 @@ inputchoice = (function ()
     {
         var bg, fg
 
-        fg = theme.quicky_frame_fg
-        bg = theme.quicky_frame_bg
+        fg = this.color.frame
+        bg = this.color.bg
         if (this.input.visible())
         {
             return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})

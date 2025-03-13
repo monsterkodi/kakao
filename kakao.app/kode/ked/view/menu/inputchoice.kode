@@ -19,6 +19,9 @@ function inputchoice extends view
         
         @input   = new input   @screen "#{@name}_input"
         @choices = new choices @screen "#{@name}_choices" features
+        
+        @setColor 'bg'    theme.quicky_bg
+        @setColor 'frame' theme.quicky_frame
 
         @choices.mapscr?.hide()       
 
@@ -134,8 +137,8 @@ function inputchoice extends view
 
     drawFrame: ->
         
-        fg = theme.quicky_frame_fg
-        bg = theme.quicky_frame_bg
+        fg = @color.frame
+        bg = @color.bg
         
         if @input.visible()
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]

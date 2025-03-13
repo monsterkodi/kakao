@@ -66,6 +66,14 @@ brckts = (function ()
             for (var _a_ = 0; _a_ < list.length; _a_++)
             {
                 seg = list[_a_]
+                if (brckts.surround[event.char][1] === event.char)
+                {
+                    if (seg === event.char)
+                    {
+                        this.state.moveCursors('right')
+                        return
+                    }
+                }
                 if (!(_k_.in(seg,[' ','',undefined,'}',']',')'])))
                 {
                     console.log(`skip |${nsegs}| ${seg}`)

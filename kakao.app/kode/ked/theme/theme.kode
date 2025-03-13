@@ -30,6 +30,7 @@ class theme
     @funcol:                '#111'     
     @gutter:                '#0a0a0a'  
     
+    @hover:                 '#44a'     
     @resize_column:         '#222'     
     @gutter_fully_selected: '#161616'  
     @linenr:                '#1a1a1a'  
@@ -37,6 +38,7 @@ class theme
     @gutter_selected:       '#228'     
     @column_fg:             '#000'  
 
+    @status:                '#222'     
     @status_time:           '#222'     
     @status_col:            '#111'     
     @status_col_empty:      '#770'     
@@ -58,10 +60,11 @@ class theme
     @file:                  '#ff0'     
     @dir:                   '#88f'     
     
-    @quicky:                '#333'     
-    @quicky_input:          '#338'     
-    @quicky_frame_fg:       '#222'     
-    @quicky_frame_bg:       '#000'  
+    @finder_bg:             '#111'     
+    @finder_frame:          '#222'     
+    
+    @quicky_frame:          '#222'     
+    @quicky_bg:             '#000'  
     
     @quicky_crumbs:         '#222'     
     @quicky_crumbs_empty:   '#222'     

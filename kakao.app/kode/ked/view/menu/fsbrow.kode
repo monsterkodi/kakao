@@ -22,6 +22,9 @@ function fsbrow extends quicky
         super @screen 'fsbrow' 
 
         @fscol = new fscol @screen 'fsbrow_fscol'
+         
+        @setColor 'bg'     theme.quicky_bg
+        @setColor 'frame'  theme.quicky_frame
 
         @fscol.on 'action' @onFsColAction
 
@@ -80,8 +83,8 @@ function fsbrow extends quicky
         if @fscol.visible()
             @fscol.draw()
             
-            fg = theme.quicky_frame_fg
-            bg = theme.quicky_frame_bg
+            bg = @color.bg
+            fg = @color.frame
             
             x = @choices.cells.cols+2
             @cells.fill_col x 2 @cells.rows-2 '│' fg bg

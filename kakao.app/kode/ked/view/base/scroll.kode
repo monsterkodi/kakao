@@ -20,13 +20,12 @@ function scroll extends view
         
         @pointerType = 'pointer'
         
-        @color = 
-            bg:       theme.gutter
-            dot:      theme.scroll_dot
-            knob:     theme.scroll
-            hover:
-                dot:  theme.scroll_doth
-                knob: theme.scroll_knob
+        @setColor 'bg'       theme.gutter
+        @setColor 'dot'      theme.scroll_dot
+        @setColor 'knob'     theme.scroll
+        @setColor 'hover',
+            dot:  theme.scroll_doth
+            knob: theme.scroll_knob
             
         @handle = @side == 'right' ? '▐' : '▌' 
             

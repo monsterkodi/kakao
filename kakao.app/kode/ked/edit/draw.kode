@@ -19,10 +19,10 @@ function draw extends view
         
         super screen name features
         
-        @color.bg           = theme[@name]            ? theme.editor
-        @color.empty        = theme[@name + '_empty'] ? theme.editor_empty
-        @color.cursor_main  = theme[@name + '_cursor_main']
-        @color.cursor_empty = theme[@name + '_cursor_empty']
+        @setColor 'bg'           theme[@name]            ? theme.editor
+        @setColor 'empty'        theme[@name + '_empty'] ? theme.editor_empty
+        @setColor 'cursor_main'  theme[@name + '_cursor_main']
+        @setColor 'cursor_empty' theme[@name + '_cursor_empty']
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  

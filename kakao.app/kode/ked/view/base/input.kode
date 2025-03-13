@@ -16,6 +16,8 @@ function input extends editor
         
         super screen name ['brckts' 'replex' 'unype']
         
+        @setColor 'bg' theme.quicky_bg
+        
     hasFocus: -> @state.hasFocus
 
     current:  => kseg.str @state.s.lines[0]
@@ -53,7 +55,7 @@ function input extends editor
         
         ⮐ if @hidden()
         
-        @cells.fill_rect 0 0 -1 -1 ' ' null theme.quicky_frame_bg
+        @cells.fill_rect 0 0 -1 -1 ' ' null @color.bg
         
         super()
 

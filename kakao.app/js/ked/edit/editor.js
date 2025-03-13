@@ -24,8 +24,6 @@ editor = (function ()
     _k_.extend(editor, draw)
     function editor (screen, name, features)
     {
-        var m
-
         this["onKey"] = this["onKey"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
         this["onFocus"] = this["onFocus"].bind(this)
@@ -35,6 +33,7 @@ editor = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["layout"] = this["layout"].bind(this)
+        this["onModesLoaded"] = this["onModesLoaded"].bind(this)
         editor.__super__.constructor.call(this,screen,name,features)
         this.focusable = true
         this.state = new state(this.cells,this.name)
@@ -60,6 +59,14 @@ editor = (function ()
             this.complete = new complete(this)
         }
         mode.autoStartForEditor(this)
+        post.on('modes.loaded',this.onModesLoaded)
+        this.onModesLoaded()
+    }
+
+    editor.prototype["onModesLoaded"] = function ()
+    {
+        var m
+
         var list = _k_.list(mode.names())
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -69,11 +76,12 @@ editor = (function ()
                 this.state.allowedModes[m] = true
             }
         }
+        console.log('allowedModes',this.feats,this.state.allowedModes)
     }
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _69_17_
+        var g, m, r, s, sl, sr, _76_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -111,7 +119,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _83_21_, _84_21_, _85_23_
+        var ret, _90_21_, _91_21_, _92_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -133,7 +141,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _100_25_, _101_25_, _102_25_, _106_20_
+        var inside, res, _107_25_, _108_25_, _109_25_, _113_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -205,7 +213,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _172_20_, _176_21_, _181_21_
+        var _179_20_, _183_21_, _188_21_
 
         if (!this.hasFocus())
         {

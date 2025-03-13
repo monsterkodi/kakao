@@ -26,7 +26,10 @@ scroll = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         scroll.__super__.constructor.call(this,screen,this.state.owner() + '_scroll')
         this.pointerType = 'pointer'
-        this.color = {bg:theme.gutter,dot:theme.scroll_dot,knob:theme.scroll,hover:{dot:theme.scroll_doth,knob:theme.scroll_knob}}
+        this.setColor('bg',theme.gutter)
+        this.setColor('dot',theme.scroll_dot)
+        this.setColor('knob',theme.scroll)
+        this.setColor('hover',{dot:theme.scroll_doth,knob:theme.scroll_knob})
         this.handle = (this.side === 'right' ? '▐' : '▌')
     }
 

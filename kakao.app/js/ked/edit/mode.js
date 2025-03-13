@@ -5,6 +5,7 @@ var mode, record, uniko, vimple
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
 let slash = kxk.slash
+let post = kxk.post
 
 import nfs from "../../kxk/nfs.js"
 
@@ -52,6 +53,7 @@ mode = (function ()
             moduleClass = moduleExport.default
             mode.modes[moduleName] = moduleClass
         }
+        post.emit('modes.loaded')
         while (!_k_.empty(mode.pending))
         {
             mode.autoStartForEditor(mode.pending.shift())
@@ -79,13 +81,13 @@ mode = (function ()
 
     mode["start"] = function (state, name)
     {
-        var _91_28_
+        var _93_28_
 
         if (this.isActive(state,name))
         {
             return
         }
-        this.active[state.name] = ((_91_28_=this.active[state.name]) != null ? _91_28_ : [])
+        this.active[state.name] = ((_93_28_=this.active[state.name]) != null ? _93_28_ : [])
         return this.active[state.name].push(new mode.modes[name](state))
     }
 

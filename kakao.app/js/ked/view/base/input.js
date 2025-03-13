@@ -17,6 +17,7 @@ input = (function ()
     {
         this["current"] = this["current"].bind(this)
         input.__super__.constructor.call(this,screen,name,['brckts','replex','unype'])
+        this.setColor('bg',theme.quicky_bg)
     }
 
     input.prototype["hasFocus"] = function ()
@@ -78,7 +79,7 @@ input = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,0,-1,-1,' ',null,theme.quicky_frame_bg)
+        this.cells.fill_rect(0,0,-1,-1,' ',null,this.color.bg)
         return input.__super__.draw.call(this)
     }
 

@@ -31,9 +31,16 @@ function editor extends draw
         if @feats.complete ➜ @complete = new complete @
             
         mode.autoStartForEditor @
+        
+        post.on 'modes.loaded' @onModesLoaded
+        @onModesLoaded()
+        
+    onModesLoaded: =>
                         
         for m in mode.names()            
             if @feats[m] ➜ @state.allowedModes[m] = true
+            
+        log 'allowedModes' @feats @state.allowedModes
                         
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     

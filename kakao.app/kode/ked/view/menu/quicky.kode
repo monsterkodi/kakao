@@ -60,7 +60,6 @@ function quicky extends inputchoice
         cw = @choicesWidth
         w  = cw+2 
         x  = int scx-w/2
-        log "#{@name} layout #{cw} #{w}"
         
         @input.layout    x+2      y+1        w-4   iz
         @crumbs.layout   x+2      y+1+ih     w-4   cr

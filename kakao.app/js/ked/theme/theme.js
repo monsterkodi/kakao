@@ -28,6 +28,8 @@ class theme
 
     static gutter = '#0a0a0a'
 
+    static hover = '#44a'
+
     static resize_column = '#222'
 
     static gutter_fully_selected = '#161616'
@@ -39,6 +41,8 @@ class theme
     static gutter_selected = '#228'
 
     static column_fg = '#000'
+
+    static status = '#222'
 
     static status_time = '#222'
 
@@ -76,13 +80,13 @@ class theme
 
     static dir = '#88f'
 
-    static quicky = '#333'
+    static finder_bg = '#111'
 
-    static quicky_input = '#338'
+    static finder_frame = '#222'
 
-    static quicky_frame_fg = '#222'
+    static quicky_frame = '#222'
 
-    static quicky_frame_bg = '#000'
+    static quicky_bg = '#000'
 
     static quicky_crumbs = '#222'
 

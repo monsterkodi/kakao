@@ -23,14 +23,14 @@ draw = (function ()
     _k_.extend(draw, view)
     function draw (screen, name, features)
     {
-        var _22_54_, _23_54_
+        var _22_57_, _23_57_
 
         this["draw"] = this["draw"].bind(this)
         draw.__super__.constructor.call(this,screen,name,features)
-        this.color.bg = ((_22_54_=theme[this.name]) != null ? _22_54_ : theme.editor)
-        this.color.empty = ((_23_54_=theme[this.name + '_empty']) != null ? _23_54_ : theme.editor_empty)
-        this.color.cursor_main = theme[this.name + '_cursor_main']
-        this.color.cursor_empty = theme[this.name + '_cursor_empty']
+        this.setColor('bg',((_22_57_=theme[this.name]) != null ? _22_57_ : theme.editor))
+        this.setColor('empty',((_23_57_=theme[this.name + '_empty']) != null ? _23_57_ : theme.editor_empty))
+        this.setColor('cursor_main',theme[this.name + '_cursor_main'])
+        this.setColor('cursor_empty',theme[this.name + '_cursor_empty'])
     }
 
     draw.prototype["draw"] = function ()

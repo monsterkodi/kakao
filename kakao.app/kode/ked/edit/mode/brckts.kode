@@ -65,11 +65,16 @@ function brckts
             if valid @state.s.selections
                 ⮐ @state.surroundSelection event.char brckts.surround[event.char]
             
-            # is space or empty or comma,semicolon,etc ahead
             nsegl = belt.segsForPositions @state.s.lines @state.s.cursors
             nsegs = kutil.uniq nsegl
             
             for seg in nsegs
+            
+                if brckts.surround[event.char][1] == event.char # if entering closing bracket         # should check if this condition 
+                    if seg == event.char                        # and it is already there             # is true for all cursors 
+                        @state.moveCursors 'right'              # move cursor over existing bracket   # ϝ𝓊𝜏𝓊ɼϵ ⫙ϵ 𝖍𝕒𝜏ϵ ⟅𝚒𝛋ϵ⟅𝛾 
+                        ⮐                                       # to not disturb manual closing       # 𝔟𝓊𝜏 𝔭ℜϵ𝖘ϵ∩𝜏 ⫙ϵ ⟅⩜𝓏𝛾 ;)
+                        
                 if seg not in [' ' '' undefined '}' ']' ')']
                     log "skip |#{nsegs}| #{seg}"
                     ⮐  'unhandled' 

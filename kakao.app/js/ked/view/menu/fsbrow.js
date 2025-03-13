@@ -38,6 +38,8 @@ fsbrow = (function ()
         this["layout"] = this["layout"].bind(this)
         fsbrow.__super__.constructor.call(this,this.screen,'fsbrow')
         this.fscol = new fscol(this.screen,'fsbrow_fscol')
+        this.setColor('bg',theme.quicky_bg)
+        this.setColor('frame',theme.quicky_frame)
         this.fscol.on('action',this.onFsColAction)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 2
@@ -82,8 +84,8 @@ fsbrow = (function ()
         if (this.fscol.visible())
         {
             this.fscol.draw()
-            fg = theme.quicky_frame_fg
-            bg = theme.quicky_frame_bg
+            bg = this.color.bg
+            fg = this.color.frame
             x = this.choices.cells.cols + 2
             this.cells.fill_col(x,2,this.cells.rows - 2,'│',fg,bg)
             this.cells.set(x,this.cells.rows - 1,'┴',fg,bg)
@@ -296,7 +298,7 @@ fsbrow = (function ()
 
     fsbrow.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _264_62_
+        var upDir, _267_62_
 
         console.log('onChoicesAction',action,choice,this.currentDir)
         switch (action)
@@ -315,7 +317,7 @@ fsbrow = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_264_62_=choice.link) != null ? _264_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_267_62_=choice.link) != null ? _267_62_ : choice.path))
                     }
                 }
                 break

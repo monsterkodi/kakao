@@ -19,7 +19,18 @@ function crumbs extends view
         @pointerType = 'pointer'
         @rounded = ''
         
-        @color = bgl:'#000' bgr:'#000'
+        @setColor 'empty_left'  '#000' 
+        @setColor 'empty_right' '#000'
+        
+    setColor: key color ->
+        
+        switch key
+            'empty' 
+                @setColor 'empty_left'  color
+                @setColor 'empty_right' color
+                ⮐ 
+        
+        super key color
         
     visible: -> 
         
@@ -35,7 +46,7 @@ function crumbs extends view
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    draw: -> 
+    draw: ->
         
         ⮐ if @hidden()
         ⮐ if empty @rounded
@@ -57,8 +68,8 @@ function crumbs extends view
             
             if ch in ''
                 fg = bg
-                bg = si > 0 ? colors[si-1] : @color.bgl
-                bg = @color.bgr if x == @rounded.length-1
+                bg = si > 0 ? colors[si-1] : @color.empty_left
+                bg = @color.empty_right if x == @rounded.length-1
                 @cells.set x 0 ch fg bg
             else
                 if si == @hoverIndex
@@ -120,9 +131,9 @@ function crumbs extends view
         
         @rounded = '' + @rounded + padding + ''
             
-    set: path -> 
+    set: path ->
     
-        @path = trim path   
+        @path = trim path
         @adjustText()
         
     show: path => @set slash.tilde(path); @cells.rows = 1

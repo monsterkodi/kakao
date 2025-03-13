@@ -70,7 +70,6 @@ quicky = (function ()
         cw = this.choicesWidth
         w = cw + 2
         x = parseInt(scx - w / 2)
-        console.log(`${this.name} layout ${cw} ${w}`)
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
         this.choices.layout(x + 1,y + 1 + ih + cr,cw,ch)
@@ -333,7 +332,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _320_62_
+        var upDir, _319_62_
 
         console.log(`${this.name} onChoicesAction`,action,choice,this.currentDir)
         switch (action)
@@ -352,7 +351,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_320_62_=choice.link) != null ? _320_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_319_62_=choice.link) != null ? _319_62_ : choice.path))
                     }
                 }
                 break

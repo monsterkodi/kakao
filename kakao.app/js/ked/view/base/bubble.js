@@ -24,7 +24,9 @@ bubble = (function ()
         this.syntax = new syntax
         this.syntax.setExt('noon')
         this.rounded = ''
-        this.color = {bg:'#222',hover:'#44a',empty:'#000'}
+        this.setColor('bg','#222')
+        this.setColor('hover','#44a')
+        this.setColor('empty','#000')
     }
 
     bubble.prototype["layout"] = function (x, y, w, h)
@@ -66,9 +68,9 @@ bubble = (function ()
 
     bubble.prototype["adjustText"] = function ()
     {
-        var _69_14_
+        var _72_14_
 
-        this.file = ((_69_14_=this.file) != null ? _69_14_ : '')
+        this.file = ((_72_14_=this.file) != null ? _72_14_ : '')
         this.pars = slash.parse(this.file)
         this.syntax.setLines(['/' + this.pars.file])
         return this.rounded = '' + this.pars.file + ''
