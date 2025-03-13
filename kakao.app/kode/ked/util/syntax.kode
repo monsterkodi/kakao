@@ -37,6 +37,12 @@ function syntax
     addSegl: segl ext =>
     
         @diss = @diss.concat kulur.dissect([segl] ext)
+        
+    appendSegls: segls ext =>
+    
+        # @diss = @diss.concat kulur.dissect(segls ext)
+        for segl in segls
+            @addSegl segl ext
             
     getClass: x y =>
         

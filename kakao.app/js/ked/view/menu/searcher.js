@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.y6=_k_.k.F256(_k_.k.y(6))
 
 var searcher
 
@@ -104,15 +104,13 @@ searcher = (function ()
 
     searcher.prototype["highlightTextAndEmitRedraw"] = function (text)
     {
-        console.log('highlight & redraw')
-        this.layout()
         this.choices.state.highlightText(text)
         return post.emit('redraw')
     }
 
     searcher.prototype["show"] = async function (text)
     {
-        var dir, editorFile, ext, file, files, filet, front, idx, index, segls, sfil, span, spans
+        var dir, editorFile, ext, file, files, filet, front, idx, items, segls, sfil, span, spans
 
         text = this.searchText(text)
         if (_k_.empty(text))
@@ -139,39 +137,38 @@ searcher = (function ()
             spans = belt.lineSpansForText(segls,text)
             if (idx === files.length - 1)
             {
+                console.log(_k_.y6('▸▸▸ searcher done'))
                 this.highlightTextAndEmitRedraw(text)
             }
             if (_k_.empty(spans))
             {
                 continue
             }
-            _k_.profile('searcher')
-            console.log(`append ${spans.length} results for ${file}`)
             front = belt.frontmostSpans(spans)
             ext = slash.ext(file)
-            this.choices.add({line:''})
-            index = this.choices.items.length
-            sfil = new searcherfile(this.screen,`${this.name}_sfil_${index}`)
-            sfil.lineIndex = index
+            items = []
+            items.push({line:''})
+            sfil = new searcherfile(this.screen,`${this.name}_sfil_${idx}`)
+            sfil.lineIndex = this.choices.items.length + 1
             sfil.set(slash.relative(file,dir))
             this.sfils.push(sfil)
-            this.choices.add({ext:ext,line:'●',type:'file',path:file,row:0,col:0})
+            items.push({line:'●',type:'file',path:file,row:0,col:0})
             var list1 = _k_.list(front)
             for (var _b_ = 0; _b_ < list1.length; _b_++)
             {
                 span = list1[_b_]
-                if (this.choices.items.slice(-1)[0].row !== span[1] - 1)
+                if (items.slice(-1)[0].row !== span[1] - 1)
                 {
-                    this.choices.add({line:''})
+                    items.push({line:''})
                 }
-                this.choices.add({ext:ext,line:' ' + kseg.str(segls[span[1]]),path:file,row:span[1],col:span[2]})
+                items.push({line:' ' + kseg.str(segls[span[1]]),path:file,row:span[1],col:span[2]})
             }
-            _k_.profilend('searcher')
+            this.choices.append(items,ext)
             if (this.hidden())
             {
                 return
             }
-            if (idx % 10 === 0 || idx === files.length - 1)
+            if (idx === files.length - 1)
             {
                 this.highlightTextAndEmitRedraw(text)
             }

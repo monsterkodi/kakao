@@ -18,6 +18,7 @@ syntax = (function ()
         this["getChar"] = this["getChar"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
+        this["appendSegls"] = this["appendSegls"].bind(this)
         this["addSegl"] = this["addSegl"].bind(this)
         this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
@@ -74,6 +75,18 @@ syntax = (function ()
         return this.diss = this.diss.concat(kulur.dissect([segl],ext))
     }
 
+    syntax.prototype["appendSegls"] = function (segls, ext)
+    {
+        var segl
+
+        var list = _k_.list(segls)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            segl = list[_a_]
+            this.addSegl(segl,ext)
+        }
+    }
+
     syntax.prototype["getClass"] = function (x, y)
     {
         var dss
@@ -92,7 +105,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _55_27_
+        var clss, _61_27_
 
         if (_k_.isNum(x))
         {
@@ -102,7 +115,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_55_27_=theme.syntax[clss]) != null ? _55_27_ : '#ff0000')
+        return ((_61_27_=theme.syntax[clss]) != null ? _61_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

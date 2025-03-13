@@ -76,6 +76,16 @@ choices = (function ()
         return this.state.addLine(item.line,item.ext)
     }
 
+    choices.prototype["append"] = function (items, ext)
+    {
+        this.items = this.items.concat(items)
+        this.fuzzied = this.items
+        return this.state.appendLines(items.map(function (i)
+        {
+            return i.line
+        }),ext)
+    }
+
     choices.prototype["extract"] = function (item)
     {
         return (this.key && _k_.isObj(item) ? item[this.key] : kseg.str(item))
@@ -163,14 +173,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _123_26_
+        var _129_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _124_26_
+        var _130_26_
 
         return (this.prevRow() != null)
     }
@@ -347,7 +357,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _261_21_
+        var col, dx, dy, ret, row, _267_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

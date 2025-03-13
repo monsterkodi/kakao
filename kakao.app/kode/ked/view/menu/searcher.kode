@@ -21,9 +21,9 @@ function searcher extends finder
         @sfils = []
         
     layout: =>
+
+        super()    
     
-        super()
-        
         for sfil in @sfils
             y = @choices.cells.y - @choices.state.s.view[1] + sfil.lineIndex
             sfil.layout @choices.cells.x y @choices.cells.cols 1
@@ -57,7 +57,6 @@ function searcher extends finder
             post.removeListener 'file.opened' onOpen
     
         post.on 'file.loaded' onOpen
-        # log "emitFileOpen #{@input.current()}"
         super choice
         
     # ███   ███  ███  ███      ███   ███████   ███   ███  █████████        ████          ███████    ████████    ███████   ███   ███
@@ -68,8 +67,6 @@ function searcher extends finder
 
     highlightTextAndEmitRedraw: text ->
     
-        log 'highlight & redraw'
-        @layout()
         @choices.state.highlightText text
         post.emit 'redraw'
         
@@ -111,26 +108,23 @@ function searcher extends finder
             spans = belt.lineSpansForText segls text
             
             if idx == files.length-1
+                log y6('▸▸▸ searcher done')
                 @highlightTextAndEmitRedraw text
             
             continue if empty spans
             
-            ●▸ searcher
-            
-            log "append #{spans.length} results for #{file}"
-            
             front = belt.frontmostSpans spans
             ext = slash.ext file
-            @choices.add line:''
             
-            index = @choices.items.length
-            sfil = new searcherfile @screen "#{@name}_sfil_#{index}"
-            sfil.lineIndex = index
+            items = []
+            items.push line:'' 
+
+            sfil = new searcherfile @screen "#{@name}_sfil_#{idx}"
+            sfil.lineIndex = @choices.items.length+1
             sfil.set slash.relative(file dir)            
             @sfils.push sfil
-            
-            @choices.add
-                ext:   ext
+
+            items.push
                 line:  '●'
                 type:  'file'
                 path:  file
@@ -138,20 +132,19 @@ function searcher extends finder
                 col:   0
                 
             for span in front
-                if @choices.items[-1].row != span[1]-1
-                    @choices.add line:''
-                @choices.add 
-                    ext:   ext
+                if items[-1].row != span[1]-1
+                    items.push line:''
+                items.push
                     line:  ' ' + kseg.str(segls[span[1]])
                     path:  file
                     row:   span[1]
                     col:   span[2]
             
-            ●▪ searcher
+            @choices.append items ext # this is quite expensive, maybe need to queue this with a delay?
             
             ⮐  if @hidden()
             
-            if idx % 10 == 0 or idx == files.length-1
+            if idx == files.length-1
                 @highlightTextAndEmitRedraw text
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███

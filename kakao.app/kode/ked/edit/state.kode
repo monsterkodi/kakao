@@ -157,12 +157,19 @@ function state
         @r = []
         
     addLine: line ext ->
-    
+
         segl = kseg line
-        @syntax.setExt ext
         @syntax.addSegl segl ext
         @segls ?= []
         @segls.push segl
+        @s = @s.set 'lines' @segls
+        
+    appendLines: lines ext ->
+
+        segls = kseg.segls lines
+        @syntax.appendSegls segls ext
+        @segls ?= []
+        @segls = @segls.concat segls
         @s = @s.set 'lines' @segls
 
     allLines: => @s.lines.asMutable()

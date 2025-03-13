@@ -35,8 +35,11 @@
         - after . :
         
 - searcher
+    - clicking on crumbs or searcherfile should filter the result list accordingly
     - fix stalls when too many search results are found
     - add ability to load search results into a new 'tab' 
+    - cmd+up|down: jump to prev|next file
+    - add statistics somewhere: number of lines | number of files
     
 - funclist
 

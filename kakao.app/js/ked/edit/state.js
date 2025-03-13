@@ -240,13 +240,23 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _164_15_
+        var segl, _163_15_
 
         segl = kseg(line)
-        this.syntax.setExt(ext)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_164_15_=this.segls) != null ? _164_15_ : [])
+        this.segls = ((_163_15_=this.segls) != null ? _163_15_ : [])
         this.segls.push(segl)
+        return this.s = this.s.set('lines',this.segls)
+    }
+
+    state.prototype["appendLines"] = function (lines, ext)
+    {
+        var segls, _171_15_
+
+        segls = kseg.segls(lines)
+        this.syntax.appendSegls(segls,ext)
+        this.segls = ((_171_15_=this.segls) != null ? _171_15_ : [])
+        this.segls = this.segls.concat(segls)
         return this.s = this.s.set('lines',this.segls)
     }
 
