@@ -497,7 +497,7 @@ function belt
                 tail[3] = s[3]
 
         mrgd
-
+# s[2] 
 # merge methods of text and edit into this class
         
 for mod in [text edit salt]

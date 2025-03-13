@@ -35,8 +35,8 @@ searcherfile = (function ()
 
     searcherfile.prototype["set"] = function (file)
     {
-        this.bubble.set(file)
-        return this.crumbs.set(slash.dir(file))
+        this.crumbs.set(slash.dir(file))
+        return this.bubble.set(file)
     }
 
     searcherfile.prototype["layout"] = function (x, y, w, h)

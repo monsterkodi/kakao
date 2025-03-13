@@ -533,6 +533,41 @@ use ../edit/tool ◆ belt
     
         belt.rangesOfPairsSurroundingPositions lines pairs posl ▸ [[3 2 5 2] [2 3 5 3] [3 4 5 4]]
         
+    ▸ openCloseSpansForPositions
+    
+        segls = kseg.segls """
+            [[{()}]]
+            '45""6'
+            'a{}c'
+            """
+
+        belt.openCloseSpansForPositions segls [[0 0]] ▸ [[0 0 1] [7 0 8]]
+        belt.openCloseSpansForPositions segls [[1 0]] ▸ [[1 0 2] [6 0 7]]
+        belt.openCloseSpansForPositions segls [[2 0]] ▸ [[2 0 3] [5 0 6]]
+        belt.openCloseSpansForPositions segls [[3 0]] ▸ [[3 0 4] [4 0 5]]
+        belt.openCloseSpansForPositions segls [[4 0]] ▸ [[3 0 4] [4 0 5]]
+        belt.openCloseSpansForPositions segls [[5 0]] ▸ [[2 0 3] [5 0 6]]
+        belt.openCloseSpansForPositions segls [[6 0]] ▸ [[1 0 2] [6 0 7]]
+        belt.openCloseSpansForPositions segls [[7 0]] ▸ [[0 0 1] [7 0 8]]
+        belt.openCloseSpansForPositions segls [[8 0]] ▸ [[0 0 1] [7 0 8]]
         
+        belt.openCloseSpansForPositions segls [[0 1]] ▸ [[0 1 1] [6 1 7]]
+        belt.openCloseSpansForPositions segls [[6 1]] ▸ [[0 1 1] [6 1 7]]
+        
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[2 2]]) ▸ [[0 2 1] [2 2 3] [3 2 4] [5 2 6]]
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[3 2]]) ▸ [[0 2 1] [2 2 3] [3 2 4] [5 2 6]]
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[4 2]]) ▸ [[0 2 1] [2 2 3] [3 2 4] [5 2 6]]
+        
+        segls = kseg.segls """
+            next = lines[ap[1]][ap[0]]  
+            """
             
+        belt.openCloseSpansForPositions segls [[25 0]] ▸ [[19 0 20] [25 0 26]]
+        belt.openCloseSpansForPositions segls [[26 0]] ▸ [[19 0 20] [25 0 26]]
+        
+        segls = kseg.segls """
+            s[2]
+            """
+            
+        belt.openCloseSpansForPositions segls [[4 0]] ▸ [[1 0 2] [3 0 4]]
         

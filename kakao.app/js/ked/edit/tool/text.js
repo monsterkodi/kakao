@@ -1,4 +1,4 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var text
 
@@ -376,13 +376,23 @@ text = (function ()
         return kseg.width(lines[this.indexOfLongestLine(lines)])
     }
 
+    text["beforeAndAfterForPos"] = function (lines, pos)
+    {
+        var after, before, line
+
+        line = lines[pos[1]]
+        before = line.slice(0, typeof pos[0] === 'number' ? pos[0] : -1)
+        after = line.slice(pos[0])
+        return [before,after]
+    }
+
     text["joinLineColumns"] = function (lineCols)
     {
         var cidx, i, lidx, line, lines, numCols, numLines
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 226, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 233, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length
@@ -797,9 +807,19 @@ text = (function ()
 
     text["isRangeInString"] = function (lines, rng)
     {
-        var _465_76_
+        var _471_76_
 
         return (this.rangeOfStringSurroundingRange(lines,rng) != null)
+    }
+
+    text["rangeOfStringSurroundingRange"] = function (lines, rng)
+    {
+        var ir
+
+        if (ir = this.rangeOfInnerStringSurroundingRange(lines,rng))
+        {
+            return this.rangeGrownBy(ir,1)
+        }
     }
 
     text["rangeOfInnerStringSurroundingRange"] = function (lines, rng)
@@ -820,16 +840,6 @@ text = (function ()
             {
                 return r
             }
-        }
-    }
-
-    text["rangeOfStringSurroundingRange"] = function (lines, rng)
-    {
-        var ir
-
-        if (ir = this.rangeOfInnerStringSurroundingRange(lines,rng))
-        {
-            return this.rangeGrownBy(ir,1)
         }
     }
 
@@ -907,6 +917,163 @@ text = (function ()
             }
         }
         return rngs
+    }
+
+    text["openCloseSpansForPositions"] = function (lines, posl)
+    {
+        var pos, spans, sps, srng
+
+        spans = []
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            if (sps = this.openCloseSpansForPosition(lines,pos))
+            {
+                spans = spans.concat(sps)
+            }
+            if (srng = this.rangeOfStringSurroundingRange(lines,[pos[0],pos[1],pos[0],pos[1]]))
+            {
+                spans.push([srng[0],srng[1],srng[0] + 1])
+                spans.push([srng[2] - 1,srng[3],srng[2]])
+            }
+            else if (_k_.in(lines[pos[1]][pos[0]],"\"'"))
+            {
+                if (srng = this.rangeOfStringSurroundingRange(lines,[pos[0] + 1,pos[1],pos[0] + 1,pos[1]]))
+                {
+                    spans.push([srng[0],srng[1],srng[0] + 1])
+                    spans.push([srng[2] - 1,srng[3],srng[2]])
+                }
+            }
+        }
+        return spans
+    }
+
+    text["openCloseSpansForPosition"] = function (lines, pos)
+    {
+        var ap, bp, clos, closeEncounters, cnt, firstClose, lastOpen, maxLookups, next, open, openEncounters, opns, prev, revs, stack
+
+        open = {'[':']','{':'}','(':')'}
+        opns = Object.keys(open).join('')
+        clos = Object.values(open).join('')
+        revs = kutil.fromPairs(kutil.zip(clos,opns))
+        maxLookups = 1000
+        bp = [pos[0],pos[1]]
+        if (!(_k_.in(lines[bp[1]][bp[0]],opns)))
+        {
+            closeEncounters = ''
+            openEncounters = ''
+            stack = []
+            cnt = 0
+            while (true)
+            {
+                bp[0] -= 1
+                if (bp[0] >= 0)
+                {
+                    prev = lines[bp[1]][bp[0]]
+                    if (_k_.in(prev,opns))
+                    {
+                        if (stack.length)
+                        {
+                            if (open[prev] === _k_.last(stack))
+                            {
+                                openEncounters += prev
+                                stack.pop()
+                                continue
+                            }
+                            else
+                            {
+                                return
+                            }
+                        }
+                        lastOpen = prev
+                        break
+                    }
+                    else if (_k_.in(prev,clos))
+                    {
+                        stack.push(prev)
+                        closeEncounters += prev
+                    }
+                }
+                else
+                {
+                    bp[1] -= 1
+                    if (bp[1] < 0)
+                    {
+                        break
+                    }
+                    bp[0] = lines[bp[1]].length
+                }
+                if ((lastOpen != null))
+                {
+                    break
+                }
+                if (bp[1] < 0)
+                {
+                    break
+                }
+                if (cnt++ > maxLookups)
+                {
+                    break
+                }
+            }
+        }
+        else
+        {
+            lastOpen = lines[bp[1]][bp[0]]
+        }
+        stack = []
+        ap = [_k_.max(bp[0] + 1,pos[0]),pos[1]]
+        while (ap[1] < lines.length)
+        {
+            cnt = 0
+            next = lines[ap[1]][ap[0]]
+            if (_k_.in(next,clos))
+            {
+                if (stack.length)
+                {
+                    if (open[_k_.last(stack)] === next)
+                    {
+                        stack.pop()
+                    }
+                    else
+                    {
+                        return
+                    }
+                }
+                else
+                {
+                    firstClose = next
+                    break
+                }
+            }
+            else if (_k_.in(next,opns))
+            {
+                stack.push(next)
+            }
+            ap[0] += 1
+            if (ap[0] >= lines[ap[1]].length)
+            {
+                ap[0] = 0
+                ap[1] += 1
+            }
+            if (cnt++ > maxLookups)
+            {
+                break
+            }
+        }
+        if (!(lastOpen != null) || !(firstClose != null))
+        {
+            if (_k_.in(lines[pos[1]][pos[0] - 1],clos) && _k_.in(revs[lines[pos[1]][pos[0] - 1]],openEncounters))
+            {
+                return this.openCloseSpansForPosition(lines,[pos[0] - 1,pos[1]])
+            }
+            return
+        }
+        if (open[lastOpen] === firstClose)
+        {
+            return [[bp[0],bp[1],bp[0] + 1],[ap[0],ap[1],ap[0] + 1]]
+        }
     }
 
     text["isCommentLine"] = function (line)

@@ -40,9 +40,6 @@ crumbs = (function ()
         return crumbs.__super__.setColor.call(this,key,color)
     }
 
-    crumbs.prototype["visible"] = function ()
-    {}
-
     crumbs.prototype["layout"] = function (x, y, w, h)
     {
         crumbs.__super__.layout.call(this,x,y,w,h)
@@ -127,13 +124,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _109_14_
+        var padding, _107_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_109_14_=this.path) != null ? _109_14_ : '')
+        this.path = ((_107_14_=this.path) != null ? _107_14_ : '')
         if (this.path === '')
         {
             this.rounded = ''
@@ -161,14 +158,14 @@ crumbs = (function ()
 
     crumbs.prototype["set"] = function (path)
     {
+        this.cells.rows = 1
         this.path = _k_.trim(path)
         return this.adjustText()
     }
 
     crumbs.prototype["show"] = function (path)
     {
-        this.set(slash.tilde(path))
-        return this.cells.rows = 1
+        return this.set(slash.tilde(path))
     }
 
     crumbs.prototype["visible"] = function ()
@@ -178,7 +175,7 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _155_26_
+        var col, index, path, row, si, _154_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 

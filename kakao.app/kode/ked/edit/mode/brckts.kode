@@ -30,8 +30,18 @@ function brckts
         
     @: @state ->      
         
-        @name = 'brckts'        
-                        
+        @name = 'brckts'      
+        
+    cursorsSet: ->
+
+        ⮐  if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
+        if @state.s.highlights.length     # don't highlight brackets when other highlights exist and it's different
+            ⮐  if not @rngs eql @state.s.highlights.asMutable() # from the previous brckts highlight
+            
+        @rngs = belt.openCloseSpansForPositions @state.allLines() @state.allCursors()
+
+        @state.setHighlights @rngs
+
     # ███   ███  ████████  ███   ███        
     # ███  ███   ███        ███ ███         
     # ███████    ███████     █████          

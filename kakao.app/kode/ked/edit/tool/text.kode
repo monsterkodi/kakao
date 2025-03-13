@@ -222,6 +222,13 @@ function text
     #      000  000        000      000     000     
     # 0000000   000        0000000  000     000   
     
+    @beforeAndAfterForPos: lines pos ->
+        
+        line = lines[pos[1]]
+        before = line[0...pos[0]]
+        after  = line[pos[0]..]
+        [before after]
+    
     @joinLineColumns: lineCols ->
         ▴ lineCols[i].length == lineCols[i+1].length for i in 0...lineCols.length-1
         numLines = lineCols[0].length
@@ -253,7 +260,6 @@ function text
             spans = @splitTextAtCols line cols
             for span,idx in spans
                 cls[idx].push span
-        
         cls
     
     @splitLineRange: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
@@ -464,6 +470,11 @@ function text
     
     @isRangeInString: lines rng -> @rangeOfStringSurroundingRange(lines rng)?
 
+    @rangeOfStringSurroundingRange: lines rng ->
+
+        if ir = @rangeOfInnerStringSurroundingRange lines rng
+            @rangeGrownBy ir 1
+
     @rangeOfInnerStringSurroundingRange: lines rng ->
         
         ⮐ if @isInvalidLineIndex lines rng[1]
@@ -472,11 +483,6 @@ function text
         rgs = @rangesShrunkenBy rgs 1
         for r in rgs
             ⮐ r if @rangeContainsRange r rng
-
-    @rangeOfStringSurroundingRange: lines rng ->
-
-        if ir = @rangeOfInnerStringSurroundingRange lines rng
-            @rangeGrownBy ir 1
             
     @rangesOfStringsInText: text li=0 -> # todo: handle #{}
         
@@ -529,6 +535,116 @@ function text
                     rngs.push [pos[0] - pair[0].length pos[1] pos[0] + pair[1].length pos[1]]
         rngs
         
+    #  ███████   ████████   ████████  ███   ███         ███████  ███       ███████    ███████  ████████
+    # ███   ███  ███   ███  ███       ████  ███        ███       ███      ███   ███  ███       ███     
+    # ███   ███  ████████   ███████   ███ █ ███        ███       ███      ███   ███  ███████   ███████ 
+    # ███   ███  ███        ███       ███  ████        ███       ███      ███   ███       ███  ███     
+    #  ███████   ███        ████████  ███   ███         ███████  ███████   ███████   ███████   ████████
+
+    @openCloseSpansForPositions: lines posl ->
+        
+        spans = []
+        for pos in posl
+        
+            if sps = @openCloseSpansForPosition lines pos
+                spans = spans.concat sps
+                
+            if srng = @rangeOfStringSurroundingRange lines [pos[0] pos[1] pos[0] pos[1]]
+                spans.push [srng[0] srng[1] srng[0]+1]
+                spans.push [srng[2]-1 srng[3] srng[2]]
+            else if lines[pos[1]][pos[0]] in "\"'"
+                if srng = @rangeOfStringSurroundingRange lines [pos[0]+1 pos[1] pos[0]+1 pos[1]]
+                    spans.push [srng[0] srng[1] srng[0]+1]
+                    spans.push [srng[2]-1 srng[3] srng[2]]
+        spans
+        
+    @openCloseSpansForPosition: lines pos ->
+                
+        open =
+            '[': ']'
+            '{': '}'
+            '(': ')'
+            
+        opns = Object.keys(open).join ''
+        clos = Object.values(open).join ''
+        revs = kutil.fromPairs kutil.zip(clos opns)
+        
+        maxLookups = 1000 # careful, increasing this drops performance significantly!
+        
+        bp = [pos[0] pos[1]]
+        
+        if lines[bp[1]][bp[0]] not in opns
+        
+            closeEncounters = ''
+            openEncounters = ''
+            
+            stack = []
+            
+            cnt = 0
+            while true # find last open bracket before
+
+                bp[0] -= 1
+                if bp[0] >= 0
+                    prev = lines[bp[1]][bp[0]]
+                    if prev in opns
+                        if stack.length
+                            if open[prev] == last(stack)
+                                openEncounters += prev
+                                stack.pop()
+                                continue
+                            else
+                                ⮐  # stack mismatch
+                        lastOpen = prev
+                        break
+                    else if prev in clos
+                        stack.push prev
+                        closeEncounters += prev
+                else
+                    bp[1] -= 1
+                    break if bp[1] < 0
+                    bp[0] = lines[bp[1]].length
+    
+                break if lastOpen?
+                break if bp[1] < 0
+                break if cnt++ > maxLookups # maximum lookups exceeded            
+        else
+            lastOpen = lines[bp[1]][bp[0]]
+            
+        stack = []
+        ap    = [max(bp[0]+1 pos[0]) pos[1]]
+        
+        while ap[1] < lines.length # find first close bracket after
+            
+            cnt  = 0
+            next = lines[ap[1]][ap[0]]
+            
+            if next in clos
+                if stack.length
+                    if open[last(stack)] == next
+                        stack.pop()
+                    else
+                        ⮐  # stack mismatch
+                else
+                    firstClose = next
+                    break
+            else if next in opns
+                stack.push next
+
+            ap[0] += 1
+            if ap[0] >= lines[ap[1]].length
+                ap[0] = 0
+                ap[1] += 1
+            
+            break if cnt++ > maxLookups # maximum lookups exceeded   
+
+        if not lastOpen? or not firstClose?
+            if lines[pos[1]][pos[0]-1] in clos and revs[lines[pos[1]][pos[0]-1]] in openEncounters
+                ⮐  @openCloseSpansForPosition lines [pos[0]-1 pos[1]]
+            ⮐
+        
+        if open[lastOpen] == firstClose
+            ⮐  [[bp[0] bp[1] bp[0]+1] [ap[0] ap[1] ap[0]+1]]
+            
     #  0000000   0000000   00     00  00     00  00000000  000   000  000000000  
     # 000       000   000  000   000  000   000  000       0000  000     000     
     # 000       000   000  000000000  000000000  0000000   000 0 000     000     

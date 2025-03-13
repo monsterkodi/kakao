@@ -437,6 +437,31 @@ def`)
         posl = [[4,0],[4,1],[4,2],[4,3],[4,4]]
         compare(belt.rangesOfPairsSurroundingPositions(lines,pairs,posl),[[3,2,5,2],[2,3,5,3],[3,4,5,4]])
     })
+    section("openCloseSpansForPositions", function ()
+    {
+        segls = kseg.segls(`[[{()}]]
+'45""6'
+'a{}c'`)
+        compare(belt.openCloseSpansForPositions(segls,[[0,0]]),[[0,0,1],[7,0,8]])
+        compare(belt.openCloseSpansForPositions(segls,[[1,0]]),[[1,0,2],[6,0,7]])
+        compare(belt.openCloseSpansForPositions(segls,[[2,0]]),[[2,0,3],[5,0,6]])
+        compare(belt.openCloseSpansForPositions(segls,[[3,0]]),[[3,0,4],[4,0,5]])
+        compare(belt.openCloseSpansForPositions(segls,[[4,0]]),[[3,0,4],[4,0,5]])
+        compare(belt.openCloseSpansForPositions(segls,[[5,0]]),[[2,0,3],[5,0,6]])
+        compare(belt.openCloseSpansForPositions(segls,[[6,0]]),[[1,0,2],[6,0,7]])
+        compare(belt.openCloseSpansForPositions(segls,[[7,0]]),[[0,0,1],[7,0,8]])
+        compare(belt.openCloseSpansForPositions(segls,[[8,0]]),[[0,0,1],[7,0,8]])
+        compare(belt.openCloseSpansForPositions(segls,[[0,1]]),[[0,1,1],[6,1,7]])
+        compare(belt.openCloseSpansForPositions(segls,[[6,1]]),[[0,1,1],[6,1,7]])
+        compare(belt.normalizeSpans(belt.openCloseSpansForPositions(segls,[[2,2]])),[[0,2,1],[2,2,3],[3,2,4],[5,2,6]])
+        compare(belt.normalizeSpans(belt.openCloseSpansForPositions(segls,[[3,2]])),[[0,2,1],[2,2,3],[3,2,4],[5,2,6]])
+        compare(belt.normalizeSpans(belt.openCloseSpansForPositions(segls,[[4,2]])),[[0,2,1],[2,2,3],[3,2,4],[5,2,6]])
+        segls = kseg.segls(`next = lines[ap[1]][ap[0]]  `)
+        compare(belt.openCloseSpansForPositions(segls,[[25,0]]),[[19,0,20],[25,0,26]])
+        compare(belt.openCloseSpansForPositions(segls,[[26,0]]),[[19,0,20],[25,0,26]])
+        segls = kseg.segls(`s[2]`)
+        compare(belt.openCloseSpansForPositions(segls,[[4,0]]),[[1,0,2],[3,0,4]])
+    })
 }
 toExport["tool belt"]._section_ = true
 toExport._test_ = true

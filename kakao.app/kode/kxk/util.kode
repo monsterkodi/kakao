@@ -92,7 +92,7 @@ util =
             
         [inc exc]
     
-    findIf: arr pred -> for v in arr ➜ ⮐ v if pred v
+    findIf:    arr pred -> for v in arr ➜ ⮐ v if pred v
     findIndex: arr pred -> for v,i in arr ➜ ⮐ i if pred v
         
     pullAll: arr items cmp=util.isEqual ->

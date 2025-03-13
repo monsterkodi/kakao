@@ -32,8 +32,6 @@ function crumbs extends view
         
         super key color
         
-    visible: -> 
-        
     layout: x y w h ->
     
         super x y w h  
@@ -133,10 +131,11 @@ function crumbs extends view
             
     set: path ->
     
+        @cells.rows = 1 # 𝜏𝖍𝚒𝖘 𝖘⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾
         @path = trim path
         @adjustText()
         
-    show: path => @set slash.tilde(path); @cells.rows = 1
+    show: path => @set slash.tilde(path)
     visible: -> @cells.rows > 0 
         
     # 00     00   0000000   000   000   0000000  00000000  
