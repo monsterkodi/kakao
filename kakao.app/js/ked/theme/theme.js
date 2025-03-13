@@ -20,9 +20,17 @@ class theme
 
     static editor_selection = '#44a'
 
+    static editor_highlight_ul = '#0a0'
+
     static editor_highlight = '#030'
 
-    static editor_highlight_ul = '#0a0'
+    static editor_highlight_bracket = '#339'
+
+    static editor_highlight_bracket_ul = '#44a'
+
+    static editor_highlight_string = '#020'
+
+    static editor_highlight_string_ul = '#040'
 
     static funcol = '#111'
 

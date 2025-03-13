@@ -26,6 +26,10 @@ brckts = (function ()
     {
         if (this.state.s.selections.length)
         {
+            if (_k_.eql(this.rngs, this.state.s.highlights))
+            {
+                this.state.setHighlights([])
+            }
             return
         }
         if (this.state.s.highlights.length)

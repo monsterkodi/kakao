@@ -23,6 +23,12 @@ function draw extends view
         @setColor 'empty'        theme[@name + '_empty'] ? theme.editor_empty
         @setColor 'cursor_main'  theme[@name + '_cursor_main']
         @setColor 'cursor_empty' theme[@name + '_cursor_empty']
+        @setColor 'highlight'    theme[@name + '_highlight']    ? theme.editor_highlight
+        @setColor 'highlight_ul' theme[@name + '_highlight_ul'] ? theme.editor_highlight_ul
+        @setColor 'highlight_bracket' theme[@name + '_highlight_bracket'] ? theme.editor_highlight_bracket
+        @setColor 'highlight_string'  theme[@name + '_highlight_string']  ? theme.editor_highlight_string
+        @setColor 'highlight_bracket_ul' theme[@name + '_highlight_bracket_ul'] ? theme.editor_highlight_bracket_ul
+        @setColor 'highlight_string_ul'  theme[@name + '_highlight_string_ul']  ? theme.editor_highlight_string_ul
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -152,8 +158,8 @@ function draw extends view
     
     drawHighlights: ->
                             
-        bg = theme[@name + '_highlight'] ? theme.editor_highlight
-        ul = theme[@name + '_highlight_ul'] ? theme.editor_highlight_ul
+        bg = @color.highlight
+        ul = @color.highlight_ul
         bg = color.darken bg if not @cells.screen.t.hasFocus
         
         [vx vy] = @state.s.view
@@ -165,9 +171,15 @@ function draw extends view
             break if y >= @cells.rows
                 
             for x in highlight[0]...highlight[2]
+                hlc = @cells.get_char x-vx y
+                switch hlc
+                    '{' '[' '(' ')' ']' '}' ➜ ulc = @color.highlight_bracket_ul ; bgc = @color.highlight_bracket
+                    "'" '"'                 ➜ ulc = @color.highlight_string_ul  ; bgc = @color.highlight_string
+                                            ➜ ulc = ul ; bgc = bg
                 
-                @cells.set_bg x-vx y bg
-                @cells.set_char x-vx y color.ul_rgb(ul)+'\x1b[4:1m'+@cells.get_char(x-vx y)+'\x1b[4:0m'
+                @cells.set_bg x-vx y bgc
+                @cells.set_char x-vx y color.ul_rgb(ulc)+'\x1b[4:1m'+hlc+'\x1b[4:0m'
+                @cells.adjustContrastForHighlight x-vx y bgc
                     
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
     # 000       000       000      000       000          000     000  000   000  0000  000  000       

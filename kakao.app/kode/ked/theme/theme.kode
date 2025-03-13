@@ -24,8 +24,12 @@ class theme
     @editor_cursor_fg:                          '#000'   
     @editor_selection_line:                     '#222'   
     @editor_selection:                          '#44a'   
-    @editor_highlight:                          '#030'   
     @editor_highlight_ul:                       '#0a0'   
+    @editor_highlight:                          '#030'   
+    @editor_highlight_bracket:                  '#339'   
+    @editor_highlight_bracket_ul:               '#44a'   
+    @editor_highlight_string:                   '#020'   
+    @editor_highlight_string_ul:                '#040'   
                                                 
     @funcol:                                    '#111'   
     @gutter:                                    '#0a0a0a'

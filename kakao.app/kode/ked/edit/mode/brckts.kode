@@ -34,7 +34,10 @@ function brckts
         
     cursorsSet: ->
 
-        ⮐  if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
+        if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
+            if @rngs eql @state.s.highlights
+                @state.setHighlights []
+            ⮐  
         if @state.s.highlights.length     # don't highlight brackets when other highlights exist and it's different
             ⮐  if not @rngs eql @state.s.highlights.asMutable() # from the previous brckts highlight
             
