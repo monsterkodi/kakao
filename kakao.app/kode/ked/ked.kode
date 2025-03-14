@@ -39,7 +39,7 @@ function KED
                 
             """ preHelp:help.header() version:@version
         
-        process.on 'uncaughtException' @onException
+        process.on 'uncaughtException' @quit
             
         @session = new session @args
         @logfile = new logfile @session.name
@@ -143,18 +143,21 @@ function KED
         
         log w2("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 
-        error "#{msg}" noon(msg) if msg?
+        if msg?
+            error msg.stack if msg.stack
+            error "#{y5 msg}" #noon(msg) 
         
         @t?.quit()
         
         @logfile.close ->
             
-            process.stderr.write "#{msg}" if msg?
+            process.stderr.write "#{r4 msg.stack}\n" if msg?.stack
+            process.stderr.write "#{y5 msg}" if msg?
             process.exit msg? ? 1 : 0
-                
-    onException: err => 
-        
-        @quit err
+            
+    # onException: err => 
+#         
+        # @quit err
 
     # 000   000  00000000  000   000  
     # 0000  000  000       000 0 000  

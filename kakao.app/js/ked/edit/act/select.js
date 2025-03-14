@@ -111,14 +111,13 @@ export default {select:function (from, to)
     return this.highlightSelection()
 },highlightSelection:function ()
 {
-    var lines, rng, spans, text
+    var rng, spans, text
 
     if (_k_.empty(this.s.selections))
     {
         return
     }
     spans = []
-    lines = this.allLines()
     var list = _k_.list(this.allSelections())
     for (var _b_ = 0; _b_ < list.length; _b_++)
     {
@@ -127,8 +126,8 @@ export default {select:function (from, to)
         {
             continue
         }
-        text = belt.textForLineRange(lines,rng)
-        spans = spans.concat(belt.lineSpansForText(lines,text))
+        text = belt.textForLineRange(this.s.lines,rng)
+        spans = spans.concat(belt.lineSpansForText(this.s.lines,text))
     }
     return this.setHighlights(spans)
 },highlightText:function (text)
@@ -375,8 +374,8 @@ export default {select:function (from, to)
 {
     var selections
 
-    selections = belt.lineRangesForPositions(this.allLines(),this.allCursors())
-    _k_.assert("kode/ked/edit/act/select.kode", 322, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
+    selections = belt.lineRangesForPositions(this.s.lines,this.s.cursors)
+    _k_.assert("kode/ked/edit/act/select.kode", 321, 8, "assert failed!" + " selections.length === this.s.cursors.length", selections.length === this.s.cursors.length)
     return this.setSelections(selections)
 },selectAllLines:function ()
 {

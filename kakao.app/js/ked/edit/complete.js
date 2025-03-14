@@ -117,7 +117,7 @@ complete = (function ()
         {
             return
         }
-        this.editor.state.syntax.setSegls(kseg.segls(this.editor.state.s.lines))
+        this.editor.state.syntax.setSegls(this.editor.state.s.lines)
         return this.visible = false
     }
 

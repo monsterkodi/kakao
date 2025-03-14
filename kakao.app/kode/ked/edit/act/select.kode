@@ -117,11 +117,10 @@ export
         ⮐ if empty @s.selections
         
         spans = []
-        lines = @allLines()
         for rng in @allSelections()
             continue if rng[1] != rng[3]
-            text  = belt.textForLineRange lines rng
-            spans = spans.concat belt.lineSpansForText(lines text)
+            text  = belt.textForLineRange @s.lines rng
+            spans = spans.concat belt.lineSpansForText(@s.lines text)
         
         @setHighlights spans
         
@@ -317,7 +316,7 @@ export
         
     selectCursorLines: ->
                     
-        selections = belt.lineRangesForPositions(@allLines() @allCursors())
+        selections = belt.lineRangesForPositions(@s.lines @s.cursors)
         
         ▴ selections.length == @s.cursors.length
                     
@@ -325,7 +324,6 @@ export
         
     selectAllLines: ->
         
-        # allsel = [[0 0 @s.lines[@s.lines.length-1].length @s.lines.length-1]]
         allsel = [[0 0 kseg.width(@s.lines[@s.lines.length-1]) @s.lines.length-1]]
         
         if allsel eql @s.selections

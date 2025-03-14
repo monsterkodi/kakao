@@ -178,7 +178,7 @@ export default {allCursors:function ()
     {
         return
     }
-    rngs = belt.splitLineRanges(this.allLines(),selections,false)
+    rngs = belt.splitLineRanges(this.s.lines,selections,false)
     this.setCursors(belt.startPositionsOfRanges(rngs))
     return true
 },moveCursorsToEndOfSelections:function ()

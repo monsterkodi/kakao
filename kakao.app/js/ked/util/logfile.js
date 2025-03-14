@@ -47,7 +47,7 @@ logfile = (function ()
         {
             return this.write(_k_.r5(args.map(function (a)
             {
-                return _k_.noon((a))
+                return _k_.r5("▴ ") + _k_.noon((a))
             }).join(' ')))
         }).bind(this)
     }

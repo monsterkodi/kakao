@@ -56,28 +56,28 @@ codeTypes = ['interpolation' 'code triple']
 
 chunked = segls ext ->
     
-    # log y8('segls') segls
-
     ext = ext[1..] if ext[0] == '.'
     ext = 'txt' if ext not in exts
 
     lineno = 0
-    segls.map (segs) ->
+    chunkd = []
+    
+    for segs in segls
 
-        line =
+        chnks =
             chunks: []
             chars:  0
             index:  lineno++
             number: lineno
             ext:    ext
+            
+        chunkd.push chnks            
 
-        ⮐ line if empty segs
+        continue if empty segs
         
         chunks = kseg.chunks kseg.detab(segs)
 
-        ⮐ line if empty chunks
-        
-        # log y8('chunks') chunks
+        continue if empty chunks
         
         lastWord = null
         lastWordIndex = -1
@@ -85,22 +85,15 @@ chunked = segls ext ->
         pushLastWord = ->
             
             if lastWord != null
-                line.chunks.push start:kseg.widthAtSegi(segs lastWordIndex) length:kseg.width(lastWord) match:kseg.str(lastWord) clss:'text'
-
+                chnks.chunks.push start:kseg.widthAtSegi(segs lastWordIndex) length:kseg.width(lastWord) match:kseg.str(lastWord) clss:'text'
                 lastWord = null
                 lastWordIndex = -1
         
         for chnk in chunks
             
-            # log 'chnk' chnk
-            # lastWord = null
-            # lastWord = []
-            # lastWordIndex = -1
-            
             pushLastWord()
             
             for s,segIndex in chnk.segl
-                # log 's' s
                 
                 isUniko = ch cc -> 
                     isu = cc >= 2000
@@ -119,8 +112,6 @@ chunked = segls ext ->
                         else
                             break
     
-                    # log 'm' s m turd
-                    
                     clss = 'punct'
     
                     if isUniko s s.charCodeAt(0)
@@ -130,27 +121,22 @@ chunked = segls ext ->
                         if s in [','';''{''}''('')']
                             clss += ' minor'
 
-                    line.chunks.push start:kseg.widthAtSegi(segs chnk.index+segIndex) length:kseg.width(s) match:s turd:turd clss:clss
+                    chnks.chunks.push start:kseg.widthAtSegi(segs chnk.index+segIndex) length:kseg.width(s) match:s turd:turd clss:clss
                 else
                     if lastWord == null
                         lastWord = []
                         lastWordIndex = chnk.index+segIndex
-                        # lastWordIndex = chnk.index+kseg.width(s)
 
-                    # log 'lastWord' lastWordIndex chnk.index segIndex lastWord s
                     lastWord.push s
                     
-        # if valid lastWord
-            # line.chunks.push start:lastWordIndex length:lastWord.length match:kseg.str(lastWord) clss:'text'
         pushLastWord()
 
-        if line.chunks.length
-            l = last line.chunks
-            line.chars = l.start + l.length
+        if chnks.chunks.length
+            l = last chnks.chunks
+            chnks.chars = l.start + l.length
 
-        # log g6('▸▸▸▸line') g4(segls) line
-        line
-
+    chunkd
+    
 ###
 000   000   0000000   000   000  0000000    000      00000000  00000000    0000000
 000   000  000   000  0000  000  000   000  000      000       000   000  000
@@ -317,8 +303,6 @@ dashArrow = ->
 
         if chunk.turd.startsWith '->'
             markFunc()
-            # addValue 0 'function tail'
-            # addValue 1 'function head'
             if line.chunks[0].clss == 'dictionary key' or line.chunks[0].turd?[..1] == '@:'
                 line.chunks[0].clss = 'method'
                 line.chunks[1].clss = 'punct method'
@@ -330,8 +314,6 @@ dashArrow = ->
 
         if chunk.turd.startsWith '=>'
             markFunc()
-            # addValue 0 'function bound tail'
-            # addValue 1 'function bound head'
             if line.chunks[0].clss == 'dictionary key'
                 line.chunks[0].clss = 'method'
                 line.chunks[1].clss = 'punct method'
@@ -486,8 +468,6 @@ kodeWord = ->
 
 thisCall = ->
     
-    # log 'thisCall'
-
     setValue -1 'function call'
     if getmatch(-2) == '@'
         setValue -2 'punct function call'
@@ -1279,13 +1259,12 @@ addValues = n value ->
     n
     
 addAndJoinValues = n value ->
-    # log r5('addAndJoinValues') line.chunks n value
+
     line.chunks[chunkIndex].clss += ' ' + value
     for i in 1...n
         line.chunks[chunkIndex].match  += line.chunks[chunkIndex+i].match
         line.chunks[chunkIndex].length += 1
     line.chunks.splice chunkIndex+1 n-1
-    # log b8('addAndJoinValues') line.chunks n value
     1
 
 handlers =
@@ -1363,7 +1342,7 @@ blocked = lines ->
     line       = null
     chunk      = null
     chunkIndex = 0
-
+    
     # 000      000  000   000  00000000   0000000
     # 000      000  0000  000  000       000
     # 000      000  000 0 000  0000000   0000000
@@ -1492,10 +1471,6 @@ kolorize = chunk ->
 kolorizeChunks = chunks=[] ->
     
     clrzd = ''
-    # if numbers
-        # numstr = String numbers
-        # clrzd += w2(numstr) + rpad(4-numstr.length)
-        
     c = 0
     for i in 0...chunks.length
         while c < chunks[i].start 
@@ -1522,8 +1497,7 @@ syntax = arg ->
     
     clines = []
     for index in 0...lines.length
-        line = lines[index]
-        if ext == 'js' and line.startsWith '//# source'
+        if ext == 'js' and lines[index].startsWith '//# source'
             continue
 
         clines.push kolorizeChunks(rngs[index])
@@ -1543,11 +1517,9 @@ dissect = segls ext='kode' ->
     
     parse(segls ext).map (l) -> l.chunks
     
-ranges = line ext='kode' ->
+ranges = str ext='kode' ->
     
-    line = kseg line
-
-    parse([line] ext)[0].chunks
+    parse([kseg(str)] ext)[0].chunks
 
 # 00000000  000   000  00000000    0000000   00000000   000000000   0000000  
 # 000        000 000   000   000  000   000  000   000     000     000       

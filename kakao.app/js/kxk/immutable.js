@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var addImmutabilityTag, addPropertyTo, arraySet, arraySetIn, asDeepMutable, asMutableArray, asMutableObject, asObject, banProperty, flatMap, getIn, getInPath, immutabilityTag, Immutable, immutableEmptyArray, immutableEmptyObject, ImmutableError, instantiateEmptyObject, isBlobObject, isEqual, isError, isFileObject, isImmutable, isMergableObject, isObject, isPromise, makeImmutable, makeImmutableArray, makeImmutableObject, makeMethodReturnImmutable, merge, mutatingArrayMethods, mutatingObjectMethods, nonMutatingArrayMethods, nonMutatingObjectMethods, objectReplace, objectSet, objectSetIn, quickCopy, toStatic, toStaticObjectOrArray, update, updateIn, without
+var addImmutabilityTag, addPropertyTo, arraySet, arraySetIn, asDeepMutable, asMutableArray, asMutableObject, asObject, banProperty, flatMap, getIn, getInPath, immutabilityTag, Immutable, immutableEmptyArray, immutableEmptyObject, ImmutableError, instantiateEmptyObject, isBlobObject, isEqual, isError, isFileObject, isImmutable, isMergableObject, isObject, isPromise, makeImmutable, makeImmutableArray, makeImmutableObject, makeMethodReturnImmutable, merge, mutatingArrayMethods, mutatingObjectMethods, objectReplace, objectSet, objectSetIn, quickCopy, toStatic, toStaticObjectOrArray, update, updateIn, without
 
 
 isObject = function (obj)
@@ -83,9 +83,7 @@ isMergableObject = function (target)
     return (target !== null) && typeof(target) === "object" && (!Array.isArray(target))
 }
 mutatingObjectMethods = ["setPrototypeOf"]
-nonMutatingObjectMethods = ["keys"]
 mutatingArrayMethods = mutatingObjectMethods.concat(['push','pop','sort','splice','shift','unshift','reverse'])
-nonMutatingArrayMethods = nonMutatingObjectMethods.concat(['map','filter','slice','concat','reduce','reduceRight'])
 
 ImmutableError = function (message)
 {
@@ -127,14 +125,8 @@ makeImmutableObject = function (obj)
 
 makeImmutableArray = function (array)
 {
-    var i, methodName
+    var i
 
-    var list = _k_.list(nonMutatingArrayMethods)
-    for (var _b_ = 0; _b_ < list.length; _b_++)
-    {
-        methodName = list[_b_]
-        makeMethodReturnImmutable(array,methodName)
-    }
     addPropertyTo(array,"flatMap",flatMap)
     addPropertyTo(array,"asObject",asObject)
     addPropertyTo(array,"asMutable",asMutableArray)
@@ -143,7 +135,7 @@ makeImmutableArray = function (array)
     addPropertyTo(array,"update",update)
     addPropertyTo(array,"updateIn",updateIn)
     addPropertyTo(array,"getIn",getIn)
-    for (var _c_ = i = 0, _d_ = array.length; (_c_ <= _d_ ? i < array.length : i > array.length); (_c_ <= _d_ ? ++i : --i))
+    for (var _b_ = i = 0, _c_ = array.length; (_b_ <= _c_ ? i < array.length : i > array.length); (_b_ <= _c_ ? ++i : --i))
     {
         array[i] = Immutable(array[i])
     }
@@ -276,7 +268,7 @@ flatMap = function (iterator)
         return this
     }
     result = []
-    for (var _e_ = index = 0, _f_ = this.length; (_e_ <= _f_ ? index < this.length : index > this.length); (_e_ <= _f_ ? ++index : --index))
+    for (var _d_ = index = 0, _e_ = this.length; (_d_ <= _e_ ? index < this.length : index > this.length); (_d_ <= _e_ ? ++index : --index))
     {
         iteratorResult = iterator(this[index],index,this)
         if (Array.isArray(iteratorResult))
@@ -330,7 +322,7 @@ asMutableArray = function (opts)
     var i, result
 
     result = []
-    for (var _10_ = i = 0, _11_ = this.length; (_10_ <= _11_ ? i < this.length : i > this.length); (_10_ <= _11_ ? ++i : --i))
+    for (var _f_ = i = 0, _10_ = this.length; (_f_ <= _10_ ? i < this.length : i > this.length); (_f_ <= _10_ ? ++i : --i))
     {
         result.push(asDeepMutable(this[i]))
     }
@@ -350,7 +342,7 @@ asObject = function (iterator)
     }
     result = {}
     length = this.length
-    for (var _12_ = index = 0, _13_ = length; (_12_ <= _13_ ? index < length : index > length); (_12_ <= _13_ ? ++index : --index))
+    for (var _11_ = index = 0, _12_ = length; (_11_ <= _12_ ? index < length : index > length); (_11_ <= _12_ ? ++index : --index))
     {
         pair = iterator(this[index],index,this)
         key = pair[0]
@@ -464,7 +456,7 @@ merge = function (other, config)
     }
     else
     {
-        for (var _14_ = index = 0, _15_ = other.length; (_14_ <= _15_ ? index < other.length : index > other.length); (_14_ <= _15_ ? ++index : --index))
+        for (var _13_ = index = 0, _14_ = other.length; (_13_ <= _14_ ? index < other.length : index > other.length); (_13_ <= _14_ ? ++index : --index))
         {
             otherFromArray = other[index]
             for (key in otherFromArray)
@@ -570,7 +562,7 @@ getInPath = function (obj, path)
 {
     var i
 
-    for (var _16_ = i = 0, _17_ = path.length; (_16_ <= _17_ ? i < path.length : i > path.length); (_16_ <= _17_ ? ++i : --i))
+    for (var _15_ = i = 0, _16_ = path.length; (_15_ <= _16_ ? i < path.length : i > path.length); (_15_ <= _16_ ? ++i : --i))
     {
         obj = obj[path[i]]
         if (obj === null)

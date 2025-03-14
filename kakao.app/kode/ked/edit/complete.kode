@@ -48,7 +48,6 @@ function complete
         else if tcw = kseg.tailCountWord before
             if tcw < before.length
                 before = before[before.length-tcw..]
-        # log b5("complete #{y5 before} #{r5 tct} #{r5 tcw}")
         @word before
         
     # 000   000   0000000   00000000   0000000    
@@ -59,16 +58,12 @@ function complete
     
     word: @turd ->
     
-        # log "complete.word #{b8 @turd}"
-        
         if empty @turd
             @hide()
             ⮐ 
                 
         @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
         @words = belt.prepareWordsForCompletion @turd @words
-        
-        # log "@words #{y6 @words.length}" @words
         
         if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
             @words = inserts.concat @words
@@ -108,16 +103,14 @@ function complete
     
     hide: -> 
         ⮐  if not @visible
-        @editor.state.syntax.setSegls kseg.segls(@editor.state.s.lines) # 𝜏𝖍𝚒𝖘 𝚒𝖘 𝕒 𝔟𝚒𝜏 𝔟ɼ𝓊𝜏𝕒⟅, 𝚒𝖘∩'𝜏 𝚒𝜏?
+        @editor.state.syntax.setSegls @editor.state.s.lines # 𝜏𝖍𝚒𝖘 𝚒𝖘 𝕒 𝔟𝚒𝜏 𝔟ɼ𝓊𝜏𝕒⟅, 𝚒𝖘∩'𝜏 𝚒𝜏?
         @visible = false
         
     hidden: -> not @visible
         
     onEditorLayout: =>
     
-        ⮐ if @hidden()
-        
-        # log "complete.onEditorLayout #{@name}"
+        ⮐  if @hidden()
         
     # ███   ███  ████████  ███   ███
     # ███  ███   ███        ███ ███ 

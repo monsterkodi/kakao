@@ -28,7 +28,7 @@ function logfile
                 
         console.error = args... => 
             
-            @write r5(args.map((a) -> noon(a)).join(' '))
+            @write r5(args.map((a) -> r5("▴ ")+noon(a)).join(' '))
         
     write: txt ->
         

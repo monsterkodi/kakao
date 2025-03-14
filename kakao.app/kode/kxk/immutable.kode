@@ -7,8 +7,6 @@
     
     Copyright (c) 2016, Richard Feldman
     https://github.com/rtfeldman/seamless-immutable 
-    
-    translated into kode
 ###
 
 isObject     = obj -> (obj != null) and (typeof(obj) == 'object') and (not Array.isArray obj)
@@ -55,13 +53,8 @@ isEqual = (a, b) -> a == b or (a != a and b != b) # Avoid false positives due to
 isMergableObject = target -> (target != null) and typeof(target) == "object" and (not Array.isArray target) #and not (target instanceof Date)
 
 mutatingObjectMethods    = [ "setPrototypeOf" ]
-nonMutatingObjectMethods = [ "keys" ];
 mutatingArrayMethods     = mutatingObjectMethods.concat [
         'push' 'pop' 'sort' 'splice' 'shift' 'unshift' 'reverse'
-    ]
-
-nonMutatingArrayMethods = nonMutatingObjectMethods.concat [
-        'map' 'filter' 'slice' 'concat' 'reduce' 'reduceRight'
     ]
 
 ImmutableError = message ->
@@ -99,10 +92,20 @@ makeImmutableObject = obj ->
     makeImmutable obj mutatingObjectMethods
     
 makeImmutableArray = array ->
-    # Don't change their implementations, but wrap these functions to make sure
-    # they always return an immutable value.
-    for methodName in nonMutatingArrayMethods
-        makeMethodReturnImmutable array methodName
+    
+    #nonMutatingArrayMethods = [
+    #    'map'     # i don't understand why the results of these were 
+    #    'filter'  # converted automatically into immutables.
+    #    'slice'   # disabled for now, let's see if anything breaks.
+    #    'concat'   
+    #    'reduce' 
+    #    'reduceRight'
+    #]
+    #
+    ## Don't change their implementations, but wrap these functions to make sure
+    ## they always return an immutable value.
+    #for methodName in nonMutatingArrayMethods
+    #    makeMethodReturnImmutable array methodName
   
     addPropertyTo array "flatMap"   flatMap
     addPropertyTo array "asObject"  asObject
@@ -420,7 +423,6 @@ objectSetIn = path value config ->
     thisHead = @[head]
 
     if @hasOwnProperty(head) and (typeof(thisHead) == "object") and (thisHead != null)
-        # Might (validly) be object or array
         newValue = Immutable.setIn thisHead, tail, value
     else
         newValue = objectSetIn.call immutableEmptyObject, tail, value

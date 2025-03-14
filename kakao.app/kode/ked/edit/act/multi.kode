@@ -139,7 +139,7 @@ export
         
         ⮐ if empty selections
         
-        rngs = belt.splitLineRanges @allLines() selections false
+        rngs = belt.splitLineRanges @s.lines selections false
 
         @setCursors belt.startPositionsOfRanges(rngs)
         
