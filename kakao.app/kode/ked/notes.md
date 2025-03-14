@@ -20,10 +20,6 @@
 #### todo
 ##### todo
 
-- brckts
-    - fix empty brackets at end of line (check balanced)
-    - alt+cmd+b select matching brckts
-    
 - completion
     - fix
         - turd missing completions

@@ -23,25 +23,23 @@ draw = (function ()
     _k_.extend(draw, view)
     function draw (screen, name, features)
     {
-        var _22_57_, _23_57_, _26_64_, _27_64_, _28_74_, _29_74_, _30_80_, _31_80_
-
         this["draw"] = this["draw"].bind(this)
         draw.__super__.constructor.call(this,screen,name,features)
-        this.setColor('bg',((_22_57_=theme[this.name]) != null ? _22_57_ : theme.editor))
-        this.setColor('empty',((_23_57_=theme[this.name + '_empty']) != null ? _23_57_ : theme.editor_empty))
-        this.setColor('cursor_main',theme[this.name + '_cursor_main'])
-        this.setColor('cursor_empty',theme[this.name + '_cursor_empty'])
-        this.setColor('highlight',((_26_64_=theme[this.name + '_highlight']) != null ? _26_64_ : theme.editor_highlight))
-        this.setColor('highlight_ul',((_27_64_=theme[this.name + '_highlight_ul']) != null ? _27_64_ : theme.editor_highlight_ul))
-        this.setColor('highlight_bracket',((_28_74_=theme[this.name + '_highlight_bracket']) != null ? _28_74_ : theme.editor_highlight_bracket))
-        this.setColor('highlight_string',((_29_74_=theme[this.name + '_highlight_string']) != null ? _29_74_ : theme.editor_highlight_string))
-        this.setColor('highlight_bracket_ul',((_30_80_=theme[this.name + '_highlight_bracket_ul']) != null ? _30_80_ : theme.editor_highlight_bracket_ul))
-        this.setColor('highlight_string_ul',((_31_80_=theme[this.name + '_highlight_string_ul']) != null ? _31_80_ : theme.editor_highlight_string_ul))
+        this.setColor('bg',theme.editor)
+        this.setColor('empty',theme.editor_empty)
+        this.setColor('cursor_main',theme.editor_cursor_main)
+        this.setColor('cursor_empty',theme.editor_cursor_empty)
+        this.setColor('highlight',theme.editor_highlight)
+        this.setColor('highlight_ul',theme.editor_highlight_ul)
+        this.setColor('highlight_bracket',theme.editor_highlight_bracket)
+        this.setColor('highlight_string',theme.editor_highlight_string)
+        this.setColor('highlight_bracket_ul',theme.editor_highlight_bracket_ul)
+        this.setColor('highlight_string_ul',theme.editor_highlight_string_ul)
     }
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _107_17_, _111_15_, _112_15_, _113_15_, _92_42_
+        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _109_17_, _113_15_, _114_15_, _115_15_, _49_58_, _94_42_
 
         if (this.hidden())
         {
@@ -50,6 +48,10 @@ draw = (function ()
         syntax = this.state.syntax
         view = this.state.s.view
         lines = this.state.s.lines
+        if ((this.complete != null))
+        {
+            lines = this.complete.preDrawLines(lines)
+        }
         bg = this.color.bg
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
@@ -97,7 +99,7 @@ draw = (function ()
                 {
                     headerClass = clss
                 }
-                x += ((_92_42_=kseg.width(line[si])) != null ? _92_42_ : 1)
+                x += ((_94_42_=kseg.width(line[si])) != null ? _94_42_ : 1)
                 if (x < this.cells.cols)
                 {
                     c += this.cells.add(c,row,ch,fg,bg)
@@ -221,10 +223,10 @@ draw = (function ()
 
     draw.prototype["drawSelections"] = function ()
     {
-        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _194_50_, _195_50_
+        var bg, li, linebg, selection, spanbg, x, xe, xs, y, _196_50_, _197_50_
 
-        spanbg = ((_194_50_=theme[this.name + '_selection']) != null ? _194_50_ : theme.editor_selection)
-        linebg = ((_195_50_=theme[this.name + '_selection_line']) != null ? _195_50_ : theme.editor_selection_line)
+        spanbg = ((_196_50_=theme[this.name + '_selection']) != null ? _196_50_ : theme.editor_selection)
+        linebg = ((_197_50_=theme[this.name + '_selection_line']) != null ? _197_50_ : theme.editor_selection_line)
         if (!this.cells.screen.t.hasFocus)
         {
             spanbg = color.darken(spanbg)
@@ -268,11 +270,11 @@ draw = (function ()
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fg, mainCursor, s, x, y, _237_41_, _253_46_
+        var bg, cursor, fg, mainCursor, s, x, y, _239_41_, _255_46_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_237_41_=theme[this.name + '_cursor_fg']) != null ? _237_41_ : theme.editor_cursor_fg)
+        fg = ((_239_41_=theme[this.name + '_cursor_fg']) != null ? _239_41_ : theme.editor_cursor_fg)
         bg = mode.themeColor(this.state,'editor_cursor_multi')
         if (!this.cells.screen.t.hasFocus)
         {
@@ -293,7 +295,7 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_253_46_=theme[this.name + '_cursor_fg']) != null ? _253_46_ : theme.editor_cursor_fg)
+            fg = ((_255_46_=theme[this.name + '_cursor_fg']) != null ? _255_46_ : theme.editor_cursor_fg)
             bg = mode.themeColor(this.state,'editor_cursor_main')
             if (!this.hasFocus())
             {

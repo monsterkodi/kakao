@@ -257,6 +257,9 @@ use ../edit/tool ◆ belt
         belt.prepareWordsForCompletion 'word' ['word[@turd.length..]'] ▸ ['word[' 'word[@turd.length..]']
         belt.prepareWordsForCompletion 'k' ['kseg' 'key'] ▸ ['key' 'kseg']
         
+        belt.prepareWordsForCompletion 'he' ['hello' 'hell'] ▸ ['hell' 'hello']
+        belt.prepareWordsForCompletion 'he' ['"hello"' '@hell'] ▸ ['hell' 'hello']
+        
     # ███  ███   ███  ███████    ████████  ███   ███  █████████
     # ███  ████  ███  ███   ███  ███       ████  ███     ███   
     # ███  ███ █ ███  ███   ███  ███████   ███ █ ███     ███   

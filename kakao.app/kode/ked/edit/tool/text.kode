@@ -554,20 +554,11 @@ function text
                     rngs.push [pos[0] - pair[0].length pos[1] pos[0] + pair[1].length pos[1]]
         rngs
         
-    #  ███████   ████████   ████████  ███   ███         ███████  ███       ███████    ███████  ████████
-    # ███   ███  ███   ███  ███       ████  ███        ███       ███      ███   ███  ███       ███     
-    # ███   ███  ████████   ███████   ███ █ ███        ███       ███      ███   ███  ███████   ███████ 
-    # ███   ███  ███        ███       ███  ████        ███       ███      ███   ███       ███  ███     
-    #  ███████   ███        ████████  ███   ███         ███████  ███████   ███████   ███████   ████████
-
-    @openCloseSpansForPositions: lines posl ->
+    @stringDelimiterSpansForPositions: lines posl ->
         
         spans = []
         for pos in posl
         
-            if sps = @openCloseSpansForPosition lines pos
-                spans = spans.concat sps
-                
             if srng = @rangeOfStringSurroundingRange lines [pos[0] pos[1] pos[0] pos[1]]
                 spans.push [srng[0] srng[1] srng[0]+1]
                 spans.push [srng[2]-1 srng[3] srng[2]]
@@ -577,16 +568,34 @@ function text
                     spans.push [srng[2]-1 srng[3] srng[2]]
         spans
         
+    #  ███████   ████████   ████████  ███   ███         ███████  ███       ███████    ███████  ████████
+    # ███   ███  ███   ███  ███       ████  ███        ███       ███      ███   ███  ███       ███     
+    # ███   ███  ████████   ███████   ███ █ ███        ███       ███      ███   ███  ███████   ███████ 
+    # ███   ███  ███        ███       ███  ████        ███       ███      ███   ███       ███  ███     
+    #  ███████   ███        ████████  ███   ███         ███████  ███████   ███████   ███████   ████████
+
+    @openCloseSpansForPositions: lines posl ->
+
+        spans = []
+        for pos in posl
+            if sps = @openCloseSpansForPosition lines pos
+                spans = spans.concat sps
+        spans
+        
     @openCloseSpansForPosition: lines pos ->
                 
         open =
             '[': ']'
             '{': '}'
             '(': ')'
-            
-        opns = Object.keys(open).join ''
-        clos = Object.values(open).join ''
-        revs = kutil.fromPairs kutil.zip(clos opns)
+                   
+        opns = '[{(' #Object.keys(open).join ''
+        clos = ']})' #Object.values(open).join ''
+        # revs = kutil.fromPairs kutil.zip(clos opns)
+        revs =
+            ']': '['
+            '}': '{'
+            ')': '('
         
         maxLookups = 1000 # careful, increasing this drops performance significantly!
         
@@ -631,10 +640,10 @@ function text
             
         stack = []
         ap    = [max(bp[0]+1 pos[0]) pos[1]]
+        cnt   = 0
         
         while ap[1] < lines.length # find first close bracket after
             
-            cnt  = 0
             next = lines[ap[1]][ap[0]]
             
             if next in clos
@@ -690,7 +699,16 @@ function text
     
     @prepareWordsForCompletion: turd words ->
         
-        words = words.filter (w) -> w.startsWith(turd) and w != turd
+        words = words.map (w) -> 
+        
+            ⮐  w if w.startsWith turd # include anything that starts with turd
+            
+            if hct = kseg.headCountTurd w   # if the chunk starts with punctuation
+                if w[hct..].startsWith turd # and the first word after that starts
+                    ⮐  w[hct..]             # with our string to complete, include it
+                    
+            turd # will be removed by uniq below
+            
         words = kutil.uniq words
         
         ⮐ [] if empty words
@@ -699,20 +717,20 @@ function text
         
         push = s ->
             
-            ⮐ if kseg.str(s) == turd
+            ⮐  if kseg.str(s) == turd # don't include what we are trying to complete
+            
             ws = kseg.words s
             ws = ws.filter (w) -> w.index+w.segl.length > turd.length
+            
             if valid ws[0] 
                 if ws[0].index == 0 and turd != ws[0].word != s and ws[0].word.startsWith(turd)
-                    segls.push ws[0].segl
-                else
-                    if ws[0].index-turd.length <= 0
-                        segls.push s[0..ws[0].index+ws[0].segl.length]
-                    else if ws[0].index-turd.length > 0
-                        segls.push s[0..turd.length+1]
-                    
+                    segls.push ws[0].segl # add the first word of longer completion 
+            if kseg.headCountTurd(s[turd.length..]) # if completion starts with turd, 
+                segls.push s[0..turd.length+1]      # add the first character
+                
             segls.push s
         
+        # log "words" words
         for segl in kseg.segls words
             
             tc = kseg.tailCountTurd segl
@@ -721,10 +739,17 @@ function text
                 push segl
             else
                 end = kseg.str segl[segl.length-tc..]
-                if end in '])}"\'' or end[-1] in ')]}' and end[-2] not in ','
+                # if end in '])}"\'' or end[-1] in ')]}' and end[-2] not in ','
+                if end in '])}' or end[-1] in ')]}' and end[-2] not in ','
+                    # log "case c #{kseg.str segl}"
                     push segl
                 else
+                    # log "case d #{kseg.str segl} #{kseg.str segl[0...segl.length-tc]}"
                     push segl[0...segl.length-tc]
+                    
+            # hc = kseg.headCountTurd segl
+            # if hc > 0
+            #     push segl[hc..]
             
         strs = segls.map kseg.str
         strs.sort()

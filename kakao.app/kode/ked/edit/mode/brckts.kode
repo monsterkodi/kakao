@@ -41,15 +41,21 @@ function brckts
     cursorsSet: ->
 
         if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
-            if @rngs eql @state.s.highlights
+            if @allSpans eql @state.s.highlights
                 @state.setHighlights []
             ⮐  
         if @state.s.highlights.length     # don't highlight brackets when other highlights exist and it's different
-            ⮐  if not @rngs eql @state.s.highlights.asMutable() # from the previous brckts highlight
+            ⮐  if not @allSpans eql @state.s.highlights.asMutable() # from the previous brckts highlight
             
-        @rngs = belt.openCloseSpansForPositions @state.allLines() @state.allCursors()
-
-        @state.setHighlights @rngs
+        lines   = @state.s.lines
+        cursors = @state.s.cursors
+        
+        @openCloseSpans       = belt.openCloseSpansForPositions       lines cursors
+        @stringDelimiterSpans = belt.stringDelimiterSpansForPositions lines cursors
+        
+        @state.setHighlights @openCloseSpans.concat(@stringDelimiterSpans)
+        
+        @allSpans = @state.s.highlights.asMutable()
 
     # ███   ███  ████████  ███   ███        
     # ███  ███   ███        ███ ███         
@@ -58,19 +64,35 @@ function brckts
     # ███   ███  ████████     ███           
 
     handleKey: key event ->
+    
+        switch key
         
-        if key == 'delete' and empty @state.s.selections
-            pairs = kutil.uniq Object.values(brckts.surround)
-            if valid (rngs = belt.rangesOfPairsSurroundingPositions(@state.s.lines pairs @state.s.cursors))
-                @state.setSelections rngs
-                @state.deleteSelection()
-                ⮐ 
+            'alt+cmd+b' 
+            
+                if valid @stringDelimiterSpans
+                    @state.setSelections belt.rangesForSpans(@stringDelimiterSpans)
+                    @state.moveCursorsToEndOfSelections()
+                    ⮐  
+                    
+                if valid @openCloseSpans
+                    @state.setSelections belt.rangesForSpans(@openCloseSpans)
+                    @state.moveCursorsToEndOfSelections()
+                    ⮐  
+            
+            'delete'
+        
+                if empty @state.s.selections
+                    pairs = kutil.uniq Object.values(brckts.surround)
+                    if valid (rngs = belt.rangesOfPairsSurroundingPositions(@state.s.lines pairs @state.s.cursors))
+                        @state.setSelections rngs
+                        @state.deleteSelection()
+                        ⮐ 
         
         ⮐ 'unhandled' if empty brckts.surround[event.char]
             
         if event.char == '#' # handle string interpolation
 
-            ⮐  "unhandled" if valid belt.positionsAndRangesOutsideStrings(@state.s.lines @state.s.selections @state.s.cursors)
+            ⮐  'unhandled' if valid belt.positionsAndRangesOutsideStrings(@state.s.lines @state.s.selections @state.s.cursors)
             
             if valid @state.s.selections
                 ⮐ @state.surroundSelection event.char brckts.surround[event.char]
@@ -82,6 +104,12 @@ function brckts
         else # not a string interpolation
             
             if valid @state.s.selections
+                
+                if valid @stringDelimiterSpans
+                    delrngs = belt.normalizeRanges belt.rangesForSpans(@stringDelimiterSpans)
+                    if delrngs eql @state.s.selections 
+                        ⮐  'unhandled'                 # don't surround selected string delimiters
+            
                 ⮐  @state.surroundSelection event.char brckts.surround[event.char]
             
             nsegl = belt.segsForPositions @state.s.lines @state.s.cursors # collect all graphemes at the cursors

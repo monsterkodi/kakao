@@ -193,7 +193,6 @@ quicky = (function ()
         this.choices.state.selectLine(selectIndex)
         this.choices.state.setMainCursor(0,selectIndex)
         this.choices.state.setView([0,0])
-        console.log(`${this.name} showPathItems ${items.length}`)
         this.show()
         return this.choices.grabFocus()
     }
@@ -334,7 +333,6 @@ quicky = (function ()
     {
         var upDir, _319_62_
 
-        console.log(`${this.name} onChoicesAction`,action,choice,this.currentDir)
         switch (action)
         {
             case 'right':

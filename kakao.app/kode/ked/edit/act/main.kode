@@ -92,7 +92,7 @@ export
 
     singleCursorAtIndentOrStartOfLine: ->
         
-        lines = @allLines()
+        lines = @s.lines
         mc    = @mainCursor()
         
         rng   = belt.lineRangeAtPos  lines mc

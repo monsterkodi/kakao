@@ -933,19 +933,15 @@ text = (function ()
         return rngs
     }
 
-    text["openCloseSpansForPositions"] = function (lines, posl)
+    text["stringDelimiterSpansForPositions"] = function (lines, posl)
     {
-        var pos, spans, sps, srng
+        var pos, spans, srng
 
         spans = []
         var list = _k_.list(posl)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             pos = list[_a_]
-            if (sps = this.openCloseSpansForPosition(lines,pos))
-            {
-                spans = spans.concat(sps)
-            }
             if (srng = this.rangeOfStringSurroundingRange(lines,[pos[0],pos[1],pos[0],pos[1]]))
             {
                 spans.push([srng[0],srng[1],srng[0] + 1])
@@ -963,14 +959,31 @@ text = (function ()
         return spans
     }
 
+    text["openCloseSpansForPositions"] = function (lines, posl)
+    {
+        var pos, spans, sps
+
+        spans = []
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            if (sps = this.openCloseSpansForPosition(lines,pos))
+            {
+                spans = spans.concat(sps)
+            }
+        }
+        return spans
+    }
+
     text["openCloseSpansForPosition"] = function (lines, pos)
     {
         var ap, bp, clos, closeEncounters, cnt, firstClose, lastOpen, maxLookups, next, open, openEncounters, opns, prev, revs, stack
 
         open = {'[':']','{':'}','(':')'}
-        opns = Object.keys(open).join('')
-        clos = Object.values(open).join('')
-        revs = kutil.fromPairs(kutil.zip(clos,opns))
+        opns = '[{('
+        clos = ']})'
+        revs = {']':'[','}':'{',')':'('}
         maxLookups = 1000
         bp = [pos[0],pos[1]]
         if (!(_k_.in(lines[bp[1]][bp[0]],opns)))
@@ -1038,9 +1051,9 @@ text = (function ()
         }
         stack = []
         ap = [_k_.max(bp[0] + 1,pos[0]),pos[1]]
+        cnt = 0
         while (ap[1] < lines.length)
         {
-            cnt = 0
             next = lines[ap[1]][ap[0]]
             if (_k_.in(next,clos))
             {
@@ -1102,9 +1115,22 @@ text = (function ()
     {
         var end, push, segl, segls, strs, tc
 
-        words = words.filter(function (w)
+        words = words.map(function (w)
         {
-            return w.startsWith(turd) && w !== turd
+            var hct
+
+            if (w.startsWith(turd))
+            {
+                return w
+            }
+            if (hct = kseg.headCountTurd(w))
+            {
+                if (w.slice(hct).startsWith(turd))
+                {
+                    return w.slice(hct)
+                }
+            }
+            return turd
         })
         words = kutil.uniq(words)
         if (_k_.empty(words))
@@ -1131,17 +1157,10 @@ text = (function ()
                 {
                     segls.push(ws[0].segl)
                 }
-                else
-                {
-                    if (ws[0].index - turd.length <= 0)
-                    {
-                        segls.push(s.slice(0, ws[0].index + ws[0].segl.length))
-                    }
-                    else if (ws[0].index - turd.length > 0)
-                    {
-                        segls.push(s.slice(0, turd.length + 1))
-                    }
-                }
+            }
+            if (kseg.headCountTurd(s.slice(turd.length)))
+            {
+                segls.push(s.slice(0, turd.length + 1))
             }
             return segls.push(s)
         }
@@ -1157,7 +1176,7 @@ text = (function ()
             else
             {
                 end = kseg.str(segl.slice(segl.length - tc))
-                if (_k_.in(end,'])}"\'') || _k_.in(end.slice(-1)[0],')]}') && !(_k_.in(end.slice(-2,-1)[0],',')))
+                if (_k_.in(end,'])}') || _k_.in(end.slice(-1)[0],')]}') && !(_k_.in(end.slice(-2,-1)[0],',')))
                 {
                     push(segl)
                 }

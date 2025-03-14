@@ -27,7 +27,7 @@ function KED
 
     @: ->
 
-        @version = '0.4.0'
+        @version = '0.5.0'
         @args = karg """
             
             ked [file]
@@ -262,7 +262,7 @@ function KED
     
     saveFile: ○=>
         
-        text = kseg.str @editor.state.allLines()
+        text = kseg.str @editor.state.s.lines
         
         if valid @currentFile
             ○ nfs.write @currentFile text
@@ -323,7 +323,7 @@ function KED
     # 000   000  00000000     000     
     
     onKey: key event =>
-        
+            
         switch key
             
             'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐ @quit()
@@ -339,7 +339,10 @@ function KED
             'cmd+.' 'ctrl+.'             ➜ ⮐ @fsbrow.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers
+            # log "#{handler.name}"
+            # ●▸ on key
             break if result = handler.onKey key event
+            # ●▪ on key
                 
         @redraw() if result?.redraw != false
         

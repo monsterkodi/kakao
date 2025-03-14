@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, profile: function (id) {_k_.hrtime ??= {}; _k_.hrtime[id] = performance.now(); }, profilend: function (id) { var b = performance.now()-_k_.hrtime[id]; let f=0.001; for (let u of ['s','ms','μs','ns']) { if (u=='ns' || (b*f)>=1) { return console.log(id+' '+Number.parseFloat(b*f).toFixed(1)+' '+u); } f*=1000; }}}
 
 var complete
 
@@ -28,24 +28,33 @@ complete = (function ()
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
         this.choices.rounded = false
-        this.choices.color.bg = theme.editor_complete_choices
+        this.color = {bg:theme.editor_selection}
+        this.choices.setColor('bg',theme.editor_complete_choices)
         this.choices.scroll.handle = '▐'
-        this.choices.scroll.color.bg = theme.editor_complete_choices
-        this.choices.scroll.color.knob = theme.editor_complete_choices_scroll
-        this.choices.scroll.color.dot = theme.editor_complete_choices_scroll
+        this.choices.scroll.setColor('bg',theme.editor_complete_choices)
+        this.choices.scroll.setColor('knob',theme.editor_complete_choices_scroll)
+        this.choices.scroll.setColor('dot',theme.editor_complete_choices_scroll)
         this.choices.on('action',this.onChoicesAction)
         this.visible = false
     }
 
     complete.prototype["complete"] = function ()
     {
-        var after
+        var before, tct, tcw
 
-        after = this.editor.state.chunkAfterCursor()
-        if (_k_.empty(after) || true)
+        before = this.editor.state.chunkBeforeCursor()
+        if (tct = kseg.tailCountTurd(before))
         {
-            return this.word(this.editor.state.chunkBeforeCursor())
+            before = before.slice(before.length - 1)
         }
+        else if (tcw = kseg.tailCountWord(before))
+        {
+            if (tcw < before.length)
+            {
+                before = before.slice(before.length - tcw)
+            }
+        }
+        return this.word(before)
     }
 
     complete.prototype["word"] = function (turd)
@@ -56,7 +65,7 @@ complete = (function ()
 
         if (_k_.empty(this.turd))
         {
-            this.visible = false
+            this.hide()
             return
         }
         this.words = kseg.chunks(this.editor.state.s.lines).map(function (chunk)
@@ -104,6 +113,11 @@ complete = (function ()
 
     complete.prototype["hide"] = function ()
     {
+        if (!this.visible)
+        {
+            return
+        }
+        this.editor.state.syntax.setSegls(kseg.segls(this.editor.state.s.lines))
         return this.visible = false
     }
 
@@ -220,29 +234,55 @@ complete = (function ()
         return word
     }
 
-    complete.prototype["draw"] = function ()
+    complete.prototype["preDrawLines"] = function (lines)
     {
-        var bg, ch, ci, cx, cy, fx, fy, h, mc, w, word, x, y, _226_52_
+        var pos, word
 
         if (this.hidden() || _k_.empty(this.words))
+        {
+            return lines
+        }
+        _k_.profile('pre draw')
+        word = this.currentWord()
+        lines = lines.asMutable()
+        var list = _k_.list(this.editor.state.s.cursors)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            kutil.replace(lines[pos[1]],pos[0],0,kseg(word.slice(this.turd.length)))
+        }
+        this.editor.state.syntax.setSegls(kseg.segls(lines))
+        _k_.profilend('pre draw')
+        return lines
+    }
+
+    complete.prototype["draw"] = function ()
+    {
+        var ci, cx, cy, fx, fy, h, mc, pos, w, word, x, y
+
+        if (this.hidden() || _k_.empty(this.words))
+        {
+            return
+        }
+        word = this.currentWord()
+        var list = _k_.list(this.editor.state.s.cursors)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            cx = pos[0] - this.editor.state.s.view[0]
+            cy = pos[1] - this.editor.state.s.view[1]
+            for (var _b_ = ci = 0, _c_ = word.length - this.turd.length; (_b_ <= _c_ ? ci < word.length - this.turd.length : ci > word.length - this.turd.length); (_b_ <= _c_ ? ++ci : --ci))
+            {
+                this.editor.cells.set_bg(cx + ci,cy,this.color.bg)
+            }
+        }
+        if (this.words.length <= 1)
         {
             return
         }
         mc = this.editor.state.mainCursor()
         cx = mc[0] - this.editor.state.s.view[0]
         cy = mc[1] - this.editor.state.s.view[1]
-        word = this.currentWord()
-        var list = _k_.list(word.slice(this.turd.length))
-        for (ci = 0; ci < list.length; ci++)
-        {
-            ch = list[ci]
-            bg = ((_226_52_=theme[this.editor.name + '_selection']) != null ? _226_52_ : theme.editor_selection)
-            this.editor.cells.set(cx + ci,cy,ch,'#fff',bg)
-        }
-        if (this.words.length <= 1)
-        {
-            return
-        }
         fx = cx - this.turd.length - 1
         x = fx + 1 + this.editor.cells.x
         y = cy + this.editor.cells.y + 2

@@ -467,6 +467,11 @@ belt = (function ()
         return [start[0],start[1],end[0],end[1]]
     }
 
+    belt["rangesForSpans"] = function (spans)
+    {
+        return spans.map(this.rangeForSpan)
+    }
+
     belt["isEmptyRange"] = function (rng)
     {
         return rng[0] === rng[2] && rng[1] === rng[3]

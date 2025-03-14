@@ -24,9 +24,11 @@ brckts = (function ()
 
     brckts.prototype["cursorsSet"] = function ()
     {
+        var cursors, lines
+
         if (this.state.s.selections.length)
         {
-            if (_k_.eql(this.rngs, this.state.s.highlights))
+            if (_k_.eql(this.allSpans, this.state.s.highlights))
             {
                 this.state.setHighlights([])
             }
@@ -34,29 +36,53 @@ brckts = (function ()
         }
         if (this.state.s.highlights.length)
         {
-            if (_k_.eql(!this.rngs, this.state.s.highlights.asMutable()))
+            if (_k_.eql(!this.allSpans, this.state.s.highlights.asMutable()))
             {
                 return
             }
         }
-        this.rngs = belt.openCloseSpansForPositions(this.state.allLines(),this.state.allCursors())
-        return this.state.setHighlights(this.rngs)
+        lines = this.state.s.lines
+        cursors = this.state.s.cursors
+        this.openCloseSpans = belt.openCloseSpansForPositions(lines,cursors)
+        this.stringDelimiterSpans = belt.stringDelimiterSpansForPositions(lines,cursors)
+        this.state.setHighlights(this.openCloseSpans.concat(this.stringDelimiterSpans))
+        return this.allSpans = this.state.s.highlights.asMutable()
     }
 
     brckts.prototype["handleKey"] = function (key, event)
     {
-        var nsegl, nsegs, pairs, pos, rngs, seg
+        var delrngs, nsegl, nsegs, pairs, pos, rngs, seg
 
-        if (key === 'delete' && _k_.empty(this.state.s.selections))
+        switch (key)
         {
-            pairs = kutil.uniq(Object.values(brckts.surround))
-            if (!_k_.empty((rngs = belt.rangesOfPairsSurroundingPositions(this.state.s.lines,pairs,this.state.s.cursors))))
-            {
-                this.state.setSelections(rngs)
-                this.state.deleteSelection()
-                return
-            }
+            case 'alt+cmd+b':
+                if (!_k_.empty(this.stringDelimiterSpans))
+                {
+                    this.state.setSelections(belt.rangesForSpans(this.stringDelimiterSpans))
+                    this.state.moveCursorsToEndOfSelections()
+                    return
+                }
+                if (!_k_.empty(this.openCloseSpans))
+                {
+                    this.state.setSelections(belt.rangesForSpans(this.openCloseSpans))
+                    this.state.moveCursorsToEndOfSelections()
+                    return
+                }
+                break
+            case 'delete':
+                if (_k_.empty(this.state.s.selections))
+                {
+                    pairs = kutil.uniq(Object.values(brckts.surround))
+                    if (!_k_.empty((rngs = belt.rangesOfPairsSurroundingPositions(this.state.s.lines,pairs,this.state.s.cursors))))
+                    {
+                        this.state.setSelections(rngs)
+                        this.state.deleteSelection()
+                        return
+                    }
+                }
+                break
         }
+
         if (_k_.empty(brckts.surround[event.char]))
         {
             return 'unhandled'
@@ -65,7 +91,7 @@ brckts = (function ()
         {
             if (!_k_.empty(belt.positionsAndRangesOutsideStrings(this.state.s.lines,this.state.s.selections,this.state.s.cursors)))
             {
-                return "unhandled"
+                return 'unhandled'
             }
             if (!_k_.empty(this.state.s.selections))
             {
@@ -79,6 +105,14 @@ brckts = (function ()
         {
             if (!_k_.empty(this.state.s.selections))
             {
+                if (!_k_.empty(this.stringDelimiterSpans))
+                {
+                    delrngs = belt.normalizeRanges(belt.rangesForSpans(this.stringDelimiterSpans))
+                    if (_k_.eql(delrngs, this.state.s.selections))
+                    {
+                        return 'unhandled'
+                    }
+                }
                 return this.state.surroundSelection(event.char,brckts.surround[event.char])
             }
             nsegl = belt.segsForPositions(this.state.s.lines,this.state.s.cursors)

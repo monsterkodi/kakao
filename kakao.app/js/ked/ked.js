@@ -71,7 +71,7 @@ KED = (function ()
         this["onException"] = this["onException"].bind(this)
         this["quit"] = this["quit"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.4.0'
+        this.version = '0.5.0'
         this.args = karg(`
 ked [file]
     options                      **
@@ -291,7 +291,7 @@ ked [file]
     {
         var text
 
-        text = kseg.str(this.editor.state.allLines())
+        text = kseg.str(this.editor.state.s.lines)
         if (!_k_.empty(this.currentFile))
         {
             await nfs.write(this.currentFile,text)
@@ -476,7 +476,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _391_22_
+        var _394_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

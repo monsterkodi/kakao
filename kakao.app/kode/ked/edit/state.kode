@@ -68,7 +68,7 @@ function state
         @swapState()
         @
 
-    setSelections: selections -> @set 'selections' belt.mergeLineRanges(@allLines() selections)
+    setSelections: selections -> @set 'selections' belt.mergeLineRanges(@s.lines selections)
     setHighlights: highlights -> @set 'highlights' belt.normalizeSpans(highlights)
 
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000
@@ -104,12 +104,11 @@ function state
         main = clamp 0 @s.cursors.length-1 main
 
         @s = @s.set 'main' main
-
         @adjustViewForMainCursor opt
         @swapState()
         
         mode.cursorsSet @
-        
+
         if not mode.isActive @ 'salter'
             mode.modes.salter?.checkCursorsSet @
         @
@@ -211,14 +210,14 @@ function state
         ⮐ if @h.length <= 1
         @r.push @h.pop()
         @s = @h[-1]
-        @syntax.setSegls @allLines()
+        @syntax.setSegls @s.lines
 
     redo: =>
 
         ⮐ if empty @r
         @h.push @r.pop()
         @s = @h[-1]
-        @syntax.setSegls @allLines()
+        @syntax.setSegls @s.lines
 
     begin: => @beginIndex = @h.length
 

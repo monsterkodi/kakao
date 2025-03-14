@@ -3,6 +3,9 @@ var _k_ = {isFunc: function (o) {return typeof o === 'function'}}
 var POST, poster
 
 POST = "__POST__"
+import events from "events"
+
+events.setMaxListeners(100)
 class Poster extends EventTarget
 {
     constructor ()

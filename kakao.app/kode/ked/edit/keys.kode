@@ -10,115 +10,115 @@ use ◆ mode
 
 handleKey = key event -> # will be bound to state
 
-    ⮐ if 'unhandled' != mode.handleKey @ key event
+    ⮐  if 'unhandled' != mode.handleKey @ key event
 
     if @s.cursors.length == 1
-        
+    
         switch key
                             
-            'ctrl+alt+up'                   ➜ ⮐ @moveCursors 'up'    count:8
-            'ctrl+alt+down'                 ➜ ⮐ @moveCursors 'down'  count:8
-            'ctrl+alt+left'                 ➜ ⮐ @moveCursors 'left'  count:8
-            'ctrl+alt+right'                ➜ ⮐ @moveCursors 'right' count:8
-        
-            'shift+ctrl+alt+up'             ➜ ⮐ @moveCursors 'up'    count:16
-            'shift+ctrl+alt+down'           ➜ ⮐ @moveCursors 'down'  count:16
-            'shift+ctrl+alt+left'           ➜ ⮐ @moveCursors 'left'  count:16
-            'shift+ctrl+alt+right'          ➜ ⮐ @moveCursors 'right' count:16
+            'ctrl+alt+up'                   ➜ ⮐  @moveCursors 'up'    count:8
+            'ctrl+alt+down'                 ➜ ⮐  @moveCursors 'down'  count:8
+            'ctrl+alt+left'                 ➜ ⮐  @moveCursors 'left'  count:8
+            'ctrl+alt+right'                ➜ ⮐  @moveCursors 'right' count:8
+                                                 
+            'shift+ctrl+alt+up'             ➜ ⮐  @moveCursors 'up'    count:16
+            'shift+ctrl+alt+down'           ➜ ⮐  @moveCursors 'down'  count:16
+            'shift+ctrl+alt+left'           ➜ ⮐  @moveCursors 'left'  count:16
+            'shift+ctrl+alt+right'          ➜ ⮐  @moveCursors 'right' count:16
+            
+    switch key                                   
+                                                 
+        'up'                                ➜ ⮐  @moveCursors 'up'   
+        'down'                              ➜ ⮐  @moveCursors 'down' 
+        'left'                              ➜ ⮐  @moveCursors 'left' 
+        'right'                             ➜ ⮐  @moveCursors 'right'
+                                                 
+        'cmd+left'  'ctrl+left'             ➜ ⮐  @moveCursors ['bos' 'ind_bol']
+        'cmd+right' 'ctrl+right'            ➜ ⮐  @moveCursors ['eos' 'ind_eol']
+                                                 
+        'alt+left'                          ➜ ⮐  @moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
+        'alt+right'                         ➜ ⮐  @moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
+                                                 
+        'shift+alt+right'                   ➜ ⮐  @moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
+        'shift+alt+left'                    ➜ ⮐  @moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
+        'shift+up'                          ➜ ⮐  @moveCursorsAndSelect 'up'
+        'shift+down'                        ➜ ⮐  @moveCursorsAndSelect 'down'
+        'shift+left'                        ➜ ⮐  @moveCursorsAndSelect 'left'
+        'shift+right'                       ➜ ⮐  @moveCursorsAndSelect 'right'
+        'shift+cmd+right'                   ➜ ⮐  @moveCursorsAndSelect 'ind_eol'
+        'shift+cmd+left'                    ➜ ⮐  @moveCursorsAndSelect 'ind_bol'
+        'shift+ctrl+h'                      ➜ ⮐  @moveCursorsAndSelect 'bof'
+        'shift+ctrl+j'                      ➜ ⮐  @moveCursorsAndSelect 'eof'
+                                                 
+        'shift+alt+cmd+up'                  ➜ ⮐  @moveMainCursorInDirection 'up'    keep:true # 'paint' cursors
+        'shift+alt+cmd+down'                ➜ ⮐  @moveMainCursorInDirection 'down'  keep:true # 'paint' cursors
+        'shift+alt+cmd+left'                ➜ ⮐  @moveMainCursorInDirection 'left'  keep:true # 'paint' cursors
+        'shift+alt+cmd+right'               ➜ ⮐  @moveMainCursorInDirection 'right' keep:true # 'paint' cursors
+                                                 
+        'alt+up'                            ➜ ⮐  @moveSelectionOrCursorLines 'up'
+        'alt+down'                          ➜ ⮐  @moveSelectionOrCursorLines 'down'
+        'shift+alt+up'                      ➜ ⮐  @cloneSelectionAndCursorLines 'up'
+        'shift+alt+down'                    ➜ ⮐  @cloneSelectionAndCursorLines 'down'
+                                                 
+        'cmd+up'   'ctrl+up'                ➜ ⮐  @expandCursors   'up'
+        'cmd+down' 'ctrl+down'              ➜ ⮐  @expandCursors   'down'
+        'shift+cmd+up'   'shift+ctrl+up'    ➜ ⮐  @contractCursors 'up'
+        'shift+cmd+down' 'shift+ctrl+down'  ➜ ⮐  @contractCursors 'down'
+                                                 
+        'pageup'                            ➜ ⮐  @singleCursorPage 'up'
+        'pagedown'                          ➜ ⮐  @singleCursorPage 'down'
+                                                 
+        'home'                              ➜ ⮐  @singleCursorAtIndentOrStartOfLine()
+        'end'                               ➜ ⮐  @singleCursorAtEndOfLine()
+                                                 
+        'ctrl+h'                            ➜ ⮐  @setMainCursor 0 0
+        'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines.length-1].length @s.lines.length-1
+                                                 
+        'alt+d'                             ➜ ⮐  @delete 'next' true
+        'shift+ctrl+k' 'entf'               ➜ ⮐  @delete 'next'
+        'ctrl+k'                            ➜ ⮐  @delete 'eol'
+        'delete'                            ➜ ⮐  @delete 'back'
+        'ctrl+delete'                       ➜ ⮐  @delete 'back' true
+        'cmd+delete'                        ➜ ⮐  @delete 'back' true
+                                                 
+        'shift+tab'                         ➜ ⮐  @deindentSelectedOrCursorLines()
+        'tab'                               ➜ ⮐  @insert '\t'
+                                                 
+        'alt+x' 'cmd+x' 'ctrl+x'            ➜ ⮐  @cut()     
+        'alt+c' 'cmd+c' 'ctrl+c'            ➜ ⮐  @copy()        
+        'alt+v' 'cmd+v' 'ctrl+v'            ➜ ⮐  @paste()
+                                                 
+        'cmd+z' 'ctrl+z'                    ➜ ⮐  @undo()
+        'shift+cmd+z'                            
+        'cmd+y' 'ctrl+y'                    ➜ ⮐  @redo()
+                                                 
+        'cmd+a'       'ctrl+a'              ➜ ⮐  @selectAllLines()
+        'cmd+j'       'ctrl+j'              ➜ ⮐  @joinLines()
+        'cmd+l'       'ctrl+l'              ➜ ⮐  @selectMoreLines()
+        'shift+cmd+l' 'shift+ctrl+l'        ➜ ⮐  @selectLessLines()
+                                                 
+        'cmd+e' 'ctrl+e'                    ➜ ⮐  @highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+        'cmd+d' 'ctrl+d'                    ➜ ⮐  @selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+        'cmd+g' 'ctrl+g'                    ➜ ⮐  @selectWordAtCursor_highlightSelection_selectNextHighlight()
+                                                 
+        'shift+cmd+e' 'shift+ctrl+e'        ➜ ⮐  @highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
+        'shift+cmd+d' 'shift+ctrl+d'        ➜ ⮐  @selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
+        'shift+cmd+g' 'shift+ctrl+g'        ➜ ⮐  @selectWordAtCursor_highlightSelection_selectPrevHighlight()
+                                                 
+        'alt+y'                             ➜ ⮐  @toggleMode 'unype'
+        'alt+r'                             ➜ ⮐  @toggleMode 'record'
+        'alt+u'                             ➜ ⮐  @toggleMode 'uniko'
+        'alt+;'                             ➜ ⮐  @toggleMode 'vimple'
+        'alt+3'                             ➜ ⮐  @toggleMode 'salter'
+                                                 
+        'cmd+3' 'ctrl+3'                    ➜ ⮐  @insertAsciiHeaderForSelectionOrWordAtCursor()
+        'alt+cmd+d' 'alt+ctrl+d'            ➜ ⮐  @selectWordAtCursor_highlightSelection_selectAllHighlights()
+                                                 
+        'cmd+/' 'ctrl+/'                    ➜ ⮐  @toggleCommentAtSelectionOrCursorLines()
+        'alt+cmd+/' 'ctrl+alt+/'            ➜ ⮐  @toggleCommentTypeAtSelectionOrCursorLines()
+                                                 
+        'esc'                               ➜ ⮐  @clearCursorsHighlightsAndSelections()
     
-    switch key
-
-        'up'                                ➜ ⮐ @moveCursors 'up'   
-        'down'                              ➜ ⮐ @moveCursors 'down' 
-        'left'                              ➜ ⮐ @moveCursors 'left' 
-        'right'                             ➜ ⮐ @moveCursors 'right'
-                
-        'cmd+left'  'ctrl+left'             ➜ ⮐ @moveCursors ['bos' 'ind_bol']
-        'cmd+right' 'ctrl+right'            ➜ ⮐ @moveCursors ['eos' 'ind_eol']
-                
-        'alt+left'                          ➜ ⮐ @moveCursors 'left'  jump:['ws' 'word' 'empty' 'punct']
-        'alt+right'                         ➜ ⮐ @moveCursors 'right' jump:['ws' 'word' 'empty' 'punct']
-        
-        'shift+alt+right'                   ➜ ⮐ @moveCursorsAndSelect 'right' jump:['ws' 'word' 'empty' 'punct']
-        'shift+alt+left'                    ➜ ⮐ @moveCursorsAndSelect 'left'  jump:['ws' 'word' 'empty' 'punct']
-        'shift+up'                          ➜ ⮐ @moveCursorsAndSelect 'up'
-        'shift+down'                        ➜ ⮐ @moveCursorsAndSelect 'down'
-        'shift+left'                        ➜ ⮐ @moveCursorsAndSelect 'left'
-        'shift+right'                       ➜ ⮐ @moveCursorsAndSelect 'right'
-        'shift+cmd+right'                   ➜ ⮐ @moveCursorsAndSelect 'ind_eol'
-        'shift+cmd+left'                    ➜ ⮐ @moveCursorsAndSelect 'ind_bol'
-        'shift+ctrl+h'                      ➜ ⮐ @moveCursorsAndSelect 'bof'
-        'shift+ctrl+j'                      ➜ ⮐ @moveCursorsAndSelect 'eof'
-                            
-        'shift+alt+cmd+up'                  ➜ ⮐ @moveMainCursorInDirection 'up'    keep:true # 'paint' cursors
-        'shift+alt+cmd+down'                ➜ ⮐ @moveMainCursorInDirection 'down'  keep:true # 'paint' cursors
-        'shift+alt+cmd+left'                ➜ ⮐ @moveMainCursorInDirection 'left'  keep:true # 'paint' cursors
-        'shift+alt+cmd+right'               ➜ ⮐ @moveMainCursorInDirection 'right' keep:true # 'paint' cursors
-                
-        'alt+up'                            ➜ ⮐ @moveSelectionOrCursorLines 'up'
-        'alt+down'                          ➜ ⮐ @moveSelectionOrCursorLines 'down'
-        'shift+alt+up'                      ➜ ⮐ @cloneSelectionAndCursorLines 'up'
-        'shift+alt+down'                    ➜ ⮐ @cloneSelectionAndCursorLines 'down'
-
-        'cmd+up'   'ctrl+up'                ➜ ⮐ @expandCursors   'up'
-        'cmd+down' 'ctrl+down'              ➜ ⮐ @expandCursors   'down'
-        'shift+cmd+up'   'shift+ctrl+up'    ➜ ⮐ @contractCursors 'up'
-        'shift+cmd+down' 'shift+ctrl+down'  ➜ ⮐ @contractCursors 'down'
-
-        'pageup'                            ➜ ⮐ @singleCursorPage 'up'
-        'pagedown'                          ➜ ⮐ @singleCursorPage 'down'
-        
-        'home'                              ➜ ⮐ @singleCursorAtIndentOrStartOfLine()
-        'end'                               ➜ ⮐ @singleCursorAtEndOfLine()
-                
-        'ctrl+h'                            ➜ ⮐ @setMainCursor 0 0
-        'ctrl+j'                            ➜ ⮐ @setMainCursor @s.lines[@s.lines.length-1].length @s.lines.length-1
-                
-        'alt+d'                             ➜ ⮐ @delete 'next' true
-        'shift+ctrl+k' 'entf'               ➜ ⮐ @delete 'next'
-        'ctrl+k'                            ➜ ⮐ @delete 'eol'
-        'delete'                            ➜ ⮐ @delete 'back'
-        'ctrl+delete'                       ➜ ⮐ @delete 'back' true
-        'cmd+delete'                        ➜ ⮐ @delete 'back' true
-                
-        'shift+tab'                         ➜ ⮐ @deindentSelectedOrCursorLines()
-        'tab'                               ➜ ⮐ @insert '\t'
-                                        
-        'alt+x' 'cmd+x' 'ctrl+x'            ➜ ⮐ @cut()     
-        'alt+c' 'cmd+c' 'ctrl+c'            ➜ ⮐ @copy()        
-        'alt+v' 'cmd+v' 'ctrl+v'            ➜ ⮐ @paste()
-                               
-        'cmd+z' 'ctrl+z'                    ➜ ⮐ @undo()
-        'shift+cmd+z'        
-        'cmd+y' 'ctrl+y'                    ➜ ⮐ @redo()
-                        
-        'cmd+a'       'ctrl+a'              ➜ ⮐ @selectAllLines()
-        'cmd+j'       'ctrl+j'              ➜ ⮐ @joinLines()
-        'cmd+l'       'ctrl+l'              ➜ ⮐ @selectMoreLines()
-        'shift+cmd+l' 'shift+ctrl+l'        ➜ ⮐ @selectLessLines()
-
-        'cmd+e' 'ctrl+e'                    ➜ ⮐ @highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
-        'cmd+d' 'ctrl+d'                    ➜ ⮐ @selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
-        'cmd+g' 'ctrl+g'                    ➜ ⮐ @selectWordAtCursor_highlightSelection_selectNextHighlight()
-               
-        'shift+cmd+e' 'shift+ctrl+e'        ➜ ⮐ @highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
-        'shift+cmd+d' 'shift+ctrl+d'        ➜ ⮐ @selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
-        'shift+cmd+g' 'shift+ctrl+g'        ➜ ⮐ @selectWordAtCursor_highlightSelection_selectPrevHighlight()
-    
-        'alt+y'                             ➜ ⮐ @toggleMode 'unype'
-        'alt+r'                             ➜ ⮐ @toggleMode 'record'
-        'alt+u'                             ➜ ⮐ @toggleMode 'uniko'
-        'alt+;'                             ➜ ⮐ @toggleMode 'vimple'
-        'alt+3'                             ➜ ⮐ @toggleMode 'salter'
-        
-        'cmd+3' 'ctrl+3'                    ➜ ⮐ @insertAsciiHeaderForSelectionOrWordAtCursor()
-        'alt+cmd+d' 'alt+ctrl+d'            ➜ ⮐ @selectWordAtCursor_highlightSelection_selectAllHighlights()
-        
-        'cmd+/' 'ctrl+/'                    ➜ ⮐ @toggleCommentAtSelectionOrCursorLines()
-        'alt+cmd+/' 'ctrl+alt+/'            ➜ ⮐ @toggleCommentTypeAtSelectionOrCursorLines()
-                
-        'esc'                               ➜ ⮐ @clearCursorsHighlightsAndSelections()
-        
     'unhandled'
 
 export handleKey

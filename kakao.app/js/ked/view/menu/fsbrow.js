@@ -61,7 +61,6 @@ fsbrow = (function ()
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
         fw = (this.fscol.visible() ? w / 2 - 1 : 0)
         cw = w - fw - 3
-        console.log(`${this.name} layout ${cw} ${fw} ${w}`)
         x = parseInt(scx - w / 2)
         h = ch + ih + cr + 2
         fh = (this.fscol.visible() ? ch : 0)
@@ -95,7 +94,7 @@ fsbrow = (function ()
             this.choices.cells.set(x,y,'',this.choices.color.current,bg)
             if ((0 <= y && y < this.choices.cells.rows))
             {
-                return this.choices.cells.set_unsafe(x + 1,y,'┤',fg,bg)
+                return this.choices.cells.set_unsafe(x + 1,y,'',fg,bg)
             }
         }
     }
@@ -300,7 +299,6 @@ fsbrow = (function ()
     {
         var upDir, _267_62_
 
-        console.log('onChoicesAction',action,choice,this.currentDir)
         switch (action)
         {
             case 'right':

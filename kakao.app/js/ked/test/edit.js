@@ -160,6 +160,8 @@ Alice’s,`)
         compare(belt.prepareWordsForCompletion('a.b',['a.b.c.d']),['a.b.','a.b.c.d'])
         compare(belt.prepareWordsForCompletion('word',['word[@turd.length..]']),['word[','word[@turd.length..]'])
         compare(belt.prepareWordsForCompletion('k',['kseg','key']),['key','kseg'])
+        compare(belt.prepareWordsForCompletion('he',['hello','hell']),['hell','hello'])
+        compare(belt.prepareWordsForCompletion('he',['"hello"','@hell']),['hell','hello'])
     })
     section("indentLineRangesAndPositionsAtIndices", function ()
     {

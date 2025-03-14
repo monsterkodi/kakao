@@ -81,13 +81,13 @@ mode = (function ()
 
     mode["start"] = function (state, name)
     {
-        var _93_28_
+        var _87_28_
 
         if (this.isActive(state,name))
         {
             return
         }
-        this.active[state.name] = ((_93_28_=this.active[state.name]) != null ? _93_28_ : [])
+        this.active[state.name] = ((_87_28_=this.active[state.name]) != null ? _87_28_ : [])
         return this.active[state.name].push(new mode.modes[name](state))
     }
 
@@ -233,6 +233,22 @@ mode = (function ()
             }
         }
         return theme[colorName]
+    }
+
+    mode["preDrawLines"] = function (state, lines)
+    {
+        var m
+
+        var list = _k_.list(this.active[state.name])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            m = list[_a_]
+            if (_k_.isFunc(m.preDrawLines))
+            {
+                lines = m.preDrawLines(lines)
+            }
+        }
+        return lines
     }
 
     mode["postDraw"] = function (state)

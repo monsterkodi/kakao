@@ -384,8 +384,8 @@ cells = (function ()
         for (var _c_ = 0; _c_ < list.length; _c_++)
         {
             y = list[_c_]
-            this.set(x1,y,'├',fg,bg)
-            this.set(x2,y,'┤',fg,bg)
+            this.set(x1,y,'',fg,bg)
+            this.set(x2,y,'',fg,bg)
             this.fill_row(y,x1 + 1,x2 - 1,'─',fg,bg)
         }
     }

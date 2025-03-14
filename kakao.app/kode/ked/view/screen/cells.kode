@@ -173,8 +173,10 @@ function cells
             @fill_col x2-1-x y1+1 y2-1 ' ' fg bg
         
         for y in opt.hdiv
-            @set  x1  y '├' fg bg
-            @set  x2  y '┤' fg bg
+            # @set  x1  y '├' fg bg
+            # @set  x2  y '┤' fg bg
+            @set  x1  y '' fg bg
+            @set  x2  y '' fg bg
             @fill_row y x1+1 x2-1 '─' fg bg
         
     draw_path: x mx y pth bg ->

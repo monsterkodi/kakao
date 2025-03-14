@@ -56,7 +56,7 @@ function fsbrow extends quicky
         w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
         fw = @fscol.visible() ? w/2-1 : 0
         cw = w-fw-3
-        log "#{@name} layout #{cw} #{fw} #{w}"
+
         x  = int scx-w/2
         
         h  = ch + ih + cr + 2
@@ -94,7 +94,7 @@ function fsbrow extends quicky
             y = @choices.currentIndex()-@choices.state.s.view[1]
             @choices.cells.fill_row     y @choices.current().tilde.length x-1 ' ' bg @choices.color.current
             @choices.cells.set          x y '' @choices.color.current bg 
-            @choices.cells.set_unsafe   x+1 y '┤' fg bg if 0 <= y < @choices.cells.rows
+            @choices.cells.set_unsafe   x+1 y '' fg bg if 0 <= y < @choices.cells.rows
         
     #  0000000    0000000   000000000   0000000   0000000    000  00000000   
     # 000        000   000     000     000   000  000   000  000  000   000  
@@ -251,7 +251,7 @@ function fsbrow extends quicky
                 
     onChoicesAction: action choice =>
     
-        log 'onChoicesAction' action choice @currentDir
+        # log 'onChoicesAction' action choice @currentDir
             
         switch action
             

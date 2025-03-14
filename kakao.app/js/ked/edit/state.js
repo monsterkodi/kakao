@@ -136,7 +136,7 @@ state = (function ()
 
     state.prototype["setSelections"] = function (selections)
     {
-        return this.set('selections',belt.mergeLineRanges(this.allLines(),selections))
+        return this.set('selections',belt.mergeLineRanges(this.s.lines,selections))
     }
 
     state.prototype["setHighlights"] = function (highlights)
@@ -146,7 +146,7 @@ state = (function ()
 
     state.prototype["setCursors"] = function (cursors, opt)
     {
-        var cur, idx, main, mainCursor, _114_29_
+        var cur, idx, main, mainCursor, _113_29_
 
         opt = (opt != null ? opt : {})
         main = opt.main
@@ -240,22 +240,22 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _163_15_
+        var segl, _162_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_163_15_=this.segls) != null ? _163_15_ : [])
+        this.segls = ((_162_15_=this.segls) != null ? _162_15_ : [])
         this.segls.push(segl)
         return this.s = this.s.set('lines',this.segls)
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _171_15_
+        var segls, _170_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_171_15_=this.segls) != null ? _171_15_ : [])
+        this.segls = ((_170_15_=this.segls) != null ? _170_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.s = this.s.set('lines',this.segls)
     }
@@ -314,7 +314,7 @@ state = (function ()
         }
         this.r.push(this.h.pop())
         this.s = this.h.slice(-1)[0]
-        return this.syntax.setSegls(this.allLines())
+        return this.syntax.setSegls(this.s.lines)
     }
 
     state.prototype["redo"] = function ()
@@ -325,7 +325,7 @@ state = (function ()
         }
         this.h.push(this.r.pop())
         this.s = this.h.slice(-1)[0]
-        return this.syntax.setSegls(this.allLines())
+        return this.syntax.setSegls(this.s.lines)
     }
 
     state.prototype["begin"] = function ()

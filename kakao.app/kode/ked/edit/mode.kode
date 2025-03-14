@@ -37,8 +37,6 @@ function mode
 
         list =○ nfs.list slash.path(◆dir 'mode')
         
-        # log 'mode.loadModules' list
-
         for item in list
             file = item.path
             continue if slash.ext(file) != 'js'
@@ -54,8 +52,6 @@ function mode
             moduleClass = moduleExport.default
             mode.modes[moduleName] = moduleClass
             
-        # log 'mode.loadModules - modes' mode.names()
-        
         post.emit 'modes.loaded'
         
         while valid mode.pending
@@ -86,18 +82,12 @@ function mode
     
     @start: state name ->
     
-        # log "mode.start #{name}"
-        
         ⮐ if @isActive state name
         
         @active[state.name] ?= []
         @active[state.name].push new mode.modes[name] state
         
-        # log "mode.start" @active[state.name].map((m) -> m.name)
-            
     @stop: state name ->
-        
-        # log "mode.stop #{name}"
         
         m = @get state name
         
@@ -105,8 +95,6 @@ function mode
         
         m.stop() if m.stop is func
         
-        # log "mode.stop" @active[state.name].map((m) -> m.name)
-
     @toggle: state name ->
         
         if @isActive state name
@@ -166,10 +154,10 @@ function mode
     # ███   ███  ████████     ███   
 
     @handleKey: state key event ->
-        
+
         for m in @active[state.name]
             if m.handleKey is func
-                ⮐ if m.handleKey(key event) != 'unhandled'
+                ⮐  if m.handleKey(key event) != 'unhandled'
         'unhandled'
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████        ███████  ████████  █████████
@@ -179,7 +167,7 @@ function mode
     #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████        ███████   ████████     ███   
 
     @cursorsSet: state ->
-    
+
         for m in @active[state.name]
             if m.cursorsSet is func
                 m.cursorsSet()
@@ -196,8 +184,20 @@ function mode
             if m.themeColor is func
                 ⮐  m.themeColor colorName
         
-        # log "themeColor #{colorName} #{theme[colorName]}"
         theme[colorName]
+        
+    # 00000000   00000000   00000000    0000000    00000000    0000000   000   000    000      000  000   000  00000000   0000000  
+    # 000   000  000   000  000         000   000  000   000  000   000  000 0 000    000      000  0000  000  000       000       
+    # 00000000   0000000    0000000     000   000  0000000    000000000  000000000    000      000  000 0 000  0000000   0000000   
+    # 000        000   000  000         000   000  000   000  000   000  000   000    000      000  000  0000  000            000  
+    # 000        000   000  00000000    0000000    000   000  000   000  00     00    0000000  000  000   000  00000000  0000000   
+    
+    @preDrawLines: state lines ->
+
+        for m in @active[state.name]
+            if m.preDrawLines is func
+                lines = m.preDrawLines(lines)
+        lines
         
     # 00000000    0000000    0000000  000000000        0000000    00000000    0000000   000   000  
     # 000   000  000   000  000          000           000   000  000   000  000   000  000 0 000  
@@ -206,7 +206,7 @@ function mode
     # 000         0000000   0000000      000           0000000    000   000  000   000  00     00  
     
     @postDraw: state ->
-        
+
         for m in @active[state.name]
             if m.postDraw is func
                 m.postDraw()

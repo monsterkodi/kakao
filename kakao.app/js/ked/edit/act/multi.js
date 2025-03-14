@@ -108,7 +108,7 @@ export default {allCursors:function ()
         this.deselect()
     }
     cursors = this.allCursors()
-    lines = this.allLines()
+    lines = this.s.lines
     var list = _k_.list(cursors)
     for (var _c_ = 0; _c_ < list.length; _c_++)
     {

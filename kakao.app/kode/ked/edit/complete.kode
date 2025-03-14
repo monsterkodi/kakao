@@ -20,12 +20,15 @@ function complete
         @choices = new choices_class @editor.cells.screen "#{@name}_choices" ['scrllr']
         @choices.focusable = false
         @choices.rounded   = false
-        @choices.color.bg  = theme.editor_complete_choices
+        
+        @color = bg: theme.editor_selection
+        
+        @choices.setColor 'bg' theme.editor_complete_choices
         
         @choices.scroll.handle = '▐'
-        @choices.scroll.color.bg   = theme.editor_complete_choices
-        @choices.scroll.color.knob = theme.editor_complete_choices_scroll
-        @choices.scroll.color.dot  = theme.editor_complete_choices_scroll
+        @choices.scroll.setColor 'bg'   theme.editor_complete_choices
+        @choices.scroll.setColor 'knob' theme.editor_complete_choices_scroll
+        @choices.scroll.setColor 'dot'  theme.editor_complete_choices_scroll
         
         @choices.on 'action' @onChoicesAction
         
@@ -37,11 +40,16 @@ function complete
     # 000       000   000  000 0 000  000        000      000          000     000       
     #  0000000   0000000   000   000  000        0000000  00000000     000     00000000  
     
-    complete: ->
-        
-        after = @editor.state.chunkAfterCursor()
-        if empty after or true
-            @word @editor.state.chunkBeforeCursor() 
+    complete: -> 
+    
+        before = @editor.state.chunkBeforeCursor()
+        if tct = kseg.tailCountTurd before
+            before = before[before.length-1..]
+        else if tcw = kseg.tailCountWord before
+            if tcw < before.length
+                before = before[before.length-tcw..]
+        # log b5("complete #{y5 before} #{r5 tct} #{r5 tcw}")
+        @word before
         
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
@@ -54,7 +62,7 @@ function complete
         # log "complete.word #{b8 @turd}"
         
         if empty @turd
-            @visible = false
+            @hide()
             ⮐ 
                 
         @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
@@ -92,7 +100,17 @@ function complete
             @choices.set @words.map((w) -> ' '+w)
             @choices.selectFirst()
         
-    hide:   -> @visible = false
+    # 000   000  000  0000000    00000000  
+    # 000   000  000  000   000  000       
+    # 000000000  000  000   000  0000000   
+    # 000   000  000  000   000  000       
+    # 000   000  000  0000000    00000000  
+    
+    hide: -> 
+        ⮐  if not @visible
+        @editor.state.syntax.setSegls kseg.segls(@editor.state.s.lines) # 𝜏𝖍𝚒𝖘 𝚒𝖘 𝕒 𝔟𝚒𝜏 𝔟ɼ𝓊𝜏𝕒⟅, 𝚒𝖘∩'𝜏 𝚒𝜏?
+        @visible = false
+        
     hidden: -> not @visible
         
     onEditorLayout: =>
@@ -146,7 +164,6 @@ function complete
         ⮐ if @hidden()
         
         @choices.onWheel event
-        # post.emit 'redraw'
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -188,8 +205,6 @@ function complete
         switch action
             'click' ➜ ⮐ @apply()
             
-        # log "onChoicesAction #{action} #{choice}"
-        
     #  ███████  ███   ███  ████████   ████████   ████████  ███   ███  █████████      ███   ███   ███████   ████████   ███████  
     # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███         ███ █ ███  ███   ███  ███   ███  ███   ███
     # ███       ███   ███  ███████    ███████    ███████   ███ █ ███     ███         █████████  ███   ███  ███████    ███   ███
@@ -203,6 +218,17 @@ function complete
             word = @words[0]
         word
         
+    preDrawLines: lines ->
+    
+        ⮐  lines if @hidden() or empty @words
+        ● pre draw
+        word  = @currentWord()
+        lines = lines.asMutable()
+        for pos in @editor.state.s.cursors
+            kutil.replace lines[pos[1]] pos[0] 0 kseg(word[@turd.length..])
+        @editor.state.syntax.setSegls kseg.segls(lines) # 𝜏𝖍𝚒𝖘 𝚒𝖘 𝕒 𝔟𝚒𝜏 𝔟ɼ𝓊𝜏𝕒⟅, 𝚒𝖘∩'𝜏 𝚒𝜏?
+        lines
+        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -211,28 +237,34 @@ function complete
     
     draw: ->
         
-        ⮐ if @hidden() or empty @words
+        ⮐  if @hidden() or empty @words
 
+        word = @currentWord()
+        
+        # log "complete #{word} #{@choices.current()} #{@words.length}" @words
+        
+        for pos in @editor.state.s.cursors # highlight the insertions
+            
+            cx = pos[0] - @editor.state.s.view[0]
+            cy = pos[1] - @editor.state.s.view[1]
+            
+            for ci in 0...word.length-@turd.length
+                @editor.cells.set_bg cx+ci cy @color.bg
+
+        ⮐  if @words.length <= 1
+        
+        # draw the popup below the main cursor
+        
         mc = @editor.state.mainCursor()
-
+         
         cx = mc[0] - @editor.state.s.view[0]
         cy = mc[1] - @editor.state.s.view[1]
         
-        word = @currentWord()
-                    
-        # log "complete #{word} #{@choices.current()} #{@words.length}" @words
-        
-        for ch,ci in word[@turd.length..] # insert the first completion at main cursor
-            bg = theme[@editor.name + '_selection'] ? theme.editor_selection
-            @editor.cells.set cx+ci cy ch '#fff' bg
-        
-        ⮐ if @words.length <= 1
-        
         fx = cx-@turd.length-1
-        x = fx+1+@editor.cells.x
-        y = cy+@editor.cells.y+2
-        w = @choices.cells.cols+1
-        h = @choices.cells.rows
+        x  = fx+1+@editor.cells.x
+        y  = cy+@editor.cells.y+2
+        w  = @choices.cells.cols+1
+        h  = @choices.cells.rows
         
         fy = cy+1
 

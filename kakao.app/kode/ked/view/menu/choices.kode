@@ -17,8 +17,8 @@ function choices extends editor
 
         super screen name features
         
-        @color.bg      = theme.choices_bg
-        @color.current = theme.choices_current
+        @setColor 'bg'      theme.choices_bg
+        @setColor 'current' theme.choices_current
         
         @pointerType = 'pointer'
         @roundedSelections = true

@@ -174,15 +174,15 @@ function editor extends draw
     
     onKey: key event =>
         
-        ⮐ if not @hasFocus()
+        ⮐  if not @hasFocus()
         
         if @complete?
-            ⮐ if @complete.handleKey(key event) != 'unhandled'
+            ⮐  if @complete.handleKey(key event) != 'unhandled'
 
         if @state.handleKey(key event) != 'unhandled'
             @complete?.hide()
             ⮐ 
-
+        
         if valid event.char
             @state.insert event.char
             @complete?.complete()                

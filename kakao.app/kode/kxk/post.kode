@@ -8,14 +8,16 @@
 
 POST = "__POST__"
 
+use events
+events.setMaxListeners 100
+
 class Poster extends EventTarget
 
     @: ->
         super()
-        @addEventListener POST, @onPostEvent
-        # window.addEventListener 'beforeunload' @dispose
+        @addEventListener POST @onPostEvent
 
-    onPostEvent: (event) ->
+    onPostEvent: event ->
         
         out = new Event event.event
         out.args      = event.args
@@ -23,10 +25,9 @@ class Poster extends EventTarget
         
     dispose: =>
         
-        @removeEventListener POST, @onPostEvent
-        # window.removeEventListener 'beforeunload' @dispose
+        @removeEventListener POST @onPostEvent
 
-    post: (event, args) -> 
+    post: event args -> 
     
         e = new Event POST
         e.event = event
@@ -39,12 +40,13 @@ export
 
     poster: poster
 
-    emit: (event, args...) -> poster.post event, args
-    toWins: (event, args...) -> kakao 'window.post' event, args
+    emit:   event args... -> poster.post event args
+    toWins: event args... -> kakao 'window.post' event args
         
-    on: (event, cb) -> 
+    on: event cb -> 
         if cb is func
-            poster.addEventListener event, (e) -> cb.apply cb, e.args
+            poster.addEventListener event (e) -> cb.apply cb e.args
         else
-            log 'post.on no func?' event, cb
-    removeListener: (event, cb) -> poster.removeEventListener event, cb
+            log 'post.on no func?' event cb
+            
+    removeListener: event cb -> poster.removeEventListener event cb

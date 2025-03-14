@@ -32,8 +32,8 @@ choices = (function ()
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,features)
-        this.color.bg = theme.choices_bg
-        this.color.current = theme.choices_current
+        this.setColor('bg',theme.choices_bg)
+        this.setColor('current',theme.choices_current)
         this.pointerType = 'pointer'
         this.roundedSelections = true
         this.frontRoundOffset = 0

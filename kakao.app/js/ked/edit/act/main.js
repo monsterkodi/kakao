@@ -66,7 +66,7 @@ export default {setMain:function (m)
 {
     var ind, lines, mc, rng
 
-    lines = this.allLines()
+    lines = this.s.lines
     mc = this.mainCursor()
     rng = belt.lineRangeAtPos(lines,mc)
     ind = belt.lineIndentAtPos(lines,mc)

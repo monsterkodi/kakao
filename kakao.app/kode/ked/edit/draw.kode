@@ -19,16 +19,16 @@ function draw extends view
         
         super screen name features
         
-        @setColor 'bg'           theme[@name]            ? theme.editor
-        @setColor 'empty'        theme[@name + '_empty'] ? theme.editor_empty
-        @setColor 'cursor_main'  theme[@name + '_cursor_main']
-        @setColor 'cursor_empty' theme[@name + '_cursor_empty']
-        @setColor 'highlight'    theme[@name + '_highlight']    ? theme.editor_highlight
-        @setColor 'highlight_ul' theme[@name + '_highlight_ul'] ? theme.editor_highlight_ul
-        @setColor 'highlight_bracket' theme[@name + '_highlight_bracket'] ? theme.editor_highlight_bracket
-        @setColor 'highlight_string'  theme[@name + '_highlight_string']  ? theme.editor_highlight_string
-        @setColor 'highlight_bracket_ul' theme[@name + '_highlight_bracket_ul'] ? theme.editor_highlight_bracket_ul
-        @setColor 'highlight_string_ul'  theme[@name + '_highlight_string_ul']  ? theme.editor_highlight_string_ul
+        @setColor 'bg'                   theme.editor
+        @setColor 'empty'                theme.editor_empty
+        @setColor 'cursor_main'          theme.editor_cursor_main
+        @setColor 'cursor_empty'         theme.editor_cursor_empty
+        @setColor 'highlight'            theme.editor_highlight
+        @setColor 'highlight_ul'         theme.editor_highlight_ul
+        @setColor 'highlight_bracket'    theme.editor_highlight_bracket
+        @setColor 'highlight_string'     theme.editor_highlight_string
+        @setColor 'highlight_bracket_ul' theme.editor_highlight_bracket_ul
+        @setColor 'highlight_string_ul'  theme.editor_highlight_string_ul
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -46,6 +46,8 @@ function draw extends view
         syntax = @state.syntax
         view   = @state.s.view
         lines  = @state.s.lines
+        lines  = @complete.preDrawLines lines if @complete?
+        # lines  = mode.preDrawLines @state @state.s.lines
         
         bg = @color.bg
         
@@ -251,9 +253,6 @@ function draw extends view
         if @isCursorVisible mainCursor
              
             fg  = theme[@name + '_cursor_fg'] ? theme.editor_cursor_fg
-            
-            # fcb = @hasFocus() ? '_cursor_bg' : '_cursor_blur'
-            # bg  = theme[@name + fcb] ? theme['editor' + fcb]
             
             bg = mode.themeColor @state 'editor_cursor_main'
             if not @hasFocus() ➜ bg = color.darken bg 

@@ -86,12 +86,12 @@ export
     # 000   000   0000000       0      00000000  
     
     moveCursors: dir opt ->
-    
+
         if dir is arr
 
             switch dir[0]
-                'bos' ➜ ⮐ if @moveCursorsToStartOfSelections(); dir = dir[1..]
-                'eos' ➜ ⮐ if @moveCursorsToEndOfSelections();   dir = dir[1..]
+                'bos' ➜ ⮐  if @moveCursorsToStartOfSelections(); dir = dir[1..]
+                'eos' ➜ ⮐  if @moveCursorsToEndOfSelections();   dir = dir[1..]
                     
             dir = dir[0]
         
@@ -103,8 +103,8 @@ export
             @deselect()
         
         cursors = @allCursors()
-        lines   = @allLines()
-        
+        lines   = @s.lines
+
         for c in cursors
             
             line = lines[c[1]]
@@ -130,6 +130,7 @@ export
             'down' ➜ main = -1
     
         @setCursors cursors main:main adjust:'topBotDelta'
+        
         true
         
     moveCursorsToStartOfSelections: ->

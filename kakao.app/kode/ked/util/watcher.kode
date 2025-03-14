@@ -41,7 +41,7 @@ function watcher
             
             opt.recursive = false if dir == '/' or dir == slash.untilde '~'
             
-            # log "○ #{y6 dir}"
+            log "○ #{y6 dir}"
             
             w = fs.watch dir
             w.on 'error' (err) => error "watch dir:'#{dir}' error: #{err}"
