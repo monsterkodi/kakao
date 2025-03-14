@@ -32,6 +32,12 @@ function brckts
         
         @name = 'brckts'      
         
+    # ███   ███  ███   ███████   ███   ███  ███      ███   ███████   ███   ███  █████████
+    # ███   ███  ███  ███        ███   ███  ███      ███  ███        ███   ███     ███   
+    # █████████  ███  ███  ████  █████████  ███      ███  ███  ████  █████████     ███   
+    # ███   ███  ███  ███   ███  ███   ███  ███      ███  ███   ███  ███   ███     ███   
+    # ███   ███  ███   ███████   ███   ███  ███████  ███   ███████   ███   ███     ███   
+
     cursorsSet: ->
 
         if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
@@ -62,7 +68,7 @@ function brckts
         
         ⮐ 'unhandled' if empty brckts.surround[event.char]
             
-        if event.char == '#'
+        if event.char == '#' # handle string interpolation
 
             ⮐  "unhandled" if valid belt.positionsAndRangesOutsideStrings(@state.s.lines @state.s.selections @state.s.cursors)
             
@@ -73,13 +79,13 @@ function brckts
             @state.moveCursors 'left' 
             ⮐
             
-        else
+        else # not a string interpolation
             
             if valid @state.s.selections
-                ⮐ @state.surroundSelection event.char brckts.surround[event.char]
+                ⮐  @state.surroundSelection event.char brckts.surround[event.char]
             
-            nsegl = belt.segsForPositions @state.s.lines @state.s.cursors
-            nsegs = kutil.uniq nsegl
+            nsegl = belt.segsForPositions @state.s.lines @state.s.cursors # collect all graphemes at the cursors
+            nsegs = kutil.uniq nsegl                                      # get set of graphemes
             
             for seg in nsegs
             
@@ -88,12 +94,15 @@ function brckts
                         @state.moveCursors 'right'              # move cursor over existing bracket   # ϝ𝓊𝜏𝓊ɼϵ ⫙ϵ 𝖍𝕒𝜏ϵ ⟅𝚒𝛋ϵ⟅𝛾 
                         ⮐                                       # to not disturb manual closing       # 𝔟𝓊𝜏 𝔭ℜϵ𝖘ϵ∩𝜏 ⫙ϵ ⟅⩜𝓏𝛾 ;)
                         
-                if seg not in [' ' '' undefined '}' ']' ')']
-                    log "skip |#{nsegs}| #{seg}"
-                    ⮐  'unhandled' 
-            
-            @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
-            @state.moveCursors 'left' 
+                if seg not in ['' undefined ' ' '}' ']' ')']    # if any cursor is not at a space or eol or on a closing bracket
+                    ⮐  'unhandled'                              # abort the insertion
+
+            for pos in @state.s.cursors
+                if belt.isUnbalancedPosition @state.s.lines pos event.char
+                    ⮐  'unhandled'
+                    
+            @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1] # insert empty bracket pair
+            @state.moveCursors 'left'                                                   # move cursors inside pair
             ⮐  
 
         'unhandled'

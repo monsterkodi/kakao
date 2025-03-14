@@ -27,8 +27,8 @@ function status extends view
         @crumbs     = new crumbs     @screen 'status_crumbs'
         @statusfile = new statusfile @screen 'status_file'
         
-        @crumbs.color.bgl = theme.gutter
-        @crumbs.color.bgr = theme.status_empty
+        @crumbs.setColor 'empty_left'  theme.gutter
+        @crumbs.setColor 'empty_right' theme.status_empty
         
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction

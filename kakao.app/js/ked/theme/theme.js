@@ -28,9 +28,9 @@ class theme
 
     static editor_highlight_bracket_ul = '#44a'
 
-    static editor_highlight_string = '#020'
+    static editor_highlight_string = '#040'
 
-    static editor_highlight_string_ul = '#040'
+    static editor_highlight_string_ul = '#050'
 
     static funcol = '#111'
 

@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk ▪ kstr kutil kseg 
-use ../../../kxk ◆ salter
+use ../../../kxk ◆ salter pepe
 use              ◆ belt
 
 function text
@@ -462,6 +462,25 @@ function text
         ⮐ 0 if pos[0] + dx < 0
         dx
         
+    # ███   ███  ███   ███  ███████     ███████   ███       ███████   ███   ███   ███████  ████████  ███████  
+    # ███   ███  ████  ███  ███   ███  ███   ███  ███      ███   ███  ████  ███  ███       ███       ███   ███
+    # ███   ███  ███ █ ███  ███████    █████████  ███      █████████  ███ █ ███  ███       ███████   ███   ███
+    # ███   ███  ███  ████  ███   ███  ███   ███  ███      ███   ███  ███  ████  ███       ███       ███   ███
+    #  ███████   ███   ███  ███████    ███   ███  ███████  ███   ███  ███   ███   ███████  ████████  ███████  
+
+    @isUnbalancedPosition: lines pos char ->
+    
+        revs =
+            ']': '[' 
+            '}': '{' 
+            ')': '('
+            '"': '"'
+            "'": "'"
+
+        p = pepe kseg.str(lines[pos[1]])
+        start = p.unbalanced?[1..].map (s) -> s.start
+        valid start and revs[char] in start
+        
     #  0000000  000000000  00000000   000  000   000   0000000   
     # 000          000     000   000  000  0000  000  000        
     # 0000000      000     0000000    000  000 0 000  000  0000  
@@ -676,8 +695,6 @@ function text
         
         ⮐ [] if empty words
         
-        # log "words #{b6 turd} #{b3 words.length} #{r8(noon(words))}"
-        
         segls = []
         
         push = s ->
@@ -685,12 +702,10 @@ function text
             ⮐ if kseg.str(s) == turd
             ws = kseg.words s
             ws = ws.filter (w) -> w.index+w.segl.length > turd.length
-            # log "ws #{b6 turd} #{r5 kseg.str(s)}" ws
             if valid ws[0] 
                 if ws[0].index == 0 and turd != ws[0].word != s and ws[0].word.startsWith(turd)
                     segls.push ws[0].segl
                 else
-                    # log "#{r3 ws[0].index-turd.length} #{y6(noon ws[0])}" 
                     if ws[0].index-turd.length <= 0
                         segls.push s[0..ws[0].index+ws[0].segl.length]
                     else if ws[0].index-turd.length > 0
@@ -709,7 +724,6 @@ function text
                 if end in '])}"\'' or end[-1] in ')]}' and end[-2] not in ','
                     push segl
                 else
-                    # log "shorten |#{g4 end}| #{b8 tc}"
                     push segl[0...segl.length-tc]
             
         strs = segls.map kseg.str

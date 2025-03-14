@@ -22,7 +22,6 @@
 
 - brckts
     - fix empty brackets at end of line (check balanced)
-    - highlight matching brckts
     - alt+cmd+b select matching brckts
     
 - completion

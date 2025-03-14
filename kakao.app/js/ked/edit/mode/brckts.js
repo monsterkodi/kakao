@@ -45,7 +45,7 @@ brckts = (function ()
 
     brckts.prototype["handleKey"] = function (key, event)
     {
-        var nsegl, nsegs, pairs, rngs, seg
+        var nsegl, nsegs, pairs, pos, rngs, seg
 
         if (key === 'delete' && _k_.empty(this.state.s.selections))
         {
@@ -95,9 +95,17 @@ brckts = (function ()
                         return
                     }
                 }
-                if (!(_k_.in(seg,[' ','',undefined,'}',']',')'])))
+                if (!(_k_.in(seg,['',undefined,' ','}',']',')'])))
                 {
-                    console.log(`skip |${nsegs}| ${seg}`)
+                    return 'unhandled'
+                }
+            }
+            var list1 = _k_.list(this.state.s.cursors)
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                pos = list1[_b_]
+                if (belt.isUnbalancedPosition(this.state.s.lines,pos,event.char))
+                {
                     return 'unhandled'
                 }
             }

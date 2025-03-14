@@ -8,6 +8,7 @@ let kutil = kxk.kutil
 let kseg = kxk.kseg
 
 import salter from "../../../kxk/salter.js"
+import pepe from "../../../kxk/pepe.js"
 
 import belt from "./belt.js"
 
@@ -805,9 +806,22 @@ text = (function ()
         return dx
     }
 
+    text["isUnbalancedPosition"] = function (lines, pos, char)
+    {
+        var p, revs, start, _481_28_
+
+        revs = {']':'[','}':'{',')':'(','"':'"',"'":"'"}
+        p = pepe(kseg.str(lines[pos[1]]))
+        start = (p.unbalanced != null ? p.unbalanced.slice(1).map(function (s)
+        {
+            return s.start
+        }) : undefined)
+        return !_k_.empty(start) && _k_.in(revs[char],start)
+    }
+
     text["isRangeInString"] = function (lines, rng)
     {
-        var _471_76_
+        var _490_76_
 
         return (this.rangeOfStringSurroundingRange(lines,rng) != null)
     }

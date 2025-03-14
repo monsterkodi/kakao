@@ -38,8 +38,8 @@ status = (function ()
         this.pointerType = 'pointer'
         this.crumbs = new crumbs(this.screen,'status_crumbs')
         this.statusfile = new statusfile(this.screen,'status_file')
-        this.crumbs.color.bgl = theme.gutter
-        this.crumbs.color.bgr = theme.status_empty
+        this.crumbs.setColor('empty_left',theme.gutter)
+        this.crumbs.setColor('empty_right',theme.status_empty)
         this.crumbs.on('action',this.onCrumbsAction)
         this.statusfile.on('action',this.onFileAction)
     }

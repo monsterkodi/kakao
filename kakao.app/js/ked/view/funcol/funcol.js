@@ -37,11 +37,12 @@ funcol = (function ()
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
         this.dirtree = new dirtree(screen,`${this.name}_dirtree`,['scroll'])
         this.crumbs.on('action',this.onCrumbsAction)
-        this.dirtree.color.bg = theme.funcol
-        this.dirtree.color.empty = this.dirtree.color.bg
-        this.dirtree.color.cursor_main = this.dirtree.color.bg
-        this.dirtree.color.cursor_empty = this.dirtree.color.bg
-        this.dirtree.scroll.color.bg = this.dirtree.color.bg
+        this.dirtree.setColor('bg',theme.funcol)
+        this.dirtree.setColor('empty',this.dirtree.color.bg)
+        this.dirtree.setColor('cursor_main',this.dirtree.color.bg)
+        this.dirtree.setColor('cursor_empty',this.dirtree.color.bg)
+        this.dirtree.scroll.setColor('bg',this.dirtree.color.bg)
+        this.crumbs.setColor('empty',theme.gutter)
         post.on('funcol.resize',this.onFuncolResize)
         post.on('funcol.toggle',this.onFuncolToggle)
         post.on('funcol.root',this.setRoot)
@@ -98,7 +99,8 @@ funcol = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,0,-1,-1,' ',null,theme.funcol)
+        this.cells.fill_rect(0,1,-1,-1,' ',null,theme.funcol)
+        this.cells.fill_rect(0,0,-1,0,' ',null,theme.gutter)
         this.crumbs.draw()
         this.dirtree.draw()
         this.knob.draw()

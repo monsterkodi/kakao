@@ -84,10 +84,12 @@ class color
     @hex:    c   -> kstr.hexColor c
     
     @darken: c f -> 
+    
         ⮐ [0 0 0] if empty c
         kstr.scaleColor c f
         
     @brighten: c f ->
+    
         ⮐ [255 255 255] if empty c
         kstr.scaleColor c 1+f
                             
@@ -195,9 +197,9 @@ class color
     #  ███████   ███████   ███   ███     ███     ███   ███  ███   ███  ███████      ███   
 
     @contrast: c1 c2 ->
+    
         v1 = color.rgb c1
         v2 = color.rgb c2
-        # c = Math.abs(v2[0]-v1[0])/256 + Math.abs(v2[1]-v1[1])/256 + Math.abs(v2[2]-v1[2])/256
         
         dr = (v2[0]-v1[0])/256
         dg = (v2[1]-v1[1])/256

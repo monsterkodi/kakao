@@ -25,11 +25,13 @@ function funcol extends view
         
         @crumbs.on 'action' @onCrumbsAction
         
-        @dirtree.color.bg           = theme.funcol
-        @dirtree.color.empty        = @dirtree.color.bg
-        @dirtree.color.cursor_main  = @dirtree.color.bg
-        @dirtree.color.cursor_empty = @dirtree.color.bg
-        @dirtree.scroll.color.bg    = @dirtree.color.bg
+        @dirtree.setColor 'bg'            theme.funcol
+        @dirtree.setColor 'empty'         @dirtree.color.bg
+        @dirtree.setColor 'cursor_main'   @dirtree.color.bg
+        @dirtree.setColor 'cursor_empty'  @dirtree.color.bg
+        @dirtree.scroll.setColor 'bg'     @dirtree.color.bg
+        
+        @crumbs.setColor  'empty'         theme.gutter
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
@@ -79,7 +81,8 @@ function funcol extends view
         
         ⮐ if @hidden()
         
-        @cells.fill_rect 0 0 -1 -1 ' ' null theme.funcol
+        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
+        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
         
         @crumbs.draw()
         @dirtree.draw()
