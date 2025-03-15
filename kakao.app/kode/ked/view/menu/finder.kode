@@ -19,12 +19,6 @@ function finder extends inputchoice
         
         @setColor 'bg'    theme.finder_bg
         @setColor 'frame' theme.finder_frame
-        @choices.setColor           'bg'        @color.bg
-        @choices.setColor           'empty'     @color.bg
-        @choices.gutter.setColor    'bg'        @color.bg
-        @choices.scroll.setColor    'bg'        @color.bg
-        @input.setColor             'bg'        @color.bg
-        @input.setColor             'empty'     @color.bg
         
         @choices.state.skipAdjustViewForMainCursor = true
         @choices.state.syntax.setExt 'kode'

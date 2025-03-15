@@ -19,13 +19,11 @@ function complete
         
         @choices = new choices_class @editor.cells.screen "#{@name}_choices" ['scrllr']
         @choices.focusable = false
-        @choices.rounded   = false
+        @choices.scroll.handle = '▐'
         
-        @color = bg: theme.editor_selection
+        @color = complete: theme.editor_selection
         
         @choices.setColor 'bg' theme.editor_complete_choices
-        
-        @choices.scroll.handle = '▐'
         @choices.scroll.setColor 'bg'   theme.editor_complete_choices
         @choices.scroll.setColor 'knob' theme.editor_complete_choices_scroll
         @choices.scroll.setColor 'dot'  theme.editor_complete_choices_scroll
@@ -41,7 +39,7 @@ function complete
     #  0000000   0000000   000   000  000        0000000  00000000     000     00000000  
     
     complete: -> 
-    
+        
         before = @editor.state.chunkBeforeCursor()
         after  = @editor.state.chunkAfterCursor()
         
@@ -251,7 +249,7 @@ function complete
             cy = pos[1] - @editor.state.s.view[1]
             
             for ci in 0...word.length-@turd.length
-                @editor.cells.set_bg cx+ci cy @color.bg
+                @editor.cells.set_bg cx+ci cy @color.complete
 
         ⮐  if @words.length <= 1
         

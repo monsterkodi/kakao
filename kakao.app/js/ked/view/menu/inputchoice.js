@@ -45,6 +45,18 @@ inputchoice = (function ()
         this.choices.on('action',this.onChoicesAction)
     }
 
+    inputchoice.prototype["setColor"] = function (key, color)
+    {
+        inputchoice.__super__.setColor.call(this,key,color)
+    
+        if (key === 'bg')
+        {
+            this.input.setColor('bg',this.color.bg)
+            this.input.setColor('empty',this.color.bg)
+            return this.choices.setColor('bg',this.color.bg)
+        }
+    }
+
     inputchoice.prototype["inputIsActive"] = function ()
     {
         return this.input.hasFocus() || this.input.current().length
@@ -74,7 +86,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _66_23_
+        var _75_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -117,9 +129,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _108_36_
+        var choice, _117_36_
 
-        choice = ((_108_36_=this.choices.current()) != null ? _108_36_ : this.input.current())
+        choice = ((_117_36_=this.choices.current()) != null ? _117_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

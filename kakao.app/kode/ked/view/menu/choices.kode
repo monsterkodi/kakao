@@ -30,6 +30,15 @@ function choices extends editor
         @fuzzied = @items
         @filterText = ''
         
+    setColor: key color ->
+    
+        super key color
+    
+        if key == 'bg'
+            @setColor           'empty' @color.bg
+            @gutter?.setColor   'bg'    @color.bg
+            @scroll?.setColor   'bg'    @color.bg
+        
     clear: -> @set []
     
     clearEmpty: ->

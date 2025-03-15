@@ -28,6 +28,15 @@ function inputchoice extends view
         @input.on   'action'  @onInputAction
         @choices.on 'action'  @onChoicesAction
         
+    setColor: key color ->
+    
+        super key color
+        
+        if key == 'bg'
+            @input.setColor             'bg'        @color.bg
+            @input.setColor             'empty'     @color.bg
+            @choices.setColor           'bg'        @color.bg
+        
     inputIsActive: -> @input.hasFocus() or @input.current().length
         
     # 000       0000000   000   000   0000000   000   000  000000000  

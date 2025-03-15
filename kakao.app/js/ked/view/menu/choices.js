@@ -44,6 +44,20 @@ choices = (function ()
         this.filterText = ''
     }
 
+    choices.prototype["setColor"] = function (key, color)
+    {
+        choices.__super__.setColor.call(this,key,color)
+    
+        var _39_19_, _40_19_
+
+        if (key === 'bg')
+        {
+            this.setColor('empty',this.color.bg)
+            ;(this.gutter != null ? this.gutter.setColor('bg',this.color.bg) : undefined)
+            return (this.scroll != null ? this.scroll.setColor('bg',this.color.bg) : undefined)
+        }
+    }
+
     choices.prototype["clear"] = function ()
     {
         return this.set([])
@@ -61,9 +75,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _49_15_
+        var lines, _58_15_
 
-        this.items = ((_49_15_=this.items) != null ? _49_15_ : [])
+        this.items = ((_58_15_=this.items) != null ? _58_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -173,14 +187,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _129_26_
+        var _138_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _130_26_
+        var _139_26_
 
         return (this.prevRow() != null)
     }
@@ -357,7 +371,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _267_21_
+        var col, dx, dy, ret, row, _276_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

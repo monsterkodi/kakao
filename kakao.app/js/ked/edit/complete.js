@@ -27,10 +27,9 @@ complete = (function ()
         this.name = this.editor.name + '_complete'
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
-        this.choices.rounded = false
-        this.color = {bg:theme.editor_selection}
-        this.choices.setColor('bg',theme.editor_complete_choices)
         this.choices.scroll.handle = '▐'
+        this.color = {complete:theme.editor_selection}
+        this.choices.setColor('bg',theme.editor_complete_choices)
         this.choices.scroll.setColor('bg',theme.editor_complete_choices)
         this.choices.scroll.setColor('knob',theme.editor_complete_choices_scroll)
         this.choices.scroll.setColor('dot',theme.editor_complete_choices_scroll)
@@ -278,7 +277,7 @@ complete = (function ()
             cy = pos[1] - this.editor.state.s.view[1]
             for (var _b_ = ci = 0, _c_ = word.length - this.turd.length; (_b_ <= _c_ ? ci < word.length - this.turd.length : ci > word.length - this.turd.length); (_b_ <= _c_ ? ++ci : --ci))
             {
-                this.editor.cells.set_bg(cx + ci,cy,this.color.bg)
+                this.editor.cells.set_bg(cx + ci,cy,this.color.complete)
             }
         }
         if (this.words.length <= 1)
