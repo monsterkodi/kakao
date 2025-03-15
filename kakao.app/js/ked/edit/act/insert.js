@@ -22,7 +22,7 @@ export default {insert:function (text)
         }
         this.deleteSelection()
     }
-    var _a_ = belt.insertTextAtPositions(this.allLines(),text,this.allCursors()); lines = _a_[0]; cursors = _a_[1]
+    var _a_ = belt.insertTextAtPositions(this.s.lines,text,this.s.cursors); lines = _a_[0]; cursors = _a_[1]
 
     this.clearHighlights()
     this.setLines(lines)

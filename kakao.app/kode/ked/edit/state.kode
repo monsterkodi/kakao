@@ -1,9 +1,9 @@
 ###
- 0000000  000000000   0000000   000000000  00000000
-000          000     000   000     000     000
-0000000      000     000000000     000     0000000
-     000     000     000   000     000     000
-0000000      000     000   000     000     00000000
+     0000000  000000000   0000000   000000000  00000000
+    000          000     000   000     000     000
+    0000000      000     000000000     000     0000000
+         000     000     000   000     000     000
+    0000000      000     000   000     000     00000000
 ###
 
 use child_process os
@@ -129,7 +129,7 @@ function state
     setLines: lines =>
         
         if empty lines ➜ lines = ['']
-            
+        
         @setSegls kseg.segls(lines)
         
     setSegls: @segls =>
@@ -140,6 +140,9 @@ function state
         
         @s = @s.set 'lines' @segls
         @r = []
+        
+        @maxLineWidth = belt.widthOfLines @s.lines
+
         @pushState()
         
     clearEmpty: => 
@@ -331,13 +334,13 @@ function state
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
 
-        width = belt.widthOfLines @s.lines
+        # width = belt.widthOfLines @s.lines
         
-        maxOffsetX = max 0 width-@cells.cols+2
+        maxOffsetX = max 0 @maxLineWidth-@cells.cols+2
         maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+2
         view[0] = clamp 0 maxOffsetX view[0]
         
-        ⮐ if view eql @s.view
+        ⮐  if view eql @s.view
 
         @setView view
 

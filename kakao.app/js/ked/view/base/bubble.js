@@ -78,6 +78,10 @@ bubble = (function ()
 
     bubble.prototype["set"] = function (file)
     {
+        if (this.file === _k_.trim(file))
+        {
+            return
+        }
         this.file = _k_.trim(file)
         return this.adjustText()
     }

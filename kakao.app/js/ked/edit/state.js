@@ -227,6 +227,7 @@ state = (function ()
         this.syntax.setSegls(this.segls)
         this.s = this.s.set('lines',this.segls)
         this.r = []
+        this.maxLineWidth = belt.widthOfLines(this.s.lines)
         return this.pushState()
     }
 
@@ -240,22 +241,22 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _162_15_
+        var segl, _165_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_162_15_=this.segls) != null ? _162_15_ : [])
+        this.segls = ((_165_15_=this.segls) != null ? _165_15_ : [])
         this.segls.push(segl)
         return this.s = this.s.set('lines',this.segls)
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _170_15_
+        var segls, _173_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_170_15_=this.segls) != null ? _170_15_ : [])
+        this.segls = ((_173_15_=this.segls) != null ? _173_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.s = this.s.set('lines',this.segls)
     }
@@ -432,7 +433,7 @@ state = (function ()
 
     state.prototype["scrollView"] = function (dir, steps = 1)
     {
-        var maxOffsetX, sx, sy, view, width
+        var maxOffsetX, sx, sy, view
 
         sx = sy = 0
         switch (dir)
@@ -455,8 +456,7 @@ state = (function ()
         view[0] += sx
         view[1] += sy
         view[1] = _k_.clamp(0,_k_.max(0,this.s.lines.length - this.cells.rows),view[1])
-        width = belt.widthOfLines(this.s.lines)
-        maxOffsetX = _k_.max(0,width - this.cells.cols + 2)
+        maxOffsetX = _k_.max(0,this.maxLineWidth - this.cells.cols + 2)
         maxOffsetX = _k_.max(maxOffsetX,this.mainCursor()[0] - this.cells.cols + 2)
         view[0] = _k_.clamp(0,maxOffsetX,view[0])
         if (_k_.eql(view, this.s.view))

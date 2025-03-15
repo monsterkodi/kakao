@@ -31,13 +31,6 @@ statusfile = (function ()
         this.rounded = ''
     }
 
-    statusfile.prototype["layout"] = function (x, y, w, h)
-    {
-        statusfile.__super__.layout.call(this,x,y,w,h)
-    
-        return this.adjustText()
-    }
-
     statusfile.prototype["draw"] = function ()
     {
         var bg, ch, fg, x
@@ -70,9 +63,9 @@ statusfile = (function ()
 
     statusfile.prototype["adjustText"] = function ()
     {
-        var _66_14_
+        var _59_14_
 
-        this.file = ((_66_14_=this.file) != null ? _66_14_ : '')
+        this.file = ((_59_14_=this.file) != null ? _59_14_ : '')
         this.pars = slash.parse(this.file)
         this.syntax.setLines(['/' + this.pars.file])
         return this.rounded = '' + this.pars.file + ''
@@ -80,6 +73,10 @@ statusfile = (function ()
 
     statusfile.prototype["set"] = function (file)
     {
+        if (this.file === _k_.trim(file))
+        {
+            return
+        }
         this.file = _k_.trim(file)
         return this.adjustText()
     }

@@ -76,6 +76,8 @@ function bubble extends view
             
     set: file ->
     
+        ⮐  if @file == trim file
+        
         @file = trim file
         @adjustText()
         

@@ -258,9 +258,9 @@ complete = (function ()
         return lines
     }
 
-    complete.prototype["draw"] = function ()
+    complete.prototype["drawCompletion"] = function ()
     {
-        var ci, cx, cy, fx, fy, h, mc, pos, w, word, x, y
+        var ci, cx, cy, pos, word
 
         if (this.hidden() || _k_.empty(this.words))
         {
@@ -277,6 +277,16 @@ complete = (function ()
             {
                 this.editor.cells.set_bg(cx + ci,cy,this.color.complete)
             }
+        }
+    }
+
+    complete.prototype["drawPopup"] = function ()
+    {
+        var cx, cy, fx, fy, h, mc, w, x, y
+
+        if (this.hidden() || _k_.empty(this.words))
+        {
+            return
         }
         if (this.words.length <= 1)
         {

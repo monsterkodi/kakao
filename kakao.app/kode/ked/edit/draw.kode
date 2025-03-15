@@ -106,9 +106,10 @@ function draw extends view
         @drawTrailingRows()        
         @drawHighlights()
         @drawSelections()
-        @complete?.draw()
         
+        @complete?.drawCompletion()
         @drawCursors()
+        @complete?.drawPopup()
         
         @gutter?.draw()
         @mapscr?.draw()

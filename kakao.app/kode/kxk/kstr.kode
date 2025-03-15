@@ -20,7 +20,9 @@ str = o -> # converts anything into a string in noon syntax
 # the function above is exported as the default
 # all the functions below are attached to it
 
-str.lines = s -> s.split /\r?\n/
+LINES_REGEXP = /\r?\n/
+
+str.lines = s -> s.split LINES_REGEXP
 
 str.graphemes = s ->
     

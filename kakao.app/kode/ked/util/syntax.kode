@@ -12,7 +12,10 @@ use ../theme    ◆ theme
 
 function syntax
 
-    @: -> @ext = 'txt' ; @diss = []
+    @: -> 
+        @ext  = 'txt' 
+        @diss = []
+        @hash = {}
         
     clear: => @diss = []
         
@@ -29,10 +32,30 @@ function syntax
             for segs in segls
                 dss = matchr.ranges(@config kseg.str(segs) 'u')
                 @diss.push dss
-            # log '○ syntax.setSegls' @diss
         else
+            ⮐  if @partialUpdate segls
+        
+            @hash = {}
             @diss = kulur.dissect segls @ext
-            # log '● syntax.setSegls' @diss
+            for segl,idx in segls
+                @hash[kseg.hash(segl)] = @diss[idx]
+            
+    partialUpdate: segls ->
+        
+        ⮐  if @diss.length != segls.length
+        ⮐  if empty @hash
+        
+        newHash = {}
+        
+        for segl,idx in segls
+        
+            hsh = kseg.hash segl
+            if @hash[hsh]
+                newHash[hsh] = @hash[hsh]
+            else
+                newHash[hsh] = kulur.dissect([segl] @ext)[0]
+                @diss.splice idx 1 newHash[hsh]
+        @hash = newHash
             
     addSegl: segl ext =>
     

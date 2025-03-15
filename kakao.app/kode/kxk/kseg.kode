@@ -498,13 +498,13 @@ kseg.widthAtSegi = segs segi ->
 kseg.width = s ->
     
     ⮐ 0 if empty s
-    s   = kseg.str s                   
+    s   = kseg.str s
     cpz = s.codePointAt 0            # code of first character
     str = String.fromCodePoint cpz   # ... converted to string 
     if s == str ➜ ⮐ wcwidth(cpz)    # ⮐ width if not a compounded glyph
     w = 0                               
     for seg in kseg(s)               # sum up individual width of subglyphs
-        w += wcwidth seg.codePointAt(0)                    
+        w += wcwidth seg.codePointAt(0)
     w
 
 ### 
@@ -519,6 +519,21 @@ kseg.indexAtWidth = segs w ->
         s += kseg.width segs[i]
         i += 1    
     i
+    
+# 000   000   0000000    0000000  000   000  
+# 000   000  000   000  000       000   000  
+# 000000000  000000000  0000000   000000000  
+# 000   000  000   000       000  000   000  
+# 000   000  000   000  0000000   000   000  
+
+kseg.hash = s ->
+
+    ⮐ 0 if empty s
+    s = kseg s
+    h = 9
+    for i in s.length-1..0 
+        h = Math.imul h^s[i].codePointAt(0), 9**9
+    h^h >> 9
     
 # https://github.com/joshuarubin/wcwidth9            
             

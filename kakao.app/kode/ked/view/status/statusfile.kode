@@ -27,12 +27,6 @@ function statusfile extends view
         
         @rounded = ''
         
-    layout: x y w h ->
-    
-        super x y w h  
-        
-        @adjustText()
-        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -62,7 +56,6 @@ function statusfile extends view
     # 000   000  0000000     0000000    0000000   0000000      000     
     
     adjustText: ->
-        
         @file ?= ''
         @pars = slash.parse @file
         @syntax.setLines ['/'+@pars.file]
@@ -70,6 +63,8 @@ function statusfile extends view
             
     set: file ->
     
+        ⮐  if @file == trim file
+        
         @file = trim file
         @adjustText()
         

@@ -20,14 +20,14 @@ export
     #    ███     ████████  ███   ███     ███   
 
     insert: text ->
-    
+
         text = mode.insert @ text
         
         if valid @s.selections
             ⮐ @indentSelectedLines() if text == '\t'
             @deleteSelection()
-                    
-        [lines cursors] = belt.insertTextAtPositions @allLines() text @allCursors()
+            
+        [lines cursors] = belt.insertTextAtPositions @s.lines text @s.cursors
         
         @clearHighlights()
         @setLines   lines

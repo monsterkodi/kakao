@@ -27,6 +27,7 @@ syntax = (function ()
         this["clear"] = this["clear"].bind(this)
         this.ext = 'txt'
         this.diss = []
+        this.hash = {}
     }
 
     syntax.prototype["clear"] = function ()
@@ -51,7 +52,7 @@ syntax = (function ()
 
     syntax.prototype["setSegls"] = function (segls)
     {
-        var dss, segs
+        var dss, idx, segl, segs
 
         if (!_k_.empty(this.config))
         {
@@ -66,8 +67,50 @@ syntax = (function ()
         }
         else
         {
-            return this.diss = kulur.dissect(segls,this.ext)
+            if (this.partialUpdate(segls))
+            {
+                return
+            }
+            this.hash = {}
+            this.diss = kulur.dissect(segls,this.ext)
+            var list1 = _k_.list(segls)
+            for (idx = 0; idx < list1.length; idx++)
+            {
+                segl = list1[idx]
+                this.hash[kseg.hash(segl)] = this.diss[idx]
+            }
         }
+    }
+
+    syntax.prototype["partialUpdate"] = function (segls)
+    {
+        var hsh, idx, newHash, segl
+
+        if (this.diss.length !== segls.length)
+        {
+            return
+        }
+        if (_k_.empty(this.hash))
+        {
+            return
+        }
+        newHash = {}
+        var list = _k_.list(segls)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            segl = list[idx]
+            hsh = kseg.hash(segl)
+            if (this.hash[hsh])
+            {
+                newHash[hsh] = this.hash[hsh]
+            }
+            else
+            {
+                newHash[hsh] = kulur.dissect([segl],this.ext)[0]
+                this.diss.splice(idx,1,newHash[hsh])
+            }
+        }
+        return this.hash = newHash
     }
 
     syntax.prototype["addSegl"] = function (segl, ext)
@@ -105,7 +148,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _61_27_
+        var clss, _84_27_
 
         if (_k_.isNum(x))
         {
@@ -115,7 +158,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_61_27_=theme.syntax[clss]) != null ? _61_27_ : '#ff0000')
+        return ((_84_27_=theme.syntax[clss]) != null ? _84_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)
