@@ -64,7 +64,7 @@ function complete
     # 00     00   0000000   000   000  0000000    
     
     word: @turd ->
-    
+            
         if empty @turd
             @hide()
             ⮐ 
@@ -73,7 +73,12 @@ function complete
         @words = belt.prepareWordsForCompletion @turd @words
         
         if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
-            @words = inserts.concat @words
+        
+            if @turd == '>'
+                if @editor.state.chunkBeforeCursor() == '>'
+                    @words = inserts.concat @words
+            else
+                @words = inserts.concat @words
 
         @visible = valid @words
 
@@ -131,7 +136,6 @@ function complete
         
         switch key
             'tab'
-            'right'
             'return' ➜ ⮐ @apply()
             'esc'    ➜ ⮐ @hide()
             'up'

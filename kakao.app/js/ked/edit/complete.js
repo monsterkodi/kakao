@@ -79,7 +79,17 @@ complete = (function ()
         this.words = belt.prepareWordsForCompletion(this.turd,this.words)
         if (inserts = specs.trigger[this.turd])
         {
-            this.words = inserts.concat(this.words)
+            if (this.turd === '>')
+            {
+                if (this.editor.state.chunkBeforeCursor() === '>')
+                {
+                    this.words = inserts.concat(this.words)
+                }
+            }
+            else
+            {
+                this.words = inserts.concat(this.words)
+            }
         }
         this.visible = !_k_.empty(this.words)
         if (_k_.empty(this.words))
@@ -147,7 +157,6 @@ complete = (function ()
         switch (key)
         {
             case 'tab':
-            case 'right':
             case 'return':
                 return this.apply()
 

@@ -245,7 +245,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col)
     {
-        var segls, start, text, _233_22_
+        var segls, start, text, _235_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -491,7 +491,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _409_22_
+        var _411_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

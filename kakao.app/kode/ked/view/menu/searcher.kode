@@ -19,9 +19,16 @@ function searcher extends finder
         super @screen @state 'searcher'
         
         post.on 'searcher.show' @show
+        post.on 'file.loaded' @onFileLoaded
         
         @sfils = []
         
+    # ███       ███████   ███   ███   ███████   ███   ███  █████████
+    # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
+    # ███      █████████    █████    ███   ███  ███   ███     ███   
+    # ███      ███   ███     ███     ███   ███  ███   ███     ███   
+    # ███████  ███   ███     ███      ███████    ███████      ███   
+
     layout: =>
 
         super()    
@@ -30,6 +37,12 @@ function searcher extends finder
             y = @choices.cells.y - @choices.state.s.view[1] + sfil.lineIndex
             sfil.layout @choices.cells.x y @choices.cells.cols 1
             
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
     draw: ->
 
         ⮐ if @hidden()
@@ -40,6 +53,12 @@ function searcher extends finder
             if @choices.state.s.view[1] <= sfil.lineIndex < @choices.state.s.view[1]+@choices.cells.rows
                 sfil.draw()
             
+    # ██     ██   ███████   ███   ███   ███████  ████████
+    # ███   ███  ███   ███  ███   ███  ███       ███     
+    # █████████  ███   ███  ███   ███  ███████   ███████ 
+    # ███ █ ███  ███   ███  ███   ███       ███  ███     
+    # ███   ███   ███████    ███████   ███████   ████████
+
     onMouse: event =>
 
         ⮐ if @hidden()
@@ -49,16 +68,33 @@ function searcher extends finder
         
         super event
         
+    # ███       ███████    ███████   ███████    ████████  ███████  
+    # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███      ███   ███  █████████  ███   ███  ███████   ███   ███
+    # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████   ███████   ███   ███  ███████    ████████  ███████  
+
+    onFileLoaded: file =>
+    
+        ⮐  if empty @fileToHighlight
+        ⮐  if empty @textToHighlight
+    
+        post.emit 'editor.highlight' @textToHighlight
+        
+        delete @fileToHighlight
+        delete @textToHighlight
+        
+    # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
+    # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
+    # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
+    # ███       ███ █ ███  ███     ███           ███       ███  ███      ███             ███   ███  ███        ███       ███  ████
+    # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
+
     emitFileOpen: choice ->
     
-        textToHighlight = @input.current()
-        onOpen = (p) =>
+        @textToHighlight = @input.current()
+        @fileToHighlight = choice.path
         
-            log "file.loaded #{p}"
-            post.emit 'editor.highlight' textToHighlight
-            post.removeListener 'file.opened' onOpen
-    
-        post.on 'file.loaded' onOpen
         super choice
         
     # ███   ███  ███  ███      ███   ███████   ███   ███  █████████        ████          ███████    ████████    ███████   ███   ███

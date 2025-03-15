@@ -204,6 +204,8 @@ function KED
             @newFile()
         
     loadFile: p row col ○=>
+    
+        # log "loadFile #{p}"
         
         start = process.hrtime()
         
