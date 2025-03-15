@@ -221,7 +221,7 @@ function complete
     preDrawLines: lines ->
     
         ⮐  lines if @hidden() or empty @words
-        ● pre draw
+        # ● pre draw
         word  = @currentWord()
         lines = lines.asMutable()
         for pos in @editor.state.s.cursors

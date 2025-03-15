@@ -2,7 +2,6 @@ var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!
 
 var salterMode
 
-import kseg from "../../../kxk/kseg.js"
 import salter from "../../../kxk/salter.js"
 
 import color from "../../theme/color.js"

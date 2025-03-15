@@ -699,19 +699,25 @@ function text
     
     @prepareWordsForCompletion: turd words ->
         
-        words = words.map (w) -> 
+        filtered = []
         
-            ⮐  w if w.startsWith turd # include anything that starts with turd
-            
-            if hct = kseg.headCountTurd w   # if the chunk starts with punctuation
-                if w[hct..].startsWith turd # and the first word after that starts
-                    ⮐  w[hct..]             # with our string to complete, include it
-                    
-            turd # will be removed by uniq below
-            
-        words = kutil.uniq words
+        for w in words
         
-        ⮐ [] if empty words
+            if w.startsWith turd # include anything that starts with turd
+                continue if w.startsWith '..' # .. if it is not the start of a relative path
+                continue if w.startsWith './' #  ▴ this prevents relative use paths to clutter 
+                filtered.push w               #  ▴ the completion when turd is a dot.
+                continue                        
+                
+            for subw in kseg.words w          # split chunk into words and 
+                if subw.word.startsWith turd  # add any that starts with turd 
+                    filtered.push subw.word    
+                else if turd.length == 1 and turd == w[subw.index-1] # add word if it is prefixed
+                    filtered.push turd[-1] + subw.word               # with turd 
+           
+        words = kutil.uniq filtered
+        
+        ⮐  [] if empty words
         
         segls = []
         
@@ -747,10 +753,6 @@ function text
                     # log "case d #{kseg.str segl} #{kseg.str segl[0...segl.length-tc]}"
                     push segl[0...segl.length-tc]
                     
-            # hc = kseg.headCountTurd segl
-            # if hc > 0
-            #     push segl[hc..]
-            
         strs = segls.map kseg.str
         strs.sort()
         kutil.uniq strs

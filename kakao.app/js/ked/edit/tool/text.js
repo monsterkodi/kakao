@@ -1113,26 +1113,41 @@ text = (function ()
 
     text["prepareWordsForCompletion"] = function (turd, words)
     {
-        var end, push, segl, segls, strs, tc
+        var end, filtered, push, segl, segls, strs, subw, tc, w
 
-        words = words.map(function (w)
+        filtered = []
+        var list = _k_.list(words)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            var hct
-
+            w = list[_a_]
             if (w.startsWith(turd))
             {
-                return w
-            }
-            if (hct = kseg.headCountTurd(w))
-            {
-                if (w.slice(hct).startsWith(turd))
+                if (w.startsWith('..'))
                 {
-                    return w.slice(hct)
+                    continue
+                }
+                if (w.startsWith('./'))
+                {
+                    continue
+                }
+                filtered.push(w)
+                continue
+            }
+            var list1 = _k_.list(kseg.words(w))
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                subw = list1[_b_]
+                if (subw.word.startsWith(turd))
+                {
+                    filtered.push(subw.word)
+                }
+                else if (turd.length === 1 && turd === w[subw.index - 1])
+                {
+                    filtered.push(turd.slice(-1)[0] + subw.word)
                 }
             }
-            return turd
-        })
-        words = kutil.uniq(words)
+        }
+        words = kutil.uniq(filtered)
         if (_k_.empty(words))
         {
             return []
@@ -1164,10 +1179,10 @@ text = (function ()
             }
             return segls.push(s)
         }
-        var list = _k_.list(kseg.segls(words))
-        for (var _a_ = 0; _a_ < list.length; _a_++)
+        var list2 = _k_.list(kseg.segls(words))
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
-            segl = list[_a_]
+            segl = list2[_c_]
             tc = kseg.tailCountTurd(segl)
             if (tc === 0 || tc === 1 && segl[0] === segl.slice(-1)[0])
             {

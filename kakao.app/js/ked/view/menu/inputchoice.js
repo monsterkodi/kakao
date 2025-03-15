@@ -4,10 +4,7 @@ var inputchoice
 
 import kxk from "../../../kxk.js"
 let post = kxk.post
-let kstr = kxk.kstr
-let kseg = kxk.kseg
 
-import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 
 import view from "../base/view.js"

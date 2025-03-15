@@ -25,7 +25,6 @@
         - turd missing completions
         - completions with leading turd
         - unicode completions
-    - disallow completion inside words
         
 - searcher
     - clicking on crumbs or searcherfile should filter the result list accordingly

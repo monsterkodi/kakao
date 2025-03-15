@@ -197,7 +197,7 @@ kseg.chunks = any ->
     returns words for any
 
     word:
-        word: string            # string without any whitespace or punctuation
+        word:  string           # string without any whitespace or punctuation
         index: int              # index in the grapheme list of any
         segl:  list of strings  # list of graphemes without any whitespace or punctuation
 ###

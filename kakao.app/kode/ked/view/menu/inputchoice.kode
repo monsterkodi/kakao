@@ -6,8 +6,8 @@
 000  000   000  000         0000000      000      0000000  000   000   0000000   000   0000000  00000000  
 ###
 
-use ../../../kxk ▪ post kstr kseg
-use ../../theme  ◆ color theme
+use ../../../kxk ▪ post
+use ../../theme  ◆ theme
 use ../base      ◆ view input
 use ../menu      ◆ choices
 
@@ -33,9 +33,9 @@ function inputchoice extends view
         super key color
         
         if key == 'bg'
-            @input.setColor             'bg'        @color.bg
-            @input.setColor             'empty'     @color.bg
-            @choices.setColor           'bg'        @color.bg
+            @input.setColor     'bg'    @color.bg
+            @input.setColor     'empty' @color.bg
+            @choices.setColor   'bg'    @color.bg
         
     inputIsActive: -> @input.hasFocus() or @input.current().length
         
