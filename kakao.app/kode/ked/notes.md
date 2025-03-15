@@ -25,9 +25,7 @@
         - turd missing completions
         - completions with leading turd
         - unicode completions
-    - allow completion inside chunks in some cases
-        - before closing )]}
-        - after . :
+    - disallow completion inside words
         
 - searcher
     - clicking on crumbs or searcherfile should filter the result list accordingly
@@ -50,7 +48,7 @@
 - dirtree
     - git status
     - searchable?
-    - set hover highlight to open file when loosing focus
+    - set hover highlight to editor file when loosing focus
 
 - quicky
     - file icons and ext removal
@@ -68,7 +66,6 @@
     - more tests
     - fix
         - insert after wide unicode segments
-        - clear selection after copy?
     - add
         - multicursor delete|backspace over multiple lines? (alt+cmd+delete in ko)
         - alt+cmd+e add word at cursor to highlights

@@ -40,19 +40,24 @@ complete = (function ()
 
     complete.prototype["complete"] = function ()
     {
-        var before, tct, tcw
+        var after, before, hcw, tct, tcw
 
         before = this.editor.state.chunkBeforeCursor()
-        if (tct = kseg.tailCountTurd(before))
+        after = this.editor.state.chunkAfterCursor()
+        tcw = kseg.tailCountWord(before)
+        hcw = kseg.headCountWord(after)
+        if (tcw && hcw)
+        {
+            return
+        }
+        tct = kseg.tailCountTurd(before)
+        if (tct)
         {
             before = before.slice(before.length - 1)
         }
-        else if (tcw = kseg.tailCountWord(before))
+        else if (tcw && tcw < before.length)
         {
-            if (tcw < before.length)
-            {
-                before = before.slice(before.length - tcw)
-            }
+            before = before.slice(before.length - tcw)
         }
         return this.word(before)
     }

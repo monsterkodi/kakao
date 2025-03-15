@@ -43,11 +43,20 @@ function complete
     complete: -> 
     
         before = @editor.state.chunkBeforeCursor()
-        if tct = kseg.tailCountTurd before
-            before = before[before.length-1..]
-        else if tcw = kseg.tailCountWord before
-            if tcw < before.length
-                before = before[before.length-tcw..]
+        after  = @editor.state.chunkAfterCursor()
+        
+        tcw = kseg.tailCountWord before
+        hcw = kseg.headCountWord after
+        
+        ⮐  if tcw and hcw # don't complete if cursor is inside a word
+        
+        tct = kseg.tailCountTurd before
+        
+        if tct 
+            before = before[before.length-1..] # start from the last punctuation character
+        else if tcw and tcw < before.length
+            before = before[before.length-tcw..] # start from the last word
+                
         @word before
         
     # 000   000   0000000   00000000   0000000    
