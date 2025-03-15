@@ -1,0 +1,95 @@
+###
+    00     00  00000000  000   000  000   000    
+    000   000  000       0000  000  000   000    
+    000000000  0000000   000 0 000  000   000    
+    000 0 000  000       000  0000  000   000    
+    000   000  00000000  000   000   0000000     
+###
+
+use ../../../kxk    ▪ kstr slash post noon
+use ../../edit/tool ◆ belt
+use ../../theme     ◆ theme 
+use                 ◆ inputchoice
+
+function context extends inputchoice
+
+    @menu: null
+
+    @: @screen ->
+        
+        super @screen 'context'
+        
+        context.menu = @
+
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
+    layout: =>
+
+        w = @width+2+1 # 2 for frame, 1 for right 
+        c = @choices.numChoices()
+        
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
+        h = c + 2 + ih
+        x = @pos[0]
+        y = @pos[1]
+        
+        @input.layout    x+2   y+1      w-4  iz
+        @choices.layout  x+1   y+1+ih   w-2  c
+        @cells.layout    x     y        w    h
+
+    #  0000000  000   000   0000000   000   000
+    # 000       000   000  000   000  000 0 000
+    # 0000000   000000000  000   000  000000000
+    #      000  000   000  000   000  000   000
+    # 0000000   000   000   0000000   00     00
+    
+    @show: pos cb items -> context.menu.show pos cb items
+
+    show: @pos @cb @items ->
+        
+        @pos[1] -= 1
+        
+        items = @items.map (i) -> ' ' + i # padding for  
+            
+        @width = belt.widthOfLines items
+        
+        @input.set ''
+        @choices.set items
+        @choices.select 0
+        @choices.state.setView [0 0]
+                
+        super()
+                
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    applyChoice: choice ->
+        
+        @cb choice
+        @hide()
+        
+    onWheel: ->
+                            
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
+    draw: =>
+
+        ⮐ if @hidden()
+        
+        @layout()
+        @drawFrame()
+        @drawChoices()
+
+export context

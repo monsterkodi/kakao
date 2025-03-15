@@ -11,7 +11,7 @@ use   ../screen  ◆ cells
 
 function view extends events
 
-    @popups: ['quicky' 'fsbrow' 'menu']
+    @popups: ['quicky' 'fsbrow' 'context' 'menu']
     @currentPopup: null
 
     @: @screen @name features ->

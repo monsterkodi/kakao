@@ -10,6 +10,7 @@ use ../../../kxk    ▪ post
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
 use ../base         ◆ view 
+use ../menu         ◆ context
 use                 ◆ mapscr 
 
 function fileeditor extends editor
@@ -49,6 +50,31 @@ function fileeditor extends editor
         
         column ?= @state.mainCursor()[0]
         @state.setCursors [[column lineIndex]] adjust:'topBotDelta'
+
+    #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
+    # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
+    # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   
+    # ███       ███   ███  ███  ████     ███     ███        ███ ███      ███   
+    #  ███████   ███████   ███   ███     ███     ████████  ███   ███     ███   
+
+    onContext: event =>
+    
+        ⮐  if not @hover
+    
+        if event.type == 'press' and event.count == 1
+            word = @state.wordAtCursor()
+            if valid word ➜ word = " '#{word}'"
+            context.show event.cell @onContextChoice [
+                "search#{word}" 
+                "find#{word}" 
+                ]
+                
+    onContextChoice: choice =>
+    
+        if choice.startsWith 'search '
+            post.emit 'searcher.show' choice[8..-2]
+        else if choice.startsWith 'find '
+            post.emit 'finder.show' choice[6..-2]
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

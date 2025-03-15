@@ -22,9 +22,14 @@ finder = (function ()
         this.screen = screen
         this.state = state
     
+        this["show"] = this["show"].bind(this)
         this["layout"] = this["layout"].bind(this)
         this["lineno"] = this["lineno"].bind(this)
         finder.__super__.constructor.call(this,this.screen,name,['gutter','scroll'])
+        if (this.name === 'finder')
+        {
+            post.on('finder.show',this.show)
+        }
         this.setColor('bg',theme.finder_bg)
         this.setColor('frame',theme.finder_frame)
         this.choices.state.skipAdjustViewForMainCursor = true
@@ -71,22 +76,16 @@ finder = (function ()
         if (_k_.empty(text))
         {
             text = this.state.textOfSelectionOrWordAtCursor()
-            if (!_k_.empty(text))
-            {
-                this.input.set(text)
-                this.input.selectAll()
-            }
-            else
-            {
-                text = ''
-            }
         }
+        text = (text != null ? text : '')
+        this.input.set(text)
+        this.input.selectAll()
         return text
     }
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _117_87_
+        var cursorLine, front, span, _120_87_
 
         if (_k_.empty(text))
         {
@@ -115,10 +114,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_117_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_120_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _117_87_ : 0))
+            })) != null ? _120_87_ : 0))
         }
         else
         {

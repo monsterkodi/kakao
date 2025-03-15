@@ -26,6 +26,7 @@ import fsbrow from "./view/menu/fsbrow.js"
 import menu from "./view/menu/menu.js"
 import finder from "./view/menu/finder.js"
 import searcher from "./view/menu/searcher.js"
+import context from "./view/menu/context.js"
 
 import status from "./view/status/status.js"
 
@@ -90,6 +91,7 @@ ked [file]
         this.finder = new finder(this.screen,this.editor.state)
         this.searcher = new searcher(this.screen,this.editor.state)
         this.status = new status(this.screen,this.editor.state)
+        this.context = new context(this.screen)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
         post.on('redraw',this.redraw)
@@ -102,9 +104,10 @@ ked [file]
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
         post.on('fs.change',this.onFileChange)
-        this.mouseHandlers = [this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.status,this.funcol]
+        this.contextHandlers = [this.editor,this.funcol]
+        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.status,this.funcol]
         this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.funcol]
-        this.keyHandlers = [this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.funcol]
+        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -168,7 +171,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _150_10_
+        var _152_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -199,7 +202,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _179_22_
+        var _181_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -242,7 +245,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col)
     {
-        var segls, start, text, _231_22_
+        var segls, start, text, _233_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -349,6 +352,22 @@ ked [file]
                 }
                 if (event.type !== 'move' || _k_.in(handler.name,view.popups))
                 {
+                    break
+                }
+            }
+        }
+        if (event.button === 'right')
+        {
+            var list2 = _k_.list(this.contextHandlers)
+            for (var _c_ = 0; _c_ < list2.length; _c_++)
+            {
+                handler = list2[_c_]
+                if (ret = handler.onContext(event))
+                {
+                    if (ret.redraw === true)
+                    {
+                        redraw = true
+                    }
                     break
                 }
             }
@@ -472,7 +491,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _397_22_
+        var _409_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -511,6 +530,7 @@ ked [file]
         this.fsbrow.draw()
         this.finder.draw()
         this.searcher.draw()
+        this.context.draw()
         this.screen.render()
         return this.status.time = process.hrtime(start)[1]
     }

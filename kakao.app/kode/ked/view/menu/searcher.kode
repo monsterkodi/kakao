@@ -18,6 +18,8 @@ function searcher extends finder
 
         super @screen @state 'searcher'
         
+        post.on 'searcher.show' @show
+        
         @sfils = []
         
     layout: =>
@@ -76,11 +78,11 @@ function searcher extends finder
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    show: text ○->
+    show: text ○=>
         
         text = @searchText text
         
-        # log g4("#{r6 'searcher'} '#{text}'")
+        log g4("#{r6 'searcher'} '#{text}'")
         
         if empty text
             @layout()

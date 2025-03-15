@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var fileeditor
 
@@ -10,6 +10,8 @@ import belt from "../../edit/tool/belt.js"
 import editor from "../../edit/editor.js"
 
 import view from "../base/view.js"
+
+import context from "../menu/context.js"
 
 import mapscr from "./mapscr.js"
 
@@ -23,6 +25,8 @@ fileeditor = (function ()
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["onContextChoice"] = this["onContextChoice"].bind(this)
+        this["onContext"] = this["onContext"].bind(this)
         this["onGotoLine"] = this["onGotoLine"].bind(this)
         features = ['scroll','gutter','mapscr','complete','filepos','replex','brckts','unype','salter','vimple','uniko']
         fileeditor.__super__.constructor.call(this,screen,name,features)
@@ -41,9 +45,40 @@ fileeditor = (function ()
         return this.state.setCursors([[column,lineIndex]],{adjust:'topBotDelta'})
     }
 
+    fileeditor.prototype["onContext"] = function (event)
+    {
+        var word
+
+        if (!this.hover)
+        {
+            return
+        }
+        if (event.type === 'press' && event.count === 1)
+        {
+            word = this.state.wordAtCursor()
+            if (!_k_.empty(word))
+            {
+                word = ` '${word}'`
+            }
+            return context.show(event.cell,this.onContextChoice,[`search${word}`,`find${word}`])
+        }
+    }
+
+    fileeditor.prototype["onContextChoice"] = function (choice)
+    {
+        if (choice.startsWith('search '))
+        {
+            return post.emit('searcher.show',choice.slice(8, -1))
+        }
+        else if (choice.startsWith('find '))
+        {
+            return post.emit('finder.show',choice.slice(6, -1))
+        }
+    }
+
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _144_31_, _92_41_
+        var col, ret, row, start, x, y, _118_41_, _170_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

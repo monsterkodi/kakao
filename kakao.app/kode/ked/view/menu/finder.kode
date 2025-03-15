@@ -17,6 +17,8 @@ function finder extends inputchoice
 
         super @screen name ['gutter' 'scroll']
         
+        post.on 'finder.show' @show if @name == 'finder'
+        
         @setColor 'bg'    theme.finder_bg
         @setColor 'frame' theme.finder_frame
         
@@ -70,11 +72,12 @@ function finder extends inputchoice
         
         if empty text 
             text = @state.textOfSelectionOrWordAtCursor()
-            if valid text                
-                @input.set text
-                @input.selectAll()
-            else
-                text = ''
+            
+        text ?= ''
+
+        @input.set text
+        @input.selectAll()
+                
         text
         
     #  0000000  000   000   0000000   000   000  
@@ -83,7 +86,7 @@ function finder extends inputchoice
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    show: text ->
+    show: text =>
         
         if empty text 
             cursorLine = @state.mainCursor()[1]

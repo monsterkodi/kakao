@@ -13,7 +13,7 @@ use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
 use ./util        ◆ logfile prjcts session help julia frecent watcher
 use ./view/base   ◆ view
-use ./view/menu   ◆ quicky fsbrow menu finder searcher 
+use ./view/menu   ◆ quicky fsbrow menu finder searcher context
 use ./view/status ◆ status 
 use ./view/screen ◆ screen ttio
 use ./view/funcol ◆ funcol 
@@ -64,6 +64,7 @@ function KED
         @finder   = new finder     @screen @editor.state
         @searcher = new searcher   @screen @editor.state
         @status   = new status     @screen @editor.state
+        @context  = new context    @screen
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
 
@@ -80,9 +81,10 @@ function KED
         post.on 'quit'          @quit
         post.on 'fs.change'     @onFileChange
         
-        @mouseHandlers = [@finder @searcher @quicky @fsbrow @menu @editor @status @funcol]
-        @wheelHandlers = [@finder @searcher @quicky @fsbrow @menu @editor         @funcol]
-        @keyHandlers   = [@finder @searcher @quicky @fsbrow @menu @editor         @funcol]
+        @contextHandlers = [                                                  @editor         @funcol ]
+        @mouseHandlers   = [ @context @finder @searcher @quicky @fsbrow @menu @editor @status @funcol ]
+        @wheelHandlers   = [          @finder @searcher @quicky @fsbrow @menu @editor         @funcol ]
+        @keyHandlers     = [ @context @finder @searcher @quicky @fsbrow @menu @editor         @funcol ]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -310,13 +312,23 @@ function KED
             ⮐ 
 
         redraw = false
+        
         for handler in @mouseHandlers
+        
             if ret = handler.onMouse event
                 event.handled = true
                 if ret.redraw == true
                     redraw = true
                 break if event.type != 'move' or handler.name in view.popups
-                
+
+        if event.button == 'right'
+            
+            for handler in @contextHandlers
+                if ret = handler.onContext event
+                    if ret.redraw == true
+                        redraw = true
+                    break
+
         @redraw() if redraw
                 
     # 000   000  00000000  000   000  
@@ -329,17 +341,17 @@ function KED
             
         switch key
             
-            'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐ @quit()
-            'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐ @reloadFile()
-            'ctrl+s' 'cmd+s'             ➜ ⮐ @saveFile()
-            'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐ @saveAs()
-            'cmd+n' 'ctrl+n'             ➜ ⮐ @newFile()
-            'alt+.' 'alt+m'              ➜ ⮐ @menu.show()
-            'cmd+p' 'ctrl+p'             ➜ ⮐ @quicky.showProjectFiles @currentFile
-            'cmd+f' 'ctrl+f'             ➜ ⮐ @finder.show()
-            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐ @searcher.show()
-            'cmd+o' 'ctrl+o'
-            'cmd+.' 'ctrl+.'             ➜ ⮐ @fsbrow.gotoDir slash.dir(@currentFile)
+            'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
+            'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐  @reloadFile()
+            'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()
+            'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐  @saveAs()
+            'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()
+            'alt+.' 'alt+m'              ➜ ⮐  @menu.show()
+            'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky.showProjectFiles @currentFile
+            'cmd+f' 'ctrl+f'             ➜ ⮐  @finder.show()
+            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
+            'cmd+o' 'ctrl+o'                  
+            'cmd+.' 'ctrl+.'             ➜ ⮐  @fsbrow.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers
             # log "#{handler.name}"
@@ -433,6 +445,7 @@ function KED
         @fsbrow.draw()
         @finder.draw()
         @searcher.draw()
+        @context.draw()
         
         # ●▸ render
         @screen.render()

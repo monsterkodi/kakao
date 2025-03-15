@@ -28,6 +28,7 @@ funcol = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onFuncolToggle"] = this["onFuncolToggle"].bind(this)
         this["onFuncolResize"] = this["onFuncolResize"].bind(this)
+        this["onContext"] = this["onContext"].bind(this)
         this["setRoot"] = this["setRoot"].bind(this)
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
@@ -105,6 +106,15 @@ funcol = (function ()
         this.dirtree.draw()
         this.knob.draw()
         return funcol.__super__.draw.call(this)
+    }
+
+    funcol.prototype["onContext"] = function (event)
+    {
+        if (!this.hover)
+        {
+            return
+        }
+        console.log(`funcol.onContext ${this.hover}`,event)
     }
 
     funcol.prototype["onFuncolResize"] = function ()
