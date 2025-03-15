@@ -88,6 +88,10 @@ salterMode = (function ()
         {
             return
         }
+        if (state.s.selections.length)
+        {
+            return
+        }
         cursors = belt.findPositionsForSaltInsert(state.s.lines,state.mainCursor())
         if (!_k_.empty(cursors))
         {

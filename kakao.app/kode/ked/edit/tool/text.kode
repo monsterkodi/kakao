@@ -207,14 +207,26 @@ function text
         maxIndex = 0
         maxLength = 0
         for line,index in lines
-            if line.length > maxLength
-                maxLength = kseg.width line
+            w = kseg.width line
+            if w > maxLength
+                maxLength = w
                 maxIndex  = index
         maxIndex
 
     @widthOfLines: lines -> 
     
         kseg.width lines[@indexOfLongestLine(lines)]
+        
+    @widthOfLinesIncludingColorBubbles: lines ->
+    
+        maxWidth = 0
+        for line in lines
+            w = kseg.width line
+            if line.indexOf('#') >= 0
+                w += 4
+            if w > maxWidth
+                maxWidth = w 
+        maxWidth
 
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
@@ -736,22 +748,20 @@ function text
                 
             segls.push s
         
-        # log "words" words
         for segl in kseg.segls words
-            
+            #
             tc = kseg.tailCountTurd segl
             
             if tc == 0 or tc == 1 and segl[0] == segl[-1]
                 push segl
             else
                 end = kseg.str segl[segl.length-tc..]
-                # if end in '])}"\'' or end[-1] in ')]}' and end[-2] not in ','
                 if end in '])}' or end[-1] in ')]}' and end[-2] not in ','
-                    # log "case c #{kseg.str segl}"
                     push segl
                 else
-                    # log "case d #{kseg.str segl} #{kseg.str segl[0...segl.length-tc]}"
-                    push segl[0...segl.length-tc]
+                    beforeTurd = segl[0...segl.length-tc]
+                    if valid beforeTurd
+                        push segl[0...segl.length-tc]
                     
         strs = segls.map kseg.str
         strs.sort()

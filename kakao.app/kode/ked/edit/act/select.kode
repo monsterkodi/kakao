@@ -339,11 +339,7 @@ export
     
     selectMoreLines: ->
         
-        cursors    = @allCursors()
-        selections = @allSelections()
-        lines      = @allLines()
-        
-        [cursors selections] = belt.addLinesBelowPositionsToRanges lines cursors selections
+        [cursors selections] = belt.addLinesBelowPositionsToRanges @s.lines @s.cursors @s.selections
         
         @setSelections selections
         @setCursors cursors main:-1

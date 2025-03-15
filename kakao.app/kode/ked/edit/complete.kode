@@ -77,7 +77,7 @@ function complete
 
         @visible = valid @words
 
-        ⮐ if empty @words
+        ⮐  if empty @words
         
         mc = @editor.state.mainCursor()
         
@@ -92,7 +92,7 @@ function complete
         if @words.length <= 1
             @choices.clear()                    
         else
-            mlw = max 1 belt.widthOfLines(@words)
+            mlw = max 1 belt.widthOfLinesIncludingColorBubbles(@words)
             
             h = min 8 @words.length
             x  = @editor.cells.x+cx-@turd.length
@@ -110,7 +110,7 @@ function complete
     
     hide: -> 
         ⮐  if not @visible
-        @editor.state.syntax.setSegls @editor.state.s.lines # 𝜏𝖍𝚒𝖘 𝚒𝖘 𝕒 𝔟𝚒𝜏 𝔟ɼ𝓊𝜏𝕒⟅, 𝚒𝖘∩'𝜏 𝚒𝜏?
+        @editor.state.syntax.setSegls @editor.state.s.lines
         @visible = false
         
     hidden: -> not @visible
@@ -226,7 +226,7 @@ function complete
         lines = lines.asMutable()
         for pos in @editor.state.s.cursors
             kutil.replace lines[pos[1]] pos[0] 0 kseg(word[@turd.length..])
-        @editor.state.syntax.setSegls kseg.segls(lines) # 𝜏𝖍𝚒𝖘 𝚒𝖘 𝕒 𝔟𝚒𝜏 𝔟ɼ𝓊𝜏𝕒⟅, 𝚒𝖘∩'𝜏 𝚒𝜏?
+        @editor.state.syntax.setSegls kseg.segls(lines)
         lines
         
     # 0000000    00000000    0000000   000   000       0000000   0000000   00     00  00000000   000    000000000  000   000  
@@ -240,8 +240,6 @@ function complete
         ⮐  if @hidden() or empty @words
 
         word = @currentWord()
-        
-        # log "complete #{word} #{@choices.current()} #{@words.length}" @words
         
         for pos in @editor.state.s.cursors # highlight the insertions
             

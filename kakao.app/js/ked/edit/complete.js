@@ -102,7 +102,7 @@ complete = (function ()
         }
         else
         {
-            mlw = _k_.max(1,belt.widthOfLines(this.words))
+            mlw = _k_.max(1,belt.widthOfLinesIncludingColorBubbles(this.words))
             h = _k_.min(8,this.words.length)
             x = this.editor.cells.x + cx - this.turd.length
             y = this.editor.cells.y + cy + 1

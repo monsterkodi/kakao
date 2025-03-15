@@ -392,12 +392,9 @@ export default {select:function (from, to)
     }
 },selectMoreLines:function ()
 {
-    var cursors, lines, selections
+    var cursors, selections
 
-    cursors = this.allCursors()
-    selections = this.allSelections()
-    lines = this.allLines()
-    var _e_ = belt.addLinesBelowPositionsToRanges(lines,cursors,selections); cursors = _e_[0]; selections = _e_[1]
+    var _e_ = belt.addLinesBelowPositionsToRanges(this.s.lines,this.s.cursors,this.s.selections); cursors = _e_[0]; selections = _e_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors,{main:-1})

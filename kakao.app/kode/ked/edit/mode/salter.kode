@@ -76,6 +76,7 @@ function salterMode
     
         ⮐  if not state.allowedModes.salter
         ⮐  if state.s.cursors.length != 1
+        ⮐  if state.s.selections.length
         
         cursors = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
         if valid cursors                # start the salter mode if the main

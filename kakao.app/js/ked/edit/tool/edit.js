@@ -266,7 +266,7 @@ edit = (function ()
         var addLineAtIndex, c, newp, newr
 
         newp = []
-        newr = _k_.copy(rngs)
+        newr = rngs.asMutable()
         addLineAtIndex = (function (c, i)
         {
             var range
@@ -287,13 +287,14 @@ edit = (function ()
             {
                 addLineAtIndex(c,c[1])
             }
-            else
+            else if (c[1] < lines.length - 1)
             {
-                if (c[1] < lines.length - 1)
-                {
-                    addLineAtIndex(c,c[1] + 1)
-                }
+                addLineAtIndex(c,c[1] + 1)
             }
+        }
+        if (_k_.empty(newp))
+        {
+            return [posl,rngs]
         }
         return [newp,newr]
     }

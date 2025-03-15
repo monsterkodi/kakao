@@ -355,7 +355,7 @@ text = (function ()
 
     text["indexOfLongestLine"] = function (lines)
     {
-        var index, line, maxIndex, maxLength
+        var index, line, maxIndex, maxLength, w
 
         maxIndex = 0
         maxLength = 0
@@ -363,9 +363,10 @@ text = (function ()
         for (index = 0; index < list.length; index++)
         {
             line = list[index]
-            if (line.length > maxLength)
+            w = kseg.width(line)
+            if (w > maxLength)
             {
-                maxLength = kseg.width(line)
+                maxLength = w
                 maxIndex = index
             }
         }
@@ -375,6 +376,28 @@ text = (function ()
     text["widthOfLines"] = function (lines)
     {
         return kseg.width(lines[this.indexOfLongestLine(lines)])
+    }
+
+    text["widthOfLinesIncludingColorBubbles"] = function (lines)
+    {
+        var line, maxWidth, w
+
+        maxWidth = 0
+        var list = _k_.list(lines)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            line = list[_a_]
+            w = kseg.width(line)
+            if (line.indexOf('#') >= 0)
+            {
+                w += 4
+            }
+            if (w > maxWidth)
+            {
+                maxWidth = w
+            }
+        }
+        return maxWidth
     }
 
     text["beforeAndAfterForPos"] = function (lines, pos)
@@ -393,7 +416,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 233, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 245, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length
@@ -808,7 +831,7 @@ text = (function ()
 
     text["isUnbalancedPosition"] = function (lines, pos, char)
     {
-        var p, revs, start, _481_28_
+        var p, revs, start, _493_28_
 
         revs = {']':'[','}':'{',')':'(','"':'"',"'":"'"}
         p = pepe(kseg.str(lines[pos[1]]))
@@ -821,7 +844,7 @@ text = (function ()
 
     text["isRangeInString"] = function (lines, rng)
     {
-        var _490_76_
+        var _502_76_
 
         return (this.rangeOfStringSurroundingRange(lines,rng) != null)
     }
@@ -1113,7 +1136,7 @@ text = (function ()
 
     text["prepareWordsForCompletion"] = function (turd, words)
     {
-        var end, filtered, push, segl, segls, strs, subw, tc, w
+        var beforeTurd, end, filtered, push, segl, segls, strs, subw, tc, w
 
         filtered = []
         var list = _k_.list(words)
@@ -1197,7 +1220,11 @@ text = (function ()
                 }
                 else
                 {
-                    push(segl.slice(0, segl.length - tc))
+                    beforeTurd = segl.slice(0, segl.length - tc)
+                    if (!_k_.empty(beforeTurd))
+                    {
+                        push(segl.slice(0, segl.length - tc))
+                    }
                 }
             }
         }
