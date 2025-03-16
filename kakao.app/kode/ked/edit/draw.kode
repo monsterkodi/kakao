@@ -43,7 +43,7 @@ function draw extends view
     
     draw: =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         # prof.start 'draw' if @name == 'editor'
         # ● draw
@@ -85,16 +85,13 @@ function draw extends view
                     # log "#{@name} #{r5 'break!'}"
                     break 
                 
-                clss = syntax.getClass ci y
-                if clss == 'invert_bg'
-                    fg = bg
-                    bg = @color.bg
-                else
-                    fg = syntax.getColor clss
+                fg = syntax.getColor ci y
                     
                 ch = syntax.getChar ci y line[si]
                 if ch == "#" ➜ checkColor = true
-                else if ch in '0█' and clss.endsWith('header') ➜ headerClass = clss
+                else if ch in '0█' 
+                    clss = syntax.getClass ci y
+                    if clss.endsWith('header') ➜ headerClass = clss
 
                 x += kseg.width(line[si]) ? 1
                 if x < @cells.cols

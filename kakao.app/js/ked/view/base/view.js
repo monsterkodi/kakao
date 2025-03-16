@@ -12,7 +12,7 @@ import cells from "../screen/cells.js"
 view = (function ()
 {
     _k_.extend(view, events)
-    view["popups"] = ['quicky','fsbrow','context','menu']
+    view["popups"] = ['quicky','fsbrow','context','menu','searcher','finder']
     view["currentPopup"] = null
     function view (screen, name, features)
     {
@@ -40,6 +40,7 @@ view = (function ()
             f = list[_a_]
             this.feats[f] = true
         }
+        this.isVisible = true
         this.focusable = false
         if (_k_.in(this.name,view.popups))
         {
@@ -59,6 +60,11 @@ view = (function ()
 
     view.prototype["onViewHide"] = function (viewName)
     {
+        if (viewName === this.name)
+        {
+            console.log(`onViewHide ${viewName}`)
+            post.emit('popup.hide',viewName)
+        }
         if (viewName === view.currentPopup)
         {
             return view.currentPopup = null
@@ -67,6 +73,11 @@ view = (function ()
 
     view.prototype["onViewShow"] = function (viewName)
     {
+        if (viewName === this.name)
+        {
+            console.log(`onViewShow ${viewName}`)
+            post.emit('popup.show',viewName)
+        }
         if (_k_.in(viewName,view.popups))
         {
             view.currentPopup = viewName
@@ -79,15 +90,19 @@ view = (function ()
 
     view.prototype["show"] = function ()
     {
+        this.isVisible = true
         post.emit('view.show',this.name)
-        this.layout()
+        this.arrange()
         return {redraw:true}
     }
 
+    view.prototype["arrange"] = function ()
+    {}
+
     view.prototype["hide"] = function ()
     {
+        this.isVisible = false
         post.emit('view.hide',this.name)
-        this.cells.rows = 0
         return {redraw:true}
     }
 
@@ -96,14 +111,9 @@ view = (function ()
         return !this.visible()
     }
 
-    view.prototype["invisible"] = function ()
-    {
-        return !this.visible()
-    }
-
     view.prototype["visible"] = function ()
     {
-        return this.cells.rows > 0 && this.cells.cols > 0
+        return this.isVisible && this.cells.rows > 0 && this.cells.cols > 0
     }
 
     view.prototype["toggle"] = function ()

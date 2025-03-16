@@ -11,7 +11,8 @@
 
 use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
-use ./util        ◆ logfile prjcts indexer session help julia frecent watcher
+use ./index       ◆ prjcts indexer
+use ./util        ◆ logfile session help julia frecent watcher
 use ./view/base   ◆ view
 use ./view/menu   ◆ quicky fsbrow menu finder searcher context
 use ./view/status ◆ status 
@@ -134,7 +135,7 @@ function KED
     # 000      000   000     000     000   000  000   000     000     
     # 0000000  000   000     000      0000000    0000000      000     
     
-    layout: ->
+    layout: =>
         
         w = @t.cols()
         h = @t.rows()
@@ -216,6 +217,17 @@ function KED
             @loadFile @currentFile
         else
             @newFile()
+            
+    #  0000000   00000000   00000000  000   000  
+    # 000   000  000   000  000       0000  000  
+    # 000   000  00000000   0000000   000 0 000  
+    # 000   000  000        000       000  0000  
+    #  0000000   000        00000000  000   000  
+    
+    openFile: path row col view =>
+        
+        @loadFile path row col view
+        @editor.grabFocus()
         
     # ███       ███████    ███████   ███████          ████████  ███  ███      ████████
     # ███      ███   ███  ███   ███  ███   ███        ███       ███  ███      ███     
@@ -225,7 +237,7 @@ function KED
 
     loadFile: p row col view ○=>
     
-        log "loadFile #{p} #{row} #{col} #{noon view}"
+        # log "loadFile #{p} #{row} #{col} #{noon view}"
         
         start = process.hrtime()
         
@@ -234,6 +246,13 @@ function KED
         else
             @currentFile = slash.path process.cwd() p
 
+        exists =○ nfs.fileExists @currentFile
+        
+        if not exists
+            log "file doesn't exist! #{@currentFile}"
+            @currentFile = null
+            ⮐ 
+        
         @currentFile =○ nfs.resolveSymlink @currentFile
         
         @status.setFile slash.tilde(@currentFile)
@@ -270,18 +289,7 @@ function KED
         
         @saveSessionFile @currentFile 'loaded'        
         @
-        
-    #  0000000   00000000   00000000  000   000  
-    # 000   000  000   000  000       0000  000  
-    # 000   000  00000000   0000000   000 0 000  
-    # 000   000  000        000       000  0000  
-    #  0000000   000        00000000  000   000  
-    
-    openFile: path row col view =>
-        
-        @loadFile path row col view
-        @editor.grabFocus()
-            
+                    
     #  0000000   0000000   000   000  00000000  
     # 000       000   000  000   000  000       
     # 0000000   000000000   000 000   0000000   
@@ -298,13 +306,13 @@ function KED
             @redraw()
             @saveSessionFile @currentFile 'saved'
             
-    saveAs: => log 'saveAs'
-
-    saveSessionFile: file type ->
+    saveSessionFile: file type =>
         
         frecent.fileAction file type
                 
         @session.set 'files▸recent' frecent.store('file')
+            
+    saveAs: => log 'saveAs'
     
     # 00000000    0000000    0000000  000000000  00000000  
     # 000   000  000   000  000          000     000       

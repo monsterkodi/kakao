@@ -28,12 +28,12 @@ menu = (function ()
         this.screen = screen
     
         this["hide"] = this["hide"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
         this.greet = new greet(this.screen)
     }
 
-    menu.prototype["layout"] = function ()
+    menu.prototype["arrange"] = function ()
     {
         var c, gh, gw, h, ih, iz, scx, scy, w, x, y
 
@@ -141,7 +141,7 @@ quit`)
         {
             return
         }
-        this.layout()
+        this.arrange()
         this.greet.draw()
         this.drawFrame()
         return this.drawChoices()

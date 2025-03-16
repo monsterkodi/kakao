@@ -11,10 +11,8 @@
     
     stores 
     
-        - main cursor positions per file
+        - main cursor position and view offset per file
         - recent file history
-        - dirtree
-            - root
 ###
 
 use ../../kxk ◆ noon events slash post nfs sds
@@ -28,9 +26,8 @@ function session extends events
         @name = sessionId()
 
         opt ?= {}
-        # log 'session opt' opt        
+
         @timeout = opt.timeout ? 1000
-        # log 'session timeout' @timeout
         
         @sep  = opt.separator ? '▸'
         
@@ -62,8 +59,6 @@ function session extends events
     
     set: key value =>
         
-        # log "session[#{@name}].set" key value
-
         ⮐ if not key is str
         ⮐ if @get(key) eql value
         ⮐ if @get(key) == value
@@ -90,6 +85,8 @@ function session extends events
         
         clearTimeout @timer
         
+    recentFiles: => Object.keys @get('files▸recent' {}) 
+        
     # 000       0000000    0000000   0000000    
     # 000      000   000  000   000  000   000  
     # 000      000   000  000000000  000   000  
@@ -114,8 +111,8 @@ function session extends events
 
     save: ○=>
         
-        ⮐ if not @file
-        ⮐ if empty @data
+        ⮐  if not @file
+        ⮐  if empty @data
         
         clearTimeout @timer
         @timer = null
@@ -146,11 +143,7 @@ function session extends events
             
             recent =○ noon.read file
             
-            # log "loadAndMerge #{m7 @name} #{g5 slash.name(file)}"
-                
             post.emit 'session.merge' recent
-            
-            # log 'post merge:' recent
             
             @set 'files'  recent.files # probably should actually merge here instead of overriding!
             @set 'editor' recent.editor
@@ -179,9 +172,5 @@ function session extends events
         files =○ @listSessions()
         for file in files[0...files.length-maxFiles]
             ○ nfs.remove file
-            
-    recentFiles: =>
-        
-        Object.keys @get('files▸recent' {}) 
-        
+                    
 export session

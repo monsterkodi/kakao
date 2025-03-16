@@ -24,12 +24,12 @@ context = (function ()
         this.screen = screen
     
         this["draw"] = this["draw"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         context.__super__.constructor.call(this,this.screen,'context')
         context.menu = this
     }
 
-    context.prototype["layout"] = function ()
+    context.prototype["arrange"] = function ()
     {
         var c, h, ih, iz, w, x, y
 
@@ -86,7 +86,7 @@ context = (function ()
         {
             return
         }
-        this.layout()
+        this.arrange()
         this.drawFrame()
         return this.drawChoices()
     }

@@ -62,7 +62,7 @@ function fileeditor extends editor
                 'ind' ➜ col = belt.numIndent @state.s.lines[row]
         
         if valid view
-            log "fileeditor.onGotoLine #{row} #{col} #{view[0]} #{view[1]}"
+            # log "fileeditor.onGotoLine #{row} #{col} #{view[0]} #{view[1]}"
             @state.setView view
             @state.setCursors [[col row]]
         else
@@ -179,7 +179,7 @@ function fileeditor extends editor
             
                 if @hover
                     
-                    if not @hasFocus() and empty view.currentPopup or view.currentPopup == @name
+                    if not @hasFocus() and empty view.currentPopup
                         @grabFocus()
                     
                     post.emit 'pointer' 'text'

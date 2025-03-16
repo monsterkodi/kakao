@@ -38,6 +38,8 @@ function choices extends editor
             @setColor           'empty' @color.bg
             @gutter?.setColor   'bg'    @color.bg
             @scroll?.setColor   'bg'    @color.bg
+
+    extract: item => @key and item is obj ? item[@key] : kseg.str(item)
         
     clear: => @set []
     
@@ -73,9 +75,7 @@ function choices extends editor
         @items = @items.concat items
         @fuzzied = @items # 𝜏𝖍𝚒𝖘 𝚒𝖘 ⟒ɼ⊚∩𝚐! 𝚒𝜏ϵ⫙𝖘 𝖘𝖍⊚𝓊⟅𝒹 𝔟ϵ ɼϵϝ𝓊𝓏𝓏𝚒ϵ𝒹 𝚒∩𝖘𝜏ϵ𝕒𝒹
         @state.appendLines items.map((i) -> i.line) ext
-        
-    extract: item => @key and item is obj ? item[@key] : kseg.str(item)
-        
+                
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -301,7 +301,7 @@ function choices extends editor
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    emitAction: action arg event ->
+    emitAction: action arg event =>
         
         @emit 'action' action arg event
                     

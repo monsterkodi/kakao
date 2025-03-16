@@ -21,6 +21,22 @@ function salterMode
             salterMode.syms = Object.keys salter.font
         
         @start()
+        
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
+    # 000       000   000  000   000  000       000   000  000   000  000       
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
+    # 000       000   000  000   000       000  000   000  000   000       000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+    
+    @checkCursorsSet: state ->
+    
+        ⮐  if not state.allowedModes.salter
+        ⮐  if state.s.cursors.length != 1
+        ⮐  if state.s.selections.length
+        
+        cursors = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
+        if valid cursors                # start the salter mode if the main
+            mode.start state 'salter'   # cursor moved inside a salted line 
 
     ###
      0000000   0000000   000    000000000  00000000  00000000   
@@ -66,22 +82,6 @@ function salterMode
     
         # @state.setMainCursor @state.mainCursor()
         
-    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
-    # 000       000   000  000   000  000       000   000  000   000  000       
-    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
-    # 000       000   000  000   000       000  000   000  000   000       000  
-    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
-    
-    @checkCursorsSet: state ->
-    
-        ⮐  if not state.allowedModes.salter
-        ⮐  if state.s.cursors.length != 1
-        ⮐  if state.s.selections.length
-        
-        cursors = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
-        if valid cursors                # start the salter mode if the main
-            mode.start state 'salter'   # cursor moved inside a salted line 
-
     findCursors:    -> belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
     isSaltedLine: y -> belt.isSaltedLine @state.s.lines[y]
 

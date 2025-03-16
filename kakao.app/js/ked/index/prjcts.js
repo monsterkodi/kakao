@@ -6,7 +6,7 @@ let slash = kxk.slash
 
 import nfs from "../../kxk/nfs.js"
 
-import walker from "./walker.js"
+import walker from "../util/walker.js"
 
 class prjcts
 {

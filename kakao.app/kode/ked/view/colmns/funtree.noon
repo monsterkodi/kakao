@@ -1,26 +1,29 @@
-(○?->\s+)([@]$)            
-    punct function        
+(▸\s+)([@]$)            
+    symbol function        
     punct method class
     
-(○?->\s+)([@])([\.\w\-]+)  
-    punct function
-    punct method class
-    method class
-    
-(○?=>\s+)([@])([\.\w\-]+)
-    punct function bound
+([○●▸]\s+)([@])([\.\w\-]+)  
+    symbol function
     punct method class
     method class
     
-(○?->\s+)([\.\w\-]+)       
-    punct function        
-    method
+(▸\s+)([\.\w\-]+)       
+    symbol function 
+    method symbol
+     
+(►\s+)([\.\w\-]+)       
+    symbol bound
+    method bound
     
-(○?=>\s+)([\.\w\-]+)       
-    punct function bound  
-    method
+(○\s+)([\.\w\-]+)       
+    symbol async bound
+    method async bound
+
+(●\s+)([\.\w\-]+)       
+    symbol async
+    method async
     
-(●\s+)([\.\w\-]+)          
+(■\s+)([\.\w\-]+)          
     punct class         
     class
 

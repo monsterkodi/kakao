@@ -20,13 +20,13 @@ export
     
     delete: type jump ->
                 
-        ⮐ @deleteSelection() if type in ['back' 'next'] and valid @s.selections
+        ⮐  @deleteSelection() if type in ['back' 'next'] and valid @s.selections
         
         lines   = @allLines()
         cursors = @allCursors()
         
         if cursors.length == 1 and type in ['back' 'next'] and belt.isLinesPosOutside lines cursors[0]
-            ⮐ @setMainCursor kseg.width(lines[cursors[0][1]]) cursors[0][1]
+            ⮐  @setMainCursor kseg.width(lines[cursors[0][1]]) cursors[0][1]
             
         if type == 'back'
             minBeforeWs = Infinity
@@ -52,7 +52,7 @@ export
                 'back' 
                     if x == 0
                         if cursors.length == 1
-                            ⮐ if y <= 0
+                            ⮐  if y <= 0
                             y -= 1
                             x = kseg.width(lines[y])
                             remove = 2
@@ -80,7 +80,7 @@ export
                 'next' 
                     if x == kseg.width(lines[y])
                         if cursors.length == 1
-                            ⮐ if y >= lines.length-1
+                            ⮐  if y >= lines.length-1
                             x = kseg.width(lines[y])
                             remove = 2
                             line = kseg.join line lines[y+1]
@@ -113,13 +113,13 @@ export
     
     deleteSelection: -> 
         
-        ⮐ if mode.deleteSelection @
+        ⮐  if mode.deleteSelection @
     
         @deleteRanges @allSelections() @allCursors()
         
     deleteRanges: rngs posl ->
         
-        ⮐ if empty rngs
+        ⮐  if empty rngs
         
         posl ?= @allCursors()
         

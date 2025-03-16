@@ -12,7 +12,7 @@ let noon = kxk.noon
 
 import nfs from "../../../kxk/nfs.js"
 
-import prjcts from "../../util/prjcts.js"
+import prjcts from "../../index/prjcts.js"
 
 import theme from "../../theme/theme.js"
 import icons from "../../theme/icons.js"

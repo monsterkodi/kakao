@@ -38,6 +38,14 @@ class theme
 
     static gutter = '#0a0a0a'
 
+    static funtree_class = '#ff6'
+
+    static funtree_func = '#aaf'
+
+    static funtree_bound = '#4d4'
+
+    static funtree_async = '#f88'
+
     static hover = '#44a'
 
     static resize_column = '#222'

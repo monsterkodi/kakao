@@ -13,10 +13,12 @@ use ../theme    ◆ theme
 function syntax
 
     @: @name -> 
+        
         @ext  = 'txt' 
         @clear()
         
     clear: => 
+        
         @diss = []  
         @hash = {}  
         @liha = {}
@@ -49,7 +51,7 @@ function syntax
                 @hash[hsh] = @diss[idx]
                 @liha[idx] = hsh
             
-    partialUpdate: segls ->
+    partialUpdate: segls =>
         
         ⮐  if @diss.length != segls.length
         ⮐  if empty @hash

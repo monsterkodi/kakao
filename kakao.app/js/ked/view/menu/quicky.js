@@ -10,7 +10,8 @@ let kutil = kxk.kutil
 
 import nfs from "../../../kxk/nfs.js"
 
-import prjcts from "../../util/prjcts.js"
+import prjcts from "../../index/prjcts.js"
+
 import walker from "../../util/walker.js"
 
 import belt from "../../edit/tool/belt.js"
@@ -39,7 +40,7 @@ quicky = (function ()
         this["preview"] = this["preview"].bind(this)
         this["openFileInEditor"] = this["openFileInEditor"].bind(this)
         this["showFiles"] = this["showFiles"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,this.name,['mapview','scroll'])
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.crumbs.padLast = true
@@ -54,7 +55,7 @@ quicky = (function ()
         }
     }
 
-    quicky.prototype["layout"] = function ()
+    quicky.prototype["arrange"] = function ()
     {
         var ch, cr, cw, h, hs, ih, iz, scx, scy, w, x, y
 
@@ -82,7 +83,7 @@ quicky = (function ()
         {
             return
         }
-        this.layout()
+        this.arrange()
         this.drawFrame()
         this.crumbs.draw()
         return this.drawChoices()
@@ -331,7 +332,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _319_62_
+        var upDir, _321_62_
 
         switch (action)
         {
@@ -349,7 +350,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_319_62_=choice.link) != null ? _319_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_321_62_=choice.link) != null ? _321_62_ : choice.path))
                     }
                 }
                 break

@@ -22,9 +22,8 @@ session = (function ()
     _k_.extend(session, events)
     function session (opt)
     {
-        var _32_31_, _35_30_
+        var _30_31_, _32_30_
 
-        this["recentFiles"] = this["recentFiles"].bind(this)
         this["cleanSessions"] = this["cleanSessions"].bind(this)
         this["listSessions"] = this["listSessions"].bind(this)
         this["newestSessionFile"] = this["newestSessionFile"].bind(this)
@@ -32,6 +31,7 @@ session = (function ()
         this["save"] = this["save"].bind(this)
         this["load"] = this["load"].bind(this)
         this["reload"] = this["reload"].bind(this)
+        this["recentFiles"] = this["recentFiles"].bind(this)
         this["clear"] = this["clear"].bind(this)
         this["delayedSave"] = this["delayedSave"].bind(this)
         this["del"] = this["del"].bind(this)
@@ -40,8 +40,8 @@ session = (function ()
         this["keypath"] = this["keypath"].bind(this)
         this.name = sessionId()
         opt = (opt != null ? opt : {})
-        this.timeout = ((_32_31_=opt.timeout) != null ? _32_31_ : 1000)
-        this.sep = ((_35_30_=opt.separator) != null ? _35_30_ : '▸')
+        this.timeout = ((_30_31_=opt.timeout) != null ? _30_31_ : 1000)
+        this.sep = ((_32_30_=opt.separator) != null ? _32_30_ : '▸')
         this.dir = slash.absolute("~/.config/ked/sessions/")
         this.file = slash.path(this.dir,`${this.name}.noon`)
         if (!opt.fresh)
@@ -59,7 +59,7 @@ session = (function ()
 
     session.prototype["get"] = function (key, value)
     {
-        var _54_45_
+        var _51_45_
 
         if (!((key != null ? key.split : undefined) != null))
         {
@@ -70,7 +70,7 @@ session = (function ()
 
     session.prototype["set"] = function (key, value)
     {
-        var _72_14_
+        var _67_14_
 
         if (!(_k_.isStr(key)))
         {
@@ -88,7 +88,7 @@ session = (function ()
         {
             return this.del(key)
         }
-        this.data = ((_72_14_=this.data) != null ? _72_14_ : {})
+        this.data = ((_67_14_=this.data) != null ? _67_14_ : {})
         sds.set(this.data,this.keypath(key),value)
         return this.delayedSave()
     }
@@ -116,6 +116,11 @@ session = (function ()
     {
         this.data = {}
         return clearTimeout(this.timer)
+    }
+
+    session.prototype["recentFiles"] = function ()
+    {
+        return Object.keys(this.get('files▸recent',{}))
     }
 
     session.prototype["reload"] = function ()
@@ -208,11 +213,6 @@ session = (function ()
             file = list[_a_]
             await nfs.remove(file)
         }
-    }
-
-    session.prototype["recentFiles"] = function ()
-    {
-        return Object.keys(this.get('files▸recent',{}))
     }
 
     return session

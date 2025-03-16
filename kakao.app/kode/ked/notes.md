@@ -39,6 +39,9 @@
     - cmd+up|down: jump to prev|next file
     
 - funclist
+    - searchable?
+    - should list md headings
+    - should list c cpp mm and js functions
 
 - salter mode
     - fix delete and other issues
@@ -47,6 +50,7 @@
     - adjust colors for editor selection similar to funcol and crumbs
             
 - dirtree
+    - should listen to file change events
     - git status
     - searchable?
     - set hover highlight to editor file when loosing focus

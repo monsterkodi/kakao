@@ -23,7 +23,7 @@ finder = (function ()
         this.state = state
     
         this["show"] = this["show"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         this["lineno"] = this["lineno"].bind(this)
         finder.__super__.constructor.call(this,this.screen,name,['gutter','scroll'])
         if (this.name === 'finder')
@@ -57,7 +57,7 @@ finder = (function ()
         return _k_.lpad(pad + 1)
     }
 
-    finder.prototype["layout"] = function ()
+    finder.prototype["arrange"] = function ()
     {
         var cs, h, w, x, y
 
@@ -71,24 +71,9 @@ finder = (function ()
         return this.cells.layout(x,y,w,cs + 4)
     }
 
-    finder.prototype["searchText"] = function (text)
-    {
-        if (_k_.empty(text))
-        {
-            text = this.state.textOfSelectionOrWordAtCursor()
-        }
-        text = (text != null ? text : '')
-        if (text !== this.input.current())
-        {
-            this.input.set(text)
-            this.input.state.moveCursors('eol')
-        }
-        return text
-    }
-
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _126_87_
+        var cursorLine, front, span, _105_87_
 
         if (_k_.empty(text))
         {
@@ -99,9 +84,8 @@ finder = (function ()
         if (_k_.empty(text))
         {
             this.choices.clear()
-            this.layout()
             this.input.grabFocus()
-            return
+            return finder.__super__.show.call(this)
         }
         this.state.highlightText(text)
         this.choices.clearEmpty()
@@ -119,36 +103,39 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_126_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_105_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _126_87_ : 0))
+            })) != null ? _105_87_ : 0))
         }
         else
         {
             this.choices.selectFirst()
         }
-        this.layout()
-        return this.input.grabFocus()
+        this.input.grabFocus()
+        return finder.__super__.show.call(this)
     }
 
-    finder.prototype["emitFileOpen"] = function (choice)
+    finder.prototype["searchText"] = function (text)
     {
-        return post.emit('file.open',choice.path,choice.row,choice.col)
+        if (_k_.empty(text))
+        {
+            text = this.state.textOfSelectionOrWordAtCursor()
+        }
+        text = (text != null ? text : '')
+        if (text !== this.input.current())
+        {
+            this.input.set(text)
+            this.input.state.moveCursors('eol')
+        }
+        return text
     }
 
     finder.prototype["apply"] = function (choice)
     {
         if (!_k_.empty(choice))
         {
-            if (choice.path)
-            {
-                this.emitFileOpen(choice)
-            }
-            else
-            {
-                post.emit('goto.line',choice.row,choice.col)
-            }
+            post.emit('goto.line',choice.row,choice.col)
         }
         post.emit('focus','editor')
         this.hide()

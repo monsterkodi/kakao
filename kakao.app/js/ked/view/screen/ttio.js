@@ -141,6 +141,11 @@ TTIO = (function ()
         return this.write(`\x1b_Gq=1,a=p,i=${id},X=${rx},Y=${ry},r=${cx + w},c=${cy + h},C=1\x1b\\`)
     }
 
+    TTIO.prototype["hideImage"] = function (id)
+    {
+        return this.write(`\x1b_Gq=1,a=d,d=i,i=${id}\x1b\\`)
+    }
+
     TTIO.prototype["deleteImage"] = function (id)
     {
         return this.write(`\x1b_Gq=1,a=d,d=I,i=${id}\x1b\\`)
@@ -660,11 +665,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _426_23_, _447_20_
+        var diff, _430_23_, _451_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_426_23_=this.lastClick) != null ? _426_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_430_23_=this.lastClick) != null ? _430_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -687,7 +692,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_447_20_=this.lastPixels) != null ? _447_20_ : [])
+        this.lastPixels = ((_451_20_=this.lastPixels) != null ? _451_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -745,7 +750,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _501_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _505_23_
 
         if ((this.pasteBuffer != null))
         {

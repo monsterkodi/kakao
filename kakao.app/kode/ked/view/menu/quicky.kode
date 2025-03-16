@@ -8,7 +8,8 @@
 
 use ../../../kxk    ▪ kstr slash post kutil
 use ../../../kxk    ◆ nfs
-use ../../util      ◆ prjcts walker 
+use ../../index     ◆ prjcts
+use ../../util      ◆ walker 
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ icons
 use ../base         ◆ crumbs 
@@ -36,13 +37,13 @@ function quicky extends inputchoice
 
         post.on 'quicky.files' @showFiles if @name == 'quicky'
 
-    # 000       0000000   000   000   0000000   000   000  000000000  
-    # 000      000   000   000 000   000   000  000   000     000     
-    # 000      000000000    00000    000   000  000   000     000     
-    # 000      000   000     000     000   000  000   000     000     
-    # 0000000  000   000     000      0000000    0000000      000     
+    #  0000000   00000000   00000000    0000000   000   000   0000000   00000000  
+    # 000   000  000   000  000   000  000   000  0000  000  000        000       
+    # 000000000  0000000    0000000    000000000  000 0 000  000  0000  0000000   
+    # 000   000  000   000  000   000  000   000  000  0000  000   000  000       
+    # 000   000  000   000  000   000  000   000  000   000   0000000   00000000  
     
-    layout: =>
+    arrange: =>
         
         scx = int @screen.cols/2
         scy = int @screen.rows/2
@@ -76,7 +77,8 @@ function quicky extends inputchoice
 
         ⮐ if @hidden()
          
-        @layout()
+        # @layout()
+        @arrange()
         @drawFrame()
         @crumbs.draw()
         @drawChoices()

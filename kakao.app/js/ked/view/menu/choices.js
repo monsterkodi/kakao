@@ -23,6 +23,7 @@ choices = (function ()
     function choices (screen, name, features = [])
     {
         this["onKey"] = this["onKey"].bind(this)
+        this["emitAction"] = this["emitAction"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["doubleClickChoiceAtIndex"] = this["doubleClickChoiceAtIndex"].bind(this)
         this["clickChoiceAtIndex"] = this["clickChoiceAtIndex"].bind(this)
@@ -30,8 +31,8 @@ choices = (function ()
         this["hoverChoiceAtIndex"] = this["hoverChoiceAtIndex"].bind(this)
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
-        this["extract"] = this["extract"].bind(this)
         this["clear"] = this["clear"].bind(this)
+        this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,features)
         this.setColor('bg',theme.choices_bg)
         this.setColor('current',theme.choices_current)
@@ -59,6 +60,11 @@ choices = (function ()
         }
     }
 
+    choices.prototype["extract"] = function (item)
+    {
+        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.str(item))
+    }
+
     choices.prototype["clear"] = function ()
     {
         return this.set([])
@@ -76,9 +82,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _58_15_
+        var lines, _60_15_
 
-        this.items = ((_58_15_=this.items) != null ? _58_15_ : [])
+        this.items = ((_60_15_=this.items) != null ? _60_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -99,11 +105,6 @@ choices = (function ()
         {
             return i.line
         }),ext)
-    }
-
-    choices.prototype["extract"] = function (item)
-    {
-        return (this.key && _k_.isObj(item) ? item[this.key] : kseg.str(item))
     }
 
     choices.prototype["drawCursors"] = function ()

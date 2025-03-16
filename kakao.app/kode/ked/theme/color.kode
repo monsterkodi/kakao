@@ -114,7 +114,7 @@ class color
         [r g b] = color.rgb c if c is str
         "\x1b[58;2;#{r};#{g};#{b}m" 
         
-    @randomBackgroundColors: lines bg fg->
+    @randomBackgroundColors: lines bg fg ->
         
         resl = []
         for line in lines

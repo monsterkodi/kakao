@@ -11,7 +11,7 @@ use   ../screen  ◆ cells
 
 function view extends events
 
-    @popups: ['quicky' 'fsbrow' 'context' 'menu']
+    @popups: ['quicky' 'fsbrow' 'context' 'menu' 'searcher' 'finder']
     @currentPopup: null
 
     @: @screen @name features ->
@@ -20,7 +20,7 @@ function view extends events
         @color = {}
         @feats = {}
         @feats[f] = true for f in features
-            
+        @isVisible = true    
         @focusable = false
                         
         post.on 'view.show' @onViewShow if @name in view.popups
@@ -29,11 +29,19 @@ function view extends events
     setColor: key color => @color[key] = color
         
     onViewHide: viewName =>
+    
+        if viewName == @name
+            log "onViewHide #{viewName}"
+            post.emit 'popup.hide' viewName
         
         if viewName == view.currentPopup
             view.currentPopup = null
         
     onViewShow: viewName =>
+    
+        if viewName == @name
+            log "onViewShow #{viewName}"
+            post.emit 'popup.show' viewName
                 
         if viewName in view.popups
             view.currentPopup = viewName            
@@ -47,16 +55,17 @@ function view extends events
     #     0      000  0000000   000  0000000    000  0000000  000     000        000     
   
     show: -> 
-        
+    
+        @isVisible = true
         post.emit 'view.show' @name
-        @layout()
+        @arrange()
         redraw:true
         
-    hide:      -> post.emit 'view.hide' @name; @cells.rows = 0; redraw:true
-    hidden:    -> not @visible()
-    invisible: -> not @visible()
-    visible:   -> @cells.rows > 0 and @cells.cols > 0
-    toggle:    -> if @hidden() then @show() else @hide()
+    arrange: ->    
+    hide:    -> @isVisible=false; post.emit 'view.hide' @name; redraw:true
+    hidden:  -> not @visible()
+    visible: -> @isVisible and @cells.rows > 0 and @cells.cols > 0
+    toggle:  -> if @hidden() then @show() else @hide()
                 
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

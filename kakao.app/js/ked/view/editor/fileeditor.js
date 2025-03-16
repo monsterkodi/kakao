@@ -57,7 +57,6 @@ fileeditor = (function ()
         }
         if (!_k_.empty(view))
         {
-            console.log(`fileeditor.onGotoLine ${row} ${col} ${view[0]} ${view[1]}`)
             this.state.setView(view)
             return this.state.setCursors([[col,row]])
         }
@@ -199,7 +198,7 @@ fileeditor = (function ()
             case 'move':
                 if (this.hover)
                 {
-                    if (!this.hasFocus() && _k_.empty(view.currentPopup) || view.currentPopup === this.name)
+                    if (!this.hasFocus() && _k_.empty(view.currentPopup))
                     {
                         this.grabFocus()
                     }

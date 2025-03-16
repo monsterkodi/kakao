@@ -27,6 +27,29 @@ salterMode = (function ()
         this.start()
     }
 
+    salterMode["checkCursorsSet"] = function (state)
+    {
+        var cursors
+
+        if (!state.allowedModes.salter)
+        {
+            return
+        }
+        if (state.s.cursors.length !== 1)
+        {
+            return
+        }
+        if (state.s.selections.length)
+        {
+            return
+        }
+        cursors = belt.findPositionsForSaltInsert(state.s.lines,state.mainCursor())
+        if (!_k_.empty(cursors))
+        {
+            return mode.start(state,'salter')
+        }
+    }
+
     salterMode.prototype["start"] = function ()
     {
         var cursors, i, main, mc, pos
@@ -75,29 +98,6 @@ salterMode = (function ()
 
     salterMode.prototype["stop"] = function ()
     {}
-
-    salterMode["checkCursorsSet"] = function (state)
-    {
-        var cursors
-
-        if (!state.allowedModes.salter)
-        {
-            return
-        }
-        if (state.s.cursors.length !== 1)
-        {
-            return
-        }
-        if (state.s.selections.length)
-        {
-            return
-        }
-        cursors = belt.findPositionsForSaltInsert(state.s.lines,state.mainCursor())
-        if (!_k_.empty(cursors))
-        {
-            return mode.start(state,'salter')
-        }
-    }
 
     salterMode.prototype["findCursors"] = function ()
     {

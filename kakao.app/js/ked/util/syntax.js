@@ -22,6 +22,7 @@ syntax = (function ()
         this["getClass"] = this["getClass"].bind(this)
         this["appendSegls"] = this["appendSegls"].bind(this)
         this["addSegl"] = this["addSegl"].bind(this)
+        this["partialUpdate"] = this["partialUpdate"].bind(this)
         this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["setRgxs"] = this["setRgxs"].bind(this)
@@ -165,7 +166,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _96_27_
+        var clss, _98_27_
 
         if (_k_.isNum(x))
         {
@@ -175,7 +176,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_96_27_=theme.syntax[clss]) != null ? _96_27_ : '#ff0000')
+        return ((_98_27_=theme.syntax[clss]) != null ? _98_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

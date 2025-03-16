@@ -43,13 +43,13 @@ function finder extends inputchoice
                 ⮐  lpad(pad @choices.fuzzied[y].row+1) + ' '
         lpad pad+1
     
-    # 000       0000000   000   000   0000000   000   000  000000000  
-    # 000      000   000   000 000   000   000  000   000     000     
-    # 000      000000000    00000    000   000  000   000     000     
-    # 000      000   000     000     000   000  000   000     000     
-    # 0000000  000   000     000      0000000    0000000      000     
-    
-    layout: =>
+    #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
+    # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    arrange: =>
 
         x = int @screen.cols/8
         y = int @screen.rows/8
@@ -61,27 +61,6 @@ function finder extends inputchoice
         @input.layout    x+2   y+1  w-4  1
         @choices.layout  x+1   y+3  w-3  cs
         @cells.layout    x     y    w    cs+4
-        
-    #  0000000  00000000   0000000   00000000    0000000  000   000  000000000  00000000  000   000  000000000  
-    # 000       000       000   000  000   000  000       000   000     000     000        000 000      000     
-    # 0000000   0000000   000000000  0000000    000       000000000     000     0000000     00000       000     
-    #      000  000       000   000  000   000  000       000   000     000     000        000 000      000     
-    # 0000000   00000000  000   000  000   000   0000000  000   000     000     00000000  000   000     000     
-    
-    searchText: text ->
-    
-        # log "finder.searchText #{text}"
-        
-        if empty text 
-            text = @state.textOfSelectionOrWordAtCursor()
-            
-        text ?= ''
-
-        if text != @input.current()
-            @input.set text
-            @input.state.moveCursors 'eol'
-                
-        text
         
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -102,9 +81,9 @@ function finder extends inputchoice
         
         if empty text
             @choices.clear()
-            @layout()
             @input.grabFocus()
-            ⮐ 
+            # @layout()
+            ⮐ super()
                     
         @state.highlightText text
         
@@ -126,28 +105,43 @@ function finder extends inputchoice
             @choices.select kutil.findIndex(@choices.items (l) -> l.row == cursorLine) ? 0
         else
             @choices.selectFirst()
-        
-        @layout()
+
         @input.grabFocus()
+        super()
+        
+    #  0000000  00000000   0000000   00000000    0000000  000   000  000000000  00000000  000   000  000000000  
+    # 000       000       000   000  000   000  000       000   000     000     000        000 000      000     
+    # 0000000   0000000   000000000  0000000    000       000000000     000     0000000     00000       000     
+    #      000  000       000   000  000   000  000       000   000     000     000        000 000      000     
+    # 0000000   00000000  000   000  000   000   0000000  000   000     000     00000000  000   000     000     
+    
+    searchText: text ->
+    
+        # log "finder.searchText #{text}"
+        
+        if empty text 
+            text = @state.textOfSelectionOrWordAtCursor()
+            
+        text ?= ''
+
+
+        if text != @input.current()
+            @input.set text
+            @input.state.moveCursors 'eol'
+                
+        text
                 
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
     # 000   000  000        000        000         000     
     # 000   000  000        000        0000000     000     
-    
-    emitFileOpen: choice -> 
-    
-        post.emit 'file.open' choice.path choice.row choice.col
-    
+        
     apply: choice ->
         
         if valid choice
             
-            if choice.path
-                @emitFileOpen choice
-            else
-                post.emit 'goto.line' choice.row choice.col
+            post.emit 'goto.line' choice.row choice.col
                 
         post.emit 'focus' 'editor'
         @hide()

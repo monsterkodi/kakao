@@ -68,8 +68,7 @@ function editor extends draw
             
         if @mapscr
             m = @mapscr.visible() ? 12 : 0
-            r = @mapscr.visible() ? h : 0
-            @mapscr.layout x+w-sr-12   y   m   r
+            @mapscr.layout x+w-sr-12  y  12   h
             
         @cells.layout x+sl+g  y   w-s-g-m    h
         

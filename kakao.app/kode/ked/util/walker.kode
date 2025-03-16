@@ -28,9 +28,7 @@ class walker
         @cfg.includeExt  ?= walker.sourceFileExtensions # this should be set by prjcts instead
         
         # log 'walker' @cfg walker.sourceFileExtensions
-        
-    ignore: p -> #lf 'ignore' p; true
-      
+              
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000   
     # 0000000      000     000000000  0000000       000   
@@ -95,9 +93,17 @@ class walker
         # log 'walker done' #@cfg
         @cfg
                 
+    #  ███████  █████████   ███████   ████████ 
+    # ███          ███     ███   ███  ███   ███
+    # ███████      ███     ███   ███  ████████ 
+    #      ███     ███     ███   ███  ███      
+    # ███████      ███      ███████   ███      
+
     stop: ->
         
         @running = false
         @walker = null
+        
+    ignore: p -> #lf 'ignore' p; true
     
 export walker

@@ -41,7 +41,7 @@ draw = (function ()
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _115_17_, _117_17_, _119_15_, _120_15_, _121_15_, _54_58_, _99_42_
+        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _112_17_, _114_17_, _116_15_, _117_15_, _118_15_, _54_58_, _96_42_
 
         if (this.hidden())
         {
@@ -82,26 +82,21 @@ draw = (function ()
                 {
                     break
                 }
-                clss = syntax.getClass(ci,y)
-                if (clss === 'invert_bg')
-                {
-                    fg = bg
-                    bg = this.color.bg
-                }
-                else
-                {
-                    fg = syntax.getColor(clss)
-                }
+                fg = syntax.getColor(ci,y)
                 ch = syntax.getChar(ci,y,line[si])
                 if (ch === "#")
                 {
                     checkColor = true
                 }
-                else if (_k_.in(ch,'0█') && clss.endsWith('header'))
+                else if (_k_.in(ch,'0█'))
                 {
-                    headerClass = clss
+                    clss = syntax.getClass(ci,y)
+                    if (clss.endsWith('header'))
+                    {
+                        headerClass = clss
+                    }
                 }
-                x += ((_99_42_=kseg.width(line[si])) != null ? _99_42_ : 1)
+                x += ((_96_42_=kseg.width(line[si])) != null ? _96_42_ : 1)
                 if (x < this.cells.cols)
                 {
                     c += this.cells.add(c,row,ch,fg,bg)
@@ -273,11 +268,11 @@ draw = (function ()
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fg, mainCursor, s, x, y, _248_41_, _264_46_
+        var bg, cursor, fg, mainCursor, s, x, y, _245_41_, _261_46_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_248_41_=theme[this.name + '_cursor_fg']) != null ? _248_41_ : theme.editor_cursor_fg)
+        fg = ((_245_41_=theme[this.name + '_cursor_fg']) != null ? _245_41_ : theme.editor_cursor_fg)
         bg = mode.themeColor(this.state,'editor_cursor_multi')
         if (!this.cells.screen.t.hasFocus)
         {
@@ -298,7 +293,7 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_264_46_=theme[this.name + '_cursor_fg']) != null ? _264_46_ : theme.editor_cursor_fg)
+            fg = ((_261_46_=theme[this.name + '_cursor_fg']) != null ? _261_46_ : theme.editor_cursor_fg)
             bg = mode.themeColor(this.state,'editor_cursor_main')
             if (!this.hasFocus())
             {

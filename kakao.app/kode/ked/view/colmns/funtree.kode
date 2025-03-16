@@ -8,18 +8,57 @@
 
 use ../../../kxk ▪ post slash
 use ../../../kxk ◆ nfs
-use ../../theme  ◆ theme icons
+use ../../theme  ◆ color theme icons
 use ../menu      ◆ choices 
 
 import rgxs from './funtree.json' with { type: "json" }
 
+function funSyntax
+
+    @: @tree ->
+    
+        @color =
+            class: theme.funtree_class
+            async: theme.funtree_async
+            bound: theme.funtree_bound
+            func:  theme.funtree_func
+        
+    clear: =>
+
+    setLines: lines => log 'setLines'
+    setSegls: segls =>
+        
+    getColor: x y =>
+        
+        item = @tree.items[y]
+        name = item.name
+        char = name[x]
+        if char == ' ' ➜ ⮐ '#000'
+            
+        if 
+            not item.async? ➜ clr = @color.class
+            item.async      ➜ clr = @color.async
+            item.bound      ➜ clr = @color.bound
+                            ➜ clr = @color.func
+        if 
+            item.static     ➜ clr = color.brighten clr 0.2
+            char == '@' and empty name[x+1]
+                              clr = @color.class
+        if 
+            char == '@'     ➜ clr = color.darken clr 0.5
+            char in '▸■'    ➜ clr = color.darken clr 0.2
+        
+        clr
+        
+    getChar: x y char => char
+    
 function funtree extends choices
 
     @: screen name features ->
         
         super screen name features
                         
-        @state.syntax.setRgxs rgxs
+        @state.syntax = new funSyntax @
         
         post.on 'file.loaded'     @clear
         post.on 'indexer.indexed' @onIndex
@@ -39,21 +78,26 @@ function funtree extends choices
         
         for clss in clssl
             clss.file ?= path
-            clss.name = ' ● ' + clss.name
+            clss.name = ' ■ ' + clss.name
             
+        # ○  ●           ●▶
+        # ○  ●  ⟶     ⤇  ○▷
+        #    ➜ ●⟶ ○⟶ ○⤇ 
+        
         for func in funcs
-            if func.bound
-                symbol = '=>'
-            else
-                symbol = '->'
             if func.async
-                symbol = '○'+symbol
-            symbol = lpad 3 symbol    
+                if func.bound
+                    symbol = '○'
+                else
+                    symbol = '●'
+            else
+                    symbol = '▸'
             name = func.name
             name = '@' + name if func.static
             func.name = '   ' + symbol + ' ' + name
         
         items = clssl.concat funcs
+        items.sort (a b) -> a.line - b.line
         
         @set items 'name'
         
@@ -72,10 +116,13 @@ function funtree extends choices
         switch action
         
             'right'
+            
                 post.emit 'goto.line' c.line-1 'ind'
                 ⮐  
+                
             'click'
             'return'
+            
                 post.emit 'goto.line' c.line-1 'ind'
                 post.emit 'focus' 'editor'
                 ⮐  

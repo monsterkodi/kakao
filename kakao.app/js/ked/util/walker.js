@@ -29,12 +29,9 @@ class walker
         this.cfg.includeExt = ((_28_25_=this.cfg.includeExt) != null ? _28_25_ : walker.sourceFileExtensions)
     }
 
-    ignore (p)
-    {}
-
     async start ()
     {
-        var dir, ext, file, item, items, listDir, p, toWalk, _66_31_, _94_17_
+        var dir, ext, file, item, items, listDir, p, toWalk, _64_31_, _92_17_
 
         dir = this.cfg.root
         this.running = true
@@ -132,6 +129,9 @@ class walker
         this.running = false
         return this.walker = null
     }
+
+    ignore (p)
+    {}
 }
 
 export default walker;

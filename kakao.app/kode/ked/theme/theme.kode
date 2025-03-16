@@ -34,7 +34,12 @@ class theme
     @dircol:                                    '#111'   
     @funcol:                                    '#0a0a0a'
     @gutter:                                    '#0a0a0a'
-                                                
+
+    @funtree_class:                             '#ff6'   
+    @funtree_func:                              '#aaf'   
+    @funtree_bound:                             '#4d4'   
+    @funtree_async:                             '#f88'   
+    
     @hover:                                     '#44a'   
     @resize_column:                             '#222'   
     @gutter_fully_selected:                     '#161616'

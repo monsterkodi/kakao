@@ -80,7 +80,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, r, s, sl, sr, _76_17_
+        var g, m, s, sl, sr, _75_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -106,8 +106,7 @@ editor = (function ()
         if (this.mapscr)
         {
             m = (this.mapscr.visible() ? 12 : 0)
-            r = (this.mapscr.visible() ? h : 0)
-            this.mapscr.layout(x + w - sr - 12,y,m,r)
+            this.mapscr.layout(x + w - sr - 12,y,12,h)
         }
         this.cells.layout(x + sl + g,y,w - s - g - m,h)
         ;(this.complete != null ? this.complete.onEditorLayout() : undefined)
@@ -118,7 +117,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _90_21_, _91_21_, _92_23_
+        var ret, _89_21_, _90_21_, _91_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -140,7 +139,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _107_25_, _108_25_, _109_25_, _113_20_
+        var inside, res, _106_25_, _107_25_, _108_25_, _112_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -212,7 +211,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _179_20_, _183_21_, _188_21_
+        var _178_20_, _182_21_, _187_21_
 
         if (!this.hasFocus())
         {

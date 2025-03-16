@@ -30,12 +30,15 @@ fsbrow = (function ()
     
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["onFsColAction"] = this["onFsColAction"].bind(this)
+        this["choicesFiltered"] = this["choicesFiltered"].bind(this)
+        this["applyChoice"] = this["applyChoice"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["preview"] = this["preview"].bind(this)
         this["gotoDirOrOpenFile"] = this["gotoDirOrOpenFile"].bind(this)
         this["gotoDir"] = this["gotoDir"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["draw"] = this["draw"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         fsbrow.__super__.constructor.call(this,this.screen,'fsbrow')
         this.fscol = new fscol(this.screen,'fsbrow_fscol')
         this.setColor('bg',theme.quicky_bg)
@@ -46,7 +49,7 @@ fsbrow = (function ()
         post.on('fsbrow.dir',this.gotoDir)
     }
 
-    fsbrow.prototype["layout"] = function ()
+    fsbrow.prototype["arrange"] = function ()
     {
         var ch, cr, cw, fh, fw, h, hs, ih, iz, scx, scy, w, x, y
 
@@ -180,11 +183,6 @@ fsbrow = (function ()
         }
     }
 
-    fsbrow.prototype["choicesFiltered"] = function ()
-    {
-        return this.preview(this.choices.current())
-    }
-
     fsbrow.prototype["preview"] = async function (item)
     {
         var segls, text
@@ -282,6 +280,11 @@ fsbrow = (function ()
         }
         this.gotoDirOrOpenFile(choice.path)
         return {redraw:true}
+    }
+
+    fsbrow.prototype["choicesFiltered"] = function ()
+    {
+        return this.preview(this.choices.current())
     }
 
     fsbrow.prototype["onFsColAction"] = function (action, choice)

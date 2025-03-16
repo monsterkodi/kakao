@@ -11,7 +11,7 @@ import nfs from "../../../kxk/nfs.js"
 
 import belt from "../../edit/tool/belt.js"
 
-import prjcts from "../../util/prjcts.js"
+import prjcts from "../../index/prjcts.js"
 
 import finder from "./finder.js"
 import searcherfile from "./searcherfile.js"
@@ -28,16 +28,16 @@ searcher = (function ()
         this["show"] = this["show"].bind(this)
         this["onFileLoaded"] = this["onFileLoaded"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         searcher.__super__.constructor.call(this,this.screen,this.state,'searcher')
         post.on('searcher.show',this.show)
         post.on('file.loaded',this.onFileLoaded)
         this.sfils = []
     }
 
-    searcher.prototype["layout"] = function ()
+    searcher.prototype["arrange"] = function ()
     {
-        searcher.__super__.layout.call(this)
+        searcher.__super__.arrange.call(this)
     
         var sfil, y
 
@@ -101,6 +101,7 @@ searcher = (function ()
         {
             return
         }
+        this.hide()
         post.emit('editor.highlight',this.textToHighlight)
         delete this.fileToHighlight
         return delete this.textToHighlight
@@ -110,7 +111,7 @@ searcher = (function ()
     {
         this.textToHighlight = this.input.current()
         this.fileToHighlight = choice.path
-        return searcher.__super__.emitFileOpen.call(this,choice)
+        return post.emit('file.open',choice.path,choice.row,choice.col)
     }
 
     searcher.prototype["highlightTextAndEmitRedraw"] = function (text)
@@ -127,19 +128,16 @@ searcher = (function ()
         console.log(_k_.g4(`${_k_.r6('searcher')} '${text}'`))
         if (_k_.empty(text))
         {
-            this.layout()
             this.input.grabFocus()
-            post.emit('redraw')
-            return
+            return searcher.__super__.show.call(this)
         }
         editorFile = ked_session.get('editor▸file')
         dir = prjcts.dir(editorFile)
         files = prjcts.files(editorFile)
+        searcher.__super__.show.call(this)
         this.input.grabFocus()
         this.choices.clearEmpty()
         this.sfils = []
-        this.layout()
-        post.emit('redraw')
         var list = _k_.list(files)
         for (idx = 0; idx < list.length; idx++)
         {
@@ -185,6 +183,15 @@ searcher = (function ()
                 this.highlightTextAndEmitRedraw(text)
             }
         }
+    }
+
+    searcher.prototype["apply"] = function (choice)
+    {
+        if ((choice != null ? choice.path : undefined))
+        {
+            return this.emitFileOpen(choice)
+        }
+        return searcher.__super__.apply.call(this,choice)
     }
 
     searcher.prototype["onInputAction"] = function (action, text)

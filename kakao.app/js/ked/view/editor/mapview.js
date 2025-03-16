@@ -25,52 +25,55 @@ mapview = (function ()
     {
         this.state = state
     
+        this["draw"] = this["draw"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
         this["createImages"] = this["createImages"].bind(this)
         this["setSyntaxSegls"] = this["setSyntaxSegls"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
+        this["layout"] = this["layout"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
+        this["reload"] = this["reload"].bind(this)
         mapview.__super__.constructor.call(this,screen,this.state.owner() + '.mapview')
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
         this.rowOffset = 0
         this.images = []
+        this.cells.cols = 11
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
-    }
-
-    mapview.prototype["show"] = function (doShow = true)
-    {
-        if (doShow === false)
-        {
-            return this.hide()
-        }
-        return this.cells.cols = 11
-    }
-
-    mapview.prototype["hide"] = function ()
-    {
-        this.clearImages()
-        return this.cells.cols = 0
-    }
-
-    mapview.prototype["hidden"] = function ()
-    {
-        return this.cells.cols <= 0
-    }
-
-    mapview.prototype["visible"] = function ()
-    {
-        return this.cells.cols > 0
     }
 
     mapview.prototype["reload"] = function ()
     {
         this.createImages()
         return this.drawImages()
+    }
+
+    mapview.prototype["show"] = function ()
+    {
+        console.log(`${this.name} show ${this.cells.cols} ${this.cells.rows}`)
+        mapview.__super__.show.call(this)
+        if (!_k_.empty(this.images))
+        {
+            return this.drawImages()
+        }
+    }
+
+    mapview.prototype["hide"] = function ()
+    {
+        var id
+
+        console.log(`${this.name} hide ${this.cells.cols} ${this.cells.rows}`)
+        var list = _k_.list(this.images)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            id = list[_a_]
+            this.cells.screen.t.hideImage(id)
+        }
+        return mapview.__super__.hide.call(this)
     }
 
     mapview.prototype["clearImages"] = function ()

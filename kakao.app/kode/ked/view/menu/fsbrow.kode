@@ -33,13 +33,13 @@ function fsbrow extends quicky
 
         post.on 'fsbrow.dir' @gotoDir
 
-    # 000       0000000   000   000   0000000   000   000  000000000  
-    # 000      000   000   000 000   000   000  000   000     000     
-    # 000      000000000    00000    000   000  000   000     000     
-    # 000      000   000     000     000   000  000   000     000     
-    # 0000000  000   000     000      0000000    0000000      000     
-    
-    layout: =>
+    #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
+    # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    arrange: =>
         
         scx = int @screen.cols/2
         scy = int @screen.rows/2
@@ -74,9 +74,9 @@ function fsbrow extends quicky
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000  00     00
 
-    draw: ->
+    draw: =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
          
         super()
         
@@ -168,11 +168,7 @@ function fsbrow extends quicky
     # 00000000   0000000    0000000    000 000   000  0000000   000000000  
     # 000        000   000  000          000     000  000       000   000  
     # 000        000   000  00000000      0      000  00000000  00     00  
-    
-    choicesFiltered: ->
         
-        @preview @choices.current()
-    
     preview: item ○=>
         
         ⮐ @hideMap() if empty item?.path
@@ -218,7 +214,7 @@ function fsbrow extends quicky
     # 000   000  000        000        000         000     
     # 000   000  000        000        0000000     000     
     
-    applyChoice: choice ->
+    applyChoice: choice =>
         
         switch @input.current()
             
@@ -236,6 +232,10 @@ function fsbrow extends quicky
 
         @gotoDirOrOpenFile choice.path 
         redraw:true
+
+    choicesFiltered: =>
+        
+        @preview @choices.current()
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  

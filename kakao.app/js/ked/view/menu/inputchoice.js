@@ -31,7 +31,7 @@ inputchoice = (function ()
         this["onInputChange"] = this["onInputChange"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["show"] = this["show"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         inputchoice.__super__.constructor.call(this,this.screen,this.name,features)
         this.input = new input(this.screen,`${this.name}_input`)
         this.choices = new choices(this.screen,`${this.name}_choices`,features)
@@ -59,7 +59,7 @@ inputchoice = (function ()
         return this.input.hasFocus() || this.input.current().length
     }
 
-    inputchoice.prototype["layout"] = function ()
+    inputchoice.prototype["arrange"] = function ()
     {
         var cs, h, w, x, y
 
@@ -99,7 +99,7 @@ inputchoice = (function ()
         this.choices.state.selectLine(0)
         this.choices.state.setMainCursor(this.choices.state.s.lines[0].length,0)
         this.choicesFiltered()
-        return this.layout()
+        return this.arrange()
     }
 
     inputchoice.prototype["onInputAction"] = function (action, text)
@@ -121,20 +121,6 @@ inputchoice = (function ()
 
     }
 
-    inputchoice.prototype["choicesFiltered"] = function ()
-    {}
-
-    inputchoice.prototype["currentChoice"] = function ()
-    {
-        var choice, _117_36_
-
-        choice = ((_117_36_=this.choices.current()) != null ? _117_36_ : this.input.current())
-        if (_k_.isStr(choice))
-        {
-            return choice = _k_.trim(choice)
-        }
-    }
-
     inputchoice.prototype["onChoicesAction"] = function (action, choice)
     {
         switch (action)
@@ -149,13 +135,27 @@ inputchoice = (function ()
 
     }
 
+    inputchoice.prototype["choicesFiltered"] = function ()
+    {}
+
+    inputchoice.prototype["currentChoice"] = function ()
+    {
+        var choice, _125_36_
+
+        choice = ((_125_36_=this.choices.current()) != null ? _125_36_ : this.input.current())
+        if (_k_.isStr(choice))
+        {
+            return choice = _k_.trim(choice)
+        }
+    }
+
     inputchoice.prototype["draw"] = function ()
     {
         if (this.hidden())
         {
             return
         }
-        this.layout()
+        this.arrange()
         this.drawFrame()
         return this.drawChoices()
     }
