@@ -58,11 +58,11 @@ state = (function ()
         this["isInvalidLineIndex"] = this["isInvalidLineIndex"].bind(this)
         this["isValidLineIndex"] = this["isValidLineIndex"].bind(this)
         this["clearLines"] = this["clearLines"].bind(this)
-        this["loadSegls"] = this["loadSegls"].bind(this)
-        this["loadLines"] = this["loadLines"].bind(this)
         this["linesInView"] = this["linesInView"].bind(this)
         this["allLines"] = this["allLines"].bind(this)
         this["clearEmpty"] = this["clearEmpty"].bind(this)
+        this["loadSegls"] = this["loadSegls"].bind(this)
+        this["loadLines"] = this["loadLines"].bind(this)
         this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["set"] = this["set"].bind(this)
@@ -231,46 +231,6 @@ state = (function ()
         return this.pushState()
     }
 
-    state.prototype["clearEmpty"] = function ()
-    {
-        this.segls = []
-        this.syntax.clear()
-        this.s = immutable({lines:this.segls,selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
-        return this.r = []
-    }
-
-    state.prototype["addLine"] = function (line, ext)
-    {
-        var segl, _165_15_
-
-        segl = kseg(line)
-        this.syntax.addSegl(segl,ext)
-        this.segls = ((_165_15_=this.segls) != null ? _165_15_ : [])
-        this.segls.push(segl)
-        return this.s = this.s.set('lines',this.segls)
-    }
-
-    state.prototype["appendLines"] = function (lines, ext)
-    {
-        var segls, _173_15_
-
-        segls = kseg.segls(lines)
-        this.syntax.appendSegls(segls,ext)
-        this.segls = ((_173_15_=this.segls) != null ? _173_15_ : [])
-        this.segls = this.segls.concat(segls)
-        return this.s = this.s.set('lines',this.segls)
-    }
-
-    state.prototype["allLines"] = function ()
-    {
-        return this.s.lines.asMutable()
-    }
-
-    state.prototype["linesInView"] = function ()
-    {
-        return this.s.lines.slice(this.s.view[1], this.s.view[1] + this.cells.rows)
-    }
-
     state.prototype["loadLines"] = function (lines)
     {
         if (!_k_.empty(lines) && !(_k_.isStr(lines[0])))
@@ -288,7 +248,48 @@ state = (function ()
         this.clearCursorsHighlightsAndSelections()
         this.r = []
         this.h = []
+        this.syntax.clear()
         return this.setSegls(segls)
+    }
+
+    state.prototype["clearEmpty"] = function ()
+    {
+        this.segls = []
+        this.syntax.clear()
+        this.s = immutable({lines:this.segls,selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
+        return this.r = []
+    }
+
+    state.prototype["addLine"] = function (line, ext)
+    {
+        var segl, _185_15_
+
+        segl = kseg(line)
+        this.syntax.addSegl(segl,ext)
+        this.segls = ((_185_15_=this.segls) != null ? _185_15_ : [])
+        this.segls.push(segl)
+        return this.s = this.s.set('lines',this.segls)
+    }
+
+    state.prototype["appendLines"] = function (lines, ext)
+    {
+        var segls, _193_15_
+
+        segls = kseg.segls(lines)
+        this.syntax.appendSegls(segls,ext)
+        this.segls = ((_193_15_=this.segls) != null ? _193_15_ : [])
+        this.segls = this.segls.concat(segls)
+        return this.s = this.s.set('lines',this.segls)
+    }
+
+    state.prototype["allLines"] = function ()
+    {
+        return this.s.lines.asMutable()
+    }
+
+    state.prototype["linesInView"] = function ()
+    {
+        return this.s.lines.slice(this.s.view[1], this.s.view[1] + this.cells.rows)
     }
 
     state.prototype["clearLines"] = function ()

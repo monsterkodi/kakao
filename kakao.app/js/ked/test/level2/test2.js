@@ -1,12 +1,5 @@
-var test2
-
-
-test2 = (function ()
-{
-    function test2 ()
-    {}
-
-    return test2
-})()
-
-export default test2;
+0.1
+1.234
+1.222
+1.243
+1.456

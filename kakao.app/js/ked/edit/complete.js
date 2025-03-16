@@ -39,7 +39,7 @@ complete = (function ()
 
     complete.prototype["complete"] = function ()
     {
-        var after, before, hcw, tct, tcw
+        var after, before, hcw, tct, tcw, turd
 
         before = this.editor.state.chunkBeforeCursor()
         after = this.editor.state.chunkAfterCursor()
@@ -50,38 +50,40 @@ complete = (function ()
             return
         }
         tct = kseg.tailCountTurd(before)
+        turd = before
         if (tct)
         {
-            before = before.slice(before.length - 1)
+            turd = before.slice(before.length - 1)
         }
         else if (tcw && tcw < before.length)
         {
-            before = before.slice(before.length - tcw)
+            turd = before.slice(before.length - tcw)
         }
-        return this.word(before)
+        return this.word(turd)
     }
 
     complete.prototype["word"] = function (turd)
     {
         this.turd = turd
     
-        var ch, ci, cx, cy, h, head, inserts, mc, mlw, x, y
+        var before, ch, ci, cx, cy, h, head, inserts, mc, mlw, x, y
 
         if (_k_.empty(this.turd))
         {
             this.hide()
             return
         }
+        before = this.editor.state.chunkBeforeCursor()
         this.words = kseg.chunks(this.editor.state.s.lines).map(function (chunk)
         {
             return chunk.chunk
         })
-        this.words = belt.prepareWordsForCompletion(this.turd,this.words)
+        this.words = belt.prepareWordsForCompletion(before,this.turd,this.words)
         if (inserts = specs.trigger[this.turd])
         {
             if (this.turd === '>')
             {
-                if (this.editor.state.chunkBeforeCursor() === '>')
+                if (before === '>')
                 {
                     this.words = inserts.concat(this.words)
                 }

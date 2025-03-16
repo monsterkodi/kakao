@@ -1391,73 +1391,73 @@ lllnest                     ⫷  # stacked very much less-than
 gggnest                     ⫸  # stacked very much greater-than
 leqqslant                   ⫹  # double-line slanted less-than or equal to
 geqqslant                   ⫺  # double-line slanted greater-than or equal to
-squaretopblack              ⬒   # square with top half black
-squarebotblack              ⬓   # square with bottom half black
-squareurblack               ⬔   # square with upper right diagonal half black
-squarellblack               ⬕   # square with lower left diagonal half black
-diamondleftblack            ⬖   # diamond with left half black
-diamondrightblack           ⬗   # diamond with right half black
-diamondtopblack             ⬘   # diamond with top half black
-diamondbotblack             ⬙   # diamond with bottom half black
-dottedsquare                ⬚   # dotted square
-lgblksquare                 ⬛  # black large square
-lgwhtsquare                 ⬜  # white large square
-vysmblksquare               ⬝   # black very small square
-vysmwhtsquare               ⬞   # white very small square
-pentagonblack               ⬟   # black pentagon
-pentagon                    ⬠   # white pentagon
-varhexagon                  ⬡   # white hexagon
-varhexagonblack             ⬢   # black hexagon
-hexagonblack                ⬣   # horizontal black hexagon
-lgblkcircle                 ⬤   # black large circle
-mdblkdiamond                ⬥   # black medium diamond
-mdwhtdiamond                ⬦   # white medium diamond
-mdblklozenge                ⬧   # black medium lozenge
-mdwhtlozenge                ⬨   # white medium lozenge
-smblkdiamond                ⬩   # black small diamond
-smblklozenge                ⬪   # black small lozenge
-smwhtlozenge                ⬫   # white small lozenge
-blkhorzoval                 ⬬   # black horizontal ellipse
-whthorzoval                 ⬭   # white horizontal ellipse
-blkvertoval                 ⬮   # black vertical ellipse
-whtvertoval                 ⬯   # white vertical ellipse
-circleonleftarrow           ⬰   # left arrow with small circle
-leftthreearrows             ⬱   # three leftwards arrows
-leftarrowonoplus            ⬲   # left arrow with circled plus
-longleftsquigarrow          ⬳   # long leftwards squiggle arrow
-nvtwoheadleftarrow          ⬴   # leftwards two-headed arrow with vertical stroke
-nVtwoheadleftarrow          ⬵   # leftwards two-headed arrow with double vertical stroke
-twoheadmapsfrom             ⬶   # leftwards two-headed arrow from bar
-twoheadleftdbkarrow         ⬷   # leftwards two-headed triple-dash arrow
-leftdotarrow                ⬸   # leftwards arrow with dotted stem
-nvleftarrowtail             ⬹   # leftwards arrow with tail with vertical stroke
-nVleftarrowtail             ⬺   # leftwards arrow with tail with double vertical stroke
-twoheadleftarrowtail        ⬻   # leftwards two-headed arrow with tail
-nvtwoheadleftarrowtail      ⬼   # leftwards two-headed arrow with tail with vertical stroke
-nVtwoheadleftarrowtail      ⬽   # leftwards two-headed arrow with tail with double vertical stroke
-leftarrowx                  ⬾   # leftwards arrow through x
-leftcurvedarrow             ⬿   # wave arrow pointing directly left
-equalleftarrow              ⭀   # equals sign above leftwards arrow
-bsimilarleftarrow           ⭁   # reverse tilde operator above leftwards arrow
-leftarrowbackapprox         ⭂   # leftwards arrow above reverse almost equal to
-rightarrowgtr               ⭃   # rightwards arrow through greater-than
-leftarrowless               ⥷   # leftwards arrow through less-than
-rightarrowsupset            ⭄   # rightwards arrow through superset
-leftarrowsubset             ⥺   # leftwards arrow through subset
-LLeftarrow                  ⭅   # leftwards quadruple arrow
-RRightarrow                 ⭆   # rightwards quadruple arrow
-bsimilarrightarrow          ⭇   # reverse tilde operator above rightwards arrow
-rightarrowbackapprox        ⭈   # rightwards arrow above reverse almost equal to
-similarleftarrow            ⭉   # tilde operator above leftwards arrow
-leftarrowapprox             ⭊   # leftwards arrow above almost equal to
-leftarrowbsimilar           ⭋   # leftwards arrow above reverse tilde operator
-rightarrowbsimilar          ⭌   # righttwards arrow above reverse tilde operator
-medwhitestar                ⭐   # white medium star
-medblackstar                ⭑   # black medium star
-smwhitestar                 ⭒   # white small star
-rightpentagonblack          ⭓   # black right-pointing pentagon
-rightpentagon               ⭔   # white right-pointing pentagon
-postalmark                  〒   # postal mark
+squaretopblack              ⬒  # square with top half black
+squarebotblack              ⬓  # square with bottom half black
+squareurblack               ⬔  # square with upper right diagonal half black
+squarellblack               ⬕  # square with lower left diagonal half black
+diamondleftblack            ⬖  # diamond with left half black
+diamondrightblack           ⬗  # diamond with right half black
+diamondtopblack             ⬘  # diamond with top half black
+diamondbotblack             ⬙  # diamond with bottom half black
+dottedsquare                ⬚  # dotted square
+lgblksquare                 ⬛ # black large square
+lgwhtsquare                 ⬜ # white large square
+vysmblksquare               ⬝  # black very small square
+vysmwhtsquare               ⬞  # white very small square
+pentagonblack               ⬟  # black pentagon
+pentagon                    ⬠  # white pentagon
+varhexagon                  ⬡  # white hexagon
+varhexagonblack             ⬢  # black hexagon
+hexagonblack                ⬣  # horizontal black hexagon
+lgblkcircle                 ⬤  # black large circle
+mdblkdiamond                ⬥  # black medium diamond
+mdwhtdiamond                ⬦  # white medium diamond
+mdblklozenge                ⬧  # black medium lozenge
+mdwhtlozenge                ⬨  # white medium lozenge
+smblkdiamond                ⬩  # black small diamond
+smblklozenge                ⬪  # black small lozenge
+smwhtlozenge                ⬫  # white small lozenge
+blkhorzoval                 ⬬  # black horizontal ellipse
+whthorzoval                 ⬭  # white horizontal ellipse
+blkvertoval                 ⬮  # black vertical ellipse
+whtvertoval                 ⬯  # white vertical ellipse
+circleonleftarrow           ⬰  # left arrow with small circle
+leftthreearrows             ⬱  # three leftwards arrows
+leftarrowonoplus            ⬲  # left arrow with circled plus
+longleftsquigarrow          ⬳  # long leftwards squiggle arrow
+nvtwoheadleftarrow          ⬴  # leftwards two-headed arrow with vertical stroke
+nVtwoheadleftarrow          ⬵  # leftwards two-headed arrow with double vertical stroke
+twoheadmapsfrom             ⬶  # leftwards two-headed arrow from bar
+twoheadleftdbkarrow         ⬷  # leftwards two-headed triple-dash arrow
+leftdotarrow                ⬸  # leftwards arrow with dotted stem
+nvleftarrowtail             ⬹  # leftwards arrow with tail with vertical stroke
+nVleftarrowtail             ⬺  # leftwards arrow with tail with double vertical stroke
+twoheadleftarrowtail        ⬻  # leftwards two-headed arrow with tail
+nvtwoheadleftarrowtail      ⬼  # leftwards two-headed arrow with tail with vertical stroke
+nVtwoheadleftarrowtail      ⬽  # leftwards two-headed arrow with tail with double vertical stroke
+leftarrowx                  ⬾  # leftwards arrow through x
+leftcurvedarrow             ⬿  # wave arrow pointing directly left
+equalleftarrow              ⭀  # equals sign above leftwards arrow
+bsimilarleftarrow           ⭁  # reverse tilde operator above leftwards arrow
+leftarrowbackapprox         ⭂  # leftwards arrow above reverse almost equal to
+rightarrowgtr               ⭃  # rightwards arrow through greater-than
+leftarrowless               ⥷  # leftwards arrow through less-than
+rightarrowsupset            ⭄  # rightwards arrow through superset
+leftarrowsubset             ⥺  # leftwards arrow through subset
+LLeftarrow                  ⭅  # leftwards quadruple arrow
+RRightarrow                 ⭆  # rightwards quadruple arrow
+bsimilarrightarrow          ⭇  # reverse tilde operator above rightwards arrow
+rightarrowbackapprox        ⭈  # rightwards arrow above reverse almost equal to
+similarleftarrow            ⭉  # tilde operator above leftwards arrow
+leftarrowapprox             ⭊  # leftwards arrow above almost equal to
+leftarrowbsimilar           ⭋  # leftwards arrow above reverse tilde operator
+rightarrowbsimilar          ⭌  # righttwards arrow above reverse tilde operator
+medwhitestar                ⭐ # white medium star
+medblackstar                ⭑  # black medium star
+smwhitestar                 ⭒  # white small star
+rightpentagonblack          ⭓  # black right-pointing pentagon
+rightpentagon               ⭔  # white right-pointing pentagon
+postalmark                  〒 # postal mark
 italic_imath                𝚤  # mathematical italic small dotless i
 italic_jmath                𝚥  # mathematical italic small dotless j
 bold_Alpha                  𝚨  # mathematical bold capital alpha
@@ -1752,42 +1752,42 @@ bolditalicsans_varrho       𝟈  # mathematical sans-serif bold italic rho symb
 bolditalicsans_varpi        𝟉  # mathematical sans-serif bold italic pi symbol
 bold_Digamma                𝟊  # mathematical bold capital digamma
 bold_digamma                𝟋  # mathematical bold small digamma
-triangleright               ▷   # (large) right triangle, open; z notation range restriction
-triangleleft                ◁   # (large) left triangle, open; z notation domain restriction
-leftouterjoin               ⟕   # left outer join
-rightouterjoin              ⟖   # right outer join
-fullouterjoin               ⟗   # full outer join
-join                        ⨝   # join
+triangleright               ▷  # (large) right triangle, open; z notation range restriction
+triangleleft                ◁  # (large) left triangle, open; z notation domain restriction
+leftouterjoin               ⟕  # left outer join
+rightouterjoin              ⟖  # right outer join
+fullouterjoin               ⟗  # full outer join
+join                        ⨝  # join
 underbar                     ̲  # combining low line
 underleftrightarrow          ͍  # underleftrightarrow accent
-leftwavearrow               ↜   # left arrow-wavy
-rightwavearrow              ↝   # right arrow-wavy
-varbarwedge                 ⌅   # logical and bar above
-smallblacktriangleright     ▸   # right triangle, filled
-smallblacktriangleleft      ◂   # left triangle, filled
-leftmoon                    ☾   # last quarter moon
-smalltriangleright          ▹   # right triangle, open
-smalltriangleleft           ◃   # left triangle, open
-tricolon                    ⁝   # tricolon
-1/4                         ¼   # vulgar fraction one quarter
-1/2                         ½   # vulgar fraction one half
-3/4                         ¾   # vulgar fraction three quarters
-1/7                         ⅐   # vulgar fraction one seventh
-1/9                         ⅑   # vulgar fraction one ninth
-1/10                        ⅒   # vulgar fraction one tenth
-1/3                         ⅓   # vulgar fraction one third
-2/3                         ⅔   # vulgar fraction two thirds
-1/5                         ⅕   # vulgar fraction one fifth
-2/5                         ⅖   # vulgar fraction two fifths
-3/5                         ⅗   # vulgar fraction three fifths
-4/5                         ⅘   # vulgar fraction four fifths
-1/6                         ⅙   # vulgar fraction one sixth
-5/6                         ⅚   # vulgar fraction five sixths
-1/8                         ⅛   # vulgar fraction one eighth
-3/8                         ⅜   # vulgar fraction three eighths
-5/8                         ⅝   # vulgar fraction five eighths
-7/8                         ⅞   # vulgar fraction seventh eighths
-1/                          ⅟   # fraction numerator one over
-0/3                         ↉   # vulgar fraction zero thirds
-1/4                         ¼   # vulgar fraction one quarter
+leftwavearrow               ↜  # left arrow-wavy
+rightwavearrow              ↝  # right arrow-wavy
+varbarwedge                 ⌅  # logical and bar above
+smallblacktriangleright     ▸  # right triangle, filled
+smallblacktriangleleft      ◂  # left triangle, filled
+leftmoon                    ☾  # last quarter moon
+smalltriangleright          ▹  # right triangle, open
+smalltriangleleft           ◃  # left triangle, open
+tricolon                    ⁝  # tricolon
+1/4                         ¼  # vulgar fraction one quarter
+1/2                         ½  # vulgar fraction one half
+3/4                         ¾  # vulgar fraction three quarters
+1/7                         ⅐  # vulgar fraction one seventh
+1/9                         ⅑  # vulgar fraction one ninth
+1/10                        ⅒  # vulgar fraction one tenth
+1/3                         ⅓  # vulgar fraction one third
+2/3                         ⅔  # vulgar fraction two thirds
+1/5                         ⅕  # vulgar fraction one fifth
+2/5                         ⅖  # vulgar fraction two fifths
+3/5                         ⅗  # vulgar fraction three fifths
+4/5                         ⅘  # vulgar fraction four fifths
+1/6                         ⅙  # vulgar fraction one sixth
+5/6                         ⅚  # vulgar fraction five sixths
+1/8                         ⅛  # vulgar fraction one eighth
+3/8                         ⅜  # vulgar fraction three eighths
+5/8                         ⅝  # vulgar fraction five eighths
+7/8                         ⅞  # vulgar fraction seventh eighths
+1/                          ⅟  # fraction numerator one over
+0/3                         ↉  # vulgar fraction zero thirds
+1/4                         ¼  # vulgar fraction one quarter
 

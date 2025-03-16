@@ -16,7 +16,7 @@ import theme from "../../theme/theme.js"
 
 import cells from "../screen/cells.js"
 
-import greeter from "./greeter.js"
+import greet from "./greet.js"
 import inputchoice from "./inputchoice.js"
 
 
@@ -30,7 +30,7 @@ menu = (function ()
         this["hide"] = this["hide"].bind(this)
         this["layout"] = this["layout"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
-        this.greeter = new greeter(this.screen)
+        this.greet = new greet(this.screen)
     }
 
     menu.prototype["layout"] = function ()
@@ -42,14 +42,14 @@ menu = (function ()
         ih = (this.inputIsActive() ? 2 : 0)
         iz = _k_.max(0,ih - 1)
         h = c + 2 + ih
-        scx = parseInt(this.screen.cols / 2)
         scy = parseInt(this.screen.rows / 2)
-        x = parseInt(scx - w / 2)
         y = parseInt(scy - (c + 2) / 2)
         y -= ih
-        var _a_ = belt.cellSize(this.greeter.header); gw = _a_[0]; gh = _a_[1]
+        scx = parseInt(this.screen.cols / 2)
+        x = parseInt(scx - w / 2)
+        var _a_ = belt.cellSize(this.greet.header); gw = _a_[0]; gh = _a_[1]
 
-        this.greeter.layout(parseInt(scx - gw / 2),_k_.max(0,parseInt(y - gh - 1 + ih)))
+        this.greet.layout(parseInt(scx - gw / 2),_k_.max(0,parseInt(y - gh - 1 + ih)))
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.choices.layout(x + 1,y + 1 + ih,w - 2,c)
         return this.cells.layout(x,y,w,h)
@@ -57,17 +57,15 @@ menu = (function ()
 
     menu.prototype["show"] = function (greet = false)
     {
-        this.greet = greet
-    
         var ccol, items
 
-        this.greeter.show(this.greet)
+        this.greet.show(greet)
         items = belt.linesForText(`recent ...
 open ...
 new
 help
 quit`)
-        if (!this.greet)
+        if (!greet)
         {
             items.splice(items.length - 2,0,'about')
         }
@@ -85,10 +83,6 @@ quit`)
         this.choices.set(items)
         this.choices.select(0)
         this.choices.state.setView([0,0])
-        if (this.greet)
-        {
-            post.emit('greet')
-        }
         return menu.__super__.show.call(this)
     }
 
@@ -103,8 +97,8 @@ quit`)
 
     menu.prototype["hide"] = function ()
     {
-        this.greeter.hide()
-        delete this.greet
+        console.log('menu.hide')
+        this.greet.hide()
         return menu.__super__.hide.call(this)
     }
 
@@ -120,7 +114,7 @@ quit`)
                 this.show(true)
                 break
             case 'quit':
-                this.greeter.hide()
+                this.greet.hide()
                 post.emit('quit')
                 break
             case 'open ...':
@@ -148,10 +142,7 @@ quit`)
             return
         }
         this.layout()
-        if (this.greet)
-        {
-            this.greeter.draw()
-        }
+        this.greet.draw()
         this.drawFrame()
         return this.drawChoices()
     }

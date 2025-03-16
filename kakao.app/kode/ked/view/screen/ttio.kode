@@ -39,7 +39,7 @@ function TTIO extends events
         process.stdin.on  'data'   @onData
         post.on 'pointer'          @onPointer
         
-        @setTitle 'ked'
+        @setTitle 'kėd'
         setTimeout @onResize 10 # delay screen size request due to ghostty bug
                             
     write: str => process.stdout.write str

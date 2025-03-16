@@ -1,10 +1,11 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 var salt
 
 import kxk from "../../../kxk.js"
-let kstr = kxk.kstr
 let kseg = kxk.kseg
+
+import salter from "../../../kxk/salter.js"
 
 
 salt = (function ()
@@ -59,6 +60,25 @@ salt = (function ()
             }
         }
         return posl
+    }
+
+    salt["insertAsciiHeaderForPositionsAndRanges"] = function (lines, posl, ranges)
+    {
+        var indt, salt, text
+
+        if (_k_.empty(ranges))
+        {
+            ranges = posl.map((function (p)
+            {
+                return this.rangeOfClosestWordToPos(lines,p)
+            }).bind(this))
+        }
+        text = this.joinLines(this.textForLineRanges(lines,ranges),' ')
+        indt = _k_.lpad(this.lineIndentAtPos(lines,posl[0]))
+        salt = salter(text,{prepend:indt + '# '}) + '\n'
+        var _a_ = this.insertTextAtPositions(lines,salt,[[0,posl[0][1]]]); lines = _a_[0]; posl = _a_[1]
+
+        return [lines,posl,[]]
     }
 
     return salt

@@ -28,6 +28,7 @@ greet = (function ()
         this.header = help.headerCells()
         this.name = 'greet'
         this.a = 120
+        this.cells.rows = 0
     }
 
     greet.prototype["hide"] = function ()
@@ -36,12 +37,8 @@ greet = (function ()
         return greet.__super__.hide.call(this)
     }
 
-    greet.prototype["show"] = function (doShow = true)
+    greet.prototype["show"] = function ()
     {
-        if (doShow === false)
-        {
-            return this.hide()
-        }
         post.emit('greet.show')
         return greet.__super__.show.call(this)
     }

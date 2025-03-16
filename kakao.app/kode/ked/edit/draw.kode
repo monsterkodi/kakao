@@ -21,8 +21,13 @@ function draw extends view
         
         @setColor 'bg'                   theme.editor
         @setColor 'empty'                theme.editor_empty
+        
         @setColor 'cursor_main'          theme.editor_cursor_main
         @setColor 'cursor_empty'         theme.editor_cursor_empty
+        
+        @setColor 'selection'            theme.editor_selection
+        @setColor 'selection_line'       theme.editor_selection_line
+        
         @setColor 'highlight'            theme.editor_highlight
         @setColor 'highlight_ul'         theme.editor_highlight_ul
         @setColor 'highlight_bracket'    theme.editor_highlight_bracket
@@ -194,8 +199,11 @@ function draw extends view
         
         # prof.start 'selection'
         
-        spanbg = theme[@name + '_selection'     ] ? theme.editor_selection
-        linebg = theme[@name + '_selection_line'] ? theme.editor_selection_line
+        # spanbg = theme[@name + '_selection'     ] ? theme.editor_selection
+        # linebg = theme[@name + '_selection_line'] ? theme.editor_selection_line
+        
+        spanbg = @color.selection
+        linebg = @color.selection_line
         
         if not @cells.screen.t.hasFocus
             spanbg = color.darken spanbg

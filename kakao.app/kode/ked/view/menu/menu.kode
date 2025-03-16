@@ -11,7 +11,7 @@ use ../../util      ◆ frecent
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ theme 
 use ../screen       ◆ cells 
-use                 ◆ greeter inputchoice
+use                 ◆ greet inputchoice
 
 function menu extends inputchoice
 
@@ -19,7 +19,7 @@ function menu extends inputchoice
         
         super @screen 'menu'
         
-        @greeter = new greeter @screen
+        @greet = new greet @screen
         
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
@@ -36,15 +36,16 @@ function menu extends inputchoice
         iz = max 0 ih - 1
         
         h = c + 2 + ih
-        scx = int @screen.cols/2
         scy = int @screen.rows/2
-        x  = int scx - w/2
         y  = int scy-(c+2)/2
         y -= ih
         
-        [gw gh] = belt.cellSize @greeter.header
+        scx = int @screen.cols/2
+        x  = int scx - w/2
         
-        @greeter.layout  int(scx-gw/2)  max(0 int(y-gh-1+ih))
+        [gw gh] = belt.cellSize @greet.header
+        
+        @greet.layout    int(scx-gw/2)  max(0 int(y-gh-1+ih))
         @input.layout    x+2   y+1      w-4  iz
         @choices.layout  x+1   y+1+ih   w-2  c
         @cells.layout    x     y        w    h
@@ -55,9 +56,9 @@ function menu extends inputchoice
     #      000  000   000  000   000  000   000
     # 0000000   000   000   0000000   00     00
 
-    show: @greet=false ->
+    show: greet=false ->
         
-        @greeter.show @greet
+        @greet.show greet
         
         items = belt.linesForText
             """
@@ -68,8 +69,7 @@ function menu extends inputchoice
             quit
             """
         
-        items.splice items.length-2 0 'about' if not @greet
-        # items.splice items.indexOf('recent ...') 1 if empty ked_session.get('files▸recent')
+        items.splice items.length-2 0 'about' if not greet
         items.splice items.indexOf('recent ...') 1 if empty ked_session.recentFiles()
         
         items = items.map (i) -> ' ' + i # padding for  
@@ -82,8 +82,6 @@ function menu extends inputchoice
         @choices.set items
         @choices.select 0
         @choices.state.setView [0 0]
-        
-        post.emit 'greet' if @greet
         
         super()
         
@@ -103,8 +101,8 @@ function menu extends inputchoice
         
     hide: => 
     
-        @greeter.hide()
-        delete @greet
+        log 'menu.hide'
+        @greet.hide()
         super()
     
     #  0000000   00000000   00000000   000      000   000  
@@ -119,8 +117,8 @@ function menu extends inputchoice
         
         switch choice
             'new'        ➜ @hide(); post.emit 'file.new'
-            'about'      ➜ @show true          # reopen with greeting header
-            'quit'       ➜ @greeter.hide(); post.emit 'quit'                    
+            'about'      ➜ @show true # reopen with greeting header
+            'quit'       ➜ @greet.hide(); post.emit 'quit'                    
             'open ...'   ➜ post.emit 'fsbrow.dir' process.cwd()
             'recent ...' ➜ @showRecent()
             'help'       ➜ @hide(); post.emit 'file.open' slash.path(◆dir '../../../../kode/ked/help.md')
@@ -140,7 +138,7 @@ function menu extends inputchoice
         ⮐ if @hidden()
         
         @layout()
-        @greeter.draw() if @greet
+        @greet.draw()
         @drawFrame()
         @drawChoices()
 

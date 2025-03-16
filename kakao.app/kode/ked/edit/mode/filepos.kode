@@ -4,13 +4,20 @@
 000000    000  000      0000000   00000000   000   000  0000000 
 000       000  000      000       000        000   000       000
 000       000  0000000  00000000  000         0000000   0000000 
+
+◆ on cursors change ➜ stores main cursor and view in session 
+◆ on file loaded    ➜ restores main cursor and view from sesson
+◆ on key event      ➜ provides recent file edits navigation via shortcuts
+◆ on post insert    ➜ tracks insertion points for file edits navigation
 ###
 
-use ../../../kxk ▪ post
+use ../../../kxk ▪ post kutil slash
 
 function filepos
 
     @autoStart: true
+    
+    @fileposl: []
     
     @: @state ->
         
@@ -24,21 +31,61 @@ function filepos
         @fileLoaded ked_session.get("editor▸file") 
         post.emit 'redraw'
         
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███  ███     
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████    ███████ 
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███       ███
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████ 
+
     cursorsSet: ->
         
         if file = ked_session.get 'editor▸file'
         
-            ked_session.set "editor▸filepos▸#{file}" @state.mainCursor().concat(@state.s.view)
+            curview = @state.mainCursor().concat(@state.s.view)
             
-    fileLoaded: file row col ->
+            if empty filepos.fileposl
+                filepos.fileposl.push [file curview]
+            else if filepos.fileposl[-1][0] == file
+                filepos.fileposl[-1][1] = curview
+            else
+                kutil.pullIf filepos.fileposl (fp) -> fp[0] == file
+                filepos.fileposl.push [file curview]
+            # log "filepos.cursors #{curview[0]} #{curview[1]} #{curview[2]} #{curview[3]}" 
+            for fp in filepos.fileposl
+                log "○ #{b6 slash.file(fp[0])} #{fp[1][0]} #{fp[1][1]} #{fp[1][2]} #{fp[1][3]}"
+            ked_session.set "editor▸filepos▸#{file}" curview
+            
+    # ███       ███████    ███████   ███████    ████████  ███████  
+    # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███      ███   ███  █████████  ███   ███  ███████   ███   ███
+    # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████   ███████   ███   ███  ███████    ████████  ███████  
+
+    fileLoaded: file row col view ->
         
         if row?
-            post.emit 'goto.line' row col
+            log "filepos.fileLoaded post goto.line #{row} #{col} #{view?[0]} #{view?[1]}"
+            post.emit 'goto.line' row col view
         else
             if posview = ked_session.get "editor▸filepos▸#{file}"
-                # log "filepos.fileLoaded #{posview} #{file}"
+                log "filepos.fileLoaded apply session #{posview} #{file}"
                 @state.setCursors [posview[0..1]]
                 @state.setView posview[2..]
+            
+    goBackward: ->
+    
+        log "goBackward #{filepos.fileposl.length}" filepos.fileposl
+    
+        ⮐  if filepos.fileposl.length < 2
+        
+        offset = 2
+        fp = filepos.fileposl[filepos.fileposl.length-offset]
+        
+        post.emit 'file.open' fp[0] fp[1][1] fp[1][0] [fp[1][2] fp[1][3]]
+    
+    goForward: ->
+    
+        ⮐  if filepos.fileposl.length < 2
             
     # ███   ███  ████████  ███   ███
     # ███  ███   ███        ███ ███ 
@@ -49,8 +96,8 @@ function filepos
     handleKey: key event ->
     
         switch key
-            'cmd+1' ➜ log 'go back'
-            'cmd+2' ➜ log 'go forward'
+            'cmd+1' ➜ ⮐  @goBackward()
+            'cmd+2' ➜ ⮐  @goForward()
             
         'unhandled'
             

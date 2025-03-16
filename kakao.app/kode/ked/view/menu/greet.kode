@@ -1,0 +1,73 @@
+###
+     ███████   ████████   ████████  ████████  █████████  
+    ███        ███   ███  ███       ███          ███     
+    ███  ████  ███████    ███████   ███████      ███     
+    ███   ███  ███   ███  ███       ███          ███     
+     ███████   ███   ███  ████████  ████████     ███     
+###
+
+use ../../../kxk    ▪ kstr post
+use ../../util      ◆ help
+use ../../theme     ◆ theme 
+use ../../edit/tool ◆ belt
+use ../../edit      ◆ editor
+use ../base         ◆ view
+
+function greet extends view
+
+    @: screen ->
+        
+        super screen 'greet'
+        
+        @header  = help.headerCells()
+        @name    = 'greet'
+        @a       = 120
+        
+        @cells.rows = 0
+
+    #  ███████  ███   ███   ███████   ███   ███  
+    # ███       ███   ███  ███   ███  ███ █ ███  
+    # ███████   █████████  ███   ███  █████████  
+    #      ███  ███   ███  ███   ███  ███   ███  
+    # ███████   ███   ███   ███████   ██     ██  
+
+    hide: -> 
+    
+        post.emit 'greet.hide'
+        super()
+
+    show: =>
+        
+        post.emit 'greet.show'
+        super()
+        
+    layout: x y ->
+        
+        [w h] = belt.cellSize @header
+        
+        @cells.layout x y w h
+
+    # ███████    ████████    ███████   ███   ███  
+    # ███   ███  ███   ███  ███   ███  ███ █ ███  
+    # ███   ███  ███████    █████████  █████████  
+    # ███   ███  ███   ███  ███   ███  ███   ███  
+    # ███████    ███   ███  ███   ███  ██     ██  
+
+    draw: =>
+        
+        ⮐ if @hidden()
+
+        duration = 480
+        @a += 1
+        @a = 0 if @a > duration
+        f = 0.4 + 0.6 * Math.abs(Math.sin(2 * Math.PI * @a / duration))
+        
+        @header = help.headerCells f
+        
+        for row,y in @header
+            for cell,x in row
+                @cells.set x y cell.char cell.fg cell.bg
+                
+        post.emit 'redraw'
+
+export greet

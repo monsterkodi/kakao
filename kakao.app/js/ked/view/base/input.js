@@ -18,6 +18,7 @@ input = (function ()
         this["current"] = this["current"].bind(this)
         input.__super__.constructor.call(this,screen,name,['brckts','replex','unype'])
         this.setColor('bg',theme.quicky_bg)
+        this.setColor('selection_line',this.color.selection)
     }
 
     input.prototype["hasFocus"] = function ()
@@ -48,7 +49,8 @@ input = (function ()
         switch (event.combo)
         {
             case 'return':
-                return this.emit('action','submit',this.current())
+                this.emit('action','submit',this.current())
+                return
 
             case 'up':
             case 'down':

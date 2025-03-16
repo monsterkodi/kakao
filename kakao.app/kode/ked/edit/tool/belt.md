@@ -10,14 +10,17 @@
 
     collection of text editing functions
     
-    belt            ranges, postions, etc 
-        - edit            complex editing
-        - text            string operations
-        - salt            salter utilities
+    belt          basics: ranges, postions, etc 
+        ◆ cell            screen cell utilities
+        ◆ edit            complex text editing
+        ◆ misc            completion, comments, etc
+        ◆ pair            string delimiters and brackets
+        ◆ salt            salter utilities
+        ◆ text            string operations
 
 ## rules
     
-    - static, not state, no side-effects
+    - static, no state, no side-effects
     - operate on plain old data-structures only
     - don't modify arguments (at least i hope that is the case ;)
 

@@ -145,6 +145,26 @@ function state
 
         @pushState()
         
+    loadLines: lines => 
+    
+        if valid lines and not lines[0] is str ➜ error "#{@name}.loadLines - first line not a string?" lines[0]
+        
+        @loadSegls kseg.segls(lines)
+    
+    loadSegls: segls =>
+
+        @s = @s.set 'cursors' [[0 0]]
+        @s = @s.set 'view' [0 0]
+        @s = @s.set 'main' 0
+        
+        @clearCursorsHighlightsAndSelections()
+        
+        @r = []
+        @h = []
+        
+        @syntax.clear()
+        @setSegls segls
+        
     clearEmpty: => 
     
         @segls = []
@@ -177,22 +197,6 @@ function state
     allLines: => @s.lines.asMutable()
     
     linesInView: => @s.lines[@s.view[1]...@s.view[1]+@cells.rows]
-
-    loadLines: lines => 
-    
-        if valid lines and not lines[0] is str ➜ error "#{@name}.loadLines - first line not a string?" lines[0]
-        
-        @loadSegls kseg.segls(lines)
-    
-    loadSegls: segls =>
-
-        @s = @s.set 'cursors' [[0 0]]
-        @s = @s.set 'view' [0 0]
-        @s = @s.set 'main' 0
-        @clearCursorsHighlightsAndSelections()
-        @r = []
-        @h = []
-        @setSegls segls
 
     clearLines: =>
 

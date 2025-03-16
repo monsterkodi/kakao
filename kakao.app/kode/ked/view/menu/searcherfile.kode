@@ -19,10 +19,11 @@ function searcherfile extends view
         @crumbs = new crumbs @screen "#{@name}_crumbs"
         @bubble = new bubble @screen "#{@name}_bubble"
         
-        @crumbs.setColor 'empty' theme.finder_bg
-        @bubble.setColor 'empty' theme.finder_bg
         @setColor 'bg'     theme.finder_bg
         @setColor 'frame'  theme.finder_frame
+        
+        @crumbs.setColor 'empty' @color.bg
+        @bubble.setColor 'empty' @color.bg
 
         @crumbs.dotlessRelative = true
         @crumbs.on 'action'  @onCrumbsAction

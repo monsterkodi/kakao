@@ -39,10 +39,19 @@ fileeditor = (function ()
         post.on('goto.line',this.onGotoLine)
     }
 
-    fileeditor.prototype["onGotoLine"] = function (lineIndex, column)
+    fileeditor.prototype["onGotoLine"] = function (row, col, view)
     {
-        column = (column != null ? column : this.state.mainCursor()[0])
-        return this.state.setCursors([[column,lineIndex]],{adjust:'topBotDelta'})
+        col = (col != null ? col : this.state.mainCursor()[0])
+        if (!_k_.empty(view))
+        {
+            console.log(`fileeditor.onGotoLine ${row} ${col} ${view[0]} ${view[1]}`)
+            this.state.setView(view)
+            return this.state.setCursors([[col,row]])
+        }
+        else
+        {
+            return this.state.setCursors([[col,row]],{adjust:'topBotDelta'})
+        }
     }
 
     fileeditor.prototype["onContext"] = function (event)
@@ -78,7 +87,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _118_41_, _170_31_
+        var col, ret, row, start, x, y, _130_41_, _182_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

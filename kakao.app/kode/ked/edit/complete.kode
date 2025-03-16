@@ -50,12 +50,13 @@ function complete
         
         tct = kseg.tailCountTurd before
         
+        turd = before
         if tct 
-            before = before[before.length-1..] # start from the last punctuation character
+            turd = before[before.length-1..] # start from the last punctuation character
         else if tcw and tcw < before.length
-            before = before[before.length-tcw..] # start from the last word
+            turd = before[before.length-tcw..] # start from the last word
                 
-        @word before
+        @word turd
         
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
@@ -68,14 +69,16 @@ function complete
         if empty @turd
             @hide()
             ⮐ 
+            
+        before = @editor.state.chunkBeforeCursor()
                 
         @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
-        @words = belt.prepareWordsForCompletion @turd @words
+        @words = belt.prepareWordsForCompletion before @turd @words
         
         if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
         
             if @turd == '>'
-                if @editor.state.chunkBeforeCursor() == '>'
+                if before == '>'
                     @words = inserts.concat @words
             else
                 @words = inserts.concat @words

@@ -6,8 +6,9 @@
 0000000   000   000  0000000     000   
 ###
 
-use ../../../kxk ▪ kstr kseg
-
+use ../../../kxk ▪ kseg
+use ../../../kxk ◆ salter
+                 
 function salt
 
     #  0000000   0000000   000      000000000  00000000  0000000    
@@ -48,5 +49,25 @@ function salt
             for y in sy..sy+4
                 posl.push [pos[0] y]
         posl
+        
+    #  0000000    0000000   0000000  000  000  000   000  00000000   0000000   0000000    00000000  00000000   
+    # 000   000  000       000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000000000  0000000   000       000  000  000000000  0000000   000000000  000   000  0000000   0000000    
+    # 000   000       000  000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000   000  0000000    0000000  000  000  000   000  00000000  000   000  0000000    00000000  000   000  
+    
+    @insertAsciiHeaderForPositionsAndRanges: lines posl ranges ->
+        
+        if empty ranges
+            ranges = posl.map (p) => @rangeOfClosestWordToPos(lines p)
+        
+        text = @joinLines @textForLineRanges(lines ranges) ' '
+        
+        indt = lpad @lineIndentAtPos(lines posl[0])
+        
+        salt = salter(text prepend:indt+'# ') + '\n'
+                
+        [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]]]
+        [lines posl []]
 
 export salt

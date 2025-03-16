@@ -157,10 +157,6 @@ function KED
             process.stderr.write "#{y5 msg}" if msg?
             process.exit msg? ? 1 : 0
             
-    # onException: err => 
-#         
-        # @quit err
-
     # 000   000  00000000  000   000  
     # 0000  000  000       000 0 000  
     # 000 0 000  0000000   000000000  
@@ -182,11 +178,11 @@ function KED
 
         @redraw()
             
-    # 000       0000000    0000000   0000000    
-    # 000      000   000  000   000  000   000  
-    # 000      000   000  000000000  000   000  
-    # 000      000   000  000   000  000   000  
-    # 0000000   0000000   000   000  0000000    
+    # ████████  ███  ███      ████████   ███████  ███   ███   ███████   ███   ███   ███████   ████████
+    # ███       ███  ███      ███       ███       ███   ███  ███   ███  ████  ███  ███        ███     
+    # ██████    ███  ███      ███████   ███       █████████  █████████  ███ █ ███  ███  ████  ███████ 
+    # ███       ███  ███      ███       ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███       ███  ███████  ████████   ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
 
     onFileChange: event =>
     
@@ -196,6 +192,12 @@ function KED
                 'delete' ➜ @newFile() # todo: load current text into new file
                 'rename' ➜ @reloadFile()
         
+    # ████████   ████████  ███       ███████    ███████   ███████  
+    # ███   ███  ███       ███      ███   ███  ███   ███  ███   ███
+    # ███████    ███████   ███      ███   ███  █████████  ███   ███
+    # ███   ███  ███       ███      ███   ███  ███   ███  ███   ███
+    # ███   ███  ████████  ███████   ███████   ███   ███  ███████  
+
     reloadFile: => 
         
         if valid @currentFile
@@ -203,9 +205,15 @@ function KED
         else
             @newFile()
         
-    loadFile: p row col ○=>
+    # ███       ███████    ███████   ███████          ████████  ███  ███      ████████
+    # ███      ███   ███  ███   ███  ███   ███        ███       ███  ███      ███     
+    # ███      ███   ███  █████████  ███   ███        ██████    ███  ███      ███████ 
+    # ███      ███   ███  ███   ███  ███   ███        ███       ███  ███      ███     
+    # ███████   ███████   ███   ███  ███████          ███       ███  ███████  ████████
+
+    loadFile: p row col view ○=>
     
-        # log "loadFile #{p}"
+        log "loadFile #{p} #{row} #{col} #{noon view}"
         
         start = process.hrtime()
         
@@ -236,7 +244,7 @@ function KED
         
         ked_session.set "editor▸file" @currentFile
         
-        mode.fileLoaded @editor.state @currentFile row col
+        mode.fileLoaded @editor.state @currentFile row col view
         
         post.emit 'file.loaded' @currentFile
         
@@ -256,9 +264,9 @@ function KED
     # 000   000  000        000       000  0000  
     #  0000000   000        00000000  000   000  
     
-    openFile: path row col =>
+    openFile: path row col view =>
         
-        @loadFile path row col
+        @loadFile path row col view
         @editor.grabFocus()
             
     #  0000000   0000000   000   000  00000000  
@@ -418,14 +426,14 @@ function KED
     
     redraw: =>    
         
-        ⮐ if @quitting
+        ⮐  if @quitting
 
         clearImmediate @redrawId
         @redrawId = setImmediate @draw
                                       
     draw: =>
             
-        ⮐ if @quitting
+        ⮐  if @quitting
         
         # ● draw
         
@@ -437,7 +445,7 @@ function KED
         
         @layout()
         
-        if not @menu.greet
+        if @menu.greet.hidden()
             @editor.draw()
             @status.draw()
             @funcol.draw()

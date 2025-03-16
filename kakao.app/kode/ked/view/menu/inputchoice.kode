@@ -83,7 +83,7 @@ function inputchoice extends view
     
     onInputChange: text =>
         
-        ⮐ if text == @choices.filterText
+        ⮐  if text == @choices.filterText
 
         @choices.filter text
         @choices.state.selectLine 0
@@ -97,10 +97,10 @@ function inputchoice extends view
         
         switch action
             'right'
-            'submit' ➜ ⮐ @applyChoice @choices.current()
-            'change' ➜ ⮐ @onInputChange text
-            'up'
-            'down'   ➜ ⮐ @choices.moveSelection action
+            'submit' ➜ ⮐  @applyChoice @choices.current()
+            'change' ➜ ⮐  @onInputChange text
+            'up'          
+            'down'   ➜ ⮐  @choices.moveSelection action
     
         # log "inputchoice.onInputAction #{action} #{text} (unhandled?)"
         
@@ -133,7 +133,7 @@ function inputchoice extends view
 
     draw: ->
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         @layout()
         @drawFrame()
@@ -170,29 +170,31 @@ function inputchoice extends view
 
     onKey: key event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
 
         switch event.combo
             
-            'tab' ➜ ⮐ @moveFocus()
+            'tab' 
+            
+                ⮐  @moveFocus()
             
             'esc'     
 
                 post.emit 'focus' 'editor'
-                ⮐ @hide()
+                ⮐  @hide()
 
         if result = @choices.onKey key event
 
             if event.char and event.char not in ' \n'
                 @input.grabFocus()
             else
-                ⮐ result
+                ⮐  result
              
         if result = @input.onKey key event
             
             # @choices.grabFocus() if empty @input.current()
             
-            ⮐ result
+            ⮐  result
 
         true
         
@@ -204,15 +206,15 @@ function inputchoice extends view
     
     onMouse: event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
-        ret = @input.onMouse   event ; ⮐ ret if ret?.redraw
-        ret = @choices.onMouse event ; ⮐ ret if ret?.redraw
-        ret = super event            ; ⮐ ret if ret?.redraw
+        ret = @input.onMouse   event ; ⮐  ret if ret?.redraw
+        ret = @choices.onMouse event ; ⮐  ret if ret?.redraw
+        ret = super event            ; ⮐  ret if ret?.redraw
         
         if event.type == 'press' and not @hover
             post.emit 'focus' 'editor'
-            ⮐ @hide()
+            ⮐  @hide()
             
         @hover
 
@@ -224,12 +226,12 @@ function inputchoice extends view
     
     onWheel: event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
 
-        ret = @input.onWheel   event ; ⮐ ret if ret?.redraw
-        ret = @choices.onWheel event ; ⮐ ret if ret?.redraw
+        ret = @input.onWheel   event ; ⮐  ret if ret?.redraw
+        ret = @choices.onWheel event ; ⮐  ret if ret?.redraw
         
         inside = @cells.isInsideEvent event
-        if inside ➜ ⮐ redraw:false 
+        if inside ➜ ⮐  redraw:false 
         
 export inputchoice

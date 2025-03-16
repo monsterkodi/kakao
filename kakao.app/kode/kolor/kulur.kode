@@ -874,8 +874,7 @@ tripleString = ->
     if getChunk(-1)?.escape then ⮐ stacked()
 
     type = switch chunk.turd[..2]
-        when '"""' then 'string double triple'
-        when "'''" then 'string single triple'
+        when '"""' then 'string triple'
 
     if type
 
@@ -1085,14 +1084,14 @@ interpolation = ->
 
         if chunk.turd?.startsWith "\#{"
             pushStack type:'interpolation' weak:true
-            setValue 0 'punct string interpolation start'
-            setValue 1 'punct string interpolation start'
+            setValue 0 'punct string interpolation'
+            setValue 1 'punct string interpolation'
             ⮐ 2
 
     else if topType == 'interpolation'
 
         if chunk.match == '}'
-            setValue 0 'punct string interpolation end'
+            setValue 0 'punct string interpolation'
             popStack()
             ⮐ 1
 

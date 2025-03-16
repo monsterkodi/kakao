@@ -16,7 +16,8 @@ function input extends editor
         
         super screen name ['brckts' 'replex' 'unype']
         
-        @setColor 'bg' theme.quicky_bg
+        @setColor 'bg'              theme.quicky_bg
+        @setColor 'selection_line'  @color.selection
         
     hasFocus: -> @state.hasFocus
 
@@ -34,11 +35,19 @@ function input extends editor
     onKey: key event ->
         
         switch event.combo
-            'return'    ➜ ⮐ @emit 'action' 'submit' @current()
+            
+            'return'    
+                
+                @emit 'action' 'submit' @current()
+                ⮐ 
+                
             'up' 'down'
+                
                 @emit 'action' event.combo 
                 ⮐ 
+                
             'right'
+                
                 if @state.mainCursor()[0] >= @current().length
                     @emit 'action' 'right'
                     ⮐ 

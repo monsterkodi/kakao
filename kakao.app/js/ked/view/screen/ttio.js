@@ -62,7 +62,7 @@ TTIO = (function ()
         process.stdout.on('resize',this.onResize)
         process.stdin.on('data',this.onData)
         post.on('pointer',this.onPointer)
-        this.setTitle('ked')
+        this.setTitle('kėd')
         setTimeout(this.onResize,10)
         return TTIO.__super__.constructor.apply(this, arguments)
     }

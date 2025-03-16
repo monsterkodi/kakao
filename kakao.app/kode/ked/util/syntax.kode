@@ -14,10 +14,12 @@ function syntax
 
     @: -> 
         @ext  = 'txt' 
-        @diss = []
-        @hash = {}
+        @clear()
         
-    clear: => @diss = []
+    clear: => 
+        @diss = []  
+        @hash = {}  
+        @liha = {}
         
     setExt: @ext =>
     
@@ -35,10 +37,13 @@ function syntax
         else
             ⮐  if @partialUpdate segls
         
-            @hash = {}
+            @clear()
+            
             @diss = kulur.dissect segls @ext
             for segl,idx in segls
-                @hash[kseg.hash(segl)] = @diss[idx]
+                hsh = kseg.hash(segl)
+                @hash[hsh] = @diss[idx]
+                @liha[idx] = hsh
             
     partialUpdate: segls ->
         
@@ -54,7 +59,10 @@ function syntax
                 newHash[hsh] = @hash[hsh]
             else
                 newHash[hsh] = kulur.dissect([segl] @ext)[0]
+                
+            if @liha[idx] != hsh
                 @diss.splice idx 1 newHash[hsh]
+                
         @hash = newHash
             
     addSegl: segl ext =>

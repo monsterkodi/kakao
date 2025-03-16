@@ -40,16 +40,28 @@ function fileeditor extends editor
         post.on 'editor.highlight' @state.highlightText
         post.on 'goto.line'        @onGotoLine
         
-    #  0000000    0000000   000000000   0000000       000      000  000   000  00000000  
-    # 000        000   000     000     000   000      000      000  0000  000  000       
-    # 000  0000  000   000     000     000   000      000      000  000 0 000  0000000   
-    # 000   000  000   000     000     000   000      000      000  000  0000  000       
-    #  0000000    0000000      000      0000000       0000000  000  000   000  00000000  
+    ###        
+     ███████    ███████   █████████   ███████         ███      ███  ███   ███  ████████  
+    ███        ███   ███     ███     ███   ███        ███      ███  ████  ███  ███       
+    ███  ████  ███   ███     ███     ███   ███        ███      ███  ███ █ ███  ███████   
+    ███   ███  ███   ███     ███     ███   ███        ███      ███  ███  ████  ███       
+     ███████    ███████      ███      ███████         ███████  ███  ███   ███  ████████  
     
-    onGotoLine: lineIndex column =>
+    sets the main cursor:
+        ◆ row       zero based line index to move the main cursor to
+        ◆ col       optional column for the main cursor
+        ◆ view      optional view offset
+    ###    
+    onGotoLine: row col view =>
         
-        column ?= @state.mainCursor()[0]
-        @state.setCursors [[column lineIndex]] adjust:'topBotDelta'
+        col ?= @state.mainCursor()[0]
+        
+        if valid view
+            log "fileeditor.onGotoLine #{row} #{col} #{view[0]} #{view[1]}"
+            @state.setView view
+            @state.setCursors [[col row]]
+        else
+            @state.setCursors [[col row]] adjust:'topBotDelta'
 
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
     # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   

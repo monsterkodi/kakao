@@ -21,12 +21,14 @@ mapscr = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["hide"] = this["hide"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
         mapscr.__super__.constructor.call(this,screen,state)
         this.pointerType = 'pointer'
         screen.t.on('preResize',this.clearImages)
-        post.on('greet',this.clearImages)
+        post.on('greet.show',this.hide)
+        post.on('greet.hide',this.show)
     }
 
     mapscr.prototype["getSegls"] = function ()
@@ -37,6 +39,12 @@ mapscr = (function ()
     mapscr.prototype["getSyntax"] = function ()
     {
         return this.state.syntax
+    }
+
+    mapscr.prototype["hide"] = function ()
+    {
+        console.log('mapscr hide')
+        return mapscr.__super__.hide.call(this)
     }
 
     mapscr.prototype["onResize"] = function ()

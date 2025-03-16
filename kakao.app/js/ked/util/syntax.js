@@ -26,13 +26,14 @@ syntax = (function ()
         this["setExt"] = this["setExt"].bind(this)
         this["clear"] = this["clear"].bind(this)
         this.ext = 'txt'
-        this.diss = []
-        this.hash = {}
+        this.clear()
     }
 
     syntax.prototype["clear"] = function ()
     {
-        return this.diss = []
+        this.diss = []
+        this.hash = {}
+        return this.liha = {}
     }
 
     syntax.prototype["setExt"] = function (ext)
@@ -52,7 +53,7 @@ syntax = (function ()
 
     syntax.prototype["setSegls"] = function (segls)
     {
-        var dss, idx, segl, segs
+        var dss, hsh, idx, segl, segs
 
         if (!_k_.empty(this.config))
         {
@@ -71,13 +72,15 @@ syntax = (function ()
             {
                 return
             }
-            this.hash = {}
+            this.clear()
             this.diss = kulur.dissect(segls,this.ext)
             var list1 = _k_.list(segls)
             for (idx = 0; idx < list1.length; idx++)
             {
                 segl = list1[idx]
-                this.hash[kseg.hash(segl)] = this.diss[idx]
+                hsh = kseg.hash(segl)
+                this.hash[hsh] = this.diss[idx]
+                this.liha[idx] = hsh
             }
         }
     }
@@ -107,6 +110,9 @@ syntax = (function ()
             else
             {
                 newHash[hsh] = kulur.dissect([segl],this.ext)[0]
+            }
+            if (this.liha[idx] !== hsh)
+            {
                 this.diss.splice(idx,1,newHash[hsh])
             }
         }
@@ -148,7 +154,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _84_27_
+        var clss, _92_27_
 
         if (_k_.isNum(x))
         {
@@ -158,7 +164,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_84_27_=theme.syntax[clss]) != null ? _84_27_ : '#ff0000')
+        return ((_92_27_=theme.syntax[clss]) != null ? _92_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

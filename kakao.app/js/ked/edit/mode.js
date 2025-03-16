@@ -266,7 +266,7 @@ mode = (function ()
         }
     }
 
-    mode["fileLoaded"] = function (state, file, row, col)
+    mode["fileLoaded"] = function (state, file, row, col, view)
     {
         var m
 
@@ -276,7 +276,7 @@ mode = (function ()
             m = list[_a_]
             if (_k_.isFunc(m.fileLoaded))
             {
-                m.fileLoaded(file,row,col)
+                m.fileLoaded(file,row,col,view)
             }
         }
     }

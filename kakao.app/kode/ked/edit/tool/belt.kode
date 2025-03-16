@@ -7,7 +7,7 @@
 ###
 
 use ../../../kxk ▪ kstr kseg
-use ◆ text edit salt
+use ◆ text cell edit misc pair salt
 
 function belt
 
@@ -20,93 +20,6 @@ function belt
                 sum[i] += n
         sum
 
-    #  0000000  00000000  000      000       0000000  
-    # 000       000       000      000      000       
-    # 000       0000000   000      000      0000000   
-    # 000       000       000      000           000  
-    #  0000000  00000000  0000000  0000000  0000000   
-    
-    @cells: cols rows ->
-    
-        lines = []
-        for l in 0...rows
-            cells = []
-            for c in 0...cols
-                cells.push bg:[] fg:[] char:' '
-            lines.push cells
-        lines
-
-    @cellsForLines: lines ->
-        
-        width = @widthOfLines lines
-        cells = @cells width lines.length
-        
-        @stampLines cells lines
-
-        cells
-        
-    @cellSize: cells -> [cells[0].length cells.length]
-        
-    @stampLines: cells lines x=0 y=0 ->
-    
-        ⮐ if empty lines
-    
-        [x y] = @pos x y
-        
-        for line,li in lines
-            for char,ci in line
-                cells[li][ci].char = char
-
-    @wrapCellRect: cells x1 y1 x2 y2 ->
-
-        [cols rows] = @cellSize cells
-        
-        x1 = cols + x1 if x1 < 0
-        x2 = cols + x2 if x2 < 0
-
-        y1 = rows + y1 if y1 < 0
-        y2 = rows + y2 if y2 < 0
-        
-        [x1 y1 x2 y2]
-        
-    @clampCellRect: cells x1 y1 x2 y2 ->
-        
-        [cols rows] = @cellSize cells
-        
-        x1 = clamp 0 cols-1 x1
-        x2 = clamp 0 cols-1 x2
-        
-        y1 = clamp 0 rows-1 y1
-        y2 = clamp 0 rows-1 y2
-        
-        [x1 y1 x2 y2]
-
-    @cellsWithChar: cells char ->
-        
-        res = []
-        for row,y in cells
-            for cell,x in row
-                if cell.char == char
-                    res.push pos:[x y] cell:cells[y][x]
-        res
-        
-    @cellsInRect: cells x1 y1 x2 y2 ->
-        
-        # [x1 y1 x2 y2] = @wrapCellRect cells x1 y1 x2 y2
-        [x1 y1 x2 y2] = @clampCellRect cells x1 y1 x2 y2
-        
-        res = []
-        for y in y1..y2
-            for x in x1..x2
-                res.push pos:[x y] cell:cells[y][x]
-        res
-        
-    @cellNeighborsAtPos: cells x y xd=1 yd=1->
-        
-        [x1 y1 x2 y2] = @clampCellRect cells x-xd y-yd x+xd y+yd
-        
-        @cellsInRect cells x1 y1 x2 y2
-        
     # 00000000    0000000    0000000
     # 000   000  000   000  000     
     # 00000000   000   000  0000000 
@@ -498,10 +411,10 @@ function belt
                 tail[3] = s[3]
 
         mrgd
-# s[2] 
-# merge methods of text and edit into this class
+
+# merge methods of sibling modules into tool/belt 
         
-for mod in [text edit salt]
+for mod in [text cell edit misc pair salt]
     for key,val of mod
         belt[key] = val
 

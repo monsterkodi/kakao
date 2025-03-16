@@ -105,7 +105,6 @@ class theme
         'text unicode':                         '#555'   
         'keyword require':                      '#444'   
         'comment':                              '#444'   
-        'comment triple ligature':              '#444'   
         'punct require':                        '#3a3a3a'
         'punct template':                       '#3a3a3a'
         'comment ligature':                     '#333'   
@@ -150,9 +149,8 @@ class theme
         'require':                              '#080'   
         'text require string':                  '#070'   
         'module require':                       '#050'   
-        'punct string interpolation start':     '#050'   
-        'punct string interpolation end':       '#050'   
-        'punct string double triple':           '#050'   
+        'punct string interpolation':           '#050'   
+        'punct string triple':                  '#050'   
         'punct string double':                  '#040'   
         'punct string single':                  '#030'   
         'comment triple header highlight':      '#050'   
@@ -251,8 +249,5 @@ for key,value of theme.syntax
         theme.syntax['file_ext_'+ext]   = color.darken value 0.4
         theme.syntax['file_icon_'+ext]  = color.darken value 0.6
         theme.syntax['file_punct_'+ext] = color.darken value 0.3
-        # theme.syntax[ext+' file']  = value
-        # theme.syntax[ext+' ext']   = color.darken value 0.6
-        # theme.syntax['punct '+ext] = color.darken value 0.3
 
 export theme

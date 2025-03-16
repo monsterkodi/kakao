@@ -1,0 +1,226 @@
+###
+000000000  00000000  000   000  000000000
+   000     000        000 000      000   
+   000     0000000     00000       000   
+   000     000        000 000      000   
+   000     00000000  000   000     000   
+###
+
+use ../../../kxk ▪ kstr kutil kseg 
+use ../../../kxk ◆ pepe
+use              ◆ belt
+
+function pair
+
+    # ███   ███  ███   ███  ███████     ███████   ███       ███████   ███   ███   ███████  ████████  ███████  
+    # ███   ███  ████  ███  ███   ███  ███   ███  ███      ███   ███  ████  ███  ███       ███       ███   ███
+    # ███   ███  ███ █ ███  ███████    █████████  ███      █████████  ███ █ ███  ███       ███████   ███   ███
+    # ███   ███  ███  ████  ███   ███  ███   ███  ███      ███   ███  ███  ████  ███       ███       ███   ███
+    #  ███████   ███   ███  ███████    ███   ███  ███████  ███   ███  ███   ███   ███████  ████████  ███████  
+
+    @isUnbalancedPosition: lines pos char ->
+    
+        revs =
+            ']': '[' 
+            '}': '{' 
+            ')': '('
+            '"': '"'
+            "'": "'"
+
+        p = pepe kseg.str(lines[pos[1]])
+        start = p.unbalanced?[1..].map (s) -> s.start
+        valid start and revs[char] in start
+        
+    #  0000000  000000000  00000000   000  000   000   0000000   
+    # 000          000     000   000  000  0000  000  000        
+    # 0000000      000     0000000    000  000 0 000  000  0000  
+    #      000     000     000   000  000  000  0000  000   000  
+    # 0000000      000     000   000  000  000   000   0000000   
+    
+    @isRangeInString: lines rng -> @rangeOfStringSurroundingRange(lines rng)?
+
+    @rangeOfStringSurroundingRange: lines rng ->
+
+        if ir = @rangeOfInnerStringSurroundingRange lines rng
+            @rangeGrownBy ir 1
+
+    @rangeOfInnerStringSurroundingRange: lines rng ->
+        
+        ⮐ if @isInvalidLineIndex lines rng[1]
+
+        rgs = @rangesOfStringsInText lines[rng[1]] rng[1] 
+        rgs = @rangesShrunkenBy rgs 1
+        for r in rgs
+            ⮐ r if @rangeContainsRange r rng
+            
+    @rangesOfStringsInText: text li=0 -> # todo: handle #{}
+        
+        rngs = []
+        ss = -1
+        cc = null
+        for i in 0...text.length
+            c = text[i]
+            if not cc and c in "'\""
+                cc = c
+                ss = i
+            else if c == cc
+                if (text[i-1] != '\\') or (i>2 and text[i-2] == '\\')
+                    rngs.push [ss li i+1 li]
+                    cc = null
+                    ss = -1
+        rngs
+        
+    #  0000000   000   000  000000000   0000000  000  0000000    00000000      0000000  000000000  00000000   
+    # 000   000  000   000     000     000       000  000   000  000          000          000     000   000  
+    # 000   000  000   000     000     0000000   000  000   000  0000000      0000000      000     0000000    
+    # 000   000  000   000     000          000  000  000   000  000               000     000     000   000  
+    #  0000000    0000000      000     0000000   000  0000000    00000000     0000000      000     000   000  
+    
+    @positionsAndRangesOutsideStrings: lines rngs posl ->
+        
+        found = []
+        
+        for rng in rngs
+            if not belt.isRangeInString(lines rng)
+                found.push rng
+                
+        for pos in posl
+            if not belt.isRangeInString(lines belt.rangeForPos(pos))
+                found.push pos
+        found
+        
+    # 00000000    0000000   000  00000000    0000000         0000000  000   000  00000000   00000000   0000000     0000000   
+    # 000   000  000   000  000  000   000  000             000       000   000  000   000  000   000  000   000  000        
+    # 00000000   000000000  000  0000000    0000000         0000000   000   000  0000000    0000000    000   000  000  0000  
+    # 000        000   000  000  000   000       000             000  000   000  000   000  000   000  000   000  000   000  
+    # 000        000   000  000  000   000  0000000         0000000    0000000   000   000  000   000  0000000     0000000   
+    
+    @rangesOfPairsSurroundingPositions: lines pairs posl ->
+        
+        rngs = []
+        for pos in posl
+            for pair in pairs
+                if @chunkBeforePos(lines pos).endsWith(pair[0]) and @chunkAfterPos(lines pos).startsWith(pair[1])
+                    rngs.push [pos[0] - pair[0].length pos[1] pos[0] + pair[1].length pos[1]]
+        rngs
+        
+    @stringDelimiterSpansForPositions: lines posl ->
+        
+        spans = []
+        for pos in posl
+        
+            if srng = @rangeOfStringSurroundingRange lines [pos[0] pos[1] pos[0] pos[1]]
+                spans.push [srng[0] srng[1] srng[0]+1]
+                spans.push [srng[2]-1 srng[3] srng[2]]
+            else if lines[pos[1]][pos[0]] in "\"'"
+                if srng = @rangeOfStringSurroundingRange lines [pos[0]+1 pos[1] pos[0]+1 pos[1]]
+                    spans.push [srng[0] srng[1] srng[0]+1]
+                    spans.push [srng[2]-1 srng[3] srng[2]]
+        spans
+        
+    #  ███████   ████████   ████████  ███   ███         ███████  ███       ███████    ███████  ████████
+    # ███   ███  ███   ███  ███       ████  ███        ███       ███      ███   ███  ███       ███     
+    # ███   ███  ████████   ███████   ███ █ ███        ███       ███      ███   ███  ███████   ███████ 
+    # ███   ███  ███        ███       ███  ████        ███       ███      ███   ███       ███  ███     
+    #  ███████   ███        ████████  ███   ███         ███████  ███████   ███████   ███████   ████████
+
+    @openCloseSpansForPositions: lines posl ->
+
+        spans = []
+        for pos in posl
+            if sps = @openCloseSpansForPosition lines pos
+                spans = spans.concat sps
+        spans
+        
+    @openCloseSpansForPosition: lines pos ->
+                
+        open =
+            '[': ']'
+            '{': '}'
+            '(': ')'
+                   
+        opns = '[{(' #Object.keys(open).join ''
+        clos = ']})' #Object.values(open).join ''
+        # revs = kutil.fromPairs kutil.zip(clos opns)
+        revs =
+            ']': '['
+            '}': '{'
+            ')': '('
+        
+        maxLookups = 1000 # careful, increasing this drops performance significantly!
+        
+        bp = [pos[0] pos[1]]
+        
+        if lines[bp[1]][bp[0]] not in opns
+        
+            closeEncounters = ''
+            openEncounters = ''
+            
+            stack = []
+            
+            cnt = 0
+            while true # find last open bracket before
+
+                bp[0] -= 1
+                if bp[0] >= 0
+                    prev = lines[bp[1]][bp[0]]
+                    if prev in opns
+                        if stack.length
+                            if open[prev] == last(stack)
+                                openEncounters += prev
+                                stack.pop()
+                                continue
+                            else
+                                ⮐  # stack mismatch
+                        lastOpen = prev
+                        break
+                    else if prev in clos
+                        stack.push prev
+                        closeEncounters += prev
+                else
+                    bp[1] -= 1
+                    break if bp[1] < 0
+                    bp[0] = lines[bp[1]].length
+    
+                break if lastOpen?
+                break if bp[1] < 0
+                break if cnt++ > maxLookups # maximum lookups exceeded            
+        else
+            lastOpen = lines[bp[1]][bp[0]]
+            
+        stack = []
+        ap    = [max(bp[0]+1 pos[0]) pos[1]]
+        cnt   = 0
+        
+        while ap[1] < lines.length # find first close bracket after
+            
+            next = lines[ap[1]][ap[0]]
+            
+            if next in clos
+                if stack.length
+                    if open[last(stack)] == next
+                        stack.pop()
+                    else
+                        ⮐  # stack mismatch
+                else
+                    firstClose = next
+                    break
+            else if next in opns
+                stack.push next
+
+            ap[0] += 1
+            if ap[0] >= lines[ap[1]].length
+                ap[0] = 0
+                ap[1] += 1
+            
+            break if cnt++ > maxLookups # maximum lookups exceeded   
+
+        if not lastOpen? or not firstClose?
+            if lines[pos[1]][pos[0]-1] in clos and revs[lines[pos[1]][pos[0]-1]] in openEncounters
+                ⮐  @openCloseSpansForPosition lines [pos[0]-1 pos[1]]
+            ⮐
+        
+        if open[lastOpen] == firstClose
+            ⮐  [[bp[0] bp[1] bp[0]+1] [ap[0] ap[1] ap[0]+1]]
+            
+export pair

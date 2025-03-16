@@ -50,8 +50,6 @@ function dirtree extends choices
 
         items.sort (a b) => @weight(a) - @weight(b)
                     
-        select ?= items[min(1 items.length-1)].path                   
-        
         @set items
         
         @restoreSessionState()

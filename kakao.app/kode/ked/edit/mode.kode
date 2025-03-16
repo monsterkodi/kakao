@@ -217,11 +217,11 @@ function mode
     # 000       000  000      000            000      000   000  000   000  000   000  000       000   000  
     # 000       000  0000000  00000000       0000000   0000000   000   000  0000000    00000000  0000000    
     
-    @fileLoaded: state file row col ->
+    @fileLoaded: state file row col view ->
         
         for m in @active[state.name]
             if m.fileLoaded is func
-                m.fileLoaded file row col
+                m.fileLoaded file row col view
             
 # ███   ███  ███  ██     ██  ████████   ███      ████████
 # ███   ███  ███  ███   ███  ███   ███  ███      ███     
