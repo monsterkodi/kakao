@@ -116,7 +116,7 @@ class indexer
         
         funcInfo
 
-    addMethod: className funcName file li async bound statik ->
+    addMethod: className funcName file li async bound statik=false ->
 
         funcInfo = @addFuncInfo funcName,
             line:   li+1
@@ -196,7 +196,7 @@ class indexer
         @removeFile file if opt?.refresh
 
         if @files[file]?
-            post.emit 'fileIndexed' file @files[file]
+            post.emit 'indexer.indexed' file @files[file]
             ⮐  @shiftQueue()
 
         fileExt = slash.ext file 

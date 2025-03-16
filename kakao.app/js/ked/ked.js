@@ -87,7 +87,7 @@ ked [file]
         this.logfile = new logfile(this.session.name)
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
-        this.viewSizes = {dircol:[20,0],funcol:[20,0]}
+        this.viewSizes = {dircol:[26,0],funcol:[30,0]}
         this.t = new ttio
         this.julia = new julia
         this.screen = new screen(this.t)
@@ -137,6 +137,11 @@ ked [file]
         }
     }
 
+    KED["run"] = function ()
+    {
+        return new KED()
+    }
+
     KED.prototype["onSessionLoaded"] = function ()
     {
         var file
@@ -162,11 +167,6 @@ ked [file]
         }
     }
 
-    KED["run"] = function ()
-    {
-        return new KED()
-    }
-
     KED.prototype["layout"] = function ()
     {
         var dcw, fcw, h, w
@@ -183,7 +183,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _158_10_
+        var _164_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -214,7 +214,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _183_22_
+        var _189_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -257,7 +257,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var segls, start, text, _249_22_
+        var segls, start, text, _255_22_
 
         console.log(`loadFile ${p} ${row} ${col} ${_k_.noon(view)}`)
         start = process.hrtime()
@@ -506,7 +506,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _430_22_
+        var _436_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

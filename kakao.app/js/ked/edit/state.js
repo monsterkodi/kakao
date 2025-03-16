@@ -79,7 +79,7 @@ state = (function ()
             }
         }
         this.handleKey = keys.bind(this)
-        this.syntax = new syntax
+        this.syntax = new syntax(this.name + '.syntax')
         this.hasFocus = false
         this.s = immutable({lines:[[]],selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
         this.clearHistory()

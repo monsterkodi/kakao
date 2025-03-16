@@ -31,6 +31,7 @@ choices = (function ()
         this["filter"] = this["filter"].bind(this)
         this["weight"] = this["weight"].bind(this)
         this["extract"] = this["extract"].bind(this)
+        this["clear"] = this["clear"].bind(this)
         choices.__super__.constructor.call(this,screen,name,features)
         this.setColor('bg',theme.choices_bg)
         this.setColor('current',theme.choices_current)
@@ -81,7 +82,6 @@ choices = (function ()
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
-        console.log(`${this.name} set ${key}`,lines)
         return this.state.loadLines(lines)
     }
 
@@ -188,14 +188,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _138_26_
+        var _137_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _139_26_
+        var _138_26_
 
         return (this.prevRow() != null)
     }
@@ -372,7 +372,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _276_21_
+        var col, dx, dy, ret, row, _275_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

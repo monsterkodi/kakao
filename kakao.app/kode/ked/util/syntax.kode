@@ -12,7 +12,7 @@ use ../theme    ◆ theme
 
 function syntax
 
-    @: -> 
+    @: @name -> 
         @ext  = 'txt' 
         @clear()
         
@@ -33,7 +33,11 @@ function syntax
             @diss = []
             for segs in segls
                 dss = matchr.ranges(@config kseg.str(segs) 'u')
+                for ds in dss
+                    if ds.clss is arr
+                        ds.clss = trim ds.clss.map(kstr.trim).join(' ') 
                 @diss.push dss
+            # log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
         else
             ⮐  if @partialUpdate segls
         
@@ -79,7 +83,7 @@ function syntax
         
         for dss in @diss[y]
             if dss.start <= x < dss.start+dss.length
-                ⮐ dss.clss
+                ⮐  dss.clss
         'text'
         
     getColor: x y =>

@@ -50,9 +50,8 @@ function filepos
             else
                 kutil.pullIf filepos.fileposl (fp) -> fp[0] == file
                 filepos.fileposl.push [file curview]
-            # log "filepos.cursors #{curview[0]} #{curview[1]} #{curview[2]} #{curview[3]}" 
-            for fp in filepos.fileposl
-                log "○ #{b6 slash.file(fp[0])} #{fp[1][0]} #{fp[1][1]} #{fp[1][2]} #{fp[1][3]}"
+            # for fp in filepos.fileposl
+            #     log "○ #{b6 slash.file(fp[0])} #{fp[1][0]} #{fp[1][1]} #{fp[1][2]} #{fp[1][3]}"
             ked_session.set "editor▸filepos▸#{file}" curview
             
     # ███       ███████    ███████   ███████    ████████  ███████  
@@ -64,17 +63,17 @@ function filepos
     fileLoaded: file row col view ->
         
         if row?
-            log "filepos.fileLoaded post goto.line #{row} #{col} #{view?[0]} #{view?[1]}"
+            # log "filepos.fileLoaded post goto.line #{row} #{col} #{view?[0]} #{view?[1]}"
             post.emit 'goto.line' row col view
         else
             if posview = ked_session.get "editor▸filepos▸#{file}"
-                log "filepos.fileLoaded apply session #{posview} #{file}"
+                # log "filepos.fileLoaded apply session #{posview} #{file}"
                 @state.setCursors [posview[0..1]]
                 @state.setView posview[2..]
             
     goBackward: ->
     
-        log "goBackward #{filepos.fileposl.length}" filepos.fileposl
+        # log "goBackward #{filepos.fileposl.length}" filepos.fileposl
     
         ⮐  if filepos.fileposl.length < 2
         

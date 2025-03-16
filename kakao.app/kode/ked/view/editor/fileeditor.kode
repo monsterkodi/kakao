@@ -54,7 +54,12 @@ function fileeditor extends editor
     ###    
     onGotoLine: row col view =>
         
-        col ?= @state.mainCursor()[0]
+        mc = @state.mainCursor()
+        
+        col ?= mc[0]
+        if col is str
+            switch col
+                'ind' ➜ col = belt.numIndent @state.s.lines[row]
         
         if valid view
             log "fileeditor.onGotoLine #{row} #{col} #{view[0]} #{view[1]}"

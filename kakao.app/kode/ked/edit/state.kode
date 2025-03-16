@@ -27,7 +27,7 @@ function state
                 
         @handleKey = keys.bind @
 
-        @syntax = new syntax
+        @syntax = new syntax @name + '.syntax'
         @hasFocus = false
 
         @s = immutable

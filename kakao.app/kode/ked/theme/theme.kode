@@ -138,6 +138,7 @@ class theme
         'class':                                '#ff4'   
         'module':                               '#fc0'   
         'function':                             '#fa0'   
+        'punct class':                          '#f90'   
         'function call':                        '#f80'   
         'punct method':                         '#a60'   
         'punct property':                       '#640'   

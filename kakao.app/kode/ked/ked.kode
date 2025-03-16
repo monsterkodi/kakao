@@ -48,7 +48,7 @@ function KED
         
         @session.on 'loaded' @onSessionLoaded
         
-        @viewSizes = dircol:[20 0] funcol:[20 0]
+        @viewSizes = dircol:[26 0] funcol:[30 0]
                     
         @t = new ttio
         
@@ -101,7 +101,21 @@ function KED
             @menu.show true
         else if @args.new
             @newFile()
-            
+                            
+    # 00000000   000   000  000   000  
+    # 000   000  000   000  0000  000  
+    # 0000000    000   000  000 0 000  
+    # 000   000  000   000  000  0000  
+    # 000   000   0000000   000   000  
+    
+    @run: -> new KED()
+
+    #  ███████  ████████   ███████   ███████  ███   ███████   ███   ███
+    # ███       ███       ███       ███       ███  ███   ███  ████  ███
+    # ███████   ███████   ███████   ███████   ███  ███   ███  ███ █ ███
+    #      ███  ███            ███       ███  ███  ███   ███  ███  ████
+    # ███████   ████████  ███████   ███████   ███   ███████   ███   ███
+
     onSessionLoaded: =>
     
         ⮐  if @args.fresh
@@ -113,15 +127,7 @@ function KED
                 @loadFile file
             else
                 @menu.show true
-                            
-    # 00000000   000   000  000   000  
-    # 000   000  000   000  0000  000  
-    # 0000000    000   000  000 0 000  
-    # 000   000  000   000  000  0000  
-    # 000   000   0000000   000   000  
-    
-    @run: -> new KED()
-
+                
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
     # 000      000000000    00000    000   000  000   000     000     
@@ -446,7 +452,7 @@ function KED
             
         ⮐  if @quitting
         
-        # ● draw
+        # ● sum
         
         start = process.hrtime()
         
@@ -456,6 +462,7 @@ function KED
         
         @layout()
         
+        # ●▸ draw
         if @menu.greet.hidden()
             @editor.draw()
             @status.draw()
@@ -468,7 +475,7 @@ function KED
         @finder.draw()
         @searcher.draw()
         @context.draw()
-        
+        # ●▪ draw
         # ●▸ render
         @screen.render()
         # ●▪ render

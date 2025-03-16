@@ -39,7 +39,7 @@ function choices extends editor
             @gutter?.setColor   'bg'    @color.bg
             @scroll?.setColor   'bg'    @color.bg
         
-    clear: -> @set []
+    clear: => @set []
     
     clearEmpty: ->
     
@@ -60,7 +60,7 @@ function choices extends editor
         @filterText = ''
         
         lines = @key ? @items.map(@extract) : @items
-        log "#{@name} set #{key}" lines
+        # log "#{@name} set #{key}" lines
         @state.loadLines lines
         
     add: item  ->
@@ -127,7 +127,6 @@ function choices extends editor
         cc
         
     choiceAtRow: row -> @fuzzied[row]
-    
     
     # 000   000  00000000  000   000  000000000        00000000   00000000   00000000  000   000  
     # 0000  000  000        000 000      000           000   000  000   000  000       000   000  

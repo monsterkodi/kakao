@@ -1,0 +1,27 @@
+(○?->\s+)([@]$)            
+    punct function        
+    punct method class
+    
+(○?->\s+)([@])([\.\w\-]+)  
+    punct function
+    punct method class
+    method class
+    
+(○?=>\s+)([@])([\.\w\-]+)
+    punct function bound
+    punct method class
+    method class
+    
+(○?->\s+)([\.\w\-]+)       
+    punct function        
+    method
+    
+(○?=>\s+)([\.\w\-]+)       
+    punct function bound  
+    method
+    
+(●\s+)([\.\w\-]+)          
+    punct class         
+    class
+
+

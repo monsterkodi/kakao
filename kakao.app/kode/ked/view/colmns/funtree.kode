@@ -11,7 +11,7 @@ use ../../../kxk ◆ nfs
 use ../../theme  ◆ theme icons
 use ../menu      ◆ choices 
 
-import rgxs from '../menu/quicky.json' with { type: "json" }
+import rgxs from './funtree.json' with { type: "json" }
 
 function funtree extends choices
 
@@ -21,6 +21,7 @@ function funtree extends choices
                         
         @state.syntax.setRgxs rgxs
         
+        post.on 'file.loaded'     @clear
         post.on 'indexer.indexed' @onIndex
         
     #  ███████   ███   ███        ███  ███   ███  ███████    ████████  ███   ███
@@ -31,15 +32,26 @@ function funtree extends choices
 
     onIndex: path info =>
     
-        clssl = info.classes
-        funcs = info.funcs
+        # log info
+    
+        clssl = clone info.classes
+        funcs = clone info.funcs
         
         for clss in clssl
             clss.file ?= path
             clss.name = ' ● ' + clss.name
             
         for func in funcs
-            func.name = '   -> ' + func.name
+            if func.bound
+                symbol = '=>'
+            else
+                symbol = '->'
+            if func.async
+                symbol = '○'+symbol
+            symbol = lpad 3 symbol    
+            name = func.name
+            name = '@' + name if func.static
+            func.name = '   ' + symbol + ' ' + name
         
         items = clssl.concat funcs
         
@@ -55,16 +67,16 @@ function funtree extends choices
         
         c = arg
         
-        log "funtree.emitAction #{action}" c if action != 'hover'
+        # log "funtree.emitAction #{action}" c if action != 'hover'
         
         switch action
         
             'right'
-                post.emit 'goto.line' c.line-1
+                post.emit 'goto.line' c.line-1 'ind'
                 ⮐  
             'click'
             'return'
-                post.emit 'goto.line' c.line-1
+                post.emit 'goto.line' c.line-1 'ind'
                 post.emit 'focus' 'editor'
                 ⮐  
                  

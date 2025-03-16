@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 var syntax
 
@@ -13,8 +13,10 @@ import theme from "../theme/theme.js"
 
 syntax = (function ()
 {
-    function syntax ()
+    function syntax (name)
     {
+        this.name = name
+    
         this["getChar"] = this["getChar"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
@@ -53,7 +55,7 @@ syntax = (function ()
 
     syntax.prototype["setSegls"] = function (segls)
     {
-        var dss, hsh, idx, segl, segs
+        var ds, dss, hsh, idx, segl, segs
 
         if (!_k_.empty(this.config))
         {
@@ -63,6 +65,15 @@ syntax = (function ()
             {
                 segs = list[_a_]
                 dss = matchr.ranges(this.config,kseg.str(segs),'u')
+                var list1 = _k_.list(dss)
+                for (var _b_ = 0; _b_ < list1.length; _b_++)
+                {
+                    ds = list1[_b_]
+                    if (_k_.isArr(ds.clss))
+                    {
+                        ds.clss = _k_.trim(ds.clss.map(kstr.trim).join(' '))
+                    }
+                }
                 this.diss.push(dss)
             }
         }
@@ -74,10 +85,10 @@ syntax = (function ()
             }
             this.clear()
             this.diss = kulur.dissect(segls,this.ext)
-            var list1 = _k_.list(segls)
-            for (idx = 0; idx < list1.length; idx++)
+            var list2 = _k_.list(segls)
+            for (idx = 0; idx < list2.length; idx++)
             {
-                segl = list1[idx]
+                segl = list2[idx]
                 hsh = kseg.hash(segl)
                 this.hash[hsh] = this.diss[idx]
                 this.liha[idx] = hsh
@@ -154,7 +165,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _92_27_
+        var clss, _96_27_
 
         if (_k_.isNum(x))
         {
@@ -164,7 +175,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_92_27_=theme.syntax[clss]) != null ? _92_27_ : '#ff0000')
+        return ((_96_27_=theme.syntax[clss]) != null ? _96_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

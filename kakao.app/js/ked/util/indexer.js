@@ -161,7 +161,7 @@ class indexer
         return funcInfo
     }
 
-    addMethod (className, funcName, file, li, async, bound, statik)
+    addMethod (className, funcName, file, li, async, bound, statik = false)
     {
         var funcInfo
 
@@ -242,7 +242,7 @@ class indexer
         }
         if ((this.files[file] != null))
         {
-            post.emit('fileIndexed',file,this.files[file])
+            post.emit('indexer.indexed',file,this.files[file])
             return this.shiftQueue()
         }
         fileExt = slash.ext(file)
