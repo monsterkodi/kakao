@@ -38,7 +38,7 @@ function status extends view
         switch action
             'click'  
                 if valid event.mods
-                    post.emit 'funcol.root' path
+                    post.emit 'dircol.root' path
                 else
                     post.emit 'fsbrow.dir' path
 
@@ -58,7 +58,7 @@ function status extends view
         cret = @crumbs.onMouse event
         sret = @statusfile.onMouse event
         
-        ⮐ sret or cret if sret or cret
+        ⮐  sret or cret if sret or cret
 
         super event
         
@@ -66,15 +66,17 @@ function status extends view
         
         post.emit 'pointer' @pointerType if @hover
         
-        if @hover and 0 <= col < 4
+        switch event.type 
             
-            switch event.type 
+            'press' 
                 
-                'press' 
-                    
-                    post.emit 'funcol.toggle'
-                        
-                    ⮐ redraw:true
+                if @hover 
+                    if 0 <= col < 4
+                        post.emit 'dircol.toggle'
+                        ⮐  redraw:true
+                    if @cells.cols-4 <= col < @cells.cols
+                        post.emit 'funcol.toggle'
+                        ⮐  redraw:true
                     
         @hover
         
@@ -107,7 +109,7 @@ function status extends view
     
     draw: =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
                 
         x      = 0
         y      = 0
@@ -166,8 +168,10 @@ function status extends view
             for i in 0...hil.length
                 add hil[i] (i<hil.length-1) ? 'status_hil' : color.darken(theme.status_hil) 'status_dark'
                 
-        for ci in x...cols
+        for ci in x...cols-1
             add ' ' null 'status_dark'
+            
+        add '' 'status_dark' null
             
         ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
         ch = ' •'[ci] # 

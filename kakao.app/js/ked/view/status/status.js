@@ -51,7 +51,7 @@ status = (function ()
             case 'click':
                 if (!_k_.empty(event.mods))
                 {
-                    return post.emit('funcol.root',path)
+                    return post.emit('dircol.root',path)
                 }
                 else
                 {
@@ -90,17 +90,25 @@ status = (function ()
         {
             post.emit('pointer',this.pointerType)
         }
-        if (this.hover && (0 <= col && col < 4))
+        switch (event.type)
         {
-            switch (event.type)
-            {
-                case 'press':
-                    post.emit('funcol.toggle')
-                    return {redraw:true}
-
-            }
-
+            case 'press':
+                if (this.hover)
+                {
+                    if ((0 <= col && col < 4))
+                    {
+                        post.emit('dircol.toggle')
+                        return {redraw:true}
+                    }
+                    if ((this.cells.cols - 4 <= col && col < this.cells.cols))
+                    {
+                        post.emit('funcol.toggle')
+                        return {redraw:true}
+                    }
+                }
+                break
         }
+
         return this.hover
     }
 
@@ -210,10 +218,11 @@ status = (function ()
                 add(hil[i],((i < hil.length - 1) ? 'status_hil' : color.darken(theme.status_hil)),'status_dark')
             }
         }
-        for (var _12_ = ci = x, _13_ = cols; (_12_ <= _13_ ? ci < cols : ci > cols); (_12_ <= _13_ ? ++ci : --ci))
+        for (var _12_ = ci = x, _13_ = cols - 1; (_12_ <= _13_ ? ci < cols - 1 : ci > cols - 1); (_12_ <= _13_ ? ++ci : --ci))
         {
             add(' ',null,'status_dark')
         }
+        add('','status_dark',null)
         ci = _k_.clamp(0,3,parseInt((this.time / (1000 * 1000) - 8) / 8))
         ch = ' •'[ci]
         fg = ['#222','#060','#f00','#ff0'][ci]

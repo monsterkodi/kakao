@@ -31,7 +31,8 @@ class theme
     @editor_highlight_string:                   '#040'   
     @editor_highlight_string_ul:                '#050'   
                                                 
-    @funcol:                                    '#111'   
+    @dircol:                                    '#111'   
+    @funcol:                                    '#0a0a0a'
     @gutter:                                    '#0a0a0a'
                                                 
     @hover:                                     '#44a'   

@@ -19,6 +19,7 @@ import nfs from "../kxk/nfs.js"
 
 import logfile from "./util/logfile.js"
 import prjcts from "./util/prjcts.js"
+import indexer from "./util/indexer.js"
 import session from "./util/session.js"
 import help from "./util/help.js"
 import julia from "./util/julia.js"
@@ -39,7 +40,8 @@ import status from "./view/status/status.js"
 import screen from "./view/screen/screen.js"
 import ttio from "./view/screen/ttio.js"
 
-import funcol from "./view/funcol/funcol.js"
+import dircol from "./view/colmns/dircol.js"
+import funcol from "./view/colmns/funcol.js"
 
 import fileeditor from "./view/editor/fileeditor.js"
 
@@ -85,14 +87,16 @@ ked [file]
         this.logfile = new logfile(this.session.name)
         global.ked_session = this.session
         this.session.on('loaded',this.onSessionLoaded)
-        this.viewSizes = {funcol:[20,0]}
+        this.viewSizes = {dircol:[20,0],funcol:[20,0]}
         this.t = new ttio
         this.julia = new julia
         this.screen = new screen(this.t)
+        this.indexer = new indexer
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
         this.fsbrow = new fsbrow(this.screen)
         this.editor = new fileeditor(this.screen,'editor')
+        this.dircol = new dircol(this.screen,'dircol',['scroll','knob'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.finder = new finder(this.screen,this.editor.state)
         this.searcher = new searcher(this.screen,this.editor.state)
@@ -110,10 +114,10 @@ ked [file]
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
         post.on('fs.change',this.onFileChange)
-        this.contextHandlers = [this.editor,this.funcol]
-        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.status,this.funcol]
-        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.funcol]
-        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.funcol]
+        this.contextHandlers = [this.editor,this.dircol,this.funcol]
+        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.status,this.dircol,this.funcol]
+        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.dircol,this.funcol]
+        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.dircol,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -165,19 +169,21 @@ ked [file]
 
     KED.prototype["layout"] = function ()
     {
-        var fcw, h, w
+        var dcw, fcw, h, w
 
         w = this.t.cols()
         h = this.t.rows()
+        dcw = this.viewSizes.dircol[0]
         fcw = this.viewSizes.funcol[0]
-        this.funcol.layout(0,0,fcw,h)
-        this.status.layout(fcw,0,w - fcw,1)
-        return this.editor.layout(fcw,1,w - fcw,h - 1)
+        this.dircol.layout(0,0,dcw,h)
+        this.status.layout(dcw,0,w - dcw,1)
+        this.editor.layout(dcw,1,w - dcw - fcw,h - 1)
+        return this.funcol.layout(w - fcw,1,fcw,h - 1)
     }
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _152_10_
+        var _158_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -208,7 +214,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _177_22_
+        var _183_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -251,7 +257,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var segls, start, text, _243_22_
+        var segls, start, text, _249_22_
 
         console.log(`loadFile ${p} ${row} ${col} ${_k_.noon(view)}`)
         start = process.hrtime()
@@ -280,6 +286,7 @@ ked [file]
         mode.fileLoaded(this.editor.state,this.currentFile,row,col,view)
         post.emit('file.loaded',this.currentFile)
         this.redraw()
+        this.indexer.index(this.currentFile)
         prjcts.index(this.currentFile)
         watcher.watch(this.currentFile)
         this.t.setTitle(slash.name(this.status.file))
@@ -490,15 +497,16 @@ ked [file]
     {
         var idx
 
-        idx = ((side === 'right') ? 0 : 1)
+        idx = ((side === 'right' || side === 'left') ? 0 : 1)
         this.viewSizes[name][idx] += delta
         this.viewSizes[name][idx] = _k_.max(0,this.viewSizes[name][idx])
+        console.log(`onViewResize ${name} ${side} ${delta}`,this.viewSizes)
         return this.redraw()
     }
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _419_22_
+        var _430_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -530,6 +538,7 @@ ked [file]
         {
             this.editor.draw()
             this.status.draw()
+            this.dircol.draw()
             this.funcol.draw()
         }
         this.menu.draw()

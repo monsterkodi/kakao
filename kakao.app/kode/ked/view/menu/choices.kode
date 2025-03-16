@@ -60,7 +60,7 @@ function choices extends editor
         @filterText = ''
         
         lines = @key ? @items.map(@extract) : @items
-        
+        log "#{@name} set #{key}" lines
         @state.loadLines lines
         
     add: item  ->

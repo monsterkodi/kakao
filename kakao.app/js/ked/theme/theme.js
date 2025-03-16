@@ -32,7 +32,9 @@ class theme
 
     static editor_highlight_string_ul = '#050'
 
-    static funcol = '#111'
+    static dircol = '#111'
+
+    static funcol = '#0a0a0a'
 
     static gutter = '#0a0a0a'
 

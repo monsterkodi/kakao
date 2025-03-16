@@ -1,9 +1,9 @@
 ###
-00000000  000   000  000   000   0000000   0000000   000    
-000       000   000  0000  000  000       000   000  000    
-000000    000   000  000 0 000  000       000   000  000    
-000       000   000  000  0000  000       000   000  000    
-000        0000000   000   000   0000000   0000000   0000000
+    ███████    ███  ████████    ███████   ███████   ███      
+    ███   ███  ███  ███   ███  ███       ███   ███  ███      
+    ███   ███  ███  ███████    ███       ███   ███  ███      
+    ███   ███  ███  ███   ███  ███       ███   ███  ███      
+    ███████    ███  ███   ███   ███████   ███████   ███████  
 ###
 
 use ../../../kxk ▪ post slash
@@ -11,7 +11,7 @@ use ../../theme  ◆ color theme
 use ../base      ◆ view knob crumbs
 use              ◆ dirtree
 
-function funcol extends view
+function dircol extends view
 
     @: screen name features ->
         
@@ -25,7 +25,7 @@ function funcol extends view
         
         @crumbs.on 'action' @onCrumbsAction
         
-        @dirtree.setColor 'bg'            theme.funcol
+        @dirtree.setColor 'bg'            theme.dircol
         @dirtree.setColor 'empty'         @dirtree.color.bg
         @dirtree.setColor 'cursor_main'   @dirtree.color.bg
         @dirtree.setColor 'cursor_empty'  @dirtree.color.bg
@@ -33,14 +33,13 @@ function funcol extends view
         
         @crumbs.setColor  'empty'         theme.gutter
         
-        post.on 'funcol.resize' @onFuncolResize
-        post.on 'funcol.toggle' @onFuncolToggle
-        post.on 'funcol.root'   @setRoot
+        post.on 'dircol.resize' @onDircolResize
+        post.on 'dircol.toggle' @onDircolToggle
+        post.on 'dircol.root'   @setRoot
         
         post.on 'session.merge' @onSessionMerge
         
-        root = ked_session.get 'funcol▸root' process.cwd()
-        # log "funcol.root: #{r7 root}"
+        root = ked_session.get 'dircol▸root' process.cwd()
         @setRoot root
         
     onCrumbsAction: action path =>
@@ -50,12 +49,9 @@ function funcol extends view
             
     onSessionMerge: recent =>
         
-        # log "funcol onSessionMerge #{noon recent.funcol}"
+        ⮐ if empty recent.dircol
         
-        ⮐ if empty recent.funcol
-        
-        if root = recent.funcol.root
-            # log "funcol set recent root #{root}"
+        if root = recent.dircol.root
             @setRoot root
             
     setRoot: path =>
@@ -66,8 +62,7 @@ function funcol extends view
         @crumbs.set path
         @dirtree.setRoot path redraw:true
         
-        # log "funcol.setRoot: #{b7 path}"
-        ked_session.set 'funcol▸root' path
+        ked_session.set 'dircol▸root' path
         
     layout: x y w h ->
         
@@ -81,7 +76,7 @@ function funcol extends view
         
         ⮐ if @hidden()
         
-        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
+        @cells.fill_rect 0 1 -1 -1 ' ' null theme.dircol
         @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
         
         @crumbs.draw()
@@ -100,7 +95,7 @@ function funcol extends view
     
         ⮐  if not @hover
     
-        log "funcol.onContext #{@hover}" event
+        log "dircol.onContext #{@hover}" event
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -108,8 +103,8 @@ function funcol extends view
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onFuncolResize: => @knob.doDrag = true
-    onFuncolToggle: => 
+    onDircolResize: => @knob.doDrag = true
+    onDircolToggle: => 
         
         post.emit 'view.size' @name [(@hidden() ? int(@knob.maxWidth/3) : 0) 0]
         
@@ -148,4 +143,4 @@ function funcol extends view
             
         @dirtree.onKey key event
 
-export funcol
+export dircol

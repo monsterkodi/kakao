@@ -44,7 +44,7 @@ knob = (function ()
     {
         knob.__super__.onMouse.call(this,event)
     
-        var col, row, size
+        var col, delta, row
 
         switch (event.type)
         {
@@ -62,12 +62,15 @@ knob = (function ()
                     this.hover = true
                     var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-                    size = ((function ()
+                    delta = ((function ()
                     {
                         switch (this.frameSide)
                         {
                             case 'top':
                                 return row
+
+                            case 'left':
+                                return -col
 
                             case 'right':
                                 return col
@@ -76,7 +79,10 @@ knob = (function ()
 
                     }).bind(this))()
                     post.emit('pointer','grabbing')
-                    post.emit('view.resize',this.parentName,this.frameSide,size)
+                    if (delta)
+                    {
+                        post.emit('view.resize',this.parentName,this.frameSide,delta)
+                    }
                     return {redraw:true}
                 }
                 this.hover = false
@@ -107,6 +113,7 @@ knob = (function ()
             case 'top':
                 return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
 
+            case 'left':
             case 'right':
                 if (!this.hover)
                 {

@@ -81,6 +81,7 @@ choices = (function ()
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
+        console.log(`${this.name} set ${key}`,lines)
         return this.state.loadLines(lines)
     }
 

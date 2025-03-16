@@ -11,12 +11,12 @@
 
 use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
-use ./util        ◆ logfile prjcts session help julia frecent watcher
+use ./util        ◆ logfile prjcts indexer session help julia frecent watcher
 use ./view/base   ◆ view
 use ./view/menu   ◆ quicky fsbrow menu finder searcher context
 use ./view/status ◆ status 
 use ./view/screen ◆ screen ttio
-use ./view/funcol ◆ funcol 
+use ./view/colmns ◆ dircol funcol 
 use ./view/editor ◆ fileeditor
 use ./edit/tool   ◆ belt
 use ./edit        ◆ mode
@@ -48,18 +48,21 @@ function KED
         
         @session.on 'loaded' @onSessionLoaded
         
-        @viewSizes = funcol:[20 0]
+        @viewSizes = dircol:[20 0] funcol:[20 0]
                     
         @t = new ttio
         
-        @julia   = new julia
-        
-        @screen  = new screen @t
+        @julia    = new julia
+                  
+        @screen   = new screen @t
+                  
+        @indexer  = new indexer
         
         @menu     = new menu       @screen        
         @quicky   = new quicky     @screen 
         @fsbrow   = new fsbrow     @screen 
         @editor   = new fileeditor @screen 'editor'
+        @dircol   = new dircol     @screen 'dircol'  ['scroll' 'knob']
         @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
         @finder   = new finder     @screen @editor.state
         @searcher = new searcher   @screen @editor.state
@@ -81,10 +84,10 @@ function KED
         post.on 'quit'          @quit
         post.on 'fs.change'     @onFileChange
         
-        @contextHandlers = [                                                  @editor         @funcol ]
-        @mouseHandlers   = [ @context @finder @searcher @quicky @fsbrow @menu @editor @status @funcol ]
-        @wheelHandlers   = [          @finder @searcher @quicky @fsbrow @menu @editor         @funcol ]
-        @keyHandlers     = [ @context @finder @searcher @quicky @fsbrow @menu @editor         @funcol ]
+        @contextHandlers = [                                                  @editor         @dircol @funcol ]
+        @mouseHandlers   = [ @context @finder @searcher @quicky @fsbrow @menu @editor @status @dircol @funcol ]
+        @wheelHandlers   = [          @finder @searcher @quicky @fsbrow @menu @editor         @dircol @funcol ]
+        @keyHandlers     = [ @context @finder @searcher @quicky @fsbrow @menu @editor         @dircol @funcol ]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -129,11 +132,14 @@ function KED
         
         w = @t.cols()
         h = @t.rows()
+        
+        dcw = @viewSizes.dircol[0]
         fcw = @viewSizes.funcol[0]
         
-        @funcol.layout  0    0  fcw    h
-        @status.layout  fcw  0  w-fcw  1
-        @editor.layout  fcw  1  w-fcw  h-1
+        @dircol.layout  0     0  dcw        h
+        @status.layout  dcw   0  w-dcw      1
+        @editor.layout  dcw   1  w-dcw-fcw  h-1
+        @funcol.layout  w-fcw 1  fcw        h-1
     
     quit: msg ○=>
         
@@ -250,8 +256,9 @@ function KED
         
         @redraw()
         
-        prjcts.index  @currentFile
-        watcher.watch @currentFile
+        @indexer.index @currentFile
+        prjcts.index   @currentFile
+        watcher.watch  @currentFile
         
         @t.setTitle slash.name(@status.file)
         
@@ -408,9 +415,13 @@ function KED
         
     onViewResize: name side delta =>
         
-        idx = (side == 'right') ? 0 : 1
+        idx = (side == 'right' or side == 'left') ? 0 : 1
+        
         @viewSizes[name][idx] += delta
         @viewSizes[name][idx] = max 0 @viewSizes[name][idx]
+        
+        log "onViewResize #{name} #{side} #{delta}" @viewSizes
+        
         @redraw()
         
     onResize: cols rows size => 
@@ -448,6 +459,7 @@ function KED
         if @menu.greet.hidden()
             @editor.draw()
             @status.draw()
+            @dircol.draw()
             @funcol.draw()
             
         @menu.draw()

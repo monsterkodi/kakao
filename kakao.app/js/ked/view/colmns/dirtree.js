@@ -128,7 +128,7 @@ dirtree = (function ()
                     case 'space':
                         if (action === 'click' && event.mods)
                         {
-                            return post.emit('funcol.root',c.path)
+                            return post.emit('dircol.root',c.path)
                         }
                         if (!c.open)
                         {
@@ -176,7 +176,7 @@ dirtree = (function ()
 
                     case 'doubleclick':
                     case 'return':
-                        return post.emit('funcol.root',c.path)
+                        return post.emit('dircol.root',c.path)
 
                 }
 

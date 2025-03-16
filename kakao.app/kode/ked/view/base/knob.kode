@@ -44,7 +44,7 @@ function knob extends view
                 if @hover
                     post.emit 'pointer' 'grabbing'
                     @doDrag = true
-                    ⮐ redraw:true
+                    ⮐  redraw:true
                     
             'drag'
             
@@ -53,13 +53,15 @@ function knob extends view
                     
                     [col row] = @cells.posForEvent event
                     
-                    size = switch @frameSide
+                    delta = switch @frameSide
                         'top'   ➜ row
+                        'left'  ➜ -col
                         'right' ➜ col
                     
                     post.emit 'pointer' 'grabbing'
-                    post.emit 'view.resize' @parentName @frameSide size
-                    ⮐ redraw:true
+                    if delta
+                        post.emit 'view.resize' @parentName @frameSide delta
+                    ⮐  redraw:true
                     
                 @hover = false
                 
@@ -82,8 +84,12 @@ function knob extends view
         fg = @hover ? theme.resize_column : theme.gutter
         
         switch @frameSide
+
             'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
+
+            'left'
             'right'
+                
                 ⮐ if not @hover
                 @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funcol
 

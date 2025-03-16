@@ -1,0 +1,125 @@
+###
+00000000  000   000  000   000   0000000   0000000   000    
+000       000   000  0000  000  000       000   000  000    
+000000    000   000  000 0 000  000       000   000  000    
+000       000   000  000  0000  000       000   000  000    
+000        0000000   000   000   0000000   0000000   0000000
+###
+
+use ../../../kxk ▪ post slash
+use ../../theme  ◆ color theme
+use ../base      ◆ view knob crumbs
+use              ◆ funtree
+
+function funcol extends view
+
+    @: screen name features ->
+        
+        super screen name features
+        
+        @pointerType = 'pointer'
+        
+        @knob    = new knob    screen "#{@name}_knob"
+        @funtree = new funtree screen "#{@name}_funtree" ['scrllr']       
+        
+        @knob.frameSide = 'left'
+        
+        @funtree.setColor 'bg'            theme.funcol
+        @funtree.setColor 'empty'         @funtree.color.bg
+        @funtree.setColor 'cursor_main'   @funtree.color.bg
+        @funtree.setColor 'cursor_empty'  @funtree.color.bg
+        @funtree.scroll.setColor 'bg'     @funtree.color.bg
+        
+        post.on 'funcol.resize' @onFuncolResize
+        post.on 'funcol.toggle' @onFuncolToggle
+        post.on 'funcol.root'   @setRoot
+        
+    # ███       ███████   ███   ███   ███████   ███   ███  █████████
+    # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
+    # ███      █████████    █████    ███   ███  ███   ███     ███   
+    # ███      ███   ███     ███     ███   ███  ███   ███     ███   
+    # ███████  ███   ███     ███      ███████    ███████      ███   
+
+    layout: x y w h ->
+        
+        @funtree.layout x y w h
+        @knob.layout    x y 1 h
+        
+        super x y w h
+        
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    draw: ->
+        
+        ⮐  if @hidden()
+        
+        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
+        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
+        
+        @funtree.draw()
+        @knob.draw()
+    
+        super()
+        
+    #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
+    # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
+    # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   
+    # ███       ███   ███  ███  ████     ███     ███        ███ ███      ███   
+    #  ███████   ███████   ███   ███     ███     ████████  ███   ███     ███   
+
+    onContext: event =>
+    
+        ⮐  if not @hover
+    
+        log "funcol.onContext #{@hover}" event
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onFuncolResize: => @knob.doDrag = true
+    onFuncolToggle: => 
+        
+        post.emit 'view.size' @name [(@hidden() ? int(@knob.maxWidth/3) : 0) 0]
+        
+    onMouse: event =>
+        
+        ret = super event            ; ⮐ ret if ret?.redraw
+        ret = @knob.onMouse event    ; ⮐ ret if ret?.redraw
+        ret = @funtree.onMouse event ; ⮐ ret if ret?.redraw
+        
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event =>
+        
+        ⮐  if @hidden()
+        @funtree.onWheel event
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event =>
+        
+        ⮐ if not @funtree.hasFocus()
+        
+        # switch key
+        # 
+        #     'cmd+left'
+        #     'ctrl+left' ➜ ⮐ @setRoot slash.dir(@funtree.currentRoot)
+            
+        @funtree.onKey key event
+
+export funcol
