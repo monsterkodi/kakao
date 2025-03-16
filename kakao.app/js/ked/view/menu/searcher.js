@@ -109,6 +109,7 @@ searcher = (function ()
 
     searcher.prototype["emitFileOpen"] = function (choice)
     {
+        console.log('emit file.open')
         this.textToHighlight = this.input.current()
         this.fileToHighlight = choice.path
         return post.emit('file.open',choice.path,choice.row,choice.col)

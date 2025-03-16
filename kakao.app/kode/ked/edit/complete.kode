@@ -135,7 +135,7 @@ function complete
 
     handleKey: key event ->
         
-        ⮐ 'unhandled' if @hidden() or empty @words
+        ⮐  'unhandled' if @hidden() or empty @words
         
         switch key
             'tab'

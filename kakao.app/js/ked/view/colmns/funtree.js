@@ -172,6 +172,10 @@ funtree = (function ()
                 post.emit('focus','editor')
                 return
 
+            case 'drag':
+                post.emit('goto.line',c.line - 1,'ind')
+                return
+
         }
 
         return funtree.__super__.emitAction.call(this,action,arg,event)

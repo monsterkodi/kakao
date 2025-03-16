@@ -115,8 +115,8 @@ function TTIO extends events
         
     deleteImagesInRange: start end ->
         
-        ⮐ log "range start '#{start}' not a number" if not start is num
-        ⮐ log "range end '#{end}' not a number" if not end is num
+        ⮐  log "range start '#{start}' not a number" if not start is num
+        ⮐  log "range end '#{end}' not a number" if not end is num
         @write "\x1b_Gq=2,a=d,d=R,x=#{start},y=#{end}\x1b\\"
     
     sendImageData: data id w h ->
@@ -268,12 +268,12 @@ function TTIO extends events
     parseCsi: csi =>
         
         switch csi
-            'H'     ➜ ⮐ @keyEventForCombo('home')
-            'F'     ➜ ⮐ @keyEventForCombo('end')
-            '3~'    ➜ ⮐ @keyEventForCombo('entf')
-            '5~'    ➜ ⮐ @keyEventForCombo('pageup')
-            '6~'    ➜ ⮐ @keyEventForCombo('pagedown')
-            'Z'     ➜ ⮐ @keyEventForCombo('shift+z' 'Z')
+            'H'     ➜ ⮐  @keyEventForCombo('home')
+            'F'     ➜ ⮐  @keyEventForCombo('end')
+            '3~'    ➜ ⮐  @keyEventForCombo('entf')
+            '5~'    ➜ ⮐  @keyEventForCombo('pageup')
+            '6~'    ➜ ⮐  @keyEventForCombo('pagedown')
+            'Z'     ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
                     
         null
         
@@ -296,10 +296,10 @@ function TTIO extends events
         
         switch esc
         
-            'OP' ➜ ⮐ @keyEventForCombo('f1')
-            'OQ' ➜ ⮐ @keyEventForCombo('f2')
-            'OR' ➜ ⮐ @keyEventForCombo('f3')
-            'OS' ➜ ⮐ @keyEventForCombo('f4')   
+            'OP' ➜ ⮐  @keyEventForCombo('f1')
+            'OQ' ➜ ⮐  @keyEventForCombo('f2')
+            'OR' ➜ ⮐  @keyEventForCombo('f3')
+            'OS' ➜ ⮐  @keyEventForCombo('f4')   
                  ➜ log 'esc' esc.charCodeAt(0) esc.length
             
         ⮐  event if event = @keyEventForChar esc
@@ -320,28 +320,28 @@ function TTIO extends events
         if raw.length == 1
                                 
             switch raw[0]
-                0x9  ➜ ⮐ @keyEventForCombo('tab')
-                0xd  ➜ ⮐ @keyEventForCombo('return' '\n')
-                0x1b ➜ ⮐ @keyEventForCombo('esc')
-                0x7f ➜ ⮐ @keyEventForCombo('delete')
+                0x9  ➜ ⮐  @keyEventForCombo('tab')
+                0xd  ➜ ⮐  @keyEventForCombo('return' '\n')
+                0x1b ➜ ⮐  @keyEventForCombo('esc')
+                0x7f ➜ ⮐  @keyEventForCombo('delete')
 
             if 0x1 <= raw[0] <= 0x1a
-                ⮐ @keyEventForCombo("ctrl+#{String.fromCharCode(raw[0]+96)}")
+                ⮐  @keyEventForCombo("ctrl+#{String.fromCharCode(raw[0]+96)}")
                 
             char = raw.toString 'utf8'
             
             if event = @keyEventForChar char
-                ⮐ event
+                ⮐  event
                 
             if raw[0] > 127 
                 raw[0] -= 128
-                ⮐ parseEsc raw.toString 'utf8'
+                ⮐  parseEsc raw.toString 'utf8'
                 
     keyEventForChar: char =>
         
         if char.length
             key = char.toLowerCase()
-            return
+            ⮐  
                 key:    key
                 type:   'press'
                 combo:  key != char ? 'shift' : ''

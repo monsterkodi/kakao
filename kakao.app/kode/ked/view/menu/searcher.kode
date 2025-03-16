@@ -45,7 +45,7 @@ function searcher extends finder
 
     draw: ->
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
 
         super()
         
@@ -61,7 +61,7 @@ function searcher extends finder
 
     onMouse: event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         for sfil in @sfils
             ret = sfil.onMouse event ; ⮐ ret if ret?.redraw
@@ -92,6 +92,8 @@ function searcher extends finder
     # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
 
     emitFileOpen: choice ->
+    
+        log 'emit file.open'
     
         @textToHighlight = @input.current()
         @fileToHighlight = choice.path

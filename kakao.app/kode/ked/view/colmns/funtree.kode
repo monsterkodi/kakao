@@ -126,6 +126,11 @@ function funtree extends choices
                 post.emit 'goto.line' c.line-1 'ind'
                 post.emit 'focus' 'editor'
                 ⮐  
+                
+            'drag'
+            
+                post.emit 'goto.line' c.line-1 'ind'
+                ⮐  
                  
         super action arg event
         

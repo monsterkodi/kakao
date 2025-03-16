@@ -26,12 +26,12 @@ class prjcts
             path = slash.absolute path process.cwd()
             
             if prjPath = @allFiles[path]
-                ⮐ prjPath
+                ⮐  prjPath
             if prjcts.projects[path]
-                ⮐ @projects[path].dir
+                ⮐  @projects[path].dir
             for prjPath,project of prjcts.projects
                 if path.startsWith prjPath
-                    ⮐ prjPath
+                    ⮐  prjPath
         log 'missing prj?' path
         null
         
@@ -45,9 +45,9 @@ class prjcts
         
         if not file is str
             log 'prjcts.index file not a str?' file
-            return
+            ⮐  
             
-        ⮐ if file.startsWith 'untitled-'
+        ⮐  if file.startsWith 'untitled-'
         
         file = slash.absolute file process.cwd()
         
@@ -55,7 +55,7 @@ class prjcts
         
         exists =○ nfs.exists file
         
-        ⮐ if not exists
+        ⮐  if not exists
         
         prjPath =○ nfs.prj file
         
@@ -68,7 +68,7 @@ class prjcts
         # log 'prjcts.index ▸' prjPath
         
         if @indexing
-            ⮐ if @indexing == prjPath
+            ⮐  if @indexing == prjPath
             @queue ?= []
             if prjPath not in @queue
                 @queue.push prjPath
@@ -79,10 +79,10 @@ class prjcts
         @indexing = prjPath
         
         walk = new walker
-            root:        prjPath
-            maxDepth:    12
-            maxFiles:    10000
-            file:        (f) => post.emit 'prjcts.file.indexed' f
+            root:     prjPath
+            maxDepth: 12
+            maxFiles: 10000
+            file:     (f) => post.emit 'prjcts.file.indexed' f
                   
         # log 'start walker'
         result =○ walk.start()

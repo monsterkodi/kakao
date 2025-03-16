@@ -18,7 +18,7 @@ export
     
     indentSelectedLines: ->
         
-        ⮐ if empty @s.selections
+        ⮐  if empty @s.selections
         
         selections = @allSelections()
         cursors    = @allCursors() 

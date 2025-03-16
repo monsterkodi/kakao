@@ -27,6 +27,7 @@ choices = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["doubleClickChoiceAtIndex"] = this["doubleClickChoiceAtIndex"].bind(this)
         this["clickChoiceAtIndex"] = this["clickChoiceAtIndex"].bind(this)
+        this["dragChoiceAtIndex"] = this["dragChoiceAtIndex"].bind(this)
         this["unhover"] = this["unhover"].bind(this)
         this["hoverChoiceAtIndex"] = this["hoverChoiceAtIndex"].bind(this)
         this["filter"] = this["filter"].bind(this)
@@ -357,6 +358,13 @@ choices = (function ()
         return {redraw:true}
     }
 
+    choices.prototype["dragChoiceAtIndex"] = function (index, event)
+    {
+        this.hoverChoiceAtIndex(index,event)
+        this.emitAction('drag',this.fuzzied[index],event)
+        return {redraw:true}
+    }
+
     choices.prototype["clickChoiceAtIndex"] = function (index, event)
     {
         this.hoverIndex = -1
@@ -373,7 +381,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _275_21_
+        var col, dx, dy, ret, row, _281_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -415,6 +423,9 @@ choices = (function ()
                             return this.clickChoiceAtIndex(row + this.state.s.view[1],event)
                         }
                         break
+                    case 'drag':
+                        return this.dragChoiceAtIndex(row + this.state.s.view[1],event)
+
                 }
 
             }

@@ -142,14 +142,14 @@ function choices extends editor
         y = @state.mainCursor()[1]
         while y < @state.s.lines.length-1
             y += 1
-            ⮐ y if kseg.trim(@state.s.lines[y]).length
+            ⮐  y if kseg.trim(@state.s.lines[y]).length
         
     prevRow: ->
 
         y = @state.mainCursor()[1]
         while y > 0
             y -= 1
-            ⮐ y if kseg.trim(@state.s.lines[y]).length
+            ⮐  y if kseg.trim(@state.s.lines[y]).length
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -159,8 +159,8 @@ function choices extends editor
     
     select: row -> 
         
-        ⮐ if not row is num
-        ⮐ if row < 0 or row >= @state.s.lines.length
+        ⮐  if not row is num
+        ⮐  if row < 0 or row >= @state.s.lines.length
     
         @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
         @state.setMainCursor 0 row
@@ -210,11 +210,11 @@ function choices extends editor
     
     filter: text =>
         
-        ⮐ if empty @items
-
-        ⮐ if text == @filterText
-        
-        ⮐ @set(@items @key) if empty text
+        ⮐  if empty @items
+           
+        ⮐  if text == @filterText
+           
+        ⮐  @set(@items @key) if empty text
             
         @filterText = text
             
@@ -238,7 +238,7 @@ function choices extends editor
     
     hoverChoiceAtIndex: index event => 
     
-        ⮐ true if @hoverIndex == index
+        ⮐  true if @hoverIndex == index
         
         @hoverIndex = index
         @state.setMainCursor 0 index
@@ -252,6 +252,12 @@ function choices extends editor
         @hoverIndex = -1
         @state.deselect()
         post.emit 'pointer' 'default'
+        redraw:true
+
+    dragChoiceAtIndex: index event =>
+        
+        @hoverChoiceAtIndex index event
+        @emitAction 'drag' @fuzzied[index] event
         redraw:true
         
     clickChoiceAtIndex: index event =>
@@ -270,9 +276,9 @@ function choices extends editor
         
         # log "choices #{r6 @name} onMouse"
     
-        ret = super event; ⮐ ret if ret?.redraw
+        ret = super event; ⮐  ret if ret?.redraw
         
-        ret = @mapscr?.onMouse event; ⮐ ret if ret # mapview doesn't do mouse yet, just to prevent clickthrough to editor
+        ret = @mapscr?.onMouse event; ⮐  ret if ret # mapview doesn't do mouse yet, just to prevent clickthrough to editor
         
         if @hover
             
@@ -283,16 +289,23 @@ function choices extends editor
                 if @hoverForSubmenu and event.type == 'move' and col > kseg.width(@state.s.lines[row])
                     dx = Math.abs event.delta[0]
                     dy = Math.abs event.delta[1]
-                    ⮐ if dx*2 >= dy
+                    ⮐  if dx*2 >= dy
                 
                 switch event.type
                     
-                    'move'  ➜ ⮐ @hoverChoiceAtIndex row + @state.s.view[1] event
+                    'move'  
+                            ⮐  @hoverChoiceAtIndex row + @state.s.view[1] event
+                            
                     'press' 
+                    
                         if event.count == 2
-                            ⮐ @doubleClickChoiceAtIndex row + @state.s.view[1] event
+                            ⮐  @doubleClickChoiceAtIndex row + @state.s.view[1] event
                         else
-                            ⮐ @clickChoiceAtIndex row + @state.s.view[1] event
+                            ⮐  @clickChoiceAtIndex row + @state.s.view[1] event
+                            
+                    'drag'
+                    
+                            ⮐  @dragChoiceAtIndex row + @state.s.view[1] event
         @hover
         
     #  0000000    0000000  000000000  000   0000000   000   000  
@@ -319,7 +332,7 @@ function choices extends editor
                 @moveSelection event.combo
                 ⮐  true
         
-        ⮐ if not @hasFocus()
+        ⮐  if not @hasFocus()
             
         switch event.combo
         

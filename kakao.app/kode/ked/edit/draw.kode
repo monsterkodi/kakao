@@ -150,7 +150,7 @@ function draw extends view
     drawTrailingRows: -> # fill empty rows below last line
         
         vl = @state.s.lines.length - @state.s.view[1]
-        ⮐ if vl >= @cells.rows 
+        ⮐  if vl >= @cells.rows 
 
         for row in vl...@cells.rows
             @cells.bg_fill 0 row -1 row @color.empty         

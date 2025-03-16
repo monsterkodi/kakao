@@ -33,7 +33,7 @@ class indexer
         if m?
             rgs = matchr.ranges indexer.methodRegExp, line
             if rgs[0].start > 11
-                return null
+                ⮐  null
         m?[1]
         
     @funcNameInLine: line ->
@@ -41,7 +41,7 @@ class indexer
         if m = line.match indexer.funcRegExp
             rgs = matchr.ranges indexer.funcRegExp, line
             if rgs[0].start > 7
-                return null
+                ⮐  null
             
         m?[1]
 
@@ -138,7 +138,7 @@ class indexer
 
     removeFile: file ->
         
-        return if not @files[file]?
+        ⮐  if not @files[file]?
         
         for name,infos of @funcs
             pullIf infos (v) -> v.file == file
