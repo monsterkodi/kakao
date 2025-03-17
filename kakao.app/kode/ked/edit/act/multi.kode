@@ -137,7 +137,7 @@ export
         
         selections = @allSelections()
         
-        ⮐ if empty selections
+        ⮐  if empty selections
         
         rngs = belt.splitLineRanges @s.lines selections false
 
@@ -149,7 +149,7 @@ export
         
         selections = @allSelections()
          
-        ⮐ if empty selections
+        ⮐  if empty selections
          
         rngs = belt.splitLineRanges @allLines() selections false
 
@@ -172,7 +172,7 @@ export
     isAnyCursorInLine: y ->
         
         for c in @allCursors()
-            ⮐ true if c[1] == y
+            ⮐  true if c[1] == y
             
     #  0000000  000   000  000   000  000   000   0000000  0000000    00000000  00000000   0000000   00000000   00000000  
     # 000       000   000  0000  000  000  000   000       000   000  000       000       000   000  000   000  000       

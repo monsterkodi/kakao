@@ -70,7 +70,7 @@ function knob extends view
                 if @doDrag
                     post.emit 'pointer' @resizePointer() if @hover
                     delete @doDrag
-                    ⮐ redraw:true
+                    ⮐  redraw:true
         @hover
             
     # 0000000    00000000    0000000   000   000  
@@ -90,7 +90,7 @@ function knob extends view
             'left'
             'right'
                 
-                ⮐ if not @hover
+                ⮐  if not @hover
                 @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funcol
 
 export knob

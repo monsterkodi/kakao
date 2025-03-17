@@ -383,7 +383,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _328_44_
+        var idx, item, _328_45_
 
         if (!(global.ked_editor_file != null))
         {

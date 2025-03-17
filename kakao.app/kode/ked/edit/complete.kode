@@ -139,12 +139,12 @@ function complete
         
         switch key
             'tab'
-            'return' ➜ ⮐ @apply()
-            'esc'    ➜ ⮐ @hide()
+            'return' ➜ ⮐  @apply()
+            'esc'    ➜ ⮐  @hide()
             'up'
             'down' 
                 if @words.length > 1
-                    ⮐ @moveSelection key
+                    ⮐  @moveSelection key
         
         'unhandled'
     
@@ -156,7 +156,7 @@ function complete
     
     onMouse: event =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         cret = @choices.onMouse event
         
@@ -168,7 +168,7 @@ function complete
 
     onWheel: event => 
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         @choices.onWheel event
         
@@ -210,7 +210,7 @@ function complete
     onChoicesAction: action choice=>
         
         switch action
-            'click' ➜ ⮐ @apply()
+            'click' ➜ ⮐  @apply()
             
     #  ███████  ███   ███  ████████   ████████   ████████  ███   ███  █████████      ███   ███   ███████   ████████   ███████  
     # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███         ███ █ ███  ███   ███  ███   ███  ███   ███

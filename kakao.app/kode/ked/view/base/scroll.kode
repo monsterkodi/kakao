@@ -48,14 +48,14 @@ function scroll extends view
                 if @hover
                     @doDrag = true
                     post.emit 'pointer''grabbing' 
-                    ⮐ @scrollTo row
+                    ⮐  @scrollTo row
                     
             'drag'
             
                 if @doDrag
                     @hover = true
                     post.emit 'pointer''grab' 
-                    ⮐ @scrollTo row 
+                    ⮐  @scrollTo row 
                     
                 @hover = false
                 
@@ -64,7 +64,7 @@ function scroll extends view
                 if @doDrag
                     post.emit 'pointer''pointer' if @hover
                     delete @doDrag 
-                    ⮐ true
+                    ⮐  true
         @hover
         
     isActive: ->
@@ -88,7 +88,7 @@ function scroll extends view
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
 
-        ⮐ if view eql @state.s.view
+        ⮐  if view eql @state.s.view
         
         @state.setView view
 

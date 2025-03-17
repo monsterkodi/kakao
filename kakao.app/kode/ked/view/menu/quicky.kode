@@ -75,9 +75,8 @@ function quicky extends inputchoice
 
     draw: ->
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
          
-        # @layout()
         @arrange()
         @drawFrame()
         @crumbs.draw()
@@ -204,8 +203,8 @@ function quicky extends inputchoice
     moveSelection: dir ->
         
         switch dir
-            'down' ➜ ⮐ if not @choices.hasNext()
-            'up'   ➜ ⮐ if not @choices.hasPrev()
+            'down' ➜ ⮐  if not @choices.hasNext()
+            'up'   ➜ ⮐  if not @choices.hasPrev()
         
         @hideMap()
 
@@ -223,7 +222,7 @@ function quicky extends inputchoice
     
     preview: item ○=>
         
-        ⮐ @hideMap() if empty item?.path
+        ⮐  @hideMap() if empty item?.path
         
         if item.type == 'file' and slash.ext(item.path) in walker.sourceFileExtensions
             text =○ nfs.read item.path
@@ -245,7 +244,7 @@ function quicky extends inputchoice
     
     onMouse: event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
         ret = super event           ; ⮐ ret if ret?.redraw
         @hover
@@ -260,10 +259,10 @@ function quicky extends inputchoice
         
         switch @input.current()
             
-            '/'  ➜ ⮐ @browseDir '/'
-            '~'  ➜ ⮐ @browseDir '~'
-            '.'  ➜ ⮐ @browseDir @currentDir
-            '..' ➜ ⮐ @browseDir slash.dir(@currentDir)
+            '/'  ➜ ⮐  @browseDir '/'
+            '~'  ➜ ⮐  @browseDir '~'
+            '.'  ➜ ⮐  @browseDir @currentDir
+            '..' ➜ ⮐  @browseDir slash.dir(@currentDir)
             
         # if empty choice and valid @input.current()
         #     @gotoDirOrOpenFile @input.current()
@@ -297,7 +296,7 @@ function quicky extends inputchoice
 
         switch action
             
-            'click' ➜ ⮐ @applyChoice tilde:path path:slash.untilde(path)
+            'click' ➜ ⮐  @applyChoice tilde:path path:slash.untilde(path)
     
     onInputAction: action text =>
         
@@ -313,12 +312,12 @@ function quicky extends inputchoice
                 
                 if choice.path
                     if choice.tilde == ' ..'
-                        ⮐ @moveSelection 'down'
+                        ⮐  @moveSelection 'down'
                     if choice.type == 'file'
-                        ⮐ post.emit 'quicky' choice.path
+                        ⮐  post.emit 'quicky' choice.path
                     else
                         @hideMap()
-                        ⮐ @gotoDirOrOpenFile choice.link ? choice.path
+                        ⮐  @gotoDirOrOpenFile choice.link ? choice.path
                         
             'left' 
                 
@@ -328,13 +327,13 @@ function quicky extends inputchoice
                 
                 if choice.path
                     upDir = slash.dir @currentDir
-                    ⮐ if empty upDir
+                    ⮐  if empty upDir
                     @hideMap()
-                    ⮐ @gotoDir upDir @currentDir
+                    ⮐  @gotoDir upDir @currentDir
             'space'            
                 
                 if choice.path and choice.type == 'file'
-                    ⮐ post.emit 'quicky' choice.path
+                    ⮐  post.emit 'quicky' choice.path
                     
         super action choice
 

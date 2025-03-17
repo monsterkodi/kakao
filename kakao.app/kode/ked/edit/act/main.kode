@@ -57,7 +57,7 @@ export
         
         mainCursor = @mainCursor()
         
-        ⮐ if mainCursor eql [x y]
+        ⮐  if mainCursor eql [x y]
 
         cursors = @allCursors()
 

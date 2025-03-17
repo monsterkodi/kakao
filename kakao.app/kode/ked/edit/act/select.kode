@@ -70,7 +70,7 @@ export
     
     selectWordAtCursor_highlightSelection_addNextHighlightToSelection: ->
         # cmd+d ctrl+d
-        if valid @s.highlights ➜ ⮐ @addCurrentOrNextHighlightToSelection()
+        if valid @s.highlights ➜ ⮐  @addCurrentOrNextHighlightToSelection()
             
         @selectWordAtCursor_highlightSelection()
         
@@ -94,7 +94,7 @@ export
     
     selectWordAtCursor_highlightSelection_addPrevHighlightToSelection: ->
         # shift+cmd+d shift+ctrl+d
-        if valid @s.highlights ➜ ⮐ @addCurrentOrPrevHighlightToSelection()
+        if valid @s.highlights ➜ ⮐  @addCurrentOrPrevHighlightToSelection()
             
         @selectWordAtCursor_highlightSelection()
         
@@ -114,7 +114,7 @@ export
     
     highlightSelection: ->
         
-        ⮐ if empty @s.selections
+        ⮐  if empty @s.selections
         
         spans = []
         for rng in @allSelections()
@@ -126,21 +126,21 @@ export
         
     highlightText: text ->
         
-        ⮐ if empty text
+        ⮐  if empty text
         
         @setHighlights belt.lineSpansForText(@s.lines text)
     
     deselectCursorHighlight: ->
         
-        ⮐ if empty @s.highlights
-        ⮐ if empty @s.selections
+        ⮐  if empty @s.highlights
+        ⮐  if empty @s.selections
         
         if prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
             @deselectSpan prev
 
     selectAllHighlights: ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         selections = []
         cursors = []
@@ -153,7 +153,7 @@ export
                     
     selectNextHighlight: ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         if next = belt.nextSpanAfterPos @s.highlights @mainCursor()
             @selectSpan next
@@ -161,7 +161,7 @@ export
 
     selectPrevHighlight: ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         pos = @mainCursor()
         
@@ -195,7 +195,7 @@ export
         
     addNextHighlightToSelection: ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         if next = belt.nextSpanAfterPos @s.highlights @mainCursor()
             @addSpanToSelection next
@@ -203,7 +203,7 @@ export
 
     addPrevHighlightToSelection: ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         pos = @mainCursor()
         
@@ -217,7 +217,7 @@ export
             
     moveCursorToNextHighlight: pos ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         pos ?= @mainCursor()
         
@@ -226,7 +226,7 @@ export
 
     moveCursorToPrevHighlight: pos ->
         
-        ⮐ if empty @s.highlights
+        ⮐  if empty @s.highlights
         
         pos ?= @mainCursor()
         
@@ -249,7 +249,7 @@ export
             if belt.isSameRange selection rng
                 selections.splice index 1
                 @setSelections selections
-                ⮐ true
+                ⮐  true
         false
         
     addRangeToSelectionWithMainCursorAtEnd: rng ->
@@ -386,21 +386,21 @@ export
             if selection[3] == y and selection[2] == 0
                 continue
             if selection[1] <= y <= selection[3]
-                ⮐ true
+                ⮐  true
         false
         
     isFullySelectedLine: y ->
         
         for selection in @s.selections
             if selection[1] <= y <= selection[3]
-                ⮐ belt.isFullLineRange(@s.lines selection)
+                ⮐  belt.isFullLineRange(@s.lines selection)
         false
         
     isPartiallySelectedLine: y ->
         
         for selection in @s.selections
             if selection[1] <= y <= selection[3]
-                ⮐ not belt.isFullLineRange(@s.lines selection)
+                ⮐  not belt.isFullLineRange(@s.lines selection)
         false
         
     isSpanSelectedLine: y ->
@@ -408,14 +408,14 @@ export
         for selection in @s.selections
             if selection[1] <= y <= selection[3]
                 span = belt.isSpanLineRange(@s.lines selection)
-                ⮐ true if span
-            ⮐ false if selection[1] > y
+                ⮐  true if span
+            ⮐  false if selection[1] > y
         false
         
     isHighlightedLine: y ->
 
         for highlight in @s.highlights
-            ⮐ true if highlight[1] == y
+            ⮐  true if highlight[1] == y
                 
         false
         

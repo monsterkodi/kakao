@@ -86,9 +86,9 @@ function editor extends draw
         
         super event
         
-        ret = @mapscr?.onMouse(event)   ; ⮐ ret if ret?.redraw
-        ret = @scroll?.onMouse(event)   ; ⮐ ret if ret?.redraw
-        ret = @complete?.onMouse(event) ; ⮐ ret if ret?.redraw
+        ret = @mapscr?.onMouse(event)   ; ⮐  ret if ret?.redraw
+        ret = @scroll?.onMouse(event)   ; ⮐  ret if ret?.redraw
+        ret = @complete?.onMouse(event) ; ⮐  ret if ret?.redraw
                         
         false
                 
@@ -100,14 +100,14 @@ function editor extends draw
     
     onWheel: event =>
         
-        ⮐ if event.cell[1] >= @cells.y + @cells.rows
+        ⮐  if event.cell[1] >= @cells.y + @cells.rows
                 
         inside  = @cells.isInsideEvent(event)
         inside |= @scroll?.cells.isInsideEvent(event)
         inside |= @gutter?.cells.isInsideEvent(event)
         inside |= @mapscr?.cells.isInsideEvent(event)
         
-        ⮐ if not inside
+        ⮐  if not inside
 
         if @complete?
             if res = @complete.onWheel(event)
@@ -149,7 +149,7 @@ function editor extends draw
         post.emit 'focus' @name
         @redraw()
         
-    hasFocus: ->
+    hasFocus: =>
         
         @state.hasFocus
         

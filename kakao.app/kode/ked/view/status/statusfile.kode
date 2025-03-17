@@ -35,7 +35,7 @@ function statusfile extends view
     
     draw: -> 
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
     
         super()
             

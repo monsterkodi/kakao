@@ -48,7 +48,7 @@ function watcher
             w.on 'change' ((dir) => (change path) => @onChange(change path dir))(dir)
             watcher.watchers[dir] = w
         
-            ⮐ if not opt.recursive
+            ⮐  if not opt.recursive
             
             items =○ nfs.list dir
             for item in items

@@ -55,7 +55,6 @@ KED = (function ()
         this["onResize"] = this["onResize"].bind(this)
         this["onViewResize"] = this["onViewResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
-        this["onQuicky"] = this["onQuicky"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onPaste"] = this["onPaste"].bind(this)
@@ -63,14 +62,15 @@ KED = (function ()
         this["saveSessionFile"] = this["saveSessionFile"].bind(this)
         this["saveFile"] = this["saveFile"].bind(this)
         this["loadFile"] = this["loadFile"].bind(this)
+        this["onQuicky"] = this["onQuicky"].bind(this)
         this["openFile"] = this["openFile"].bind(this)
         this["reloadFile"] = this["reloadFile"].bind(this)
         this["onFileChange"] = this["onFileChange"].bind(this)
         this["newFile"] = this["newFile"].bind(this)
         this["quit"] = this["quit"].bind(this)
-        this["layout"] = this["layout"].bind(this)
+        this["arrange"] = this["arrange"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.5.0'
+        this.version = '0.6.0'
         this.args = karg(`
 ked [file]
     options                      **
@@ -164,7 +164,7 @@ ked [file]
         }
     }
 
-    KED.prototype["layout"] = function ()
+    KED.prototype["arrange"] = function ()
     {
         var dcw, fcw, h, w
 
@@ -180,7 +180,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _165_10_
+        var _171_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -211,7 +211,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _190_22_
+        var _196_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -258,9 +258,33 @@ ked [file]
         return this.editor.grabFocus()
     }
 
+    KED.prototype["onQuicky"] = async function (path)
+    {
+        var exists, file
+
+        if (slash.isAbsolute(path))
+        {
+            file = path
+        }
+        else
+        {
+            file = slash.absolute(path,slash.dir(this.currentFile))
+        }
+        if (slash.samePath(file,this.currentFile))
+        {
+            this.redraw()
+            return
+        }
+        exists = await nfs.fileExists(file)
+        if (exists)
+        {
+            return await this.loadFile(file)
+        }
+    }
+
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var exists, segls, start, text, _274_22_
+        var exists, segls, start, text, _301_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -462,30 +486,6 @@ ked [file]
         }
     }
 
-    KED.prototype["onQuicky"] = async function (path)
-    {
-        var exists, file
-
-        if (slash.isAbsolute(path))
-        {
-            file = path
-        }
-        else
-        {
-            file = slash.absolute(path,slash.dir(this.currentFile))
-        }
-        if (slash.samePath(file,this.currentFile))
-        {
-            this.redraw()
-            return
-        }
-        exists = await nfs.fileExists(file)
-        if (exists)
-        {
-            return await this.loadFile(file)
-        }
-    }
-
     KED.prototype["onViewSize"] = function (name, pos)
     {
         var x, y
@@ -509,7 +509,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _444_22_
+        var _450_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -536,7 +536,7 @@ ked [file]
         start = process.hrtime()
         this.status.gutter = this.editor.state.gutterWidth()
         this.screen.init()
-        this.layout()
+        this.arrange()
         if (this.menu.greet.hidden())
         {
             this.editor.draw()

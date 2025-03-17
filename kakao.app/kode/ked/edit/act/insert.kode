@@ -24,7 +24,7 @@ export
         text = mode.insert @ text
         
         if valid @s.selections
-            ⮐ @indentSelectedLines() if text == '\t'
+            ⮐  @indentSelectedLines() if text == '\t'
             @deleteSelection()
             
         [lines cursors] = belt.insertTextAtPositions @s.lines text @s.cursors

@@ -86,9 +86,9 @@ function choices extends editor
         
     drawSelections: ->
         
-        ⮐ if empty @state.s.selections
+        ⮐  if empty @state.s.selections
         
-        ⮐ super() if not @roundedSelections
+        ⮐  super() if not @roundedSelections
         
         fg = @color.current
         if not @cells.screen.t.hasFocus
@@ -99,7 +99,7 @@ function choices extends editor
         li = sel[1]
         y  = li-@state.s.view[1]
         
-        ⮐ if y >= @cells.rows
+        ⮐  if y >= @cells.rows
         
         xs = max sel[0] kseg.headCount(@state.s.lines[li] ' ')
         xs += @frontRoundOffset if xs == 0

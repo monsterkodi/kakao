@@ -130,7 +130,7 @@ function fileeditor extends editor
                         
                     @dragStart = copy @state.s.selections[0]
                     
-                    ⮐ redraw:true
+                    ⮐  redraw:true
                     
                 else if @hover or @gutter?.cells.isInsideEvent(event)
                     
@@ -152,7 +152,7 @@ function fileeditor extends editor
                     
                     @grabFocus()
                     
-                    ⮐ redraw:true
+                    ⮐  redraw:true
                     
             'drag'
             
@@ -169,7 +169,7 @@ function fileeditor extends editor
                     if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd belt.rangeFromStartToEnd(start [x y])
                     else             @state.select start [x y]
                         
-                    ⮐ redraw:true
+                    ⮐  redraw:true
                     
             'release'
             

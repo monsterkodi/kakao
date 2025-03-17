@@ -67,7 +67,7 @@ function searcherfile extends view
 
     draw: ->
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         super()
         
@@ -92,10 +92,10 @@ function searcherfile extends view
 
     onMouse: event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
-        ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
-        ret = @bubble.onMouse event ; ⮐ ret if ret?.redraw
+        ret = @crumbs.onMouse event ; ⮐  ret if ret?.redraw
+        ret = @bubble.onMouse event ; ⮐  ret if ret?.redraw
         
         super event
                 

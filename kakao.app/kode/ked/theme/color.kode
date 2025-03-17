@@ -85,31 +85,31 @@ class color
     
     @darken: c f -> 
     
-        ⮐ [0 0 0] if empty c
+        ⮐  [0 0 0] if empty c
         kstr.scaleColor c f
         
     @brighten: c f ->
     
-        ⮐ [255 255 255] if empty c
+        ⮐  [255 255 255] if empty c
         kstr.scaleColor c 1+f
                             
     @bg_rgb: c -> # background
     
-        ⮐ '\x1b[49m' if empty c
+        ⮐  '\x1b[49m' if empty c
         [r g b] = c if c is arr
         [r g b] = color.rgb c if c is str
         "\x1b[48;2;#{r};#{g};#{b}m" 
 
     @fg_rgb: c -> # foreground (text) 
         
-        ⮐ '\x1b[39m' if empty c
+        ⮐  '\x1b[39m' if empty c
         [r g b] = c if c is arr
         [r g b] = color.rgb c if c is str
         "\x1b[38;2;#{r};#{g};#{b}m" 
 
     @ul_rgb: c -> # underline color
         
-        ⮐ '\x1b[59m' if empty c
+        ⮐  '\x1b[59m' if empty c
         [r g b] = c if c is arr
         [r g b] = color.rgb c if c is str
         "\x1b[58;2;#{r};#{g};#{b}m" 

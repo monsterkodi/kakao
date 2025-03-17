@@ -48,7 +48,7 @@ function session extends events
         
     get: key value =>
         
-        ⮐ clone(value) if not key?.split?
+        ⮐  clone(value) if not key?.split?
         clone sds.get @data @keypath(key) value
          
     #  0000000  00000000  000000000  
@@ -59,10 +59,10 @@ function session extends events
     
     set: key value =>
         
-        ⮐ if not key is str
-        ⮐ if @get(key) eql value
-        ⮐ if @get(key) == value
-        ⮐ @del(key) if empty value
+        ⮐  if not key is str
+        ⮐  if @get(key) eql value
+        ⮐  if @get(key) == value
+        ⮐  @del(key) if empty value
 
         @data ?= {}
         sds.set @data @keypath(key) value
@@ -70,7 +70,7 @@ function session extends events
         
     del: key => 
     
-        ⮐ if not @data
+        ⮐  if not @data
         sds.del @data @keypath(key)
         @delayedSave()
         

@@ -121,7 +121,7 @@ function fsbrow extends quicky
             p = slash.parse item.path
 
             w = 0
-            ⮐ w if item.tilde == icons.dir + ' ..'
+            ⮐  w if item.tilde == icons.dir + ' ..'
             w += 10000 if item.type == 'file'
             w += 1000  if item.tilde.startsWith icons.dir + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']
@@ -171,7 +171,7 @@ function fsbrow extends quicky
         
     preview: item ○=>
         
-        ⮐ @hideMap() if empty item?.path
+        ⮐  @hideMap() if empty item?.path
         
         if item.type == 'file' and slash.ext(item.path) in walker.sourceFileExtensions
             text =○ nfs.read item.path
@@ -198,13 +198,13 @@ function fsbrow extends quicky
     
     onMouse: event =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         ret = @fscol.onMouse event  ; ⮐ ret if ret?.redraw
         super event
 
     onWheel: event =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         ret = @fscol.onWheel event ; ⮐ ret if ret?.redraw
         super event
                 
@@ -218,17 +218,17 @@ function fsbrow extends quicky
         
         switch @input.current()
             
-            '/'  ➜ ⮐ @gotoDir '/'
-            '~'  ➜ ⮐ @gotoDir '~'
-            '.'  ➜ ⮐ @gotoDir @currentDir
-            '..' ➜ ⮐ @gotoDir slash.dir(@currentDir)
+            '/'  ➜ ⮐  @gotoDir '/'
+            '~'  ➜ ⮐  @gotoDir '~'
+            '.'  ➜ ⮐  @gotoDir @currentDir
+            '..' ➜ ⮐  @gotoDir slash.dir(@currentDir)
             
         if empty choice and valid @input.current()
             @gotoDirOrOpenFile @input.current()
-            ⮐ redraw:true
+            ⮐  redraw:true
             
-        if empty choice      ➜ ⮐ redraw:false 
-        if empty choice.path ➜ ⮐ redraw:false 
+        if empty choice      ➜ ⮐  redraw:false 
+        if empty choice.path ➜ ⮐  redraw:false 
 
         @gotoDirOrOpenFile choice.path 
         redraw:true
@@ -270,13 +270,13 @@ function fsbrow extends quicky
                 
                 if choice.path
                     upDir = slash.dir @currentDir
-                    ⮐ if empty upDir
+                    ⮐  if empty upDir
                     @hideMap()
-                    ⮐ @gotoDir upDir @currentDir
+                    ⮐  @gotoDir upDir @currentDir
             'space'            
                 
                 if choice.path and choice.type == 'file'
-                    ⮐ post.emit 'quicky' choice.path
+                    ⮐  post.emit 'quicky' choice.path
                     
         super action choice
 

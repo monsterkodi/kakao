@@ -21,7 +21,7 @@ function edit
                           
         # prof.start 'insert'
         
-        ⮐ [lines posl] if empty text
+        ⮐  [lines posl] if empty text
         
         if text == '\t'
             pos  = posl[0]
@@ -137,7 +137,7 @@ function edit
         lines = copy lines
         posl  = clone posl
         
-        ⮐ [lines posl] if empty rngs
+        ⮐  [lines posl] if empty rngs
         
         for ri in rngs.length-1..0
             
@@ -175,7 +175,7 @@ function edit
         
     @adjustPositionsForDeletedLineRange: posl lines rng ->
         
-        ⮐ posl if empty posl
+        ⮐  posl if empty posl
         
         for pi in posl.length-1..0
             pos = posl[pi]
@@ -204,8 +204,8 @@ function edit
             cursors[ci][0] += delta
             ci++
             
-            ⮐ if ci >= cursors.length
-            ⮐ if cursors[ci][1] > cursor[1]
+            ⮐  if ci >= cursors.length
+            ⮐  if cursors[ci][1] > cursor[1]
             
     #  0000000   0000000    0000000          00000000    0000000   000   000   0000000   00000000   0000000  
     # 000   000  000   000  000   000        000   000  000   000  0000  000  000        000       000       
@@ -231,7 +231,7 @@ function edit
             else if c[1] < lines.length-1
                 addLineAtIndex c c[1]+1 
 
-        ⮐ [posl rngs] if empty newp
+        ⮐  [posl rngs] if empty newp
         
         [newp newr]
     
@@ -271,7 +271,7 @@ function edit
     @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
         
         if empty indices or dir == 'down' and indices[-1] >= lines.length-1 or dir == 'up' and indices[0] <= 0
-            ⮐ [lines rngs posl]
+            ⮐  [lines rngs posl]
         
         newLines = copy lines
         newRngs  = copy rngs
@@ -312,7 +312,7 @@ function edit
     @cloneLineBlockRangesAndMoveRangesAndPositionsInDirection: lines blocks rngs posl dir ->
         
         if empty blocks or dir == 'down' and blocks[-1][3] > lines.length-1 or dir == 'up' and blocks[0][1] < 0
-            ⮐ [lines rngs posl]
+            ⮐  [lines rngs posl]
         
         newLines = copy lines
         newRngs  = copy rngs
@@ -358,7 +358,7 @@ function edit
     
     @toggleCommentsInLineRangesAtIndices: lines rngs posl indices ->
         
-        ⮐ [lines rngs posl] if empty indices
+        ⮐  [lines rngs posl] if empty indices
         
         newLines = copy lines
         newRngs  = copy rngs
@@ -392,7 +392,7 @@ function edit
         
     @toggleCommentTypesInLineRangesAtIndices: lines rngs posl indices ->
         
-        ⮐ [lines rngs posl] if empty indices
+        ⮐  [lines rngs posl] if empty indices
         
         newLines = copy lines
         newRngs  = copy rngs
@@ -410,7 +410,7 @@ function edit
     
     @deindentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
         
-        ⮐ [lines rngs posl] if empty indices  
+        ⮐  [lines rngs posl] if empty indices  
         
         newLines = lines
         newRngs  = copy rngs
@@ -444,7 +444,7 @@ function edit
     
     @indentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
         
-        ⮐ [lines rngs posl] if empty indices  
+        ⮐  [lines rngs posl] if empty indices  
         
         newLines = lines
         newRngs  = copy rngs
@@ -475,7 +475,7 @@ function edit
     
     @extendLineRangesFromPositionToPosition: lines rngs start pos ->
 
-        if empty rngs ➜ ⮐ [@rangeFromStartToEnd(start pos)]
+        if empty rngs ➜ ⮐  [@rangeFromStartToEnd(start pos)]
 
         newRngs = copy rngs
         

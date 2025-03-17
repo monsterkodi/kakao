@@ -67,7 +67,7 @@ function mode
         
         if empty mode.modes
             # log "pending... #{editor.name}"
-            ⮐ mode.pending.push editor
+            ⮐  mode.pending.push editor
 
         for name in mode.names()
             if editor.feats[name] and mode.modes[name].autoStart
@@ -82,7 +82,7 @@ function mode
     
     @start: state name ->
     
-        ⮐ if @isActive state name
+        ⮐  if @isActive state name
         
         @active[state.name] ?= []
         @active[state.name].push new mode.modes[name] state
@@ -113,7 +113,7 @@ function mode
     @get: state name ->
         
         for m in @active[state.name]
-            ⮐ m if m.name == name
+            ⮐  m if m.name == name
 
     @insert: state text ->
         
@@ -132,7 +132,7 @@ function mode
         
         for m in @active[state.name]
             if m.deleteSelection is func
-                ⮐ true if m.deleteSelection()
+                ⮐  true if m.deleteSelection()
         false        
         
     @handleKey: state key event ->

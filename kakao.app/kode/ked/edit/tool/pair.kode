@@ -46,12 +46,12 @@ function pair
 
     @rangeOfInnerStringSurroundingRange: lines rng ->
         
-        ⮐ if @isInvalidLineIndex lines rng[1]
+        ⮐  if @isInvalidLineIndex lines rng[1]
 
         rgs = @rangesOfStringsInText lines[rng[1]] rng[1] 
         rgs = @rangesShrunkenBy rgs 1
         for r in rgs
-            ⮐ r if @rangeContainsRange r rng
+            ⮐  r if @rangeContainsRange r rng
             
     @rangesOfStringsInText: text li=0 -> # todo: handle #{}
         

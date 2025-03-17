@@ -62,7 +62,7 @@ function input extends editor
         
     draw: ->
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         @cells.fill_rect 0 0 -1 -1 ' ' null @color.bg
         

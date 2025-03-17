@@ -17,7 +17,7 @@ function prof
         while args.length
             key += args.shift()
             if prof.tils[key]
-                ⮐ [key prof.tils[key] args.join(' ')] 
+                ⮐  [key prof.tils[key] args.join(' ')] 
             key += ' '
         log r5("prof! #{g5(key)} doesn't match #{b8(Object.keys(prof.tils).join(' '))}")
         ['' [] '']

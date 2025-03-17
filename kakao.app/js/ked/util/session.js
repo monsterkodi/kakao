@@ -59,7 +59,7 @@ session = (function ()
 
     session.prototype["get"] = function (key, value)
     {
-        var _51_45_
+        var _51_46_
 
         if (!((key != null ? key.split : undefined) != null))
         {

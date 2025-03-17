@@ -256,7 +256,7 @@ class indexer
         isJS = _k_.in(fileExt,['js','mjs'])
         nfs.read(file).then((function (text)
         {
-            var className, cnt, currentClass, fileInfo, funcAdded, funcInfo, funcName, funcStack, indent, li, line, lines, m, methodName, word, words, _246_47_, _304_51_, _332_35_, _333_35_
+            var bound, boundIndex, className, cnt, currentClass, fileInfo, funcAdded, funcInfo, funcName, funcStack, indent, li, line, lines, m, methodName, unbndIndex, word, words, _246_47_, _307_51_, _335_35_, _336_35_
 
             if (_k_.empty(text))
             {
@@ -302,7 +302,10 @@ class indexer
                         {
                             if (methodName = indexer.methodNameInLine(line))
                             {
-                                funcInfo = this.addMethod(currentClass,methodName,file,li,line.indexOf('○') >= 0,line.indexOf('=>') >= 0)
+                                unbndIndex = line.indexOf('->')
+                                boundIndex = line.indexOf('=>')
+                                bound = boundIndex > 0 && (unbndIndex < 0 || boundIndex < unbndIndex)
+                                funcInfo = this.addMethod(currentClass,methodName,file,li,line.indexOf('○') >= 0,bound)
                                 funcStack.push([indent,funcInfo])
                                 funcAdded = true
                             }
@@ -341,7 +344,7 @@ class indexer
                         word = list[_c_]
                         if (indexer.testWord(word))
                         {
-                            cnt = ((_304_51_=this.words[word]) != null ? _304_51_ : 0)
+                            cnt = ((_307_51_=this.words[word]) != null ? _307_51_ : 0)
                             this.words[word] = cnt + 1
                         }
                         switch (word)
@@ -367,8 +370,8 @@ class indexer
                 {
                     _k_.last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
-                    funcInfo.class = ((_332_35_=funcInfo.class) != null ? _332_35_ : slash.name(funcInfo.file))
-                    funcInfo.class = ((_333_35_=funcInfo.class) != null ? _333_35_ : slash.name(file))
+                    funcInfo.class = ((_335_35_=funcInfo.class) != null ? _335_35_ : slash.name(funcInfo.file))
+                    funcInfo.class = ((_336_35_=funcInfo.class) != null ? _336_35_ : slash.name(file))
                     fileInfo.funcs.push(funcInfo)
                 }
                 post.emit('indexer.indexed',file,fileInfo)

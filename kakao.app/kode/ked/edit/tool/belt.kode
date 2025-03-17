@@ -32,7 +32,7 @@ function belt
     
     @normalizePositions: posl maxY ->
         
-        ⮐ [] if empty posl 
+        ⮐  [] if empty posl 
         
         posl = posl.map (a) -> [max(0 a[0]) clamp(0 maxY a[1])]
         posl = @sortPositions posl
@@ -42,7 +42,7 @@ function belt
         
     @removeDuplicatePositions: posl ->
         
-        ⮐ posl if posl.length <= 1
+        ⮐  posl if posl.length <= 1
         
         for i in posl.length-1..1
             if @samePos posl[i] posl[i-1]
@@ -51,7 +51,7 @@ function belt
         
     @indexOfPosInPositions: pos posl ->
         
-        ⮐ -1 if empty posl
+        ⮐  -1 if empty posl
         posl.findIndex (p) -> pos eql p
         
     @lineIndicesForPositions: posl ->
@@ -90,7 +90,7 @@ function belt
     @positionsContain: posl pos ->
         
         for p in posl
-            ⮐ true if p eql pos
+            ⮐  true if p eql pos
         false
         
     @positionsOutsideRange: posl rng ->
@@ -143,8 +143,8 @@ function belt
     
     @isPosInsideRange: pos rng ->
         
-        ⮐ false if @isPosBeforeRange pos rng 
-        ⮐ false if @isPosAfterRange  pos rng 
+        ⮐  false if @isPosBeforeRange pos rng 
+        ⮐  false if @isPosAfterRange  pos rng 
         true
         
     @isPosOutsideRange: pos rng -> not @isPosInsideRange pos rng
@@ -155,14 +155,13 @@ function belt
     
     @isPosAfterRange: pos rng ->
     
-        # pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] >= rng[2])
         pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] > rng[2])
         
     @isPosTouchingRange: pos rng ->
         
-        ⮐ true if @isPosInsideRange pos rng
-        ⮐ true if pos eql @endOfRange rng
-        ⮐ true if pos eql @startOfRange rng
+        ⮐  true if @isPosInsideRange pos rng
+        ⮐  true if pos eql @endOfRange rng
+        ⮐  true if pos eql @startOfRange rng
         false
 
     @rangeContainsPos:   rng pos -> @isPosInsideRange pos rng
@@ -196,8 +195,8 @@ function belt
     
     @isPosInsideSpan: pos span ->
 
-        ⮐ false if @isPosBeforeSpan pos span
-        ⮐ false if @isPosAfterSpan pos span
+        ⮐  false if @isPosBeforeSpan pos span
+        ⮐  false if @isPosAfterSpan pos span
         true
         
     @isPosBeforeSpan: pos span ->
@@ -217,22 +216,22 @@ function belt
     
     @nextSpanAfterPos: spans pos ->
         
-        ⮐ if empty spans
+        ⮐  if empty spans
         
         pos = [0 0] if @isPosAfterSpan pos spans[-1]
         
-        ⮐ spans[0] if @isPosBeforeSpan pos spans[0]
+        ⮐  spans[0] if @isPosBeforeSpan pos spans[0]
             
         for span,index in spans
             if @isPosAfterSpan pos span
                 if index+1 < spans.length and @isPosBeforeOrInsideSpan pos spans[index+1]
-                    ⮐ spans[index+1]
+                    ⮐  spans[index+1]
 
     @prevSpanBeforePos: spans pos ->
         
-        ⮐ if empty spans
-        ⮐ spans[-1] if @isPosBeforeSpan pos spans[0]
-        ⮐ spans[-1] if @isPosInsideSpan pos spans[0]
+        ⮐  if empty spans
+        ⮐  spans[-1] if @isPosBeforeSpan pos spans[0]
+        ⮐  spans[-1] if @isPosInsideSpan pos spans[0]
             
         for index in spans.length-1..0
             span = spans[index]
@@ -241,7 +240,7 @@ function belt
                     
     @normalizeSpans: spans ->
         
-        ⮐ [] if empty spans
+        ⮐  [] if empty spans
         
         spans = spans.map (a) -> if a[0] > a[2] ➜ [a[2] a[1] a[0]] else a
         spans.sort (a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1]
@@ -256,19 +255,19 @@ function belt
     @rangesContainLine: rngs lineIndex -> 
         
         for rng in rngs
-            ⮐ true if rng[1] <= lineIndex <= rng[3]
+            ⮐  true if rng[1] <= lineIndex <= rng[3]
         false
         
     @rangesContainSpan: rngs span -> @rangesContainRange rngs @rangeForSpan(span)
     @rangesContainRange: rngs range -> 
         
         for rng in rngs
-            ⮐ true if rng eql range
+            ⮐  true if rng eql range
         false
                 
     @normalizeRanges: rngs ->
         
-        ⮐ [] if empty rngs or not rngs is arr
+        ⮐  [] if empty rngs or not rngs is arr
         
         rngs = rngs.map (a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a
         rngs = rngs.map (a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a
@@ -292,8 +291,8 @@ function belt
     ###        
     @rangesForLinesSplitAtPositions: lines posl ->
         
-        ⮐ [] if empty posl
-        ⮐ [[0 0 kseg.width(lines[-1]) lines.length-1] [kseg.width(lines[-1]) lines.length-1 kseg.width(lines[-1]) lines.length-1]] if posl[0][1] >= lines.length
+        ⮐  [] if empty posl
+        ⮐  [[0 0 kseg.width(lines[-1]) lines.length-1] [kseg.width(lines[-1]) lines.length-1 kseg.width(lines[-1]) lines.length-1]] if posl[0][1] >= lines.length
         rngs = [[0 0 posl[0][0] posl[0][1]]]
         for pos,idx in posl
             rngs.push [posl[idx-1][0] posl[idx-1][1] pos[0] pos[1]] if idx > 0
@@ -304,13 +303,13 @@ function belt
         
         for rng in rngs
             if @rangeContainsPos rng pos
-                ⮐ rng
+                ⮐  rng
 
     @rangeInRangesTouchingPos: rngs pos ->
         
         for rng in rngs
             if @rangeTouchesPos rng pos
-                ⮐ rng   
+                ⮐  rng   
 
     # 000      000  000   000  00000000         000  000   000  0000000    000   0000000  00000000   0000000  
     # 000      000  0000  000  000              000  0000  000  000   000  000  000       000       000       
@@ -373,7 +372,7 @@ function belt
         
         indices = @lineIndicesForRangesAndPositions rngs posl
         
-        ⮐ blocks if empty indices
+        ⮐  blocks if empty indices
         
         block = [0 indices[0] -1 -1]
         for index,ii in indices
@@ -394,7 +393,7 @@ function belt
     
     @mergeLineRanges: lines rngs ->
         
-        ⮐ [] if empty rngs or not rngs is arr
+        ⮐  [] if empty rngs or not rngs is arr
         
         rngs = @normalizeRanges rngs
         

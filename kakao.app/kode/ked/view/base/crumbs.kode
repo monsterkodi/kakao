@@ -46,8 +46,8 @@ function crumbs extends view
     
     draw: ->
         
-        ⮐ if @hidden()
-        ⮐ if empty @rounded
+        ⮐  if @hidden()
+        ⮐  if empty @rounded
     
         c = theme.quicky_crumbs
         
@@ -91,7 +91,7 @@ function crumbs extends view
         for si in 0...@split.length
             sl += @split[si].length + 2
             if sl > col
-                ⮐ si
+                ⮐  si
         @split.length-1
         
     #  0000000   0000000          000  000   000   0000000  000000000  
@@ -167,14 +167,14 @@ function crumbs extends view
                     path = '/' + path if not path[0] in '~/'
                     @emit 'action' 'click' path event
                     delete @hoverIndex
-                ⮐ redraw:true
+                ⮐  redraw:true
                 
             'move'
             
                 index = @splitIndexAtCol col
                 if @hoverIndex != index
                     @hoverIndex = index
-                    ⮐ redraw:true
+                    ⮐  redraw:true
         @hover
                     
 export crumbs

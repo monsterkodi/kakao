@@ -255,7 +255,10 @@ class indexer
                                 # 000   000  00000000     000     000   000   0000000   0000000    0000000
         
                                 if methodName = indexer.methodNameInLine line
-                                    funcInfo = @addMethod currentClass methodName file li line.indexOf('○')>=0 line.indexOf('=>')>=0
+                                    unbndIndex = line.indexOf '->'
+                                    boundIndex = line.indexOf '=>'
+                                    bound = boundIndex > 0 and (unbndIndex < 0 or boundIndex < unbndIndex)
+                                    funcInfo = @addMethod currentClass methodName file li line.indexOf('○')>=0 bound
                                     funcStack.push [indent funcInfo]
                                     funcAdded = true
                             else

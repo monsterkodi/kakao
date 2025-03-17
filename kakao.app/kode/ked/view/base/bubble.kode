@@ -47,7 +47,7 @@ function bubble extends view
     
     draw: -> 
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
     
         super()
             
@@ -99,7 +99,7 @@ function bubble extends view
                 
                 if @hover
                     @emit 'action' 'click' @file
-                    ⮐ redraw:true                
+                    ⮐  redraw:true
         @hover
     
 export bubble

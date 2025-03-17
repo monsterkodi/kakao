@@ -23,7 +23,9 @@ greet = (function ()
     function greet (screen)
     {
         this["draw"] = this["draw"].bind(this)
+        this["layout"] = this["layout"].bind(this)
         this["show"] = this["show"].bind(this)
+        this["hide"] = this["hide"].bind(this)
         greet.__super__.constructor.call(this,screen,'greet')
         this.header = help.headerCells()
         this.name = 'greet'

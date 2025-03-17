@@ -27,7 +27,7 @@ function text
         
     @seglsForLineRange: lines rng ->
         
-        ⮐ '' if empty lines or empty rng
+        ⮐  '' if empty lines or empty rng
         
         l = []
         
@@ -48,24 +48,24 @@ function text
     @segsForLineSpan: lines span ->
         
         l = []
-        ⮐ l if empty lines or empty span
+        ⮐  l if empty lines or empty span
         y = span[1]
-        ⮐ l if @isInvalidLineIndex lines y
+        ⮐  l if @isInvalidLineIndex lines y
         lines[y][span[0]...span[2]]
         
     @segsForPositions: lines posl ->
         
         l = []
-        ⮐ l if empty lines or empty posl
+        ⮐  l if empty lines or empty posl
         for pos in posl
-            ⮐ l if @isInvalidLineIndex lines pos[1]
+            ⮐  l if @isInvalidLineIndex lines pos[1]
             segi = kseg.segiAtWidth lines[pos[1]] pos[0]
             l.push lines[pos[1]][segi]
         l
 
     @textForLineRange: lines rng ->
          
-        ⮐ '' if empty lines or empty rng
+        ⮐  '' if empty lines or empty rng
          
         l = []
          
@@ -84,7 +84,7 @@ function text
         
     @textForLineRanges: lines rngs ->
         
-        ⮐ '' if empty lines
+        ⮐  '' if empty lines
         
         text = ''
         for rng in rngs
@@ -164,7 +164,7 @@ function text
         d = rng[3] - rng[1]
         
         if d == 0 
-            ⮐ rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
+            ⮐  rng[0] == 0 and rng[2] == lines[rng[1]].length ? 1 : 0
         
         n = 0
         n += 1   if rng[0] == 0 
@@ -190,7 +190,7 @@ function text
         if nl == 1
             bos = kseg.segiAtWidth lines[rng[1]] rng[0]
             eos = kseg.segiAtWidth lines[rng[1]] rng[2]
-            ⮐ [lines[rng[1]][bos...eos]]
+            ⮐  [lines[rng[1]][bos...eos]]
         
         firstLineIndex = min rng[1] lines.length-1
         lastLineIndex  = min rng[3] lines.length-1
@@ -276,7 +276,7 @@ function text
     @splitLineRange: lines rng includeEmpty=true -> # split multi-line-range into list of single-line-ranges
         
         nl = @numLinesInRange rng 
-        ⮐ [rng] if nl == 1
+        ⮐  [rng] if nl == 1
         
         split = []
         
@@ -321,31 +321,31 @@ function text
         
         [x y] = pos
         
-        ⮐ if @isInvalidLineIndex lines y
+        ⮐  if @isInvalidLineIndex lines y
          
         if r = kstr.rangeOfClosestChunk lines[y] x
             if 0 <= r[0] < r[1]
-                ⮐ [r[0] y r[1] y]
+                ⮐  [r[0] y r[1] y]
                 
     @rangeOfClosestChunkLeftToPos: lines pos ->
         
         [x y] = pos
         
-        ⮐ if @isInvalidLineIndex lines y
+        ⮐  if @isInvalidLineIndex lines y
         
         if r = kstr.rangeOfClosestChunk lines[y][0...x] x
             if 0 <= r[0] < r[1]
-                ⮐ [r[0] y r[1] y]
+                ⮐  [r[0] y r[1] y]
 
     @rangeOfClosestChunkRightToPos: lines pos ->
         
         [x y] = pos
         
-        ⮐ if @isInvalidLineIndex lines y
+        ⮐  if @isInvalidLineIndex lines y
         
         if r = kstr.rangeOfClosestChunk lines[y][x..] x
             if 0 <= r[0] < r[1]
-                ⮐ [r[0] y r[1] y]
+                ⮐  [r[0] y r[1] y]
                 
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
@@ -356,31 +356,31 @@ function text
     @wordAtPos: lines pos ->
         
         if rng = @rangeOfClosestWordToPos lines pos
-            ⮐ kseg.str @segsForLineSpan(lines rng)
+            ⮐  kseg.str @segsForLineSpan(lines rng)
         ''
         
     @chunkBeforePos: lines pos ->
         
         before = lines[pos[1]][0...pos[0]]
         if tcc = kseg.tailCountChunk before
-            ⮐ kseg.str before[before.length-tcc..]
+            ⮐  kseg.str before[before.length-tcc..]
         ''    
         
     @chunkAfterPos: lines pos ->
         
         after = lines[pos[1]][pos[0]..]
         if hcc = kseg.headCountChunk after
-            ⮐ kseg.str after[0...hcc]
+            ⮐  kseg.str after[0...hcc]
         ''    
     
     @rangeOfClosestWordToPos: lines pos ->
         
         [x y] = pos
-        ⮐ if @isInvalidLineIndex lines y
+        ⮐  if @isInvalidLineIndex lines y
          
         if r = kseg.spanForClosestWordAtColumn lines[y] x
             if 0 <= r[0] < r[1]
-                ⮐ [r[0] y r[1] y]
+                ⮐  [r[0] y r[1] y]
                 
     @rangeOfWhitespaceLeftToPos: lines pos ->
         
@@ -389,13 +389,13 @@ function text
         y = clamp 0 lines.length-1 y
         x = clamp 0 lines[y].length x
         
-        ⮐ [x y x y] if x <= 0
+        ⮐  [x y x y] if x <= 0
         
         segi = kseg.indexAtWidth lines[y] x
         left = lines[y][0...segi]
         
         if tc = kseg.tailCount left ' '
-            ⮐ [segi-tc y segi y]
+            ⮐  [segi-tc y segi y]
             
         [x y x y]
 
@@ -403,16 +403,16 @@ function text
         
         [x y] = pos
         
-        ⮐ if x <= 0 or @isInvalidLineIndex lines y
+        ⮐  if x <= 0 or @isInvalidLineIndex lines y
         
         segi = kseg.indexAtWidth lines[y] x
         left = lines[y][0...segi]
         
         if tc = kseg.tailCount left ' '
-            ⮐ [segi-tc y segi y]
+            ⮐  [segi-tc y segi y]
             
         if tc = kseg.tailCountWord left
-            ⮐ [segi-tc y segi y]
+            ⮐  [segi-tc y segi y]
         
         [segi-1 y segi y]
 
@@ -420,13 +420,13 @@ function text
         
         [x y] = pos
         
-        ⮐ if x < 0 or @isInvalidLineIndex lines y
+        ⮐  if x < 0 or @isInvalidLineIndex lines y
         
         if r = kstr.rangeOfClosestWord lines[y][x..] 0
             if 0 == r[0] < r[1]
-                ⮐ [x y r[1]+x y]
+                ⮐  [x y r[1]+x y]
             if r[0] > 0 
-                ⮐ [x y r[0]+x y]
+                ⮐  [x y r[0]+x y]
             
         [x y lines[y].length y]   
         
@@ -435,9 +435,9 @@ function text
     @categoryForChar: char -> 
         
         if 
-            empty char      ➜ ⮐ 'empty'
-            /\s+/.test char ➜ ⮐ 'ws'
-            /\w+/.test char ➜ ⮐ 'word'
+            empty char      ➜ ⮐  'empty'
+            /\s+/.test char ➜ ⮐  'ws'
+            /\w+/.test char ➜ ⮐  'word'
             
         'punct'
         
@@ -446,20 +446,20 @@ function text
         if dx > 0
             ci = px
             if nc = cat = @categoryForChar @lineChar(line ci)
-                ⮐ dx if cat not in jump
+                ⮐  dx if cat not in jump
                 while true
                     ci += dx
                     nc = @categoryForChar @lineChar(line ci)
                     break if nc != cat
                     break if ci <= 0
-                    ⮐ 1 if nc == 'empty'
+                    ⮐  1 if nc == 'empty'
             ci - px
         else
             ci = px - 1
-            ⮐ 0 if ci < 0
-            if ci >= line.length and 'empty' in jump ➜ ⮐ line.length - ci - 1
+            ⮐  0 if ci < 0
+            if ci >= line.length and 'empty' in jump ➜ ⮐  line.length - ci - 1
             cat = @categoryForChar @lineChar(line ci)
-            ⮐ dx if cat not in jump
+            ⮐  dx if cat not in jump
             while 0 <= ci < line.length and @categoryForChar(@lineChar(line ci)) == cat
                 ci += dx
             min dx ci - px + 1
@@ -468,9 +468,9 @@ function text
         
         dx = dir == 'left' ? -1 : 1
         
-        if opt?.jump ➜ ⮐ @jumpDelta(lines[pos[1]] pos[0] dx opt.jump)
+        if opt?.jump ➜ ⮐  @jumpDelta(lines[pos[1]] pos[0] dx opt.jump)
             
-        ⮐ 0 if pos[0] + dx < 0
+        ⮐  0 if pos[0] + dx < 0
         dx
         
 export text

@@ -375,7 +375,7 @@ function TTIO extends events
                 
         [code px py] = csi[1..-2].split(';').map (s) -> int s
         
-        ⮐ if empty @cellsz
+        ⮐  if empty @cellsz
         
         cx = int px/@cellsz[0]
         cy = int py/@cellsz[1]        

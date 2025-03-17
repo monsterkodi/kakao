@@ -90,9 +90,9 @@ function funcol extends view
         
     onMouse: event =>
         
-        ret = super event            ; ⮐ ret if ret?.redraw
-        ret = @knob.onMouse event    ; ⮐ ret if ret?.redraw
-        ret = @funtree.onMouse event ; ⮐ ret if ret?.redraw
+        ret = super event            ; ⮐  ret if ret?.redraw
+        ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
+        ret = @funtree.onMouse event ; ⮐  ret if ret?.redraw
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -113,7 +113,7 @@ function funcol extends view
     
     onKey: key event =>
         
-        ⮐ if not @funtree.hasFocus()
+        ⮐  if not @funtree.hasFocus()
         
         # switch key
         # 

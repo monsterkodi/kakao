@@ -31,7 +31,7 @@ function greet extends view
     #      ███  ███   ███  ███   ███  ███   ███  
     # ███████   ███   ███   ███████   ██     ██  
 
-    hide: -> 
+    hide: => 
     
         post.emit 'greet.hide'
         super()
@@ -41,7 +41,7 @@ function greet extends view
         post.emit 'greet.show'
         super()
         
-    layout: x y ->
+    layout: x y =>
         
         [w h] = belt.cellSize @header
         
@@ -55,7 +55,7 @@ function greet extends view
 
     draw: =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
 
         duration = 480
         @a += 1

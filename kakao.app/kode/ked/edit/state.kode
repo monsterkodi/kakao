@@ -40,18 +40,18 @@ function state
             
         @clearHistory()
 
-    toggleMode: name -> mode.toggle @ name if @allowedModes[name]
-    startMode: name -> mode.start @ name if @allowedModes[name]
-    stopMode: name -> mode.stop @ name if @allowedModes[name]
+    toggleMode: name => mode.toggle @ name if @allowedModes[name]
+    startMode: name => mode.start @ name if @allowedModes[name]
+    stopMode: name => mode.stop @ name if @allowedModes[name]
         
-    owner: -> 
+    owner: => 
         
         if @name.endsWith '.state'
             @name[0...-6]
         else
             @name
         
-    clearHistory: ->
+    clearHistory: =>
     
         @h = [@s] # undo states (history)
         @r = []   # redo states
@@ -68,8 +68,8 @@ function state
         @swapState()
         @
 
-    setSelections: selections -> @set 'selections' belt.mergeLineRanges(@s.lines selections)
-    setHighlights: highlights -> @set 'highlights' belt.normalizeSpans(highlights)
+    setSelections: selections => @set 'selections' belt.mergeLineRanges(@s.lines selections)
+    setHighlights: highlights => @set 'highlights' belt.normalizeSpans(highlights)
 
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000
     # 000       000   000  000   000  000       000   000  000   000  000
@@ -77,7 +77,7 @@ function state
     # 000       000   000  000   000       000  000   000  000   000       000
     #  0000000   0000000   000   000  0000000    0000000   000   000  0000000
 
-    setCursors: cursors opt ->
+    setCursors: cursors opt =>
         
         opt ?= {}
         main = opt.main
@@ -113,12 +113,12 @@ function state
             mode.modes.salter?.checkCursorsSet @
         @
             
-    textOfSelectionOrWordAtCursor: -> 
+    textOfSelectionOrWordAtCursor: => 
         
         if @s.selections.length
-            ⮐ @textOfSelection()
+            ⮐  @textOfSelection()
         else
-            ⮐ @wordAtCursor()
+            ⮐  @wordAtCursor()
 
     # 000      000  000   000  00000000   0000000
     # 000      000  0000  000  000       000
@@ -178,7 +178,7 @@ function state
             view:        [0 0]
         @r = []
         
-    addLine: line ext ->
+    addLine: line ext =>
 
         segl = kseg line
         @syntax.addSegl segl ext
@@ -186,7 +186,7 @@ function state
         @segls.push segl
         @s = @s.set 'lines' @segls
         
-    appendLines: lines ext ->
+    appendLines: lines ext =>
 
         segls = kseg.segls lines
         @syntax.appendSegls segls ext
@@ -214,14 +214,14 @@ function state
 
     undo: =>
 
-        ⮐ if @h.length <= 1
+        ⮐  if @h.length <= 1
         @r.push @h.pop()
         @s = @h[-1]
         @syntax.setSegls @s.lines
 
     redo: =>
 
-        ⮐ if empty @r
+        ⮐  if empty @r
         @h.push @r.pop()
         @s = @h[-1]
         @syntax.setSegls @s.lines
@@ -237,8 +237,8 @@ function state
             delete @beginIndex
         @
 
-    pushState: -> @h.push @s ; @
-    swapState: -> @h.pop() ; @pushState()
+    pushState: => @h.push @s ; @
+    swapState: => @h.pop() ; @pushState()
 
     isDirty: => @h.length > 1
     hasRedo: => @r.length > 0
@@ -380,7 +380,7 @@ function state
         if not @skipAdjustViewForMainCursor
             view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
         
-        ⮐ if view eql @s.view
+        ⮐  if view eql @s.view
         
         @setView view
 

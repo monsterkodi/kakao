@@ -332,7 +332,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _321_62_
+        var upDir, _320_63_
 
         switch (action)
         {
@@ -350,7 +350,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_321_62_=choice.link) != null ? _321_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_320_63_=choice.link) != null ? _320_63_ : choice.path))
                     }
                 }
                 break

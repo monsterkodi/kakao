@@ -116,7 +116,7 @@ function inputchoice extends view
             'click'
             'right'
             'space'
-            'return' ➜ ⮐ @applyChoice @choices.current()
+            'return' ➜ ⮐  @applyChoice @choices.current()
             
     choicesFiltered: ->
         

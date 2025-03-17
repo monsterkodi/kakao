@@ -49,14 +49,14 @@ function dircol extends view
             
     onSessionMerge: recent =>
         
-        ⮐ if empty recent.dircol
+        ⮐  if empty recent.dircol
         
         if root = recent.dircol.root
             @setRoot root
             
     setRoot: path =>
     
-        ⮐ if empty path
+        ⮐  if empty path
     
         path = slash.tilde path
         @crumbs.set path
@@ -74,7 +74,7 @@ function dircol extends view
         
     draw: ->
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         @cells.fill_rect 0 1 -1 -1 ' ' null theme.dircol
         @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
@@ -110,10 +110,10 @@ function dircol extends view
         
     onMouse: event =>
         
-        ret = super event            ; ⮐ ret if ret?.redraw
-        ret = @knob.onMouse event    ; ⮐ ret if ret?.redraw
-        ret = @crumbs.onMouse event  ; ⮐ ret if ret?.redraw
-        ret = @dirtree.onMouse event ; ⮐ ret if ret?.redraw
+        ret = super event            ; ⮐  ret if ret?.redraw
+        ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
+        ret = @crumbs.onMouse event  ; ⮐  ret if ret?.redraw
+        ret = @dirtree.onMouse event ; ⮐  ret if ret?.redraw
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -123,7 +123,7 @@ function dircol extends view
     
     onWheel: event =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         @dirtree.onWheel event
         
     # 000   000  00000000  000   000  
@@ -134,12 +134,12 @@ function dircol extends view
     
     onKey: key event =>
         
-        ⮐ if not @dirtree.hasFocus()
+        ⮐  if not @dirtree.hasFocus()
         
         switch key
         
             'cmd+left'
-            'ctrl+left' ➜ ⮐ @setRoot slash.dir(@dirtree.currentRoot)
+            'ctrl+left' ➜ ⮐  @setRoot slash.dir(@dirtree.currentRoot)
             
         @dirtree.onKey key event
 
