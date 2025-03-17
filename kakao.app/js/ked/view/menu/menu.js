@@ -118,7 +118,7 @@ quit`)
                 post.emit('quit')
                 break
             case 'open ...':
-                post.emit('fsbrow.dir',process.cwd())
+                post.emit('browse.dir',process.cwd())
                 break
             case 'recent ...':
                 this.showRecent()

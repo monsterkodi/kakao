@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var fscol
+var brocol
 
 import kxk from "../../../kxk.js"
 let slash = kxk.slash
@@ -15,34 +15,34 @@ import choices from "./choices.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 
-fscol = (function ()
+brocol = (function ()
 {
-    _k_.extend(fscol, choices)
-    function fscol (screen, name)
+    _k_.extend(brocol, choices)
+    function brocol (screen, name)
     {
         this["onMouse"] = this["onMouse"].bind(this)
-        fscol.__super__.constructor.call(this,screen,name,['scrllr'])
+        brocol.__super__.constructor.call(this,screen,name,['scrllr'])
         this.frontRoundOffset = 2
         this.state.syntax.setRgxs(rgxs)
     }
 
-    fscol.prototype["show"] = function (dir)
+    brocol.prototype["show"] = function (dir)
     {
-        this.cells.rows = 1
-        return this.listDir(dir)
+        this.listDir(dir)
+        return brocol.__super__.show.call(this)
     }
 
-    fscol.prototype["isCursorVisible"] = function ()
+    brocol.prototype["isCursorVisible"] = function ()
     {
         return false
     }
 
-    fscol.prototype["visible"] = function ()
+    brocol.prototype["visible"] = function ()
     {
         return this.cells.rows > 0
     }
 
-    fscol.prototype["onMouse"] = function (event)
+    brocol.prototype["onMouse"] = function (event)
     {
         var col, ret, row
 
@@ -52,7 +52,7 @@ fscol = (function ()
         }
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
-        ret = fscol.__super__.onMouse.call(this,event)
+        ret = brocol.__super__.onMouse.call(this,event)
         if (this.hoverIndex >= 0 && (!(this.hover) || this.state.isInvalidLineIndex(row)))
         {
             return this.unhover()
@@ -60,7 +60,7 @@ fscol = (function ()
         return ret
     }
 
-    fscol.prototype["listDir"] = async function (dir)
+    brocol.prototype["listDir"] = async function (dir)
     {
         var item, items, weight
 
@@ -116,7 +116,7 @@ fscol = (function ()
         return post.emit('redraw')
     }
 
-    return fscol
+    return brocol
 })()
 
-export default fscol;
+export default brocol;

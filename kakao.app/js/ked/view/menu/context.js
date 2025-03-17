@@ -73,6 +73,7 @@ context = (function ()
 
     context.prototype["applyChoice"] = function (choice)
     {
+        console.log('context applyChoice',choice)
         this.cb(choice)
         return this.hide()
     }

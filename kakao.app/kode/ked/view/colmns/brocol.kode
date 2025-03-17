@@ -9,11 +9,11 @@
 use ../../../kxk ▪ slash post kstr
 use ../../../kxk ◆ nfs
 use ../../theme  ◆ icons 
-use              ◆ choices
+use ../menu      ◆ choices
 
 import rgxs from './quicky.json' with { type: "json" }
 
-function fscol extends choices
+function brocol extends choices
 
     @: screen name ->
         
@@ -24,15 +24,15 @@ function fscol extends choices
         
     show: dir -> 
 
-        @cells.rows = 1 
         @listDir dir
+        super()
         
     isCursorVisible: -> false
     visible: -> @cells.rows > 0 
     
     onMouse: event =>
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         [col row] = @cells.posForEvent event
         
@@ -77,4 +77,4 @@ function fscol extends choices
         
         post.emit 'redraw'
         
-export fscol
+export brocol

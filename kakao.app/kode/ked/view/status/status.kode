@@ -40,12 +40,12 @@ function status extends view
                 if valid event.mods
                     post.emit 'dircol.root' path
                 else
-                    post.emit 'fsbrow.dir' path
+                    post.emit 'browse.dir' path
 
     onFileAction: action file =>
         
         switch action
-            'click' ➜ post.emit 'fsbrow.dir' slash.dir(file) file
+            'click' ➜ post.emit 'browse.dir' slash.dir(file) file
             
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

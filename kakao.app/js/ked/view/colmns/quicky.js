@@ -20,7 +20,7 @@ import icons from "../../theme/icons.js"
 
 import crumbs from "../base/crumbs.js"
 
-import inputchoice from "./inputchoice.js"
+import inputchoice from "../menu/inputchoice.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 

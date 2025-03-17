@@ -17,32 +17,31 @@ import indexer from "./index/indexer.js"
 import logfile from "./util/logfile.js"
 import session from "./util/session.js"
 import help from "./util/help.js"
-import julia from "./util/julia.js"
 import frecent from "./util/frecent.js"
 import watcher from "./util/watcher.js"
 
+import belt from "./edit/tool/belt.js"
+
+import mode from "./edit/mode.js"
+
 import view from "./view/base/view.js"
 
-import quicky from "./view/menu/quicky.js"
-import fsbrow from "./view/menu/fsbrow.js"
+import status from "./view/status/status.js"
+
+import fileeditor from "./view/editor/fileeditor.js"
+
+import screen from "./view/screen/screen.js"
+import ttio from "./view/screen/ttio.js"
+
 import menu from "./view/menu/menu.js"
 import finder from "./view/menu/finder.js"
 import searcher from "./view/menu/searcher.js"
 import context from "./view/menu/context.js"
 
-import status from "./view/status/status.js"
-
-import screen from "./view/screen/screen.js"
-import ttio from "./view/screen/ttio.js"
-
+import browse from "./view/colmns/browse.js"
 import dircol from "./view/colmns/dircol.js"
 import funcol from "./view/colmns/funcol.js"
-
-import fileeditor from "./view/editor/fileeditor.js"
-
-import belt from "./edit/tool/belt.js"
-
-import mode from "./edit/mode.js"
+import quicky from "./view/colmns/quicky.js"
 
 global.int = parseInt
 
@@ -86,12 +85,11 @@ ked [file]
         this.session.on('loaded',this.onSessionLoaded)
         this.viewSizes = {dircol:[26,0],funcol:[30,0]}
         this.t = new ttio
-        this.julia = new julia
         this.screen = new screen(this.t)
         this.indexer = new indexer
         this.menu = new menu(this.screen)
         this.quicky = new quicky(this.screen)
-        this.fsbrow = new fsbrow(this.screen)
+        this.browse = new browse(this.screen)
         this.editor = new fileeditor(this.screen,'editor')
         this.dircol = new dircol(this.screen,'dircol',['scroll','knob'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
@@ -112,9 +110,9 @@ ked [file]
         post.on('quit',this.quit)
         post.on('fs.change',this.onFileChange)
         this.contextHandlers = [this.editor,this.dircol,this.funcol]
-        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.status,this.dircol,this.funcol]
-        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.dircol,this.funcol]
-        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.fsbrow,this.menu,this.editor,this.dircol,this.funcol]
+        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.status,this.dircol,this.funcol]
+        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.dircol,this.funcol]
+        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.dircol,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -180,7 +178,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _171_10_
+        var _168_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -211,7 +209,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _196_22_
+        var _193_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -284,7 +282,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var exists, segls, start, text, _301_22_
+        var exists, segls, start, text, _298_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -467,7 +465,7 @@ ked [file]
             case 'ctrl+o':
             case 'cmd+.':
             case 'ctrl+.':
-                return this.fsbrow.gotoDir(slash.dir(this.currentFile))
+                return this.browse.gotoDir(slash.dir(this.currentFile))
 
         }
 
@@ -509,7 +507,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _450_22_
+        var _447_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
@@ -546,7 +544,7 @@ ked [file]
         }
         this.menu.draw()
         this.quicky.draw()
-        this.fsbrow.draw()
+        this.browse.draw()
         this.finder.draw()
         this.searcher.draw()
         this.context.draw()

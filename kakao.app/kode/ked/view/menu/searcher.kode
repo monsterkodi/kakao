@@ -118,6 +118,8 @@ function searcher extends finder
     # 0000000   000   000   0000000   00     00  
     
     show: text ○=>
+    
+        log "searcher show |#{text}|"
         
         text = @searchText text
         
@@ -125,6 +127,7 @@ function searcher extends finder
         
         if empty text
             @input.grabFocus()
+            log 'searcher open empty'
             ⮐  super()
         
         editorFile = ked_session.get 'editor▸file'
@@ -132,6 +135,8 @@ function searcher extends finder
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
 
+        log "searcher - search in #{files.length} files for |#{text}|"
+        
         super()
         
         @input.grabFocus()

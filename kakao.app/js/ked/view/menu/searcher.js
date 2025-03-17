@@ -125,16 +125,19 @@ searcher = (function ()
     {
         var dir, editorFile, ext, file, files, filet, front, idx, items, segls, sfil, span, spans
 
+        console.log(`searcher show |${text}|`)
         text = this.searchText(text)
         console.log(_k_.g4(`${_k_.r6('searcher')} '${text}'`))
         if (_k_.empty(text))
         {
             this.input.grabFocus()
+            console.log('searcher open empty')
             return searcher.__super__.show.call(this)
         }
         editorFile = ked_session.get('editor▸file')
         dir = prjcts.dir(editorFile)
         files = prjcts.files(editorFile)
+        console.log(`searcher - search in ${files.length} files for |${text}|`)
         searcher.__super__.show.call(this)
         this.input.grabFocus()
         this.choices.clearEmpty()

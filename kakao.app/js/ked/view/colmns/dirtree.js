@@ -211,7 +211,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _185_31_, _192_48_
+        var depth, index, item, items, state, _187_31_, _191_48_
 
         if (_k_.empty(dirItem))
         {
@@ -225,8 +225,8 @@ dirtree = (function ()
         dirItem.open = true
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
-        depth = (((_185_31_=dirItem.depth) != null ? _185_31_ : 0)) + 1
         state = ked_session.get(this.name,{})
+        depth = (((_187_31_=dirItem.depth) != null ? _187_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -383,7 +383,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _328_45_
+        var idx, item, _327_45_
 
         if (!(global.ked_editor_file != null))
         {
@@ -446,12 +446,12 @@ dirtree = (function ()
 
     dirtree.prototype["symbol"] = function (item)
     {
-        var _368_51_
+        var _367_52_
 
         switch (item.type)
         {
             case 'file':
-                return ((_368_51_=icons[slash.ext(item.path)]) != null ? _368_51_ : icons.file)
+                return ((_367_52_=icons[slash.ext(item.path)]) != null ? _367_52_ : icons.file)
 
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)

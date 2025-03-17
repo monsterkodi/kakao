@@ -66,7 +66,11 @@ mapview = (function ()
     {
         var id
 
-        console.log(`${this.name} hide ${this.cells.cols} ${this.cells.rows}`)
+        if (this.hidden())
+        {
+            return
+        }
+        console.log(`${this.name} hide ${this.cells.cols} ${this.cells.rows} ${this.images.length}`)
         var list = _k_.list(this.images)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {

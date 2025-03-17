@@ -48,7 +48,9 @@ function mapview extends view
     
     hide: => 
         
-        log "#{@name} hide #{@cells.cols} #{@cells.rows}" 
+        ⮐  if @hidden()
+        
+        log "#{@name} hide #{@cells.cols} #{@cells.rows} #{@images.length}" 
         
         for id in @images
             @cells.screen.t.hideImage id

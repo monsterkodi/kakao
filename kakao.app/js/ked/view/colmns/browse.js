@@ -1,6 +1,6 @@
 var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var fsbrow
+var browse
 
 import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
@@ -17,19 +17,19 @@ import theme from "../../theme/theme.js"
 import icons from "../../theme/icons.js"
 
 import quicky from "./quicky.js"
-import fscol from "./fscol.js"
+import brocol from "./brocol.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 
-fsbrow = (function ()
+browse = (function ()
 {
-    _k_.extend(fsbrow, quicky)
-    function fsbrow (screen)
+    _k_.extend(browse, quicky)
+    function browse (screen)
     {
         this.screen = screen
     
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
-        this["onFsColAction"] = this["onFsColAction"].bind(this)
+        this["onbrocolAction"] = this["onbrocolAction"].bind(this)
         this["choicesFiltered"] = this["choicesFiltered"].bind(this)
         this["applyChoice"] = this["applyChoice"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
@@ -39,17 +39,17 @@ fsbrow = (function ()
         this["gotoDir"] = this["gotoDir"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
-        fsbrow.__super__.constructor.call(this,this.screen,'fsbrow')
-        this.fscol = new fscol(this.screen,'fsbrow_fscol')
+        browse.__super__.constructor.call(this,this.screen,'browse')
+        this.brocol = new brocol(this.screen,'browse_brocol')
         this.setColor('bg',theme.quicky_bg)
         this.setColor('frame',theme.quicky_frame)
-        this.fscol.on('action',this.onFsColAction)
+        this.brocol.on('action',this.onbrocolAction)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 2
-        post.on('fsbrow.dir',this.gotoDir)
+        post.on('browse.dir',this.gotoDir)
     }
 
-    fsbrow.prototype["arrange"] = function ()
+    browse.prototype["arrange"] = function ()
     {
         var ch, cr, cw, fh, fw, h, hs, ih, iz, scx, scy, w, x, y
 
@@ -62,19 +62,19 @@ fsbrow = (function ()
         cr = (this.crumbs.visible() ? 1 : 0)
         ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
-        fw = (this.fscol.visible() ? w / 2 - 1 : 0)
+        fw = (this.brocol.visible() ? w / 2 - 1 : 0)
         cw = w - fw - 3
         x = parseInt(scx - w / 2)
         h = ch + ih + cr + 2
-        fh = (this.fscol.visible() ? ch : 0)
+        fh = (this.brocol.visible() ? ch : 0)
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
         this.choices.layout(x + 1,y + 1 + ih + cr,cw,ch)
-        this.fscol.layout(x + 2 + cw,y + 1 + ih + cr,fw,fh)
+        this.brocol.layout(x + 2 + cw,y + 1 + ih + cr,fw,fh)
         return this.cells.layout(x,y,w,h)
     }
 
-    fsbrow.prototype["draw"] = function ()
+    browse.prototype["draw"] = function ()
     {
         var bg, fg, x, y
 
@@ -82,10 +82,10 @@ fsbrow = (function ()
         {
             return
         }
-        fsbrow.__super__.draw.call(this)
-        if (this.fscol.visible())
+        browse.__super__.draw.call(this)
+        if (this.brocol.visible())
         {
-            this.fscol.draw()
+            this.brocol.draw()
             bg = this.color.bg
             fg = this.color.frame
             x = this.choices.cells.cols + 2
@@ -102,7 +102,7 @@ fsbrow = (function ()
         }
     }
 
-    fsbrow.prototype["gotoDir"] = async function (dir, select)
+    browse.prototype["gotoDir"] = async function (dir, select)
     {
         var item, items, parent, weight
 
@@ -164,7 +164,7 @@ fsbrow = (function ()
         return this.showPathItems(items,select)
     }
 
-    fsbrow.prototype["gotoDirOrOpenFile"] = async function (path)
+    browse.prototype["gotoDirOrOpenFile"] = async function (path)
     {
         var isDir, isFile
 
@@ -183,7 +183,7 @@ fsbrow = (function ()
         }
     }
 
-    fsbrow.prototype["preview"] = async function (item)
+    browse.prototype["preview"] = async function (item)
     {
         var segls, text
 
@@ -204,18 +204,18 @@ fsbrow = (function ()
         }
         if (item.type === 'dir' && !item.tilde.endsWith('..'))
         {
-            this.fscol.show(item.path)
+            this.brocol.show(item.path)
             this.choices.hoverForSubmenu = true
         }
         else
         {
-            this.fscol.hide()
+            this.brocol.hide()
             this.choices.hoverForSubmenu = false
         }
         return post.emit('redraw')
     }
 
-    fsbrow.prototype["onMouse"] = function (event)
+    browse.prototype["onMouse"] = function (event)
     {
         var ret
 
@@ -223,15 +223,15 @@ fsbrow = (function ()
         {
             return
         }
-        ret = this.fscol.onMouse(event)
+        ret = this.brocol.onMouse(event)
         if ((ret != null ? ret.redraw : undefined))
         {
             return ret
         }
-        return fsbrow.__super__.onMouse.call(this,event)
+        return browse.__super__.onMouse.call(this,event)
     }
 
-    fsbrow.prototype["onWheel"] = function (event)
+    browse.prototype["onWheel"] = function (event)
     {
         var ret
 
@@ -239,15 +239,15 @@ fsbrow = (function ()
         {
             return
         }
-        ret = this.fscol.onWheel(event)
+        ret = this.brocol.onWheel(event)
         if ((ret != null ? ret.redraw : undefined))
         {
             return ret
         }
-        return fsbrow.__super__.onWheel.call(this,event)
+        return browse.__super__.onWheel.call(this,event)
     }
 
-    fsbrow.prototype["applyChoice"] = function (choice)
+    browse.prototype["applyChoice"] = function (choice)
     {
         switch (this.input.current())
         {
@@ -282,12 +282,12 @@ fsbrow = (function ()
         return {redraw:true}
     }
 
-    fsbrow.prototype["choicesFiltered"] = function ()
+    browse.prototype["choicesFiltered"] = function ()
     {
         return this.preview(this.choices.current())
     }
 
-    fsbrow.prototype["onFsColAction"] = function (action, choice)
+    browse.prototype["onbrocolAction"] = function (action, choice)
     {
         switch (action)
         {
@@ -298,9 +298,9 @@ fsbrow = (function ()
 
     }
 
-    fsbrow.prototype["onChoicesAction"] = function (action, choice)
+    browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _267_62_
+        var upDir, _267_63_
 
         switch (action)
         {
@@ -318,7 +318,7 @@ fsbrow = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_267_62_=choice.link) != null ? _267_62_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_267_63_=choice.link) != null ? _267_63_ : choice.path))
                     }
                 }
                 break
@@ -343,10 +343,10 @@ fsbrow = (function ()
                 break
         }
 
-        return fsbrow.__super__.onChoicesAction.call(this,action,choice)
+        return browse.__super__.onChoicesAction.call(this,action,choice)
     }
 
-    return fsbrow
+    return browse
 })()
 
-export default fsbrow;
+export default browse;

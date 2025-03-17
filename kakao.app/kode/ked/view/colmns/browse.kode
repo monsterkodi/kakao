@@ -1,9 +1,9 @@
 ###
-    ████████   ███████  ███████    ████████    ███████   ███   ███
-    ███       ███       ███   ███  ███   ███  ███   ███  ███ █ ███
-    ██████    ███████   ███████    ███████    ███   ███  █████████
-    ███            ███  ███   ███  ███   ███  ███   ███  ███   ███
-    ███       ███████   ███████    ███   ███   ███████   ██     ██
+    ███████    ████████    ███████   ███   ███   ███████  ████████
+    ███   ███  ███   ███  ███   ███  ███ █ ███  ███       ███     
+    ███████    ███████    ███   ███  █████████  ███████   ███████ 
+    ███   ███  ███   ███  ███   ███  ███   ███       ███  ███     
+    ███████    ███   ███   ███████   ██     ██  ███████   ████████
 ###
 
 use ../../../kxk    ▪ kstr slash post
@@ -11,27 +11,27 @@ use ../../../kxk    ◆ nfs
 use ../../util      ◆ walker 
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ theme icons
-use                 ◆ quicky fscol
+use                 ◆ quicky brocol
 
 import rgxs from './quicky.json' with { type: "json" }
 
-function fsbrow extends quicky
+function browse extends quicky
 
     @: @screen ->
 
-        super @screen 'fsbrow' 
+        super @screen 'browse' 
 
-        @fscol = new fscol @screen 'fsbrow_fscol'
+        @brocol = new brocol @screen 'browse_brocol'
          
         @setColor 'bg'     theme.quicky_bg
         @setColor 'frame'  theme.quicky_frame
 
-        @fscol.on 'action' @onFsColAction
+        @brocol.on 'action' @onbrocolAction
 
         @choices.mapscr.rowOffset = 1
         @choices.frontRoundOffset = 2
 
-        post.on 'fsbrow.dir' @gotoDir
+        post.on 'browse.dir' @gotoDir
 
     #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
     # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
@@ -54,19 +54,19 @@ function fsbrow extends quicky
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
 
         w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
-        fw = @fscol.visible() ? w/2-1 : 0
+        fw = @brocol.visible() ? w/2-1 : 0
         cw = w-fw-3
 
         x  = int scx-w/2
         
         h  = ch + ih + cr + 2
-        fh = @fscol.visible() ? ch : 0
+        fh = @brocol.visible() ? ch : 0
         
         @input.layout    x+2      y+1        w-4   iz
         @crumbs.layout   x+2      y+1+ih     w-4   cr
         @choices.layout  x+1      y+1+ih+cr  cw    ch
-        @fscol.layout    x+2+cw   y+1+ih+cr  fw    fh
-        @cells.layout    x        y          w     h
+        @brocol.layout   x+2+cw   y+1+ih+cr  fw    fh
+        @cells.layout    x        y           w     h
 
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
@@ -80,8 +80,8 @@ function fsbrow extends quicky
          
         super()
         
-        if @fscol.visible()
-            @fscol.draw()
+        if @brocol.visible()
+            @brocol.draw()
             
             bg = @color.bg
             fg = @color.frame
@@ -182,10 +182,10 @@ function fsbrow extends quicky
             @hideMap()
             
         if item.type == 'dir' and not item.tilde.endsWith '..'
-            @fscol.show item.path
+            @brocol.show item.path
             @choices.hoverForSubmenu = true
         else
-            @fscol.hide()
+            @brocol.hide()
             @choices.hoverForSubmenu = false
             
         post.emit 'redraw'
@@ -199,13 +199,13 @@ function fsbrow extends quicky
     onMouse: event =>
 
         ⮐  if @hidden()
-        ret = @fscol.onMouse event  ; ⮐ ret if ret?.redraw
+        ret = @brocol.onMouse event  ; ⮐ ret if ret?.redraw
         super event
 
     onWheel: event =>
         
         ⮐  if @hidden()
-        ret = @fscol.onWheel event ; ⮐ ret if ret?.redraw
+        ret = @brocol.onWheel event ; ⮐ ret if ret?.redraw
         super event
                 
     #  0000000   00000000   00000000   000      000   000  
@@ -243,7 +243,7 @@ function fsbrow extends quicky
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    onFsColAction: action choice =>
+    onbrocolAction: action choice =>
         
         switch action
             
@@ -259,12 +259,12 @@ function fsbrow extends quicky
                 
                 if choice.path
                     if choice.tilde == ' ..'
-                        ⮐ @moveSelection 'down'
+                        ⮐  @moveSelection 'down'
                     if choice.type == 'file'
-                        ⮐ post.emit 'quicky' choice.path
+                        ⮐  post.emit 'quicky' choice.path
                     else
                         @hideMap()
-                        ⮐ @gotoDirOrOpenFile choice.link ? choice.path
+                        ⮐  @gotoDirOrOpenFile choice.link ? choice.path
                         
             'left' 'delete'
                 
@@ -280,4 +280,4 @@ function fsbrow extends quicky
                     
         super action choice
 
-export fsbrow
+export browse

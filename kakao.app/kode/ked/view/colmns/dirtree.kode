@@ -182,10 +182,9 @@ function dirtree extends choices
         
         dirItem.tilde = dirItem.tilde.replace icons.dir_close icons.dir_open 
             
-        depth = (dirItem.depth ? 0) + 1
-        
         state = ked_session.get @name {}
         
+        depth = (dirItem.depth ? 0) + 1
         for item in items
             item.depth = depth
             item.tilde = lpad(1+depth*2) + @symbolName(item)
@@ -328,17 +327,17 @@ function dirtree extends choices
         ⮐  if not global.ked_editor_file?
         
         for item,idx in @fuzzied
-            ⮐ idx if item.path == ked_editor_file
+            ⮐  idx if item.path == ked_editor_file
             
     itemForPath: p ->
         
         for item,idx in @items
-            ⮐ item if slash.samePath item.path p
+            ⮐  item if slash.samePath item.path p
 
     itemIndexForPath: p ->
         
         for item,idx in @items
-            ⮐ idx if slash.samePath item.path p
+            ⮐  idx if slash.samePath item.path p
             
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     
@@ -365,9 +364,9 @@ function dirtree extends choices
                           
         switch item.type
             'file' 
-                ⮐ icons[slash.ext(item.path)] ? icons.file
+                ⮐  icons[slash.ext(item.path)] ? icons.file
             'dir'
-                ⮐ item.open ? icons.dir_open : icons.dir_close
+                ⮐  item.open ? icons.dir_open : icons.dir_close
                 
     symbolName: item -> 
         

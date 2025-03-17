@@ -72,7 +72,7 @@ function context extends inputchoice
     # 000   000  000        000        0000000     000     
     
     applyChoice: choice ->
-        
+        log 'context applyChoice' choice
         @cb choice
         @hide()
         

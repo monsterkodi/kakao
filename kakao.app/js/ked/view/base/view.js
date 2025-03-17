@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 var view
 
@@ -12,7 +12,7 @@ import cells from "../screen/cells.js"
 view = (function ()
 {
     _k_.extend(view, events)
-    view["popups"] = ['quicky','fsbrow','context','menu','searcher','finder']
+    view["popups"] = ['quicky','browse','context','menu','searcher','finder']
     view["currentPopup"] = null
     function view (screen, name, features)
     {
@@ -60,14 +60,14 @@ view = (function ()
 
     view.prototype["onViewHide"] = function (viewName)
     {
-        if (viewName === this.name)
-        {
-            console.log(`onViewHide ${viewName}`)
-            post.emit('popup.hide',viewName)
-        }
         if (viewName === view.currentPopup)
         {
-            return view.currentPopup = null
+            view.currentPopup = null
+        }
+        if (viewName === this.name && _k_.empty(view.currentPopup))
+        {
+            console.log(`onViewHide ${viewName}`)
+            return post.emit('popup.hide',viewName)
         }
     }
 

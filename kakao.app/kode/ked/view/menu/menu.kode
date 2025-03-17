@@ -119,7 +119,7 @@ function menu extends inputchoice
             'new'        ➜ @hide(); post.emit 'file.new'
             'about'      ➜ @show true # reopen with greeting header
             'quit'       ➜ @greet.hide(); post.emit 'quit'                    
-            'open ...'   ➜ post.emit 'fsbrow.dir' process.cwd()
+            'open ...'   ➜ post.emit 'browse.dir' process.cwd()
             'recent ...' ➜ @showRecent()
             'help'       ➜ @hide(); post.emit 'file.open' slash.path(◆dir '../../../../kode/ked/help.md')
             

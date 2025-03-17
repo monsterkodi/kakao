@@ -55,7 +55,7 @@ status = (function ()
                 }
                 else
                 {
-                    return post.emit('fsbrow.dir',path)
+                    return post.emit('browse.dir',path)
                 }
                 break
         }
@@ -67,7 +67,7 @@ status = (function ()
         switch (action)
         {
             case 'click':
-                return post.emit('fsbrow.dir',slash.dir(file),file)
+                return post.emit('browse.dir',slash.dir(file),file)
 
         }
 

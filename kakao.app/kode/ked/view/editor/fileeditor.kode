@@ -6,7 +6,7 @@
 000       000  0000000  00000000  00000000  0000000    000     000      0000000   000   000
 ###
 
-use ../../../kxk    ▪ post
+use ../../../kxk    ▪ post kstr
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
 use ../base         ◆ view 
@@ -79,7 +79,7 @@ function fileeditor extends editor
         ⮐  if not @hover
     
         if event.type == 'press' and event.count == 1
-            word = @state.wordAtCursor()
+            word = @state.textOfSelectionOrWordAtCursor()
             if valid word ➜ word = " '#{word}'"
             context.show event.cell @onContextChoice [
                 "search#{word}" 
@@ -87,11 +87,11 @@ function fileeditor extends editor
                 ]
                 
     onContextChoice: choice =>
-    
-        if choice.startsWith 'search '
-            post.emit 'searcher.show' choice[8..-2]
-        else if choice.startsWith 'find '
-            post.emit 'finder.show' choice[6..-2]
+        log 'fileeditor.onContextChoice' choice
+        if choice.startsWith 'search'
+            post.emit 'searcher.show' kstr.trim(choice[6..-2] " '")
+        else if choice.startsWith 'find'
+            post.emit 'finder.show' kstr.trim(choice[4..-2] " '")
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -111,7 +111,7 @@ function fileeditor extends editor
             
                 if event.count > 1 and @hover
 
-                    @state.deselect() if not event.shift
+                    @state.deselect() if not event.shift and event.button=='left'
                     
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
@@ -139,7 +139,7 @@ function fileeditor extends editor
                     
                     @dragStart = [x y x]
                                         
-                    @state.deselect()     if not event.shift
+                    @state.deselect()     if not event.shift and event.button=='left'
                     @state.clearCursors() if not event.alt
 
                     if event.alt

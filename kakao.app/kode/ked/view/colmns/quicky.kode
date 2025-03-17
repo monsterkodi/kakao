@@ -13,7 +13,7 @@ use ../../util      ◆ walker
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ icons
 use ../base         ◆ crumbs 
-use                 ◆ inputchoice
+use ../menu         ◆ inputchoice
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -53,6 +53,8 @@ function quicky extends inputchoice
         
         hs = int @screen.rows/2
         y  = int scy - hs/2 - ih
+        
+        log "crumbs.visible #{@crumbs.visible()}"
         
         cr = @crumbs.visible() ? 1 : 0
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
@@ -283,7 +285,7 @@ function quicky extends inputchoice
     browseDir: dir select ○=>
     
         log "#{@name} browseDir #{dir}"
-        post.emit 'fsbrow.dir' dir
+        post.emit 'browse.dir' dir
         @hide()
         
     #  0000000    0000000  000000000  000   0000000   000   000  

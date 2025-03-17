@@ -4,6 +4,7 @@ var fileeditor
 
 import kxk from "../../../kxk.js"
 let post = kxk.post
+let kstr = kxk.kstr
 
 import belt from "../../edit/tool/belt.js"
 
@@ -76,7 +77,7 @@ fileeditor = (function ()
         }
         if (event.type === 'press' && event.count === 1)
         {
-            word = this.state.wordAtCursor()
+            word = this.state.textOfSelectionOrWordAtCursor()
             if (!_k_.empty(word))
             {
                 word = ` '${word}'`
@@ -87,13 +88,14 @@ fileeditor = (function ()
 
     fileeditor.prototype["onContextChoice"] = function (choice)
     {
-        if (choice.startsWith('search '))
+        console.log('fileeditor.onContextChoice',choice)
+        if (choice.startsWith('search'))
         {
-            return post.emit('searcher.show',choice.slice(8, -1))
+            return post.emit('searcher.show',kstr.trim(choice.slice(6, -1)," '"))
         }
-        else if (choice.startsWith('find '))
+        else if (choice.startsWith('find'))
         {
-            return post.emit('finder.show',choice.slice(6, -1))
+            return post.emit('finder.show',kstr.trim(choice.slice(4, -1)," '"))
         }
     }
 
@@ -113,7 +115,7 @@ fileeditor = (function ()
             case 'press':
                 if (event.count > 1 && this.hover)
                 {
-                    if (!event.shift)
+                    if (!event.shift && event.button === 'left')
                     {
                         this.state.deselect()
                     }
@@ -144,7 +146,7 @@ fileeditor = (function ()
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
                     this.dragStart = [x,y,x]
-                    if (!event.shift)
+                    if (!event.shift && event.button === 'left')
                     {
                         this.state.deselect()
                     }

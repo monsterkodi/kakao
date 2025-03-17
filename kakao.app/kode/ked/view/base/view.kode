@@ -11,7 +11,7 @@ use   ../screen  ◆ cells
 
 function view extends events
 
-    @popups: ['quicky' 'fsbrow' 'context' 'menu' 'searcher' 'finder']
+    @popups: ['quicky' 'browse' 'context' 'menu' 'searcher' 'finder']
     @currentPopup: null
 
     @: @screen @name features ->
@@ -30,12 +30,12 @@ function view extends events
         
     onViewHide: viewName =>
     
-        if viewName == @name
-            log "onViewHide #{viewName}"
-            post.emit 'popup.hide' viewName
-        
         if viewName == view.currentPopup
             view.currentPopup = null
+            
+        if viewName == @name and empty view.currentPopup
+            log "onViewHide #{viewName}"
+            post.emit 'popup.hide' viewName
         
     onViewShow: viewName =>
     

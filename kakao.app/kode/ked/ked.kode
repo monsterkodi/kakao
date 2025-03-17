@@ -5,22 +5,21 @@
 000  000   000       000   000  
 000   000  00000000  0000000    
 
-
-    bun --watch js/ked/ked.js kode/ked/kde.kode
+    bun --watch js/ked/ked.js
 ###
 
 use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
 use ./index       ◆ prjcts indexer
-use ./util        ◆ logfile session help julia frecent watcher
-use ./view/base   ◆ view
-use ./view/menu   ◆ quicky fsbrow menu finder searcher context
-use ./view/status ◆ status 
-use ./view/screen ◆ screen ttio
-use ./view/colmns ◆ dircol funcol 
-use ./view/editor ◆ fileeditor
+use ./util        ◆ logfile session help frecent watcher
 use ./edit/tool   ◆ belt
 use ./edit        ◆ mode
+use ./view/base   ◆ view
+use ./view/status ◆ status 
+use ./view/editor ◆ fileeditor
+use ./view/screen ◆ screen ttio
+use ./view/menu   ◆ menu finder searcher context
+use ./view/colmns ◆ browse dircol funcol quicky
 
 global.int = parseInt # this should go into kode instead
 
@@ -53,15 +52,13 @@ function KED
                     
         @t = new ttio
         
-        @julia    = new julia
-                  
         @screen   = new screen @t
                   
         @indexer  = new indexer
         
         @menu     = new menu       @screen        
         @quicky   = new quicky     @screen 
-        @fsbrow   = new fsbrow     @screen 
+        @browse   = new browse     @screen 
         @editor   = new fileeditor @screen 'editor'
         @dircol   = new dircol     @screen 'dircol'  ['scroll' 'knob']
         @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
@@ -86,9 +83,9 @@ function KED
         post.on 'fs.change'     @onFileChange
         
         @contextHandlers = [                                                  @editor         @dircol @funcol ]
-        @mouseHandlers   = [ @context @finder @searcher @quicky @fsbrow @menu @editor @status @dircol @funcol ]
-        @wheelHandlers   = [          @finder @searcher @quicky @fsbrow @menu @editor         @dircol @funcol ]
-        @keyHandlers     = [ @context @finder @searcher @quicky @fsbrow @menu @editor         @dircol @funcol ]
+        @mouseHandlers   = [ @context @finder @searcher @quicky @browse @menu @editor @status @dircol @funcol ]
+        @wheelHandlers   = [          @finder @searcher @quicky @browse @menu @editor         @dircol @funcol ]
+        @keyHandlers     = [ @context @finder @searcher @quicky @browse @menu @editor         @dircol @funcol ]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -409,7 +406,7 @@ function KED
             'cmd+f' 'ctrl+f'             ➜ ⮐  @finder.show()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
             'cmd+o' 'ctrl+o'                  
-            'cmd+.' 'ctrl+.'             ➜ ⮐  @fsbrow.gotoDir slash.dir(@currentFile)
+            'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)
             
         for handler in @keyHandlers
             # log "#{handler.name}"
@@ -485,7 +482,7 @@ function KED
             
         @menu.draw()
         @quicky.draw()
-        @fsbrow.draw()
+        @browse.draw()
         @finder.draw()
         @searcher.draw()
         @context.draw()
