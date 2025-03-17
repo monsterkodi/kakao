@@ -1,17 +1,21 @@
-###
-████████  ███   ███  ███   ███  █████████  ████████   ████████  ████████  
-███       ███   ███  ████  ███     ███     ███   ███  ███       ███       
-██████    ███   ███  ███ █ ███     ███     ███████    ███████   ███████   
-███       ███   ███  ███  ████     ███     ███   ███  ███       ███       
-███        ███████   ███   ███     ███     ███   ███  ████████  ████████  
-###
+#    ████████  ███   ███  ███   ███  █████████  ████████   ████████  ████████  
+#    ███       ███   ███  ████  ███     ███     ███   ███  ███       ███       
+#    ██████    ███   ███  ███ █ ███     ███     ███████    ███████   ███████   
+#    ███       ███   ███  ███  ████     ███     ███   ███  ███       ███       
+#    ███        ███████   ███   ███     ███     ███   ███  ████████  ████████  
 
 use ../../../kxk ▪ post slash
 use ../../../kxk ◆ nfs
 use ../../theme  ◆ color theme icons
 use ../menu      ◆ choices 
 
-import rgxs from './funtree.json' with { type: "json" }
+###
+     ███████  ███   ███  ███   ███  █████████   ███████   ███   ███
+    ███        ███ ███   ████  ███     ███     ███   ███   ███ ███ 
+    ███████     █████    ███ █ ███     ███     █████████    █████  
+         ███     ███     ███  ████     ███     ███   ███   ███ ███ 
+    ███████      ███     ███   ███     ███     ███   ███  ███   ███
+###
 
 function funSyntax
 
@@ -28,6 +32,12 @@ function funSyntax
     setLines: lines => log 'setLines'
     setSegls: segls =>
         
+    #  ███████   ███████   ███       ███████   ████████ 
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    # ███       ███   ███  ███      ███   ███  ███████  
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    #  ███████   ███████   ███████   ███████   ███   ███
+
     getColor: x y =>
         
         item = @tree.items[y]
@@ -51,7 +61,15 @@ function funSyntax
         clr
         
     getChar: x y char => char
-    
+
+###    
+    ████████  ███   ███  ███   ███  █████████  ████████   ████████  ████████
+    ███       ███   ███  ████  ███     ███     ███   ███  ███       ███     
+    ██████    ███   ███  ███ █ ███     ███     ███████    ███████   ███████ 
+    ███       ███   ███  ███  ████     ███     ███   ███  ███       ███     
+    ███        ███████   ███   ███     ███     ███   ███  ████████  ████████
+###
+
 function funtree extends choices
 
     @: screen name features ->
@@ -71,8 +89,6 @@ function funtree extends choices
 
     onIndex: path info =>
     
-        # log info
-    
         clssl = clone info.classes
         funcs = clone info.funcs
         
@@ -80,10 +96,6 @@ function funtree extends choices
             clss.file ?= path
             clss.name = ' ■ ' + clss.name
             
-        # ○  ●           ●▶
-        # ○  ●  ⟶     ⤇  ○▷
-        #    ➜ ●⟶ ○⟶ ○⤇ 
-        
         for func in funcs
             if func.async
                 if func.bound
@@ -110,8 +122,6 @@ function funtree extends choices
     emitAction: action arg event  ->
         
         c = arg
-        
-        # log "funtree.emitAction #{action}" c if action != 'hover'
         
         switch action
         

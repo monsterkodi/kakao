@@ -54,8 +54,8 @@
     
     cell      single terminal character slot
     cells     2 dimensional area of cells, list of rows
-              - x y         offset in screen cells
-              - cols rows   number of cells in x and y direction
+              ◆ x y         offset in screen cells
+              ◆ cols rows   number of cells in x and y direction
 
     col       x coordinate, mostly used in the context of cells and strings
     row       y coordinate, mostly used in the context of cells and lines
@@ -63,8 +63,8 @@
     grapheme  string that is displayed as a single symbol but may occupy multiple cells
               
     width     how many cells a grapheme occupies
-              - ascii: always 1 
-              - unicode: between 1 and 2
+              ◆ ascii: always 1 
+              ◆ unicode: between 1 and 2
                                 
     length    number of graphemes for grapheme lists
               number of bytes for strings

@@ -14,7 +14,6 @@ import icons from "../../theme/icons.js"
 
 import choices from "../menu/choices.js"
 
-import rgxs from './funtree.json' with { type : "json" }
 
 funSyntax = (function ()
 {
@@ -43,7 +42,7 @@ funSyntax = (function ()
 
     funSyntax.prototype["getColor"] = function (x, y)
     {
-        var char, clr, item, name, _39_26_
+        var char, clr, item, name, _49_26_
 
         item = this.tree.items[y]
         name = item.name
@@ -110,7 +109,7 @@ funtree = (function ()
 
     funtree.prototype["onIndex"] = function (path, info)
     {
-        var clss, clssl, func, funcs, items, name, symbol, _80_22_
+        var clss, clssl, func, funcs, items, name, symbol, _96_22_
 
         clssl = _k_.clone(info.classes)
         funcs = _k_.clone(info.funcs)
@@ -118,7 +117,7 @@ funtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_80_22_=clss.file) != null ? _80_22_ : path)
+            clss.file = ((_96_22_=clss.file) != null ? _96_22_ : path)
             clss.name = ' ■ ' + clss.name
         }
         var list1 = _k_.list(funcs)
