@@ -29,7 +29,7 @@ browse = (function ()
         this.screen = screen
     
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
-        this["onbrocolAction"] = this["onbrocolAction"].bind(this)
+        this["onBrocolAction"] = this["onBrocolAction"].bind(this)
         this["choicesFiltered"] = this["choicesFiltered"].bind(this)
         this["applyChoice"] = this["applyChoice"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
@@ -40,10 +40,11 @@ browse = (function ()
         this["draw"] = this["draw"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         browse.__super__.constructor.call(this,this.screen,'browse')
+        this.isVisible = false
         this.brocol = new brocol(this.screen,'browse_brocol')
         this.setColor('bg',theme.quicky_bg)
         this.setColor('frame',theme.quicky_frame)
-        this.brocol.on('action',this.onbrocolAction)
+        this.brocol.on('action',this.onBrocolAction)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 2
         post.on('browse.dir',this.gotoDir)
@@ -61,6 +62,7 @@ browse = (function ()
         y = parseInt(scy - hs / 2 - ih)
         cr = (this.crumbs.visible() ? 1 : 0)
         ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
+        console.log(`browse.arrange brocol visible ${this.brocol.visible()}`)
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
         fw = (this.brocol.visible() ? w / 2 - 1 : 0)
         cw = w - fw - 3
@@ -287,7 +289,7 @@ browse = (function ()
         return this.preview(this.choices.current())
     }
 
-    browse.prototype["onbrocolAction"] = function (action, choice)
+    browse.prototype["onBrocolAction"] = function (action, choice)
     {
         switch (action)
         {
@@ -300,7 +302,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _267_63_
+        var upDir, _271_63_
 
         switch (action)
         {
@@ -318,7 +320,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_267_63_=choice.link) != null ? _267_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_271_63_=choice.link) != null ? _271_63_ : choice.path))
                     }
                 }
                 break

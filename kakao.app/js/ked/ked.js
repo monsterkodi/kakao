@@ -124,12 +124,30 @@ ked [file]
         }
         else if (this.args.fresh)
         {
+            this.hideEditor()
             this.menu.show(true)
         }
         else if (this.args.new)
         {
             this.newFile()
         }
+    }
+
+    KED.prototype["showEditor"] = function ()
+    {
+        this.editor.show()
+        this.status.show()
+        this.dircol.show()
+        this.funcol.show()
+        return this.editor.grabFocus()
+    }
+
+    KED.prototype["hideEditor"] = function ()
+    {
+        this.editor.hide()
+        this.status.hide()
+        this.dircol.hide()
+        return this.funcol.hide()
     }
 
     KED["run"] = function ()
@@ -157,6 +175,7 @@ ked [file]
             }
             else
             {
+                this.hideEditor()
                 return this.menu.show(true)
             }
         }
@@ -178,7 +197,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _168_10_
+        var _185_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -209,7 +228,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _193_22_
+        var _210_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -218,6 +237,7 @@ ked [file]
         this.t.setCursor(0,0)
         this.t.setTitle('kėd')
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
+        this.showEditor()
         return this.redraw()
     }
 
@@ -282,7 +302,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var exists, segls, start, text, _298_22_
+        var exists, segls, start, text, _316_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -316,6 +336,7 @@ ked [file]
         ked_session.set("editor▸file",this.currentFile)
         mode.fileLoaded(this.editor.state,this.currentFile,row,col,view)
         post.emit('file.loaded',this.currentFile)
+        this.showEditor()
         this.redraw()
         this.indexer.index(this.currentFile)
         prjcts.index(this.currentFile)
@@ -347,7 +368,7 @@ ked [file]
 
     KED.prototype["saveAs"] = function ()
     {
-        console.log('saveAs')
+        console.log('todo: saveAs')
     }
 
     KED.prototype["onPaste"] = function (text)
@@ -473,6 +494,10 @@ ked [file]
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             handler = list[_a_]
+            if (handler.hidden())
+            {
+                continue
+            }
             if (result = handler.onKey(key,event))
             {
                 break
@@ -507,7 +532,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var _447_22_
+        var _467_22_
 
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)

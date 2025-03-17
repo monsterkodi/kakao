@@ -22,6 +22,8 @@ function quicky extends inputchoice
     @: @screen @name='quicky'->
 
         super @screen @name ['mapview' 'scroll']
+        
+        @isVisible = false
 
         @crumbs = new crumbs  @screen 'quicky_crumbs'
 
@@ -53,8 +55,6 @@ function quicky extends inputchoice
         
         hs = int @screen.rows/2
         y  = int scy - hs/2 - ih
-        
-        log "crumbs.visible #{@crumbs.visible()}"
         
         cr = @crumbs.visible() ? 1 : 0
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())

@@ -1,9 +1,11 @@
 ###
-    00000000  000  000   000  0000000    00000000  00000000   
-    000       000  0000  000  000   000  000       000   000  
-    000000    000  000 0 000  000   000  0000000   0000000    
-    000       000  000  0000  000   000  000       000   000  
-    000       000  000   000  0000000    00000000  000   000  
+    ████████  ███  ███   ███  ███████    ████████  ████████   
+    ███       ███  ████  ███  ███   ███  ███       ███   ███  
+    ██████    ███  ███ █ ███  ███   ███  ███████   ███████    
+    ███       ███  ███  ████  ███   ███  ███       ███   ███  
+    ███       ███  ███   ███  ███████    ████████  ███   ███  
+
+    searches and highlights in the current fileeditor file 
 ###
 
 use ../../../kxk    ▪ post kseg kutil
@@ -16,6 +18,8 @@ function finder extends inputchoice
     @: @screen @state name='finder' ->
 
         super @screen name ['gutter' 'scroll']
+        
+        @isVisible = false
         
         post.on 'finder.show' @show if @name == 'finder'
         
@@ -177,9 +181,9 @@ function finder extends inputchoice
             'submit' ➜ ⮐  @apply @choices.current()
             'change'
                 if valid text
-                    ⮐ @show text
-                else
-                    ⮐ @choices.clear()
+                    ⮐  @show text
+                else   
+                    ⮐  @choices.clear()
             
         super action text
 

@@ -1,9 +1,11 @@
 ###
- 0000000  00000000   0000000   00000000    0000000  000   000  00000000  00000000 
-000       000       000   000  000   000  000       000   000  000       000   000
-0000000   0000000   000000000  0000000    000       000000000  0000000   0000000  
-     000  000       000   000  000   000  000       000   000  000       000   000
-0000000   00000000  000   000  000   000   0000000  000   000  00000000  000   000
+     ███████  ████████   ███████   ████████    ███████  ███   ███  ████████  ████████ 
+    ███       ███       ███   ███  ███   ███  ███       ███   ███  ███       ███   ███
+    ███████   ███████   █████████  ███████    ███       █████████  ███████   ███████  
+         ███  ███       ███   ███  ███   ███  ███       ███   ███  ███       ███   ███
+    ███████   ████████  ███   ███  ███   ███   ███████  ███   ███  ████████  ███   ███
+
+    searches in multiple files provided by index▸prjcts
 ###
 
 use ../../../kxk    ▪ post kseg slash
@@ -17,6 +19,8 @@ function searcher extends finder
     @: @screen @state ->
 
         super @screen @state 'searcher'
+        
+        @isVisible = false
         
         post.on 'searcher.show' @show
         post.on 'file.loaded' @onFileLoaded
@@ -76,10 +80,11 @@ function searcher extends finder
 
     onFileLoaded: file =>
     
+        @hide()
+        
         ⮐  if empty @fileToHighlight
         ⮐  if empty @textToHighlight
     
-        @hide()
         post.emit 'editor.highlight' @textToHighlight
         
         delete @fileToHighlight
@@ -199,6 +204,7 @@ function searcher extends finder
     apply: choice ->
         
         ⮐  @emitFileOpen(choice) if choice?.path
+        
         super choice
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███

@@ -81,7 +81,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, s, sl, sr, _75_17_
+        var g, m, s, sl, sr, _80_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -118,7 +118,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _89_21_, _90_21_, _91_23_
+        var ret, _94_21_, _95_21_, _96_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -140,7 +140,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _106_25_, _107_25_, _108_25_, _112_20_
+        var inside, res, _111_25_, _112_25_, _113_25_, _117_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -212,7 +212,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _178_20_, _182_21_, _187_21_
+        var _183_20_, _187_21_, _192_21_
 
         if (!this.hasFocus())
         {

@@ -4,6 +4,9 @@
     0000000    000   000  0000000    0000000    000      0000000   
     000   000  000   000  000   000  000   000  000      000       
     0000000     0000000   0000000    0000000    0000000  00000000  
+
+    displays some clickable text in a rounded 'bubble'
+    used by searcher to display file headings
 ###
 
 use ../../../kxk ▪ slash

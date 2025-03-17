@@ -1,9 +1,17 @@
 ###
-000   000  000  00000000  000   000
-000   000  000  000       000 0 000
- 000 000   000  0000000   000000000
-   000     000  000       000   000
-    0      000  00000000  00     00
+    ███   ███  ███  ████████  ███   ███ 
+    ███   ███  ███  ███       ███ █ ███ 
+     ███ ███   ███  ███████   █████████ 
+       ███     ███  ███       ███   ███ 
+        █      ███  ████████  ██     ██ 
+
+    keeps track of
+        - screen cells
+        - visibility
+        - theme colors
+        - view features
+        - mouse enter and leave
+        - current popup
 ###
 
 use ../../../kxk ▪ events post
@@ -20,7 +28,7 @@ function view extends events
         @color = {}
         @feats = {}
         @feats[f] = true for f in features
-        @isVisible = true    
+        @isVisible = true
         @focusable = false
                         
         post.on 'view.show' @onViewShow if @name in view.popups
@@ -64,7 +72,7 @@ function view extends events
     arrange: ->    
     hide:    -> @isVisible=false; post.emit 'view.hide' @name; redraw:true
     hidden:  -> not @visible()
-    visible: -> @isVisible and @cells.rows > 0 and @cells.cols > 0
+    visible: -> @isVisible #and @cells.rows > 0 and @cells.cols > 0
     toggle:  -> if @hidden() then @show() else @hide()
                 
     # 00     00   0000000   000   000   0000000  00000000  

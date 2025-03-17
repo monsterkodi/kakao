@@ -75,7 +75,7 @@ function funtree extends choices
     @: screen name features ->
         
         super screen name features
-                        
+        
         @state.syntax = new funSyntax @
         
         post.on 'file.loaded'     @clear

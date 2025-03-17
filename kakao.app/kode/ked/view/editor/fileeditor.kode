@@ -51,7 +51,8 @@ function fileeditor extends editor
         ◆ row       zero based line index to move the main cursor to
         ◆ col       optional column for the main cursor
         ◆ view      optional view offset
-    ###    
+    ###
+        
     onGotoLine: row col view =>
         
         mc = @state.mainCursor()
@@ -87,7 +88,7 @@ function fileeditor extends editor
                 ]
                 
     onContextChoice: choice =>
-        log 'fileeditor.onContextChoice' choice
+
         if choice.startsWith 'search'
             post.emit 'searcher.show' kstr.trim(choice[6..-2] " '")
         else if choice.startsWith 'find'

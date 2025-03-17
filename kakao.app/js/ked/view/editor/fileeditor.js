@@ -88,7 +88,6 @@ fileeditor = (function ()
 
     fileeditor.prototype["onContextChoice"] = function (choice)
     {
-        console.log('fileeditor.onContextChoice',choice)
         if (choice.startsWith('search'))
         {
             return post.emit('searcher.show',kstr.trim(choice.slice(6, -1)," '"))
@@ -101,7 +100,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _135_41_, _187_31_
+        var col, ret, row, start, x, y, _136_41_, _188_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

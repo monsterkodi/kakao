@@ -4,6 +4,8 @@
     ███  ████  ███████    ███████   ███████      ███     
     ███   ███  ███   ███  ███       ███          ███     
      ███████   ███   ███  ████████  ████████     ███     
+
+    the fancy glowing app name ascii art thingy
 ###
 
 use ../../../kxk    ▪ kstr post
@@ -19,6 +21,8 @@ function greet extends view
         
         super screen 'greet'
         
+        @isVisible = false
+                
         @header  = help.headerCells()
         @name    = 'greet'
         @a       = 120

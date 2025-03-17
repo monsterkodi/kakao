@@ -30,6 +30,7 @@ menu = (function ()
         this["hide"] = this["hide"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         menu.__super__.constructor.call(this,this.screen,'menu')
+        this.isVisible = false
         this.greet = new greet(this.screen)
     }
 
@@ -59,7 +60,10 @@ menu = (function ()
     {
         var ccol, items
 
-        this.greet.show(greet)
+        if (greet)
+        {
+            this.greet.show()
+        }
         items = belt.linesForText(`recent ...
 open ...
 new
@@ -97,7 +101,6 @@ quit`)
 
     menu.prototype["hide"] = function ()
     {
-        console.log('menu.hide')
         this.greet.hide()
         return menu.__super__.hide.call(this)
     }

@@ -113,7 +113,7 @@ view = (function ()
 
     view.prototype["visible"] = function ()
     {
-        return this.isVisible && this.cells.rows > 0 && this.cells.cols > 0
+        return this.isVisible
     }
 
     view.prototype["toggle"] = function ()

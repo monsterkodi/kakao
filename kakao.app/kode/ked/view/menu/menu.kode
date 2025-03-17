@@ -1,9 +1,11 @@
 ###
-    00     00  00000000  000   000  000   000    
-    000   000  000       0000  000  000   000    
-    000000000  0000000   000 0 000  000   000    
-    000 0 000  000       000  0000  000   000    
-    000   000  00000000  000   000   0000000     
+    ██     ██  ████████  ███   ███  ███   ███  
+    ███   ███  ███       ████  ███  ███   ███  
+    █████████  ███████   ███ █ ███  ███   ███  
+    ███ █ ███  ███       ███  ████  ███   ███  
+    ███   ███  ████████  ███   ███   ███████   
+
+    simple list of actions with optional greet
 ###
 
 use ../../../kxk    ▪ kstr slash post noon
@@ -18,6 +20,8 @@ function menu extends inputchoice
     @: @screen ->
         
         super @screen 'menu'
+        
+        @isVisible = false
         
         @greet = new greet @screen
         
@@ -58,7 +62,7 @@ function menu extends inputchoice
 
     show: greet=false ->
         
-        @greet.show greet
+        @greet.show() if greet
         
         items = belt.linesForText
             """
@@ -99,9 +103,8 @@ function menu extends inputchoice
 
         post.emit 'quicky.files' recent
         
-    hide: => 
+    hide: =>
     
-        log 'menu.hide'
         @greet.hide()
         super()
     

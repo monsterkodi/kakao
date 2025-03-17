@@ -63,9 +63,9 @@ statusfile = (function ()
 
     statusfile.prototype["adjustText"] = function ()
     {
-        var _60_14_
+        var _62_14_
 
-        this.file = ((_60_14_=this.file) != null ? _60_14_ : '')
+        this.file = ((_62_14_=this.file) != null ? _62_14_ : '')
         this.pars = slash.parse(this.file)
         this.syntax.clear()
         this.syntax.setLines(['/' + this.pars.file])

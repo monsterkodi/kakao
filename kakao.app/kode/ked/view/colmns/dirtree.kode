@@ -10,7 +10,6 @@ use ../../../kxk ▪ kutil kseg kstr slash post noon
 use ../../../kxk ◆ nfs
 use ../../index  ◆ prjcts 
 use ../../theme  ◆ theme icons
-use ../base      ◆ crumbs
 use ../menu      ◆ choices 
 
 import rgxs from '../menu/quicky.json' with { type: "json" }

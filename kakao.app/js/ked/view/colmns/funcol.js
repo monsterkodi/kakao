@@ -11,7 +11,6 @@ import theme from "../../theme/theme.js"
 
 import view from "../base/view.js"
 import knob from "../base/knob.js"
-import crumbs from "../base/crumbs.js"
 
 import funtree from "./funtree.js"
 

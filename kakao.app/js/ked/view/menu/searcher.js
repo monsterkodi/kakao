@@ -30,6 +30,7 @@ searcher = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         searcher.__super__.constructor.call(this,this.screen,this.state,'searcher')
+        this.isVisible = false
         post.on('searcher.show',this.show)
         post.on('file.loaded',this.onFileLoaded)
         this.sfils = []
@@ -93,6 +94,7 @@ searcher = (function ()
 
     searcher.prototype["onFileLoaded"] = function (file)
     {
+        this.hide()
         if (_k_.empty(this.fileToHighlight))
         {
             return
@@ -101,7 +103,6 @@ searcher = (function ()
         {
             return
         }
-        this.hide()
         post.emit('editor.highlight',this.textToHighlight)
         delete this.fileToHighlight
         return delete this.textToHighlight

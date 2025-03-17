@@ -124,13 +124,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _107_14_
+        var padding, _110_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_107_14_=this.path) != null ? _107_14_ : '')
+        this.path = ((_110_14_=this.path) != null ? _110_14_ : '')
         if (this.path === '')
         {
             this.rounded = ''
@@ -175,7 +175,7 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _154_26_
+        var col, index, path, row, si, _157_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 

@@ -26,6 +26,7 @@ finder = (function ()
         this["arrange"] = this["arrange"].bind(this)
         this["lineno"] = this["lineno"].bind(this)
         finder.__super__.constructor.call(this,this.screen,name,['gutter','scroll'])
+        this.isVisible = false
         if (this.name === 'finder')
         {
             post.on('finder.show',this.show)
@@ -73,7 +74,7 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _105_87_
+        var cursorLine, front, span, _109_87_
 
         if (_k_.empty(text))
         {
@@ -103,10 +104,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_105_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_109_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _105_87_ : 0))
+            })) != null ? _109_87_ : 0))
         }
         else
         {

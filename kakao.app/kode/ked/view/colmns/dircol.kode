@@ -21,7 +21,7 @@ function dircol extends view
         
         @knob    = new knob    screen "#{@name}_knob"
         @crumbs  = new crumbs  screen "#{@name}_crumbs"
-        @dirtree = new dirtree screen "#{@name}_dirtree" ['scroll']       
+        @dirtree = new dirtree screen "#{@name}_dirtree" ['scroll']
         
         @crumbs.on 'action' @onCrumbsAction
         
@@ -40,6 +40,7 @@ function dircol extends view
         post.on 'session.merge' @onSessionMerge
         
         root = ked_session.get 'dircol▸root' process.cwd()
+        
         @setRoot root
         
     onCrumbsAction: action path =>

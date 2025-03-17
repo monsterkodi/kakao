@@ -8,7 +8,7 @@
 
 use ../../../kxk ▪ post slash
 use ../../theme  ◆ color theme
-use ../base      ◆ view knob crumbs
+use ../base      ◆ view knob
 use              ◆ funtree
 
 function funcol extends view

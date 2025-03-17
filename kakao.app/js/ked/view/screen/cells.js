@@ -345,7 +345,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _150_16_, _158_20_, _159_20_
+        var bg, fg, x, y, _154_16_, _162_20_, _163_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -364,9 +364,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_150_16_=opt.pad) != null ? _150_16_ : [1,0])
-        fg = ((_158_20_=opt.fg) != null ? _158_20_ : '#888888')
-        bg = ((_159_20_=opt.bg) != null ? _159_20_ : null)
+        opt.pad = ((_154_16_=opt.pad) != null ? _154_16_ : [1,0])
+        fg = ((_162_20_=opt.fg) != null ? _162_20_ : '#888888')
+        bg = ((_163_20_=opt.bg) != null ? _163_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)

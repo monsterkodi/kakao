@@ -51,7 +51,7 @@ choices = (function ()
     {
         choices.__super__.setColor.call(this,key,color)
     
-        var _39_19_, _40_19_
+        var _48_19_, _49_19_
 
         if (key === 'bg')
         {
@@ -83,9 +83,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _60_15_
+        var lines, _69_15_
 
-        this.items = ((_60_15_=this.items) != null ? _60_15_ : [])
+        this.items = ((_69_15_=this.items) != null ? _69_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -190,14 +190,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _137_26_
+        var _146_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _138_26_
+        var _147_26_
 
         return (this.prevRow() != null)
     }
@@ -381,7 +381,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _281_21_
+        var col, dx, dy, ret, row, _290_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

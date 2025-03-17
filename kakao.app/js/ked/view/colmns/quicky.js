@@ -42,6 +42,7 @@ quicky = (function ()
         this["showFiles"] = this["showFiles"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,this.name,['mapview','scroll'])
+        this.isVisible = false
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.crumbs.padLast = true
         this.choices.state.syntax.setRgxs(rgxs)
@@ -65,7 +66,6 @@ quicky = (function ()
         iz = _k_.max(0,ih - 1)
         hs = parseInt(this.screen.rows / 2)
         y = parseInt(scy - hs / 2 - ih)
-        console.log(`crumbs.visible ${this.crumbs.visible()}`)
         cr = (this.crumbs.visible() ? 1 : 0)
         ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
         h = ch + ih + cr + 2

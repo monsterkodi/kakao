@@ -68,9 +68,9 @@ bubble = (function ()
 
     bubble.prototype["adjustText"] = function ()
     {
-        var _72_14_
+        var _75_14_
 
-        this.file = ((_72_14_=this.file) != null ? _72_14_ : '')
+        this.file = ((_75_14_=this.file) != null ? _75_14_ : '')
         this.pars = slash.parse(this.file)
         this.syntax.setLines(['/' + this.pars.file])
         return this.rounded = '' + this.pars.file + ''

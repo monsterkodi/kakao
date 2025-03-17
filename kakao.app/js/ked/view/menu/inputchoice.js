@@ -21,7 +21,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _26_23_
+        var _29_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -38,6 +38,7 @@ inputchoice = (function ()
         this.setColor('bg',theme.quicky_bg)
         this.setColor('frame',theme.quicky_frame)
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
+        this.choices.show()
         this.input.on('action',this.onInputAction)
         this.choices.on('action',this.onChoicesAction)
     }
@@ -83,7 +84,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _75_23_
+        var _80_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -140,9 +141,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _125_36_
+        var choice, _130_36_
 
-        choice = ((_125_36_=this.choices.current()) != null ? _125_36_ : this.input.current())
+        choice = ((_130_36_=this.choices.current()) != null ? _130_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

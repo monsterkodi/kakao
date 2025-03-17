@@ -27,6 +27,7 @@ greet = (function ()
         this["show"] = this["show"].bind(this)
         this["hide"] = this["hide"].bind(this)
         greet.__super__.constructor.call(this,screen,'greet')
+        this.isVisible = false
         this.header = help.headerCells()
         this.name = 'greet'
         this.a = 120

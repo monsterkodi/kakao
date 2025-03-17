@@ -1,9 +1,15 @@
 ###
-     0000000  000000000   0000000   000000000  00000000
-    000          000     000   000     000     000
-    0000000      000     000000000     000     0000000
-         000     000     000   000     000     000
-    0000000      000     000   000     000     00000000
+     ███████  █████████   ███████   █████████  ████████  
+    ███          ███     ███   ███     ███     ███       
+    ███████      ███     █████████     ███     ███████   
+         ███     ███     ███   ███     ███     ███       
+    ███████      ███     ███   ███     ███     ████████  
+
+    handles basic text editing for the editor
+    wraps text and editor state like cursors and selections 
+        in an immutable to simplify undo
+    delegates almost all text manipulation to pure functions
+        in tool▸belt to simplify testing
 ###
 
 use child_process os
