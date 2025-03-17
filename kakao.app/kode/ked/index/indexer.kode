@@ -100,7 +100,6 @@ class indexer
     addFuncInfo: funcName funcInfo ->
         
         if not funcName
-            # log "addFuncInfo #{funcName}" funcInfo
             ⮐ 
         
         if funcName.length > 1 and funcName.startsWith '@'
@@ -190,7 +189,7 @@ class indexer
     index: file opt ○=>
         
         ● indexFile
-        log "indexer.index #{file}" 
+        # log "indexer.index #{file}" 
         
         @removeFile file if opt?.refresh
 
@@ -336,18 +335,10 @@ class indexer
                     funcInfo.class ?= slash.name file
                     fileInfo.funcs.push funcInfo
 
-                # if opt?.post != false
-                    # post.emit 'classesCount' Object.keys(@classes).length
-                    # post.emit 'funcsCount'   Object.keys(@funcs).length
                 post.emit 'indexer.indexed' file fileInfo
 
             @files[file] = fileInfo
             
-            # log "indexer ▸▸▸ #{file}" fileInfo
-            
-            # if opt?.post != false
-            #     post.emit 'filesCount' Object.keys(@files).length
-
             @shiftQueue()
         @
 

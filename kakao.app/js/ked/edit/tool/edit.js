@@ -551,7 +551,7 @@ edit = (function ()
         newLines = _k_.copy(lines)
         newRngs = _k_.copy(rngs)
         newPosl = _k_.copy(posl)
-        console.log(`toggleCommentTypes ${indices}`)
+        console.log(`todo: toggleCommentTypes ${indices}`)
         return [newLines,newRngs,newPosl]
     }
 

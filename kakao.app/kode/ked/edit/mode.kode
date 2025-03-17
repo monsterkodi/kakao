@@ -66,12 +66,10 @@ function mode
     @autoStartForEditor: editor ->
         
         if empty mode.modes
-            # log "pending... #{editor.name}"
             ⮐  mode.pending.push editor
 
         for name in mode.names()
             if editor.feats[name] and mode.modes[name].autoStart
-                # log "autostart #{editor.name} #{name}"
                 mode.start editor.state name
 
     #  ███████  █████████   ███████   ████████   █████████

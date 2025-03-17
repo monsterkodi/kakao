@@ -338,8 +338,6 @@ function state
 
         view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
 
-        # width = belt.widthOfLines @s.lines
-        
         maxOffsetX = max 0 @maxLineWidth-@cells.cols+2
         maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+2
         view[0] = clamp 0 maxOffsetX view[0]
@@ -396,8 +394,6 @@ function state
     setView: view =>
         
         @set 'view' view
-        # if @name == 'editor.state' # ⟅𝕒𝓏𝛾 ⊂ℜ𝕒☡𝛾
-            # ked_session.set "editor▸view" view
         @
 
     rangeForVisibleLines: =>

@@ -138,14 +138,13 @@ function pair
             '[': ']'
             '{': '}'
             '(': ')'
-                   
-        opns = '[{(' #Object.keys(open).join ''
-        clos = ']})' #Object.values(open).join ''
-        # revs = kutil.fromPairs kutil.zip(clos opns)
         revs =
             ']': '['
             '}': '{'
             ')': '('
+            
+        opns = '[{(' 
+        clos = ']})' 
         
         maxLookups = 1000 # careful, increasing this drops performance significantly!
         

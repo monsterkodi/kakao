@@ -139,7 +139,7 @@ class indexer
 
     addFuncInfo (funcName, funcInfo)
     {
-        var funcInfos, _112_37_
+        var funcInfos, _111_37_
 
         if (!funcName)
         {
@@ -151,7 +151,7 @@ class indexer
             funcInfo.static = true
         }
         funcInfo.name = funcName
-        funcInfos = ((_112_37_=this.funcs[funcName]) != null ? _112_37_ : [])
+        funcInfos = ((_111_37_=this.funcs[funcName]) != null ? _111_37_ : [])
         if (!(_k_.isArr(funcInfos)))
         {
             funcInfos = []
@@ -235,7 +235,6 @@ class indexer
         var fileExt, isCpp, isHpp, isJS
 
         _k_.profile('indexFile')
-        console.log(`indexer.index ${file}`)
         if ((opt != null ? opt.refresh : undefined))
         {
             this.removeFile(file)
@@ -256,7 +255,7 @@ class indexer
         isJS = _k_.in(fileExt,['js','mjs'])
         nfs.read(file).then((function (text)
         {
-            var bound, boundIndex, className, cnt, currentClass, fileInfo, funcAdded, funcInfo, funcName, funcStack, indent, li, line, lines, m, methodName, unbndIndex, word, words, _246_47_, _307_51_, _335_35_, _336_35_
+            var bound, boundIndex, className, cnt, currentClass, fileInfo, funcAdded, funcInfo, funcName, funcStack, indent, li, line, lines, m, methodName, unbndIndex, word, words, _245_47_, _306_51_, _334_35_, _335_35_
 
             if (_k_.empty(text))
             {
@@ -295,7 +294,7 @@ class indexer
                         {
                             _k_.last(funcStack)[1].last = li - 1
                             funcInfo = funcStack.pop()[1]
-                            funcInfo.class = ((_246_47_=funcInfo.class) != null ? _246_47_ : slash.name(file))
+                            funcInfo.class = ((_245_47_=funcInfo.class) != null ? _245_47_ : slash.name(file))
                             fileInfo.funcs.push(funcInfo)
                         }
                         if ((currentClass != null))
@@ -344,7 +343,7 @@ class indexer
                         word = list[_c_]
                         if (indexer.testWord(word))
                         {
-                            cnt = ((_307_51_=this.words[word]) != null ? _307_51_ : 0)
+                            cnt = ((_306_51_=this.words[word]) != null ? _306_51_ : 0)
                             this.words[word] = cnt + 1
                         }
                         switch (word)
@@ -370,8 +369,8 @@ class indexer
                 {
                     _k_.last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
-                    funcInfo.class = ((_335_35_=funcInfo.class) != null ? _335_35_ : slash.name(funcInfo.file))
-                    funcInfo.class = ((_336_35_=funcInfo.class) != null ? _336_35_ : slash.name(file))
+                    funcInfo.class = ((_334_35_=funcInfo.class) != null ? _334_35_ : slash.name(funcInfo.file))
+                    funcInfo.class = ((_335_35_=funcInfo.class) != null ? _335_35_ : slash.name(file))
                     fileInfo.funcs.push(funcInfo)
                 }
                 post.emit('indexer.indexed',file,fileInfo)

@@ -192,9 +192,9 @@ pair = (function ()
         var ap, bp, clos, closeEncounters, cnt, firstClose, lastOpen, maxLookups, next, open, openEncounters, opns, prev, revs, stack
 
         open = {'[':']','{':'}','(':')'}
+        revs = {']':'[','}':'{',')':'('}
         opns = '[{('
         clos = ']})'
-        revs = {']':'[','}':'{',')':'('}
         maxLookups = 1000
         bp = [pos[0],pos[1]]
         if (!(_k_.in(lines[bp[1]][bp[0]],opns)))

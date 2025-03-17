@@ -380,7 +380,6 @@ function edit
             
             [indent line] = @splitLineIndent newLines[index]
             if comment
-                # indent  = indent.length > minIndent ? lpad(indent.length-minIndent) : ''
                 indent  = kseg.repeat indent.length-minIndent
                 newLine = kseg.join comIndent comment indent ' ' line
             else
@@ -398,7 +397,7 @@ function edit
         newRngs  = copy rngs
         newPosl  = copy posl
         
-        log "toggleCommentTypes #{indices}"
+        log "todo: toggleCommentTypes #{indices}"
         
         [newLines newRngs newPosl]  
         

@@ -122,7 +122,6 @@ function cell
     
     @cellsInRect: cells x1 y1 x2 y2 ->
         
-        # [x1 y1 x2 y2] = @wrapCellRect cells x1 y1 x2 y2
         [x1 y1 x2 y2] = @clampCellRect cells x1 y1 x2 y2
         
         res = []
