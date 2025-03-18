@@ -31,7 +31,7 @@ function KED
         @args = karg """
             
             ked [file]
-                options                      **
+                options                                       **
                 new        start with empty buffer          = false
                 fresh      don't load previous session      = false
                 timeout    session save timeout in ms       = 1000
@@ -153,8 +153,8 @@ function KED
         dcw = @dircol.cells.cols
         fcw = @funcol.cells.cols
         
-        dcw = 0 if @dircol.hidden()
-        fcw = 0 if @funcol.hidden()
+        dcw = 0 if @dircol.hidden() or not @dircol.active
+        fcw = 0 if @funcol.hidden() or not @funcol.active
         
         if @viewSizeDelta
             switch @viewSizeDelta.name
@@ -162,8 +162,8 @@ function KED
                 @funcol.name ➜ fcw = @funcol.cells.cols + @viewSizeDelta.delta
             delete @viewSizeDelta
         
-        @dircol.layout  0     0  dcw        h    if @dircol.visible()
-        @funcol.layout  w-fcw 1  fcw        h-1  if @funcol.visible()
+        @dircol.layout  0     0  dcw        h    if @dircol.visible() and @dircol.active
+        @funcol.layout  w-fcw 1  fcw        h-1  if @funcol.visible() and @funcol.active
         @status.layout  dcw   0  w-dcw      1
         @editor.layout  dcw   1  w-dcw-fcw  h-1
     
@@ -185,7 +185,7 @@ function KED
 
         if msg?
             error msg.stack if msg.stack
-            error "#{y5 msg}" #noon(msg) 
+            error "#{y5 msg}"
         
         @t?.quit()
         
@@ -226,7 +226,7 @@ function KED
     onFileChange: event =>
     
         if event.path == @currentFile
-            # log "ked.onFileChange #{event.change} #{@currentFile}" 
+
             switch event.change
                 'delete' ➜ @newFile() # todo: load current text into new file
                 'rename' ➜ @reloadFile()
@@ -271,7 +271,6 @@ function KED
             file = slash.absolute path slash.dir(@currentFile)
         
         ⮐  if slash.samePath(file @currentFile)
-            # @redraw()
         
         ○ @loadFile file
                                 
@@ -288,10 +287,14 @@ function KED
         start = process.hrtime()
         
         if slash.isAbsolute p
-            @loadingFile = slash.absolute p
+            absFile = slash.absolute p
         else
-            @loadingFile = slash.path process.cwd() p
-
+            absFile = slash.path process.cwd() p
+            
+        ⮐ if slash.samePath absFile @loadingFile
+        
+        @loadingFile = absFile
+        
         exists =○ nfs.fileExists @loadingFile
         
         if not exists
@@ -306,8 +309,6 @@ function KED
         @currentFile = @loadingFile
 
         delete @loadingFile
-
-        # log "ked.loadFile #{@currentFile}"
         
         @status.setFile slash.tilde(@currentFile)
         

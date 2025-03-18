@@ -34,6 +34,7 @@ dircol = (function ()
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         dircol.__super__.constructor.call(this,screen,name,features)
         this.isVisible = false
+        this.active = true
         this.pointerType = 'pointer'
         this.knob = new knob(screen,`${this.name}_knob`)
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
@@ -97,7 +98,7 @@ dircol = (function ()
 
     dircol.prototype["draw"] = function ()
     {
-        if (this.hidden() || this.collapsed())
+        if (this.hidden() || this.collapsed() || !this.active)
         {
             return
         }
@@ -131,6 +132,7 @@ dircol = (function ()
         {
             this.toggle()
         }
+        this.active = this.visible()
         cols = _k_.max(16,parseInt(this.cells.screen.cols / 6))
         return post.emit('view.size',this.name,'right',((this.hidden() ? -this.cells.cols : cols - this.cells.cols)))
     }
@@ -139,7 +141,7 @@ dircol = (function ()
     {
         var ret
 
-        if (this.hidden() || this.collapsed())
+        if (this.hidden() || this.collapsed() || !this.active)
         {
             return
         }
@@ -167,7 +169,7 @@ dircol = (function ()
 
     dircol.prototype["onWheel"] = function (event)
     {
-        if (this.hidden() || this.collapsed())
+        if (this.hidden() || this.collapsed() || !this.active)
         {
             return
         }

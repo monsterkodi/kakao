@@ -100,7 +100,7 @@ status = (function ()
                         post.emit('dircol.toggle')
                         return {redraw:true}
                     }
-                    if ((this.cells.cols - 4 <= col && col < this.cells.cols))
+                    if ((this.cells.cols - 12 <= col && col < this.cells.cols))
                     {
                         post.emit('funcol.toggle')
                         return {redraw:true}
@@ -116,6 +116,10 @@ status = (function ()
     {
         this.file = file
     
+        if (_k_.empty(this.file))
+        {
+            return
+        }
         this.crumbs.set(slash.dir(this.file))
         return this.statusfile.set(this.file)
     }

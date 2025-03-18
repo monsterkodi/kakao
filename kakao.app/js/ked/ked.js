@@ -71,7 +71,7 @@ KED = (function ()
         this.version = '0.6.0'
         this.args = karg(`
 ked [file]
-    options                      **
+    options                                       **
     new        start with empty buffer          = false
     fresh      don't load previous session      = false
     timeout    session save timeout in ms       = 1000
@@ -185,11 +185,11 @@ ked [file]
         h = this.t.rows()
         dcw = this.dircol.cells.cols
         fcw = this.funcol.cells.cols
-        if (this.dircol.hidden())
+        if (this.dircol.hidden() || !this.dircol.active)
         {
             dcw = 0
         }
-        if (this.funcol.hidden())
+        if (this.funcol.hidden() || !this.funcol.active)
         {
             fcw = 0
         }
@@ -207,11 +207,11 @@ ked [file]
 
             delete this.viewSizeDelta
         }
-        if (this.dircol.visible())
+        if (this.dircol.visible() && this.dircol.active)
         {
             this.dircol.layout(0,0,dcw,h)
         }
-        if (this.funcol.visible())
+        if (this.funcol.visible() && this.funcol.active)
         {
             this.funcol.layout(w - fcw,1,fcw,h - 1)
         }
@@ -325,17 +325,22 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var exists, segls, start, text, _326_22_
+        var absFile, exists, segls, start, text, _327_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
         {
-            this.loadingFile = slash.absolute(p)
+            absFile = slash.absolute(p)
         }
         else
         {
-            this.loadingFile = slash.path(process.cwd(),p)
+            absFile = slash.path(process.cwd(),p)
         }
+        if (slash.samePath(absFile,this.loadingFile))
+        {
+            return
+        }
+        this.loadingFile = absFile
         exists = await nfs.fileExists(this.loadingFile)
         if (!exists)
         {
@@ -542,7 +547,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _474_22_
+        var mcw, _475_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

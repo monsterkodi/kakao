@@ -161,6 +161,7 @@ function quicky extends inputchoice
     showPathItems: items select ->
 
         @input.set ''
+        @input.hide()
         
         selectIndex = 0
         
@@ -179,7 +180,6 @@ function quicky extends inputchoice
         @choices.state.setMainCursor 0 selectIndex
         @choices.state.setView [0 0]
         
-        # log "#{@name} showPathItems #{items.length}"
         @show()
         @choices.grabFocus()
         
@@ -308,8 +308,6 @@ function quicky extends inputchoice
     
     onChoicesAction: action choice =>
     
-        # log "#{@name} onChoicesAction" action choice @currentDir
-            
         switch action
             
             'right' 

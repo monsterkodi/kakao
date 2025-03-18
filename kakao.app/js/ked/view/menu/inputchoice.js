@@ -21,7 +21,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _29_23_
+        var _31_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -33,6 +33,7 @@ inputchoice = (function ()
         this["show"] = this["show"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         inputchoice.__super__.constructor.call(this,this.screen,this.name,features)
+        this.autoHideInput = true
         this.input = new input(this.screen,`${this.name}_input`)
         this.choices = new choices(this.screen,`${this.name}_choices`,features)
         this.setColor('bg',theme.quicky_bg)
@@ -85,7 +86,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _82_23_
+        var _84_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -142,9 +143,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _132_36_
+        var choice, _134_36_
 
-        choice = ((_132_36_=this.choices.current()) != null ? _132_36_ : this.input.current())
+        choice = ((_134_36_=this.choices.current()) != null ? _134_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -176,7 +177,6 @@ inputchoice = (function ()
         bg = this.color.bg
         if (this.input.visible())
         {
-            console.log(`${this.name} drawDivider`)
             return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
         }
         else
@@ -194,7 +194,11 @@ inputchoice = (function ()
         }
         else
         {
-            return this.choices.grabFocus()
+            this.choices.grabFocus()
+            if (this.autoHideInput && !this.inputIsActive())
+            {
+                return this.input.hide()
+            }
         }
     }
 
@@ -225,11 +229,19 @@ inputchoice = (function ()
             }
             else
             {
+                if (this.autoHideInput && !this.inputIsActive())
+                {
+                    this.input.hide()
+                }
                 return result
             }
         }
         if (result = this.input.onKey(key,event))
         {
+            if (this.autoHideInput && !this.inputIsActive())
+            {
+                this.input.hide()
+            }
             return result
         }
         return true

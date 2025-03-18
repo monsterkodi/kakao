@@ -63,6 +63,7 @@ function context extends inputchoice
         @width = belt.widthOfLines items
         
         @input.set ''
+        @input.hide()
         @choices.set items
         @choices.select 0
         @choices.state.setView [0 0]

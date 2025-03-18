@@ -20,6 +20,8 @@ function inputchoice extends view
 
         super @screen @name features
         
+        @autoHideInput = true
+        
         @input   = new input   @screen "#{@name}_input"
         @choices = new choices @screen "#{@name}_choices" features
         
@@ -157,7 +159,6 @@ function inputchoice extends view
         bg = @color.bg
         
         if @input.visible()
-            log "#{@name} drawDivider"
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
         else
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg
@@ -169,6 +170,7 @@ function inputchoice extends view
             @input.selectAll()
         else
             @choices.grabFocus()
+            @input.hide() if @autoHideInput and not @inputIsActive()
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000
@@ -196,11 +198,13 @@ function inputchoice extends view
             if event.char and event.char not in ' \n'
                 @input.grabFocus()
             else
+                @input.hide() if @autoHideInput and not @inputIsActive()
                 ⮐  result
              
         if result = @input.onKey key event
             
             # @choices.grabFocus() if empty @input.current()
+            @input.hide() if @autoHideInput and not @inputIsActive()
             
             ⮐  result
 

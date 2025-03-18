@@ -73,7 +73,7 @@ function filepos
             
     goBackward: ->
     
-        # log "goBackward #{filepos.fileposl.length}" filepos.fileposl
+        log "goBackward #{filepos.fileposl.length}" filepos.fileposl
     
         ⮐  if filepos.fileposl.length < 2
         

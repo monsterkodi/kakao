@@ -18,6 +18,7 @@ function funcol extends view
         super screen name features
         
         @isVisible = false
+        @active    = false
         
         @pointerType = 'pointer'
         
@@ -57,7 +58,7 @@ function funcol extends view
 
     draw: ->
         
-        ⮐  if @hidden() or @collapsed()
+        ⮐  if @hidden() or @collapsed() or not @active
         
         @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
         @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
@@ -89,7 +90,7 @@ function funcol extends view
     onFuncolToggle: => 
     
         @toggle() if not (@visible() and @collapsed())
-
+        @active = @visible()
         cols = max 16 int(@cells.screen.cols / 6)
         post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
         
@@ -101,7 +102,7 @@ function funcol extends view
   
     onMouse: event =>
     
-        ⮐  if @hidden() or @collapsed()
+        ⮐  if @hidden() or @collapsed() or not @active
         
         ret = super event            ; ⮐  ret if ret?.redraw
         ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
@@ -115,7 +116,7 @@ function funcol extends view
     
     onWheel: event =>
         
-        ⮐  if @hidden() or @collapsed()
+        ⮐  if @hidden() or @collapsed() or not @active
         @funtree.onWheel event
         
     # 000   000  00000000  000   000  

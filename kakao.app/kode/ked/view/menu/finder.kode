@@ -20,6 +20,7 @@ function finder extends inputchoice
         super @screen name ['gutter' 'scroll']
         
         @isVisible = false
+        @autoHideInput = false
         
         post.on 'finder.show' @show if @name == 'finder'
         

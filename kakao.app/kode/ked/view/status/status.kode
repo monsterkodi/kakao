@@ -77,7 +77,7 @@ function status extends view
                     if 0 <= col < 4
                         post.emit 'dircol.toggle'
                         ⮐  redraw:true
-                    if @cells.cols-4 <= col < @cells.cols
+                    if @cells.cols-12 <= col < @cells.cols
                         post.emit 'funcol.toggle'
                         ⮐  redraw:true
                     
@@ -91,6 +91,7 @@ function status extends view
     
     setFile: @file => 
         
+        ⮐ if empty @file
         @crumbs.set slash.dir(@file)
         @statusfile.set @file
         

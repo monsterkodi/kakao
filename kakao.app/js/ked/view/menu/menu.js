@@ -84,6 +84,7 @@ quit`)
         ccol = parseInt(this.screen.cols / 2) - 5
         this.width = belt.widthOfLines(items)
         this.input.set('')
+        this.input.hide()
         this.choices.set(items)
         this.choices.select(0)
         this.choices.state.setView([0,0])

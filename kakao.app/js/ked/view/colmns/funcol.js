@@ -28,6 +28,7 @@ funcol = (function ()
         this["onContext"] = this["onContext"].bind(this)
         funcol.__super__.constructor.call(this,screen,name,features)
         this.isVisible = false
+        this.active = false
         this.pointerType = 'pointer'
         this.knob = new knob(screen,`${this.name}_knob`)
         this.funtree = new funtree(screen,`${this.name}_funtree`,['scrllr'])
@@ -51,7 +52,7 @@ funcol = (function ()
 
     funcol.prototype["draw"] = function ()
     {
-        if (this.hidden() || this.collapsed())
+        if (this.hidden() || this.collapsed() || !this.active)
         {
             return
         }
@@ -84,6 +85,7 @@ funcol = (function ()
         {
             this.toggle()
         }
+        this.active = this.visible()
         cols = _k_.max(16,parseInt(this.cells.screen.cols / 6))
         return post.emit('view.size',this.name,'left',((this.hidden() ? -this.cells.cols : cols - this.cells.cols)))
     }
@@ -92,7 +94,7 @@ funcol = (function ()
     {
         var ret
 
-        if (this.hidden() || this.collapsed())
+        if (this.hidden() || this.collapsed() || !this.active)
         {
             return
         }
@@ -115,7 +117,7 @@ funcol = (function ()
 
     funcol.prototype["onWheel"] = function (event)
     {
-        if (this.hidden() || this.collapsed())
+        if (this.hidden() || this.collapsed() || !this.active)
         {
             return
         }

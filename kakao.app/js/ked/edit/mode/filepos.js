@@ -70,6 +70,7 @@ filepos = (function ()
     {
         var fp, offset
 
+        console.log(`goBackward ${filepos.fileposl.length}`,filepos.fileposl)
         if (filepos.fileposl.length < 2)
         {
             return
