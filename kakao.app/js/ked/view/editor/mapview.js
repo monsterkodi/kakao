@@ -54,8 +54,8 @@ mapview = (function ()
 
     mapview.prototype["show"] = function ()
     {
+        console.log(`${this.name} show ${this.cells.cols} ${this.cells.rows}`)
         mapview.__super__.show.call(this)
-    
         if (!_k_.empty(this.images))
         {
             return this.drawImages()
@@ -70,7 +70,6 @@ mapview = (function ()
         {
             return
         }
-        console.log(`${this.name} hide ${this.cells.cols} ${this.cells.rows} ${this.images.length}`)
         var list = _k_.list(this.images)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -237,6 +236,10 @@ mapview = (function ()
 
     mapview.prototype["draw"] = function ()
     {
+        if (this.hidden())
+        {
+            return
+        }
         return this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,'#000')
     }
 

@@ -20,6 +20,9 @@
 #### todo
 ##### todo
 
+- alt+cmd+'       replace surrounding string delimiters with '
+- shift+alt+cmd+' replace surrounding string delimiters with "
+
 - completion
     - fix
         - no completion when converting string delimiters

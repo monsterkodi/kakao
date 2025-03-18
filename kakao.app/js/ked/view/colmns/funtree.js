@@ -100,14 +100,14 @@ funtree = (function ()
     _k_.extend(funtree, choices)
     function funtree (screen, name, features)
     {
-        this["onIndex"] = this["onIndex"].bind(this)
+        this["onFileIndexed"] = this["onFileIndexed"].bind(this)
         funtree.__super__.constructor.call(this,screen,name,features)
         this.state.syntax = new funSyntax(this)
         post.on('file.loaded',this.clear)
-        post.on('indexer.indexed',this.onIndex)
+        post.on('file.indexed',this.onFileIndexed)
     }
 
-    funtree.prototype["onIndex"] = function (path, info)
+    funtree.prototype["onFileIndexed"] = function (path, info)
     {
         var clss, clssl, func, funcs, items, name, symbol, _96_22_
 
@@ -151,7 +151,8 @@ funtree = (function ()
         {
             return a.line - b.line
         })
-        return this.set(items,'name')
+        this.set(items,'name')
+        return post.emit('redraw')
     }
 
     funtree.prototype["emitAction"] = function (action, arg, event)

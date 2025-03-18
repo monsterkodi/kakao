@@ -96,10 +96,7 @@ class prjcts
             return
         }
         this.indexing = prjPath
-        walk = new walker({root:prjPath,maxDepth:12,maxFiles:10000,file:(function (f)
-        {
-            return post.emit('prjcts.file.indexed',f)
-        }).bind(this)})
+        walk = new walker({root:prjPath,maxDepth:12,maxFiles:10000})
         result = await walk.start()
         if (result)
         {
@@ -110,7 +107,7 @@ class prjcts
                 file = list[_a_]
                 this.allFiles[file] = prjPath
             }
-            post.emit('prjcts.project.indexed',prjPath)
+            post.emit('project.indexed',prjPath)
         }
         delete this.indexing
         if (!_k_.empty(this.queue))

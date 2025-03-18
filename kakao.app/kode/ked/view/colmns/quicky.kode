@@ -238,8 +238,6 @@ function quicky extends inputchoice
             
     hideMap: -> 
     
-        log "#{@name} hideMap"
-    
         @choices.mapscr.hide()
     
     # 00     00   0000000   000   000   0000000  00000000  

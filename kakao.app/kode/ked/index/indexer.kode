@@ -6,7 +6,7 @@
 000  000   000  0000000    00000000  000   000  00000000  000   000
 ###
 
-use ../../kxk ▪ pickBy pullIf deleteBy sds matchr slash post
+use ../../kxk ▪ pickBy pullIf deleteBy kstr sds matchr slash post
 use ../../kxk ◆ nfs
 
 # use ◆ walker #IndexHpp IndexJS IndexMM IndexStyl
@@ -52,7 +52,7 @@ class indexer
         
         m?[1]
         
-    @file: file -> indexer.files[file]
+    @file: file -> indexer.singleton.files[file]
         
     # 000000000  00000000   0000000  000000000  000   000   0000000   00000000   0000000    
     #    000     000       000          000     000 0 000  000   000  000   000  000   000  
@@ -79,12 +79,13 @@ class indexer
     
     @: ->
         
-        post.on 'index'       (file) => @indexFile file
-        post.on 'saved'       (file) => @indexFile file refresh: true
+        indexer.singleton = @
+        
+        post.on 'index'       (file) => @index file
         post.on 'file.change' (info) => 
             if @files[info.path]
-                log "refresh on file.change #{info.path}"
-                @indexFile file refresh: true
+                log "indexer file.change #{info.path}"
+                @index info.path refresh:true
         
         @imageExtensions = ['png' 'jpg' 'gif' 'tiff' 'pxm' 'icns']        
 
@@ -103,8 +104,7 @@ class indexer
 
     addFuncInfo: funcName funcInfo ->
         
-        if not funcName
-            ⮐ 
+        ⮐  if not funcName
         
         if funcName.length > 1 and funcName.startsWith '@'
             funcName = funcName.slice 1
@@ -157,32 +157,32 @@ class indexer
     # 000   000  000        000        000         000     000  000  0000  000   000  000        000 000   000       000   000  
     # 000   000  000        000        0000000     000     000  000   000  0000000    00000000  000   000  00000000  000   000  
     
-    applyIndexer: file fileInfo text IndexerClass ->
-                
-        indexer = new IndexerClass
-        parsed = indexer.parse text
-        
-        funcAdded = not empty(parsed.classes) or not empty(parsed.funcs)
-        
-        for clss in parsed.classes
-            
-            sds.set @classes "#{clss.name}.file" file
-            sds.set @classes "#{clss.name}.line" clss.line+1
-            
-            fileInfo.classes.push 
-                name: clss.name
-                line: clss.line+1
-                
-        for func in parsed.funcs
-            # this is ugly as fuck, consider fixing it!
-            if func.method
-                funcInfo = @addMethod func.class func.method file func.line func.async func.bound func.static
-            else
-                func.line = func.line+1
-                func.file = file
-                funcInfo = @addFuncInfo func.name func
-                
-            fileInfo.funcs.push funcInfo
+    #applyIndexer: file fileInfo text IndexerClass ->
+    #            
+    #    indexr = new IndexerClass
+    #    parsed = indexr.parse text
+    #    
+    #    funcAdded = not empty(parsed.classes) or not empty(parsed.funcs)
+    #    
+    #    for clss in parsed.classes
+    #        
+    #        sds.set @classes "#{clss.name}.file" file
+    #        sds.set @classes "#{clss.name}.line" clss.line+1
+    #        
+    #        fileInfo.classes.push 
+    #            name: clss.name
+    #            line: clss.line+1
+    #            
+    #    for func in parsed.funcs
+    #        # this is ugly as fuck, consider fixing it!
+    #        if func.method
+    #            funcInfo = @addMethod func.class func.method file func.line func.async func.bound func.static
+    #        else
+    #            func.line = func.line+1
+    #            func.file = file
+    #            funcInfo = @addFuncInfo func.name func
+    #            
+    #        fileInfo.funcs.push funcInfo
             
     # 000  000   000  0000000    00000000  000   000
     # 000  0000  000  000   000  000        000 000 
@@ -194,38 +194,48 @@ class indexer
         
         # ● indexFile
         
-        @removeFile file if opt?.refresh
-
-        if @files[file]?
-            post.emit 'indexer.indexed' file @files[file]
+        if @files[file]? and not opt?.refresh
+            # log "index.cached #{slash.file file}"
+            post.emit 'file.indexed' file @files[file]
             ⮐  @shiftQueue()
 
-        log "indexer.index #{file}" 
+        # log "indexer.index #{file}" 
         
         fileExt = slash.ext file 
 
         if fileExt in @imageExtensions
             @files[file] = {}
             ⮐  @shiftQueue()
-            
-        isCpp = fileExt in ['cpp' 'cc' 'c' 'frag' 'vert']
-        isHpp = fileExt in ['hpp' 'h' ]
-        isJS  = fileExt in ['js' 'mjs']
-        
+                    
         nfs.read(file).then (text) =>
+        
+            ⮐  @shiftQueue() if empty text
             
-            ⮐  if empty text
+            # ●▸ hash
+            hash = kstr.hash text
+            # ●▪ hash
             
+            if @files[file]?.hash == hash
+                # log "index.match #{slash.file file}"
+                post.emit 'file.indexed' file @files[file]
+                ⮐  @shiftQueue()
+            
+            # ●▸ index
             lines = text.split /\r?\n/
             
             fileInfo =
-                lines: lines.length
-                funcs: []
+                lines:   lines.length
+                funcs:   []
                 classes: []
+                hash:    hash
                 
             funcAdded = false
             funcStack = []
             currentClass = null
+            
+            isCpp = fileExt in ['cpp' 'cc' 'c' 'frag' 'vert']
+            isHpp = fileExt in ['hpp' 'h' ]
+            isJS  = fileExt in ['js' 'mjs']
             
             if 
                 
@@ -340,9 +350,11 @@ class indexer
                     funcInfo.class ?= slash.name file
                     fileInfo.funcs.push funcInfo
 
-                post.emit 'indexer.indexed' file fileInfo
+                post.emit 'file.indexed' file fileInfo
 
             @files[file] = fileInfo
+            
+            # ●▪ index
             
             @shiftQueue()
         @
@@ -356,7 +368,6 @@ class indexer
     shiftQueue: =>
         
         if @queue.length
-            file = @queue.shift()
-            @indexFile file
+            @indexFile @queue.shift()
 
 export indexer

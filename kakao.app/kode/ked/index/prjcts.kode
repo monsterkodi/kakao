@@ -82,7 +82,7 @@ class prjcts
             root:     prjPath
             maxDepth: 12
             maxFiles: 10000
-            file:     (f) => post.emit 'prjcts.file.indexed' f
+            # file:     (f) => post.emit 'prjcts.file.indexed' f
                   
         # log 'start walker'
         result =○ walk.start()
@@ -94,7 +94,7 @@ class prjcts
                 
             # log 'prjcts.index ▪' prjcts.projects
 
-            post.emit 'prjcts.project.indexed' prjPath
+            post.emit 'project.indexed' prjPath
         
         delete @indexing
         

@@ -78,8 +78,8 @@ function funtree extends choices
         
         @state.syntax = new funSyntax @
         
-        post.on 'file.loaded'     @clear
-        post.on 'indexer.indexed' @onIndex
+        post.on 'file.loaded'  @clear
+        post.on 'file.indexed' @onFileIndexed
         
     #  ███████   ███   ███        ███  ███   ███  ███████    ████████  ███   ███
     # ███   ███  ████  ███        ███  ████  ███  ███   ███  ███        ███ ███ 
@@ -87,7 +87,7 @@ function funtree extends choices
     # ███   ███  ███  ████        ███  ███  ████  ███   ███  ███        ███ ███ 
     #  ███████   ███   ███        ███  ███   ███  ███████    ████████  ███   ███
 
-    onIndex: path info =>
+    onFileIndexed: path info =>
     
         clssl = clone info.classes
         funcs = clone info.funcs
@@ -112,6 +112,7 @@ function funtree extends choices
         items.sort (a b) -> a.line - b.line
         
         @set items 'name'
+        post.emit 'redraw'
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
