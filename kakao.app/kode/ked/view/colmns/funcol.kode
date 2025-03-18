@@ -86,7 +86,8 @@ function funcol extends view
     onFuncolResize: => @knob.doDrag = true
     onFuncolToggle: => 
         
-        post.emit 'view.size' @name [(@hidden() ? int(@knob.maxWidth/3) : 0) 0]
+        @toggle()
+        post.emit 'view.size' @name [(@hidden() ? 0 : int(@knob.maxWidth/3)) @cells.rows]
         
     onMouse: event =>
         

@@ -77,7 +77,8 @@ funcol = (function ()
 
     funcol.prototype["onFuncolToggle"] = function ()
     {
-        return post.emit('view.size',this.name,[((this.hidden() ? parseInt(this.knob.maxWidth / 3) : 0)),0])
+        this.toggle()
+        return post.emit('view.size',this.name,[((this.hidden() ? 0 : parseInt(this.knob.maxWidth / 3))),this.cells.rows])
     }
 
     funcol.prototype["onMouse"] = function (event)

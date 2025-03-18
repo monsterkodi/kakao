@@ -107,7 +107,8 @@ function dircol extends view
     onDircolResize: => @knob.doDrag = true
     onDircolToggle: => 
         
-        post.emit 'view.size' @name [(@hidden() ? int(@knob.maxWidth/3) : 0) 0]
+        @toggle()
+        post.emit 'view.size' @name [(@hidden() ? 0 : int(@knob.maxWidth/3)) @cells.rows]
         
     onMouse: event =>
         
