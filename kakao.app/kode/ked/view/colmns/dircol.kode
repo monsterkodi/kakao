@@ -58,6 +58,9 @@ function dircol extends view
         if root = recent.dircol.root
             @setRoot root
             
+        if recent.dircol.active
+            @active = true
+            
     setRoot: path =>
     
         ⮐  if empty path
@@ -68,7 +71,7 @@ function dircol extends view
         
         ked_session.set 'dircol▸root' path
         
-    layout: x y w h ->
+    layout: x y w h =>
         
         @crumbs.layout  x     y   w   1
         @dirtree.layout x     y+1 w h-1
@@ -76,7 +79,7 @@ function dircol extends view
         
         super x y w h
         
-    draw: ->
+    draw: =>
         
         ⮐  if @hidden() or @collapsed() or not @active
         
@@ -112,6 +115,7 @@ function dircol extends view
         
         @toggle() if not (@visible() and @collapsed())
         @active = @visible()
+        ked_session.set 'dircol▸active' @active
         cols = max 16 int(@cells.screen.cols / 6)
         post.emit 'view.size' @name 'right' (@hidden() ? -@cells.cols : cols-@cells.cols )
         

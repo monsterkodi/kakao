@@ -75,7 +75,7 @@ function quicky extends inputchoice
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000  00     00
 
-    draw: ->
+    draw: =>
 
         ⮐  if @hidden()
          
@@ -102,7 +102,7 @@ function quicky extends inputchoice
     # 000        000   000  000   000  000   000  000       000          000     000       000  000      000            000  
     # 000        000   000   0000000    0000000   00000000   0000000     000     000       000  0000000  00000000  0000000   
     
-    showProjectFiles: @currentFile ->
+    showProjectFiles: @currentFile =>
         
         items  = prjcts.files @currentFile
         prjDir = prjcts.dir @currentFile
@@ -144,7 +144,7 @@ function quicky extends inputchoice
 
         @calcWidthAndShowPathItems items
         
-    calcWidthAndShowPathItems: items ->
+    calcWidthAndShowPathItems: items =>
     
         lines = items.map (i) -> i.tilde
         
@@ -158,7 +158,7 @@ function quicky extends inputchoice
     # 000        000   000     000     000   000        000     000     000       000 0 000       000  
     # 000        000   000     000     000   000        000     000     00000000  000   000  0000000   
     
-    showPathItems: items select ->
+    showPathItems: items select =>
 
         @input.set ''
         @input.hide()
@@ -202,7 +202,7 @@ function quicky extends inputchoice
     #      000  000       000      000       000          000
     # 0000000   00000000  0000000  00000000   0000000     000
 
-    moveSelection: dir ->
+    moveSelection: dir =>
         
         switch dir
             'down' ➜ ⮐  if not @choices.hasNext()
@@ -218,7 +218,7 @@ function quicky extends inputchoice
     # 000        000   000  000          000     000  000       000   000  
     # 000        000   000  00000000      0      000  00000000  00     00  
     
-    choicesFiltered: ->
+    choicesFiltered: =>
         
         @preview @choices.current()
     
@@ -236,7 +236,7 @@ function quicky extends inputchoice
             
         post.emit 'redraw'
             
-    hideMap: -> 
+    hideMap: => 
     
         @choices.mapscr.hide()
     
@@ -259,7 +259,7 @@ function quicky extends inputchoice
     # 000   000  000        000        000         000     
     # 000   000  000        000        0000000     000     
     
-    applyChoice: choice ->
+    applyChoice: choice =>
         
         switch @input.current()
             

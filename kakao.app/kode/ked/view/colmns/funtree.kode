@@ -17,6 +17,20 @@ use ../menu      ◆ choices
     ███████      ███     ███   ███     ███     ███   ███  ███   ███
 ###
 
+SYMBOL = 
+    clss:          '■'
+    unbound:       '->'
+    bound:         '=>'
+    async_unbound: '○→' 
+    async_bound:   '●→'
+        
+# SYMBOL =
+#     clss:          '■' 
+#     unbound:       '▸'
+#     bound:         '▸'
+#     async_unbound: '○'
+#     async_bound:   '●' 
+
 function funSyntax
 
     @: @tree ->
@@ -25,7 +39,7 @@ function funSyntax
             class: theme.funtree_class
             async: theme.funtree_async
             bound: theme.funtree_bound
-            func:  theme.funtree_func
+            func:  theme.funtree_func            
         
     clear: =>
 
@@ -55,8 +69,10 @@ function funSyntax
             char == '@' and empty name[x+1]
                               clr = @color.class
         if 
-            char == '@'     ➜ clr = color.darken clr 0.5
-            char in '▸■'    ➜ clr = color.darken clr 0.2
+            char == '@'            ➜ clr = color.darken clr 0.5
+            char == SYMBOL.clss    ➜ clr = color.darken clr 0.2
+            char in SYMBOL.bound   ➜ clr = color.darken clr 0.3
+            char in SYMBOL.unbound ➜ clr = color.darken clr 0.3
         
         clr
         
@@ -94,16 +110,19 @@ function funtree extends choices
         
         for clss in clssl
             clss.file ?= path
-            clss.name = ' ■ ' + clss.name
+            clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
             
         for func in funcs
             if func.async
                 if func.bound
-                    symbol = '○'
+                    symbol = SYMBOL.async_bound
                 else
-                    symbol = '●'
+                    symbol = SYMBOL.async_unbound
             else
-                    symbol = '▸'
+                if func.bound
+                    symbol = SYMBOL.bound
+                else
+                    symbol = SYMBOL.unbound
             name = func.name
             name = '@' + name if func.static
             func.name = '   ' + symbol + ' ' + name
@@ -120,29 +139,27 @@ function funtree extends choices
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    emitAction: action arg event  ->
-        
-        c = arg
+    emitAction: action choice event  ->
         
         switch action
         
             'right'
             
-                post.emit 'goto.line' c.line-1 'ind'
+                post.emit 'goto.line' choice.line-1 'ind'
                 ⮐  
                 
             'click'
             'return'
             
-                post.emit 'goto.line' c.line-1 'ind'
+                post.emit 'goto.line' choice.line-1 'ind'
                 post.emit 'focus' 'editor'
                 ⮐  
                 
             'drag'
             
-                post.emit 'goto.line' c.line-1 'ind'
+                post.emit 'goto.line' choice.line-1 'ind'
                 ⮐  
                  
-        super action arg event
+        super action choice event
         
 export funtree

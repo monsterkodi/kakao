@@ -27,6 +27,7 @@ inputchoice = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
+        this["autoHide"] = this["autoHide"].bind(this)
         this["onInputAction"] = this["onInputAction"].bind(this)
         this["onInputChange"] = this["onInputChange"].bind(this)
         this["hide"] = this["hide"].bind(this)
@@ -124,6 +125,14 @@ inputchoice = (function ()
 
     }
 
+    inputchoice.prototype["autoHide"] = function ()
+    {
+        if (this.autoHideInput && !this.inputIsActive())
+        {
+            return this.input.hide()
+        }
+    }
+
     inputchoice.prototype["onChoicesAction"] = function (action, choice)
     {
         switch (action)
@@ -134,6 +143,9 @@ inputchoice = (function ()
             case 'return':
                 return this.applyChoice(this.choices.current())
 
+            case 'hover':
+                return this.autoHide()
+
         }
 
     }
@@ -143,9 +155,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _134_36_
+        var choice, _138_36_
 
-        choice = ((_134_36_=this.choices.current()) != null ? _134_36_ : this.input.current())
+        choice = ((_138_36_=this.choices.current()) != null ? _138_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -195,10 +207,7 @@ inputchoice = (function ()
         else
         {
             this.choices.grabFocus()
-            if (this.autoHideInput && !this.inputIsActive())
-            {
-                return this.input.hide()
-            }
+            return this.autoHide()
         }
     }
 
@@ -229,19 +238,13 @@ inputchoice = (function ()
             }
             else
             {
-                if (this.autoHideInput && !this.inputIsActive())
-                {
-                    this.input.hide()
-                }
+                this.autoHide()
                 return result
             }
         }
         if (result = this.input.onKey(key,event))
         {
-            if (this.autoHideInput && !this.inputIsActive())
-            {
-                this.input.hide()
-            }
+            this.autoHide()
             return result
         }
         return true

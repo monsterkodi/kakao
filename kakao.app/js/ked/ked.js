@@ -518,6 +518,10 @@ ked [file]
             case 'ctrl+.':
                 return this.browse.gotoDir(slash.dir(this.currentFile))
 
+            case "cmd+'":
+            case "ctrl+'":
+                return post.emit('funcol.toggle')
+
         }
 
         var list = _k_.list(this.keyHandlers)
@@ -547,7 +551,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _475_22_
+        var mcw, _476_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

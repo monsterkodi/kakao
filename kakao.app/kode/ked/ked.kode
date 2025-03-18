@@ -437,6 +437,7 @@ function KED
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
             'cmd+o' 'ctrl+o'                  
             'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)
+            "cmd+'" "ctrl+'"             ➜ ⮐  post.emit 'funcol.toggle'
             
         for handler in @keyHandlers
             # log "#{handler.name}"

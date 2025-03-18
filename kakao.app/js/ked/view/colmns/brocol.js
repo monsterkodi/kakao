@@ -23,6 +23,7 @@ brocol = (function ()
     function brocol (screen, name)
     {
         this["onMouse"] = this["onMouse"].bind(this)
+        this["show"] = this["show"].bind(this)
         brocol.__super__.constructor.call(this,screen,name,['scrllr'])
         this.frontRoundOffset = 2
         this.state.syntax.setRgxs(rgxs)

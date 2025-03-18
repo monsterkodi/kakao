@@ -113,6 +113,8 @@ function inputchoice extends view
     
         # log "inputchoice.onInputAction #{action} #{text} (unhandled?)"
         
+    autoHide: => @input.hide() if @autoHideInput and not @inputIsActive()
+        
     #  0000000  000   000   0000000   000   0000000  00000000   0000000  
     # 000       000   000  000   000  000  000       000       000       
     # 000       000000000  000   000  000  000       0000000   0000000   
@@ -120,12 +122,14 @@ function inputchoice extends view
     #  0000000  000   000   0000000   000   0000000  00000000  0000000   
     
     onChoicesAction: action choice =>
-        
+    
         switch action
             'click'
             'right'
             'space'
             'return' ➜ ⮐  @applyChoice @choices.current()
+            
+            'hover'  ➜ @autoHide()
             
     choicesFiltered: ->
         
@@ -170,7 +174,7 @@ function inputchoice extends view
             @input.selectAll()
         else
             @choices.grabFocus()
-            @input.hide() if @autoHideInput and not @inputIsActive()
+            @autoHide()
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000
@@ -198,13 +202,13 @@ function inputchoice extends view
             if event.char and event.char not in ' \n'
                 @input.grabFocus()
             else
-                @input.hide() if @autoHideInput and not @inputIsActive()
+                @autoHide()
                 ⮐  result
              
         if result = @input.onKey key event
             
             # @choices.grabFocus() if empty @input.current()
-            @input.hide() if @autoHideInput and not @inputIsActive()
+            @autoHide()
             
             ⮐  result
 

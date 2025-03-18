@@ -96,20 +96,16 @@ function dirtree extends choices
     # 000   000  000          000     000  000   000  000  0000  
     # 000   000   0000000     000     000   0000000   000   000  
     
-    emitAction: action arg event  ->
-        
-        c = arg
+    emitAction: action choice event  ->
         
         if action == 'hover'
                     
             @grabFocus()
-            if valid event.mods and c.type == 'file'
-                post.emit 'quicky' c.path
+            if valid event.mods and choice.type == 'file'
+                post.emit 'quicky' choice.path
             ⮐ 
             
-        # log "dirTree.emitAction #{action}" c
-                
-        switch c.type
+        switch choice.type
             
             'dir' 
                 
@@ -118,33 +114,33 @@ function dirtree extends choices
                     'click'
                     'space'
                         
-                        if action == 'click' and event.mods ➜ ⮐  post.emit 'dircol.root' c.path
+                        if action == 'click' and event.mods ➜ ⮐  post.emit 'dircol.root' choice.path
                         
-                        if not c.open ➜ @openDir(c redraw:true) 
-                        else @closeDir c
+                        if not choice.open ➜ @openDir(choice redraw:true) 
+                        else @closeDir choice
                         ⮐ 
                         
                     'right'
                     
-                        if not c.open ➜ @openDir(c redraw:true)
+                        if not choice.open ➜ @openDir(choice redraw:true)
                         else @selectNextKeepOffset()
                         ⮐ 
 
                     'left'
                     
-                        if c.open ➜ @closeDir(c redraw:true)
+                        if choice.open ➜ @closeDir(choice redraw:true)
                         else @selectPrevKeepOffset()
                         ⮐ 
                         
                     'delete'
                     'esc'
                     
-                        @selectOpenSiblingAboveOrParent() if not c.open
-                        @closeDir(c redraw:true) if c.open
+                        @selectOpenSiblingAboveOrParent() if not choice.open
+                        @closeDir(choice redraw:true) if choice.open
                         ⮐ 
                         
                     'doubleclick'
-                    'return' ➜ ⮐  post.emit 'dircol.root' c.path
+                    'return' ➜ ⮐  post.emit 'dircol.root' choice.path
                 
             'file'
 
@@ -157,12 +153,12 @@ function dirtree extends choices
                     'esc'    ➜ ⮐  @selectParent()
                     
                     'drag'
-                    'space'  ➜ ⮐  post.emit 'quicky' c.path
+                    'space'  ➜ ⮐  post.emit 'quicky' choice.path
                     
                     'click'
-                    'return' ➜ ⮐  post.emit 'file.open' c.path
+                    'return' ➜ ⮐  post.emit 'file.open' choice.path
         
-        super action arg event
+        super action choice event
         
     #  0000000   00000000   00000000  000   000  0000000    000  00000000   
     # 000   000  000   000  000       0000  000  000   000  000  000   000  

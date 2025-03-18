@@ -433,9 +433,9 @@ choices = (function ()
         return this.hover
     }
 
-    choices.prototype["emitAction"] = function (action, arg, event)
+    choices.prototype["emitAction"] = function (action, choice, event)
     {
-        return this.emit('action',action,arg,event)
+        return this.emit('action',action,choice,event)
     }
 
     choices.prototype["onKey"] = function (key, event)

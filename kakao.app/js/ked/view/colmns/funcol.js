@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var funcol
 
@@ -26,6 +26,7 @@ funcol = (function ()
         this["onFuncolToggle"] = this["onFuncolToggle"].bind(this)
         this["onFuncolResize"] = this["onFuncolResize"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
+        this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         funcol.__super__.constructor.call(this,screen,name,features)
         this.isVisible = false
         this.active = false
@@ -40,7 +41,21 @@ funcol = (function ()
         this.funtree.scroll.setColor('bg',this.funtree.color.bg)
         post.on('funcol.resize',this.onFuncolResize)
         post.on('funcol.toggle',this.onFuncolToggle)
-        post.on('funcol.root',this.setRoot)
+        post.on('session.merge',this.onSessionMerge)
+    }
+
+    funcol.prototype["onSessionMerge"] = function (recent)
+    {
+        console.log('funcol.recent',recent.funcol)
+        if (_k_.empty(recent.funcol))
+        {
+            return
+        }
+        if (recent.funcol.active)
+        {
+            this.active = true
+            return this.show()
+        }
     }
 
     funcol.prototype["layout"] = function (x, y, w, h)
@@ -69,7 +84,7 @@ funcol = (function ()
         {
             return
         }
-        console.log(`funcol.onContext ${this.hover}`,event)
+        console.log(`funcol.onContext: ${this.hover}`,event)
     }
 
     funcol.prototype["onFuncolResize"] = function ()
@@ -86,6 +101,7 @@ funcol = (function ()
             this.toggle()
         }
         this.active = this.visible()
+        ked_session.set('funcol▸active',this.active)
         cols = _k_.max(16,parseInt(this.cells.screen.cols / 6))
         return post.emit('view.size',this.name,'left',((this.hidden() ? -this.cells.cols : cols - this.cells.cols)))
     }

@@ -35,7 +35,18 @@ function funcol extends view
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
-        post.on 'funcol.root'   @setRoot
+        # post.on 'funcol.root'   @setRoot
+        post.on 'session.merge' @onSessionMerge
+        
+    onSessionMerge: recent =>
+    
+        log 'funcol.recent' recent.funcol
+        
+        ⮐  if empty recent.funcol
+        
+        if recent.funcol.active
+            @active = true
+            @show()
         
     # ███       ███████   ███   ███   ███████   ███   ███  █████████
     # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
@@ -78,7 +89,7 @@ function funcol extends view
     
         ⮐  if not @hover
     
-        log "funcol.onContext #{@hover}" event
+        log "funcol.onContext: #{@hover}" event
         
     # █████████   ███████    ███████    ███████   ███      ████████
     #    ███     ███   ███  ███        ███        ███      ███     
@@ -91,6 +102,7 @@ function funcol extends view
     
         @toggle() if not (@visible() and @collapsed())
         @active = @visible()
+        ked_session.set 'funcol▸active' @active
         cols = max 16 int(@cells.screen.cols / 6)
         post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
         

@@ -1,6 +1,6 @@
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var funSyntax, funtree
+var funSyntax, funtree, SYMBOL
 
 import kxk from "../../../kxk.js"
 let post = kxk.post
@@ -14,6 +14,7 @@ import icons from "../../theme/icons.js"
 
 import choices from "../menu/choices.js"
 
+SYMBOL = {clss:'■',unbound:'->',bound:'=>',async_unbound:'○→',async_bound:'●→'}
 
 funSyntax = (function ()
 {
@@ -42,7 +43,7 @@ funSyntax = (function ()
 
     funSyntax.prototype["getColor"] = function (x, y)
     {
-        var char, clr, item, name, _49_26_
+        var char, clr, item, name, _63_26_
 
         item = this.tree.items[y]
         name = item.name
@@ -79,9 +80,17 @@ funSyntax = (function ()
         {
             clr = color.darken(clr,0.5)
         }
-        else if (_k_.in(char,'▸■'))
+        else if (char === SYMBOL.clss)
         {
             clr = color.darken(clr,0.2)
+        }
+        else if (_k_.in(char,SYMBOL.bound))
+        {
+            clr = color.darken(clr,0.3)
+        }
+        else if (_k_.in(char,SYMBOL.unbound))
+        {
+            clr = color.darken(clr,0.3)
         }
         return clr
     }
@@ -109,7 +118,7 @@ funtree = (function ()
 
     funtree.prototype["onFileIndexed"] = function (path, info)
     {
-        var clss, clssl, func, funcs, items, name, symbol, _96_22_
+        var clss, clssl, func, funcs, items, name, symbol, _112_22_
 
         clssl = _k_.clone(info.classes)
         funcs = _k_.clone(info.funcs)
@@ -117,8 +126,8 @@ funtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_96_22_=clss.file) != null ? _96_22_ : path)
-            clss.name = ' ■ ' + clss.name
+            clss.file = ((_112_22_=clss.file) != null ? _112_22_ : path)
+            clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
         }
         var list1 = _k_.list(funcs)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
@@ -128,16 +137,23 @@ funtree = (function ()
             {
                 if (func.bound)
                 {
-                    symbol = '○'
+                    symbol = SYMBOL.async_bound
                 }
                 else
                 {
-                    symbol = '●'
+                    symbol = SYMBOL.async_unbound
                 }
             }
             else
             {
-                symbol = '▸'
+                if (func.bound)
+                {
+                    symbol = SYMBOL.bound
+                }
+                else
+                {
+                    symbol = SYMBOL.unbound
+                }
             }
             name = func.name
             if (func.static)
@@ -155,30 +171,27 @@ funtree = (function ()
         return post.emit('redraw')
     }
 
-    funtree.prototype["emitAction"] = function (action, arg, event)
+    funtree.prototype["emitAction"] = function (action, choice, event)
     {
-        var c
-
-        c = arg
         switch (action)
         {
             case 'right':
-                post.emit('goto.line',c.line - 1,'ind')
+                post.emit('goto.line',choice.line - 1,'ind')
                 return
 
             case 'click':
             case 'return':
-                post.emit('goto.line',c.line - 1,'ind')
+                post.emit('goto.line',choice.line - 1,'ind')
                 post.emit('focus','editor')
                 return
 
             case 'drag':
-                post.emit('goto.line',c.line - 1,'ind')
+                post.emit('goto.line',choice.line - 1,'ind')
                 return
 
         }
 
-        return funtree.__super__.emitAction.call(this,action,arg,event)
+        return funtree.__super__.emitAction.call(this,action,choice,event)
     }
 
     return funtree

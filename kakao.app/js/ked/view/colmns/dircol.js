@@ -29,6 +29,8 @@ dircol = (function ()
         this["onDircolToggle"] = this["onDircolToggle"].bind(this)
         this["onDircolResize"] = this["onDircolResize"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
+        this["draw"] = this["draw"].bind(this)
+        this["layout"] = this["layout"].bind(this)
         this["setRoot"] = this["setRoot"].bind(this)
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
@@ -72,7 +74,11 @@ dircol = (function ()
         }
         if (root = recent.dircol.root)
         {
-            return this.setRoot(root)
+            this.setRoot(root)
+        }
+        if (recent.dircol.active)
+        {
+            return this.active = true
         }
     }
 
@@ -133,6 +139,7 @@ dircol = (function ()
             this.toggle()
         }
         this.active = this.visible()
+        ked_session.set('dircol▸active',this.active)
         cols = _k_.max(16,parseInt(this.cells.screen.cols / 6))
         return post.emit('view.size',this.name,'right',((this.hidden() ? -this.cells.cols : cols - this.cells.cols)))
     }

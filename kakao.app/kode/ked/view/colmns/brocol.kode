@@ -23,7 +23,7 @@ function brocol extends choices
         @frontRoundOffset = 2
         @state.syntax.setRgxs rgxs
         
-    show: dir -> 
+    show: dir => 
     
         @listDir dir
         super()

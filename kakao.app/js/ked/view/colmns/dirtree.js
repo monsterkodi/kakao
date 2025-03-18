@@ -104,21 +104,18 @@ dirtree = (function ()
         return ked_session.set(this.name,state)
     }
 
-    dirtree.prototype["emitAction"] = function (action, arg, event)
+    dirtree.prototype["emitAction"] = function (action, choice, event)
     {
-        var c
-
-        c = arg
         if (action === 'hover')
         {
             this.grabFocus()
-            if (!_k_.empty(event.mods) && c.type === 'file')
+            if (!_k_.empty(event.mods) && choice.type === 'file')
             {
-                post.emit('quicky',c.path)
+                post.emit('quicky',choice.path)
             }
             return
         }
-        switch (c.type)
+        switch (choice.type)
         {
             case 'dir':
                 switch (action)
@@ -127,22 +124,22 @@ dirtree = (function ()
                     case 'space':
                         if (action === 'click' && event.mods)
                         {
-                            return post.emit('dircol.root',c.path)
+                            return post.emit('dircol.root',choice.path)
                         }
-                        if (!c.open)
+                        if (!choice.open)
                         {
-                            this.openDir(c,{redraw:true})
+                            this.openDir(choice,{redraw:true})
                         }
                         else
                         {
-                            this.closeDir(c)
+                            this.closeDir(choice)
                         }
                         return
 
                     case 'right':
-                        if (!c.open)
+                        if (!choice.open)
                         {
-                            this.openDir(c,{redraw:true})
+                            this.openDir(choice,{redraw:true})
                         }
                         else
                         {
@@ -151,9 +148,9 @@ dirtree = (function ()
                         return
 
                     case 'left':
-                        if (c.open)
+                        if (choice.open)
                         {
-                            this.closeDir(c,{redraw:true})
+                            this.closeDir(choice,{redraw:true})
                         }
                         else
                         {
@@ -163,19 +160,19 @@ dirtree = (function ()
 
                     case 'delete':
                     case 'esc':
-                        if (!c.open)
+                        if (!choice.open)
                         {
                             this.selectOpenSiblingAboveOrParent()
                         }
-                        if (c.open)
+                        if (choice.open)
                         {
-                            this.closeDir(c,{redraw:true})
+                            this.closeDir(choice,{redraw:true})
                         }
                         return
 
                     case 'doubleclick':
                     case 'return':
-                        return post.emit('dircol.root',c.path)
+                        return post.emit('dircol.root',choice.path)
 
                 }
 
@@ -195,23 +192,23 @@ dirtree = (function ()
 
                     case 'drag':
                     case 'space':
-                        return post.emit('quicky',c.path)
+                        return post.emit('quicky',choice.path)
 
                     case 'click':
                     case 'return':
-                        return post.emit('file.open',c.path)
+                        return post.emit('file.open',choice.path)
 
                 }
 
                 break
         }
 
-        return dirtree.__super__.emitAction.call(this,action,arg,event)
+        return dirtree.__super__.emitAction.call(this,action,choice,event)
     }
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _188_31_, _192_48_
+        var depth, index, item, items, state, _184_31_, _188_48_
 
         if (_k_.empty(dirItem))
         {
@@ -226,7 +223,7 @@ dirtree = (function ()
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
         state = ked_session.get(this.name,{})
-        depth = (((_188_31_=dirItem.depth) != null ? _188_31_ : 0)) + 1
+        depth = (((_184_31_=dirItem.depth) != null ? _184_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -383,7 +380,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _326_45_
+        var idx, item, _322_45_
 
         if (!(global.ked_editor_file != null))
         {
