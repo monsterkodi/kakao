@@ -263,18 +263,17 @@ function KED
     
     onQuicky: path ○=>
         
+        ⮐  if valid @loadingFile
+        
         if slash.isAbsolute path
             file = path
         else
             file = slash.absolute path slash.dir(@currentFile)
         
-        if slash.samePath file @currentFile
-            @redraw()
-            ⮐ 
-            
-        exists =○ nfs.fileExists file
-        if exists
-            ○ @loadFile file
+        ⮐  if slash.samePath(file @currentFile)
+            # @redraw()
+        
+        ○ @loadFile file
                                 
     # ███       ███████    ███████   ███████          ████████  ███  ███      ████████
     # ███      ███   ███  ███   ███  ███   ███        ███       ███  ███      ███     
@@ -289,24 +288,30 @@ function KED
         start = process.hrtime()
         
         if slash.isAbsolute p
-            @currentFile = slash.absolute p
+            @loadingFile = slash.absolute p
         else
-            @currentFile = slash.path process.cwd() p
+            @loadingFile = slash.path process.cwd() p
 
-        exists =○ nfs.fileExists @currentFile
+        exists =○ nfs.fileExists @loadingFile
         
         if not exists
-            log "file doesn't exist! #{@currentFile}"
-            @currentFile = null
+            log "file doesn't exist! #{@loadingFile}"
+            delete @loadingFile
             ⮐ 
         
-        @currentFile =○ nfs.resolveSymlink @currentFile
+        @loadingFile =○ nfs.resolveSymlink @loadingFile
+        
+        text =○ nfs.readText @loadingFile
+        
+        @currentFile = @loadingFile
+
+        delete @loadingFile
+
+        # log "ked.loadFile #{@currentFile}"
         
         @status.setFile slash.tilde(@currentFile)
         
         global.ked_editor_file = @currentFile
-
-        text =○ nfs.readText @currentFile
         
         if text == undefined
             text = '○ binary ○'

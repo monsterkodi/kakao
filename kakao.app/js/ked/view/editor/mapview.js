@@ -54,8 +54,8 @@ mapview = (function ()
 
     mapview.prototype["show"] = function ()
     {
-        console.log(`${this.name} show ${this.cells.cols} ${this.cells.rows}`)
         mapview.__super__.show.call(this)
+    
         if (!_k_.empty(this.images))
         {
             return this.drawImages()

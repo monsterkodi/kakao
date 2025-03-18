@@ -39,11 +39,13 @@ function mapview extends view
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    reload: => @createImages(); @drawImages()
+    reload: => 
+    
+        @createImages()
+        @drawImages()
     
     show: => 
     
-        log "#{@name} show #{@cells.cols} #{@cells.rows}" 
         super()
         
         if valid @images

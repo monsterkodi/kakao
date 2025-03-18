@@ -75,7 +75,7 @@ brocol = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
-            item.tilde = diritem.symbolName(item)
+            item.tilde = ' ' + diritem.symbolName(item)
         }
         weight = (function (item)
         {
@@ -83,11 +83,6 @@ brocol = (function ()
 
             p = slash.parse(item.path)
             w = 0
-            if (item.tilde === icons.dir + ' ..')
-            {
-                console.log('ever reached?')
-                return
-            }
             if (item.type === 'file')
             {
                 w += 10000

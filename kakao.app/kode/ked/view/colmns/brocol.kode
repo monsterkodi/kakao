@@ -53,16 +53,13 @@ function brocol extends choices
             ⮐ 
 
         for item in items
-            item.tilde = diritem.symbolName(item)
+            item.tilde = ' ' +  diritem.symbolName(item)
 
         weight = item =>
 
             p = slash.parse item.path
 
             w = 0
-            if item.tilde == icons.dir + ' ..'
-                log 'ever reached?'
-                ⮐ 
             w += 10000 if item.type == 'file'
             w += 1000  if item.tilde.startsWith icons.dir + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']

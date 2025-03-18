@@ -302,8 +302,12 @@ ked [file]
 
     KED.prototype["onQuicky"] = async function (path)
     {
-        var exists, file
+        var file
 
+        if (!_k_.empty(this.loadingFile))
+        {
+            return
+        }
         if (slash.isAbsolute(path))
         {
             file = path
@@ -314,40 +318,37 @@ ked [file]
         }
         if (slash.samePath(file,this.currentFile))
         {
-            this.redraw()
             return
         }
-        exists = await nfs.fileExists(file)
-        if (exists)
-        {
-            return await this.loadFile(file)
-        }
+        return await this.loadFile(file)
     }
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var exists, segls, start, text, _321_22_
+        var exists, segls, start, text, _326_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
         {
-            this.currentFile = slash.absolute(p)
+            this.loadingFile = slash.absolute(p)
         }
         else
         {
-            this.currentFile = slash.path(process.cwd(),p)
+            this.loadingFile = slash.path(process.cwd(),p)
         }
-        exists = await nfs.fileExists(this.currentFile)
+        exists = await nfs.fileExists(this.loadingFile)
         if (!exists)
         {
-            console.log(`file doesn't exist! ${this.currentFile}`)
-            this.currentFile = null
+            console.log(`file doesn't exist! ${this.loadingFile}`)
+            delete this.loadingFile
             return
         }
-        this.currentFile = await nfs.resolveSymlink(this.currentFile)
+        this.loadingFile = await nfs.resolveSymlink(this.loadingFile)
+        text = await nfs.readText(this.loadingFile)
+        this.currentFile = this.loadingFile
+        delete this.loadingFile
         this.status.setFile(slash.tilde(this.currentFile))
         global.ked_editor_file = this.currentFile
-        text = await nfs.readText(this.currentFile)
         if (text === undefined)
         {
             text = '○ binary ○'
@@ -541,7 +542,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _469_22_
+        var mcw, _474_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

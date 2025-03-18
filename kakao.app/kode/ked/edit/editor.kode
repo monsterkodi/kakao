@@ -73,8 +73,10 @@ function editor extends draw
             @gutter.layout    x+sl    y   g   h
             
         if @mapscr
-
-            m = @mapscr.visible() ? min(12 int(Math.floor(w/10))) : 0
+            if @name == 'editor'
+                m = @mapscr.visible() ? min(12 int(Math.floor(w/10))) : 0
+            else
+                m = @mapscr.visible() ? 12 : 0
             @mapscr.layout x+w-sr-m  y  m   h
             
         @cells.layout x+sl+g  y   w-s-g-m    h
