@@ -26,7 +26,7 @@ function mapview extends view
         @imgId  = kstr.hash(@state.name) & ~0xffff
         @rowOffset = 0
         @images = []
-        @cells.cols = 11
+        @cells.cols = 12
         
         # log 'mapview' @state.name @imgId.toString(2)
         

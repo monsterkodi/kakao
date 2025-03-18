@@ -17,6 +17,8 @@ function funcol extends view
         
         super screen name features
         
+        @isVisible = false
+        
         @pointerType = 'pointer'
         
         @knob    = new knob    screen "#{@name}_knob"
@@ -44,7 +46,7 @@ function funcol extends view
         
         @funtree.layout x y w h
         @knob.layout    x y 1 h
-        
+                
         super x y w h
         
     # ███████    ████████    ███████   ███   ███
@@ -55,7 +57,7 @@ function funcol extends view
 
     draw: ->
         
-        ⮐  if @hidden()
+        ⮐  if @hidden() or @collapsed()
         
         @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
         @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
@@ -77,19 +79,29 @@ function funcol extends view
     
         log "funcol.onContext #{@hover}" event
         
+    # █████████   ███████    ███████    ███████   ███      ████████
+    #    ███     ███   ███  ███        ███        ███      ███     
+    #    ███     ███   ███  ███  ████  ███  ████  ███      ███████ 
+    #    ███     ███   ███  ███   ███  ███   ███  ███      ███     
+    #    ███      ███████    ███████    ███████   ███████  ████████
+    
+    onFuncolResize: => @knob.doDrag = true
+    onFuncolToggle: => 
+    
+        @toggle() if not (@visible() and @collapsed())
+
+        cols = max 16 int(@cells.screen.cols / 6)
+        post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
+        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
-    
-    onFuncolResize: => @knob.doDrag = true
-    onFuncolToggle: => 
-        
-        @toggle()
-        post.emit 'view.size' @name [(@hidden() ? 0 : int(@knob.maxWidth/3)) @cells.rows]
-        
+  
     onMouse: event =>
+    
+        ⮐  if @hidden() or @collapsed()
         
         ret = super event            ; ⮐  ret if ret?.redraw
         ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
@@ -103,7 +115,7 @@ function funcol extends view
     
     onWheel: event =>
         
-        ⮐  if @hidden()
+        ⮐  if @hidden() or @collapsed()
         @funtree.onWheel event
         
     # 000   000  00000000  000   000  

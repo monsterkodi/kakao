@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var editor
 
@@ -81,7 +81,7 @@ editor = (function ()
 
     editor.prototype["layout"] = function (x, y, w, h)
     {
-        var g, m, s, sl, sr, _80_17_
+        var g, m, s, sl, sr, _82_17_
 
         g = m = s = 0
         sl = sr = 0
@@ -106,8 +106,8 @@ editor = (function ()
         }
         if (this.mapscr)
         {
-            m = (this.mapscr.visible() ? 12 : 0)
-            this.mapscr.layout(x + w - sr - 12,y,12,h)
+            m = (this.mapscr.visible() ? _k_.min(12,parseInt(Math.floor(w / 10))) : 0)
+            this.mapscr.layout(x + w - sr - m,y,m,h)
         }
         this.cells.layout(x + sl + g,y,w - s - g - m,h)
         ;(this.complete != null ? this.complete.onEditorLayout() : undefined)
@@ -118,7 +118,7 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _94_21_, _95_21_, _96_23_
+        var ret, _96_21_, _97_21_, _98_23_
 
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
@@ -140,7 +140,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _111_25_, _112_25_, _113_25_, _117_20_
+        var inside, res, _113_25_, _114_25_, _115_25_, _119_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -216,7 +216,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _184_20_, _188_21_, _193_21_
+        var _186_20_, _190_21_, _195_21_
 
         if (!this.hasFocus())
         {

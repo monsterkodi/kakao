@@ -128,6 +128,11 @@ view = (function ()
         }
     }
 
+    view.prototype["collapsed"] = function ()
+    {
+        return this.cells.rows <= 0 || this.cells.cols <= 0
+    }
+
     view.prototype["onMouse"] = function (event)
     {
         return this.handleHover(event)

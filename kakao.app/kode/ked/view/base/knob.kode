@@ -63,7 +63,7 @@ function knob extends view
                     
                     post.emit 'pointer' 'grabbing'
                     if delta
-                        post.emit 'view.resize' @parentName @frameSide delta
+                        post.emit 'view.size' @parentName @frameSide delta
                     ⮐  redraw:true
                     
                 @hover = false

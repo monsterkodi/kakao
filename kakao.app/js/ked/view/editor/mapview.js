@@ -41,7 +41,7 @@ mapview = (function ()
         0xffff
         this.rowOffset = 0
         this.images = []
-        this.cells.cols = 11
+        this.cells.cols = 12
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
     }

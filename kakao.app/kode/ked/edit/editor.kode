@@ -68,12 +68,14 @@ function editor extends draw
                 @scroll.layout x      y   s   h 
             
         if @gutter
+
             g = @state.gutterWidth()
             @gutter.layout    x+sl    y   g   h
             
         if @mapscr
-            m = @mapscr.visible() ? 12 : 0
-            @mapscr.layout x+w-sr-12  y  12   h
+
+            m = @mapscr.visible() ? min(12 int(Math.floor(w/10))) : 0
+            @mapscr.layout x+w-sr-m  y  m   h
             
         @cells.layout x+sl+g  y   w-s-g-m    h
         

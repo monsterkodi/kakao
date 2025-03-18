@@ -20,8 +20,12 @@
 #### todo
 ##### todo
 
+- auto-replace surrounding string delimiters with " when inserting #{}
 - alt+cmd+'       replace surrounding string delimiters with '
 - shift+alt+cmd+' replace surrounding string delimiters with "
+
+- scale dir|funcol relative to fileeditor
+- fix browse mapview showing at wrong place when switching from browcol
 
 - completion
     - fix

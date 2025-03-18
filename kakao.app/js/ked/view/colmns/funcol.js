@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var funcol
 
@@ -27,6 +27,7 @@ funcol = (function ()
         this["onFuncolResize"] = this["onFuncolResize"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
         funcol.__super__.constructor.call(this,screen,name,features)
+        this.isVisible = false
         this.pointerType = 'pointer'
         this.knob = new knob(screen,`${this.name}_knob`)
         this.funtree = new funtree(screen,`${this.name}_funtree`,['scrllr'])
@@ -50,7 +51,7 @@ funcol = (function ()
 
     funcol.prototype["draw"] = function ()
     {
-        if (this.hidden())
+        if (this.hidden() || this.collapsed())
         {
             return
         }
@@ -77,14 +78,24 @@ funcol = (function ()
 
     funcol.prototype["onFuncolToggle"] = function ()
     {
-        this.toggle()
-        return post.emit('view.size',this.name,[((this.hidden() ? 0 : parseInt(this.knob.maxWidth / 3))),this.cells.rows])
+        var cols
+
+        if (!(this.visible() && this.collapsed()))
+        {
+            this.toggle()
+        }
+        cols = _k_.max(16,parseInt(this.cells.screen.cols / 6))
+        return post.emit('view.size',this.name,'left',((this.hidden() ? -this.cells.cols : cols - this.cells.cols)))
     }
 
     funcol.prototype["onMouse"] = function (event)
     {
         var ret
 
+        if (this.hidden() || this.collapsed())
+        {
+            return
+        }
         ret = funcol.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
         {
@@ -104,7 +115,7 @@ funcol = (function ()
 
     funcol.prototype["onWheel"] = function (event)
     {
-        if (this.hidden())
+        if (this.hidden() || this.collapsed())
         {
             return
         }

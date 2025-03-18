@@ -156,6 +156,7 @@ function dirtree extends choices
                     'delete'
                     'esc'    ➜ ⮐  @selectParent()
                     
+                    'drag'
                     'space'  ➜ ⮐  post.emit 'quicky' c.path
                     
                     'click'

@@ -81,7 +81,7 @@ knob = (function ()
                     post.emit('pointer','grabbing')
                     if (delta)
                     {
-                        post.emit('view.resize',this.parentName,this.frameSide,delta)
+                        post.emit('view.size',this.parentName,this.frameSide,delta)
                     }
                     return {redraw:true}
                 }

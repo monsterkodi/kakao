@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
 var dircol
 
@@ -33,6 +33,7 @@ dircol = (function ()
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         dircol.__super__.constructor.call(this,screen,name,features)
+        this.isVisible = false
         this.pointerType = 'pointer'
         this.knob = new knob(screen,`${this.name}_knob`)
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
@@ -96,7 +97,7 @@ dircol = (function ()
 
     dircol.prototype["draw"] = function ()
     {
-        if (this.hidden())
+        if (this.hidden() || this.collapsed())
         {
             return
         }
@@ -124,14 +125,24 @@ dircol = (function ()
 
     dircol.prototype["onDircolToggle"] = function ()
     {
-        this.toggle()
-        return post.emit('view.size',this.name,[((this.hidden() ? 0 : parseInt(this.knob.maxWidth / 3))),this.cells.rows])
+        var cols
+
+        if (!(this.visible() && this.collapsed()))
+        {
+            this.toggle()
+        }
+        cols = _k_.max(16,parseInt(this.cells.screen.cols / 6))
+        return post.emit('view.size',this.name,'right',((this.hidden() ? -this.cells.cols : cols - this.cells.cols)))
     }
 
     dircol.prototype["onMouse"] = function (event)
     {
         var ret
 
+        if (this.hidden() || this.collapsed())
+        {
+            return
+        }
         ret = dircol.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
         {
@@ -156,7 +167,7 @@ dircol = (function ()
 
     dircol.prototype["onWheel"] = function (event)
     {
-        if (this.hidden())
+        if (this.hidden() || this.collapsed())
         {
             return
         }

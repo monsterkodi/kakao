@@ -72,9 +72,11 @@ function view extends events
     arrange: ->    
     hide:    -> @isVisible=false; post.emit 'view.hide' @name; redraw:true
     hidden:  -> not @visible()
-    visible: -> @isVisible #and @cells.rows > 0 and @cells.cols > 0
+    visible: -> @isVisible
     toggle:  -> if @hidden() then @show() else @hide()
-                
+         
+    collapsed: -> @cells.rows <= 0 or @cells.cols <= 0
+    
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   

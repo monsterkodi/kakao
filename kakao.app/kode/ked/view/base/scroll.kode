@@ -91,7 +91,7 @@ function scroll extends view
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
 
-        ⮐  if view eql @state.s.view
+        ⮐  true if view eql @state.s.view
         
         @state.setView view
 

@@ -94,7 +94,7 @@ scroll = (function ()
         view[1] = _k_.max(0,view[1])
         if (_k_.eql(view, this.state.s.view))
         {
-            return
+            return true
         }
         this.state.setView(view)
         return {redraw:true}

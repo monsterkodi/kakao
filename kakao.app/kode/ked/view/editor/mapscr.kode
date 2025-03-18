@@ -42,6 +42,7 @@ function mapscr extends mapview
     onResize: =>
         
         ⮐  if empty @cells.screen.t.pixels
+        
         @redraw = true
         
     #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
@@ -63,7 +64,7 @@ function mapscr extends mapview
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
         
-        ⮐ if view eql @state.s.view
+        ⮐  if view eql @state.s.view
         
         @state.setView view
         
@@ -86,13 +87,13 @@ function mapscr extends mapview
                 if @hover
                     @doDrag = true
                     post.emit 'pointer''grabbing'
-                    ⮐ @scrollToPixel event.pixel
+                    ⮐  @scrollToPixel event.pixel
                     
             'drag'
             
                 if @doDrag
                     post.emit 'pointer''grab'
-                    ⮐ @scrollToPixel event.pixel
+                    ⮐  @scrollToPixel event.pixel
                     
                 @hover = false
                 
@@ -101,7 +102,7 @@ function mapscr extends mapview
                 if @doDrag
                     delete @doDrag 
                     post.emit 'pointer''pointer' if @hover
-                    ⮐ true
+                    ⮐  true
         @hover
         
     clearImages: =>
@@ -114,7 +115,8 @@ function mapscr extends mapview
     createImages: =>
         
         t = @cells.screen.t
-        ⮐ if empty t.cellsz
+        
+        ⮐  if empty t.cellsz
         
         # w = t.cellsz[0]
         # data = Buffer.alloc w*3
@@ -133,7 +135,7 @@ function mapscr extends mapview
         
         t = @cells.screen.t
         
-        ⮐ if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
+        ⮐  if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
         
         # log 'mapscr' @cells.cols @cells.rows 
         # t.placeImageStretched @knobId @cells.x @cells.y 2 3 0 0
