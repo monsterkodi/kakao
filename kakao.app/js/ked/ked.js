@@ -108,7 +108,7 @@ ked [file]
         post.on('file.new',this.newFile)
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
-        post.on('fs.change',this.onFileChange)
+        post.on('file.change',this.onFileChange)
         this.contextHandlers = [this.editor,this.dircol,this.funcol]
         this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.status,this.dircol,this.funcol]
         this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.dircol,this.funcol]

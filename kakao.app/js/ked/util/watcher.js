@@ -95,11 +95,11 @@ watcher = (function ()
         exists = await nfs.exists(path)
         if (exists)
         {
-            return post.emit('fs.change',{path:path,change:change,watcher:this})
+            return post.emit('file.change',{path:path,change:change,watcher:this})
         }
         else
         {
-            return post.emit('fs.change',{path:path,change:'remove',watcher:this})
+            return post.emit('file.change',{path:path,change:'remove',watcher:this})
         }
     }
 

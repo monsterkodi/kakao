@@ -258,6 +258,7 @@ quicky = (function ()
 
     quicky.prototype["hideMap"] = function ()
     {
+        console.log(`${this.name} hideMap`)
         return this.choices.mapscr.hide()
     }
 
@@ -333,7 +334,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _322_63_
+        var upDir, _326_63_
 
         switch (action)
         {
@@ -351,7 +352,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_322_63_=choice.link) != null ? _322_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_326_63_=choice.link) != null ? _326_63_ : choice.path))
                     }
                 }
                 break

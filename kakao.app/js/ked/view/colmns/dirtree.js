@@ -8,7 +8,6 @@ let kseg = kxk.kseg
 let kstr = kxk.kstr
 let slash = kxk.slash
 let post = kxk.post
-let noon = kxk.noon
 
 import nfs from "../../../kxk/nfs.js"
 
@@ -18,6 +17,8 @@ import theme from "../../theme/theme.js"
 import icons from "../../theme/icons.js"
 
 import choices from "../menu/choices.js"
+
+import diritem from "./diritem.js"
 
 import rgxs from '../menu/quicky.json' with { type : "json" }
 
@@ -52,7 +53,7 @@ dirtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
-            item.tilde = ' ' + this.symbolName(item)
+            item.tilde = ' ' + diritem.symbolName(item)
         }
         items.sort((function (a, b)
         {
@@ -209,7 +210,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _186_31_, _190_48_
+        var depth, index, item, items, state, _187_31_, _191_48_
 
         if (_k_.empty(dirItem))
         {
@@ -224,13 +225,13 @@ dirtree = (function ()
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
         state = ked_session.get(this.name,{})
-        depth = (((_186_31_=dirItem.depth) != null ? _186_31_ : 0)) + 1
+        depth = (((_187_31_=dirItem.depth) != null ? _187_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
             item.depth = depth
-            item.tilde = _k_.lpad(1 + depth * 2) + this.symbolName(item)
+            item.tilde = _k_.lpad(1 + depth * 2) + diritem.symbolName(item)
             if (item.type === 'dir' && (state.open != null ? state.open[item.path] : undefined))
             {
                 this.openDir(item,{redraw:true})
@@ -381,7 +382,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _326_45_
+        var idx, item, _325_45_
 
         if (!(global.ked_editor_file != null))
         {
@@ -440,45 +441,6 @@ dirtree = (function ()
         }
         w += kstr.weight(p.file)
         return w
-    }
-
-    dirtree.prototype["symbol"] = function (item)
-    {
-        var _366_52_
-
-        switch (item.type)
-        {
-            case 'file':
-                return ((_366_52_=icons[slash.ext(item.path)]) != null ? _366_52_ : icons.file)
-
-            case 'dir':
-                return (item.open ? icons.dir_open : icons.dir_close)
-
-        }
-
-    }
-
-    dirtree.prototype["symbolName"] = function (item)
-    {
-        var name
-
-        switch (slash.ext(item.path))
-        {
-            case 'kode':
-            case 'noon':
-            case 'json':
-            case 'pug':
-            case 'styl':
-            case 'html':
-            case 'js':
-            case 'md':
-                name = slash.name(item.path)
-                break
-            default:
-                name = slash.file(item.path)
-        }
-
-        return this.symbol(item) + ' ' + name
     }
 
     return dirtree

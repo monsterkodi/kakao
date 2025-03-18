@@ -10,6 +10,7 @@ use ../../../kxk ▪ slash post kstr
 use ../../../kxk ◆ nfs
 use ../../theme  ◆ icons 
 use ../menu      ◆ choices
+use              ◆ diritem
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -23,12 +24,11 @@ function brocol extends choices
         @state.syntax.setRgxs rgxs
         
     show: dir -> 
-
+    
         @listDir dir
         super()
         
     isCursorVisible: -> false
-    visible: -> @cells.rows > 0 
     
     onMouse: event =>
         
@@ -53,15 +53,16 @@ function brocol extends choices
             ⮐ 
 
         for item in items
-            item.tilde = slash.file item.path
-            item.tilde = ((item.type == 'dir') ? (icons.dir + ' ') : '  ') + item.tilde
+            item.tilde = diritem.symbolName(item)
 
         weight = item =>
 
             p = slash.parse item.path
 
             w = 0
-            ⮐ w if item.tilde == icons.dir + ' ..'
+            if item.tilde == icons.dir + ' ..'
+                log 'ever reached?'
+                ⮐ 
             w += 10000 if item.type == 'file'
             w += 1000  if item.tilde.startsWith icons.dir + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']

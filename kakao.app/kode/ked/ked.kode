@@ -80,7 +80,7 @@ function KED
         post.on 'file.new'      @newFile
         post.on 'file.open'     @openFile
         post.on 'quit'          @quit
-        post.on 'fs.change'     @onFileChange
+        post.on 'file.change'   @onFileChange
         
         @contextHandlers = [                                                  @editor         @dircol @funcol ]
         @mouseHandlers   = [ @context @finder @searcher @quicky @browse @menu @editor @status @dircol @funcol ]

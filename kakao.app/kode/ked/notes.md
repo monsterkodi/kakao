@@ -22,6 +22,7 @@
 
 - completion
     - fix
+        - no completion when converting string delimiters
         - turd missing completions
         - completions with leading turd
         - unicode completions
@@ -39,6 +40,7 @@
     - cmd+up|down: jump to prev|next file
     
 - funclist
+    - swap with mapscr when the fileeditor hasn't many columns
     - searchable?
     - should list md headings
     - should list c cpp mm and js functions
@@ -56,7 +58,6 @@
     - set hover highlight to editor file when loosing focus
 
 - quicky
-    - file icons and ext removal
     - prefs mode
         - set preview_on_hover false
     - fix prjcts files

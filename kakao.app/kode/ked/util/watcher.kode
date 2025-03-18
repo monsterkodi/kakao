@@ -64,8 +64,8 @@ function watcher
         exists =○ nfs.exists path
         
         if exists
-            post.emit 'fs.change' path:path change:change   watcher:@
+            post.emit 'file.change' path:path change:change   watcher:@
         else
-            post.emit 'fs.change' path:path change:'remove' watcher:@
+            post.emit 'file.change' path:path change:'remove' watcher:@
                 
 export watcher

@@ -38,6 +38,7 @@ inputchoice = (function ()
         this.setColor('bg',theme.quicky_bg)
         this.setColor('frame',theme.quicky_frame)
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
+        this.input.hide()
         this.choices.show()
         this.input.on('action',this.onInputAction)
         this.choices.on('action',this.onChoicesAction)
@@ -84,7 +85,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _80_23_
+        var _82_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -141,9 +142,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _130_36_
+        var choice, _132_36_
 
-        choice = ((_130_36_=this.choices.current()) != null ? _130_36_ : this.input.current())
+        choice = ((_132_36_=this.choices.current()) != null ? _132_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -175,6 +176,7 @@ inputchoice = (function ()
         bg = this.color.bg
         if (this.input.visible())
         {
+            console.log(`${this.name} drawDivider`)
             return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
         }
         else

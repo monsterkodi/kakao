@@ -43,7 +43,7 @@ function mapview extends view
     
     show: => 
     
-        log "#{@name} show #{@cells.cols} #{@cells.rows}" 
+        # log "#{@name} show #{@cells.cols} #{@cells.rows}" 
         super()
         
         if valid @images

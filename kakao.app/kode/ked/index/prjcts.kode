@@ -74,7 +74,7 @@ class prjcts
                 @queue.push prjPath
             ⮐ 
         
-        ⮐ if valid @projects[prjPath]
+        ⮐  if valid @projects[prjPath]
             
         @indexing = prjPath
         

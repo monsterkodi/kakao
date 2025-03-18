@@ -94,6 +94,10 @@ searcher = (function ()
 
     searcher.prototype["onFileLoaded"] = function (file)
     {
+        if (this.hidden())
+        {
+            return
+        }
         this.hide()
         if (_k_.empty(this.fileToHighlight))
         {

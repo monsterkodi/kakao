@@ -18,6 +18,7 @@ import icons from "../../theme/icons.js"
 
 import quicky from "./quicky.js"
 import brocol from "./brocol.js"
+import diritem from "./diritem.js"
 
 import rgxs from './quicky.json' with { type : "json" }
 
@@ -62,7 +63,6 @@ browse = (function ()
         y = parseInt(scy - hs / 2 - ih)
         cr = (this.crumbs.visible() ? 1 : 0)
         ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
-        console.log(`browse.arrange brocol visible ${this.brocol.visible()}`)
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
         fw = (this.brocol.visible() ? w / 2 - 1 : 0)
         cw = w - fw - 3
@@ -132,6 +132,7 @@ browse = (function ()
             w = 0
             if (item.tilde === icons.dir + ' ..')
             {
+                console.log('is this ever reached?')
                 return w
             }
             if (item.type === 'file')
@@ -153,8 +154,7 @@ browse = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
-            item.tilde = slash.relative(item.path,this.currentDir)
-            item.tilde = (((item.type === 'dir') ? (icons.dir + ' ') : '  ')) + item.tilde
+            item.tilde = diritem.symbolName(item)
         }
         items.sort(function (a, b)
         {
@@ -302,7 +302,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _271_63_
+        var upDir, _272_63_
 
         switch (action)
         {
@@ -320,7 +320,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_271_63_=choice.link) != null ? _271_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_272_63_=choice.link) != null ? _272_63_ : choice.path))
                     }
                 }
                 break

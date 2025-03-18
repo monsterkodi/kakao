@@ -52,7 +52,7 @@ class indexer
         
         m?[1]
         
-    @file: file -> window.indexer.files[file]
+    @file: file -> indexer.files[file]
         
     # 000000000  00000000   0000000  000000000  000   000   0000000   00000000   0000000    
     #    000     000       000          000     000 0 000  000   000  000   000  000   000  
@@ -79,8 +79,12 @@ class indexer
     
     @: ->
         
-        post.on 'index' (file) => @indexFile file
-        post.on 'saved' (file) => @indexFile file refresh: true
+        post.on 'index'       (file) => @indexFile file
+        post.on 'saved'       (file) => @indexFile file refresh: true
+        post.on 'file.change' (info) => 
+            if @files[info.path]
+                log "refresh on file.change #{info.path}"
+                @indexFile file refresh: true
         
         @imageExtensions = ['png' 'jpg' 'gif' 'tiff' 'pxm' 'icns']        
 
@@ -188,8 +192,7 @@ class indexer
 
     index: file opt ○=>
         
-        ● indexFile
-        # log "indexer.index #{file}" 
+        # ● indexFile
         
         @removeFile file if opt?.refresh
 
@@ -197,6 +200,8 @@ class indexer
             post.emit 'indexer.indexed' file @files[file]
             ⮐  @shiftQueue()
 
+        log "indexer.index #{file}" 
+        
         fileExt = slash.ext file 
 
         if fileExt in @imageExtensions

@@ -6,11 +6,12 @@
 0000000    000  000   000     000     000   000  00000000  00000000
 ###
 
-use ../../../kxk ▪ kutil kseg kstr slash post noon
+use ../../../kxk ▪ kutil kseg kstr slash post
 use ../../../kxk ◆ nfs
 use ../../index  ◆ prjcts 
 use ../../theme  ◆ theme icons
 use ../menu      ◆ choices 
+use              ◆ diritem
 
 import rgxs from '../menu/quicky.json' with { type: "json" }
 
@@ -45,7 +46,7 @@ function dirtree extends choices
         ⮐  if empty items
         
         for item in items
-            item.tilde = ' ' + @symbolName(item)
+            item.tilde = ' ' + diritem.symbolName(item)
 
         items.sort (a b) => @weight(a) - @weight(b)
                     
@@ -186,7 +187,7 @@ function dirtree extends choices
         depth = (dirItem.depth ? 0) + 1
         for item in items
             item.depth = depth
-            item.tilde = lpad(1+depth*2) + @symbolName(item)
+            item.tilde = lpad(1+depth*2) + diritem.symbolName(item)
             if item.type == 'dir' and state.open?[item.path]
                 @openDir item redraw:true
         
@@ -307,7 +308,6 @@ function dirtree extends choices
         @color.current = @hasFocus() ? current : theme.dirtree_current_blur
         
         if li = @indexOfOpenFile()
-            # bg = theme.dirtree_open_file
             bg = theme.gutter
             y  = li-@state.s.view[1]
             if y < @cells.rows and li < @state.s.lines.length
@@ -315,7 +315,6 @@ function dirtree extends choices
                 @cells.set xs-1-@state.s.view[0] y '' bg @color.bg
                 for x in xs...@cells.cols
                     @cells.set_bg x-@state.s.view[0] y bg
-                # @cells.set x-@state.s.view[0] y '' bg @color.bg
         
         super()
                 
@@ -352,36 +351,5 @@ function dirtree extends choices
         w += 10000 if item.type == 'file'
         w += kstr.weight(p.file)
         w
-
-    #  0000000  000   000  00     00  0000000     0000000   000      
-    # 000        000 000   000   000  000   000  000   000  000      
-    # 0000000     00000    000000000  0000000    000   000  000      
-    #      000     000     000 0 000  000   000  000   000  000      
-    # 0000000      000     000   000  0000000     0000000   0000000  
-    
-    symbol: item ->
-                          
-        switch item.type
-            'file' 
-                ⮐  icons[slash.ext(item.path)] ? icons.file
-            'dir'
-                ⮐  item.open ? icons.dir_open : icons.dir_close
-                
-    symbolName: item -> 
-        
-        switch slash.ext item.path
-            'kode'
-            'noon'
-            'json'
-            'pug'
-            'styl'
-            'html'
-            'js'
-            'md'
-                name = slash.name item.path
-            else
-                name = slash.file item.path
-        
-        @symbol(item) + ' ' + name
         
 export dirtree

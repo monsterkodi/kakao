@@ -80,6 +80,8 @@ function searcher extends finder
 
     onFileLoaded: file =>
     
+        ⮐  if @hidden()
+    
         @hide()
         
         ⮐  if empty @fileToHighlight

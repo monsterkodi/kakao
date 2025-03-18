@@ -28,6 +28,7 @@ function inputchoice extends view
 
         @choices.mapscr?.hide()       
         
+        @input.hide()
         @choices.show()
 
         @input.on   'action'  @onInputAction
@@ -38,6 +39,7 @@ function inputchoice extends view
         super key color
         
         if key == 'bg'
+        
             @input.setColor     'bg'    @color.bg
             @input.setColor     'empty' @color.bg
             @choices.setColor   'bg'    @color.bg
@@ -155,6 +157,7 @@ function inputchoice extends view
         bg = @color.bg
         
         if @input.visible()
+            log "#{@name} drawDivider"
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
         else
             @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg

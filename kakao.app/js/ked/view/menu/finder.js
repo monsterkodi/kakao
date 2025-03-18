@@ -85,6 +85,7 @@ finder = (function ()
         if (_k_.empty(text))
         {
             this.choices.clear()
+            this.input.show()
             this.input.grabFocus()
             return finder.__super__.show.call(this)
         }
@@ -113,6 +114,7 @@ finder = (function ()
         {
             this.choices.selectFirst()
         }
+        this.input.show()
         this.input.grabFocus()
         return finder.__super__.show.call(this)
     }

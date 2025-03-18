@@ -11,7 +11,7 @@ use ../../../kxk    ◆ nfs
 use ../../util      ◆ walker 
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ theme icons
-use                 ◆ quicky brocol
+use                 ◆ quicky brocol diritem
 
 import rgxs from './quicky.json' with { type: "json" }
 
@@ -55,7 +55,7 @@ function browse extends quicky
         cr = @crumbs.visible() ? 1 : 0
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
 
-        log "browse.arrange brocol visible #{@brocol.visible()}"
+        # log "browse.arrange brocol visible #{@brocol.visible()}"
 
         w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
         fw = @brocol.visible() ? w/2-1 : 0
@@ -125,7 +125,9 @@ function browse extends quicky
             p = slash.parse item.path
 
             w = 0
-            ⮐  w if item.tilde == icons.dir + ' ..'
+            if item.tilde == icons.dir + ' ..'
+                log 'is this ever reached?'
+                ⮐  w 
             w += 10000 if item.type == 'file'
             w += 1000  if item.tilde.startsWith icons.dir + ' .'
             w += 1     if slash.ext(item.tilde) in ['js' 'json']
@@ -133,14 +135,13 @@ function browse extends quicky
             w
         
         for item in items
-            item.tilde = slash.relative item.path @currentDir
-            item.tilde = ((item.type == 'dir') ? (icons.dir + ' ') : '  ') + item.tilde
+            item.tilde = diritem.symbolName(item)
 
         items.sort (a b) -> weight(a) - weight(b)
         
         parent = slash.dir @currentDir
 
-        items.unshift
+        items.unshift # add the .. item
             type: 'dir'
             file: slash.name(parent)
             path: parent

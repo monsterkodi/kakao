@@ -13,6 +13,8 @@ import icons from "../../theme/icons.js"
 
 import choices from "../menu/choices.js"
 
+import diritem from "./diritem.js"
+
 import rgxs from './quicky.json' with { type : "json" }
 
 brocol = (function ()
@@ -35,11 +37,6 @@ brocol = (function ()
     brocol.prototype["isCursorVisible"] = function ()
     {
         return false
-    }
-
-    brocol.prototype["visible"] = function ()
-    {
-        return this.cells.rows > 0
     }
 
     brocol.prototype["onMouse"] = function (event)
@@ -78,8 +75,7 @@ brocol = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
-            item.tilde = slash.file(item.path)
-            item.tilde = (((item.type === 'dir') ? (icons.dir + ' ') : '  ')) + item.tilde
+            item.tilde = diritem.symbolName(item)
         }
         weight = (function (item)
         {
@@ -89,7 +85,8 @@ brocol = (function ()
             w = 0
             if (item.tilde === icons.dir + ' ..')
             {
-                return w
+                console.log('ever reached?')
+                return
             }
             if (item.type === 'file')
             {

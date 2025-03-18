@@ -191,6 +191,10 @@ editor = (function ()
 
     editor.prototype["grabFocus"] = function ()
     {
+        if (this.hidden())
+        {
+            this.show()
+        }
         post.emit('focus',this.name)
         return this.redraw()
     }
@@ -212,7 +216,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _183_20_, _187_21_, _192_21_
+        var _184_20_, _188_21_, _193_21_
 
         if (!this.hasFocus())
         {

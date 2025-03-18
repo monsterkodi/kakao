@@ -88,7 +88,7 @@ class theme
 
     static scroll = '#1a1a1a'
 
-    static scroll_dot = '#222'
+    static scroll_dot = '#44a'
 
     static scroll_knob = '#44f'
 

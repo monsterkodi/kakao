@@ -85,8 +85,8 @@ function finder extends inputchoice
         
         if empty text
             @choices.clear()
+            @input.show()
             @input.grabFocus()
-            # @layout()
             ⮐ super()
                     
         @state.highlightText text
@@ -110,6 +110,7 @@ function finder extends inputchoice
         else
             @choices.selectFirst()
 
+        @input.show()
         @input.grabFocus()
         super()
         
