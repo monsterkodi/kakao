@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var quicky
 
@@ -22,6 +22,8 @@ import crumbs from "../base/crumbs.js"
 
 import inputchoice from "../menu/inputchoice.js"
 
+import diritem from "./diritem.js"
+
 import rgxs from './quicky.json' with { type : "json" }
 
 quicky = (function ()
@@ -35,10 +37,9 @@ quicky = (function ()
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["onInputAction"] = this["onInputAction"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
-        this["browseDir"] = this["browseDir"].bind(this)
         this["applyChoice"] = this["applyChoice"].bind(this)
-        this["onMouse"] = this["onMouse"].bind(this)
         this["hideMap"] = this["hideMap"].bind(this)
+        this["browseDir"] = this["browseDir"].bind(this)
         this["preview"] = this["preview"].bind(this)
         this["choicesFiltered"] = this["choicesFiltered"].bind(this)
         this["moveSelection"] = this["moveSelection"].bind(this)
@@ -47,6 +48,7 @@ quicky = (function ()
         this["calcWidthAndShowPathItems"] = this["calcWidthAndShowPathItems"].bind(this)
         this["showProjectFiles"] = this["showProjectFiles"].bind(this)
         this["showFiles"] = this["showFiles"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,this.name,['mapview','scroll'])
@@ -98,14 +100,41 @@ quicky = (function ()
         return this.drawChoices()
     }
 
+    quicky.prototype["onMouse"] = function (event)
+    {
+        var ret
+
+        if (this.hidden())
+        {
+            return
+        }
+        ret = this.crumbs.onMouse(event)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
+        }
+        ret = quicky.__super__.onMouse.call(this,event)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
+        }
+        return this.hover
+    }
+
     quicky.prototype["showFiles"] = function (files)
     {
-        var items
+        var item, items
 
         items = files.map(function (path)
         {
-            return {path:path,type:'file',tilde:' ' + slash.file(path)}
+            return {path:path,type:'file'}
         })
+        var list = _k_.list(items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            item.tilde = ' ' + diritem.symbolName(item)
+        }
         this.crumbs.hide()
         return this.calcWidthAndShowPathItems(items)
     }
@@ -149,7 +178,7 @@ quicky = (function ()
         }).bind(this)
         items = items.map((function (path)
         {
-            var prs, rel
+            var item, prs, rel
 
             rel = slash.relative(path,prjDir)
             if (slash.isAbsolute(rel))
@@ -157,7 +186,9 @@ quicky = (function ()
                 prs = slash.parse(rel)
                 rel = slash.join(slash.split(prs.dir).slice(-2),prs.file)
             }
-            return {type:'file',path:path,tilde:' ' + rel}
+            item = {type:'file',path:path}
+            item.tilde = ' ' + diritem.symbolName(item)
+            return item
         }).bind(this))
         items.sort(function (a, b)
         {
@@ -265,30 +296,16 @@ quicky = (function ()
         return post.emit('redraw')
     }
 
+    quicky.prototype["browseDir"] = async function (dir, select)
+    {
+        console.log(`${this.name} browseDir ${dir}`)
+        post.emit('browse.dir',dir)
+        return this.hide()
+    }
+
     quicky.prototype["hideMap"] = function ()
     {
         return this.choices.mapscr.hide()
-    }
-
-    quicky.prototype["onMouse"] = function (event)
-    {
-        var ret
-
-        if (this.hidden())
-        {
-            return
-        }
-        ret = this.crumbs.onMouse(event)
-        if ((ret != null ? ret.redraw : undefined))
-        {
-            return ret
-        }
-        ret = quicky.__super__.onMouse.call(this,event)
-        if ((ret != null ? ret.redraw : undefined))
-        {
-            return ret
-        }
-        return this.hover
     }
 
     quicky.prototype["applyChoice"] = function (choice)
@@ -317,13 +334,6 @@ quicky = (function ()
         return {redraw:true}
     }
 
-    quicky.prototype["browseDir"] = async function (dir, select)
-    {
-        console.log(`${this.name} browseDir ${dir}`)
-        post.emit('browse.dir',dir)
-        return this.hide()
-    }
-
     quicky.prototype["onCrumbsAction"] = function (action, path)
     {
         switch (action)
@@ -342,7 +352,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _322_63_
+        var upDir, _328_63_
 
         switch (action)
         {
@@ -360,7 +370,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_322_63_=choice.link) != null ? _322_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_328_63_=choice.link) != null ? _328_63_ : choice.path))
                     }
                 }
                 break

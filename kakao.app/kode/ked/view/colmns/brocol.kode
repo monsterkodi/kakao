@@ -23,12 +23,12 @@ function brocol extends choices
         @frontRoundOffset = 2
         @state.syntax.setRgxs rgxs
         
+    isCursorVisible: -> false
+    
     show: dir => 
     
         @listDir dir
         super()
-        
-    isCursorVisible: -> false
     
     onMouse: event =>
         

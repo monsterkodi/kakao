@@ -54,6 +54,7 @@ KED = (function ()
         this["onResize"] = this["onResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
+        this["showFinderOrSearcher"] = this["showFinderOrSearcher"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onPaste"] = this["onPaste"].bind(this)
         this["saveAs"] = this["saveAs"].bind(this)
@@ -468,6 +469,18 @@ ked [file]
         }
     }
 
+    KED.prototype["showFinderOrSearcher"] = function ()
+    {
+        if (this.finder.visible() && !_k_.empty(this.finder.input.current()))
+        {
+            return this.searcher.show(this.finder.input.current())
+        }
+        else
+        {
+            return this.finder.show()
+        }
+    }
+
     KED.prototype["onKey"] = function (key, event)
     {
         var handler, result
@@ -506,7 +519,7 @@ ked [file]
 
             case 'cmd+f':
             case 'ctrl+f':
-                return this.finder.show()
+                return this.showFinderOrSearcher()
 
             case 'shift+cmd+f':
             case 'shift+ctrl+f':
@@ -551,7 +564,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _476_22_
+        var mcw, _483_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

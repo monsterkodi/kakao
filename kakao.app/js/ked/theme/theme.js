@@ -32,6 +32,10 @@ class theme
 
     static editor_highlight_string_ul = '#050'
 
+    static mapview = '#000'
+
+    static mapscr = '#060606'
+
     static dircol = '#111'
 
     static funcol = '#0a0a0a'

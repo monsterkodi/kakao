@@ -76,10 +76,12 @@ dircol = (function ()
         {
             this.setRoot(root)
         }
-        if (recent.dircol.active)
+        this.active = recent.dircol.active
+        if (this.active)
         {
-            return this.active = true
+            this.show()
         }
+        return ked_session.set('dircol',recent.dircol)
     }
 
     dircol.prototype["setRoot"] = function (path)

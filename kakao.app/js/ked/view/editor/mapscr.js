@@ -5,6 +5,8 @@ var floor, mapscr, pow
 import kxk from "../../../kxk.js"
 let post = kxk.post
 
+import theme from "../../theme/theme.js"
+
 import mapview from "./mapview.js"
 
 floor = Math.floor
@@ -26,6 +28,7 @@ mapscr = (function ()
         this["getSegls"] = this["getSegls"].bind(this)
         mapscr.__super__.constructor.call(this,screen,state)
         this.pointerType = 'pointer'
+        this.setColor('bg',theme.mapscr)
         screen.t.on('preResize',this.clearImages)
         post.on('popup.show',this.hide)
         post.on('greet.show',this.hide)

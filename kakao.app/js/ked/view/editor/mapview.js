@@ -37,6 +37,7 @@ mapview = (function ()
         this["show"] = this["show"].bind(this)
         this["reload"] = this["reload"].bind(this)
         mapview.__super__.constructor.call(this,screen,this.state.owner() + '.mapview')
+        this.setColor('bg',theme.mapview)
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
         this.rowOffset = 0
@@ -139,7 +140,7 @@ mapview = (function ()
 
     mapview.prototype["createImages"] = function ()
     {
-        var bytes, data, dataForLine, line, lines, syntax, t, w, y
+        var bgrgb, bytes, charPixels, data, dataForLine, line, lines, syntax, t, w, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
@@ -156,12 +157,23 @@ mapview = (function ()
         lines = this.getSegls()
         syntax = this.getSyntax()
         data = Buffer.alloc(bytes)
+        bgrgb = color.hex(this.color.bg)
+        charPixels = (function (x, rgb)
+        {
+            var xr
+
+            for (var _a_ = xr = 0, _b_ = this.pixelsPerCol; (_a_ <= _b_ ? xr <= this.pixelsPerCol : xr >= this.pixelsPerCol); (_a_ <= _b_ ? ++xr : --xr))
+            {
+                data[(x * this.pixelsPerCol + xr) * 3 + 0] = rgb[0]
+                data[(x * this.pixelsPerCol + xr) * 3 + 1] = rgb[1]
+                data[(x * this.pixelsPerCol + xr) * 3 + 2] = rgb[2]
+            }
+        }).bind(this)
         dataForLine = (function (line)
         {
-            var b, ch, clss, f, g, r, rgb, x, xr
+            var ch, clss, f, rgb, x
 
-            data.fill(0)
-            for (var _a_ = x = 0, _b_ = line.length; (_a_ <= _b_ ? x < line.length : x > line.length); (_a_ <= _b_ ? ++x : --x))
+            for (var _c_ = x = 0, _d_ = line.length; (_c_ <= _d_ ? x < line.length : x > line.length); (_c_ <= _d_ ? ++x : --x))
             {
                 if (x * this.pixelsPerCol > w)
                 {
@@ -191,15 +203,16 @@ mapview = (function ()
                             return _k_.clamp(0,255,parseInt(f * v))
                         })
                     }
-                    var _c_ = rgb; r = _c_[0]; g = _c_[1]; b = _c_[2]
-
-                    for (var _d_ = xr = 0, _e_ = this.pixelsPerCol; (_d_ <= _e_ ? xr <= this.pixelsPerCol : xr >= this.pixelsPerCol); (_d_ <= _e_ ? ++xr : --xr))
-                    {
-                        data[(x * this.pixelsPerCol + xr) * 3 + 0] = r
-                        data[(x * this.pixelsPerCol + xr) * 3 + 1] = g
-                        data[(x * this.pixelsPerCol + xr) * 3 + 2] = b
-                    }
+                    charPixels(x,rgb)
                 }
+                else
+                {
+                    charPixels(x,bgrgb)
+                }
+            }
+            for (var _e_ = x = line.length, _f_ = w / this.pixelsPerCol; (_e_ <= _f_ ? x < w / this.pixelsPerCol : x > w / this.pixelsPerCol); (_e_ <= _f_ ? ++x : --x))
+            {
+                charPixels(x,bgrgb)
             }
         }).bind(this)
         var list = _k_.list(lines)
@@ -240,7 +253,7 @@ mapview = (function ()
         {
             return
         }
-        return this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,'#000')
+        return this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,this.color.bg)
     }
 
     return mapview

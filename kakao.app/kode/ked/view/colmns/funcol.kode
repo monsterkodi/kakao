@@ -47,6 +47,8 @@ function funcol extends view
         if recent.funcol.active
             @active = true
             @show()
+            
+        ked_session.set 'funcol' recent.funcol
         
     # ███       ███████   ███   ███   ███████   ███   ███  █████████
     # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   

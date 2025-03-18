@@ -148,6 +148,10 @@
         - esc does it most of the time
         - in the rare cases i want to deselect, but keep the multi cursors:
             - select all and select all again
+            
+    - finder & searcher
+        - cmd+f opens finder if not open
+        - cmd+f in finder opens searcher
     
     - select all
         - deselects when all lines are selected already 

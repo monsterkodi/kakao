@@ -415,6 +415,13 @@ function KED
                     break
 
         @redraw() if redraw
+        
+    showFinderOrSearcher: =>
+    
+        if @finder.visible() and valid @finder.input.current()
+            @searcher.show @finder.input.current()
+        else
+            @finder.show()
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -433,7 +440,7 @@ function KED
             'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()
             'alt+.' 'alt+m'              ➜ ⮐  @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky.showProjectFiles @currentFile
-            'cmd+f' 'ctrl+f'             ➜ ⮐  @finder.show()
+            'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
             'cmd+o' 'ctrl+o'                  
             'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)

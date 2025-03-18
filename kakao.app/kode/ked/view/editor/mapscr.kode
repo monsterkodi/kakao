@@ -10,6 +10,7 @@
 ###
 
 use ../../../kxk ▪ post
+use ../../theme  ◆ theme
 use              ◆ mapview
 
 {floor, pow} = Math
@@ -21,6 +22,8 @@ function mapscr extends mapview
         super screen state
         
         @pointerType = 'pointer'
+        
+        @setColor 'bg' theme.mapscr
         
         screen.t.on 'preResize' @clearImages
         

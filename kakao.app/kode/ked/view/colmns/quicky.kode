@@ -14,7 +14,8 @@ use ../../edit/tool ◆ belt
 use ../../theme     ◆ icons
 use ../base         ◆ crumbs 
 use ../menu         ◆ inputchoice
-
+use                 ◆ diritem
+               
 import rgxs from './quicky.json' with { type: "json" }
 
 function quicky extends inputchoice
@@ -84,6 +85,19 @@ function quicky extends inputchoice
         @crumbs.draw()
         @drawChoices()
                 
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+
+        ⮐  if @hidden()
+        ret = @crumbs.onMouse event ; ⮐  ret if ret?.redraw
+        ret = super event           ; ⮐  ret if ret?.redraw
+        @hover
+                
     #  0000000  000   000   0000000   000   000        00000000  000  000      00000000   0000000  
     # 000       000   000  000   000  000 0 000        000       000  000      000       000       
     # 0000000   000000000  000   000  000000000        000000    000  000      0000000   0000000   
@@ -91,8 +105,10 @@ function quicky extends inputchoice
     # 0000000   000   000   0000000   00     00        000       000  0000000  00000000  0000000   
     
     showFiles: files =>
-                                                               #  pad
-        items = files.map (path) -> path:path type:'file' tilde:' ' + slash.file(path) 
+    
+        items = files.map (path) -> path:path type:'file' 
+        for item in items
+            item.tilde = ' ' + diritem.symbolName(item)
         @crumbs.hide()
         @calcWidthAndShowPathItems items
         
@@ -108,8 +124,8 @@ function quicky extends inputchoice
         prjDir = prjcts.dir @currentFile
         
         items = items.concat ked_session.recentFiles()[0...10]
-        
-        ⮐ @gotoDir process.cwd() if empty items
+                
+        ⮐  @gotoDir process.cwd() if empty items
         
         items = kutil.uniq items
         
@@ -138,7 +154,10 @@ function quicky extends inputchoice
                 prs = slash.parse rel
                 rel = slash.join slash.split(prs.dir)[-2..] prs.file
             
-            type:'file' path:path tilde:' ' + rel
+            # type:'file' path:path tilde:' ' + rel
+            item = type:'file' path:path 
+            item.tilde = ' ' + diritem.symbolName(item)
+            item
             
         items.sort (a b) -> weight(a) - weight(b)            
 
@@ -235,24 +254,23 @@ function quicky extends inputchoice
             @hideMap()
             
         post.emit 'redraw'
+
+    # ███████    ████████    ███████   ███   ███   ███████  ████████  ███████    ███  ████████ 
+    # ███   ███  ███   ███  ███   ███  ███ █ ███  ███       ███       ███   ███  ███  ███   ███
+    # ███████    ███████    ███   ███  █████████  ███████   ███████   ███   ███  ███  ███████  
+    # ███   ███  ███   ███  ███   ███  ███   ███       ███  ███       ███   ███  ███  ███   ███
+    # ███████    ███   ███   ███████   ██     ██  ███████   ████████  ███████    ███  ███   ███
+
+    browseDir: dir select ○=>
+    
+        log "#{@name} browseDir #{dir}"
+        post.emit 'browse.dir' dir
+        @hide()
             
     hideMap: => 
     
         @choices.mapscr.hide()
     
-    # 00     00   0000000   000   000   0000000  00000000  
-    # 000   000  000   000  000   000  000       000       
-    # 000000000  000   000  000   000  0000000   0000000   
-    # 000 0 000  000   000  000   000       000  000       
-    # 000   000   0000000    0000000   0000000   00000000  
-    
-    onMouse: event =>
-
-        ⮐  if @hidden()
-        ret = @crumbs.onMouse event ; ⮐ ret if ret?.redraw
-        ret = super event           ; ⮐ ret if ret?.redraw
-        @hover
-
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
@@ -277,19 +295,7 @@ function quicky extends inputchoice
 
         @openFileInEditor choice.path 
         redraw:true
-        
-    #  0000000    0000000   000000000   0000000   0000000    000  00000000   
-    # 000        000   000     000     000   000  000   000  000  000   000  
-    # 000  0000  000   000     000     000   000  000   000  000  0000000    
-    # 000   000  000   000     000     000   000  000   000  000  000   000  
-    #  0000000    0000000      000      0000000   0000000    000  000   000  
-    
-    browseDir: dir select ○=>
-    
-        log "#{@name} browseDir #{dir}"
-        post.emit 'browse.dir' dir
-        @hide()
-        
+                
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
     # 000000000  000          000     000  000   000  000 0 000  

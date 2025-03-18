@@ -84,13 +84,13 @@ funSyntax = (function ()
         {
             clr = color.darken(clr,0.2)
         }
-        else if (_k_.in(char,SYMBOL.bound))
+        else if (_k_.in(char,SYMBOL.bound) && item.bound)
         {
-            clr = color.darken(clr,0.3)
+            clr = color.darken(clr,0.5)
         }
         else if (_k_.in(char,SYMBOL.unbound))
         {
-            clr = color.darken(clr,0.3)
+            clr = color.darken(clr,0.7)
         }
         return clr
     }

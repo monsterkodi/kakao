@@ -29,15 +29,15 @@ brocol = (function ()
         this.state.syntax.setRgxs(rgxs)
     }
 
+    brocol.prototype["isCursorVisible"] = function ()
+    {
+        return false
+    }
+
     brocol.prototype["show"] = function (dir)
     {
         this.listDir(dir)
         return brocol.__super__.show.call(this)
-    }
-
-    brocol.prototype["isCursorVisible"] = function ()
-    {
-        return false
     }
 
     brocol.prototype["onMouse"] = function (event)

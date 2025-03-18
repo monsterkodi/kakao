@@ -23,6 +23,8 @@ function mapview extends view
         
         super screen @state.owner() + '.mapview'
         
+        @setColor 'bg' theme.mapview
+        
         @imgId  = kstr.hash(@state.name) & ~0xffff
         @rowOffset = 0
         @images = []
@@ -114,17 +116,23 @@ function mapview extends view
         w = @cells.cols * t.cellsz[0]
         bytes = w*3
         
-        # log  "mapview.createImages #{b7 @name} #{@cells.cols} #{@cells.rows} #{bytes}"  
         ⮐  if bytes <= 0
         
         lines  = @getSegls()
         syntax = @getSyntax()
         
-        data = Buffer.alloc bytes
+        data  = Buffer.alloc bytes
+        
+        bgrgb = color.hex @color.bg 
+        
+        charPixels = x rgb =>
+        
+            for xr in 0..@pixelsPerCol
+                data[(x*@pixelsPerCol+xr)*3+0] = rgb[0]
+                data[(x*@pixelsPerCol+xr)*3+1] = rgb[1]
+                data[(x*@pixelsPerCol+xr)*3+2] = rgb[2]
         
         dataForLine = line =>
-            
-            data.fill 0
             
             for x in 0...line.length
                 
@@ -146,12 +154,12 @@ function mapview extends view
                         rgb = color.rgb syntax.getColor(x y)
                         rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
                      
-                    [r g b] = rgb
-                     
-                    for xr in 0..@pixelsPerCol
-                        data[(x*@pixelsPerCol+xr)*3+0] = r
-                        data[(x*@pixelsPerCol+xr)*3+1] = g
-                        data[(x*@pixelsPerCol+xr)*3+2] = b
+                    charPixels x rgb
+                else
+                    charPixels x bgrgb
+                        
+            for x in line.length...w/@pixelsPerCol
+                charPixels x bgrgb        
                     
         for line,y in lines
             
@@ -184,6 +192,6 @@ function mapview extends view
         
         ⮐  if @hidden() 
                      
-        @cells.fill_rect 0 0 @cells.cols-1 @cells.rows-1 ' ' null '#000'
+        @cells.fill_rect 0 0 @cells.cols-1 @cells.rows-1 ' ' null @color.bg
         
 export mapview

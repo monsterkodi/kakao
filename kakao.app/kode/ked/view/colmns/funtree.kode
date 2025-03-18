@@ -71,8 +71,8 @@ function funSyntax
         if 
             char == '@'            ➜ clr = color.darken clr 0.5
             char == SYMBOL.clss    ➜ clr = color.darken clr 0.2
-            char in SYMBOL.bound   ➜ clr = color.darken clr 0.3
-            char in SYMBOL.unbound ➜ clr = color.darken clr 0.3
+            char in SYMBOL.bound   and item.bound ➜ clr = color.darken clr 0.5
+            char in SYMBOL.unbound                ➜ clr = color.darken clr 0.7
         
         clr
         

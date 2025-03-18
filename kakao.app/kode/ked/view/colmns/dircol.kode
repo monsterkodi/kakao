@@ -18,7 +18,7 @@ function dircol extends view
         super screen name features
         
         @isVisible = false
-        @active = true
+        @active    = true
         
         @pointerType = 'pointer'
         
@@ -58,8 +58,10 @@ function dircol extends view
         if root = recent.dircol.root
             @setRoot root
             
-        if recent.dircol.active
-            @active = true
+        @active = recent.dircol.active
+        @show() if @active
+            
+        ked_session.set 'dircol' recent.dircol
             
     setRoot: path =>
     

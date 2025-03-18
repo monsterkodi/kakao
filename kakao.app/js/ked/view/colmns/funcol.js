@@ -54,8 +54,9 @@ funcol = (function ()
         if (recent.funcol.active)
         {
             this.active = true
-            return this.show()
+            this.show()
         }
+        return ked_session.set('funcol',recent.funcol)
     }
 
     funcol.prototype["layout"] = function (x, y, w, h)
