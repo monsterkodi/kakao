@@ -326,7 +326,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, exists, segls, start, text, _327_22_
+        var absFile, colors, exists, segls, start, text, _333_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -359,8 +359,18 @@ ked [file]
         {
             text = '○ binary ○'
         }
-        segls = belt.seglsForText(text)
-        this.editor.state.syntax.ext = slash.ext(this.currentFile)
+        var _a_ = belt.colorSeglsForText(text); colors = _a_[0]; segls = _a_[1]
+
+        if (!_k_.empty(colors))
+        {
+            this.editor.state.syntax.ext = '__ansi__'
+            console.log('colors',colors)
+            this.editor.state.syntax.setColors(colors)
+        }
+        else
+        {
+            this.editor.state.syntax.ext = slash.ext(this.currentFile)
+        }
         this.editor.state.loadSegls(segls)
         this.status.time = process.hrtime(start)[1]
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
@@ -564,7 +574,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _483_22_
+        var mcw, _489_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

@@ -173,3 +173,8 @@
     - gifsicle ked01.gif -o ked01o.gif -O=3 --colors 256 
     - ffmpeg -i ~/Desktop/ked.mov -r 24 -f gif ~/Desktop/ked.gif    
     - gifski -W 1080 --repeat 0 -Q 100 --fps 30 --extra -o ~/Desktop/ked.gif ~/Desktop/ked.mov
+
+#### creatures
+
+    (';')  {'�'}
+    

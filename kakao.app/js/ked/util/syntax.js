@@ -24,6 +24,7 @@ syntax = (function ()
         this["addSegl"] = this["addSegl"].bind(this)
         this["partialUpdate"] = this["partialUpdate"].bind(this)
         this["setSegls"] = this["setSegls"].bind(this)
+        this["setColors"] = this["setColors"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["setRgxs"] = this["setRgxs"].bind(this)
         this["setExt"] = this["setExt"].bind(this)
@@ -52,6 +53,13 @@ syntax = (function ()
     syntax.prototype["setLines"] = function (lines)
     {
         return this.setSegls(kseg.segls(lines))
+    }
+
+    syntax.prototype["setColors"] = function (colors)
+    {
+        this.colors = colors
+    
+        console.log('syntax.setColors',this.colors)
     }
 
     syntax.prototype["setSegls"] = function (segls)
@@ -166,7 +174,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _98_27_
+        var clss, _100_27_
 
         if (_k_.isNum(x))
         {
@@ -176,7 +184,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_98_27_=theme.syntax[clss]) != null ? _98_27_ : '#ff0000')
+        return ((_100_27_=theme.syntax[clss]) != null ? _100_27_ : '#ff0000')
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

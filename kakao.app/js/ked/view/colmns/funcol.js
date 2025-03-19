@@ -46,7 +46,6 @@ funcol = (function ()
 
     funcol.prototype["onSessionMerge"] = function (recent)
     {
-        console.log('funcol.recent',recent.funcol)
         if (_k_.empty(recent.funcol))
         {
             return

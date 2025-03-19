@@ -317,9 +317,15 @@ function KED
         if text == undefined
             text = '○ binary ○'
         
-        segls = belt.seglsForText text
+        [colors segls] = belt.colorSeglsForText text
         
-        @editor.state.syntax.ext = slash.ext @currentFile
+        if valid colors
+            @editor.state.syntax.ext = '__ansi__'
+            log 'colors' colors
+            @editor.state.syntax.setColors colors
+        else
+            @editor.state.syntax.ext = slash.ext @currentFile
+            
         @editor.state.loadSegls segls
         
         @status.time = process.hrtime(start)[1]

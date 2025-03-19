@@ -28,6 +28,8 @@ function syntax
     setRgxs: rgxs => @config = matchr.config rgxs 'u'
     
     setLines: lines => @setSegls kseg.segls(lines) 
+    
+    setColors: @colors => log 'syntax.setColors' @colors
         
     setSegls: segls =>
         

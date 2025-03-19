@@ -7,15 +7,14 @@
 ###
 
 use ../../../kxk ▪ kstr kutil kseg 
+use ../../theme  ◆ color
 use              ◆ belt
 
 function text
 
-    @linesForText: text -> 
+    @linesForText: text -> kstr.lines text
         
-        kstr.lines text.replace(/\x1b/g '�')
-        
-    @joinLines: lines join='\n'->
+    @joinLines: lines join='\n' ->
         
         if lines is str
             lines = kstr.lines lines
@@ -24,6 +23,38 @@ function text
     @seglsForText: text ->
 
         kseg.segls text.replace(/\x1b/g '�')
+        
+    @colorSeglsForText: text ->
+                
+        colors = []
+        segls  = []
+        
+        pattern = /\x1b\[((?:\d{1,3};?)+)m/gu
+        
+        for line,li in @linesForText(text)
+            # log "#{li} |#{line}|"           
+            ansisub = m c x ->
+                cs = c.split(';').map (c) -> int(c)
+                # log "ansisub #{m.length} #{cs} #{x}"
+                switch cs[0]
+                    38
+                        colors[li] ?= []
+                        if cs.length == 5 
+                            colors[li].push(x:x fg:cs[2..4]) 
+                        else
+                            colors[li].push(x:x fg:color.rgb(color.ansi256[cs[2]]))
+                    48  
+                        colors[li] ?= []
+                        if cs.length == 5 
+                            colors[li].push(x:x bg:cs[2..4]) 
+                        else
+                            colors[li].push(x:x bg:color.rgb(color.ansi256[cs[2]]))
+                ''
+                
+            noansi = line.replaceAll pattern ansisub
+            segls.push kseg(noansi)
+        
+        [colors segls]
         
     @seglsForLineRange: lines rng ->
         

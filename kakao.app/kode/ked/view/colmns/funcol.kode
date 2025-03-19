@@ -35,13 +35,10 @@ function funcol extends view
         
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
-        # post.on 'funcol.root'   @setRoot
         post.on 'session.merge' @onSessionMerge
         
     onSessionMerge: recent =>
     
-        log 'funcol.recent' recent.funcol
-        
         ⮐  if empty recent.funcol
         
         if recent.funcol.active
