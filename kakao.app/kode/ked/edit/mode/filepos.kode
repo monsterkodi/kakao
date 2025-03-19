@@ -39,7 +39,7 @@ function filepos
 
     cursorsSet: ->
         
-        if file = ked_session.get 'editor▸file'
+        if file = ked_session.get "editor▸file"
         
             curview = @state.mainCursor().concat(@state.s.view)
             

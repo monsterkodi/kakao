@@ -39,13 +39,14 @@ function fileeditor extends editor
             
         post.on 'editor.highlight' @state.highlightText
         post.on 'goto.line'        @onGotoLine
-        
+
     ###        
      ███████    ███████   █████████   ███████         ███      ███  ███   ███  ████████  
     ███        ███   ███     ███     ███   ███        ███      ███  ████  ███  ███       
     ███  ████  ███   ███     ███     ███   ███        ███      ███  ███ █ ███  ███████   
     ███   ███  ███   ███     ███     ███   ███        ███      ███  ███  ████  ███       
      ███████    ███████      ███      ███████         ███████  ███  ███   ███  ████████  
+    
     
     sets the main cursor:
         ◆ row       zero based line index to move the main cursor to
@@ -68,7 +69,7 @@ function fileeditor extends editor
             @state.setCursors [[col row]]
         else
             @state.setCursors [[col row]] adjust:'topBotDelta'
-
+            
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
     # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
     # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   
@@ -102,7 +103,7 @@ function fileeditor extends editor
     
     onMouse: event =>
         
-        ret = super event ; ⮐ ret if ret?.redraw
+        ret = super event ; ⮐  ret if ret?.redraw
         
         [col row] = @cells.posForEvent event
         
@@ -198,7 +199,7 @@ function fileeditor extends editor
     
     onWheel: event =>
         
-        ⮐ if event.cell[1] >= @cells.y + @cells.rows
+        ⮐  if event.cell[1] >= @cells.y + @cells.rows
         
         if @dragStart
             

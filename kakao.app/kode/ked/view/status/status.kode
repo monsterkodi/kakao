@@ -113,7 +113,7 @@ function status extends view
     
     draw: =>
         
-        ⮐  if @hidden()
+        ⮐  if @hidden() or empty @file
                 
         x      = 0
         y      = 0

@@ -96,7 +96,8 @@ function inputchoice extends view
 
         @choices.filter text
         @choices.state.selectLine 0
-        @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        # @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+        @choices.state.setMainCursor 0 0
         @choicesFiltered()
         @arrange()
         

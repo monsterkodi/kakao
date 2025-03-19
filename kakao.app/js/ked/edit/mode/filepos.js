@@ -25,7 +25,7 @@ filepos = (function ()
     {
         var curview, file
 
-        if (file = ked_session.get('editor▸file'))
+        if (file = ked_session.get("editor▸file"))
         {
             curview = this.state.mainCursor().concat(this.state.s.view)
             if (_k_.empty(filepos.fileposl))

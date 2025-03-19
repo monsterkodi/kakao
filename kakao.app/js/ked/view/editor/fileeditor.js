@@ -100,7 +100,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _136_41_, _188_31_
+        var col, ret, row, start, x, y, _137_41_, _189_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

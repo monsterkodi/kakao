@@ -20,6 +20,9 @@
 #### todo
 ##### todo
 
+- mapscroll 
+    - add scrollbar handle
+
 - auto-replace surrounding string delimiters with " when inserting #{}
 - alt+cmd+'       replace surrounding string delimiters with '
 - shift+alt+cmd+' replace surrounding string delimiters with "

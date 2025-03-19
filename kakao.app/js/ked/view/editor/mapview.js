@@ -88,11 +88,18 @@ mapview = (function ()
         {
             return
         }
-        var list = _k_.list(this.images)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
+        if (process.env.TERM === 'xterm-kitty')
         {
-            id = list[_a_]
-            this.cells.screen.t.deleteImage(id)
+            this.cells.screen.t.deleteImagesInRange(this.images[0],this.images.slice(-1)[0])
+        }
+        else
+        {
+            var list = _k_.list(this.images)
+            for (var _a_ = 0; _a_ < list.length; _a_++)
+            {
+                id = list[_a_]
+                this.cells.screen.t.deleteImage(id)
+            }
         }
         return this.images = []
     }

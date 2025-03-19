@@ -140,7 +140,7 @@ status = (function ()
     {
         var add, ch, ci, colno, cols, cur, cursor, dty, fg, fnl, hil, i, rdo, sel, set, x, y
 
-        if (this.hidden())
+        if (this.hidden() || _k_.empty(this.file))
         {
             return
         }

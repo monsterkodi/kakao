@@ -84,7 +84,7 @@ class indexer
         post.on 'index'       (file) => @index file
         post.on 'file.change' (info) => 
             if @files[info.path]
-                log "indexer file.change #{info.path}"
+                # log "indexer file.change #{info.path}"
                 @index info.path refresh:true
         
         @imageExtensions = ['png' 'jpg' 'gif' 'tiff' 'pxm' 'icns']        

@@ -130,7 +130,6 @@ class indexer
         {
             if (this.files[info.path])
             {
-                console.log(`indexer file.change ${info.path}`)
                 return this.index(info.path,{refresh:true})
             }
         }).bind(this))

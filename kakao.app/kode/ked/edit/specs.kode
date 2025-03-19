@@ -6,7 +6,7 @@
     0000000   000        00000000   0000000  0000000 
 
     provides support for quick insertion of certain 
-    unicode symbols (special characters)
+    unicode symbols: (spe)cial (c)haracter(s)  
 ###
 
 function specs
@@ -27,9 +27,11 @@ function specs
         '~r': '⮐ '
         '~t': '➜'
         
-    @trigger: # prepended to auto completion
-     
-        '~': [ '○' '▪' '◆' '▸' '▾' '▴' '◂' '✔' '✘' '●' '■' '⮐  ' '➜ ']
+    @trigger: # prepended to auto completion 
+                         
+        '~': [  '○' '▪' '◆' '▸' '▾' '▴' '◂' '✔' '✘' '●' '■' '⮐  ' '➜ '
+                '│' '─' '┬' '├' '┼' '┤' '┴' '╭' '' '╰' '╮' '' '╯' 
+             ]
         'r': [ '⮐  ']
         't': [ '➜ ']
         '>': [ '▸ ']

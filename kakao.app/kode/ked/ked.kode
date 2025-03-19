@@ -75,6 +75,7 @@ function KED
         post.on 'view.size'     @onViewSize
         post.on 'quicky'        @onQuicky
         post.on 'file.new'      @newFile
+        post.on 'file.reload'   @reloadFile
         post.on 'file.open'     @openFile
         post.on 'quit'          @quit
         post.on 'file.change'   @onFileChange
@@ -226,9 +227,10 @@ function KED
     onFileChange: event =>
     
         if event.path == @currentFile
-
+            # log "ked.onFileChange #{event.path} #{event.change}"
             switch event.change
                 'delete' ➜ @newFile() # todo: load current text into new file
+                'change'
                 'rename' ➜ @reloadFile()
         
     # ████████   ████████  ███       ███████    ███████   ███████  
@@ -238,6 +240,8 @@ function KED
     # ███   ███  ████████  ███████   ███████   ███   ███  ███████  
 
     reloadFile: => 
+        
+        # log 'reloadFile'
         
         if valid @currentFile
             @loadFile @currentFile

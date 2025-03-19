@@ -104,6 +104,7 @@ ked [file]
         post.on('view.size',this.onViewSize)
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
+        post.on('file.reload',this.reloadFile)
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
         post.on('file.change',this.onFileChange)
@@ -222,7 +223,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _190_10_
+        var _191_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -253,7 +254,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _215_22_
+        var _216_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -275,6 +276,7 @@ ked [file]
                 case 'delete':
                     return this.newFile()
 
+                case 'change':
                 case 'rename':
                     return this.reloadFile()
 
@@ -326,7 +328,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, segls, start, text, _331_22_
+        var absFile, colors, exists, segls, start, text, _335_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -572,7 +574,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _487_22_
+        var mcw, _491_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)
