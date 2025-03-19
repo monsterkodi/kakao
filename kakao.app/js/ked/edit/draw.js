@@ -268,11 +268,11 @@ draw = (function ()
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fg, mainCursor, s, x, y, _245_41_, _261_46_
+        var bg, cursor, fg, mainCursor, s, x, y, _242_41_, _258_46_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_245_41_=theme[this.name + '_cursor_fg']) != null ? _245_41_ : theme.editor_cursor_fg)
+        fg = ((_242_41_=theme[this.name + '_cursor_fg']) != null ? _242_41_ : theme.editor_cursor_fg)
         bg = mode.themeColor(this.state,'editor_cursor_multi')
         if (!this.cells.screen.t.hasFocus)
         {
@@ -293,7 +293,7 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_261_46_=theme[this.name + '_cursor_fg']) != null ? _261_46_ : theme.editor_cursor_fg)
+            fg = ((_258_46_=theme[this.name + '_cursor_fg']) != null ? _258_46_ : theme.editor_cursor_fg)
             bg = mode.themeColor(this.state,'editor_cursor_main')
             if (!this.hasFocus())
             {

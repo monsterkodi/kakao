@@ -78,7 +78,7 @@ browse = (function ()
 
     browse.prototype["draw"] = function ()
     {
-        var bg, fg, x, y
+        var bg, choice, fg, x, y
 
         if (this.hidden())
         {
@@ -93,13 +93,16 @@ browse = (function ()
             x = this.choices.cells.cols + 2
             this.cells.fill_col(x,2,this.cells.rows - 2,'│',fg,bg)
             this.cells.set(x,this.cells.rows - 1,'┴',fg,bg)
-            x = this.choices.cells.cols - 1
-            y = this.choices.currentIndex() - this.choices.state.s.view[1]
-            this.choices.cells.fill_row(y,this.choices.current().tilde.length,x - 1,' ',bg,this.choices.color.current)
-            this.choices.cells.set(x,y,'',this.choices.color.current,bg)
-            if ((0 <= y && y < this.choices.cells.rows))
+            if (choice = this.choices.current())
             {
-                return this.choices.cells.set_unsafe(x + 1,y,'',fg,bg)
+                x = this.choices.cells.cols - 1
+                y = this.choices.currentIndex() - this.choices.state.s.view[1]
+                this.choices.cells.fill_row(y,choice.tilde.length,x - 1,' ',bg,this.choices.color.current)
+                this.choices.cells.set(x,y,'',this.choices.color.current,bg)
+                if ((0 <= y && y < this.choices.cells.rows))
+                {
+                    return this.choices.cells.set_unsafe(x + 1,y,'',fg,bg)
+                }
             }
         }
     }
@@ -302,7 +305,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _272_63_
+        var upDir, _273_63_
 
         switch (action)
         {
@@ -320,7 +323,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_272_63_=choice.link) != null ? _272_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_273_63_=choice.link) != null ? _273_63_ : choice.path))
                     }
                 }
                 break

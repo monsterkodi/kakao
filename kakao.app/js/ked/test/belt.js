@@ -467,9 +467,6 @@ def`)
         segls = kseg.segls(`s[2]`)
         compare(belt.openCloseSpansForPositions(segls,[[4,0]]),[[1,0,2],[3,0,4]])
     })
-    section("", function ()
-    {
-    })
 }
 toExport["tool belt"]._section_ = true
 toExport._test_ = true

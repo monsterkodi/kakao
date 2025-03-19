@@ -18,6 +18,7 @@ syntax = (function ()
         this.name = name
     
         this["getChar"] = this["getChar"].bind(this)
+        this["getAnsiColor"] = this["getAnsiColor"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
         this["getClass"] = this["getClass"].bind(this)
         this["appendSegls"] = this["appendSegls"].bind(this)
@@ -43,6 +44,8 @@ syntax = (function ()
     syntax.prototype["setExt"] = function (ext)
     {
         this.ext = ext
+    
+        return this.ansi = false
     }
 
     syntax.prototype["setRgxs"] = function (rgxs)
@@ -59,7 +62,7 @@ syntax = (function ()
     {
         this.colors = colors
     
-        console.log('syntax.setColors',this.colors)
+        return this.ansi = true
     }
 
     syntax.prototype["setSegls"] = function (segls)
@@ -174,8 +177,12 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _100_27_
+        var clss, _102_27_
 
+        if (this.ansi)
+        {
+            return this.getAnsiColor(x,y)
+        }
         if (_k_.isNum(x))
         {
             clss = this.getClass(x,y)
@@ -184,7 +191,33 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_100_27_=theme.syntax[clss]) != null ? _100_27_ : '#ff0000')
+        return ((_102_27_=theme.syntax[clss]) != null ? _102_27_ : '#ff0000')
+    }
+
+    syntax.prototype["getAnsiColor"] = function (x, y)
+    {
+        var clr, _108_24_
+
+        var list = _k_.list(this.colors[y])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            clr = list[_a_]
+            if (clr.x <= x)
+            {
+                if ((clr.w != null))
+                {
+                    if (x < clr.x + clr.w)
+                    {
+                        return clr.fg
+                    }
+                }
+                else
+                {
+                    return clr.fg
+                }
+            }
+        }
+        return [256,0,256]
     }
 
     syntax.prototype["getChar"] = function (x, y, char)

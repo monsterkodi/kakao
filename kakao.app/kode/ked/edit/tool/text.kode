@@ -32,26 +32,71 @@ function text
         pattern = /\x1b\[((?:\d{1,3};?)+)m/gu
         
         for line,li in @linesForText(text)
-            # log "#{li} |#{line}|"           
+            
+            # log "#{li} |#{line.replace(/\x1b/g '�')}|"           
+            
             ansisub = m c x ->
+                
                 cs = c.split(';').map (c) -> int(c)
-                # log "ansisub #{m.length} #{cs} #{x}"
+                # log "ansisub▪ #{m.length} #{cs} #{x}"
+                l = m.length
                 switch cs[0]
                     38
                         colors[li] ?= []
                         if cs.length == 5 
-                            colors[li].push(x:x fg:cs[2..4]) 
+                            colors[li].push(x:x l:l fg:cs[2..4]) 
                         else
-                            colors[li].push(x:x fg:color.rgb(color.ansi256[cs[2]]))
+                            colors[li].push(x:x l:l fg:color.rgb(color.ansi256[cs[2]]))
                     48  
                         colors[li] ?= []
                         if cs.length == 5 
-                            colors[li].push(x:x bg:cs[2..4]) 
+                            colors[li].push(x:x l:l bg:cs[2..4]) 
                         else
-                            colors[li].push(x:x bg:color.rgb(color.ansi256[cs[2]]))
+                            colors[li].push(x:x l:l bg:color.rgb(color.ansi256[cs[2]]))
+                    39
+                        colors[li] ?= []
+                        colors[li].push(x:x l:l fg:-1) 
+                    49
+                        colors[li] ?= []
+                        colors[li].push(x:x l:l bg:-1) 
                 ''
-                
+            
+            pattern.lastIndex = 0    
             noansi = line.replaceAll pattern ansisub
+            
+            if valid colors[li]
+                lcl = colors[li]
+                removed = 0
+                idx = 0
+                while idx < lcl.length
+                    clr = lcl[idx]
+                    clr.x -= removed
+                    removed += clr.l
+                    delete clr.l
+                    
+                    if clr.fg?
+                        if idx > 0 and lcl[idx-1].fg
+                            lcl[idx-1].w = clr.x - lcl[idx-1].x
+                        else if idx > 1 and lcl[idx-2].fg
+                            lcl[idx-2].w = clr.x - lcl[idx-2].x
+                            
+                        if clr.fg == -1
+                            lcl.splice idx 1
+                            continue
+                            
+                    if clr.bg?
+                        if idx > 0 and lcl[idx-1].bg
+                            lcl[idx-1].w = clr.x - lcl[idx-1].x
+                        else if idx > 1 and lcl[idx-2].bg
+                            lcl[idx-2].w = clr.x - lcl[idx-2].x
+                        
+                        if clr.bg == -1
+                            lcl.splice idx 1
+                            continue
+                        
+                    idx += 1
+                # log "#{line.replace(/\x1b/g '�')}" 
+                # log "#{line}" lcl
             segls.push kseg(noansi)
         
         [colors segls]

@@ -23,13 +23,13 @@ function syntax
         @hash = {}  
         @liha = {}
         
-    setExt: @ext =>
+    setExt: @ext => @ansi = false
     
     setRgxs: rgxs => @config = matchr.config rgxs 'u'
     
     setLines: lines => @setSegls kseg.segls(lines) 
     
-    setColors: @colors => log 'syntax.setColors' @colors
+    setColors: @colors => @ansi = true
         
     setSegls: segls =>
         
@@ -92,12 +92,26 @@ function syntax
         
     getColor: x y =>
         
+        if @ansi ➜ ⮐  @getAnsiColor x y
+        
         if x is num
             clss = @getClass x y
         else
             clss = x
         
         theme.syntax[clss] ? '#ff0000'
+        
+    getAnsiColor: x y =>
+        
+        for clr in @colors[y]
+            if clr.x <= x
+                if clr.w? 
+                    if x < clr.x + clr.w
+                        ⮐  clr.fg
+                else
+                    ⮐  clr.fg
+                
+        [256 0 256]
         
     getChar: x y char =>
         

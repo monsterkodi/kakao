@@ -196,9 +196,6 @@ function draw extends view
         
         # prof.start 'selection'
         
-        # spanbg = theme[@name + '_selection'     ] ? theme.editor_selection
-        # linebg = theme[@name + '_selection_line'] ? theme.editor_selection_line
-        
         spanbg = @color.selection
         linebg = @color.selection_line
         

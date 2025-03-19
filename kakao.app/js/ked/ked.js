@@ -326,7 +326,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, segls, start, text, _333_22_
+        var absFile, colors, exists, segls, start, text, _331_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -363,13 +363,11 @@ ked [file]
 
         if (!_k_.empty(colors))
         {
-            this.editor.state.syntax.ext = '__ansi__'
-            console.log('colors',colors)
             this.editor.state.syntax.setColors(colors)
         }
         else
         {
-            this.editor.state.syntax.ext = slash.ext(this.currentFile)
+            this.editor.state.syntax.setExt(slash.ext(this.currentFile))
         }
         this.editor.state.loadSegls(segls)
         this.status.time = process.hrtime(start)[1]
@@ -574,7 +572,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _489_22_
+        var mcw, _487_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

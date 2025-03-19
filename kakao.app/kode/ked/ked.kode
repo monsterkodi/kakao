@@ -320,11 +320,9 @@ function KED
         [colors segls] = belt.colorSeglsForText text
         
         if valid colors
-            @editor.state.syntax.ext = '__ansi__'
-            log 'colors' colors
             @editor.state.syntax.setColors colors
         else
-            @editor.state.syntax.ext = slash.ext @currentFile
+            @editor.state.syntax.setExt slash.ext(@currentFile)
             
         @editor.state.loadSegls segls
         

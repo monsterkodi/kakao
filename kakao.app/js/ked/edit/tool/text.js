@@ -38,7 +38,7 @@ text = (function ()
 
     text["colorSeglsForText"] = function (text)
     {
-        var ansisub, colors, li, line, noansi, pattern, segls
+        var ansisub, clr, colors, idx, lcl, li, line, noansi, pattern, removed, segls, _77_29_, _87_29_
 
         colors = []
         segls = []
@@ -49,41 +49,97 @@ text = (function ()
             line = list[li]
             ansisub = function (m, c, x)
             {
-                var cs, _41_35_, _47_35_
+                var cs, l, _45_35_, _51_35_, _57_35_, _60_35_
 
                 cs = c.split(';').map(function (c)
                 {
                     return parseInt(c)
                 })
+                l = m.length
                 switch (cs[0])
                 {
                     case 38:
-                        colors[li] = ((_41_35_=colors[li]) != null ? _41_35_ : [])
+                        colors[li] = ((_45_35_=colors[li]) != null ? _45_35_ : [])
                         if (cs.length === 5)
                         {
-                            colors[li].push({x:x,fg:cs.slice(2, 5)})
+                            colors[li].push({x:x,l:l,fg:cs.slice(2, 5)})
                         }
                         else
                         {
-                            colors[li].push({x:x,fg:color.rgb(color.ansi256[cs[2]])})
+                            colors[li].push({x:x,l:l,fg:color.rgb(color.ansi256[cs[2]])})
                         }
                         break
                     case 48:
-                        colors[li] = ((_47_35_=colors[li]) != null ? _47_35_ : [])
+                        colors[li] = ((_51_35_=colors[li]) != null ? _51_35_ : [])
                         if (cs.length === 5)
                         {
-                            colors[li].push({x:x,bg:cs.slice(2, 5)})
+                            colors[li].push({x:x,l:l,bg:cs.slice(2, 5)})
                         }
                         else
                         {
-                            colors[li].push({x:x,bg:color.rgb(color.ansi256[cs[2]])})
+                            colors[li].push({x:x,l:l,bg:color.rgb(color.ansi256[cs[2]])})
                         }
+                        break
+                    case 39:
+                        colors[li] = ((_57_35_=colors[li]) != null ? _57_35_ : [])
+                        colors[li].push({x:x,l:l,fg:-1})
+                        break
+                    case 49:
+                        colors[li] = ((_60_35_=colors[li]) != null ? _60_35_ : [])
+                        colors[li].push({x:x,l:l,bg:-1})
                         break
                 }
 
                 return ''
             }
+            pattern.lastIndex = 0
             noansi = line.replaceAll(pattern,ansisub)
+            if (!_k_.empty(colors[li]))
+            {
+                lcl = colors[li]
+                removed = 0
+                idx = 0
+                while (idx < lcl.length)
+                {
+                    clr = lcl[idx]
+                    clr.x -= removed
+                    removed += clr.l
+                    delete clr.l
+                    if ((clr.fg != null))
+                    {
+                        if (idx > 0 && lcl[idx - 1].fg)
+                        {
+                            lcl[idx - 1].w = clr.x - lcl[idx - 1].x
+                        }
+                        else if (idx > 1 && lcl[idx - 2].fg)
+                        {
+                            lcl[idx - 2].w = clr.x - lcl[idx - 2].x
+                        }
+                        if (clr.fg === -1)
+                        {
+                            lcl.splice(idx,1)
+                            continue
+                        }
+                    }
+                    if ((clr.bg != null))
+                    {
+                        if (idx > 0 && lcl[idx - 1].bg)
+                        {
+                            lcl[idx - 1].w = clr.x - lcl[idx - 1].x
+                        }
+                        else if (idx > 1 && lcl[idx - 2].bg)
+                        {
+                            lcl[idx - 2].w = clr.x - lcl[idx - 2].x
+                        }
+                        if (clr.bg === -1)
+                        {
+                            lcl.splice(idx,1)
+                            continue
+                        }
+                    }
+                    idx += 1
+                }
+            }
             segls.push(kseg(noansi))
         }
         return [colors,segls]
@@ -468,7 +524,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 275, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 320, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

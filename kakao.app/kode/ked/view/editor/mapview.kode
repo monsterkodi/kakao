@@ -151,7 +151,8 @@ function mapview extends view
                             rgb = [9 140 0]
                     else
                         f = 0.7
-                        rgb = color.rgb syntax.getColor(x y)
+                        rgb = syntax.getColor x y
+                        rgb = color.rgb(rgb) if rgb is str
                         rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
                      
                     charPixels x rgb
