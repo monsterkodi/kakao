@@ -167,7 +167,6 @@ TTIO = (function ()
         var base64, chunk, chunks, i
 
         base64 = data.toString('base64')
-        console.log(`base64.length ${base64.length}`)
         if (base64.length > 4096)
         {
             chunk = base64.slice(0, 4096)
@@ -664,11 +663,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _460_23_, _481_20_
+        var diff, _458_23_, _479_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_460_23_=this.lastClick) != null ? _460_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_458_23_=this.lastClick) != null ? _458_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -691,7 +690,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_481_20_=this.lastPixels) != null ? _481_20_ : [])
+        this.lastPixels = ((_479_20_=this.lastPixels) != null ? _479_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -749,7 +748,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _535_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _533_23_
 
         if ((this.pasteBuffer != null))
         {

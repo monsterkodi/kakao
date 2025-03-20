@@ -162,8 +162,6 @@ function TTIO extends events
         
         base64 = data.toString 'base64'
         
-        log "base64.length #{base64.length}"
-        
         if base64.length > 4096 # and 'kitty' in process.env.TERM
             chunk = base64[0...4096]
             @write "\x1b_Gq=1,i=#{id},p=#{id},f=#{8*bytesperpixel},s=#{w},v=#{h},m=1;#{chunk}\x1b\\"

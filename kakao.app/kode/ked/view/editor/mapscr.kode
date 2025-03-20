@@ -170,7 +170,7 @@ function mapscr extends mapview
         
         t = @cells.screen.t
         
-        ⮐  if empty t.pixels or @cells.rows <= 0 or @cells.cols <= 0
+        ⮐  if empty t.pixels or @hidden() or @collapsed()
         
         super()
         

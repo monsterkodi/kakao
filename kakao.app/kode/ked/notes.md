@@ -20,9 +20,6 @@
 #### todo
 ##### todo
 
-- mapscroll 
-    - add scrollbar handle
-
 - auto-replace surrounding string delimiters with " when inserting #{}
 - alt+cmd+'       replace surrounding string delimiters with '
 - shift+alt+cmd+' replace surrounding string delimiters with "
@@ -49,7 +46,8 @@
     - cmd+up|down: jump to prev|next file
     
 - funclist
-    - swap with mapscr when the fileeditor hasn't many columns
+    - autohighlight function of main cursor
+    - swap with mapscr when the fileeditor hasn't many columns?
     - searchable?
     - should list md headings
     - should list c cpp mm and js functions
@@ -98,7 +96,7 @@
         - ~...*n n times *
 
 - mapscroll 
-    - add scrollbar handle
+    - make scrollbar handle not jump and unblurred
     - update on line changes
     - fix scrolling to bottom for long files
     - show cursors and selections

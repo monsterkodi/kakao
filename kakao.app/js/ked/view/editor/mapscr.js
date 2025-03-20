@@ -157,7 +157,7 @@ mapscr = (function ()
         var t
 
         t = this.cells.screen.t
-        if (_k_.empty(t.pixels) || this.cells.rows <= 0 || this.cells.cols <= 0)
+        if (_k_.empty(t.pixels) || this.hidden() || this.collapsed())
         {
             return
         }

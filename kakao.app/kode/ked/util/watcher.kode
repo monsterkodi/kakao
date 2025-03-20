@@ -32,7 +32,7 @@ function watcher
             prjPath =○ nfs.prj path
             
             if empty watcher.watchers[path]
-                log "watcher ● #{g4 path}"
+                # log "watcher ● #{g4 path}"
                 w = fs.watch path
                 w.on 'error' (err) => error "watch file:'#{path}' error: #{err}"
                 w.on 'change' ((dir) => (change path) => @onChange(change path dir))(slash.dir(path))
@@ -51,7 +51,7 @@ function watcher
             
             opt.recursive = false if dir == '/' or dir == slash.untilde '~'
             
-            log "watcher ○ #{y6 dir}"
+            # log "watcher ○ #{y6 dir}"
             
             w = fs.watch dir
             w.on 'error' (err) => error "watch dir:'#{dir}' error: #{err}"
