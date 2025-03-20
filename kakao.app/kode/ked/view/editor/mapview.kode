@@ -6,8 +6,8 @@
     ███ █ ███  ███   ███  ███           ███     ███  ███       ███   ███  
     ███   ███  ███   ███  ███            █      ███  ████████  ██     ██  
 
-    the base of fileditors mapscr 
-    but also used for browse and quicky previews
+    the base of fileditor's mapscr 
+    also used for browse and quicky previews
 ###
 
 use ../../../kxk ▪ kstr post
@@ -29,8 +29,6 @@ function mapview extends view
         @rowOffset = 0
         @images = []
         @cells.cols = 12
-        
-        # log 'mapview' @state.name @imgId.toString(2)
         
         @pixelsPerRow = 4
         @pixelsPerCol = 2
@@ -57,8 +55,6 @@ function mapview extends view
         
         ⮐  if @hidden()
         
-        # log "#{@name} hide #{@cells.cols} #{@cells.rows} #{@images.length}" 
-        
         for id in @images
             @cells.screen.t.hideImage id
         
@@ -80,13 +76,12 @@ function mapview extends view
     
         resized = x != @cells.x or y != @cells.y or w != @cells.cols or h != @cells.rows
         super x y w h
-        # log "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{r3 @hidden()}"
+
         ⮐  if @hidden()
+        
         if @redraw or resized
             @createImages() if @redraw
             delete @redraw
-            # log "mapview.layout #{g3 @name} #{x} #{y} #{w} #{h} #{@redraw} #{resized}"
-            # setImmediate @drawImages
             @drawImages()
                 
     getSegls:  => @segls
@@ -97,7 +92,6 @@ function mapview extends view
         @syntax.setExt ext 
         @syntax.setSegls @segls
         
-        # log "mapview.setSegls #{y6 @name}"
         @redraw = true        
     
     # 000  00     00   0000000    0000000   00000000   0000000  
@@ -173,8 +167,6 @@ function mapview extends view
                 
         # prof.end @state.name+'.map'
             
-        # log "mapview.createImages #{b7 @name} #{b6 @images.length} #{lines.length} #{@cells.rows}-#{@rowOffset}*#{t.cellsz[1]}/#{y} = #{(@cells.rows-@rowOffset) * t.cellsz[1] / @pixelsPerRow} #{y}"  
-                        
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  

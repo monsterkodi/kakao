@@ -13,13 +13,13 @@
 ###
 
 use child_process os
-use ../../kxk ▪ immutable kstr kseg
+use ../../kxk ▪ immutable kstr kseg events
 use ../util   ◆ syntax
 use ./act     ◆ del insert select join indent multi main
 use ./tool    ◆ belt
 use           ◆ keys mode
 
-function state
+function state extends events
 
     @: @cells name ->
 
@@ -400,6 +400,7 @@ function state
     setView: view =>
         
         @set 'view' view
+        @emit 'view.changed' @s.view
         @
 
     rangeForVisibleLines: =>

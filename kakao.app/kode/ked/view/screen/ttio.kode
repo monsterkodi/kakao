@@ -76,12 +76,20 @@ function TTIO extends events
     rows: => process.stdout.rows  
     
     setTitle: t -> @write "\x1b]2;#{t}\x1b\\"
-        
-    #  0000000  00000000  000   000  0000000          000  00     00   0000000    0000000   00000000  
-    # 000       000       0000  000  000   000        000  000   000  000   000  000        000       
-    # 0000000   0000000   000 0 000  000   000        000  000000000  000000000  000  0000  0000000   
-    #      000  000       000  0000  000   000        000  000 0 000  000   000  000   000  000       
-    # 0000000   00000000  000   000  0000000          000  000   000  000   000   0000000   00000000  
+    
+    ###
+    000  00     00   0000000    0000000   00000000  
+    000  000   000  000   000  000        000       
+    000  000000000  000000000  000  0000  0000000   
+    000  000 0 000  000   000  000   000  000       
+    000  000   000  000   000   0000000   00000000  
+    ###
+    
+    # 00000000   000       0000000    0000000  00000000  
+    # 000   000  000      000   000  000       000       
+    # 00000000   000      000000000  000       0000000   
+    # 000        000      000   000  000       000       
+    # 000        0000000  000   000   0000000  00000000  
     
     placeImage: id x y px py sx sy ->
         
@@ -98,17 +106,27 @@ function TTIO extends events
             
             @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement+1},X=#{rx},Y=#{ry},C=1\x1b\\"
 
-    placeImageStretched: id x y w h px py ->
+    #  0000000  000000000  00000000   00000000  000000000   0000000  000   000  00000000  0000000    
+    # 000          000     000   000  000          000     000       000   000  000       000   000  
+    # 0000000      000     0000000    0000000      000     000       000000000  0000000   000   000  
+    #      000     000     000   000  000          000     000       000   000  000       000   000  
+    # 0000000      000     000   000  00000000     000      0000000  000   000  00000000  0000000    
+    
+    placeImageStretched: id x y px py w h ->
         
-        cx = x + int(px / @cellsz[0])
-        cy = y + int(py / @cellsz[1])
         rx = px % @cellsz[0]
         ry = py % @cellsz[1]
         
-        @setCursor cx cy
+        @setCursor x y
         
-        @write "\x1b_Gq=1,a=p,i=#{id},X=#{rx},Y=#{ry},r=#{cx+w},c=#{cy+h},C=1\x1b\\"
+        @write "\x1b_Gq=1,a=p,i=#{id},p=#{id},X=#{rx},Y=#{ry},c=#{w},r=#{h},z=1000,C=1\x1b\\"
 
+    # 000   000  000  0000000    00000000  
+    # 000   000  000  000   000  000       
+    # 000000000  000  000   000  0000000   
+    # 000   000  000  000   000  000       
+    # 000   000  000  0000000    00000000  
+    
     hideImage: id ->
         
         @write "\x1b_Gq=1,a=d,d=i,i=#{id}\x1b\\"
@@ -123,7 +141,13 @@ function TTIO extends events
         ⮐  log "range end '#{end}' not a number" if not end is num
         @write "\x1b_Gq=2,a=d,d=R,x=#{start},y=#{end}\x1b\\"
     
-    sendImageData: data id w h ->
+    #  0000000  00000000  000   000  0000000    
+    # 000       000       0000  000  000   000  
+    # 0000000   0000000   000 0 000  000   000  
+    #      000  000       000  0000  000   000  
+    # 0000000   00000000  000   000  0000000    
+    
+    sendImageData: data id w h bytesperpixel=3 ->
         
         ###
             q=1  don't send OK q=2 don't send OK and failure
@@ -138,15 +162,17 @@ function TTIO extends events
         
         base64 = data.toString 'base64'
         
+        log "base64.length #{base64.length}"
+        
         if base64.length > 4096 # and 'kitty' in process.env.TERM
             chunk = base64[0...4096]
-            @write "\x1b_Gq=1,i=#{id},p=#{id},f=24,s=#{w},v=#{h},m=1;#{chunk}\x1b\\"
+            @write "\x1b_Gq=1,i=#{id},p=#{id},f=#{8*bytesperpixel},s=#{w},v=#{h},m=1;#{chunk}\x1b\\"
             chunks = Math.ceil base64.length / 4096
             for i in 1...chunks
                 chunk = base64[i*4096...Math.min((i+1)*4096, base64.length)]
                 @write "\x1b_Gq=1,m=#{(i == chunks - 1) ? 0 : 1};#{chunk}\x1b\\"
         else            
-            @write "\x1b_Gq=1,i=#{id},p=#{id},f=24,s=#{w},v=#{h};#{base64}\x1b\\"
+            @write "\x1b_Gq=1,i=#{id},p=#{id},f=#{8*bytesperpixel},s=#{w},v=#{h};#{base64}\x1b\\"
     
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  

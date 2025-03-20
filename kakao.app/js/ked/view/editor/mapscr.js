@@ -18,6 +18,7 @@ mapscr = (function ()
     _k_.extend(mapscr, mapview)
     function mapscr (screen, state)
     {
+        this["drawKnob"] = this["drawKnob"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
         this["createImages"] = this["createImages"].bind(this)
         this["clearImages"] = this["clearImages"].bind(this)
@@ -27,6 +28,7 @@ mapscr = (function ()
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
         mapscr.__super__.constructor.call(this,screen,state)
+        this.state.on('view.changed',this.drawKnob)
         this.pointerType = 'pointer'
         this.setColor('bg',theme.mapscr)
         screen.t.on('preResize',this.clearImages)
@@ -73,6 +75,7 @@ mapscr = (function ()
             return
         }
         this.state.setView(view)
+        this.drawKnob()
         return {redraw:true}
     }
 
@@ -116,19 +119,37 @@ mapscr = (function ()
 
     mapscr.prototype["clearImages"] = function ()
     {
+        if (this.knobId)
+        {
+            this.cells.screen.t.deleteImage(this.knobId)
+        }
+        delete this.knobId
         return mapscr.__super__.clearImages.call(this)
     }
 
     mapscr.prototype["createImages"] = function ()
     {
-        var t
+        var bpp, data, h, i, t, w
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
         {
             return
         }
-        return mapscr.__super__.createImages.call(this)
+        mapscr.__super__.createImages.call(this)
+        w = t.cellsz[0]
+        h = t.cellsz[1]
+        bpp = 4
+        data = Buffer.alloc(w * h * bpp)
+        for (var _a_ = i = 0, _b_ = w * h; (_a_ <= _b_ ? i < w * h : i > w * h); (_a_ <= _b_ ? ++i : --i))
+        {
+            data[i * bpp + 0] = 160
+            data[i * bpp + 1] = 160
+            data[i * bpp + 2] = 160
+            data[i * bpp + 3] = 1
+        }
+        this.knobId = this.imgId + 0xeeee
+        return t.sendImageData(data,this.knobId,w,h,bpp)
     }
 
     mapscr.prototype["drawImages"] = function ()
@@ -140,7 +161,24 @@ mapscr = (function ()
         {
             return
         }
-        return mapscr.__super__.drawImages.call(this)
+        mapscr.__super__.drawImages.call(this)
+        return this.drawKnob()
+    }
+
+    mapscr.prototype["drawKnob"] = function ()
+    {
+        var h, t, y, yc, yr
+
+        t = this.cells.screen.t
+        if (_k_.empty(t.pixels))
+        {
+            return
+        }
+        y = this.pixelsPerRow * this.state.s.view[1] / t.cellsz[1]
+        yc = parseInt(y)
+        yr = parseInt((y - yc) * t.cellsz[1])
+        h = parseInt(Math.ceil(this.state.cells.rows * this.pixelsPerRow / t.cellsz[1]))
+        return t.placeImageStretched(this.knobId,this.cells.x,this.cells.y + yc,0,yr,12,h)
     }
 
     return mapscr
