@@ -17,9 +17,9 @@ use                 ◆ greet inputchoice
 
 function menu extends inputchoice
 
-    @: @screen ->
+    @: @screen @name='menu' ->
         
-        super @screen 'menu'
+        super @screen @name
         
         @isVisible = false
         
@@ -139,7 +139,7 @@ function menu extends inputchoice
 
     draw: ->
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         @arrange()
         @greet.draw()

@@ -54,6 +54,11 @@ class Kode
                 li = info.tok.line
                 console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
             }
+            if (!_k_.empty(info.line))
+            {
+                li = info.line
+                console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
+            }
         }
         console.error(msg)
     }

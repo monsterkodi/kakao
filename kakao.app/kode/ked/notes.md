@@ -20,12 +20,11 @@
 #### todo
 ##### todo
 
-- auto-replace surrounding string delimiters with " when inserting #{}
-- alt+cmd+'       replace surrounding string delimiters with '
-- shift+alt+cmd+' replace surrounding string delimiters with "
-
-- fix browse mapview showing at wrong place when switching from browcol
-
+- macro
+    - class
+    - set prefs
+    - unicode palette
+        
 - completion
     - fix
         - no completion when converting string delimiters
@@ -33,11 +32,6 @@
         - completions with leading turd
         - unicode completions
 
-- macro
-    - class
-    - set prefs
-    - unicode palette
-        
 - searcher
     - add statistics somewhere: number of lines | number of files
     - clicking on crumbs or searcherfile should filter the result list accordingly
@@ -46,7 +40,7 @@
     - cmd+up|down: jump to prev|next file
     
 - funclist
-    - autohighlight function of main cursor
+    - autohighlight function at main cursor
     - swap with mapscr when the fileeditor hasn't many columns?
     - searchable?
     - should list md headings
@@ -55,9 +49,6 @@
 - salter mode
     - fix delete and other issues
 
-- style
-    - adjust colors for editor selection similar to funcol and crumbs
-            
 - dirtree
     - should listen to file change events
     - git status
@@ -67,6 +58,7 @@
 - quicky
     - prefs mode
         - set preview_on_hover false
+    - make relative to prjcts dir again?
     - fix prjcts files
         - clamp long relative parent dirs
     - click in mapview to jump to line

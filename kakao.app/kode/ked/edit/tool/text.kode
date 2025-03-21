@@ -167,6 +167,10 @@ function text
             text += @textForLineRange lines rng
             text += '\n'
         text[0...-1]
+        
+    @textForSpans: lines spans ->
+    
+        @textForLineRanges lines @rangesForSpans(spans)
                 
     @lineSpansForText: lines text ->
         

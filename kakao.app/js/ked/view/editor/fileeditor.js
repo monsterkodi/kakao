@@ -1,10 +1,13 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var fileeditor
 
 import kxk from "../../../kxk.js"
 let post = kxk.post
 let kstr = kxk.kstr
+let slash = kxk.slash
+
+import nfs from "../../../kxk/nfs.js"
 
 import belt from "../../edit/tool/belt.js"
 
@@ -26,8 +29,11 @@ fileeditor = (function ()
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
+        this["jumpToCounterpart"] = this["jumpToCounterpart"].bind(this)
         this["onContextChoice"] = this["onContextChoice"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
+        this["onGotoEof"] = this["onGotoEof"].bind(this)
+        this["onGotoBof"] = this["onGotoBof"].bind(this)
         this["onGotoLine"] = this["onGotoLine"].bind(this)
         features = ['scroll','gutter','mapscr','complete','filepos','replex','brckts','unype','salter','vimple','uniko']
         fileeditor.__super__.constructor.call(this,screen,name,features)
@@ -38,6 +44,8 @@ fileeditor = (function ()
         }
         post.on('editor.highlight',this.state.highlightText)
         post.on('goto.line',this.onGotoLine)
+        post.on('goto.bof',this.onGotoBof)
+        post.on('goto.eof',this.onGotoEof)
     }
 
     fileeditor.prototype["onGotoLine"] = function (row, col, view)
@@ -65,6 +73,16 @@ fileeditor = (function ()
         {
             return this.state.setCursors([[col,row]],{adjust:'topBotDelta'})
         }
+    }
+
+    fileeditor.prototype["onGotoBof"] = function ()
+    {
+        return this.state.moveCursors('bof')
+    }
+
+    fileeditor.prototype["onGotoEof"] = function ()
+    {
+        return this.state.moveCursors('eof')
     }
 
     fileeditor.prototype["onContext"] = function (event)
@@ -98,9 +116,76 @@ fileeditor = (function ()
         }
     }
 
+    fileeditor.prototype["jumpToCounterpart"] = async function ()
+    {
+        var counter, counterparts, currentFile, currext, ext, file, swapLastDir, _140_41_, _146_41_, _155_41_
+
+        currentFile = ked_session.get('editor▸file')
+        currext = slash.ext(currentFile)
+        counterparts = {mm:['h'],cpp:['hpp','h'],cc:['hpp','h'],h:['cpp','c','mm'],hpp:['cpp','c'],coffee:['js','mjs'],kode:['js','mjs'],js:['coffee','kode'],mjs:['coffee','kode'],pug:['html'],noon:['json'],json:['noon'],html:['pug'],css:['styl'],styl:['css']}
+        swapLastDir = function (path, from, to)
+        {
+            var lastIndex
+
+            lastIndex = path.lastIndexOf(`/${from}/`)
+            if (lastIndex >= 0)
+            {
+                path = path.slice(0, typeof lastIndex === 'number' ? lastIndex+1 : Infinity) + to + path.slice(lastIndex + (`/${from}`).length)
+            }
+            return path
+        }
+        var list = ((_140_41_=counterparts[currext]) != null ? _140_41_ : [])
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            ext = list[_a_]
+            if (await nfs.fileExists(slash.swapExt(currentFile,ext)))
+            {
+                post.emit('file.open',slash.swapExt(currentFile,ext))
+                return
+            }
+        }
+        var list1 = ((_146_41_=counterparts[currext]) != null ? _146_41_ : [])
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        {
+            ext = list1[_b_]
+            counter = slash.swapExt(currentFile,ext)
+            file = swapLastDir(counter,currext,ext)
+            if (await nfs.fileExists(file))
+            {
+                post.emit('file.open',file)
+                return
+            }
+        }
+        var list2 = ((_155_41_=counterparts[currext]) != null ? _155_41_ : [])
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            ext = list2[_c_]
+            counter = slash.swapExt(currentFile,ext)
+            if (_k_.in(currext,['noon']))
+            {
+                file = swapLastDir(counter,'kode','js')
+                if (await nfs.fileExists(file))
+                {
+                    post.emit('file.open',file)
+                    return
+                }
+            }
+            if (_k_.in(currext,['json']))
+            {
+                file = swapLastDir(counter,'js','kode')
+                if (await nfs.fileExists(file))
+                {
+                    post.emit('file.open',file)
+                    return
+                }
+            }
+        }
+        console.log('cant find counterpart',currentFile)
+    }
+
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _137_41_, _189_31_
+        var col, ret, row, start, x, y, _214_41_, _266_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

@@ -196,27 +196,40 @@ browse = (function ()
         {
             return this.hideMap()
         }
-        if (item.type === 'file' && _k_.in(slash.ext(item.path),walker.sourceFileExtensions))
+        if (item.type === 'file')
         {
-            text = await nfs.read(item.path)
-            segls = belt.seglsForText(text)
-            this.choices.mapscr.show()
-            this.choices.mapscr.setSyntaxSegls(slash.ext(item.path),segls)
+            this.brocol.hide()
+            if (_k_.in(slash.ext(item.path),walker.sourceFileExtensions))
+            {
+                text = await nfs.read(item.path)
+                if (this.brocol.visible())
+                {
+                    return
+                }
+                segls = belt.seglsForText(text)
+                this.choices.mapscr.setSyntaxSegls(slash.ext(item.path),segls)
+                this.choices.mapscr.show()
+            }
+            else
+            {
+                this.hideMap()
+            }
         }
         else
         {
             this.hideMap()
+            if (!item.tilde.endsWith('..'))
+            {
+                this.brocol.show(item.path)
+                this.choices.hoverForSubmenu = true
+            }
+            else
+            {
+                this.brocol.hide()
+                this.choices.hoverForSubmenu = false
+            }
         }
-        if (item.type === 'dir' && !item.tilde.endsWith('..'))
-        {
-            this.brocol.show(item.path)
-            this.choices.hoverForSubmenu = true
-        }
-        else
-        {
-            this.brocol.hide()
-            this.choices.hoverForSubmenu = false
-        }
+        this.arrange()
         return post.emit('redraw')
     }
 
@@ -305,7 +318,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _273_63_
+        var upDir, _283_63_
 
         switch (action)
         {
@@ -323,7 +336,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_273_63_=choice.link) != null ? _273_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_283_63_=choice.link) != null ? _283_63_ : choice.path))
                     }
                 }
                 break

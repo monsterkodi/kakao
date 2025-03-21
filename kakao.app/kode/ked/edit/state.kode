@@ -97,7 +97,7 @@ function state extends events
             mainCursor = @mainCursor()
         
         cursors = belt.normalizePositions cursors @s.lines.length-1
-
+        
         @s = @s.set 'cursors' cursors
 
         main = -1
@@ -109,7 +109,10 @@ function state extends events
         main = @s.main if main < 0
         main = clamp 0 @s.cursors.length-1 main
 
+        # log "#{@name} #{main} cursors" cursors
+
         @s = @s.set 'main' main
+        
         @adjustViewForMainCursor opt
         @swapState()
         
@@ -117,6 +120,8 @@ function state extends events
 
         if not mode.isActive @ 'salter'
             mode.modes.salter?.checkCursorsSet @
+            
+        # log "#{@name} done #{@s.cursors}"
         @
             
     textOfSelectionOrWordAtCursor: => 

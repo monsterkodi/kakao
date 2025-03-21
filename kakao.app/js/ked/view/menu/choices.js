@@ -381,7 +381,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _290_21_
+        var col, dx, dy, ret, row, _291_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

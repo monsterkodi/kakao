@@ -173,6 +173,7 @@ function choices extends editor
     
         @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
         @state.setMainCursor 0 row
+        # log "#{@name} focusable #{@focusable}"
         @grabFocus() if @focusable
         @emit 'select' @choiceAtRow(row)
         
@@ -334,6 +335,8 @@ function choices extends editor
     # 000   000  00000000     000     
     
     onKey: key event =>
+    
+        # log "#{@name} onKey #{key}"
         
         switch event.combo        
             'up' 

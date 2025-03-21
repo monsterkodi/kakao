@@ -34,6 +34,7 @@ import screen from "./view/screen/screen.js"
 import ttio from "./view/screen/ttio.js"
 
 import menu from "./view/menu/menu.js"
+import macro from "./view/menu/macro.js"
 import finder from "./view/menu/finder.js"
 import searcher from "./view/menu/searcher.js"
 import context from "./view/menu/context.js"
@@ -69,7 +70,7 @@ KED = (function ()
         this["quit"] = this["quit"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.6.0'
+        this.version = '0.7.0'
         this.args = karg(`
 ked [file]
     options                                       **
@@ -87,6 +88,7 @@ ked [file]
         this.screen = new screen(this.t)
         this.indexer = new indexer
         this.menu = new menu(this.screen)
+        this.macro = new macro(this.screen)
         this.quicky = new quicky(this.screen)
         this.browse = new browse(this.screen)
         this.editor = new fileeditor(this.screen,'editor')
@@ -108,10 +110,12 @@ ked [file]
         post.on('file.open',this.openFile)
         post.on('quit',this.quit)
         post.on('file.change',this.onFileChange)
+        post.on('focus',function (name)
+        {})
         this.contextHandlers = [this.editor,this.dircol,this.funcol]
-        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.status,this.dircol,this.funcol]
-        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.dircol,this.funcol]
-        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.editor,this.dircol,this.funcol]
+        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
+        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.browse,this.macro,this.editor,this.dircol,this.funcol]
+        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.macro,this.editor,this.dircol,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -223,7 +227,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _191_10_
+        var _193_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -254,7 +258,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _216_22_
+        var _218_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -328,7 +332,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, segls, start, text, _335_22_
+        var absFile, colors, exists, segls, start, text, _337_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -535,8 +539,16 @@ ked [file]
             case 'shift+ctrl+f':
                 return this.searcher.show()
 
+            case 'alt+o':
+                return this.editor.jumpToCounterpart()
+
             case 'cmd+o':
             case 'ctrl+o':
+            case 'cmd+m':
+            case 'cmd+;':
+            case 'ctrl+;':
+                return this.macro.show()
+
             case 'cmd+.':
             case 'ctrl+.':
                 return this.browse.gotoDir(slash.dir(this.currentFile))
@@ -544,6 +556,10 @@ ked [file]
             case "cmd+'":
             case "ctrl+'":
                 return post.emit('funcol.toggle')
+
+            case "cmd+\\":
+            case "ctrl+\\":
+                return post.emit('dircol.toggle')
 
         }
 
@@ -574,7 +590,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _491_22_
+        var mcw, _496_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)
@@ -623,6 +639,7 @@ ked [file]
             this.funcol.draw()
         }
         this.menu.draw()
+        this.macro.draw()
         this.quicky.draw()
         this.browse.draw()
         this.finder.draw()

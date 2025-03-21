@@ -10,7 +10,9 @@
     kitty image display
 ###
 
-use ../../../kxk ◆ events post kstr
+use ../../../kxk ▪ events post kstr
+use ../../../kxk ◆ nfs
+use ../../util   ◆ png
 
 function TTIO extends events
 
@@ -120,6 +122,33 @@ function TTIO extends events
         @setCursor x y
         
         @write "\x1b_Gq=1,a=p,i=#{id},p=#{id},X=#{rx},Y=#{ry},c=#{w},r=#{h},z=1000,C=1\x1b\\"
+
+    placeImageOverlay: id x y px py pw ph ->
+        
+        @setCursor x y
+        
+        if not @pngID
+
+            w = 300
+            h = 400
+            
+            img = new ArrayBuffer w*h*4
+            buf = new DataView img
+            
+            for x in 0...w
+                for y in 0...h
+                    buf.setUint8 ((x*h+y)*4)+0 255 
+                    buf.setUint8 ((x*h+y)*4)+1 255 
+                    buf.setUint8 ((x*h+y)*4)+2 255
+                    buf.setUint8 ((x*h+y)*4)+3 2 
+            
+            dta = png.encode [img] w h 1
+            b64 = Buffer.from(dta).toString('base64')
+
+            @pngID = 1
+            @write "\x1b_Gq=1,i=#{@pngID},f=100;#{b64}\x1b\\"
+        
+        @write "\x1b_Gq=1,a=p,i=#{@pngID},p=#{@pngID},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
 
     # 000   000  000  0000000    00000000  
     # 000   000  000  000   000  000       

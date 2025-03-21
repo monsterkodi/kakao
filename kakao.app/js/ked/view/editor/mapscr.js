@@ -143,10 +143,10 @@ mapscr = (function ()
         data = Buffer.alloc(w * h * bpp)
         for (var _a_ = i = 0, _b_ = w * h; (_a_ <= _b_ ? i < w * h : i > w * h); (_a_ <= _b_ ? ++i : --i))
         {
-            data[i * bpp + 0] = 160
-            data[i * bpp + 1] = 160
-            data[i * bpp + 2] = 160
-            data[i * bpp + 3] = 1
+            data[i * bpp + 0] = 250
+            data[i * bpp + 1] = 250
+            data[i * bpp + 2] = 250
+            data[i * bpp + 3] = 20
         }
         this.knobId = this.imgId + 0xeeee
         return t.sendImageData(data,this.knobId,w,h,bpp)
@@ -167,7 +167,7 @@ mapscr = (function ()
 
     mapscr.prototype["drawKnob"] = function ()
     {
-        var h, t, y, yc, yr
+        var h, t, w, y, yc, yr
 
         t = this.cells.screen.t
         if (_k_.empty(t.pixels))
@@ -177,8 +177,9 @@ mapscr = (function ()
         y = this.pixelsPerRow * this.state.s.view[1] / t.cellsz[1]
         yc = parseInt(y)
         yr = parseInt((y - yc) * t.cellsz[1])
-        h = parseInt(Math.ceil(this.state.cells.rows * this.pixelsPerRow / t.cellsz[1]))
-        return t.placeImageStretched(this.knobId,this.cells.x,this.cells.y + yc,0,yr,12,h)
+        h = parseInt(this.state.cells.rows * this.pixelsPerRow)
+        w = 12 * t.cellsz[0]
+        return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,0,yr,w,h)
     }
 
     return mapscr

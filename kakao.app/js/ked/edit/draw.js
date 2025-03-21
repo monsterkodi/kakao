@@ -261,6 +261,7 @@ draw = (function ()
                 for (var _d_ = x = xs, _e_ = xe; (_d_ <= _e_ ? x < xe : x > xe); (_d_ <= _e_ ? ++x : --x))
                 {
                     this.cells.set_bg(x - this.state.s.view[0],y,bg)
+                    this.cells.adjustContrastForHighlight(x,y,bg)
                 }
             }
         }
@@ -268,11 +269,11 @@ draw = (function ()
 
     draw.prototype["drawCursors"] = function ()
     {
-        var bg, cursor, fg, mainCursor, s, x, y, _242_41_, _258_46_
+        var bg, cursor, fg, mainCursor, s, x, y, _243_41_, _259_46_
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = ((_242_41_=theme[this.name + '_cursor_fg']) != null ? _242_41_ : theme.editor_cursor_fg)
+        fg = ((_243_41_=theme[this.name + '_cursor_fg']) != null ? _243_41_ : theme.editor_cursor_fg)
         bg = mode.themeColor(this.state,'editor_cursor_multi')
         if (!this.cells.screen.t.hasFocus)
         {
@@ -293,7 +294,7 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = ((_258_46_=theme[this.name + '_cursor_fg']) != null ? _258_46_ : theme.editor_cursor_fg)
+            fg = ((_259_46_=theme[this.name + '_cursor_fg']) != null ? _259_46_ : theme.editor_cursor_fg)
             bg = mode.themeColor(this.state,'editor_cursor_main')
             if (!this.hasFocus())
             {

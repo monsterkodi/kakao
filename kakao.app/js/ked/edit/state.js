@@ -162,7 +162,7 @@ state = (function ()
 
     state.prototype["setCursors"] = function (cursors, opt)
     {
-        var cur, idx, main, mainCursor, _119_29_
+        var cur, idx, main, mainCursor, _122_29_
 
         opt = (opt != null ? opt : {})
         main = opt.main
@@ -278,22 +278,22 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _191_15_
+        var segl, _196_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_191_15_=this.segls) != null ? _191_15_ : [])
+        this.segls = ((_196_15_=this.segls) != null ? _196_15_ : [])
         this.segls.push(segl)
         return this.s = this.s.set('lines',this.segls)
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _199_15_
+        var segls, _204_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_199_15_=this.segls) != null ? _199_15_ : [])
+        this.segls = ((_204_15_=this.segls) != null ? _204_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.s = this.s.set('lines',this.segls)
     }

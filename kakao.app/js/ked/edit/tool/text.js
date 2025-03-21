@@ -285,6 +285,11 @@ text = (function ()
         return text.slice(0, -1)
     }
 
+    text["textForSpans"] = function (lines, spans)
+    {
+        return this.textForLineRanges(lines,this.rangesForSpans(spans))
+    }
+
     text["lineSpansForText"] = function (lines, text)
     {
         var line, spans, x1, x2, y
@@ -524,7 +529,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 320, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 324, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

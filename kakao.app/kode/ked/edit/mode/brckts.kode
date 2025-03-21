@@ -57,15 +57,49 @@ function brckts
         
         @allSpans = @state.s.highlights.asMutable()
 
+    #  ███████  ███   ███   ███████   ████████ 
+    # ███       ███ █ ███  ███   ███  ███   ███
+    # ███████   █████████  █████████  ████████ 
+    #      ███  ███   ███  ███   ███  ███      
+    # ███████   ██     ██  ███   ███  ███      
+
+    swapStringDelimiters: =>
+ 
+        @state.begin()
+        @state.pushState()   
+        cursors = @state.allCursors()
+        selections = @state.allSelections()
+        @state.setSelections belt.rangesForSpans(@stringDelimiterSpans)
+        @state.moveCursorsToEndOfSelections()
+        if @state.textOfSelection().startsWith('"')
+            @state.insert "'"
+        else
+            @state.insert '"'
+        @state.setCursors cursors
+        @state.setSelections selections
+        @state.end()
+        
+    conditionalSwapStringDelimiters: =>
+    
+        ⮐  if not @stringDelimiterSpans
+        if belt.textForSpans(@state.s.lines @stringDelimiterSpans).startsWith "'"
+            @swapStringDelimiters()
+        
     # ███   ███  ████████  ███   ███        
     # ███  ███   ███        ███ ███         
     # ███████    ███████     █████          
     # ███  ███   ███          ███           
     # ███   ███  ████████     ███           
 
-    handleKey: key event ->
+    handleKey: key event =>
     
         switch key
+        
+            "alt+cmd+'"
+            
+                if valid @stringDelimiterSpans
+                    @swapStringDelimiters()
+                    ⮐  
         
             'alt+cmd+b' 
             
@@ -88,17 +122,24 @@ function brckts
                         @state.deleteSelection()
                         ⮐ 
         
-        ⮐ 'unhandled' if empty brckts.surround[event.char]
+        ⮐  'unhandled' if empty brckts.surround[event.char]
             
         if event.char == '#' # handle string interpolation
 
             ⮐  'unhandled' if valid belt.positionsAndRangesOutsideStrings(@state.s.lines @state.s.selections @state.s.cursors)
             
-            if valid @state.s.selections
-                ⮐ @state.surroundSelection event.char brckts.surround[event.char]
+            @conditionalSwapStringDelimiters()
             
-            @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
-            @state.moveCursors 'left' 
+            @state.begin()
+            
+            if valid @state.s.selections
+                @state.surroundSelection event.char brckts.surround[event.char]
+            else            
+                @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
+                @state.moveCursors 'left' 
+                
+            @state.end()
+                                
             ⮐
             
         else # not a string interpolation
@@ -123,11 +164,11 @@ function brckts
                         ⮐                                       # to not disturb manual closing       # 𝔟𝓊𝜏 𝔭ℜϵ𝖘ϵ∩𝜏 ⫙ϵ ⟅⩜𝓏𝛾 ;)
                         
                 if seg not in ['' undefined ' ' '}' ']' ')']    # if any cursor is not at a space or eol or on a closing bracket
-                    ⮐  'unhandled'                              # abort the insertion
+                    ⮐  "unhandled"                              # abort the insertion
 
             for pos in @state.s.cursors
                 if belt.isUnbalancedPosition @state.s.lines pos event.char
-                    ⮐  'unhandled'
+                    ⮐  "unhandled"
                     
             @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1] # insert empty bracket pair
             @state.moveCursors 'left'                                                   # move cursors inside pair

@@ -225,6 +225,7 @@ function draw extends view
                 
                 for x in xs...xe
                     @cells.set_bg x-@state.s.view[0] y bg 
+                    @cells.adjustContrastForHighlight x y bg
                     
         # prof.end 'selection'
             

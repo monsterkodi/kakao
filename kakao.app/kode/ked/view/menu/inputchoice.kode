@@ -76,7 +76,10 @@ function inputchoice extends view
     show: =>
 
         super()
-        @choices.grabFocus()
+        if @choices.numFiltered()
+            @choices.grabFocus()
+        else if @input.visible()
+            @input.grabFocus()
         redraw:true
 
     hide: => 

@@ -18,7 +18,7 @@ use ./view/base   ◆ view
 use ./view/status ◆ status 
 use ./view/editor ◆ fileeditor
 use ./view/screen ◆ screen ttio
-use ./view/menu   ◆ menu finder searcher context
+use ./view/menu   ◆ menu macro finder searcher context
 use ./view/colmns ◆ browse dircol funcol quicky
 
 global.int = parseInt # this should go into kode instead
@@ -27,7 +27,7 @@ function KED
 
     @: ->
 
-        @version = '0.6.0'
+        @version = '0.7.0'
         @args = karg """
             
             ked [file]
@@ -55,6 +55,7 @@ function KED
         @indexer  = new indexer
         
         @menu     = new menu       @screen        
+        @macro    = new macro      @screen        
         @quicky   = new quicky     @screen 
         @browse   = new browse     @screen 
         @editor   = new fileeditor @screen 'editor'
@@ -79,11 +80,12 @@ function KED
         post.on 'file.open'     @openFile
         post.on 'quit'          @quit
         post.on 'file.change'   @onFileChange
+        post.on 'focus'         (name) -> # log "focus: '#{name}'"
         
-        @contextHandlers = [                                                  @editor         @dircol @funcol ]
-        @mouseHandlers   = [ @context @finder @searcher @quicky @browse @menu @editor @status @dircol @funcol ]
-        @wheelHandlers   = [          @finder @searcher @quicky @browse @menu @editor         @dircol @funcol ]
-        @keyHandlers     = [ @context @finder @searcher @quicky @browse @menu @editor         @dircol @funcol ]
+        @contextHandlers = [                                                         @editor         @dircol @funcol ]
+        @mouseHandlers   = [ @context @finder @searcher @quicky @browse @menu @macro @editor @status @dircol @funcol ]
+        @wheelHandlers   = [          @finder @searcher @quicky @browse       @macro @editor         @dircol @funcol ]
+        @keyHandlers     = [ @context @finder @searcher @quicky @browse @menu @macro @editor         @dircol @funcol ]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -450,9 +452,12 @@ function KED
             'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky.showProjectFiles @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
-            'cmd+o' 'ctrl+o'                  
+            'alt+o'                      ➜ ⮐  @editor.jumpToCounterpart()
+            'cmd+o' 'ctrl+o'
+            'cmd+m' 'cmd+;' 'ctrl+;'     ➜ ⮐  @macro.show()
             'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)
             "cmd+'" "ctrl+'"             ➜ ⮐  post.emit 'funcol.toggle'
+            "cmd+\\" "ctrl+\\"           ➜ ⮐  post.emit 'dircol.toggle'
             
         for handler in @keyHandlers
             # log "#{handler.name}"
@@ -525,6 +530,7 @@ function KED
             @funcol.draw()
             
         @menu.draw()
+        @macro.draw()
         @quicky.draw()
         @browse.draw()
         @finder.draw()

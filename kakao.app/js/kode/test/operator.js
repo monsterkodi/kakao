@@ -183,6 +183,10 @@ p = hello:a, world:b
 q = hello:b, world:a
 p eql q`),true)
     })
+    section("shift", function ()
+    {
+        compare(kc("a = 0xffff >>> 8"),"a = 0xffff >>> 8")
+    })
     section("empty", function ()
     {
         compare(kc(`if empty [] == false

@@ -12,7 +12,7 @@ import cells from "../screen/cells.js"
 view = (function ()
 {
     _k_.extend(view, events)
-    view["popups"] = ['quicky','browse','context','menu','searcher','finder']
+    view["popups"] = ['quicky','browse','context','menu','macro','searcher','finder']
     view["currentPopup"] = null
     function view (screen, name, features)
     {

@@ -19,6 +19,9 @@ brckts = (function ()
     {
         this.state = state
     
+        this["handleKey"] = this["handleKey"].bind(this)
+        this["conditionalSwapStringDelimiters"] = this["conditionalSwapStringDelimiters"].bind(this)
+        this["swapStringDelimiters"] = this["swapStringDelimiters"].bind(this)
         this.name = 'brckts'
     }
 
@@ -49,12 +52,54 @@ brckts = (function ()
         return this.allSpans = this.state.s.highlights.asMutable()
     }
 
+    brckts.prototype["swapStringDelimiters"] = function ()
+    {
+        var cursors, selections
+
+        this.state.begin()
+        this.state.pushState()
+        cursors = this.state.allCursors()
+        selections = this.state.allSelections()
+        this.state.setSelections(belt.rangesForSpans(this.stringDelimiterSpans))
+        this.state.moveCursorsToEndOfSelections()
+        if (this.state.textOfSelection().startsWith('"'))
+        {
+            this.state.insert("'")
+        }
+        else
+        {
+            this.state.insert('"')
+        }
+        this.state.setCursors(cursors)
+        this.state.setSelections(selections)
+        return this.state.end()
+    }
+
+    brckts.prototype["conditionalSwapStringDelimiters"] = function ()
+    {
+        if (!this.stringDelimiterSpans)
+        {
+            return
+        }
+        if (belt.textForSpans(this.state.s.lines,this.stringDelimiterSpans).startsWith("'"))
+        {
+            return this.swapStringDelimiters()
+        }
+    }
+
     brckts.prototype["handleKey"] = function (key, event)
     {
         var delrngs, nsegl, nsegs, pairs, pos, rngs, seg
 
         switch (key)
         {
+            case "alt+cmd+'":
+                if (!_k_.empty(this.stringDelimiterSpans))
+                {
+                    this.swapStringDelimiters()
+                    return
+                }
+                break
             case 'alt+cmd+b':
                 if (!_k_.empty(this.stringDelimiterSpans))
                 {
@@ -93,12 +138,18 @@ brckts = (function ()
             {
                 return 'unhandled'
             }
+            this.conditionalSwapStringDelimiters()
+            this.state.begin()
             if (!_k_.empty(this.state.s.selections))
             {
-                return this.state.surroundSelection(event.char,brckts.surround[event.char])
+                this.state.surroundSelection(event.char,brckts.surround[event.char])
             }
-            this.state.insert(brckts.surround[event.char][0] + brckts.surround[event.char][1])
-            this.state.moveCursors('left')
+            else
+            {
+                this.state.insert(brckts.surround[event.char][0] + brckts.surround[event.char][1])
+                this.state.moveCursors('left')
+            }
+            this.state.end()
             return
         }
         else
@@ -131,7 +182,7 @@ brckts = (function ()
                 }
                 if (!(_k_.in(seg,['',undefined,' ','}',']',')'])))
                 {
-                    return 'unhandled'
+                    return "unhandled"
                 }
             }
             var list1 = _k_.list(this.state.s.cursors)
@@ -140,7 +191,7 @@ brckts = (function ()
                 pos = list1[_b_]
                 if (belt.isUnbalancedPosition(this.state.s.lines,pos,event.char))
                 {
-                    return 'unhandled'
+                    return "unhandled"
                 }
             }
             this.state.insert(brckts.surround[event.char][0] + brckts.surround[event.char][1])

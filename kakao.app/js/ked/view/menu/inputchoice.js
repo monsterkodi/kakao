@@ -81,13 +81,20 @@ inputchoice = (function ()
     {
         inputchoice.__super__.show.call(this)
     
-        this.choices.grabFocus()
+        if (this.choices.numFiltered())
+        {
+            this.choices.grabFocus()
+        }
+        else if (this.input.visible())
+        {
+            this.input.grabFocus()
+        }
         return {redraw:true}
     }
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _84_23_
+        var _87_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -155,9 +162,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _139_36_
+        var choice, _142_36_
 
-        choice = ((_139_36_=this.choices.current()) != null ? _139_36_ : this.input.current())
+        choice = ((_142_36_=this.choices.current()) != null ? _142_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

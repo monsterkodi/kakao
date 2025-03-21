@@ -75,7 +75,7 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _110_87_
+        var cursorLine, front, span, _109_87_
 
         if (_k_.empty(text))
         {
@@ -87,7 +87,6 @@ finder = (function ()
         {
             this.choices.clear()
             this.input.show()
-            this.input.grabFocus()
             return finder.__super__.show.call(this)
         }
         this.state.highlightText(text)
@@ -106,10 +105,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_110_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_109_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _110_87_ : 0))
+            })) != null ? _109_87_ : 0))
         }
         else
         {

@@ -875,7 +875,7 @@ function Parser extends parse
     curly: open tokens ->
 
         if tokens[0]?.text == '}'
-            ⮐ object:
+            ⮐  object:
                 open:    open
                 keyvals: []
                 close:   tokens.shift()
@@ -885,9 +885,9 @@ function Parser extends parse
         exps = @exps '{' tokens '}'
 
         close = @shiftClose 'curly' '}' tokens
-        if not close 
-            warn 'no close?' exps
-            warn 'no close?' tokens
+        # if not close 
+            # warn 'no close?' exps
+            # warn 'no close?' tokens
 
         @pop '{'
 
@@ -985,7 +985,7 @@ function Parser extends parse
             k.col  = col
             
         else
-            log 'WHAT COULD THAT BE?' key
+            @onError "keyval is missing type or prop in:\n#{noon key}" tokens:tokens
             
         keyval:
             key:   k
@@ -1121,7 +1121,7 @@ function Parser extends parse
             lhs: lhs
             rhs: @exp(tokens)
 
-    error: (o, tokens) ->
+    error: o tokens ->
         
         @pop o.pop if o.pop
         if globalThis.process

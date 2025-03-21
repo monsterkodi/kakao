@@ -144,18 +144,16 @@ function mapscr extends mapview
         
         super() # has to come first, because it clears all images
         
-        # log "cellsz #{noon t.cellsz}"
-        
         w = t.cellsz[0]
         h = t.cellsz[1]
 
         bpp = 4
         data = Buffer.alloc w*h*bpp
         for i in 0...w*h
-            data[i*bpp+0] = 160
-            data[i*bpp+1] = 160
-            data[i*bpp+2] = 160
-            data[i*bpp+3] = 1
+            data[i*bpp+0] = 250
+            data[i*bpp+1] = 250
+            data[i*bpp+2] = 250
+            data[i*bpp+3] = 20
         
         @knobId = @imgId+0xeeee
         t.sendImageData data @knobId w h bpp
@@ -186,9 +184,9 @@ function mapscr extends mapview
         yc = int(y) 
         yr = int((y - yc) * t.cellsz[1])
         
-        h  = int Math.ceil(@state.cells.rows*@pixelsPerRow/t.cellsz[1])
+        h  = int @state.cells.rows*@pixelsPerRow
+        w  = 12*t.cellsz[0]
         
-        t.placeImageStretched @knobId @cells.x @cells.y+yc 0 yr 12 h
-        # t.placeImage @knobId @cells.x @cells.y 0 0 1 1
+        t.placeImageOverlay @knobId @cells.x @cells.y+yc 0 yr w h
         
 export mapscr

@@ -23,13 +23,14 @@ import inputchoice from "./inputchoice.js"
 menu = (function ()
 {
     _k_.extend(menu, inputchoice)
-    function menu (screen)
+    function menu (screen, name = 'menu')
     {
         this.screen = screen
+        this.name = name
     
         this["hide"] = this["hide"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
-        menu.__super__.constructor.call(this,this.screen,'menu')
+        menu.__super__.constructor.call(this,this.screen,this.name)
         this.isVisible = false
         this.greet = new greet(this.screen)
     }
