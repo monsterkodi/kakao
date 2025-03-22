@@ -52,17 +52,21 @@ function git
     # 00000000  000   000  00000000   0000000  
     
     @exec: args opt ○->
-        cmd = '/usr/bin/git ' + args
-        # log "#{r3 'git.exec'} #{b6 cmd}" opt 
+    
         new Promise (resolve reject) ->
+        
             try
+                # log "#{r3 'git.exec'} #{b6 cmd}" opt 
+                cmd = '/usr/bin/git ' + args
                 child_process.exec cmd opt (err stdout stderr) ->
                     # log "git.exec err:#{err} stdout:#{stdout} stderr:#{stderr}"
                     if empty err
                         resolve stdout
                     else
+                        log 'reject1'
                         reject err
             catch err
+                log 'reject2'
                 reject err
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  

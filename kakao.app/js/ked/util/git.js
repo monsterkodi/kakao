@@ -65,13 +65,13 @@ git = (function ()
 
     git["exec"] = async function (args, opt)
     {
-        var cmd
-
-        cmd = '/usr/bin/git ' + args
         return new Promise(function (resolve, reject)
         {
+            var cmd
+
             try
             {
+                cmd = '/usr/bin/git ' + args
                 return child_process.exec(cmd,opt,function (err, stdout, stderr)
                 {
                     if (_k_.empty(err))
@@ -80,12 +80,14 @@ git = (function ()
                     }
                     else
                     {
+                        console.log('reject1')
                         return reject(err)
                     }
                 })
             }
             catch (err)
             {
+                console.log('reject2')
                 return reject(err)
             }
         })
@@ -157,7 +159,7 @@ git = (function ()
 
     git["diff"] = async function (file)
     {
-        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _146_55_, _147_48_
+        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _150_55_, _151_48_
 
         gitDir = await git.dir(file)
         diff = await git.exec(`--no-pager diff --no-color -U0 --ignore-blank-lines ${file}`,{cwd:gitDir})
@@ -170,8 +172,8 @@ git = (function ()
                 var _a_ = line.split(' '); x = _a_[0]; before = _a_[1]; after = _a_[2]
 
                 afterSplit = after.split(',')
-                numOld = parseInt(((_146_55_=before.split(',')[1]) != null ? _146_55_ : 1))
-                numNew = parseInt(((_147_48_=afterSplit[1]) != null ? _147_48_ : 1))
+                numOld = parseInt(((_150_55_=before.split(',')[1]) != null ? _150_55_ : 1))
+                numNew = parseInt(((_151_48_=afterSplit[1]) != null ? _151_48_ : 1))
                 change = {line:parseInt(afterSplit[0])}
                 oldLines = []
                 for (var _b_ = i = 0, _c_ = numOld; (_b_ <= _c_ ? i < numOld : i > numOld); (_b_ <= _c_ ? ++i : --i))
