@@ -313,7 +313,7 @@ function differ extends searcher
         out +=○ git.exec "commit -m \"#{msg}\"" cwd:gitDir
         out +=○ git.exec "push -q"              cwd:gitDir
 
-        log r4 "differ.commit\n#{b7 out}"
+        log r4("differ.commit\n#{b7 out}")
         
         @hide()
         post.emit 'redraw'

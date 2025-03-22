@@ -208,7 +208,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _184_31_, _188_48_
+        var depth, index, item, items, state, _184_31_, _188_48_, _189_62_, _197_46_
 
         if (_k_.empty(dirItem))
         {
@@ -232,7 +232,7 @@ dirtree = (function ()
             item.tilde = _k_.lpad(1 + depth * 2) + diritem.symbolName(item)
             if (item.type === 'dir' && (state.open != null ? state.open[item.path] : undefined))
             {
-                this.openDir(item,{redraw:true})
+                this.openDir(item,{redraw:true,select:(((_189_62_=opt.select) != null ? _189_62_ : dirItem))})
             }
         }
         items.sort((function (a, b)
@@ -241,7 +241,7 @@ dirtree = (function ()
         }).bind(this))
         index = this.items.indexOf(dirItem)
         kutil.insert(this.items,index + 1,items)
-        this.set(this.items,index)
+        this.set(this.items,this.items.indexOf(((_197_46_=opt.select) != null ? _197_46_ : dirItem)))
         ked_session.set(`${this.name}▸open▸${dirItem.path}`,'✔')
         if (opt.redraw)
         {

@@ -186,7 +186,7 @@ function dirtree extends choices
             item.depth = depth
             item.tilde = lpad(1+depth*2) + diritem.symbolName(item)
             if item.type == 'dir' and state.open?[item.path]
-                @openDir item redraw:true
+                @openDir item {redraw:true select:(opt.select ? dirItem)}
         
         items.sort (a b) => @weight(a) - @weight(b)
         
@@ -194,7 +194,7 @@ function dirtree extends choices
         
         kutil.insert @items index+1 items
         
-        @set @items index
+        @set @items @items.indexOf(opt.select ? dirItem)
         
         ked_session.set "#{@name}▸open▸#{dirItem.path}" '✔'
         
