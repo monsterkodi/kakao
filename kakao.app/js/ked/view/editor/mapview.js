@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var floor, mapview, pow
 
@@ -55,12 +55,7 @@ mapview = (function ()
 
     mapview.prototype["show"] = function ()
     {
-        mapview.__super__.show.call(this)
-    
-        if (!_k_.empty(this.images))
-        {
-            return this.drawImages()
-        }
+        return mapview.__super__.show.call(this)
     }
 
     mapview.prototype["hide"] = function ()
@@ -147,7 +142,7 @@ mapview = (function ()
 
     mapview.prototype["createImages"] = function ()
     {
-        var bgrgb, bytes, charPixels, data, dataForLine, line, lines, syntax, t, w, y
+        var bytes, charPixels, data, dataForLine, line, lines, maxX, maxY, syntax, t, w, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
@@ -164,7 +159,8 @@ mapview = (function ()
         lines = this.getSegls()
         syntax = this.getSyntax()
         data = Buffer.alloc(bytes)
-        bgrgb = color.hex(this.color.bg)
+        maxX = w / this.pixelsPerCol
+        maxY = (this.cells.rows - this.rowOffset) * t.cellsz[1] / this.pixelsPerRow
         charPixels = (function (x, rgb)
         {
             var xr
@@ -182,48 +178,46 @@ mapview = (function ()
 
             for (var _c_ = x = 0, _d_ = line.length; (_c_ <= _d_ ? x < line.length : x > line.length); (_c_ <= _d_ ? ++x : --x))
             {
-                if (x * this.pixelsPerCol > w)
+                if (x > maxX)
                 {
                     break
                 }
                 ch = line[x]
                 if (!_k_.empty(ch) && ch !== ' ')
                 {
-                    clss = syntax.getClass(x,y)
-                    if (_k_.in('header',clss))
+                    if (_k_.in(ch,'0█'))
                     {
-                        if (_k_.in('triple',clss))
+                        clss = syntax.getClass(x,y)
+                        if (_k_.in('header',clss))
                         {
-                            rgb = [27,207,14]
-                        }
-                        else
-                        {
-                            rgb = [9,140,0]
+                            if (_k_.in('triple',clss))
+                            {
+                                rgb = [27,207,14]
+                            }
+                            else
+                            {
+                                rgb = [9,140,0]
+                            }
+                            charPixels(x,rgb)
+                            continue
                         }
                     }
-                    else
+                    f = 0.7
+                    rgb = syntax.getColor(x,y)
+                    rgb = rgb.map(function (v)
                     {
-                        f = 0.7
-                        rgb = syntax.getColor(x,y)
-                        if (_k_.isStr(rgb))
-                        {
-                            rgb = color.rgb(rgb)
-                        }
-                        rgb = rgb.map(function (v)
-                        {
-                            return _k_.clamp(0,255,parseInt(f * v))
-                        })
-                    }
+                        return _k_.clamp(0,255,parseInt(f * v))
+                    })
                     charPixels(x,rgb)
                 }
                 else
                 {
-                    charPixels(x,bgrgb)
+                    charPixels(x,this.color.bg)
                 }
             }
             for (var _e_ = x = line.length, _f_ = w / this.pixelsPerCol; (_e_ <= _f_ ? x < w / this.pixelsPerCol : x > w / this.pixelsPerCol); (_e_ <= _f_ ? ++x : --x))
             {
-                charPixels(x,bgrgb)
+                charPixels(x,this.color.bg)
             }
         }).bind(this)
         var list = _k_.list(lines)
@@ -233,7 +227,7 @@ mapview = (function ()
             dataForLine(line)
             this.images.push(this.imgId + y)
             t.sendImageData(data,this.imgId + y,w,1)
-            if (y > (this.cells.rows - this.rowOffset) * t.cellsz[1] / this.pixelsPerRow)
+            if (y > maxY)
             {
                 break
             }
@@ -245,7 +239,7 @@ mapview = (function ()
         var id, t, y
 
         t = this.cells.screen.t
-        if (_k_.empty(t.pixels) || this.hidden())
+        if (_k_.empty(t.pixels) || this.hidden() || this.collapsed())
         {
             return
         }
@@ -260,7 +254,7 @@ mapview = (function ()
 
     mapview.prototype["draw"] = function ()
     {
-        if (this.hidden())
+        if (this.hidden() || this.collapsed())
         {
             return
         }

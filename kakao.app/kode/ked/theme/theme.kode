@@ -251,7 +251,13 @@ class theme
         'file_bmp':                             '#050'   
         'file_tiff':                            '#040'   
         'file_image':                           '#030'   
-        
+                
+for key,val of theme
+    if val is str
+        theme[key] = color.values val
+    else
+        for k,v of val
+            val[k] = color.values v
 
 for key,value of theme.syntax
     if key.startsWith 'file_'
@@ -259,5 +265,5 @@ for key,value of theme.syntax
         theme.syntax['file_ext_'+ext]   = color.darken value 0.4
         theme.syntax['file_icon_'+ext]  = color.darken value 0.6
         theme.syntax['file_punct_'+ext] = color.darken value 0.3
-
+            
 export theme

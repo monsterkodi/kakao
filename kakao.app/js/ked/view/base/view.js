@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}}
 
 var view
 
@@ -6,13 +6,14 @@ import kxk from "../../../kxk.js"
 let events = kxk.events
 let post = kxk.post
 
+import color from "../../theme/color.js"
+
 import cells from "../screen/cells.js"
 
 
 view = (function ()
 {
     _k_.extend(view, events)
-    view["popups"] = ['quicky','browse','context','menu','macro','searcher','finder','differ']
     view["currentPopup"] = null
     function view (screen, name, features)
     {
@@ -43,19 +44,23 @@ view = (function ()
         return view.__super__.constructor.apply(this, arguments)
     }
 
-    view.prototype["setColor"] = function (key, color)
+    view.prototype["setColor"] = function (key, clr)
     {
-        return this.color[key] = color
+        return this.color[key] = color.values(clr)
     }
 
     view.prototype["show"] = function ()
     {
+        var popup
+
         this.isVisible = true
-        if (_k_.in(this.name,view.popups))
+        if (this.isPopup)
         {
             if (view.currentPopup && view.currentPopup !== this)
             {
-                view.currentPopup.hide()
+                popup = view.currentPopup
+                view.currentPopup = null
+                popup.hide()
             }
             view.currentPopup = this
             post.emit('popup.show',this.name)
@@ -67,7 +72,7 @@ view = (function ()
     view.prototype["hide"] = function ()
     {
         this.isVisible = false
-        if (_k_.in(this.name,view.popups))
+        if (this.isPopup)
         {
             if (this === view.currentPopup)
             {

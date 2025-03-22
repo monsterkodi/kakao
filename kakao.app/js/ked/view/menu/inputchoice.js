@@ -21,7 +21,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _31_23_
+        var _33_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -35,6 +35,8 @@ inputchoice = (function ()
         this["arrange"] = this["arrange"].bind(this)
         inputchoice.__super__.constructor.call(this,this.screen,this.name,features)
         this.autoHideInput = true
+        this.isVisible = false
+        this.isPopup = true
         this.input = new input(this.screen,`${this.name}_input`)
         this.choices = new choices(this.screen,`${this.name}_choices`,features)
         this.setColor('bg',theme.quicky_bg)
@@ -94,7 +96,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _87_23_
+        var _89_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -162,9 +164,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _142_36_
+        var choice, _144_36_
 
-        choice = ((_142_36_=this.choices.current()) != null ? _142_36_ : this.input.current())
+        choice = ((_144_36_=this.choices.current()) != null ? _144_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

@@ -52,7 +52,6 @@ quicky = (function ()
         this["draw"] = this["draw"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         quicky.__super__.constructor.call(this,this.screen,this.name,['mapview','scroll'])
-        this.isVisible = false
         this.crumbs = new crumbs(this.screen,'quicky_crumbs')
         this.crumbs.padLast = true
         this.choices.state.syntax.setRgxs(rgxs)
@@ -352,7 +351,7 @@ quicky = (function ()
 
     quicky.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _327_63_
+        var upDir, _325_63_
 
         switch (action)
         {
@@ -370,7 +369,7 @@ quicky = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_327_63_=choice.link) != null ? _327_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_325_63_=choice.link) != null ? _325_63_ : choice.path))
                     }
                 }
                 break

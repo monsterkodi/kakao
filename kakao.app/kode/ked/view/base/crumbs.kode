@@ -57,7 +57,7 @@ function crumbs extends view
         colors = []
         for i in 0...@split.length
             if i == @hoverIndex
-                colors.push '#44a'
+                colors.push color.values('#44a')
             else
                 colors.push color.darken(c 0.4+0.6*(i+1)/@split.length)
         
@@ -134,7 +134,7 @@ function crumbs extends view
             
     set: path ->
     
-        @cells.rows = 1 # 𝜏𝖍𝚒𝖘 𝖘⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾
+        @cells.rows = 1 # 𝜏𝖍𝚒𝖘 s⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾
         @path = trim path
         @adjustText()
         

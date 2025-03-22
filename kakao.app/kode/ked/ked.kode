@@ -235,7 +235,6 @@ function KED
     onFileChange: event =>
     
         if event.path == @currentFile
-            # log "ked.onFileChange #{event.path} #{event.change}"
             switch event.change
                 'delete' ➜ @newFile() # todo: load current text into new file
                 'change'
@@ -248,8 +247,6 @@ function KED
     # ███   ███  ████████  ███████   ███████   ███   ███  ███████  
 
     reloadFile: => 
-        
-        # log 'reloadFile'
         
         if valid @currentFile
             @loadFile @currentFile
@@ -420,7 +417,7 @@ function KED
                 event.handled = true
                 if ret.redraw == true
                     redraw = true
-                break if event.type != 'move' or handler.name in view.popups
+                break if event.type != 'move' or handler.isPopup
 
         if event.button == 'right'
             

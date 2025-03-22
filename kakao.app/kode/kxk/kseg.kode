@@ -17,8 +17,8 @@ segmenter = new Intl.Segmenter "en-US" granularity:'grapheme'
 
 kseg = s ->
     
-    ⮐ [] if empty s
-    ⮐ s if not s is str
+    ⮐  [] if empty s
+    ⮐  s if not s is str
     
     Array.from(segmenter.segment(s)).map (r) -> r.segment
     
@@ -118,8 +118,8 @@ kseg.segls = any ->
 
 kseg.str = any ->
 
-    ⮐ '' if empty any
-    ⮐ any if not any is arr
+    ⮐  '' if empty any
+    ⮐  any if not any is arr
     if any[0] is str
         any.join ''
     else
@@ -156,7 +156,7 @@ kseg.join = args... ->
 
 kseg.detab = a tw=4 ->
     
-    ⮐ a if not a is arr
+    ⮐  a if not a is arr
     
     i = 0
     while i < a.length
@@ -228,7 +228,7 @@ kseg.words = any ->
     
 kseg.infos = any key test ->
     
-    ⮐ [] if empty any
+    ⮐  [] if empty any
     
     infos = []
     turd = true
@@ -269,9 +269,9 @@ kseg.infos = any key test ->
 
 kseg.startsWith = a prefix ->
     
-    ⮐ false if a.length < prefix.length
-    ⮐ false if empty a or empty prefix
-    ⮐ false if not a is arr
+    ⮐  false if a.length < prefix.length
+    ⮐  false if empty a or empty prefix
+    ⮐  false if not a is arr
     
     segs = kseg prefix
     a[0...segs.length] eql segs
@@ -290,9 +290,9 @@ kseg.startsWith = a prefix ->
 
 kseg.endsWith = a postfix ->
     
-    ⮐ false if a.length < postfix.length
-    ⮐ false if empty a or empty postfix
-    ⮐ false if not a is arr
+    ⮐  false if a.length < postfix.length
+    ⮐  false if empty a or empty postfix
+    ⮐  false if not a is arr
     
     segs = kseg postfix
     a[a.length-segs.length..] eql segs
@@ -315,49 +315,49 @@ kseg.endsWith = a postfix ->
 kseg.headCount = a c ->
     
     for s,i in a
-        ⮐ i if s != c
+        ⮐  i if s != c
     i
     
 kseg.tailCount = a c ->
     
     for i in 0...a.length
-        ⮐ i if a[a.length-1-i] != c
+        ⮐  i if a[a.length-1-i] != c
     i
 
 kseg.headCountWord = a ->
     
     for s,i in a
-        ⮐ i if not /\w+/.test s
+        ⮐  i if not /\w+/.test s
     i
     
 kseg.tailCountWord = a ->
     
     for i in 0...a.length
-        ⮐ i if not /\w+/.test a[a.length-1-i]
+        ⮐  i if not /\w+/.test a[a.length-1-i]
     i
 
 kseg.headCountTurd = a ->
     
     for s,i in a
-        ⮐ i if /[\s\w]+/.test s
+        ⮐  i if /[\s\w]+/.test s
     i
     
 kseg.tailCountTurd = a ->
     
     for i in 0...a.length
-        ⮐ i if /[\s\w]+/.test a[a.length-1-i]
+        ⮐  i if /[\s\w]+/.test a[a.length-1-i]
     i
 
 kseg.headCountChunk = a ->
     
     for s,i in a
-        ⮐ i if /[\s]+/.test s
+        ⮐  i if /[\s]+/.test s
     i
     
 kseg.tailCountChunk = a ->
     
     for i in 0...a.length
-        ⮐ i if /[\s]+/.test a[a.length-1-i]
+        ⮐  i if /[\s]+/.test a[a.length-1-i]
     i
     
 #  0000000   0000000   000      000      00000000   0000000  000000000  
@@ -388,8 +388,6 @@ kseg.spanForClosestWordAtColumn = a c ->
     
     a = kseg a
     
-    # log "#{y5 kseg.str(a)} #{c}"
-    
     segi  = kseg.segiAtWidth a c
     left  = a[0...segi]
     right = a[segi..]
@@ -402,8 +400,6 @@ kseg.spanForClosestWordAtColumn = a c ->
     
     ll = left.length
     rl = right.length
-    
-    # log "#{lw} #{ls} ▪ #{rs} #{rw}"
     
     if 
         ls == ll and rs == rl ➜ s = [c c]                                          # only spaces on both sides
@@ -437,7 +433,7 @@ kseg.splitAtIndent = a ->
 
 kseg.repeat = n s=' ' ->
     
-    ⮐ [] if n <= 0
+    ⮐  [] if n <= 0
     s = kseg s
     a = []
     for i in 0...n
@@ -452,7 +448,7 @@ kseg.repeat = n s=' ' ->
 
 kseg.trim = s c=' ' ->
     
-    ⮐ [] if empty s
+    ⮐  [] if empty s
     s = kseg s
     hc = kseg.headCount s c
     tc = kseg.tailCount s c
@@ -467,7 +463,7 @@ kseg.trim = s c=' ' ->
     
     segment index at column w 
     
-    ⮐ start of segment if column is inside
+    ⮐  start of segment if column is inside
 ###
 kseg.segiAtWidth = segs w ->
 
@@ -497,26 +493,28 @@ kseg.widthAtSegi = segs segi ->
 ###
 kseg.width = s ->
     
-    ⮐ 0 if empty s
-    s   = kseg.str s
-    cpz = s.codePointAt 0            # code of first character
-    str = String.fromCodePoint cpz   # ... converted to string 
-    if s == str ➜ ⮐ wcwidth(cpz)    # ⮐ width if not a compounded glyph
-    w = 0                               
-    for seg in kseg(s)               # sum up individual width of subglyphs
+    ⮐  0 if empty s
+    if s is str
+        segs = kseg s
+    else
+        segs = s
+    w = 0 
+    for seg in segs
         w += wcwidth seg.codePointAt(0)
     w
+    
+kseg.segWidth = seg -> wcwidth seg.codePointAt(0)
 
 ### 
     segment index at column w 
     
-    ⮐ start of next segment if column is inside
+    ⮐  start of next segment if column is inside
 ###
 kseg.indexAtWidth = segs w ->
 
     i = s = 0
     while s < w and i < segs.length
-        s += kseg.width segs[i]
+        s += wcwidth segs[i].codePointAt(0)
         i += 1    
     i
     
@@ -528,7 +526,7 @@ kseg.indexAtWidth = segs w ->
 
 kseg.hash = s ->
 
-    ⮐ 0 if empty s
+    ⮐  0 if empty s
     s = kseg s
     h = 9
     for i in s.length-1..0 
@@ -670,7 +668,7 @@ wcwidth_singlewidth = [
 
 intable = table c ->
   
-    ⮐ if c < table[0][0]
+    ⮐  if c < table[0][0]
   
     bot = 0
     top = table.length - 1

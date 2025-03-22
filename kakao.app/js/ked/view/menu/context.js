@@ -26,7 +26,6 @@ context = (function ()
         this["draw"] = this["draw"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         context.__super__.constructor.call(this,this.screen,'context')
-        this.isVisible = false
         context.menu = this
     }
 

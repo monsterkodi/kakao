@@ -20,9 +20,7 @@ function context extends inputchoice
     @: @screen ->
         
         super @screen 'context'
-        
-        @isVisible = false
-        
+                
         context.menu = @
 
     #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████

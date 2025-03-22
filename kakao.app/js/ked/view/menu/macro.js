@@ -24,7 +24,6 @@ macro = (function ()
         this["hide"] = this["hide"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         macro.__super__.constructor.call(this,this.screen,'macro')
-        this.isVisible = false
     }
 
     macro.prototype["arrange"] = function ()

@@ -74,10 +74,11 @@ function editor extends draw
             
         if @mapscr
             if @name == 'editor'
-                m = @mapscr.visible() ? min(12 int(Math.floor(w/10))) : 0
+                mw = min(12 int(Math.floor(w/10)))
             else
-                m = @mapscr.visible() ? 12 : 0
-            @mapscr.layout x+w-sr-m  y  m   h
+                mw = 12
+            m = @mapscr.visible() ? mw : 0
+            @mapscr.layout x+w-sr-m  y  mw   h
             
         @cells.layout x+sl+g  y   w-s-g-m    h
         

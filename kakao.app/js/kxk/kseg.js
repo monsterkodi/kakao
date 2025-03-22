@@ -493,27 +493,33 @@ kseg.widthAtSegi = function (segs, segi)
 
 kseg.width = function (s)
 {
-    var cpz, seg, str, w
+    var seg, segs, w
 
     if (_k_.empty(s))
     {
         return 0
     }
-    s = kseg.str(s)
-    cpz = s.codePointAt(0)
-    str = String.fromCodePoint(cpz)
-    if (s === str)
+    if (_k_.isStr(s))
     {
-        return wcwidth(cpz)
+        segs = kseg(s)
+    }
+    else
+    {
+        segs = s
     }
     w = 0
-    var list = _k_.list(kseg(s))
+    var list = _k_.list(segs)
     for (var _1c_ = 0; _1c_ < list.length; _1c_++)
     {
         seg = list[_1c_]
         w += wcwidth(seg.codePointAt(0))
     }
     return w
+}
+
+kseg.segWidth = function (seg)
+{
+    return wcwidth(seg.codePointAt(0))
 }
 
 kseg.indexAtWidth = function (segs, w)
@@ -523,7 +529,7 @@ kseg.indexAtWidth = function (segs, w)
     i = s = 0
     while (s < w && i < segs.length)
     {
-        s += kseg.width(segs[i])
+        s += wcwidth(segs[i].codePointAt(0))
         i += 1
     }
     return i

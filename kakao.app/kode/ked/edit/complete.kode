@@ -276,7 +276,7 @@ function complete
         
         fy = cy+1
 
-        @editor.cells.draw_frame fx fy fx+w+1 fy+h+1 fg:theme.editor_complete_choices bg:'#000'
+        @editor.cells.draw_frame fx fy fx+w+1 fy+h+1 fg:theme.editor_complete_choices bg:[0 0 0]
         
         @choices.layout x y w h
         @choices.draw()

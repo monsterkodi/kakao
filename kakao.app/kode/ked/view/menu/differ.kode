@@ -13,6 +13,7 @@ use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../index     ◆ prjcts
 use ../../util      ◆ git fileinfo
+use ../base         ◆ view
 use                 ◆ searcher searcherfile
 
 function differ extends searcher
@@ -47,8 +48,7 @@ function differ extends searcher
     
     show: =>
         
-        @isVisible = true
-        @arrange()
+        view.prototype.show.call @
         
         @input.grabFocus()
         @choices.clearEmpty()        
@@ -77,7 +77,6 @@ function differ extends searcher
             added  = change.add ? []
             modadd = modded.concat added
             if empty modadd.filter((m) -> valid trim(m.new))
-                log 'skip only whitespace' change
                 continue
         
             items.push line:''
@@ -111,13 +110,13 @@ function differ extends searcher
 
     status: ○=> 
     
+        @show()
+    
         currentFile = ked_session.get 'editor▸file'
         status =○ git.status currentFile
 
-        ⮐  if empty status
-        ⮐  if empty status.gitDir
-            
-        @show()
+        ⮐  @hide() if empty status
+        ⮐  @hide() if empty status.gitDir
         
         fileHeader = change file status =>
 
@@ -174,9 +173,9 @@ function differ extends searcher
 
         for file in status.changed
             
-            fileHeader 'changed' file status
-            
             if noCounterpart(file)
+            
+                fileHeader 'changed' file status
                 
                 diff =○ git.diff file
                 

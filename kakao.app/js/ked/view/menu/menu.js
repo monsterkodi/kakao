@@ -31,7 +31,6 @@ menu = (function ()
         this["hide"] = this["hide"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         menu.__super__.constructor.call(this,this.screen,this.name)
-        this.isVisible = false
         this.greet = new greet(this.screen)
     }
 

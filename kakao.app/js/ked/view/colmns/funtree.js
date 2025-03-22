@@ -50,7 +50,7 @@ funSyntax = (function ()
         char = name[x]
         if (char === ' ')
         {
-            return '#000'
+            return [0,0,0]
         }
         if (!(item.async != null))
         {
@@ -118,15 +118,19 @@ funtree = (function ()
 
     funtree.prototype["onFileIndexed"] = function (path, info)
     {
-        var clss, clssl, func, funcs, items, name, symbol, _112_22_
+        var clss, clssl, func, funcs, items, name, symbol, _114_22_
 
+        if (path !== ked_session.get('editor▸file'))
+        {
+            return
+        }
         clssl = _k_.clone(info.classes)
         funcs = _k_.clone(info.funcs)
         var list = _k_.list(clssl)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_112_22_=clss.file) != null ? _112_22_ : path)
+            clss.file = ((_114_22_=clss.file) != null ? _114_22_ : path)
             clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
         }
         var list1 = _k_.list(funcs)

@@ -41,7 +41,7 @@ draw = (function ()
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _112_17_, _114_17_, _116_15_, _117_15_, _118_15_, _54_58_, _96_42_
+        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _112_17_, _114_17_, _116_15_, _117_15_, _118_15_, _54_58_, _96_45_
 
         if (this.hidden())
         {
@@ -96,7 +96,7 @@ draw = (function ()
                         headerClass = clss
                     }
                 }
-                x += ((_96_42_=kseg.width(line[si])) != null ? _96_42_ : 1)
+                x += ((_96_45_=kseg.segWidth(line[si])) != null ? _96_45_ : 1)
                 if (x < this.cells.cols)
                 {
                     c += this.cells.add(c,row,ch,fg,bg)
@@ -323,7 +323,7 @@ draw = (function ()
 
     draw.prototype["drawColorPills"] = function (line, row, linel)
     {
-        var clr, cx, dta, idx, rng, rngs
+        var cx, dta, idx, rng, rngs
 
         if (rngs = kstr.colorRanges(kseg.str(line)))
         {
@@ -332,11 +332,10 @@ draw = (function ()
             for (idx = 0; idx < list.length; idx++)
             {
                 rng = list[idx]
-                clr = color.rgb(rng.color)
                 dta = 4
                 if (idx === 0)
                 {
-                    this.cells.set(cx,row,'',clr,this.color.empty)
+                    this.cells.set(cx,row,'',rng.color,this.color.empty)
                     cx += 1
                     dta--
                 }
@@ -344,11 +343,11 @@ draw = (function ()
                 {
                     dta--
                 }
-                this.cells.bg_rect(cx,row,cx + dta,row,rng.match)
+                this.cells.bg_rect(cx,row,cx + dta,row,rng.color)
                 cx += dta
                 if (idx === rngs.length - 1)
                 {
-                    this.cells.set(cx,row,'',clr,this.color.empty)
+                    this.cells.set(cx,row,'',rng.color,this.color.empty)
                 }
             }
         }

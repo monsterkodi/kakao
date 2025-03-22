@@ -38,7 +38,7 @@ text = (function ()
 
     text["colorSeglsForText"] = function (text)
     {
-        var ansisub, clr, colors, idx, lcl, li, line, noansi, pattern, removed, segls, _77_29_, _87_29_
+        var ansisub, clr, colors, idx, lcl, li, line, noansi, pattern, removed, segls, _75_29_, _85_29_
 
         colors = []
         segls = []
@@ -49,7 +49,7 @@ text = (function ()
             line = list[li]
             ansisub = function (m, c, x)
             {
-                var cs, l, _45_35_, _51_35_, _57_35_, _60_35_
+                var cs, l, _43_35_, _49_35_, _55_35_, _58_35_
 
                 cs = c.split(';').map(function (c)
                 {
@@ -59,33 +59,33 @@ text = (function ()
                 switch (cs[0])
                 {
                     case 38:
-                        colors[li] = ((_45_35_=colors[li]) != null ? _45_35_ : [])
+                        colors[li] = ((_43_35_=colors[li]) != null ? _43_35_ : [])
                         if (cs.length === 5)
                         {
                             colors[li].push({x:x,l:l,fg:cs.slice(2, 5)})
                         }
                         else
                         {
-                            colors[li].push({x:x,l:l,fg:color.rgb(color.ansi256[cs[2]])})
+                            colors[li].push({x:x,l:l,fg:color.ansi256[cs[2]]})
                         }
                         break
                     case 48:
-                        colors[li] = ((_51_35_=colors[li]) != null ? _51_35_ : [])
+                        colors[li] = ((_49_35_=colors[li]) != null ? _49_35_ : [])
                         if (cs.length === 5)
                         {
                             colors[li].push({x:x,l:l,bg:cs.slice(2, 5)})
                         }
                         else
                         {
-                            colors[li].push({x:x,l:l,bg:color.rgb(color.ansi256[cs[2]])})
+                            colors[li].push({x:x,l:l,bg:color.ansi256[cs[2]]})
                         }
                         break
                     case 39:
-                        colors[li] = ((_57_35_=colors[li]) != null ? _57_35_ : [])
+                        colors[li] = ((_55_35_=colors[li]) != null ? _55_35_ : [])
                         colors[li].push({x:x,l:l,fg:-1})
                         break
                     case 49:
-                        colors[li] = ((_60_35_=colors[li]) != null ? _60_35_ : [])
+                        colors[li] = ((_58_35_=colors[li]) != null ? _58_35_ : [])
                         colors[li].push({x:x,l:l,bg:-1})
                         break
                 }
@@ -529,7 +529,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 324, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 321, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

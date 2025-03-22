@@ -57,7 +57,7 @@ function funSyntax
         item = @tree.items[y]
         name = item.name
         char = name[x]
-        if char == ' ' ➜ ⮐ '#000'
+        if char == ' ' ➜ ⮐  [0 0 0]
             
         if 
             not item.async? ➜ clr = @color.class
@@ -104,6 +104,8 @@ function funtree extends choices
     #  ███████   ███   ███        ███  ███   ███  ███████    ████████  ███   ███
 
     onFileIndexed: path info =>
+    
+        ⮐  if path != ked_session.get 'editor▸file'
     
         clssl = clone info.classes
         funcs = clone info.funcs

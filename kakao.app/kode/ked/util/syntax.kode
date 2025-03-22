@@ -99,7 +99,7 @@ function syntax
         else
             clss = x
         
-        theme.syntax[clss] ? '#ff0000'
+        theme.syntax[clss] ? [255 0 0]
         
     getAnsiColor: x y =>
         

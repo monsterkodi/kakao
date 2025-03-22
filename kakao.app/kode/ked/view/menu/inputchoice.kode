@@ -21,6 +21,8 @@ function inputchoice extends view
         super @screen @name features
         
         @autoHideInput = true
+        @isVisible = false
+        @isPopup   = true
         
         @input   = new input   @screen "#{@name}_input"
         @choices = new choices @screen "#{@name}_choices" features

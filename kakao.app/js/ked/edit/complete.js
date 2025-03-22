@@ -305,7 +305,7 @@ complete = (function ()
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
         fy = cy + 1
-        this.editor.cells.draw_frame(fx,fy,fx + w + 1,fy + h + 1,{fg:theme.editor_complete_choices,bg:'#000'})
+        this.editor.cells.draw_frame(fx,fy,fx + w + 1,fy + h + 1,{fg:theme.editor_complete_choices,bg:[0,0,0]})
         this.choices.layout(x,y,w,h)
         return this.choices.draw()
     }

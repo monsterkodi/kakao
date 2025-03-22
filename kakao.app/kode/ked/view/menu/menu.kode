@@ -21,8 +21,6 @@ function menu extends inputchoice
         
         super @screen @name
         
-        @isVisible = false
-        
         @greet = new greet @screen
         
     #  0000000   00000000   00000000    0000000   000   000   0000000   00000000  

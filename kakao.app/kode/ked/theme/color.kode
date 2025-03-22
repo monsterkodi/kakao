@@ -82,36 +82,47 @@ class color
     @rgb:    c   -> kstr.hexColor c
     @hex:    c   -> kstr.hexColor c
     
-    @darken: c f -> 
+    @values: c   -> c is str ? kstr.hexColor(c) : c
+    
+    @darken: c f=0.5 -> 
     
         ⮐  [0 0 0] if empty c
-        kstr.scaleColor c f
+        if c is str
+            log "darken #{c}"
+            c = color.values c
+        c.map((v) -> clamp(0 255 int(f*v)))
         
-    @brighten: c f ->
+    @brighten: c f=0.5 ->
     
         ⮐  [255 255 255] if empty c
-        kstr.scaleColor c 1+f
+        if c is str
+            log "brighten #{c}"
+            c = color.values c
+        c.map((v) -> clamp(0 255 int((1+f)*v)))
                             
     @bg_rgb: c -> # background
     
         ⮐  '\x1b[49m' if empty c
-        [r g b] = c if c is arr
-        [r g b] = color.rgb c if c is str
-        "\x1b[48;2;#{r};#{g};#{b}m" 
+        if c is str
+            log "bg_rgb '#{c}'"
+            c = color.values c 
+        "\x1b[48;2;#{c[0]};#{c[1]};#{c[2]}m" 
 
     @fg_rgb: c -> # foreground (text) 
         
         ⮐  '\x1b[39m' if empty c
-        [r g b] = c if c is arr
-        [r g b] = color.rgb c if c is str
-        "\x1b[38;2;#{r};#{g};#{b}m" 
+        if c is str
+            log "fg_rgb '#{c}'"
+            c = color.values c
+        "\x1b[38;2;#{c[0]};#{c[1]};#{c[2]}m" 
 
     @ul_rgb: c -> # underline color
         
         ⮐  '\x1b[59m' if empty c
-        [r g b] = c if c is arr
-        [r g b] = color.rgb c if c is str
-        "\x1b[58;2;#{r};#{g};#{b}m" 
+        if c is str
+            log "ul_rgb '#{c}'"
+            c = color.values c 
+        "\x1b[58;2;#{c[0]};#{c[1]};#{c[2]}m" 
         
     @randomBackgroundColors: lines bg fg ->
         
@@ -197,15 +208,17 @@ class color
 
     @contrast: c1 c2 ->
     
-        v1 = color.rgb c1
-        v2 = color.rgb c2
-        
-        dr = (v2[0]-v1[0])/256
-        dg = (v2[1]-v1[1])/256
-        db = (v2[2]-v1[2])/256
+        log "contrast #{c1} #{c2}" if c1 is str or c2 is str
+    
+        dr = (c2[0]-c1[0])/256
+        dg = (c2[1]-c1[1])/256
+        db = (c2[2]-c1[2])/256
         
         c = dr + dg + db 
         
         1+c/3
+            
+for key,val of color.ansi256
+    color.ansi256[key] = color.values val
             
 export color

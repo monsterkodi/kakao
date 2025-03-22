@@ -24,8 +24,6 @@ function quicky extends inputchoice
 
         super @screen @name ['mapview' 'scroll']
         
-        @isVisible = false
-
         @crumbs = new crumbs  @screen 'quicky_crumbs'
 
         @crumbs.padLast = true

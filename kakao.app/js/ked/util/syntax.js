@@ -191,7 +191,7 @@ syntax = (function ()
         {
             clss = x
         }
-        return ((_102_27_=theme.syntax[clss]) != null ? _102_27_ : '#ff0000')
+        return ((_102_27_=theme.syntax[clss]) != null ? _102_27_ : [255,0,0])
     }
 
     syntax.prototype["getAnsiColor"] = function (x, y)

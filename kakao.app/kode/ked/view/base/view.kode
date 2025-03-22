@@ -15,11 +15,11 @@
 ###
 
 use ../../../kxk ▪ events post
-use   ../screen  ◆ cells 
+use ../../theme  ◆ color
+use ../screen    ◆ cells 
 
 function view extends events
 
-    @popups: ['quicky' 'browse' 'context' 'menu' 'macro' 'searcher' 'finder' 'differ']
     @currentPopup: null
 
     @: @screen @name features ->
@@ -31,7 +31,7 @@ function view extends events
         @isVisible = true
         @focusable = false
                         
-    setColor: key color => @color[key] = color
+    setColor: key clr => @color[key] = color.values(clr)
         
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
     # 000   000  000  000       000  000   000  000  000      000     000      000 000   
@@ -43,10 +43,13 @@ function view extends events
     
         @isVisible = true
         
-        if @name in view.popups
+        if @isPopup
             if view.currentPopup and view.currentPopup != @
-                view.currentPopup.hide()
+                popup = view.currentPopup
+                view.currentPopup = null
+                popup.hide()
             view.currentPopup = @
+            # log "view popup.show #{@name}" 
             post.emit 'popup.show' @name
         
         @arrange()
@@ -56,9 +59,10 @@ function view extends events
     
         @isVisible = false 
         
-        if @name in view.popups
+        if @isPopup
             if @ == view.currentPopup
                 view.currentPopup = null
+                # log "view popup.hide #{@name}" 
                 post.emit 'popup.hide' @name
         
         redraw:true

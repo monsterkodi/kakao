@@ -16,6 +16,8 @@ import prjcts from "../../index/prjcts.js"
 import git from "../../util/git.js"
 import fileinfo from "../../util/fileinfo.js"
 
+import view from "../base/view.js"
+
 import searcher from "./searcher.js"
 import searcherfile from "./searcherfile.js"
 
@@ -52,8 +54,7 @@ differ = (function ()
 
     differ.prototype["show"] = function ()
     {
-        this.isVisible = true
-        this.arrange()
+        view.prototype.show.call(this)
         this.input.grabFocus()
         this.choices.clearEmpty()
         this.sfils = []
@@ -83,7 +84,6 @@ differ = (function ()
                     return !_k_.empty(_k_.trim(m.new))
                 })))
             {
-                console.log('skip only whitespace',change)
                 continue
             }
             items.push({line:''})
@@ -115,17 +115,17 @@ differ = (function ()
     {
         var currentFile, diff, file, fileHeader, lines, newl, noCounterpart, status, text
 
+        this.show()
         currentFile = ked_session.get('editor▸file')
         status = await git.status(currentFile)
         if (_k_.empty(status))
         {
-            return
+            return this.hide()
         }
         if (_k_.empty(status.gitDir))
         {
-            return
+            return this.hide()
         }
-        this.show()
         fileHeader = (function (change, file, status)
         {
             var path, sfil, symbol
@@ -200,9 +200,9 @@ differ = (function ()
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             file = list2[_c_]
-            fileHeader('changed',file,status)
             if (noCounterpart(file))
             {
+                fileHeader('changed',file,status)
                 diff = await git.diff(file)
                 if (this.hidden())
                 {

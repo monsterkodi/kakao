@@ -93,7 +93,7 @@ function draw extends view
                     clss = syntax.getClass ci y
                     if clss.endsWith('header') ➜ headerClass = clss
 
-                x += kseg.width(line[si]) ? 1
+                x += kseg.segWidth(line[si]) ? 1
                 if x < @cells.cols
                     c += @cells.add c row ch fg bg
                 
@@ -244,7 +244,7 @@ function draw extends view
 
         bg = mode.themeColor @state 'editor_cursor_multi'
 
-        bg = color.darken bg if not @cells.screen.t.hasFocus
+        bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
         for cursor in s.cursors
  
@@ -284,12 +284,11 @@ function draw extends view
         if rngs = kstr.colorRanges kseg.str(line)
             cx = max(0 linel)+1
             for rng,idx in rngs
-                clr = color.rgb rng.color
                 dta = 4
-                if idx == 0             ➜ @cells.set cx row '' clr @color.empty; cx += 1; dta--
+                if idx == 0             ➜ @cells.set cx row '' rng.color @color.empty; cx += 1; dta--
                 if idx == rngs.length-1 ➜ dta--
-                @cells.bg_rect cx row cx+dta row rng.match; cx += dta
-                if idx == rngs.length-1 ➜ @cells.set cx row '' clr @color.empty
+                @cells.bg_rect cx row cx+dta row rng.color; cx += dta
+                if idx == rngs.length-1 ➜ @cells.set cx row '' rng.color @color.empty
                     
     drawAsciiHeader: line row clss ->
         

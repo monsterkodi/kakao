@@ -1,4 +1,6 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+
+var key, val
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -22,85 +24,85 @@ class color
         return kstr.hexColor(c)
     }
 
-    static darken (c, f)
+    static values (c)
+    {
+        return (_k_.isStr(c) ? kstr.hexColor(c) : c)
+    }
+
+    static darken (c, f = 0.5)
     {
         if (_k_.empty(c))
         {
             return [0,0,0]
         }
-        return kstr.scaleColor(c,f)
+        if (_k_.isStr(c))
+        {
+            console.log(`darken ${c}`)
+            c = color.values(c)
+        }
+        return c.map(function (v)
+        {
+            return _k_.clamp(0,255,parseInt(f * v))
+        })
     }
 
-    static brighten (c, f)
+    static brighten (c, f = 0.5)
     {
         if (_k_.empty(c))
         {
             return [255,255,255]
         }
-        return kstr.scaleColor(c,1 + f)
+        if (_k_.isStr(c))
+        {
+            console.log(`brighten ${c}`)
+            c = color.values(c)
+        }
+        return c.map(function (v)
+        {
+            return _k_.clamp(0,255,parseInt((1 + f) * v))
+        })
     }
 
     static bg_rgb (c)
     {
-        var b, g, r
-
         if (_k_.empty(c))
         {
             return '\x1b[49m'
         }
-        if (_k_.isArr(c))
-        {
-            var _a_ = c; r = _a_[0]; g = _a_[1]; b = _a_[2]
-
-        }
         if (_k_.isStr(c))
         {
-            var _b_ = color.rgb(c); r = _b_[0]; g = _b_[1]; b = _b_[2]
-
+            console.log(`bg_rgb '${c}'`)
+            c = color.values(c)
         }
-        return `\x1b[48;2;${r};${g};${b}m`
+        return `\x1b[48;2;${c[0]};${c[1]};${c[2]}m`
     }
 
     static fg_rgb (c)
     {
-        var b, g, r
-
         if (_k_.empty(c))
         {
             return '\x1b[39m'
         }
-        if (_k_.isArr(c))
-        {
-            var _a_ = c; r = _a_[0]; g = _a_[1]; b = _a_[2]
-
-        }
         if (_k_.isStr(c))
         {
-            var _b_ = color.rgb(c); r = _b_[0]; g = _b_[1]; b = _b_[2]
-
+            console.log(`fg_rgb '${c}'`)
+            c = color.values(c)
         }
-        return `\x1b[38;2;${r};${g};${b}m`
+        return `\x1b[38;2;${c[0]};${c[1]};${c[2]}m`
     }
 
     static ul_rgb (c)
     {
-        var b, g, r
-
         if (_k_.empty(c))
         {
             return '\x1b[59m'
         }
-        if (_k_.isArr(c))
-        {
-            var _a_ = c; r = _a_[0]; g = _a_[1]; b = _a_[2]
-
-        }
         if (_k_.isStr(c))
         {
-            var _b_ = color.rgb(c); r = _b_[0]; g = _b_[1]; b = _b_[2]
-
+            console.log(`ul_rgb '${c}'`)
+            c = color.values(c)
         }
-        return `\x1b[58;2;${r};${g};${b}m`
+        return `\x1b[58;2;${c[0]};${c[1]};${c[2]}m`
     }
 
     static randomBackgroundColors (lines, bg, fg)
@@ -239,16 +241,23 @@ class color
 
     static contrast (c1, c2)
     {
-        var c, db, dg, dr, v1, v2
+        var c, db, dg, dr
 
-        v1 = color.rgb(c1)
-        v2 = color.rgb(c2)
-        dr = (v2[0] - v1[0]) / 256
-        dg = (v2[1] - v1[1]) / 256
-        db = (v2[2] - v1[2]) / 256
+        if (_k_.isStr(c1) || _k_.isStr(c2))
+        {
+            console.log(`contrast ${c1} ${c2}`)
+        }
+        dr = (c2[0] - c1[0]) / 256
+        dg = (c2[1] - c1[1]) / 256
+        db = (c2[2] - c1[2]) / 256
         c = dr + dg + db
         return 1 + c / 3
     }
 }
 
+for (key in color.ansi256)
+{
+    val = color.ansi256[key]
+    color.ansi256[key] = color.values(val)
+}
 export default color;

@@ -65,7 +65,7 @@ crumbs = (function ()
         {
             if (i === this.hoverIndex)
             {
-                colors.push('#44a')
+                colors.push(color.values('#44a'))
             }
             else
             {

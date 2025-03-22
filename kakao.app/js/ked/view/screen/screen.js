@@ -40,7 +40,7 @@ screen = (function ()
     {
         var w
 
-        w = kseg.width(char)
+        w = kseg.segWidth(char)
         if (w > 1)
         {
             this.set(x,y,char,fg,bg)

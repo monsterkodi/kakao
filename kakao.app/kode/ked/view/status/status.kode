@@ -124,8 +124,8 @@ function status extends view
         dty    = @state.isDirty()
         
         set = x char fg bg => 
-            if valid fg and fg[0] != '#' ➜ fg = theme[fg]
-            if valid bg and bg[0] != '#' ➜ bg = theme[bg]
+            if fg is str ➜ fg = theme[fg]
+            if bg is str ➜ bg = theme[bg]
             @cells.set x y char fg bg
             1
         add = char fg bg => x += set x char fg bg
@@ -179,7 +179,7 @@ function status extends view
             
         ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
         ch = ' •'[ci] # 
-        fg = ['#222' '#060' '#f00' '#ff0'][ci]
+        fg = [[32 32 32] [0 96 0] [255 0 0] [255 255 0]][ci]
         switch ch
             '•' ➜ log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
             '' ➜ log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
