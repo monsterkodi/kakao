@@ -18,19 +18,12 @@ use ../menu      ◆ choices
 ###
 
 SYMBOL = 
-    clss:          '■'
-    unbound:       '->'
-    bound:         '=>'
-    async_unbound: '○→' 
-    async_bound:   '●→'
+    clss:          '■'  # '■' 
+    unbound:       '->' # '▸'
+    bound:         '=>' # '▸'
+    async_unbound: '○→' # '○'
+    async_bound:   '●→' # '●' 
         
-# SYMBOL =
-#     clss:          '■' 
-#     unbound:       '▸'
-#     bound:         '▸'
-#     async_unbound: '○'
-#     async_bound:   '●' 
-
 function funSyntax
 
     @: @tree ->
@@ -52,6 +45,7 @@ function funSyntax
     # ███       ███   ███  ███      ███   ███  ███   ███
     #  ███████   ███████   ███████   ███████   ███   ███
 
+    getClass: x y => ''
     getColor: x y =>
         
         item = @tree.items[y]

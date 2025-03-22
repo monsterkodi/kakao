@@ -24,6 +24,7 @@ funSyntax = (function ()
     
         this["getChar"] = this["getChar"].bind(this)
         this["getColor"] = this["getColor"].bind(this)
+        this["getClass"] = this["getClass"].bind(this)
         this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["clear"] = this["clear"].bind(this)
@@ -41,9 +42,14 @@ funSyntax = (function ()
     funSyntax.prototype["setSegls"] = function (segls)
     {}
 
+    funSyntax.prototype["getClass"] = function (x, y)
+    {
+        return ''
+    }
+
     funSyntax.prototype["getColor"] = function (x, y)
     {
-        var char, clr, item, name, _63_26_
+        var char, clr, item, name, _57_26_
 
         item = this.tree.items[y]
         name = item.name
@@ -118,7 +124,7 @@ funtree = (function ()
 
     funtree.prototype["onFileIndexed"] = function (path, info)
     {
-        var clss, clssl, func, funcs, items, name, symbol, _114_22_
+        var clss, clssl, func, funcs, items, name, symbol, _108_22_
 
         if (path !== ked_session.get('editor▸file'))
         {
@@ -130,7 +136,7 @@ funtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_114_22_=clss.file) != null ? _114_22_ : path)
+            clss.file = ((_108_22_=clss.file) != null ? _108_22_ : path)
             clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
         }
         var list1 = _k_.list(funcs)
