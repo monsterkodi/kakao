@@ -351,7 +351,8 @@ differ = (function ()
         out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
         out += await git.exec("push -q",{cwd:gitDir})
         console.log(r4,`differ.commit\n${_k_.b7(out)}`)
-        return this.hide()
+        this.hide()
+        return post.emit('redraw')
     }
 
     differ.prototype["onInputAction"] = function (action, text)
