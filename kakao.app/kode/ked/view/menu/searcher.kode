@@ -20,10 +20,9 @@ function searcher extends finder
 
         super @screen @state name
         
-        @isVisible = false
-        
-        post.on 'searcher.show' @show
-        post.on 'file.loaded' @onFileLoaded
+        if @name == 'searcher'
+            post.on 'searcher.show' @show
+            post.on 'file.loaded'   @onFileLoaded
         
         @sfils = []
         

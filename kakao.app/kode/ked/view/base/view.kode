@@ -31,31 +31,8 @@ function view extends events
         @isVisible = true
         @focusable = false
                         
-        post.on 'view.show' @onViewShow if @name in view.popups
-        post.on 'view.hide' @onViewHide if @name in view.popups
-        
     setColor: key color => @color[key] = color
         
-    onViewHide: viewName =>
-    
-        if viewName == view.currentPopup
-            view.currentPopup = null
-            
-        if viewName == @name and empty view.currentPopup
-            log "onViewHide #{viewName}"
-            post.emit 'popup.hide' viewName
-        
-    onViewShow: viewName =>
-    
-        if viewName == @name
-            log "onViewShow #{viewName}"
-            post.emit 'popup.show' viewName
-                
-        if viewName in view.popups
-            view.currentPopup = viewName            
-            if viewName != @name and @visible()
-                @hide() 
-                
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
     # 000   000  000  000       000  000   000  000  000      000     000      000 000   
     #  000 000   000  0000000   000  0000000    000  000      000     000       00000    
@@ -65,12 +42,28 @@ function view extends events
     show: -> 
     
         @isVisible = true
-        post.emit 'view.show' @name
+        
+        if @name in view.popups
+            if view.currentPopup and view.currentPopup != @
+                view.currentPopup.hide()
+            view.currentPopup = @
+            post.emit 'popup.show' @name
+        
         @arrange()
         redraw:true
         
+    hide: ->
+    
+        @isVisible = false 
+        
+        if @name in view.popups
+            if @ == view.currentPopup
+                view.currentPopup = null
+                post.emit 'popup.hide' @name
+        
+        redraw:true
+        
     arrange: ->    
-    hide:    -> @isVisible=false; post.emit 'view.hide' @name; redraw:true
     hidden:  -> not @visible()
     visible: -> @isVisible
     toggle:  -> if @hidden() then @show() else @hide()

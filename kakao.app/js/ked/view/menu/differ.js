@@ -53,7 +53,6 @@ differ = (function ()
     differ.prototype["show"] = function ()
     {
         this.isVisible = true
-        post.emit('view.show',this.name)
         this.arrange()
         this.input.grabFocus()
         this.choices.clearEmpty()
@@ -63,7 +62,7 @@ differ = (function ()
 
     differ.prototype["diff"] = function (diff)
     {
-        var add, added, change, ext, file, items, li, modadd, modded, _85_32_, _86_32_
+        var add, added, change, ext, file, items, li, modadd, modded, _76_32_, _77_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -76,8 +75,8 @@ differ = (function ()
             {
                 continue
             }
-            modded = ((_85_32_=change.mod) != null ? _85_32_ : [])
-            added = ((_86_32_=change.add) != null ? _86_32_ : [])
+            modded = ((_76_32_=change.mod) != null ? _76_32_ : [])
+            added = ((_77_32_=change.add) != null ? _77_32_ : [])
             modadd = modded.concat(added)
             if (_k_.empty(modadd.filter(function (m)
                 {

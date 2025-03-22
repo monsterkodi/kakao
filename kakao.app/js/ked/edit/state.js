@@ -538,6 +538,10 @@ state = (function ()
 
     state.prototype["setView"] = function (view)
     {
+        if (_k_.eql(this.s.view, view))
+        {
+            return
+        }
         this.set('view',view)
         this.emit('view.changed',this.s.view)
         return this

@@ -20,8 +20,7 @@ mapscr = (function ()
     {
         this["drawKnob"] = this["drawKnob"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
-        this["createImages"] = this["createImages"].bind(this)
-        this["clearImages"] = this["clearImages"].bind(this)
+        this["hide"] = this["hide"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
@@ -30,6 +29,7 @@ mapscr = (function ()
         mapscr.__super__.constructor.call(this,screen,state)
         this.state.on('view.changed',this.drawKnob)
         this.pointerType = 'pointer'
+        this.knobId = this.imgId + 0xeeee
         this.setColor('bg',theme.mapscr)
         screen.t.on('preResize',this.clearImages)
         post.on('popup.show',this.hide)
@@ -117,39 +117,14 @@ mapscr = (function ()
         return this.hover
     }
 
-    mapscr.prototype["clearImages"] = function ()
+    mapscr.prototype["hide"] = function ()
     {
-        if (this.knobId)
-        {
-            this.cells.screen.t.deleteImage(this.knobId)
-        }
-        delete this.knobId
-        return mapscr.__super__.clearImages.call(this)
-    }
-
-    mapscr.prototype["createImages"] = function ()
-    {
-        var bpp, data, h, i, t, w
-
-        t = this.cells.screen.t
-        if (_k_.empty(t.cellsz))
+        if (this.hidden())
         {
             return
         }
-        mapscr.__super__.createImages.call(this)
-        w = t.cellsz[0]
-        h = t.cellsz[1]
-        bpp = 4
-        data = Buffer.alloc(w * h * bpp)
-        for (var _a_ = i = 0, _b_ = w * h; (_a_ <= _b_ ? i < w * h : i > w * h); (_a_ <= _b_ ? ++i : --i))
-        {
-            data[i * bpp + 0] = 250
-            data[i * bpp + 1] = 250
-            data[i * bpp + 2] = 250
-            data[i * bpp + 3] = 20
-        }
-        this.knobId = this.imgId + 0xeeee
-        return t.sendImageData(data,this.knobId,w,h,bpp)
+        this.cells.screen.t.hideImageOverlay(this.knobId)
+        return mapscr.__super__.hide.call(this)
     }
 
     mapscr.prototype["drawImages"] = function ()
@@ -170,7 +145,7 @@ mapscr = (function ()
         var h, t, w, y, yc, yr
 
         t = this.cells.screen.t
-        if (_k_.empty(t.pixels))
+        if (_k_.empty(t.pixels) || this.hidden() || this.collapsed())
         {
             return
         }

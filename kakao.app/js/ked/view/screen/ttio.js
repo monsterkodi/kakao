@@ -170,7 +170,12 @@ TTIO = (function ()
             this.pngID = 1
             this.write(`\x1b_Gq=1,i=${this.pngID},f=100;${b64}\x1b\\`)
         }
-        return this.write(`\x1b_Gq=1,a=p,i=${this.pngID},p=${this.pngID},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+        return this.write(`\x1b_Gq=1,a=p,i=${this.pngID},p=${id},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+    }
+
+    TTIO.prototype["hideImageOverlay"] = function (id)
+    {
+        return this.write(`\x1b_Gq=1,a=d,d=i,i=${this.pngID},p=${id}\x1b\\`)
     }
 
     TTIO.prototype["hideImage"] = function (id)
@@ -697,11 +702,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _486_23_, _507_20_
+        var diff, _496_23_, _517_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_486_23_=this.lastClick) != null ? _486_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_496_23_=this.lastClick) != null ? _496_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -724,7 +729,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_507_20_=this.lastPixels) != null ? _507_20_ : [])
+        this.lastPixels = ((_517_20_=this.lastPixels) != null ? _517_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -782,7 +787,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _561_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _571_23_
 
         if ((this.pasteBuffer != null))
         {

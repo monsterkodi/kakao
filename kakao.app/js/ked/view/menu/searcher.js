@@ -30,9 +30,11 @@ searcher = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         searcher.__super__.constructor.call(this,this.screen,this.state,name)
-        this.isVisible = false
-        post.on('searcher.show',this.show)
-        post.on('file.loaded',this.onFileLoaded)
+        if (this.name === 'searcher')
+        {
+            post.on('searcher.show',this.show)
+            post.on('file.loaded',this.onFileLoaded)
+        }
         this.sfils = []
     }
 

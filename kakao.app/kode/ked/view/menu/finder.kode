@@ -85,7 +85,7 @@ function finder extends inputchoice
         
         text = @searchText text
         
-        log g4("#{r6 'finder.show'} '#{text}'")
+        log g4("#{r6 'finder.show'} #{m5 @name} '#{text}'")
         
         if empty text
             @choices.clear()

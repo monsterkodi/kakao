@@ -26,8 +26,8 @@ function mapview extends view
         @setColor 'bg' theme.mapview
         
         @imgId  = kstr.hash(@state.name) & ~0xffff
-        @rowOffset = 0
-        @images = []
+        @rowOffset  = 0
+        @images     = []
         @cells.cols = 12
         
         @pixelsPerRow = 4

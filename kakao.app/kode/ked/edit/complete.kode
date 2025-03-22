@@ -75,14 +75,9 @@ function complete
         @words = kseg.chunks(@editor.state.s.lines).map (chunk) -> chunk.chunk        
         @words = belt.prepareWordsForCompletion before @turd @words
         
-        if @turd not in ['constructor']
+        if @turd.length == 1 
             if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
-            
-                if @turd == '>'
-                    if before == '>'
-                        @words = inserts.concat @words
-                else
-                    @words = inserts.concat @words
+                @words = inserts.concat @words
 
         @visible = valid @words
 

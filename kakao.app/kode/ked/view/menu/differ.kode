@@ -33,20 +33,12 @@ function differ extends searcher
 
     emitFileOpen: choice ->
     
-        # log 'emit file.open'
-    
         post.emit 'file.open' choice.path choice.row choice.col
         
         @hide()
         
     onFileLoaded: file =>
     
-        # ⮐  if @hidden()
-        # 
-        # log "#{@name} onFileLoaded #{file} hide?"
-    
-        # @hide()
-        
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
     # 0000000   000000000  000   000  000000000  
@@ -56,7 +48,6 @@ function differ extends searcher
     show: =>
         
         @isVisible = true
-        post.emit 'view.show' @name
         @arrange()
         
         @input.grabFocus()

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isFunc: function (o) {return typeof o === 'function'}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isFunc: function (o) {return typeof o === 'function'}}
 
 var view
 
@@ -28,8 +28,6 @@ view = (function ()
         this["onMouseLeave"] = this["onMouseLeave"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["onViewShow"] = this["onViewShow"].bind(this)
-        this["onViewHide"] = this["onViewHide"].bind(this)
         this["setColor"] = this["setColor"].bind(this)
         this.cells = new cells(this.screen)
         this.color = {}
@@ -42,14 +40,6 @@ view = (function ()
         }
         this.isVisible = true
         this.focusable = false
-        if (_k_.in(this.name,view.popups))
-        {
-            post.on('view.show',this.onViewShow)
-        }
-        if (_k_.in(this.name,view.popups))
-        {
-            post.on('view.hide',this.onViewHide)
-        }
         return view.__super__.constructor.apply(this, arguments)
     }
 
@@ -58,53 +48,38 @@ view = (function ()
         return this.color[key] = color
     }
 
-    view.prototype["onViewHide"] = function (viewName)
-    {
-        if (viewName === view.currentPopup)
-        {
-            view.currentPopup = null
-        }
-        if (viewName === this.name && _k_.empty(view.currentPopup))
-        {
-            console.log(`onViewHide ${viewName}`)
-            return post.emit('popup.hide',viewName)
-        }
-    }
-
-    view.prototype["onViewShow"] = function (viewName)
-    {
-        if (viewName === this.name)
-        {
-            console.log(`onViewShow ${viewName}`)
-            post.emit('popup.show',viewName)
-        }
-        if (_k_.in(viewName,view.popups))
-        {
-            view.currentPopup = viewName
-            if (viewName !== this.name && this.visible())
-            {
-                return this.hide()
-            }
-        }
-    }
-
     view.prototype["show"] = function ()
     {
         this.isVisible = true
-        post.emit('view.show',this.name)
+        if (_k_.in(this.name,view.popups))
+        {
+            if (view.currentPopup && view.currentPopup !== this)
+            {
+                view.currentPopup.hide()
+            }
+            view.currentPopup = this
+            post.emit('popup.show',this.name)
+        }
         this.arrange()
+        return {redraw:true}
+    }
+
+    view.prototype["hide"] = function ()
+    {
+        this.isVisible = false
+        if (_k_.in(this.name,view.popups))
+        {
+            if (this === view.currentPopup)
+            {
+                view.currentPopup = null
+                post.emit('popup.hide',this.name)
+            }
+        }
         return {redraw:true}
     }
 
     view.prototype["arrange"] = function ()
     {}
-
-    view.prototype["hide"] = function ()
-    {
-        this.isVisible = false
-        post.emit('view.hide',this.name)
-        return {redraw:true}
-    }
 
     view.prototype["hidden"] = function ()
     {

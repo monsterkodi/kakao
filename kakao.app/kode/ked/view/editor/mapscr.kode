@@ -24,6 +24,8 @@ function mapscr extends mapview
         
         @pointerType = 'pointer'
         
+        @knobId = @imgId+0xeeee
+        
         @setColor 'bg' theme.mapscr
         
         screen.t.on 'preResize' @clearImages
@@ -117,46 +119,13 @@ function mapscr extends mapview
      ███  ███   ███  ███   ███   ███████   ████████  ███████ 
 ###
 
-    #  ███████  ███      ████████   ███████   ████████ 
-    # ███       ███      ███       ███   ███  ███   ███
-    # ███       ███      ███████   █████████  ███████  
-    # ███       ███      ███       ███   ███  ███   ███
-    #  ███████  ███████  ████████  ███   ███  ███   ███
-
-    clearImages: =>
+    hide: =>
+    
+        ⮐  if @hidden()
         
-        @cells.screen.t.deleteImage @knobId if @knobId
-        delete @knobId
+        @cells.screen.t.hideImageOverlay @knobId
         
         super()
-        
-    #  ███████  ████████   ████████   ███████   █████████  ████████
-    # ███       ███   ███  ███       ███   ███     ███     ███     
-    # ███       ███████    ███████   █████████     ███     ███████ 
-    # ███       ███   ███  ███       ███   ███     ███     ███     
-    #  ███████  ███   ███  ████████  ███   ███     ███     ████████
-
-    createImages: =>
-        
-        t = @cells.screen.t
-        
-        ⮐  if empty t.cellsz
-        
-        super() # has to come first, because it clears all images
-        
-        w = t.cellsz[0]
-        h = t.cellsz[1]
-
-        bpp = 4
-        data = Buffer.alloc w*h*bpp
-        for i in 0...w*h
-            data[i*bpp+0] = 250
-            data[i*bpp+1] = 250
-            data[i*bpp+2] = 250
-            data[i*bpp+3] = 20
-        
-        @knobId = @imgId+0xeeee
-        t.sendImageData data @knobId w h bpp
         
     # ███████    ████████    ███████   ███   ███
     # ███   ███  ███   ███  ███   ███  ███ █ ███
@@ -178,7 +147,7 @@ function mapscr extends mapview
         
         t = @cells.screen.t
         
-        ⮐  if empty t.pixels
+        ⮐  if empty t.pixels or @hidden() or @collapsed()
         
         y  = @pixelsPerRow*@state.s.view[1]/t.cellsz[1]
         yc = int(y) 

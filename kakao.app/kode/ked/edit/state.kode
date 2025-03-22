@@ -404,6 +404,7 @@ function state extends events
 
     setView: view =>
         
+        ⮐  if @s.view eql view
         @set 'view' view
         @emit 'view.changed' @s.view
         @

@@ -34,7 +34,6 @@ function specs
              ]
         'r': [ '⮐  ']
         't': [ '➜ ']
-        '>': [ '▸ ']
     
     @inserts: {} # map of inserts, to make check in complete easier
 
