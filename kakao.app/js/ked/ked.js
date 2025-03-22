@@ -466,12 +466,16 @@ ked [file]
                 }
             }
         }
-        if (event.button === 'right')
+        if (event.button === 'right' && event.type === 'press' && event.count === 1)
         {
             var list2 = _k_.list(this.contextHandlers)
             for (var _c_ = 0; _c_ < list2.length; _c_++)
             {
                 handler = list2[_c_]
+                if (!handler.hover)
+                {
+                    continue
+                }
                 if (ret = handler.onContext(event))
                 {
                     if (ret.redraw === true)
@@ -595,7 +599,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _499_22_
+        var mcw, _500_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

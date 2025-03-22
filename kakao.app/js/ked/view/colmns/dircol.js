@@ -13,6 +13,8 @@ import view from "../base/view.js"
 import knob from "../base/knob.js"
 import crumbs from "../base/crumbs.js"
 
+import context from "../menu/context.js"
+
 import dirtree from "./dirtree.js"
 
 
@@ -28,6 +30,7 @@ dircol = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onDircolToggle"] = this["onDircolToggle"].bind(this)
         this["onDircolResize"] = this["onDircolResize"].bind(this)
+        this["onContextChoice"] = this["onContextChoice"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
         this["draw"] = this["draw"].bind(this)
         this["layout"] = this["layout"].bind(this)
@@ -131,11 +134,23 @@ dircol = (function ()
 
     dircol.prototype["onContext"] = function (event)
     {
-        if (!this.hover)
+        return context.show(event.cell,this.onContextChoice,["trash"])
+    }
+
+    dircol.prototype["onContextChoice"] = function (choice)
+    {
+        var current
+
+        if (current = this.dirtree.current())
         {
-            return
+            switch (choice)
+            {
+                case 'trash':
+                    return post.emit('file.trash',current.path)
+
+            }
+
         }
-        console.log(`dircol.onContext ${this.hover}`,event)
     }
 
     dircol.prototype["onDircolResize"] = function ()

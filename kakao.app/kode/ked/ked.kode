@@ -419,9 +419,10 @@ function KED
                     redraw = true
                 break if event.type != 'move' or handler.isPopup
 
-        if event.button == 'right'
+        if event.button == 'right' and event.type == 'press' and event.count == 1
             
             for handler in @contextHandlers
+                continue if not handler.hover
                 if ret = handler.onContext event
                     if ret.redraw == true
                         redraw = true

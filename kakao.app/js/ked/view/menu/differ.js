@@ -14,7 +14,7 @@ import belt from "../../edit/tool/belt.js"
 import prjcts from "../../index/prjcts.js"
 
 import git from "../../util/git.js"
-import fileinfo from "../../util/fileinfo.js"
+import fileutil from "../../util/fileutil.js"
 
 import view from "../base/view.js"
 
@@ -38,6 +38,12 @@ differ = (function ()
         this["show"] = this["show"].bind(this)
         this["onFileLoaded"] = this["onFileLoaded"].bind(this)
         differ.__super__.constructor.call(this,this.screen,null,'differ')
+        this.symbol = {changed:'●',added:'✔',deleted:'✘',renamed:'➜'}
+        this.symbolColors = {'✘':[155,0,0],'✔':[0,200,0],'●':[50,50,50],'➜':[150,150,250]}
+        this.choices.gutter.fgcolor = (function (x, y, c)
+        {
+            return this.symbolColors[c]
+        }).bind(this)
         post.on('differ.status',this.status)
         post.on('differ.file',this.file)
         post.on('differ.history',this.history)
@@ -63,7 +69,7 @@ differ = (function ()
 
     differ.prototype["diff"] = function (diff)
     {
-        var add, added, change, ext, file, items, li, modadd, modded, _76_32_, _77_32_
+        var add, added, change, ext, file, items, li, modadd, modded, _90_32_, _91_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -76,8 +82,8 @@ differ = (function ()
             {
                 continue
             }
-            modded = ((_76_32_=change.mod) != null ? _76_32_ : [])
-            added = ((_77_32_=change.add) != null ? _77_32_ : [])
+            modded = ((_90_32_=change.mod) != null ? _90_32_ : [])
+            added = ((_91_32_=change.add) != null ? _91_32_ : [])
             modadd = modded.concat(added)
             if (_k_.empty(modadd.filter(function (m)
                 {
@@ -130,22 +136,7 @@ differ = (function ()
         {
             var path, sfil, symbol
 
-            symbol = ((function ()
-            {
-                switch (change)
-                {
-                    case 'changed':
-                        return '●'
-
-                    case 'added':
-                        return '◼'
-
-                    case 'deleted':
-                        return '✘'
-
-                }
-
-            }).bind(this))()
+            symbol = this.symbol[change]
             path = slash.relative(file,status.gitDir)
             sfil = new searcherfile(this.screen,`${this.name}_sfil_${this.sfils.length}`)
             sfil.lineIndex = this.choices.items.length
@@ -165,7 +156,7 @@ differ = (function ()
                 {
                     return
                 }
-                counter = fileinfo.swapLastDir(counter,slash.ext(file),ext)
+                counter = fileutil.swapLastDir(counter,slash.ext(file),ext)
                 if (status.files[counter])
                 {
                     return
@@ -183,9 +174,9 @@ differ = (function ()
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             file = list1[_b_]
-            fileHeader('added',file,status)
             if (noCounterpart(file))
             {
+                fileHeader('added',file,status)
                 text = await nfs.read(file)
                 lines = belt.linesForText(text)
                 newl = lines.map(function (l)
@@ -256,16 +247,16 @@ differ = (function ()
                     switch (f.type[0])
                     {
                         case 'D':
-                            return '✘'
+                            return this.symbol.deleted
 
                         case 'A':
-                            return '✔'
+                            return this.symbol.added
 
                         case 'R':
-                            return '➜'
+                            return this.symbol.renamed
 
                         case 'M':
-                            return '▪'
+                            return this.symbol.changed
 
                         default:
                             return '◆'

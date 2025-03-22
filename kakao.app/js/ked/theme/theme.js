@@ -148,14 +148,14 @@ for (key in theme)
     val = theme[key]
     if (_k_.isStr(val))
     {
-        theme[key] = color.values(val)
+        theme[key] = color.vibrant(color.values(val),0.8)
     }
     else
     {
         for (k in val)
         {
             v = val[k]
-            val[k] = color.values(v)
+            val[k] = color.vibrant(color.values(v),0.8)
         }
     }
 }

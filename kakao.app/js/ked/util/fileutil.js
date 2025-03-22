@@ -30,5 +30,5 @@ fileutil = (function ()
     return fileutil
 })()
 
-post.on('file.trash',fileinfo.trash)
-export default file(util);
+post.on('file.trash',fileutil.trash)
+export default fileutil;

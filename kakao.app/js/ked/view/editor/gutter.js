@@ -39,9 +39,12 @@ gutter = (function ()
         return lineno
     }
 
+    gutter.prototype["fgcolor"] = function (x, y)
+    {}
+
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, selected, spansel, y, _60_95_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _65_99_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
@@ -59,10 +62,17 @@ gutter = (function ()
                 col = i
                 if (col < this.cells.rows)
                 {
-                    fg = y === mainCursor[1] ? color.darken(this.color.cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? this.color.cursor_multi : spansel ? this.color.selection : selected ? this.color.selection_line : highlighted ? this.color.highlight : this.color.linenr
-                    if ((selected || hasCursor || highlighted) && !this.cells.screen.t.hasFocus)
+                    if (sc = this.fgcolor(i,y,c))
                     {
-                        fg = color.darken(fg)
+                        fg = sc
+                    }
+                    else
+                    {
+                        fg = y === mainCursor[1] ? color.darken(this.color.cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? this.color.cursor_multi : spansel ? this.color.selection : selected ? this.color.selection_line : highlighted ? this.color.highlight : this.color.linenr
+                        if ((selected || hasCursor || highlighted) && !this.cells.screen.t.hasFocus)
+                        {
+                            fg = color.darken(fg)
+                        }
                     }
                     bg = spansel ? this.color.bg_selected : selected ? this.color.bg_fully_selected : this.color.bg
                     if (selected && !this.cells.screen.t.hasFocus)

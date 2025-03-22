@@ -42,8 +42,6 @@ function macro extends inputchoice
         scx = int @screen.cols/2
         x  = int scx - w/2
         
-        # log "macro.arrange #{x} #{y} #{w} #{h}"
-        
         @input.layout    x+2   y+1      w-4  iz
         @choices.layout  x+1   y+1+ih   w-2  c
         @cells.layout    x     y        w    h

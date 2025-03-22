@@ -13,7 +13,7 @@ use ../../theme  ◆ theme icons
 use ../menu      ◆ choices 
 use              ◆ diritem
 
-import rgxs from '../menu/quicky.json' with { type: "json" }
+import rgxs from './quicky.json' with { type: "json" }
 
 function dirtree extends choices
 

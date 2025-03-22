@@ -20,7 +20,7 @@ import choices from "../menu/choices.js"
 
 import diritem from "./diritem.js"
 
-import rgxs from '../menu/quicky.json' with { type : "json" }
+import rgxs from './quicky.json' with { type : "json" }
 
 dirtree = (function ()
 {

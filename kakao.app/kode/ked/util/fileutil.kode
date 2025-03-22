@@ -38,6 +38,6 @@ function fileutil
     
         log "trash #{path}"
         
-post.on 'file.trash' fileinfo.trash
+post.on 'file.trash' fileutil.trash
 
-export file util
+export fileutil

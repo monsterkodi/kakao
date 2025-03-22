@@ -44,13 +44,13 @@ function text
                         if cs.length == 5 
                             colors[li].push(x:x l:l fg:cs[2..4]) 
                         else
-                            colors[li].push(x:x l:l fg:color.ansi256[cs[2]))
+                            colors[li].push(x:x l:l fg:color.ansi256[cs[2]])
                     48  
                         colors[li] ?= []
                         if cs.length == 5 
                             colors[li].push(x:x l:l bg:cs[2..4]) 
                         else
-                            colors[li].push(x:x l:l bg:color.ansi256[cs[2]))
+                            colors[li].push(x:x l:l bg:color.ansi256[cs[2]])
                     39
                         colors[li] ?= []
                         colors[li].push(x:x l:l fg:-1) 

@@ -185,24 +185,15 @@ mapview = (function ()
                 ch = line[x]
                 if (!_k_.empty(ch) && ch !== ' ')
                 {
+                    f = 0.7
                     if (_k_.in(ch,'0█'))
                     {
                         clss = syntax.getClass(x,y)
                         if (_k_.in('header',clss))
                         {
-                            if (_k_.in('triple',clss))
-                            {
-                                rgb = [27,207,14]
-                            }
-                            else
-                            {
-                                rgb = [9,140,0]
-                            }
-                            charPixels(x,rgb)
-                            continue
+                            f = 2.0
                         }
                     }
-                    f = 0.7
                     rgb = syntax.getColor(x,y)
                     rgb = rgb.map(function (v)
                     {

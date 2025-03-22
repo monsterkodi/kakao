@@ -136,17 +136,11 @@ function mapview extends view
                 
                 if valid ch and ch != ' '
                  
+                    f = 0.7
                     if ch in '0█'
                         clss = syntax.getClass x y
                         if 'header' in clss
-                            if 'triple' in clss
-                                rgb = [27 207 14]
-                            else
-                                rgb = [9 140 0]
-                            charPixels x rgb
-                            continue
-
-                    f = 0.7
+                            f = 2.0
                     rgb = syntax.getColor x y
                     rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
                      

@@ -13,7 +13,7 @@ import belt from "../../edit/tool/belt.js"
 
 import editor from "../../edit/editor.js"
 
-import fileinfo from "../../util/fileinfo.js"
+import fileutil from "../../util/fileutil.js"
 
 import view from "../base/view.js"
 
@@ -91,19 +91,12 @@ fileeditor = (function ()
     {
         var word
 
-        if (!this.hover)
+        word = this.state.textOfSelectionOrWordAtCursor()
+        if (!_k_.empty(word))
         {
-            return
+            word = ` '${word}'`
         }
-        if (event.type === 'press' && event.count === 1)
-        {
-            word = this.state.textOfSelectionOrWordAtCursor()
-            if (!_k_.empty(word))
-            {
-                word = ` '${word}'`
-            }
-            return context.show(event.cell,this.onContextChoice,[`search${word}`,`find${word}`])
-        }
+        return context.show(event.cell,this.onContextChoice,[`search${word}`,`find${word}`,'status'])
     }
 
     fileeditor.prototype["onContextChoice"] = function (choice)
@@ -116,15 +109,25 @@ fileeditor = (function ()
         {
             return post.emit('finder.show',kstr.trim(choice.slice(4, -1)," '"))
         }
+        else
+        {
+            switch (choice)
+            {
+                case 'status':
+                    return post.emit('differ.status')
+
+            }
+
+        }
     }
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _115_50_, _121_50_, _130_50_
+        var counter, currentFile, currext, ext, file, _116_50_, _122_50_, _131_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_115_50_=fileinfo.counterparts[currext]) != null ? _115_50_ : [])
+        var list = ((_116_50_=fileutil.counterparts[currext]) != null ? _116_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -134,26 +137,26 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_121_50_=fileinfo.counterparts[currext]) != null ? _121_50_ : [])
+        var list1 = ((_122_50_=fileutil.counterparts[currext]) != null ? _122_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
             counter = slash.swapExt(currentFile,ext)
-            file = fileinfo.swapLastDir(counter,currext,ext)
+            file = fileutil.swapLastDir(counter,currext,ext)
             if (await nfs.fileExists(file))
             {
                 post.emit('file.open',file)
                 return
             }
         }
-        var list2 = ((_130_50_=fileinfo.counterparts[currext]) != null ? _130_50_ : [])
+        var list2 = ((_131_50_=fileutil.counterparts[currext]) != null ? _131_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
             counter = slash.swapExt(currentFile,ext)
             if (_k_.in(currext,['noon']))
             {
-                file = fileinfo.swapLastDir(counter,'kode','js')
+                file = fileutil.swapLastDir(counter,'kode','js')
                 if (await nfs.fileExists(file))
                 {
                     post.emit('file.open',file)
@@ -162,7 +165,7 @@ fileeditor = (function ()
             }
             if (_k_.in(currext,['json']))
             {
-                file = fileinfo.swapLastDir(counter,'js','kode')
+                file = fileutil.swapLastDir(counter,'js','kode')
                 if (await nfs.fileExists(file))
                 {
                     post.emit('file.open',file)
@@ -175,7 +178,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _189_41_, _241_31_
+        var col, ret, row, start, x, y, _190_41_, _242_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

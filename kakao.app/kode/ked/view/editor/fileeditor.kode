@@ -10,7 +10,7 @@ use ../../../kxk    ▪ post kstr slash
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
-use ../../util      ◆ fileinfo
+use ../../util      ◆ fileutil
 use ../base         ◆ view 
 use ../menu         ◆ context
 use                 ◆ mapscr 
@@ -84,15 +84,13 @@ function fileeditor extends editor
 
     onContext: event =>
     
-        ⮐  if not @hover
-    
-        if event.type == 'press' and event.count == 1
-            word = @state.textOfSelectionOrWordAtCursor()
-            if valid word ➜ word = " '#{word}'"
-            context.show event.cell @onContextChoice [
-                "search#{word}" 
-                "find#{word}" 
-                ]
+        word = @state.textOfSelectionOrWordAtCursor()
+        if valid word ➜ word = " '#{word}'"
+        context.show event.cell @onContextChoice [
+            "search#{word}" 
+            "find#{word}"
+            'status'
+            ]
                 
     onContextChoice: choice =>
 
@@ -100,6 +98,9 @@ function fileeditor extends editor
             post.emit 'searcher.show' kstr.trim(choice[6..-2] " '")
         else if choice.startsWith 'find'
             post.emit 'finder.show' kstr.trim(choice[4..-2] " '")
+        else
+            switch choice
+                'status' ➜ post.emit 'differ.status'
             
     #  ███████   ███████   ███   ███  ███   ███  █████████  ████████  ████████   ████████    ███████   ████████   █████████
     # ███       ███   ███  ███   ███  ████  ███     ███     ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
@@ -112,35 +113,35 @@ function fileeditor extends editor
         currentFile = ked_session.get 'editor▸file'
         currext = slash.ext currentFile
         
-        for ext in fileinfo.counterparts[currext] ? []
+        for ext in fileutil.counterparts[currext] ? []
             
             if ○ nfs.fileExists slash.swapExt(currentFile, ext)
                 post.emit 'file.open' slash.swapExt(currentFile, ext)
                 ⮐ 
 
-        for ext in fileinfo.counterparts[currext] ? []
+        for ext in fileutil.counterparts[currext] ? []
             
             counter = slash.swapExt currentFile, ext
-            file = fileinfo.swapLastDir counter, currext, ext
+            file = fileutil.swapLastDir counter, currext, ext
             
             if ○ nfs.fileExists file
                 post.emit 'file.open' file
                 ⮐ 
 
-        for ext in fileinfo.counterparts[currext] ? []
+        for ext in fileutil.counterparts[currext] ? []
             
             counter = slash.swapExt currentFile, ext
             
             if currext in ['noon']
 
-                file = fileinfo.swapLastDir counter 'kode' 'js'
+                file = fileutil.swapLastDir counter 'kode' 'js'
                 if ○ nfs.fileExists file
                     post.emit 'file.open' file
                     ⮐
                     
             if currext in ['json']
                 
-                file = fileinfo.swapLastDir counter 'js' 'kode'
+                file = fileutil.swapLastDir counter 'js' 'kode'
                 if ○ nfs.fileExists file
                     post.emit 'file.open' file
                     ⮐ 

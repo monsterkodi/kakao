@@ -12,7 +12,7 @@ use ../../../kxk    ▪ post kseg slash
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../index     ◆ prjcts
-use ../../util      ◆ git fileinfo
+use ../../util      ◆ git fileutil
 use ../base         ◆ view
 use                 ◆ searcher searcherfile
 
@@ -22,10 +22,24 @@ function differ extends searcher
     
         super @screen null 'differ'
         
+        @symbol = 
+            changed: '●'
+            added:   '✔'
+            deleted: '✘'
+            renamed: '➜'
+            
+        @symbolColors =
+            '✘': [155 0 0] 
+            '✔': [0 200 0] 
+            '●': [50 50 50] 
+            '➜': [150 150 250] 
+        
+        @choices.gutter.fgcolor = (x y c) => @symbolColors[c]
+        
         post.on 'differ.status'  @status
         post.on 'differ.file'    @file
         post.on 'differ.history' @history
-
+        
     # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
     # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
     # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
@@ -120,11 +134,7 @@ function differ extends searcher
         
         fileHeader = change file status =>
 
-            symbol = switch change
-
-                'changed' ➜ '●'
-                'added'   ➜ '◼'
-                'deleted' ➜ '✘'
+            symbol = @symbol[change]
 
             path = slash.relative file status.gitDir
                 
@@ -151,7 +161,7 @@ function differ extends searcher
             if ext = cpt[slash.ext file]
                 counter = slash.swapExt file ext
                 ⮐  if status.files[counter]
-                counter = fileinfo.swapLastDir counter slash.ext(file) ext 
+                counter = fileutil.swapLastDir counter slash.ext(file) ext 
                 ⮐  if status.files[counter]
             true
     
@@ -161,9 +171,9 @@ function differ extends searcher
 
         for file in status.added
 
-            fileHeader 'added' file status
-            
             if noCounterpart(file)
+            
+                fileHeader 'added' file status
             
                 text =○ nfs.read file
                 lines = belt.linesForText text
@@ -225,10 +235,10 @@ function differ extends searcher
             for f in h.files
                 
                 symbol = switch f.type[0]
-                    'D' ➜ '✘'
-                    'A' ➜ '✔'
-                    'R' ➜ '➜'
-                    'M' ➜ '▪'
+                    'D' ➜ @symbol.deleted
+                    'A' ➜ @symbol.added
+                    'R' ➜ @symbol.renamed
+                    'M' ➜ @symbol.changed
                         ➜ '◆'
             
                 items.push

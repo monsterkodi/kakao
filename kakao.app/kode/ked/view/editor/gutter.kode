@@ -36,6 +36,8 @@ function gutter extends view
         lineno += ' '
         lineno
         
+    fgcolor: x y ->
+        
     draw: ->
         
         mainCursor = @state.mainCursor()
@@ -56,16 +58,19 @@ function gutter extends view
                 col = i
                 if col < @cells.rows
                     
-                    fg = if
-                        y == mainCursor[1] ➜ color.darken(@color.cursor_main @state.hasFocus?1:0.5)
-                        hasCursor          ➜ @color.cursor_multi
-                        spansel            ➜ @color.selection
-                        selected           ➜ @color.selection_line
-                        highlighted        ➜ @color.highlight
-                                           ➜ @color.linenr
-                                           
-                    fg = color.darken fg if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus
-                                                
+                    if sc = @fgcolor i y c
+                        fg = sc
+                    else
+                        fg = if
+                            y == mainCursor[1] ➜ color.darken(@color.cursor_main @state.hasFocus?1:0.5)
+                            hasCursor          ➜ @color.cursor_multi
+                            spansel            ➜ @color.selection
+                            selected           ➜ @color.selection_line
+                            highlighted        ➜ @color.highlight
+                                               ➜ @color.linenr
+                                               
+                        fg = color.darken fg if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus
+                    
                     bg = if 
                         spansel    ➜ @color.bg_selected
                         selected   ➜ @color.bg_fully_selected

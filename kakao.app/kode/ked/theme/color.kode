@@ -79,10 +79,8 @@ class color
         '#bcbcbc' '#c6c6c6' '#d0d0d0' '#dadada' '#e4e4e4' '#eeeeee'
         ]
     
-    @rgb:    c   -> kstr.hexColor c
-    @hex:    c   -> kstr.hexColor c
-    
-    @values: c   -> c is str ? kstr.hexColor(c) : c
+    @hex:    c -> c is arr ? kstr.hexColor(c) : c
+    @values: c -> c is str ? kstr.hexColor(c) : c
     
     @darken: c f=0.5 -> 
     
@@ -99,7 +97,29 @@ class color
             log "brighten #{c}"
             c = color.values c
         c.map((v) -> clamp(0 255 int((1+f)*v)))
-                            
+        
+    @devibrant: c f=0.5 ->
+        
+        ⮐  [128 128 128] if empty c
+        w = (c[0] + c[1] + c[2]) / 3
+        w *= 2 if c[0] * c[1] * c[2] == 0
+        [
+            min(255 parseInt(c[0]*(1-f)+w*f))
+            min(255 parseInt(c[1]*(1-f)+w*f))
+            min(255 parseInt(c[2]*(1-f)+w*f))
+        ]
+
+    @vibrant: c f=0.5 ->
+        
+        ⮐  [128 128 128] if empty c
+        w = (c[0] + c[1] + c[2]) / 3
+        w *= 2 if c[0] * c[1] * c[2] == 0
+        [
+            min(255 parseInt(c[0]*f+w*(1-f)))
+            min(255 parseInt(c[1]*f+w*(1-f)))
+            min(255 parseInt(c[2]*f+w*(1-f)))
+        ]
+        
     @bg_rgb: c -> # background
     
         ⮐  '\x1b[49m' if empty c

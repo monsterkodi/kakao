@@ -9,6 +9,7 @@
 use ../../../kxk ▪ post slash
 use ../../theme  ◆ color theme
 use ../base      ◆ view knob crumbs
+use ../menu      ◆ context
 use              ◆ dirtree
 
 function dircol extends view
@@ -110,9 +111,16 @@ function dircol extends view
 
     onContext: event =>
     
-        ⮐  if not @hover
+        context.show event.cell @onContextChoice [
+            "trash" 
+            ]
+                
+    onContextChoice: choice =>
     
-        log "dircol.onContext #{@hover}" event
+        if current = @dirtree.current()
+
+            switch choice
+                'trash' ➜ post.emit 'file.trash' current.path
     
     # █████████   ███████    ███████    ███████   ███      ████████
     #    ███     ███   ███  ███        ███        ███      ███     
