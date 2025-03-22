@@ -5,7 +5,7 @@
 #    ███     ███   ███  ███   ███  ███            ███   ███  ███       ███         ███   
 #    ███      ███████    ███████   ███████        ███████    ████████  ███████     ███   
 
-use ../../kxk      ▪ kseg
+use ../../kxk      ▪ kseg immutable
 use ../edit/tool   ◆ belt
 
 ▸ tool belt
@@ -42,8 +42,8 @@ use ../edit/tool   ◆ belt
     
         lines = ['123' '45' '6']
     
-        belt.extendLineRangesFromPositionToPosition lines [] [0 0] [0 2] ▸ [[0 0 0 2]]
-        belt.extendLineRangesFromPositionToPosition lines [[0 0 1 0] [2 0 3 0]] [1 1] [0 2] ▸ [[0 0 1 0] [2 0 3 0] [1 1 0 2]]
+        belt.extendLineRangesFromPositionToPosition lines immutable([]) [0 0] [0 2] ▸ [[0 0 0 2]]
+        belt.extendLineRangesFromPositionToPosition lines immutable([[0 0 1 0] [2 0 3 0]]) [1 1] [0 2] ▸ [[0 0 1 0] [2 0 3 0] [1 1 0 2]]
 
     #       000  000   000  00     00  00000000   
     #       000  000   000  000   000  000   000  

@@ -1,8 +1,9 @@
 var toExport = {}
-var lines, result, words
+var lines, posl, result, rngs, words
 
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
+let immutable = kxk.immutable
 
 import belt from "../edit/tool/belt.js"
 
@@ -120,24 +121,26 @@ line2`)
     })
     section("moveLineRangesAndPositionsAtIndicesInDirection", function ()
     {
-        lines = ['a','b','c']
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1],'down'),[['a','c','b'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[2],'down'),[['a','b','c'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1,2],'down'),[['a','b','c'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[0,2],'down'),[['a','b','c'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1],'up'),[['b','a','c'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[2],'up'),[['a','c','b'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[1,2],'up'),[['b','c','a'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[],[0,2],'up'),[['a','b','c'],[],[]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1]],[1],'down'),[['a','c','b'],[],[[0,2]]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'down'),[['a','c','b'],[],[[0,2],[1,2]]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'down'),[['a','c','b'],[],[[0,2],[1,2]]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1]],[1],'up'),[['b','a','c'],[],[[0,0]]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'up'),[['b','a','c'],[],[[0,0],[1,0]]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[1,1]],[1],'up'),[['b','a','c'],[],[[0,0],[1,0]]])
-        lines = ['a','b','c','d','e']
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'up'),[['b','c','d','a','e'],[],[[0,0],[0,1],[0,2]]])
-        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,[],[[0,1],[0,2],[0,3]],[1,2,3],'down'),[['a','e','b','c','d'],[],[[0,2],[0,3],[0,4]]])
+        lines = immutable(['a','b','c'])
+        rngs = immutable([])
+        posl = immutable([])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[1],'down'),[['a','c','b'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[2],'down'),[['a','b','c'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[1,2],'down'),[['a','b','c'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[0,2],'down'),[['a','b','c'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[1],'up'),[['b','a','c'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[2],'up'),[['a','c','b'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[1,2],'up'),[['b','c','a'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,posl,[0,2],'up'),[['a','b','c'],[],[]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1]]),[1],'down'),[['a','c','b'],[],[[0,2]]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1],[1,1]]),[1],'down'),[['a','c','b'],[],[[0,2],[1,2]]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1],[1,1]]),[1],'down'),[['a','c','b'],[],[[0,2],[1,2]]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1]]),[1],'up'),[['b','a','c'],[],[[0,0]]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1],[1,1]]),[1],'up'),[['b','a','c'],[],[[0,0],[1,0]]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1],[1,1]]),[1],'up'),[['b','a','c'],[],[[0,0],[1,0]]])
+        lines = immutable(['a','b','c','d','e'])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1],[0,2],[0,3]]),[1,2,3],'up'),[['b','c','d','a','e'],[],[[0,0],[0,1],[0,2]]])
+        compare(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines,rngs,immutable([[0,1],[0,2],[0,3]]),[1,2,3],'down'),[['a','e','b','c','d'],[],[[0,2],[0,3],[0,4]]])
     })
     section("prepareWordsForCompletion", function ()
     {
@@ -171,14 +174,18 @@ Alice’s,`)
         lines = belt.seglsForText(`◆1
     ◆2
         ◆3`)
-        compare(belt.indentLineRangesAndPositionsAtIndices(lines,[[0,0,1,1]],[[0,1],[1,1]],[0,1]),[[kseg('    ◆1'),kseg('        ◆2'),kseg('        ◆3')],[[4,0,5,1]],[[4,1],[5,1]]])
+        posl = immutable([[0,0,1,1]])
+        rngs = immutable([[0,1],[1,1]])
+        compare(belt.indentLineRangesAndPositionsAtIndices(lines,posl,rngs,[0,1]),[[kseg('    ◆1'),kseg('        ◆2'),kseg('        ◆3')],[[4,0,5,1]],[[4,1],[5,1]]])
     })
     section("deindentLineRangesAndPositionsAtIndices", function ()
     {
         lines = belt.seglsForText(`◆1
     ◆2
         ◆3`)
-        compare(belt.deindentLineRangesAndPositionsAtIndices(lines,[[0,1,1,2]],[[0,1],[1,2]],[1,2]),[[kseg('◆1'),kseg('◆2'),kseg('    ◆3')],[[0,1,0,2]],[[0,1],[0,2]]])
+        posl = immutable([[0,1,1,2]])
+        rngs = immutable([[0,1],[1,2]])
+        compare(belt.deindentLineRangesAndPositionsAtIndices(lines,posl,rngs,[1,2]),[[kseg('◆1'),kseg('◆2'),kseg('    ◆3')],[[0,1,0,2]],[[0,1],[0,2]]])
     })
 }
 toExport["tool edit"]._section_ = true

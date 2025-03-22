@@ -351,9 +351,9 @@ edit = (function ()
         {
             return [lines,rngs,posl]
         }
-        newLines = _k_.copy(lines)
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newLines = lines.asMutable()
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         var _a_ = ((function ()
         {
             switch (dir)
@@ -425,9 +425,9 @@ edit = (function ()
         {
             return [lines,rngs,posl]
         }
-        newLines = _k_.copy(lines)
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newLines = lines.asMutable()
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         var _a_ = ((function ()
         {
             switch (dir)
@@ -498,9 +498,9 @@ edit = (function ()
         {
             return [lines,rngs,posl]
         }
-        newLines = _k_.copy(lines)
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newLines = lines.asMutable()
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         comStart = '#'
         minIndent = Infinity
         var list = _k_.list(indices)
@@ -548,9 +548,9 @@ edit = (function ()
         {
             return [lines,rngs,posl]
         }
-        newLines = _k_.copy(lines)
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newLines = lines.asMutable()
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         console.log(`todo: toggleCommentTypes ${indices}`)
         return [newLines,newRngs,newPosl]
     }
@@ -564,8 +564,8 @@ edit = (function ()
             return [lines,rngs,posl]
         }
         newLines = lines
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         var list = _k_.list(indices)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -609,8 +609,8 @@ edit = (function ()
             return [lines,rngs,posl]
         }
         newLines = lines
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         var list = _k_.list(indices)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -649,7 +649,7 @@ edit = (function ()
         {
             return [this.rangeFromStartToEnd(start,pos)]
         }
-        newRngs = _k_.copy(rngs)
+        newRngs = rngs.asMutable()
         if (rng = this.rangeInRangesTouchingPos(newRngs,start))
         {
             if (this.isPosAfterRange(pos,rng))
@@ -674,8 +674,8 @@ edit = (function ()
     {
         var ind, line, nc, newPosl, newRngs, pos, rng
 
-        newRngs = _k_.copy(rngs)
-        newPosl = _k_.copy(posl)
+        newRngs = rngs.asMutable()
+        newPosl = posl.asMutable()
         var list = _k_.list(newPosl)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {

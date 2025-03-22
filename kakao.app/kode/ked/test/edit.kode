@@ -6,7 +6,7 @@
 00000000  0000000    000     000   
 ###
 
-use ../../kxk    ▪ kseg
+use ../../kxk    ▪ kseg immutable
 use ../edit/tool ◆ belt
 
 ▸ tool edit
@@ -201,30 +201,32 @@ use ../edit/tool ◆ belt
     
     ▸ moveLineRangesAndPositionsAtIndicesInDirection
     
-        lines = ['a' 'b' 'c']
+        lines = immutable ['a' 'b' 'c']
+        rngs  = immutable []
+        posl  = immutable []
     
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [1] 'down' ▸ [['a' 'c' 'b'] [] []]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [2] 'down' ▸ [['a' 'b' 'c'] [] []]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [1 2] 'down' ▸ [['a' 'b' 'c'] [] []]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [0 2] 'down' ▸ [['a' 'b' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'down' ▸ [['a' 'c' 'b'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'down' ▸ [['a' 'b' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'down' ▸ [['a' 'b' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'down' ▸ [['a' 'b' 'c'] [] []]
 
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [1] 'up' ▸ [['b' 'a' 'c'] [] []]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [2] 'up' ▸ [['a' 'c' 'b'] [] []]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [1 2] 'up' ▸ [['b' 'c' 'a'] [] []]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [] [0 2] 'up' ▸ [['a' 'b' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'up' ▸ [['b' 'a' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'up' ▸ [['a' 'c' 'b'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'up' ▸ [['b' 'c' 'a'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'up' ▸ [['a' 'b' 'c'] [] []]
 
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1]] [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2]]]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1] [1 1]] [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1] [1 1]] [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
 
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1]] [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0]]]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1] [1 1]] [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1] [1 1]] [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
         
-        lines = ['a' 'b' 'c' 'd' 'e']
+        lines = immutable ['a' 'b' 'c' 'd' 'e']
         
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1] [0 2] [0 3]] [1 2 3] 'up' ▸ [['b' 'c' 'd' 'a' 'e'] [] [[0 0] [0 1] [0 2]]]
-        belt.moveLineRangesAndPositionsAtIndicesInDirection lines [] [[0 1] [0 2] [0 3]] [1 2 3] 'down' ▸ [['a' 'e' 'b' 'c' 'd'] [] [[0 2] [0 3] [0 4]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [0 2] [0 3]]) [1 2 3] 'up'   ▸ [['b' 'c' 'd' 'a' 'e'] [] [[0 0] [0 1] [0 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [0 2] [0 3]]) [1 2 3] 'down' ▸ [['a' 'e' 'b' 'c' 'd'] [] [[0 2] [0 3] [0 4]]]
         
     #  0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
     # 000       000   000  000   000  000   000  000      000          000     000  000   000  0000  000  
@@ -279,8 +281,9 @@ use ../edit/tool ◆ belt
                 ◆2
                     ◆3
             """
-            
-        belt.indentLineRangesAndPositionsAtIndices lines [[0 0 1 1]] [[0 1] [1 1]] [0 1] ▸ [[kseg('    ◆1') kseg('        ◆2') kseg('        ◆3')] [[4 0 5 1]] [[4 1] [5 1]]]
+        posl = immutable [[0 0 1 1]]
+        rngs = immutable [[0 1] [1 1]]
+        belt.indentLineRangesAndPositionsAtIndices lines posl rngs [0 1] ▸ [[kseg('    ◆1') kseg('        ◆2') kseg('        ◆3')] [[4 0 5 1]] [[4 1] [5 1]]]
             
     ▸ deindentLineRangesAndPositionsAtIndices
     
@@ -290,7 +293,8 @@ use ../edit/tool ◆ belt
                 ◆2
                     ◆3
             """
-            
-        belt.deindentLineRangesAndPositionsAtIndices lines [[0 1 1 2]] [[0 1] [1 2]] [1 2] ▸ [[kseg('◆1') kseg('◆2') kseg('    ◆3')] [[0 1 0 2]] [[0 1] [0 2]]]
+        posl = immutable [[0 1 1 2]] 
+        rngs = immutable [[0 1] [1 2]]
+        belt.deindentLineRangesAndPositionsAtIndices lines posl rngs [1 2] ▸ [[kseg('◆1') kseg('◆2') kseg('    ◆3')] [[0 1 0 2]] [[0 1] [0 2]]]
         
      

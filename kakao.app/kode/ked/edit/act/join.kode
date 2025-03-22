@@ -20,8 +20,8 @@ export
         
         @moveCursorsToEndOfLines()
         
-        idxs = belt.lineIndicesForPositions @allCursors()
-        rngs = belt.rangesForJoiningLines @allLines() idxs
+        idxs = belt.lineIndicesForPositions @s.cursors
+        rngs = belt.rangesForJoiningLines @s.lines idxs
 
         @deleteRanges rngs @allCursors()
         
@@ -33,11 +33,9 @@ export
 
     moveSelectionOrCursorLines: dir ->
         
-        selections = @allSelections()
-        cursors    = @allCursors() 
-        indices    = belt.lineIndicesForRangesOrPositions selections cursors
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
         
-        [lines selections cursors] = belt.moveLineRangesAndPositionsAtIndicesInDirection @allLines() selections cursors indices dir
+        [lines selections cursors] = belt.moveLineRangesAndPositionsAtIndicesInDirection @s.lines @s.selections @s.cursors indices dir
         
         @setLines lines
         @setSelections selections
@@ -51,12 +49,9 @@ export
 
     cloneSelectionAndCursorLines: dir ->
         
-        selections = @allSelections()
-        cursors    = @allCursors() 
-        lines      = @allLines()
-        blocks     = belt.blockRangesForRangesAndPositions lines selections cursors
+        blocks = belt.blockRangesForRangesAndPositions @s.lines @s.selections @s.cursors
         
-        [lines selections cursors] = belt.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection lines blocks selections cursors dir
+        [lines selections cursors] = belt.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection @s.lines blocks @s.selections @s.cursors dir
         
         @setLines lines
         @setSelections selections
@@ -70,11 +65,9 @@ export
 
     toggleCommentAtSelectionOrCursorLines: ->
 
-        selections = @allSelections()
-        cursors    = @allCursors() 
-        indices    = belt.lineIndicesForRangesOrPositions selections cursors
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
 
-        [lines selections cursors] = belt.toggleCommentsInLineRangesAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.toggleCommentsInLineRangesAtIndices @s.lines @s.selections @s.cursors indices
                 
         @setLines lines        
         @setSelections selections
@@ -82,11 +75,9 @@ export
 
     toggleCommentTypeAtSelectionOrCursorLines: ->
 
-        selections = @allSelections()
-        cursors    = @allCursors() 
-        indices    = belt.lineIndicesForRangesOrPositions selections cursors
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
 
-        [lines selections cursors] = belt.toggleCommentTypesInLineRangesAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.toggleCommentTypesInLineRangesAtIndices @s.lines @s.selections @s.cursors indices
                 
         @setLines lines        
         @setSelections selections

@@ -43,7 +43,7 @@ export
 
     insertAsciiHeaderForSelectionOrWordAtCursor: ->
 
-        [lines cursors selections] = belt.insertAsciiHeaderForPositionsAndRanges @allLines() @allCursors() @allSelections()
+        [lines cursors selections] = belt.insertAsciiHeaderForPositionsAndRanges @s.lines @s.cursors @s.selections
         
         @clearHighlights()
         @setLines      lines
@@ -58,11 +58,8 @@ export
 
     surroundSelection: trigger pair ->
         
-        log "surroundSelection #{trigger} #{pair}"
-    
-        [lines posl] = belt.insertSurroundAtRanges @allLines() @allSelections() trigger pair
+        [lines posl] = belt.insertSurroundAtRanges @s.lines @s.selections trigger pair
 
-        # @clearHighlights()
         @setLines      lines
         @setSelections []
         @setCursors    posl

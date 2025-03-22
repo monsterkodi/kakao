@@ -190,7 +190,7 @@ export
     
     moveCursorsAndSelect: dir opt ->
         
-        [selections cursors] = belt.extendLineRangesByMovingPositionsInDirection @allLines() @allSelections() @allCursors() dir opt
+        [selections cursors] = belt.extendLineRangesByMovingPositionsInDirection @s.lines @s.selections @s.cursors dir opt
         
         @setSelections selections
         @setCursors cursors adjust:'topBotDelta'

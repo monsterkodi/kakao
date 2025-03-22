@@ -230,7 +230,7 @@ export default {allCursors:function ()
 {
     var cursors, selections
 
-    var _f_ = belt.extendLineRangesByMovingPositionsInDirection(this.allLines(),this.allSelections(),this.allCursors(),dir,opt); selections = _f_[0]; cursors = _f_[1]
+    var _f_ = belt.extendLineRangesByMovingPositionsInDirection(this.s.lines,this.s.selections,this.s.cursors,dir,opt); selections = _f_[0]; cursors = _f_[1]
 
     this.setSelections(selections)
     return this.setCursors(cursors,{adjust:'topBotDelta'})

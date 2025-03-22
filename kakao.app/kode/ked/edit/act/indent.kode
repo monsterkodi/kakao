@@ -20,11 +20,9 @@ export
         
         ⮐  if empty @s.selections
         
-        selections = @allSelections()
-        cursors    = @allCursors() 
-        indices    = belt.lineIndicesForRangesOrPositions selections cursors
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
         
-        [lines selections cursors] = belt.indentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.indentLineRangesAndPositionsAtIndices @allLines() @s.selections @s.cursors indices
         
         @setLines lines
         @setSelections selections
@@ -38,11 +36,9 @@ export
     
     deindentSelectedOrCursorLines: ->
         
-        selections = @allSelections()
-        cursors    = @allCursors() 
-        indices    = belt.lineIndicesForRangesOrPositions selections cursors
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
         
-        [lines selections cursors] = belt.deindentLineRangesAndPositionsAtIndices @allLines() selections cursors indices
+        [lines selections cursors] = belt.deindentLineRangesAndPositionsAtIndices @allLines() @s.selections @s.cursors indices
         
         @setLines lines
         @setSelections selections

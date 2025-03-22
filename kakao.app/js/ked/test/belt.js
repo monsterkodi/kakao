@@ -5,6 +5,7 @@ var c, cells, l, line, lines, pairs, posl, rect, segls, spans, text
 
 import kxk from "../../kxk.js"
 let kseg = kxk.kseg
+let immutable = kxk.immutable
 
 import belt from "../edit/tool/belt.js"
 
@@ -52,8 +53,8 @@ XYZ`)
     section("extendLineRangesToPosition", function ()
     {
         lines = ['123','45','6']
-        compare(belt.extendLineRangesFromPositionToPosition(lines,[],[0,0],[0,2]),[[0,0,0,2]])
-        compare(belt.extendLineRangesFromPositionToPosition(lines,[[0,0,1,0],[2,0,3,0]],[1,1],[0,2]),[[0,0,1,0],[2,0,3,0],[1,1,0,2]])
+        compare(belt.extendLineRangesFromPositionToPosition(lines,immutable([]),[0,0],[0,2]),[[0,0,0,2]])
+        compare(belt.extendLineRangesFromPositionToPosition(lines,immutable([[0,0,1,0],[2,0,3,0]]),[1,1],[0,2]),[[0,0,1,0],[2,0,3,0],[1,1,0,2]])
     })
     section("jumpDelta", function ()
     {

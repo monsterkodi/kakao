@@ -10,10 +10,8 @@ export default {indentSelectedLines:function ()
     {
         return
     }
-    selections = this.allSelections()
-    cursors = this.allCursors()
-    indices = belt.lineIndicesForRangesOrPositions(selections,cursors)
-    var _a_ = belt.indentLineRangesAndPositionsAtIndices(this.allLines(),selections,cursors,indices); lines = _a_[0]; selections = _a_[1]; cursors = _a_[2]
+    indices = belt.lineIndicesForRangesOrPositions(this.s.selections,this.s.cursors)
+    var _a_ = belt.indentLineRangesAndPositionsAtIndices(this.allLines(),this.s.selections,this.s.cursors,indices); lines = _a_[0]; selections = _a_[1]; cursors = _a_[2]
 
     this.setLines(lines)
     this.setSelections(selections)
@@ -22,10 +20,8 @@ export default {indentSelectedLines:function ()
 {
     var cursors, indices, lines, selections
 
-    selections = this.allSelections()
-    cursors = this.allCursors()
-    indices = belt.lineIndicesForRangesOrPositions(selections,cursors)
-    var _b_ = belt.deindentLineRangesAndPositionsAtIndices(this.allLines(),selections,cursors,indices); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
+    indices = belt.lineIndicesForRangesOrPositions(this.s.selections,this.s.cursors)
+    var _b_ = belt.deindentLineRangesAndPositionsAtIndices(this.allLines(),this.s.selections,this.s.cursors,indices); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
 
     this.setLines(lines)
     this.setSelections(selections)
