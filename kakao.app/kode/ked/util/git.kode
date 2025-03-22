@@ -55,12 +55,15 @@ function git
         cmd = '/usr/bin/git ' + args
         # log "#{r3 'git.exec'} #{b6 cmd}" opt 
         new Promise (resolve reject) ->
-            child_process.exec cmd opt (err stdout stderr) ->
-                # log "git.exec err:#{err} stdout:#{stdout} stderr:#{stderr}"
-                if empty err
-                    resolve stdout
-                else
-                    reject err
+            try
+                child_process.exec cmd opt (err stdout stderr) ->
+                    # log "git.exec err:#{err} stdout:#{stdout} stderr:#{stderr}"
+                    if empty err
+                        resolve stdout
+                    else
+                        reject err
+            catch err
+                reject err
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  
     # 000          000     000   000     000     000   000  000       
