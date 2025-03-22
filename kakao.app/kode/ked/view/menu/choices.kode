@@ -79,11 +79,11 @@ function choices extends editor
         @items.push item
         @state.addLine item.line item.ext
         
-    append: items ext ->
+    append: items ext key='line'->
     
         @items = @items.concat items
         @fuzzied = @items # 𝜏𝖍𝚒𝖘 𝚒𝖘 ⟒ɼ⊚∩𝚐! 𝚒𝜏ϵ⫙𝖘 𝖘𝖍⊚𝓊⟅𝒹 𝔟ϵ ɼϵϝ𝓊𝓏𝓏𝚒ϵ𝒹 𝚒∩𝖘𝜏ϵ𝕒𝒹
-        @state.appendLines items.map((i) -> i.line) ext
+        @state.appendLines items.map((i) -> i[key]) ext
                 
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  

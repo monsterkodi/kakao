@@ -98,13 +98,13 @@ choices = (function ()
         return this.state.addLine(item.line,item.ext)
     }
 
-    choices.prototype["append"] = function (items, ext)
+    choices.prototype["append"] = function (items, ext, key = 'line')
     {
         this.items = this.items.concat(items)
         this.fuzzied = this.items
         return this.state.appendLines(items.map(function (i)
         {
-            return i.line
+            return i[key]
         }),ext)
     }
 

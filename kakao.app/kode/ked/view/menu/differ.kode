@@ -130,16 +130,12 @@ function differ extends searcher
         
         fileHeader = change file status =>
 
-            # ⮐  if slash.ext(file) in IGNORE_FILE_EXTS
-
             symbol = switch change
 
                 'changed' ➜ '●'
                 'added'   ➜ '◼'
                 'deleted' ➜ '✘'
 
-            # log "differ.status.fileHeader #{symbol} #{file}"
-            
             path = slash.relative file status.gitDir
                 
             sfil = new searcherfile @screen "#{@name}_sfil_#{@sfils.length}"
@@ -171,14 +167,13 @@ function differ extends searcher
     
         for file in status.deleted
 
-            if true # slash.ext(file) in SOURCE_FILE_EXTS
-                fileHeader 'deleted' file status
+            fileHeader 'deleted' file status
 
         for file in status.added
 
             fileHeader 'added' file status
             
-            if noCounterpart(file) #slash.ext(file) in SOURCE_FILE_EXTS
+            if noCounterpart(file)
             
                 text =○ nfs.read file
                 lines = belt.linesForText text
@@ -186,7 +181,6 @@ function differ extends searcher
                 diff  = file:file changes:[line:1 add:newl]
                 @diff diff
 
-        # for file in status.changed.filter((f) -> slash.ext(f) in SOURCE_FILE_EXTS)
         for file in status.changed
             
             fileHeader 'changed' file status
@@ -215,11 +209,84 @@ function differ extends searcher
             @show()
             @diff diff
             
+    # ███   ███  ███   ███████  █████████   ███████   ████████   ███   ███
+    # ███   ███  ███  ███          ███     ███   ███  ███   ███   ███ ███ 
+    # █████████  ███  ███████      ███     ███   ███  ███████      █████  
+    # ███   ███  ███       ███     ███     ███   ███  ███   ███     ███   
+    # ███   ███  ███  ███████      ███      ███████   ███   ███     ███   
+
     history: ○=>
-    
-        history =○ git.history()
         
-        log 'differ.history' history
+        history =○ git.history()
+
+        ⮐  if empty history
+        
+        @show()
+        
+        currentFile = ked_session.get 'editor▸file'
+        gitDir =○ git.dir currentFile
+        
+        items = []
+        for h in history 
+            items.push 
+                line:   ' ● ' + h.msg
+                commit: h.commit
+
+            for f in h.files
+                
+                symbol = switch f.type[0]
+                    'D' ➜ '✘'
+                    'A' ➜ '✔'
+                    'R' ➜ '➜'
+                    'M' ➜ '▪'
+                        ➜ '◆'
+            
+                items.push
+                    line:  '      ' + symbol + ' ' + f.path
+                    path:   slash.path(gitDir f.path)
+                    commit: h.commit
+        
+        @choices.append items
+        post.emit 'redraw'
+        
+    # ████████    ███████   █████████   ███████  ███   ███
+    # ███   ███  ███   ███     ███     ███       ███   ███
+    # ████████   █████████     ███     ███       █████████
+    # ███        ███   ███     ███     ███       ███   ███
+    # ███        ███   ███     ███      ███████  ███   ███
+
+    patch: rev ○=>
+    
+        patch =○ git.patch rev
+        
+        ⮐  if empty patch
+        
+        log "rev #{rev}" patch
+        
+        currentFile = ked_session.get 'editor▸file'
+        gitDir =○ git.dir currentFile
+        
+        items = []
+        
+        for p in patch
+        
+            file = slash.path gitDir p.tgtfile[2..]
+        
+            log "file #{file}"
+        
+            items.push 
+                line:   ' ● ' + p.tgtfile[2..]
+                path:   file
+                
+            if p.changes is arr
+                for c in p.changes
+                    for l in c.changedlines
+                        items.push
+                            line:   l.type + ' ' + l.line
+                            path:   file
+
+        @choices.set items 'line'
+        post.emit 'redraw'
     
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -228,8 +295,13 @@ function differ extends searcher
     # 000   000  000        000        0000000     000     
         
     apply: choice ->
+    
+        if valid choice
         
-        ⮐  @emitFileOpen(choice) if choice?.path
+            ⮐  @emitFileOpen(choice) if choice.path
+            ⮐  @patch(choice.commit) if choice.commit
+        
+        log "differ.apply?" choice
         
         super choice
         
@@ -241,8 +313,6 @@ function differ extends searcher
 
     commit: msg ○=>
     
-        log "commit #{msg}"
-        
         currentFile = ked_session.get 'editor▸file'
         gitDir =○ git.dir currentFile
         
@@ -253,7 +323,7 @@ function differ extends searcher
         out +=○ git.exec "commit -m \"#{msg}\"" cwd:gitDir
         out +=○ git.exec "push -q"              cwd:gitDir
 
-        log '▸' out
+        log r4 "differ.commit\n#{b7 out}" 
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
     # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
