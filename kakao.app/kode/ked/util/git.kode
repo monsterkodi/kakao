@@ -1,0 +1,246 @@
+###
+ 0000000   000  000000000
+000        000     000   
+000  0000  000     000   
+000   000  000     000   
+ 0000000   000     000   
+###
+
+use ../../kxk ▪ slash post kermit
+use ../../kxk ◆ nfs
+
+use child_process
+
+function git
+
+    @statusRequests: {}
+    @statusCache: {}
+
+    @: ->
+        
+        @gitDirs = []
+        
+        post.on 'project.indexed' @onProjectIndexed
+        post.on 'file.change'     @onFileChange
+        
+    onProjectIndexed: prjPath ○=>
+        
+        gitDir =○ git.dir prjPath
+        
+        # log "git.onProjectIndexed #{prjPath} #{gitDir}"
+        
+        if valid gitDir and gitDir not in @gitDirs
+            @gitDirs.push slash.path(gitDir '.git')
+                
+    onFileChange: info =>
+
+        # log 'git.fileChange' info
+
+        for gitDir in @gitDirs
+            if info.path.startsWith gitDir
+                if slash.dir(info.path).endsWith('.git/refs/heads')
+                    if slash.name(info.path) in ['master' 'main']
+                        git.status gitDir
+                        ⮐ 
+
+    @dir: path ○-> ○ nfs.git path
+    
+    # 00000000  000   000  00000000   0000000  
+    # 000        000 000   000       000       
+    # 0000000     00000    0000000   000       
+    # 000        000 000   000       000       
+    # 00000000  000   000  00000000   0000000  
+    
+    @exec: args opt ○->
+        cmd = '/usr/bin/git ' + args
+        # log "#{r3 'git.exec'} #{b6 cmd}" opt 
+        new Promise (resolve reject) ->
+            child_process.exec cmd opt (err stdout stderr) ->
+                # log "git.exec err:#{err} stdout:#{stdout} stderr:#{stderr}"
+                if empty err
+                    resolve stdout
+                else
+                    reject err
+        
+    #  0000000  000000000   0000000   000000000  000   000   0000000  
+    # 000          000     000   000     000     000   000  000       
+    # 0000000      000     000000000     000     000   000  0000000   
+    #      000     000     000   000     000     000   000       000  
+    # 0000000      000     000   000     000      0000000   0000000   
+    
+    @status: file ○->
+        
+        log 'git.status' file
+        
+        gitDir =○ git.dir file
+        
+        status =
+            gitDir:  gitDir
+            changed: []
+            deleted: []
+            added:   []
+            files:   {}
+        
+        ⮐  status if empty gitDir or @statusRequests[gitDir]
+        
+        @statusRequests[gitDir] = true
+        
+        gitStatus =○ git.exec 'status --porcelain' cwd:gitDir
+        
+        delete @statusRequests[gitDir]
+        
+        ⮐  status if gitStatus.startsWith 'fatal:'
+        
+        lines = gitStatus.split '\n'
+                
+        dirSet = new Set
+        
+        while line = lines.shift()
+            rel    = line.slice 3
+            file   = slash.path gitDir, rel
+            while (rel = slash.dir rel) != ''
+                dirSet.add rel
+                
+            header = line.slice 0,2
+            switch header
+                ' D' ➜ status.deleted.push file
+                'MM'
+                ' M' ➜ status.changed.push file
+                '??' ➜ status.added  .push file
+                
+        status.dirs = Array.from(dirSet).map (d) -> slash.path(gitDir d)
+        
+        for key in ['changed' 'added' 'deleted']
+            for file in status[key]
+                status.files[file] = key
+        
+        post.emit 'git.status' status
+        @statusCache[gitDir] = status
+                
+        status
+
+    # 0000000    000  00000000  00000000  
+    # 000   000  000  000       000       
+    # 000   000  000  000000    000000    
+    # 000   000  000  000       000       
+    # 0000000    000  000       000       
+    
+    @diff: file ○->
+        
+        gitDir =○ git.dir file
+        
+        diff   =○ git.exec "--no-pager diff --no-color -U0 --ignore-blank-lines #{file}" cwd:gitDir 
+        
+        status = file:file changes:[]
+        lines  = diff.split '\n'
+    
+        while line = lines.shift()
+    
+            if line.startsWith '@@'
+                [x before after] = line.split ' '
+                afterSplit = after.split ','
+    
+                numOld = parseInt(before.split(',')[1] ? 1)
+                numNew = parseInt(afterSplit[1] ? 1)
+                change = line: parseInt(afterSplit[0])
+    
+                oldLines = []
+                for i in 0...numOld
+                    oldLines.push lines.shift().slice(1)
+                lines.shift() while first(lines)[0] == '\\'
+    
+                newLines = []
+                for i in 0...numNew
+                    newLines.push lines.shift().slice(1)
+                lines.shift() while first(lines)[0] == '\\'
+    
+                change.old = oldLines if oldLines.length
+                change.new = newLines if newLines.length
+    
+                if numOld and numNew
+                    change.mod = []
+                    for i in 0...Math.min(numOld, numNew)
+                        change.mod.push old:change.old[i] new:change.new[i]
+    
+                if numOld > numNew
+                    change.del = []
+                    for i in numNew...numOld
+                        change.del.push old:change.old[i]
+    
+                else if numNew > numOld
+                    change.add = []
+                    for i in numOld...numNew
+                        change.add.push new:change.new[i]
+    
+                status.changes.push change
+    
+        status
+        
+    # 00000000    0000000   000000000   0000000  000   000  
+    # 000   000  000   000     000     000       000   000  
+    # 00000000   000000000     000     000       000000000  
+    # 000        000   000     000     000       000   000  
+    # 000        000   000     000      0000000  000   000  
+    
+    @patch: rev ○->
+        
+        currentFile = ked_session.get 'editor▸file'
+        gitDir =○ git.dir currentFile
+        
+        patch =○ git.exec "--no-pager diff #{rev}^..#{rev} --no-color -U0 --ignore-blank-lines" cwd:gitDir 
+        patch = '\n' + patch
+        
+        # log '▸▸▸ patch' patch
+        
+        patches = []
+        for diffgit in patch.split '\ndiff --git '
+            continue if empty diffgit
+            # log 'diffgit' diffgit
+            try
+                r = kermit """
+                    diff --git ●path
+                    index ●refs
+                    --- ●srcfile
+                    +++ ●tgtfile
+                    ■changes
+                        @@ ●lineinfo @@
+                        ■changedlines
+                            ●type ○line
+                    """ 'diff --git ' + diffgit
+                patches = patches.concat r
+            catch err
+                # error err
+                true
+
+        # log '◂◂◂ patches' patches               
+        patches
+
+    # 000   000  000   0000000  000000000   0000000   00000000   000   000  
+    # 000   000  000  000          000     000   000  000   000   000 000   
+    # 000000000  000  0000000      000     000   000  0000000      00000    
+    # 000   000  000       000     000     000   000  000   000     000     
+    # 000   000  000  0000000      000      0000000   000   000     000     
+    
+    @history: path ○->
+        
+        args = ["--no-pager" "log" "--name-status" "--no-color" '.']
+        
+        if path
+            args.push path
+            cwd = slash.dir path
+        else
+            currentFile = ked_session.get 'editor▸file'
+            cwd =○ git.dir currentFile
+            
+        history =○ git.exec args.join(' ') cwd:cwd
+
+        kermit """
+            commit  ●commit
+            Author: ●author
+            Date:   ●date
+            ●msg
+            ■files
+                ●type ●path
+            """ history
+        
+export git

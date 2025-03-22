@@ -19,6 +19,7 @@ import session from "./util/session.js"
 import help from "./util/help.js"
 import frecent from "./util/frecent.js"
 import watcher from "./util/watcher.js"
+import git from "./util/git.js"
 
 import belt from "./edit/tool/belt.js"
 
@@ -33,11 +34,12 @@ import fileeditor from "./view/editor/fileeditor.js"
 import screen from "./view/screen/screen.js"
 import ttio from "./view/screen/ttio.js"
 
+import context from "./view/menu/context.js"
 import menu from "./view/menu/menu.js"
 import macro from "./view/menu/macro.js"
 import finder from "./view/menu/finder.js"
 import searcher from "./view/menu/searcher.js"
-import context from "./view/menu/context.js"
+import differ from "./view/menu/differ.js"
 
 import browse from "./view/colmns/browse.js"
 import dircol from "./view/colmns/dircol.js"
@@ -87,6 +89,7 @@ ked [file]
         this.t = new ttio
         this.screen = new screen(this.t)
         this.indexer = new indexer
+        this.git = new git
         this.menu = new menu(this.screen)
         this.macro = new macro(this.screen)
         this.quicky = new quicky(this.screen)
@@ -96,6 +99,7 @@ ked [file]
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.finder = new finder(this.screen,this.editor.state)
         this.searcher = new searcher(this.screen,this.editor.state)
+        this.differ = new differ(this.screen)
         this.status = new status(this.screen,this.editor.state)
         this.context = new context(this.screen)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
@@ -113,9 +117,9 @@ ked [file]
         post.on('focus',function (name)
         {})
         this.contextHandlers = [this.editor,this.dircol,this.funcol]
-        this.mouseHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
-        this.wheelHandlers = [this.finder,this.searcher,this.quicky,this.browse,this.macro,this.editor,this.dircol,this.funcol]
-        this.keyHandlers = [this.context,this.finder,this.searcher,this.quicky,this.browse,this.menu,this.macro,this.editor,this.dircol,this.funcol]
+        this.mouseHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
+        this.wheelHandlers = [this.finder,this.searcher,this.differ,this.quicky,this.browse,this.macro,this.editor,this.dircol,this.funcol]
+        this.keyHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.menu,this.macro,this.editor,this.dircol,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -169,7 +173,7 @@ ked [file]
         {
             return
         }
-        if (_k_.empty(this.currentFile))
+        if (_k_.empty(this.currentFile) && _k_.empty(this.loadingFile))
         {
             if (file = ked_session.get("editor▸file"))
             {
@@ -227,7 +231,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _193_10_
+        var _197_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -258,7 +262,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _218_22_
+        var _222_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -332,7 +336,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, segls, start, text, _337_22_
+        var absFile, colors, exists, segls, start, text, _341_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -590,7 +594,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _496_22_
+        var mcw, _500_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)
@@ -644,6 +648,7 @@ ked [file]
         this.browse.draw()
         this.finder.draw()
         this.searcher.draw()
+        this.differ.draw()
         this.context.draw()
         this.screen.render()
         return this.status.time = process.hrtime(start)[1]

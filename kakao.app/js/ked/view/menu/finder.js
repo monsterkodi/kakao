@@ -42,14 +42,21 @@ finder = (function ()
 
     finder.prototype["lineno"] = function (y)
     {
-        var pad
+        var pad, _46_43_
 
         pad = this.choices.gutter.cells.cols - 1
         if ((0 <= y && y < this.choices.fuzzied.length))
         {
             if (this.choices.fuzzied[y].type === 'file')
             {
-                return _k_.lpad(pad,'●') + ' '
+                if ((this.choices.fuzzied[y].line != null))
+                {
+                    return _k_.lpad(pad,this.choices.fuzzied[y].line) + ' '
+                }
+                else
+                {
+                    return _k_.lpad(pad,'●') + ' '
+                }
             }
             if (_k_.isNum(this.choices.fuzzied[y].row))
             {
@@ -75,7 +82,7 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _109_87_
+        var cursorLine, front, span, _112_87_
 
         if (_k_.empty(text))
         {
@@ -105,10 +112,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_109_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_112_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _109_87_ : 0))
+            })) != null ? _112_87_ : 0))
         }
         else
         {

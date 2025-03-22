@@ -325,12 +325,12 @@ function TTIO extends events
     parseCsi: csi =>
         
         switch csi
-            'H'     ➜ ⮐  @keyEventForCombo('home')
-            'F'     ➜ ⮐  @keyEventForCombo('end')
-            '3~'    ➜ ⮐  @keyEventForCombo('entf')
-            '5~'    ➜ ⮐  @keyEventForCombo('pageup')
-            '6~'    ➜ ⮐  @keyEventForCombo('pagedown')
-            'Z'     ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
+            'H'  ➜ ⮐  @keyEventForCombo('home')
+            'F'  ➜ ⮐  @keyEventForCombo('end')
+            '3~' ➜ ⮐  @keyEventForCombo('entf')
+            '5~' ➜ ⮐  @keyEventForCombo('pageup')
+            '6~' ➜ ⮐  @keyEventForCombo('pagedown')
+            'Z'  ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
                     
         null
         
@@ -346,10 +346,10 @@ function TTIO extends events
             code = esc.charCodeAt 0
             if 1 <= code <= 26
                 key = String.fromCharCode code + 96
-                ⮐ @keyEventForCombo "alt+cmd+#{key}"
-            ⮐ if esc == '\\' # esc\ end of kitty graphics message
+                ⮐  @keyEventForCombo "alt+cmd+#{key}"
+            ⮐  if esc == '\\' # esc\ end of kitty graphics message
         else
-            ⮐ if esc.startsWith '_G' # start of kitty graphics message
+            ⮐  if esc.startsWith '_G' # start of kitty graphics message
         
         switch esc
         
@@ -456,7 +456,6 @@ function TTIO extends events
                 32  ➜ ((code & 0b11) == 3) ? 'move' : 'drag'
                 64  ➜ 'wheel'
                 0   ➜ 'press' 
-
         else 
 
             event.type = switch code
@@ -587,6 +586,8 @@ function TTIO extends events
                     pxs = csi[2..-2].split(';').map (p) -> int(p)
                     @pixels = [pxs[1] pxs[0]]
                     @cellsz = [int(@pixels[0]/@cols()) int(@pixels[1]/@rows())]
+                    
+                    # log "ttio.cellsz #{@cellsz[0]} #{@cellsz[1]} #{@cellsz[1]/@cellsz[0]}"
     
                     @emit 'resize' @cols() @rows() @pixels @cellsz
                     

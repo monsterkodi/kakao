@@ -146,7 +146,8 @@ function browse extends quicky
             type: 'dir'
             file: slash.name(parent)
             path: parent
-            tilde: parent ? (icons.dir + ' ..') : ''
+            tilde: parent ? (icons.dir + '\u00A0..') : ''
+            # prevents icon from growing    ▴▴▴▴
             
         select ?= items[1].path
                

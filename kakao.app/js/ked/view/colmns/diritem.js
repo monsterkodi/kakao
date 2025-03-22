@@ -47,7 +47,7 @@ diritem = (function ()
                 name = slash.file(item.path)
         }
 
-        return this.symbol(item) + ' ' + name
+        return this.symbol(item) + '\u00A0' + name
     }
 
     return diritem

@@ -164,7 +164,7 @@ browse = (function ()
             return weight(a) - weight(b)
         })
         parent = slash.dir(this.currentDir)
-        items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? (icons.dir + ' ..') : '')})
+        items.unshift({type:'dir',file:slash.name(parent),path:parent,tilde:(parent ? (icons.dir + '\u00A0..') : '')})
         select = (select != null ? select : items[1].path)
         return this.showPathItems(items,select)
     }
@@ -318,7 +318,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _283_63_
+        var upDir, _284_63_
 
         switch (action)
         {
@@ -336,7 +336,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_283_63_=choice.link) != null ? _283_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_284_63_=choice.link) != null ? _284_63_ : choice.path))
                     }
                 }
                 break

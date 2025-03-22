@@ -154,7 +154,6 @@ function quicky extends inputchoice
                 prs = slash.parse rel
                 rel = slash.join slash.split(prs.dir)[-2..] prs.file
             
-            # type:'file' path:path tilde:' ' + rel
             item = type:'file' path:path 
             item.tilde = ' ' + diritem.symbolName(item)
             item

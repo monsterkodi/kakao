@@ -53,7 +53,7 @@ function brocol extends choices
             ⮐ 
 
         for item in items
-            item.tilde = ' ' +  diritem.symbolName(item)
+            item.tilde = ' ' + diritem.symbolName(item)
 
         weight = item =>
 

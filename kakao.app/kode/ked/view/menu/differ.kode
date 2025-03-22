@@ -1,0 +1,197 @@
+###
+    0000000    000  00000000  00000000  00000000  00000000   
+    000   000  000  000       000       000       000   000  
+    000   000  000  000000    000000    0000000   0000000    
+    000   000  000  000       000       000       000   000  
+    0000000    000  000       000       00000000  000   000  
+
+    displays git diffs
+###
+
+use ../../../kxk    ▪ post kseg slash
+use ../../../kxk    ◆ nfs
+use ../../edit/tool ◆ belt
+use ../../index     ◆ prjcts
+use ../../util      ◆ git
+use                 ◆ searcher searcherfile
+
+function differ extends searcher
+
+    @: @screen ->
+    
+        super @screen null 'differ'
+        
+        post.on 'differ.status' @status
+
+    # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
+    # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
+    # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
+    # ███       ███ █ ███  ███     ███           ███       ███  ███      ███             ███   ███  ███        ███       ███  ████
+    # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
+
+    emitFileOpen: choice ->
+    
+        log 'emit file.open'
+    
+        post.emit 'file.open' choice.path choice.row choice.col
+        
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: =>
+        
+        @isVisible = true
+        post.emit 'view.show' @name
+        @arrange()
+        
+        @input.grabFocus()
+        @choices.clearEmpty()        
+        @sfils = []
+        redraw:true
+        
+    # ███       ███████    ███████   ███████    ███  ████████  ████████
+    # ███      ███   ███  ███        ███   ███  ███  ███       ███     
+    # ███      ███   ███  ███  ████  ███   ███  ███  ██████    ██████  
+    # ███      ███   ███  ███   ███  ███   ███  ███  ███       ███     
+    # ███████   ███████    ███████   ███████    ███  ███       ███     
+
+    diff: diff =>
+    
+        # log "differ.diff" diff
+        
+        file = diff.file
+        ext  = slash.ext file
+        
+        items = []
+            
+        for change in diff.changes
+        
+            items.push line:''
+            
+            for add,li in change.add
+                items.push
+                    line:  ' ' + add.new
+                    path:  file
+                    row:   change.line+li-1
+                    col:   0
+                    
+            for add,li in change.mod
+                items.push
+                    line:  ' ' + add.new
+                    path:  file
+                    row:   change.line+li-1
+                    col:   0
+                    
+        items.push line:'' 
+
+        @choices.append items ext
+        post.emit 'redraw'
+            
+    #  ███████  █████████   ███████   █████████  ███   ███   ███████
+    # ███          ███     ███   ███     ███     ███   ███  ███     
+    # ███████      ███     █████████     ███     ███   ███  ███████ 
+    #      ███     ███     ███   ███     ███     ███   ███       ███
+    # ███████      ███     ███   ███     ███      ███████   ███████ 
+
+    status: ○=> 
+    
+        # log 'differ.status'
+    
+        currentFile = ked_session.get 'editor▸file'
+        status =○ git.status currentFile
+
+        ⮐  if empty status
+        ⮐  if empty status.gitDir
+            
+        # log 'differ.status got' status
+        
+        # log 'differ.status got status'
+        
+        @show()
+        
+        logFile = change file status =>
+
+            # ⮐  if slash.ext(file) in IGNORE_FILE_EXTS
+
+            symbol = switch change
+
+                'changed' ➜ '●'
+                'added'   ➜ '◼'
+                'deleted' ➜ '✘'
+
+            # log "differ.status.logFile #{symbol} #{file}"
+            
+            path = slash.relative file status.gitDir
+                
+            sfil = new searcherfile @screen "#{@name}_sfil_#{@sfils.length}"
+            sfil.lineIndex = @choices.items.length#+1
+            sfil.set path
+            @sfils.push sfil
+            
+            @choices.append [
+                line:   symbol
+                type:  'file'
+                path:  file
+                row:   0
+                col:   0
+                ]
+                
+        for file in status.deleted
+
+            if true # slash.ext(file) in SOURCE_FILE_EXTS
+                logFile 'deleted' file status
+
+        for file in status.added
+
+            if true #slash.ext(file) in SOURCE_FILE_EXTS
+                logFile 'added' file status
+                text =○ nfs.read file
+                lines = belt.linesForText text
+                newl  = lines.map (l) -> new:l
+                diff  = file:file changes:[line:1 add:newl]
+                @diff diff
+
+        # for file in status.changed.filter((f) -> slash.ext(f) in SOURCE_FILE_EXTS)
+        for file in status.changed
+            
+            logFile 'changed' file status
+                
+            diff =○ git.diff file
+            
+            if @hidden()
+                log 'hidden?'
+            
+            @diff diff if valid diff
+
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+        
+    apply: choice ->
+        
+        ⮐  @emitFileOpen(choice) if choice?.path
+        
+        super choice
+                                    
+    # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███  ███  ████  ███        ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ███  ████
+    # ███  ███   ███  ███         ███████      ███         ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onInputAction: action text ->
+    
+        log "differ.commit? action:#{action} '#{text}'"
+        # switch action
+#             
+            # 'submit' ➜ ⮐  @show text
+            # 'change' ➜ ⮐  
+            
+        super action text
+
+export differ

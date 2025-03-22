@@ -9,6 +9,8 @@ import belt from "../../edit/tool/belt.js"
 
 import theme from "../../theme/theme.js"
 
+import git from "../../util/git.js"
+
 import inputchoice from "./inputchoice.js"
 
 
@@ -19,6 +21,8 @@ macro = (function ()
     {
         this.screen = screen
     
+        this["gitStatus"] = this["gitStatus"].bind(this)
+        this["gitDiff"] = this["gitDiff"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         macro.__super__.constructor.call(this,this.screen,'macro')
@@ -48,7 +52,8 @@ macro = (function ()
     {
         var ccol, items
 
-        items = belt.linesForText(`diff
+        items = belt.linesForText(`status
+diff
 commit`)
         items = items.map(function (i)
         {
@@ -70,6 +75,23 @@ commit`)
         return macro.__super__.hide.call(this)
     }
 
+    macro.prototype["gitDiff"] = async function ()
+    {
+        var currentFile, diff
+
+        currentFile = ked_session.get('editor▸file')
+        diff = await git.diff(currentFile)
+        if (!_k_.empty(diff))
+        {
+            return post.emit('differ.show',diff)
+        }
+    }
+
+    macro.prototype["gitStatus"] = async function ()
+    {
+        return post.emit('differ.status')
+    }
+
     macro.prototype["applyChoice"] = function (choice)
     {
         var input, num
@@ -89,6 +111,19 @@ commit`)
             {
                 post.emit('goto.line',num - 1,'ind')
             }
+        }
+        else
+        {
+            switch (choice)
+            {
+                case 'status':
+                    this.gitStatus()
+                    break
+                case 'diff':
+                    this.gitDiff()
+                    break
+            }
+
         }
         this.hide()
         return true
