@@ -151,6 +151,7 @@ function finder extends inputchoice
             post.emit 'goto.line' choice.row choice.col
                 
         post.emit 'focus' 'editor'
+        # log "#{@name} applyChoice -> hide"
         @hide()
         redraw:true
         

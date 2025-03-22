@@ -27,7 +27,7 @@ function KED
 
     @: ->
 
-        @version = '0.7.0'
+        @version = '0.8.0'
         @args = karg """
             
             ked [file]
@@ -96,6 +96,8 @@ function KED
         @t.on 'paste'  @onPaste
                                     
         # log 'ked args:' @args
+        
+        ked_session.set 'ked▸args' @args
         
         if valid @args.options
             @loadFile @args.options[0]

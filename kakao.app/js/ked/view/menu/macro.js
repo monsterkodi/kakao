@@ -21,8 +21,6 @@ macro = (function ()
     {
         this.screen = screen
     
-        this["gitStatus"] = this["gitStatus"].bind(this)
-        this["gitDiff"] = this["gitDiff"].bind(this)
         this["hide"] = this["hide"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         macro.__super__.constructor.call(this,this.screen,'macro')
@@ -54,7 +52,7 @@ macro = (function ()
 
         items = belt.linesForText(`status
 diff
-commit`)
+history`)
         items = items.map(function (i)
         {
             return ' ' + i
@@ -73,23 +71,6 @@ commit`)
     {
         post.emit('focus','editor')
         return macro.__super__.hide.call(this)
-    }
-
-    macro.prototype["gitDiff"] = async function ()
-    {
-        var currentFile, diff
-
-        currentFile = ked_session.get('editor▸file')
-        diff = await git.diff(currentFile)
-        if (!_k_.empty(diff))
-        {
-            return post.emit('differ.show',diff)
-        }
-    }
-
-    macro.prototype["gitStatus"] = async function ()
-    {
-        return post.emit('differ.status')
     }
 
     macro.prototype["applyChoice"] = function (choice)
@@ -116,11 +97,14 @@ commit`)
         {
             switch (choice)
             {
-                case 'status':
-                    this.gitStatus()
-                    break
                 case 'diff':
-                    this.gitDiff()
+                    post.emit('differ.file')
+                    break
+                case 'status':
+                    post.emit('differ.status')
+                    break
+                case 'history':
+                    post.emit('differ.history')
                     break
             }
 

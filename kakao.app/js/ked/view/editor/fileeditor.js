@@ -13,6 +13,8 @@ import belt from "../../edit/tool/belt.js"
 
 import editor from "../../edit/editor.js"
 
+import fileinfo from "../../util/fileinfo.js"
+
 import view from "../base/view.js"
 
 import context from "../menu/context.js"
@@ -118,23 +120,11 @@ fileeditor = (function ()
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, counterparts, currentFile, currext, ext, file, swapLastDir, _140_41_, _146_41_, _155_41_
+        var counter, currentFile, currext, ext, file, _115_50_, _121_50_, _130_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        counterparts = {mm:['h'],cpp:['hpp','h'],cc:['hpp','h'],h:['cpp','c','mm'],hpp:['cpp','c'],coffee:['js','mjs'],kode:['js','mjs'],js:['coffee','kode'],mjs:['coffee','kode'],pug:['html'],noon:['json'],json:['noon'],html:['pug'],css:['styl'],styl:['css']}
-        swapLastDir = function (path, from, to)
-        {
-            var lastIndex
-
-            lastIndex = path.lastIndexOf(`/${from}/`)
-            if (lastIndex >= 0)
-            {
-                path = path.slice(0, typeof lastIndex === 'number' ? lastIndex+1 : Infinity) + to + path.slice(lastIndex + (`/${from}`).length)
-            }
-            return path
-        }
-        var list = ((_140_41_=counterparts[currext]) != null ? _140_41_ : [])
+        var list = ((_115_50_=fileinfo.counterparts[currext]) != null ? _115_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -144,26 +134,26 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_146_41_=counterparts[currext]) != null ? _146_41_ : [])
+        var list1 = ((_121_50_=fileinfo.counterparts[currext]) != null ? _121_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
             counter = slash.swapExt(currentFile,ext)
-            file = swapLastDir(counter,currext,ext)
+            file = fileinfo.swapLastDir(counter,currext,ext)
             if (await nfs.fileExists(file))
             {
                 post.emit('file.open',file)
                 return
             }
         }
-        var list2 = ((_155_41_=counterparts[currext]) != null ? _155_41_ : [])
+        var list2 = ((_130_50_=fileinfo.counterparts[currext]) != null ? _130_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
             counter = slash.swapExt(currentFile,ext)
             if (_k_.in(currext,['noon']))
             {
-                file = swapLastDir(counter,'kode','js')
+                file = fileinfo.swapLastDir(counter,'kode','js')
                 if (await nfs.fileExists(file))
                 {
                     post.emit('file.open',file)
@@ -172,7 +162,7 @@ fileeditor = (function ()
             }
             if (_k_.in(currext,['json']))
             {
-                file = swapLastDir(counter,'js','kode')
+                file = fileinfo.swapLastDir(counter,'js','kode')
                 if (await nfs.fileExists(file))
                 {
                     post.emit('file.open',file)
@@ -185,7 +175,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _214_41_, _266_31_
+        var col, ret, row, start, x, y, _189_41_, _241_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

@@ -16,9 +16,9 @@ use                 ◆ finder searcherfile
 
 function searcher extends finder
 
-    @: @screen @state ->
+    @: @screen @state name='searcher' ->
 
-        super @screen @state 'searcher'
+        super @screen @state name
         
         @isVisible = false
         
@@ -82,6 +82,7 @@ function searcher extends finder
     
         ⮐  if @hidden()
     
+        # log "#{@name} onFileLoaded -> hide"
         @hide()
         
         ⮐  if empty @fileToHighlight
@@ -100,7 +101,7 @@ function searcher extends finder
 
     emitFileOpen: choice ->
     
-        log 'emit file.open'
+        # log 'emit file.open'
     
         @textToHighlight = @input.current()
         @fileToHighlight = choice.path
@@ -126,11 +127,11 @@ function searcher extends finder
     
     show: text ○=>
     
-        log "searcher show |#{text}|"
+        # log "searcher show |#{text}|"
         
         text = @searchText text
         
-        log g4("#{r6 'searcher'} '#{text}'")
+        # log g4("#{r6 'searcher'} '#{text}'")
         
         if empty text
             @input.grabFocus()
@@ -142,7 +143,7 @@ function searcher extends finder
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
 
-        log "searcher - search in #{files.length} files for |#{text}|"
+        log "searcher - search #{files.length} files in #{dir} for |#{text}|"
         
         super()
         

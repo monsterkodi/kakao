@@ -66,13 +66,24 @@ dircol = (function ()
 
     dircol.prototype["onSessionMerge"] = function (recent)
     {
-        var root
+        var args, root
 
         if (_k_.empty(recent.dircol))
         {
             return
         }
-        if (root = recent.dircol.root)
+        args = ked_session.get('ked▸args',{})
+        if (!_k_.empty(args.options))
+        {
+            console.log(`dircol.onSessionMerge - use first options dir ${slash.dir(args.options[0])}`)
+            root = slash.dir(args.options[0])
+        }
+        else
+        {
+            console.log(`dircol.onSessionMerge - use last session dir ${recent.dircol.root}`)
+            root = recent.dircol.root
+        }
+        if (root)
         {
             this.setRoot(root)
         }

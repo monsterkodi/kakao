@@ -72,7 +72,7 @@ KED = (function ()
         this["quit"] = this["quit"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         this["onSessionLoaded"] = this["onSessionLoaded"].bind(this)
-        this.version = '0.7.0'
+        this.version = '0.8.0'
         this.args = karg(`
 ked [file]
     options                                       **
@@ -125,6 +125,7 @@ ked [file]
         this.t.on('wheel',this.onWheel)
         this.t.on('resize',this.onResize)
         this.t.on('paste',this.onPaste)
+        ked_session.set('ked▸args',this.args)
         if (!_k_.empty(this.args.options))
         {
             this.loadFile(this.args.options[0])
@@ -231,7 +232,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _197_10_
+        var _199_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -262,7 +263,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _222_22_
+        var _224_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -336,7 +337,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, segls, start, text, _341_22_
+        var absFile, colors, exists, segls, start, text, _343_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -594,7 +595,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _500_22_
+        var mcw, _502_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

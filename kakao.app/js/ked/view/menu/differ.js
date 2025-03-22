@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var differ
 
@@ -14,6 +14,7 @@ import belt from "../../edit/tool/belt.js"
 import prjcts from "../../index/prjcts.js"
 
 import git from "../../util/git.js"
+import fileinfo from "../../util/fileinfo.js"
 
 import searcher from "./searcher.js"
 import searcherfile from "./searcherfile.js"
@@ -26,18 +27,27 @@ differ = (function ()
     {
         this.screen = screen
     
+        this["commit"] = this["commit"].bind(this)
+        this["history"] = this["history"].bind(this)
+        this["file"] = this["file"].bind(this)
         this["status"] = this["status"].bind(this)
         this["diff"] = this["diff"].bind(this)
         this["show"] = this["show"].bind(this)
+        this["onFileLoaded"] = this["onFileLoaded"].bind(this)
         differ.__super__.constructor.call(this,this.screen,null,'differ')
         post.on('differ.status',this.status)
+        post.on('differ.file',this.file)
+        post.on('differ.history',this.history)
     }
 
     differ.prototype["emitFileOpen"] = function (choice)
     {
-        console.log('emit file.open')
-        return post.emit('file.open',choice.path,choice.row,choice.col)
+        post.emit('file.open',choice.path,choice.row,choice.col)
+        return this.hide()
     }
+
+    differ.prototype["onFileLoaded"] = function (file)
+    {}
 
     differ.prototype["show"] = function ()
     {
@@ -52,7 +62,7 @@ differ = (function ()
 
     differ.prototype["diff"] = function (diff)
     {
-        var add, change, ext, file, items, li
+        var add, added, change, ext, file, items, li, modadd, modded, _85_32_, _86_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -61,18 +71,39 @@ differ = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             change = list[_a_]
+            if (_k_.empty(change.add) && _k_.empty(change.mod))
+            {
+                continue
+            }
+            modded = ((_85_32_=change.mod) != null ? _85_32_ : [])
+            added = ((_86_32_=change.add) != null ? _86_32_ : [])
+            modadd = modded.concat(added)
+            if (_k_.empty(modadd.filter(function (m)
+                {
+                    return !_k_.empty(_k_.trim(m.new))
+                })))
+            {
+                console.log('skip only whitespace',change)
+                continue
+            }
             items.push({line:''})
             var list1 = _k_.list(change.add)
             for (li = 0; li < list1.length; li++)
             {
                 add = list1[li]
-                items.push({line:' ' + add.new,path:file,row:change.line + li - 1,col:0})
+                if (!_k_.empty(_k_.trim(add.new)))
+                {
+                    items.push({line:' ' + add.new,path:file,row:change.line + li - 1,col:0})
+                }
             }
             var list2 = _k_.list(change.mod)
             for (li = 0; li < list2.length; li++)
             {
                 add = list2[li]
-                items.push({line:' ' + add.new,path:file,row:change.line + li - 1,col:0})
+                if (!_k_.empty(_k_.trim(add.new)))
+                {
+                    items.push({line:' ' + add.new,path:file,row:change.line + li - 1,col:0})
+                }
             }
         }
         items.push({line:''})
@@ -82,7 +113,7 @@ differ = (function ()
 
     differ.prototype["status"] = async function ()
     {
-        var currentFile, diff, file, lines, logFile, newl, status, text
+        var currentFile, diff, file, fileHeader, lines, newl, noCounterpart, status, text
 
         currentFile = ked_session.get('editor▸file')
         status = await git.status(currentFile)
@@ -95,7 +126,7 @@ differ = (function ()
             return
         }
         this.show()
-        logFile = (function (change, file, status)
+        fileHeader = (function (change, file, status)
         {
             var path, sfil, symbol
 
@@ -122,22 +153,42 @@ differ = (function ()
             this.sfils.push(sfil)
             return this.choices.append([{line:symbol,type:'file',path:file,row:0,col:0}])
         }).bind(this)
+        noCounterpart = function (file)
+        {
+            var counter, cpt, ext
+
+            cpt = {js:'kode',pug:'html',css:'styl'}
+            if (ext = cpt[slash.ext(file)])
+            {
+                counter = slash.swapExt(file,ext)
+                if (status.files[counter])
+                {
+                    return
+                }
+                counter = fileinfo.swapLastDir(counter,slash.ext(file),ext)
+                if (status.files[counter])
+                {
+                    return
+                }
+            }
+            return true
+        }
         var list = _k_.list(status.deleted)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             file = list[_a_]
             if (true)
             {
-                logFile('deleted',file,status)
+                fileHeader('deleted',file,status)
             }
         }
         var list1 = _k_.list(status.added)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             file = list1[_b_]
-            if (true)
+            fileHeader('added',file,status)
+            if (noCounterpart(file))
             {
-                logFile('added',file,status)
                 text = await nfs.read(file)
                 lines = belt.linesForText(text)
                 newl = lines.map(function (l)
@@ -152,17 +203,41 @@ differ = (function ()
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             file = list2[_c_]
-            logFile('changed',file,status)
-            diff = await git.diff(file)
-            if (this.hidden())
+            fileHeader('changed',file,status)
+            if (noCounterpart(file))
             {
-                console.log('hidden?')
-            }
-            if (!_k_.empty(diff))
-            {
-                this.diff(diff)
+                diff = await git.diff(file)
+                if (this.hidden())
+                {
+                    console.log('hidden?')
+                }
+                if (!_k_.empty(diff))
+                {
+                    this.diff(diff)
+                }
             }
         }
+    }
+
+    differ.prototype["file"] = async function ()
+    {
+        var currentFile, diff
+
+        currentFile = ked_session.get('editor▸file')
+        diff = await git.diff(currentFile)
+        if (!_k_.empty(diff))
+        {
+            this.show()
+            return this.diff(diff)
+        }
+    }
+
+    differ.prototype["history"] = async function ()
+    {
+        var history
+
+        history = await git.history()
+        console.log('differ.history',history)
     }
 
     differ.prototype["apply"] = function (choice)
@@ -174,9 +249,37 @@ differ = (function ()
         return differ.__super__.apply.call(this,choice)
     }
 
+    differ.prototype["commit"] = async function (msg)
+    {
+        var currentFile, gitDir, out
+
+        console.log(`commit ${msg}`)
+        currentFile = ked_session.get('editor▸file')
+        gitDir = await git.dir(currentFile)
+        if (_k_.empty(gitDir))
+        {
+            return
+        }
+        out = ''
+        out += await git.exec("add .",{cwd:gitDir})
+        out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
+        out += await git.exec("push -q",{cwd:gitDir})
+        console.log('▸',out)
+    }
+
     differ.prototype["onInputAction"] = function (action, text)
     {
-        console.log(`differ.commit? action:${action} '${text}'`)
+        switch (action)
+        {
+            case 'submit':
+                if (!_k_.empty(text))
+                {
+                    this.commit(text)
+                    return
+                }
+                break
+        }
+
         return differ.__super__.onInputAction.call(this,action,text)
     }
 

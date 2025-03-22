@@ -196,7 +196,7 @@ function editor extends draw
             @state.insert event.char
             @complete?.complete()                
         else
-            if key not in ['shift' 'ctrl' 'alt' 'cmd'] 
+            if key.split('+')[-1] not in ['shift' 'ctrl' 'alt' 'cmd'] 
                 log 'editor.onKey?' key
 
 export editor

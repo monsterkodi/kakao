@@ -10,6 +10,7 @@ use ../../../kxk    ▪ post kstr slash
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
+use ../../util      ◆ fileinfo
 use ../base         ◆ view 
 use ../menu         ◆ context
 use                 ◆ mapscr 
@@ -110,62 +111,36 @@ function fileeditor extends editor
         
         currentFile = ked_session.get 'editor▸file'
         currext = slash.ext currentFile
-
-        # TODO: move this stuff to a config.noon file
         
-        counterparts =
-            mm:      ['h']
-            cpp:     ['hpp' 'h']
-            cc:      ['hpp' 'h']
-            h:       ['cpp' 'c' 'mm']
-            hpp:     ['cpp' 'c']
-            coffee:  ['js' 'mjs']
-            kode:    ['js' 'mjs']
-            js:      ['coffee' 'kode']
-            mjs:     ['coffee' 'kode']
-            pug:     ['html']
-            noon:    ['json']
-            json:    ['noon']
-            html:    ['pug']
-            css:     ['styl']
-            styl:    ['css']
-            
-        swapLastDir = path from to ->
-    
-            lastIndex = path.lastIndexOf "/#{from}/"
-            if lastIndex >= 0
-                path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
-            path
-
-        for ext in counterparts[currext] ? []
+        for ext in fileinfo.counterparts[currext] ? []
             
             if ○ nfs.fileExists slash.swapExt(currentFile, ext)
                 post.emit 'file.open' slash.swapExt(currentFile, ext)
                 ⮐ 
 
-        for ext in counterparts[currext] ? []
+        for ext in fileinfo.counterparts[currext] ? []
             
             counter = slash.swapExt currentFile, ext
-            file = swapLastDir counter, currext, ext
+            file = fileinfo.swapLastDir counter, currext, ext
             
             if ○ nfs.fileExists file
                 post.emit 'file.open' file
                 ⮐ 
 
-        for ext in counterparts[currext] ? []
+        for ext in fileinfo.counterparts[currext] ? []
             
             counter = slash.swapExt currentFile, ext
             
             if currext in ['noon']
 
-                file = swapLastDir counter 'kode' 'js'
+                file = fileinfo.swapLastDir counter 'kode' 'js'
                 if ○ nfs.fileExists file
                     post.emit 'file.open' file
                     ⮐
                     
             if currext in ['json']
                 
-                file = swapLastDir counter 'js' 'kode'
+                file = fileinfo.swapLastDir counter 'js' 'kode'
                 if ○ nfs.fileExists file
                     post.emit 'file.open' file
                     ⮐ 

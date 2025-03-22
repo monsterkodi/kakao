@@ -62,7 +62,7 @@ function macro extends inputchoice
             """
             status
             diff
-            commit
+            history
             """
         
         items = items.map (i) -> ' ' + i # padding for  
@@ -84,24 +84,6 @@ function macro extends inputchoice
         post.emit 'focus' 'editor'    
         super()
         
-    #  ███████   ███  █████████     ███████    ███  ████████  ████████
-    # ███        ███     ███        ███   ███  ███  ███       ███     
-    # ███  ████  ███     ███        ███   ███  ███  ██████    ██████  
-    # ███   ███  ███     ███        ███   ███  ███  ███       ███     
-    #  ███████   ███     ███        ███████    ███  ███       ███     
-
-    gitDiff: ○=>
-    
-        currentFile = ked_session.get 'editor▸file'
-        diff =○ git.diff(currentFile)
-        if valid diff
-            # log 'emit differ.show' #diff
-            post.emit 'differ.show' diff
-            
-    gitStatus: ○=>
-        # log 'emit differ.status'
-        post.emit 'differ.status'
-            
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
@@ -120,8 +102,9 @@ function macro extends inputchoice
                 num = int input ➜ post.emit 'goto.line' num-1 'ind'
         else
             switch choice
-                'status' ➜ @gitStatus()
-                'diff'   ➜ @gitDiff()
+                'diff'    ➜ post.emit 'differ.file'
+                'status'  ➜ post.emit 'differ.status'
+                'history' ➜ post.emit 'differ.history'
                 
         @hide()
         true

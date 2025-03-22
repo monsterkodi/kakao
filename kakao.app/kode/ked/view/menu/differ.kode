@@ -12,7 +12,7 @@ use ../../../kxk    ▪ post kseg slash
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../index     ◆ prjcts
-use ../../util      ◆ git
+use ../../util      ◆ git fileinfo
 use                 ◆ searcher searcherfile
 
 function differ extends searcher
@@ -21,7 +21,9 @@ function differ extends searcher
     
         super @screen null 'differ'
         
-        post.on 'differ.status' @status
+        post.on 'differ.status'  @status
+        post.on 'differ.file'    @file
+        post.on 'differ.history' @history
 
     # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
     # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
@@ -31,9 +33,19 @@ function differ extends searcher
 
     emitFileOpen: choice ->
     
-        log 'emit file.open'
+        # log 'emit file.open'
     
         post.emit 'file.open' choice.path choice.row choice.col
+        
+        @hide()
+        
+    onFileLoaded: file =>
+    
+        # ⮐  if @hidden()
+        # 
+        # log "#{@name} onFileLoaded #{file} hide?"
+    
+        # @hide()
         
     #  0000000  000   000   0000000   000   000  
     # 000       000   000  000   000  000 0 000  
@@ -52,16 +64,14 @@ function differ extends searcher
         @sfils = []
         redraw:true
         
-    # ███       ███████    ███████   ███████    ███  ████████  ████████
-    # ███      ███   ███  ███        ███   ███  ███  ███       ███     
-    # ███      ███   ███  ███  ████  ███   ███  ███  ██████    ██████  
-    # ███      ███   ███  ███   ███  ███   ███  ███  ███       ███     
-    # ███████   ███████    ███████   ███████    ███  ███       ███     
+    # ███████    ███  ████████  ████████
+    # ███   ███  ███  ███       ███     
+    # ███   ███  ███  ██████    ██████  
+    # ███   ███  ███  ███       ███     
+    # ███████    ███  ███       ███     
 
     diff: diff =>
     
-        # log "differ.diff" diff
-        
         file = diff.file
         ext  = slash.ext file
         
@@ -69,21 +79,33 @@ function differ extends searcher
             
         for change in diff.changes
         
+            if empty change.add and empty change.mod
+                continue # skip when only deleted
+        
+            modded = change.mod ? []
+            added  = change.add ? []
+            modadd = modded.concat added
+            if empty modadd.filter((m) -> valid trim(m.new))
+                log 'skip only whitespace' change
+                continue
+        
             items.push line:''
             
             for add,li in change.add
-                items.push
-                    line:  ' ' + add.new
-                    path:  file
-                    row:   change.line+li-1
-                    col:   0
+                if valid trim add.new
+                    items.push
+                        line:  ' ' + add.new
+                        path:  file
+                        row:   change.line+li-1
+                        col:   0
                     
             for add,li in change.mod
-                items.push
-                    line:  ' ' + add.new
-                    path:  file
-                    row:   change.line+li-1
-                    col:   0
+                if valid trim add.new
+                    items.push
+                        line:  ' ' + add.new
+                        path:  file
+                        row:   change.line+li-1
+                        col:   0
                     
         items.push line:'' 
 
@@ -98,21 +120,15 @@ function differ extends searcher
 
     status: ○=> 
     
-        # log 'differ.status'
-    
         currentFile = ked_session.get 'editor▸file'
         status =○ git.status currentFile
 
         ⮐  if empty status
         ⮐  if empty status.gitDir
             
-        # log 'differ.status got' status
-        
-        # log 'differ.status got status'
-        
         @show()
         
-        logFile = change file status =>
+        fileHeader = change file status =>
 
             # ⮐  if slash.ext(file) in IGNORE_FILE_EXTS
 
@@ -122,7 +138,7 @@ function differ extends searcher
                 'added'   ➜ '◼'
                 'deleted' ➜ '✘'
 
-            # log "differ.status.logFile #{symbol} #{file}"
+            # log "differ.status.fileHeader #{symbol} #{file}"
             
             path = slash.relative file status.gitDir
                 
@@ -138,16 +154,32 @@ function differ extends searcher
                 row:   0
                 col:   0
                 ]
-                
+    
+        noCounterpart = file ->
+        
+            cpt = 
+                js:  'kode'
+                pug: 'html'
+                css: 'styl'
+            
+            if ext = cpt[slash.ext file]
+                counter = slash.swapExt file ext
+                ⮐  if status.files[counter]
+                counter = fileinfo.swapLastDir counter slash.ext(file) ext 
+                ⮐  if status.files[counter]
+            true
+    
         for file in status.deleted
 
             if true # slash.ext(file) in SOURCE_FILE_EXTS
-                logFile 'deleted' file status
+                fileHeader 'deleted' file status
 
         for file in status.added
 
-            if true #slash.ext(file) in SOURCE_FILE_EXTS
-                logFile 'added' file status
+            fileHeader 'added' file status
+            
+            if noCounterpart(file) #slash.ext(file) in SOURCE_FILE_EXTS
+            
                 text =○ nfs.read file
                 lines = belt.linesForText text
                 newl  = lines.map (l) -> new:l
@@ -157,15 +189,38 @@ function differ extends searcher
         # for file in status.changed.filter((f) -> slash.ext(f) in SOURCE_FILE_EXTS)
         for file in status.changed
             
-            logFile 'changed' file status
+            fileHeader 'changed' file status
+            
+            if noCounterpart(file)
                 
-            diff =○ git.diff file
+                diff =○ git.diff file
+                
+                if @hidden()
+                    log 'hidden?'
+                
+                @diff diff if valid diff
             
-            if @hidden()
-                log 'hidden?'
-            
-            @diff diff if valid diff
+    # ████████  ███  ███      ████████
+    # ███       ███  ███      ███     
+    # ██████    ███  ███      ███████ 
+    # ███       ███  ███      ███     
+    # ███       ███  ███████  ████████
 
+    file: ○=>
+    
+        currentFile = ked_session.get 'editor▸file'
+        diff =○ git.diff currentFile
+                       
+        if valid diff
+            @show()
+            @diff diff
+            
+    history: ○=>
+    
+        history =○ git.history()
+        
+        log 'differ.history' history
+    
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
@@ -177,6 +232,28 @@ function differ extends searcher
         ⮐  @emitFileOpen(choice) if choice?.path
         
         super choice
+        
+    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
+
+    commit: msg ○=>
+    
+        log "commit #{msg}"
+        
+        currentFile = ked_session.get 'editor▸file'
+        gitDir =○ git.dir currentFile
+        
+        ⮐  if empty gitDir
+        
+        out = ''
+        out +=○ git.exec "add ."                cwd:gitDir       
+        out +=○ git.exec "commit -m \"#{msg}\"" cwd:gitDir
+        out +=○ git.exec "push -q"              cwd:gitDir
+
+        log '▸' out
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
     # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
@@ -186,11 +263,12 @@ function differ extends searcher
 
     onInputAction: action text ->
     
-        log "differ.commit? action:#{action} '#{text}'"
-        # switch action
-#             
-            # 'submit' ➜ ⮐  @show text
-            # 'change' ➜ ⮐  
+        switch action
+
+            'submit' 
+                if valid text
+                    @commit text
+                    ⮐  
             
         super action text
 
