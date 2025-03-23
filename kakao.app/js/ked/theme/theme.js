@@ -58,5 +58,4 @@ setVibrant = function (vf)
     }
 }
 post.on('theme.vibrant',setVibrant)
-setVibrant(0.8)
 export default theme;

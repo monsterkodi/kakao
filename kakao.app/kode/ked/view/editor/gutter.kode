@@ -20,9 +20,9 @@ function gutter extends view
         
         super screen @state.owner() + '.gutter'
         
-        @setColor 'bg'                     theme.gutter
-        @setColor 'bg_selected'            theme.gutter_selected
-        @setColor 'bg_fully_selected'      theme.gutter_fully_selected
+        @setColor 'bg'                     theme.gutter.bg
+        @setColor 'bg_selected'            theme.gutter.bg_selected
+        @setColor 'bg_fully_selected'      theme.gutter.bg_fully_selected
         @setColor 'linenr'                 theme.linenr
         @setColor 'cursor_main'            theme.editor_cursor_main
         @setColor 'cursor_multi'           theme.editor_cursor_multi

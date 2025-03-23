@@ -28,7 +28,7 @@ funSyntax = (function ()
         this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["clear"] = this["clear"].bind(this)
-        this.color = {class:theme.funtree_class,async:theme.funtree_async,bound:theme.funtree_bound,func:theme.funtree_func}
+        this.color = {class:theme.funtree.class,async:theme.funtree.async,bound:theme.funtree.bound,func:theme.funtree.func}
     }
 
     funSyntax.prototype["clear"] = function ()

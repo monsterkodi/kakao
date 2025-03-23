@@ -22,9 +22,9 @@ statusfile = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["show"] = this["show"].bind(this)
         statusfile.__super__.constructor.call(this,screen,name)
-        this.setColor('bg',theme.status)
+        this.setColor('bg',theme.status.bg)
+        this.setColor('empty',theme.status.empty)
         this.setColor('hover',theme.hover)
-        this.setColor('empty',theme.status_empty)
         this.pointerType = 'pointer'
         this.syntax = new syntax
         this.syntax.setExt('noon')

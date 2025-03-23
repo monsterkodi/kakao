@@ -23,8 +23,8 @@ function finder extends inputchoice
         
         post.on 'finder.show' @show if @name == 'finder'
         
-        @setColor 'bg'    theme.finder_bg
-        @setColor 'frame' theme.finder_frame
+        @setColor 'bg'    theme.finder.bg
+        @setColor 'frame' theme.finder.frame
         
         @choices.state.skipAdjustViewForMainCursor = true
         @choices.state.syntax.setExt 'kode'

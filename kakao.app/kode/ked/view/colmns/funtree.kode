@@ -29,10 +29,10 @@ function funSyntax
     @: @tree ->
     
         @color =
-            class: theme.funtree_class
-            async: theme.funtree_async
-            bound: theme.funtree_bound
-            func:  theme.funtree_func            
+            class: theme.funtree.class
+            async: theme.funtree.async
+            bound: theme.funtree.bound
+            func:  theme.funtree.func            
         
     clear: =>
 

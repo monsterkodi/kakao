@@ -31,8 +31,8 @@ finder = (function ()
         {
             post.on('finder.show',this.show)
         }
-        this.setColor('bg',theme.finder_bg)
-        this.setColor('frame',theme.finder_frame)
+        this.setColor('bg',theme.finder.bg)
+        this.setColor('frame',theme.finder.frame)
         this.choices.state.skipAdjustViewForMainCursor = true
         this.choices.state.syntax.setExt('kode')
         this.choices.gutter.lineno = this.lineno

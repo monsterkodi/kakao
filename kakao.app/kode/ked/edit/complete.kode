@@ -21,12 +21,12 @@ function complete
         @choices.focusable = false
         @choices.scroll.handle = '▐'
         
-        @color = complete: theme.editor_selection
+        @color = complete: theme.editor.selection
         
-        @choices.setColor 'bg' theme.editor_complete_choices
-        @choices.scroll.setColor 'bg'   theme.editor_complete_choices
-        @choices.scroll.setColor 'knob' theme.editor_complete_choices_scroll
-        @choices.scroll.setColor 'dot'  theme.editor_complete_choices_scroll
+        @choices.setColor        'bg'   theme.complete.bg
+        @choices.scroll.setColor 'bg'   theme.complete.bg
+        @choices.scroll.setColor 'knob' theme.complete.scroll
+        @choices.scroll.setColor 'dot'  theme.complete.scroll
         
         @choices.on 'action' @onChoicesAction
         
@@ -80,7 +80,7 @@ function complete
                 @words = inserts.concat @words
 
         @visible = valid @words
-
+        
         ⮐  if empty @words
         
         mc = @editor.state.mainCursor()
@@ -89,9 +89,6 @@ function complete
         
         cx = mc[0] - @editor.state.s.view[0]     
         cy = mc[1] - @editor.state.s.view[1]
-        
-        for ch,ci in head[@turd.length..]
-            @editor.cells.set cx+ci cy ch '#fff' theme.selection
         
         if @words.length <= 1
             @choices.clear()                    
@@ -224,7 +221,7 @@ function complete
     preDrawLines: lines ->
     
         ⮐  lines if @hidden() or empty @words
-        # ● pre draw
+
         word  = @currentWord()
         lines = lines.asMutable()
         for pos in @editor.state.s.cursors
@@ -265,7 +262,7 @@ function complete
         
         mc = @editor.state.mainCursor()
          
-        cx = mc[0] - @editor.state.s.view[0]
+        cx = mc[0] - @editor.state.s.view[0]    
         cy = mc[1] - @editor.state.s.view[1]
         
         fx = cx-@turd.length-1
@@ -276,7 +273,7 @@ function complete
         
         fy = cy+1
 
-        @editor.cells.draw_frame fx fy fx+w+1 fy+h+1 fg:theme.editor_complete_choices bg:[0 0 0]
+        @editor.cells.draw_frame fx fy fx+w+1 fy+h+1 fg:theme.complete.bg bg:[0 0 0]
         
         @choices.layout x y w h
         @choices.draw()

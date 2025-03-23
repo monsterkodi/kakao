@@ -146,13 +146,13 @@ function mode
             if m.cursorsSet is func
                 m.cursorsSet()
         
-    @themeColor: state colorName ->
+    @themeColor: state colorName defaultColor ->
     
         for m in @active[state.name]
             if m.themeColor is func
-                ⮐  m.themeColor colorName
+                ⮐ m.themeColor colorName defaultColor
         
-        theme[colorName]
+        defaultColor
         
     @preDrawLines: state lines ->
 

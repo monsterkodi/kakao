@@ -212,19 +212,19 @@ salterMode = (function ()
         return 'unhandled'
     }
 
-    salterMode.prototype["themeColor"] = function (colorName)
+    salterMode.prototype["themeColor"] = function (colorName, defaultColor)
     {
         switch (colorName)
         {
-            case 'editor_cursor_multi':
+            case 'cursor.multi':
                 return color.brighten(theme.syntax['comment triple header'],0.2)
 
-            case 'editor_cursor_main':
+            case 'cursor.main':
                 return color.brighten(theme.syntax['comment triple header'],0.6)
 
         }
 
-        return theme[colorName]
+        return defaultColor
     }
 
     return salterMode

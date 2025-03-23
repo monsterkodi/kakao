@@ -71,7 +71,7 @@ function funcol extends view
         ⮐  if @hidden() or @collapsed() or not @active
         
         @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
-        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
+        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
         
         @funtree.draw()
         @knob.draw()

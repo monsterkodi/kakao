@@ -26,12 +26,14 @@ function status extends view
         @drawTime = ''
         
         @pointerType = 'pointer'
+        
+        @setColor 'gutter' theme.gutter.bg
            
         @crumbs     = new crumbs     @screen 'status_crumbs'
         @statusfile = new statusfile @screen 'status_file'
         
-        @crumbs.setColor 'empty_left'  theme.gutter
-        @crumbs.setColor 'empty_right' theme.status_empty
+        @crumbs.setColor 'empty_left'  @color.gutter
+        @crumbs.setColor 'empty_right' theme.status.empty
         
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction
@@ -91,7 +93,7 @@ function status extends view
     
     setFile: @file => 
         
-        ⮐ if empty @file
+        ⮐  if empty @file
         @crumbs.set slash.dir(@file)
         @statusfile.set @file
         
@@ -124,19 +126,19 @@ function status extends view
         dty    = @state.isDirty()
         
         set = x char fg bg => 
-            if fg is str ➜ fg = theme[fg]
-            if bg is str ➜ bg = theme[bg]
+            if fg is str ➜ fg = theme.status[fg]
+            if bg is str ➜ bg = theme.status[bg]
             @cells.set x y char fg bg
             1
         add = char fg bg => x += set x char fg bg
         
-        add '' 'status_col' 'gutter' # column number ...
+        add '' 'col' @color.gutter # column number ...
         colno = rpad @gutter-1 "#{cursor[0]}"
         for ci in 1...@gutter
-            fg = cursor[0] ? 'status_fg' : 'column_fg'
-            fg = 'status_col_empty' if belt.isLinesPosOutside @state.s.lines cursor 
-            add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'status_col'
-        add '' 'status_col' 'gutter' # column number end
+            fg = cursor[0] ? 'fg' : 'col_zero'
+            fg = 'col_empty' if belt.isLinesPosOutside @state.s.lines cursor 
+            add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'col'
+        add '' 'col' color.gutter # column number end
               
         @crumbs.draw() # dir path
         @statusfile.draw() # file
@@ -145,37 +147,37 @@ function status extends view
         x += @statusfile.rounded.length
         
         # dirty and redo indicators
-        add '' 'status_dark'  'status_empty'
-        add '' 'status_dirty' 'status_dark' if dty
-        add ' ' 'status_dirty' 'status_dark' if dty
-        add '' 'status_redo'  'status_dark' if rdo
-        add ' ' 'status_dark'  'status_dark'
+        add '' 'dark'  'empty'
+        add '' 'dirty' 'dark' if dty
+        add ' ' 'dirty' 'dark' if dty
+        add '' 'redo'  'dark' if rdo
+        add ' ' 'dark'  'dark'
         
         if @state.s.cursors.length > 1
 
             cur = "#{@state.s.cursors.length}♦"
              
             for i in 0...cur.length
-                add cur[i] (i<cur.length-1) ? 'status_cur' : color.darken(theme.status_cur) 'status_dark'
+                add cur[i] (i<cur.length-1) ? 'cur' : color.darken(theme.status.cur) 'dark'
                 
         if @state.s.selections.length
 
             sel = "#{@state.s.selections.length}≡"
              
             for i in 0...sel.length
-                add sel[i] (i<sel.length-1) ? 'status_sel' : color.darken(theme.status_sel) 'status_dark'
+                add sel[i] (i<sel.length-1) ? 'sel' : color.darken(theme.status.sel) 'dark'
 
         if @state.s.highlights.length
 
             hil = "#{@state.s.highlights.length}❇"
              
             for i in 0...hil.length
-                add hil[i] (i<hil.length-1) ? 'status_hil' : color.darken(theme.status_hil) 'status_dark'
+                add hil[i] (i<hil.length-1) ? 'hil' : color.darken(theme.status.hil) 'dark'
                 
         for ci in x...cols-1
-            add ' ' null 'status_dark'
+            add ' ' null 'dark'
             
-        add '' 'status_dark' null
+        add '' 'dark' null
             
         ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
         ch = ' •'[ci] # 
@@ -184,7 +186,7 @@ function status extends view
             '•' ➜ log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
             '' ➜ log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
             '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
-        set cols-2 ch fg 'status_dark'
+        set cols-2 ch fg 'dark'
              
 export status
 

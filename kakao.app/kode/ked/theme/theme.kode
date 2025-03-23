@@ -45,6 +45,4 @@ setVibrant = vf ->
                 
 post.on 'theme.vibrant' setVibrant
 
-setVibrant 0.8
-          
 export theme

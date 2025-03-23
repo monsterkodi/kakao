@@ -26,8 +26,9 @@ function choices extends editor
 
         super screen name features
         
-        @setColor 'bg'      theme.choices_bg
-        @setColor 'current' theme.choices_current
+        @setColor 'bg'           theme.editor.bg
+        @setColor 'current'      theme.choices.current
+        @setColor 'current_blur' theme.choices.current_blur
         
         @pointerType = 'pointer'
         @roundedSelections = true
@@ -99,7 +100,8 @@ function choices extends editor
         
         ⮐  super() if not @roundedSelections
         
-        fg = @color.current
+        fg = @hasFocus() ? @color.current : @color.current_blur
+        
         if not @cells.screen.t.hasFocus
             fg = color.darken fg
         

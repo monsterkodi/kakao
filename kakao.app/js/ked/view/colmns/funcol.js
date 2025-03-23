@@ -72,7 +72,7 @@ funcol = (function ()
             return
         }
         this.cells.fill_rect(0,1,-1,-1,' ',null,theme.funcol)
-        this.cells.fill_rect(0,0,-1,0,' ',null,theme.gutter)
+        this.cells.fill_rect(0,0,-1,0,' ',null,theme.gutter.bg)
         this.funtree.draw()
         this.knob.draw()
         return funcol.__super__.draw.call(this)

@@ -19,21 +19,12 @@ function draw extends view
         
         super screen name features
         
-        @setColor 'bg'                   theme.editor
-        @setColor 'empty'                theme.editor_empty
+        @setColor 'bg'                   theme.editor.bg
+        @setColor 'empty'                theme.editor.empty
         
-        @setColor 'cursor_main'          theme.editor_cursor_main
-        @setColor 'cursor_empty'         theme.editor_cursor_empty
-        
-        @setColor 'selection'            theme.editor_selection
-        @setColor 'selection_line'       theme.editor_selection_line
-        
-        @setColor 'highlight'            theme.editor_highlight
-        @setColor 'highlight_ul'         theme.editor_highlight_ul
-        @setColor 'highlight_bracket'    theme.editor_highlight_bracket
-        @setColor 'highlight_string'     theme.editor_highlight_string
-        @setColor 'highlight_bracket_ul' theme.editor_highlight_bracket_ul
-        @setColor 'highlight_string_ul'  theme.editor_highlight_string_ul
+        @setColor 'cursor'               theme.cursor
+        @setColor 'selection'            theme.selection
+        @setColor 'highlight'            theme.highlight
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -133,9 +124,9 @@ function draw extends view
         
         if row+view[1] == @state.mainCursor()[1]
             if linel > 0
-                @cells.bg_rect 0 row linel row @color.cursor_main
+                @cells.bg_rect 0 row linel row @color.cursor.main
             if linel < @cells.cols
-                @cells.bg_fill max(0 linel) row -1 row @color.cursor_empty
+                @cells.bg_fill max(0 linel) row -1 row @color.cursor.empty
         else
             if linel > 0
                 @cells.bg_rect 0 row linel row @color.bg
@@ -163,8 +154,8 @@ function draw extends view
     
     drawHighlights: ->
                             
-        bg = @color.highlight
-        ul = @color.highlight_ul
+        bg = @color.highlight.bg
+        ul = @color.highlight.ul
         bg = color.darken bg if not @cells.screen.t.hasFocus
         
         [vx vy] = @state.s.view
@@ -178,8 +169,8 @@ function draw extends view
             for x in highlight[0]...highlight[2]
                 hlc = @cells.get_char x-vx y
                 switch hlc
-                    '{' '[' '(' ')' ']' '}' ➜ ulc = @color.highlight_bracket_ul ; bgc = @color.highlight_bracket
-                    "'" '"'                 ➜ ulc = @color.highlight_string_ul  ; bgc = @color.highlight_string
+                    '{' '[' '(' ')' ']' '}' ➜ ulc = @color.highlight.bracket_ul ; bgc = @color.highlight.bracket
+                    "'" '"'                 ➜ ulc = @color.highlight.string_ul  ; bgc = @color.highlight.string
                                             ➜ ulc = ul ; bgc = bg
                 
                 @cells.set_bg x-vx y bgc
@@ -196,8 +187,8 @@ function draw extends view
         
         # prof.start 'selection'
         
-        spanbg = @color.selection
-        linebg = @color.selection_line
+        spanbg = @color.selection.span
+        linebg = @color.selection.line
         
         if not @cells.screen.t.hasFocus
             spanbg = color.darken spanbg
@@ -240,9 +231,9 @@ function draw extends view
         s = @state.s
         mainCursor = @state.mainCursor()
         
-        fg = theme[@name + '_cursor_fg'] ? theme.editor_cursor_fg
+        fg = theme.cursor.fg
 
-        bg = mode.themeColor @state 'editor_cursor_multi'
+        bg = mode.themeColor @state 'cursor.multi' theme.cursor.multi
 
         bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
@@ -256,9 +247,10 @@ function draw extends view
                         
         if @isCursorVisible mainCursor
              
-            fg  = theme[@name + '_cursor_fg'] ? theme.editor_cursor_fg
+            fg  = theme.cursor.fg
             
-            bg = mode.themeColor @state 'editor_cursor_main'
+            bg = mode.themeColor @state 'cursor.main' theme.cursor.main
+
             if not @hasFocus() ➜ bg = color.darken bg 
              
             [x y] = [mainCursor[0]-s.view[0] mainCursor[1]-s.view[1]]

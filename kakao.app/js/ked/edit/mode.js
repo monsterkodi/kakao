@@ -219,7 +219,7 @@ mode = (function ()
         }
     }
 
-    mode["themeColor"] = function (state, colorName)
+    mode["themeColor"] = function (state, colorName, defaultColor)
     {
         var m
 
@@ -229,10 +229,10 @@ mode = (function ()
             m = list[_a_]
             if (_k_.isFunc(m.themeColor))
             {
-                return m.themeColor(colorName)
+                return m.themeColor(colorName,defaultColor)
             }
         }
-        return theme[colorName]
+        return defaultColor
     }
 
     mode["preDrawLines"] = function (state, lines)

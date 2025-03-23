@@ -22,6 +22,8 @@ function crumbs extends view
         @pointerType = 'pointer'
         @rounded = ''
         
+        @setColor 'bg'          theme.crumbs.bg
+        @setColor 'fg'          theme.crumbs.fg
         @setColor 'empty_left'  '#000' 
         @setColor 'empty_right' '#000'
         
@@ -51,15 +53,13 @@ function crumbs extends view
         
         ⮐  if @hidden()
         ⮐  if empty @rounded
-    
-        c = theme.quicky_crumbs
-        
+            
         colors = []
         for i in 0...@split.length
             if i == @hoverIndex
                 colors.push color.values('#44a')
             else
-                colors.push color.darken(c 0.4+0.6*(i+1)/@split.length)
+                colors.push color.darken(@color.bg 0.4+0.6*(i+1)/@split.length)
         
         for x in 0...@rounded.length 
             
@@ -74,9 +74,9 @@ function crumbs extends view
                 @cells.set x 0 ch fg bg
             else
                 if si == @hoverIndex
-                    fg = theme.syntax.dir_leaf
+                    fg = color.adjustForBackground @color.fg bg 
                 else if si < @split.length-1
-                    fg = color.darken(theme.dir min(1 (si+3)/@split.length))
+                    fg = color.darken(@color.fg min(1 (si+3)/@split.length))
                 else
                     fg = theme.syntax.dir_leaf
                 

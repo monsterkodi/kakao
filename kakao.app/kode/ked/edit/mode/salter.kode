@@ -134,22 +134,6 @@ function salterMode
     
         switch key
         
-            # 'delete'
-            # 
-            #     @state.begin()
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.delete 'back' 
-            #     @state.end()
-            #     ⮐
-                
             'up'
                 if @state.s.main > 0
                     @state.setMain @state.s.main-1
@@ -181,12 +165,12 @@ function salterMode
     # 000       000   000  000      000   000  000   000  
     #  0000000   0000000   0000000   0000000   000   000  
     
-    themeColor: colorName ->
+    themeColor: colorName defaultColor ->
         
         switch colorName
-            'editor_cursor_multi' ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.2)
-            'editor_cursor_main'  ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.6)
+            'cursor.multi' ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.2)
+            'cursor.main'  ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.6)
         
-        theme[colorName]
+        defaultColor
 
 export salterMode

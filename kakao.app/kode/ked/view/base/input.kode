@@ -20,7 +20,7 @@ function input extends editor
         super screen name ['brckts' 'replex' 'unype']
         
         @setColor 'selection_line'  @color.selection
-        @setColor 'bg'              theme.quicky_bg
+        @setColor 'bg'              theme.quicky.bg
         
     hasFocus: -> @state.hasFocus
 

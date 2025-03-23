@@ -18,7 +18,7 @@ input = (function ()
         this["current"] = this["current"].bind(this)
         input.__super__.constructor.call(this,screen,name,['brckts','replex','unype'])
         this.setColor('selection_line',this.color.selection)
-        this.setColor('bg',theme.quicky_bg)
+        this.setColor('bg',theme.quicky.bg)
     }
 
     input.prototype["hasFocus"] = function ()

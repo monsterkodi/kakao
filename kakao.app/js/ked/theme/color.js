@@ -233,6 +233,21 @@ class color
         c = dr + dg + db
         return 1 + c / 3
     }
+
+    static adjustForBackground (fg, bg)
+    {
+        var contrast
+
+        contrast = color.contrast(bg,fg)
+        if (contrast < 1.4)
+        {
+            return color.brighten(fg,3 * (1.4 - contrast))
+        }
+        else
+        {
+            return fg
+        }
+    }
 }
 
 for (key in color.ansi256)

@@ -27,8 +27,8 @@ function inputchoice extends view
         @input   = new input   @screen "#{@name}_input"
         @choices = new choices @screen "#{@name}_choices" features
         
-        @setColor 'bg'    theme.quicky_bg
-        @setColor 'frame' theme.quicky_frame
+        @setColor 'bg'    theme.quicky.bg
+        @setColor 'frame' theme.quicky.frame
 
         @choices.mapscr?.hide()       
         

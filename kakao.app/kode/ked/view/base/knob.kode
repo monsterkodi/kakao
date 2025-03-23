@@ -84,7 +84,7 @@ function knob extends view
     
     draw: =>
         
-        fg = @hover ? theme.resize_column : theme.gutter
+        fg = @hover ? theme.resize_column : theme.gutter.bg
         
         switch @frameSide
 

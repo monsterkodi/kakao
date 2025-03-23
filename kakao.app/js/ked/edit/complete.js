@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var complete
 
@@ -28,11 +28,11 @@ complete = (function ()
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
         this.choices.scroll.handle = '▐'
-        this.color = {complete:theme.editor_selection}
-        this.choices.setColor('bg',theme.editor_complete_choices)
-        this.choices.scroll.setColor('bg',theme.editor_complete_choices)
-        this.choices.scroll.setColor('knob',theme.editor_complete_choices_scroll)
-        this.choices.scroll.setColor('dot',theme.editor_complete_choices_scroll)
+        this.color = {complete:theme.editor.selection}
+        this.choices.setColor('bg',theme.complete.bg)
+        this.choices.scroll.setColor('bg',theme.complete.bg)
+        this.choices.scroll.setColor('knob',theme.complete.scroll)
+        this.choices.scroll.setColor('dot',theme.complete.scroll)
         this.choices.on('action',this.onChoicesAction)
         this.visible = false
     }
@@ -66,7 +66,7 @@ complete = (function ()
     {
         this.turd = turd
     
-        var before, ch, ci, cx, cy, h, head, inserts, mc, mlw, x, y
+        var before, cx, cy, h, head, inserts, mc, mlw, x, y
 
         if (_k_.empty(this.turd))
         {
@@ -95,12 +95,6 @@ complete = (function ()
         head = this.words[0]
         cx = mc[0] - this.editor.state.s.view[0]
         cy = mc[1] - this.editor.state.s.view[1]
-        var list = _k_.list(head.slice(this.turd.length))
-        for (ci = 0; ci < list.length; ci++)
-        {
-            ch = list[ci]
-            this.editor.cells.set(cx + ci,cy,ch,'#fff',theme.selection)
-        }
         if (this.words.length <= 1)
         {
             return this.choices.clear()
@@ -305,7 +299,7 @@ complete = (function ()
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
         fy = cy + 1
-        this.editor.cells.draw_frame(fx,fy,fx + w + 1,fy + h + 1,{fg:theme.editor_complete_choices,bg:[0,0,0]})
+        this.editor.cells.draw_frame(fx,fy,fx + w + 1,fy + h + 1,{fg:theme.complete.bg,bg:[0,0,0]})
         this.choices.layout(x,y,w,h)
         return this.choices.draw()
     }

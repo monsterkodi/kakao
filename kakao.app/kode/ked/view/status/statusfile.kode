@@ -19,9 +19,9 @@ function statusfile extends view
 
         super screen name
         
-        @setColor 'bg'     theme.status
+        @setColor 'bg'     theme.status.bg
+        @setColor 'empty'  theme.status.empty
         @setColor 'hover'  theme.hover
-        @setColor 'empty'  theme.status_empty
         
         @pointerType = 'pointer'
         @syntax = new syntax

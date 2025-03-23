@@ -22,6 +22,8 @@ crumbs = (function ()
         crumbs.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
         this.rounded = ''
+        this.setColor('bg',theme.crumbs.bg)
+        this.setColor('fg',theme.crumbs.fg)
         this.setColor('empty_left','#000')
         this.setColor('empty_right','#000')
     }
@@ -49,7 +51,7 @@ crumbs = (function ()
 
     crumbs.prototype["draw"] = function ()
     {
-        var bg, c, ch, colors, fg, i, si, x
+        var bg, ch, colors, fg, i, si, x
 
         if (this.hidden())
         {
@@ -59,7 +61,6 @@ crumbs = (function ()
         {
             return
         }
-        c = theme.quicky_crumbs
         colors = []
         for (var _a_ = i = 0, _b_ = this.split.length; (_a_ <= _b_ ? i < this.split.length : i > this.split.length); (_a_ <= _b_ ? ++i : --i))
         {
@@ -69,7 +70,7 @@ crumbs = (function ()
             }
             else
             {
-                colors.push(color.darken(c,0.4 + 0.6 * (i + 1) / this.split.length))
+                colors.push(color.darken(this.color.bg,0.4 + 0.6 * (i + 1) / this.split.length))
             }
         }
         for (var _c_ = x = 0, _d_ = this.rounded.length; (_c_ <= _d_ ? x < this.rounded.length : x > this.rounded.length); (_c_ <= _d_ ? ++x : --x))
@@ -91,11 +92,11 @@ crumbs = (function ()
             {
                 if (si === this.hoverIndex)
                 {
-                    fg = theme.syntax.dir_leaf
+                    fg = color.adjustForBackground(this.color.fg,bg)
                 }
                 else if (si < this.split.length - 1)
                 {
-                    fg = color.darken(theme.dir,_k_.min(1,(si + 3) / this.split.length))
+                    fg = color.darken(this.color.fg,_k_.min(1,(si + 3) / this.split.length))
                 }
                 else
                 {

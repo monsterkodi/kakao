@@ -209,8 +209,6 @@ function cells
     adjustContrastForHighlight: x y highlightColor ->
         
         ofg = @get_fg x y
-        contrast = color.contrast highlightColor ofg
-        if contrast < 1.4
-            @set_fg x y color.brighten(ofg 3*(1.4-contrast))
+        @set_fg x y color.adjustForBackground(ofg highlightColor)        
                         
 export cells

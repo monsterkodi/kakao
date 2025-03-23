@@ -356,13 +356,11 @@ dirtree = (function ()
 
     dirtree.prototype["drawSelections"] = function ()
     {
-        var bg, current, li, x, xs, y
+        var bg, li, x, xs, y
 
-        current = this.color.current
-        this.color.current = (this.hasFocus() ? current : theme.dirtree_current_blur)
         if (li = this.indexOfOpenFile())
         {
-            bg = theme.gutter
+            bg = theme.gutter.bg
             y = li - this.state.s.view[1]
             if (y < this.cells.rows && li < this.state.s.lines.length)
             {
@@ -374,8 +372,7 @@ dirtree = (function ()
                 }
             }
         }
-        dirtree.__super__.drawSelections.call(this)
-        return this.color.current = current
+        return dirtree.__super__.drawSelections.call(this)
     }
 
     dirtree.prototype["indexOfOpenFile"] = function ()

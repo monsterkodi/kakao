@@ -43,8 +43,8 @@ browse = (function ()
         browse.__super__.constructor.call(this,this.screen,'browse')
         this.isVisible = false
         this.brocol = new brocol(this.screen,'browse_brocol')
-        this.setColor('bg',theme.quicky_bg)
-        this.setColor('frame',theme.quicky_frame)
+        this.setColor('bg',theme.quicky.bg)
+        this.setColor('frame',theme.quicky.frame)
         this.brocol.on('action',this.onBrocolAction)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 2
@@ -101,7 +101,7 @@ browse = (function ()
                 this.choices.cells.set(x,y,'',this.choices.color.current,bg)
                 if ((0 <= y && y < this.choices.cells.rows))
                 {
-                    return this.choices.cells.set_unsafe(x + 1,y,'',fg,bg)
+                    return this.choices.cells.set_unsafe(x + 1,y,'┤',fg,bg)
                 }
             }
         }
@@ -318,7 +318,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _284_63_
+        var upDir, _282_63_
 
         switch (action)
         {
@@ -336,7 +336,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_284_63_=choice.link) != null ? _284_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_282_63_=choice.link) != null ? _282_63_ : choice.path))
                     }
                 }
                 break

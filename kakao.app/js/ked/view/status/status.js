@@ -36,10 +36,11 @@ status = (function ()
         this.file = ''
         this.drawTime = ''
         this.pointerType = 'pointer'
+        this.setColor('gutter',theme.gutter.bg)
         this.crumbs = new crumbs(this.screen,'status_crumbs')
         this.statusfile = new statusfile(this.screen,'status_file')
-        this.crumbs.setColor('empty_left',theme.gutter)
-        this.crumbs.setColor('empty_right',theme.status_empty)
+        this.crumbs.setColor('empty_left',this.color.gutter)
+        this.crumbs.setColor('empty_right',theme.status.empty)
         this.crumbs.on('action',this.onCrumbsAction)
         this.statusfile.on('action',this.onFileAction)
     }
@@ -155,11 +156,11 @@ status = (function ()
         {
             if (_k_.isStr(fg))
             {
-                fg = theme[fg]
+                fg = theme.status[fg]
             }
             if (_k_.isStr(bg))
             {
-                bg = theme[bg]
+                bg = theme.status[bg]
             }
             this.cells.set(x,y,char,fg,bg)
             return 1
@@ -168,42 +169,42 @@ status = (function ()
         {
             return x += set(x,char,fg,bg)
         }).bind(this)
-        add('','status_col','gutter')
+        add('','col',this.color.gutter)
         colno = _k_.rpad(this.gutter - 1,`${cursor[0]}`)
         for (var _a_ = ci = 1, _b_ = this.gutter; (_a_ <= _b_ ? ci < this.gutter : ci > this.gutter); (_a_ <= _b_ ? ++ci : --ci))
         {
-            fg = (cursor[0] ? 'status_fg' : 'column_fg')
+            fg = (cursor[0] ? 'fg' : 'col_zero')
             if (belt.isLinesPosOutside(this.state.s.lines,cursor))
             {
-                fg = 'status_col_empty'
+                fg = 'col_empty'
             }
-            add(((ci - 1 < colno.length) ? colno[ci - 1] : ' '),fg,'status_col')
+            add(((ci - 1 < colno.length) ? colno[ci - 1] : ' '),fg,'col')
         }
-        add('','status_col','gutter')
+        add('','col',color.gutter)
         this.crumbs.draw()
         this.statusfile.draw()
         x += this.crumbs.rounded.length
         x += this.statusfile.rounded.length
-        add('','status_dark','status_empty')
+        add('','dark','empty')
         if (dty)
         {
-            add('','status_dirty','status_dark')
+            add('','dirty','dark')
         }
         if (dty)
         {
-            add(' ','status_dirty','status_dark')
+            add(' ','dirty','dark')
         }
         if (rdo)
         {
-            add('','status_redo','status_dark')
+            add('','redo','dark')
         }
-        add(' ','status_dark','status_dark')
+        add(' ','dark','dark')
         if (this.state.s.cursors.length > 1)
         {
             cur = `${this.state.s.cursors.length}♦`
             for (var _c_ = i = 0, _d_ = cur.length; (_c_ <= _d_ ? i < cur.length : i > cur.length); (_c_ <= _d_ ? ++i : --i))
             {
-                add(cur[i],((i < cur.length - 1) ? 'status_cur' : color.darken(theme.status_cur)),'status_dark')
+                add(cur[i],((i < cur.length - 1) ? 'cur' : color.darken(theme.status.cur)),'dark')
             }
         }
         if (this.state.s.selections.length)
@@ -211,7 +212,7 @@ status = (function ()
             sel = `${this.state.s.selections.length}≡`
             for (var _e_ = i = 0, _f_ = sel.length; (_e_ <= _f_ ? i < sel.length : i > sel.length); (_e_ <= _f_ ? ++i : --i))
             {
-                add(sel[i],((i < sel.length - 1) ? 'status_sel' : color.darken(theme.status_sel)),'status_dark')
+                add(sel[i],((i < sel.length - 1) ? 'sel' : color.darken(theme.status.sel)),'dark')
             }
         }
         if (this.state.s.highlights.length)
@@ -219,14 +220,14 @@ status = (function ()
             hil = `${this.state.s.highlights.length}❇`
             for (var _10_ = i = 0, _11_ = hil.length; (_10_ <= _11_ ? i < hil.length : i > hil.length); (_10_ <= _11_ ? ++i : --i))
             {
-                add(hil[i],((i < hil.length - 1) ? 'status_hil' : color.darken(theme.status_hil)),'status_dark')
+                add(hil[i],((i < hil.length - 1) ? 'hil' : color.darken(theme.status.hil)),'dark')
             }
         }
         for (var _12_ = ci = x, _13_ = cols - 1; (_12_ <= _13_ ? ci < cols - 1 : ci > cols - 1); (_12_ <= _13_ ? ++ci : --ci))
         {
-            add(' ',null,'status_dark')
+            add(' ',null,'dark')
         }
-        add('','status_dark',null)
+        add('','dark',null)
         ci = _k_.clamp(0,3,parseInt((this.time / (1000 * 1000) - 8) / 8))
         ch = ' •'[ci]
         fg = [[32,32,32],[0,96,0],[255,0,0],[255,255,0]][ci]
@@ -243,7 +244,7 @@ status = (function ()
                 break
         }
 
-        return set(cols - 2,ch,fg,'status_dark')
+        return set(cols - 2,ch,fg,'dark')
     }
 
     return status

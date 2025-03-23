@@ -19,9 +19,9 @@ gutter = (function ()
     
         gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
     
-        this.setColor('bg',theme.gutter)
-        this.setColor('bg_selected',theme.gutter_selected)
-        this.setColor('bg_fully_selected',theme.gutter_fully_selected)
+        this.setColor('bg',theme.gutter.bg)
+        this.setColor('bg_selected',theme.gutter.bg_selected)
+        this.setColor('bg_fully_selected',theme.gutter.bg_fully_selected)
         this.setColor('linenr',theme.linenr)
         this.setColor('cursor_main',theme.editor_cursor_main)
         this.setColor('cursor_multi',theme.editor_cursor_multi)

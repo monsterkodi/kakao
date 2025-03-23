@@ -35,7 +35,7 @@ function dircol extends view
         @dirtree.setColor 'cursor_empty'  @dirtree.color.bg
         @dirtree.scroll.setColor 'bg'     @dirtree.color.bg
         
-        @crumbs.setColor  'empty'         theme.gutter
+        @crumbs.setColor  'empty'         theme.gutter.bg
         
         post.on 'dircol.resize' @onDircolResize
         post.on 'dircol.toggle' @onDircolToggle
@@ -95,7 +95,7 @@ function dircol extends view
         ⮐  if @hidden() or @collapsed() or not @active
         
         @cells.fill_rect 0 1 -1 -1 ' ' null theme.dircol
-        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter
+        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
         
         @crumbs.draw()
         @dirtree.draw()

@@ -230,6 +230,14 @@ class color
         c = dr + dg + db 
         
         1+c/3
+        
+    @adjustForBackground: fg bg ->
+        
+        contrast = color.contrast bg fg
+        if contrast < 1.4
+            color.brighten(fg 3*(1.4-contrast))
+        else
+            fg
             
 for key,val of color.ansi256
     color.ansi256[key] = color.values val

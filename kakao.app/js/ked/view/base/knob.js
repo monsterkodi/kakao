@@ -107,7 +107,7 @@ knob = (function ()
     {
         var fg
 
-        fg = (this.hover ? theme.resize_column : theme.gutter)
+        fg = (this.hover ? theme.resize_column : theme.gutter.bg)
         switch (this.frameSide)
         {
             case 'top':

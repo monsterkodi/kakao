@@ -300,12 +300,12 @@ function dirtree extends choices
         
     drawSelections: ->
         
-        current = @color.current
+        # current = @color.current
         
-        @color.current = @hasFocus() ? current : theme.dirtree_current_blur
+        # @color.current = @hasFocus() ? current : theme.dirtree_current_blur
         
         if li = @indexOfOpenFile()
-            bg = theme.gutter
+            bg = theme.gutter.bg
             y  = li-@state.s.view[1]
             if y < @cells.rows and li < @state.s.lines.length
                 xs = kseg.headCount(@state.s.lines[li] ' ')
@@ -315,7 +315,7 @@ function dirtree extends choices
         
         super()
                 
-        @color.current = current
+        # @color.current = current
         
     indexOfOpenFile: ->
         
