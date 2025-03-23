@@ -36,8 +36,7 @@ choices = (function ()
         this["extract"] = this["extract"].bind(this)
         choices.__super__.constructor.call(this,screen,name,features)
         this.setColor('bg',theme.editor.bg)
-        this.setColor('current',theme.choices.current)
-        this.setColor('current_blur',theme.choices.current_blur)
+        this.setColor('hover',theme.hover)
         this.pointerType = 'pointer'
         this.roundedSelections = true
         this.frontRoundOffset = 0
@@ -52,7 +51,7 @@ choices = (function ()
     {
         choices.__super__.setColor.call(this,key,color)
     
-        var _49_19_, _50_19_
+        var _48_19_, _49_19_
 
         if (key === 'bg')
         {
@@ -84,9 +83,9 @@ choices = (function ()
         this.items = items
         this.key = key
     
-        var lines, _70_15_
+        var lines, _69_15_
 
-        this.items = ((_70_15_=this.items) != null ? _70_15_ : [])
+        this.items = ((_69_15_=this.items) != null ? _69_15_ : [])
         this.fuzzied = this.items
         this.filterText = ''
         lines = (this.key ? this.items.map(this.extract) : this.items)
@@ -124,7 +123,7 @@ choices = (function ()
         {
             return choices.__super__.drawSelections.call(this)
         }
-        fg = (this.hasFocus() ? this.color.current : this.color.current_blur)
+        fg = (this.hasFocus() ? this.color.hover.bg : this.color.hover.blur)
         if (!this.cells.screen.t.hasFocus)
         {
             fg = color.darken(fg)
@@ -191,14 +190,14 @@ choices = (function ()
 
     choices.prototype["hasNext"] = function ()
     {
-        var _148_26_
+        var _147_26_
 
         return (this.nextRow() != null)
     }
 
     choices.prototype["hasPrev"] = function ()
     {
-        var _149_26_
+        var _148_26_
 
         return (this.prevRow() != null)
     }
@@ -382,7 +381,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _293_21_
+        var col, dx, dy, ret, row, _292_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

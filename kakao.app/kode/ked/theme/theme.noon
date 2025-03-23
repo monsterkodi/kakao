@@ -4,9 +4,14 @@
 # ███   ███  ███
 #  ███████   ███
 
+hover                                       
+    bg                                      #44a   
+    blur                                    #222   
+
 editor
     bg                                      #000   
     empty                                   #000   
+    mapscr                                  #060606
     
 cursor
     multi                                   #f00   
@@ -25,10 +30,7 @@ highlight
     bracket_ul                              #44a   
     string                                  #040   
     string_ul                               #050   
-    
-mapview                                     #000   
-mapscr                                      #060606
-                                              
+                                                  
 dirtree
     bg                                      #111   
 
@@ -39,11 +41,10 @@ funtree
     bound                                   #4d4   
     async                                   #f88   
                                             
-hover                                       #44a   
-resize_column                               #222   
-linenr                                      #1a1a1a
-column                                      #222   
-
+knob                            
+    fg                                      #222   
+    bg                                      #111   
+    
 gutter 
     fg                                      #1a1a1a
     bg                                      #0a0a0a
@@ -81,11 +82,7 @@ quicky
 crumbs
     fg                                      #88f   
     bg                                      #222   
-                                              
-choices
-    current                                 #44a   
-    current_blur                            #222   
-                                              
+                                                                                            
 complete
     bg                                      #006   
     scroll                                  #22a   

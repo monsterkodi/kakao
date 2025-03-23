@@ -19,22 +19,19 @@ function knob extends view
         
         super screen name
         
-        @parentName = @name[0...-5]
-        @frameSide = 'right'
-        @maxWidth = 68
-        @pointerType = @resizePointer()
+        @setColor 'fg' theme.knob.fg
+        @setColor 'bg' theme.knob.bg
+        
+        @parentName  = @name[0...-5]
+        @frameSide   = 'right'
+        @maxWidth    = 68
+        @pointerType = 'ew-resize'
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
-    
-    resizePointer: ->
-        
-        switch @frameSide
-            'right' 'left' ➜ 'ew-resize'
-            'top' 'bottom' ➜ 'ns-resize'
     
     onMouse: event =>
         
@@ -57,13 +54,13 @@ function knob extends view
                     [col row] = @cells.posForEvent event
                     
                     delta = switch @frameSide
-                        'top'   ➜ row
                         'left'  ➜ -col
                         'right' ➜ col
                     
                     post.emit 'pointer' 'grabbing'
                     if delta
                         post.emit 'view.size' @parentName @frameSide delta
+                        
                     ⮐  redraw:true
                     
                 @hover = false
@@ -71,7 +68,7 @@ function knob extends view
             'release'
             
                 if @doDrag
-                    post.emit 'pointer' @resizePointer() if @hover
+                    post.emit 'pointer' @pointerType if @hover
                     delete @doDrag
                     ⮐  redraw:true
         @hover
@@ -83,17 +80,9 @@ function knob extends view
     # 0000000    000   000  000   000  00     00  
     
     draw: =>
+    
+        ⮐  if not @hover
         
-        fg = @hover ? theme.resize_column : theme.gutter.bg
-        
-        switch @frameSide
-
-            'top'   ➜ @cells.set int(@cells.cols/2) 0 '●' fg
-
-            'left'
-            'right'
-                
-                ⮐  if not @hover
-                @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funtree.bg
+        @cells.fill_col 0 0 @cells.rows-1 '|' @color.fg @color.bg
 
 export knob

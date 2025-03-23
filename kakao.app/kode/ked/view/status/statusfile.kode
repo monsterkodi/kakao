@@ -21,7 +21,7 @@ function statusfile extends view
         
         @setColor 'bg'     theme.status.bg
         @setColor 'empty'  theme.status.empty
-        @setColor 'hover'  theme.hover
+        @setColor 'hover'  theme.hover.bg
         
         @pointerType = 'pointer'
         @syntax = new syntax

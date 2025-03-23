@@ -23,7 +23,7 @@ function mapview extends view
         
         super screen @state.owner() + '.mapview'
         
-        @setColor 'bg' theme.mapview
+        @setColor 'bg' theme.quicky.bg
         
         @imgId  = kstr.hash(@state.name) & ~0xffff
         @rowOffset  = 0

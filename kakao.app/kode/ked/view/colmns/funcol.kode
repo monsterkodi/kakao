@@ -33,6 +33,8 @@ function funcol extends view
         @funtree.setColor 'cursor_empty'  @funtree.color.bg
         @funtree.scroll.setColor 'bg'     @funtree.color.bg
         
+        @knob   .setColor 'bg'            @funtree.color.bg
+        
         post.on 'funcol.resize' @onFuncolResize
         post.on 'funcol.toggle' @onFuncolToggle
         post.on 'session.merge' @onSessionMerge
@@ -140,11 +142,6 @@ function funcol extends view
         
         ⮐  if not @funtree.hasFocus()
         
-        # switch key
-        # 
-        #     'cmd+left'
-        #     'ctrl+left' ➜ ⮐ @setRoot slash.dir(@funtree.currentRoot)
-            
         @funtree.onKey key event
 
 export funcol

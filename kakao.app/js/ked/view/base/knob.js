@@ -18,26 +18,12 @@ knob = (function ()
         this["draw"] = this["draw"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         knob.__super__.constructor.call(this,screen,name)
+        this.setColor('fg',theme.knob.fg)
+        this.setColor('bg',theme.knob.bg)
         this.parentName = this.name.slice(0, -5)
         this.frameSide = 'right'
         this.maxWidth = 68
-        this.pointerType = this.resizePointer()
-    }
-
-    knob.prototype["resizePointer"] = function ()
-    {
-        switch (this.frameSide)
-        {
-            case 'right':
-            case 'left':
-                return 'ew-resize'
-
-            case 'top':
-            case 'bottom':
-                return 'ns-resize'
-
-        }
-
+        this.pointerType = 'ew-resize'
     }
 
     knob.prototype["onMouse"] = function (event)
@@ -66,9 +52,6 @@ knob = (function ()
                     {
                         switch (this.frameSide)
                         {
-                            case 'top':
-                                return row
-
                             case 'left':
                                 return -col
 
@@ -92,7 +75,7 @@ knob = (function ()
                 {
                     if (this.hover)
                     {
-                        post.emit('pointer',this.resizePointer())
+                        post.emit('pointer',this.pointerType)
                     }
                     delete this.doDrag
                     return {redraw:true}
@@ -105,24 +88,11 @@ knob = (function ()
 
     knob.prototype["draw"] = function ()
     {
-        var fg
-
-        fg = (this.hover ? theme.resize_column : theme.gutter.bg)
-        switch (this.frameSide)
+        if (!this.hover)
         {
-            case 'top':
-                return this.cells.set(parseInt(this.cells.cols / 2),0,'●',fg)
-
-            case 'left':
-            case 'right':
-                if (!this.hover)
-                {
-                    return
-                }
-                return this.cells.fill_col(0,0,this.cells.rows - 1,'|',fg,theme.funtree.bg)
-
+            return
         }
-
+        return this.cells.fill_col(0,0,this.cells.rows - 1,'|',this.color.fg,this.color.bg)
     }
 
     return knob

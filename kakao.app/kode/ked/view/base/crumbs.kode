@@ -22,6 +22,7 @@ function crumbs extends view
         @pointerType = 'pointer'
         @rounded = ''
         
+        @setColor 'hover'       theme.hover.bg
         @setColor 'bg'          theme.crumbs.bg
         @setColor 'fg'          theme.crumbs.fg
         @setColor 'empty_left'  '#000' 
@@ -57,7 +58,7 @@ function crumbs extends view
         colors = []
         for i in 0...@split.length
             if i == @hoverIndex
-                colors.push color.values('#44a')
+                colors.push @color.hover
             else
                 colors.push color.darken(@color.bg 0.4+0.6*(i+1)/@split.length)
         

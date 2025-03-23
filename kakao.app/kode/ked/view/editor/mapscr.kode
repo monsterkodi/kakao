@@ -26,7 +26,7 @@ function mapscr extends mapview
         
         @knobId = @imgId+0xeeee
         
-        @setColor 'bg' theme.mapscr
+        @setColor 'bg' theme.editor.mapscr
         
         screen.t.on 'preResize' @clearImages
         

@@ -30,7 +30,7 @@ mapscr = (function ()
         this.state.on('view.changed',this.drawKnob)
         this.pointerType = 'pointer'
         this.knobId = this.imgId + 0xeeee
-        this.setColor('bg',theme.mapscr)
+        this.setColor('bg',theme.editor.mapscr)
         screen.t.on('preResize',this.clearImages)
         post.on('popup.show',this.hide)
         post.on('greet.show',this.hide)

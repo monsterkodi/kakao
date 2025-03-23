@@ -33,9 +33,12 @@ function dircol extends view
         @dirtree.setColor 'empty'         @dirtree.color.bg
         @dirtree.setColor 'cursor_main'   @dirtree.color.bg
         @dirtree.setColor 'cursor_empty'  @dirtree.color.bg
+        
         @dirtree.scroll.setColor 'bg'     @dirtree.color.bg
         
-        @crumbs.setColor  'empty'         theme.gutter.bg
+        @knob   .setColor 'bg'            @dirtree.color.bg
+        
+        @crumbs .setColor 'empty'         theme.gutter.bg
         
         post.on 'dircol.resize' @onDircolResize
         post.on 'dircol.toggle' @onDircolToggle

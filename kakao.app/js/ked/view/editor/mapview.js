@@ -37,7 +37,7 @@ mapview = (function ()
         this["show"] = this["show"].bind(this)
         this["reload"] = this["reload"].bind(this)
         mapview.__super__.constructor.call(this,screen,this.state.owner() + '.mapview')
-        this.setColor('bg',theme.mapview)
+        this.setColor('bg',theme.quicky.bg)
         this.imgId = kstr.hash(this.state.name) & ~
         0xffff
         this.rowOffset = 0

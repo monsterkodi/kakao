@@ -22,6 +22,7 @@ crumbs = (function ()
         crumbs.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
         this.rounded = ''
+        this.setColor('hover',theme.hover.bg)
         this.setColor('bg',theme.crumbs.bg)
         this.setColor('fg',theme.crumbs.fg)
         this.setColor('empty_left','#000')
@@ -66,7 +67,7 @@ crumbs = (function ()
         {
             if (i === this.hoverIndex)
             {
-                colors.push(color.values('#44a'))
+                colors.push(this.color.hover)
             }
             else
             {
@@ -125,13 +126,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _110_14_
+        var padding, _111_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_110_14_=this.path) != null ? _110_14_ : '')
+        this.path = ((_111_14_=this.path) != null ? _111_14_ : '')
         if (this.path === '')
         {
             this.rounded = ''
@@ -176,7 +177,7 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _157_26_
+        var col, index, path, row, si, _158_26_
 
         var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
 
