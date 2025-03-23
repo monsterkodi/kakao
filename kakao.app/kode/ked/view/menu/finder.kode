@@ -29,7 +29,9 @@ function finder extends inputchoice
         @choices.state.skipAdjustViewForMainCursor = true
         @choices.state.syntax.setExt 'kode'
         @choices.gutter.lineno = @lineno
-        @choices.gutter.color.highlight = theme.linenr
+        # revert gutter highlight color to default fg color since all lines are highlighted
+        @choices.gutter.setColor 'highlight'         theme.gutter.fg 
+        @choices.gutter.setColor 'bg_fully_selected' theme.finder.bg
 
     # ███      ███  ███   ███  ████████  ███   ███   ███████ 
     # ███      ███  ████  ███  ███       ████  ███  ███   ███

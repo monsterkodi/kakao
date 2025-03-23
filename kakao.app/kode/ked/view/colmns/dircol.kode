@@ -29,7 +29,7 @@ function dircol extends view
         
         @crumbs.on 'action' @onCrumbsAction
         
-        @dirtree.setColor 'bg'            theme.dircol
+        @dirtree.setColor 'bg'            theme.dirtree.bg
         @dirtree.setColor 'empty'         @dirtree.color.bg
         @dirtree.setColor 'cursor_main'   @dirtree.color.bg
         @dirtree.setColor 'cursor_empty'  @dirtree.color.bg
@@ -94,7 +94,7 @@ function dircol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells.fill_rect 0 1 -1 -1 ' ' null theme.dircol
+        @cells.fill_rect 0 1 -1 -1 ' ' null theme.dirtree.bg
         @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
         
         @crumbs.draw()

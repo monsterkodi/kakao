@@ -27,7 +27,7 @@ function funcol extends view
         
         @knob.frameSide = 'left'
         
-        @funtree.setColor 'bg'            theme.funcol
+        @funtree.setColor 'bg'            theme.funtree.bg
         @funtree.setColor 'empty'         @funtree.color.bg
         @funtree.setColor 'cursor_main'   @funtree.color.bg
         @funtree.setColor 'cursor_empty'  @funtree.color.bg
@@ -70,7 +70,7 @@ function funcol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funcol
+        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funtree.bg
         @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
         
         @funtree.draw()

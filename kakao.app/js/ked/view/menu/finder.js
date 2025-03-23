@@ -36,12 +36,13 @@ finder = (function ()
         this.choices.state.skipAdjustViewForMainCursor = true
         this.choices.state.syntax.setExt('kode')
         this.choices.gutter.lineno = this.lineno
-        this.choices.gutter.color.highlight = theme.linenr
+        this.choices.gutter.setColor('highlight',theme.gutter.fg)
+        this.choices.gutter.setColor('bg_fully_selected',theme.finder.bg)
     }
 
     finder.prototype["lineno"] = function (y)
     {
-        var pad, _45_43_
+        var pad, _47_43_
 
         pad = this.choices.gutter.cells.cols - 1
         if ((0 <= y && y < this.choices.fuzzied.length))
@@ -81,7 +82,7 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _111_87_
+        var cursorLine, front, span, _113_87_
 
         if (_k_.empty(text))
         {
@@ -111,10 +112,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_111_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_113_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _111_87_ : 0))
+            })) != null ? _113_87_ : 0))
         }
         else
         {

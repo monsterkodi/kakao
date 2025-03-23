@@ -94,6 +94,6 @@ function knob extends view
             'right'
                 
                 ⮐  if not @hover
-                @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funcol
+                @cells.fill_col 0 0 @cells.rows-1 '|' fg theme.funtree.bg
 
 export knob

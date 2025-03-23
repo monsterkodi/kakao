@@ -34,7 +34,7 @@ funcol = (function ()
         this.knob = new knob(screen,`${this.name}_knob`)
         this.funtree = new funtree(screen,`${this.name}_funtree`,['scrllr'])
         this.knob.frameSide = 'left'
-        this.funtree.setColor('bg',theme.funcol)
+        this.funtree.setColor('bg',theme.funtree.bg)
         this.funtree.setColor('empty',this.funtree.color.bg)
         this.funtree.setColor('cursor_main',this.funtree.color.bg)
         this.funtree.setColor('cursor_empty',this.funtree.color.bg)
@@ -71,7 +71,7 @@ funcol = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,1,-1,-1,' ',null,theme.funcol)
+        this.cells.fill_rect(0,1,-1,-1,' ',null,theme.funtree.bg)
         this.cells.fill_rect(0,0,-1,0,' ',null,theme.gutter.bg)
         this.funtree.draw()
         this.knob.draw()

@@ -23,9 +23,11 @@
   },
   "mapview": "#000",
   "mapscr": "#060606",
-  "dircol": "#111",
-  "funcol": "#0a0a0a",
+  "dirtree": {
+    "bg": "#111"
+  },
   "funtree": {
+    "bg": "#0a0a0a",
     "class": "#ff6",
     "func": "#aaf",
     "bound": "#4d4",
@@ -36,6 +38,7 @@
   "linenr": "#1a1a1a",
   "column": "#222",
   "gutter": {
+    "fg": "#1a1a1a",
     "bg": "#0a0a0a",
     "bg_fully_selected": "#161616",
     "bg_selected": "#228"

@@ -19,15 +19,15 @@ gutter = (function ()
     
         gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
     
+        this.setColor('fg',theme.gutter.fg)
         this.setColor('bg',theme.gutter.bg)
         this.setColor('bg_selected',theme.gutter.bg_selected)
         this.setColor('bg_fully_selected',theme.gutter.bg_fully_selected)
-        this.setColor('linenr',theme.linenr)
-        this.setColor('cursor_main',theme.editor_cursor_main)
-        this.setColor('cursor_multi',theme.editor_cursor_multi)
-        this.setColor('selection',theme.editor_selection)
-        this.setColor('selection_line',theme.editor_selection_line)
-        this.setColor('highlight',theme.editor_highlight)
+        this.setColor('cursor_main',theme.cursor.main)
+        this.setColor('cursor_multi',theme.cursor.multi)
+        this.setColor('selection',theme.selection.span)
+        this.setColor('selection_line',theme.selection.line)
+        this.setColor('highlight',theme.highlight.bg)
     }
 
     gutter.prototype["lineno"] = function (y)
@@ -68,7 +68,7 @@ gutter = (function ()
                     }
                     else
                     {
-                        fg = y === mainCursor[1] ? color.darken(this.color.cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? this.color.cursor_multi : spansel ? this.color.selection : selected ? this.color.selection_line : highlighted ? this.color.highlight : this.color.linenr
+                        fg = y === mainCursor[1] ? color.darken(this.color.cursor_main,(this.state.hasFocus != null),{1:0.5}) : hasCursor ? this.color.cursor_multi : spansel ? this.color.selection : selected ? this.color.selection_line : highlighted ? this.color.highlight : this.color.fg
                         if ((selected || hasCursor || highlighted) && !this.cells.screen.t.hasFocus)
                         {
                             fg = color.darken(fg)

@@ -45,7 +45,7 @@ dircol = (function ()
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
         this.dirtree = new dirtree(screen,`${this.name}_dirtree`,['scroll'])
         this.crumbs.on('action',this.onCrumbsAction)
-        this.dirtree.setColor('bg',theme.dircol)
+        this.dirtree.setColor('bg',theme.dirtree.bg)
         this.dirtree.setColor('empty',this.dirtree.color.bg)
         this.dirtree.setColor('cursor_main',this.dirtree.color.bg)
         this.dirtree.setColor('cursor_empty',this.dirtree.color.bg)
@@ -124,7 +124,7 @@ dircol = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,1,-1,-1,' ',null,theme.dircol)
+        this.cells.fill_rect(0,1,-1,-1,' ',null,theme.dirtree.bg)
         this.cells.fill_rect(0,0,-1,0,' ',null,theme.gutter.bg)
         this.crumbs.draw()
         this.dirtree.draw()

@@ -119,7 +119,7 @@ knob = (function ()
                 {
                     return
                 }
-                return this.cells.fill_col(0,0,this.cells.rows - 1,'|',fg,theme.funcol)
+                return this.cells.fill_col(0,0,this.cells.rows - 1,'|',fg,theme.funtree.bg)
 
         }
 
