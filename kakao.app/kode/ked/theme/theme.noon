@@ -112,6 +112,7 @@ syntax
     punct minor                             #333   
     punct define                            #333   
     punct comment triple                    #222   
+    punct code triple                       #222   
     punct comment                           #222   
     section                                 #ccf   
     number hex                              #aaf   
@@ -151,6 +152,7 @@ syntax
     method                                  #ff6   
     class                                   #ff4   
     module                                  #fc0   
+    module this                             #fc0   
     function                                #fa0   
     punct class                             #f90   
     semver                                  #f90   

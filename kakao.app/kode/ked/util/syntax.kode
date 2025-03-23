@@ -31,6 +31,12 @@ function syntax
     
     setColors: @colors => @ansi = true
         
+    #  ███████  ████████   ███████   ███       ███████
+    # ███       ███       ███        ███      ███     
+    # ███████   ███████   ███  ████  ███      ███████ 
+    #      ███  ███       ███   ███  ███           ███
+    # ███████   ████████   ███████   ███████  ███████ 
+
     setSegls: segls =>
         
         if valid @config
@@ -53,6 +59,12 @@ function syntax
                 @hash[hsh] = @diss[idx]
                 @liha[idx] = hsh
             
+    # ███   ███  ████████   ███████     ███████   █████████  ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███     ███     ███     
+    # ███   ███  ████████   ███   ███  █████████     ███     ███████ 
+    # ███   ███  ███        ███   ███  ███   ███     ███     ███     
+    #  ███████   ███        ███████    ███   ███     ███     ████████
+
     partialUpdate: segls =>
         
         ⮐  if @diss.length != segls.length
@@ -83,6 +95,12 @@ function syntax
         for segl in segls
             @addSegl segl ext
             
+    #  ███████  ███       ███████    ███████   ███████
+    # ███       ███      ███   ███  ███       ███     
+    # ███       ███      █████████  ███████   ███████ 
+    # ███       ███      ███   ███       ███       ███
+    #  ███████  ███████  ███   ███  ███████   ███████ 
+
     getClass: x y =>
         
         for dss in @diss[y]
@@ -90,6 +108,12 @@ function syntax
                 ⮐  dss.clss
         'text'
         
+    #  ███████   ███████   ███       ███████   ████████ 
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    # ███       ███   ███  ███      ███   ███  ███████  
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    #  ███████   ███████   ███████   ███████   ███   ███
+
     getColor: x y =>
         
         if @ansi ➜ ⮐  @getAnsiColor x y
@@ -99,10 +123,17 @@ function syntax
         else
             clss = x
         
-        log "syntax.getColor - no syntax color for '#{clss}'" if empty theme.syntax[clss]
+        if empty theme.syntax[clss]
+            log "syntax.getColor - no syntax color for '#{clss}'" @diss[y] 
         
         theme.syntax[clss] ? [255 0 0]
         
+    #  ███████   ███   ███   ███████  ███
+    # ███   ███  ████  ███  ███       ███
+    # █████████  ███ █ ███  ███████   ███
+    # ███   ███  ███  ████       ███  ███
+    # ███   ███  ███   ███  ███████   ███
+
     getAnsiColor: x y =>
         
         for clr in @colors[y]
@@ -115,6 +146,12 @@ function syntax
                 
         [256 0 256]
         
+    #  ███████  ███   ███   ███████   ████████ 
+    # ███       ███   ███  ███   ███  ███   ███
+    # ███       █████████  █████████  ███████  
+    # ███       ███   ███  ███   ███  ███   ███
+    #  ███████  ███   ███  ███   ███  ███   ███
+
     getChar: x y char =>
         
         clss = @getClass x y

@@ -209,7 +209,7 @@ toExport["kulur"] = function ()
         compare(inc(rgs,2,'0'),'comment')
         compare(inc(rgs,6,'0'),'comment')
         dss = dissect("###\n 0 1 0 \n###")
-        compare(inc(dss[1],1,"0"),'comment triple')
+        compare(inc(dss[1],1,"0"),'number')
         lang('styl')
         rgs = ranges("// 000")
         compare(inc(rgs,3,"000"),'comment header')
@@ -523,23 +523,27 @@ text`)
         compare(inc(dss[3],5,"h4"),'text h4')
         compare(inc(dss[4],0,"#"),'punct h5')
         compare(inc(dss[4],6,"h5"),'text h5')
-        dss = dissect(`\`\`\`js
-\`\`\``)
+        dss = dissect('```js\n```')
         compare(inc(dss[1],0,'`'),'punct code triple')
-        dss = dissect(`\`\`\`js
-\`\`\``)
-        compare(inc(dss[1],0,'`'),'punct code triple')
-    })
-    dss = dissect(`abc
+        dss = dissect(`abc
     def    hello number 0.123
 - num 0.2 `)
-    console.log('dss2',dss[2])
-    compare(inc(dss[1],24,'0'),'number float')
-    compare(inc(dss[1],25,'.'),'punct number float')
-    compare(inc(dss[1],26,'123'),'number float')
-    compare(inc(dss[2],6,'0'),'number float')
-    compare(inc(dss[2],7,'.'),'punct number float')
-    compare(inc(dss[2],8,'2'),'number float')
+        compare(inc(dss[1],24,'0'),'number float')
+        compare(inc(dss[1],25,'.'),'punct number float')
+        compare(inc(dss[1],26,'123'),'number float')
+        compare(inc(dss[2],6,'0'),'number float')
+        compare(inc(dss[2],7,'.'),'punct number float')
+        compare(inc(dss[2],8,'2'),'number float')
+        dss = dissect(`ugga
+    - fix me!`)
+        compare(inc(dss[1],4,'-'),'punct li2 marker')
+        dss = dissect(`ugga
+     - fix me!`)
+        compare(inc(dss[1],5,'-'),'punct li2 marker')
+        dss = dissect(`ugga
+      - fix me!`)
+        compare(inc(dss[1],6,'-'),'punct li2 marker')
+    })
 }
 toExport["kulur"]._section_ = true
 toExport._test_ = true

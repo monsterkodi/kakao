@@ -177,7 +177,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _104_27_
+        var clss, _129_27_
 
         if (this.ansi)
         {
@@ -193,14 +193,14 @@ syntax = (function ()
         }
         if (_k_.empty(theme.syntax[clss]))
         {
-            console.log(`syntax.getColor - no syntax color for '${clss}'`)
+            console.log(`syntax.getColor - no syntax color for '${clss}'`,this.diss[y])
         }
-        return ((_104_27_=theme.syntax[clss]) != null ? _104_27_ : [255,0,0])
+        return ((_129_27_=theme.syntax[clss]) != null ? _129_27_ : [255,0,0])
     }
 
     syntax.prototype["getAnsiColor"] = function (x, y)
     {
-        var clr, _110_24_
+        var clr, _141_24_
 
         var list = _k_.list(this.colors[y])
         for (var _a_ = 0; _a_ < list.length; _a_++)

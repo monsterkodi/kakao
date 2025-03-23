@@ -121,6 +121,7 @@ function git
             for file in status[key]
                 status.files[file] = key
         
+        log 'git.status post' status
         post.emit 'git.status' status
         @statusCache[gitDir] = status
                 

@@ -135,7 +135,6 @@ searcher = (function ()
         if (_k_.empty(text))
         {
             this.input.grabFocus()
-            console.log('searcher open empty')
             return searcher.__super__.show.call(this)
         }
         editorFile = ked_session.get('editor▸file')

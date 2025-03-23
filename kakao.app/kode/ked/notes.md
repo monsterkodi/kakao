@@ -20,6 +20,16 @@
 #### todo
 ##### todo
 
+- dirtree
+    - git status!!!!!
+    
+- searcher
+    - fix input reset to some weird previous value!!!!!
+    - fix right action triggering when input has focus!!!
+        - should only apply when search results are filtered?
+    
+- unsaved changes 'tabs'
+
 - macro
     - class
     - set prefs
@@ -41,6 +51,7 @@
     
 - funclist
     - autohighlight function at main cursor
+        - use that information to jump to correct counterpart positions!
     - swap with mapscr when the fileeditor hasn't many columns?
     - searchable?
     - should list md headings
@@ -85,6 +96,11 @@
         - ~\d+ single character
         - ~\d+n multiple characters
         - ~...*n n times *
+        
+- md mode
+    - activates on md file load
+    - switches italic and bold fonts
+    - handle new kitty font size protocol?
 
 - mapscroll 
     - make scrollbar handle not jump and unblurred
@@ -108,7 +124,6 @@
 ### nice to have
     
     - tabs
-    - git
     
     - unicode replacement mode ~[n][a-Z]
         - insert n characters if provided 

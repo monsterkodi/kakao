@@ -619,14 +619,10 @@ noonProp = ->
 
 noonPunct = ->
 
-    # ⮐  if notCode # makes this sense here ???
-
     noonProp()
 
 noonWord = ->
 
-    # ⮐  if notCode # makes this sense here ???
-    
     if chunk.start == 0
     
         setValue 0 'obj'
@@ -650,11 +646,10 @@ urlPunct = ->
                 setValue  3 'url domain'
                 setValue  4 'punct url tld'
                 setValue  5 'url tld'
-
-                ⮐ 6
+                ⮐  6
 
         if chunk.match == '.'
-            if not prev.clss.startsWith('number') and prev.clss != 'semver' and prev.match not in '\\./'
+            if not prev.clss.startsWith('number') and prev.clss != 'semver' and prev.match not in '\\./' and not /\d+/.test(prev.match)
                 if next = getChunk 1
                     if next.start == chunk.start+chunk.length
                         fileext = next.match
@@ -849,8 +844,11 @@ simpleString = ->
                 if next.start == chunk.start + chunk.length
                     scnd = getChunk 2
                     if not scnd or scnd.match != "'"
-                        ⮐ stacked()
-            
+                        ⮐  stacked()
+        
+        if chunk.clss == 'punct code triple'
+            ⮐ 0
+                        
         if topType == type
             addValue 0 type
             popStack()
@@ -900,8 +898,6 @@ tripleString = ->
 
 number = ->
 
-    ⮐  if notCode
-
     if NUMBER.test chunk.match
         prev = getmatch(-1)
         if prev == '.'
@@ -919,7 +915,7 @@ number = ->
 
             if getValue(-2) == 'number'
                 setValue -2 'number float'
-                addValue -1 'number float'
+                setValue -1 'punct number float'
                 setValue  0 'number float'
                 ⮐  1
         if prev == '#'
@@ -933,7 +929,6 @@ number = ->
         chunk.clss = 'number hex'
         ⮐  1
         
-    # log "number #{chunk.match}"    
     if HEX.test chunk.match
         if getmatch(-1) == '#'
             chunk.clss = 'number hex'
@@ -1012,7 +1007,7 @@ mdPunct = ->
     if chunkIndex == 0
 
         if chunk.turd.length <= 1 and chunk.match in '-*' and getChunk(1)?.start > chunk.start+1
-            type = ['li1''li2''li3''li4''li5'][chunk.start/4]
+            type = ['li1''li2''li3''li4''li5'][parseInt chunk.start/4]
             pushStack merge:true fill:true type:type
             ⮐  addValue 0 type + ' marker'
 
@@ -1521,10 +1516,9 @@ syntax = arg ->
 
 dissect = segls ext='kode' ->
     
-    ⮐ [] if empty segls
+    ⮐  [] if empty segls
 
     segls = kseg.segls segls
-    
     parse(segls ext).map (l) -> l.chunks
     
 ranges = str ext='kode' ->

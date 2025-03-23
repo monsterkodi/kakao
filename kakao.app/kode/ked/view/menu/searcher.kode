@@ -134,7 +134,6 @@ function searcher extends finder
         
         if empty text
             @input.grabFocus()
-            log 'searcher open empty'
             ⮐  super()
         
         editorFile = ked_session.get 'editor▸file'
