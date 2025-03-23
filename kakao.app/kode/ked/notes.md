@@ -50,7 +50,6 @@
     - fix delete and other issues
 
 - dirtree
-    - should listen to file change events
     - git status
     - searchable?
     - set hover highlight to editor file when loosing focus
@@ -120,9 +119,6 @@
     - ansi mode
         - store ansi color in cells
         - color palette
-        
-    - theme  
-        - color vibrancy?      
         
     - help 
         - interactive-keyboard-shortcuts

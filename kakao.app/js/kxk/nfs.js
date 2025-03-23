@@ -1,20 +1,22 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
 
 import slash from "./slash.js"
 
 import fs from "fs"
+
+import child_process from "child_process"
 
 import fsp from 'fs/promises'
 class NFS
 {
     static async listdir (dir, opt)
     {
-        var absPath, dirent, dirents, file, isDir, resolved, _24_22_, _25_18_, _26_23_
+        var absPath, dirent, dirents, file, isDir, resolved, _26_22_, _27_18_, _28_23_
 
         opt = (opt != null ? opt : {})
-        opt.recursive = ((_24_22_=opt.recursive) != null ? _24_22_ : true)
-        opt.found = ((_25_18_=opt.found) != null ? _25_18_ : [])
-        opt.ignoreDirs = ((_26_23_=opt.ignoreDirs) != null ? _26_23_ : [])
+        opt.recursive = ((_26_22_=opt.recursive) != null ? _26_22_ : true)
+        opt.found = ((_27_18_=opt.found) != null ? _27_18_ : [])
+        opt.ignoreDirs = ((_28_23_=opt.ignoreDirs) != null ? _28_23_ : [])
         dir = await NFS.resolveSymlink(dir)
         dirents = await fsp.readdir(dir,{withFileTypes:true})
         var list = _k_.list(dirents)
@@ -300,26 +302,6 @@ class NFS
         return pth
     }
 
-    static async isWritable (p)
-    {
-        console.error('todo')
-    }
-
-    static async isReadable (p)
-    {
-        console.error('todo')
-    }
-
-    static async duplicate (p)
-    {
-        console.error('todo')
-    }
-
-    static async trash (p)
-    {
-        console.error('todo')
-    }
-
     static async readText (p)
     {
         var text
@@ -333,6 +315,66 @@ class NFS
             }
         }
         return text
+    }
+
+    static async hfsPath (p)
+    {
+        var escapedPath, hfsPath, osascript, stdout
+
+        escapedPath = p.replace(/"/g,'\\\\\\"')
+        osascript = `tell application \\\"Finder\\\" to return posix file \\\"${escapedPath}\\\"`
+        stdout = await this.exec(`/usr/bin/osascript -e \"${osascript}\"`)
+        hfsPath = stdout.match(/^file\s(.*)/)
+        return _k_.trim(hfsPath[1])
+    }
+
+    static async trash (p)
+    {
+        var hfs, shellCommand
+
+        hfs = await NFS.hfsPath(p)
+        shellCommand = `/usr/bin/osascript -l JavaScript -e \"Application('Finder').delete([\\\"${hfs}\\\"])\"`
+        return this.exec(shellCommand)
+    }
+
+    static async exec (cmd)
+    {
+        return new Promise(function (resolve, reject)
+        {
+            try
+            {
+                return child_process.exec(cmd,{},function (err, stdout, stderr)
+                {
+                    if (err)
+                    {
+                        return reject(err,stderr)
+                    }
+                    else
+                    {
+                        return resolve(stdout)
+                    }
+                })
+            }
+            catch (err)
+            {
+                return reject(err)
+            }
+        })
+    }
+
+    static async isWritable (p)
+    {
+        console.error('todo')
+    }
+
+    static async isReadable (p)
+    {
+        console.error('todo')
+    }
+
+    static async duplicate (p)
+    {
+        console.error('todo')
     }
 }
 

@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 var dirtree
 
@@ -31,15 +31,53 @@ dirtree = (function ()
         this["setState"] = this["setState"].bind(this)
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["setRoot"] = this["setRoot"].bind(this)
+        this["onFileChange"] = this["onFileChange"].bind(this)
         dirtree.__super__.constructor.call(this,screen,name,features)
         this.state.syntax.setRgxs(rgxs)
         post.on('session.merge',this.onSessionMerge)
+        post.on('file.change',this.onFileChange)
         this.frontRoundOffset = 0
+    }
+
+    dirtree.prototype["onFileChange"] = function (info)
+    {
+        var item
+
+        console.log('dirtree.onFileChange',info)
+        if (info.path.startsWith(this.currentRoot))
+        {
+            if (info.change === 'rename')
+            {
+                var list = _k_.list(this.items)
+                for (var _a_ = 0; _a_ < list.length; _a_++)
+                {
+                    item = list[_a_]
+                    if (item.path === info.path)
+                    {
+                        return
+                    }
+                }
+                this.setRoot(this.currentRoot,{redraw:true,index:this.currentIndex()})
+            }
+            if (_k_.in(info.change,['remove','deleted']))
+            {
+                var list1 = _k_.list(this.items)
+                for (var _b_ = 0; _b_ < list1.length; _b_++)
+                {
+                    item = list1[_b_]
+                    if (item.path === info.path)
+                    {
+                        this.setRoot(this.currentRoot,{redraw:true,index:this.currentIndex()})
+                        return
+                    }
+                }
+            }
+        }
     }
 
     dirtree.prototype["setRoot"] = async function (path, opt)
     {
-        var dir, item, items
+        var dir, item, items, _77_29_
 
         opt = (opt != null ? opt : {})
         dir = slash.untilde(path)
@@ -59,18 +97,20 @@ dirtree = (function ()
         {
             return this.weight(a) - this.weight(b)
         }).bind(this))
-        this.set(items)
-        this.restoreSessionState()
+        this.set(items,((_77_29_=opt.index) != null ? _77_29_ : 0))
+        this.restoreSessionState(opt)
         if (opt.redraw)
         {
             return post.emit('redraw')
         }
     }
 
-    dirtree.prototype["restoreSessionState"] = function ()
+    dirtree.prototype["restoreSessionState"] = function (opt)
     {
         var key, state, value
 
+        opt = (opt != null ? opt : {})
+        opt.redraw = true
         state = ked_session.get(this.name,{})
         if (_k_.empty(state.open))
         {
@@ -81,7 +121,7 @@ dirtree = (function ()
             value = state.open[key]
             if (key.startsWith(this.currentRoot))
             {
-                this.openDir(this.itemForPath(key),{redraw:true})
+                this.openDir(this.itemForPath(key),opt)
             }
         }
     }
@@ -113,6 +153,11 @@ dirtree = (function ()
             {
                 post.emit('quicky',choice.path)
             }
+            return
+        }
+        if (action === 'cmd+delete')
+        {
+            post.emit('file.trash',choice.path)
             return
         }
         switch (choice.type)
@@ -208,7 +253,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _184_31_, _188_48_, _189_62_, _197_46_
+        var depth, index, item, items, state, _217_31_, _221_48_, _233_20_, _235_26_
 
         if (_k_.empty(dirItem))
         {
@@ -223,7 +268,7 @@ dirtree = (function ()
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
         state = ked_session.get(this.name,{})
-        depth = (((_184_31_=dirItem.depth) != null ? _184_31_ : 0)) + 1
+        depth = (((_217_31_=dirItem.depth) != null ? _217_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -232,7 +277,12 @@ dirtree = (function ()
             item.tilde = _k_.lpad(1 + depth * 2) + diritem.symbolName(item)
             if (item.type === 'dir' && (state.open != null ? state.open[item.path] : undefined))
             {
-                this.openDir(item,{redraw:true,select:(((_189_62_=opt.select) != null ? _189_62_ : dirItem))})
+                if (_k_.empty(opt.select) && _k_.empty(opt.index))
+                {
+                    opt.select = dirItem
+                }
+                opt.redraw = true
+                this.openDir(item,opt)
             }
         }
         items.sort((function (a, b)
@@ -241,7 +291,15 @@ dirtree = (function ()
         }).bind(this))
         index = this.items.indexOf(dirItem)
         kutil.insert(this.items,index + 1,items)
-        this.set(this.items,this.items.indexOf(((_197_46_=opt.select) != null ? _197_46_ : dirItem)))
+        if ((opt.index != null))
+        {
+            index = opt.index
+        }
+        else if ((opt.select != null))
+        {
+            index = this.items.indexOf(opt.select)
+        }
+        this.set(this.items,index)
         ked_session.set(`${this.name}▸open▸${dirItem.path}`,'✔')
         if (opt.redraw)
         {
@@ -377,7 +435,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _322_45_
+        var idx, item, _364_45_
 
         if (!(global.ked_editor_file != null))
         {

@@ -25,8 +25,8 @@ function crumbs extends view
         @setColor 'hover'       theme.hover.bg
         @setColor 'bg'          theme.crumbs.bg
         @setColor 'fg'          theme.crumbs.fg
-        @setColor 'empty_left'  '#000' 
-        @setColor 'empty_right' '#000'
+        @setColor 'empty_left'  theme.editor.bg
+        @setColor 'empty_right' theme.editor.bg
         
     setColor: key color ->
         
@@ -79,7 +79,7 @@ function crumbs extends view
                 else if si < @split.length-1
                     fg = color.darken(@color.fg min(1 (si+3)/@split.length))
                 else
-                    fg = theme.syntax.dir_leaf
+                    fg = color.brighten @color.fg
                 
                 @cells.set x 0 ch fg bg 
                 
@@ -106,7 +106,7 @@ function crumbs extends view
     
     adjustText: ->
         
-        ⮐ if @hidden()
+        ⮐  if @hidden()
     
         @path ?= ''
         

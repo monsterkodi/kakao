@@ -24,9 +24,31 @@ function dirtree extends choices
         @state.syntax.setRgxs rgxs
         
         post.on 'session.merge' @onSessionMerge
+        post.on 'file.change'   @onFileChange
         
         @frontRoundOffset = 0
                 
+    # ████████  ███  ███      ████████         ███████  ███   ███   ███████   ███   ███   ███████   ████████
+    # ███       ███  ███      ███             ███       ███   ███  ███   ███  ████  ███  ███        ███     
+    # ██████    ███  ███      ███████         ███       █████████  █████████  ███ █ ███  ███  ████  ███████ 
+    # ███       ███  ███      ███             ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    onFileChange: info =>
+        log 'dirtree.onFileChange' info
+        if info.path.startsWith @currentRoot
+            if info.change == 'rename'
+                for item in @items
+                    if item.path == info.path
+                        ⮐  
+                @setRoot @currentRoot redraw:true index:@currentIndex()
+                
+            if info.change in ['remove' 'deleted']
+                for item in @items
+                    if item.path == info.path
+                        @setRoot @currentRoot redraw:true index:@currentIndex()
+                        ⮐  
+                    
     # 00000000    0000000    0000000   000000000  
     # 000   000  000   000  000   000     000     
     # 0000000    000   000  000   000     000     
@@ -49,10 +71,12 @@ function dirtree extends choices
             item.tilde = ' ' + diritem.symbolName(item)
 
         items.sort (a b) => @weight(a) - @weight(b)
-                    
-        @set items
         
-        @restoreSessionState()
+        # log 'setRoot' opt
+                    
+        @set items opt.index ? 0
+        
+        @restoreSessionState opt
         
         post.emit 'redraw' if opt.redraw
         
@@ -62,7 +86,10 @@ function dirtree extends choices
     # 000   000  000            000     000     000   000  000   000  000       
     # 000   000  00000000  0000000      000      0000000   000   000  00000000  
         
-    restoreSessionState: ->
+    restoreSessionState: opt ->
+        
+        opt ?= {}
+        opt.redraw = true
         
         state = ked_session.get @name {}
 
@@ -71,7 +98,7 @@ function dirtree extends choices
         for key,value of state.open
             
             if key.startsWith @currentRoot
-                @openDir @itemForPath(key) redraw:true
+                @openDir @itemForPath(key) opt
         
     #  0000000  000000000   0000000   000000000  00000000  
     # 000          000     000   000     000     000       
@@ -97,6 +124,8 @@ function dirtree extends choices
     # 000   000   0000000     000     000   0000000   000   000  
     
     emitAction: action choice event  ->
+    
+        # log "emitAction #{action}" choice
         
         if action == 'hover'
                     
@@ -104,6 +133,10 @@ function dirtree extends choices
             if valid event.mods and choice.type == 'file'
                 post.emit 'quicky' choice.path
             ⮐ 
+            
+        if action == 'cmd+delete'
+            post.emit 'file.trash' choice.path
+            ⮐  
             
         switch choice.type
             
@@ -186,7 +219,10 @@ function dirtree extends choices
             item.depth = depth
             item.tilde = lpad(1+depth*2) + diritem.symbolName(item)
             if item.type == 'dir' and state.open?[item.path]
-                @openDir item {redraw:true select:(opt.select ? dirItem)}
+                if empty opt.select and empty opt.index
+                    opt.select = dirItem
+                opt.redraw = true
+                @openDir item opt
         
         items.sort (a b) => @weight(a) - @weight(b)
         
@@ -194,7 +230,12 @@ function dirtree extends choices
         
         kutil.insert @items index+1 items
         
-        @set @items @items.indexOf(opt.select ? dirItem)
+        if opt.index?
+            index = opt.index
+        else if opt.select?
+            index = @items.indexOf opt.select
+        
+        @set @items index
         
         ked_session.set "#{@name}▸open▸#{dirItem.path}" '✔'
         
@@ -224,6 +265,7 @@ function dirtree extends choices
         
         kutil.replace @items index+1 numChildren []
         
+        # log "dirtree.closeDir #{index}"
         @set @items index
         
         ked_session.del "#{@name}▸open▸#{dirItem.path}"

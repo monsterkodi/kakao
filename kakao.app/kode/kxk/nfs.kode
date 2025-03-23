@@ -8,6 +8,8 @@
 
 use ◆ slash
 use fs
+use child_process
+
 import fsp from 'fs/promises'
 
 class NFS
@@ -283,6 +285,52 @@ class NFS
             
         pth
     
+    # 00000000   00000000   0000000   0000000    000000000  00000000  000   000  000000000  
+    # 000   000  000       000   000  000   000     000     000        000 000      000     
+    # 0000000    0000000   000000000  000   000     000     0000000     00000       000     
+    # 000   000  000       000   000  000   000     000     000        000 000      000     
+    # 000   000  00000000  000   000  0000000       000     00000000  000   000     000     
+    
+    @readText: p ○->
+        
+        text =○ NFS.read p 
+        if text.includes '\ufffd' # unicode replacement character
+            if text[0..32].includes '\x00'
+                ⮐
+        text
+        
+    # 000000000  00000000    0000000    0000000  000   000  
+    #    000     000   000  000   000  000       000   000  
+    #    000     0000000    000000000  0000000   000000000  
+    #    000     000   000  000   000       000  000   000  
+    #    000     000   000  000   000  0000000   000   000  
+    
+    @hfsPath: p ○-> # using ideas from https://github.com/johansatge/mac-trash
+        
+        escapedPath = p.replace /"/g '\\\\\\"'
+        osascript = "tell application \\\"Finder\\\" to return posix file \\\"#{escapedPath}\\\""
+        stdout =○ @exec "/usr/bin/osascript -e \"#{osascript}\""
+        hfsPath = stdout.match /^file\s(.*)/
+        trim hfsPath[1]
+    
+    @trash: p ○->  # using ideas from https://github.com/johansatge/mac-trash
+    
+        hfs =○ NFS.hfsPath p
+        shellCommand = "/usr/bin/osascript -l JavaScript -e \"Application('Finder').delete([\\\"#{hfs}\\\"])\""
+        @exec shellCommand
+        
+    @exec: cmd ○->
+        
+        new Promise (resolve reject) ->
+            try
+                child_process.exec cmd {} (err stdout stderr) ->
+                    if err
+                        reject err stderr
+                    else
+                        resolve stdout
+            catch err
+                reject err
+        
     # 000000000   0000000   0000000     0000000     
     #    000     000   000  000   000  000   000    
     #    000     000   000  000   000  000   000    
@@ -292,14 +340,6 @@ class NFS
     @isWritable: p ○-> error 'todo'
     @isReadable: p ○-> error 'todo'
     @duplicate:  p ○-> error 'todo'
-    @trash:      p ○-> error 'todo'
     
-    @readText: p ○->
-        
-        text =○ NFS.read p 
-        if text.includes '\ufffd' #unicode replacement character
-            if text[0..32].includes '\x00'
-                ⮐
-        text
 
 export NFS

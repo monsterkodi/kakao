@@ -530,6 +530,16 @@ text`)
 \`\`\``)
         compare(inc(dss[1],0,'`'),'punct code triple')
     })
+    dss = dissect(`abc
+    def    hello number 0.123
+- num 0.2 `)
+    console.log('dss2',dss[2])
+    compare(inc(dss[1],24,'0'),'number float')
+    compare(inc(dss[1],25,'.'),'punct number float')
+    compare(inc(dss[1],26,'123'),'number float')
+    compare(inc(dss[2],6,'0'),'number float')
+    compare(inc(dss[2],7,'.'),'punct number float')
+    compare(inc(dss[2],8,'2'),'number float')
 }
 toExport["kulur"]._section_ = true
 toExport._test_ = true

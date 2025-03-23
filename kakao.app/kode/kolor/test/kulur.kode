@@ -697,8 +697,8 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
             - li1
             text
         """
-        inc dss[0], 0  '-'    ▸ 'punct li1 marker'
-        inc dss[1], 0  'text' ▸ 'text'
+        inc dss[0] 0  '-'    ▸ 'punct li1 marker'
+        inc dss[1] 0  'text' ▸ 'text'
     
         dss = dissect """
             # h1
@@ -707,28 +707,39 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
             #### h4
             ##### h5
         """
-        inc dss[0], 0  "#"    ▸ 'punct h1'
-        inc dss[0], 2  "h1"   ▸ 'text h1'
-        inc dss[1], 0  "#"    ▸ 'punct h2'
-        inc dss[1], 3  "h2"   ▸ 'text h2'
-        inc dss[2], 0  "#"    ▸ 'punct h3'
-        inc dss[2], 4  "h3"   ▸ 'text h3'
-        inc dss[3], 0  "#"    ▸ 'punct h4'
-        inc dss[3], 5  "h4"   ▸ 'text h4'
-        inc dss[4], 0  "#"    ▸ 'punct h5'
-        inc dss[4], 6  "h5"   ▸ 'text h5'
+        inc dss[0] 0  "#"    ▸ 'punct h1'
+        inc dss[0] 2  "h1"   ▸ 'text h1'
+        inc dss[1] 0  "#"    ▸ 'punct h2'
+        inc dss[1] 3  "h2"   ▸ 'text h2'
+        inc dss[2] 0  "#"    ▸ 'punct h3'
+        inc dss[2] 4  "h3"   ▸ 'text h3'
+        inc dss[3] 0  "#"    ▸ 'punct h4'
+        inc dss[3] 5  "h4"   ▸ 'text h4'
+        inc dss[4] 0  "#"    ▸ 'punct h5'
+        inc dss[4] 6  "h5"   ▸ 'text h5'
     
         dss = dissect """
             \`\`\`js
             \`\`\`
         """
-        inc dss[1], 0 '`' ▸ 'punct code triple'
+        inc dss[1] 0 '`' ▸ 'punct code triple'
             dss = dissect """
                 \`\`\`js
                 \`\`\`
             """
-            inc dss[1], 0 '`' ▸ 'punct code triple'
-        
-        
+            inc dss[1] 0 '`' ▸ 'punct code triple'
             
-            
+        dss = dissect """
+            abc
+                def    hello number 0.123
+            - num 0.2 
+            """
+        log 'dss2' dss[2]
+        inc dss[1] 24 '0'   ▸ 'number float'
+        inc dss[1] 25 '.'   ▸ 'punct number float'
+        inc dss[1] 26 '123' ▸ 'number float'
+        
+        inc dss[2] 6 '0'    ▸ 'number float' 
+        inc dss[2] 7 '.'    ▸ 'punct number float' 
+        inc dss[2] 8 '2'    ▸ 'number float' 
+        

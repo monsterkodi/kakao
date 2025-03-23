@@ -833,11 +833,12 @@ simpleString = ->
 
     ⮐  if topType == 'regexp'
 
-    if getChunk(-1)?.escape then ⮐ stacked()
+    if getChunk(-1)?.escape then ⮐  stacked()
     
-    if chunk.match in '"\''
+    if chunk.match in '`"\''
 
         type = switch chunk.match
+            when '`' then 'string double'
             when '"' then 'string double'
             when "'" then 'string single'
 

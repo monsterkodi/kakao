@@ -39,20 +39,28 @@ full_vibrant = _k_.clone(theme)
 
 setVibrant = function (vf, lf = 1.0)
 {
+    var c
+
     vf = _k_.clamp(0,1,vf)
     for (key in full_vibrant)
     {
         val = full_vibrant[key]
         if (_k_.isArr(val))
         {
-            theme[key] = color.saturate(val,vf,lf)
+            c = color.saturate(val,vf,lf)
+            theme[key][0] = c[0]
+            theme[key][1] = c[1]
+            theme[key][2] = c[2]
         }
         else
         {
             for (k in val)
             {
                 v = val[k]
-                theme[key][k] = color.saturate(v,vf,lf)
+                c = color.saturate(v,vf,lf)
+                theme[key][k][0] = c[0]
+                theme[key][k][1] = c[1]
+                theme[key][k][2] = c[2]
             }
         }
     }

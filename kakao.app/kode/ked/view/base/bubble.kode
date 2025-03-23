@@ -26,9 +26,9 @@ function bubble extends view
         
         @rounded = ''
         
-        @setColor 'bg'    '#222' 
-        @setColor 'hover' '#44a' 
-        @setColor 'empty' '#000'
+        @setColor 'bg'    theme.hover.blur
+        @setColor 'hover' theme.hover.bg 
+        @setColor 'empty' theme.editor.bg
         
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     

@@ -96,8 +96,15 @@ history`)
                 sp = input.split(/\s+/)
                 sf = parseFloat(sp[1])
                 lf = ((sp.length > 2) ? parseFloat(sp[2]) : 1)
-                console.log(sf,lf)
                 post.emit('theme.vibrant',sf,lf)
+            }
+            else if (input.startsWith('class '))
+            {
+                sp = input.split(/\s+/)
+                if (!_k_.empty(sp[1]))
+                {
+                    post.emit('file.class',sp[1])
+                }
             }
         }
         else

@@ -52,7 +52,6 @@ misc = (function ()
                 {
                     if (turd !== '.')
                     {
-                        console.log(`○ ${w} ${before}`)
                         filtered.push(turd.slice(-1)[0] + subw.word)
                     }
                     else

@@ -291,37 +291,12 @@ class color
             clr = clr.map (v) -> int clamp(0 255 v * amount)
             cell.cell[type] = clr
             
-    #  ███████   ███████   ███   ███  █████████  ████████    ███████    ███████  █████████
-    # ███       ███   ███  ████  ███     ███     ███   ███  ███   ███  ███          ███   
-    # ███       ███   ███  ███ █ ███     ███     ███████    █████████  ███████      ███   
-    # ███       ███   ███  ███  ████     ███     ███   ███  ███   ███       ███     ███   
-    #  ███████   ███████   ███   ███     ███     ███   ███  ███   ███  ███████      ███   
+    # ███      ███   ███  ██     ██  ███  ███   ███   ███████   ███   ███   ███████  ████████
+    # ███      ███   ███  ███   ███  ███  ████  ███  ███   ███  ████  ███  ███       ███     
+    # ███      ███   ███  █████████  ███  ███ █ ███  █████████  ███ █ ███  ███       ███████ 
+    # ███      ███   ███  ███ █ ███  ███  ███  ████  ███   ███  ███  ████  ███       ███     
+    # ███████   ███████   ███   ███  ███  ███   ███  ███   ███  ███   ███   ███████  ████████
 
-    @contrast: c1 c2 ->
-    
-        dr = (c2[0]-c1[0])/256
-        dg = (c2[1]-c1[1])/256
-        db = (c2[2]-c1[2])/256
-        
-        c = dr + dg + db 
-        
-        1+c/3
-        
-    @adjustForBackground: fg bg ->
-    
-        color.readabilityCache[bg] ?= {}
-        
-        if clr = color.readabilityCache[bg][fg]
-            ⮐  clr
-    
-        color.readabilityCache[bg][fg] = @ensureReadability fg bg
-        
-        # contrast = color.contrast bg fg
-        # if contrast < 1.4
-        #     color.brighten(fg 3*(1.4-contrast))
-        # else
-        #     fg
-                
     @luminance: c ->
         
         [r g b] = c
@@ -336,6 +311,21 @@ class color
     
         0.2126 * r + 0.7152 * g + 0.0722 * b
             
+    #  ███████   ███████   ███   ███  █████████  ████████    ███████    ███████  █████████
+    # ███       ███   ███  ████  ███     ███     ███   ███  ███   ███  ███          ███   
+    # ███       ███   ███  ███ █ ███     ███     ███████    █████████  ███████      ███   
+    # ███       ███   ███  ███  ████     ███     ███   ███  ███   ███       ███     ███   
+    #  ███████   ███████   ███   ███     ███     ███   ███  ███   ███  ███████      ███   
+
+    @adjustForBackground: fg bg ->
+    
+        color.readabilityCache[bg] ?= {}
+        
+        if clr = color.readabilityCache[bg][fg]
+            ⮐  clr
+    
+        color.readabilityCache[bg][fg] = @ensureReadability fg bg
+                
     # 00000000   00000000   0000000   0000000     0000000   0000000    000  000      000  000000000  000   000  
     # 000   000  000       000   000  000   000  000   000  000   000  000  000      000     000      000 000   
     # 0000000    0000000   000000000  000   000  000000000  0000000    000  000      000     000       00000    
@@ -347,7 +337,7 @@ class color
         ⮐  fg if empty fg or not fg[0] is num
         ⮐  fg if empty bg or not bg[0] is num
     
-        fgo = copy fg
+        fgo = copy fg # todo: remove this when fail case never happens
     
         contrastRatio = l1 l2 -> (max(l1 l2) + 0.05) / (min(l1 l2) + 0.05)
     
@@ -362,29 +352,25 @@ class color
 
         step = bgLuminance > 0.5 ? -5 : 5
 
-        cnt = 0
-        while cnt < 50
-            cnt++
+        cnt = 0          # todo: remove this when fail case never happens
+        while cnt < 50   # todo: replace with while true when fail case never happens
+            cnt++        # todo: remove this when fail case never happens
             fg = @hslToRgb [h s l]
             fgLuminance = @luminance fg
     
             contrast = contrastRatio fgLuminance bgLuminance
     
-            if contrast >= targetContrast
-                log "✔ #{cnt}"
-                ⮐  fg 
+            ⮐  fg if contrast >= targetContrast
     
             l += step
                 
             if l < 0 or l > 100
                 step = -step
                 
-            # log "cnt #{cnt} #{contrast} #{step} #{l}"
-                
-        log "fail #{fgo} #{bg}"
-        fgo
+        log "fail #{fgo} #{bg}" # todo: remove this when fail case never happens
+        fgo                     # todo: remove this when fail case never happens
     
-for key,val of color.ansi256
+for key,val of color.ansi256 # convert colors to rgb triplets
     color.ansi256[key] = color.values val
             
 export color

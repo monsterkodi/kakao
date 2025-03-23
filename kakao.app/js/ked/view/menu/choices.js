@@ -453,18 +453,7 @@ choices = (function ()
         {
             return
         }
-        switch (event.combo)
-        {
-            case 'esc':
-            case 'left':
-            case 'right':
-            case 'space':
-            case 'delete':
-            case 'return':
-                this.emitAction(event.combo,this.current(),event)
-                break
-        }
-
+        this.emitAction(event.combo,this.current(),event)
         return true
     }
 

@@ -25,8 +25,8 @@ crumbs = (function ()
         this.setColor('hover',theme.hover.bg)
         this.setColor('bg',theme.crumbs.bg)
         this.setColor('fg',theme.crumbs.fg)
-        this.setColor('empty_left','#000')
-        this.setColor('empty_right','#000')
+        this.setColor('empty_left',theme.editor.bg)
+        this.setColor('empty_right',theme.editor.bg)
     }
 
     crumbs.prototype["setColor"] = function (key, color)
@@ -101,7 +101,7 @@ crumbs = (function ()
                 }
                 else
                 {
-                    fg = theme.syntax.dir_leaf
+                    fg = color.brighten(this.color.fg)
                 }
                 this.cells.set(x,0,ch,fg,bg)
             }

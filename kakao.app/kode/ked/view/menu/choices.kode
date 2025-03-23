@@ -347,14 +347,16 @@ function choices extends editor
         
         ⮐  if not @hasFocus()
             
-        switch event.combo
-        
-            'esc'
-            'left' 
-            'right'  
-            'space'  
-            'delete'
-            'return' ➜ @emitAction event.combo @current() event
+        # switch event.combo
+        # 
+        #     'esc'
+        #     'left' 
+        #     'right'  
+        #     'space'  
+        #     'delete'
+        #     'return' ➜ @emitAction event.combo @current() event
+            
+        @emitAction event.combo @current() event
                         
         # not calling super here effectively disables all text-editing
         true

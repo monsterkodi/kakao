@@ -24,9 +24,9 @@ bubble = (function ()
         this.syntax = new syntax
         this.syntax.setExt('noon')
         this.rounded = ''
-        this.setColor('bg','#222')
-        this.setColor('hover','#44a')
-        this.setColor('empty','#000')
+        this.setColor('bg',theme.hover.blur)
+        this.setColor('hover',theme.hover.bg)
+        this.setColor('empty',theme.editor.bg)
     }
 
     bubble.prototype["layout"] = function (x, y, w, h)

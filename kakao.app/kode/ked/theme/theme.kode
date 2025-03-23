@@ -38,10 +38,16 @@ setVibrant = vf lf=1.0 ->
     vf = clamp 0 1 vf
     for key,val of full_vibrant
         if val is arr
-            theme[key] = color.saturate val vf lf
+            c = color.saturate val vf lf
+            theme[key][0] = c[0]
+            theme[key][1] = c[1]
+            theme[key][2] = c[2]
         else
             for k,v of val
-                theme[key][k] = color.saturate v vf lf
+                c = color.saturate v vf lf
+                theme[key][k][0] = c[0]
+                theme[key][k][1] = c[1]
+                theme[key][k][2] = c[2]
                 
 post.on 'theme.vibrant' setVibrant
 

@@ -46,7 +46,7 @@ toExport["color"] = function ()
     {
         compare(color.adjustForBackground([255,255,0],[0,0,0]),[255,255,0])
         compare(color.adjustForBackground([255,255,0],[200,200,0]),[76,77,0])
-        compare(color.adjustForBackground([255,255,255],[170,170,170]),[255,255,255])
+        compare(color.adjustForBackground([255,255,255],[170,170,170]),[51,51,51])
     })
 }
 toExport["color"]._section_ = true

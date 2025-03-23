@@ -53,7 +53,7 @@ function misc
                     filtered.push subw.word    
                 else if turd.length == 1 and turd == w[subw.index-1] # if subword is prefixed with turd
                     if turd != '.'
-                        log "○ #{w} #{before}"
+                        # log "○ #{w} #{before}"
                         filtered.push turd[-1] + subw.word
                     else
                     if /\d+\./.test(before) and /\d+/.test(subw.word)

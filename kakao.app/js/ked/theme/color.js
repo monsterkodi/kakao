@@ -322,29 +322,6 @@ class color
         }
     }
 
-    static contrast (c1, c2)
-    {
-        var c, db, dg, dr
-
-        dr = (c2[0] - c1[0]) / 256
-        dg = (c2[1] - c1[1]) / 256
-        db = (c2[2] - c1[2]) / 256
-        c = dr + dg + db
-        return 1 + c / 3
-    }
-
-    static adjustForBackground (fg, bg)
-    {
-        var clr, _312_35_
-
-        color.readabilityCache[bg] = ((_312_35_=color.readabilityCache[bg]) != null ? _312_35_ : {})
-        if (clr = color.readabilityCache[bg][fg])
-        {
-            return clr
-        }
-        return color.readabilityCache[bg][fg] = this.ensureReadability(fg,bg)
-    }
-
     static luminance (c)
     {
         var b, g, r
@@ -358,6 +335,18 @@ class color
         g = g <= 0.03928 ? g / 12.92 : ((g + 0.055) / 1.055) ** 2.4
         b = b <= 0.03928 ? b / 12.92 : ((b + 0.055) / 1.055) ** 2.4
         return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    }
+
+    static adjustForBackground (fg, bg)
+    {
+        var clr, _322_35_
+
+        color.readabilityCache[bg] = ((_322_35_=color.readabilityCache[bg]) != null ? _322_35_ : {})
+        if (clr = color.readabilityCache[bg][fg])
+        {
+            return clr
+        }
+        return color.readabilityCache[bg][fg] = this.ensureReadability(fg,bg)
     }
 
     static ensureReadability (fg, bg)
@@ -393,7 +382,6 @@ class color
             contrast = contrastRatio(fgLuminance,bgLuminance)
             if (contrast >= targetContrast)
             {
-                console.log(`✔ ${cnt}`)
                 return fg
             }
             l += step

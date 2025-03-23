@@ -6,9 +6,16 @@
       ███       ███  ███████  ████████   ███████      ███     ███  ███████  
 ###
 
-use ../../kxk ▪ post
+use ../../kxk ▪ post slash
+use ../../kxk ◆ nfs salter
 
 function fileutil
+
+    #  ███████   ███████   ███   ███  ███   ███  █████████  ████████  ████████ 
+    # ███       ███   ███  ███   ███  ████  ███     ███     ███       ███   ███
+    # ███       ███   ███  ███   ███  ███ █ ███     ███     ███████   ███████  
+    # ███       ███   ███  ███   ███  ███  ████     ███     ███       ███   ███
+    #  ███████   ███████    ███████   ███   ███     ███     ████████  ███   ███
 
     @counterparts: # todo: move this to a config file?
         mm:      ['h']
@@ -27,6 +34,12 @@ function fileutil
         css:     ['styl']
         styl:    ['css']
     
+    #  ███████  ███   ███   ███████   ████████ 
+    # ███       ███ █ ███  ███   ███  ███   ███
+    # ███████   █████████  █████████  ████████ 
+    #      ███  ███   ███  ███   ███  ███      
+    # ███████   ██     ██  ███   ███  ███      
+
     @swapLastDir: path from to ->
 
         lastIndex = path.lastIndexOf "/#{from}/"
@@ -34,10 +47,44 @@ function fileutil
             path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
         path
         
-    @trash: path ->
+    # █████████  ████████    ███████    ███████  ███   ███
+    #    ███     ███   ███  ███   ███  ███       ███   ███
+    #    ███     ███████    █████████  ███████   █████████
+    #    ███     ███   ███  ███   ███       ███  ███   ███
+    #    ███     ███   ███  ███   ███  ███████   ███   ███
+
+    @trash: path ○->
     
-        log "trash #{path}"
+        ○ nfs.trash path
+        
+    #  ███████  ███       ███████    ███████   ███████
+    # ███       ███      ███   ███  ███       ███     
+    # ███       ███      █████████  ███████   ███████ 
+    # ███       ███      ███   ███       ███       ███
+    #  ███████  ███████  ███   ███  ███████   ███████ 
+
+    @class: name ○->
+    
+        currentDir = slash.dir ked_session.get('editor▸file')
+        currentDir ?= process.cwd()
+        file       = slash.path currentDir "#{name}.kode"
+        
+        ○ nfs.write file """
+            ###
+            #{salter(name prepend:'    ')}
+            ###
+            
+            function #{name}
+            
+                @: ->
+                
+            export #{name}
+            
+            """ 
+            
+        post.emit 'file.open' file 6 'eol'
         
 post.on 'file.trash' fileutil.trash
+post.on 'file.class' fileutil.class
 
 export fileutil

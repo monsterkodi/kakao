@@ -1,4 +1,6 @@
 
+# https://github.com/JuliaLang/julia/blob/master/stdlib/REPL/src/latex_symbols.jl
+
 sqrt                        √
 cbrt                        ∛
 female                      ♀

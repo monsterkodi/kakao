@@ -99,6 +99,8 @@ function syntax
         else
             clss = x
         
+        log "syntax.getColor - no syntax color for '#{clss}'" if empty theme.syntax[clss]
+        
         theme.syntax[clss] ? [255 0 0]
         
     getAnsiColor: x y =>
