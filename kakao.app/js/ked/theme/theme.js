@@ -37,7 +37,7 @@ for (key in theme.syntax)
 }
 full_vibrant = _k_.clone(theme)
 
-setVibrant = function (vf)
+setVibrant = function (vf, lf = 1.0)
 {
     vf = _k_.clamp(0,1,vf)
     for (key in full_vibrant)
@@ -45,14 +45,14 @@ setVibrant = function (vf)
         val = full_vibrant[key]
         if (_k_.isArr(val))
         {
-            theme[key] = color.vibrant(val,vf)
+            theme[key] = color.saturate(val,vf,lf)
         }
         else
         {
             for (k in val)
             {
                 v = val[k]
-                theme[key][k] = color.vibrant(v,vf)
+                theme[key][k] = color.saturate(v,vf,lf)
             }
         }
     }

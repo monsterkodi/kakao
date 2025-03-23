@@ -11,14 +11,14 @@ use ◆ color
 
 import theme from './theme.json' with { type: "json" }
 
-for key,val of theme
+for key,val of theme # convert all colors into rgb triplets
     if val is str
         theme[key] = color.values(val)
     else
         for k,v of val
             val[k] = color.values(v)
 
-for key,value of theme.syntax
+for key,value of theme.syntax # generate colors for file ext and punct
     if key.startsWith 'file_'
         ext = key[5..]
         theme.syntax['file_ext_'+ext]   = color.darken value 0.4
@@ -33,15 +33,15 @@ for key,value of theme.syntax
 
 full_vibrant = clone theme
 
-setVibrant = vf -> 
+setVibrant = vf lf=1.0 -> 
 
     vf = clamp 0 1 vf
     for key,val of full_vibrant
         if val is arr
-            theme[key] = color.vibrant val vf
+            theme[key] = color.saturate val vf lf
         else
             for k,v of val
-                theme[key][k] = color.vibrant v vf
+                theme[key][k] = color.saturate v vf lf
                 
 post.on 'theme.vibrant' setVibrant
 

@@ -74,7 +74,7 @@ history`)
 
     macro.prototype["applyChoice"] = function (choice)
     {
-        var input, num
+        var input, lf, num, sf, sp
 
         if (_k_.empty(choice))
         {
@@ -93,7 +93,11 @@ history`)
             }
             else if (input.startsWith('vibrant '))
             {
-                post.emit('theme.vibrant',parseFloat(input.split(/\s+/)[1]))
+                sp = input.split(/\s+/)
+                sf = parseFloat(sp[1])
+                lf = ((sp.length > 2) ? parseFloat(sp[2]) : 1)
+                console.log(sf,lf)
+                post.emit('theme.vibrant',sf,lf)
             }
         }
         else

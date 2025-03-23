@@ -42,6 +42,12 @@ toExport["color"] = function ()
         compare(belt.colorSeglsForText(color.bg_rgb([12,123,234]) + color.fg_rgb([12,123,234]) + ("rgb")),[[[{x:0,bg:[12,123,234]},{x:0,fg:[12,123,234]}]],kseg.segls("rgb")])
         compare(belt.colorSeglsForText(`▸ ${color.fg_rgb([255,255,0,0])}${color.fg_rgb()} ms`),[[[{x:2,fg:[255,255,0],w:1}]],kseg.segls("▸  ms")])
     })
+    section("adjustForBackground", function ()
+    {
+        compare(color.adjustForBackground([255,255,0],[0,0,0]),[255,255,0])
+        compare(color.adjustForBackground([255,255,0],[200,200,0]),[76,77,0])
+        compare(color.adjustForBackground([255,255,255],[170,170,170]),[255,255,255])
+    })
 }
 toExport["color"]._section_ = true
 toExport._test_ = true

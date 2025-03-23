@@ -96,7 +96,12 @@ function macro extends inputchoice
                 input == 'bof'  ➜ post.emit 'goto.bof'
                 input == 'eof'  ➜ post.emit 'goto.eof'
                 num = int input ➜ post.emit 'goto.line' num-1 'ind'
-                input.startsWith 'vibrant ' ➜ post.emit 'theme.vibrant' parseFloat(input.split(/\s+/)[1])
+                input.startsWith 'vibrant ' 
+                    sp = input.split /\s+/
+                    sf = parseFloat sp[1]
+                    lf = (sp.length > 2) ? parseFloat(sp[2]) : 1
+                    log sf lf
+                    post.emit 'theme.vibrant' sf lf
         else
             switch choice
                 'diff'    ➜ post.emit 'differ.file'
