@@ -90,6 +90,117 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         dss = dissect "    => true"
         inc dss[0] 4 "=>"  ▸ 'punct function bound'
         
+    # ███   ███   ███████    ███████   ███   ███
+    # ████  ███  ███   ███  ███   ███  ████  ███
+    # ███ █ ███  ███   ███  ███   ███  ███ █ ███
+    # ███  ████  ███   ███  ███   ███  ███  ████
+    # ███   ███   ███████    ███████   ███   ███
+
+    ▸ noon
+    
+        lang 'noon'
+            
+        rgs = ranges "    property  value"
+        inc rgs 4 'property'   ▸ 'property'
+        inc rgs 14 'value'     ▸ 'text'
+    
+        rgs = ranges "top" 'noon'
+        inc rgs 0 'top'        ▸ 'obj'
+    
+        rgs = ranges "tip top"
+        inc rgs 0 'tip'        ▸ 'obj'
+        inc rgs 4 'top'        ▸ 'obj'
+        
+        rgs = ranges "top  prop"
+        inc rgs 0 'top'        ▸ 'obj'
+        inc rgs 5 'prop'       ▸ 'text'
+    
+        rgs = ranges "version  ^0.1.2"
+        inc rgs 0 'version'    ▸ 'obj'
+        inc rgs 9 '^'          ▸ 'punct semver'
+        inc rgs 10 '0'         ▸ 'semver'
+        
+        rgs = ranges "    some-package-name  1"
+        inc rgs 4  'some'      ▸ 'property'
+        inc rgs 9  'package'   ▸ 'property'
+        inc rgs 17 'name'      ▸ 'property'
+    
+        rgs = ranges "    some-package-name  ^1.2.3"
+        inc rgs 4  'some'      ▸ 'property'
+        inc rgs 9  'package'   ▸ 'property'
+        inc rgs 17 'name'      ▸ 'property'
+        
+        rgs = ranges "top  prop  value"
+        inc rgs 0  'top'       ▸ 'obj'
+        inc rgs 5  'prop'      ▸ 'property'
+        inc rgs 11 'value'     ▸ 'text'
+        
+        rgs = ranges "    http://domain.com"
+        inc rgs 4 'http'       ▸ 'url protocol'
+        inc rgs 8 ':'          ▸ 'punct url'
+        inc rgs 9 '/'          ▸ 'punct url'
+        inc rgs 10 '/'         ▸ 'punct url'
+        inc rgs 11 'domain'    ▸ 'url domain'
+        inc rgs 17 '.'         ▸ 'punct url tld'
+        inc rgs 18 'com'       ▸ 'url tld'
+    
+        rgs = ranges "    http://domain.com/dir/page.html"
+        inc rgs 4 'http'       ▸ 'url protocol'
+        inc rgs 8 ':'          ▸ 'punct url'
+        inc rgs 9 '/'          ▸ 'punct url'
+        inc rgs 10 '/'         ▸ 'punct url'
+        inc rgs 11 'domain'    ▸ 'url domain'
+        inc rgs 17 '.'         ▸ 'punct url tld'
+        inc rgs 18 'com'       ▸ 'url tld'
+        inc rgs 21 '/'         ▸ 'punct dir'
+        
+        rgs = ranges "    file.kode"
+        inc rgs 4 'file'       ▸ 'file_kode'
+        inc rgs 8 '.'          ▸ 'file_punct_kode'
+        inc rgs 9 'kode'       ▸ 'file_ext_kode'
+    
+        rgs = ranges "    /some/path"
+        inc rgs 5 'some'       ▸ 'text dir'
+        inc rgs 9 '/'          ▸ 'punct dir'
+        inc rgs 10 'path'      ▸ 'text file'
+        
+        rgs = ranges '    /some\\path/file.txt:10'
+        inc rgs 4  '/'         ▸ 'punct dir'
+        inc rgs 5  'some'      ▸ 'text dir'
+        inc rgs 9  '\\'        ▸ 'punct dir'
+        inc rgs 19 '.'         ▸ 'file_punct_txt'
+        inc rgs 23 ':'         ▸ 'punct'
+        
+        rgs = ranges "    test  ./node_modules/.bin/mocha"
+        inc rgs 4 'test'       ▸ 'property'
+        inc rgs 10 '.'         ▸ 'punct dir'
+        inc rgs 11 '/'         ▸ 'punct dir'
+        inc rgs 12 'node_modules' ▸ 'text dir'
+        inc rgs 24 '/'         ▸ 'punct dir'
+        inc rgs 25 '.'         ▸ 'punct dir'
+        inc rgs 26 'bin'       ▸ 'text dir'
+        inc rgs 29 '/'         ▸ 'punct dir'
+        inc rgs 30 'mocha'     ▸ 'text file'
+        
+        rgs = ranges "c   #999"
+        inc rgs 4 "#"   ▸ 'punct'
+        inc rgs 5 '999' ▸ 'number hex'
+        
+        rgs = ranges "c   #abc"
+        inc rgs 4 "#"   ▸ 'punct'
+        inc rgs 5 'abc' ▸ 'number hex'
+    
+        rgs = ranges "c   #abcdef"
+        inc rgs 4 "#"   ▸ 'punct'
+        inc rgs 5 'abcdef' ▸ 'number hex'
+    
+        ▸ comments
+        
+            rgs = ranges "   # bla blub"
+            inc rgs 3 "#"      ▸ 'punct comment'
+            inc rgs 5 "bla"    ▸ 'comment'
+            inc rgs 9 "blub"   ▸ 'comment'
+        
     # 00000000   0000000   000      000      0000000     0000000    0000000  000   000  
     # 000       000   000  000      000      000   000  000   000  000       000  000   
     # 000000    000000000  000      000      0000000    000000000  000       0000000    
@@ -97,6 +208,8 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
     # 000       000   000  0000000  0000000  0000000    000   000   0000000  000   000  
     
     ▸ fallback
+    
+        lang 'kode'
             
         rgs = ranges 'text' 'unknown'
         inc rgs 0 'text' ▸ 'text'
@@ -509,76 +622,76 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         lang 'md'
         
         rgs = ranges "**bold**"
-        inc rgs, 0 '*'          ▸ 'punct bold'
-        inc rgs, 1 '*'          ▸ 'punct bold'
-        inc rgs, 2 'bold'       ▸ 'text bold'
-        inc rgs, 6 '*'          ▸ 'punct bold'
-        inc rgs, 7 '*'          ▸ 'punct bold'
+        inc rgs 0 '*'          ▸ 'punct bold'
+        inc rgs 1 '*'          ▸ 'punct bold'
+        inc rgs 2 'bold'       ▸ 'text bold'
+        inc rgs 6 '*'          ▸ 'punct bold'
+        inc rgs 7 '*'          ▸ 'punct bold'
         
         rgs = ranges ",**b**,"
-        inc rgs, 1 '*'          ▸ 'punct bold'
-        inc rgs, 3 'b'          ▸ 'text bold'
-        inc rgs, 4 '*'          ▸ 'punct bold'
+        inc rgs 1 '*'          ▸ 'punct bold'
+        inc rgs 3 'b'          ▸ 'text bold'
+        inc rgs 4 '*'          ▸ 'punct bold'
                 
         rgs = ranges "*it lic*"
-        inc rgs, 0 '*'          ▸ 'punct italic'
-        inc rgs, 1 'it'         ▸ 'text italic'
-        inc rgs, 4 'lic'        ▸ 'text italic'
-        inc rgs, 7 '*'          ▸ 'punct italic'
+        inc rgs 0 '*'          ▸ 'punct italic'
+        inc rgs 1 'it'         ▸ 'text italic'
+        inc rgs 4 'lic'        ▸ 'text italic'
+        inc rgs 7 '*'          ▸ 'punct italic'
         
         rgs = ranges "*italic*"
-        inc rgs, 0 '*'          ▸ 'punct italic'
-        inc rgs, 1 'italic'     ▸ 'text italic'
-        inc rgs, 7 '*'          ▸ 'punct italic'
+        inc rgs 0 '*'          ▸ 'punct italic'
+        inc rgs 1 'italic'     ▸ 'text italic'
+        inc rgs 7 '*'          ▸ 'punct italic'
      
         rgs = ranges "*`italic code`*"
-        inc rgs, 0 '*'          ▸ 'punct italic'
-        inc rgs, 1 '`'          ▸ 'punct italic code'
-        inc rgs, 2 'italic'     ▸ 'text italic code'
-        inc rgs, 9 'code'       ▸ 'text italic code'
-        inc rgs, 14 '*'         ▸ 'punct italic'
+        inc rgs 0 '*'          ▸ 'punct italic'
+        inc rgs 1 '`'          ▸ 'punct italic code'
+        inc rgs 2 'italic'     ▸ 'text italic code'
+        inc rgs 9 'code'       ▸ 'text italic code'
+        inc rgs 14 '*'         ▸ 'punct italic'
         
         rgs = ranges "it's good"
-        inc rgs, 0 'it'         ▸ 'text'
-        inc rgs, 2 "'"          ▸ 'punct'
-        inc rgs, 3 's'          ▸ 'text'
+        inc rgs 0 'it'         ▸ 'text'
+        inc rgs 2 "'"          ▸ 'punct'
+        inc rgs 3 's'          ▸ 'text'
         
         rgs = ranges "if is empty in then"
-        inc rgs, 0  'if'        ▸ 'text'
-        inc rgs, 3  'is'        ▸ 'text'
-        inc rgs, 6  'empty'     ▸ 'text'
-        inc rgs, 12 'in'        ▸ 'text'
-        inc rgs, 15 'then'      ▸ 'text'
+        inc rgs 0  'if'        ▸ 'text'
+        inc rgs 3  'is'        ▸ 'text'
+        inc rgs 6  'empty'     ▸ 'text'
+        inc rgs 12 'in'        ▸ 'text'
+        inc rgs 15 'then'      ▸ 'text'
     
         rgs = ranges 'text files. bla'
-        inc rgs, 0, 'text'  ▸ 'text'
-        inc rgs, 10, '.'    ▸ 'punct'
+        inc rgs 0, 'text'  ▸ 'text'
+        inc rgs 10, '.'    ▸ 'punct'
         
         rgs = ranges '..bla'
-        inc rgs, 0, '.'     ▸ 'punct'
-        inc rgs, 1, '.'     ▸ 'punct'
+        inc rgs 0, '.'     ▸ 'punct'
+        inc rgs 1, '.'     ▸ 'punct'
         
         rgs = ranges '```coffeescript'
-        inc rgs, 0 '`'      ▸ 'punct code triple'
-        inc rgs, 3 'coffeescript' ▸ 'comment'
+        inc rgs 0 '`'      ▸ 'punct code triple'
+        inc rgs 3 'coffeescript' ▸ 'comment'
             
     ▸ md2
         
         rgs = ranges "- li"
-        inc rgs, 0 '-'      ▸ 'punct li1 marker'
-        inc rgs, 2 'li'     ▸ 'text li1'
+        inc rgs 0 '-'      ▸ 'punct li1 marker'
+        inc rgs 2 'li'     ▸ 'text li1'
     
         rgs = ranges "    - **bold**"
-        inc rgs, 4 '-'      ▸ 'punct li2 marker'
-        inc rgs, 8 'bold'   ▸ 'text li2 bold'
+        inc rgs 4 '-'      ▸ 'punct li2 marker'
+        inc rgs 8 'bold'   ▸ 'text li2 bold'
         
         rgs = ranges "        - **bold**"
-        inc rgs, 8 '-'      ▸ 'punct li3 marker'
-        inc rgs, 12 'bold'  ▸ 'text li3 bold'
+        inc rgs 8 '-'      ▸ 'punct li3 marker'
+        inc rgs 12 'bold'  ▸ 'text li3 bold'
     
         rgs = ranges "        * **bold**"
-        inc rgs, 8 '*'      ▸ 'punct li3 marker'
-        inc rgs, 12 'bold'  ▸ 'text li3 bold'
+        inc rgs 8 '*'      ▸ 'punct li3 marker'
+        inc rgs 12 'bold'  ▸ 'text li3 bold'
     
         dss = dissect """
             - li1

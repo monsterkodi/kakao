@@ -30,7 +30,7 @@ macro = (function ()
     {
         var c, h, ih, iz, scx, scy, w, x, y
 
-        w = this.width + 2 + 1
+        w = _k_.max(20,this.width + 2 + 1)
         c = this.choices.numChoices()
         ih = (this.inputIsActive() ? 2 : 0)
         iz = _k_.max(0,ih - 1)
@@ -90,6 +90,10 @@ history`)
             else if (num = parseInt(input))
             {
                 post.emit('goto.line',num - 1,'ind')
+            }
+            else if (input.startsWith('vibrant '))
+            {
+                post.emit('theme.vibrant',parseFloat(input.split(/\s+/)[1]))
             }
         }
         else

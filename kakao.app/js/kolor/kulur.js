@@ -286,7 +286,7 @@ starComment = function ()
 
 funcArgs = function ()
 {
-    var ch, turd, _249_30_
+    var ch, turd, _249_31_
 
     if (notCode)
     {
@@ -850,19 +850,11 @@ noonProp = function ()
 
 noonPunct = function ()
 {
-    if (notCode)
-    {
-        return
-    }
     return noonProp()
 }
 
 noonWord = function ()
 {
-    if (notCode)
-    {
-        return
-    }
     if (chunk.start === 0)
     {
         setValue(0,'obj')
@@ -996,7 +988,7 @@ jsWord = function ()
 
 dict = function ()
 {
-    var prev, _715_44_
+    var prev, _717_44_
 
     if (notCode)
     {
@@ -1081,7 +1073,7 @@ jsonWord = function ()
 
 escape = function ()
 {
-    var _768_46_, _769_26_, _773_61_, _776_61_
+    var _770_46_, _771_26_, _775_61_, _778_61_
 
     if (chunk.match === '\\' && ((topType != null ? topType.startsWith('regexp') : undefined) || (topType != null ? topType.startsWith('string') : undefined)))
     {
@@ -1109,7 +1101,7 @@ escape = function ()
 
 regexp = function ()
 {
-    var next, prev, _786_19_
+    var next, prev, _788_19_
 
     if ((topType != null ? topType.startsWith('string') : undefined))
     {
@@ -1186,7 +1178,7 @@ tripleRegexp = function ()
 
 simpleString = function ()
 {
-    var next, scnd, type, _834_19_
+    var next, scnd, type, _836_19_
 
     if (topType === 'regexp')
     {
@@ -1254,7 +1246,7 @@ simpleString = function ()
 
 tripleString = function ()
 {
-    var type, _874_19_
+    var type, _876_19_
 
     if (!chunk.turd || chunk.turd.length < 3)
     {
@@ -1299,13 +1291,16 @@ tripleString = function ()
 
 number = function ()
 {
+    var prev
+
     if (notCode)
     {
         return
     }
     if (NUMBER.test(chunk.match))
     {
-        if (getmatch(-1) === '.')
+        prev = getmatch(-1)
+        if (prev === '.')
         {
             if (getValue(-4) === 'number float' && getValue(-2) === 'number float')
             {
@@ -1332,13 +1327,28 @@ number = function ()
                 return 1
             }
         }
-        chunk.clss = 'number'
+        if (prev === '#')
+        {
+            chunk.clss = 'number hex'
+        }
+        else
+        {
+            chunk.clss = 'number'
+        }
         return 1
     }
     if (HEXNUM.test(chunk.match))
     {
         chunk.clss = 'number hex'
         return 1
+    }
+    if (HEX.test(chunk.match))
+    {
+        if (getmatch(-1) === '#')
+        {
+            chunk.clss = 'number hex'
+            return 1
+        }
     }
 }
 
@@ -1363,7 +1373,7 @@ float = function ()
 
 cssWord = function ()
 {
-    var prev, prevPrev, _969_45_
+    var prev, prevPrev, _979_45_
 
     if (_k_.in(chunk.match.slice(-2),['px','em','ex']) && NUMBER.test(chunk.match.slice(0, -2)))
     {
@@ -1415,7 +1425,7 @@ cssWord = function ()
 
 mdPunct = function ()
 {
-    var type, _1003_73_, _1028_21_, _1053_21_
+    var type, _1013_73_, _1038_21_, _1063_21_
 
     if (chunkIndex === 0)
     {
@@ -1517,7 +1527,7 @@ mdPunct = function ()
 
 interpolation = function ()
 {
-    var _1085_21_
+    var _1095_21_
 
     if ((topType != null ? topType.startsWith('string double') : undefined))
     {
@@ -1542,7 +1552,7 @@ interpolation = function ()
 
 keyword = function ()
 {
-    var _1110_61_
+    var _1120_61_
 
     if (notCode)
     {
@@ -1609,7 +1619,7 @@ mmString = function ()
 
 shPunct = function ()
 {
-    var _1176_42_, _1176_64_, _1179_102_, _1179_41_, _1179_82_, _1185_102_, _1185_41_, _1185_82_
+    var _1186_42_, _1186_64_, _1189_102_, _1189_41_, _1189_82_, _1195_102_, _1195_41_, _1195_82_
 
     if (notCode)
     {
@@ -1715,16 +1725,16 @@ setValue = function (d, value)
 
 getValue = function (d)
 {
-    var _1247_27_, _1247_34_
+    var _1257_27_, _1257_34_
 
-    return ((_1247_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1247_34_ : '')
+    return ((_1257_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1257_34_ : '')
 }
 
 getmatch = function (d)
 {
-    var _1248_27_, _1248_35_
+    var _1258_27_, _1258_35_
 
-    return ((_1248_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1248_35_ : '')
+    return ((_1258_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1258_35_ : '')
 }
 
 addValue = function (d, value)
@@ -1779,7 +1789,7 @@ for (ext in handlers)
 
 blocked = function (lines)
 {
-    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1400_40_, _1415_61_
+    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1410_40_, _1425_61_
 
     extStack = []
     stack = []
@@ -1887,7 +1897,7 @@ blocked = function (lines)
                         if (mtch.turd)
                         {
                             turdChunk = getChunk(-mtch.turd.length)
-                            if (mtch.turd === (((_1415_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1415_61_ : (turdChunk != null ? turdChunk.match : undefined))))
+                            if (mtch.turd === (((_1425_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1425_61_ : (turdChunk != null ? turdChunk.match : undefined))))
                             {
                                 pushExt(mtch)
                             }
@@ -1998,11 +2008,11 @@ kolorizeChunks = function (chunks = [])
 
 syntax = function (arg)
 {
-    var clines, index, lines, rngs, text, _1492_19_
+    var clines, index, lines, rngs, text, _1502_19_
 
     arg = (arg != null ? arg : {})
     text = arg.text
-    ext = ((_1492_19_=arg.ext) != null ? _1492_19_ : 'coffee')
+    ext = ((_1502_19_=arg.ext) != null ? _1502_19_ : 'coffee')
     lines = text.split(NEWLINE)
     rngs = parse(lines,ext).map(function (l)
     {

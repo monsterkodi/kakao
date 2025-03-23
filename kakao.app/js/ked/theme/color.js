@@ -6,8 +6,6 @@ import kxk from "../../kxk.js"
 let kstr = kxk.kstr
 let randRange = kxk.randRange
 
-import ansi from "../../kxk/ansi.js"
-
 import belt from "../edit/tool/belt.js"
 
 class color
@@ -30,11 +28,6 @@ class color
         {
             return [0,0,0]
         }
-        if (_k_.isStr(c))
-        {
-            console.log(`darken ${c}`)
-            c = color.values(c)
-        }
         return c.map(function (v)
         {
             return _k_.clamp(0,255,parseInt(f * v))
@@ -47,31 +40,10 @@ class color
         {
             return [255,255,255]
         }
-        if (_k_.isStr(c))
-        {
-            console.log(`brighten ${c}`)
-            c = color.values(c)
-        }
         return c.map(function (v)
         {
             return _k_.clamp(0,255,parseInt((1 + f) * v))
         })
-    }
-
-    static devibrant (c, f = 0.5)
-    {
-        var w
-
-        if (_k_.empty(c))
-        {
-            return [128,128,128]
-        }
-        w = (c[0] + c[1] + c[2]) / 3
-        if (c[0] * c[1] * c[2] === 0)
-        {
-            w *= 2
-        }
-        return [_k_.min(255,parseInt(c[0] * (1 - f) + w * f)),_k_.min(255,parseInt(c[1] * (1 - f) + w * f)),_k_.min(255,parseInt(c[2] * (1 - f) + w * f))]
     }
 
     static vibrant (c, f = 0.5)
@@ -96,11 +68,6 @@ class color
         {
             return '\x1b[49m'
         }
-        if (_k_.isStr(c))
-        {
-            console.log(`bg_rgb '${c}'`)
-            c = color.values(c)
-        }
         return `\x1b[48;2;${c[0]};${c[1]};${c[2]}m`
     }
 
@@ -110,11 +77,6 @@ class color
         {
             return '\x1b[39m'
         }
-        if (_k_.isStr(c))
-        {
-            console.log(`fg_rgb '${c}'`)
-            c = color.values(c)
-        }
         return `\x1b[38;2;${c[0]};${c[1]};${c[2]}m`
     }
 
@@ -123,11 +85,6 @@ class color
         if (_k_.empty(c))
         {
             return '\x1b[59m'
-        }
-        if (_k_.isStr(c))
-        {
-            console.log(`ul_rgb '${c}'`)
-            c = color.values(c)
         }
         return `\x1b[58;2;${c[0]};${c[1]};${c[2]}m`
     }
@@ -270,10 +227,6 @@ class color
     {
         var c, db, dg, dr
 
-        if (_k_.isStr(c1) || _k_.isStr(c2))
-        {
-            console.log(`contrast ${c1} ${c2}`)
-        }
         dr = (c2[0] - c1[0]) / 256
         dg = (c2[1] - c1[1]) / 256
         db = (c2[2] - c1[2]) / 256

@@ -93,7 +93,7 @@ lang 'noon'
     inc rgs, 26 'bin'       ▸ 'text dir'
     inc rgs, 29 '/'         ▸ 'punct dir'
     inc rgs, 30 'mocha'     ▸ 'text file'
-
+    
     ▸ comments
     
         rgs = ranges "   # bla blub"

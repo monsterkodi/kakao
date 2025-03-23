@@ -28,7 +28,7 @@ function macro extends inputchoice
     
     arrange: =>
 
-        w = @width+2+1 # 2 for frame, 1 for right 
+        w = max 20 @width+2+1 # 2 for frame, 1 for right 
         c = @choices.numChoices()
         
         ih = @inputIsActive() ? 2 : 0
@@ -96,6 +96,7 @@ function macro extends inputchoice
                 input == 'bof'  ➜ post.emit 'goto.bof'
                 input == 'eof'  ➜ post.emit 'goto.eof'
                 num = int input ➜ post.emit 'goto.line' num-1 'ind'
+                input.startsWith 'vibrant ' ➜ post.emit 'theme.vibrant' parseFloat(input.split(/\s+/)[1])
         else
             switch choice
                 'diff'    ➜ post.emit 'differ.file'
