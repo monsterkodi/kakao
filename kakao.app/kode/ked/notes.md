@@ -23,6 +23,8 @@
 - index use files
 - git changes in gutter
 - unsaved changes 'tabs'
+- dirtree 
+    - add modified icon on closed folders
 
 - macro
     - class

@@ -12,6 +12,8 @@ import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 import icons from "../../theme/icons.js"
 
+import belt from "../../edit/tool/belt.js"
+
 import choices from "../menu/choices.js"
 
 SYMBOL = {clss:'■',unbound:'->',bound:'=>',async_unbound:'○→',async_bound:'●→'}
@@ -28,7 +30,7 @@ funSyntax = (function ()
         this["setSegls"] = this["setSegls"].bind(this)
         this["setLines"] = this["setLines"].bind(this)
         this["clear"] = this["clear"].bind(this)
-        this.color = {class:theme.funtree.class,async:theme.funtree.async,bound:theme.funtree.bound,func:theme.funtree.func}
+        this.color = {class:theme.funtree.class,async:theme.funtree.async,bound:theme.funtree.bound,bound_async:theme.funtree.bound_async,func:theme.funtree.func,func_async:theme.funtree.func_async,test0:theme.funtree.test0,test1:theme.funtree.test1,test2:theme.funtree.test2,test3:theme.funtree.test3}
     }
 
     funSyntax.prototype["clear"] = function ()
@@ -49,7 +51,7 @@ funSyntax = (function ()
 
     funSyntax.prototype["getColor"] = function (x, y)
     {
-        var char, clr, item, name, _57_26_
+        var char, clr, item, name
 
         item = this.tree.items[y]
         name = item.name
@@ -58,13 +60,17 @@ funSyntax = (function ()
         {
             return [0,0,0]
         }
-        if (!(item.async != null))
+        if (item.clss)
         {
             clr = this.color.class
         }
+        else if (item.test)
+        {
+            clr = this.color['test' + parseInt(belt.numIndent(item.name) / 2)]
+        }
         else if (item.async)
         {
-            clr = this.color.async
+            clr = (item.bound ? this.color.bound_async : this.color.func_async)
         }
         else if (item.bound)
         {
@@ -82,9 +88,13 @@ funSyntax = (function ()
         {
             clr = this.color.class
         }
-        if (char === '@')
+        if (char === '▸')
         {
             clr = color.darken(clr,0.5)
+        }
+        else if (char === '@')
+        {
+            clr = color.darken(clr,((clr === this.color.class ? 0.75 : 0.5)))
         }
         else if (char === SYMBOL.clss)
         {
@@ -124,7 +134,7 @@ funtree = (function ()
 
     funtree.prototype["onFileIndexed"] = function (path, info)
     {
-        var clss, clssl, func, funcs, items, name, symbol, _109_22_
+        var clss, clssl, func, funcs, indt, items, name, symbol, _118_22_
 
         if (path !== ked_session.get('editor▸file'))
         {
@@ -140,41 +150,49 @@ funtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_109_22_=clss.file) != null ? _109_22_ : path)
+            clss.file = ((_118_22_=clss.file) != null ? _118_22_ : path)
             clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
         }
         var list1 = _k_.list(funcs)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             func = list1[_b_]
-            if (func.async)
+            if (func.test)
             {
-                if (func.bound)
-                {
-                    symbol = SYMBOL.async_bound
-                }
-                else
-                {
-                    symbol = SYMBOL.async_unbound
-                }
+                func.name = belt.reindent(4,2,func.name)
             }
             else
             {
-                if (func.bound)
+                if (func.async)
                 {
-                    symbol = SYMBOL.bound
+                    if (func.bound)
+                    {
+                        symbol = SYMBOL.async_bound
+                    }
+                    else
+                    {
+                        symbol = SYMBOL.async_unbound
+                    }
                 }
                 else
                 {
-                    symbol = SYMBOL.unbound
+                    if (func.bound)
+                    {
+                        symbol = SYMBOL.bound
+                    }
+                    else
+                    {
+                        symbol = SYMBOL.unbound
+                    }
                 }
+                name = func.name
+                if (func.static)
+                {
+                    name = '@' + name
+                }
+                indt = (func.class ? '   ' : '')
+                func.name = indt + symbol + ' ' + name
             }
-            name = func.name
-            if (func.static)
-            {
-                name = '@' + name
-            }
-            func.name = '   ' + symbol + ' ' + name
         }
         items = clssl.concat(funcs)
         items.sort(function (a, b)

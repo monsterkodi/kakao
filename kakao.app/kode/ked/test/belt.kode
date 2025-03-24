@@ -141,6 +141,7 @@ use ../edit/tool   ◆ belt
         belt.jumpDelta line 4  -1 ['ws'] ▸ -1
         belt.jumpDelta line 3  -1 ['ws'] ▸ -1
         belt.jumpDelta line 2  -1 ['ws'] ▸ -2
+
         
     ▸ isPosInsideRange
     

@@ -130,12 +130,11 @@ fileeditor = (function ()
 
         if (clss = indexer.singleton.classes[word])
         {
-            console.log(`fileeditor.jumpToWord(${word}) jumpToClass`,clss)
-            return post.emit('file.open',clss.file,clss.line - 1)
+            post.emit('file.open',clss.file,clss.line - 1)
+            return true
         }
         else if (func = indexer.singleton.funcs[word])
         {
-            console.log(`fileeditor.jumpToWord(${word}) jumpToFunc`,func)
             if (_k_.isArr(func))
             {
                 currentFile = ked_session.get('editor▸file')
@@ -156,22 +155,24 @@ fileeditor = (function ()
             }
             if (!_k_.empty(func.file))
             {
-                return post.emit('file.open',func.file,func.line - 1,'ind')
+                post.emit('file.open',func.file,func.line - 1,'ind')
+                return true
             }
         }
         else
         {
             console.log(`fileeditor.jumpToWord(${word}) nothing found to jump to`)
         }
+        return false
     }
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _147_50_, _153_50_, _162_50_
+        var counter, currentFile, currext, ext, file, _150_50_, _156_50_, _165_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_147_50_=fileutil.counterparts[currext]) != null ? _147_50_ : [])
+        var list = ((_150_50_=fileutil.counterparts[currext]) != null ? _150_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -181,7 +182,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_153_50_=fileutil.counterparts[currext]) != null ? _153_50_ : [])
+        var list1 = ((_156_50_=fileutil.counterparts[currext]) != null ? _156_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -193,7 +194,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list2 = ((_162_50_=fileutil.counterparts[currext]) != null ? _162_50_ : [])
+        var list2 = ((_165_50_=fileutil.counterparts[currext]) != null ? _165_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -222,7 +223,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _221_41_, _278_31_
+        var col, ret, row, start, word, x, y, _224_41_, _282_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -270,8 +271,11 @@ fileeditor = (function ()
                     {
                         if (word = belt.wordAtPos(this.state.s.lines,[x,y]))
                         {
-                            this.jumpToWord(word)
-                            return
+                            console.log(`jumpToWord ${word}`,event)
+                            if (this.jumpToWord(word))
+                            {
+                                return
+                            }
                         }
                     }
                     this.dragStart = [x,y,x]

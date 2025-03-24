@@ -29,7 +29,6 @@ function index_kode
             funcs:   [] 
             lines:   lines.length
             
-        funcAdded = false
         funcStack = []
         currentClass = null
         
@@ -42,7 +41,6 @@ function index_kode
                 funcInfo.static = true
                 
             funcInfo.name = funcName
-            result.funcs.push funcInfo
             funcInfo
             
         for line,li in lines
@@ -78,7 +76,6 @@ function index_kode
                         bound:  bound
                         
                     funcStack.push [indent funcInfo]
-                    funcAdded = true
             else
     
                 # 00000000  000   000  000   000   0000000  000000000  000   0000000   000   000   0000000
@@ -95,7 +92,6 @@ function index_kode
                         async: line.indexOf('○')>=0
     
                     funcStack.push [indent funcInfo]
-                    funcAdded = true
     
                 else if funcName = index_utils.postNameInLine line
                     funcInfo = addFuncInfo funcName,
@@ -103,16 +99,16 @@ function index_kode
                         post: true
     
                     funcStack.push [indent funcInfo]
-                    funcAdded = true
                     
-                m = line.match index_utils.testRegExp
-                if m?[0]?
-                    funcInfo = addFuncInfo m[0].replaceAll('▸ ' ''),
-                        line: li
-                        test: m[0].replaceAll('▸ ' '')
-    
-                    funcStack.push [indent funcInfo]
-                    funcAdded = true
+                else                    
+                    m = line.match index_utils.testRegExp
+                    if m?[0]?
+                        # funcInfo = addFuncInfo m[0].replaceAll('▸ ' ''),
+                        funcInfo = addFuncInfo m[0],
+                            line: li
+                            test: true #m[0].replaceAll('▸ ' '')
+                    
+                        funcStack.push [indent funcInfo]
     
             words = line.split index_utils.splitRegExp
 

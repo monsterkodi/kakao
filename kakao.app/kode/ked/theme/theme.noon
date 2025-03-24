@@ -38,8 +38,13 @@ funtree
     bg                                      #0a0a0a
     class                                   #ff6   
     func                                    #aaf   
-    bound                                   #4d4   
-    async                                   #f88   
+    func_async                              #66f   
+    bound                                   #f88   
+    bound_async                             #c44   
+    test0                                   #0f0   
+    test1                                   #0a0   
+    test2                                   #080   
+    test3                                   #060   
                                             
 knob                            
     fg                                      #222   

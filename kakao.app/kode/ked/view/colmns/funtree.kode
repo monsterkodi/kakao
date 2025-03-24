@@ -4,10 +4,11 @@
 #    ███       ███   ███  ███  ████     ███     ███   ███  ███       ███       
 #    ███        ███████   ███   ███     ███     ███   ███  ████████  ████████  
 
-use ../../../kxk ▪ post slash
-use ../../../kxk ◆ nfs
-use ../../theme  ◆ color theme icons
-use ../menu      ◆ choices 
+use ../../../kxk    ▪ post slash
+use ../../../kxk    ◆ nfs
+use ../../theme     ◆ color theme icons
+use ../../edit/tool ◆ belt
+use ../menu         ◆ choices 
 
 ###
      ███████  ███   ███  ███   ███  █████████   ███████   ███   ███
@@ -29,10 +30,16 @@ function funSyntax
     @: @tree ->
     
         @color =
-            class: theme.funtree.class
-            async: theme.funtree.async
-            bound: theme.funtree.bound
-            func:  theme.funtree.func            
+            class:          theme.funtree.class
+            async:          theme.funtree.async
+            bound:          theme.funtree.bound
+            bound_async:    theme.funtree.bound_async
+            func:           theme.funtree.func            
+            func_async:     theme.funtree.func_async
+            test0:          theme.funtree.test0
+            test1:          theme.funtree.test1
+            test2:          theme.funtree.test2
+            test3:          theme.funtree.test3
         
     clear: =>
 
@@ -52,10 +59,11 @@ function funSyntax
         name = item.name
         char = name[x]
         if char == ' ' ➜ ⮐  [0 0 0]
-            
+
         if 
-            not item.async? ➜ clr = @color.class
-            item.async      ➜ clr = @color.async
+            item.clss       ➜ clr = @color.class
+            item.test       ➜ clr = @color['test' + int(belt.numIndent(item.name)/2)] 
+            item.async      ➜ clr = item.bound ? @color.bound_async : @color.func_async
             item.bound      ➜ clr = @color.bound
                             ➜ clr = @color.func
         if 
@@ -63,7 +71,8 @@ function funSyntax
             char == '@' and empty name[x+1]
                               clr = @color.class
         if 
-            char == '@'            ➜ clr = color.darken clr 0.5
+            char == '▸'            ➜ clr = color.darken clr 0.5
+            char == '@'            ➜ clr = color.darken clr (clr == @color.class ? 0.75 : 0.5)
             char == SYMBOL.clss    ➜ clr = color.darken clr 0.2
             char in SYMBOL.bound   and item.bound ➜ clr = color.darken clr 0.5
             char in SYMBOL.unbound                ➜ clr = color.darken clr 0.7
@@ -110,19 +119,24 @@ function funtree extends choices
             clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
             
         for func in funcs
-            if func.async
-                if func.bound
-                    symbol = SYMBOL.async_bound
-                else
-                    symbol = SYMBOL.async_unbound
+            if func.test
+                func.name = belt.reindent 4 2 func.name
             else
-                if func.bound
-                    symbol = SYMBOL.bound
+                if func.async
+                    if func.bound
+                        symbol = SYMBOL.async_bound
+                    else
+                        symbol = SYMBOL.async_unbound
                 else
-                    symbol = SYMBOL.unbound
-            name = func.name
-            name = '@' + name if func.static
-            func.name = '   ' + symbol + ' ' + name
+                    if func.bound
+                        symbol = SYMBOL.bound
+                    else
+                        symbol = SYMBOL.unbound
+                        
+                name = func.name
+                name = '@' + name if func.static
+                indt = func.class ? '   ' : ''
+                func.name = indt + symbol + ' ' + name
         
         items = clssl.concat funcs
         items.sort (a b) -> a.line - b.line

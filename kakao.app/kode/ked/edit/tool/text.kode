@@ -198,6 +198,12 @@ function text
     @numIndent: segs -> kseg.numIndent segs
         
     @splitLineIndent: str -> kseg.splitAtIndent str
+    
+    @reindent: oldIndent newIndent str ->
+    
+        [indent rest] = @splitLineIndent str
+        
+        lpad(parseInt(indent.length*newIndent/oldIndent)) + rest
         
     @numIndentOfLines: lines ->
         

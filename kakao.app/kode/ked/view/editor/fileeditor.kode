@@ -116,10 +116,11 @@ function fileeditor extends editor
         # log 'fileeditor.jumpToWord funcs'   Object.keys(indexer.singleton.funcs)
         
         if clss = indexer.singleton.classes[word]
-            log "fileeditor.jumpToWord(#{word}) jumpToClass" clss
+            # log "fileeditor.jumpToWord(#{word}) jumpToClass" clss
             post.emit 'file.open' clss.file clss.line-1
+            ⮐  true
         else if func = indexer.singleton.funcs[word]
-            log "fileeditor.jumpToWord(#{word}) jumpToFunc" func
+            # log "fileeditor.jumpToWord(#{word}) jumpToFunc" func
             if func is arr
                 currentFile = ked_session.get 'editor▸file'
                 for fun,idx in func
@@ -130,8 +131,10 @@ function fileeditor extends editor
                     func = func[0]
             if valid func.file
                 post.emit 'file.open' func.file func.line-1 'ind'
+                ⮐  true
         else 
             log "fileeditor.jumpToWord(#{word}) nothing found to jump to"
+        false
             
     #  ███████   ███████   ███   ███  ███   ███  █████████  ████████  ████████   ████████    ███████   ████████   █████████
     # ███       ███   ███  ███   ███  ████  ███     ███     ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
@@ -225,8 +228,9 @@ function fileeditor extends editor
                     
                     if event.cmd or event.ctrl
                         if word = belt.wordAtPos @state.s.lines [x y]
-                            @jumpToWord word
-                            ⮐  
+                            log "jumpToWord #{word}" event
+                            if @jumpToWord word
+                                ⮐ 
                         
                     @dragStart = [x y x]
                                         

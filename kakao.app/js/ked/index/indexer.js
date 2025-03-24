@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 import kxk from "../../kxk.js"
 let pickBy = kxk.pickBy
@@ -21,11 +21,6 @@ import index_styl from "./index_styl.js"
 
 class indexer
 {
-    static file (file)
-    {
-        return this.singleton.files[file]
-    }
-
     constructor ()
     {
         this.index = this.index.bind(this)
@@ -50,22 +45,14 @@ class indexer
         this.words = Object.create(null)
     }
 
-    async onProjectIndexed (prjDir)
+    static file (file)
     {
-        var file, files
-
-        files = prjcts.projects[prjDir].files
-        var list = _k_.list(files)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            file = list[_a_]
-            await this.index(file)
-        }
+        return this.singleton.files[file]
     }
 
     addFuncInfo (funcName, funcInfo)
     {
-        var funcInfos, _75_37_
+        var funcInfos, _60_37_
 
         if (!funcName)
         {
@@ -77,7 +64,7 @@ class indexer
             funcInfo.static = true
         }
         funcInfo.name = funcName
-        funcInfos = ((_75_37_=this.funcs[funcName]) != null ? _75_37_ : [])
+        funcInfos = ((_60_37_=this.funcs[funcName]) != null ? _60_37_ : [])
         if (!(_k_.isArr(funcInfos)))
         {
             funcInfos = []
@@ -129,7 +116,6 @@ class indexer
 
         indexr = new indexerClass
         parsed = indexr.parse(text)
-        console.log(`indexer.applyIndexer ${file}`,parsed)
         funcAdded = !_k_.empty((parsed.classes)) || !_k_.empty((parsed.funcs))
         var list = _k_.list(parsed.classes)
         for (var _a_ = 0; _a_ < list.length; _a_++)
@@ -137,7 +123,7 @@ class indexer
             clss = list[_a_]
             sds.set(this.classes,`${clss.name}.file`,file)
             sds.set(this.classes,`${clss.name}.line`,clss.line + 1)
-            fileInfo.classes.push({name:clss.name,line:clss.line + 1})
+            fileInfo.classes.push({clss:true,name:clss.name,line:clss.line + 1})
         }
         var list1 = _k_.list(parsed.funcs)
         for (var _b_ = 0; _b_ < list1.length; _b_++)
@@ -157,6 +143,19 @@ class indexer
         }
         this.files[file] = fileInfo
         return post.emit('file.indexed',file,fileInfo)
+    }
+
+    async onProjectIndexed (prjDir)
+    {
+        var file, files
+
+        files = prjcts.projects[prjDir].files
+        var list = _k_.list(files)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            file = list[_a_]
+            await this.index(file)
+        }
     }
 
     async index (file, opt)

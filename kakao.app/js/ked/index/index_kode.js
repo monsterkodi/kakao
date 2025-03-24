@@ -16,12 +16,11 @@ index_kode = (function ()
 
     index_kode.prototype["parse"] = function (text)
     {
-        var addFuncInfo, async, bound, boundIndex, className, currentClass, firstClass, funcAdded, funcInfo, funcName, funcStack, indent, li, line, lines, m, methodName, result, unbndIndex, word, words, _143_27_
+        var addFuncInfo, async, bound, boundIndex, className, currentClass, firstClass, funcInfo, funcName, funcStack, indent, li, line, lines, m, methodName, result, unbndIndex, word, words, _139_27_
 
         lines = kstr.lines(text)
         bound = {}
         result = {classes:[],funcs:[],lines:lines.length}
-        funcAdded = false
         funcStack = []
         currentClass = null
         addFuncInfo = function (funcName, funcInfo)
@@ -36,7 +35,6 @@ index_kode = (function ()
                 funcInfo.static = true
             }
             funcInfo.name = funcName
-            result.funcs.push(funcInfo)
             return funcInfo
         }
         var list = _k_.list(lines)
@@ -64,7 +62,6 @@ index_kode = (function ()
                     async = line.indexOf('○') >= 0
                     funcInfo = {line:li,name:methodName,class:currentClass,async:async,bound:bound}
                     funcStack.push([indent,funcInfo])
-                    funcAdded = true
                 }
             }
             else
@@ -77,20 +74,20 @@ index_kode = (function ()
                 {
                     funcInfo = addFuncInfo(funcName,{line:li,async:line.indexOf('○') >= 0})
                     funcStack.push([indent,funcInfo])
-                    funcAdded = true
                 }
                 else if (funcName = index_utils.postNameInLine(line))
                 {
                     funcInfo = addFuncInfo(funcName,{line:li,post:true})
                     funcStack.push([indent,funcInfo])
-                    funcAdded = true
                 }
-                m = line.match(index_utils.testRegExp)
-                if (((m != null ? m[0] : undefined) != null))
+                else
                 {
-                    funcInfo = addFuncInfo(m[0].replaceAll('▸ ',''),{line:li,test:m[0].replaceAll('▸ ','')})
-                    funcStack.push([indent,funcInfo])
-                    funcAdded = true
+                    m = line.match(index_utils.testRegExp)
+                    if (((m != null ? m[0] : undefined) != null))
+                    {
+                        funcInfo = addFuncInfo(m[0],{line:li,test:true})
+                        funcStack.push([indent,funcInfo])
+                    }
                 }
             }
             words = line.split(index_utils.splitRegExp)
@@ -117,7 +114,7 @@ index_kode = (function ()
         {
             _k_.last(funcStack)[1].last = li - 1
             funcInfo = funcStack.pop()[1]
-            funcInfo.class = ((_143_27_=funcInfo.class) != null ? _143_27_ : firstClass)
+            funcInfo.class = ((_139_27_=funcInfo.class) != null ? _139_27_ : firstClass)
             result.funcs.push(funcInfo)
         }
         return result

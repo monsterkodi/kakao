@@ -14,8 +14,6 @@ use           ◆ prjcts index_utils index_kode index_styl
 # use ◆ walker #IndexHpp IndexJS IndexMM IndexStyl
 
 class indexer
-
-    @file: file -> @singleton.files[file]
     
     ###    
     000  000   000  0000000    00000000  000   000  00000000  00000000   
@@ -40,22 +38,9 @@ class indexer
         @classes = Object.create null
         @funcs   = Object.create null
         @words   = Object.create null
-        
-    # ████████   ████████         ███   ███████  █████████        ███  ███   ███  ███████    ███   ███  ███████    
-    # ███   ███  ███   ███        ███  ███          ███           ███  ████  ███  ███   ███   ███ ███   ███   ███  
-    # ████████   ███████          ███  ███          ███           ███  ███ █ ███  ███   ███    █████    ███   ███  
-    # ███        ███   ███  ███   ███  ███          ███           ███  ███  ████  ███   ███   ███ ███   ███   ███  
-    # ███        ███   ███   ███████    ███████     ███           ███  ███   ███  ███████    ███   ███  ███████    
-
-    onProjectIndexed: prjDir ○=>
+                
+    @file: file -> @singleton.files[file]
     
-        # log 'indexer.onProjectIndexed' prjDir
-        files = prjcts.projects[prjDir].files
-        # log "▸▸▸ #{files.length} files to index" #files
-        for file in files
-            ○ @index file
-        # log "▪▪▪ #{files.length} files indexed" 
-        
     #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
     # 000   000  000   000  000   000      000       000   000  0000  000  000       
     # 000000000  000   000  000   000      000000    000   000  000 0 000  000       
@@ -122,7 +107,7 @@ class indexer
         indexr = new indexerClass
         parsed = indexr.parse text
         
-        log "indexer.applyIndexer #{file}" parsed
+        # log "indexer.applyIndexer #{file}" parsed
         
         funcAdded = not empty(parsed.classes) or not empty(parsed.funcs)
         
@@ -132,11 +117,12 @@ class indexer
             sds.set @classes "#{clss.name}.line" clss.line+1
             
             fileInfo.classes.push 
+                clss: true
                 name: clss.name
                 line: clss.line+1
                 
         for func in parsed.funcs
-            # this is ugly as fuck, consider fixing it!
+
             if func.method
                 funcInfo = @addMethod func.class func.method file func.line func.async func.bound func.static
             else
@@ -147,7 +133,19 @@ class indexer
             fileInfo.funcs.push funcInfo
             
         @files[file] = fileInfo
-        post.emit 'file.indexed' file fileInfo
+        post.emit 'file.indexed' file fileInfo        
+        
+    # ████████   ████████         ███   ███████  █████████        ███  ███   ███  ███████    ███   ███  ███████    
+    # ███   ███  ███   ███        ███  ███          ███           ███  ████  ███  ███   ███   ███ ███   ███   ███  
+    # ████████   ███████          ███  ███          ███           ███  ███ █ ███  ███   ███    █████    ███   ███  
+    # ███        ███   ███  ███   ███  ███          ███           ███  ███  ████  ███   ███   ███ ███   ███   ███  
+    # ███        ███   ███   ███████    ███████     ███           ███  ███   ███  ███████    ███   ███  ███████    
+
+    onProjectIndexed: prjDir ○=>
+    
+        files = prjcts.projects[prjDir].files
+        for file in files
+            ○ @index file
             
     # 000  000   000  0000000    00000000  000   000
     # 000  0000  000  000   000  000        000 000 
