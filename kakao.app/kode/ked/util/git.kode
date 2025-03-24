@@ -44,11 +44,9 @@ function git
 
         for gitDir in @gitDirs
             if info.path.startsWith gitDir
-                log "git.onFileChange -- change in gitDir #{info.path}"
                 if slash.dir(info.path).endsWith('.git/refs/heads')
-                    log "git.onFileChange -- change in heads #{info.path}"
                     if slash.name(info.path) in ['master' 'main']
-                        log 'git.onFileChange - master main'
+                        log "git.onFileChange - master main #{info.path}"
                         git.status gitDir
                         ⮐ 
 

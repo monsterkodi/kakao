@@ -36,8 +36,15 @@ function dirtree extends choices
             if item.path in status.changed
                 item.modified = true
                 item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
-                @set @items @currentIndex()
-                post.emit 'redraw'
+                redraw = true
+            if item.modified and item.path not in status.changed
+                delete item.modified
+                item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                redraw = true
+                
+        if redraw
+            @set @items @currentIndex()        
+            post.emit 'redraw' 
                 
     # ████████  ███  ███      ████████         ███████  ███   ███   ███████   ███   ███   ███████   ████████
     # ███       ███  ███      ███             ███       ███   ███  ███   ███  ████  ███  ███        ███     
@@ -46,7 +53,7 @@ function dirtree extends choices
     # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
 
     onFileChange: info =>
-        # log 'dirtree.onFileChange' info
+        
         if info.path.startsWith @currentRoot
             if info.change == 'rename'
                 for item in @items
