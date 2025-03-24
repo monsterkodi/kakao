@@ -320,6 +320,8 @@ function differ extends searcher
         ⮐  if empty gitDir
         
         @hide()
+        post.emit 'focus' 'editor'
+        # post.emit 'redraw'
         
         out = ''
         out +=○ git.exec "add ."                cwd:gitDir       

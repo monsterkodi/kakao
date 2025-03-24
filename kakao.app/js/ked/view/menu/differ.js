@@ -338,6 +338,7 @@ differ = (function ()
             return
         }
         this.hide()
+        post.emit('focus','editor')
         out = ''
         out += await git.exec("add .",{cwd:gitDir})
         out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
