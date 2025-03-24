@@ -20,10 +20,6 @@
 #### todo
 ##### todo
 
-- searcher
-    - fix right action triggering when input has focus!!!
-        - should only apply when search results are filtered?
-    
 - unsaved changes 'tabs'
 
 - macro
