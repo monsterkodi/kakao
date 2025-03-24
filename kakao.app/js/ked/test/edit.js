@@ -168,6 +168,8 @@ Alice’s,`)
         compare(belt.prepareWordsForCompletion('a.','.',['0.1','1.234','obj.prop']),['.prop'])
         compare(belt.prepareWordsForCompletion('0.','.',['0.1','1.234','obj.prop']),['.1'])
         compare(belt.prepareWordsForCompletion('3.1','1',['1.123','1.234','obj.prop']),[])
+        compare(belt.prepareWordsForCompletion('rugga','r',['rofl','rug']),['rofl','rug'])
+        compare(belt.prepareWordsForCompletion('rugga','ru',['rug']),['rug'])
     })
     section("indentLineRangesAndPositionsAtIndices", function ()
     {

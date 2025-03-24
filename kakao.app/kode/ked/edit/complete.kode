@@ -43,10 +43,12 @@ function complete
         before = @editor.state.chunkBeforeCursor()
         after  = @editor.state.chunkAfterCursor()
         
-        tcw = kseg.tailCountWord before
         hcw = kseg.headCountWord after
+        tcw = kseg.tailCountWord before
         
-        ⮐  if tcw and hcw # don't complete if cursor is inside a word
+        log "complete.complete #{tcw} #{hcw}"
+        
+        ⮐  if tcw > 1 and hcw # don't complete if cursor is inside a word
         
         tct = kseg.tailCountTurd before
         
@@ -65,6 +67,8 @@ function complete
     # 00     00   0000000   000   000  0000000    
     
     word: @turd ->
+    
+        # log "complete.word(#{@turd}"
             
         if empty @turd
             @hide()
@@ -77,6 +81,7 @@ function complete
         
         if @turd.length == 1 
             if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
+                log 'add specs trigger' inserts
                 @words = inserts.concat @words
 
         @visible = valid @words

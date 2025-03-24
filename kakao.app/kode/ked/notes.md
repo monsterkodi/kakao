@@ -20,6 +20,8 @@
 #### todo
 ##### todo
 
+- index use files
+- git changes in gutter
 - unsaved changes 'tabs'
 
 - macro
@@ -84,10 +86,9 @@
 
 - unicode mode
     - quicky
-        - ~\w+ julia search
-        - ~\d+ single character
-        - ~\d+n multiple characters
-        - ~...*n n times *
+        - ~w+ julia search
+        - ~d+ single character
+        - ~... n times
         
 - md mode
     - activates on md file load
@@ -172,5 +173,5 @@
 
 #### creatures
 
-    (';')  {'�'} [0 0]
+    (';')  {'�'}  [0 0]  '"("'
     

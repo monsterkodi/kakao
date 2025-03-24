@@ -43,9 +43,10 @@ complete = (function ()
 
         before = this.editor.state.chunkBeforeCursor()
         after = this.editor.state.chunkAfterCursor()
-        tcw = kseg.tailCountWord(before)
         hcw = kseg.headCountWord(after)
-        if (tcw && hcw)
+        tcw = kseg.tailCountWord(before)
+        console.log(`complete.complete ${tcw} ${hcw}`)
+        if (tcw > 1 && hcw)
         {
             return
         }
@@ -83,6 +84,7 @@ complete = (function ()
         {
             if (inserts = specs.trigger[this.turd])
             {
+                console.log('add specs trigger',inserts)
                 this.words = inserts.concat(this.words)
             }
         }

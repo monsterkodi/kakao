@@ -1,0 +1,148 @@
+###
+    ███  ███   ███  ███████    ████████  ███   ███          ███   ███   ███████   ███████    ████████
+    ███  ████  ███  ███   ███  ███        ███ ███           ███  ███   ███   ███  ███   ███  ███     
+    ███  ███ █ ███  ███   ███  ███████     █████            ███████    ███   ███  ███   ███  ███████ 
+    ███  ███  ████  ███   ███  ███        ███ ███           ███  ███   ███   ███  ███   ███  ███     
+    ███  ███   ███  ███████    ████████  ███   ███  ██████  ███   ███   ███████   ███████    ████████
+###
+
+use ../../kxk ▪ kstr slash
+use           ◆ index_utils
+
+function index_kode
+
+    @: ->
+                        
+    # 00000000    0000000   00000000    0000000  00000000
+    # 000   000  000   000  000   000  000       000     
+    # 00000000   000000000  0000000    0000000   0000000 
+    # 000        000   000  000   000       000  000     
+    # 000        000   000  000   000  0000000   00000000
+
+    parse: text ->
+        
+        lines = kstr.lines text
+
+        bound = {}
+        result = 
+            classes: [] 
+            funcs:   [] 
+            lines:   lines.length
+            
+        funcAdded = false
+        funcStack = []
+        currentClass = null
+        
+        addFuncInfo = funcName funcInfo ->
+            
+            ⮐  if not funcName
+            
+            if funcName.length > 1 and funcName.startsWith '@'
+                funcName = funcName.slice 1
+                funcInfo.static = true
+                
+            funcInfo.name = funcName
+            result.funcs.push funcInfo
+            funcInfo
+            
+        for line,li in lines
+
+            continue if empty trim line # ignore empty lines
+        
+            indent = line.search /\S/
+    
+            while funcStack.length and indent <= last(funcStack)[0]
+                last(funcStack)[1].last = li - 1
+                funcInfo = funcStack.pop()[1]
+                result.funcs.push funcInfo 
+    
+            if currentClass? 
+    
+                # 00     00  00000000  000000000  000   000   0000000   0000000     0000000
+                # 000   000  000          000     000   000  000   000  000   000  000
+                # 000000000  0000000      000     000000000  000   000  000   000  0000000
+                # 000 0 000  000          000     000   000  000   000  000   000       000
+                # 000   000  00000000     000     000   000   0000000   0000000    0000000
+    
+                if methodName = index_utils.methodNameInLine line
+                    unbndIndex = line.indexOf '->'
+                    boundIndex = line.indexOf '=>'
+                    bound = boundIndex > 0 and (unbndIndex < 0 or boundIndex < unbndIndex)
+                    async = line.indexOf('○')>=0
+
+                    funcInfo = 
+                        line:   li
+                        name:   methodName
+                        class:  currentClass
+                        async:  async
+                        bound:  bound
+                        
+                    funcStack.push [indent funcInfo]
+                    funcAdded = true
+            else
+    
+                # 00000000  000   000  000   000   0000000  000000000  000   0000000   000   000   0000000
+                # 000       000   000  0000  000  000          000     000  000   000  0000  000  000
+                # 000000    000   000  000 0 000  000          000     000  000   000  000 0 000  0000000
+                # 000       000   000  000  0000  000          000     000  000   000  000  0000       000
+                # 000        0000000   000   000   0000000     000     000   0000000   000   000  0000000
+    
+                currentClass = null if indent < 2 
+    
+                if funcName = index_utils.funcNameInLine line
+                    funcInfo = addFuncInfo funcName,
+                        line: li
+                        async: line.indexOf('○')>=0
+    
+                    funcStack.push [indent funcInfo]
+                    funcAdded = true
+    
+                else if funcName = index_utils.postNameInLine line
+                    funcInfo = addFuncInfo funcName,
+                        line: li
+                        post: true
+    
+                    funcStack.push [indent funcInfo]
+                    funcAdded = true
+                    
+                m = line.match index_utils.testRegExp
+                if m?[0]?
+                    funcInfo = addFuncInfo m[0].replaceAll('▸ ' ''),
+                        line: li
+                        test: m[0].replaceAll('▸ ' '')
+    
+                    funcStack.push [indent funcInfo]
+                    funcAdded = true
+    
+            words = line.split index_utils.splitRegExp
+
+            for word in words
+                
+                switch word
+            
+                    #  0000000  000       0000000    0000000   0000000
+                    # 000       000      000   000  000       000
+                    # 000       000      000000000  0000000   0000000
+                    # 000       000      000   000       000       000
+                    #  0000000  0000000  000   000  0000000   0000000
+                    
+                    'class' 'function'
+                        
+                        if className = index_utils.classNameInLine line
+
+                            firstClass  ?= className
+                            currentClass = className
+                            
+                            result.classes.push 
+                                name: className
+                                line: li
+        
+        while funcStack.length
+            last(funcStack)[1].last = li - 1
+            funcInfo = funcStack.pop()[1]
+            funcInfo.class ?= firstClass
+            result.funcs.push funcInfo
+            
+        result
+    
+export index_kode

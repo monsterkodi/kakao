@@ -972,7 +972,7 @@ cssWord = ->
 
     if prev = getChunk -1
 
-        if prev.match == '.' and getChunk(-2)?.clss != 'number'
+        if prev.match == '.' and getChunk(-2)?.clss != 'number' and empty topType
             addValue -1 'class'
             setValue  0 'class'
             ⮐  1

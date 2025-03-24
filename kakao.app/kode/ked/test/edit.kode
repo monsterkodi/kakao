@@ -267,6 +267,9 @@ use ../edit/tool ◆ belt
         
         belt.prepareWordsForCompletion '3.1'  '1'      ['1.123' '1.234' 'obj.prop'] ▸ []
         
+        belt.prepareWordsForCompletion 'rugga' 'r'     ['rofl' 'rug']               ▸ ['rofl' 'rug']
+        belt.prepareWordsForCompletion 'rugga' 'ru'    ['rug']                      ▸ ['rug']
+        
     # ███  ███   ███  ███████    ████████  ███   ███  █████████
     # ███  ████  ███  ███   ███  ███       ████  ███     ███   
     # ███  ███ █ ███  ███   ███  ███████   ███ █ ███     ███   

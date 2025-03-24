@@ -115,6 +115,7 @@ syntax
     punct code triple                       #222   
     punct comment                           #222   
     section                                 #ccf   
+    argument                                #bbf   
     number hex                              #aaf   
     keyword                                 #99f   
     number                                  #88f   
@@ -124,6 +125,7 @@ syntax
     punct function async                    #99f   
     punct function tail                     #77e   
     punct function head                     #77e   
+    property special                        #f79   
     number float                            #f68   
     punct number float                      #a46   
     punct function bound                    #c48   
@@ -137,6 +139,7 @@ syntax
     url domain                              #d00   
     punct regexp start                      #c00   
     punct regexp end                        #c00   
+    text unicode regexp                     #f85   
     text regexp                             #f04   
     punct minor regexp                      #a02   
     punct escape regexp                     #902   

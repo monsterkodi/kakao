@@ -1390,7 +1390,7 @@ cssWord = function ()
     }
     if (prev = getChunk(-1))
     {
-        if (prev.match === '.' && (getChunk(-2) != null ? getChunk(-2).clss : undefined) !== 'number')
+        if (prev.match === '.' && (getChunk(-2) != null ? getChunk(-2).clss : undefined) !== 'number' && _k_.empty(topType))
         {
             addValue(-1,'class')
             setValue(0,'class')

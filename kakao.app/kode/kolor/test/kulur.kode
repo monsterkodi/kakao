@@ -446,6 +446,19 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         inc rgs 0 "0"      ▸ 'number float'
         inc rgs 1 "."      ▸ 'punct number float'
         inc rgs 2 "5"      ▸ 'number float'
+
+    ▸ styl
+        
+        lang 'styl'
+        
+        rgs = ranges '   src    url("../font/NF.woff")'
+        inc rgs 13 '('      ▸ 'punct minor'
+        inc rgs 14 '"'      ▸ 'punct string double'
+        inc rgs 15 '.'      ▸ 'string double'
+        inc rgs 25 '.'      ▸ 'string double'
+        inc rgs 26 'woff'   ▸ 'string double'
+        inc rgs 30 '"'      ▸ 'punct string double'
+        # log rgs
         
     #  0000000  00000000   00000000 
     # 000       000   000  000   000
