@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var fileeditor
 
@@ -14,6 +14,8 @@ import belt from "../../edit/tool/belt.js"
 import editor from "../../edit/editor.js"
 
 import fileutil from "../../util/fileutil.js"
+
+import indexer from "../../index/indexer.js"
 
 import view from "../base/view.js"
 
@@ -32,6 +34,7 @@ fileeditor = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["jumpToCounterpart"] = this["jumpToCounterpart"].bind(this)
+        this["jumpToWord"] = this["jumpToWord"].bind(this)
         this["onContextChoice"] = this["onContextChoice"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
         this["onGotoEof"] = this["onGotoEof"].bind(this)
@@ -121,13 +124,54 @@ fileeditor = (function ()
         }
     }
 
+    fileeditor.prototype["jumpToWord"] = function (word)
+    {
+        var clss, currentFile, fun, func, idx
+
+        if (clss = indexer.singleton.classes[word])
+        {
+            console.log(`fileeditor.jumpToWord(${word}) jumpToClass`,clss)
+            return post.emit('file.open',clss.file,clss.line - 1)
+        }
+        else if (func = indexer.singleton.funcs[word])
+        {
+            console.log(`fileeditor.jumpToWord(${word}) jumpToFunc`,func)
+            if (_k_.isArr(func))
+            {
+                currentFile = ked_session.get('editor▸file')
+                var list = _k_.list(func)
+                for (idx = 0; idx < list.length; idx++)
+                {
+                    fun = list[idx]
+                    if (fun.file === currentFile)
+                    {
+                        func = func[(idx + 1) % func.length]
+                        break
+                    }
+                }
+                if (_k_.isArr(func))
+                {
+                    func = func[0]
+                }
+            }
+            if (!_k_.empty(func.file))
+            {
+                return post.emit('file.open',func.file,func.line - 1,'ind')
+            }
+        }
+        else
+        {
+            console.log(`fileeditor.jumpToWord(${word}) nothing found to jump to`)
+        }
+    }
+
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _116_50_, _122_50_, _131_50_
+        var counter, currentFile, currext, ext, file, _147_50_, _153_50_, _162_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_116_50_=fileutil.counterparts[currext]) != null ? _116_50_ : [])
+        var list = ((_147_50_=fileutil.counterparts[currext]) != null ? _147_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -137,7 +181,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_122_50_=fileutil.counterparts[currext]) != null ? _122_50_ : [])
+        var list1 = ((_153_50_=fileutil.counterparts[currext]) != null ? _153_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -149,7 +193,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list2 = ((_131_50_=fileutil.counterparts[currext]) != null ? _131_50_ : [])
+        var list2 = ((_162_50_=fileutil.counterparts[currext]) != null ? _162_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -178,7 +222,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _190_41_, _246_31_
+        var col, ret, row, start, word, x, y, _221_41_, _278_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -226,7 +270,8 @@ fileeditor = (function ()
                     {
                         if (word = belt.wordAtPos(this.state.s.lines,[x,y]))
                         {
-                            console.log(`fileeditor.onMouse cmdctrl clicked '${word}'`)
+                            this.jumpToWord(word)
+                            return
                         }
                     }
                     this.dragStart = [x,y,x]

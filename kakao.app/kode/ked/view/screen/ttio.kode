@@ -322,6 +322,9 @@ function TTIO extends events
             '5~' ➜ ⮐  @keyEventForCombo('pageup')
             '6~' ➜ ⮐  @keyEventForCombo('pagedown')
             'Z'  ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
+            'I'  ➜ @hasFocus = true;  post.emit 'window.focus' ; ⮐  type:'focus'
+            'O'  ➜ @hasFocus = false; post.emit 'window.blur'  ; ⮐  type:'focus'
+            
         log "--------------------- unhandled csi? |#{csi}|" 
         null
         
@@ -635,13 +638,12 @@ function TTIO extends events
                         continue
                         
                     if event.type == 'release' # ignore release events for now
-                        log "key release #{noon event}"
+                        log "ignored csi key release #{noon event}"
                         continue 
+                        
+                    if event.type == 'focus'
+                        continue
 
-                switch csi
-                    'I' ➜ @hasFocus = true;  post.emit 'window.focus' ; continue
-                    'O' ➜ @hasFocus = false; post.emit 'window.blur'  ; continue
-                    
                 log "-------------- unhandled csi #{csi}"
                         
             else if esc

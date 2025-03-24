@@ -8,6 +8,8 @@
 
 use ../../kxk ▪ pickBy pullIf deleteBy kstr sds matchr slash post
 use ../../kxk ◆ nfs
+use ../util   ◆ fileutil
+use           ◆ prjcts
 
 # use ◆ walker #IndexHpp IndexJS IndexMM IndexStyl
 
@@ -70,31 +72,45 @@ class indexer
             /^[0\_\-\@\#]+$/.test word          ➜ false # exclude when consist of special characters only
             /\d/.test word                      ➜ false # exclude when word contains number
                                                 ➜ true
-        
-    # 000  000   000  0000000    00000000  000   000  00000000  00000000   
-    # 000  0000  000  000   000  000        000 000   000       000   000  
-    # 000  000 0 000  000   000  0000000     00000    0000000   0000000    
-    # 000  000  0000  000   000  000        000 000   000       000   000  
-    # 000  000   000  0000000    00000000  000   000  00000000  000   000  
+                                                
+    ###    
+    000  000   000  0000000    00000000  000   000  00000000  00000000   
+    000  0000  000  000   000  000        000 000   000       000   000  
+    000  000 0 000  000   000  0000000     00000    0000000   0000000    
+    000  000  0000  000   000  000        000 000   000       000   000  
+    000  000   000  0000000    00000000  000   000  00000000  000   000  
+    ###
     
     @: ->
         
         indexer.singleton = @
         
+        post.on 'project.indexed' @onProjectIndexed
         post.on 'index'       (file) => @index file
         post.on 'file.change' (info) => 
             if @files[info.path]
-                # log "indexer file.change #{info.path}"
                 @index info.path refresh:true
         
-        @imageExtensions = ['png' 'jpg' 'gif' 'tiff' 'pxm' 'icns']        
+        @dirs    = Object.create null
+        @files   = Object.create null
+        @classes = Object.create null
+        @funcs   = Object.create null
+        @words   = Object.create null
+        
+    # ████████   ████████         ███   ███████  █████████        ███  ███   ███  ███████    ███   ███  ███████    
+    # ███   ███  ███   ███        ███  ███          ███           ███  ████  ███  ███   ███   ███ ███   ███   ███  
+    # ████████   ███████          ███  ███          ███           ███  ███ █ ███  ███   ███    █████    ███   ███  
+    # ███        ███   ███  ███   ███  ███          ███           ███  ███  ████  ███   ███   ███ ███   ███   ███  
+    # ███        ███   ███   ███████    ███████     ███           ███  ███   ███  ███████    ███   ███  ███████    
 
-        @dirs    = {}
-        @files   = {}
-        @classes = {}
-        @funcs   = {}
-        @words   = {}
-        @queue   = []
+    onProjectIndexed: prjDir ○=>
+    
+        # log 'indexer.onProjectIndexed' prjDir
+        files = prjcts.projects[prjDir].files
+        # log "▸▸▸ #{files.length} files to index" #files
+        for file in files
+            ○ @index file
+        # log "▪▪▪ #{files.length} files indexed" 
         
     #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
     # 000   000  000   000  000   000      000       000   000  0000  000  000       
@@ -197,19 +213,19 @@ class indexer
         if @files[file]? and not opt?.refresh
             # log "index.cached #{slash.file file}"
             post.emit 'file.indexed' file @files[file]
-            ⮐  @shiftQueue()
+            ⮐ 
 
         # log "indexer.index #{file}" 
         
         fileExt = slash.ext file 
 
-        if fileExt in @imageExtensions
+        if fileExt in fileutil.imageExtensions
             @files[file] = {}
-            ⮐  @shiftQueue()
+            ⮐ 
                     
         nfs.read(file).then (text) =>
         
-            ⮐  @shiftQueue() if empty text
+            ⮐  if empty text
             
             # ●▸ hash
             hash = kstr.hash text
@@ -218,7 +234,7 @@ class indexer
             if @files[file]?.hash == hash
                 # log "index.match #{slash.file file}"
                 post.emit 'file.indexed' file @files[file]
-                ⮐  @shiftQueue()
+                ⮐ 
             
             # ●▸ index
             lines = text.split /\r?\n/
@@ -355,19 +371,6 @@ class indexer
             @files[file] = fileInfo
             
             # ●▪ index
-            
-            @shiftQueue()
         @
-
-    #  0000000  000   000  000  00000000  000000000  
-    # 000       000   000  000  000          000     
-    # 0000000   000000000  000  000000       000     
-    #      000  000   000  000  000          000     
-    # 0000000   000   000  000  000          000     
-    
-    shiftQueue: =>
-        
-        if @queue.length
-            @indexFile @queue.shift()
 
 export indexer

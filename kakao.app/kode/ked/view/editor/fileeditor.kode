@@ -11,6 +11,7 @@ use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../edit      ◆ editor 
 use ../../util      ◆ fileutil
+use ../../index     ◆ indexer
 use ../base         ◆ view 
 use ../menu         ◆ context
 use                 ◆ mapscr 
@@ -101,6 +102,36 @@ function fileeditor extends editor
         else
             switch choice
                 'status' ➜ post.emit 'differ.status'
+                
+    #       ███  ███   ███  ██     ██  ████████         █████████   ███████         ███   ███   ███████   ████████   ███████  
+    #       ███  ███   ███  ███   ███  ███   ███           ███     ███   ███        ███ █ ███  ███   ███  ███   ███  ███   ███
+    #       ███  ███   ███  █████████  ████████            ███     ███   ███        █████████  ███   ███  ███████    ███   ███
+    # ███   ███  ███   ███  ███ █ ███  ███                 ███     ███   ███        ███   ███  ███   ███  ███   ███  ███   ███
+    #  ███████    ███████   ███   ███  ███                 ███      ███████         ██     ██   ███████   ███   ███  ███████  
+
+    jumpToWord: word =>
+    
+        # log "fileeditor.jumpToWord '#{word}'"
+        # log 'fileeditor.jumpToWord classes' Object.keys(indexer.singleton.classes)
+        # log 'fileeditor.jumpToWord funcs'   Object.keys(indexer.singleton.funcs)
+        
+        if clss = indexer.singleton.classes[word]
+            log "fileeditor.jumpToWord(#{word}) jumpToClass" clss
+            post.emit 'file.open' clss.file clss.line-1
+        else if func = indexer.singleton.funcs[word]
+            log "fileeditor.jumpToWord(#{word}) jumpToFunc" func
+            if func is arr
+                currentFile = ked_session.get 'editor▸file'
+                for fun,idx in func
+                    if fun.file == currentFile
+                        func = func[(idx+1) % func.length]
+                        break
+                if func is arr
+                    func = func[0]
+            if valid func.file
+                post.emit 'file.open' func.file func.line-1 'ind'
+        else 
+            log "fileeditor.jumpToWord(#{word}) nothing found to jump to"
             
     #  ███████   ███████   ███   ███  ███   ███  █████████  ████████  ████████   ████████    ███████   ████████   █████████
     # ███       ███   ███  ███   ███  ████  ███     ███     ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
@@ -121,8 +152,8 @@ function fileeditor extends editor
 
         for ext in fileutil.counterparts[currext] ? []
             
-            counter = slash.swapExt currentFile, ext
-            file = fileutil.swapLastDir counter, currext, ext
+            counter = slash.swapExt currentFile ext
+            file = fileutil.swapLastDir counter currext ext
             
             if ○ nfs.fileExists file
                 post.emit 'file.open' file
@@ -194,7 +225,8 @@ function fileeditor extends editor
                     
                     if event.cmd or event.ctrl
                         if word = belt.wordAtPos @state.s.lines [x y]
-                            log "fileeditor.onMouse cmdctrl clicked '#{word}'"
+                            @jumpToWord word
+                            ⮐  
                         
                     @dragStart = [x y x]
                                         

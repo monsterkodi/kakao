@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}}
 
 import kxk from "../../kxk.js"
 let pickBy = kxk.pickBy
@@ -11,6 +11,10 @@ let slash = kxk.slash
 let post = kxk.post
 
 import nfs from "../../kxk/nfs.js"
+
+import fileutil from "../util/fileutil.js"
+
+import prjcts from "./prjcts.js"
 
 class indexer
 {
@@ -119,9 +123,10 @@ class indexer
 
     constructor ()
     {
-        this.shiftQueue = this.shiftQueue.bind(this)
         this.index = this.index.bind(this)
+        this.onProjectIndexed = this.onProjectIndexed.bind(this)
         indexer.singleton = this
+        post.on('project.indexed',this.onProjectIndexed)
         post.on('index',(function (file)
         {
             return this.index(file)
@@ -133,18 +138,29 @@ class indexer
                 return this.index(info.path,{refresh:true})
             }
         }).bind(this))
-        this.imageExtensions = ['png','jpg','gif','tiff','pxm','icns']
-        this.dirs = {}
-        this.files = {}
-        this.classes = {}
-        this.funcs = {}
-        this.words = {}
-        this.queue = []
+        this.dirs = Object.create(null)
+        this.files = Object.create(null)
+        this.classes = Object.create(null)
+        this.funcs = Object.create(null)
+        this.words = Object.create(null)
+    }
+
+    async onProjectIndexed (prjDir)
+    {
+        var file, files
+
+        files = prjcts.projects[prjDir].files
+        var list = _k_.list(files)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            file = list[_a_]
+            await this.index(file)
+        }
     }
 
     addFuncInfo (funcName, funcInfo)
     {
-        var funcInfos, _115_37_
+        var funcInfos, _131_37_
 
         if (!funcName)
         {
@@ -156,7 +172,7 @@ class indexer
             funcInfo.static = true
         }
         funcInfo.name = funcName
-        funcInfos = ((_115_37_=this.funcs[funcName]) != null ? _115_37_ : [])
+        funcInfos = ((_131_37_=this.funcs[funcName]) != null ? _131_37_ : [])
         if (!(_k_.isArr(funcInfos)))
         {
             funcInfos = []
@@ -209,27 +225,27 @@ class indexer
         if ((this.files[file] != null) && !(opt != null ? opt.refresh : undefined))
         {
             post.emit('file.indexed',file,this.files[file])
-            return this.shiftQueue()
+            return
         }
         fileExt = slash.ext(file)
-        if (_k_.in(fileExt,this.imageExtensions))
+        if (_k_.in(fileExt,fileutil.imageExtensions))
         {
             this.files[file] = {}
-            return this.shiftQueue()
+            return
         }
         nfs.read(file).then((function (text)
         {
-            var bound, boundIndex, className, cnt, currentClass, fileInfo, funcAdded, funcInfo, funcName, funcStack, hash, indent, isCpp, isHpp, isJS, li, line, lines, m, methodName, unbndIndex, word, words, _260_47_, _321_51_, _349_35_, _350_35_
+            var bound, boundIndex, className, cnt, currentClass, fileInfo, funcAdded, funcInfo, funcName, funcStack, hash, indent, isCpp, isHpp, isJS, li, line, lines, m, methodName, unbndIndex, word, words, _276_47_, _337_51_, _365_35_, _366_35_
 
             if (_k_.empty(text))
             {
-                return this.shiftQueue()
+                return
             }
             hash = kstr.hash(text)
             if ((this.files[file] != null ? this.files[file].hash : undefined) === hash)
             {
                 post.emit('file.indexed',file,this.files[file])
-                return this.shiftQueue()
+                return
             }
             lines = text.split(/\r?\n/)
             fileInfo = {lines:lines.length,funcs:[],classes:[],hash:hash}
@@ -267,7 +283,7 @@ class indexer
                         {
                             _k_.last(funcStack)[1].last = li - 1
                             funcInfo = funcStack.pop()[1]
-                            funcInfo.class = ((_260_47_=funcInfo.class) != null ? _260_47_ : slash.name(file))
+                            funcInfo.class = ((_276_47_=funcInfo.class) != null ? _276_47_ : slash.name(file))
                             fileInfo.funcs.push(funcInfo)
                         }
                         if ((currentClass != null))
@@ -316,7 +332,7 @@ class indexer
                         word = list[_c_]
                         if (indexer.testWord(word))
                         {
-                            cnt = ((_321_51_=this.words[word]) != null ? _321_51_ : 0)
+                            cnt = ((_337_51_=this.words[word]) != null ? _337_51_ : 0)
                             this.words[word] = cnt + 1
                         }
                         switch (word)
@@ -342,24 +358,15 @@ class indexer
                 {
                     _k_.last(funcStack)[1].last = li - 1
                     funcInfo = funcStack.pop()[1]
-                    funcInfo.class = ((_349_35_=funcInfo.class) != null ? _349_35_ : slash.name(funcInfo.file))
-                    funcInfo.class = ((_350_35_=funcInfo.class) != null ? _350_35_ : slash.name(file))
+                    funcInfo.class = ((_365_35_=funcInfo.class) != null ? _365_35_ : slash.name(funcInfo.file))
+                    funcInfo.class = ((_366_35_=funcInfo.class) != null ? _366_35_ : slash.name(file))
                     fileInfo.funcs.push(funcInfo)
                 }
                 post.emit('file.indexed',file,fileInfo)
             }
-            this.files[file] = fileInfo
-            return this.shiftQueue()
+            return this.files[file] = fileInfo
         }).bind(this))
         return this
-    }
-
-    shiftQueue ()
-    {
-        if (this.queue.length)
-        {
-            return this.indexFile(this.queue.shift())
-        }
     }
 }
 
