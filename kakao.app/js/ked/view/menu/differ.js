@@ -114,6 +114,7 @@ differ = (function ()
         }
         items.push({line:''})
         this.choices.append(items,ext)
+        this.input.grabFocus()
         return post.emit('redraw')
     }
 
@@ -336,12 +337,12 @@ differ = (function ()
         {
             return
         }
+        this.hide()
         out = ''
         out += await git.exec("add .",{cwd:gitDir})
         out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
         out += await git.exec("push -q",{cwd:gitDir})
         console.log(_k_.r4(`differ.commit\n${_k_.b7(out)}`))
-        this.hide()
         return post.emit('redraw')
     }
 

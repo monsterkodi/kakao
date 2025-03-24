@@ -114,6 +114,7 @@ function differ extends searcher
         items.push line:'' 
 
         @choices.append items ext
+        @input.grabFocus()
         post.emit 'redraw'
             
     #  ███████  █████████   ███████   █████████  ███   ███   ███████
@@ -124,7 +125,7 @@ function differ extends searcher
 
     status: ○=> 
     
-        @show()
+        @show()        
     
         currentFile = ked_session.get 'editor▸file'
         status =○ git.status currentFile
@@ -318,14 +319,15 @@ function differ extends searcher
         
         ⮐  if empty gitDir
         
+        @hide()
+        
         out = ''
         out +=○ git.exec "add ."                cwd:gitDir       
         out +=○ git.exec "commit -m \"#{msg}\"" cwd:gitDir
         out +=○ git.exec "push -q"              cwd:gitDir
 
         log r4("differ.commit\n#{b7 out}")
-        
-        @hide()
+                
         post.emit 'redraw'
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
