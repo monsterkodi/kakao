@@ -262,7 +262,7 @@ function differ extends searcher
         
         ⮐  if empty patch
         
-        log "rev #{rev}" patch
+        # log "rev #{rev}" patch
         
         currentFile = ked_session.get 'editor▸file'
         gitDir =○ git.dir currentFile
@@ -273,7 +273,7 @@ function differ extends searcher
         
             file = slash.path gitDir p.tgtfile[2..]
         
-            log "file #{file}"
+            # log "file #{file}"
         
             items.push 
                 line:   ' ● ' + p.tgtfile[2..]
@@ -321,7 +321,6 @@ function differ extends searcher
         
         @hide()
         post.emit 'focus' 'editor'
-        # post.emit 'redraw'
         
         out = ''
         out +=○ git.exec "add ."                cwd:gitDir       

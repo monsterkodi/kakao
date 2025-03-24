@@ -280,7 +280,6 @@ differ = (function ()
         {
             return
         }
-        console.log(`rev ${rev}`,patch)
         currentFile = ked_session.get('editor▸file')
         gitDir = await git.dir(currentFile)
         items = []
@@ -289,7 +288,6 @@ differ = (function ()
         {
             p = list[_a_]
             file = slash.path(gitDir,p.tgtfile.slice(2))
-            console.log(`file ${file}`)
             items.push({line:' ● ' + p.tgtfile.slice(2),path:file})
             if (_k_.isArr(p.changes))
             {
