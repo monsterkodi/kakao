@@ -21,24 +21,26 @@
 (\/)([\w\.\-]+)(\/)         . dir_punct   . dir  . dir_punct  
 ([\w\-]+)(\.[\w\-]+)        . file               . ext
 ([\w\-]+|~)(\/)             . dir                . dir_punct
-([⏷⏵])([\.\w\s\-]+)$      . dir                . dir_leaf
+([⏷⏵])([\.\w\s\-]+)(\s?✔?)$   . dir . dir_leaf . dir
 
 \.\.                        . dir  
 \s\.                        . dir
 \/                          . dir_punct
 [⏷⏵]                      . dir
 
+[✔]                         . modified
+
 []                         . file_icon_text
 
-()(\s?[^\/\s]*)            . file_icon_noon  . file_noon
-()(\s?[^\/\s]*)            . file_icon_kode  . file_kode
-()(\s?[^\/\s]*)            . file_icon_md    . file_md
-()(\s?[^\/\s]*)            . file_icon_styl  . file_styl
-()(\s?[^\/\s]*)            . file_icon_json  . file_json
-()(\s?[^\/\s]*)            . file_icon_js    . file_js
-()(\s?[^\/\s]*)            . file_icon_html  . file_html
-()(\s?[^\/\s]*)            . file_icon_css   . file_css
-()(\s?[^\/\s]*)            . file_icon_pug   . file_pug
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_noon  . file_noon . file_icon_noon  
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_kode  . file_kode . file_icon_kode  
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_md    . file_md   . file_icon_md   
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_styl  . file_styl . file_icon_styl  
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_json  . file_json . file_icon_json  
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_js    . file_js   . file_icon_js   
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_html  . file_html . file_icon_html  
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_css   . file_css  . file_icon_css  
+()(\s?[^\/\s]*)(\s?✔?)     . file_icon_pug   . file_pug  . file_icon_pug  
 
 []     . file_icon_png
 []     . file_icon_bash

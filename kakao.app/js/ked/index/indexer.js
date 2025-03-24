@@ -18,6 +18,9 @@ import prjcts from "./prjcts.js"
 import index_utils from "./index_utils.js"
 import index_kode from "./index_kode.js"
 import index_styl from "./index_styl.js"
+import index_js from "./index_js.js"
+import index_hpp from "./index_hpp.js"
+import index_mm from "./index_mm.js"
 
 class indexer
 {
@@ -52,7 +55,7 @@ class indexer
 
     addFuncInfo (funcName, funcInfo)
     {
-        var funcInfos, _60_37_
+        var funcInfos, _58_37_
 
         if (!funcName)
         {
@@ -64,7 +67,7 @@ class indexer
             funcInfo.static = true
         }
         funcInfo.name = funcName
-        funcInfos = ((_60_37_=this.funcs[funcName]) != null ? _60_37_ : [])
+        funcInfos = ((_58_37_=this.funcs[funcName]) != null ? _58_37_ : [])
         if (!(_k_.isArr(funcInfos)))
         {
             funcInfos = []

@@ -51,6 +51,10 @@ diritem = (function ()
         {
             name += ' ✔'
         }
+        if (item.added)
+        {
+            name += ' ✚'
+        }
         return this.symbol(item) + '\u00A0' + name
     }
 

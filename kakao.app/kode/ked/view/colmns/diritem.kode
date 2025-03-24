@@ -39,8 +39,9 @@ function diritem
                 name = slash.name item.path
             else
                 name = slash.file item.path
-                
+        # ✔✚        
         name += ' ✔' if item.modified
+        name += ' ✚' if item.added
                 
         # non-breakable space ▾ that prevents icons from growing in some fonts
         @symbol(item) + '\u00A0' + name

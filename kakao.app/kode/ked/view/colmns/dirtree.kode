@@ -30,15 +30,41 @@ function dirtree extends choices
         
         @frontRoundOffset = 0
         
+    #  ███████   ███  █████████         ███████  █████████   ███████   █████████  ███   ███   ███████
+    # ███        ███     ███           ███          ███     ███   ███     ███     ███   ███  ███     
+    # ███  ████  ███     ███           ███████      ███     █████████     ███     ███   ███  ███████ 
+    # ███   ███  ███     ███                ███     ███     ███   ███     ███     ███   ███       ███
+    #  ███████   ███     ███           ███████      ███     ███   ███     ███      ███████   ███████ 
+
     onGitStatus: status =>
     
         # todo: handle added files
+        
+        # log 'dirtree.onGitStatus' status
     
         for item in @items
-            if item.path in status.changed
+        
+            if item.type == 'dir' 
+                if item.path in status.dirs
+                    for file of status.files
+                        if file.startsWith item.path
+                            item.modified = true
+                            depth = item.depth ? 0
+                            item.tilde = lpad((depth*2)+1) + diritem.symbolName(item)
+                            redraw = true
+                            break
+                continue
+        
+            if item.path in status.changed 
                 item.modified = true
                 item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
                 redraw = true
+                
+            if item.path in status.added
+                item.added = true
+                item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                redraw = true
+                
             if item.modified and item.path not in status.changed
                 delete item.modified
                 item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)

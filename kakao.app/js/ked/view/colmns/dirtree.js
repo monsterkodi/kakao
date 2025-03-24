@@ -45,15 +45,39 @@ dirtree = (function ()
 
     dirtree.prototype["onGitStatus"] = function (status)
     {
-        var item, redraw
+        var depth, file, item, redraw, _52_47_
 
         var list = _k_.list(this.items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             item = list[_a_]
+            if (item.type === 'dir')
+            {
+                if (_k_.in(item.path,status.dirs))
+                {
+                    for (file in status.files)
+                    {
+                        if (file.startsWith(item.path))
+                        {
+                            item.modified = true
+                            depth = ((_52_47_=item.depth) != null ? _52_47_ : 0)
+                            item.tilde = _k_.lpad((depth * 2) + 1) + diritem.symbolName(item)
+                            redraw = true
+                            break
+                        }
+                    }
+                }
+                continue
+            }
             if (_k_.in(item.path,status.changed))
             {
                 item.modified = true
+                item.tilde = _k_.lpad(item.depth * 2 + 1) + diritem.symbolName(item)
+                redraw = true
+            }
+            if (_k_.in(item.path,status.added))
+            {
+                item.added = true
                 item.tilde = _k_.lpad(item.depth * 2 + 1) + diritem.symbolName(item)
                 redraw = true
             }
@@ -108,7 +132,7 @@ dirtree = (function ()
 
     dirtree.prototype["setRoot"] = async function (path, opt)
     {
-        var dir, item, items, _97_29_
+        var dir, item, items, _123_29_
 
         opt = (opt != null ? opt : {})
         dir = slash.untilde(path)
@@ -128,7 +152,7 @@ dirtree = (function ()
         {
             return this.weight(a) - this.weight(b)
         }).bind(this))
-        this.set(items,((_97_29_=opt.index) != null ? _97_29_ : 0))
+        this.set(items,((_123_29_=opt.index) != null ? _123_29_ : 0))
         this.restoreSessionState(opt)
         if (opt.redraw)
         {
@@ -284,7 +308,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _237_31_, _241_48_, _253_20_, _255_26_
+        var depth, index, item, items, state, _263_31_, _267_48_, _279_20_, _281_26_
 
         if (_k_.empty(dirItem))
         {
@@ -299,7 +323,7 @@ dirtree = (function ()
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
         state = ked_session.get(this.name,{})
-        depth = (((_237_31_=dirItem.depth) != null ? _237_31_ : 0)) + 1
+        depth = (((_263_31_=dirItem.depth) != null ? _263_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -467,7 +491,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _386_45_
+        var idx, item, _412_45_
 
         if (!(global.ked_editor_file != null))
         {

@@ -9,9 +9,7 @@
 use ../../kxk ▪ pickBy pullIf deleteBy kstr sds matchr slash post
 use ../../kxk ◆ nfs
 use ../util   ◆ fileutil
-use           ◆ prjcts index_utils index_kode index_styl
-
-# use ◆ walker #IndexHpp IndexJS IndexMM IndexStyl
+use           ◆ prjcts index_utils index_kode index_styl index_js index_hpp index_mm
 
 class indexer
     
