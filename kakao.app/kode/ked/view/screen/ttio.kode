@@ -322,7 +322,7 @@ function TTIO extends events
             '5~' ➜ ⮐  @keyEventForCombo('pageup')
             '6~' ➜ ⮐  @keyEventForCombo('pagedown')
             'Z'  ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
-        log '--------------------- unhandled csi?' csi
+        log "--------------------- unhandled csi? |#{csi}|" 
         null
         
     # 00000000   0000000   0000000  

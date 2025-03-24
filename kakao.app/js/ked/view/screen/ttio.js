@@ -453,7 +453,7 @@ TTIO = (function ()
 
         }
 
-        console.log('--------------------- unhandled csi?',csi)
+        console.log(`--------------------- unhandled csi? |${csi}|`)
         return null
     }
 

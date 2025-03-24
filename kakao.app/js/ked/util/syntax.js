@@ -191,9 +191,9 @@ syntax = (function ()
         {
             clss = x
         }
-        if (_k_.empty(theme.syntax[clss]))
+        if (_k_.empty(theme.syntax[clss]) && !clss.endsWith('italic'))
         {
-            console.log(`syntax.getColor - no syntax color for '${clss}'`,this.diss[y])
+            console.log(`syntax.getColor - no syntax color for '${clss}'`)
         }
         return ((_129_27_=theme.syntax[clss]) != null ? _129_27_ : [255,0,0])
     }

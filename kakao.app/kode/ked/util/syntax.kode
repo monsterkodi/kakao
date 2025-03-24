@@ -123,8 +123,8 @@ function syntax
         else
             clss = x
         
-        if empty theme.syntax[clss]
-            log "syntax.getColor - no syntax color for '#{clss}'" @diss[y] 
+        if empty theme.syntax[clss] and not clss.endsWith 'italic'
+            log "syntax.getColor - no syntax color for '#{clss}'" # @diss[y] 
         
         theme.syntax[clss] ? [255 0 0]
         
