@@ -32,14 +32,22 @@ function git
         if valid gitDir and gitDir not in @gitDirs
             @gitDirs.push slash.path(gitDir '.git')
                 
-    onFileChange: info =>
+    # ████████  ███  ███      ████████         ███████  ███   ███   ███████   ███   ███   ███████   ████████
+    # ███       ███  ███      ███             ███       ███   ███  ███   ███  ████  ███  ███        ███     
+    # ██████    ███  ███      ███████         ███       █████████  █████████  ███ █ ███  ███  ████  ███████ 
+    # ███       ███  ███      ███             ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
 
-        # log 'git.fileChange' info
+    # triggers a git status update if .git/refs/heads changed to reflect repository changes made externally
+
+    onFileChange: info =>
 
         for gitDir in @gitDirs
             if info.path.startsWith gitDir
                 if slash.dir(info.path).endsWith('.git/refs/heads')
+                    log "git.onFileChange -- change in heads #{info.path}"
                     if slash.name(info.path) in ['master' 'main']
+                        log 'git.onFileChange - master main'
                         git.status gitDir
                         ⮐ 
 
@@ -74,12 +82,15 @@ function git
     # 0000000      000     000000000     000     000   000  0000000   
     #      000     000     000   000     000     000   000       000  
     # 0000000      000     000   000     000      0000000   0000000   
-    
-    @status: file ○->
+    ###
+        checks for changes in the git repository at path
+        posts 'git.status' for modifications in subtree below path
+    ###
+    @status: path ○->
         
-        log 'git.status' file
+        # log 'git.status' path
         
-        gitDir =○ git.dir file
+        gitDir =○ git.dir path
         
         status =
             gitDir:  gitDir
@@ -121,7 +132,7 @@ function git
             for file in status[key]
                 status.files[file] = key
         
-        log 'git.status post' status
+        # log 'git.status post' status
         post.emit 'git.status' status
         @statusCache[gitDir] = status
                 

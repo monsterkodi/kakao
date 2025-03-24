@@ -350,11 +350,16 @@ function KED
         
         @indexer.index @currentFile
         prjcts.index   @currentFile
-        watcher.watch  @currentFile
         
+        watcher.watch  @currentFile
+                
         @t.setTitle slash.name(@status.file)
         
         @saveSessionFile @currentFile 'loaded'        
+        
+        if gitDir =○ git.dir @currentFile
+            watcher.watch slash.path(gitDir '.git') recursive:false
+            
         @
                     
     #  0000000   0000000   000   000  00000000  

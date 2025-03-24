@@ -47,6 +47,10 @@ diritem = (function ()
                 name = slash.file(item.path)
         }
 
+        if (item.modified)
+        {
+            name += ' ✔'
+        }
         return this.symbol(item) + '\u00A0' + name
     }
 

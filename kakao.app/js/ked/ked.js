@@ -337,7 +337,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, segls, start, text, _340_22_
+        var absFile, colors, exists, gitDir, segls, start, text, _340_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -393,6 +393,10 @@ ked [file]
         watcher.watch(this.currentFile)
         this.t.setTitle(slash.name(this.status.file))
         this.saveSessionFile(this.currentFile,'loaded')
+        if (gitDir = await git.dir(this.currentFile))
+        {
+            watcher.watch(slash.path(gitDir,'.git'),{recursive:false})
+        }
         return this
     }
 
@@ -599,7 +603,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _500_22_
+        var mcw, _505_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

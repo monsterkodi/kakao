@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.prototype.hasOwnProperty(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}}
 
 var dirtree
 
@@ -16,6 +16,8 @@ import prjcts from "../../index/prjcts.js"
 import theme from "../../theme/theme.js"
 import icons from "../../theme/icons.js"
 
+import git from "../../util/git.js"
+
 import choices from "../menu/choices.js"
 
 import diritem from "./diritem.js"
@@ -32,18 +34,37 @@ dirtree = (function ()
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["setRoot"] = this["setRoot"].bind(this)
         this["onFileChange"] = this["onFileChange"].bind(this)
+        this["onGitStatus"] = this["onGitStatus"].bind(this)
         dirtree.__super__.constructor.call(this,screen,name,features)
         this.state.syntax.setRgxs(rgxs)
         post.on('session.merge',this.onSessionMerge)
         post.on('file.change',this.onFileChange)
+        post.on('git.status',this.onGitStatus)
         this.frontRoundOffset = 0
+    }
+
+    dirtree.prototype["onGitStatus"] = function (status)
+    {
+        var item
+
+        var list = _k_.list(this.items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            if (_k_.in(item.path,status.changed))
+            {
+                item.modified = true
+                item.tilde = _k_.lpad(item.depth * 4 - 3) + diritem.symbolName(item)
+                this.set(this.items,this.currentIndex())
+                post.emit('redraw')
+            }
+        }
     }
 
     dirtree.prototype["onFileChange"] = function (info)
     {
         var item
 
-        console.log('dirtree.onFileChange',info)
         if (info.path.startsWith(this.currentRoot))
         {
             if (info.change === 'rename')
@@ -77,7 +98,7 @@ dirtree = (function ()
 
     dirtree.prototype["setRoot"] = async function (path, opt)
     {
-        var dir, item, items, _77_29_
+        var dir, item, items, _88_29_
 
         opt = (opt != null ? opt : {})
         dir = slash.untilde(path)
@@ -97,7 +118,7 @@ dirtree = (function ()
         {
             return this.weight(a) - this.weight(b)
         }).bind(this))
-        this.set(items,((_77_29_=opt.index) != null ? _77_29_ : 0))
+        this.set(items,((_88_29_=opt.index) != null ? _88_29_ : 0))
         this.restoreSessionState(opt)
         if (opt.redraw)
         {
@@ -253,7 +274,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _217_31_, _221_48_, _233_20_, _235_26_
+        var depth, index, item, items, state, _228_31_, _232_48_, _244_20_, _246_26_
 
         if (_k_.empty(dirItem))
         {
@@ -268,7 +289,7 @@ dirtree = (function ()
         items = await this.dirItems(dirItem.path,'dirtree.openDir')
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close,icons.dir_open)
         state = ked_session.get(this.name,{})
-        depth = (((_217_31_=dirItem.depth) != null ? _217_31_ : 0)) + 1
+        depth = (((_228_31_=dirItem.depth) != null ? _228_31_ : 0)) + 1
         var list = _k_.list(items)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -301,6 +322,7 @@ dirtree = (function ()
         }
         this.set(this.items,index)
         ked_session.set(`${this.name}▸open▸${dirItem.path}`,'✔')
+        git.status(dirItem.path)
         if (opt.redraw)
         {
             return post.emit('redraw')
@@ -435,7 +457,7 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _364_45_
+        var idx, item, _377_45_
 
         if (!(global.ked_editor_file != null))
         {

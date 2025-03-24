@@ -40,6 +40,8 @@ function diritem
             else
                 name = slash.file item.path
                 
+        name += ' ✔' if item.modified
+                
         # non-breakable space ▾ that prevents icons from growing in some fonts
         @symbol(item) + '\u00A0' + name
 

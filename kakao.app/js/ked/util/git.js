@@ -48,8 +48,10 @@ git = (function ()
             {
                 if (slash.dir(info.path).endsWith('.git/refs/heads'))
                 {
+                    console.log(`git.onFileChange -- change in heads ${info.path}`)
                     if (_k_.in(slash.name(info.path),['master','main']))
                     {
+                        console.log('git.onFileChange - master main')
                         git.status(gitDir)
                         return
                     }
@@ -93,12 +95,11 @@ git = (function ()
         })
     }
 
-    git["status"] = async function (file)
+    git["status"] = async function (path)
     {
-        var dirSet, gitDir, gitStatus, header, key, line, lines, rel, status
+        var dirSet, file, gitDir, gitStatus, header, key, line, lines, rel, status
 
-        console.log('git.status',file)
-        gitDir = await git.dir(file)
+        gitDir = await git.dir(path)
         status = {gitDir:gitDir,changed:[],deleted:[],added:[],files:{}}
         if (_k_.empty(gitDir) || this.statusRequests[gitDir])
         {
@@ -152,7 +153,6 @@ git = (function ()
                 status.files[file] = key
             }
         }
-        console.log('git.status post',status)
         post.emit('git.status',status)
         this.statusCache[gitDir] = status
         return status
@@ -160,7 +160,7 @@ git = (function ()
 
     git["diff"] = async function (file)
     {
-        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _151_55_, _152_48_
+        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _162_55_, _163_48_
 
         gitDir = await git.dir(file)
         diff = await git.exec(`--no-pager diff --no-color -U0 --ignore-blank-lines ${file}`,{cwd:gitDir})
@@ -173,8 +173,8 @@ git = (function ()
                 var _a_ = line.split(' '); x = _a_[0]; before = _a_[1]; after = _a_[2]
 
                 afterSplit = after.split(',')
-                numOld = parseInt(((_151_55_=before.split(',')[1]) != null ? _151_55_ : 1))
-                numNew = parseInt(((_152_48_=afterSplit[1]) != null ? _152_48_ : 1))
+                numOld = parseInt(((_162_55_=before.split(',')[1]) != null ? _162_55_ : 1))
+                numNew = parseInt(((_163_48_=afterSplit[1]) != null ? _163_48_ : 1))
                 change = {line:parseInt(afterSplit[0])}
                 oldLines = []
                 for (var _b_ = i = 0, _c_ = numOld; (_b_ <= _c_ ? i < numOld : i > numOld); (_b_ <= _c_ ? ++i : --i))

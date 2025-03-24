@@ -10,6 +10,7 @@ use ../../../kxk ▪ kutil kseg kstr slash post
 use ../../../kxk ◆ nfs
 use ../../index  ◆ prjcts 
 use ../../theme  ◆ theme icons
+use ../../util   ◆ git
 use ../menu      ◆ choices 
 use              ◆ diritem
 
@@ -25,8 +26,18 @@ function dirtree extends choices
         
         post.on 'session.merge' @onSessionMerge
         post.on 'file.change'   @onFileChange
+        post.on 'git.status'    @onGitStatus
         
         @frontRoundOffset = 0
+        
+    onGitStatus: status =>
+    
+        for item in @items
+            if item.path in status.changed
+                item.modified = true
+                item.tilde = lpad(item.depth*4-3) + diritem.symbolName(item)
+                @set @items @currentIndex()
+                post.emit 'redraw'
                 
     # ████████  ███  ███      ████████         ███████  ███   ███   ███████   ███   ███   ███████   ████████
     # ███       ███  ███      ███             ███       ███   ███  ███   ███  ████  ███  ███        ███     
@@ -35,7 +46,7 @@ function dirtree extends choices
     # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
 
     onFileChange: info =>
-        log 'dirtree.onFileChange' info
+        # log 'dirtree.onFileChange' info
         if info.path.startsWith @currentRoot
             if info.change == 'rename'
                 for item in @items
@@ -238,6 +249,8 @@ function dirtree extends choices
         @set @items index
         
         ked_session.set "#{@name}▸open▸#{dirItem.path}" '✔'
+        
+        git.status dirItem.path
         
         post.emit 'redraw' if opt.redraw
         
