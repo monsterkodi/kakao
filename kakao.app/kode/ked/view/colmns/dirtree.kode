@@ -45,10 +45,11 @@ function dirtree extends choices
         for item in @items
         
             if item.type == 'dir' 
+            
+                foundChange = false
+                
                 if item.path in status.dirs
                 
-                    foundChange = false
-                    
                     for file of status.files
                         if file.startsWith item.path
                             item.modified = true
@@ -58,11 +59,11 @@ function dirtree extends choices
                             foundChange = true
                             break
                             
-                    if item.modified and not foundChange
-                        delete item.modified
-                        depth = item.depth ? 0
-                        item.tilde = lpad(depth*2+1) + diritem.symbolName(item)
-                        redraw = true
+                if item.modified and not foundChange
+                    delete item.modified
+                    depth = item.depth ? 0
+                    item.tilde = lpad(depth*2+1) + diritem.symbolName(item)
+                    redraw = true
                             
                 continue
         
