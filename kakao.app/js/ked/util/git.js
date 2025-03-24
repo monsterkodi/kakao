@@ -46,6 +46,7 @@ git = (function ()
             gitDir = list[_a_]
             if (info.path.startsWith(gitDir))
             {
+                console.log(`git.onFileChange -- change in gitDir ${info.path}`)
                 if (slash.dir(info.path).endsWith('.git/refs/heads'))
                 {
                     console.log(`git.onFileChange -- change in heads ${info.path}`)
@@ -160,7 +161,7 @@ git = (function ()
 
     git["diff"] = async function (file)
     {
-        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _162_55_, _163_48_
+        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _163_55_, _164_48_
 
         gitDir = await git.dir(file)
         diff = await git.exec(`--no-pager diff --no-color -U0 --ignore-blank-lines ${file}`,{cwd:gitDir})
@@ -173,8 +174,8 @@ git = (function ()
                 var _a_ = line.split(' '); x = _a_[0]; before = _a_[1]; after = _a_[2]
 
                 afterSplit = after.split(',')
-                numOld = parseInt(((_162_55_=before.split(',')[1]) != null ? _162_55_ : 1))
-                numNew = parseInt(((_163_48_=afterSplit[1]) != null ? _163_48_ : 1))
+                numOld = parseInt(((_163_55_=before.split(',')[1]) != null ? _163_55_ : 1))
+                numNew = parseInt(((_164_48_=afterSplit[1]) != null ? _164_48_ : 1))
                 change = {line:parseInt(afterSplit[0])}
                 oldLines = []
                 for (var _b_ = i = 0, _c_ = numOld; (_b_ <= _c_ ? i < numOld : i > numOld); (_b_ <= _c_ ? ++i : --i))
