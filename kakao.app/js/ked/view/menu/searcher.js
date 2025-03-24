@@ -13,6 +13,8 @@ import belt from "../../edit/tool/belt.js"
 
 import prjcts from "../../index/prjcts.js"
 
+import view from "../base/view.js"
+
 import finder from "./finder.js"
 import searcherfile from "./searcherfile.js"
 
@@ -140,8 +142,7 @@ searcher = (function ()
         editorFile = ked_session.get('editor▸file')
         dir = prjcts.dir(editorFile)
         files = prjcts.files(editorFile)
-        console.log(`searcher - search ${files.length} files in ${dir} for |${text}|`)
-        searcher.__super__.show.call(this)
+        view.prototype.show.call(this)
         this.input.grabFocus()
         this.choices.clearEmpty()
         this.sfils = []

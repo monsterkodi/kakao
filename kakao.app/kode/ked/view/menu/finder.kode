@@ -79,14 +79,14 @@ function finder extends inputchoice
     
     show: text =>
         
-        # log "finder.show #{text}"
+        # log "finder.show #{@name} #{text}"
         
         if empty text 
             cursorLine = @state.mainCursor()[1]
         
         text = @searchText text
         
-        log g4("#{r6 'finder.show'} #{m5 @name} '#{text}'")
+        # log g4("#{r6 'finder.show'} #{m5 @name} '#{text}'")
         
         if empty text
             @choices.clear()
@@ -126,9 +126,10 @@ function finder extends inputchoice
     
     searchText: text ->
     
-        # log "finder.searchText #{text}"
+        # log "finder.searchText #{@name} #{text}"
         
         if empty text 
+            # log "finder.searchText #{@name} take text of selection or word at cursor"
             text = @state.textOfSelectionOrWordAtCursor()
             
         text ?= ''

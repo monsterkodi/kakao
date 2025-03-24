@@ -12,6 +12,7 @@ use ../../../kxk    ▪ post kseg slash
 use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../index     ◆ prjcts
+use ../base         ◆ view
 use                 ◆ finder searcherfile
 
 function searcher extends finder
@@ -128,7 +129,7 @@ function searcher extends finder
     
         # log "searcher show |#{text}|"
         
-        text = @searchText text
+        text = @searchText text # to use selection or cursor word if text is empty
         
         # log g4("#{r6 'searcher'} '#{text}'")
         
@@ -141,9 +142,9 @@ function searcher extends finder
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
 
-        log "searcher - search #{files.length} files in #{dir} for |#{text}|"
+        # log "searcher - search #{files.length} files in #{dir} for |#{text}|"
         
-        super()
+        view.prototype.show.call @ # bypass finder to avoid reading selection or cursor word again
         
         @input.grabFocus()
         @choices.clearEmpty()        
@@ -215,6 +216,8 @@ function searcher extends finder
     # ███  ███   ███  ███         ███████      ███         ███   ███   ███████     ███     ███   ███████   ███   ███
 
     onInputAction: action text ->
+    
+        # log "searcher.onInputAction #{action} #{text}"
     
         switch action
             

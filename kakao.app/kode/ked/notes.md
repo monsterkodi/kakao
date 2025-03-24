@@ -21,7 +21,6 @@
 ##### todo
 
 - searcher
-    - fix input reset to some weird previous value!!!!!
     - fix right action triggering when input has focus!!!
         - should only apply when search results are filtered?
     
