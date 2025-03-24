@@ -54,7 +54,7 @@ dirtree = (function ()
             if (_k_.in(item.path,status.changed))
             {
                 item.modified = true
-                item.tilde = _k_.lpad(item.depth * 4 - 3) + diritem.symbolName(item)
+                item.tilde = _k_.lpad(item.depth * 2 + 1) + diritem.symbolName(item)
                 this.set(this.items,this.currentIndex())
                 post.emit('redraw')
             }

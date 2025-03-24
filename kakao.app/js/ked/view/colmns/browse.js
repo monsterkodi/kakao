@@ -78,7 +78,7 @@ browse = (function ()
 
     browse.prototype["draw"] = function ()
     {
-        var bg, choice, fg, x, y
+        var bg, cc, choice, fg, x, y
 
         if (this.hidden())
         {
@@ -97,8 +97,9 @@ browse = (function ()
             {
                 x = this.choices.cells.cols - 1
                 y = this.choices.currentIndex() - this.choices.state.s.view[1]
-                this.choices.cells.fill_row(y,choice.tilde.length,x - 1,' ',bg,this.choices.color.current)
-                this.choices.cells.set(x,y,'',this.choices.color.current,bg)
+                cc = (this.choices.hasFocus() ? this.choices.color.hover.bg : this.choices.color.hover.blur)
+                this.choices.cells.fill_row(y,choice.tilde.length,x - 1,' ',bg,cc)
+                this.choices.cells.set(x,y,'',cc,bg)
                 if ((0 <= y && y < this.choices.cells.rows))
                 {
                     return this.choices.cells.set_unsafe(x + 1,y,'┤',fg,bg)
@@ -318,7 +319,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _282_63_
+        var upDir, _285_63_
 
         switch (action)
         {
@@ -336,7 +337,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_282_63_=choice.link) != null ? _282_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_285_63_=choice.link) != null ? _285_63_ : choice.path))
                     }
                 }
                 break

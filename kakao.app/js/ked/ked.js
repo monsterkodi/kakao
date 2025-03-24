@@ -395,7 +395,7 @@ ked [file]
         this.saveSessionFile(this.currentFile,'loaded')
         if (gitDir = await git.dir(this.currentFile))
         {
-            watcher.watch(slash.path(gitDir,'.git'),{recursive:false})
+            watcher.watch(slash.path(gitDir,'.git/refs/heads'),{recursive:false})
         }
         return this
     }

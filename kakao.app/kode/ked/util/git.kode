@@ -38,7 +38,7 @@ function git
     # ███       ███  ███      ███             ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
     # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
 
-    # triggers a git status update if .git/refs/heads changed to reflect repository changes made externally
+    # triggers a git status update if files in .git/refs/heads change to reflect repository changes made externally
 
     onFileChange: info =>
 

@@ -95,8 +95,11 @@ function browse extends quicky
             if choice = @choices.current()
                 x = @choices.cells.cols-1
                 y = @choices.currentIndex()-@choices.state.s.view[1]
-                @choices.cells.fill_row     y choice.tilde.length x-1 ' ' bg @choices.color.current
-                @choices.cells.set          x y '' @choices.color.current bg 
+                
+                cc = @choices.hasFocus() ? @choices.color.hover.bg : @choices.color.hover.blur
+                
+                @choices.cells.fill_row     y choice.tilde.length x-1 ' ' bg cc
+                @choices.cells.set          x y '' cc bg 
                 @choices.cells.set_unsafe   x+1 y '┤' fg bg if 0 <= y < @choices.cells.rows
         
     #  0000000    0000000   000000000   0000000   0000000    000  00000000   

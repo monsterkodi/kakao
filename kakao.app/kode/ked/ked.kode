@@ -358,7 +358,7 @@ function KED
         @saveSessionFile @currentFile 'loaded'        
         
         if gitDir =○ git.dir @currentFile
-            watcher.watch slash.path(gitDir '.git') recursive:false
+            watcher.watch slash.path(gitDir '.git/refs/heads') recursive:false
             
         @
                     

@@ -123,6 +123,7 @@
     "punct keyword return": "#44c",
     "punct keyword": "#33b",
     "punct range": "#22a",
+    "url domain": "#d00",
     "punct regexp start": "#c00",
     "punct regexp end": "#c00",
     "text regexp": "#f04",

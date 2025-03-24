@@ -35,7 +35,7 @@ function dirtree extends choices
         for item in @items
             if item.path in status.changed
                 item.modified = true
-                item.tilde = lpad(item.depth*4-3) + diritem.symbolName(item)
+                item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
                 @set @items @currentIndex()
                 post.emit 'redraw'
                 
