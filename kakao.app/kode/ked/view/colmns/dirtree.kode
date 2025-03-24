@@ -60,27 +60,28 @@ function dirtree extends choices
                             break
                             
                 if item.modified and not foundChange
+                
                     delete item.modified
                     depth = item.depth ? 0
                     item.tilde = lpad(depth*2+1) + diritem.symbolName(item)
                     redraw = true
                             
-                continue
+            else # if item.type == 'file'
         
-            if item.path in status.changed 
-                item.modified = true
-                item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
-                redraw = true
-                
-            if item.path in status.added
-                item.added = true
-                item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
-                redraw = true
-                
-            if item.modified and item.path not in status.changed
-                delete item.modified
-                item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
-                redraw = true
+                if item.path in status.changed 
+                    item.modified = true
+                    item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                    redraw = true
+                    
+                if item.path in status.added
+                    item.added = true
+                    item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                    redraw = true
+                    
+                if item.modified and item.path not in status.changed
+                    delete item.modified
+                    item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                    redraw = true
                 
         if redraw
             @set @items @currentIndex()        
