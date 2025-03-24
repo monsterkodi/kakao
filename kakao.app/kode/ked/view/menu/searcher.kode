@@ -222,6 +222,7 @@ function searcher extends finder
         switch action
             
             'submit' ➜ ⮐  @show text
+            'right'  ➜ ⮐  
             'change' ➜ ⮐  
             
         super action text

@@ -178,7 +178,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, x, y, _190_41_, _242_31_
+        var col, ret, row, start, word, x, y, _190_41_, _246_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -190,7 +190,7 @@ fileeditor = (function ()
         switch (event.type)
         {
             case 'press':
-                if (event.count > 1 && this.hover)
+                if (event.count > 1)
                 {
                     if (!event.shift && event.button === 'left')
                     {
@@ -222,6 +222,13 @@ fileeditor = (function ()
                 {
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]
+                    if (event.cmd || event.ctrl)
+                    {
+                        if (word = belt.wordAtPos(this.state.s.lines,[x,y]))
+                        {
+                            console.log(`fileeditor.onMouse cmdctrl clicked '${word}'`)
+                        }
+                    }
                     this.dragStart = [x,y,x]
                     if (!event.shift && event.button === 'left')
                     {

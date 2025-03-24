@@ -5,35 +5,31 @@ let slash = kxk.slash
 
 import nfs from "../../kxk/nfs.js"
 
+import fileutil from "./fileutil.js"
+
 class walker
 {
-    static indexFileExtensions = ['kode','mm','zig','cc','c','h','hpp','cpp']
-
-    static dotFileExtensions = ['bashrc','bash_history','gitconfig','gitignore_global','lesshst','npmrc','nvimrc','profile','zprofile','zsh_history','zshrc']
-
-    static sourceFileExtensions = walker.indexFileExtensions.concat(walker.dotFileExtensions,['ts','js','mjs','swift','styl','css','pug','html','md','noon','json','txt','log','sh','fish','py','frag','vert','config','lua','toml','conf','gitignore','plist'])
-
     constructor (cfg)
     {
         this.cfg = cfg
     
-        var _22_25_, _23_25_, _24_25_, _25_25_, _26_25_, _27_25_, _28_25_
+        var _18_25_, _19_25_, _20_25_, _21_25_, _22_25_, _23_25_, _24_25_
 
         this.stop = this.stop.bind(this)
         this.start = this.start.bind(this)
         this.cfg.files = []
-        this.cfg.maxDepth = ((_22_25_=this.cfg.maxDepth) != null ? _22_25_ : 3)
-        this.cfg.dotFiles = ((_23_25_=this.cfg.dotFiles) != null ? _23_25_ : false)
-        this.cfg.maxFiles = ((_24_25_=this.cfg.maxFiles) != null ? _24_25_ : 15000)
-        this.cfg.ignore = ((_25_25_=this.cfg.ignore) != null ? _25_25_ : ['node_modules','build','Build','Library','Applications'])
-        this.cfg.include = ((_26_25_=this.cfg.include) != null ? _26_25_ : ['.konrad.noon','.gitignore','.npmignore'])
-        this.cfg.ignoreExt = ((_27_25_=this.cfg.ignoreExt) != null ? _27_25_ : ['asar'])
-        this.cfg.includeExt = ((_28_25_=this.cfg.includeExt) != null ? _28_25_ : walker.sourceFileExtensions)
+        this.cfg.maxDepth = ((_18_25_=this.cfg.maxDepth) != null ? _18_25_ : 3)
+        this.cfg.dotFiles = ((_19_25_=this.cfg.dotFiles) != null ? _19_25_ : false)
+        this.cfg.maxFiles = ((_20_25_=this.cfg.maxFiles) != null ? _20_25_ : 15000)
+        this.cfg.ignore = ((_21_25_=this.cfg.ignore) != null ? _21_25_ : ['node_modules','build','Build','Library','Applications'])
+        this.cfg.include = ((_22_25_=this.cfg.include) != null ? _22_25_ : ['.konrad.noon','.gitignore','.npmignore'])
+        this.cfg.ignoreExt = ((_23_25_=this.cfg.ignoreExt) != null ? _23_25_ : ['asar'])
+        this.cfg.includeExt = ((_24_25_=this.cfg.includeExt) != null ? _24_25_ : fileutil.sourceFileExtensions)
     }
 
     async start ()
     {
-        var dir, ext, file, item, items, listDir, p, toWalk, _64_31_, _92_17_
+        var dir, ext, file, item, items, listDir, p, toWalk, _58_31_, _86_17_
 
         dir = this.cfg.root
         this.running = true

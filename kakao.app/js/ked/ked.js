@@ -603,7 +603,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _505_22_
+        var mcw, _507_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

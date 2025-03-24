@@ -100,6 +100,7 @@ function funtree extends choices
     onFileIndexed: path info =>
     
         ⮐  if path != ked_session.get 'editor▸file'
+        ⮐  if empty info.classes and empty info.funcs
     
         clssl = clone info.classes
         funcs = clone info.funcs

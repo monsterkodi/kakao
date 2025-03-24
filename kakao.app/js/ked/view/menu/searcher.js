@@ -209,6 +209,9 @@ searcher = (function ()
             case 'submit':
                 return this.show(text)
 
+            case 'right':
+                return
+
             case 'change':
                 return
 

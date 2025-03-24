@@ -124,9 +124,13 @@ funtree = (function ()
 
     funtree.prototype["onFileIndexed"] = function (path, info)
     {
-        var clss, clssl, func, funcs, items, name, symbol, _108_22_
+        var clss, clssl, func, funcs, items, name, symbol, _109_22_
 
         if (path !== ked_session.get('editor▸file'))
+        {
+            return
+        }
+        if (_k_.empty(info.classes) && _k_.empty(info.funcs))
         {
             return
         }
@@ -136,7 +140,7 @@ funtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_108_22_=clss.file) != null ? _108_22_ : path)
+            clss.file = ((_109_22_=clss.file) != null ? _109_22_ : path)
             clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
         }
         var list1 = _k_.list(funcs)

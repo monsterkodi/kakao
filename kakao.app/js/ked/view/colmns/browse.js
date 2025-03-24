@@ -9,7 +9,7 @@ let post = kxk.post
 
 import nfs from "../../../kxk/nfs.js"
 
-import walker from "../../util/walker.js"
+import fileutil from "../../util/fileutil.js"
 
 import belt from "../../edit/tool/belt.js"
 
@@ -200,7 +200,7 @@ browse = (function ()
         if (item.type === 'file')
         {
             this.brocol.hide()
-            if (_k_.in(slash.ext(item.path),walker.sourceFileExtensions))
+            if (_k_.in(slash.ext(item.path),fileutil.sourceFileExtensions))
             {
                 text = await nfs.read(item.path)
                 if (this.brocol.visible())

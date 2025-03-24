@@ -155,7 +155,7 @@ function fileeditor extends editor
     # 000   000   0000000    0000000   0000000   00000000  
     
     onMouse: event =>
-        
+            
         ret = super event ; ⮐  ret if ret?.redraw
         
         [col row] = @cells.posForEvent event
@@ -164,7 +164,7 @@ function fileeditor extends editor
             
             'press'
             
-                if event.count > 1 and @hover
+                if event.count > 1
 
                     @state.deselect() if not event.shift and event.button=='left'
                     
@@ -192,6 +192,10 @@ function fileeditor extends editor
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
                     
+                    if event.cmd or event.ctrl
+                        if word = belt.wordAtPos @state.s.lines [x y]
+                            log "fileeditor.onMouse cmdctrl clicked '#{word}'"
+                        
                     @dragStart = [x y x]
                                         
                     @state.deselect()     if not event.shift and event.button=='left'

@@ -12,7 +12,7 @@ import nfs from "../../../kxk/nfs.js"
 
 import prjcts from "../../index/prjcts.js"
 
-import walker from "../../util/walker.js"
+import fileutil from "../../util/fileutil.js"
 
 import belt from "../../edit/tool/belt.js"
 
@@ -281,7 +281,7 @@ quicky = (function ()
         {
             return this.hideMap()
         }
-        if (item.type === 'file' && _k_.in(slash.ext(item.path),walker.sourceFileExtensions))
+        if (item.type === 'file' && _k_.in(slash.ext(item.path),fileutil.sourceFileExtensions))
         {
             text = await nfs.read(item.path)
             segls = belt.seglsForText(text)

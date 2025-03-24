@@ -9,7 +9,7 @@
 use ../../../kxk    ▪ kstr slash post kutil
 use ../../../kxk    ◆ nfs
 use ../../index     ◆ prjcts
-use ../../util      ◆ walker 
+use ../../util      ◆ fileutil
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ icons
 use ../base         ◆ crumbs 
@@ -242,7 +242,7 @@ function quicky extends inputchoice
         
         ⮐  @hideMap() if empty item?.path
         
-        if item.type == 'file' and slash.ext(item.path) in walker.sourceFileExtensions
+        if item.type == 'file' and slash.ext(item.path) in fileutil.sourceFileExtensions
             text =○ nfs.read item.path
             segls = belt.seglsForText text
             @choices.mapscr.show()

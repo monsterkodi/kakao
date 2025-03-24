@@ -8,14 +8,10 @@
 
 use ../../kxk ▪ slash
 use ../../kxk ◆ nfs 
+use           ◆ fileutil
 
 class walker
     
-    # move these to config!
-    @indexFileExtensions:  [ 'kode' 'mm' 'zig' 'cc' 'c' 'h' 'hpp' 'cpp' ] 
-    @dotFileExtensions:    [ 'bashrc' 'bash_history' 'gitconfig' 'gitignore_global' 'lesshst' 'npmrc' 'nvimrc' 'profile' 'zprofile' 'zsh_history' 'zshrc' ]
-    @sourceFileExtensions: walker.indexFileExtensions.concat(walker.dotFileExtensions [ 'ts' 'js' 'mjs' 'swift' 'styl' 'css' 'pug' 'html' 'md' 'noon' 'json' 'txt' 'log' 'sh' 'fish' 'py' 'frag' 'vert' 'config' 'lua' 'toml' 'conf' 'gitignore' 'plist' ]) 
-
     @: @cfg ->
 
         @cfg.files       = []
@@ -25,10 +21,8 @@ class walker
         @cfg.ignore      ?= ['node_modules' 'build' 'Build' 'Library' 'Applications'] #, 'resources' 'ThirdParty' 'Binaries' 'Intermediate' 'Saved' 'Programs' 'Shaders' 'DerivedDataCache' 'Content' 'Samples']
         @cfg.include     ?= ['.konrad.noon' '.gitignore' '.npmignore']
         @cfg.ignoreExt   ?= ['asar']
-        @cfg.includeExt  ?= walker.sourceFileExtensions # this should be set by prjcts instead
+        @cfg.includeExt  ?= fileutil.sourceFileExtensions # this should be set by prjcts instead
         
-        # log 'walker' @cfg walker.sourceFileExtensions
-              
     #  0000000  000000000   0000000   00000000   000000000
     # 000          000     000   000  000   000     000   
     # 0000000      000     000000000  0000000       000   

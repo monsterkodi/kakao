@@ -449,6 +449,8 @@ function KED
     # 000   000  00000000     000     
     
     onKey: key event =>
+    
+        # log 'ked.onKey' event
             
         switch key
             

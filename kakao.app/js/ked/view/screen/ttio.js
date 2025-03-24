@@ -48,6 +48,8 @@ TTIO = (function ()
         this["write"] = this["write"].bind(this)
         this.store()
         this.hasFocus = true
+        this.modifiers = ['cmd','ctrl','alt','shift']
+        this.activeMods = {}
         this.hideCursor()
         if (process.stdin.isTTY)
         {
@@ -451,6 +453,7 @@ TTIO = (function ()
 
         }
 
+        console.log('--------------------- unhandled csi?',csi)
         return null
     }
 
@@ -692,11 +695,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _473_23_, _494_20_
+        var diff, _477_23_, _498_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_473_23_=this.lastClick) != null ? _473_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_477_23_=this.lastClick) != null ? _477_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -719,7 +722,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_494_20_=this.lastPixels) != null ? _494_20_ : [])
+        this.lastPixels = ((_498_20_=this.lastPixels) != null ? _498_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -729,6 +732,7 @@ TTIO = (function ()
         {
             this.lastPixels.shift()
         }
+        event.cmd = this.activeMods.cmd
         return this.emit('mouse',event)
     }
 
@@ -777,7 +781,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _548_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _554_23_
 
         if ((this.pasteBuffer != null))
         {
@@ -844,11 +848,19 @@ TTIO = (function ()
                 {
                     if (event.type === 'release')
                     {
+                        if (_k_.in(event.key,this.modifiers))
+                        {
+                            this.activeMods[event.key] = false
+                        }
                         this.emit('release',event.combo,event)
                         continue
                     }
                     else
                     {
+                        if (_k_.in(event.key,this.modifiers))
+                        {
+                            this.activeMods[event.key] = true
+                        }
                         this.emit('key',event.combo,event)
                         continue
                     }
@@ -862,6 +874,7 @@ TTIO = (function ()
                     }
                     if (event.type === 'release')
                     {
+                        console.log(`key release ${_k_.noon(event)}`)
                         continue
                     }
                 }
@@ -879,6 +892,7 @@ TTIO = (function ()
                         break
                 }
 
+                console.log(`-------------- unhandled csi ${csi}`)
             }
             else if (esc)
             {

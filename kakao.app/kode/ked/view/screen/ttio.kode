@@ -21,6 +21,10 @@ function TTIO extends events
         @store()
         
         @hasFocus = true
+        
+        @modifiers  = ['cmd' 'ctrl' 'alt' 'shift']
+        @activeMods = {}
+        
         @hideCursor()
         
         if process.stdin.isTTY ➜ process.stdin.setRawMode true
@@ -318,7 +322,7 @@ function TTIO extends events
             '5~' ➜ ⮐  @keyEventForCombo('pageup')
             '6~' ➜ ⮐  @keyEventForCombo('pagedown')
             'Z'  ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
-                    
+        log '--------------------- unhandled csi?' csi
         null
         
     # 00000000   0000000   0000000  
@@ -497,6 +501,8 @@ function TTIO extends events
         @lastPixels.push event.pixel
         @lastPixels.shift() if @lastPixels.length > 4
         
+        event.cmd = @activeMods.cmd
+        
         @emit 'mouse' event
                 
     # 00000000    0000000   00000000    0000000  00000000  
@@ -544,7 +550,7 @@ function TTIO extends events
     # 0000000    000   000     000     000   000  
     
     onData: data =>
-
+    
         if @pasteBuffer?
         
             dataStr = data.toString 'utf8'
@@ -560,13 +566,15 @@ function TTIO extends events
             ⮐ 
         
         for seq in @parseData data
-            
+        
             data = seq.data
             csi  = seq.csi
             esc  = seq.esc
             raw  = seq.raw
         
             if csi
+                
+                # log "ttio.onData csi #{noon csi}"
                 
                 if csi.startsWith('4;') and csi.endsWith('t') # screen size in pixels
                     
@@ -596,6 +604,7 @@ function TTIO extends events
                     delete @pasteBuffer
                     
                     continue
+
                     
                 if csi.startsWith('<') and csi[-1] in 'Mm'
                     
@@ -605,28 +614,35 @@ function TTIO extends events
                         
                     log 'unhandled mouse event?' csi
                     continue 
-                    
+                
                 if event = @parseKitty csi data
-                    
+                
                     if event.type == 'release'
+                        if event.key in @modifiers
+                            @activeMods[event.key] = false
                         @emit 'release' event.combo event
                         continue
-                    else 
-                        #lf '▸' noon(event)
+                    else
+                        if event.key in @modifiers
+                            @activeMods[event.key] = true
                         @emit 'key' event.combo event
                         continue
                         
                 if event = @parseCsi csi
-                    
+                
                     if event.type in ['press' 'repeat']
                         @emit 'key' event.combo event
                         continue
                         
-                    continue if event.type == 'release' # ignore release events for now
+                    if event.type == 'release' # ignore release events for now
+                        log "key release #{noon event}"
+                        continue 
 
                 switch csi
                     'I' ➜ @hasFocus = true;  post.emit 'window.focus' ; continue
                     'O' ➜ @hasFocus = false; post.emit 'window.blur'  ; continue
+                    
+                log "-------------- unhandled csi #{csi}"
                         
             else if esc
                 

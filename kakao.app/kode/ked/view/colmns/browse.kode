@@ -8,7 +8,7 @@
 
 use ../../../kxk    ▪ kstr slash post
 use ../../../kxk    ◆ nfs
-use ../../util      ◆ walker 
+use ../../util      ◆ fileutil 
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ theme icons
 use                 ◆ quicky brocol diritem
@@ -185,7 +185,7 @@ function browse extends quicky
         
             @brocol.hide()
         
-            if slash.ext(item.path) in walker.sourceFileExtensions
+            if slash.ext(item.path) in fileutil.sourceFileExtensions
                 text =○ nfs.read item.path
                 ⮐  if @brocol.visible()
                 segls = belt.seglsForText text
