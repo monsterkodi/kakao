@@ -20,9 +20,6 @@
 #### todo
 ##### todo
 
-- dirtree
-    - git status!!!!!
-    
 - searcher
     - fix input reset to some weird previous value!!!!!
     - fix right action triggering when input has focus!!!

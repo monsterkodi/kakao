@@ -337,8 +337,6 @@ class color
         ⮐  fg if empty fg or not fg[0] is num
         ⮐  fg if empty bg or not bg[0] is num
     
-        fgo = copy fg # todo: remove this when fail case never happens
-    
         contrastRatio = l1 l2 -> (max(l1 l2) + 0.05) / (min(l1 l2) + 0.05)
     
         fgLuminance = @luminance fg
@@ -346,29 +344,24 @@ class color
     
         contrast = contrastRatio fgLuminance bgLuminance
     
-        targetContrast = 4.5 # WCAG AA standard
-    
         [h s l] = @rgbToHsl fg
 
         step = bgLuminance > 0.5 ? -5 : 5
 
-        cnt = 0          # todo: remove this when fail case never happens
-        while cnt < 50   # todo: replace with while true when fail case never happens
-            cnt++        # todo: remove this when fail case never happens
+        cnt = 0        # limiting the loop 
+        while cnt < 50 # shouldn't be neccessary
+            cnt++      # but better safe than sorry
+            
             fg = @hslToRgb [h s l]
             fgLuminance = @luminance fg
     
             contrast = contrastRatio fgLuminance bgLuminance
     
-            ⮐  fg if contrast >= targetContrast
+            ⮐  fg if contrast >= 4.5 # WCAG AA standard - ⊂𝕒𝓊𝖘ϵ ⫐ϵϵ𝔭𝓢ϵϵ𝓚 𝖘𝕒𝚒𝒹 𝖘⊚ :Ρ
     
             l += step
-                
-            if l < 0 or l > 100
-                step = -step
-                
-        log "fail #{fgo} #{bg}" # todo: remove this when fail case never happens
-        fgo                     # todo: remove this when fail case never happens
+            step = -step if l < 0 or l > 100
+        fg
     
 for key,val of color.ansi256 # convert colors to rgb triplets
     color.ansi256[key] = color.values val

@@ -1,4 +1,4 @@
-var _k_ = {isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }}
+var _k_ = {isArr: function (o) {return Array.isArray(o)}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var key, val
 
@@ -351,7 +351,7 @@ class color
 
     static ensureReadability (fg, bg)
     {
-        var bgLuminance, cnt, contrast, contrastRatio, fgLuminance, fgo, h, l, s, step, targetContrast
+        var bgLuminance, cnt, contrast, contrastRatio, fgLuminance, h, l, s, step
 
         if (_k_.empty(fg) || !(_k_.isNum(fg[0])))
         {
@@ -361,7 +361,6 @@ class color
         {
             return fg
         }
-        fgo = _k_.copy(fg)
         contrastRatio = function (l1, l2)
         {
             return (_k_.max(l1,l2) + 0.05) / (_k_.min(l1,l2) + 0.05)
@@ -369,7 +368,6 @@ class color
         fgLuminance = this.luminance(fg)
         bgLuminance = this.luminance(bg)
         contrast = contrastRatio(fgLuminance,bgLuminance)
-        targetContrast = 4.5
         var _a_ = this.rgbToHsl(fg); h = _a_[0]; s = _a_[1]; l = _a_[2]
 
         step = (bgLuminance > 0.5 ? -5 : 5)
@@ -380,7 +378,7 @@ class color
             fg = this.hslToRgb([h,s,l])
             fgLuminance = this.luminance(fg)
             contrast = contrastRatio(fgLuminance,bgLuminance)
-            if (contrast >= targetContrast)
+            if (contrast >= 4.5)
             {
                 return fg
             }
@@ -390,8 +388,7 @@ class color
                 step = -step
             }
         }
-        console.log(`fail ${fgo} ${bg}`)
-        return fgo
+        return fg
     }
 }
 

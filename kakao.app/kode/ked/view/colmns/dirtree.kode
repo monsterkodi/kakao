@@ -32,6 +32,8 @@ function dirtree extends choices
         
     onGitStatus: status =>
     
+        # todo: handle added files
+    
         for item in @items
             if item.path in status.changed
                 item.modified = true
