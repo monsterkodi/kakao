@@ -113,21 +113,25 @@ Pigments = (function ()
     return Pigments
 })()
 
-export default {actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+ctrl+p'}},initPigments:function ()
-{
-    var _116_31_
-
-    return this.pigments = ((_116_31_=this.pigments) != null ? _116_31_ : new Pigments(this))
-},togglePigments:function ()
-{
-    var _121_21_, _123_21_
-
-    if (window.stash.get(`pigments|${this.currentFile}`,false))
+export default {
+    actions:{togglePigments:{name:'Toggle Pigments',text:'toggle pigments for current file',combo:'command+alt+ctrl+p'}},
+    initPigments:function ()
     {
-        return (this.pigments != null ? this.pigments.deactivate() : undefined)
-    }
-    else
+        var _116_31_
+    
+        return this.pigments = ((_116_31_=this.pigments) != null ? _116_31_ : new Pigments(this))
+    },
+    togglePigments:function ()
     {
-        return (this.pigments != null ? this.pigments.activate() : undefined)
+        var _121_21_, _123_21_
+    
+        if (window.stash.get(`pigments|${this.currentFile}`,false))
+        {
+            return (this.pigments != null ? this.pigments.deactivate() : undefined)
+        }
+        else
+        {
+            return (this.pigments != null ? this.pigments.activate() : undefined)
+        }
     }
-}}
+}

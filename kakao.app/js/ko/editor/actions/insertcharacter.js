@@ -4,209 +4,214 @@ import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let reversed = kxk.reversed
 
-export default {insertCharacter:function (ch)
-{
-    var cc, cline, nc, newCursors, sline
-
-    if (ch === '\n')
+export default {
+    insertCharacter:function (ch)
     {
-        return this.newline()
-    }
-    if (this.salterMode && this.insertSalterCharacter(ch))
-    {
-        return
-    }
-    this.do.start()
-    this.clampCursorOrFillVirtualSpaces()
-    if (!_k_.empty(this.surroundCharacters))
-    {
-        if (_k_.in(ch,this.surroundCharacters))
+        var cc, cline, nc, newCursors, sline
+    
+        if (ch === '\n')
         {
-            if (this.insertSurroundCharacter(ch))
-            {
-                this.do.end()
-                return
-            }
+            return this.newline()
         }
-    }
-    this.deleteSelection()
-    newCursors = this.do.cursors()
-    var list = _k_.list(newCursors)
-    for (var _a_ = 0; _a_ < list.length; _a_++)
-    {
-        cc = list[_a_]
-        cline = this.do.line(cc[1])
-        sline = this.twiggleSubstitute(cline,cc,ch)
-        if (sline)
+        if (this.salterMode && this.insertSalterCharacter(ch))
         {
-            this.do.change(cc[1],sline)
+            return
         }
-        else
+        this.do.start()
+        this.clampCursorOrFillVirtualSpaces()
+        if (!_k_.empty(this.surroundCharacters))
         {
-            this.do.change(cc[1],kstr.splice(cline,cc[0],0,ch))
-            var list1 = _k_.list(positionsAtLineIndexInPositions(cc[1],newCursors))
-            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            if (_k_.in(ch,this.surroundCharacters))
             {
-                nc = list1[_b_]
-                if (nc[0] >= cc[0])
+                if (this.insertSurroundCharacter(ch))
                 {
-                    nc[0] += 1
+                    this.do.end()
+                    return
                 }
             }
         }
-    }
-    this.do.setCursors(newCursors)
-    this.do.end()
-    return this.emitEdit('insert')
-},twiggleSubstitute:function (line, cursor, char)
-{
-    var sub, substitute
-
-    if (cursor[0] && line[cursor[0] - 1] === '~')
-    {
-        substitute = ((function ()
+        this.deleteSelection()
+        newCursors = this.do.cursors()
+        var list = _k_.list(newCursors)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            switch (char)
+            cc = list[_a_]
+            cline = this.do.line(cc[1])
+            sline = this.twiggleSubstitute(cline,cc,ch)
+            if (sline)
             {
-                case '>':
-                    return '▸'
-
-                case '<':
-                    return '◂'
-
-                case '.':
-                    return '▶'
-
-                case ',':
-                    return '◀'
-
-                case 'v':
-                    return '▾'
-
-                case 'V':
-                    return '▼'
-
-                case '^':
-                    return '▴'
-
-                case 'b':
-                    return '█'
-
-                case '\\':
-                    return '█'
-
-                case '[':
-                    return ''
-
-                case ']':
-                    return ''
-
-                case '{':
-                    return ''
-
-                case '}':
-                    return ''
-
-                case 'c':
-                    return '●'
-
-                case 'd':
-                    return '◆'
-
-                case 'o':
-                    return '○'
-
-                case 'r':
-                    return '⮐'
-
-                case 's':
-                    return '▪'
-
-                case 'S':
-                    return '■'
-
-                case 't':
-                    return '➜'
-
-                case 'X':
-                    return '✘'
-
-                case 'O':
-                    return '✔'
-
-                case '1':
-                    return '┏'
-
-                case '2':
-                    return '┳'
-
-                case '3':
-                    return '┓'
-
-                case '4':
-                    return '┣'
-
-                case '5':
-                    return '╋'
-
-                case '6':
-                    return '┫'
-
-                case '7':
-                    return '┗'
-
-                case '8':
-                    return '┻'
-
-                case '9':
-                    return '┛'
-
-                case '-':
-                    return '━'
-
-                case '=':
-                    return '┃'
-
+                this.do.change(cc[1],sline)
             }
-
-        }).bind(this))()
-        if (substitute)
-        {
-            sub = kstr.splice(line,cursor[0] - 1,1,substitute)
-            return sub
+            else
+            {
+                this.do.change(cc[1],kstr.splice(cline,cc[0],0,ch))
+                var list1 = _k_.list(positionsAtLineIndexInPositions(cc[1],newCursors))
+                for (var _b_ = 0; _b_ < list1.length; _b_++)
+                {
+                    nc = list1[_b_]
+                    if (nc[0] >= cc[0])
+                    {
+                        nc[0] += 1
+                    }
+                }
+            }
         }
-    }
-},clampCursorOrFillVirtualSpaces:function ()
-{
-    var cursor, lineLength, x, y
-
-    this.do.start()
-    if (this.do.numCursors() === 1)
+        this.do.setCursors(newCursors)
+        this.do.end()
+        return this.emitEdit('insert')
+    },
+    twiggleSubstitute:function (line, cursor, char)
     {
-        cursor = this.do.cursor(0)
-        y = _k_.clamp(0,this.do.numLines() - 1,cursor[1])
-        lineLength = this.do.numLines() && this.do.line(cursor[1]).length || 0
-        x = _k_.clamp(0,lineLength,cursor[0])
-        this.do.setCursors([[x,y]])
-    }
-    else
-    {
-        this.fillVirtualSpaces()
-    }
-    return this.do.end()
-},fillVirtualSpaces:function ()
-{
-    var c
-
-    this.do.start()
-    var list = _k_.list(reversed(this.do.cursors()))
-    for (var _c_ = 0; _c_ < list.length; _c_++)
-    {
-        c = list[_c_]
-        if (c[0] > this.do.line(c[1]).length)
+        var sub, substitute
+    
+        if (cursor[0] && line[cursor[0] - 1] === '~')
         {
-            this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))
+            substitute = ((function ()
+            {
+                switch (char)
+                {
+                    case '>':
+                        return '▸'
+    
+                    case '<':
+                        return '◂'
+    
+                    case '.':
+                        return '▶'
+    
+                    case ',':
+                        return '◀'
+    
+                    case 'v':
+                        return '▾'
+    
+                    case 'V':
+                        return '▼'
+    
+                    case '^':
+                        return '▴'
+    
+                    case 'b':
+                        return '█'
+    
+                    case '\\':
+                        return '█'
+    
+                    case '[':
+                        return ''
+    
+                    case ']':
+                        return ''
+    
+                    case '{':
+                        return ''
+    
+                    case '}':
+                        return ''
+    
+                    case 'c':
+                        return '●'
+    
+                    case 'd':
+                        return '◆'
+    
+                    case 'o':
+                        return '○'
+    
+                    case 'r':
+                        return '⮐'
+    
+                    case 's':
+                        return '▪'
+    
+                    case 'S':
+                        return '■'
+    
+                    case 't':
+                        return '➜'
+    
+                    case 'X':
+                        return '✘'
+    
+                    case 'O':
+                        return '✔'
+    
+                    case '1':
+                        return '┏'
+    
+                    case '2':
+                        return '┳'
+    
+                    case '3':
+                        return '┓'
+    
+                    case '4':
+                        return '┣'
+    
+                    case '5':
+                        return '╋'
+    
+                    case '6':
+                        return '┫'
+    
+                    case '7':
+                        return '┗'
+    
+                    case '8':
+                        return '┻'
+    
+                    case '9':
+                        return '┛'
+    
+                    case '-':
+                        return '━'
+    
+                    case '=':
+                        return '┃'
+    
+                }
+    
+            }).bind(this))()
+            if (substitute)
+            {
+                sub = kstr.splice(line,cursor[0] - 1,1,substitute)
+                return sub
+            }
         }
+    },
+    clampCursorOrFillVirtualSpaces:function ()
+    {
+        var cursor, lineLength, x, y
+    
+        this.do.start()
+        if (this.do.numCursors() === 1)
+        {
+            cursor = this.do.cursor(0)
+            y = _k_.clamp(0,this.do.numLines() - 1,cursor[1])
+            lineLength = this.do.numLines() && this.do.line(cursor[1]).length || 0
+            x = _k_.clamp(0,lineLength,cursor[0])
+            this.do.setCursors([[x,y]])
+        }
+        else
+        {
+            this.fillVirtualSpaces()
+        }
+        return this.do.end()
+    },
+    fillVirtualSpaces:function ()
+    {
+        var c
+    
+        this.do.start()
+        var list = _k_.list(reversed(this.do.cursors()))
+        for (var _c_ = 0; _c_ < list.length; _c_++)
+        {
+            c = list[_c_]
+            if (c[0] > this.do.line(c[1]).length)
+            {
+                this.do.change(c[1],kstr.splice(this.do.line(c[1]),c[0],0,_k_.lpad(c[0] - this.do.line(c[1]).length)))
+            }
+        }
+        return this.do.end()
     }
-    return this.do.end()
-}}
+}

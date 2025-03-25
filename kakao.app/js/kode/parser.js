@@ -366,21 +366,13 @@ Parser = (function ()
 
     Parser.prototype["export"] = function (obj, tokens)
     {
-        var start, toExport, token
+        var start, toExport
 
         toExport = []
         start = tokens.shift()
         if (start.text === '{')
         {
-            while (token = tokens.shift())
-            {
-                if (token.text === '}')
-                {
-                    tokens.shift()
-                    break
-                }
-                toExport.push(token)
-            }
+            toExport = this.object('export',start.tokens)
         }
         else if (start.type === 'block')
         {
@@ -774,6 +766,11 @@ Parser = (function ()
     {
         var block, col, colon, k, line, text, value
 
+        if (_k_.empty(tokens))
+        {
+            this.onError(`keyval is missing tokens in:\n${_k_.noon(key)}`)
+            return
+        }
         colon = tokens.shift()
         this.push(':')
         if ((tokens[0] != null ? tokens[0].type : undefined) === 'block')

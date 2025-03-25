@@ -11,27 +11,32 @@ var ext
 import kolor from "../kolor.js"
 
 ext = 'kode'
-export default {lang:function (l)
-{
-    return ext = l
-},ranges:function (s)
-{
-    return kolor.ranges(s,ext)
-},dissect:function (c)
-{
-    return kolor.dissect(c.split('\n'),ext)
-},inc:function (rgs, start, match)
-{
-    var r
-
-    var list = _k_.list(rgs)
-    for (var _a_ = 0; _a_ < list.length; _a_++)
+export default {
+    lang:function (l)
     {
-        r = list[_a_]
-        if (r.start === start && r.match === match)
+        return ext = l
+    },
+    ranges:function (s)
+    {
+        return kolor.ranges(s,ext)
+    },
+    dissect:function (c)
+    {
+        return kolor.dissect(c.split('\n'),ext)
+    },
+    inc:function (rgs, start, match)
+    {
+        var r
+    
+        var list = _k_.list(rgs)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            return r.clss
+            r = list[_a_]
+            if (r.start === start && r.match === match)
+            {
+                return r.clss
+            }
         }
+        console.log(`${_k_.r6(_k_.noon((rgs)))}\n${_k_.r5('expected')} ${_k_.g5(match)} ${_k_.r5('at index')} ${_k_.b7(start)} `)
     }
-    console.log(`${_k_.r6(_k_.noon((rgs)))}\n${_k_.r5('expected')} ${_k_.g5(match)} ${_k_.r5('at index')} ${_k_.b7(start)} `)
-}}
+}

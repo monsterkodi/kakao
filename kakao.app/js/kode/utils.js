@@ -82,4 +82,7 @@ firstLineCol = function (e)
     }
     return {line:Infinity,col:Infinity}
 }
-export default {firstLineCol:firstLineCol,lastLineCol:lastLineCol}
+export default {
+    firstLineCol:firstLineCol,
+    lastLineCol:lastLineCol
+}

@@ -42,26 +42,32 @@ class Poster extends EventTarget
 }
 
 poster = new Poster
-export default {poster:poster,emit:function (event, ...args)
-{
-    return poster.post(event,args)
-},toWins:function (event, ...args)
-{
-    return kakao('window.post',event,args)
-},on:function (event, cb)
-{
-    if (_k_.isFunc(cb))
+export default {
+    poster:poster,
+    emit:function (event, ...args)
     {
-        return poster.addEventListener(event,function (e)
+        return poster.post(event,args)
+    },
+    toWins:function (event, ...args)
+    {
+        return kakao('window.post',event,args)
+    },
+    on:function (event, cb)
+    {
+        if (_k_.isFunc(cb))
         {
-            return cb.apply(cb,e.args)
-        })
-    }
-    else
+            return poster.addEventListener(event,function (e)
+            {
+                return cb.apply(cb,e.args)
+            })
+        }
+        else
+        {
+            console.log('post.on no func?',event,cb)
+        }
+    },
+    removeListener:function (event, cb)
     {
-        console.log('post.on no func?',event,cb)
+        return poster.removeEventListener(event,cb)
     }
-},removeListener:function (event, cb)
-{
-    return poster.removeEventListener(event,cb)
-}}
+}

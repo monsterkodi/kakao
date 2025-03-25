@@ -71,4 +71,7 @@ file = function (file)
     }
     return info
 }
-export default {file:file,image:image}
+export default {
+    file:file,
+    image:image
+}

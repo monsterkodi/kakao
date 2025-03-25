@@ -5,109 +5,122 @@ let kseg = kxk.kseg
 
 import belt from "../tool/belt.js"
 
-export default {setMain:function (m)
-{
-    this.s = this.s.set('main',_k_.clamp(0,this.s.cursors.length - 1,m))
-    return this.adjustViewForMainCursor({adjust:'topBotDelta'})
-},mainCursor:function ()
-{
-    return this.s.cursors[this.s.main].asMutable()
-},setMainCursor:function (x, y)
-{
-    var _a_ = belt.pos(x,y); x = _a_[0]; y = _a_[1]
-
-    y = _k_.clamp(0,this.s.lines.length - 1,y)
-    x = _k_.max(0,x)
-    return this.setCursors([[x,y]])
-},moveMainCursorInDirection:function (dir, opt = {})
-{
-    var mc
-
-    mc = belt.positionInDirection(this.mainCursor(),dir)
-    if (opt.keep)
+export default {
+    setMain:function (m)
     {
-        return this.addCursor(mc)
-    }
-    else
+        this.s = this.s.set('main',_k_.clamp(0,this.s.cursors.length - 1,m))
+        return this.adjustViewForMainCursor({adjust:'topBotDelta'})
+    },
+    mainCursor:function ()
     {
-        return this.moveMainCursor(mc)
-    }
-},moveMainCursor:function (x, y)
-{
-    var cursors, main, mainCursor
-
-    var _b_ = belt.pos(x,y); x = _b_[0]; y = _b_[1]
-
-    y = _k_.clamp(0,this.s.lines.length - 1,y)
-    x = _k_.max(0,x)
-    mainCursor = this.mainCursor()
-    if (_k_.eql(mainCursor, [x,y]))
+        return this.s.cursors[this.s.main].asMutable()
+    },
+    setMainCursor:function (x, y)
     {
-        return
-    }
-    cursors = this.allCursors()
-    cursors.splice(belt.indexOfPosInPositions(mainCursor,cursors),1)
-    main = belt.indexOfPosInPositions([x,y],cursors)
-    if (main < 0)
+        var _a_ = belt.pos(x,y); x = _a_[0]; y = _a_[1]
+    
+        y = _k_.clamp(0,this.s.lines.length - 1,y)
+        x = _k_.max(0,x)
+        return this.setCursors([[x,y]])
+    },
+    moveMainCursorInDirection:function (dir, opt = {})
     {
-        cursors.push([x,y])
-        main = cursors.length - 1
-    }
-    return this.setCursors(cursors,{main:main})
-},singleCursorAtEndOfLine:function ()
-{
-    var mc, rng
-
-    rng = belt.lineRangeAtPos(this.allLines(),this.mainCursor())
-    mc = belt.endOfRange(rng)
-    this.deselect()
-    return this.setCursors([mc])
-},singleCursorAtIndentOrStartOfLine:function ()
-{
-    var ind, lines, mc, rng
-
-    lines = this.s.lines
-    mc = this.mainCursor()
-    rng = belt.lineRangeAtPos(lines,mc)
-    ind = belt.lineIndentAtPos(lines,mc)
-    if (ind < mc[0])
+        var mc
+    
+        mc = belt.positionInDirection(this.mainCursor(),dir)
+        if (opt.keep)
+        {
+            return this.addCursor(mc)
+        }
+        else
+        {
+            return this.moveMainCursor(mc)
+        }
+    },
+    moveMainCursor:function (x, y)
     {
-        mc[0] = ind
-    }
-    else
+        var cursors, main, mainCursor
+    
+        var _b_ = belt.pos(x,y); x = _b_[0]; y = _b_[1]
+    
+        y = _k_.clamp(0,this.s.lines.length - 1,y)
+        x = _k_.max(0,x)
+        mainCursor = this.mainCursor()
+        if (_k_.eql(mainCursor, [x,y]))
+        {
+            return
+        }
+        cursors = this.allCursors()
+        cursors.splice(belt.indexOfPosInPositions(mainCursor,cursors),1)
+        main = belt.indexOfPosInPositions([x,y],cursors)
+        if (main < 0)
+        {
+            cursors.push([x,y])
+            main = cursors.length - 1
+        }
+        return this.setCursors(cursors,{main:main})
+    },
+    singleCursorAtEndOfLine:function ()
     {
-        mc = belt.startOfRange(rng)
-    }
-    this.deselect()
-    return this.setCursors([mc])
-},singleCursorPage:function (dir)
-{
-    var mc
-
-    mc = this.mainCursor()
-    switch (dir)
+        var mc, rng
+    
+        rng = belt.lineRangeAtPos(this.allLines(),this.mainCursor())
+        mc = belt.endOfRange(rng)
+        this.deselect()
+        return this.setCursors([mc])
+    },
+    singleCursorAtIndentOrStartOfLine:function ()
     {
-        case 'up':
-            mc[1] -= this.cells.rows
-            break
-        case 'down':
-            mc[1] += this.cells.rows
-            break
+        var ind, lines, mc, rng
+    
+        lines = this.s.lines
+        mc = this.mainCursor()
+        rng = belt.lineRangeAtPos(lines,mc)
+        ind = belt.lineIndentAtPos(lines,mc)
+        if (ind < mc[0])
+        {
+            mc[0] = ind
+        }
+        else
+        {
+            mc = belt.startOfRange(rng)
+        }
+        this.deselect()
+        return this.setCursors([mc])
+    },
+    singleCursorPage:function (dir)
+    {
+        var mc
+    
+        mc = this.mainCursor()
+        switch (dir)
+        {
+            case 'up':
+                mc[1] -= this.cells.rows
+                break
+            case 'down':
+                mc[1] += this.cells.rows
+                break
+        }
+    
+        this.deselect()
+        return this.setCursors([mc])
+    },
+    wordAtCursor:function ()
+    {
+        return belt.wordAtPos(this.s.lines,this.mainCursor())
+    },
+    chunkBeforeCursor:function ()
+    {
+        return belt.chunkBeforePos(this.s.lines,this.mainCursor())
+    },
+    chunkAfterCursor:function ()
+    {
+        return belt.chunkAfterPos(this.s.lines,this.mainCursor())
+    },
+    setMainCursorAndSelect:function (x, y)
+    {
+        this.setSelections(belt.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
+        return this.setCursors([[x,y]],{adjust:'topBotDelta'})
     }
-
-    this.deselect()
-    return this.setCursors([mc])
-},wordAtCursor:function ()
-{
-    return belt.wordAtPos(this.s.lines,this.mainCursor())
-},chunkBeforeCursor:function ()
-{
-    return belt.chunkBeforePos(this.s.lines,this.mainCursor())
-},chunkAfterCursor:function ()
-{
-    return belt.chunkAfterPos(this.s.lines,this.mainCursor())
-},setMainCursorAndSelect:function (x, y)
-{
-    this.setSelections(belt.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
-    return this.setCursors([[x,y]],{adjust:'topBotDelta'})
-}}
+}

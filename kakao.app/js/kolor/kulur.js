@@ -883,7 +883,7 @@ urlPunct = function ()
         }
         if (chunk.match === '.')
         {
-            if (!prev.clss.startsWith('number') && prev.clss !== 'semver' && !(_k_.in(prev.match,'\\./')) && !/\d+/.test(prev.match))
+            if (!prev.clss.startsWith('number') && prev.clss !== 'semver' && !(_k_.in(prev.match,'\\./')) && !/\d+/.test(prev.match) && _k_.empty(topType))
             {
                 if (next = getChunk(1))
                 {
@@ -2050,4 +2050,14 @@ ranges = function (str, ext = 'kode')
 {
     return parse([kseg(str)],ext)[0].chunks
 }
-export default {klor:klor,exts:exts,parse:parse,chunked:chunked,ranges:ranges,dissect:dissect,kolorize:kolorize,kolorizeChunks:kolorizeChunks,syntax:syntax}
+export default {
+    klor:klor,
+    exts:exts,
+    parse:parse,
+    chunked:chunked,
+    ranges:ranges,
+    dissect:dissect,
+    kolorize:kolorize,
+    kolorizeChunks:kolorizeChunks,
+    syntax:syntax
+}

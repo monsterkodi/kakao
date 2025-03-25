@@ -2106,13 +2106,23 @@ syntax = function (arg)
     }
     return clines.join('\n')
 }
-export default {klor:klor,exts:exts,parse:parse,chunked:chunked,ranges:function (line, ext = 'kode')
-{
-    return parse([line],ext)[0].chunks
-},dissect:function (lines, ext = 'kode')
-{
-    return parse(lines,ext).map(function (l)
+export default {
+    klor:klor,
+    exts:exts,
+    parse:parse,
+    chunked:chunked,
+    ranges:function (line, ext = 'kode')
     {
-        return l.chunks
-    })
-},kolorize:kolorize,kolorizeChunks:kolorizeChunks,syntax:syntax}
+        return parse([line],ext)[0].chunks
+    },
+    dissect:function (lines, ext = 'kode')
+    {
+        return parse(lines,ext).map(function (l)
+        {
+            return l.chunks
+        })
+    },
+    kolorize:kolorize,
+    kolorizeChunks:kolorizeChunks,
+    syntax:syntax
+}

@@ -9,42 +9,46 @@ import belt from "../tool/belt.js"
 
 import mode from "../mode.js"
 
-export default {insert:function (text)
-{
-    var cursors, lines
-
-    text = mode.insert(this,text)
-    if (!_k_.empty(this.s.selections))
+export default {
+    insert:function (text)
     {
-        if (text === '\t')
+        var cursors, lines
+    
+        text = mode.insert(this,text)
+        if (!_k_.empty(this.s.selections))
         {
-            return this.indentSelectedLines()
+            if (text === '\t')
+            {
+                return this.indentSelectedLines()
+            }
+            this.deleteSelection()
         }
-        this.deleteSelection()
+        var _a_ = belt.insertTextAtPositions(this.s.lines,text,this.s.cursors); lines = _a_[0]; cursors = _a_[1]
+    
+        this.clearHighlights()
+        this.setLines(lines)
+        this.setCursors(cursors)
+        return mode.postInsert(this)
+    },
+    insertAsciiHeaderForSelectionOrWordAtCursor:function ()
+    {
+        var cursors, lines, selections
+    
+        var _b_ = belt.insertAsciiHeaderForPositionsAndRanges(this.s.lines,this.s.cursors,this.s.selections); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
+    
+        this.clearHighlights()
+        this.setLines(lines)
+        this.setSelections(selections)
+        return this.setCursors(cursors)
+    },
+    surroundSelection:function (trigger, pair)
+    {
+        var lines, posl
+    
+        var _c_ = belt.insertSurroundAtRanges(this.s.lines,this.s.selections,trigger,pair); lines = _c_[0]; posl = _c_[1]
+    
+        this.setLines(lines)
+        this.setSelections([])
+        return this.setCursors(posl)
     }
-    var _a_ = belt.insertTextAtPositions(this.s.lines,text,this.s.cursors); lines = _a_[0]; cursors = _a_[1]
-
-    this.clearHighlights()
-    this.setLines(lines)
-    this.setCursors(cursors)
-    return mode.postInsert(this)
-},insertAsciiHeaderForSelectionOrWordAtCursor:function ()
-{
-    var cursors, lines, selections
-
-    var _b_ = belt.insertAsciiHeaderForPositionsAndRanges(this.s.lines,this.s.cursors,this.s.selections); lines = _b_[0]; cursors = _b_[1]; selections = _b_[2]
-
-    this.clearHighlights()
-    this.setLines(lines)
-    this.setSelections(selections)
-    return this.setCursors(cursors)
-},surroundSelection:function (trigger, pair)
-{
-    var lines, posl
-
-    var _c_ = belt.insertSurroundAtRanges(this.s.lines,this.s.selections,trigger,pair); lines = _c_[0]; posl = _c_[1]
-
-    this.setLines(lines)
-    this.setSelections([])
-    return this.setCursors(posl)
-}}
+}

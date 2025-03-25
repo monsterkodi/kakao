@@ -292,4 +292,9 @@ del = function (object, keypath)
     }
     return object
 }
-export default {find:find,get:get,set:set,del:del}
+export default {
+    find:find,
+    get:get,
+    set:set,
+    del:del
+}

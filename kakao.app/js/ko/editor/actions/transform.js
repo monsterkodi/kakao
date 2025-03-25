@@ -280,16 +280,24 @@ class Transform
     }
 }
 
-export default {actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggles selected texts between lower- upper- and title-case',combo:'command+alt+ctrl+u'},reverseSelection:{name:'Reverse Selection',text:'reverses the order of selected texts',combo:'command+alt+ctrl+r'},sortSelection:{name:'Sort Selection',text:'sorts selected texts. toggles between up and down',combo:'command+alt+ctrl+s'},doTransform:{name:'doTransform'}},toggleCase:function ()
-{
-    return Transform.do(this,'case')
-},reverseSelection:function ()
-{
-    return Transform.do(this,'reverse')
-},sortSelection:function ()
-{
-    return Transform.do(this,'sort')
-},doTransform:function (arg)
-{
-    return Transform.do(this,arg)
-},Transform:Transform,transformNames:Transform.transformNames}
+export default {
+    actions:{menu:"Misc",toggleCase:{name:'Toggle Case',text:'toggles selected texts between lower- upper- and title-case',combo:'command+alt+ctrl+u'},reverseSelection:{name:'Reverse Selection',text:'reverses the order of selected texts',combo:'command+alt+ctrl+r'},sortSelection:{name:'Sort Selection',text:'sorts selected texts. toggles between up and down',combo:'command+alt+ctrl+s'},doTransform:{name:'doTransform'}},
+    toggleCase:function ()
+    {
+        return Transform.do(this,'case')
+    },
+    reverseSelection:function ()
+    {
+        return Transform.do(this,'reverse')
+    },
+    sortSelection:function ()
+    {
+        return Transform.do(this,'sort')
+    },
+    doTransform:function (arg)
+    {
+        return Transform.do(this,arg)
+    },
+    Transform:Transform,
+    transformNames:Transform.transformNames
+}

@@ -54,4 +54,7 @@ make = function (hash, pattern)
     }
     return pw
 }
-export default {make:make,isValidPattern:isValidPattern}
+export default {
+    make:make,
+    isValidPattern:isValidPattern
+}

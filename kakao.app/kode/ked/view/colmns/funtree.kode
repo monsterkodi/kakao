@@ -120,7 +120,7 @@ function funtree extends choices
             
         for func in funcs
             if func.test
-                func.name = belt.reindent 4 2 func.name
+                func.name = ' ' + belt.reindent(4 2 func.name)
             else
                 if func.async
                     if func.bound
@@ -135,7 +135,7 @@ function funtree extends choices
                         
                 name = func.name
                 name = '@' + name if func.static
-                indt = func.class ? '   ' : ''
+                indt = func.class ? '   ' : ' '
                 func.name = indt + symbol + ' ' + name
         
         items = clssl.concat funcs

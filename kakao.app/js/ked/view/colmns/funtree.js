@@ -159,7 +159,7 @@ funtree = (function ()
             func = list1[_b_]
             if (func.test)
             {
-                func.name = belt.reindent(4,2,func.name)
+                func.name = ' ' + belt.reindent(4,2,func.name)
             }
             else
             {
@@ -190,7 +190,7 @@ funtree = (function ()
                 {
                     name = '@' + name
                 }
-                indt = (func.class ? '   ' : '')
+                indt = (func.class ? '   ' : ' ')
                 func.name = indt + symbol + ' ' + name
             }
         }

@@ -10,16 +10,16 @@ use ./utils ▪ kc ke
 
 ▸ export
 
-    kc 'export { export1, export2 }'            ▸ 'export { export1 , export2 };'
-    kc 'export { export1, export2 as blark }'   ▸ 'export { export1 , export2 as blark };'
-    
     kc  """
         export
             k: 1
             $: 2
         """ ▸ 
         """
-        export default {k:1,$:2}
+        export default {
+            k:1,
+            $:2
+        }
         """
 
     kc """
@@ -28,12 +28,18 @@ use ./utils ▪ kc ke
             $: (a) -> log a
         """ ▸ 
         """
-        export default {elem:elem,$:function (a)
-        {
-            console.log(a)
-        }}
+        export default {
+            elem:elem,
+            $:function (a)
+            {
+                console.log(a)
+            }
+        }
         """
         
     kc 'export single' ▸ 'export default single;'
     
     kc 'd = { export:1 }' ▸ 'd = {export:1}'
+    
+    # kc 'export { export1, export2 }'            ▸ 'export { export1 , export2 };'
+    # kc 'export { export1, export2 as blark }'   ▸ 'export { export1 , export2 as blark };'

@@ -283,6 +283,16 @@ toExport["kulur"] = function ()
         compare(inc(rgs,1,"/"),'punct comment')
         compare(inc(rgs,2,"#"),'comment')
     })
+    section("json", function ()
+    {
+        lang('json')
+        dss = dissect(`{
+  "key": [
+    "func.call"
+  ]
+}`)
+        compare(inc(dss[2],5,'func'),'string double')
+    })
     section("txt", function ()
     {
         lang('txt')

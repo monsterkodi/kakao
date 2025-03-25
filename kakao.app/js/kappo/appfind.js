@@ -105,4 +105,9 @@ activateApp = function ()
 {
     console.log('activeApp')
 }
-export default {findApps:findApps,getActiveApp:getActiveApp,activateApp:activateApp,activateApp:activateApp}
+export default {
+    findApps:findApps,
+    getActiveApp:getActiveApp,
+    activateApp:activateApp,
+    activateApp:activateApp
+}

@@ -86,25 +86,29 @@ class Invisibles
     }
 }
 
-export default {actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'toggle invisibles for current file',combo:'ctrl+i'}},toggleInvisibles:function ()
-{
-    var _1_13_
-
-    if (!this.invisibles)
+export default {
+    actions:{toggleInvisibles:{name:'Toggle Invisibles',text:'toggle invisibles for current file',combo:'ctrl+i'}},
+    toggleInvisibles:function ()
     {
-        return
-    }
-    if (window.stash.get(`invisibles|${((_1_13_=this.currentFile) != null ? _1_13_ : this.name)}`,false))
+        var _1_13_
+    
+        if (!this.invisibles)
+        {
+            return
+        }
+        if (window.stash.get(`invisibles|${((_1_13_=this.currentFile) != null ? _1_13_ : this.name)}`,false))
+        {
+            return this.invisibles.deactivate()
+        }
+        else
+        {
+            return this.invisibles.activate()
+        }
+    },
+    initInvisibles:function ()
     {
-        return this.invisibles.deactivate()
+        var _130_35_
+    
+        return this.invisibles = ((_130_35_=this.invisibles) != null ? _130_35_ : new Invisibles(this))
     }
-    else
-    {
-        return this.invisibles.activate()
-    }
-},initInvisibles:function ()
-{
-    var _130_35_
-
-    return this.invisibles = ((_130_35_=this.invisibles) != null ? _130_35_ : new Invisibles(this))
-}}
+}

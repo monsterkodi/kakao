@@ -407,11 +407,20 @@ class Renderer
     # 00000000  000   000  000         0000000   000   000     000     
     
     export: n ->
+        
+        # log '++++++++ export' n
 
         s = ''
         s += 'export '
         if n.args is arr
-            a = @nodes n.args, ' '
+            # log "[[[[]]]] renderer export array nargs"
+            if n.args[0].object
+                # log '------- n.args[0] object' n.args
+                a = @object n.args[0].object ',\n' true
+            else
+                # log '------- n.args[0] node' n.args
+                a = @node n.args[0]
+            # log "+++++++ renderer export" a
             if a[0] == "{" 
                 s += 'default ' + a
             else 
@@ -1504,10 +1513,14 @@ class Renderer
     # 000   000  000   000  000   000  000       000          000
     #  0000000   0000000     0000000   00000000   0000000     000
 
-    object: p -> 
+    object: p sep=',' tl ->
+     
         nodes = p.keyvals.map (s) => @atom s
-        nodes = nodes.map (n) -> if ':' in n then n else "#{n}:#{n}"        
-        "{#{nodes.join ','}}"
+        nodes = nodes.map (n) -> if ':' in n then n else "#{n}:#{n}"
+        if tl 
+            nodes = nodes.map((n) -> kstr.lines(n).map((l)->'    '+l).join('\n'))
+        newls = tl ? '\n' : ''
+        "{#{newls}#{nodes.join sep}#{newls}}"
 
     # 000   000  00000000  000   000  000   000   0000000   000
     # 000  000   000        000 000   000   000  000   000  000
@@ -1526,7 +1539,7 @@ class Renderer
     # 000        000   000  000   000  000
     # 000        000   000   0000000   000
 
-    prop:   p ->
+    prop: p ->
 
         "#{@node(p.obj)}.#{@node p.prop}"
 
@@ -1536,7 +1549,7 @@ class Renderer
     # 000  000  0000  000   000  000        000 000
     # 000  000   000  0000000    00000000  000   000
 
-    index:  p ->
+    index: p ->
 
         if slice = p.slidx.slice
 

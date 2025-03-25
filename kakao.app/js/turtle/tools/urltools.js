@@ -99,4 +99,9 @@ extractDomain = function (str)
     }
     return undefined
 }
-export default {extractDomain:extractDomain,shortenLink:shortenLink,extractSite:extractSite,containsLink:containsLink}
+export default {
+    extractDomain:extractDomain,
+    shortenLink:shortenLink,
+    extractSite:extractSite,
+    containsLink:containsLink
+}

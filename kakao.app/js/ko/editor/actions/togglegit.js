@@ -3,143 +3,149 @@ var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ?
 import kxk from "../../../kxk.js"
 let reversed = kxk.reversed
 
-export default {actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u'}},toggleGitChange:function (key, info)
-{
-    return this.toggleGitChangesInLines(this.selectedAndCursorLineIndices())
-},toggleGitChangesInLines:function (lineIndices)
-{
-    var cursors, li, lineMeta, metas, offset, oi, untoggled
-
-    metas = []
-    untoggled = false
-    this.do.start()
-    this.do.setCursors([this.mainCursor()])
-    this.do.select([])
-    this.do.end()
-    var list = _k_.list(lineIndices)
-    for (var _a_ = 0; _a_ < list.length; _a_++)
+export default {
+    actions:{toggleGitChange:{name:'Toggle Git Changes at Cursors',combo:'command+u'}},
+    toggleGitChange:function (key, info)
     {
-        li = list[_a_]
-        var list1 = _k_.list(this.meta.metasAtLineIndex(li))
-        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        return this.toggleGitChangesInLines(this.selectedAndCursorLineIndices())
+    },
+    toggleGitChangesInLines:function (lineIndices)
+    {
+        var cursors, li, lineMeta, metas, offset, oi, untoggled
+    
+        metas = []
+        untoggled = false
+        this.do.start()
+        this.do.setCursors([this.mainCursor()])
+        this.do.select([])
+        this.do.end()
+        var list = _k_.list(lineIndices)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
         {
-            lineMeta = list1[_b_]
-            if (lineMeta[2].clss.startsWith('git'))
+            li = list[_a_]
+            var list1 = _k_.list(this.meta.metasAtLineIndex(li))
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                lineMeta = list1[_b_]
+                if (lineMeta[2].clss.startsWith('git'))
+                {
+                    if (!lineMeta[2].toggled)
+                    {
+                        untoggled = true
+                    }
+                    metas.push(lineMeta)
+                }
+            }
+        }
+        var list2 = _k_.list(metas)
+        for (var _c_ = 0; _c_ < list2.length; _c_++)
+        {
+            lineMeta = list2[_c_]
+            oi = lineMeta[0]
+            if (untoggled)
             {
                 if (!lineMeta[2].toggled)
                 {
-                    untoggled = true
+                    this.reverseGitChange(lineMeta)
                 }
-                metas.push(lineMeta)
-            }
-        }
-    }
-    var list2 = _k_.list(metas)
-    for (var _c_ = 0; _c_ < list2.length; _c_++)
-    {
-        lineMeta = list2[_c_]
-        oi = lineMeta[0]
-        if (untoggled)
-        {
-            if (!lineMeta[2].toggled)
-            {
-                this.reverseGitChange(lineMeta)
-            }
-        }
-        else
-        {
-            if (lineMeta[2].toggled)
-            {
-                this.applyGitChange(lineMeta)
             }
             else
             {
-                this.reverseGitChange(lineMeta)
+                if (lineMeta[2].toggled)
+                {
+                    this.applyGitChange(lineMeta)
+                }
+                else
+                {
+                    this.reverseGitChange(lineMeta)
+                }
+            }
+            if (oi !== lineMeta[0])
+            {
+                offset = oi - lineMeta[0]
+                if (offset < 0)
+                {
+                    this.meta.moveLineMeta(lineMeta,offset)
+                }
             }
         }
-        if (oi !== lineMeta[0])
+        cursors = []
+        var list3 = _k_.list(metas)
+        for (var _d_ = 0; _d_ < list3.length; _d_++)
         {
-            offset = oi - lineMeta[0]
-            if (offset < 0)
+            lineMeta = list3[_d_]
+            cursors.push([0,lineMeta[0]])
+            if (!(_k_.in(lineMeta,this.meta.metas)))
             {
-                this.meta.moveLineMeta(lineMeta,offset)
+                this.meta.addLineMeta(lineMeta)
+                this.meta.addDiv(lineMeta)
             }
         }
-    }
-    cursors = []
-    var list3 = _k_.list(metas)
-    for (var _d_ = 0; _d_ < list3.length; _d_++)
+        this.do.start()
+        this.do.setCursors(cursors,{main:'closest'})
+        this.do.select([])
+        return this.do.end()
+    },
+    reverseGitChange:function (lineMeta)
     {
-        lineMeta = list3[_d_]
-        cursors.push([0,lineMeta[0]])
-        if (!(_k_.in(lineMeta,this.meta.metas)))
+        var li, line, meta, _87_16_
+    
+        meta = lineMeta[2]
+        li = lineMeta[0]
+        this.do.start()
+        meta.toggled = true
+        ;(meta.div != null ? meta.div.classList.add('toggled') : undefined)
+        switch (meta.clss)
         {
-            this.meta.addLineMeta(lineMeta)
-            this.meta.addDiv(lineMeta)
-        }
-    }
-    this.do.start()
-    this.do.setCursors(cursors,{main:'closest'})
-    this.do.select([])
-    return this.do.end()
-},reverseGitChange:function (lineMeta)
-{
-    var li, line, meta, _87_16_
-
-    meta = lineMeta[2]
-    li = lineMeta[0]
-    this.do.start()
-    meta.toggled = true
-    ;(meta.div != null ? meta.div.classList.add('toggled') : undefined)
-    switch (meta.clss)
-    {
-        case 'git mod':
-        case 'git mod boring':
-            this.do.change(li,meta.change.old)
-            break
-        case 'git add':
-        case 'git add boring':
-            this.do.delete(li)
-            break
-        case 'git del':
-            var list = _k_.list(reversed(meta.change))
-            for (var _e_ = 0; _e_ < list.length; _e_++)
-            {
-                line = list[_e_]
-                this.do.insert(li,line.old)
-            }
-            break
-    }
-
-    return this.do.end()
-},applyGitChange:function (lineMeta)
-{
-    var li, line, meta, _114_16_
-
-    meta = lineMeta[2]
-    li = lineMeta[0]
-    this.do.start()
-    delete meta.toggled
-    ;(meta.div != null ? meta.div.classList.remove('toggled') : undefined)
-    switch (meta.clss)
-    {
-        case 'git mod':
-        case 'git mod boring':
-            this.do.change(li,meta.change.new)
-            break
-        case 'git add':
-        case 'git add boring':
-            this.do.insert(li,meta.change.new)
-            break
-        case 'git del':
-            var list = _k_.list(reversed(meta.change))
-            for (var _f_ = 0; _f_ < list.length; _f_++)
-            {
-                line = list[_f_]
+            case 'git mod':
+            case 'git mod boring':
+                this.do.change(li,meta.change.old)
+                break
+            case 'git add':
+            case 'git add boring':
                 this.do.delete(li)
-            }
-            break
+                break
+            case 'git del':
+                var list = _k_.list(reversed(meta.change))
+                for (var _e_ = 0; _e_ < list.length; _e_++)
+                {
+                    line = list[_e_]
+                    this.do.insert(li,line.old)
+                }
+                break
+        }
+    
+        return this.do.end()
+    },
+    applyGitChange:function (lineMeta)
+    {
+        var li, line, meta, _114_16_
+    
+        meta = lineMeta[2]
+        li = lineMeta[0]
+        this.do.start()
+        delete meta.toggled
+        ;(meta.div != null ? meta.div.classList.remove('toggled') : undefined)
+        switch (meta.clss)
+        {
+            case 'git mod':
+            case 'git mod boring':
+                this.do.change(li,meta.change.new)
+                break
+            case 'git add':
+            case 'git add boring':
+                this.do.insert(li,meta.change.new)
+                break
+            case 'git del':
+                var list = _k_.list(reversed(meta.change))
+                for (var _f_ = 0; _f_ < list.length; _f_++)
+                {
+                    line = list[_f_]
+                    this.do.delete(li)
+                }
+                break
+        }
+    
+        return this.do.end()
     }
-
-    return this.do.end()
-}}
+}

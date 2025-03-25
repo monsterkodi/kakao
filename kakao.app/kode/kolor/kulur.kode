@@ -649,7 +649,7 @@ urlPunct = ->
                 ⮐  6
 
         if chunk.match == '.'
-            if not prev.clss.startsWith('number') and prev.clss != 'semver' and prev.match not in '\\./' and not /\d+/.test(prev.match)
+            if not prev.clss.startsWith('number') and prev.clss != 'semver' and prev.match not in '\\./' and not /\d+/.test(prev.match) and empty topType
                 if next = getChunk 1
                     if next.start == chunk.start+chunk.length
                         fileext = next.match

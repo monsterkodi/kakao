@@ -122,7 +122,7 @@ class Lexer
     ###
         converts text into a list of token objects
         token object:
-            type: string        # any of the keys in lexer.noon
+            type: string        # any of the keys in Patterns
             text: string        # text of match
             line: number        # line number
             col:  number        # start index in line

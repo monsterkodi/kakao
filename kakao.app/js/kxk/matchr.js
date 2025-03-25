@@ -310,4 +310,10 @@ merge = function (dssA, dssB)
     }
     return result
 }
-export default {config:config,ranges:ranges,dissect:dissect,sortRanges:sortRanges,merge:merge}
+export default {
+    config:config,
+    ranges:ranges,
+    dissect:dissect,
+    sortRanges:sortRanges,
+    merge:merge
+}

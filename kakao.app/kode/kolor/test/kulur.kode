@@ -379,6 +379,26 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         inc rgs 0 "/"          ▸ 'punct comment'
         inc rgs 1 "/"          ▸ 'punct comment'
         inc rgs 2 "#"          ▸ 'comment'
+        
+    #       ███   ███████   ███████   ███   ███
+    #       ███  ███       ███   ███  ████  ███
+    #       ███  ███████   ███   ███  ███ █ ███
+    # ███   ███       ███  ███   ███  ███  ████
+    #  ███████   ███████    ███████   ███   ███
+
+    ▸ json
+    
+        lang 'json'
+        
+        dss = dissect """
+            {
+              "key": [
+                "func.call"
+              ]
+            }
+            """
+            
+        inc dss[2] 5 'func'   ▸ 'string double'
                               
     # 000000000  000   000  000000000  
     #    000      000 000      000     

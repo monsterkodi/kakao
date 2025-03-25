@@ -128,4 +128,10 @@ decryptFile = async function (file, key)
         console.error("no such file:",file)
     }
 }
-export default {encrypt:encrypt,decrypt:decrypt,encryptFile:encryptFile,decryptFile:decryptFile,genHash:genHash}
+export default {
+    encrypt:encrypt,
+    decrypt:decrypt,
+    encryptFile:encryptFile,
+    decryptFile:decryptFile,
+    genHash:genHash
+}
