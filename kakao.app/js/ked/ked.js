@@ -336,7 +336,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, gitDir, segls, start, text, _338_22_
+        var absFile, colors, exists, gitDir, segls, start, text, _339_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -379,16 +379,19 @@ ked [file]
         {
             this.editor.state.syntax.setExt(slash.ext(this.currentFile))
         }
+        this.editor.setCurrentFile(this.currentFile)
         this.editor.state.loadSegls(segls)
         this.status.time = process.hrtime(start)[1]
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         ked_session.set("editor▸file",this.currentFile)
         mode.fileLoaded(this.editor.state,this.currentFile,row,col,view)
+        console.log('file.loaded')
         post.emit('file.loaded',this.currentFile)
         this.showEditor()
         this.redraw()
         this.indexer.index(this.currentFile)
         prjcts.index(this.currentFile)
+        git.diff(this.currentFile)
         watcher.watch(this.currentFile)
         this.t.setTitle(slash.name(this.status.file))
         this.saveSessionFile(this.currentFile,'loaded')
@@ -602,7 +605,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _505_22_
+        var mcw, _507_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

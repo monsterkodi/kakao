@@ -11,7 +11,6 @@
 use ../../../kxk    ▪ post
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ theme 
-use ../../util      ◆ git
 use                 ◆ inputchoice
 
 function macro extends inputchoice

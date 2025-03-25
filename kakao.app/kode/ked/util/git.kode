@@ -8,6 +8,7 @@
 
 use ../../kxk ▪ slash post kermit
 use ../../kxk ◆ nfs
+use           ◆ watcher
 
 use child_process
 
@@ -26,8 +27,6 @@ function git
     onProjectIndexed: prjPath ○=>
         
         gitDir =○ git.dir prjPath
-        
-        # log "git.onProjectIndexed #{prjPath} #{gitDir}"
         
         if valid gitDir and gitDir not in @gitDirs
             @gitDirs.push slash.path(gitDir '.git')
@@ -83,7 +82,7 @@ function git
     # 0000000      000     000   000     000      0000000   0000000   
     ###
         checks for changes in the git repository at path
-        posts 'git.status' for modifications in subtree below path
+        posts 'git.status' with modified files in repository
     ###
     @status: path ○->
         
@@ -131,7 +130,6 @@ function git
             for file in status[key]
                 status.files[file] = key
         
-        # log 'git.status post' status
         post.emit 'git.status' status
         @statusCache[gitDir] = status
                 
@@ -143,10 +141,13 @@ function git
     # 000   000  000  000       000       
     # 0000000    000  000       000       
     
+    # parses the output of git diff for file
+    # posts 'git.diff'
+    
     @diff: file ○->
         
         gitDir =○ git.dir file
-        
+        ○ watcher.snapshot file # this prevents unwanted file change events under node when diffing
         diff   =○ git.exec "--no-pager diff --no-color -U0 --ignore-blank-lines #{file}" cwd:gitDir 
         
         status = file:file changes:[]
@@ -192,6 +193,7 @@ function git
     
                 status.changes.push change
     
+        post.emit 'git.diff' status 
         status
         
     # 00000000    0000000   000000000   0000000  000   000  

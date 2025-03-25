@@ -9,8 +9,6 @@ import belt from "../../edit/tool/belt.js"
 
 import theme from "../../theme/theme.js"
 
-import git from "../../util/git.js"
-
 import inputchoice from "./inputchoice.js"
 
 

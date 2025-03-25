@@ -69,6 +69,21 @@ function differ extends searcher
         @sfils = []
         redraw:true
         
+    # ████████  ███  ███      ████████
+    # ███       ███  ███      ███     
+    # ██████    ███  ███      ███████ 
+    # ███       ███  ███      ███     
+    # ███       ███  ███████  ████████
+
+    file: ○=>
+    
+        currentFile = ked_session.get 'editor▸file'
+        diff =○ git.diff currentFile
+                       
+        if valid diff
+            @show()
+            @diff diff
+        
     # ███████    ███  ████████  ████████
     # ███   ███  ███  ███       ███     
     # ███   ███  ███  ██████    ██████  
@@ -194,22 +209,7 @@ function differ extends searcher
                     log 'hidden?'
                 
                 @diff diff if valid diff
-            
-    # ████████  ███  ███      ████████
-    # ███       ███  ███      ███     
-    # ██████    ███  ███      ███████ 
-    # ███       ███  ███      ███     
-    # ███       ███  ███████  ████████
-
-    file: ○=>
-    
-        currentFile = ked_session.get 'editor▸file'
-        diff =○ git.diff currentFile
-                       
-        if valid diff
-            @show()
-            @diff diff
-            
+                        
     # ███   ███  ███   ███████  █████████   ███████   ████████   ███   ███
     # ███   ███  ███  ███          ███     ███   ███  ███   ███   ███ ███ 
     # █████████  ███  ███████      ███     ███   ███  ███████      █████  

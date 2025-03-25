@@ -44,6 +44,23 @@ function fileeditor extends editor
         post.on 'goto.line'        @onGotoLine
         post.on 'goto.bof'         @onGotoBof
         post.on 'goto.eof'         @onGotoEof
+        post.on 'git.diff'         @onGitDiff
+        
+    setCurrentFile: @currentFile =>
+        
+        @gutter.gitChanges = {}
+        
+    #  ███████   ███  █████████     ███████    ███  ████████  ████████
+    # ███        ███     ███        ███   ███  ███  ███       ███     
+    # ███  ████  ███     ███        ███   ███  ███  ██████    ██████  
+    # ███   ███  ███     ███        ███   ███  ███  ███       ███     
+    #  ███████   ███     ███        ███████    ███  ███       ███     
+
+    onGitDiff: diff =>
+    
+        currentFile = ked_session.get 'editor▸file'
+        if diff.file == currentFile
+            @gutter.onGitDiff diff
 
     ###        
      ███████    ███████   █████████   ███████         ███      ███  ███   ███  ████████  

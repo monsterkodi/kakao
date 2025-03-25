@@ -40,6 +40,8 @@ fileeditor = (function ()
         this["onGotoEof"] = this["onGotoEof"].bind(this)
         this["onGotoBof"] = this["onGotoBof"].bind(this)
         this["onGotoLine"] = this["onGotoLine"].bind(this)
+        this["onGitDiff"] = this["onGitDiff"].bind(this)
+        this["setCurrentFile"] = this["setCurrentFile"].bind(this)
         features = ['scroll','gutter','mapscr','complete','filepos','replex','brckts','unype','salter','vimple','uniko']
         fileeditor.__super__.constructor.call(this,screen,name,features)
         if (this.feats.mapscr)
@@ -51,6 +53,25 @@ fileeditor = (function ()
         post.on('goto.line',this.onGotoLine)
         post.on('goto.bof',this.onGotoBof)
         post.on('goto.eof',this.onGotoEof)
+        post.on('git.diff',this.onGitDiff)
+    }
+
+    fileeditor.prototype["setCurrentFile"] = function (currentFile)
+    {
+        this.currentFile = currentFile
+    
+        return this.gutter.gitChanges = {}
+    }
+
+    fileeditor.prototype["onGitDiff"] = function (diff)
+    {
+        var currentFile
+
+        currentFile = ked_session.get('editor▸file')
+        if (diff.file === currentFile)
+        {
+            return this.gutter.onGitDiff(diff)
+        }
     }
 
     fileeditor.prototype["onGotoLine"] = function (row, col, view)
@@ -168,11 +189,11 @@ fileeditor = (function ()
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _150_50_, _156_50_, _165_50_
+        var counter, currentFile, currext, ext, file, _167_50_, _173_50_, _182_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_150_50_=fileutil.counterparts[currext]) != null ? _150_50_ : [])
+        var list = ((_167_50_=fileutil.counterparts[currext]) != null ? _167_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -182,7 +203,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_156_50_=fileutil.counterparts[currext]) != null ? _156_50_ : [])
+        var list1 = ((_173_50_=fileutil.counterparts[currext]) != null ? _173_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -194,7 +215,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list2 = ((_165_50_=fileutil.counterparts[currext]) != null ? _165_50_ : [])
+        var list2 = ((_182_50_=fileutil.counterparts[currext]) != null ? _182_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -223,7 +244,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _224_41_, _282_31_
+        var col, ret, row, start, word, x, y, _241_41_, _299_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

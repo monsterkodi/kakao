@@ -330,7 +330,8 @@ function KED
             @editor.state.syntax.setColors colors
         else
             @editor.state.syntax.setExt slash.ext(@currentFile)
-            
+        
+        @editor.setCurrentFile @currentFile     
         @editor.state.loadSegls segls
         
         @status.time = process.hrtime(start)[1]
@@ -341,6 +342,7 @@ function KED
         
         mode.fileLoaded @editor.state @currentFile row col view
         
+        log 'file.loaded'
         post.emit 'file.loaded' @currentFile
         
         @showEditor()
@@ -348,6 +350,7 @@ function KED
         
         @indexer.index @currentFile
         prjcts.index   @currentFile
+        git.diff       @currentFile
         
         watcher.watch  @currentFile
                 
@@ -469,7 +472,6 @@ function KED
             "cmd+\\" "ctrl+\\"           ➜ ⮐  post.emit 'dircol.toggle'
             
         for handler in @keyHandlers
-            # log "#{handler.name}"
             # ●▸ on key
             continue if handler.hidden()
             break if result = handler.onKey key event

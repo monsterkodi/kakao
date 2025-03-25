@@ -19,14 +19,25 @@ watcher = (function ()
 
     watcher["watchers"] = {}
     watcher["renameTimer"] = {}
+    watcher["fileStats"] = {}
+    watcher["snapshot"] = async function (file)
+    {
+        var stat
+
+        if (stat = await nfs.fileExists(file))
+        {
+            return this.fileStats[file] = stat
+        }
+    }
+
     watcher["watch"] = async function (path, opt)
     {
-        var dir, isDir, item, items, prjPath, w, _27_22_
+        var dir, isDir, item, items, prjPath, w, _40_22_
 
         path = slash.untilde(path)
         isDir = await nfs.isDir(path)
         opt = (opt != null ? opt : {})
-        opt.recursive = ((_27_22_=opt.recursive) != null ? _27_22_ : true)
+        opt.recursive = ((_40_22_=opt.recursive) != null ? _40_22_ : true)
         if (isDir)
         {
             dir = path
@@ -129,6 +140,16 @@ watcher = (function ()
                         }).bind(this)
                     }).bind(this))(path),100)
                     return
+                }
+            }
+            if (change === 'change')
+            {
+                if ((this.fileStats[path] != null))
+                {
+                    if (this.fileStats[path].size === exists.size && this.fileStats[path].mtimeMs === exists.mtimeMs)
+                    {
+                        return
+                    }
                 }
             }
             return post.emit('file.change',{path:path,change:change,watcher:this})

@@ -9,6 +9,8 @@ let kermit = kxk.kermit
 
 import nfs from "../../kxk/nfs.js"
 
+import watcher from "./watcher.js"
+
 import child_process from "child_process"
 
 
@@ -159,9 +161,10 @@ git = (function ()
 
     git["diff"] = async function (file)
     {
-        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _161_55_, _162_48_
+        var after, afterSplit, before, change, diff, gitDir, i, line, lines, newLines, numNew, numOld, oldLines, status, x, _162_55_, _163_48_
 
         gitDir = await git.dir(file)
+        await watcher.snapshot(file)
         diff = await git.exec(`--no-pager diff --no-color -U0 --ignore-blank-lines ${file}`,{cwd:gitDir})
         status = {file:file,changes:[]}
         lines = diff.split('\n')
@@ -172,8 +175,8 @@ git = (function ()
                 var _a_ = line.split(' '); x = _a_[0]; before = _a_[1]; after = _a_[2]
 
                 afterSplit = after.split(',')
-                numOld = parseInt(((_161_55_=before.split(',')[1]) != null ? _161_55_ : 1))
-                numNew = parseInt(((_162_48_=afterSplit[1]) != null ? _162_48_ : 1))
+                numOld = parseInt(((_162_55_=before.split(',')[1]) != null ? _162_55_ : 1))
+                numNew = parseInt(((_163_48_=afterSplit[1]) != null ? _163_48_ : 1))
                 change = {line:parseInt(afterSplit[0])}
                 oldLines = []
                 for (var _b_ = i = 0, _c_ = numOld; (_b_ <= _c_ ? i < numOld : i > numOld); (_b_ <= _c_ ? ++i : --i))
@@ -228,6 +231,7 @@ git = (function ()
                 status.changes.push(change)
             }
         }
+        post.emit('git.diff',status)
         return status
     }
 

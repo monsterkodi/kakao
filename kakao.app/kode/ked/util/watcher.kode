@@ -16,6 +16,19 @@ function watcher
 
     @watchers: {}
     @renameTimer: {}
+    
+    @fileStats: {}
+    
+    #  0000000  000   000   0000000   00000000    0000000  000   000   0000000   000000000  
+    # 000       0000  000  000   000  000   000  000       000   000  000   000     000     
+    # 0000000   000 0 000  000000000  00000000   0000000   000000000  000   000     000     
+    #      000  000  0000  000   000  000             000  000   000  000   000     000     
+    # 0000000   000   000  000   000  000        0000000   000   000   0000000      000     
+    
+    @snapshot: file ○->
+    
+        if stat =○ nfs.fileExists file
+            @fileStats[file] = stat
 
     @watch: path opt ○->
         
@@ -70,7 +83,7 @@ function watcher
     @onChange: change path dir ○=>
         
         path = slash.path dir path
-        # log "watcher.onChange #{path}"
+
         exists =○ nfs.exists path
         
         if exists
@@ -81,13 +94,19 @@ function watcher
                     delete @renameTimer[path]
                 else
                     @renameTimer[path] = setTimeout ((p) => => @postRename p)(path) 100
-                    ⮐
+                    ⮐ 
+                    
+            if change == 'change'      # workaround for a node quirk: when a file is read, 
+                if @fileStats[path]?   # node reports a change because the atimeMs changes :(
+                    if @fileStats[path].size == exists.size and @fileStats[path].mtimeMs == exists.mtimeMs
+                        ⮐  # assume the file didn't change when the size and modification time is unchanged
+
             post.emit 'file.change' path:path change:change   watcher:@
         else
             post.emit 'file.change' path:path change:'remove' watcher:@
             
     @postRename: path =>
-        # log "postRename #{path}"
+
         clearTimeout @renameTimer[path]
         delete @renameTimer[path]
         post.emit 'file.change' path:path change:'rename' watcher:@
