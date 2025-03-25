@@ -46,7 +46,6 @@ import dircol from "./view/colmns/dircol.js"
 import funcol from "./view/colmns/funcol.js"
 import quicky from "./view/colmns/quicky.js"
 
-global.int = parseInt
 
 KED = (function ()
 {
@@ -232,7 +231,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _199_10_
+        var _197_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -263,7 +262,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _224_22_
+        var _222_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -337,7 +336,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, gitDir, segls, start, text, _340_22_
+        var absFile, colors, exists, gitDir, segls, start, text, _338_22_
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -603,7 +602,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _507_22_
+        var mcw, _505_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

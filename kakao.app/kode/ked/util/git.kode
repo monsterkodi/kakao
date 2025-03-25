@@ -177,7 +177,7 @@ function git
     
                 if numOld and numNew
                     change.mod = []
-                    for i in 0...Math.min(numOld, numNew)
+                    for i in 0...min(numOld, numNew)
                         change.mod.push old:change.old[i] new:change.new[i]
     
                 if numOld > numNew

@@ -77,6 +77,9 @@ Patterns =
         "clamp"
         "int"
         "float"
+        "floor"
+        "ceil"
+        "round"
         "first"
         "last"
         "lpad"
@@ -87,6 +90,7 @@ Patterns =
         "use"
         "min"
         "max"
+        "abs"
     ]
     "var": "[▸a-zA-Z_$][a-zA-Z0-9_$]*"
     

@@ -40,8 +40,8 @@ _getBPP = out ->
 _filterZero = data out off w h ->
 
     bpp = _getBPP(out) 
-    bpl = Math.ceil(w*bpp/8)
-    bpp = Math.ceil(bpp/8)
+    bpl = ceil(w*bpp/8)
+    bpp = ceil(bpp/8)
     
     type = data[off]
     x = 0
@@ -84,8 +84,8 @@ _paeth = a b c ->
 
 _copyTile = sb sw sh tb tw th xoff yoff mode ->
 
-    w = Math.min sw tw
-    h = Math.min sh th
+    w = min sw tw
+    h = min sh th
     si=ti=0
     for y in 0...h
         for x in 0...w
@@ -150,7 +150,7 @@ addErr = er tg ti f ->
     tg[ti+2] += (er[2]*f) >> 4  
     tg[ti+3] += (er[3]*f) >> 4
 
-N = x   ->  Math.max(0 Math.min(255 x))
+N = x   ->  max(0 min(255 x))
 D = a b ->  
     dr = a[0] - b[0] 
     dg = a[1] - b[1] 
@@ -473,7 +473,7 @@ compress = bufs w h ps dith ->
             cc<= 4 ➜ depth=2
             cc<=16 ➜ depth=4
                    ➜ depth=8
-        depth = Math.max depth 0
+        depth = max depth 0
     
     for j in 0...frms.length
 
@@ -487,7 +487,7 @@ compress = bufs w h ps dith ->
         bpl = 4*nw
         bpp = 4
         if cc<=256 and forbidPlte==false
-            bpl = Math.ceil(depth*nw/8)
+            bpl = ceil(depth*nw/8)
             nimg = new Uint8Array(bpl*nh)
             inj = inds[j]
             for y in 0...nh
@@ -596,10 +596,10 @@ framize = bufs w h alwaysBlend evenCrd forbidPrev ->
             if frm.blend == 1 ➜ continue
             r0 = frm.rect 
             r1 = frms[j-1].rect
-            miX = Math.min(r0.x r1.x) 
-            miY = Math.min(r0.y r1.y)
-            maX = Math.max(r0.x+r0.width r1.x+r1.width) 
-            maY = Math.max(r0.y+r0.height r1.y+r1.height)
+            miX = min(r0.x r1.x) 
+            miY = min(r0.y r1.y)
+            maX = max(r0.x+r0.width r1.x+r1.width) 
+            maY = max(r0.y+r0.height r1.y+r1.height)
             r = x:miX y:miY width:maX-miX height:maY-miY
             
             frms[j-1].dispose = 1
@@ -806,7 +806,7 @@ updatePalette = sb inds plte ->
         i+=4
 
     for i in 0...plte.length 
-        plte[i] = Math.round sums[i]/cnts[i>>>2]
+        plte[i] = round sums[i]/cnts[i>>>2]
 
 findNearest = sb inds plte ->
 
@@ -1033,7 +1033,7 @@ estats = stats ->
             b = M.multVec(A b)
             tmi = Math.sqrt(M.dot(b b))
             b = M.sml(1/tmi b)
-            break if i!=0 and Math.abs(tmi-mi) < 1e-9
+            break if i!=0 and abs(tmi-mi) < 1e-9
             mi = tmi
     q = [m0*iN m1*iN m2*iN m3*iN]
     eMq255 = M.dot(M.sml(255 q) b)
@@ -1044,7 +1044,7 @@ estats = stats ->
     L:      mi  
     eMq255: eMq255 
     eMq :   M.dot(b q)
-    rgba:   (((Math.round(255*q[3])<<24) | (Math.round(255*q[2])<<16) | (Math.round(255*q[1])<<8) | (Math.round(255*q[0])<<0))>>>0)
+    rgba:   (((round(255*q[3])<<24) | (round(255*q[2])<<16) | (round(255*q[1])<<8) | (round(255*q[0])<<0))>>>0)
 
 M4 = 
     multVec: m v -> [

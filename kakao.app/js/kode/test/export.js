@@ -11,6 +11,7 @@ toExport["export"] = function ()
     k:1,
     $:2
 }`)
+    compare(kc(`export    k: 1    $: 2`),`export default {k:1,$:2};`)
     compare(kc(`export
     elem: elem
     $: (a) -> log a`),`export default {
@@ -22,6 +23,7 @@ toExport["export"] = function ()
 }`)
     compare(kc('export single'),'export default single;')
     compare(kc('d = { export:1 }'),'d = {export:1}')
+    compare(kc('d = export:2'),'d = {export:2}')
 }
 toExport["export"]._section_ = true
 toExport._test_ = true

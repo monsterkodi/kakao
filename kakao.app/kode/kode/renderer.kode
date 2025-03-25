@@ -814,10 +814,15 @@ class Renderer
                 ⮐ "_k_.#{callee}(#{@nodes p.args, ','})"
                 
             switch callee
-                
-                'new' 'throw' ➜ "#{callee} #{@nodes p.args, ','}"
-                'int'         ➜ "parseInt(#{@nodes p.args, ','})"
-                'float'       ➜ "parseFloat(#{@nodes p.args, ','})"
+                'throw'
+                'new'    ➜ "#{callee} #{@nodes p.args, ','}"
+                'int'    ➜ "parseInt(#{@nodes p.args, ','})"
+                'float'  ➜ "parseFloat(#{@nodes p.args, ','})"
+                'floor'  ➜ "Math.floor(#{@node p.args[0]})"
+                'ceil'   ➜ "Math.ceil(#{@node p.args[0]})"
+                'round'  ➜ "Math.round(#{@node p.args[0]})"
+                'abs'    ➜ "Math.abs(#{@node p.args[0]})"
+                'random' ➜ "Math.random(#{@node p.args[0]})"
                     
                 'super' ➜ @super p
                     

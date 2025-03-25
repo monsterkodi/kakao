@@ -12,8 +12,6 @@ use ../../../kxk ▪ post
 use ../../theme  ◆ theme
 use              ◆ mapview
 
-{floor, pow} = Math
-
 function mapscr extends mapview
 
     @: screen state ->

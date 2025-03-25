@@ -1,3 +1,5 @@
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
+
 var addErr, compress, compressPNG, concatRGBA, crcLib, D, dist, dither, encode, estats, findNearest, framize, getKDtree, getNearest, kmeans, M4, N, planeDst, quantize, remap, splitPixels, stats, updatePalette, vecDot, _bin, _copyTile, _filterLine, _filterZero, _getBPP, _main, _paeth, _prepareDiff, _updateFrame
 
 import zlib from "zlib"
@@ -141,8 +143,8 @@ _copyTile = function (sb, sw, sh, tb, tw, th, xoff, yoff, mode)
 {
     var ba, bb, bg, br, fa, fb, fg, fr, h, ifa, ioa, oa, si, ti, w, x, y
 
-    w = Math.min(sw,tw)
-    h = Math.min(sh,th)
+    w = _k_.min(sw,tw)
+    h = _k_.min(sh,th)
     si = ti = 0
     for (var _10_ = y = 0, _11_ = h; (_10_ <= _11_ ? y < h : y > h); (_10_ <= _11_ ? ++y : --y))
     {
@@ -277,7 +279,7 @@ addErr = function (er, tg, ti, f)
 
 N = function (x)
 {
-    return Math.max(0,Math.min(255,x))
+    return _k_.max(0,_k_.min(255,x))
 }
 
 D = function (a, b)
@@ -741,7 +743,7 @@ compress = function (bufs, w, h, ps, dith)
         {
             depth = 8
         }
-        depth = Math.max(depth,0)
+        depth = _k_.max(depth,0)
     }
     for (var _3c_ = j = 0, _3d_ = frms.length; (_3c_ <= _3d_ ? j < frms.length : j > frms.length); (_3c_ <= _3d_ ? ++j : --j))
     {
@@ -932,10 +934,10 @@ framize = function (bufs, w, h, alwaysBlend, evenCrd, forbidPrev)
             }
             r0 = frm.rect
             r1 = frms[j - 1].rect
-            miX = Math.min(r0.x,r1.x)
-            miY = Math.min(r0.y,r1.y)
-            maX = Math.max(r0.x + r0.width,r1.x + r1.width)
-            maY = Math.max(r0.y + r0.height,r1.y + r1.height)
+            miX = _k_.min(r0.x,r1.x)
+            miY = _k_.min(r0.y,r1.y)
+            maX = _k_.max(r0.x + r0.width,r1.x + r1.width)
+            maY = _k_.max(r0.y + r0.height,r1.y + r1.height)
             r = {x:miX,y:miY,width:maX - miX,height:maY - miY}
             frms[j - 1].dispose = 1
             if (j - 1 !== 0)

@@ -15,8 +15,6 @@ use ../../util   ◆ prof syntax
 use ../../theme  ◆ color theme
 use ../base      ◆ view
 
-{floor, pow} = Math
-
 function mapview extends view
 
     @: screen @state ->

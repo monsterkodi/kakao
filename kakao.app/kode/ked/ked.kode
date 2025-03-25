@@ -21,8 +21,6 @@ use ./view/screen ◆ screen ttio
 use ./view/menu   ◆ context menu macro finder searcher differ 
 use ./view/colmns ◆ browse dircol funcol quicky
 
-global.int = parseInt # this should go into kode instead
-
 function KED
 
     @: ->

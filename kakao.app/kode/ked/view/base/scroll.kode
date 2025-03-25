@@ -13,7 +13,7 @@ use ../../../kxk ▪ post
 use ../../theme  ◆ theme
 use              ◆ view
 
-{floor, pow} = Math
+{pow} = Math
 
 function scroll extends view
 
