@@ -36,6 +36,8 @@ function dirtree extends choices
     # ███   ███  ███     ███                ███     ███     ███   ███     ███     ███   ███       ███
     #  ███████   ███     ███           ███████      ███     ███   ███     ███      ███████   ███████ 
 
+    tilde: item -> item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+
     onGitStatus: status =>
     
         # todo: handle added files
@@ -53,8 +55,7 @@ function dirtree extends choices
                     for file of status.files
                         if file.startsWith item.path
                             item.modified = true
-                            depth = item.depth ? 0
-                            item.tilde = lpad(depth*2+1) + diritem.symbolName(item)
+                            @tilde item
                             redraw = true
                             foundChange = true
                             break
@@ -62,25 +63,24 @@ function dirtree extends choices
                 if item.modified and not foundChange
                 
                     delete item.modified
-                    depth = item.depth ? 0
-                    item.tilde = lpad(depth*2+1) + diritem.symbolName(item)
+                    @tilde item
                     redraw = true
                             
             else # if item.type == 'file'
         
                 if item.path in status.changed 
                     item.modified = true
-                    item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                    @tilde item                    
                     redraw = true
                     
                 if item.path in status.added
                     item.added = true
-                    item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                    @tilde item
                     redraw = true
                     
                 if item.modified and item.path not in status.changed
                     delete item.modified
-                    item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+                    @tilde item
                     redraw = true
                 
         if redraw
@@ -127,7 +127,8 @@ function dirtree extends choices
         ⮐  if empty items
         
         for item in items
-            item.tilde = ' ' + diritem.symbolName(item)
+            item.depth = 0
+            @tilde item
 
         items.sort (a b) => @weight(a) - @weight(b)
         
@@ -273,10 +274,10 @@ function dirtree extends choices
             
         state = ked_session.get @name {}
         
-        depth = (dirItem.depth ? 0) + 1
+        depth = dirItem.depth + 1
         for item in items
             item.depth = depth
-            item.tilde = lpad(1+depth*2) + diritem.symbolName(item)
+            @tilde item
             if item.type == 'dir' and state.open?[item.path]
                 if empty opt.select and empty opt.index
                     opt.select = dirItem

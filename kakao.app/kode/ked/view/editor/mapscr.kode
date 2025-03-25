@@ -152,8 +152,7 @@ function mapscr extends mapview
         yr = int((y - yc) * t.cellsz[1])
         
         h  = int @state.cells.rows*@pixelsPerRow
-        w  = 12*t.cellsz[0]
-        
+        w  = @cells.cols*t.cellsz[0]
         t.placeImageOverlay @knobId @cells.x @cells.y+yc 0 yr w h
         
 export mapscr

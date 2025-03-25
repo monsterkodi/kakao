@@ -20,9 +20,15 @@
 #### todo
 ##### todo
 
+- auto open dirtree folder for current file
 - index required files
 - git changes in gutter
 - unsaved changes 'tabs'
+- add results from indexer to completion
+- fix completion highlight color
+- nicer rounded frames with kitty images
+- selections, cursors and highlights in mapscroll
+- highlight line changes in differ
 
 - macro
     - class
@@ -46,16 +52,13 @@
 - funclist
     - autohighlight function at main cursor
         - use that information to jump to correct counterpart positions!
-    - swap with mapscr when the fileeditor hasn't many columns?
     - searchable?
     - should list md headings
-    - should list c cpp mm and js functions
 
 - salter mode
     - fix delete and other issues
 
 - dirtree
-    - git status
     - searchable?
     - set hover highlight to editor file when loosing focus
 
@@ -68,7 +71,7 @@
     - click in mapview to jump to line
     
 - status
-    - move dirty and redo into statusfile 
+    - move dirty and redo into statusfile? 
     - relative crumbs when dirtree is open?
     - add number of lines in editor file
 
@@ -84,6 +87,9 @@
         - shift+ctrl+left|right|up|down rectangular selection
     - more tests
 
+- when a hex triplet or sixlet is selected (or cursor is in one)
+     - add 'colorpicker' item to the context menu
+
 - unicode mode
     - quicky
         - ~w+ julia search
@@ -96,7 +102,6 @@
     - handle new kitty font size protocol?
 
 - mapscroll 
-    - make scrollbar handle not jump and unblurred
     - update on line changes
     - fix scrolling to bottom for long files
     - show cursors and selections

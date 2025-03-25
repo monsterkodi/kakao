@@ -150,7 +150,7 @@ mapscr = (function ()
         yc = parseInt(y)
         yr = parseInt((y - yc) * t.cellsz[1])
         h = parseInt(this.state.cells.rows * this.pixelsPerRow)
-        w = 12 * t.cellsz[0]
+        w = this.cells.cols * t.cellsz[0]
         return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,0,yr,w,h)
     }
 
