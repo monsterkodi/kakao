@@ -22,16 +22,16 @@
 
 - auto open dirtree folder for current file
 - index required files
-- git changes in gutter
+- git changes in fileeditor scroll
 - unsaved changes 'tabs'
 - add results from indexer to completion
 - fix completion highlight color
 - nicer rounded frames with kitty images
 - selections, cursors and highlights in mapscroll
 - highlight line changes in differ
+- add mapscroll to differ status
 
 - macro
-    - class
     - set prefs
     - unicode palette
         
@@ -135,7 +135,7 @@
         
     - help 
         - interactive-keyboard-shortcuts
-        - multicursor tutorial game?
+        - multicursor tutorial|game?
     
 ### todo  
 

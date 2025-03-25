@@ -53,7 +53,7 @@ editor = (function ()
         }
         if (this.feats.gutter)
         {
-            this.gutter = new gutter(this.screen,this.state)
+            this.gutter = new gutter(this)
         }
         if (this.feats.complete)
         {
@@ -126,8 +126,13 @@ editor = (function ()
     {
         editor.__super__.onMouse.call(this,event)
     
-        var ret, _100_21_, _101_23_, _99_21_
+        var ret, _100_21_, _101_21_, _102_23_, _99_21_
 
+        ret = (this.gutter != null ? this.gutter.onMouse(event) : undefined)
+        if ((ret != null ? ret.redraw : undefined))
+        {
+            return ret
+        }
         ret = (this.mapscr != null ? this.mapscr.onMouse(event) : undefined)
         if ((ret != null ? ret.redraw : undefined))
         {
@@ -148,7 +153,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _116_25_, _117_25_, _118_25_, _122_20_
+        var inside, res, _117_25_, _118_25_, _119_25_, _123_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -224,7 +229,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _189_20_, _193_21_, _198_21_
+        var _190_20_, _194_21_, _199_21_
 
         if (!this.hasFocus())
         {

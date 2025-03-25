@@ -66,14 +66,17 @@ finder = (function ()
         return _k_.lpad(pad + 1)
     }
 
+    finder.prototype["arrangeRect"] = function ()
+    {
+        return [parseInt(this.screen.cols / 8),parseInt(this.screen.rows / 8),parseInt(this.screen.cols * 3 / 4),parseInt(this.screen.rows * 3 / 4 - 4)]
+    }
+
     finder.prototype["arrange"] = function ()
     {
         var cs, h, w, x, y
 
-        x = parseInt(this.screen.cols / 8)
-        y = parseInt(this.screen.rows / 8)
-        w = parseInt(this.screen.cols * 3 / 4)
-        h = parseInt(this.screen.rows * 3 / 4 - 4)
+        var _a_ = this.arrangeRect(); x = _a_[0]; y = _a_[1]; w = _a_[2]; h = _a_[3]
+
         cs = _k_.min(h,this.choices.numFiltered())
         this.input.layout(x + 2,y + 1,w - 4,1)
         this.choices.layout(x + 1,y + 3,w - 3,cs)
@@ -82,7 +85,7 @@ finder = (function ()
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _113_87_
+        var cursorLine, front, span, _119_87_
 
         if (_k_.empty(text))
         {
@@ -111,10 +114,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_113_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_119_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _113_87_ : 0))
+            })) != null ? _119_87_ : 0))
         }
         else
         {

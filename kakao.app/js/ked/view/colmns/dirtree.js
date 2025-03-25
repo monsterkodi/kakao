@@ -506,9 +506,10 @@ dirtree = (function ()
 
     dirtree.prototype["indexOfOpenFile"] = function ()
     {
-        var idx, item, _426_45_
+        var currentFile, idx, item
 
-        if (!(global.ked_editor_file != null))
+        currentFile = ked_session.get('editor▸file')
+        if (_k_.empty(currentFile))
         {
             return
         }
@@ -516,7 +517,7 @@ dirtree = (function ()
         for (idx = 0; idx < list.length; idx++)
         {
             item = list[idx]
-            if (item.path === ked_editor_file)
+            if (item.path === currentFile)
             {
                 return idx
             }

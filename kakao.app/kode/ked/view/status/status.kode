@@ -67,7 +67,7 @@ function status extends view
 
         super event
         
-        [col row] = @cells.posForEvent event
+        [col row] = @eventPos event
         
         post.emit 'pointer' @pointerType if @hover
         

@@ -1,11 +1,15 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, lpad: function (l,s='',c=' ') {s=String(s); while(s.length<l){s=c+s} return s}}
 
 var gutter
 
 import kxk from "../../../kxk.js"
 let post = kxk.post
+let kseg = kxk.kseg
+
+import kulur from "../../../kolor/kulur.js"
 
 import prof from "../../util/prof.js"
+import syntax from "../../util/syntax.js"
 
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
@@ -16,17 +20,19 @@ import view from "../base/view.js"
 gutter = (function ()
 {
     _k_.extend(gutter, view)
-    function gutter (screen, state)
+    function gutter (editor)
     {
-        this.state = state
+        this.editor = editor
     
-        gutter.__super__.constructor.call(this,screen,this.state.owner() + '.gutter')
-    
+        this["onMouse"] = this["onMouse"].bind(this)
+        this.state = this.editor.state
+        gutter.__super__.constructor.call(this,this.editor.screen,this.state.owner() + '.gutter')
         this.setColor('fg',theme.gutter.fg)
         this.setColor('bg',theme.gutter.bg)
         this.setColor('bg_selected',theme.gutter.bg_selected)
         this.setColor('bg_fully_selected',theme.gutter.bg_fully_selected)
         this.setColor('bg_git_mod',theme.gutter.bg_git_mod)
+        this.setColor('bg_git_add',theme.gutter.bg_git_add)
         this.setColor('bg_git_del',theme.gutter.bg_git_del)
         this.setColor('cursor_main',theme.cursor.main)
         this.setColor('cursor_multi',theme.cursor.multi)
@@ -34,6 +40,67 @@ gutter = (function ()
         this.setColor('selection_line',theme.selection.line)
         this.setColor('highlight',theme.highlight.bg)
         this.gitChanges = {}
+    }
+
+    gutter.prototype["onMouse"] = function (event)
+    {
+        var idx, pos
+
+        if (this.cells.isOutsideEvent(event))
+        {
+            if (!_k_.empty(this.preview))
+            {
+                this.preview = []
+                post.emit('redraw')
+                return
+            }
+        }
+        if (!_k_.empty(this.gitChanges) && (event.cmd || event.ctrl || event.alt))
+        {
+            pos = this.eventPos(event)
+            idx = pos[1] + this.state.s.view[1]
+            if (this.gitChanges[idx])
+            {
+                if (event.type === 'press')
+                {
+                    console.log('press on git change!',this.gitChanges[idx])
+                }
+                else if (event.type === 'move')
+                {
+                    if (this.gitChanges[idx].old)
+                    {
+                        this.preview = [idx]
+                        return {redraw:true}
+                    }
+                }
+            }
+        }
+        if (!_k_.empty(this.preview))
+        {
+            this.preview = []
+            return post.emit('redraw')
+        }
+    }
+
+    gutter.prototype["drawPreviews"] = function ()
+    {
+        var idx, oldDiss, segl, syntax, _71_45_
+
+        if (_k_.empty(this.preview) || _k_.empty(this.gitChanges))
+        {
+            return
+        }
+        var list = _k_.list(this.preview)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            idx = list[_a_]
+            segl = kseg(((_71_45_=this.gitChanges[idx].old) != null ? _71_45_ : ''))
+            syntax = this.editor.state.syntax
+            oldDiss = syntax.diss[idx]
+            syntax.diss[idx] = kulur.dissect([segl],syntax.ext)
+            this.editor.drawLine(segl,idx)
+            syntax.diss[idx] = oldDiss
+        }
     }
 
     gutter.prototype["lineno"] = function (y)
@@ -50,7 +117,7 @@ gutter = (function ()
 
     gutter.prototype["onGitDiff"] = function (diff)
     {
-        var change, firstLine, modi, mods, numLines, off, _58_35_, _58_48_, _61_36_
+        var add, change, del, firstLine, mod, modi, mods, numLines, off, _101_29_, _102_29_, _103_29_, _107_36_
 
         this.gitChanges = {}
         var list = _k_.list(diff.changes)
@@ -58,7 +125,10 @@ gutter = (function ()
         {
             change = list[_a_]
             firstLine = change.line
-            mods = ((_58_35_=change.add) != null ? _58_35_ : ((_58_48_=change.mod) != null ? _58_48_ : change.del))
+            mod = ((_101_29_=change.mod) != null ? _101_29_ : [])
+            add = ((_102_29_=change.add) != null ? _102_29_ : [])
+            del = ((_103_29_=change.del) != null ? _103_29_ : [])
+            mods = mod.concat(add.concat(del))
             numLines = mods.length
             for (var _b_ = modi = 0, _c_ = numLines; (_b_ <= _c_ ? modi < numLines : modi > numLines); (_b_ <= _c_ ? ++modi : --modi))
             {
@@ -74,7 +144,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _98_99_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _143_99_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
@@ -104,7 +174,7 @@ gutter = (function ()
                             fg = color.darken(fg)
                         }
                     }
-                    bg = (this.gitChanges[y] != null ? this.gitChanges[y].old : undefined) && !this.gitChanges[y].new ? this.color.bg_git_del : (this.gitChanges[y] != null) ? this.color.bg_git_mod : spansel ? this.color.bg_selected : selected ? this.color.bg_fully_selected : this.color.bg
+                    bg = (this.gitChanges[y] != null ? this.gitChanges[y].old : undefined) && this.gitChanges[y].new ? this.color.bg_git_mod : (this.gitChanges[y] != null ? this.gitChanges[y].old : undefined) ? this.color.bg_git_del : (this.gitChanges[y] != null) ? this.color.bg_git_add : spansel ? this.color.bg_selected : selected ? this.color.bg_fully_selected : this.color.bg
                     if (selected && !this.cells.screen.t.hasFocus)
                     {
                         bg = color.darken(bg)
@@ -113,6 +183,7 @@ gutter = (function ()
                 }
             }
         }
+        return this.drawPreviews()
     }
 
     return gutter

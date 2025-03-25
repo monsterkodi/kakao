@@ -32,7 +32,7 @@ function editor extends draw
         if @feats.scrllr   ➜ @scroll   = new scroll   @screen @state 'right'
         if @feats.scroll   ➜ @scroll   = new scroll   @screen @state 'left'
         if @feats.mapview  ➜ @mapscr   = new mapview  @screen @state
-        if @feats.gutter   ➜ @gutter   = new gutter   @screen @state
+        if @feats.gutter   ➜ @gutter   = new gutter   @
         if @feats.complete ➜ @complete = new complete @
             
         mode.autoStartForEditor @
@@ -96,6 +96,7 @@ function editor extends draw
         
         super event
         
+        ret = @gutter?.onMouse(event)   ; ⮐  ret if ret?.redraw
         ret = @mapscr?.onMouse(event)   ; ⮐  ret if ret?.redraw
         ret = @scroll?.onMouse(event)   ; ⮐  ret if ret?.redraw
         ret = @complete?.onMouse(event) ; ⮐  ret if ret?.redraw

@@ -85,7 +85,7 @@ status = (function ()
             return sret || cret
         }
         status.__super__.onMouse.call(this,event)
-        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+        var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
         if (this.hover)
         {

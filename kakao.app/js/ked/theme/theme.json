@@ -50,7 +50,8 @@
     "bg": "#0a0a0a",
     "bg_fully_selected": "#161616",
     "bg_selected": "#228",
-    "bg_git_mod": "#020",
+    "bg_git_mod": "#030",
+    "bg_git_add": "#020",
     "bg_git_del": "#800"
   },
   "status": {

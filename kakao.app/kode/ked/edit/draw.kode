@@ -39,63 +39,19 @@ function draw extends view
         # prof.start 'draw' if @name == 'editor'
         # ● draw
                 
-        syntax = @state.syntax
         view   = @state.s.view
         lines  = @state.s.lines
         lines  = @complete.preDrawLines lines if @complete?
         # lines  = mode.preDrawLines @state @state.s.lines
         
-        bg = @color.bg
-        
         for row in 0...@cells.rows
-            
-            checkColor = false
-            headerClass = null
             
             y = row+view[1]
             
             break if y >= lines.length
             
-            line  = lines[y]
-            linel = kseg.width(line) - view[0]
+            @drawLine lines[y] y row
             
-            c = 0
-            firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
-            firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
-            c = 1 if firstIndex != firstSegi            # one column to the right 
-            
-            x = 0
-            while x < @cells.cols
-                
-                ci = x+view[0]
-                si = kseg.indexAtWidth line ci
-                
-                # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
-                
-                if si >= line.length
-                    # log "#{@name} #{r5 'break!'}"
-                    break 
-                
-                fg = syntax.getColor ci y
-                    
-                ch = syntax.getChar ci y line[si]
-                if ch == "#" ➜ checkColor = true
-                else if ch in '0█' 
-                    clss = syntax.getClass ci y
-                    if clss.endsWith('header') ➜ headerClass = clss
-
-                x += kseg.segWidth(line[si]) ? 1
-                if x < @cells.cols
-                    c += @cells.add c row ch fg bg
-                
-                if clss == 'invert_bg'
-                    bg = @color.bg
-                    
-            @drawRowBackground row linel
-                    
-            @drawColorPills  line row linel       if checkColor
-            @drawAsciiHeader line row headerClass if headerClass
-
         @drawTrailingRows()        
         @drawHighlights()
         @drawSelections()
@@ -113,6 +69,62 @@ function draw extends view
         mode.postDraw @state
         
         super()
+        
+    # ███      ███  ███   ███  ████████
+    # ███      ███  ████  ███  ███     
+    # ███      ███  ███ █ ███  ███████ 
+    # ███      ███  ███  ████  ███     
+    # ███████  ███  ███   ███  ████████
+
+    drawLine: line y row ->
+    
+        row ?= y-@state.s.view[1]
+        bg = @color.bg
+        
+        checkColor = false
+        headerClass = null
+        
+        syntax = @state.syntax
+        view   = @state.s.view
+    
+        linel = kseg.width(line) - view[0]
+        
+        c = 0
+        firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
+        firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
+        c = 1 if firstIndex != firstSegi            # one column to the right 
+        
+        x = 0
+        while x < @cells.cols
+            
+            ci = x+view[0]
+            si = kseg.indexAtWidth line ci
+            
+            # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
+            
+            if si >= line.length
+                # log "#{@name} #{r5 'break!'}"
+                break 
+            
+            fg = syntax.getColor ci y
+                
+            ch = syntax.getChar ci y line[si]
+            if ch == "#" ➜ checkColor = true
+            else if ch in '0█' 
+                clss = syntax.getClass ci y
+                if clss.endsWith('header') ➜ headerClass = clss
+
+            x += kseg.segWidth(line[si]) ? 1
+            if x < @cells.cols
+                c += @cells.add c row ch fg bg
+            
+            if clss == 'invert_bg'
+                bg = @color.bg
+                
+        @drawRowBackground row linel
+                
+        @drawColorPills  line row linel       if checkColor
+        @drawAsciiHeader line row headerClass if headerClass
         
     # 00000000    0000000   000   000       0000000     0000000    0000000  000   000   0000000   00000000   0000000    
     # 000   000  000   000  000 0 000       000   000  000   000  000       000  000   000        000   000  000   000  

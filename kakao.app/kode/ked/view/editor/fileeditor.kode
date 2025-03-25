@@ -45,9 +45,15 @@ function fileeditor extends editor
         post.on 'goto.bof'         @onGotoBof
         post.on 'goto.eof'         @onGotoEof
         post.on 'git.diff'         @onGitDiff
+        post.on 'git.commit'       @onGitCommit
         
     setCurrentFile: @currentFile =>
         
+        @gutter.gitChanges = {}
+        @mapscr?.reload()
+
+    onGitCommit: =>
+    
         @gutter.gitChanges = {}
         
     #  ███████   ███  █████████     ███████    ███  ████████  ████████
@@ -61,7 +67,7 @@ function fileeditor extends editor
         currentFile = ked_session.get 'editor▸file'
         if diff.file == currentFile
             @gutter.onGitDiff diff
-
+            
     ###        
      ███████    ███████   █████████   ███████         ███      ███  ███   ███  ████████  
     ███        ███   ███     ███     ███   ███        ███      ███  ████  ███  ███       
@@ -133,11 +139,11 @@ function fileeditor extends editor
         # log 'fileeditor.jumpToWord funcs'   Object.keys(indexer.singleton.funcs)
         
         if clss = indexer.singleton.classes[word]
-            # log "fileeditor.jumpToWord(#{word}) jumpToClass" clss
+
             post.emit 'file.open' clss.file clss.line-1
             ⮐  true
         else if func = indexer.singleton.funcs[word]
-            # log "fileeditor.jumpToWord(#{word}) jumpToFunc" func
+
             if func is arr
                 currentFile = ked_session.get 'editor▸file'
                 for fun,idx in func
@@ -209,7 +215,7 @@ function fileeditor extends editor
             
         ret = super event ; ⮐  ret if ret?.redraw
         
-        [col row] = @cells.posForEvent event
+        [col row] = @eventPos event
         
         switch event.type
             

@@ -25,9 +25,10 @@ import searcherfile from "./searcherfile.js"
 differ = (function ()
 {
     _k_.extend(differ, searcher)
-    function differ (screen)
+    function differ (screen, editor)
     {
         this.screen = screen
+        this.editor = editor
     
         this["commit"] = this["commit"].bind(this)
         this["patch"] = this["patch"].bind(this)
@@ -47,6 +48,11 @@ differ = (function ()
         post.on('differ.status',this.status)
         post.on('differ.file',this.file)
         post.on('differ.history',this.history)
+    }
+
+    differ.prototype["arrangeRect"] = function ()
+    {
+        return [parseInt(this.editor.cells.x - this.editor.gutter.cells.cols - 1),parseInt(this.editor.cells.y - 1),parseInt(this.editor.cells.cols + this.editor.gutter.cells.cols + 1),parseInt(this.editor.cells.rows - 3)]
     }
 
     differ.prototype["emitFileOpen"] = function (choice)
@@ -82,7 +88,7 @@ differ = (function ()
 
     differ.prototype["diff"] = function (diff)
     {
-        var add, added, change, ext, file, items, li, modadd, modded, _105_32_, _106_32_
+        var add, added, change, ext, file, items, li, modadd, modded, _114_32_, _115_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -95,8 +101,8 @@ differ = (function ()
             {
                 continue
             }
-            modded = ((_105_32_=change.mod) != null ? _105_32_ : [])
-            added = ((_106_32_=change.add) != null ? _106_32_ : [])
+            modded = ((_114_32_=change.mod) != null ? _114_32_ : [])
+            added = ((_115_32_=change.add) != null ? _115_32_ : [])
             modadd = modded.concat(added)
             if (_k_.empty(modadd.filter(function (m)
                 {
@@ -342,6 +348,7 @@ differ = (function ()
         out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
         out += await git.exec("push -q",{cwd:gitDir})
         console.log(_k_.r4(`differ.commit\n${_k_.b7(out)}`))
+        post.emit('git.commit')
         return post.emit('redraw')
     }
 

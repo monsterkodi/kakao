@@ -179,7 +179,7 @@ crumbs = (function ()
     {
         var col, index, path, row, si, _158_26_
 
-        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+        var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
         crumbs.__super__.onMouse.call(this,event)
         if (!this.hover)

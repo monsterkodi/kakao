@@ -40,7 +40,7 @@ function scroll extends view
     
     onMouse: event =>
         
-        [col row] = @cells.posForEvent event
+        [col row] = @eventPos event
         
         super event
         

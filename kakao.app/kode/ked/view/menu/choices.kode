@@ -293,7 +293,7 @@ function choices extends editor
         
         if @hover
             
-            [col row] = @cells.posForEvent event
+            [col row] = @eventPos event
             
             if @state.isValidLineIndex(row)
                 

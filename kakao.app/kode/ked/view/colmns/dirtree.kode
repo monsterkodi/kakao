@@ -422,11 +422,13 @@ function dirtree extends choices
         # @color.current = current
         
     indexOfOpenFile: ->
+    
+        currentFile = ked_session.get 'editor▸file'
         
-        ⮐  if not global.ked_editor_file?
+        ⮐  if empty currentFile
         
         for item,idx in @fuzzied
-            ⮐  idx if item.path == ked_editor_file
+            ⮐  idx if item.path == currentFile
             
     itemForPath: p ->
         

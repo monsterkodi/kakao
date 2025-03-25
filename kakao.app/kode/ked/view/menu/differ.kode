@@ -18,7 +18,7 @@ use                 ◆ searcher searcherfile
 
 function differ extends searcher
 
-    @: @screen ->
+    @: @screen @editor ->
     
         super @screen null 'differ'
         
@@ -39,6 +39,15 @@ function differ extends searcher
         post.on 'differ.status'  @status
         post.on 'differ.file'    @file
         post.on 'differ.history' @history
+        
+    arrangeRect: ->
+    
+        [
+            int(@editor.cells.x-@editor.gutter.cells.cols-1)
+            int(@editor.cells.y-1)
+            int(@editor.cells.cols+@editor.gutter.cells.cols+1)
+            int(@editor.cells.rows-3)
+        ]
         
     # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
     # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
@@ -328,7 +337,8 @@ function differ extends searcher
         out +=○ git.exec "push -q"              cwd:gitDir
 
         log r4("differ.commit\n#{b7 out}")
-                
+        
+        post.emit 'git.commit'
         post.emit 'redraw'
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███

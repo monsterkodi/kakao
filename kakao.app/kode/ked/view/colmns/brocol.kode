@@ -34,7 +34,7 @@ function brocol extends choices
         
         ⮐  if @hidden()
         
-        [col row] = @cells.posForEvent event
+        [col row] = @eventPos event
         
         ret = super event
         

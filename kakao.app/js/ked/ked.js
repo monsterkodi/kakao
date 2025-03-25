@@ -98,7 +98,7 @@ ked [file]
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
         this.finder = new finder(this.screen,this.editor.state)
         this.searcher = new searcher(this.screen,this.editor.state)
-        this.differ = new differ(this.screen)
+        this.differ = new differ(this.screen,this.editor)
         this.status = new status(this.screen,this.editor.state)
         this.context = new context(this.screen)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
@@ -336,7 +336,7 @@ ked [file]
 
     KED.prototype["loadFile"] = async function (p, row, col, view)
     {
-        var absFile, colors, exists, gitDir, segls, start, text, _339_22_
+        var absFile, colors, exists, gitDir, segls, start, text
 
         start = process.hrtime()
         if (slash.isAbsolute(p))
@@ -364,7 +364,6 @@ ked [file]
         this.currentFile = this.loadingFile
         delete this.loadingFile
         this.status.setFile(slash.tilde(this.currentFile))
-        global.ked_editor_file = this.currentFile
         if (text === undefined)
         {
             text = '○ binary ○'
@@ -379,13 +378,11 @@ ked [file]
         {
             this.editor.state.syntax.setExt(slash.ext(this.currentFile))
         }
-        this.editor.setCurrentFile(this.currentFile)
         this.editor.state.loadSegls(segls)
-        this.status.time = process.hrtime(start)[1]
-        ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
+        this.editor.setCurrentFile(this.currentFile)
         ked_session.set("editor▸file",this.currentFile)
+        this.status.time = process.hrtime(start)[1]
         mode.fileLoaded(this.editor.state,this.currentFile,row,col,view)
-        console.log('file.loaded')
         post.emit('file.loaded',this.currentFile)
         this.showEditor()
         this.redraw()
@@ -605,7 +602,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _507_22_
+        var mcw, _501_22_
 
         mcw = parseInt(cols / 6)
         if (mcw >= 16)

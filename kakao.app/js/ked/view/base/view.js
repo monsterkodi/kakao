@@ -113,6 +113,11 @@ view = (function ()
         return this.cells.rows <= 0 || this.cells.cols <= 0
     }
 
+    view.prototype["eventPos"] = function (event)
+    {
+        return this.cells.posForEvent(event)
+    }
+
     view.prototype["onMouse"] = function (event)
     {
         return this.handleHover(event)

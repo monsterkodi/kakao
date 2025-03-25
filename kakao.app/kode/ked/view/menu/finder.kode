@@ -57,13 +57,19 @@ function finder extends inputchoice
     # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
     # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
     # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
-
+    
+    arrangeRect: ->
+    
+        [
+            int(@screen.cols/8)
+            int(@screen.rows/8)
+            int(@screen.cols*3/4)
+            int(@screen.rows*3/4-4)
+        ]
+        
     arrange: =>
 
-        x = int @screen.cols/8
-        y = int @screen.rows/8
-        w = int @screen.cols*3/4
-        h = int @screen.rows*3/4-4
+        [x y w h] = @arrangeRect()
 
         cs = min h @choices.numFiltered()
         

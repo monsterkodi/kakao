@@ -10,30 +10,71 @@
     searcher/finder replaces lineno to display source line numbers 
 ###
 
-use ../../../kxk  ▪ post
-use ../../util    ◆ prof 
-use ../../theme   ◆ color theme 
-use ../base       ◆ view
+use ../../../kxk   ▪ post kseg
+use ../../../kolor ◆ kulur
+use ../../util     ◆ prof syntax
+use ../../theme    ◆ color theme 
+use ../base        ◆ view
 
 function gutter extends view
 
-    @: screen @state ->
+    @: @editor ->
+    
+        @state = @editor.state
         
-        super screen @state.owner() + '.gutter'
+        super @editor.screen @state.owner() + '.gutter'
         
-        @setColor 'fg'                     theme.gutter.fg
-        @setColor 'bg'                     theme.gutter.bg
-        @setColor 'bg_selected'            theme.gutter.bg_selected
-        @setColor 'bg_fully_selected'      theme.gutter.bg_fully_selected
-        @setColor 'bg_git_mod'             theme.gutter.bg_git_mod
-        @setColor 'bg_git_del'             theme.gutter.bg_git_del
-        @setColor 'cursor_main'            theme.cursor.main
-        @setColor 'cursor_multi'           theme.cursor.multi
-        @setColor 'selection'              theme.selection.span
-        @setColor 'selection_line'         theme.selection.line
-        @setColor 'highlight'              theme.highlight.bg
+        @setColor 'fg'                theme.gutter.fg
+        @setColor 'bg'                theme.gutter.bg
+        @setColor 'bg_selected'       theme.gutter.bg_selected
+        @setColor 'bg_fully_selected' theme.gutter.bg_fully_selected
+        @setColor 'bg_git_mod'        theme.gutter.bg_git_mod
+        @setColor 'bg_git_add'        theme.gutter.bg_git_add
+        @setColor 'bg_git_del'        theme.gutter.bg_git_del
+        @setColor 'cursor_main'       theme.cursor.main
+        @setColor 'cursor_multi'      theme.cursor.multi
+        @setColor 'selection'         theme.selection.span
+        @setColor 'selection_line'    theme.selection.line
+        @setColor 'highlight'         theme.highlight.bg
         
         @gitChanges = {}
+        
+    onMouse: event =>
+
+        if @cells.isOutsideEvent event
+            if valid @preview
+                @preview = []
+                post.emit 'redraw'
+                ⮐  
+                
+        if valid @gitChanges and (event.cmd or event.ctrl or event.alt)            
+            pos = @eventPos event
+            idx = pos[1]+@state.s.view[1]
+            if @gitChanges[idx]
+                # log 'preview?' @gitChanges[idx]
+                if event.type == 'press'
+                    log 'press on git change!' @gitChanges[idx]
+                else if event.type == 'move'
+                    if @gitChanges[idx].old
+                        @preview = [idx]
+                        ⮐  redraw:true
+
+        if valid @preview
+            @preview = []
+            post.emit 'redraw'
+                
+    drawPreviews: -> 
+    
+        ⮐  if empty @preview or empty @gitChanges
+        
+        for idx in @preview
+            segl = kseg(@gitChanges[idx].old ? '')
+            # log "drawPreviewLine #{idx}" segl
+            syntax = @editor.state.syntax
+            oldDiss = syntax.diss[idx]
+            syntax.diss[idx] = kulur.dissect [segl] syntax.ext
+            @editor.drawLine segl idx
+            syntax.diss[idx] = oldDiss
         
     lineno: y ->
                 
@@ -53,15 +94,19 @@ function gutter extends view
         
         @gitChanges = {}
         
+        # log 'onGitDiff' diff
+        
         for change in diff.changes
             firstLine = change.line
-            mods      = change.add ? change.mod ? change.del
+            mod = change.mod ? []
+            add = change.add ? []
+            del = change.del ? []
+            mods      = mod.concat add.concat(del) 
             numLines  = mods.length
             for modi in 0...numLines
                 off = mods[modi].new? ? -1 : 0
                 @gitChanges[firstLine+modi+off] = mods[modi]
 
-        # log 'gitChanges' @gitChanges                
         if valid @gitChanges
             post.emit 'redraw'
         
@@ -105,8 +150,9 @@ function gutter extends view
                         fg = color.darken fg if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus
                     
                     bg = if 
-                        @gitChanges[y]?.old and not @gitChanges[y].new ➜ @color.bg_git_del
-                        @gitChanges[y]?        ➜ @color.bg_git_mod
+                        @gitChanges[y]?.old and @gitChanges[y].new ➜ @color.bg_git_mod
+                        @gitChanges[y]?.old    ➜ @color.bg_git_del
+                        @gitChanges[y]?        ➜ @color.bg_git_add
                         spansel                ➜ @color.bg_selected
                         selected               ➜ @color.bg_fully_selected
                                                ➜ @color.bg
@@ -114,5 +160,7 @@ function gutter extends view
                     bg = color.darken bg if selected and not @cells.screen.t.hasFocus
                     
                     @cells.set col row (y<@state.s.lines.length) ? c : ' ' fg bg
+                    
+        @drawPreviews()
 
 export gutter

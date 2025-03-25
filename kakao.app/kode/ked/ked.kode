@@ -1,9 +1,9 @@
 ###
-000   000  00000000  0000000    
-000  000   000       000   000  
-0000000    0000000   000   000  
-000  000   000       000   000  
-000   000  00000000  0000000    
+    ███   ███  ████████  ███████    
+    ███  ███   ███       ███   ███  
+    ███████    ███████   ███   ███  
+    ███  ███   ███       ███   ███  
+    ███   ███  ████████  ███████    
 
     bun --watch js/ked/ked.js
 ###
@@ -62,7 +62,7 @@ function KED
         @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
         @finder   = new finder     @screen @editor.state
         @searcher = new searcher   @screen @editor.state
-        @differ   = new differ     @screen #@editor.state
+        @differ   = new differ     @screen @editor
         @status   = new status     @screen @editor.state
         @context  = new context    @screen
         
@@ -319,8 +319,6 @@ function KED
         
         @status.setFile slash.tilde(@currentFile)
         
-        global.ked_editor_file = @currentFile
-        
         if text == undefined
             text = '○ binary ○'
         
@@ -331,18 +329,14 @@ function KED
         else
             @editor.state.syntax.setExt slash.ext(@currentFile)
         
-        @editor.setCurrentFile @currentFile     
         @editor.state.loadSegls segls
+        @editor.setCurrentFile @currentFile     
+        ked_session.set "editor▸file" @currentFile
         
         @status.time = process.hrtime(start)[1]
         
-        @editor.mapscr?.reload()
-        
-        ked_session.set "editor▸file" @currentFile
-        
         mode.fileLoaded @editor.state @currentFile row col view
         
-        log 'file.loaded'
         post.emit 'file.loaded' @currentFile
         
         @showEditor()

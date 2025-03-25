@@ -51,7 +51,7 @@ function knob extends view
                 if @doDrag
                     @hover = true
                     
-                    [col row] = @cells.posForEvent event
+                    [col row] = @eventPos event
                     
                     delta = switch @frameSide
                         'left'  ➜ -col

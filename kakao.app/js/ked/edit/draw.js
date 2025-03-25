@@ -34,80 +34,26 @@ draw = (function ()
 
     draw.prototype["draw"] = function ()
     {
-        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, line, linel, lines, row, si, syntax, view, x, y, _103_17_, _105_17_, _107_15_, _108_15_, _109_15_, _45_58_, _87_45_
+        var lines, row, view, y, _44_58_, _59_17_, _61_17_, _63_15_, _64_15_, _65_15_
 
         if (this.hidden())
         {
             return
         }
-        syntax = this.state.syntax
         view = this.state.s.view
         lines = this.state.s.lines
         if ((this.complete != null))
         {
             lines = this.complete.preDrawLines(lines)
         }
-        bg = this.color.bg
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))
         {
-            checkColor = false
-            headerClass = null
             y = row + view[1]
             if (y >= lines.length)
             {
                 break
             }
-            line = lines[y]
-            linel = kseg.width(line) - view[0]
-            c = 0
-            firstIndex = kseg.indexAtWidth(line,view[0])
-            firstSegi = kseg.segiAtWidth(line,view[0])
-            if (firstIndex !== firstSegi)
-            {
-                c = 1
-            }
-            x = 0
-            while (x < this.cells.cols)
-            {
-                ci = x + view[0]
-                si = kseg.indexAtWidth(line,ci)
-                if (si >= line.length)
-                {
-                    break
-                }
-                fg = syntax.getColor(ci,y)
-                ch = syntax.getChar(ci,y,line[si])
-                if (ch === "#")
-                {
-                    checkColor = true
-                }
-                else if (_k_.in(ch,'0█'))
-                {
-                    clss = syntax.getClass(ci,y)
-                    if (clss.endsWith('header'))
-                    {
-                        headerClass = clss
-                    }
-                }
-                x += ((_87_45_=kseg.segWidth(line[si])) != null ? _87_45_ : 1)
-                if (x < this.cells.cols)
-                {
-                    c += this.cells.add(c,row,ch,fg,bg)
-                }
-                if (clss === 'invert_bg')
-                {
-                    bg = this.color.bg
-                }
-            }
-            this.drawRowBackground(row,linel)
-            if (checkColor)
-            {
-                this.drawColorPills(line,row,linel)
-            }
-            if (headerClass)
-            {
-                this.drawAsciiHeader(line,row,headerClass)
-            }
+            this.drawLine(lines[y],y,row)
         }
         this.drawTrailingRows()
         this.drawHighlights()
@@ -120,6 +66,68 @@ draw = (function ()
         ;(this.scroll != null ? this.scroll.draw() : undefined)
         mode.postDraw(this.state)
         return draw.__super__.draw.call(this)
+    }
+
+    draw.prototype["drawLine"] = function (line, y, row)
+    {
+        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, linel, si, syntax, view, x, _117_41_
+
+        row = (row != null ? row : y - this.state.s.view[1])
+        bg = this.color.bg
+        checkColor = false
+        headerClass = null
+        syntax = this.state.syntax
+        view = this.state.s.view
+        linel = kseg.width(line) - view[0]
+        c = 0
+        firstIndex = kseg.indexAtWidth(line,view[0])
+        firstSegi = kseg.segiAtWidth(line,view[0])
+        if (firstIndex !== firstSegi)
+        {
+            c = 1
+        }
+        x = 0
+        while (x < this.cells.cols)
+        {
+            ci = x + view[0]
+            si = kseg.indexAtWidth(line,ci)
+            if (si >= line.length)
+            {
+                break
+            }
+            fg = syntax.getColor(ci,y)
+            ch = syntax.getChar(ci,y,line[si])
+            if (ch === "#")
+            {
+                checkColor = true
+            }
+            else if (_k_.in(ch,'0█'))
+            {
+                clss = syntax.getClass(ci,y)
+                if (clss.endsWith('header'))
+                {
+                    headerClass = clss
+                }
+            }
+            x += ((_117_41_=kseg.segWidth(line[si])) != null ? _117_41_ : 1)
+            if (x < this.cells.cols)
+            {
+                c += this.cells.add(c,row,ch,fg,bg)
+            }
+            if (clss === 'invert_bg')
+            {
+                bg = this.color.bg
+            }
+        }
+        this.drawRowBackground(row,linel)
+        if (checkColor)
+        {
+            this.drawColorPills(line,row,linel)
+        }
+        if (headerClass)
+        {
+            return this.drawAsciiHeader(line,row,headerClass)
+        }
     }
 
     draw.prototype["drawRowBackground"] = function (row, linel)

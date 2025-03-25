@@ -46,7 +46,7 @@ knob = (function ()
                 if (this.doDrag)
                 {
                     this.hover = true
-                    var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+                    var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
                     delta = ((function ()
                     {

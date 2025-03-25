@@ -41,6 +41,7 @@ fileeditor = (function ()
         this["onGotoBof"] = this["onGotoBof"].bind(this)
         this["onGotoLine"] = this["onGotoLine"].bind(this)
         this["onGitDiff"] = this["onGitDiff"].bind(this)
+        this["onGitCommit"] = this["onGitCommit"].bind(this)
         this["setCurrentFile"] = this["setCurrentFile"].bind(this)
         features = ['scroll','gutter','mapscr','complete','filepos','replex','brckts','unype','salter','vimple','uniko']
         fileeditor.__super__.constructor.call(this,screen,name,features)
@@ -54,12 +55,21 @@ fileeditor = (function ()
         post.on('goto.bof',this.onGotoBof)
         post.on('goto.eof',this.onGotoEof)
         post.on('git.diff',this.onGitDiff)
+        post.on('git.commit',this.onGitCommit)
     }
 
     fileeditor.prototype["setCurrentFile"] = function (currentFile)
     {
         this.currentFile = currentFile
     
+        var _53_15_
+
+        this.gutter.gitChanges = {}
+        return (this.mapscr != null ? this.mapscr.reload() : undefined)
+    }
+
+    fileeditor.prototype["onGitCommit"] = function ()
+    {
         return this.gutter.gitChanges = {}
     }
 
@@ -189,11 +199,11 @@ fileeditor = (function ()
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _167_50_, _173_50_, _182_50_
+        var counter, currentFile, currext, ext, file, _173_50_, _179_50_, _188_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_167_50_=fileutil.counterparts[currext]) != null ? _167_50_ : [])
+        var list = ((_173_50_=fileutil.counterparts[currext]) != null ? _173_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -203,7 +213,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_173_50_=fileutil.counterparts[currext]) != null ? _173_50_ : [])
+        var list1 = ((_179_50_=fileutil.counterparts[currext]) != null ? _179_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -215,7 +225,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list2 = ((_182_50_=fileutil.counterparts[currext]) != null ? _182_50_ : [])
+        var list2 = ((_188_50_=fileutil.counterparts[currext]) != null ? _188_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -244,14 +254,14 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _241_41_, _299_31_
+        var col, ret, row, start, word, x, y, _247_41_, _305_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
         {
             return ret
         }
-        var _a_ = this.cells.posForEvent(event); col = _a_[0]; row = _a_[1]
+        var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
         switch (event.type)
         {
