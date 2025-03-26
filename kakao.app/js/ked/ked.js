@@ -603,9 +603,10 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size)
     {
-        var mcw, _501_22_
+        var mcw, _503_22_
 
         mcw = parseInt(cols / 6)
+        rounded.cache = {}
         if (mcw >= 16)
         {
             this.dircol.cells.cols = mcw
@@ -646,6 +647,7 @@ ked [file]
         this.arrange()
         if (this.menu.greet.hidden())
         {
+            console.log('editor.draw')
             this.editor.draw()
             this.status.draw()
             this.dircol.draw()
@@ -660,6 +662,7 @@ ked [file]
         this.differ.draw()
         this.context.draw()
         this.screen.render()
+        this.t.removeImgs()
         return this.status.time = process.hrtime(start)[1]
     }
 

@@ -46,7 +46,6 @@ complete = (function ()
         after = this.editor.state.chunkAfterCursor()
         hcw = kseg.headCountWord(after)
         tcw = kseg.tailCountWord(before)
-        console.log(`complete.complete ${tcw} ${hcw}`)
         if (tcw > 1 && hcw)
         {
             return
@@ -85,7 +84,6 @@ complete = (function ()
         {
             if (inserts = specs.trigger[this.turd])
             {
-                console.log('add specs trigger',inserts)
                 this.words = inserts.concat(this.words)
             }
         }
@@ -296,12 +294,13 @@ complete = (function ()
         mc = this.editor.state.mainCursor()
         cx = mc[0] - this.editor.state.s.view[0]
         cy = mc[1] - this.editor.state.s.view[1]
-        fx = cx - this.turd.length - 1
+        fx = cx - this.turd.length - 2
         x = fx + 1 + this.editor.cells.x
         y = cy + this.editor.cells.y + 2
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
         fy = cy + 1
+        console.log('complete.drawPopup')
         this.editor.cells.draw_rounded_border(fx,fy,fx + w + 1,fy + h + 1,{fg:this.color.bg})
         this.choices.layout(x,y,w,h)
         return this.choices.draw()

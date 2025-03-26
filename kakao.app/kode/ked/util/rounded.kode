@@ -29,13 +29,14 @@ function rounded
         ⮐  if x >= img.w
         ⮐  if y >= img.h
         
-        for i in 0...4
+        for i in 0...rgba.length
             img.view.setUint8 ((x+y*img.w)*4)+i rgba[i]
+        if rgba.length == 3
+             img.view.setUint8 ((x+y*img.w)*4)+3 255
             
     @encode: img ->
     
         img.png = Buffer.from png.encode([img.buff] img.w img.h 2)
-        img.b64 = img.png.toString 'base64'
         img
         
     @circle: img cx cy r fg ->
@@ -69,19 +70,61 @@ function rounded
         @circle img r r r   fg
         @fill   img 0 r w h fg
         @encode img 
+
+    @borderTopLeft: w h fg ->    
+    
+        img = @img w h
+        r   = int w/2
+        h2  = int h/2 
+        
+        @circle img w h2+r r        fg
+        @fill   img r h2+r r h-h2-r fg
+        @encode img 
+        
+    @borderTopRight: w h fg ->
+        
+        img = @img w h
+        r   = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2+r r        fg
+        @fill   img 0 h2+r r h-h2-r fg
+        @encode img 
+
+    @borderBottomLeft: w h fg ->
+    
+        img = @img w h
+        r   = int w/2
+        h2  = int h/2
+        
+        @circle img w h2-r r   fg
+        @fill   img r 0 r h2-r fg
+        @encode img 
+
+    @borderBottomRight: w h fg ->
+        
+        img = @img w h
+        r   = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2-r r   fg    
+        @fill   img 0 0 r h2-r fg
+        @encode img 
         
     @place: x y name fg bg ->
         
-        log "rounded.place #{x} #{y} #{name} #{fg} #{bg}"
-        key = name+fg+bg
+        key = name+fg+bg 
         img = @cache[key]
-        csz = ked_ttio.cellsz
+
         if empty img
-            img = @topLeft csz[0] csz[1] fg
+            csz = ked_ttio.cellsz
+            img = switch name 
+                'rounded.border.tl' ➜ @borderTopLeft     csz[0] csz[1] fg 
+                'rounded.border.tr' ➜ @borderTopRight    csz[0] csz[1] fg 
+                'rounded.border.bl' ➜ @borderBottomLeft  csz[0] csz[1] fg 
+                'rounded.border.br' ➜ @borderBottomRight csz[0] csz[1] fg 
             @cache[key] = img
-        
+
         ked_ttio.placeImg img x y
-        
-# nfs.write '~/Desktop/topLeft.png' rounded.topLeft(20 40 [100 100 255 255]).png
-    
+            
 export rounded

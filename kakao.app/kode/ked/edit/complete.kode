@@ -50,7 +50,7 @@ function complete
         hcw = kseg.headCountWord after
         tcw = kseg.tailCountWord before
         
-        log "complete.complete #{tcw} #{hcw}"
+        # log "complete.complete #{tcw} #{hcw}"
         
         ⮐  if tcw > 1 and hcw # don't complete if cursor is inside a word
         
@@ -85,7 +85,7 @@ function complete
         
         if @turd.length == 1 
             if inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
-                log 'add specs trigger' inserts
+                # log 'add specs trigger' inserts
                 @words = inserts.concat @words
 
         @visible = valid @words
@@ -274,7 +274,7 @@ function complete
         cx = mc[0] - @editor.state.s.view[0]    
         cy = mc[1] - @editor.state.s.view[1]
         
-        fx = cx-@turd.length-1
+        fx = cx-@turd.length-2
         x  = fx+1+@editor.cells.x
         y  = cy+@editor.cells.y+2
         w  = @choices.cells.cols+1
@@ -282,6 +282,7 @@ function complete
         
         fy = cy+1
 
+        log 'complete.drawPopup'
         @editor.cells.draw_rounded_border fx fy fx+w+1 fy+h+1 fg:@color.bg
         
         @choices.layout x y w h

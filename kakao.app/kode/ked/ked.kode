@@ -488,6 +488,8 @@ function KED
     
         mcw = int cols/6
         
+        rounded.cache = {}
+        
         if mcw >= 16
             @dircol.cells.cols = mcw
             @funcol.cells.cols = mcw
@@ -529,6 +531,7 @@ function KED
         
         # ●▸ draw
         if @menu.greet.hidden()
+            log 'editor.draw'
             @editor.draw()
             @status.draw()
             @dircol.draw()
@@ -545,6 +548,7 @@ function KED
         # ●▪ draw
         # ●▸ render
         @screen.render()
+        @t.removeImgs()
         # ●▪ render
         
         @status.time = process.hrtime(start)[1]

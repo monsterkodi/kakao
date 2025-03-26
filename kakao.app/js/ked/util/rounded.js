@@ -38,16 +38,19 @@ rounded = (function ()
         {
             return
         }
-        for (i = 0; i < 4; i++)
+        for (var _a_ = i = 0, _b_ = rgba.length; (_a_ <= _b_ ? i < rgba.length : i > rgba.length); (_a_ <= _b_ ? ++i : --i))
         {
             img.view.setUint8(((x + y * img.w) * 4) + i,rgba[i])
+        }
+        if (rgba.length === 3)
+        {
+            return img.view.setUint8(((x + y * img.w) * 4) + 3,255)
         }
     }
 
     rounded["encode"] = function (img)
     {
         img.png = Buffer.from(png.encode([img.buff],img.w,img.h,2))
-        img.b64 = img.png.toString('base64')
         return img
     }
 
@@ -105,17 +108,82 @@ rounded = (function ()
         return this.encode(img)
     }
 
+    rounded["borderTopLeft"] = function (w, h, fg)
+    {
+        var h2, img, r
+
+        img = this.img(w,h)
+        r = parseInt(w / 2)
+        h2 = parseInt(h / 2)
+        this.circle(img,w,h2 + r,r,fg)
+        this.fill(img,r,h2 + r,r,h - h2 - r,fg)
+        return this.encode(img)
+    }
+
+    rounded["borderTopRight"] = function (w, h, fg)
+    {
+        var h2, img, r
+
+        img = this.img(w,h)
+        r = parseInt(w / 2) - 1
+        h2 = parseInt(h / 2)
+        this.circle(img,0,h2 + r,r,fg)
+        this.fill(img,0,h2 + r,r,h - h2 - r,fg)
+        return this.encode(img)
+    }
+
+    rounded["borderBottomLeft"] = function (w, h, fg)
+    {
+        var h2, img, r
+
+        img = this.img(w,h)
+        r = parseInt(w / 2)
+        h2 = parseInt(h / 2)
+        this.circle(img,w,h2 - r,r,fg)
+        this.fill(img,r,0,r,h2 - r,fg)
+        return this.encode(img)
+    }
+
+    rounded["borderBottomRight"] = function (w, h, fg)
+    {
+        var h2, img, r
+
+        img = this.img(w,h)
+        r = parseInt(w / 2) - 1
+        h2 = parseInt(h / 2)
+        this.circle(img,0,h2 - r,r,fg)
+        this.fill(img,0,0,r,h2 - r,fg)
+        return this.encode(img)
+    }
+
     rounded["place"] = function (x, y, name, fg, bg)
     {
         var csz, img, key
 
-        console.log(`rounded.place ${x} ${y} ${name} ${fg} ${bg}`)
         key = name + fg + bg
         img = this.cache[key]
-        csz = ked_ttio.cellsz
         if (_k_.empty(img))
         {
-            img = this.topLeft(csz[0],csz[1],fg)
+            csz = ked_ttio.cellsz
+            img = ((function ()
+            {
+                switch (name)
+                {
+                    case 'rounded.border.tl':
+                        return this.borderTopLeft(csz[0],csz[1],fg)
+
+                    case 'rounded.border.tr':
+                        return this.borderTopRight(csz[0],csz[1],fg)
+
+                    case 'rounded.border.bl':
+                        return this.borderBottomLeft(csz[0],csz[1],fg)
+
+                    case 'rounded.border.br':
+                        return this.borderBottomRight(csz[0],csz[1],fg)
+
+                }
+
+            }).bind(this))()
             this.cache[key] = img
         }
         return ked_ttio.placeImg(img,x,y)

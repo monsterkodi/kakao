@@ -49,6 +49,8 @@ TTIO = (function ()
         this.store()
         this.hasFocus = true
         this.imgIds = 100
+        this.lastplImgs = {}
+        this.placedImgs = {}
         this.modifiers = ['cmd','ctrl','alt','shift']
         this.activeMods = {}
         this.hideCursor()
@@ -170,11 +172,10 @@ TTIO = (function ()
 
     TTIO.prototype["placeImg"] = function (img, x, y, px, py, pw, ph)
     {
-        var _158_17_, _159_17_
+        var placed, _163_32_, _167_16_, _170_28_
 
         if (_k_.empty(img.id))
         {
-            console.log('no id -> send')
             this.sendImg(img)
         }
         this.setCursor(x,y)
@@ -182,11 +183,42 @@ TTIO = (function ()
         py = (py != null ? py : 0)
         pw = (pw != null ? pw : this.cellsz[0])
         ph = (ph != null ? ph : this.cellsz[1])
-        img.pids = ((_158_17_=img.pids) != null ? _158_17_ : [])
-        img.pidc = ((_159_17_=img.pidc) != null ? _159_17_ : 0)
-        img.pidc++
-        img.pids.push(img.pidc)
-        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pidc},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+        if (placed = (this.lastplImgs[img.id] != null ? this.lastplImgs[img.id][[x,y,px,py,pw,ph]] : undefined))
+        {
+            this.placedImgs[img.id] = ((_163_32_=this.placedImgs[img.id]) != null ? _163_32_ : {})
+            this.placedImgs[img.id][[x,y,px,py,pw,ph]] = placed
+            return
+        }
+        img.pid = ((_167_16_=img.pid) != null ? _167_16_ : 0)
+        img.pid++
+        this.placedImgs[img.id] = ((_170_28_=this.placedImgs[img.id]) != null ? _170_28_ : {})
+        this.placedImgs[img.id][[x,y,px,py,pw,ph].toString()] = img.pid
+        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pid},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+    }
+
+    TTIO.prototype["hideImg"] = function (id, pl)
+    {
+        return this.write(`\x1b_Gq=1,a=d,d=i,i=${id},p=${pl}\x1b\\`)
+    }
+
+    TTIO.prototype["removeImgs"] = function ()
+    {
+        var iid, plid, pos, posplids
+
+        for (iid in this.lastplImgs)
+        {
+            posplids = this.lastplImgs[iid]
+            for (pos in posplids)
+            {
+                plid = posplids[pos]
+                if (_k_.empty((this.placedImgs[iid])) || _k_.empty((this.placedImgs[iid][pos])))
+                {
+                    this.hideImg(iid,plid)
+                }
+            }
+        }
+        this.lastplImgs = this.placedImgs
+        return this.placedImgs = {}
     }
 
     TTIO.prototype["hideImage"] = function (id)
@@ -724,11 +756,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _500_23_, _521_20_
+        var diff, _527_23_, _548_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_500_23_=this.lastClick) != null ? _500_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_527_23_=this.lastClick) != null ? _527_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -751,7 +783,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_521_20_=this.lastPixels) != null ? _521_20_ : [])
+        this.lastPixels = ((_548_20_=this.lastPixels) != null ? _548_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -810,7 +842,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _577_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _604_23_
 
         if ((this.pasteBuffer != null))
         {

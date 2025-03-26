@@ -75,6 +75,11 @@ cells = (function ()
         return (0 <= x && x < this.cols) && (0 <= y && y < this.rows)
     }
 
+    cells.prototype["outside"] = function (x, y)
+    {
+        return !this.inside(x,y)
+    }
+
     cells.prototype["add"] = function (x, y, char, fg, bg)
     {
         if (this.inside(x,y))
@@ -348,7 +353,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _167_16_, _175_20_, _176_20_
+        var bg, fg, x, y, _168_16_, _176_20_, _177_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -367,9 +372,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_167_16_=opt.pad) != null ? _167_16_ : [1,0])
-        fg = ((_175_20_=opt.fg) != null ? _175_20_ : '#888')
-        bg = ((_176_20_=opt.bg) != null ? _176_20_ : null)
+        opt.pad = ((_168_16_=opt.pad) != null ? _168_16_ : [1,0])
+        fg = ((_176_20_=opt.fg) != null ? _176_20_ : '#888')
+        bg = ((_177_20_=opt.bg) != null ? _177_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)
@@ -395,7 +400,7 @@ cells = (function ()
 
     cells.prototype["draw_rounded_border"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, _214_20_, _215_20_
+        var bg, fg, _215_20_, _216_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -414,13 +419,16 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        fg = ((_214_20_=opt.fg) != null ? _214_20_ : '#888')
-        bg = ((_215_20_=opt.bg) != null ? _215_20_ : null)
+        fg = ((_215_20_=opt.fg) != null ? _215_20_ : '#888')
+        bg = ((_216_20_=opt.bg) != null ? _216_20_ : null)
         this.img(x1,y1,'rounded.border.tl',fg,bg)
-        this.set(x1,y1,'╭',fg,bg)
-        this.set(x2,y1,'╮',fg,bg)
-        this.set(x1,y2,'╰',fg,bg)
-        this.set(x2,y2,'╯',fg,bg)
+        this.img(x2,y1,'rounded.border.tr',fg,bg)
+        this.img(x1,y2,'rounded.border.bl',fg,bg)
+        this.img(x2,y2,'rounded.border.br',fg,bg)
+        this.set(x1,y1,' ',null,bg)
+        this.set(x2,y1,' ',null,bg)
+        this.set(x1,y2,' ',null,bg)
+        this.set(x2,y2,' ',null,bg)
         this.fill_row(y1,x1 + 1,x2 - 1,'▄',fg,bg)
         this.fill_row(y2,x1 + 1,x2 - 1,'▀',fg,bg)
         this.fill_col(x1,y1 + 1,y2 - 1,'▐',fg,bg)
@@ -429,10 +437,11 @@ cells = (function ()
 
     cells.prototype["img"] = function (x, y, name, fg, bg)
     {
-        if (name.startsWith('rounded.'))
+        if (this.outside(x,y))
         {
-            return rounded.place(x,y,name.slice(8),fg,bg)
+            return
         }
+        return rounded.place(this.wx(x),this.wy(y),name,fg,bg)
     }
 
     cells.prototype["adjustContrastForHighlight"] = function (x, y, highlightColor)

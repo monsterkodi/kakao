@@ -22,7 +22,9 @@ function TTIO extends events
         
         @hasFocus = true
         
-        @imgIds = 100
+        @imgIds     = 100
+        @lastplImgs = {}
+        @placedImgs = {}
         
         @modifiers  = ['cmd' 'ctrl' 'alt' 'shift']
         @activeMods = {}
@@ -147,19 +149,44 @@ function TTIO extends events
     placeImg: img x y px py pw ph ->
     
         if empty img.id
-            log 'no id -> send'
             @sendImg img
     
         @setCursor x y
+        
         px ?= 0
         py ?= 0
-        pw ?= @cellsz[0]
+        pw ?= @cellsz[0]      
         ph ?= @cellsz[1]
-        img.pids ?= []
-        img.pidc ?= 0
-        img.pidc++
-        img.pids.push img.pidc
-        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pidc},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
+
+        if placed = @lastplImgs[img.id]?[[x y px py pw ph]]
+            # log "◆#{img.id} #{placed} #{[x y px py pw ph]}"  
+            @placedImgs[img.id] ?= {}
+            @placedImgs[img.id][[x y px py pw ph]] = placed
+            ⮐
+
+        img.pid ?= 0                   
+        img.pid++
+        
+        @placedImgs[img.id] ?= {}
+        @placedImgs[img.id][[x y px py pw ph].toString()] = img.pid
+        
+        # log "●#{img.id} #{img.pid} #{[x y px py pw ph].toString()}"
+        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
+
+    hideImg: id pl ->
+        
+        # log "▪#{id} #{pl}"
+        @write "\x1b_Gq=1,a=d,d=i,i=#{id},p=#{pl}\x1b\\"
+        
+    removeImgs: ->
+        
+        for iid,posplids of @lastplImgs
+            for pos,plid of posplids
+                if empty(@placedImgs[iid]) or empty(@placedImgs[iid][pos])
+                    @hideImg iid plid
+                
+        @lastplImgs = @placedImgs
+        @placedImgs = {}
         
     # 000   000  000  0000000    00000000  
     # 000   000  000  000   000  000       

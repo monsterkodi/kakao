@@ -31,7 +31,8 @@ function cells
     wx: x -> x < 0 ? @x+@cols+x : @x+x
     wy: y -> y < 0 ? @y+@rows+y : @y+y
     
-    inside: x y -> 0 <= x < @cols and 0 <= y < @rows
+    inside:  x y -> 0 <= x < @cols and 0 <= y < @rows
+    outside: x y -> not @inside x y
     
     add:        x y char fg bg => if @inside(x y) ➜ @screen.add       @wx(x) @wy(y) char fg bg else Infinity
     set:        x y char fg bg => if @inside(x y) ➜ @screen.set       @wx(x) @wy(y) char fg bg
@@ -215,11 +216,19 @@ function cells
         bg = opt.bg ? null
         
         @img  x1  y1 'rounded.border.tl' fg bg
+        @img  x2  y1 'rounded.border.tr' fg bg
+        @img  x1  y2 'rounded.border.bl' fg bg
+        @img  x2  y2 'rounded.border.br' fg bg
         
-        @set  x1  y1 '╭' fg bg
-        @set  x2  y1 '╮' fg bg
-        @set  x1  y2 '╰' fg bg
-        @set  x2  y2 '╯' fg bg
+        @set  x1  y1 ' ' null bg
+        @set  x2  y1 ' ' null bg
+        @set  x1  y2 ' ' null bg
+        @set  x2  y2 ' ' null bg
+        
+        # @set  x1  y1 '╭' fg bg
+        # @set  x2  y1 '╮' fg bg
+        # @set  x1  y2 '╰' fg bg
+        # @set  x2  y2 '╯' fg bg
         
         @fill_row y1 x1+1 x2-1 '▄' fg bg
         @fill_row y2 x1+1 x2-1 '▀' fg bg
@@ -228,8 +237,9 @@ function cells
         
     img: x y name fg bg ->
     
-        if name.startsWith 'rounded.'
-            ⮐  rounded.place x y name[8..] fg bg
+        ⮐  if @outside x y
+    
+        rounded.place @wx(x) @wy(y) name fg bg
         
     #  0000000   0000000          000         0000000   0000000   000   000  000000000  00000000    0000000    0000000  000000000  
     # 000   000  000   000        000        000       000   000  0000  000     000     000   000  000   000  000          000     
