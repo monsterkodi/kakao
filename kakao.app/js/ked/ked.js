@@ -20,6 +20,7 @@ import help from "./util/help.js"
 import frecent from "./util/frecent.js"
 import watcher from "./util/watcher.js"
 import git from "./util/git.js"
+import rounded from "./util/rounded.js"
 
 import belt from "./edit/tool/belt.js"
 

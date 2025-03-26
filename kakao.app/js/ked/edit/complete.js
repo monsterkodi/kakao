@@ -30,6 +30,7 @@ complete = (function ()
         this.choices.scroll.handle = '▐'
         this.color = {complete:theme.editor.selection}
         this.choices.setColor('bg',theme.complete.bg)
+        this.choices.setColor('hover',{bg:theme.hover.bg,blur:theme.hover.bg})
         this.choices.scroll.setColor('bg',theme.complete.bg)
         this.choices.scroll.setColor('knob',theme.complete.scroll)
         this.choices.scroll.setColor('dot',theme.complete.scroll)

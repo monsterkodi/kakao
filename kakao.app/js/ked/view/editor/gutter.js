@@ -117,7 +117,7 @@ gutter = (function ()
 
     gutter.prototype["onGitDiff"] = function (diff)
     {
-        var add, change, del, firstLine, mod, modi, mods, numLines, off, _101_29_, _102_29_, _103_29_, _107_36_
+        var add, change, del, firstLine, mod, modi, mods, numLines, off, _101_29_, _102_29_, _103_29_, _108_36_
 
         this.gitChanges = {}
         var list = _k_.list(diff.changes)
@@ -128,8 +128,9 @@ gutter = (function ()
             mod = ((_101_29_=change.mod) != null ? _101_29_ : [])
             add = ((_102_29_=change.add) != null ? _102_29_ : [])
             del = ((_103_29_=change.del) != null ? _103_29_ : [])
-            mods = mod.concat(add.concat(del))
+            mods = mod.concat(add)
             numLines = mods.length
+            mods = mods.concat(del)
             for (var _b_ = modi = 0, _c_ = numLines; (_b_ <= _c_ ? modi < numLines : modi > numLines); (_b_ <= _c_ ? ++modi : --modi))
             {
                 off = ((mods[modi].new != null) ? -1 : 0)
@@ -144,7 +145,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _143_99_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _144_99_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))

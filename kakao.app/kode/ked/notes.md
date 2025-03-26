@@ -25,7 +25,6 @@
 - git changes in fileeditor scroll
 - unsaved changes 'tabs'
 - add results from indexer to completion
-- fix completion highlight color
 - nicer rounded frames with kitty images
 - selections, cursors and highlights in mapscroll
 - highlight line changes in differ

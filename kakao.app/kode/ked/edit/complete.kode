@@ -23,10 +23,11 @@ function complete
         
         @color = complete: theme.editor.selection
         
-        @choices.setColor        'bg'   theme.complete.bg
-        @choices.scroll.setColor 'bg'   theme.complete.bg
-        @choices.scroll.setColor 'knob' theme.complete.scroll
-        @choices.scroll.setColor 'dot'  theme.complete.scroll
+        @choices.setColor        'bg'    theme.complete.bg
+        @choices.setColor        'hover' bg:theme.hover.bg blur:theme.hover.bg
+        @choices.scroll.setColor 'bg'    theme.complete.bg
+        @choices.scroll.setColor 'knob'  theme.complete.scroll
+        @choices.scroll.setColor 'dot'   theme.complete.scroll
         
         @choices.on 'action' @onChoicesAction
         

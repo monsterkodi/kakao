@@ -15,7 +15,7 @@ let kstr = kxk.kstr
 
 import nfs from "../../../kxk/nfs.js"
 
-import png from "../../util/png.js"
+import rounded from "../../util/rounded.js"
 
 
 TTIO = (function ()
@@ -138,36 +138,21 @@ TTIO = (function ()
 
     TTIO.prototype["placeImageOverlay"] = function (id, x, y, px, py, pw, ph)
     {
-        var b64, buf, dta, h, img, w
+        var img
 
         this.setCursor(x,y)
-        if (!this.pngID)
+        if (!this.overlayID)
         {
-            w = 300
-            h = 400
-            img = new ArrayBuffer(w * h * 4)
-            buf = new DataView(img)
-            for (var _a_ = x = 0, _b_ = w; (_a_ <= _b_ ? x < w : x > w); (_a_ <= _b_ ? ++x : --x))
-            {
-                for (var _c_ = y = 0, _d_ = h; (_c_ <= _d_ ? y < h : y > h); (_c_ <= _d_ ? ++y : --y))
-                {
-                    buf.setUint8(((x * h + y) * 4) + 0,255)
-                    buf.setUint8(((x * h + y) * 4) + 1,255)
-                    buf.setUint8(((x * h + y) * 4) + 2,255)
-                    buf.setUint8(((x * h + y) * 4) + 3,2)
-                }
-            }
-            dta = png.encode([img],w,h,1)
-            b64 = Buffer.from(dta).toString('base64')
-            this.pngID = 1
-            this.write(`\x1b_Gq=1,i=${this.pngID},f=100;${b64}\x1b\\`)
+            img = rounded.rect(300,400,0,[255,255,255,2])
+            this.overlayID = 1
+            this.write(`\x1b_Gq=1,i=${this.overlayID},f=100;${img.b64}\x1b\\`)
         }
-        return this.write(`\x1b_Gq=1,a=p,i=${this.pngID},p=${id},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+        return this.write(`\x1b_Gq=1,a=p,i=${this.overlayID},p=${id},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
     }
 
     TTIO.prototype["hideImageOverlay"] = function (id)
     {
-        return this.write(`\x1b_Gq=1,a=d,d=i,i=${this.pngID},p=${id}\x1b\\`)
+        return this.write(`\x1b_Gq=1,a=d,d=i,i=${this.overlayID},p=${id}\x1b\\`)
     }
 
     TTIO.prototype["hideImage"] = function (id)
@@ -705,11 +690,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _480_23_, _501_20_
+        var diff, _465_23_, _486_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_480_23_=this.lastClick) != null ? _480_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_465_23_=this.lastClick) != null ? _465_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -732,7 +717,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_501_20_=this.lastPixels) != null ? _501_20_ : [])
+        this.lastPixels = ((_486_20_=this.lastPixels) != null ? _486_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -791,7 +776,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _557_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _542_23_
 
         if ((this.pasteBuffer != null))
         {

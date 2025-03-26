@@ -1,0 +1,73 @@
+###
+    ████████    ███████   ███   ███  ███   ███  ███████    ████████  ███████  
+    ███   ███  ███   ███  ███   ███  ████  ███  ███   ███  ███       ███   ███
+    ███████    ███   ███  ███   ███  ███ █ ███  ███   ███  ███████   ███   ███
+    ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███       ███   ███
+    ███   ███   ███████    ███████   ███   ███  ███████    ████████  ███████  
+###
+
+use ../../kxk ◆ nfs
+use ◆ png
+
+function rounded
+
+    @img: w h ->
+        
+        buff = new ArrayBuffer w*h*4
+        view = new DataView buff
+    
+        w:    w
+        h:    h
+        buff: buff
+        view: view
+
+    @set: img x y rgba ->
+    
+        ⮐  if x < 0 or y < 0
+        ⮐  if x >= img.w
+        ⮐  if y >= img.h
+        
+        for i in 0...4
+            img.view.setUint8 ((x+y*img.w)*4)+i rgba[i]
+            
+    @encode: img ->
+    
+        img.png = Buffer.from png.encode([img.buff] img.w img.h 2)
+        img.b64 = img.png.toString 'base64'
+        img
+        
+    @circle: img cx cy r fg ->
+    
+        rsq = r * r
+        for x in cx-r..cx+r
+            for y in cy-r..cy+r
+                if (cx-x)**2 + (cy-y)**2 <= rsq
+                    @set img x y fg
+                    
+    @fill: img x y w h fg ->
+        
+        for r in x..x+w
+            for c in y..y+h
+                @set img r c fg
+                    
+    @rect: w h r fg ->
+        
+        img = @img w h
+        rx = r
+        ry = r
+        rw = w-2*r
+        rh = h-2*r
+        @fill img rx ry rw rh fg
+        @encode img
+
+    @topLeft: w h fg ->
+    
+        img = @img w h
+        r   = min w h
+        @circle img r r r   fg
+        @fill   img 0 r w h fg
+        @encode img        
+        
+# nfs.write '~/Desktop/topLeft.png' rounded.topLeft(20 40 [100 100 255 255]).png
+    
+export rounded

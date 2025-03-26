@@ -28,7 +28,7 @@
 \/                          . dir_punct
 [⏷⏵]                      . dir
 
-[✔]                         . modified
+[✔✚]                        . modified
 
 []                         . file_icon_text
 

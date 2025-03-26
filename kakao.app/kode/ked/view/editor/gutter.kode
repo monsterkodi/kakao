@@ -101,8 +101,9 @@ function gutter extends view
             mod = change.mod ? []
             add = change.add ? []
             del = change.del ? []
-            mods      = mod.concat add.concat(del) 
-            numLines  = mods.length
+            mods     = mod.concat add
+            numLines = mods.length
+            mods     = mods.concat del
             for modi in 0...numLines
                 off = mods[modi].new? ? -1 : 0
                 @gitChanges[firstLine+modi+off] = mods[modi]
