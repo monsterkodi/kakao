@@ -97,8 +97,8 @@ function dircol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells.fill_rect 0 1 -1 -1 ' ' null theme.dirtree.bg
-        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
+        @cells.fill_rect 0 1 -1 -1 ' ' null @dirtree.color.bg
+        @cells.fill_rect 0 0 -1  0 ' ' null @crumbs.color.empty
         
         @crumbs.draw()
         @dirtree.draw()

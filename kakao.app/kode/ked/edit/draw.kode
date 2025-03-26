@@ -19,12 +19,12 @@ function draw extends view
         
         super screen name features
         
-        @setColor 'bg'                   theme.editor.bg
-        @setColor 'empty'                theme.editor.empty
-        
-        @setColor 'cursor'               theme.cursor
-        @setColor 'selection'            theme.selection
-        @setColor 'highlight'            theme.highlight
+        @setColor 'bg'        theme.editor.bg
+        @setColor 'empty'     theme.editor.empty
+                              
+        @setColor 'cursor'    theme.cursor
+        @setColor 'selection' theme.selection
+        @setColor 'highlight' theme.highlight
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -243,9 +243,9 @@ function draw extends view
         s = @state.s
         mainCursor = @state.mainCursor()
         
-        fg = theme.cursor.fg
+        fg = @color.cursor.fg
 
-        bg = mode.themeColor @state 'cursor.multi' theme.cursor.multi
+        bg = mode.themeColor @state 'cursor.multi' @color.cursor.multi
 
         bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
@@ -259,9 +259,9 @@ function draw extends view
                         
         if @isCursorVisible mainCursor
              
-            fg  = theme.cursor.fg
+            fg  = @color.cursor.fg
             
-            bg = mode.themeColor @state 'cursor.main' theme.cursor.main
+            bg = mode.themeColor @state 'cursor.main' @color.cursor.main
 
             if not @hasFocus() ➜ bg = color.darken bg 
              

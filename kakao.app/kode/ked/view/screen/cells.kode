@@ -12,6 +12,7 @@
 
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ color theme
+use ../../util      ◆ rounded
 
 function cells
 
@@ -90,6 +91,12 @@ function cells
                     if col < @cols
                         @set_bg col row bg
 
+    # ████████  ███  ███      ███    
+    # ███       ███  ███      ███    
+    # ██████    ███  ███      ███    
+    # ███       ███  ███      ███    
+    # ███       ███  ███████  ███████
+
     bg_fill: x1 y1 x2 y2 bg =>
     
         x1 = @cols + x1 if x1 < 0
@@ -142,6 +149,12 @@ function cells
         for row in y1..y2
             @set col row char fg bg
             
+    # ████████  ████████    ███████   ██     ██  ████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     
+    # ██████    ███████    █████████  █████████  ███████ 
+    # ███       ███   ███  ███   ███  ███ █ ███  ███     
+    # ███       ███   ███  ███   ███  ███   ███  ████████
+
     draw_frame: x1 y1 x2 y2 opt =>
 
         ⮐  if x1 < 0 and x2 < 0
@@ -183,6 +196,12 @@ function cells
             @set  x2  y '' fg bg
             @fill_row y x1+1 x2-1 '─' fg bg
             
+    # ████████    ███████   ███   ███  ███   ███  ███████    ████████  ███████  
+    # ███   ███  ███   ███  ███   ███  ████  ███  ███   ███  ███       ███   ███
+    # ███████    ███   ███  ███   ███  ███ █ ███  ███   ███  ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███       ███   ███
+    # ███   ███   ███████    ███████   ███   ███  ███████    ████████  ███████  
+
     draw_rounded_border: x1 y1 x2 y2 opt =>
     
         ⮐  if x1 < 0 and x2 < 0
@@ -195,32 +214,22 @@ function cells
         fg = opt.fg ? '#888'
         bg = opt.bg ? null
         
+        @img  x1  y1 'rounded.border.tl' fg bg
+        
         @set  x1  y1 '╭' fg bg
         @set  x2  y1 '╮' fg bg
         @set  x1  y2 '╰' fg bg
         @set  x2  y2 '╯' fg bg
         
-        @fill_row y1 x1+1 x2-1 '█' fg bg
-        @fill_row y2 x1+1 x2-1 '█' fg bg
-        @fill_col x1 y1+1 y2-1 '█' fg bg
-        @fill_col x2 y1+1 y2-1 '█' fg bg
+        @fill_row y1 x1+1 x2-1 '▄' fg bg
+        @fill_row y2 x1+1 x2-1 '▀' fg bg
+        @fill_col x1 y1+1 y2-1 '▐' fg bg
+        @fill_col x2 y1+1 y2-1 '▌' fg bg
         
-    draw_path: x mx y pth bg ->
-
-        lastSlash = pth.lastIndexOf '/'
-        lastDot   = pth.lastIndexOf '.'
-        
-        si = max 0 pth.length - mx + x
-        
-        for ci in si...pth.length
-            fg = ci > lastSlash ? 'file' : 'dir'
-            fg = theme[fg]
-            fg = color.darken(fg) if lastSlash <= lastDot <= ci
-            fg = color.darken(fg) if pth[ci] in './'
-            @set x y pth[ci] fg bg
-            x += 1
-            
-        pth.length - si
+    img: x y name fg bg ->
+    
+        if name.startsWith 'rounded.'
+            ⮐  rounded.place x y name[8..] fg bg
         
     #  0000000   0000000          000         0000000   0000000   000   000  000000000  00000000    0000000    0000000  000000000  
     # 000   000  000   000        000        000       000   000  0000  000     000     000   000  000   000  000          000     

@@ -125,8 +125,8 @@ dircol = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,1,-1,-1,' ',null,theme.dirtree.bg)
-        this.cells.fill_rect(0,0,-1,0,' ',null,theme.gutter.bg)
+        this.cells.fill_rect(0,1,-1,-1,' ',null,this.dirtree.color.bg)
+        this.cells.fill_rect(0,0,-1,0,' ',null,this.crumbs.color.empty)
         this.crumbs.draw()
         this.dirtree.draw()
         this.knob.draw()

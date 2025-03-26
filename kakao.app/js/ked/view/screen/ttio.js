@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, noon: function (obj) { 
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, noon: function (obj) { 
     var pad = function (s, l) { while (s.length < l) { s += ' ' }; return s }; 
     var esc = function (k, arry) { var es, sp; if (0 <= k.indexOf('\n')) { sp = k.split('\n'); es = sp.map(function (s) { return esc(s,arry) }); es.unshift('...'); es.push('...'); return es.join('\n') } if (k === '' || k === '...' || _k_.in(k[0],[' ','#','|']) || _k_.in(k[k.length - 1],[' ','#','|'])) { k = '|' + k + '|' } else if (arry && /  /.test(k)) { k = '|' + k + '|' }; return k }; 
     var pretty = function (o, ind, seen) { var k, kl, l, v, mk = 4; if (Object.keys(o).length > 1) { for (k in o) { if (Object.hasOwn(o,k)) { kl = parseInt(Math.ceil((k.length + 2) / 4) * 4); mk = Math.max(mk,kl); if (mk > 32) { mk = 32; break } } } }; l = []; var keyValue = function (k, v) { var i, ks, s, vs; s = ind; k = esc(k,true); if (k.indexOf('  ') > 0 && k[0] !== '|') { k = '|'+k+'|' } else if (k[0] !== '|' && k[k.length - 1] === '|') { k = '|' + k } else if (k[0] === '|' && k[k.length - 1] !== '|') { k += '|' }; ks = pad(k,Math.max(mk,k.length + 2)); i = pad(ind + '    ',mk); s += ks; vs = toStr(v,i,false,seen); if (vs[0] === '\n') { while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) } }; s += vs; while (s[s.length - 1] === ' ') { s = s.substr(0,s.length - 1) }; return s }; for (k in o) { if (Object.hasOwn(o,k)) { l.push(keyValue(k,o[k])) } }; return l.join('\n') }; 
@@ -48,6 +48,7 @@ TTIO = (function ()
         this["write"] = this["write"].bind(this)
         this.store()
         this.hasFocus = true
+        this.imgIds = 100
         this.modifiers = ['cmd','ctrl','alt','shift']
         this.activeMods = {}
         this.hideCursor()
@@ -70,6 +71,7 @@ TTIO = (function ()
         process.stdin.on('data',this.onData)
         post.on('pointer',this.onPointer)
         this.setTitle('kėd')
+        global.ked_ttio = this
         setTimeout(this.onResize,10)
         return TTIO.__super__.constructor.apply(this, arguments)
     }
@@ -138,21 +140,53 @@ TTIO = (function ()
 
     TTIO.prototype["placeImageOverlay"] = function (id, x, y, px, py, pw, ph)
     {
-        var img
-
-        this.setCursor(x,y)
         if (!this.overlayID)
         {
-            img = rounded.rect(300,400,0,[255,255,255,2])
-            this.overlayID = 1
-            this.write(`\x1b_Gq=1,i=${this.overlayID},f=100;${img.b64}\x1b\\`)
+            this.overlayID = this.sendImg(rounded.rect(300,400,0,[255,255,255,2]),1)
         }
+        this.setCursor(x,y)
         return this.write(`\x1b_Gq=1,a=p,i=${this.overlayID},p=${id},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
     }
 
     TTIO.prototype["hideImageOverlay"] = function (id)
     {
         return this.write(`\x1b_Gq=1,a=d,d=i,i=${this.overlayID},p=${id}\x1b\\`)
+    }
+
+    TTIO.prototype["sendImg"] = function (img, id)
+    {
+        var base64
+
+        if (_k_.empty(id))
+        {
+            this.imgIds += 1
+            id = this.imgIds
+        }
+        base64 = img.png.toString('base64')
+        this.write(`\x1b_Gq=1,i=${id},f=100;${base64}\x1b\\`)
+        img.id = id
+        return id
+    }
+
+    TTIO.prototype["placeImg"] = function (img, x, y, px, py, pw, ph)
+    {
+        var _158_17_, _159_17_
+
+        if (_k_.empty(img.id))
+        {
+            console.log('no id -> send')
+            this.sendImg(img)
+        }
+        this.setCursor(x,y)
+        px = (px != null ? px : 0)
+        py = (py != null ? py : 0)
+        pw = (pw != null ? pw : this.cellsz[0])
+        ph = (ph != null ? ph : this.cellsz[1])
+        img.pids = ((_158_17_=img.pids) != null ? _158_17_ : [])
+        img.pidc = ((_159_17_=img.pidc) != null ? _159_17_ : 0)
+        img.pidc++
+        img.pids.push(img.pidc)
+        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pidc},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
     }
 
     TTIO.prototype["hideImage"] = function (id)
@@ -690,11 +724,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _465_23_, _486_20_
+        var diff, _500_23_, _521_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_465_23_=this.lastClick) != null ? _465_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_500_23_=this.lastClick) != null ? _500_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -717,7 +751,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_486_20_=this.lastPixels) != null ? _486_20_ : [])
+        this.lastPixels = ((_521_20_=this.lastPixels) != null ? _521_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -776,7 +810,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _542_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _577_23_
 
         if ((this.pasteBuffer != null))
         {

@@ -274,8 +274,8 @@ draw = (function ()
 
         s = this.state.s
         mainCursor = this.state.mainCursor()
-        fg = theme.cursor.fg
-        bg = mode.themeColor(this.state,'cursor.multi',theme.cursor.multi)
+        fg = this.color.cursor.fg
+        bg = mode.themeColor(this.state,'cursor.multi',this.color.cursor.multi)
         if (!this.cells.screen.t.hasFocus)
         {
             bg = color.darken(bg)
@@ -295,8 +295,8 @@ draw = (function ()
         }
         if (this.isCursorVisible(mainCursor))
         {
-            fg = theme.cursor.fg
-            bg = mode.themeColor(this.state,'cursor.main',theme.cursor.main)
+            fg = this.color.cursor.fg
+            bg = mode.themeColor(this.state,'cursor.main',this.color.cursor.main)
             if (!this.hasFocus())
             {
                 bg = color.darken(bg)

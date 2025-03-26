@@ -1,4 +1,4 @@
-var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }}
+var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var rounded
 
@@ -12,6 +12,7 @@ rounded = (function ()
     function rounded ()
     {}
 
+    rounded["cache"] = {}
     rounded["img"] = function (w, h)
     {
         var buff, view
@@ -102,6 +103,22 @@ rounded = (function ()
         this.circle(img,r,r,r,fg)
         this.fill(img,0,r,w,h,fg)
         return this.encode(img)
+    }
+
+    rounded["place"] = function (x, y, name, fg, bg)
+    {
+        var csz, img, key
+
+        console.log(`rounded.place ${x} ${y} ${name} ${fg} ${bg}`)
+        key = name + fg + bg
+        img = this.cache[key]
+        csz = ked_ttio.cellsz
+        if (_k_.empty(img))
+        {
+            img = this.topLeft(csz[0],csz[1],fg)
+            this.cache[key] = img
+        }
+        return ked_ttio.placeImg(img,x,y)
     }
 
     return rounded

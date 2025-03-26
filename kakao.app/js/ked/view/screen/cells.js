@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var cells
 
@@ -6,6 +6,8 @@ import belt from "../../edit/tool/belt.js"
 
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
+
+import rounded from "../../util/rounded.js"
 
 
 cells = (function ()
@@ -346,7 +348,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _154_16_, _162_20_, _163_20_
+        var bg, fg, x, y, _167_16_, _175_20_, _176_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -365,9 +367,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_154_16_=opt.pad) != null ? _154_16_ : [1,0])
-        fg = ((_162_20_=opt.fg) != null ? _162_20_ : '#888')
-        bg = ((_163_20_=opt.bg) != null ? _163_20_ : null)
+        opt.pad = ((_167_16_=opt.pad) != null ? _167_16_ : [1,0])
+        fg = ((_175_20_=opt.fg) != null ? _175_20_ : '#888')
+        bg = ((_176_20_=opt.bg) != null ? _176_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)
@@ -393,7 +395,7 @@ cells = (function ()
 
     cells.prototype["draw_rounded_border"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, _195_20_, _196_20_
+        var bg, fg, _214_20_, _215_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -412,41 +414,25 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        fg = ((_195_20_=opt.fg) != null ? _195_20_ : '#888')
-        bg = ((_196_20_=opt.bg) != null ? _196_20_ : null)
+        fg = ((_214_20_=opt.fg) != null ? _214_20_ : '#888')
+        bg = ((_215_20_=opt.bg) != null ? _215_20_ : null)
+        this.img(x1,y1,'rounded.border.tl',fg,bg)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)
         this.set(x2,y2,'╯',fg,bg)
-        this.fill_row(y1,x1 + 1,x2 - 1,'█',fg,bg)
-        this.fill_row(y2,x1 + 1,x2 - 1,'█',fg,bg)
-        this.fill_col(x1,y1 + 1,y2 - 1,'█',fg,bg)
-        return this.fill_col(x2,y1 + 1,y2 - 1,'█',fg,bg)
+        this.fill_row(y1,x1 + 1,x2 - 1,'▄',fg,bg)
+        this.fill_row(y2,x1 + 1,x2 - 1,'▀',fg,bg)
+        this.fill_col(x1,y1 + 1,y2 - 1,'▐',fg,bg)
+        return this.fill_col(x2,y1 + 1,y2 - 1,'▌',fg,bg)
     }
 
-    cells.prototype["draw_path"] = function (x, mx, y, pth, bg)
+    cells.prototype["img"] = function (x, y, name, fg, bg)
     {
-        var ci, fg, lastDot, lastSlash, si
-
-        lastSlash = pth.lastIndexOf('/')
-        lastDot = pth.lastIndexOf('.')
-        si = _k_.max(0,pth.length - mx + x)
-        for (var _a_ = ci = si, _b_ = pth.length; (_a_ <= _b_ ? ci < pth.length : ci > pth.length); (_a_ <= _b_ ? ++ci : --ci))
+        if (name.startsWith('rounded.'))
         {
-            fg = (ci > lastSlash ? 'file' : 'dir')
-            fg = theme[fg]
-            if ((lastSlash <= lastDot && lastDot <= ci))
-            {
-                fg = color.darken(fg)
-            }
-            if (_k_.in(pth[ci],'./'))
-            {
-                fg = color.darken(fg)
-            }
-            this.set(x,y,pth[ci],fg,bg)
-            x += 1
+            return rounded.place(x,y,name.slice(8),fg,bg)
         }
-        return pth.length - si
     }
 
     cells.prototype["adjustContrastForHighlight"] = function (x, y, highlightColor)

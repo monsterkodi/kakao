@@ -22,6 +22,8 @@ function TTIO extends events
         
         @hasFocus = true
         
+        @imgIds = 100
+        
         @modifiers  = ['cmd' 'ctrl' 'alt' 'shift']
         @activeMods = {}
         
@@ -50,6 +52,9 @@ function TTIO extends events
         post.on 'pointer'          @onPointer
         
         @setTitle 'kėd'
+        
+        global.ked_ttio = @
+        
         setTimeout @onResize 10 # delay screen size request due to ghostty bug
                             
     write: str => process.stdout.write str
@@ -112,20 +117,50 @@ function TTIO extends events
     
     placeImageOverlay: id x y px py pw ph ->
         
-        @setCursor x y
-        
         if not @overlayID
+            @overlayID = @sendImg rounded.rect(300 400 0 [255 255 255 2]) 1
         
-            img = rounded.rect 300 400 0 [255 255 255 2]
-            @overlayID = 1
-            @write "\x1b_Gq=1,i=#{@overlayID},f=100;#{img.b64}\x1b\\"
-        
+        @setCursor x y
         @write "\x1b_Gq=1,a=p,i=#{@overlayID},p=#{id},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
         
     hideImageOverlay: id ->
     
         @write "\x1b_Gq=1,a=d,d=i,i=#{@overlayID},p=#{id}\x1b\\"
+        
+    # ███  ██     ██   ███████ 
+    # ███  ███   ███  ███      
+    # ███  █████████  ███  ████
+    # ███  ███ █ ███  ███   ███
+    # ███  ███   ███   ███████ 
 
+    sendImg: img id ->
+    
+        if empty id
+            @imgIds += 1
+            id = @imgIds
+            
+        base64 = img.png.toString 'base64'
+        @write "\x1b_Gq=1,i=#{id},f=100;#{base64}\x1b\\"
+        img.id = id
+        id
+        
+    placeImg: img x y px py pw ph ->
+    
+        if empty img.id
+            log 'no id -> send'
+            @sendImg img
+    
+        @setCursor x y
+        px ?= 0
+        py ?= 0
+        pw ?= @cellsz[0]
+        ph ?= @cellsz[1]
+        img.pids ?= []
+        img.pidc ?= 0
+        img.pidc++
+        img.pids.push img.pidc
+        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pidc},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
+        
     # 000   000  000  0000000    00000000  
     # 000   000  000  000   000  000       
     # 000000000  000  000   000  0000000   
@@ -151,7 +186,7 @@ function TTIO extends events
     # 0000000   0000000   000 0 000  000   000  
     #      000  000       000  0000  000   000  
     # 0000000   00000000  000   000  0000000    
-    
+            
     sendImageData: data id w h bytesperpixel=3 ->
         
         ###
