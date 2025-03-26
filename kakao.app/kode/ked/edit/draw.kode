@@ -7,7 +7,7 @@
 ###
 
 use ../../kxk    ▪ kseg kstr 
-use ../util      ◆ prof 
+use ../util      ◆ prof rounded
 use ../theme     ◆ color theme 
 use ../view/base ◆ view
 use ./tool       ◆ belt
@@ -255,7 +255,8 @@ function draw extends view
             
             if @isCursorVisible cursor
              
-                @cells.set_fg_bg cursor[0]-s.view[0] cursor[1]-s.view[1] fg bg
+                # @cells.set_fg_bg cursor[0]-s.view[0] cursor[1]-s.view[1] fg bg
+                @cells.draw_rounded_multi_cursor cursor[0]-s.view[0] cursor[1]-s.view[1] bg
                         
         if @isCursorVisible mainCursor
              
@@ -275,7 +276,8 @@ function draw extends view
                      
             bg = color.darken bg if not @cells.screen.t.hasFocus
                  
-            @cells.set_fg_bg x y fg bg
+            # @cells.set_fg_bg x y fg bg
+            @cells.draw_rounded_cursor x y bg
 
     #  0000000   0000000   000       0000000   00000000   00000000   000  000      000       0000000  
     # 000       000   000  000      000   000  000   000  000   000  000  000      000      000       

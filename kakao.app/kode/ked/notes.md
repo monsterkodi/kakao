@@ -25,7 +25,7 @@
 - git changes in fileeditor scroll
 - unsaved changes 'tabs'
 - add results from indexer to completion
-- nicer rounded frames with kitty images
+- nicer rounded scroll and cursors with kitty images
 - selections, cursors and highlights in mapscroll
 - highlight line changes in differ
 - add mapscroll to differ status

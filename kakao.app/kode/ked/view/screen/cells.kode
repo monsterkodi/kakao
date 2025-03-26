@@ -235,7 +235,21 @@ function cells
         @fill_col x1 y1+1 y2-1 '▐' fg bg
         @fill_col x2 y1+1 y2-1 '▌' fg bg
         
-    img: x y name fg bg ->
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████  
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███
+
+    draw_rounded_cursor: x y fg =>
+    
+        @img x y "rounded.cursor" fg
+        
+    draw_rounded_multi_cursor: x y fg =>
+    
+        @img x y "rounded.multi" fg
+        
+    img: x y name fg bg =>
     
         ⮐  if @outside x y
     
@@ -247,7 +261,7 @@ function cells
     # 000   000  000   000  000   000        000       000   000  000  0000     000     000   000  000   000       000     000     
     # 000   000  0000000     0000000          0000000   0000000   000   000     000     000   000  000   000  0000000      000     
     
-    adjustContrastForHighlight: x y highlightColor ->
+    adjustContrastForHighlight: x y highlightColor =>
         
         ofg = @get_fg x y
         @set_fg x y color.adjustForBackground(ofg highlightColor)        

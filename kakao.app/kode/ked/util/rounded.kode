@@ -111,20 +111,42 @@ function rounded
         @fill   img 0 0 r h2-r fg
         @encode img 
         
+    @cursor: w h fg ->
+    
+        img = @img w h
+        r   = int w/2
+        
+        @circle img r r     r   fg
+        @circle img r h-r-1 r   fg
+        @fill   img 0 r w h-w   fg
+        @encode img 
+
+    @multi: w h fg ->
+    
+        img = @img w h
+        @fill   img 0 0 w h   fg
+        @encode img 
+        
     @place: x y name fg bg ->
         
         key = name+fg+bg 
         img = @cache[key]
 
+        csz = ked_ttio.cellsz
+        ⮐  if empty csz
+        
         if empty img
-            csz = ked_ttio.cellsz
             img = switch name 
                 'rounded.border.tl' ➜ @borderTopLeft     csz[0] csz[1] fg 
                 'rounded.border.tr' ➜ @borderTopRight    csz[0] csz[1] fg 
                 'rounded.border.bl' ➜ @borderBottomLeft  csz[0] csz[1] fg 
                 'rounded.border.br' ➜ @borderBottomRight csz[0] csz[1] fg 
+                'rounded.cursor'    ➜ @cursor            int(csz[0]/5)*2+1 csz[1] fg 
+                'rounded.multi'     ➜ @multi             int(csz[0]/10)*2+1 csz[1] fg 
             @cache[key] = img
 
-        ked_ttio.placeImg img x y
+        switch name 
+            'rounded.cursor' ➜ ked_ttio.placeImg img x-1 y int(9*csz[0]/10)+1
+                             ➜ ked_ttio.placeImg img x   y
             
 export rounded

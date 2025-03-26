@@ -16,6 +16,10 @@ cells = (function ()
     {
         this.screen = screen
     
+        this["adjustContrastForHighlight"] = this["adjustContrastForHighlight"].bind(this)
+        this["img"] = this["img"].bind(this)
+        this["draw_rounded_multi_cursor"] = this["draw_rounded_multi_cursor"].bind(this)
+        this["draw_rounded_cursor"] = this["draw_rounded_cursor"].bind(this)
         this["draw_rounded_border"] = this["draw_rounded_border"].bind(this)
         this["draw_frame"] = this["draw_frame"].bind(this)
         this["fill_col"] = this["fill_col"].bind(this)
@@ -433,6 +437,16 @@ cells = (function ()
         this.fill_row(y2,x1 + 1,x2 - 1,'▀',fg,bg)
         this.fill_col(x1,y1 + 1,y2 - 1,'▐',fg,bg)
         return this.fill_col(x2,y1 + 1,y2 - 1,'▌',fg,bg)
+    }
+
+    cells.prototype["draw_rounded_cursor"] = function (x, y, fg)
+    {
+        return this.img(x,y,"rounded.cursor",fg)
+    }
+
+    cells.prototype["draw_rounded_multi_cursor"] = function (x, y, fg)
+    {
+        return this.img(x,y,"rounded.multi",fg)
     }
 
     cells.prototype["img"] = function (x, y, name, fg, bg)

@@ -7,6 +7,7 @@ let kseg = kxk.kseg
 let kstr = kxk.kstr
 
 import prof from "../util/prof.js"
+import rounded from "../util/rounded.js"
 
 import color from "../theme/color.js"
 import theme from "../theme/theme.js"
@@ -290,7 +291,7 @@ draw = (function ()
             }
             if (this.isCursorVisible(cursor))
             {
-                this.cells.set_fg_bg(cursor[0] - s.view[0],cursor[1] - s.view[1],fg,bg)
+                this.cells.draw_rounded_multi_cursor(cursor[0] - s.view[0],cursor[1] - s.view[1],bg)
             }
         }
         if (this.isCursorVisible(mainCursor))
@@ -318,7 +319,7 @@ draw = (function ()
             {
                 bg = color.darken(bg)
             }
-            return this.cells.set_fg_bg(x,y,fg,bg)
+            return this.cells.draw_rounded_cursor(x,y,bg)
         }
     }
 

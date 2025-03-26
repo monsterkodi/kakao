@@ -156,15 +156,40 @@ rounded = (function ()
         return this.encode(img)
     }
 
+    rounded["cursor"] = function (w, h, fg)
+    {
+        var img, r
+
+        img = this.img(w,h)
+        r = parseInt(w / 2)
+        this.circle(img,r,r,r,fg)
+        this.circle(img,r,h - r - 1,r,fg)
+        this.fill(img,0,r,w,h - w,fg)
+        return this.encode(img)
+    }
+
+    rounded["multi"] = function (w, h, fg)
+    {
+        var img
+
+        img = this.img(w,h)
+        this.fill(img,0,0,w,h,fg)
+        return this.encode(img)
+    }
+
     rounded["place"] = function (x, y, name, fg, bg)
     {
         var csz, img, key
 
         key = name + fg + bg
         img = this.cache[key]
+        csz = ked_ttio.cellsz
+        if (_k_.empty(csz))
+        {
+            return
+        }
         if (_k_.empty(img))
         {
-            csz = ked_ttio.cellsz
             img = ((function ()
             {
                 switch (name)
@@ -181,12 +206,26 @@ rounded = (function ()
                     case 'rounded.border.br':
                         return this.borderBottomRight(csz[0],csz[1],fg)
 
+                    case 'rounded.cursor':
+                        return this.cursor(parseInt(csz[0] / 5) * 2 + 1,csz[1],fg)
+
+                    case 'rounded.multi':
+                        return this.multi(parseInt(csz[0] / 10) * 2 + 1,csz[1],fg)
+
                 }
 
             }).bind(this))()
             this.cache[key] = img
         }
-        return ked_ttio.placeImg(img,x,y)
+        switch (name)
+        {
+            case 'rounded.cursor':
+                return ked_ttio.placeImg(img,x - 1,y,parseInt(9 * csz[0] / 10) + 1)
+
+            default:
+                return ked_ttio.placeImg(img,x,y)
+        }
+
     }
 
     return rounded
