@@ -52,8 +52,8 @@ gutter = (function ()
             {
                 this.preview = []
                 post.emit('redraw')
-                return
             }
+            return
         }
         if (!_k_.empty(this.gitChanges) && (event.cmd || event.ctrl || event.alt))
         {
@@ -63,7 +63,7 @@ gutter = (function ()
             {
                 if (event.type === 'press')
                 {
-                    console.log('press on git change!',this.gitChanges[idx])
+                    console.log('todo: press on git change!',this.gitChanges[idx])
                 }
                 else if (event.type === 'move')
                 {
@@ -84,7 +84,7 @@ gutter = (function ()
 
     gutter.prototype["drawPreviews"] = function ()
     {
-        var idx, oldDiss, segl, syntax, _71_45_
+        var idx, oldDiss, segl, syntax, _76_45_
 
         if (_k_.empty(this.preview) || _k_.empty(this.gitChanges))
         {
@@ -94,7 +94,7 @@ gutter = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             idx = list[_a_]
-            segl = kseg(((_71_45_=this.gitChanges[idx].old) != null ? _71_45_ : ''))
+            segl = kseg(((_76_45_=this.gitChanges[idx].old) != null ? _76_45_ : ''))
             syntax = this.editor.state.syntax
             oldDiss = syntax.diss[idx]
             syntax.diss[idx] = kulur.dissect([segl],syntax.ext)
@@ -117,7 +117,7 @@ gutter = (function ()
 
     gutter.prototype["onGitDiff"] = function (diff)
     {
-        var add, change, del, firstLine, mod, modi, mods, numLines, off, _101_29_, _102_29_, _103_29_, _108_36_
+        var add, change, del, firstLine, mod, modi, mods, numLines, off, _106_29_, _107_29_, _108_29_, _113_36_
 
         this.gitChanges = {}
         var list = _k_.list(diff.changes)
@@ -125,9 +125,9 @@ gutter = (function ()
         {
             change = list[_a_]
             firstLine = change.line
-            mod = ((_101_29_=change.mod) != null ? _101_29_ : [])
-            add = ((_102_29_=change.add) != null ? _102_29_ : [])
-            del = ((_103_29_=change.del) != null ? _103_29_ : [])
+            mod = ((_106_29_=change.mod) != null ? _106_29_ : [])
+            add = ((_107_29_=change.add) != null ? _107_29_ : [])
+            del = ((_108_29_=change.del) != null ? _108_29_ : [])
             mods = mod.concat(add)
             numLines = mods.length
             mods = mods.concat(del)
@@ -145,7 +145,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _144_99_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _149_99_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))

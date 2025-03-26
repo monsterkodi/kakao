@@ -39,21 +39,26 @@ function gutter extends view
         
         @gitChanges = {}
         
+    # ██     ██   ███████   ███   ███   ███████  ████████
+    # ███   ███  ███   ███  ███   ███  ███       ███     
+    # █████████  ███   ███  ███   ███  ███████   ███████ 
+    # ███ █ ███  ███   ███  ███   ███       ███  ███     
+    # ███   ███   ███████    ███████   ███████   ████████
+
     onMouse: event =>
 
         if @cells.isOutsideEvent event
             if valid @preview
                 @preview = []
                 post.emit 'redraw'
-                ⮐  
+            ⮐  
                 
         if valid @gitChanges and (event.cmd or event.ctrl or event.alt)            
             pos = @eventPos event
             idx = pos[1]+@state.s.view[1]
             if @gitChanges[idx]
-                # log 'preview?' @gitChanges[idx]
                 if event.type == 'press'
-                    log 'press on git change!' @gitChanges[idx]
+                    log 'todo: press on git change!' @gitChanges[idx]
                 else if event.type == 'move'
                     if @gitChanges[idx].old
                         @preview = [idx]

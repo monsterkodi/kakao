@@ -159,7 +159,7 @@ function cells
         # │ │ │
         # ╰─┴─╯
         
-        fg = opt.fg ? '#888888'
+        fg = opt.fg ? '#888'
         bg = opt.bg ? null
         
         @set  x1  y1 '╭' fg bg
@@ -182,6 +182,28 @@ function cells
             @set  x1  y '' fg bg
             @set  x2  y '' fg bg
             @fill_row y x1+1 x2-1 '─' fg bg
+            
+    draw_rounded_border: x1 y1 x2 y2 opt =>
+    
+        ⮐  if x1 < 0 and x2 < 0
+        ⮐  if y1 < 0 and y2 < 0
+        
+        x2 = @cols + x2 if x2 < 0
+        y2 = @rows + y2 if y2 < 0
+        
+        opt ?= {}
+        fg = opt.fg ? '#888'
+        bg = opt.bg ? null
+        
+        @set  x1  y1 '╭' fg bg
+        @set  x2  y1 '╮' fg bg
+        @set  x1  y2 '╰' fg bg
+        @set  x2  y2 '╯' fg bg
+        
+        @fill_row y1 x1+1 x2-1 '█' fg bg
+        @fill_row y2 x1+1 x2-1 '█' fg bg
+        @fill_col x1 y1+1 y2-1 '█' fg bg
+        @fill_col x2 y1+1 y2-1 '█' fg bg
         
     draw_path: x mx y pth bg ->
 

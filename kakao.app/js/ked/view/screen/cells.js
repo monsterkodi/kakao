@@ -14,6 +14,7 @@ cells = (function ()
     {
         this.screen = screen
     
+        this["draw_rounded_border"] = this["draw_rounded_border"].bind(this)
         this["draw_frame"] = this["draw_frame"].bind(this)
         this["fill_col"] = this["fill_col"].bind(this)
         this["fill_row"] = this["fill_row"].bind(this)
@@ -365,7 +366,7 @@ cells = (function ()
         }
         opt = (opt != null ? opt : {})
         opt.pad = ((_154_16_=opt.pad) != null ? _154_16_ : [1,0])
-        fg = ((_162_20_=opt.fg) != null ? _162_20_ : '#888888')
+        fg = ((_162_20_=opt.fg) != null ? _162_20_ : '#888')
         bg = ((_163_20_=opt.bg) != null ? _163_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
@@ -388,6 +389,39 @@ cells = (function ()
             this.set(x2,y,'',fg,bg)
             this.fill_row(y,x1 + 1,x2 - 1,'─',fg,bg)
         }
+    }
+
+    cells.prototype["draw_rounded_border"] = function (x1, y1, x2, y2, opt)
+    {
+        var bg, fg, _195_20_, _196_20_
+
+        if (x1 < 0 && x2 < 0)
+        {
+            return
+        }
+        if (y1 < 0 && y2 < 0)
+        {
+            return
+        }
+        if (x2 < 0)
+        {
+            x2 = this.cols + x2
+        }
+        if (y2 < 0)
+        {
+            y2 = this.rows + y2
+        }
+        opt = (opt != null ? opt : {})
+        fg = ((_195_20_=opt.fg) != null ? _195_20_ : '#888')
+        bg = ((_196_20_=opt.bg) != null ? _196_20_ : null)
+        this.set(x1,y1,'╭',fg,bg)
+        this.set(x2,y1,'╮',fg,bg)
+        this.set(x1,y2,'╰',fg,bg)
+        this.set(x2,y2,'╯',fg,bg)
+        this.fill_row(y1,x1 + 1,x2 - 1,'█',fg,bg)
+        this.fill_row(y2,x1 + 1,x2 - 1,'█',fg,bg)
+        this.fill_col(x1,y1 + 1,y2 - 1,'█',fg,bg)
+        return this.fill_col(x2,y1 + 1,y2 - 1,'█',fg,bg)
     }
 
     cells.prototype["draw_path"] = function (x, mx, y, pth, bg)

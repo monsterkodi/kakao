@@ -94,7 +94,7 @@ dirtree = (function ()
                     this.tilde(item)
                     redraw = true
                 }
-                if (item.modified && !(_k_.in(item.path,status.changed)))
+                if (item.modified && !(_k_.in(item.path,status.changed)) || item.added && !(_k_.in(item.path,status.added)))
                 {
                     delete item.modified
                     this.tilde(item)

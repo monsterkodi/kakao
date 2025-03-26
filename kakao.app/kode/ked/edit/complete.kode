@@ -21,13 +21,16 @@ function complete
         @choices.focusable = false
         @choices.scroll.handle = '▐'
         
-        @color = complete: theme.editor.selection
+        @color = 
+            bg:       theme.complete.bg
+            complete: theme.editor.selection
+            scroll:   theme.complete.scroll
         
-        @choices.setColor        'bg'    theme.complete.bg
         @choices.setColor        'hover' bg:theme.hover.bg blur:theme.hover.bg
-        @choices.scroll.setColor 'bg'    theme.complete.bg
-        @choices.scroll.setColor 'knob'  theme.complete.scroll
-        @choices.scroll.setColor 'dot'   theme.complete.scroll
+        @choices.setColor        'bg'    @color.bg
+        @choices.scroll.setColor 'bg'    @color.bg
+        @choices.scroll.setColor 'knob'  @color.scroll
+        @choices.scroll.setColor 'dot'   @color.scroll
         
         @choices.on 'action' @onChoicesAction
         
@@ -266,7 +269,7 @@ function complete
         ⮐  if @hidden() or empty @words
         ⮐  if @words.length <= 1
         
-        mc = @editor.state.mainCursor()
+        mc = @editor.state.mainCursor()  
          
         cx = mc[0] - @editor.state.s.view[0]    
         cy = mc[1] - @editor.state.s.view[1]
@@ -279,7 +282,7 @@ function complete
         
         fy = cy+1
 
-        @editor.cells.draw_frame fx fy fx+w+1 fy+h+1 fg:theme.complete.bg bg:[0 0 0]
+        @editor.cells.draw_rounded_border fx fy fx+w+1 fy+h+1 fg:@color.bg
         
         @choices.layout x y w h
         @choices.draw()

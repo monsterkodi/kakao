@@ -28,12 +28,12 @@ complete = (function ()
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
         this.choices.scroll.handle = '▐'
-        this.color = {complete:theme.editor.selection}
-        this.choices.setColor('bg',theme.complete.bg)
+        this.color = {bg:theme.complete.bg,complete:theme.editor.selection,scroll:theme.complete.scroll}
         this.choices.setColor('hover',{bg:theme.hover.bg,blur:theme.hover.bg})
-        this.choices.scroll.setColor('bg',theme.complete.bg)
-        this.choices.scroll.setColor('knob',theme.complete.scroll)
-        this.choices.scroll.setColor('dot',theme.complete.scroll)
+        this.choices.setColor('bg',this.color.bg)
+        this.choices.scroll.setColor('bg',this.color.bg)
+        this.choices.scroll.setColor('knob',this.color.scroll)
+        this.choices.scroll.setColor('dot',this.color.scroll)
         this.choices.on('action',this.onChoicesAction)
         this.visible = false
     }
@@ -302,7 +302,7 @@ complete = (function ()
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
         fy = cy + 1
-        this.editor.cells.draw_frame(fx,fy,fx + w + 1,fy + h + 1,{fg:theme.complete.bg,bg:[0,0,0]})
+        this.editor.cells.draw_rounded_border(fx,fy,fx + w + 1,fy + h + 1,{fg:this.color.bg})
         this.choices.layout(x,y,w,h)
         return this.choices.draw()
     }

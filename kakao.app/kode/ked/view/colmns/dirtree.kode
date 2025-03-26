@@ -78,7 +78,7 @@ function dirtree extends choices
                     @tilde item
                     redraw = true
                     
-                if item.modified and item.path not in status.changed
+                if item.modified and item.path not in status.changed or item.added and item.path not in status.added
                     delete item.modified
                     @tilde item
                     redraw = true
@@ -327,7 +327,6 @@ function dirtree extends choices
         
         kutil.replace @items index+1 numChildren []
         
-        # log "dirtree.closeDir #{index}"
         @set @items index
         
         ked_session.del "#{@name}▸open▸#{dirItem.path}"
@@ -354,7 +353,7 @@ function dirtree extends choices
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: items index=0-> 
+    set: items index=0 -> 
         
         oldTop = @state.s.view[1]
         super items 'tilde'
@@ -404,10 +403,6 @@ function dirtree extends choices
         
     drawSelections: ->
         
-        # current = @color.current
-        
-        # @color.current = @hasFocus() ? current : theme.dirtree_current_blur
-        
         if li = @indexOfOpenFile()
             bg = theme.gutter.bg
             y  = li-@state.s.view[1]
@@ -419,8 +414,6 @@ function dirtree extends choices
         
         super()
                 
-        # @color.current = current
-        
     indexOfOpenFile: ->
     
         currentFile = ked_session.get 'editor▸file'
