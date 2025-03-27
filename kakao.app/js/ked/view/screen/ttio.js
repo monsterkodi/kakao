@@ -172,7 +172,7 @@ TTIO = (function ()
 
     TTIO.prototype["placeImg"] = function (img, x, y, px, py, pw, ph)
     {
-        var placed, _163_32_, _167_16_, _170_28_
+        var placed, z, _163_32_, _167_16_, _170_28_, _174_18_
 
         if (_k_.empty(img.id))
         {
@@ -193,7 +193,8 @@ TTIO = (function ()
         img.pid++
         this.placedImgs[img.id] = ((_170_28_=this.placedImgs[img.id]) != null ? _170_28_ : {})
         this.placedImgs[img.id][[x,y,px,py,pw,ph].toString()] = img.pid
-        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pid},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+        z = ((_174_18_=img.z) != null ? _174_18_ : 1000)
+        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pid},X=${px},Y=${py},w=${pw},h=${ph},z=${z},C=1\x1b\\`)
     }
 
     TTIO.prototype["hideImg"] = function (id, pl)
@@ -756,11 +757,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _527_23_, _548_20_
+        var diff, _528_23_, _549_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_527_23_=this.lastClick) != null ? _527_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_528_23_=this.lastClick) != null ? _528_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -783,7 +784,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_548_20_=this.lastPixels) != null ? _548_20_ : [])
+        this.lastPixels = ((_549_20_=this.lastPixels) != null ? _549_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -842,7 +843,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _604_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _605_23_
 
         if ((this.pasteBuffer != null))
         {

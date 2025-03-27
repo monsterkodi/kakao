@@ -162,7 +162,7 @@ state = (function ()
 
     state.prototype["setCursors"] = function (cursors, opt)
     {
-        var cur, idx, main, mainCursor, _122_29_
+        var cur, idx, main, mainCursor
 
         opt = (opt != null ? opt : {})
         main = opt.main
@@ -204,10 +204,7 @@ state = (function ()
         this.adjustViewForMainCursor(opt)
         this.swapState()
         mode.cursorsSet(this)
-        if (!mode.isActive(this,'salter'))
-        {
-            ;(mode.modes.salter != null ? mode.modes.salter.checkCursorsSet(this) : undefined)
-        }
+        this.emit('cursorsSet')
         return this
     }
 
@@ -278,22 +275,22 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _196_15_
+        var segl, _194_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_196_15_=this.segls) != null ? _196_15_ : [])
+        this.segls = ((_194_15_=this.segls) != null ? _194_15_ : [])
         this.segls.push(segl)
         return this.s = this.s.set('lines',this.segls)
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _204_15_
+        var segls, _202_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_204_15_=this.segls) != null ? _204_15_ : [])
+        this.segls = ((_202_15_=this.segls) != null ? _202_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.s = this.s.set('lines',this.segls)
     }

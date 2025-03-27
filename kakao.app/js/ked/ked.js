@@ -21,6 +21,7 @@ import frecent from "./util/frecent.js"
 import watcher from "./util/watcher.js"
 import git from "./util/git.js"
 import rounded from "./util/rounded.js"
+import squares from "./util/squares.js"
 
 import belt from "./edit/tool/belt.js"
 
@@ -601,9 +602,9 @@ ked [file]
         return this.redraw()
     }
 
-    KED.prototype["onResize"] = function (cols, rows, size)
+    KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _503_22_
+        var mcw, _504_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}
@@ -619,6 +620,7 @@ ked [file]
             this.dircol.hide()
             this.funcol.hide()
         }
+        squares.onResize(cols,rows,size,cellsz)
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
     }
@@ -647,7 +649,6 @@ ked [file]
         this.arrange()
         if (this.menu.greet.hidden())
         {
-            console.log('editor.draw')
             this.editor.draw()
             this.status.draw()
             this.dircol.draw()

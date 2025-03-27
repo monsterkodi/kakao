@@ -17,7 +17,7 @@ logfile = (function ()
     {
         this.name = name
     
-        this.stream = fs.createWriteStream('ked.log',{flags:'w',autoClose:false})
+        this.stream = fs.createWriteStream('/Users/kodi/s/kakao/kakao.app/ked.log',{flags:'w',autoClose:false})
         console.log = (function (...args)
         {
             var obj

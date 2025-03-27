@@ -1,0 +1,91 @@
+###
+     ███████   ███████   ███   ███   ███████   ████████   ████████   ███████
+    ███       ███   ███  ███   ███  ███   ███  ███   ███  ███       ███     
+    ███████   ███ ██ ██  ███   ███  █████████  ███████    ███████   ███████ 
+         ███  ███ ████   ███   ███  ███   ███  ███   ███  ███            ███
+    ███████    █████ ██   ███████   ███   ███  ███   ███  ████████  ███████ 
+###
+
+use ../../kxk ◆ nfs
+use           ◆ png
+
+function squares
+
+    @pixlArr: (new Uint32Array(new ArrayBuffer(4)))
+    @tileArr: null
+    @csz:   []
+    @cache: {}
+    
+    # █████████  ███  ███      ████████
+    #    ███     ███  ███      ███     
+    #    ███     ███  ███      ███████ 
+    #    ███     ███  ███      ███     
+    #    ███     ███  ███████  ████████
+    
+    @tileRect: px py pw ph -> 
+    
+        tw = @csz[0]
+        th = @csz[1]
+        tx = floor(px / tw)
+        ty = floor(py / th)
+    
+        [tx ty tw th]
+
+    @tileImg: tw th fg ->
+    
+        fg.push(255) if fg.length < 4
+        
+        # @pixlArr.set [fg[0] << 24 | fg[1] << 16 | fg[2] << 8 | (fg[3] ? 255)]
+        @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
+        
+        img = w:tw h:th z:2000
+            
+        for c in 0...tw
+            @tileArr.set @pixlArr c
+        for r in 1...th
+            @tileArr.copyWithin r*tw (r-1)*tw r*tw
+        
+        img.png = Buffer.from png.encode([@tileArr.buffer] img.w img.h 2)
+        img
+        
+    # ████████   ███       ███████    ███████  ████████
+    # ███   ███  ███      ███   ███  ███       ███     
+    # ████████   ███      █████████  ███       ███████ 
+    # ███        ███      ███   ███  ███       ███     
+    # ███        ███████  ███   ███   ███████  ████████
+
+    @place: sx sy sw sh fg ->
+    
+        ⮐  if empty @csz
+        
+        # log "squares place #{sx} #{sy} #{sw} #{sh}"
+        
+        t = @tileRect sx sy sw sh
+        
+        img = @cache[fg]
+        if empty img
+        
+            img = @tileImg t[2] t[3] fg
+            @cache[fg] = img
+            
+        ox = sx - t[0] * @csz[0]
+        oy = sy - t[1] * @csz[1]
+        
+        # log "squares place #{t[0]} #{t[1]} - #{ox} #{oy} #{sw} #{sh}"
+        
+        ked_ttio.placeImg img t[0] t[1] ox oy sw sh
+    
+# ████████   ████████   ███████  ███  ███████  ████████
+# ███   ███  ███       ███       ███     ███   ███     
+# ███████    ███████   ███████   ███    ███    ███████ 
+# ███   ███  ███            ███  ███   ███     ███     
+# ███   ███  ████████  ███████   ███  ███████  ████████
+
+    @onResize: cols rows pixels cellsz -> 
+
+        @csz     = cellsz # should this be copied instead?
+        @cache   = {}
+        bytes    = @csz[0]*@csz[1]*4
+        @tileArr = new Uint32Array(new ArrayBuffer(bytes))
+    
+export squares

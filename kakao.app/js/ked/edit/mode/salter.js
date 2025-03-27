@@ -29,9 +29,9 @@ salterMode = (function ()
 
     salterMode["checkCursorsSet"] = function (state)
     {
-        var cursors
+        var cursors, _33_41_
 
-        if (!state.allowedModes.salter)
+        if (!(state.allowedModes != null ? state.allowedModes.salter : undefined))
         {
             return
         }

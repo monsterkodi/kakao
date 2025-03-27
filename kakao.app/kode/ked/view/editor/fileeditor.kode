@@ -38,8 +38,8 @@ function fileeditor extends editor
         
         super screen name features
         
-        if @feats.mapscr ➜ @mapscr = new mapscr @screen @state; @mapscr.show()
-            
+        if @feats.mapscr ➜ @mapscr = new mapscr @; @mapscr.show()
+        
         post.on 'editor.highlight' @state.highlightText
         post.on 'goto.line'        @onGotoLine
         post.on 'goto.bof'         @onGotoBof

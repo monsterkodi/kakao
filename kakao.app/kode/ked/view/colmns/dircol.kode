@@ -69,9 +69,10 @@ function dircol extends view
         
         if root
             @setRoot root
-            
-        @active = recent.dircol.active
-        @show() if @active
+
+        if recent.funcol.active            
+            @active = true
+            @show()
             
         ked_session.set 'dircol' recent.dircol
             

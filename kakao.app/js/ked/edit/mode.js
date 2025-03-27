@@ -204,7 +204,7 @@ mode = (function ()
         return 'unhandled'
     }
 
-    mode["cursorsSet"] = function (state)
+    mode["cursorsSet"] = function (state, editor)
     {
         var m
 
@@ -214,8 +214,12 @@ mode = (function ()
             m = list[_a_]
             if (_k_.isFunc(m.cursorsSet))
             {
-                m.cursorsSet()
+                m.cursorsSet(editor)
             }
+        }
+        if (!this.isActive(state,'salter'))
+        {
+            return (mode.modes['salter'] != null ? mode.modes['salter'].checkCursorsSet(this) : undefined)
         }
     }
 

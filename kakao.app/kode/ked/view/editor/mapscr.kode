@@ -10,13 +10,14 @@
 
 use ../../../kxk ▪ post
 use ../../theme  ◆ theme
+use ../../util   ◆ squares
 use              ◆ mapview
 
 function mapscr extends mapview
 
-    @: screen state ->
+    @: @editor ->
         
-        super screen state
+        super @editor.screen @editor.state
         
         @state.on 'view.changed' @drawKnob
         
@@ -26,7 +27,7 @@ function mapscr extends mapview
         
         @setColor 'bg' theme.editor.mapscr
         
-        screen.t.on 'preResize' @clearImages
+        @screen.t.on 'preResize' @clearImages
         
         post.on 'popup.show' @hide
         post.on 'greet.show' @hide
@@ -130,6 +131,12 @@ function mapscr extends mapview
     # ███   ███  ███████    █████████  █████████
     # ███   ███  ███   ███  ███   ███  ███   ███
     # ███████    ███   ███  ███   ███  ██     ██
+    
+    draw: =>
+    
+        super()
+        
+        @drawCursors()
 
     drawImages: =>
         
@@ -155,4 +162,38 @@ function mapscr extends mapview
         w  = @cells.cols*t.cellsz[0]
         t.placeImageOverlay @knobId @cells.x @cells.y+yc 0 yr w h
         
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███  ███     
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████    ███████ 
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███       ███
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████ 
+
+    drawCursors: =>
+    
+        t = @cells.screen.t
+        ⮐  if empty t.cellsz
+        csz = t.cellsz
+    
+        mw = @cells.cols*csz[0]
+    
+        for pos,idx in @state.s.cursors
+        
+            if pos[0]*@pixelsPerCol < mw
+            
+                sx = @cells.x*csz[0] + pos[0]*@pixelsPerCol
+                
+                if idx == @state.s.main
+                    fg = theme.cursor.main
+                    sw = @pixelsPerCol*2
+                    sx -= int @pixelsPerCol/2
+                else
+                    fg = theme.cursor.multi
+                    sw = @pixelsPerCol
+                    
+                sy = @cells.y*csz[1] + pos[1]*@pixelsPerRow
+                squares.place sx sy sw @pixelsPerRow fg
+                
+                if idx == @state.s.main
+                    squares.place @cells.x*csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg
+
 export mapscr

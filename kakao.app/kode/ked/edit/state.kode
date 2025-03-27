@@ -117,9 +117,7 @@ function state extends events
         @swapState()
         
         mode.cursorsSet @
-
-        if not mode.isActive @ 'salter'
-            mode.modes.salter?.checkCursorsSet @
+        @emit 'cursorsSet'
             
         # log "#{@name} done #{@s.cursors}"
         @

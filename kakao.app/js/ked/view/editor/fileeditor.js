@@ -47,7 +47,7 @@ fileeditor = (function ()
         fileeditor.__super__.constructor.call(this,screen,name,features)
         if (this.feats.mapscr)
         {
-            this.mapscr = new mapscr(this.screen,this.state)
+            this.mapscr = new mapscr(this)
             this.mapscr.show()
         }
         post.on('editor.highlight',this.state.highlightText)

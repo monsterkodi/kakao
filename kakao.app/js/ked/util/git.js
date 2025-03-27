@@ -83,15 +83,13 @@ git = (function ()
                     }
                     else
                     {
-                        console.log('reject1')
-                        return reject(err)
+                        console.error('reject1',err)
                     }
                 })
             }
             catch (err)
             {
-                console.log('reject2')
-                return reject(err)
+                console.error('reject2',err)
             }
         })
     }

@@ -171,7 +171,8 @@ function TTIO extends events
         @placedImgs[img.id][[x y px py pw ph].toString()] = img.pid
         
         # log "●#{img.id} #{img.pid} #{[x y px py pw ph].toString()}"
-        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
+        z = img.z ? 1000
+        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z},C=1\x1b\\"
 
     hideImg: id pl ->
         
@@ -187,7 +188,7 @@ function TTIO extends events
                 
         @lastplImgs = @placedImgs
         @placedImgs = {}
-        
+
     # 000   000  000  0000000    00000000  
     # 000   000  000  000   000  000       
     # 000000000  000  000   000  0000000   

@@ -91,9 +91,9 @@ dircol = (function ()
         {
             this.setRoot(root)
         }
-        this.active = recent.dircol.active
-        if (this.active)
+        if (recent.funcol.active)
         {
+            this.active = true
             this.show()
         }
         return ked_session.set('dircol',recent.dircol)

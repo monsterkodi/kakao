@@ -13,6 +13,12 @@ function rounded
 
     @cache: {}
 
+    # ███  ██     ██   ███████ 
+    # ███  ███   ███  ███      
+    # ███  █████████  ███  ████
+    # ███  ███ █ ███  ███   ███
+    # ███  ███   ███   ███████ 
+
     @img: w h ->
         
         buff = new ArrayBuffer w*h*4
@@ -22,6 +28,17 @@ function rounded
         h:    h
         buff: buff
         view: view
+
+    @encode: img maxColors=2->
+    
+        img.png = Buffer.from png.encode([img.buff] img.w img.h maxColors)
+        img
+
+    #  ███████  ████████  █████████
+    # ███       ███          ███   
+    # ███████   ███████      ███   
+    #      ███  ███          ███   
+    # ███████   ████████     ███   
 
     @set: img x y rgba ->
     
@@ -33,12 +50,7 @@ function rounded
             img.view.setUint8 ((x+y*img.w)*4)+i rgba[i]
         if rgba.length == 3
              img.view.setUint8 ((x+y*img.w)*4)+3 255
-            
-    @encode: img ->
-    
-        img.png = Buffer.from png.encode([img.buff] img.w img.h 2)
-        img
-        
+                    
     @circle: img cx cy r fg ->
     
         rsq = r * r
@@ -70,6 +82,12 @@ function rounded
         @circle img r r r   fg
         @fill   img 0 r w h fg
         @encode img 
+
+    # ███████     ███████   ████████   ███████    ████████  ████████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████    ███   ███  ███████    ███   ███  ███████   ███████  
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████     ███████   ███   ███  ███████    ████████  ███   ███
 
     @borderTopLeft: w h fg ->    
     
@@ -111,6 +129,12 @@ function rounded
         @fill   img 0 0 r h2-r fg
         @encode img 
         
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████  
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███
+
     @cursor: w h fg ->
     
         img = @img w h
@@ -127,6 +151,12 @@ function rounded
         @fill   img 0 0 w h   fg
         @encode img 
         
+    # ████████   ███       ███████    ███████  ████████
+    # ███   ███  ███      ███   ███  ███       ███     
+    # ████████   ███      █████████  ███       ███████ 
+    # ███        ███      ███   ███  ███       ███     
+    # ███        ███████  ███   ███   ███████  ████████
+
     @place: x y name fg bg ->
         
         key = name+fg+bg 

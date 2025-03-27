@@ -300,7 +300,6 @@ complete = (function ()
         w = this.choices.cells.cols + 1
         h = this.choices.cells.rows
         fy = cy + 1
-        console.log('complete.drawPopup')
         this.editor.cells.draw_rounded_border(fx,fy,fx + w + 1,fy + h + 1,{fg:this.color.bg})
         this.choices.layout(x,y,w,h)
         return this.choices.draw()

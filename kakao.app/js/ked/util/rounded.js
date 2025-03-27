@@ -22,6 +22,12 @@ rounded = (function ()
         return {w:w,h:h,buff:buff,view:view}
     }
 
+    rounded["encode"] = function (img, maxColors = 2)
+    {
+        img.png = Buffer.from(png.encode([img.buff],img.w,img.h,maxColors))
+        return img
+    }
+
     rounded["set"] = function (img, x, y, rgba)
     {
         var i
@@ -46,12 +52,6 @@ rounded = (function ()
         {
             return img.view.setUint8(((x + y * img.w) * 4) + 3,255)
         }
-    }
-
-    rounded["encode"] = function (img)
-    {
-        img.png = Buffer.from(png.encode([img.buff],img.w,img.h,2))
-        return img
     }
 
     rounded["circle"] = function (img, cx, cy, r, fg)

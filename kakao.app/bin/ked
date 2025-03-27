@@ -1,4 +1,5 @@
-#!/usr/bin/env node --trace-warnings --trace-uncaught
+#!/Users/kodi/.local/share/nvm/v23.8.0/bin/node --trace-warnings --trace-uncaught
+// /usr/bin/env node --trace-warnings --trace-uncaught
 
 import ked from '../js/ked/ked.js'
 

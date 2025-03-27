@@ -25,7 +25,6 @@
 - git changes in fileeditor scroll
 - unsaved changes 'tabs'
 - add results from indexer to completion
-- nicer rounded scroll and cursors with kitty images
 - selections, cursors and highlights in mapscroll
 - highlight line changes in differ
 - add mapscroll to differ status
@@ -35,6 +34,8 @@
     - unicode palette
         
 - completion
+    - preselect or highlight preview part
+    - rank results by cursor distance
     - fix
         - no completion when converting string delimiters
         - turd missing completions

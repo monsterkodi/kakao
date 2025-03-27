@@ -30,7 +30,7 @@ function salterMode
     
     @checkCursorsSet: state ->
     
-        ⮐  if not state.allowedModes.salter
+        ⮐  if not state.allowedModes?.salter
         ⮐  if state.s.cursors.length != 1
         ⮐  if state.s.selections.length
         

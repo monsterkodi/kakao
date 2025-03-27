@@ -256,7 +256,7 @@ use ../edit/tool ◆ belt
         belt.prepareWordsForCompletion 'fa'   'fa'     ['f']                        ▸ []
         belt.prepareWordsForCompletion 'w'    'w'      ['word[@turd.length..]']     ▸ ['word' 'word[@turd.length..]']
         belt.prepareWordsForCompletion 'a.b'  'a.b'    ['a.b.c.d']                  ▸ ['a.b.' 'a.b.c.d']
-        belt.prepareWordsForCompletion 'word' 'word'   ['word[@turd.length..]']     ▸ ['word[' 'word[@turd.length..]']
+        belt.prepareWordsForCompletion 'word' 'word'   ['word[@turd.length..]']     ▸ ['word[@turd.length..]']
         belt.prepareWordsForCompletion 'k'    'k'      ['kseg' 'key']               ▸ ['key' 'kseg']
                                                                                     
         belt.prepareWordsForCompletion 'he'   'he'     ['hello' 'hell']             ▸ ['hell' 'hello']
@@ -269,6 +269,8 @@ use ../edit/tool ◆ belt
         
         belt.prepareWordsForCompletion 'rugga' 'r'     ['rofl' 'rug']               ▸ ['rofl' 'rug']
         belt.prepareWordsForCompletion 'rugga' 'ru'    ['rug']                      ▸ ['rug']
+        
+        belt.prepareWordsForCompletion 'mc'    'mc'    ['mc[0]' 'mc[1]']            ▸ ['mc[0]' 'mc[1]']
         
     # ███  ███   ███  ███████    ████████  ███   ███  █████████
     # ███  ████  ███  ███   ███  ███       ████  ███     ███   

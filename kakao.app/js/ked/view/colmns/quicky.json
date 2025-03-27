@@ -94,59 +94,53 @@
   "\\/": [
     "dir_punct"
   ],
-  "[⏷⏵]": [
-    "dir"
-  ],
-  "[✔✚]": [
-    "modified"
-  ],
-  "[]": [
-    "file_icon_text"
-  ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_noon",
     "file_noon",
     "file_icon_noon"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_kode",
     "file_kode",
     "file_icon_kode"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_md",
     "file_md",
     "file_icon_md"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_styl",
     "file_styl",
     "file_icon_styl"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_json",
     "file_json",
     "file_icon_json"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_js",
     "file_js",
     "file_icon_js"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_html",
     "file_html",
     "file_icon_html"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_css",
     "file_css",
     "file_icon_css"
   ],
-  "()(\\s?[^\\/\\s]*)(\\s?✔?)": [
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
     "file_icon_pug",
     "file_pug",
     "file_icon_pug"
+  ],
+  "[]": [
+    "file_icon_text"
   ],
   "[]": [
     "file_icon_png"

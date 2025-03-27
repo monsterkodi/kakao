@@ -69,11 +69,11 @@ function git
                     if empty err
                         resolve stdout
                     else
-                        log 'reject1'
-                        reject err
+                        error 'reject1' err
+                        # reject err
             catch err
-                log 'reject2'
-                reject err
+                error 'reject2' err
+                # reject err
         
     #  0000000  000000000   0000000   000000000  000   000   0000000  
     # 000          000     000   000     000     000   000  000       

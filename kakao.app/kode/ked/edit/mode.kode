@@ -140,11 +140,14 @@ function mode
                 ⮐  if m.handleKey(key event) != 'unhandled'
         'unhandled'
         
-    @cursorsSet: state ->
+    @cursorsSet: state editor ->
 
         for m in @active[state.name]
             if m.cursorsSet is func
-                m.cursorsSet()
+                m.cursorsSet editor
+                
+        if not @isActive state 'salter'
+            mode.modes['salter']?.checkCursorsSet @
         
     @themeColor: state colorName defaultColor ->
     
