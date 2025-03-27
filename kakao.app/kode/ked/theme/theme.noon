@@ -93,6 +93,10 @@ quicky
 crumbs
     fg                                      #88f   
     bg                                      #222   
+    
+context
+    fg                                      #88f   
+    bg                                      #222   
                                                                                             
 complete
     bg                                      #006   

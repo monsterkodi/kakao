@@ -34,7 +34,7 @@ function funSyntax
             async:          theme.funtree.async
             bound:          theme.funtree.bound
             bound_async:    theme.funtree.bound_async
-            func:           theme.funtree.func            
+            func:           theme.funtree.func
             func_async:     theme.funtree.func_async
             test0:          theme.funtree.test0
             test1:          theme.funtree.test1

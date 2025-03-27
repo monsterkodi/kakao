@@ -20,6 +20,8 @@ function context extends inputchoice
     @: @screen ->
         
         super @screen 'context'
+        
+        @setColor 'bg' theme.context.bg
                 
         context.menu = @
 
@@ -75,7 +77,7 @@ function context extends inputchoice
     # 000   000  000        000        0000000     000     
     
     applyChoice: choice ->
-        log 'context applyChoice' choice
+        # log 'context applyChoice' choice
         @cb choice
         @hide()
         
@@ -89,10 +91,22 @@ function context extends inputchoice
 
     draw: =>
 
-        ⮐ if @hidden()
+        ⮐  if @hidden()
         
         @arrange()
         @drawFrame()
         @drawChoices()
-
+        
+    drawFrame: ->
+        
+        cy = 0
+        
+        bg = @cells.get_bg 0 0
+        
+        if @input.visible()
+            @cells.draw_rounded_border 0 0 -1 2 fg:@color.bg bg:bg
+            cy = 2
+        
+        @cells.draw_rounded_border 0 cy -1 -1 fg:@color.bg bg:bg
+            
 export context

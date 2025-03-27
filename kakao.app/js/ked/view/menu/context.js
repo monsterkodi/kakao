@@ -26,6 +26,7 @@ context = (function ()
         this["draw"] = this["draw"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         context.__super__.constructor.call(this,this.screen,'context')
+        this.setColor('bg',theme.context.bg)
         context.menu = this
     }
 
@@ -74,7 +75,6 @@ context = (function ()
 
     context.prototype["applyChoice"] = function (choice)
     {
-        console.log('context applyChoice',choice)
         this.cb(choice)
         return this.hide()
     }
@@ -91,6 +91,20 @@ context = (function ()
         this.arrange()
         this.drawFrame()
         return this.drawChoices()
+    }
+
+    context.prototype["drawFrame"] = function ()
+    {
+        var bg, cy
+
+        cy = 0
+        bg = this.cells.get_bg(0,0)
+        if (this.input.visible())
+        {
+            this.cells.draw_rounded_border(0,0,-1,2,{fg:this.color.bg,bg:bg})
+            cy = 2
+        }
+        return this.cells.draw_rounded_border(0,cy,-1,-1,{fg:this.color.bg,bg:bg})
     }
 
     return context

@@ -20,14 +20,13 @@
 #### todo
 ##### todo
 
-- auto open dirtree folder for current file
-- index required files
-- git changes in fileeditor scroll
 - unsaved changes 'tabs'
-- add results from indexer to completion
-- selections, cursors and highlights in mapscroll
+- git changes in fileeditor scroll
 - highlight line changes in differ
 - add mapscroll to differ status
+- auto open dirtree folder for current file
+- index required files
+- add results from indexer to completion
 
 - macro
     - set prefs
@@ -104,7 +103,6 @@
 - mapscroll 
     - update on line changes
     - fix scrolling to bottom for long files
-    - show cursors and selections
     
 - session
     - clean recent files (check for existence)
