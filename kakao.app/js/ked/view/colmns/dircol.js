@@ -70,7 +70,7 @@ dircol = (function ()
 
     dircol.prototype["onSessionMerge"] = function (recent)
     {
-        var args, root
+        var args, root, _73_24_
 
         if (_k_.empty(recent.dircol))
         {
@@ -91,7 +91,7 @@ dircol = (function ()
         {
             this.setRoot(root)
         }
-        if (recent.funcol.active)
+        if ((recent.funcol != null ? recent.funcol.active : undefined))
         {
             this.active = true
             this.show()

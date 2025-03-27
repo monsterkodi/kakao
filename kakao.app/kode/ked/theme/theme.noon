@@ -22,9 +22,11 @@ cursor
 selection    
     line                                    #222   
     span                                    #44a   
+    map                                     #66a   
     
 highlight                                   
     bg                                      #030   
+    map                                     #060   
     ul                                      #0a0   
     bracket                                 #339   
     bracket_ul                              #44a   
