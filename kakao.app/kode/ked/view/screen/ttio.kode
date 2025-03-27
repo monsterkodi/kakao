@@ -146,7 +146,7 @@ function TTIO extends events
         img.id = id
         id
         
-    placeImg: img x y px py pw ph ->
+    placeImg: img x y px py pw ph z ->
     
         if empty img.id
             @sendImg img
@@ -171,8 +171,8 @@ function TTIO extends events
         @placedImgs[img.id][[x y px py pw ph].toString()] = img.pid
         
         # log "●#{img.id} #{img.pid} #{[x y px py pw ph].toString()}"
-        z = img.z ? 1000
-        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z},C=1\x1b\\"
+
+        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z ? 1000},C=1\x1b\\"
 
     hideImg: id pl ->
         

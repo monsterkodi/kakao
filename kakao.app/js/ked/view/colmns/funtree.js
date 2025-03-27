@@ -205,6 +205,12 @@ funtree = (function ()
 
     funtree.prototype["emitAction"] = function (action, choice, event)
     {
+        if (_k_.empty(choice))
+        {
+            console.error('funtree.emitAction -- empty choice ▸ action:',action)
+            console.error('funtree.emitAction -- empty choice ▸ event:',event)
+            return
+        }
         switch (action)
         {
             case 'right':

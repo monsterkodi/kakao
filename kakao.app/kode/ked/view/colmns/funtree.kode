@@ -151,6 +151,11 @@ function funtree extends choices
     # 000   000   0000000     000     000   0000000   000   000  
     
     emitAction: action choice event  ->
+    
+        if empty choice
+            error 'funtree.emitAction -- empty choice ▸ action:' action 
+            error 'funtree.emitAction -- empty choice ▸ event:' event
+            ⮐  
         
         switch action
         

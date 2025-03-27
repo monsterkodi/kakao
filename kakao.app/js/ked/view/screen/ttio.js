@@ -170,9 +170,9 @@ TTIO = (function ()
         return id
     }
 
-    TTIO.prototype["placeImg"] = function (img, x, y, px, py, pw, ph)
+    TTIO.prototype["placeImg"] = function (img, x, y, px, py, pw, ph, z)
     {
-        var placed, z, _163_32_, _167_16_, _170_28_, _174_18_
+        var placed, _163_32_, _167_16_, _170_28_
 
         if (_k_.empty(img.id))
         {
@@ -193,8 +193,7 @@ TTIO = (function ()
         img.pid++
         this.placedImgs[img.id] = ((_170_28_=this.placedImgs[img.id]) != null ? _170_28_ : {})
         this.placedImgs[img.id][[x,y,px,py,pw,ph].toString()] = img.pid
-        z = ((_174_18_=img.z) != null ? _174_18_ : 1000)
-        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pid},X=${px},Y=${py},w=${pw},h=${ph},z=${z},C=1\x1b\\`)
+        return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pid},X=${px},Y=${py},w=${pw},h=${ph},z=${(z != null ? z : 1000)},C=1\x1b\\`)
     }
 
     TTIO.prototype["hideImg"] = function (id, pl)

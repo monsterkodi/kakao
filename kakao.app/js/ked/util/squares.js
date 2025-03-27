@@ -36,7 +36,7 @@ squares = (function ()
             fg.push(255)
         }
         this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_39_64_=fg[3]) != null ? _39_64_ : 255)) << 24])
-        img = {w:tw,h:th,z:2000}
+        img = {w:tw,h:th}
         for (var _a_ = c = 0, _b_ = tw; (_a_ <= _b_ ? c < tw : c > tw); (_a_ <= _b_ ? ++c : --c))
         {
             this.tileArr.set(this.pixlArr,c)
@@ -49,7 +49,7 @@ squares = (function ()
         return img
     }
 
-    squares["place"] = function (sx, sy, sw, sh, fg)
+    squares["place"] = function (sx, sy, sw, sh, fg, z)
     {
         var img, ox, oy, t
 
@@ -66,7 +66,7 @@ squares = (function ()
         }
         ox = sx - t[0] * this.csz[0]
         oy = sy - t[1] * this.csz[1]
-        return ked_ttio.placeImg(img,t[0],t[1],ox,oy,sw,sh)
+        return ked_ttio.placeImg(img,t[0],t[1],ox,oy,sw,sh,z)
     }
 
     squares["onResize"] = function (cols, rows, pixels, cellsz)

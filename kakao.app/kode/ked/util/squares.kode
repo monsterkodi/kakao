@@ -38,7 +38,7 @@ function squares
         # @pixlArr.set [fg[0] << 24 | fg[1] << 16 | fg[2] << 8 | (fg[3] ? 255)]
         @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
         
-        img = w:tw h:th z:2000
+        img = w:tw h:th
             
         for c in 0...tw
             @tileArr.set @pixlArr c
@@ -54,7 +54,7 @@ function squares
     # ███        ███      ███   ███  ███       ███     
     # ███        ███████  ███   ███   ███████  ████████
 
-    @place: sx sy sw sh fg ->
+    @place: sx sy sw sh fg z ->
     
         ⮐  if empty @csz
         
@@ -73,7 +73,7 @@ function squares
         
         # log "squares place #{t[0]} #{t[1]} - #{ox} #{oy} #{sw} #{sh}"
         
-        ked_ttio.placeImg img t[0] t[1] ox oy sw sh
+        ked_ttio.placeImg img t[0] t[1] ox oy sw sh z
     
 # ████████   ████████   ███████  ███  ███████  ████████
 # ███   ███  ███       ███       ███     ███   ███     

@@ -27,8 +27,9 @@ function mapscr extends mapview
         @knobId = @imgId+0xeeee
         
         @setColor 'bg'        theme.editor.mapscr
-        @setColor 'selection' theme.selection.map
         @setColor 'highlight' theme.highlight.map
+        @setColor 'selection' theme.selection.map
+        @setColor 'fullysel'  theme.selection.mapfully
         
         @screen.t.on 'preResize' @clearImages
         
@@ -196,7 +197,7 @@ function mapscr extends mapview
                 squares.place sx sy sw @pixelsPerRow fg
                 
                 if idx == @state.s.main
-                    squares.place @cells.x*csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg
+                    squares.place @cells.x*csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       
@@ -209,21 +210,20 @@ function mapscr extends mapview
         mw = @cells.cols*csz[0]
         mc = @state.mainCursor()
     
-        highlightLines = belt.lineIndicesForSpans  @state.s.highlights
-        selectedLines  = belt.lineIndicesForRanges @state.s.selections
+        ppr = @pixelsPerRow
+        ppc = @pixelsPerCol
         
-        for li in selectedLines
-        
-            continue if li == mc[1]
-            sy = @cells.y*csz[1] + li*@pixelsPerRow
-            squares.place @cells.x*csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow @color.selection
+        for li in belt.lineIndicesForRanges @state.s.selections
+            if @state.isSpanSelectedLine li 
+                clr = @color.selection
+            else
+                clr = @color.fullysel
+            sy = @cells.y*csz[1] + li*ppr
+            squares.place @cells.x*csz[0]+mw-ppc*16 sy ppc*16 ppr clr 2000
     
-        for li in highlightLines
+        for li in belt.lineIndicesForSpans  @state.s.highlights
         
-            continue if li == mc[1]
-            continue if li in selectedLines
-        
-            sy = @cells.y*csz[1] + li*@pixelsPerRow
-            squares.place @cells.x*csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow @color.highlight
+            sy = @cells.y*csz[1] + li*ppr
+            squares.place @cells.x*csz[0]+mw-ppc*8 sy ppc*8 ppr @color.highlight 2001
 
 export mapscr
