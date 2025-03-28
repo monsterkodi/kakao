@@ -152,6 +152,8 @@ differ = (function ()
         {
             return this.hide()
         }
+        this.input.set('▸')
+        this.input.state.moveCursors('eol')
         fileHeader = (function (change, file, status)
         {
             var path, sfil, symbol
@@ -357,9 +359,9 @@ differ = (function ()
         switch (action)
         {
             case 'submit':
-                if (!_k_.empty(text))
+                if (!_k_.empty(text) && text.startsWith('▸'))
                 {
-                    this.commit(text)
+                    this.commit(text.slice(1))
                     return
                 }
                 break

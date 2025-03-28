@@ -227,7 +227,10 @@ dirtree = (function ()
         }
         if (action === 'cmd+delete')
         {
-            post.emit('file.trash',choice.path)
+            if (choice.type === 'file')
+            {
+                post.emit('file.trash',choice.path)
+            }
             return
         }
         switch (choice.type)
@@ -323,7 +326,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _281_48_, _293_20_, _295_26_
+        var depth, index, item, items, state, _282_48_, _294_20_, _296_26_
 
         if (_k_.empty(dirItem))
         {

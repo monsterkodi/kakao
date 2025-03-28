@@ -254,12 +254,16 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _247_41_, _305_31_
+        var col, ret, row, start, word, x, y, _218_69_, _308_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
         {
             return ret
+        }
+        if (!(this.dragStart || this.cells.isInsideEvent(event) || ((this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))))
+        {
+            return this.hover
         }
         var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
@@ -294,7 +298,7 @@ fileeditor = (function ()
                     this.dragStart = _k_.copy(this.state.s.selections[0])
                     return {redraw:true}
                 }
-                else if (this.hover || (this.gutter != null ? this.gutter.cells.isInsideEvent(event) : undefined))
+                else
                 {
                     x = col + this.state.s.view[0]
                     y = row + this.state.s.view[1]

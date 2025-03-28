@@ -212,8 +212,11 @@ function fileeditor extends editor
     # 000   000   0000000    0000000   0000000   00000000  
     
     onMouse: event =>
-            
+    
         ret = super event ; ⮐  ret if ret?.redraw
+        
+        if not (@dragStart or @cells.isInsideEvent(event) or (@gutter?.cells.isInsideEvent(event)))
+            ⮐  @hover 
         
         [col row] = @eventPos event
         
@@ -244,7 +247,7 @@ function fileeditor extends editor
                     
                     ⮐  redraw:true
                     
-                else if @hover or @gutter?.cells.isInsideEvent(event)
+                else
                     
                     x = col + @state.s.view[0]
                     y = row + @state.s.view[1]
@@ -254,7 +257,7 @@ function fileeditor extends editor
                             log "jumpToWord #{word}" event
                             if @jumpToWord word
                                 ⮐ 
-                        
+
                     @dragStart = [x y x]
                                         
                     @state.deselect()     if not event.shift and event.button=='left'

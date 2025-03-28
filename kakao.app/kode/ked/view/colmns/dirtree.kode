@@ -195,7 +195,8 @@ function dirtree extends choices
             ⮐ 
             
         if action == 'cmd+delete'
-            post.emit 'file.trash' choice.path
+            if choice.type == 'file'
+                post.emit 'file.trash' choice.path
             ⮐  
             
         switch choice.type

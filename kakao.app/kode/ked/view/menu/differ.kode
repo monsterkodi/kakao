@@ -157,6 +157,9 @@ function differ extends searcher
         ⮐  @hide() if empty status
         ⮐  @hide() if empty status.gitDir
         
+        @input.set '▸'
+        @input.state.moveCursors 'eol'
+        
         fileHeader = change file status =>
 
             symbol = @symbol[change]
@@ -352,8 +355,8 @@ function differ extends searcher
         switch action
 
             'submit' 
-                if valid text
-                    @commit text
+                if valid text and text.startsWith '▸'
+                    @commit text[1..]
                     ⮐  
             
         super action text

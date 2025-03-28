@@ -898,6 +898,8 @@ tripleString = ->
 
 number = ->
 
+    ⮐  0 if topType?.startsWith 'string'
+
     if NUMBER.test chunk.match
         prev = getmatch(-1)
         if prev == '.'
@@ -918,6 +920,7 @@ number = ->
                 setValue -1 'punct number float'
                 setValue  0 'number float'
                 ⮐  1
+                
         if prev == '#'
             chunk.clss = 'number hex'
         else

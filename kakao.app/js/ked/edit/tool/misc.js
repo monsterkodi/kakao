@@ -37,7 +37,6 @@ misc = (function ()
                 {
                     continue
                 }
-                console.log(`■ ${w} ${before} ${turd}`)
                 filtered.push(w)
                 continue
             }
@@ -47,14 +46,12 @@ misc = (function ()
                 subw = list1[_b_]
                 if (subw.word.startsWith(turd))
                 {
-                    console.log(`◆ ${w} ${before}`)
                     filtered.push(subw.word)
                 }
                 else if (turd.length === 1 && turd === w[subw.index - 1])
                 {
                     if (turd !== '.')
                     {
-                        console.log(`○ ${w} ${before}`)
                         filtered.push(turd.slice(-1)[0] + subw.word)
                     }
                     else
@@ -64,13 +61,11 @@ misc = (function ()
                     {
                         if (w.startsWith(before))
                         {
-                            console.log(`✔ ${w} ${before}`)
                             filtered.push(turd.slice(-1)[0] + subw.word)
                         }
                     }
                     else if (!/\d+\./.test(before) && !/\d+/.test(subw.word))
                     {
-                        console.log(`▴ ${w} ${before}`)
                         filtered.push(turd.slice(-1)[0] + subw.word)
                     }
                 }
@@ -106,7 +101,6 @@ misc = (function ()
             {
                 if (!(_k_.in(s[turd.length],'([{')))
                 {
-                    console.log(`✘ ${kseg.str(s.slice(0, turd.length + 1))} ${before} |${s[turd.length]}|`)
                     segls.push(s.slice(0, turd.length + 1))
                 }
             }

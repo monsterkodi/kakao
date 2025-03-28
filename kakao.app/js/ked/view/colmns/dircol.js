@@ -135,7 +135,12 @@ dircol = (function ()
 
     dircol.prototype["onContext"] = function (event)
     {
-        return context.show(event.cell,this.onContextChoice,["trash"])
+        var _118_29_
+
+        if ((this.dirtree.current() != null ? this.dirtree.current().type : undefined) === 'file')
+        {
+            return context.show(event.cell,this.onContextChoice,["trash"])
+        }
     }
 
     dircol.prototype["onContextChoice"] = function (choice)
@@ -147,8 +152,11 @@ dircol = (function ()
             switch (choice)
             {
                 case 'trash':
-                    return post.emit('file.trash',current.path)
-
+                    if (choice.type === 'file')
+                    {
+                        return post.emit('file.trash',current.path)
+                    }
+                    break
             }
 
         }

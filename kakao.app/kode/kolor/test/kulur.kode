@@ -306,6 +306,24 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         rgs = ranges "(8.9,100.2)"
         inc rgs 3 "9"      ▸ 'number float'
         inc rgs 9 "2"      ▸ 'number float'
+        
+        rgs = ranges "#f00" 
+        inc rgs 0 "#"      ▸ 'punct number hex'
+        inc rgs 1 'f00'    ▸ 'number hex'
+
+        lang 'kode'
+        
+        rgs = ranges "#f00" 
+        inc rgs 0 "#"      ▸ 'punct comment'
+        inc rgs 1 'f00'    ▸ 'comment'
+
+        rgs = ranges "'#f00'" 
+        inc rgs 1 "#"      ▸ 'string single'
+        inc rgs 2 'f00'    ▸ 'string single'
+         
+        rgs = ranges "'#808'" 
+        inc rgs 1 "#"      ▸ 'string single'
+        inc rgs 2 '808'    ▸ 'string single'
          
     #  0000000  00000000  00     00  000   000  00000000  00000000   
     # 000       000       000   000  000   000  000       000   000  

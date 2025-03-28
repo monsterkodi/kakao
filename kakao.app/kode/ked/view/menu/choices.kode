@@ -285,14 +285,12 @@ function choices extends editor
         
     onMouse: event =>
         
-        # log "choices #{r6 @name} onMouse"
-    
         ret = super event; ⮐  ret if ret?.redraw
         
         ret = @mapscr?.onMouse event; ⮐  ret if ret # mapview doesn't do mouse yet, just to prevent clickthrough to editor
         
         if @hover
-            
+        
             [col row] = @eventPos event
             
             if @state.isValidLineIndex(row)
@@ -312,11 +310,15 @@ function choices extends editor
                         if event.count == 2
                             ⮐  @doubleClickChoiceAtIndex row + @state.s.view[1] event
                         else
+                            @dragStart = [col row]
                             ⮐  @clickChoiceAtIndex row + @state.s.view[1] event
                             
                     'drag'
-                    
-                            ⮐  @dragChoiceAtIndex row + @state.s.view[1] event
+                            if @dragStart
+                                ⮐  @dragChoiceAtIndex row + @state.s.view[1] event
+                                
+                    'release'
+                            delete @dragStart
         @hover
         
     #  0000000    0000000  000000000  000   0000000   000   000  

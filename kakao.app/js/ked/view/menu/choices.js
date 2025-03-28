@@ -381,7 +381,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _292_21_
+        var col, dx, dy, ret, row, _290_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -420,12 +420,19 @@ choices = (function ()
                         }
                         else
                         {
+                            this.dragStart = [col,row]
                             return this.clickChoiceAtIndex(row + this.state.s.view[1],event)
                         }
                         break
                     case 'drag':
-                        return this.dragChoiceAtIndex(row + this.state.s.view[1],event)
-
+                        if (this.dragStart)
+                        {
+                            return this.dragChoiceAtIndex(row + this.state.s.view[1],event)
+                        }
+                        break
+                    case 'release':
+                        delete this.dragStart
+                        break
                 }
 
             }

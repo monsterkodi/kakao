@@ -115,16 +115,20 @@ function dircol extends view
 
     onContext: event =>
     
-        context.show event.cell @onContextChoice [
-            "trash" 
-            ]
+        if @dirtree.current()?.type == 'file'
+    
+            context.show event.cell @onContextChoice [
+                "trash" 
+                ]
                 
     onContextChoice: choice =>
     
         if current = @dirtree.current()
 
             switch choice
-                'trash' ➜ post.emit 'file.trash' current.path
+                'trash' 
+                    if choice.type == 'file'
+                        post.emit 'file.trash' current.path
     
     # █████████   ███████    ███████    ███████   ███      ████████
     #    ███     ███   ███  ███        ███        ███      ███     

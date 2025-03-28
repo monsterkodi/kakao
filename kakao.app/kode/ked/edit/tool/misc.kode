@@ -43,28 +43,28 @@ function misc
                 continue if /\d+\.\d+/.test(w) and not w.startsWith before # skip float decimals if the integer part doesn't match
                 
                 # continue if w[-1] in '[({'
-                log "■ #{w} #{before} #{turd}"
+                # log "■ #{w} #{before} #{turd}"
                 
                 filtered.push w
                 continue                        
                 
             for subw in kseg.words w          # split chunk into words and 
                 if subw.word.startsWith turd  # add any that starts with turd 
-                    log "◆ #{w} #{before}"
+                    # log "◆ #{w} #{before}"
                     filtered.push subw.word    
                 else if turd.length == 1 and turd == w[subw.index-1] # if subword is prefixed with turd
                     if turd != '.'
-                        log "○ #{w} #{before}"
+                        # log "○ #{w} #{before}"
                         filtered.push turd[-1] + subw.word
                     else
                     if /\d+\./.test(before) and /\d+/.test(subw.word)
                         if w.startsWith before 
-                            log "✔ #{w} #{before}"
+                            # log "✔ #{w} #{before}"
                             filtered.push turd[-1] + subw.word           
                         # else
                         #     log "✘ #{w} #{before}"
                     else if not /\d+\./.test(before) and not /\d+/.test(subw.word)
-                        log "▴ #{w} #{before}"
+                        # log "▴ #{w} #{before}"
                         filtered.push turd[-1] + subw.word
            
         words = kutil.uniq filtered
@@ -85,7 +85,7 @@ function misc
                     segls.push ws[0].segl # add the first word of longer completion 
             if kseg.headCountTurd(s[turd.length..]) # if completion starts with turd, 
                 if not s[turd.length] in '([{'
-                    log "✘ #{kseg.str s[0..turd.length+1]} #{before} |#{s[turd.length]}|"
+                    # log "✘ #{kseg.str s[0..turd.length+1]} #{before} |#{s[turd.length]}|"
                     segls.push s[0..turd.length+1]      # add the first character
                 
             segls.push s

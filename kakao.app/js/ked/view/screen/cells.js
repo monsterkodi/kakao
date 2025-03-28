@@ -440,7 +440,7 @@ cells = (function ()
         }
         if (y1 + 1 < y2)
         {
-            this.img(x2,y1 + 1,'rounded.border.rt',fg,x2,y2 - 1)
+            this.img(x2,y1 + 1,'rounded.border.rt',fg,x2)
         }
         if (y1 + 2 < y2)
         {
