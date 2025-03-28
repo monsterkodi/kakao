@@ -101,12 +101,10 @@ function context extends inputchoice
         
         cy = 0
         
-        bg = @cells.get_bg 0 0
-        
         if @input.visible()
-            @cells.draw_rounded_border 0 0 -1 2 fg:@color.bg bg:bg
+            @cells.draw_rounded_border 0 0 -1 2 fg:@color.bg
             cy = 2
         
-        @cells.draw_rounded_border 0 cy -1 -1 fg:@color.bg bg:bg
+        @cells.draw_rounded_border 0 cy -1 -1 fg:@color.bg
             
 export context

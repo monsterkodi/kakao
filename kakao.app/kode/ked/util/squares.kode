@@ -35,7 +35,6 @@ function squares
     
         fg.push(255) if fg.length < 4
         
-        # @pixlArr.set [fg[0] << 24 | fg[1] << 16 | fg[2] << 8 | (fg[3] ? 255)]
         @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
         
         img = w:tw h:th
@@ -58,8 +57,6 @@ function squares
     
         ⮐  if empty @csz
         
-        # log "squares place #{sx} #{sy} #{sw} #{sh}"
-        
         t = @tileRect sx sy sw sh
         
         img = @cache[fg]
@@ -70,8 +67,6 @@ function squares
             
         ox = sx - t[0] * @csz[0]
         oy = sy - t[1] * @csz[1]
-        
-        # log "squares place #{t[0]} #{t[1]} - #{ox} #{oy} #{sw} #{sh}"
         
         ked_ttio.placeImg img t[0] t[1] ox oy sw sh z
     

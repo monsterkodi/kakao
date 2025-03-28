@@ -29,13 +29,13 @@ squares = (function ()
 
     squares["tileImg"] = function (tw, th, fg)
     {
-        var c, img, r, _39_64_
+        var c, img, r, _38_64_
 
         if (fg.length < 4)
         {
             fg.push(255)
         }
-        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_39_64_=fg[3]) != null ? _39_64_ : 255)) << 24])
+        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_38_64_=fg[3]) != null ? _38_64_ : 255)) << 24])
         img = {w:tw,h:th}
         for (var _a_ = c = 0, _b_ = tw; (_a_ <= _b_ ? c < tw : c > tw); (_a_ <= _b_ ? ++c : --c))
         {

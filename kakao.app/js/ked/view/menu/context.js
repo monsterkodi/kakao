@@ -95,16 +95,15 @@ context = (function ()
 
     context.prototype["drawFrame"] = function ()
     {
-        var bg, cy
+        var cy
 
         cy = 0
-        bg = this.cells.get_bg(0,0)
         if (this.input.visible())
         {
-            this.cells.draw_rounded_border(0,0,-1,2,{fg:this.color.bg,bg:bg})
+            this.cells.draw_rounded_border(0,0,-1,2,{fg:this.color.bg})
             cy = 2
         }
-        return this.cells.draw_rounded_border(0,cy,-1,-1,{fg:this.color.bg,bg:bg})
+        return this.cells.draw_rounded_border(0,cy,-1,-1,{fg:this.color.bg})
     }
 
     return context

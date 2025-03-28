@@ -13,6 +13,7 @@ rounded = (function ()
     {}
 
     rounded["cache"] = {}
+    rounded["shadow"] = [0,0,0,200]
     rounded["img"] = function (w, h)
     {
         var buff, view
@@ -22,7 +23,7 @@ rounded = (function ()
         return {w:w,h:h,buff:buff,view:view}
     }
 
-    rounded["encode"] = function (img, maxColors = 2)
+    rounded["encode"] = function (img, maxColors = 3)
     {
         img.png = Buffer.from(png.encode([img.buff],img.w,img.h,maxColors))
         return img
@@ -151,6 +152,8 @@ rounded = (function ()
         img = this.img(w,h)
         r = parseInt(w / 2) - 1
         h2 = parseInt(h / 2)
+        this.circle(img,0,h2,w,this.shadow)
+        this.fill(img,0,0,w,h2,this.shadow)
         this.circle(img,0,h2 - r,r,fg)
         this.fill(img,0,0,r,h2 - r,fg)
         return this.encode(img)
@@ -162,7 +165,8 @@ rounded = (function ()
 
         img = this.img(w,h)
         h2 = parseInt(h / 2)
-        this.fill(img,0,0,h2,h2,fg)
+        this.fill(img,0,0,w,h2,fg)
+        this.fill(img,0,h2 + 1,w,h2,this.shadow)
         return this.encode(img)
     }
 
@@ -193,6 +197,7 @@ rounded = (function ()
         img = this.img(w,h)
         w2 = parseInt(w / 2) - 1
         this.fill(img,0,0,w2,h,fg)
+        this.fill(img,w2 + 1,0,w2,h,this.shadow)
         return this.encode(img)
     }
 
@@ -217,7 +222,7 @@ rounded = (function ()
         return this.encode(img)
     }
 
-    rounded["place"] = function (x, y, name, fg, bg, xe, ye)
+    rounded["place"] = function (x, y, name, fg, xe, ye)
     {
         var csz, img, key, xr, yr
 
@@ -280,7 +285,6 @@ rounded = (function ()
 
         if (xe && xe > x)
         {
-            console.log(`hugga ${xe}`)
             for (var _a_ = xr = x + 1, _b_ = xe; (_a_ <= _b_ ? xr <= xe : xr >= xe); (_a_ <= _b_ ? ++xr : --xr))
             {
                 ked_ttio.placeImg(img,xr,y)
@@ -288,7 +292,6 @@ rounded = (function ()
         }
         if (ye && ye > y)
         {
-            console.log(`farz ${ye}`)
             for (var _c_ = yr = y + 1, _d_ = ye; (_c_ <= _d_ ? yr <= ye : yr >= ye); (_c_ <= _d_ ? ++yr : --yr))
             {
                 ked_ttio.placeImg(img,x,yr)

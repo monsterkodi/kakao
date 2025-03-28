@@ -11,7 +11,8 @@ use                ◆ png
 
 function rounded
 
-    @cache: {}
+    @cache:  {}
+    @shadow: [0 0 0 200]
 
     # ███  ██     ██   ███████ 
     # ███  ███   ███  ███      
@@ -29,7 +30,7 @@ function rounded
         buff: buff
         view: view
 
-    @encode: img maxColors=2->
+    @encode: img maxColors=3->
     
         img.png = Buffer.from png.encode([img.buff] img.w img.h maxColors)
         img
@@ -125,6 +126,8 @@ function rounded
         r   = int(w/2)-1
         h2  = int h/2
         
+        @circle img 0 h2 w    @shadow
+        @fill   img 0 0  w h2 @shadow
         @circle img 0 h2-r r   fg    
         @fill   img 0 0 r h2-r fg
         @encode img 
@@ -134,7 +137,8 @@ function rounded
         img = @img w h
         h2  = int h/2
         
-        @fill   img 0 0 h2 h2 fg
+        @fill   img 0 0    w h2 fg
+        @fill   img 0 h2+1 w h2 @shadow
         @encode img 
         
     @borderTop: w h fg ->
@@ -158,7 +162,8 @@ function rounded
         img = @img w h
         w2  = int(w/2)-1
         
-        @fill   img 0 0 w2 h fg
+        @fill   img 0  0 w2 h fg
+        @fill   img w2+1 0 w2 h @shadow
         @encode img 
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
@@ -172,15 +177,15 @@ function rounded
         img = @img w h
         r   = int w/2
         
-        @circle img r r     r   fg
-        @circle img r h-r-1 r   fg
-        @fill   img 0 r w h-w   fg
+        @circle img r r     r fg
+        @circle img r h-r-1 r fg
+        @fill   img 0 r w h-w fg
         @encode img 
 
     @multi: w h fg ->
     
         img = @img w h
-        @fill   img 0 0 w h   fg
+        @fill   img 0 0 w h fg
         @encode img 
         
     # ████████   ███       ███████    ███████  ████████
@@ -189,7 +194,7 @@ function rounded
     # ███        ███      ███   ███  ███       ███     
     # ███        ███████  ███   ███   ███████  ████████
 
-    @place: x y name fg bg xe ye ->
+    @place: x y name fg xe ye ->
         
         csz = ked_ttio.cellsz
         ⮐  if empty csz
@@ -216,12 +221,10 @@ function rounded
                              ➜ ked_ttio.placeImg img x   y
                              
         if xe and xe > x
-            log "hugga #{xe}"
             for xr in x+1..xe
                 ked_ttio.placeImg img xr y
 
         if ye and ye > y
-            log "farz #{ye}"
             for yr in y+1..ye
                 ked_ttio.placeImg img x yr
             

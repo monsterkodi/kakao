@@ -404,7 +404,7 @@ cells = (function ()
 
     cells.prototype["draw_rounded_border"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, _215_20_, _216_20_
+        var fg, _215_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -424,15 +424,14 @@ cells = (function ()
         }
         opt = (opt != null ? opt : {})
         fg = ((_215_20_=opt.fg) != null ? _215_20_ : '#888')
-        bg = ((_216_20_=opt.bg) != null ? _216_20_ : null)
-        this.img(x1,y1,'rounded.border.tl',fg,bg)
-        this.img(x2,y1,'rounded.border.tr',fg,bg)
-        this.img(x1,y2,'rounded.border.bl',fg,bg)
-        this.img(x2,y2,'rounded.border.br',fg,bg)
-        this.img(x1 + 1,y1,'rounded.border.t',fg,bg,x2 - 1)
-        this.img(x1 + 1,y2,'rounded.border.b',fg,bg,x2 - 1)
-        this.img(x1,y1 + 1,'rounded.border.l',fg,bg,x1,y2 - 1)
-        return this.img(x2,y1 + 1,'rounded.border.r',fg,bg,x2,y2 - 1)
+        this.img(x1,y1,'rounded.border.tl',fg)
+        this.img(x2,y1,'rounded.border.tr',fg)
+        this.img(x1,y2,'rounded.border.bl',fg)
+        this.img(x2,y2,'rounded.border.br',fg)
+        this.img(x1 + 1,y1,'rounded.border.t',fg,x2 - 1)
+        this.img(x1 + 1,y2,'rounded.border.b',fg,x2 - 1)
+        this.img(x1,y1 + 1,'rounded.border.l',fg,x1,y2 - 1)
+        return this.img(x2,y1 + 1,'rounded.border.r',fg,x2,y2 - 1)
     }
 
     cells.prototype["draw_rounded_cursor"] = function (x, y, fg)
@@ -445,14 +444,13 @@ cells = (function ()
         return this.img(x,y,"rounded.multi",fg)
     }
 
-    cells.prototype["img"] = function (x, y, name, fg, bg, xe, ye)
+    cells.prototype["img"] = function (x, y, name, fg, xe, ye)
     {
         if (this.outside(x,y))
         {
             return
         }
-        console.log(`huggafarz ${xe} ${ye}`)
-        return rounded.place(this.wx(x),this.wy(y),name,fg,bg,this.wx(xe),this.wy(ye))
+        return rounded.place(this.wx(x),this.wy(y),name,fg,this.wx(xe),this.wy(ye))
     }
 
     cells.prototype["adjustContrastForHighlight"] = function (x, y, highlightColor)
