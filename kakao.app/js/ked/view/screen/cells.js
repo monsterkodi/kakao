@@ -429,14 +429,10 @@ cells = (function ()
         this.img(x2,y1,'rounded.border.tr',fg,bg)
         this.img(x1,y2,'rounded.border.bl',fg,bg)
         this.img(x2,y2,'rounded.border.br',fg,bg)
-        this.set(x1,y1,' ',null,bg)
-        this.set(x2,y1,' ',null,bg)
-        this.set(x1,y2,' ',null,bg)
-        this.set(x2,y2,' ',null,bg)
-        this.fill_row(y1,x1 + 1,x2 - 1,'▄',fg,bg)
-        this.fill_row(y2,x1 + 1,x2 - 1,'▀',fg,bg)
-        this.fill_col(x1,y1 + 1,y2 - 1,'▐',fg,bg)
-        return this.fill_col(x2,y1 + 1,y2 - 1,'▌',fg,bg)
+        this.img(x1 + 1,y1,'rounded.border.t',fg,bg,x2 - 1)
+        this.img(x1 + 1,y2,'rounded.border.b',fg,bg,x2 - 1)
+        this.img(x1,y1 + 1,'rounded.border.l',fg,bg,x1,y2 - 1)
+        return this.img(x2,y1 + 1,'rounded.border.r',fg,bg,x2,y2 - 1)
     }
 
     cells.prototype["draw_rounded_cursor"] = function (x, y, fg)
@@ -449,13 +445,14 @@ cells = (function ()
         return this.img(x,y,"rounded.multi",fg)
     }
 
-    cells.prototype["img"] = function (x, y, name, fg, bg)
+    cells.prototype["img"] = function (x, y, name, fg, bg, xe, ye)
     {
         if (this.outside(x,y))
         {
             return
         }
-        return rounded.place(this.wx(x),this.wy(y),name,fg,bg)
+        console.log(`huggafarz ${xe} ${ye}`)
+        return rounded.place(this.wx(x),this.wy(y),name,fg,bg,this.wx(xe),this.wy(ye))
     }
 
     cells.prototype["adjustContrastForHighlight"] = function (x, y, highlightColor)

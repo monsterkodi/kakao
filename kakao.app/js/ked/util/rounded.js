@@ -156,6 +156,46 @@ rounded = (function ()
         return this.encode(img)
     }
 
+    rounded["borderBottom"] = function (w, h, fg)
+    {
+        var h2, img
+
+        img = this.img(w,h)
+        h2 = parseInt(h / 2)
+        this.fill(img,0,0,h2,h2,fg)
+        return this.encode(img)
+    }
+
+    rounded["borderTop"] = function (w, h, fg)
+    {
+        var h2, img
+
+        img = this.img(w,h)
+        h2 = parseInt(h / 2)
+        this.fill(img,0,h2,h2,h2,fg)
+        return this.encode(img)
+    }
+
+    rounded["borderLeft"] = function (w, h, fg)
+    {
+        var img, w2
+
+        img = this.img(w,h)
+        w2 = parseInt(w / 2)
+        this.fill(img,w2,0,w2,h,fg)
+        return this.encode(img)
+    }
+
+    rounded["borderRight"] = function (w, h, fg)
+    {
+        var img, w2
+
+        img = this.img(w,h)
+        w2 = parseInt(w / 2) - 1
+        this.fill(img,0,0,w2,h,fg)
+        return this.encode(img)
+    }
+
     rounded["cursor"] = function (w, h, fg)
     {
         var img, r
@@ -177,17 +217,17 @@ rounded = (function ()
         return this.encode(img)
     }
 
-    rounded["place"] = function (x, y, name, fg, bg)
+    rounded["place"] = function (x, y, name, fg, bg, xe, ye)
     {
-        var csz, img, key
+        var csz, img, key, xr, yr
 
-        key = name + fg + bg
-        img = this.cache[key]
         csz = ked_ttio.cellsz
         if (_k_.empty(csz))
         {
             return
         }
+        key = name + fg
+        img = this.cache[key]
         if (_k_.empty(img))
         {
             img = ((function ()
@@ -206,6 +246,18 @@ rounded = (function ()
                     case 'rounded.border.br':
                         return this.borderBottomRight(csz[0],csz[1],fg)
 
+                    case 'rounded.border.t':
+                        return this.borderTop(csz[0],csz[1],fg)
+
+                    case 'rounded.border.r':
+                        return this.borderRight(csz[0],csz[1],fg)
+
+                    case 'rounded.border.l':
+                        return this.borderLeft(csz[0],csz[1],fg)
+
+                    case 'rounded.border.b':
+                        return this.borderBottom(csz[0],csz[1],fg)
+
                     case 'rounded.cursor':
                         return this.cursor(parseInt(csz[0] / 5) * 2 + 1,csz[1],fg)
 
@@ -220,12 +272,28 @@ rounded = (function ()
         switch (name)
         {
             case 'rounded.cursor':
-                return ked_ttio.placeImg(img,x - 1,y,parseInt(9 * csz[0] / 10) + 1)
-
+                ked_ttio.placeImg(img,x - 1,y,parseInt(9 * csz[0] / 10) + 1)
+                break
             default:
-                return ked_ttio.placeImg(img,x,y)
+                ked_ttio.placeImg(img,x,y)
         }
 
+        if (xe && xe > x)
+        {
+            console.log(`hugga ${xe}`)
+            for (var _a_ = xr = x + 1, _b_ = xe; (_a_ <= _b_ ? xr <= xe : xr >= xe); (_a_ <= _b_ ? ++xr : --xr))
+            {
+                ked_ttio.placeImg(img,xr,y)
+            }
+        }
+        if (ye && ye > y)
+        {
+            console.log(`farz ${ye}`)
+            for (var _c_ = yr = y + 1, _d_ = ye; (_c_ <= _d_ ? yr <= ye : yr >= ye); (_c_ <= _d_ ? ++yr : --yr))
+            {
+                ked_ttio.placeImg(img,x,yr)
+            }
+        }
     }
 
     return rounded

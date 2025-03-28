@@ -215,25 +215,25 @@ function cells
         fg = opt.fg ? '#888'
         bg = opt.bg ? null
         
-        @img  x1  y1 'rounded.border.tl' fg bg
-        @img  x2  y1 'rounded.border.tr' fg bg
-        @img  x1  y2 'rounded.border.bl' fg bg
-        @img  x2  y2 'rounded.border.br' fg bg
+        @img x1 y1 'rounded.border.tl' fg bg
+        @img x2 y1 'rounded.border.tr' fg bg
+        @img x1 y2 'rounded.border.bl' fg bg
+        @img x2 y2 'rounded.border.br' fg bg
         
-        @set  x1  y1 ' ' null bg
-        @set  x2  y1 ' ' null bg
-        @set  x1  y2 ' ' null bg
-        @set  x2  y2 ' ' null bg
+        @img x1+1 y1 'rounded.border.t' fg bg x2-1 
+        @img x1+1 y2 'rounded.border.b' fg bg x2-1
+        @img x1 y1+1 'rounded.border.l' fg bg x1 y2-1
+        @img x2 y1+1 'rounded.border.r' fg bg x2 y2-1
         
         # @set  x1  y1 '╭' fg bg
         # @set  x2  y1 '╮' fg bg
         # @set  x1  y2 '╰' fg bg
         # @set  x2  y2 '╯' fg bg
         
-        @fill_row y1 x1+1 x2-1 '▄' fg bg
-        @fill_row y2 x1+1 x2-1 '▀' fg bg
-        @fill_col x1 y1+1 y2-1 '▐' fg bg
-        @fill_col x2 y1+1 y2-1 '▌' fg bg
+        # @fill_row y1 x1+1 x2-1 '▄' fg bg
+        # @fill_row y2 x1+1 x2-1 '▀' fg bg
+        # @fill_col x1 y1+1 y2-1 '▐' fg bg
+        # @fill_col x2 y1+1 y2-1 '▌' fg bg
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
     # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
@@ -249,11 +249,13 @@ function cells
     
         @img x y "rounded.multi" fg
         
-    img: x y name fg bg =>
+    img: x y name fg bg xe ye =>
     
         ⮐  if @outside x y
+        
+        log "huggafarz #{xe} #{ye}"
     
-        rounded.place @wx(x) @wy(y) name fg bg
+        rounded.place @wx(x) @wy(y) name fg bg @wx(xe) @wy(ye)
         
     #  0000000   0000000          000         0000000   0000000   000   000  000000000  00000000    0000000    0000000  000000000  
     # 000   000  000   000        000        000       000   000  0000  000     000     000   000  000   000  000          000     
