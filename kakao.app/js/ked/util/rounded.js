@@ -170,6 +170,17 @@ rounded = (function ()
         return this.encode(img)
     }
 
+    rounded["borderLeftBottom"] = function (w, h, fg)
+    {
+        var h2, img
+
+        img = this.img(w,h)
+        h2 = parseInt(h / 2)
+        this.circle(img,w,h2 + 1,w,this.shadow)
+        this.fill(img,0,0,w,h2,fg)
+        return this.encode(img)
+    }
+
     rounded["borderTop"] = function (w, h, fg)
     {
         var h2, img
@@ -198,6 +209,19 @@ rounded = (function ()
         w2 = parseInt(w / 2) - 1
         this.fill(img,0,0,w2,h,fg)
         this.fill(img,w2 + 1,0,w2,h,this.shadow)
+        return this.encode(img)
+    }
+
+    rounded["borderRightTop"] = function (w, h, fg)
+    {
+        var h2, img, w2
+
+        img = this.img(w,h)
+        w2 = parseInt(w / 2) - 1
+        h2 = parseInt(h / 2)
+        this.circle(img,0,h2,w,this.shadow)
+        this.fill(img,0,h2,w,h2,this.shadow)
+        this.fill(img,0,0,w2,h,fg)
         return this.encode(img)
     }
 
@@ -262,6 +286,12 @@ rounded = (function ()
 
                     case 'rounded.border.b':
                         return this.borderBottom(csz[0],csz[1],fg)
+
+                    case 'rounded.border.rt':
+                        return this.borderRightTop(csz[0],csz[1],fg)
+
+                    case 'rounded.border.lb':
+                        return this.borderLeftBottom(csz[0],csz[1],fg)
 
                     case 'rounded.cursor':
                         return this.cursor(parseInt(csz[0] / 5) * 2 + 1,csz[1],fg)

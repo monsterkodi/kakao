@@ -429,9 +429,23 @@ cells = (function ()
         this.img(x1,y2,'rounded.border.bl',fg)
         this.img(x2,y2,'rounded.border.br',fg)
         this.img(x1 + 1,y1,'rounded.border.t',fg,x2 - 1)
-        this.img(x1 + 1,y2,'rounded.border.b',fg,x2 - 1)
         this.img(x1,y1 + 1,'rounded.border.l',fg,x1,y2 - 1)
-        return this.img(x2,y1 + 1,'rounded.border.r',fg,x2,y2 - 1)
+        if (x1 + 1 < x2)
+        {
+            this.img(x1 + 1,y2,'rounded.border.lb',fg)
+        }
+        if (x1 + 2 < x2)
+        {
+            this.img(x1 + 2,y2,'rounded.border.b',fg,x2 - 1)
+        }
+        if (y1 + 1 < y2)
+        {
+            this.img(x2,y1 + 1,'rounded.border.rt',fg,x2,y2 - 1)
+        }
+        if (y1 + 2 < y2)
+        {
+            return this.img(x2,y1 + 2,'rounded.border.r',fg,x2,y2 - 1)
+        }
     }
 
     cells.prototype["draw_rounded_cursor"] = function (x, y, fg)

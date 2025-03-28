@@ -126,8 +126,8 @@ function rounded
         r   = int(w/2)-1
         h2  = int h/2
         
-        @circle img 0 h2 w    @shadow
-        @fill   img 0 0  w h2 @shadow
+        @circle img 0 h2 w     @shadow
+        @fill   img 0 0  w h2  @shadow
         @circle img 0 h2-r r   fg    
         @fill   img 0 0 r h2-r fg
         @encode img 
@@ -139,6 +139,15 @@ function rounded
         
         @fill   img 0 0    w h2 fg
         @fill   img 0 h2+1 w h2 @shadow
+        @encode img 
+
+    @borderLeftBottom: w h fg ->
+        
+        img = @img w h
+        h2  = int h/2
+        
+        @circle img w h2+1 w @shadow
+        @fill   img 0 0 w h2 fg
         @encode img 
         
     @borderTop: w h fg ->
@@ -162,8 +171,19 @@ function rounded
         img = @img w h
         w2  = int(w/2)-1
         
-        @fill   img 0  0 w2 h fg
+        @fill   img 0    0 w2 h fg
         @fill   img w2+1 0 w2 h @shadow
+        @encode img
+        
+    @borderRightTop: w h fg ->
+        
+        img = @img w h
+        w2  = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2 w     @shadow
+        @fill   img 0 h2 w h2  @shadow
+        @fill   img 0 0 w2 h fg
         @encode img 
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
@@ -212,6 +232,8 @@ function rounded
                 'rounded.border.r'  ➜ @borderRight       csz[0] csz[1] fg 
                 'rounded.border.l'  ➜ @borderLeft        csz[0] csz[1] fg 
                 'rounded.border.b'  ➜ @borderBottom      csz[0] csz[1] fg 
+                'rounded.border.rt' ➜ @borderRightTop    csz[0] csz[1] fg 
+                'rounded.border.lb' ➜ @borderLeftBottom  csz[0] csz[1] fg 
                 'rounded.cursor'    ➜ @cursor            int(csz[0]/5 )*2+1 csz[1]  fg 
                 'rounded.multi'     ➜ @multi             int(csz[0]/10)*2+1 csz[1] fg 
             @cache[key] = img
