@@ -87,8 +87,8 @@ finder
     frame                                   #222   
                                               
 quicky
-    bg                                      #000   
-    frame                                   #222   
+    bg                                      #222   
+    frame                                   #111   
     
 crumbs
     fg                                      #88f   

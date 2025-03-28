@@ -404,7 +404,7 @@ cells = (function ()
 
     cells.prototype["draw_rounded_border"] = function (x1, y1, x2, y2, opt)
     {
-        var fg, _215_20_
+        var fg, zLayer, _215_24_, _216_28_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -423,30 +423,41 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        fg = ((_215_20_=opt.fg) != null ? _215_20_ : '#888')
-        this.img(x1,y1,'rounded.border.tl',fg)
-        this.img(x2,y1,'rounded.border.tr',fg)
-        this.img(x1,y2,'rounded.border.bl',fg)
-        this.img(x2,y2,'rounded.border.br',fg)
-        this.img(x1 + 1,y1,'rounded.border.t',fg,x2 - 1)
-        this.img(x1,y1 + 1,'rounded.border.l',fg,x1,y2 - 1)
+        fg = ((_215_24_=opt.fg) != null ? _215_24_ : '#888')
+        zLayer = ((_216_28_=opt.zLayer) != null ? _216_28_ : 1000)
+        this.img(x1,y1,'rounded.border.tl',fg,zLayer)
+        this.img(x2,y1,'rounded.border.tr',fg,zLayer)
+        this.img(x1,y2,'rounded.border.bl',fg,zLayer)
+        this.img(x2,y2,'rounded.border.br',fg,zLayer)
+        this.img(x1 + 1,y1,'rounded.border.t',fg,zLayer,x2 - 1)
+        this.img(x1,y1 + 1,'rounded.border.l',fg,zLayer,x1,y2 - 1)
         if (x1 + 1 < x2)
         {
-            this.img(x1 + 1,y2,'rounded.border.lb',fg)
+            this.img(x1 + 1,y2,'rounded.border.lb',fg,zLayer)
         }
-        if (x1 + 2 < x2)
-        {
-            this.img(x1 + 2,y2,'rounded.border.b',fg,x2 - 1)
-        }
+        this.img(x1 + 2,y2,'rounded.border.b',fg,zLayer,x2 - 1)
         if (y1 + 1 < y2)
         {
-            this.img(x2,y1 + 1,'rounded.border.rt',fg,x2)
+            this.img(x2,y1 + 1,'rounded.border.rt',fg,zLayer,x2)
         }
         if (y1 + 2 < y2)
         {
-            return this.img(x2,y1 + 2,'rounded.border.r',fg,x2,y2 - 1)
+            return this.img(x2,y1 + 2,'rounded.border.r',fg,zLayer,x2,y2 - 1)
         }
     }
+
+    cells.prototype["draw_vertical_padding"] = function (x, y, fg, bg, zLayer = 1000)
+    {
+        return rounded.place(this.wx(x),this.wy(y),'rounded.vertical',fg,null,null,zLayer,bg)
+    }
+
+    cells.prototype["draw_horizontal_padding"] = function (x, y, fg, bg, zLayer = 1000)
+    {
+        return rounded.place(this.wx(x),this.wy(y),'rounded.horizontal',fg,null,null,zLayer,bg)
+    }
+
+    cells.prototype["draw_border_br_fix"] = function (x, y, fg, bg, zLayer = 1000)
+    {}
 
     cells.prototype["draw_rounded_cursor"] = function (x, y, fg)
     {
@@ -458,13 +469,13 @@ cells = (function ()
         return this.img(x,y,"rounded.multi",fg)
     }
 
-    cells.prototype["img"] = function (x, y, name, fg, xe, ye)
+    cells.prototype["img"] = function (x, y, name, fg, zLayer = 1000, xe, ye)
     {
         if (this.outside(x,y))
         {
             return
         }
-        return rounded.place(this.wx(x),this.wy(y),name,fg,this.wx(xe),this.wy(ye))
+        return rounded.place(this.wx(x),this.wy(y),name,fg,this.wx(xe),this.wy(ye),zLayer)
     }
 
     cells.prototype["adjustContrastForHighlight"] = function (x, y, highlightColor)

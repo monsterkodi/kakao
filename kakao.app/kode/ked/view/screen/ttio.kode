@@ -170,9 +170,9 @@ function TTIO extends events
         @placedImgs[img.id] ?= {}
         @placedImgs[img.id][[x y px py pw ph].toString()] = img.pid
         
-        # log "●#{img.id} #{img.pid} #{[x y px py pw ph].toString()}"
-
-        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z ? 1000},C=1\x1b\\"
+        log "●#{img.id} #{img.pid} #{[x y px py pw ph].toString()} zLayer:#{z}"
+        z ?= 1000
+        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z},C=1\x1b\\"
 
     hideImg: id pl ->
         

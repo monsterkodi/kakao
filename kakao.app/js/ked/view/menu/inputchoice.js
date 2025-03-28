@@ -5,7 +5,10 @@ var inputchoice
 import kxk from "../../../kxk.js"
 let post = kxk.post
 
+import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
+
+import rounded from "../../util/rounded.js"
 
 import view from "../base/view.js"
 import input from "../base/input.js"
@@ -21,7 +24,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _33_23_
+        var _34_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -48,14 +51,14 @@ inputchoice = (function ()
         this.choices.on('action',this.onChoicesAction)
     }
 
-    inputchoice.prototype["setColor"] = function (key, color)
+    inputchoice.prototype["setColor"] = function (key, clr)
     {
-        inputchoice.__super__.setColor.call(this,key,color)
+        inputchoice.__super__.setColor.call(this,key,clr)
     
         if (key === 'bg')
         {
-            this.input.setColor('bg',this.color.bg)
-            this.input.setColor('empty',this.color.bg)
+            this.input.setColor('bg',color.darken(this.color.bg))
+            this.input.setColor('empty',color.darken(this.color.bg))
             return this.choices.setColor('bg',this.color.bg)
         }
     }
@@ -96,7 +99,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _89_23_
+        var _90_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -164,9 +167,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _144_36_
+        var choice, _145_36_
 
-        choice = ((_144_36_=this.choices.current()) != null ? _144_36_ : this.input.current())
+        choice = ((_145_36_=this.choices.current()) != null ? _145_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -192,18 +195,21 @@ inputchoice = (function ()
 
     inputchoice.prototype["drawFrame"] = function ()
     {
-        var bg, fg
+        var inner, outer, sy
 
-        fg = this.color.frame
-        bg = this.color.bg
+        sy = 0
         if (this.input.visible())
         {
-            return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg,hdiv:[2]})
+            inner = color.darken(this.color.bg,0.5)
+            outer = color.darken(this.color.bg,0.75)
+            this.cells.draw_rounded_border(0,0,-1,2,{fg:outer})
+            this.cells.draw_vertical_padding(1,1,outer,inner)
+            this.cells.draw_vertical_padding(this.cells.cols - 2,1,inner,outer)
+            this.cells.draw_horizontal_padding(1,2,outer,this.color.bg,1002)
+            rounded.place(this.cells.wx(this.cells.cols - 1),this.cells.wy(2),'rounded.border.br_ns',outer,null,null,1002,this.color.bg)
+            sy = 2
         }
-        else
-        {
-            return this.cells.draw_frame(0,0,-1,-1,{fg:fg,bg:bg})
-        }
+        return this.cells.draw_rounded_border(0,sy,-1,-1,{fg:this.color.bg,zLayer:1001})
     }
 
     inputchoice.prototype["moveFocus"] = function ()

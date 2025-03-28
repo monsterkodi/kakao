@@ -212,19 +212,33 @@ function cells
         y2 = @rows + y2 if y2 < 0
         
         opt ?= {}
-        fg = opt.fg ? '#888'
+        fg     = opt.fg ? '#888'
+        zLayer = opt.zLayer ? 1000
         
-        @img x1 y1 'rounded.border.tl' fg 
-        @img x2 y1 'rounded.border.tr' fg 
-        @img x1 y2 'rounded.border.bl' fg 
-        @img x2 y2 'rounded.border.br' fg 
+        @img x1 y1 'rounded.border.tl' fg zLayer  
+        @img x2 y1 'rounded.border.tr' fg zLayer  
+        @img x1 y2 'rounded.border.bl' fg zLayer  
+        @img x2 y2 'rounded.border.br' fg zLayer  
         
-        @img x1+1 y1 'rounded.border.t'  fg x2-1 
-        @img x1 y1+1 'rounded.border.l'  fg x1 y2-1
-        @img x1+1 y2 'rounded.border.lb' fg          if x1+1 < x2
-        @img x1+2 y2 'rounded.border.b'  fg x2-1     if x1+2 < x2
-        @img x2 y1+1 'rounded.border.rt' fg x2       if y1+1 < y2
-        @img x2 y1+2 'rounded.border.r'  fg x2 y2-1  if y1+2 < y2
+        @img x1+1 y1 'rounded.border.t' fg zLayer x2-1 
+        @img x1 y1+1 'rounded.border.l' fg zLayer x1 y2-1
+        
+        @img x1+1 y2 'rounded.border.lb' fg zLayer          if x1+1 < x2
+        @img x1+2 y2 'rounded.border.b'  fg zLayer x2-1
+        @img x2 y1+1 'rounded.border.rt' fg zLayer x2       if y1+1 < y2
+        @img x2 y1+2 'rounded.border.r'  fg zLayer x2 y2-1  if y1+2 < y2
+        
+    draw_vertical_padding: x y fg bg zLayer=1000 ->
+    
+        rounded.place @wx(x) @wy(y) 'rounded.vertical' fg null null zLayer bg
+
+    draw_horizontal_padding: x y fg bg zLayer=1000 ->
+    
+        rounded.place @wx(x) @wy(y) 'rounded.horizontal' fg null null zLayer bg
+        
+    draw_border_br_fix: x y fg bg zLayer=1000 ->
+    
+        # rounded.place @wx(x) @wy(y) 'rounded.border.br_fix' fg null null zLayer bg
                 
     #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
     # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
@@ -240,11 +254,11 @@ function cells
     
         @img x y "rounded.multi" fg
         
-    img: x y name fg xe ye =>
+    img: x y name fg zLayer=1000 xe ye =>
     
         ⮐  if @outside x y
         
-        rounded.place @wx(x) @wy(y) name fg @wx(xe) @wy(ye)
+        rounded.place @wx(x) @wy(y) name fg @wx(xe) @wy(ye) zLayer
         
     #  0000000   0000000          000         0000000   0000000   000   000  000000000  00000000    0000000    0000000  000000000  
     # 000   000  000   000        000        000       000   000  0000  000     000     000   000  000   000  000          000     

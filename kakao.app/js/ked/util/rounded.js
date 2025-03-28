@@ -13,7 +13,7 @@ rounded = (function ()
     {}
 
     rounded["cache"] = {}
-    rounded["shadow"] = [0,0,0,200]
+    rounded["shadow"] = [0,0,0,100]
     rounded["img"] = function (w, h)
     {
         var buff, view
@@ -23,7 +23,7 @@ rounded = (function ()
         return {w:w,h:h,buff:buff,view:view}
     }
 
-    rounded["encode"] = function (img, maxColors = 3)
+    rounded["encode"] = function (img, maxColors = 4)
     {
         img.png = Buffer.from(png.encode([img.buff],img.w,img.h,maxColors))
         return img
@@ -159,6 +159,18 @@ rounded = (function ()
         return this.encode(img)
     }
 
+    rounded["borderBottomRightNoShadow"] = function (w, h, fg, bg)
+    {
+        var h2, img, r
+
+        img = this.img(w,h)
+        r = parseInt(w / 2) - 1
+        h2 = parseInt(h / 2)
+        this.circle(img,0,h2 + r,r,bg)
+        this.fill(img,0,h2 + r,r,h - r,bg)
+        return this.encode(img)
+    }
+
     rounded["borderBottom"] = function (w, h, fg)
     {
         var h2, img
@@ -187,7 +199,7 @@ rounded = (function ()
 
         img = this.img(w,h)
         h2 = parseInt(h / 2)
-        this.fill(img,0,h2,h2,h2,fg)
+        this.fill(img,0,h2,w,h2,fg)
         return this.encode(img)
     }
 
@@ -225,6 +237,28 @@ rounded = (function ()
         return this.encode(img)
     }
 
+    rounded["vertical"] = function (w, h, left, right)
+    {
+        var img, w2
+
+        img = this.img(w,h)
+        w2 = parseInt(w / 2)
+        this.fill(img,0,0,w2,h,left)
+        this.fill(img,w2 + 1,0,w2,h,right)
+        return this.encode(img)
+    }
+
+    rounded["horizontal"] = function (w, h, top, bottom)
+    {
+        var h2, img
+
+        img = this.img(w,h)
+        h2 = parseInt(h / 2)
+        this.fill(img,0,0,h2,h2,top)
+        this.fill(img,0,h2,h2,h2,bottom)
+        return this.encode(img)
+    }
+
     rounded["cursor"] = function (w, h, fg)
     {
         var img, r
@@ -246,7 +280,7 @@ rounded = (function ()
         return this.encode(img)
     }
 
-    rounded["place"] = function (x, y, name, fg, xe, ye)
+    rounded["place"] = function (x, y, name, fg, xe, ye, z, bg)
     {
         var csz, img, key, xr, yr
 
@@ -293,6 +327,15 @@ rounded = (function ()
                     case 'rounded.border.lb':
                         return this.borderLeftBottom(csz[0],csz[1],fg)
 
+                    case 'rounded.vertical':
+                        return this.vertical(csz[0],csz[1],fg,bg)
+
+                    case 'rounded.horizontal':
+                        return this.horizontal(csz[0],csz[1],fg,bg)
+
+                    case 'rounded.border.br_ns':
+                        return this.borderBottomRightNoShadow(csz[0],csz[1],fg,bg)
+
                     case 'rounded.cursor':
                         return this.cursor(parseInt(csz[0] / 5) * 2 + 1,csz[1],fg)
 
@@ -307,24 +350,24 @@ rounded = (function ()
         switch (name)
         {
             case 'rounded.cursor':
-                ked_ttio.placeImg(img,x - 1,y,parseInt(9 * csz[0] / 10) + 1)
+                ked_ttio.placeImg(img,x - 1,y,parseInt(9 * csz[0] / 10) + 1,null,null,null,666)
                 break
             default:
-                ked_ttio.placeImg(img,x,y)
+                ked_ttio.placeImg(img,x,y,null,null,null,null,666)
         }
 
         if (xe && xe > x)
         {
             for (var _a_ = xr = x + 1, _b_ = xe; (_a_ <= _b_ ? xr <= xe : xr >= xe); (_a_ <= _b_ ? ++xr : --xr))
             {
-                ked_ttio.placeImg(img,xr,y)
+                ked_ttio.placeImg(img,xr,y,null,null,null,null,z)
             }
         }
         if (ye && ye > y)
         {
             for (var _c_ = yr = y + 1, _d_ = ye; (_c_ <= _d_ ? yr <= ye : yr >= ye); (_c_ <= _d_ ? ++yr : --yr))
             {
-                ked_ttio.placeImg(img,x,yr)
+                ked_ttio.placeImg(img,x,yr,null,null,null,null,z)
             }
         }
     }

@@ -10,7 +10,8 @@
 ###
 
 use ../../../kxk ▪ post
-use ../../theme  ◆ theme
+use ../../theme  ◆ color theme
+use ../../util   ◆ rounded
 use ../base      ◆ view input
 use ../menu      ◆ choices
 
@@ -38,14 +39,14 @@ function inputchoice extends view
         @input.on   'action'  @onInputAction
         @choices.on 'action'  @onChoicesAction
         
-    setColor: key color ->
+    setColor: key clr ->
     
-        super key color
+        super key clr
         
         if key == 'bg'
         
-            @input.setColor     'bg'    @color.bg
-            @input.setColor     'empty' @color.bg
+            @input.setColor     'bg'    color.darken(@color.bg)
+            @input.setColor     'empty' color.darken(@color.bg)
             @choices.setColor   'bg'    @color.bg
         
     inputIsActive: -> @input.hasFocus() or @input.current().length
@@ -136,7 +137,7 @@ function inputchoice extends view
             'return' ➜ ⮐  @applyChoice @choices.current()
             
             'hover'  ➜ @autoHide()
-            
+                                             
     choicesFiltered: ->
         
     currentChoice: ->
@@ -162,17 +163,29 @@ function inputchoice extends view
         
         @input.draw()
         @choices.draw()    
-
-    drawFrame: ->
         
-        fg = @color.frame
-        bg = @color.bg
+    drawFrame: ->
+
+        sy = 0
         
         if @input.visible()
-            @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg hdiv:[2]
-        else
-            @cells.draw_frame 0 0 -1 -1 fg:fg bg:bg
+        
+            inner = color.darken @color.bg 0.5
+            outer = color.darken @color.bg 0.75
             
+            @cells.draw_rounded_border 0 0 -1 2 fg:outer
+            
+            # add left and right half-width padding to input
+            @cells.draw_vertical_padding 1 1 outer inner
+            @cells.draw_vertical_padding @cells.cols-2 1 inner outer
+            
+            # fix left and right side of weird kitty rendering bug
+            @cells.draw_horizontal_padding 1 2 outer @color.bg 1002 
+            rounded.place @cells.wx(@cells.cols-1) @cells.wy(2) 'rounded.border.br_ns' outer null null 1002 @color.bg
+            sy = 2
+        
+        @cells.draw_rounded_border 0 sy -1 -1 fg:@color.bg zLayer: 1001
+        
     moveFocus: ->
         
         if @choices.hasFocus()

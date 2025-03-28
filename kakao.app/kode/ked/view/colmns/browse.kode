@@ -23,11 +23,11 @@ function browse extends quicky
 
         @isVisible = false
         
-        @brocol = new brocol @screen 'browse_brocol'
-         
         @setColor 'bg'     theme.quicky.bg
         @setColor 'frame'  theme.quicky.frame
-
+        
+        @brocol = new brocol @screen 'browse_brocol'
+        @brocol.setColor 'bg' @color.bg
         @brocol.on 'action' @onBrocolAction
 
         @choices.mapscr.rowOffset = 1
@@ -56,7 +56,7 @@ function browse extends quicky
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
 
         w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
-        fw = @brocol.visible() ? w/2-1 : 0
+        fw = @brocol.visible() ? w/2-1 : -1
         cw = w-fw-3
 
         x  = int scx-w/2

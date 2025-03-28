@@ -42,9 +42,10 @@ browse = (function ()
         this["arrange"] = this["arrange"].bind(this)
         browse.__super__.constructor.call(this,this.screen,'browse')
         this.isVisible = false
-        this.brocol = new brocol(this.screen,'browse_brocol')
         this.setColor('bg',theme.quicky.bg)
         this.setColor('frame',theme.quicky.frame)
+        this.brocol = new brocol(this.screen,'browse_brocol')
+        this.brocol.setColor('bg',this.color.bg)
         this.brocol.on('action',this.onBrocolAction)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 2
@@ -64,7 +65,7 @@ browse = (function ()
         cr = (this.crumbs.visible() ? 1 : 0)
         ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
-        fw = (this.brocol.visible() ? w / 2 - 1 : 0)
+        fw = (this.brocol.visible() ? w / 2 - 1 : -1)
         cw = w - fw - 3
         x = parseInt(scx - w / 2)
         h = ch + ih + cr + 2
