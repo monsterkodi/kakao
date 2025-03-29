@@ -12,7 +12,7 @@
 
 use ../../../kxk   ▪ post kseg
 use ../../../kolor ◆ kulur
-use ../../util     ◆ prof syntax
+use ../../util     ◆ prof syntax squares
 use ../../theme    ◆ color theme 
 use ../base        ◆ view
 
@@ -88,6 +88,11 @@ function gutter extends view
         lineno
         
     fgcolor: x y ->
+
+    clearChanges: =>
+        
+        @gitChanges = {}
+        @gitBlocks  = []
         
     #  ███████   ███  █████████     ███████    ███  ████████  ████████
     # ███        ███     ███        ███   ███  ███  ███       ███     
@@ -97,24 +102,65 @@ function gutter extends view
 
     onGitDiff: diff ->
         
-        @gitChanges = {}
-        
-        # log 'onGitDiff' diff
-        
+        @clearChanges()
+            
         for change in diff.changes
+        
             firstLine = change.line
+            
             mod = change.mod ? []
             add = change.add ? []
             del = change.del ? []
+            
             mods     = mod.concat add
             numLines = mods.length
             mods     = mods.concat del
+            
             for modi in 0...numLines
                 off = mods[modi].new? ? -1 : 0
                 @gitChanges[firstLine+modi+off] = mods[modi]
+                
+            @gitBlocks.push [change.line-1 numLines mod.length]
 
         if valid @gitChanges
             post.emit 'redraw'
+            
+    #  ███████   ███  █████████         ███████   ███████  ████████    ███████   ███      ███            
+    # ███        ███     ███           ███       ███       ███   ███  ███   ███  ███      ███            
+    # ███  ████  ███     ███           ███████   ███       ███████    ███   ███  ███      ███            
+    # ███   ███  ███     ███                ███  ███       ███   ███  ███   ███  ███      ███            
+    #  ███████   ███     ███           ███████    ███████  ███   ███   ███████   ███████  ███████        
+
+    drawGitScroll: ->
+    
+        ⮐  if empty @gitBlocks
+        csz = @screen.t.cellsz
+        ⮐  if empty csz
+        
+        sw = int csz[0]/2 
+        sx = @cells.x*csz[0] - sw
+        oy = @cells.y*csz[1]
+        pixelsPerRow = clamp 0 csz[1] csz[1] * @cells.rows / @state.s.lines.length
+        
+        for gb in @gitBlocks
+        
+            sy = int gb[0]*pixelsPerRow + oy
+            
+            if gb[1] <= 0
+                fg = @color.bg_git_del
+                sh = int pixelsPerRow
+            else
+                fg = gb[2] ? @color.bg_git_mod : @color.bg_git_add
+                sh = int gb[1]*pixelsPerRow 
+    
+            if gb[2] and gb[2] < gb[1]
+                mh = int gb[2]*pixelsPerRow 
+                squares.place sx sy sw mh @color.bg_git_mod
+                sy += mh
+                ah  = sh-mh
+                squares.place sx sy sw ah @color.bg_git_add
+            else
+                squares.place sx sy sw sh fg
         
     # ███████    ████████    ███████   ███   ███
     # ███   ███  ███   ███  ███   ███  ███ █ ███
@@ -168,5 +214,6 @@ function gutter extends view
                     @cells.set col row (y<@state.s.lines.length) ? c : ' ' fg bg
                     
         @drawPreviews()
+        @drawGitScroll()
 
 export gutter

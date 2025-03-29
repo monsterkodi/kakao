@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var squares
 
@@ -16,26 +16,44 @@ squares = (function ()
     squares["tileArr"] = null
     squares["csz"] = []
     squares["cache"] = {}
-    squares["tileRect"] = function (px, py, pw, ph)
+    squares["tilesInRect"] = function (px, py, pw, ph)
     {
-        var th, tw, tx, ty
+        var boty, cx, cy, ox, oy, rightx, sh, sw, tiles, tx, ty
 
-        tw = this.csz[0]
-        th = this.csz[1]
-        tx = Math.floor(px / tw)
-        ty = Math.floor(py / th)
-        return [tx,ty,tw,th]
+        tiles = []
+        rightx = px + pw
+        boty = py + ph
+        cy = py
+        while (cy < boty)
+        {
+            cx = px
+            ty = Math.floor(cy / this.csz[1])
+            oy = cy - ty * this.csz[1]
+            sh = _k_.clamp(0,this.csz[1],this.csz[1] - oy)
+            sh = _k_.min(sh,boty - cy)
+            while (cx < rightx)
+            {
+                tx = Math.floor(cx / this.csz[0])
+                ox = cx - tx * this.csz[0]
+                sw = _k_.clamp(0,this.csz[0],this.csz[0] - ox)
+                sw = _k_.min(sw,rightx - cx)
+                tiles.push([tx,ty,ox,oy,sw,sh])
+                cx += sw
+            }
+            cy += sh
+        }
+        return tiles
     }
 
     squares["tileImg"] = function (tw, th, fg)
     {
-        var c, img, r, _38_64_
+        var c, img, r, _59_64_
 
         if (fg.length < 4)
         {
             fg.push(255)
         }
-        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_38_64_=fg[3]) != null ? _38_64_ : 255)) << 24])
+        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_59_64_=fg[3]) != null ? _59_64_ : 255)) << 24])
         img = {w:tw,h:th}
         for (var _a_ = c = 0, _b_ = tw; (_a_ <= _b_ ? c < tw : c > tw); (_a_ <= _b_ ? ++c : --c))
         {
@@ -51,22 +69,24 @@ squares = (function ()
 
     squares["place"] = function (sx, sy, sw, sh, fg, z)
     {
-        var img, ox, oy, t
+        var img, t
 
         if (_k_.empty(this.csz))
         {
             return
         }
-        t = this.tileRect(sx,sy,sw,sh)
         img = this.cache[fg]
         if (_k_.empty(img))
         {
-            img = this.tileImg(t[2],t[3],fg)
+            img = this.tileImg(this.csz[0],this.csz[1],fg)
             this.cache[fg] = img
         }
-        ox = sx - t[0] * this.csz[0]
-        oy = sy - t[1] * this.csz[1]
-        return ked_ttio.placeImg(img,t[0],t[1],ox,oy,sw,sh,z)
+        var list = _k_.list(this.tilesInRect(sx,sy,sw,sh))
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            t = list[_a_]
+            ked_ttio.placeImg(img,t[0],t[1],t[2],t[3],t[4],t[5],z)
+        }
     }
 
     squares["onResize"] = function (cols, rows, pixels, cellsz)

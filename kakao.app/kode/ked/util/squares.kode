@@ -22,14 +22,35 @@ function squares
     #    ███     ███  ███      ███     
     #    ███     ███  ███████  ████████
     
-    @tileRect: px py pw ph -> 
+    @tilesInRect: px py pw ph ->
     
-        tw = @csz[0]
-        th = @csz[1]
-        tx = floor(px / tw)
-        ty = floor(py / th)
-    
-        [tx ty tw th]
+        tiles = []
+        
+        rightx = px+pw
+        boty = py+ph
+        
+        cy = py
+        
+        while cy < boty
+            cx = px
+            
+            ty = floor cy / @csz[1]
+            oy = cy - ty * @csz[1]
+            sh = clamp 0 @csz[1] @csz[1]-oy
+            sh = min sh boty-cy
+            
+            while cx < rightx
+                tx = floor cx / @csz[0]
+                ox = cx - tx * @csz[0]
+                sw = clamp 0 @csz[0] @csz[0]-ox
+                sw = min sw rightx-cx
+                
+                tiles.push [tx ty ox oy sw sh]
+                
+                cx += sw
+            cy += sh
+        
+        tiles
 
     @tileImg: tw th fg ->
     
@@ -57,19 +78,15 @@ function squares
     
         ⮐  if empty @csz
         
-        t = @tileRect sx sy sw sh
-        
         img = @cache[fg]
         if empty img
         
-            img = @tileImg t[2] t[3] fg
+            img = @tileImg @csz[0] @csz[1] fg
             @cache[fg] = img
             
-        ox = sx - t[0] * @csz[0]
-        oy = sy - t[1] * @csz[1]
+        for t in @tilesInRect sx sy sw sh
+            ked_ttio.placeImg img t[0] t[1] t[2] t[3] t[4] t[5] z
         
-        ked_ttio.placeImg img t[0] t[1] ox oy sw sh z
-    
 # ████████   ████████   ███████  ███  ███████  ████████
 # ███   ███  ███       ███       ███     ███   ███     
 # ███████    ███████   ███████   ███    ███    ███████ 

@@ -21,7 +21,6 @@
 ##### todo
 
 - unsaved changes 'tabs'
-- git changes in fileeditor scroll
 - highlight line changes in differ
 - add mapscroll to differ status
 - auto open dirtree folder for current file

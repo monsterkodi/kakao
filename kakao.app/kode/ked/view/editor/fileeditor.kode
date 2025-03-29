@@ -49,12 +49,12 @@ function fileeditor extends editor
         
     setCurrentFile: @currentFile =>
         
-        @gutter.gitChanges = {}
+        @gutter.clearChanges()
         @mapscr?.reload()
 
     onGitCommit: =>
     
-        @gutter.gitChanges = {}
+        @gutter.clearChanges()
         
     #  ███████   ███  █████████     ███████    ███  ████████  ████████
     # ███        ███     ███        ███   ███  ███  ███       ███     

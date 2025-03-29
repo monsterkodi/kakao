@@ -64,13 +64,13 @@ fileeditor = (function ()
     
         var _53_15_
 
-        this.gutter.gitChanges = {}
+        this.gutter.clearChanges()
         return (this.mapscr != null ? this.mapscr.reload() : undefined)
     }
 
     fileeditor.prototype["onGitCommit"] = function ()
     {
-        return this.gutter.gitChanges = {}
+        return this.gutter.clearChanges()
     }
 
     fileeditor.prototype["onGitDiff"] = function (diff)
