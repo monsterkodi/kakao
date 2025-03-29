@@ -193,7 +193,6 @@ TTIO = (function ()
         img.pid++
         this.placedImgs[img.id] = ((_170_28_=this.placedImgs[img.id]) != null ? _170_28_ : {})
         this.placedImgs[img.id][[x,y,px,py,pw,ph].toString()] = img.pid
-        console.log(`●${img.id} ${img.pid} ${[x,y,px,py,pw,ph].toString()} zLayer:${z}`)
         z = (z != null ? z : 1000)
         return this.write(`\x1b_Gq=1,a=p,i=${img.id},p=${img.pid},X=${px},Y=${py},w=${pw},h=${ph},z=${z},C=1\x1b\\`)
     }

@@ -270,11 +270,12 @@ function rounded
                 'rounded.border.br_ns'  ➜ @borderBottomRightNoShadow    csz[0] csz[1] fg bg
                 'rounded.cursor'        ➜ @cursor                   int(csz[0]/5 )*2+1 csz[1] fg 
                 'rounded.multi'         ➜ @multi                    int(csz[0]/10)*2+1 csz[1] fg 
+            # img.name = name 
             @cache[key] = img
 
         switch name 
             'rounded.cursor' ➜ ked_ttio.placeImg img x-1 y int(9*csz[0]/10)+1 null null null 666
-                             ➜ ked_ttio.placeImg img x   y               null null null null 666
+                             ➜ ked_ttio.placeImg img x   y               null null null null z
         
         if xe and xe > x
             for xr in x+1..xe

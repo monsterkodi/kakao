@@ -179,9 +179,6 @@ function inputchoice extends view
             @cells.draw_vertical_padding 1 1 outer inner
             @cells.draw_vertical_padding @cells.cols-2 1 inner outer
             
-            # fix left and right side of weird kitty rendering bug
-            @cells.draw_horizontal_padding 1 2 outer @color.bg 1002 
-            rounded.place @cells.wx(@cells.cols-1) @cells.wy(2) 'rounded.border.br_ns' outer null null 1002 @color.bg
             sy = 2
         
         @cells.draw_rounded_border 0 sy -1 -1 fg:@color.bg zLayer: 1001

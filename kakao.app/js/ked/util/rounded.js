@@ -353,7 +353,7 @@ rounded = (function ()
                 ked_ttio.placeImg(img,x - 1,y,parseInt(9 * csz[0] / 10) + 1,null,null,null,666)
                 break
             default:
-                ked_ttio.placeImg(img,x,y,null,null,null,null,666)
+                ked_ttio.placeImg(img,x,y,null,null,null,null,z)
         }
 
         if (xe && xe > x)

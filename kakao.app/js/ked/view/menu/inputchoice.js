@@ -205,8 +205,6 @@ inputchoice = (function ()
             this.cells.draw_rounded_border(0,0,-1,2,{fg:outer})
             this.cells.draw_vertical_padding(1,1,outer,inner)
             this.cells.draw_vertical_padding(this.cells.cols - 2,1,inner,outer)
-            this.cells.draw_horizontal_padding(1,2,outer,this.color.bg,1002)
-            rounded.place(this.cells.wx(this.cells.cols - 1),this.cells.wy(2),'rounded.border.br_ns',outer,null,null,1002,this.color.bg)
             sy = 2
         }
         return this.cells.draw_rounded_border(0,sy,-1,-1,{fg:this.color.bg,zLayer:1001})

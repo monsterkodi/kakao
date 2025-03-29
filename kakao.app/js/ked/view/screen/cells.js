@@ -456,9 +456,6 @@ cells = (function ()
         return rounded.place(this.wx(x),this.wy(y),'rounded.horizontal',fg,null,null,zLayer,bg)
     }
 
-    cells.prototype["draw_border_br_fix"] = function (x, y, fg, bg, zLayer = 1000)
-    {}
-
     cells.prototype["draw_rounded_cursor"] = function (x, y, fg)
     {
         return this.img(x,y,"rounded.cursor",fg)

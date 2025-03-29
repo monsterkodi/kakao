@@ -236,10 +236,6 @@ function cells
     
         rounded.place @wx(x) @wy(y) 'rounded.horizontal' fg null null zLayer bg
         
-    draw_border_br_fix: x y fg bg zLayer=1000 ->
-    
-        # rounded.place @wx(x) @wy(y) 'rounded.border.br_fix' fg null null zLayer bg
-                
     #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
     # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
     # ███       ███   ███  ███████    ███████   ███   ███  ███████  

@@ -170,7 +170,7 @@ function TTIO extends events
         @placedImgs[img.id] ?= {}
         @placedImgs[img.id][[x y px py pw ph].toString()] = img.pid
         
-        log "●#{img.id} #{img.pid} #{[x y px py pw ph].toString()} zLayer:#{z}"
+        # log "●#{img.id} #{img.pid} #{img.name} #{[x y px py pw ph].toString()} z:#{z}"
         z ?= 1000
         @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z},C=1\x1b\\"
 
