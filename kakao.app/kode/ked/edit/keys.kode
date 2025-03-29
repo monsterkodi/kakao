@@ -19,15 +19,10 @@ handleKey = key event -> # will be bound to state
     
         switch key
                             
-            'ctrl+alt+up'                   ➜ ⮐  @moveCursors 'up'    count:8
-            'ctrl+alt+down'                 ➜ ⮐  @moveCursors 'down'  count:8
-            'ctrl+alt+left'                 ➜ ⮐  @moveCursors 'left'  count:8
-            'ctrl+alt+right'                ➜ ⮐  @moveCursors 'right' count:8
-                                                 
+            'ctrl+alt+up'                   ➜ ⮐  @singleCursorPage 'up'  
+            'ctrl+alt+down'                 ➜ ⮐  @singleCursorPage 'down'
             'shift+ctrl+alt+up'             ➜ ⮐  @moveCursors 'up'    count:16
             'shift+ctrl+alt+down'           ➜ ⮐  @moveCursors 'down'  count:16
-            'shift+ctrl+alt+left'           ➜ ⮐  @moveCursors 'left'  count:16
-            'shift+ctrl+alt+right'          ➜ ⮐  @moveCursors 'right' count:16
             
     switch key                                   
                                                  

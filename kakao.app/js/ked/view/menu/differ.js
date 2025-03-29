@@ -43,7 +43,14 @@ differ = (function ()
         this.symbolColors = {'✘':[155,0,0],'✔':[0,200,0],'●':[50,50,50],'➜':[150,150,250]}
         this.choices.gutter.fgcolor = (function (x, y, c)
         {
-            return this.symbolColors[c]
+            if (y === this.choices.currentIndex())
+            {
+                return [255,255,0]
+            }
+            else
+            {
+                return this.symbolColors[c]
+            }
         }).bind(this)
         post.on('differ.status',this.status)
         post.on('differ.file',this.file)
@@ -64,7 +71,7 @@ differ = (function ()
 
     differ.prototype["diff"] = function (diff)
     {
-        var add, added, change, ext, file, items, li, modadd, modded, _78_32_, _79_32_
+        var add, added, change, ext, file, items, li, modadd, modded, _82_32_, _83_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -77,8 +84,8 @@ differ = (function ()
             {
                 continue
             }
-            modded = ((_78_32_=change.mod) != null ? _78_32_ : [])
-            added = ((_79_32_=change.add) != null ? _79_32_ : [])
+            modded = ((_82_32_=change.mod) != null ? _82_32_ : [])
+            added = ((_83_32_=change.add) != null ? _83_32_ : [])
             modadd = modded.concat(added)
             if (_k_.empty(modadd.filter(function (m)
                 {

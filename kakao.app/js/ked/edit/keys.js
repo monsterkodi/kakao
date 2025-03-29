@@ -14,28 +14,16 @@ handleKey = function (key, event)
         switch (key)
         {
             case 'ctrl+alt+up':
-                return this.moveCursors('up',{count:8})
+                return this.singleCursorPage('up')
 
             case 'ctrl+alt+down':
-                return this.moveCursors('down',{count:8})
-
-            case 'ctrl+alt+left':
-                return this.moveCursors('left',{count:8})
-
-            case 'ctrl+alt+right':
-                return this.moveCursors('right',{count:8})
+                return this.singleCursorPage('down')
 
             case 'shift+ctrl+alt+up':
                 return this.moveCursors('up',{count:16})
 
             case 'shift+ctrl+alt+down':
                 return this.moveCursors('down',{count:16})
-
-            case 'shift+ctrl+alt+left':
-                return this.moveCursors('left',{count:16})
-
-            case 'shift+ctrl+alt+right':
-                return this.moveCursors('right',{count:16})
 
         }
 

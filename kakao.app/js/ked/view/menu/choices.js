@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isObj: function (o) {return !(o == null || typeof o != 'object' || o.constructor.name !== 'Object')}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
 var choices
 
@@ -232,6 +232,40 @@ choices = (function ()
         }
     }
 
+    choices.prototype["pageUpRow"] = function ()
+    {
+        var y
+
+        y = this.state.mainCursor()[1] - this.cells.rows + 1
+        y = _k_.max(y,0)
+        while (y > 0 && _k_.empty(kseg.trim(this.state.s.lines[y])))
+        {
+            y -= 1
+        }
+        if (_k_.empty(kseg.trim(this.state.s.lines[y])) && y < this.state.s.lines.length - 1)
+        {
+            y += 1
+        }
+        return y
+    }
+
+    choices.prototype["pageDownRow"] = function ()
+    {
+        var y
+
+        y = this.state.mainCursor()[1] + this.cells.rows - 1
+        y = _k_.min(y,this.state.s.lines.length - 1)
+        while (y < this.state.s.lines.length - 1 && _k_.empty(kseg.trim(this.state.s.lines[y])))
+        {
+            y += 1
+        }
+        if (_k_.empty(kseg.trim(this.state.s.lines[y])) && y > 0)
+        {
+            y -= 1
+        }
+        return y
+    }
+
     choices.prototype["select"] = function (row)
     {
         if (!(_k_.isNum(row)))
@@ -260,6 +294,12 @@ choices = (function ()
     {
         switch (dir)
         {
+            case 'pagedown':
+                this.selectPageDown()
+                break
+            case 'pageup':
+                this.selectPageUp()
+                break
             case 'down':
                 this.selectNext()
                 break
@@ -269,6 +309,16 @@ choices = (function ()
         }
 
         return this
+    }
+
+    choices.prototype["selectPageUp"] = function ()
+    {
+        return this.select(this.pageUpRow())
+    }
+
+    choices.prototype["selectPageDown"] = function ()
+    {
+        return this.select(this.pageDownRow())
     }
 
     choices.prototype["selectNext"] = function ()
@@ -391,7 +441,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _295_21_
+        var col, dx, dy, ret, row, _323_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))
@@ -461,7 +511,17 @@ choices = (function ()
         {
             case 'up':
             case 'down':
+            case 'pageup':
+            case 'pagedown':
                 this.moveSelection(event.combo)
+                return true
+
+            case 'ctrl+alt+up':
+                this.moveSelection('pageup')
+                return true
+
+            case 'ctrl+alt+down':
+                this.moveSelection('pagedown')
                 return true
 
         }

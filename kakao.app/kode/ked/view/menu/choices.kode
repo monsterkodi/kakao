@@ -160,6 +160,30 @@ function choices extends editor
         while y > 0
             y -= 1
             ⮐  y if kseg.trim(@state.s.lines[y]).length
+            
+    pageUpRow: ->
+    
+        y = @state.mainCursor()[1] - @cells.rows + 1
+        y = max y 0 
+        
+        while y > 0 and empty kseg.trim(@state.s.lines[y])
+            y -= 1
+            
+        if empty kseg.trim(@state.s.lines[y]) and y < @state.s.lines.length-1
+            y += 1
+        y
+    
+    pageDownRow: ->
+    
+        y = @state.mainCursor()[1] + @cells.rows - 1
+        y = min y @state.s.lines.length-1
+        
+        while y < @state.s.lines.length-1 and empty kseg.trim(@state.s.lines[y])
+            y += 1
+            
+        if empty kseg.trim(@state.s.lines[y]) and y > 0
+            y -= 1
+        y
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -168,13 +192,13 @@ function choices extends editor
     # 0000000   00000000  0000000  00000000   0000000     000     
     
     select: row -> 
-        
+    
         ⮐  if not row is num
         ⮐  if row < 0 or row >= @state.s.lines.length
     
         @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
         @state.setMainCursor 0 row
-        # log "#{@name} focusable #{@focusable}"
+
         @grabFocus() if @focusable
         @emit 'select' @choiceAtRow(row)
         
@@ -183,10 +207,14 @@ function choices extends editor
     moveSelection: dir ->
         
         switch dir
-            'down' ➜ @selectNext()
-            'up'   ➜ @selectPrev() 
+            'pagedown' ➜ @selectPageDown()
+            'pageup'   ➜ @selectPageUp()
+            'down'     ➜ @selectNext()
+            'up'       ➜ @selectPrev() 
         @
         
+    selectPageUp:   -> @select @pageUpRow()
+    selectPageDown: -> @select @pageDownRow()
     selectNext: -> @select @nextRow()
     selectPrev: -> 
         row = @prevRow()
@@ -344,13 +372,18 @@ function choices extends editor
     
     onKey: key event =>
     
-        # log "#{@name} onKey #{key}"
+        # log "#{@name} onKey #{key} combo #{event.combo}"
         
         switch event.combo        
             'up' 
             'down'   
+            'pageup'   
+            'pagedown'   
                 @moveSelection event.combo
                 ⮐  true
+                
+            'ctrl+alt+up'   ➜ @moveSelection 'pageup'   ; ⮐  true 
+            'ctrl+alt+down' ➜ @moveSelection 'pagedown' ; ⮐  true 
         
         ⮐  if not @hasFocus()
             
