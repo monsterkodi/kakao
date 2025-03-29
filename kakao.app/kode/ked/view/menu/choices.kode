@@ -26,8 +26,8 @@ function choices extends editor
 
         super screen name features
         
-        @setColor 'bg'           theme.editor.bg
-        @setColor 'hover'        theme.hover
+        @setColor 'bg'    theme.editor.bg
+        @setColor 'hover' theme.hover
         
         @pointerType = 'pointer'
         @roundedSelections = true
@@ -44,9 +44,9 @@ function choices extends editor
         super key color
     
         if key == 'bg'
-            @setColor           'empty' @color.bg
-            @gutter?.setColor   'bg'    @color.bg
-            @scroll?.setColor   'bg'    @color.bg
+            @setColor         'empty' @color.bg
+            @gutter?.setColor 'bg'    @color.bg
+            @scroll?.setColor 'bg'    @color.bg
 
     extract: item => @key and item is obj ? item[@key] : kseg.str(item)
         

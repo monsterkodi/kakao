@@ -47,7 +47,22 @@ function menu extends inputchoice
         
         [gw gh] = belt.cellSize @greet.header
         
-        @greet.layout    int(scx-gw/2)  max(0 int(y-gh-1+ih))
+        gx = int(scx-gw/2)
+        gy = max(0 int(y-gh-1+ih))
+        
+        if @greet.visible() and y <= gy+gh # if menu overlaps greet
+        
+            diff = (gy+gh)-y
+            
+            while diff and gy        # move greet up while possible
+                 gy -= 1           
+                 diff = (gy+gh)-y  
+                 
+            while diff and y+h < @screen.rows # move menu down
+                y += 1
+                diff = (gy+gh)-y
+                 
+        @greet.layout    gx    gy
         @input.layout    x+2   y+1      w-4  iz
         @choices.layout  x+1   y+1+ih   w-2  c
         @cells.layout    x     y        w    h
@@ -60,7 +75,9 @@ function menu extends inputchoice
 
     show: greet=false ->
         
-        @greet.show() if greet
+        if greet
+            @greet.show() 
+            @screen.t.setTitle 'kėd'
         
         items = belt.linesForText
             """

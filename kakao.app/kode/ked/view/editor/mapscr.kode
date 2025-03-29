@@ -33,7 +33,7 @@ function mapscr extends mapview
         
         @screen.t.on 'preResize' @clearImages
         
-        post.on 'popup.show' @hide
+        post.on 'popup.show' (name) => @hide() if name in ['searcher' 'finder' 'differ']
         post.on 'greet.show' @hide
         
         post.on 'popup.hide' @show

@@ -36,7 +36,7 @@ menu = (function ()
 
     menu.prototype["arrange"] = function ()
     {
-        var c, gh, gw, h, ih, iz, scx, scy, w, x, y
+        var c, diff, gh, gw, gx, gy, h, ih, iz, scx, scy, w, x, y
 
         w = this.width + 2 + 1
         c = this.choices.numChoices()
@@ -50,7 +50,23 @@ menu = (function ()
         x = parseInt(scx - w / 2)
         var _a_ = belt.cellSize(this.greet.header); gw = _a_[0]; gh = _a_[1]
 
-        this.greet.layout(parseInt(scx - gw / 2),_k_.max(0,parseInt(y - gh - 1 + ih)))
+        gx = parseInt(scx - gw / 2)
+        gy = _k_.max(0,parseInt(y - gh - 1 + ih))
+        if (this.greet.visible() && y <= gy + gh)
+        {
+            diff = (gy + gh) - y
+            while (diff && gy)
+            {
+                gy -= 1
+                diff = (gy + gh) - y
+            }
+            while (diff && y + h < this.screen.rows)
+            {
+                y += 1
+                diff = (gy + gh) - y
+            }
+        }
+        this.greet.layout(gx,gy)
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.choices.layout(x + 1,y + 1 + ih,w - 2,c)
         return this.cells.layout(x,y,w,h)
@@ -63,6 +79,7 @@ menu = (function ()
         if (greet)
         {
             this.greet.show()
+            this.screen.t.setTitle('kėd')
         }
         items = belt.linesForText(`recent ...
 open ...
