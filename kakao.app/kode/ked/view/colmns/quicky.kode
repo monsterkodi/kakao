@@ -27,6 +27,7 @@ function quicky extends inputchoice
         @crumbs = new crumbs  @screen 'quicky_crumbs'
 
         @crumbs.padLast = true
+        @crumbs.setColor 'empty' @color.bg
 
         @choices.state.syntax.setRgxs rgxs
         @choices.on 'select' @preview

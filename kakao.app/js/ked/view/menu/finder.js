@@ -17,14 +17,15 @@ import inputchoice from "./inputchoice.js"
 finder = (function ()
 {
     _k_.extend(finder, inputchoice)
-    function finder (screen, state, name = 'finder')
+    function finder (screen, editor, name = 'finder')
     {
         this.screen = screen
-        this.state = state
+        this.editor = editor
     
         this["show"] = this["show"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
         this["lineno"] = this["lineno"].bind(this)
+        this.state = this.editor.state
         finder.__super__.constructor.call(this,this.screen,name,['gutter','scroll'])
         this.autoHideInput = false
         if (this.name === 'finder')
@@ -42,7 +43,7 @@ finder = (function ()
 
     finder.prototype["lineno"] = function (y)
     {
-        var pad, _47_43_
+        var pad, _49_43_
 
         pad = this.choices.gutter.cells.cols - 1
         if ((0 <= y && y < this.choices.fuzzied.length))
@@ -68,7 +69,7 @@ finder = (function ()
 
     finder.prototype["arrangeRect"] = function ()
     {
-        return [parseInt(this.screen.cols / 8),parseInt(this.screen.rows / 8),parseInt(this.screen.cols * 3 / 4),parseInt(this.screen.rows * 3 / 4 - 4)]
+        return [parseInt(this.editor.cells.x - this.editor.gutter.cells.cols - 1),parseInt(this.editor.cells.y),parseInt(this.editor.cells.cols + this.editor.gutter.cells.cols + 1),parseInt(this.editor.cells.rows - 3)]
     }
 
     finder.prototype["arrange"] = function ()
@@ -77,15 +78,15 @@ finder = (function ()
 
         var _a_ = this.arrangeRect(); x = _a_[0]; y = _a_[1]; w = _a_[2]; h = _a_[3]
 
-        cs = _k_.min(h,this.choices.numFiltered())
+        cs = _k_.min(h - 1,this.choices.numFiltered())
         this.input.layout(x + 2,y + 1,w - 4,1)
-        this.choices.layout(x + 1,y + 3,w - 3,cs)
+        this.choices.layout(x + 1,y + 3,w - 2,cs)
         return this.cells.layout(x,y,w,cs + 4)
     }
 
     finder.prototype["show"] = function (text)
     {
-        var cursorLine, front, span, _119_87_
+        var cursorLine, front, span, _121_87_
 
         if (_k_.empty(text))
         {
@@ -114,10 +115,10 @@ finder = (function ()
         this.choices.state.highlightText(text)
         if (cursorLine)
         {
-            this.choices.select(((_119_87_=kutil.findIndex(this.choices.items,function (l)
+            this.choices.select(((_121_87_=kutil.findIndex(this.choices.items,function (l)
             {
                 return l.row === cursorLine
-            })) != null ? _119_87_ : 0))
+            })) != null ? _121_87_ : 0))
         }
         else
         {

@@ -20,7 +20,7 @@ function differ extends searcher
 
     @: @screen @editor ->
     
-        super @screen null 'differ'
+        super @screen @editor 'differ'
         
         @symbol = 
             changed: '●'
@@ -39,15 +39,6 @@ function differ extends searcher
         post.on 'differ.status'  @status
         post.on 'differ.file'    @file
         post.on 'differ.history' @history
-        
-    arrangeRect: ->
-    
-        [
-            int(@editor.cells.x-@editor.gutter.cells.cols-1)
-            int(@editor.cells.y-1)
-            int(@editor.cells.cols+@editor.gutter.cells.cols+1)
-            int(@editor.cells.rows-3)
-        ]
         
     # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
     # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███

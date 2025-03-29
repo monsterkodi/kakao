@@ -17,9 +17,9 @@ use                 ◆ finder searcherfile
 
 function searcher extends finder
 
-    @: @screen @state name='searcher' ->
+    @: @screen @editor name='searcher' ->
 
-        super @screen @state name
+        super @screen @editor name
         
         if @name == 'searcher'
             post.on 'searcher.show' @show
@@ -32,7 +32,16 @@ function searcher extends finder
     # 000000000  0000000    0000000    000000000  000 0 000  000  0000  0000000   
     # 000   000  000   000  000   000  000   000  000  0000  000   000  000       
     # 000   000  000   000  000   000  000   000  000   000   0000000   00000000  
+
+    arrangeRect: ->
     
+        [
+            int(@editor.cells.x-@editor.gutter.cells.cols-1)
+            int(@editor.cells.y)
+            int(@editor.cells.cols+@editor.gutter.cells.cols+1)
+            int(@editor.cells.rows-3)
+        ]
+
     arrange: =>
 
         super()    

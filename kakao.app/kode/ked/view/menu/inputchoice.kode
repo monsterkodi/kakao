@@ -45,8 +45,8 @@ function inputchoice extends view
         
         if key == 'bg'
         
-            @input.setColor     'bg'    color.darken(@color.bg)
-            @input.setColor     'empty' color.darken(@color.bg)
+            # @input.setColor     'bg'    color.brighten(@color.bg)
+            # @input.setColor     'empty' @color.bg #color.brighten(@color.bg)
             @choices.setColor   'bg'    @color.bg
         
     inputIsActive: -> @input.hasFocus() or @input.current().length
@@ -170,8 +170,9 @@ function inputchoice extends view
         
         if @input.visible()
         
-            inner = color.darken @color.bg 0.5
-            outer = color.darken @color.bg 0.75
+            outer = color.brighten @color.bg
+            # inner = @input.hasFocus() ? @color.bg : outer
+            inner = @input.hasFocus() ? @input.color.empty : outer
             
             @cells.draw_rounded_border 0 0 -1 2 fg:outer
             

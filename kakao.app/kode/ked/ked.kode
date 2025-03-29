@@ -60,10 +60,10 @@ function KED
         @editor   = new fileeditor @screen 'editor'
         @dircol   = new dircol     @screen 'dircol'  ['scroll' 'knob']
         @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
-        @finder   = new finder     @screen @editor.state
-        @searcher = new searcher   @screen @editor.state
+        @finder   = new finder     @screen @editor
+        @searcher = new searcher   @screen @editor
         @differ   = new differ     @screen @editor
-        @status   = new status     @screen @editor.state
+        @status   = new status     @screen @editor
         @context  = new context    @screen
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -532,7 +532,7 @@ function KED
         
         # ●▸ draw
         if @menu.greet.hidden()
-            @editor.draw()
+            @editor.draw() if not @differ.visible()
             @status.draw()
             @dircol.draw()
             @funcol.draw()

@@ -17,10 +17,11 @@ use                 ◆ statusfile
 
 function status extends view
 
-    @: screen @state ->
-
-        super screen 'status'
+    @: @screen @editor ->
         
+        super @screen 'status'
+        
+        @state    = @editor.state
         @gutter   = 4
         @file     = ''
         @drawTime = ''

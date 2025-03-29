@@ -21,9 +21,10 @@ import statusfile from "./statusfile.js"
 status = (function ()
 {
     _k_.extend(status, view)
-    function status (screen, state)
+    function status (screen, editor)
     {
-        this.state = state
+        this.screen = screen
+        this.editor = editor
     
         this["draw"] = this["draw"].bind(this)
         this["layout"] = this["layout"].bind(this)
@@ -31,7 +32,8 @@ status = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onFileAction"] = this["onFileAction"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
-        status.__super__.constructor.call(this,screen,'status')
+        status.__super__.constructor.call(this,this.screen,'status')
+        this.state = this.editor.state
         this.gutter = 4
         this.file = ''
         this.drawTime = ''

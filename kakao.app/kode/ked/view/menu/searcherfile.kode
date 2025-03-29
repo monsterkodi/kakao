@@ -83,9 +83,6 @@ function searcherfile extends view
             xe = @cells.x + @cells.cols
             @cells.fill_row 0 xs xe '─' @color.frame @color.bg
             
-        @cells.set_unsafe @cells.cols   0 '─' @color.frame @color.bg
-        @cells.set_unsafe @cells.cols+1 0 '┤' @color.frame @color.bg
-        
     # ██     ██   ███████   ███   ███   ███████  ████████
     # ███   ███  ███   ███  ███   ███  ███       ███     
     # █████████  ███   ███  ███   ███  ███████   ███████ 

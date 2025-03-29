@@ -71,16 +71,14 @@ searcherfile = (function ()
         this.bubble.draw()
         if (true)
         {
-            this.cells.fill_row(0,0,this.cells.cols - this.crumbs.rounded.length - this.bubble.rounded.length - 1,'─',this.color.frame,this.color.bg)
+            return this.cells.fill_row(0,0,this.cells.cols - this.crumbs.rounded.length - this.bubble.rounded.length - 1,'─',this.color.frame,this.color.bg)
         }
         else
         {
             xs = this.crumbs.rounded.length + this.bubble.rounded.length
             xe = this.cells.x + this.cells.cols
-            this.cells.fill_row(0,xs,xe,'─',this.color.frame,this.color.bg)
+            return this.cells.fill_row(0,xs,xe,'─',this.color.frame,this.color.bg)
         }
-        this.cells.set_unsafe(this.cells.cols,0,'─',this.color.frame,this.color.bg)
-        return this.cells.set_unsafe(this.cells.cols + 1,0,'┤',this.color.frame,this.color.bg)
     }
 
     searcherfile.prototype["onMouse"] = function (event)

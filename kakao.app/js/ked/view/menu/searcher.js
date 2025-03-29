@@ -22,22 +22,27 @@ import searcherfile from "./searcherfile.js"
 searcher = (function ()
 {
     _k_.extend(searcher, finder)
-    function searcher (screen, state, name = 'searcher')
+    function searcher (screen, editor, name = 'searcher')
     {
         this.screen = screen
-        this.state = state
+        this.editor = editor
     
         this["show"] = this["show"].bind(this)
         this["onFileLoaded"] = this["onFileLoaded"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["arrange"] = this["arrange"].bind(this)
-        searcher.__super__.constructor.call(this,this.screen,this.state,name)
+        searcher.__super__.constructor.call(this,this.screen,this.editor,name)
         if (this.name === 'searcher')
         {
             post.on('searcher.show',this.show)
             post.on('file.loaded',this.onFileLoaded)
         }
         this.sfils = []
+    }
+
+    searcher.prototype["arrangeRect"] = function ()
+    {
+        return [parseInt(this.editor.cells.x - this.editor.gutter.cells.cols - 1),parseInt(this.editor.cells.y),parseInt(this.editor.cells.cols + this.editor.gutter.cells.cols + 1),parseInt(this.editor.cells.rows - 3)]
     }
 
     searcher.prototype["arrange"] = function ()

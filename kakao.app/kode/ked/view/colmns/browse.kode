@@ -10,7 +10,7 @@ use ../../../kxk    ▪ kstr slash post
 use ../../../kxk    ◆ nfs
 use ../../util      ◆ fileutil 
 use ../../edit/tool ◆ belt
-use ../../theme     ◆ theme icons
+use ../../theme     ◆ color theme icons
 use                 ◆ quicky brocol diritem
 
 import rgxs from './quicky.json' with { type: "json" }
@@ -27,8 +27,8 @@ function browse extends quicky
         @setColor 'frame'  theme.quicky.frame
         
         @brocol = new brocol @screen 'browse_brocol'
-        @brocol.setColor 'bg' @color.bg
-        @brocol.on 'action' @onBrocolAction
+        @brocol.setColor 'bg' color.darken(@color.bg 0.7)
+        @brocol.on 'action'   @onBrocolAction
 
         @choices.mapscr.rowOffset = 1
         @choices.frontRoundOffset = 2
@@ -56,8 +56,8 @@ function browse extends quicky
         ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
 
         w  = min min(@screen.cols 42) max(32 int(@screen.cols/2))
-        fw = @brocol.visible() ? w/2-1 : -1
-        cw = w-fw-3
+        bw = @brocol.visible() ? w/2 : 0
+        cw = w-bw-2
 
         x  = int scx-w/2
         
@@ -67,7 +67,7 @@ function browse extends quicky
         @input.layout    x+2      y+1        w-4   iz
         @crumbs.layout   x+2      y+1+ih     w-4   cr
         @choices.layout  x+1      y+1+ih+cr  cw    ch
-        @brocol.layout   x+2+cw   y+1+ih+cr  fw    fh
+        @brocol.layout   x+1+cw   y+1+ih+cr  bw    fh
         @cells.layout    x        y           w     h
 
     # 0000000    00000000    0000000   000   000
@@ -82,17 +82,23 @@ function browse extends quicky
          
         super()
         
+        if @crumbs.visible()
+            # add left and right padding to crumbs
+            cry = @crumbs.cells.wy(0)-@cells.y
+            @cells.set 1                    cry ' ' null @color.bg
+            @cells.set @crumbs.cells.cols+2 cry ' ' null @color.bg
+        
         if @brocol.visible()
+        
             @brocol.draw()
             
             bg = @color.bg
             fg = @color.frame
             
             x = @choices.cells.cols+2
-            @cells.fill_col x 2 @cells.rows-2 '│' fg bg
-            @cells.set      x   @cells.rows-1 '┴' fg bg
     
             if choice = @choices.current()
+            
                 x = @choices.cells.cols-1
                 y = @choices.currentIndex()-@choices.state.s.view[1]
                 
@@ -100,7 +106,6 @@ function browse extends quicky
                 
                 @choices.cells.fill_row     y choice.tilde.length x-1 ' ' bg cc
                 @choices.cells.set          x y '' cc bg 
-                @choices.cells.set_unsafe   x+1 y '┤' fg bg if 0 <= y < @choices.cells.rows
         
     #  0000000    0000000   000000000   0000000   0000000    000  00000000   
     # 000        000   000     000     000   000  000   000  000  000   000  

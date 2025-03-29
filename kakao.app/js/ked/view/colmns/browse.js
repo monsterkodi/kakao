@@ -13,6 +13,7 @@ import fileutil from "../../util/fileutil.js"
 
 import belt from "../../edit/tool/belt.js"
 
+import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 import icons from "../../theme/icons.js"
 
@@ -45,7 +46,7 @@ browse = (function ()
         this.setColor('bg',theme.quicky.bg)
         this.setColor('frame',theme.quicky.frame)
         this.brocol = new brocol(this.screen,'browse_brocol')
-        this.brocol.setColor('bg',this.color.bg)
+        this.brocol.setColor('bg',color.darken(this.color.bg,0.7))
         this.brocol.on('action',this.onBrocolAction)
         this.choices.mapscr.rowOffset = 1
         this.choices.frontRoundOffset = 2
@@ -54,7 +55,7 @@ browse = (function ()
 
     browse.prototype["arrange"] = function ()
     {
-        var ch, cr, cw, fh, fw, h, hs, ih, iz, scx, scy, w, x, y
+        var bw, ch, cr, cw, fh, h, hs, ih, iz, scx, scy, w, x, y
 
         scx = parseInt(this.screen.cols / 2)
         scy = parseInt(this.screen.rows / 2)
@@ -65,46 +66,46 @@ browse = (function ()
         cr = (this.crumbs.visible() ? 1 : 0)
         ch = (this.crumbs.visible() ? hs : _k_.min(hs,this.choices.numFiltered()))
         w = _k_.min(_k_.min(this.screen.cols,42),_k_.max(32,parseInt(this.screen.cols / 2)))
-        fw = (this.brocol.visible() ? w / 2 - 1 : -1)
-        cw = w - fw - 3
+        bw = (this.brocol.visible() ? w / 2 : 0)
+        cw = w - bw - 2
         x = parseInt(scx - w / 2)
         h = ch + ih + cr + 2
         fh = (this.brocol.visible() ? ch : 0)
         this.input.layout(x + 2,y + 1,w - 4,iz)
         this.crumbs.layout(x + 2,y + 1 + ih,w - 4,cr)
         this.choices.layout(x + 1,y + 1 + ih + cr,cw,ch)
-        this.brocol.layout(x + 2 + cw,y + 1 + ih + cr,fw,fh)
+        this.brocol.layout(x + 1 + cw,y + 1 + ih + cr,bw,fh)
         return this.cells.layout(x,y,w,h)
     }
 
     browse.prototype["draw"] = function ()
     {
-        var bg, cc, choice, fg, x, y
+        var bg, cc, choice, cry, fg, x, y
 
         if (this.hidden())
         {
             return
         }
         browse.__super__.draw.call(this)
+        if (this.crumbs.visible())
+        {
+            cry = this.crumbs.cells.wy(0) - this.cells.y
+            this.cells.set(1,cry,' ',null,this.color.bg)
+            this.cells.set(this.crumbs.cells.cols + 2,cry,' ',null,this.color.bg)
+        }
         if (this.brocol.visible())
         {
             this.brocol.draw()
             bg = this.color.bg
             fg = this.color.frame
             x = this.choices.cells.cols + 2
-            this.cells.fill_col(x,2,this.cells.rows - 2,'│',fg,bg)
-            this.cells.set(x,this.cells.rows - 1,'┴',fg,bg)
             if (choice = this.choices.current())
             {
                 x = this.choices.cells.cols - 1
                 y = this.choices.currentIndex() - this.choices.state.s.view[1]
                 cc = (this.choices.hasFocus() ? this.choices.color.hover.bg : this.choices.color.hover.blur)
                 this.choices.cells.fill_row(y,choice.tilde.length,x - 1,' ',bg,cc)
-                this.choices.cells.set(x,y,'',cc,bg)
-                if ((0 <= y && y < this.choices.cells.rows))
-                {
-                    return this.choices.cells.set_unsafe(x + 1,y,'┤',fg,bg)
-                }
+                return this.choices.cells.set(x,y,'',cc,bg)
             }
         }
     }
@@ -320,7 +321,7 @@ browse = (function ()
 
     browse.prototype["onChoicesAction"] = function (action, choice)
     {
-        var upDir, _285_63_
+        var upDir, _290_63_
 
         switch (action)
         {
@@ -338,7 +339,7 @@ browse = (function ()
                     else
                     {
                         this.hideMap()
-                        return this.gotoDirOrOpenFile(((_285_63_=choice.link) != null ? _285_63_ : choice.path))
+                        return this.gotoDirOrOpenFile(((_290_63_=choice.link) != null ? _290_63_ : choice.path))
                     }
                 }
                 break

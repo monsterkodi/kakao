@@ -15,7 +15,9 @@ use                 ◆ inputchoice
 
 function finder extends inputchoice
 
-    @: @screen @state name='finder' ->
+    @: @screen @editor name='finder' ->
+    
+        @state = @editor.state
 
         super @screen name ['gutter' 'scroll']
         
@@ -57,24 +59,24 @@ function finder extends inputchoice
     # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
     # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
     # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
-    
+
     arrangeRect: ->
     
         [
-            int(@screen.cols/8)
-            int(@screen.rows/8)
-            int(@screen.cols*3/4)
-            int(@screen.rows*3/4-4)
+            int(@editor.cells.x-@editor.gutter.cells.cols-1)
+            int(@editor.cells.y)
+            int(@editor.cells.cols+@editor.gutter.cells.cols+1)
+            int(@editor.cells.rows-3)
         ]
         
     arrange: =>
 
         [x y w h] = @arrangeRect()
 
-        cs = min h @choices.numFiltered()
+        cs = min h-1 @choices.numFiltered()
         
         @input.layout    x+2   y+1  w-4  1
-        @choices.layout  x+1   y+3  w-3  cs
+        @choices.layout  x+1   y+3  w-2  cs
         @cells.layout    x     y    w    cs+4
         
     #  0000000  000   000   0000000   000   000  

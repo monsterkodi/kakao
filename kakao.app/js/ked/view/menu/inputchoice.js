@@ -57,8 +57,6 @@ inputchoice = (function ()
     
         if (key === 'bg')
         {
-            this.input.setColor('bg',color.darken(this.color.bg))
-            this.input.setColor('empty',color.darken(this.color.bg))
             return this.choices.setColor('bg',this.color.bg)
         }
     }
@@ -200,8 +198,8 @@ inputchoice = (function ()
         sy = 0
         if (this.input.visible())
         {
-            inner = color.darken(this.color.bg,0.5)
-            outer = color.darken(this.color.bg,0.75)
+            outer = color.brighten(this.color.bg)
+            inner = (this.input.hasFocus() ? this.input.color.empty : outer)
             this.cells.draw_rounded_border(0,0,-1,2,{fg:outer})
             this.cells.draw_vertical_padding(1,1,outer,inner)
             this.cells.draw_vertical_padding(this.cells.cols - 2,1,inner,outer)

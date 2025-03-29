@@ -98,10 +98,10 @@ ked [file]
         this.editor = new fileeditor(this.screen,'editor')
         this.dircol = new dircol(this.screen,'dircol',['scroll','knob'])
         this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
-        this.finder = new finder(this.screen,this.editor.state)
-        this.searcher = new searcher(this.screen,this.editor.state)
+        this.finder = new finder(this.screen,this.editor)
+        this.searcher = new searcher(this.screen,this.editor)
         this.differ = new differ(this.screen,this.editor)
-        this.status = new status(this.screen,this.editor.state)
+        this.status = new status(this.screen,this.editor)
         this.context = new context(this.screen)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
@@ -649,7 +649,10 @@ ked [file]
         this.arrange()
         if (this.menu.greet.hidden())
         {
-            this.editor.draw()
+            if (!this.differ.visible())
+            {
+                this.editor.draw()
+            }
             this.status.draw()
             this.dircol.draw()
             this.funcol.draw()

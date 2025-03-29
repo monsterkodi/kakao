@@ -38,7 +38,7 @@ differ = (function ()
         this["file"] = this["file"].bind(this)
         this["show"] = this["show"].bind(this)
         this["onFileLoaded"] = this["onFileLoaded"].bind(this)
-        differ.__super__.constructor.call(this,this.screen,null,'differ')
+        differ.__super__.constructor.call(this,this.screen,this.editor,'differ')
         this.symbol = {changed:'●',added:'✔',deleted:'✘',renamed:'➜'}
         this.symbolColors = {'✘':[155,0,0],'✔':[0,200,0],'●':[50,50,50],'➜':[150,150,250]}
         this.choices.gutter.fgcolor = (function (x, y, c)
@@ -48,11 +48,6 @@ differ = (function ()
         post.on('differ.status',this.status)
         post.on('differ.file',this.file)
         post.on('differ.history',this.history)
-    }
-
-    differ.prototype["arrangeRect"] = function ()
-    {
-        return [parseInt(this.editor.cells.x - this.editor.gutter.cells.cols - 1),parseInt(this.editor.cells.y - 1),parseInt(this.editor.cells.cols + this.editor.gutter.cells.cols + 1),parseInt(this.editor.cells.rows - 3)]
     }
 
     differ.prototype["emitFileOpen"] = function (choice)
@@ -88,7 +83,7 @@ differ = (function ()
 
     differ.prototype["diff"] = function (diff)
     {
-        var add, added, change, ext, file, items, li, modadd, modded, _114_32_, _115_32_
+        var add, added, change, ext, file, items, li, modadd, modded, _105_32_, _106_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -101,8 +96,8 @@ differ = (function ()
             {
                 continue
             }
-            modded = ((_114_32_=change.mod) != null ? _114_32_ : [])
-            added = ((_115_32_=change.add) != null ? _115_32_ : [])
+            modded = ((_105_32_=change.mod) != null ? _105_32_ : [])
+            added = ((_106_32_=change.add) != null ? _106_32_ : [])
             modadd = modded.concat(added)
             if (_k_.empty(modadd.filter(function (m)
                 {
