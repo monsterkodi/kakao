@@ -430,7 +430,10 @@ cells = (function ()
         this.img(x1,y2,'rounded.border.bl',fg,zLayer)
         this.img(x2,y2,'rounded.border.br',fg,zLayer)
         this.img(x1 + 1,y1,'rounded.border.t',fg,zLayer,x2 - 1)
-        this.img(x1,y1 + 1,'rounded.border.l',fg,zLayer,x1,y2 - 1)
+        if (y1 + 1 < y2)
+        {
+            this.img(x1,y1 + 1,'rounded.border.l',fg,zLayer,x1,y2 - 1)
+        }
         if (x1 + 1 < x2)
         {
             this.img(x1 + 1,y2,'rounded.border.lb',fg,zLayer)

@@ -21,6 +21,8 @@ function input extends editor
         
         @setColor 'selection_line'  @color.selection
         @setColor 'bg'              theme.quicky.bg
+        @setColor 'bg_blur'         theme.quicky.bg
+        @setColor 'bg_focus'        theme.editor.bg
         
     hasFocus: -> @state.hasFocus
 
@@ -67,7 +69,10 @@ function input extends editor
         
         ⮐  if @hidden()
         
-        @cells.fill_rect 0 0 -1 -1 ' ' null @color.bg
+        @setColor 'bg' @hasFocus() ? @color.bg_focus : @color.bg_blur
+        @setColor 'empty' @color.bg
+        
+        # @cells.fill_rect 0 0 -1 -1 ' ' null @color.bg
         
         super()
 

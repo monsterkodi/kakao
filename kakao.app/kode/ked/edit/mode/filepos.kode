@@ -6,8 +6,8 @@
 000       000  0000000  00000000  000         0000000   0000000 
 
 ◆ on cursors change ➜ stores main cursor and view in session 
-◆ on file loaded    ➜ restores main cursor and view from sesson
-◆ on key event      ➜ provides recent file edits navigation via shortcuts
+◆ on file loaded    ➜ restores main cursor and view from session
+◆ on key event      ➜ provides file edits navigation via shortcuts
 ◆ on post insert    ➜ tracks insertion points for file edits navigation
 ###
 

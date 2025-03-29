@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, isArr: function (o) {return Array.isArray(o)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.b7=_k_.k.F256(_k_.k.b(7))
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, isArr: function (o) {return Array.isArray(o)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.b7=_k_.k.F256(_k_.k.b(7))
 
 var differ
 
@@ -30,12 +30,12 @@ differ = (function ()
         this.screen = screen
         this.editor = editor
     
-        this["commit"] = this["commit"].bind(this)
         this["patch"] = this["patch"].bind(this)
         this["history"] = this["history"].bind(this)
+        this["commit"] = this["commit"].bind(this)
         this["status"] = this["status"].bind(this)
-        this["diff"] = this["diff"].bind(this)
         this["file"] = this["file"].bind(this)
+        this["diff"] = this["diff"].bind(this)
         this["show"] = this["show"].bind(this)
         this["onFileLoaded"] = this["onFileLoaded"].bind(this)
         differ.__super__.constructor.call(this,this.screen,this.editor,'differ')
@@ -50,12 +50,6 @@ differ = (function ()
         post.on('differ.history',this.history)
     }
 
-    differ.prototype["emitFileOpen"] = function (choice)
-    {
-        post.emit('file.open',choice.path,choice.row,choice.col)
-        return this.hide()
-    }
-
     differ.prototype["onFileLoaded"] = function (file)
     {}
 
@@ -68,22 +62,9 @@ differ = (function ()
         return {redraw:true}
     }
 
-    differ.prototype["file"] = async function ()
-    {
-        var currentFile, diff
-
-        currentFile = ked_session.get('editor▸file')
-        diff = await git.diff(currentFile)
-        if (!_k_.empty(diff))
-        {
-            this.show()
-            return this.diff(diff)
-        }
-    }
-
     differ.prototype["diff"] = function (diff)
     {
-        var add, added, change, ext, file, items, li, modadd, modded, _105_32_, _106_32_
+        var add, added, change, ext, file, items, li, modadd, modded, _78_32_, _79_32_
 
         file = diff.file
         ext = slash.ext(file)
@@ -96,8 +77,8 @@ differ = (function ()
             {
                 continue
             }
-            modded = ((_105_32_=change.mod) != null ? _105_32_ : [])
-            added = ((_106_32_=change.add) != null ? _106_32_ : [])
+            modded = ((_78_32_=change.mod) != null ? _78_32_ : [])
+            added = ((_79_32_=change.add) != null ? _79_32_ : [])
             modadd = modded.concat(added)
             if (_k_.empty(modadd.filter(function (m)
                 {
@@ -130,6 +111,19 @@ differ = (function ()
         this.choices.append(items,ext)
         this.input.grabFocus()
         return post.emit('redraw')
+    }
+
+    differ.prototype["file"] = async function ()
+    {
+        var currentFile, diff
+
+        currentFile = ked_session.get('editor▸file')
+        diff = await git.diff(currentFile)
+        if (!_k_.empty(diff))
+        {
+            this.show()
+            return this.diff(diff)
+        }
     }
 
     differ.prototype["status"] = async function ()
@@ -224,6 +218,27 @@ differ = (function ()
         }
     }
 
+    differ.prototype["commit"] = async function (msg)
+    {
+        var currentFile, gitDir, out
+
+        currentFile = ked_session.get('editor▸file')
+        gitDir = await git.dir(currentFile)
+        if (_k_.empty(gitDir))
+        {
+            return
+        }
+        this.hide()
+        post.emit('focus','editor')
+        out = ''
+        out += await git.exec("add .",{cwd:gitDir})
+        out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
+        out += await git.exec("push -q",{cwd:gitDir})
+        console.log(_k_.r4(`differ.commit\n${_k_.b7(out)}`))
+        post.emit('git.commit')
+        return post.emit('redraw')
+    }
+
     differ.prototype["history"] = async function ()
     {
         var currentFile, f, gitDir, h, history, items, symbol
@@ -311,6 +326,12 @@ differ = (function ()
         return post.emit('redraw')
     }
 
+    differ.prototype["emitFileOpen"] = function (choice)
+    {
+        post.emit('file.open',choice.path,choice.row,choice.col)
+        return this.hide()
+    }
+
     differ.prototype["apply"] = function (choice)
     {
         if (!_k_.empty(choice))
@@ -326,27 +347,6 @@ differ = (function ()
         }
         console.log("differ.apply?",choice)
         return differ.__super__.apply.call(this,choice)
-    }
-
-    differ.prototype["commit"] = async function (msg)
-    {
-        var currentFile, gitDir, out
-
-        currentFile = ked_session.get('editor▸file')
-        gitDir = await git.dir(currentFile)
-        if (_k_.empty(gitDir))
-        {
-            return
-        }
-        this.hide()
-        post.emit('focus','editor')
-        out = ''
-        out += await git.exec("add .",{cwd:gitDir})
-        out += await git.exec(`commit -m \"${msg}\"`,{cwd:gitDir})
-        out += await git.exec("push -q",{cwd:gitDir})
-        console.log(_k_.r4(`differ.commit\n${_k_.b7(out)}`))
-        post.emit('git.commit')
-        return post.emit('redraw')
     }
 
     differ.prototype["onInputAction"] = function (action, text)

@@ -57,6 +57,7 @@ inputchoice = (function ()
     
         if (key === 'bg')
         {
+            this.input.setColor('bg_blur',this.color.bg)
             return this.choices.setColor('bg',this.color.bg)
         }
     }
@@ -97,7 +98,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _90_23_
+        var _89_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -120,7 +121,6 @@ inputchoice = (function ()
     {
         switch (action)
         {
-            case 'right':
             case 'submit':
                 return this.applyChoice(this.choices.current())
 
@@ -156,6 +156,14 @@ inputchoice = (function ()
             case 'hover':
                 return this.autoHide()
 
+            case 'boundary':
+            case 'left':
+                if (this.input.visible())
+                {
+                    this.input.grabFocus()
+                    return true
+                }
+                break
         }
 
     }
@@ -165,9 +173,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _145_36_
+        var choice, _149_36_
 
-        choice = ((_145_36_=this.choices.current()) != null ? _145_36_ : this.input.current())
+        choice = ((_149_36_=this.choices.current()) != null ? _149_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -198,8 +206,8 @@ inputchoice = (function ()
         sy = 0
         if (this.input.visible())
         {
-            outer = color.brighten(this.color.bg)
-            inner = (this.input.hasFocus() ? this.input.color.empty : outer)
+            outer = (this.input.hasFocus() ? color.brighten(this.color.bg) : this.color.bg)
+            inner = (this.input.hasFocus() ? this.input.color.bg_focus : this.input.color.bg_blur)
             this.cells.draw_rounded_border(0,0,-1,2,{fg:outer})
             this.cells.draw_vertical_padding(1,1,outer,inner)
             this.cells.draw_vertical_padding(this.cells.cols - 2,1,inner,outer)
@@ -249,6 +257,10 @@ inputchoice = (function ()
             }
             else
             {
+                if (_k_.in(key,'down'))
+                {
+                    this.choices.grabFocus()
+                }
                 this.autoHide()
                 return result
             }

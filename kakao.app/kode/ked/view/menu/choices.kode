@@ -7,7 +7,7 @@
 
     an editor that can't edit ;)
     
-    can display selections with nice rounded edges and is used almost 
+    displays selections with nice rounded edges and is used almost 
     everywhere by now: 
         context menu dirtree funtree quicky browse finder searcher...
     
@@ -188,7 +188,12 @@ function choices extends editor
         @
         
     selectNext: -> @select @nextRow()
-    selectPrev: -> @select @prevRow()
+    selectPrev: -> 
+        row = @prevRow()
+        if empty row
+            @emitAction 'boundary' @current()
+        else
+            @select row
                     
     # 000   000  00000000  000   0000000   000   000  000000000  
     # 000 0 000  000       000  000        000   000     000     

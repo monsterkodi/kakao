@@ -220,9 +220,8 @@ function cells
         @img x1 y2 'rounded.border.bl' fg zLayer  
         @img x2 y2 'rounded.border.br' fg zLayer  
         
-        @img x1+1 y1 'rounded.border.t' fg zLayer x2-1 
-        @img x1 y1+1 'rounded.border.l' fg zLayer x1 y2-1
-        
+        @img x1+1 y1 'rounded.border.t'  fg zLayer x2-1 
+        @img x1 y1+1 'rounded.border.l'  fg zLayer x1 y2-1  if y1+1 < y2
         @img x1+1 y2 'rounded.border.lb' fg zLayer          if x1+1 < x2
         @img x1+2 y2 'rounded.border.b'  fg zLayer x2-1
         @img x2 y1+1 'rounded.border.rt' fg zLayer x2       if y1+1 < y2

@@ -39,19 +39,7 @@ function differ extends searcher
         post.on 'differ.status'  @status
         post.on 'differ.file'    @file
         post.on 'differ.history' @history
-        
-    # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
-    # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
-    # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
-    # ███       ███ █ ███  ███     ███           ███       ███  ███      ███             ███   ███  ███        ███       ███  ████
-    # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
-
-    emitFileOpen: choice ->
-    
-        post.emit 'file.open' choice.path choice.row choice.col
-        
-        @hide()
-        
+                
     onFileLoaded: file =>
     
     #  0000000  000   000   0000000   000   000  
@@ -68,22 +56,7 @@ function differ extends searcher
         @choices.clearEmpty()        
         @sfils = []
         redraw:true
-        
-    # ████████  ███  ███      ████████
-    # ███       ███  ███      ███     
-    # ██████    ███  ███      ███████ 
-    # ███       ███  ███      ███     
-    # ███       ███  ███████  ████████
-
-    file: ○=>
-    
-        currentFile = ked_session.get 'editor▸file'
-        diff =○ git.diff currentFile
-                       
-        if valid diff
-            @show()
-            @diff diff
-        
+                
     # ███████    ███  ████████  ████████
     # ███   ███  ███  ███       ███     
     # ███   ███  ███  ██████    ██████  
@@ -131,6 +104,21 @@ function differ extends searcher
         @choices.append items ext
         @input.grabFocus()
         post.emit 'redraw'
+
+    # ████████  ███  ███      ████████
+    # ███       ███  ███      ███     
+    # ██████    ███  ███      ███████ 
+    # ███       ███  ███      ███     
+    # ███       ███  ███████  ████████
+
+    file: ○=>
+    
+        currentFile = ked_session.get 'editor▸file'
+        diff =○ git.diff currentFile
+                       
+        if valid diff
+            @show()
+            @diff diff
             
     #  ███████  █████████   ███████   █████████  ███   ███   ███████
     # ███          ███     ███   ███     ███     ███   ███  ███     
@@ -212,6 +200,32 @@ function differ extends searcher
                     log 'hidden?'
                 
                 @diff diff if valid diff
+
+    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
+
+    commit: msg ○=>
+    
+        currentFile = ked_session.get 'editor▸file'
+        gitDir =○ git.dir currentFile
+        
+        ⮐  if empty gitDir
+        
+        @hide()
+        post.emit 'focus' 'editor'
+        
+        out = ''
+        out +=○ git.exec "add ."                cwd:gitDir       
+        out +=○ git.exec "commit -m \"#{msg}\"" cwd:gitDir
+        out +=○ git.exec "push -q"              cwd:gitDir
+
+        log r4("differ.commit\n#{b7 out}")
+        
+        post.emit 'git.commit'
+        post.emit 'redraw'
                         
     # ███   ███  ███   ███████  █████████   ███████   ████████   ███   ███
     # ███   ███  ███  ███          ███     ███   ███  ███   ███   ███ ███ 
@@ -292,6 +306,19 @@ function differ extends searcher
         @choices.set items 'line'
         post.emit 'redraw'
     
+    # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
+    # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
+    # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
+    # ███       ███ █ ███  ███     ███           ███       ███  ███      ███             ███   ███  ███        ███       ███  ████
+    # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
+
+
+    emitFileOpen: choice ->
+    
+        post.emit 'file.open' choice.path choice.row choice.col
+        
+        @hide()
+    
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
     # 000000000  00000000   00000000   000        00000    
@@ -308,33 +335,7 @@ function differ extends searcher
         log "differ.apply?" choice
         
         super choice
-        
-    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
-    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
-    # ███       ███   ███  █████████  █████████  ███     ███   
-    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
-    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
-
-    commit: msg ○=>
-    
-        currentFile = ked_session.get 'editor▸file'
-        gitDir =○ git.dir currentFile
-        
-        ⮐  if empty gitDir
-        
-        @hide()
-        post.emit 'focus' 'editor'
-        
-        out = ''
-        out +=○ git.exec "add ."                cwd:gitDir       
-        out +=○ git.exec "commit -m \"#{msg}\"" cwd:gitDir
-        out +=○ git.exec "push -q"              cwd:gitDir
-
-        log r4("differ.commit\n#{b7 out}")
-        
-        post.emit 'git.commit'
-        post.emit 'redraw'
-                                    
+                                            
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
     # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
     # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███

@@ -278,7 +278,17 @@ choices = (function ()
 
     choices.prototype["selectPrev"] = function ()
     {
-        return this.select(this.prevRow())
+        var row
+
+        row = this.prevRow()
+        if (_k_.empty(row))
+        {
+            return this.emitAction('boundary',this.current())
+        }
+        else
+        {
+            return this.select(row)
+        }
     }
 
     choices.prototype["weight"] = function (item, text)
@@ -381,7 +391,7 @@ choices = (function ()
 
     choices.prototype["onMouse"] = function (event)
     {
-        var col, dx, dy, ret, row, _290_21_
+        var col, dx, dy, ret, row, _295_21_
 
         ret = choices.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

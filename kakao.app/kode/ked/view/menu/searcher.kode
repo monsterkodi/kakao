@@ -91,7 +91,6 @@ function searcher extends finder
     
         ⮐  if @hidden()
     
-        # log "#{@name} onFileLoaded -> hide"
         @hide()
         
         ⮐  if empty @fileToHighlight

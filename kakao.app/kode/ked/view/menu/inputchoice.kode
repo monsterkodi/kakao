@@ -45,9 +45,8 @@ function inputchoice extends view
         
         if key == 'bg'
         
-            # @input.setColor     'bg'    color.brighten(@color.bg)
-            # @input.setColor     'empty' @color.bg #color.brighten(@color.bg)
-            @choices.setColor   'bg'    @color.bg
+            @input.setColor     'bg_blur' @color.bg
+            @choices.setColor   'bg'      @color.bg
         
     inputIsActive: -> @input.hasFocus() or @input.current().length
         
@@ -112,7 +111,6 @@ function inputchoice extends view
         # log 'input.choice.onInputAction' action text
         
         switch action
-            'right'
             'submit' ➜ ⮐  @applyChoice @choices.current()
             'change' ➜ ⮐  @onInputChange text
             'up'          
@@ -137,6 +135,12 @@ function inputchoice extends view
             'return' ➜ ⮐  @applyChoice @choices.current()
             
             'hover'  ➜ @autoHide()
+            
+            'boundary'
+            'left'
+                if @input.visible() 
+                    @input.grabFocus()
+                    ⮐  true
                                              
     choicesFiltered: ->
         
@@ -170,9 +174,8 @@ function inputchoice extends view
         
         if @input.visible()
         
-            outer = color.brighten @color.bg
-            # inner = @input.hasFocus() ? @color.bg : outer
-            inner = @input.hasFocus() ? @input.color.empty : outer
+            outer = @input.hasFocus() ? color.brighten(@color.bg) : @color.bg
+            inner = @input.hasFocus() ? @input.color.bg_focus : @input.color.bg_blur
             
             @cells.draw_rounded_border 0 0 -1 2 fg:outer
             
@@ -219,6 +222,7 @@ function inputchoice extends view
             if event.char and event.char not in ' \n'
                 @input.grabFocus()
             else
+                @choices.grabFocus() if key in 'down'
                 @autoHide()
                 ⮐  result
              

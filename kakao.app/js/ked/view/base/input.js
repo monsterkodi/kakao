@@ -19,6 +19,8 @@ input = (function ()
         input.__super__.constructor.call(this,screen,name,['brckts','replex','unype'])
         this.setColor('selection_line',this.color.selection)
         this.setColor('bg',theme.quicky.bg)
+        this.setColor('bg_blur',theme.quicky.bg)
+        this.setColor('bg_focus',theme.editor.bg)
     }
 
     input.prototype["hasFocus"] = function ()
@@ -81,7 +83,8 @@ input = (function ()
         {
             return
         }
-        this.cells.fill_rect(0,0,-1,-1,' ',null,this.color.bg)
+        this.setColor('bg',(this.hasFocus() ? this.color.bg_focus : this.color.bg_blur))
+        this.setColor('empty',this.color.bg)
         return input.__super__.draw.call(this)
     }
 
