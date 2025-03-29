@@ -256,7 +256,7 @@ editor = (function ()
         {
             if (!(_k_.in(key.split('+').slice(-1)[0],['shift','ctrl','alt','cmd'])))
             {
-                console.log('editor.onKey?',key)
+                console.log(`editor.onKey? |${key}|`,event)
             }
         }
     }

@@ -327,7 +327,12 @@ function quicky extends inputchoice
                         
             'left' 
                 
-                ⮐  @choices.select 0
+                if @choices.currentIndex() == 0
+                    if @input.visible()
+                        @input.grabFocus()
+                else
+                    @choices.select 0
+                ⮐  
                 
             'delete'
                 

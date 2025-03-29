@@ -355,7 +355,7 @@ TTIO = (function ()
         {
             key = ((function ()
             {
-                switch (csi.slice(-2,-1)[0])
+                switch (csi.slice(0, -1).split(';')[0])
                 {
                     case '3':
                         return 'entf'
@@ -757,11 +757,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _528_23_, _549_20_
+        var diff, _529_23_, _550_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_528_23_=this.lastClick) != null ? _528_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_529_23_=this.lastClick) != null ? _529_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -784,7 +784,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_549_20_=this.lastPixels) != null ? _549_20_ : [])
+        this.lastPixels = ((_550_20_=this.lastPixels) != null ? _550_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -843,7 +843,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _605_23_
+        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _606_23_
 
         if ((this.pasteBuffer != null))
         {

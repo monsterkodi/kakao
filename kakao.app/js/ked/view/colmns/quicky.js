@@ -375,7 +375,18 @@ quicky = (function ()
                 }
                 break
             case 'left':
-                return this.choices.select(0)
+                if (this.choices.currentIndex() === 0)
+                {
+                    if (this.input.visible())
+                    {
+                        this.input.grabFocus()
+                    }
+                }
+                else
+                {
+                    this.choices.select(0)
+                }
+                return
 
             case 'delete':
                 if (choice.path)
