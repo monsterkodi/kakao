@@ -138,7 +138,7 @@ function gutter extends view
         ⮐  if empty csz
         
         sw = int csz[0]/2 
-        sx = @cells.x*csz[0] - sw
+        sx = (@cells.x-1)*csz[0]
         oy = @cells.y*csz[1]
         pixelsPerRow = clamp 0 csz[1] csz[1] * @cells.rows / @state.s.lines.length
         

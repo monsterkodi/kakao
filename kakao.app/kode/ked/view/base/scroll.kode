@@ -11,6 +11,7 @@
 
 use ../../../kxk ▪ post
 use ../../theme  ◆ theme
+use ../../util   ◆ squares
 use              ◆ view
 
 {pow} = Math
@@ -51,14 +52,14 @@ function scroll extends view
                 if @hover
                     @doDrag = true
                     post.emit 'pointer''grabbing' 
-                    ⮐  @scrollTo row
+                    ⮐  @scrollToPixel event.pixel
                     
             'drag'
             
                 if @doDrag
                     @hover = true
                     post.emit 'pointer''grab' 
-                    ⮐  @scrollTo row 
+                    ⮐  @scrollToPixel event.pixel
                     
                 @hover = false
                 
@@ -80,21 +81,25 @@ function scroll extends view
     #      000  000       000   000  000   000  000      000         000     000   000  
     # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
     
-    scrollTo: row =>
-        
+    scrollToPixel: pixel =>
+    
+        csz = @screen.t.cellsz
+        ⮐  if empty csz
         view = @state.s.view.asMutable()
         
-        view[1] = int floor(row * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        pixelsPerRow = clamp 0 csz[1] csz[1] * @cells.rows / @state.s.lines.length
+        
+        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / pixelsPerRow
         
         maxY = @state.s.lines.length - @cells.rows
         
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
-
+        
         ⮐  true if view eql @state.s.view
         
-        @state.setView view
-
+        @state.setView view 
+        
         redraw:true
         
     # 0000000    00000000    0000000   000   000  

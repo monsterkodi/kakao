@@ -166,7 +166,7 @@ gutter = (function ()
             return
         }
         sw = parseInt(csz[0] / 2)
-        sx = this.cells.x * csz[0] - sw
+        sx = (this.cells.x - 1) * csz[0]
         oy = this.cells.y * csz[1]
         pixelsPerRow = _k_.clamp(0,csz[1],csz[1] * this.cells.rows / this.state.s.lines.length)
         var list = _k_.list(this.gitBlocks)
