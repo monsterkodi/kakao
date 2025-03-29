@@ -22,6 +22,7 @@ import watcher from "./util/watcher.js"
 import git from "./util/git.js"
 import rounded from "./util/rounded.js"
 import squares from "./util/squares.js"
+import sircels from "./util/sircels.js"
 
 import belt from "./edit/tool/belt.js"
 
@@ -604,7 +605,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _504_22_
+        var mcw, _505_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}
@@ -621,6 +622,7 @@ ked [file]
             this.funcol.hide()
         }
         squares.onResize(cols,rows,size,cellsz)
+        sircels.onResize(cols,rows,size,cellsz)
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
     }

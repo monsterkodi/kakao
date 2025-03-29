@@ -12,16 +12,16 @@ squares = (function ()
     function squares ()
     {}
 
-    squares["pixlArr"] = (new Uint32Array(new ArrayBuffer(4)))
+    squares["pixlArr"] = new Uint32Array(new ArrayBuffer(4))
     squares["tileArr"] = null
     squares["csz"] = []
     squares["cache"] = {}
     squares["tilesInRect"] = function (px, py, pw, ph)
     {
-        var boty, cx, cy, ox, oy, rightx, sh, sw, tiles, tx, ty
+        var boty, cx, cy, ox, oy, rgtx, sh, sw, tiles, tx, ty
 
         tiles = []
-        rightx = px + pw
+        rgtx = px + pw
         boty = py + ph
         cy = py
         while (cy < boty)
@@ -31,12 +31,12 @@ squares = (function ()
             oy = cy - ty * this.csz[1]
             sh = _k_.clamp(0,this.csz[1],this.csz[1] - oy)
             sh = _k_.min(sh,boty - cy)
-            while (cx < rightx)
+            while (cx < rgtx)
             {
                 tx = Math.floor(cx / this.csz[0])
                 ox = cx - tx * this.csz[0]
                 sw = _k_.clamp(0,this.csz[0],this.csz[0] - ox)
-                sw = _k_.min(sw,rightx - cx)
+                sw = _k_.min(sw,rgtx - cx)
                 tiles.push([tx,ty,ox,oy,sw,sh])
                 cx += sw
             }
@@ -47,13 +47,9 @@ squares = (function ()
 
     squares["tileImg"] = function (tw, th, fg)
     {
-        var c, img, r, _59_64_
+        var c, img, r, _57_64_
 
-        if (fg.length < 4)
-        {
-            fg.push(255)
-        }
-        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_59_64_=fg[3]) != null ? _59_64_ : 255)) << 24])
+        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_57_64_=fg[3]) != null ? _57_64_ : 255)) << 24])
         img = {w:tw,h:th}
         for (var _a_ = c = 0, _b_ = tw; (_a_ <= _b_ ? c < tw : c > tw); (_a_ <= _b_ ? ++c : --c))
         {
@@ -91,12 +87,9 @@ squares = (function ()
 
     squares["onResize"] = function (cols, rows, pixels, cellsz)
     {
-        var bytes
-
         this.csz = cellsz
         this.cache = {}
-        bytes = this.csz[0] * this.csz[1] * 4
-        return this.tileArr = new Uint32Array(new ArrayBuffer(bytes))
+        return this.tileArr = new Uint32Array(new ArrayBuffer(this.csz[0] * this.csz[1] * 4))
     }
 
     return squares

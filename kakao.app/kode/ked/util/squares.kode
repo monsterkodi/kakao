@@ -11,7 +11,7 @@ use           ◆ png
 
 function squares
 
-    @pixlArr: (new Uint32Array(new ArrayBuffer(4)))
+    @pixlArr: new Uint32Array(new ArrayBuffer(4))
     @tileArr: null
     @csz:   []
     @cache: {}
@@ -21,12 +21,12 @@ function squares
     #    ███     ███  ███      ███████ 
     #    ███     ███  ███      ███     
     #    ███     ███  ███████  ████████
-    
+        
     @tilesInRect: px py pw ph ->
     
         tiles = []
         
-        rightx = px+pw
+        rgtx = px+pw
         boty = py+ph
         
         cy = py
@@ -39,11 +39,11 @@ function squares
             sh = clamp 0 @csz[1] @csz[1]-oy
             sh = min sh boty-cy
             
-            while cx < rightx
+            while cx < rgtx
                 tx = floor cx / @csz[0]
                 ox = cx - tx * @csz[0]
                 sw = clamp 0 @csz[0] @csz[0]-ox
-                sw = min sw rightx-cx
+                sw = min sw rgtx-cx
                 
                 tiles.push [tx ty ox oy sw sh]
                 
@@ -54,8 +54,6 @@ function squares
 
     @tileImg: tw th fg ->
     
-        fg.push(255) if fg.length < 4
-        
         @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
         
         img = w:tw h:th
@@ -97,7 +95,6 @@ function squares
 
         @csz     = cellsz # should this be copied instead?
         @cache   = {}
-        bytes    = @csz[0]*@csz[1]*4
-        @tileArr = new Uint32Array(new ArrayBuffer(bytes))
+        @tileArr = new Uint32Array(new ArrayBuffer(@csz[0]*@csz[1]*4))
     
 export squares

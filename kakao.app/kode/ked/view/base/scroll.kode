@@ -11,7 +11,7 @@
 
 use ../../../kxk ▪ post
 use ../../theme  ◆ theme
-use ../../util   ◆ squares
+use ../../util   ◆ squares sircels
 use              ◆ view
 
 {pow} = Math
@@ -85,11 +85,11 @@ function scroll extends view
     
         csz = @screen.t.cellsz
         ⮐  if empty csz
+
         view = @state.s.view.asMutable()
         
-        pixelsPerRow = clamp 0 csz[1] csz[1] * @cells.rows / @state.s.lines.length
-        
-        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / pixelsPerRow
+        rowf = pixel[1]/csz[1]-@cells.y
+        view[1] = floor(rowf * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
         
         maxY = @state.s.lines.length - @cells.rows
         
@@ -109,25 +109,31 @@ function scroll extends view
     # 0000000    000   000  000   000  00     00  
     
     draw: =>
+
+        csz = @screen.t.cellsz
+        ⮐  if empty csz
         
         rows = @cells.rows
+        
+        @cells.fill_col 0 0 rows ' ' null @color.bg
+        
         lnum = @state.s.lines.length
         
-        kh = int floor(pow((rows) 2) / lnum)
-        kp = int floor((rows-kh-1) * @state.s.view[1] / (lnum-rows))
-        nc = int floor((rows-1)    * @state.s.view[1] / (lnum-rows))
-        ns = kp
-        ne = kp+kh
+        ⮐  if lnum <= rows
         
-        for row in 0...rows
+        kh = ((rows**2) / lnum) * csz[1]
+        ky = ((rows*csz[1]-kh) * @state.s.view[1] / (lnum-rows)) 
 
-            fg = @color.bg
-
-            if       
-                lnum < rows     ➜
-                row == nc       ➜ fg = @hover ? @color.hover.dot  : @color.dot
-                ns <= row <= ne ➜ fg = @hover ? @color.hover.knob : @color.knob
-            
-            @cells.set 0 row @handle fg @color.bg
+        fg = @hover ? @color.hover.knob : @color.knob
+        
+        x  = @cells.x*csz[0]
+        y  = int @cells.y*csz[1]+ky
+        w  = int csz[0]/2
+        h  = int kh
+        r  = int csz[0]/4
+        
+        sircels.place x y r fg
+        sircels.place x y+h-w r fg
+        squares.place x y+r w h-w fg 
 
 export scroll

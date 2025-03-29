@@ -1,0 +1,79 @@
+###
+     ███████  ███  ████████    ███████  ████████  ███       ███████
+    ███       ███  ███   ███  ███       ███       ███      ███     
+    ███████   ███  ███████    ███       ███████   ███      ███████ 
+         ███  ███  ███   ███  ███       ███       ███           ███
+    ███████   ███  ███   ███   ███████  ████████  ███████  ███████ 
+###
+
+use ../../kxk ◆ nfs
+use           ◆ png
+
+function sircels
+
+    @pixlArr: new Uint32Array(new ArrayBuffer(4))
+    @sircArr: null
+    @csz:   []
+    @cache: {}
+    
+    @sircImg: cr fg ->
+    
+        @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
+        
+        img = w:cr*2 h:cr*2
+            
+        rsq = cr * cr
+        for x in -cr..cr
+            for y in -cr..cr
+                if x**2 + y**2 <= rsq
+                    @sircArr.set @pixlArr (x+cr)+(y+cr)*(cr+cr)
+        
+        img.png = Buffer.from png.encode([@sircArr.buffer] img.w img.h 2)
+        img
+        
+    # ████████   ███       ███████    ███████  ████████
+    # ███   ███  ███      ███   ███  ███       ███     
+    # ████████   ███      █████████  ███       ███████ 
+    # ███        ███      ███   ███  ███       ███     
+    # ███        ███████  ███   ███   ███████  ████████
+    
+    @tileRect: px py pw ph ->
+    
+        ty = floor py / @csz[1]
+        oy = py - ty * @csz[1]
+        sh = min ph clamp(0 @csz[1] @csz[1]-oy)
+        
+        tx = floor px / @csz[0]
+        ox = px - tx * @csz[0]
+        sw = min pw clamp(0 @csz[0] @csz[0]-ox)
+        
+        [tx ty ox oy sw sh]
+
+    @place: sx sy sr fg z ->
+    
+        ⮐  if empty @csz
+        
+        img = @cache[fg]
+        if empty img
+            # log "sircels #{sr} #{fg}"
+            img = @sircImg sr fg
+            @cache[fg] = img
+            nfs.write '~/Desktop/sircle.png' img.png
+            
+        t = @tileRect sx sy sr*2 sr*2
+        # log "sircels #{sx} #{sy} #{sr} #{img.w} #{img.h}" t 
+        ked_ttio.placeImg img t[0] t[1] t[2] t[3] t[4] t[5] z
+
+# ████████   ████████   ███████  ███  ███████  ████████
+# ███   ███  ███       ███       ███     ███   ███     
+# ███████    ███████   ███████   ███    ███    ███████ 
+# ███   ███  ███            ███  ███   ███     ███     
+# ███   ███  ████████  ███████   ███  ███████  ████████
+
+    @onResize: cols rows pixels cellsz -> 
+
+        @csz     = cellsz # should this be copied instead?
+        @cache   = {}
+        @sircArr = new Uint32Array(new ArrayBuffer(@csz[0]*@csz[0]*4))
+    
+export sircels

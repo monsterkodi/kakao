@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }, eql: function (a,b,s) { var i, k, v; s = (s != null ? s : []); if (Object.is(a,b)) { return true }; if (typeof(a) !== typeof(b)) { return false }; if (!(Array.isArray(a)) && !(typeof(a) === 'object')) { return false }; if (Array.isArray(a)) { if (a.length !== b.length) { return false }; var list = _k_.list(a); for (i = 0; i < list.length; i++) { v = list[i]; s.push(i); if (!_k_.eql(v,b[i],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } } else if (_k_.isStr(a)) { return a === b } else { if (!_k_.eql(Object.keys(a),Object.keys(b))) { return false }; for (k in a) { v = a[k]; s.push(k); if (!_k_.eql(v,b[k],s)) { s.splice(0,s.length); return false }; if (_k_.empty(s)) { return false }; s.pop() } }; return true }, isStr: function (o) {return typeof o === 'string' || o instanceof String}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var pow, scroll
 
@@ -8,6 +8,7 @@ let post = kxk.post
 import theme from "../../theme/theme.js"
 
 import squares from "../../util/squares.js"
+import sircels from "../../util/sircels.js"
 
 import view from "./view.js"
 
@@ -83,7 +84,7 @@ scroll = (function ()
 
     scroll.prototype["scrollToPixel"] = function (pixel)
     {
-        var csz, maxY, pixelsPerRow, view
+        var csz, maxY, rowf, view
 
         csz = this.screen.t.cellsz
         if (_k_.empty(csz))
@@ -91,8 +92,8 @@ scroll = (function ()
             return
         }
         view = this.state.s.view.asMutable()
-        pixelsPerRow = _k_.clamp(0,csz[1],csz[1] * this.cells.rows / this.state.s.lines.length)
-        view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / pixelsPerRow)
+        rowf = pixel[1] / csz[1] - this.cells.y
+        view[1] = Math.floor(rowf * (this.state.s.lines.length - this.cells.rows + 1) / (this.cells.rows - 1))
         maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
         {
@@ -109,31 +110,31 @@ scroll = (function ()
 
     scroll.prototype["draw"] = function ()
     {
-        var fg, kh, kp, lnum, nc, ne, ns, row, rows
+        var csz, fg, h, kh, ky, lnum, r, rows, w, x, y
 
-        rows = this.cells.rows
-        lnum = this.state.s.lines.length
-        kh = parseInt(Math.floor(pow((rows),2) / lnum))
-        kp = parseInt(Math.floor((rows - kh - 1) * this.state.s.view[1] / (lnum - rows)))
-        nc = parseInt(Math.floor((rows - 1) * this.state.s.view[1] / (lnum - rows)))
-        ns = kp
-        ne = kp + kh
-        for (var _a_ = row = 0, _b_ = rows; (_a_ <= _b_ ? row < rows : row > rows); (_a_ <= _b_ ? ++row : --row))
+        csz = this.screen.t.cellsz
+        if (_k_.empty(csz))
         {
-            fg = this.color.bg
-            if (lnum < rows)
-            {
-            }
-            else if (row === nc)
-            {
-                fg = (this.hover ? this.color.hover.dot : this.color.dot)
-            }
-            else if ((ns <= row && row <= ne))
-            {
-                fg = (this.hover ? this.color.hover.knob : this.color.knob)
-            }
-            this.cells.set(0,row,this.handle,fg,this.color.bg)
+            return
         }
+        rows = this.cells.rows
+        this.cells.fill_col(0,0,rows,' ',null,this.color.bg)
+        lnum = this.state.s.lines.length
+        if (lnum <= rows)
+        {
+            return
+        }
+        kh = ((rows ** 2) / lnum) * csz[1]
+        ky = ((rows * csz[1] - kh) * this.state.s.view[1] / (lnum - rows))
+        fg = (this.hover ? this.color.hover.knob : this.color.knob)
+        x = this.cells.x * csz[0]
+        y = parseInt(this.cells.y * csz[1] + ky)
+        w = parseInt(csz[0] / 2)
+        h = parseInt(kh)
+        r = parseInt(csz[0] / 4)
+        sircels.place(x,y,r,fg)
+        sircels.place(x,y + h - w,r,fg)
+        return squares.place(x,y + r,w,h - w,fg)
     }
 
     return scroll
