@@ -46,7 +46,13 @@ function mapscr extends mapview
         post.on 'popup.hide' @show
         post.on 'greet.hide' @show
         
+        @editor.state.on 'lines.changed' @onLinesChanged
+        
         @calcView()
+        
+    onLinesChanged: diff =>
+    
+        log "mapscr.onLinesChanged chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length}" #diff
         
     getSegls:  => @state.segls
     getSyntax: => @state.syntax

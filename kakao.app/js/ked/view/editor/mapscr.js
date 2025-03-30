@@ -33,6 +33,7 @@ mapscr = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
+        this["onLinesChanged"] = this["onLinesChanged"].bind(this)
         mapscr.__super__.constructor.call(this,this.editor.screen,this.editor.state)
         this.state.on('view.changed',this.drawKnob)
         this.pointerType = 'pointer'
@@ -58,7 +59,13 @@ mapscr = (function ()
         post.on('greet.show',this.hide)
         post.on('popup.hide',this.show)
         post.on('greet.hide',this.show)
+        this.editor.state.on('lines.changed',this.onLinesChanged)
         this.calcView()
+    }
+
+    mapscr.prototype["onLinesChanged"] = function (diff)
+    {
+        console.log(`mapscr.onLinesChanged chg ${diff.chg.length} ins ${diff.ins.length} del ${diff.del.length}`)
     }
 
     mapscr.prototype["getSegls"] = function ()

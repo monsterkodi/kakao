@@ -524,14 +524,13 @@ text = (function ()
 
     text["diffLines"] = function (oldLines, newLines)
     {
-        var changes, dd, deletes, inserts, ni, nl, oi, ol
+        var changes, deletes, inserts, ni, nl, oi, ol
 
         changes = []
         inserts = []
         deletes = []
         oi = 0
         ni = 0
-        dd = 0
         if (oldLines !== newLines)
         {
             ol = oldLines[oi]
@@ -540,11 +539,10 @@ text = (function ()
             {
                 if (!(nl != null))
                 {
-                    deletes.push({old:oi})
+                    deletes.push(oi)
                     oi += 1
-                    dd -= 1
                 }
-                else if (ol === nl || kseg.str(ol) === kseg.str(nl))
+                else if (ol === nl)
                 {
                     oi += 1
                     ni += 1
@@ -555,10 +553,10 @@ text = (function ()
                 {
                     if (nl === oldLines[oi + 1] && ol === newLines[ni + 1])
                     {
-                        changes.push({old:oi,new:ni})
+                        changes.push(ni)
                         oi += 1
                         ni += 1
-                        changes.push({old:oi,new:ni})
+                        changes.push(ni)
                         oi += 1
                         ni += 1
                         ol = oldLines[oi]
@@ -566,21 +564,19 @@ text = (function ()
                     }
                     else if (nl === oldLines[oi + 1] && oldLines[oi + 1] !== newLines[ni + 1])
                     {
-                        deletes.push({old:oi})
+                        deletes.push(oi)
                         oi += 1
-                        dd -= 1
                         ol = oldLines[oi]
                     }
                     else if (ol === newLines[ni + 1] && oldLines[oi + 1] !== newLines[ni + 1])
                     {
-                        inserts.push({new:ni})
+                        inserts.push(ni)
                         ni += 1
-                        dd += 1
                         nl = newLines[ni]
                     }
                     else
                     {
-                        changes.push({old:oi,new:ni})
+                        changes.push(ni)
                         oi += 1
                         ol = oldLines[oi]
                         ni += 1
@@ -590,7 +586,7 @@ text = (function ()
             }
             while (ni < newLines.length)
             {
-                inserts.push({new:ni})
+                inserts.push(ni)
                 ni += 1
                 nl = newLines[ni]
             }
@@ -614,7 +610,7 @@ text = (function ()
 
         for (var _a_ = i = 0, _b_ = lineCols.length - 1; (_a_ <= _b_ ? i < lineCols.length - 1 : i > lineCols.length - 1); (_a_ <= _b_ ? ++i : --i))
         {
-            _k_.assert("kode/ked/edit/tool/text.kode", 409, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
+            _k_.assert("kode/ked/edit/tool/text.kode", 406, 8, "assert failed!" + " lineCols[i].length === lineCols[i + 1].length", lineCols[i].length === lineCols[i + 1].length)
         }
         numLines = lineCols[0].length
         numCols = lineCols.length

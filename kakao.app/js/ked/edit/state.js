@@ -65,7 +65,9 @@ state = (function ()
         this["linesInView"] = this["linesInView"].bind(this)
         this["appendLines"] = this["appendLines"].bind(this)
         this["addLine"] = this["addLine"].bind(this)
+        this["clearSegls"] = this["clearSegls"].bind(this)
         this["clearEmpty"] = this["clearEmpty"].bind(this)
+        this["clearSingle"] = this["clearSingle"].bind(this)
         this["loadSegls"] = this["loadSegls"].bind(this)
         this["loadLines"] = this["loadLines"].bind(this)
         this["setSegls"] = this["setSegls"].bind(this)
@@ -95,8 +97,7 @@ state = (function ()
         this.handleKey = keys.bind(this)
         this.syntax = new syntax(this.name + '.syntax')
         this.hasFocus = false
-        this.s = immutable({lines:[[]],selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
-        this.clearHistory()
+        this.clearSingle()
         return state.__super__.constructor.apply(this, arguments)
     }
 
@@ -254,42 +255,47 @@ state = (function ()
 
     state.prototype["loadSegls"] = function (segls)
     {
-        this.s = this.s.set('cursors',[[0,0]])
-        this.s = this.s.set('view',[0,0])
-        this.s = this.s.set('main',0)
-        this.clearCursorsHighlightsAndSelections()
-        this.r = []
-        this.h = []
-        this.syntax.clear()
+        this.clearEmpty()
         return this.setSegls(segls)
+    }
+
+    state.prototype["clearSingle"] = function ()
+    {
+        return this.clearSegls([[]])
     }
 
     state.prototype["clearEmpty"] = function ()
     {
-        this.segls = []
-        this.syntax.clear()
+        return this.clearSegls([])
+    }
+
+    state.prototype["clearSegls"] = function (segls)
+    {
+        this.segls = segls
+    
         this.s = immutable({lines:this.segls,selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
-        return this.r = []
+        this.syntax.clear()
+        return this.clearHistory()
     }
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _195_15_
+        var segl, _180_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_195_15_=this.segls) != null ? _195_15_ : [])
+        this.segls = ((_180_15_=this.segls) != null ? _180_15_ : [])
         this.segls.push(segl)
         return this.changeLinesSegls()
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _204_15_
+        var segls, _189_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_204_15_=this.segls) != null ? _204_15_ : [])
+        this.segls = ((_189_15_=this.segls) != null ? _189_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.changeLinesSegls()
     }
@@ -300,7 +306,11 @@ state = (function ()
 
         oldLines = this.s.lines
         this.s = this.s.set('lines',this.segls)
-        return diff = belt.diffLines(oldLines,this.s.lines)
+        if (oldLines !== this.s.lines)
+        {
+            diff = belt.diffLines(oldLines,this.s.lines)
+            return this.emit('lines.changed',diff)
+        }
     }
 
     state.prototype["linesInView"] = function ()
