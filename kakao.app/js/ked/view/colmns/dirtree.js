@@ -219,7 +219,7 @@ dirtree = (function ()
         if (action === 'hover')
         {
             this.grabFocus()
-            if (!_k_.empty(event.mods) && choice.type === 'file')
+            if ((event.alt || event.cmd) && choice.type === 'file')
             {
                 post.emit('quicky',choice.path)
             }
@@ -326,7 +326,7 @@ dirtree = (function ()
 
     dirtree.prototype["openDir"] = async function (dirItem, opt)
     {
-        var depth, index, item, items, state, _282_48_, _294_20_, _296_26_
+        var depth, index, item, items, state, _281_48_, _293_20_, _295_26_
 
         if (_k_.empty(dirItem))
         {

@@ -188,9 +188,8 @@ function dirtree extends choices
         # log "emitAction #{action}" choice
         
         if action == 'hover'
-                    
             @grabFocus()
-            if valid event.mods and choice.type == 'file'
+            if (event.alt or event.cmd) and choice.type == 'file'
                 post.emit 'quicky' choice.path
             ⮐ 
             

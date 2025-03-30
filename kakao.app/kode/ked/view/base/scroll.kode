@@ -24,14 +24,10 @@ function scroll extends view
         
         @pointerType = 'pointer'
         
-        @setColor 'bg'       theme.gutter.bg
-        @setColor 'dot'      theme.scroll.dot
-        @setColor 'knob'     theme.scroll.bg
-        @setColor 'hover',
-            dot:  theme.scroll.doth
-            knob: theme.scroll.knob
-            
-        @handle = @side == 'right' ? '▐' : '▌' 
+        @setColor 'bg'         theme.gutter.bg
+        @setColor 'dot'        theme.scroll.dot
+        @setColor 'knob'       theme.scroll.knob
+        @setColor 'hover'      theme.scroll.hover
             
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -121,19 +117,19 @@ function scroll extends view
         
         ⮐  if lnum <= rows
         
-        kh = ((rows**2) / lnum) * csz[1]
+        kh = ((rows*rows) / lnum) * csz[1]
         ky = ((rows*csz[1]-kh) * @state.s.view[1] / (lnum-rows)) 
 
-        fg = @hover ? @color.hover.knob : @color.knob
+        fg = @hover ? @color.hover : @color.knob
         
         x  = @cells.x*csz[0]
         y  = int @cells.y*csz[1]+ky
         w  = int csz[0]/2
         h  = int kh
-        r  = int csz[0]/4
         
-        sircels.place x y r fg
-        sircels.place x y+h-w r fg
-        squares.place x y+r w h-w fg 
+        squares.place x int(y+w/2) w h-w fg
+        
+        sircels.place x y     w (ky ? fg : @color.dot)
+        sircels.place x y+h-w w ((y+h < (@cells.y+rows)*csz[1]-1) ? fg : @color.dot)
 
 export scroll

@@ -77,10 +77,9 @@ status
     hil                                     #0a0   
                                               
 scroll                                      
-    bg                                      #1a1a1a
-    doth                                    #88f   
-    dot                                     #44a   
-    knob                                    #44f   
+    knob                                    #1a1a1a
+    hover                                   #44a   
+    dot                                     #88f   
                                               
 finder
     bg                                      #111   

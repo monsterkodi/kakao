@@ -30,9 +30,8 @@ scroll = (function ()
         this.pointerType = 'pointer'
         this.setColor('bg',theme.gutter.bg)
         this.setColor('dot',theme.scroll.dot)
-        this.setColor('knob',theme.scroll.bg)
-        this.setColor('hover',{dot:theme.scroll.doth,knob:theme.scroll.knob})
-        this.handle = (this.side === 'right' ? '▐' : '▌')
+        this.setColor('knob',theme.scroll.knob)
+        this.setColor('hover',theme.scroll.hover)
     }
 
     scroll.prototype["onMouse"] = function (event)
@@ -110,7 +109,7 @@ scroll = (function ()
 
     scroll.prototype["draw"] = function ()
     {
-        var csz, fg, h, kh, ky, lnum, r, rows, w, x, y
+        var csz, fg, h, kh, ky, lnum, rows, w, x, y
 
         csz = this.screen.t.cellsz
         if (_k_.empty(csz))
@@ -124,17 +123,16 @@ scroll = (function ()
         {
             return
         }
-        kh = ((rows ** 2) / lnum) * csz[1]
+        kh = ((rows * rows) / lnum) * csz[1]
         ky = ((rows * csz[1] - kh) * this.state.s.view[1] / (lnum - rows))
-        fg = (this.hover ? this.color.hover.knob : this.color.knob)
+        fg = (this.hover ? this.color.hover : this.color.knob)
         x = this.cells.x * csz[0]
         y = parseInt(this.cells.y * csz[1] + ky)
         w = parseInt(csz[0] / 2)
         h = parseInt(kh)
-        r = parseInt(csz[0] / 4)
-        sircels.place(x,y,r,fg)
-        sircels.place(x,y + h - w,r,fg)
-        return squares.place(x,y + r,w,h - w,fg)
+        squares.place(x,parseInt(y + w / 2),w,h - w,fg)
+        sircels.place(x,y,w,((ky ? fg : this.color.dot)))
+        return sircels.place(x,y + h - w,w,(((y + h < (this.cells.y + rows) * csz[1] - 1) ? fg : this.color.dot)))
     }
 
     return scroll
