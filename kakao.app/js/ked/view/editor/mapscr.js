@@ -23,13 +23,13 @@ mapscr = (function ()
     
         this["drawHighlights"] = this["drawHighlights"].bind(this)
         this["drawCursors"] = this["drawCursors"].bind(this)
+        this["hide"] = this["hide"].bind(this)
         this["drawKnob"] = this["drawKnob"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
         this["draw"] = this["draw"].bind(this)
-        this["hide"] = this["hide"].bind(this)
-        this["onMouse"] = this["onMouse"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
         mapscr.__super__.constructor.call(this,this.editor.screen,this.editor.state)
@@ -37,6 +37,11 @@ mapscr = (function ()
         this.pointerType = 'pointer'
         this.knobId = this.imgId + 0xeeee
         this.topLine = 0
+        this.botLine = 0
+        this.knobHeight = 0
+        this.mapWidth = 0
+        this.mapHeight = 0
+        this.linesInMap = 0
         this.setColor('bg',theme.editor.mapscr)
         this.setColor('highlight',theme.highlight.map)
         this.setColor('selection',theme.selection.map)
@@ -52,6 +57,7 @@ mapscr = (function ()
         post.on('greet.show',this.hide)
         post.on('popup.hide',this.show)
         post.on('greet.hide',this.show)
+        this.calcView()
     }
 
     mapscr.prototype["getSegls"] = function ()
@@ -62,37 +68,6 @@ mapscr = (function ()
     mapscr.prototype["getSyntax"] = function ()
     {
         return this.state.syntax
-    }
-
-    mapscr.prototype["onResize"] = function ()
-    {
-        if (_k_.empty(this.cells.screen.t.pixels))
-        {
-            return
-        }
-        return this.redraw = true
-    }
-
-    mapscr.prototype["scrollToPixel"] = function (pixel)
-    {
-        var maxY, view
-
-        view = this.state.s.view.asMutable()
-        view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / this.pixelsPerRow)
-        view[1] -= 6
-        maxY = this.state.s.lines.length - this.cells.rows
-        if (maxY > 0)
-        {
-            view[1] = _k_.min(maxY,view[1])
-        }
-        view[1] = _k_.max(0,view[1])
-        if (_k_.eql(view, this.state.s.view))
-        {
-            return
-        }
-        this.state.setView(view)
-        this.drawKnob()
-        return {redraw:true}
     }
 
     mapscr.prototype["onMouse"] = function (event)
@@ -133,14 +108,59 @@ mapscr = (function ()
         return this.hover
     }
 
-    mapscr.prototype["hide"] = function ()
+    mapscr.prototype["onResize"] = function ()
     {
-        if (this.hidden())
+        if (_k_.empty(this.cells.screen.t.pixels))
         {
             return
         }
-        this.cells.screen.t.hideImageOverlay(this.knobId)
-        return mapscr.__super__.hide.call(this)
+        this.csz = this.cells.screen.t.cellsz
+        this.calcView()
+        return this.redraw = true
+    }
+
+    mapscr.prototype["scrollToPixel"] = function (pixel)
+    {
+        var maxY, view
+
+        view = this.state.s.view.asMutable()
+        view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / this.pixelsPerRow)
+        view[1] -= 6
+        maxY = this.state.s.lines.length - this.cells.rows
+        if (maxY > 0)
+        {
+            view[1] = _k_.min(maxY,view[1])
+        }
+        view[1] = _k_.max(0,view[1])
+        if (_k_.eql(view, this.state.s.view))
+        {
+            return
+        }
+        this.state.setView(view)
+        this.calcView()
+        this.drawKnob()
+        return {redraw:true}
+    }
+
+    mapscr.prototype["calcView"] = function ()
+    {
+        this.mapHeight = this.cells.rows * this.csz[1]
+        this.linesInMap = parseInt(this.mapHeight / this.pixelsPerRow)
+        this.mapWidth = this.cells.cols * this.csz[0]
+        this.knobHeight = this.state.cells.rows * this.pixelsPerRow
+        this.topLine = 0
+        this.botLine = _k_.min(this.state.s.lines.length - 1,this.topLine + this.linesInMap)
+        console.log(`calcView top ${this.topLine} bot ${this.botLine}`)
+    }
+
+    mapscr.prototype["lineOffset"] = function (y)
+    {
+        return (y - this.topLine) * this.pixelsPerRow
+    }
+
+    mapscr.prototype["pixelPos"] = function (pos)
+    {
+        return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + this.lineOffset(pos[1])]
     }
 
     mapscr.prototype["draw"] = function ()
@@ -166,40 +186,37 @@ mapscr = (function ()
         {
             return
         }
-        var list = _k_.list(this.images)
-        for (y = 0; y < list.length; y++)
+        for (var _a_ = y = this.topLine, _b_ = this.botLine; (_a_ <= _b_ ? y <= this.botLine : y >= this.botLine); (_a_ <= _b_ ? ++y : --y))
         {
-            id = list[y]
+            id = this.images[y]
             t.placeLineImage(id,this.cells.x,this.cells.y,this.lineOffset(y),this.pixelsPerRow)
         }
         return this.drawKnob()
     }
 
-    mapscr.prototype["lineOffset"] = function (y)
-    {
-        return (y - this.topLine) * this.pixelsPerRow
-    }
-
-    mapscr.prototype["pixelPos"] = function (pos)
-    {
-        return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + this.lineOffset(pos[1])]
-    }
-
     mapscr.prototype["drawKnob"] = function ()
     {
-        var h, t, w, y, yc, yr
+        var t, y, yc, yr
 
         t = this.cells.screen.t
         if (_k_.empty(t.pixels) || this.hidden() || this.collapsed())
         {
             return
         }
-        y = this.pixelsPerRow * this.state.s.view[1] / t.cellsz[1]
+        y = this.pixelsPerRow * this.state.s.view[1] / this.csz[1]
         yc = parseInt(y)
-        yr = parseInt((y - yc) * t.cellsz[1])
-        h = parseInt(this.state.cells.rows * this.pixelsPerRow)
-        w = this.cells.cols * t.cellsz[0]
-        return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,0,yr,w,h)
+        yr = parseInt((y - yc) * this.csz[1])
+        return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,yr,this.mapWidth,this.knobHeight)
+    }
+
+    mapscr.prototype["hide"] = function ()
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        this.cells.screen.t.hideImageOverlay(this.knobId)
+        return mapscr.__super__.hide.call(this)
     }
 
     mapscr.prototype["drawCursors"] = function ()

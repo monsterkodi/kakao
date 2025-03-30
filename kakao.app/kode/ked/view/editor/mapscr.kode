@@ -26,7 +26,12 @@ function mapscr extends mapview
         
         @knobId = @imgId+0xeeee
         
-        @topLine = 0
+        @topLine    = 0 # index of first visible line
+        @botLine    = 0 # index of last visible line
+        @knobHeight = 0 # height of the knob in pixels
+        @mapWidth   = 0 # width of the map in pixels
+        @mapHeight  = 0 # height of the map in pixels
+        @linesInMap = 0 # number of lines that fit into map
         
         @setColor 'bg'        theme.editor.mapscr
         @setColor 'highlight' theme.highlight.map
@@ -41,49 +46,11 @@ function mapscr extends mapview
         post.on 'popup.hide' @show
         post.on 'greet.hide' @show
         
+        @calcView()
+        
     getSegls:  => @state.segls
     getSyntax: => @state.syntax
     
-    # 00000000   00000000   0000000  000  0000000  00000000  
-    # 000   000  000       000       000     000   000       
-    # 0000000    0000000   0000000   000    000    0000000   
-    # 000   000  000            000  000   000     000       
-    # 000   000  00000000  0000000   000  0000000  00000000  
-    
-    onResize: =>
-        
-        ⮐  if empty @cells.screen.t.pixels
-        
-        @redraw = true
-        
-    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
-    # 000       000       000   000  000   000  000      000         000     000   000  
-    # 0000000   000       0000000    000   000  000      000         000     000   000  
-    #      000  000       000   000  000   000  000      000         000     000   000  
-    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
-    
-    scrollToPixel: pixel =>
-        
-        # log 'scrollToPixel'
-        
-        view = @state.s.view.asMutable()
-        
-        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
-        
-        view[1] -= 6 # offset so that clicking inside a header scrolls it into view
-        
-        maxY = @state.s.lines.length - @cells.rows
-        
-        view[1] = min maxY view[1] if maxY > 0
-        view[1] = max 0 view[1]
-        
-        ⮐  if view eql @state.s.view
-        
-        @state.setView view
-        @drawKnob()
-        
-        redraw:true
-        
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
@@ -118,28 +85,85 @@ function mapscr extends mapview
                     post.emit 'pointer''pointer' if @hover
                     ⮐  true
         @hover
-
-###        
-     ███  ██     ██   ███████    ███████   ████████   ███████
-     ███  ███   ███  ███   ███  ███        ███       ███     
-     ███  █████████  █████████  ███  ████  ███████   ███████ 
-     ███  ███ █ ███  ███   ███  ███   ███  ███            ███
-     ███  ███   ███  ███   ███   ███████   ████████  ███████ 
-###
-              
-    hide: =>
     
-        ⮐  if @hidden()
+    # 00000000   00000000   0000000  000  0000000  00000000  
+    # 000   000  000       000       000     000   000       
+    # 0000000    0000000   0000000   000    000    0000000   
+    # 000   000  000            000  000   000     000       
+    # 000   000  00000000  0000000   000  0000000  00000000  
+    
+    onResize: =>
         
-        @cells.screen.t.hideImageOverlay @knobId
+        ⮐  if empty @cells.screen.t.pixels
         
-        super()
+        @csz = @cells.screen.t.cellsz
+        @calcView()
+        @redraw = true
         
-    # ███████    ████████    ███████   ███   ███
-    # ███   ███  ███   ███  ███   ███  ███ █ ███
-    # ███   ███  ███████    █████████  █████████
-    # ███   ███  ███   ███  ███   ███  ███   ███
-    # ███████    ███   ███  ███   ███  ██     ██
+    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
+    # 000       000       000   000  000   000  000      000         000     000   000  
+    # 0000000   000       0000000    000   000  000      000         000     000   000  
+    #      000  000       000   000  000   000  000      000         000     000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
+    
+    scrollToPixel: pixel =>
+        
+        # log 'scrollToPixel'
+        
+        view = @state.s.view.asMutable()
+        
+        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
+        
+        view[1] -= 6 # offset so that clicking inside a header scrolls it into view
+        
+        maxY = @state.s.lines.length - @cells.rows
+        
+        view[1] = min maxY view[1] if maxY > 0
+        view[1] = max 0 view[1]
+        
+        ⮐  if view eql @state.s.view
+        
+        @state.setView view
+        
+        @calcView()
+        @drawKnob()
+        
+        redraw:true
+        
+    #  ███████   ████████  ████████   ███████  ████████  █████████
+    # ███   ███  ███       ███       ███       ███          ███   
+    # ███   ███  ██████    ██████    ███████   ███████      ███   
+    # ███   ███  ███       ███            ███  ███          ███   
+    #  ███████   ███       ███       ███████   ████████     ███   
+
+    calcView: ->
+    
+        @mapHeight  = @cells.rows * @csz[1]
+        @linesInMap = int @mapHeight / @pixelsPerRow
+        
+        @mapWidth   = @cells.cols*@csz[0]
+        @knobHeight = @state.cells.rows*@pixelsPerRow
+        
+        @topLine    = 0 
+        @botLine    = min @state.s.lines.length-1 @topLine+@linesInMap 
+        
+        log "calcView top #{@topLine} bot #{@botLine}"
+
+    lineOffset: y -> (y-@topLine)*@pixelsPerRow
+        
+    pixelPos: pos -> 
+       [
+           @cells.x*@csz[0] + pos[0]*@pixelsPerCol
+           @cells.y*@csz[1] + @lineOffset(pos[1])
+       ]
+    
+    ###
+    ███████    ████████    ███████   ███   ███
+    ███   ███  ███   ███  ███   ███  ███ █ ███
+    ███   ███  ███████    █████████  █████████
+    ███   ███  ███   ███  ███   ███  ███   ███
+    ███████    ███   ███  ███   ███  ██     ██
+    ###
     
     draw: =>
     
@@ -152,38 +176,49 @@ function mapscr extends mapview
             @drawCursors()    
             @drawHighlights() 
 
+    # ███  ██     ██   ███████    ███████   ████████   ███████
+    # ███  ███   ███  ███   ███  ███        ███       ███     
+    # ███  █████████  █████████  ███  ████  ███████   ███████ 
+    # ███  ███ █ ███  ███   ███  ███   ███  ███            ███
+    # ███  ███   ███  ███   ███   ███████   ████████  ███████ 
+
     drawImages: =>
         
         t = @cells.screen.t
         
         ⮐  if empty t.pixels or @hidden() or @collapsed()
         
-        for id,y in @images
+        for y in @topLine..@botLine
+            id = @images[y]
             t.placeLineImage id @cells.x @cells.y @lineOffset(y) @pixelsPerRow
         
         @drawKnob()
-        
-    lineOffset: y -> (y-@topLine)*@pixelsPerRow
-        
-    pixelPos: pos -> 
-       [
-           @cells.x*@csz[0] + pos[0]*@pixelsPerCol
-           @cells.y*@csz[1] + @lineOffset(pos[1])
-       ]
-        
+                
+    # ███   ███  ███   ███   ███████   ███████  
+    # ███  ███   ████  ███  ███   ███  ███   ███
+    # ███████    ███ █ ███  ███   ███  ███████  
+    # ███  ███   ███  ████  ███   ███  ███   ███
+    # ███   ███  ███   ███   ███████   ███████  
+
     drawKnob: =>
         
         t = @cells.screen.t
         
         ⮐  if empty t.pixels or @hidden() or @collapsed()
         
-        y  = @pixelsPerRow*@state.s.view[1]/t.cellsz[1]
+        y  = @pixelsPerRow*@state.s.view[1]/@csz[1]
         yc = int(y) 
-        yr = int((y - yc) * t.cellsz[1])
+        yr = int((y - yc) * @csz[1])
         
-        h  = int @state.cells.rows*@pixelsPerRow
-        w  = @cells.cols*t.cellsz[0]
-        t.placeImageOverlay @knobId @cells.x @cells.y+yc 0 yr w h
+        t.placeImageOverlay @knobId @cells.x @cells.y+yc yr @mapWidth @knobHeight
+
+    hide: =>
+    
+        ⮐  if @hidden()
+        
+        @cells.screen.t.hideImageOverlay @knobId
+        
+        super()
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████
     # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███  ███     

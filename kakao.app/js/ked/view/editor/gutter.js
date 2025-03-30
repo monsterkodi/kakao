@@ -149,7 +149,6 @@ gutter = (function ()
         }
         if (!_k_.empty(this.gitChanges))
         {
-            console.log('gutter.onGitDiff',this.gitChanges)
             return post.emit('redraw')
         }
     }

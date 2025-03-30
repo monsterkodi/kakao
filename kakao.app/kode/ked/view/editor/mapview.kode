@@ -103,7 +103,7 @@ function mapview extends view
         
         @clearImages()
 
-        prof.start @state.name+'.map'
+        # prof.start @state.name+'.map'
         
         w = @cells.cols * t.cellsz[0]
         bytes = w*3
@@ -157,7 +157,7 @@ function mapview extends view
             t.sendImageData data @imgId+y w 1
             break if y > maxY
                 
-        prof.end @state.name+'.map'
+        # prof.end @state.name+'.map'
             
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -173,12 +173,8 @@ function mapview extends view
         
         @csz = @cells.screen.t.cellsz
         
-        # prof.start @state.name+'.map.draw'
-        
         for id,y in @images
             t.placeLineImage id @cells.x @cells.y+@rowOffset y*@pixelsPerRow @pixelsPerRow
-            
-        # prof.end @state.name+'.map.draw'
         @
         
     draw: =>

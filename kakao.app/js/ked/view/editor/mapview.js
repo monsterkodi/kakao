@@ -148,7 +148,6 @@ mapview = (function ()
             return
         }
         this.clearImages()
-        prof.start(this.state.name + '.map')
         w = this.cells.cols * t.cellsz[0]
         bytes = w * 3
         if (bytes <= 0)
@@ -222,7 +221,6 @@ mapview = (function ()
                 break
             }
         }
-        return prof.end(this.state.name + '.map')
     }
 
     mapview.prototype["drawImages"] = function ()

@@ -138,14 +138,14 @@ TTIO = (function ()
         }
     }
 
-    TTIO.prototype["placeImageOverlay"] = function (id, x, y, px, py, pw, ph)
+    TTIO.prototype["placeImageOverlay"] = function (id, x, y, py, pw, ph)
     {
         if (!this.overlayID)
         {
             this.overlayID = this.sendImg(rounded.rect(300,400,0,[255,255,255,2]),1)
         }
         this.setCursor(x,y)
-        return this.write(`\x1b_Gq=1,a=p,i=${this.overlayID},p=${id},X=${px},Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
+        return this.write(`\x1b_Gq=1,a=p,i=${this.overlayID},p=${id},X=0,Y=${py},w=${pw},h=${ph},z=1000,C=1\x1b\\`)
     }
 
     TTIO.prototype["hideImageOverlay"] = function (id)
