@@ -199,21 +199,20 @@ export default {
         {
             return
         }
-        rngs = belt.splitLineRanges(this.allLines(),selections,false)
+        rngs = belt.splitLineRanges(this.s.lines,selections,false)
         this.setCursors(belt.endPositionsOfRanges(rngs))
         return true
     },
     moveCursorsToEndOfLines:function ()
     {
-        var cur, cursors, lines
+        var cur, cursors
     
         cursors = this.allCursors()
-        lines = this.allLines()
         var list = _k_.list(cursors)
         for (var _d_ = 0; _d_ < list.length; _d_++)
         {
             cur = list[_d_]
-            cur[0] = belt.lineRangeAtPos(lines,cur)[2]
+            cur[0] = belt.lineRangeAtPos(this.s.lines,cur)[2]
         }
         this.setCursors(cursors)
         return true

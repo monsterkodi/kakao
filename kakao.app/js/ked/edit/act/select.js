@@ -437,31 +437,30 @@ export default {
     },
     selectLessLines:function ()
     {
-        var cursors, lines, selections
+        var cursors, selections
     
-        cursors = this.allCursors()
-        selections = this.allSelections()
-        lines = this.allLines()
-        var _f_ = belt.removeLinesAtPositionsFromRanges(lines,cursors,selections); cursors = _f_[0]; selections = _f_[1]
+        var _f_ = belt.removeLinesAtPositionsFromRanges(this.s.lines,this.s.cursors,this.s.selections); cursors = _f_[0]; selections = _f_[1]
     
         this.setSelections(selections)
         return this.setCursors(cursors,{main:-1})
     },
     textOfSelection:function ()
     {
-        return belt.textForLineRanges(this.allLines(),this.allSelections())
+        return belt.textForLineRanges(this.s.lines,this.s.selections)
     },
     selectedText:function ()
     {
-        return belt.textForLineRanges(this.allLines(),this.allSelections())
+        return belt.textForLineRanges(this.s.lines,this.s.selections)
     },
     selectionsOrCursorLineRanges:function ()
     {
-        return (!_k_.empty(this.s.selections) ? this.allSelections() : belt.lineRangesForPositions(this.allLines(),this.allCursors(),true))
+        var _369_51_
+    
+        return ((_369_51_=this.s.selections) != null ? _369_51_ : belt.lineRangesForPositions(this.s.lines,this.s.cursors,true))
     },
     textOfSelectionOrCursorLines:function ()
     {
-        return belt.textForLineRanges(this.allLines(),this.selectionsOrCursorLineRanges())
+        return belt.textForLineRanges(this.s.lines,this.selectionsOrCursorLineRanges())
     },
     isSingleLineSelected:function ()
     {

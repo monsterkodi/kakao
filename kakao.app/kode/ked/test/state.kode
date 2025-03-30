@@ -15,7 +15,7 @@ global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
 cells = cols:55 rows:66
 s = new state cells 'test'
 
-txt = t    -> kseg.str(s.allLines()) ▸ t
+txt = t    -> kseg.str(s.s.lines) ▸ t
 cur = x y  -> s.mainCursor() ▸ [x y]
 mul = c... -> s.allCursors() ▸ c
 sel = r... -> s.allSelections() ▸ r
@@ -277,7 +277,7 @@ sel = r... -> s.allSelections() ▸ r
         txt '\n'
         cur 0 1
         
-        s.allLines() ▸ [[][]]
+        s.s.lines ▸ [[][]]
         
     # 0000000    00000000  000      00000000  000000000  00000000        0000000     0000000    0000000  000   000  
     # 000   000  000       000      000          000     000             000   000  000   000  000       000  000   

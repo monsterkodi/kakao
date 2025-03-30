@@ -580,7 +580,6 @@ text = (function ()
                     }
                     else
                     {
-                        console.log('',['✘',kseg.str(ol),kseg.str(nl)])
                         changes.push({old:oi,new:ni})
                         oi += 1
                         ol = oldLines[oi]

@@ -21,7 +21,7 @@ s = new state(cells,'test')
 
 txt = function (t)
 {
-    return compare(kseg.str(s.allLines()),t)
+    return compare(kseg.str(s.s.lines),t)
 }
 
 cur = function (x, y)
@@ -192,7 +192,7 @@ line 3`)
         s.insert('\n')
         txt('\n')
         cur(0,1)
-        compare(s.allLines(),[[],[]])
+        compare(s.s.lines,[[],[]])
     })
     section("delete back", function ()
     {

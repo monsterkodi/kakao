@@ -64,7 +64,7 @@ export default {
     {
         var mc, rng
     
-        rng = belt.lineRangeAtPos(this.allLines(),this.mainCursor())
+        rng = belt.lineRangeAtPos(this.s.lines,this.mainCursor())
         mc = belt.endOfRange(rng)
         this.deselect()
         return this.setCursors([mc])
@@ -120,7 +120,7 @@ export default {
     },
     setMainCursorAndSelect:function (x, y)
     {
-        this.setSelections(belt.extendLineRangesFromPositionToPosition,this.allLines(),this.allSelections(),this.mainCursor(),[x,y])
+        this.setSelections(belt.extendLineRangesFromPositionToPosition,this.s.lines,this.allSelections(),this.mainCursor(),[x,y])
         return this.setCursors([[x,y]],{adjust:'topBotDelta'})
     }
 }

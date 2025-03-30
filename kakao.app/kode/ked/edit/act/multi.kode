@@ -151,7 +151,7 @@ export
          
         ⮐  if empty selections
          
-        rngs = belt.splitLineRanges @allLines() selections false
+        rngs = belt.splitLineRanges @s.lines selections false
 
         @setCursors belt.endPositionsOfRanges(rngs)
         
@@ -160,10 +160,9 @@ export
     moveCursorsToEndOfLines: ->
         
         cursors = @allCursors()
-        lines   = @allLines()
         
         for cur in cursors
-            cur[0] = belt.lineRangeAtPos(lines cur)[2]
+            cur[0] = belt.lineRangeAtPos(@s.lines cur)[2]
         
         @setCursors cursors
         

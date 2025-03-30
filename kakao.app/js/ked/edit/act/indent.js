@@ -12,7 +12,7 @@ export default {
             return
         }
         indices = belt.lineIndicesForRangesOrPositions(this.s.selections,this.s.cursors)
-        var _a_ = belt.indentLineRangesAndPositionsAtIndices(this.allLines(),this.s.selections,this.s.cursors,indices); lines = _a_[0]; selections = _a_[1]; cursors = _a_[2]
+        var _a_ = belt.indentLineRangesAndPositionsAtIndices(this.s.lines,this.s.selections,this.s.cursors,indices); lines = _a_[0]; selections = _a_[1]; cursors = _a_[2]
     
         this.setLines(lines)
         this.setSelections(selections)
@@ -23,7 +23,7 @@ export default {
         var cursors, indices, lines, selections
     
         indices = belt.lineIndicesForRangesOrPositions(this.s.selections,this.s.cursors)
-        var _b_ = belt.deindentLineRangesAndPositionsAtIndices(this.allLines(),this.s.selections,this.s.cursors,indices); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
+        var _b_ = belt.deindentLineRangesAndPositionsAtIndices(this.s.lines,this.s.selections,this.s.cursors,indices); lines = _b_[0]; selections = _b_[1]; cursors = _b_[2]
     
         this.setLines(lines)
         this.setSelections(selections)

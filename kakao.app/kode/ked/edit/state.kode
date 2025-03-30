@@ -219,10 +219,8 @@ function state extends events
         @s = @s.set 'lines' @segls
         
         diff = belt.diffLines oldLines @s.lines
-        log "diff lines #{oldLines != @s.lines} chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length}" 
+        # log "diff lines #{oldLines != @s.lines} chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length}" 
 
-    allLines: => @s.lines.asMutable()
-    
     linesInView: => @s.lines[@s.view[1]...@s.view[1]+@cells.rows]
 
     clearLines: =>

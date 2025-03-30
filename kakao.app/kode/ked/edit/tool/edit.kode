@@ -134,7 +134,7 @@ function edit
     
     @deleteLineRangesAndAdjustPositions: lines rngs posl ->
         
-        lines = copy lines
+        lines = lines.map (l) -> l
         posl  = clone posl
         
         ⮐  [lines posl] if empty rngs
@@ -273,7 +273,7 @@ function edit
         if empty indices or dir == 'down' and indices[-1] >= lines.length-1 or dir == 'up' and indices[0] <= 0
             ⮐  [lines rngs posl]
         
-        newLines = lines.asMutable()
+        newLines = lines.map (l) -> l
         newRngs  = rngs.asMutable()
         newPosl  = posl.asMutable()
         
@@ -393,7 +393,7 @@ function edit
         
         ⮐  [lines rngs posl] if empty indices
         
-        newLines = lines.asMutable()
+        newLines = lines.map (l) -> l
         newRngs  = rngs.asMutable()
         newPosl  = posl.asMutable()
         
@@ -411,7 +411,7 @@ function edit
         
         ⮐  [lines rngs posl] if empty indices  
         
-        newLines = lines
+        newLines = lines.map (l) -> l
         newRngs  = rngs.asMutable()
         newPosl  = posl.asMutable()
         
@@ -445,7 +445,7 @@ function edit
         
         ⮐  [lines rngs posl] if empty indices  
         
-        newLines = lines
+        newLines = lines.map (l) -> l
         newRngs  = rngs.asMutable()
         newPosl  = posl.asMutable()
         

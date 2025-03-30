@@ -352,11 +352,7 @@ export
     
     selectLessLines: ->
         
-        cursors    = @allCursors()
-        selections = @allSelections()
-        lines      = @allLines()
-        
-        [cursors selections] = belt.removeLinesAtPositionsFromRanges lines cursors selections
+        [cursors selections] = belt.removeLinesAtPositionsFromRanges @s.lines @s.cursors @s.selections
         
         @setSelections selections
         @setCursors cursors main:-1
@@ -367,14 +363,14 @@ export
     #    000     000        000 000      000     
     #    000     00000000  000   000     000     
     
-    textOfSelection: -> belt.textForLineRanges @allLines() @allSelections()
-    selectedText:    -> belt.textForLineRanges @allLines() @allSelections()
+    textOfSelection: -> belt.textForLineRanges @s.lines @s.selections
+    selectedText:    -> belt.textForLineRanges @s.lines @s.selections
     
-    selectionsOrCursorLineRanges: -> valid @s.selections ? @allSelections() : belt.lineRangesForPositions(@allLines() @allCursors() true)
+    selectionsOrCursorLineRanges: -> @s.selections ? belt.lineRangesForPositions(@s.lines @s.cursors true)
     
     textOfSelectionOrCursorLines: -> 
         
-        belt.textForLineRanges @allLines() @selectionsOrCursorLineRanges()
+        belt.textForLineRanges @s.lines @selectionsOrCursorLineRanges()
 
     isSingleLineSelected: ->
         

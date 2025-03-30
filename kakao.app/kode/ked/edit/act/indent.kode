@@ -22,7 +22,7 @@ export
         
         indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
         
-        [lines selections cursors] = belt.indentLineRangesAndPositionsAtIndices @allLines() @s.selections @s.cursors indices
+        [lines selections cursors] = belt.indentLineRangesAndPositionsAtIndices @s.lines @s.selections @s.cursors indices
         
         @setLines lines
         @setSelections selections
@@ -38,7 +38,7 @@ export
         
         indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
         
-        [lines selections cursors] = belt.deindentLineRangesAndPositionsAtIndices @allLines() @s.selections @s.cursors indices
+        [lines selections cursors] = belt.deindentLineRangesAndPositionsAtIndices @s.lines @s.selections @s.cursors indices
         
         @setLines lines
         @setSelections selections

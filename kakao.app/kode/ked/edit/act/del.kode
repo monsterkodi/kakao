@@ -6,7 +6,7 @@
 0000000    00000000  0000000
 ###
 
-use ../../../kxk ▪ kstr kseg
+use ../../../kxk ▪ kstr kseg immutable
 use ../tool      ◆ belt
 use ..           ◆ mode
 
@@ -21,8 +21,9 @@ export
     delete: type jump ->
                 
         ⮐  @deleteSelection() if type in ['back' 'next'] and valid @s.selections
+
+        lines = @s.lines.map (l) -> l
         
-        lines   = @allLines()
         cursors = @allCursors()
         
         if cursors.length == 1 and type in ['back' 'next'] and belt.isLinesPosOutside lines cursors[0]
@@ -124,7 +125,7 @@ export
         
         @pushState() if not @beginIndex
 
-        [lines cursors] = belt.deleteLineRangesAndAdjustPositions @allLines() rngs posl
+        [lines cursors] = belt.deleteLineRangesAndAdjustPositions @s.lines rngs posl
 
         @deselect()
         @clearHighlights()

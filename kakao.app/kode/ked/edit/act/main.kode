@@ -78,7 +78,7 @@ export
 
     singleCursorAtEndOfLine: ->
         
-        rng = belt.lineRangeAtPos @allLines() @mainCursor()
+        rng = belt.lineRangeAtPos @s.lines @mainCursor()
         mc  = belt.endOfRange rng
         
         @deselect()
@@ -135,6 +135,6 @@ export
     
     setMainCursorAndSelect: x y ->
         
-        @setSelections belt.extendLineRangesFromPositionToPosition @allLines() @allSelections() @mainCursor() [x y]
+        @setSelections belt.extendLineRangesFromPositionToPosition @s.lines @allSelections() @mainCursor() [x y]
         @setCursors [[x y]] adjust:'topBotDelta'
     

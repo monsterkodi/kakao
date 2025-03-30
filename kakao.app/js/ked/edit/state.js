@@ -63,7 +63,6 @@ state = (function ()
         this["isValidLineIndex"] = this["isValidLineIndex"].bind(this)
         this["clearLines"] = this["clearLines"].bind(this)
         this["linesInView"] = this["linesInView"].bind(this)
-        this["allLines"] = this["allLines"].bind(this)
         this["appendLines"] = this["appendLines"].bind(this)
         this["addLine"] = this["addLine"].bind(this)
         this["clearEmpty"] = this["clearEmpty"].bind(this)
@@ -301,13 +300,7 @@ state = (function ()
 
         oldLines = this.s.lines
         this.s = this.s.set('lines',this.segls)
-        diff = belt.diffLines(oldLines,this.s.lines)
-        console.log(`diff lines ${oldLines !== this.s.lines} chg ${diff.chg.length} ins ${diff.ins.length} del ${diff.del.length}`)
-    }
-
-    state.prototype["allLines"] = function ()
-    {
-        return this.s.lines.asMutable()
+        return diff = belt.diffLines(oldLines,this.s.lines)
     }
 
     state.prototype["linesInView"] = function ()

@@ -374,7 +374,7 @@ function text
 
                     else # change
                     
-                        log '' ['✘' kseg.str(ol) kseg.str(nl)]
+                        # log '' ['✘' kseg.str(ol) kseg.str(nl)]
 
                         changes.push old:oi new:ni #doIndex:oi+dd #after:nl
                         oi += 1

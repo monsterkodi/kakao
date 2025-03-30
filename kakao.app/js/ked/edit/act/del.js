@@ -3,6 +3,7 @@ var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'st
 import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let kseg = kxk.kseg
+let immutable = kxk.immutable
 
 import belt from "../tool/belt.js"
 
@@ -17,7 +18,10 @@ export default {
         {
             return this.deleteSelection()
         }
-        lines = this.allLines()
+        lines = this.s.lines.map(function (l)
+        {
+            return l
+        })
         cursors = this.allCursors()
         if (cursors.length === 1 && _k_.in(type,['back','next']) && belt.isLinesPosOutside(lines,cursors[0]))
         {
@@ -164,7 +168,7 @@ export default {
         {
             this.pushState()
         }
-        var _e_ = belt.deleteLineRangesAndAdjustPositions(this.allLines(),rngs,posl); lines = _e_[0]; cursors = _e_[1]
+        var _e_ = belt.deleteLineRangesAndAdjustPositions(this.s.lines,rngs,posl); lines = _e_[0]; cursors = _e_[1]
     
         this.deselect()
         this.clearHighlights()
