@@ -62,6 +62,8 @@ function mapscr extends mapview
     
     scrollToPixel: pixel =>
         
+        log 'scrollToPixel'
+        
         view = @state.s.view.asMutable()
         
         view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
@@ -142,16 +144,20 @@ function mapscr extends mapview
         
         super()
         
-        if csz = @cells.screen.t.cellsz
+        if @csz
         
-            @drawCursors    csz
-            @drawHighlights csz
+            @drawCursors()    
+            @drawHighlights() 
 
     drawImages: =>
         
-        ⮐  if empty @cells.screen.t.pixels or @hidden() or @collapsed()
+        t = @cells.screen.t
         
-        super()
+        ⮐  if empty t.pixels or @hidden() or @collapsed()
+        
+        # super()
+        for id,y in @images
+            t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
         
         @drawKnob()
         
@@ -175,16 +181,22 @@ function mapscr extends mapview
     # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███       ███
     #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████ 
 
-    drawCursors: csz =>
+    pixelPos: pos -> 
+        [
+            @cells.x*@csz[0] + pos[0]*@pixelsPerCol
+            @cells.y*@csz[1] + pos[1]*@pixelsPerRow
+        ]
+
+    drawCursors: =>
         
-        mw = @cells.cols*csz[0]
+        mw = @cells.cols*@csz[0]
     
         for pos,idx in @state.s.cursors
         
             if pos[0]*@pixelsPerCol < mw
             
-                sx = @cells.x*csz[0] + pos[0]*@pixelsPerCol
-                
+                [sx sy] = @pixelPos pos 
+            
                 if idx == @state.s.main
                     fg = theme.cursor.main
                     sw = @pixelsPerCol*2
@@ -193,11 +205,10 @@ function mapscr extends mapview
                     fg = theme.cursor.multi
                     sw = @pixelsPerCol
                     
-                sy = @cells.y*csz[1] + pos[1]*@pixelsPerRow
                 squares.place sx sy sw @pixelsPerRow fg
                 
                 if idx == @state.s.main
-                    squares.place @cells.x*csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
+                    squares.place @cells.x*@csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       
@@ -205,25 +216,28 @@ function mapscr extends mapview
     # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
     
-    drawHighlights: csz =>
+    drawHighlights: =>
         
-        mw = @cells.cols*csz[0]
+        mw = @cells.cols*@csz[0]
         mc = @state.mainCursor()
-    
-        ppr = @pixelsPerRow
-        ppc = @pixelsPerCol
         
+        rgtx = int @cells.cols*@csz[0]/@pixelsPerCol
+        selw = @pixelsPerCol*16
+        hlw  = @pixelsPerCol*8
+    
         for li in belt.lineIndicesForRanges @state.s.selections
+        
             if @state.isSpanSelectedLine li 
                 clr = @color.selection
             else
                 clr = @color.fullysel
-            sy = @cells.y*csz[1] + li*ppr
-            squares.place @cells.x*csz[0]+mw-ppc*16 sy ppc*16 ppr clr 2000
+                
+            [sx sy] = @pixelPos [rgtx li] 
+            squares.place sx-selw sy selw @pixelsPerRow clr 2000
     
-        for li in belt.lineIndicesForSpans  @state.s.highlights
+        for li in belt.lineIndicesForSpans @state.s.highlights
         
-            sy = @cells.y*csz[1] + li*ppr
-            squares.place @cells.x*csz[0]+mw-ppc*8 sy ppc*8 ppr @color.highlight 2001
+            [sx sy] = @pixelPos [rgtx li] 
+            squares.place sx-hlw sy hlw @pixelsPerRow @color.highlight 2001
 
 export mapscr

@@ -40,6 +40,7 @@ mapview = (function ()
         this.rowOffset = 0
         this.images = []
         this.cells.cols = 12
+        this.csz = []
         this.pixelsPerRow = 4
         this.pixelsPerCol = 2
     }
@@ -233,14 +234,13 @@ mapview = (function ()
         {
             return
         }
-        prof.start(this.state.name + '.map.draw')
+        this.csz = this.cells.screen.t.cellsz
         var list = _k_.list(this.images)
         for (y = 0; y < list.length; y++)
         {
             id = list[y]
             t.placeImage(id,this.cells.x,this.cells.y + this.rowOffset,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
         }
-        prof.end(this.state.name + '.map.draw')
         return this
     }
 
@@ -250,7 +250,9 @@ mapview = (function ()
         {
             return
         }
-        return this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,this.color.bg)
+        this.csz = this.cells.screen.t.cellsz
+        this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,this.color.bg)
+        return this.drawImages()
     }
 
     return mapview

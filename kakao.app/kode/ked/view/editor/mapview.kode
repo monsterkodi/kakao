@@ -28,6 +28,7 @@ function mapview extends view
         @images     = []
         @cells.cols = 12
         
+        @csz          = []
         @pixelsPerRow = 4
         @pixelsPerCol = 2
             
@@ -170,18 +171,24 @@ function mapview extends view
         
         ⮐  if empty t.pixels or @hidden() or @collapsed()
         
-        prof.start @state.name+'.map.draw'
+        @csz = @cells.screen.t.cellsz
+        
+        # prof.start @state.name+'.map.draw'
         
         for id,y in @images
             t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
             
-        prof.end @state.name+'.map.draw'
+        # prof.end @state.name+'.map.draw'
         @
         
     draw: =>
         
         ⮐  if @hidden() or @collapsed()
+        
+        @csz = @cells.screen.t.cellsz
                      
         @cells.fill_rect 0 0 @cells.cols-1 @cells.rows-1 ' ' null @color.bg
+        
+        @drawImages()
         
 export mapview

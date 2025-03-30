@@ -76,6 +76,7 @@ mapscr = (function ()
     {
         var maxY, view
 
+        console.log('scrollToPixel')
         view = this.state.s.view.asMutable()
         view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / this.pixelsPerRow)
         view[1] -= 6
@@ -144,27 +145,33 @@ mapscr = (function ()
 
     mapscr.prototype["draw"] = function ()
     {
-        var csz
-
         if (this.hidden() || this.collapsed())
         {
             return
         }
         mapscr.__super__.draw.call(this)
-        if (csz = this.cells.screen.t.cellsz)
+        if (this.csz)
         {
-            this.drawCursors(csz)
-            return this.drawHighlights(csz)
+            this.drawCursors()
+            return this.drawHighlights()
         }
     }
 
     mapscr.prototype["drawImages"] = function ()
     {
-        if (_k_.empty(this.cells.screen.t.pixels) || this.hidden() || this.collapsed())
+        var id, t, y
+
+        t = this.cells.screen.t
+        if (_k_.empty(t.pixels) || this.hidden() || this.collapsed())
         {
             return
         }
-        mapscr.__super__.drawImages.call(this)
+        var list = _k_.list(this.images)
+        for (y = 0; y < list.length; y++)
+        {
+            id = list[y]
+            t.placeImage(id,this.cells.x,this.cells.y + this.rowOffset,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
+        }
         return this.drawKnob()
     }
 
@@ -185,18 +192,24 @@ mapscr = (function ()
         return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,0,yr,w,h)
     }
 
-    mapscr.prototype["drawCursors"] = function (csz)
+    mapscr.prototype["pixelPos"] = function (pos)
+    {
+        return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + pos[1] * this.pixelsPerRow]
+    }
+
+    mapscr.prototype["drawCursors"] = function ()
     {
         var fg, idx, mw, pos, sw, sx, sy
 
-        mw = this.cells.cols * csz[0]
+        mw = this.cells.cols * this.csz[0]
         var list = _k_.list(this.state.s.cursors)
         for (idx = 0; idx < list.length; idx++)
         {
             pos = list[idx]
             if (pos[0] * this.pixelsPerCol < mw)
             {
-                sx = this.cells.x * csz[0] + pos[0] * this.pixelsPerCol
+                var _b_ = this.pixelPos(pos); sx = _b_[0]; sy = _b_[1]
+
                 if (idx === this.state.s.main)
                 {
                     fg = theme.cursor.main
@@ -208,24 +221,24 @@ mapscr = (function ()
                     fg = theme.cursor.multi
                     sw = this.pixelsPerCol
                 }
-                sy = this.cells.y * csz[1] + pos[1] * this.pixelsPerRow
                 squares.place(sx,sy,sw,this.pixelsPerRow,fg)
                 if (idx === this.state.s.main)
                 {
-                    squares.place(this.cells.x * csz[0] + mw - this.pixelsPerCol * 4,sy,this.pixelsPerCol * 4,this.pixelsPerRow,fg,2002)
+                    squares.place(this.cells.x * this.csz[0] + mw - this.pixelsPerCol * 4,sy,this.pixelsPerCol * 4,this.pixelsPerRow,fg,2002)
                 }
             }
         }
     }
 
-    mapscr.prototype["drawHighlights"] = function (csz)
+    mapscr.prototype["drawHighlights"] = function ()
     {
-        var clr, li, mc, mw, ppc, ppr, sy
+        var clr, hlw, li, mc, mw, rgtx, selw, sx, sy
 
-        mw = this.cells.cols * csz[0]
+        mw = this.cells.cols * this.csz[0]
         mc = this.state.mainCursor()
-        ppr = this.pixelsPerRow
-        ppc = this.pixelsPerCol
+        rgtx = parseInt(this.cells.cols * this.csz[0] / this.pixelsPerCol)
+        selw = this.pixelsPerCol * 16
+        hlw = this.pixelsPerCol * 8
         var list = _k_.list(belt.lineIndicesForRanges(this.state.s.selections))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -238,15 +251,17 @@ mapscr = (function ()
             {
                 clr = this.color.fullysel
             }
-            sy = this.cells.y * csz[1] + li * ppr
-            squares.place(this.cells.x * csz[0] + mw - ppc * 16,sy,ppc * 16,ppr,clr,2000)
+            var _b_ = this.pixelPos([rgtx,li]); sx = _b_[0]; sy = _b_[1]
+
+            squares.place(sx - selw,sy,selw,this.pixelsPerRow,clr,2000)
         }
         var list1 = _k_.list(belt.lineIndicesForSpans(this.state.s.highlights))
-        for (var _b_ = 0; _b_ < list1.length; _b_++)
+        for (var _c_ = 0; _c_ < list1.length; _c_++)
         {
-            li = list1[_b_]
-            sy = this.cells.y * csz[1] + li * ppr
-            squares.place(this.cells.x * csz[0] + mw - ppc * 8,sy,ppc * 8,ppr,this.color.highlight,2001)
+            li = list1[_c_]
+            var _d_ = this.pixelPos([rgtx,li]); sx = _d_[0]; sy = _d_[1]
+
+            squares.place(sx - hlw,sy,hlw,this.pixelsPerRow,this.color.highlight,2001)
         }
     }
 
