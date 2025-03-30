@@ -116,6 +116,10 @@ searcher = (function ()
         {
             return
         }
+        if (_k_.empty(file))
+        {
+            return
+        }
         post.emit('editor.highlight',this.textToHighlight)
         delete this.fileToHighlight
         return delete this.textToHighlight

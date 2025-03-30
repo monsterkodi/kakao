@@ -89,7 +89,7 @@ kseg.str = function (any)
     }
     if (!(_k_.isArr(any)))
     {
-        return any
+        return String(any)
     }
     if (_k_.isStr(any[0]))
     {
@@ -512,7 +512,7 @@ kseg.width = function (s)
     for (var _1c_ = 0; _1c_ < list.length; _1c_++)
     {
         seg = list[_1c_]
-        w += wcwidth(seg.codePointAt(0))
+        w += kseg.segWidth(seg)
     }
     return w
 }
@@ -529,7 +529,7 @@ kseg.indexAtWidth = function (segs, w)
     i = s = 0
     while (s < w && i < segs.length)
     {
-        s += wcwidth(segs[i].codePointAt(0))
+        s += kseg.segWidth(segs[i])
         i += 1
     }
     return i

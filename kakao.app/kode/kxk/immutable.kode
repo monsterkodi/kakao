@@ -507,7 +507,7 @@ toStaticObjectOrArray = fnObject fnArray ->
         args = [].slice.call arguments
         self = args.shift()
         if Array.isArray self
-                fnArray.apply self args
+            fnArray.apply self args
         else 
             fnObject.apply self args
   

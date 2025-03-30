@@ -127,7 +127,7 @@ function screen
                 if fg != pfg
                     s += fg
                     pfg = fg
-                s += char
+                s += char.valueOf()
             s += '\n' if y != @rows-1
 
         @t.write s

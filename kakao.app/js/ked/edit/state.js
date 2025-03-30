@@ -238,7 +238,7 @@ state = (function ()
             this.segls = [[]]
         }
         this.syntax.setSegls(this.segls)
-        this.s = this.s.set('lines',this.segls)
+        this.changeLinesSegls()
         this.r = []
         this.maxLineWidth = belt.widthOfLines(this.s.lines)
         return this.pushState()
@@ -275,24 +275,34 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _194_15_
+        var segl, _195_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_194_15_=this.segls) != null ? _194_15_ : [])
+        this.segls = ((_195_15_=this.segls) != null ? _195_15_ : [])
         this.segls.push(segl)
-        return this.s = this.s.set('lines',this.segls)
+        return this.changeLinesSegls()
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _202_15_
+        var segls, _204_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_202_15_=this.segls) != null ? _202_15_ : [])
+        this.segls = ((_204_15_=this.segls) != null ? _204_15_ : [])
         this.segls = this.segls.concat(segls)
-        return this.s = this.s.set('lines',this.segls)
+        return this.changeLinesSegls()
+    }
+
+    state.prototype["changeLinesSegls"] = function ()
+    {
+        var diff, oldLines
+
+        oldLines = this.s.lines
+        this.s = this.s.set('lines',this.segls)
+        diff = belt.diffLines(oldLines,this.s.lines)
+        console.log(`diff lines ${oldLines !== this.s.lines} chg ${diff.chg.length} ins ${diff.ins.length} del ${diff.del.length}`)
     }
 
     state.prototype["allLines"] = function ()

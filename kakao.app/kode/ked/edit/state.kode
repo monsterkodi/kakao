@@ -146,12 +146,13 @@ function state extends events
         if empty @segls ➜ @segls = [[]]
         
         @syntax.setSegls @segls
+                    
+        @changeLinesSegls()
         
-        @s = @s.set 'lines' @segls
         @r = []
         
         @maxLineWidth = belt.widthOfLines @s.lines
-
+        
         @pushState()
         
     loadLines: lines => 
@@ -193,7 +194,8 @@ function state extends events
         @syntax.addSegl segl ext
         @segls ?= []
         @segls.push segl
-        @s = @s.set 'lines' @segls
+
+        @changeLinesSegls()
         
     appendLines: lines ext =>
 
@@ -201,7 +203,23 @@ function state extends events
         @syntax.appendSegls segls ext
         @segls ?= []
         @segls = @segls.concat segls
+
+        @changeLinesSegls()
+        
+    #  ███████  ███   ███   ███████   ███   ███   ███████   ████████        ███      ███  ███   ███  ████████   ███████
+    # ███       ███   ███  ███   ███  ████  ███  ███        ███             ███      ███  ████  ███  ███       ███     
+    # ███       █████████  █████████  ███ █ ███  ███  ████  ███████         ███      ███  ███ █ ███  ███████   ███████ 
+    # ███       ███   ███  ███   ███  ███  ████  ███   ███  ███             ███      ███  ███  ████  ███            ███
+    #  ███████  ███   ███  ███   ███  ███   ███   ███████   ████████        ███████  ███  ███   ███  ████████  ███████ 
+
+    changeLinesSegls: ->
+    
+        oldLines = @s.lines
+    
         @s = @s.set 'lines' @segls
+        
+        diff = belt.diffLines oldLines @s.lines
+        log "diff lines #{oldLines != @s.lines} chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length}" 
 
     allLines: => @s.lines.asMutable()
     

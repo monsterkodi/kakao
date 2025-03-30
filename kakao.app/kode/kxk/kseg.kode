@@ -119,7 +119,7 @@ kseg.segls = any ->
 kseg.str = any ->
 
     ⮐  '' if empty any
-    ⮐  any if not any is arr
+    ⮐  String(any) if not any is arr
     if any[0] is str
         any.join ''
     else
@@ -500,11 +500,11 @@ kseg.width = s ->
         segs = s
     w = 0 
     for seg in segs
-        w += wcwidth seg.codePointAt(0)
+        w += kseg.segWidth seg
     w
     
 kseg.segWidth = seg -> wcwidth seg.codePointAt(0)
-
+    
 ### 
     segment index at column w 
     
@@ -514,7 +514,7 @@ kseg.indexAtWidth = segs w ->
 
     i = s = 0
     while s < w and i < segs.length
-        s += wcwidth segs[i].codePointAt(0)
+        s += kseg.segWidth segs[i]
         i += 1    
     i
     

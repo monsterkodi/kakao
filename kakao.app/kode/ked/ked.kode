@@ -221,6 +221,8 @@ function KED
         @t.setTitle 'kėd'
         
         @editor.mapscr?.reload()
+        
+        post.emit 'file.loaded' null
 
         @showEditor()
         @redraw()

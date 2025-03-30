@@ -309,6 +309,88 @@ function text
             if w > maxWidth
                 maxWidth = w 
         maxWidth
+        
+    # ███████    ███  ████████  ████████
+    # ███   ███  ███  ███       ███     
+    # ███   ███  ███  ██████    ██████  
+    # ███   ███  ███  ███       ███     
+    # ███████    ███  ███       ███     
+
+    @diffLines: oldLines newLines ->
+    
+        changes = []
+        inserts = []
+        deletes = []
+        
+        oi = 0 # index in oldLines
+        ni = 0 # index in newLines
+        dd = 0 # delta for doIndex
+
+        if oldLines != newLines
+
+            ol = oldLines[oi]
+            nl = newLines[ni]
+
+            while oi < oldLines.length
+
+                if not nl? # new state has not enough lines, mark remaining lines in oldState as deleted
+                    deletes.push old:oi #doIndex:oi+dd
+                    oi += 1
+                    dd -= 1
+
+                else if ol == nl or kseg.str(ol) == kseg.str(nl) # same lines in old and new
+
+                    oi += 1
+                    ni += 1
+                    ol = oldLines[oi]
+                    nl = newLines[ni]
+                    
+                else
+
+                    if nl == oldLines[oi+1] and ol == newLines[ni+1]
+
+                        changes.push old:oi new:ni #doIndex:oi+dd #after:nl
+                        oi += 1
+                        ni += 1
+                        changes.push old:oi new:ni #doIndex:oi+dd #after:ol
+                        oi += 1
+                        ni += 1
+                        ol = oldLines[oi]
+                        nl = newLines[ni]
+
+                    else if nl == oldLines[oi+1] and oldLines[oi+1] != newLines[ni+1]
+
+                        deletes.push old:oi #doIndex:oi+dd
+                        oi += 1
+                        dd -= 1
+                        ol = oldLines[oi]
+
+                    else if ol == newLines[ni+1] and oldLines[oi+1] != newLines[ni+1]
+
+                        inserts.push new:ni #doIndex:oi+dd #after:nl
+                        ni += 1
+                        dd += 1
+                        nl = newLines[ni]
+
+                    else # change
+                    
+                        log '' ['✘' kseg.str(ol) kseg.str(nl)]
+
+                        changes.push old:oi new:ni #doIndex:oi+dd #after:nl
+                        oi += 1
+                        ol = oldLines[oi]
+                        ni += 1
+                        nl = newLines[ni]
+
+            while ni < newLines.length # mark remaining lines in newState as inserted
+
+                inserts.push new:ni #doIndex:ni #after:nl
+                ni += 1
+                nl = newLines[ni]
+
+        chg: changes
+        ins: inserts
+        del: deletes
 
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     

@@ -166,7 +166,7 @@ screen = (function ()
                     s += fg
                     pfg = fg
                 }
-                s += char
+                s += char.valueOf()
             }
             if (y !== this.rows - 1)
             {

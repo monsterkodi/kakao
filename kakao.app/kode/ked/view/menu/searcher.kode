@@ -95,6 +95,7 @@ function searcher extends finder
         
         ⮐  if empty @fileToHighlight
         ⮐  if empty @textToHighlight
+        ⮐  if empty file
     
         post.emit 'editor.highlight' @textToHighlight
         
