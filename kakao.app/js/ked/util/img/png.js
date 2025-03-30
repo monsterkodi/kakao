@@ -1,33 +1,11 @@
 var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.min.apply(_k_.min,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n < m ? n : m}}}; return m }, max: function () { var m = -Infinity; for (var a of arguments) { if (Array.isArray(a)) {m = _k_.max.apply(_k_.max,[m].concat(a))} else {var n = parseFloat(a); if(!isNaN(n)){m = n > m ? n : m}}}; return m }}
 
-var addErr, compress, compressPNG, concatRGBA, crcLib, D, dist, dither, encode, estats, findNearest, framize, getKDtree, getNearest, kmeans, M4, N, planeDst, quantize, remap, splitPixels, stats, updatePalette, vecDot, _bin, _copyTile, _filterLine, _filterZero, _getBPP, _main, _paeth, _prepareDiff, _updateFrame
+var addErr, compress, compressPNG, concatRGBA, copyTile, crcLib, D, dist, dither, encode, estats, filterLine, filterZero, findNearest, framize, getBPP, getKDtree, getNearest, kmeans, M4, N, paeth, planeDst, prepareDiff, quantize, remap, splitPixels, stats, updateFrame, updatePalette, vecDot
 
 import zlib from "zlib"
 
-_bin = {writeUshort:function (buff, p, n)
-{
-    buff[p] = (n >> 8) & 255
-    return buff[p + 1] = n & 255
-},writeUint:function (buff, p, n)
-{
-    buff[p] = (n >> 24) & 255
-    buff[p + 1] = (n >> 16) & 255
-    buff[p + 2] = (n >> 8) & 255
-    return buff[p + 3] = n & 255
-},writeASCII:function (data, p, s)
-{
-    var i
 
-    for (var _a_ = i = 0, _b_ = s.length; (_a_ <= _b_ ? i < s.length : i > s.length); (_a_ <= _b_ ? ++i : --i))
-    {
-        data[p + i] = s.charCodeAt(i)
-    }
-},pad:function (n)
-{
-    return ((n.length < 2) ? ("0" + n) : n)
-}}
-
-_getBPP = function (out)
+getBPP = function (out)
 {
     var noc
 
@@ -35,11 +13,11 @@ _getBPP = function (out)
     return noc * out.depth
 }
 
-_filterZero = function (data, out, off, w, h)
+filterZero = function (data, out, off, w, h)
 {
     var bpl, bpp, di, i, type, x, y
 
-    bpp = _getBPP(out)
+    bpp = getBPP(out)
     bpl = Math.ceil(w * bpp / 8)
     bpp = Math.ceil(bpp / 8)
     type = data[off]
@@ -50,12 +28,12 @@ _filterZero = function (data, out, off, w, h)
     }
     if (type === 3)
     {
-        for (var _c_ = x = bpp, _d_ = bpl; (_c_ <= _d_ ? x < bpl : x > bpl); (_c_ <= _d_ ? ++x : --x))
+        for (var _a_ = x = bpp, _b_ = bpl; (_a_ <= _b_ ? x < bpl : x > bpl); (_a_ <= _b_ ? ++x : --x))
         {
             data[x + 1] = (data[x + 1] + (data[x + 1 - bpp] >>> 1)) & 255
         }
     }
-    for (var _e_ = y = 0, _f_ = h; (_e_ <= _f_ ? y < h : y > h); (_e_ <= _f_ ? ++y : --y))
+    for (var _c_ = y = 0, _d_ = h; (_c_ <= _d_ ? y < h : y > h); (_c_ <= _d_ ? ++y : --y))
     {
         i = off + y * bpl
         di = i + y + 1
@@ -107,12 +85,12 @@ _filterZero = function (data, out, off, w, h)
         {
             while (x < bpp)
             {
-                data[i + x] = (data[di + x] + _paeth(0,data[i + x - bpl],0))
+                data[i + x] = (data[di + x] + paeth(0,data[i + x - bpl],0))
                 x++
             }
             while (x < bpl)
             {
-                data[i + x] = (data[di + x] + _paeth(data[i + x - bpp],data[i + x - bpl],data[i + x - bpp - bpl]))
+                data[i + x] = (data[di + x] + paeth(data[i + x - bpp],data[i + x - bpl],data[i + x - bpp - bpl]))
                 x++
             }
         }
@@ -120,7 +98,7 @@ _filterZero = function (data, out, off, w, h)
     return data
 }
 
-_paeth = function (a, b, c)
+paeth = function (a, b, c)
 {
     var p, pa, pb, pc
 
@@ -139,16 +117,16 @@ _paeth = function (a, b, c)
     return c
 }
 
-_copyTile = function (sb, sw, sh, tb, tw, th, xoff, yoff, mode)
+copyTile = function (sb, sw, sh, tb, tw, th, xoff, yoff, mode)
 {
     var ba, bb, bg, br, fa, fb, fg, fr, h, ifa, ioa, oa, si, ti, w, x, y
 
     w = _k_.min(sw,tw)
     h = _k_.min(sh,th)
     si = ti = 0
-    for (var _10_ = y = 0, _11_ = h; (_10_ <= _11_ ? y < h : y > h); (_10_ <= _11_ ? ++y : --y))
+    for (var _e_ = y = 0, _f_ = h; (_e_ <= _f_ ? y < h : y > h); (_e_ <= _f_ ? ++y : --y))
     {
-        for (var _12_ = x = 0, _13_ = w; (_12_ <= _13_ ? x < w : x > w); (_12_ <= _13_ ? ++x : --x))
+        for (var _10_ = x = 0, _11_ = w; (_10_ <= _11_ ? x < w : x > w); (_10_ <= _11_ ? ++x : --x))
         {
             if (xoff >= 0 && yoff >= 0)
             {
@@ -259,7 +237,7 @@ crcLib = {table:(function ()
 {
     var i
 
-    for (var _14_ = i = 0, _15_ = len; (_14_ <= _15_ ? i < len : i > len); (_14_ <= _15_ ? ++i : --i))
+    for (var _12_ = i = 0, _13_ = len; (_12_ <= _13_ ? i < len : i > len); (_12_ <= _13_ ? ++i : --i))
     {
         c = crcLib.table[(c ^ buf[off + i]) & 0xff] ^ (c >>> 8)
     }
@@ -301,16 +279,16 @@ dither = function (sb, w, h, plte, tb, oind, MTD)
     pc = plte.length
     nplt = []
     rads = []
-    for (var _16_ = i = 0, _17_ = pc; (_16_ <= _17_ ? i < pc : i > pc); (_16_ <= _17_ ? ++i : --i))
+    for (var _14_ = i = 0, _15_ = pc; (_14_ <= _15_ ? i < pc : i > pc); (_14_ <= _15_ ? ++i : --i))
     {
         c = plte[i]
         nplt.push([((c >>> 0) & 255),((c >>> 8) & 255),((c >>> 16) & 255),((c >>> 24) & 255)])
     }
-    for (var _18_ = i = 0, _19_ = pc; (_18_ <= _19_ ? i < pc : i > pc); (_18_ <= _19_ ? ++i : --i))
+    for (var _16_ = i = 0, _17_ = pc; (_16_ <= _17_ ? i < pc : i > pc); (_16_ <= _17_ ? ++i : --i))
     {
         ne = 0xffffffff
         ni = 0
-        for (var _1a_ = j = 0, _1b_ = pc; (_1a_ <= _1b_ ? j < pc : j > pc); (_1a_ <= _1b_ ? ++j : --j))
+        for (var _18_ = j = 0, _19_ = pc; (_18_ <= _19_ ? j < pc : j > pc); (_18_ <= _19_ ? ++j : --j))
         {
             ce = D(nplt[i],nplt[j])
             if (j !== i && ce < ne)
@@ -326,13 +304,13 @@ dither = function (sb, w, h, plte, tb, oind, MTD)
     err = new Int16Array(w * h * 4)
     S = 4
     M = [0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5]
-    for (var _1c_ = i = 0, _1d_ = M.length; (_1c_ <= _1d_ ? i < M.length : i > M.length); (_1c_ <= _1d_ ? ++i : --i))
+    for (var _1a_ = i = 0, _1b_ = M.length; (_1a_ <= _1b_ ? i < M.length : i > M.length); (_1a_ <= _1b_ ? ++i : --i))
     {
         M[i] = 255 * (-0.5 + (M[i] + 0.5) / (S * S))
     }
-    for (var _1e_ = y = 0, _1f_ = h; (_1e_ <= _1f_ ? y < h : y > h); (_1e_ <= _1f_ ? ++y : --y))
+    for (var _1c_ = y = 0, _1d_ = h; (_1c_ <= _1d_ ? y < h : y > h); (_1c_ <= _1d_ ? ++y : --y))
     {
-        for (var _20_ = x = 0, _21_ = w; (_20_ <= _21_ ? x < w : x > w); (_20_ <= _21_ ? ++x : --x))
+        for (var _1e_ = x = 0, _1f_ = w; (_1e_ <= _1f_ ? x < w : x > w); (_1e_ <= _1f_ ? ++x : --x))
         {
             i = (y * w + x) * 4
             if (MTD !== 2)
@@ -346,7 +324,7 @@ dither = function (sb, w, h, plte, tb, oind, MTD)
             }
             ni = 0
             nd = 0xffffff
-            for (var _22_ = j = 0, _23_ = pc; (_22_ <= _23_ ? j < pc : j > pc); (_22_ <= _23_ ? ++j : --j))
+            for (var _20_ = j = 0, _21_ = pc; (_20_ <= _21_ ? j < pc : j > pc); (_20_ <= _21_ ? ++j : --j))
             {
                 cd = D(cc,nplt[j])
                 if (cd < nd)
@@ -384,25 +362,36 @@ dither = function (sb, w, h, plte, tb, oind, MTD)
 
 encode = function (bufs, w, h, ps, dels, tabs, forbidPlte)
 {
-    var nimg
+    var anim, b, c, cicc, crc, data, dl, fi, fr, g, i, imgd, ioff, j, leng, nimg, offset, pltAlpha, r, sl, ti, wAs, wr, wUi, wUs, _308_38_
 
     ps = (ps != null ? ps : 0)
     forbidPlte = (forbidPlte != null ? forbidPlte : false)
     dither = false
     nimg = compress(bufs,w,h,ps,dither)
     compressPNG(nimg,-1)
-    return _main(nimg,w,h,dels,tabs)
-}
-
-_main = function (nimg, w, h, dels, tabs)
-{
-    var anim, b, c, cicc, crc, data, dl, fi, fr, g, i, imgd, ioff, j, leng, offset, pltAlpha, r, sl, ti, wAs, wr, wUi, wUs, _317_38_
-
     tabs = (tabs != null ? tabs : {})
     crc = crcLib.crc
-    wUi = _bin.writeUint
-    wUs = _bin.writeUshort
-    wAs = _bin.writeASCII
+    wUs = function (buff, p, n)
+    {
+        buff[p] = (n >> 8) & 255
+        return buff[p + 1] = n & 255
+    }
+    wUi = function (buff, p, n)
+    {
+        buff[p] = (n >> 24) & 255
+        buff[p + 1] = (n >> 16) & 255
+        buff[p + 2] = (n >> 8) & 255
+        return buff[p + 3] = n & 255
+    }
+    wAs = function (data, p, s)
+    {
+        var i
+
+        for (var _22_ = i = 0, _23_ = s.length; (_22_ <= _23_ ? i < s.length : i > s.length); (_22_ <= _23_ ? ++i : --i))
+        {
+            data[p + i] = s.charCodeAt(i)
+        }
+    }
     offset = 8
     anim = nimg.frames.length > 1
     pltAlpha = false
@@ -518,7 +507,7 @@ _main = function (nimg, w, h, dels, tabs)
         offset += 4
         wUi(data,offset,nimg.frames.length)
         offset += 4
-        wUi(data,offset,(((_317_38_=tabs["loop"]) != null ? _317_38_ : 0)))
+        wUi(data,offset,(((_308_38_=tabs["loop"]) != null ? _308_38_ : 0)))
         offset += 4
         wUi(data,offset,crc(data,offset - 12,12))
         offset += 4
@@ -626,7 +615,7 @@ compressPNG = function (out, filter, levelZero)
         nw = frm.rect.width
         nh = frm.rect.height
         fdata = new Uint8Array(nh * frm.bpl + nh)
-        frm.cimg = _filterZero(frm.img,nh,frm.bpp,frm.bpl,fdata,filter,levelZero)
+        frm.cimg = filterZero(frm.img,nh,frm.bpp,frm.bpl,fdata,filter,levelZero)
     }
 }
 
@@ -906,15 +895,15 @@ framize = function (bufs, w, h, alwaysBlend, evenCrd, forbidPrev)
                 frms[j - 1].dispose = 2
             }
             nimg = new Uint8Array(nw * nh * 4)
-            _copyTile(pimg,w,h,nimg,nw,nh,-nx,-ny,0)
-            blend = (_copyTile(cimg,w,h,nimg,nw,nh,-nx,-ny,3) ? 1 : 0)
+            copyTile(pimg,w,h,nimg,nw,nh,-nx,-ny,0)
+            blend = (copyTile(cimg,w,h,nimg,nw,nh,-nx,-ny,3) ? 1 : 0)
             if (blend === 1)
             {
-                _prepareDiff(cimg,w,h,nimg,{x:nx,y:ny,width:nw,height:nh})
+                prepareDiff(cimg,w,h,nimg,{x:nx,y:ny,width:nw,height:nh})
             }
             else
             {
-                _copyTile(cimg,w,h,nimg,nw,nh,-nx,-ny,0)
+                copyTile(cimg,w,h,nimg,nw,nh,-nx,-ny,0)
             }
         }
         else
@@ -942,8 +931,8 @@ framize = function (bufs, w, h, alwaysBlend, evenCrd, forbidPrev)
             frms[j - 1].dispose = 1
             if (j - 1 !== 0)
             {
-                _updateFrame(bufs,w,h,frms,j - 1,r,evenCrd)
-                _updateFrame(bufs,w,h,frms,j,r,evenCrd)
+                updateFrame(bufs,w,h,frms,j - 1,r,evenCrd)
+                updateFrame(bufs,w,h,frms,j,r,evenCrd)
             }
         }
     }
@@ -959,7 +948,7 @@ framize = function (bufs, w, h, alwaysBlend, evenCrd, forbidPrev)
     return frms
 }
 
-_updateFrame = function (bufs, w, h, frms, i, r, evenCrd)
+updateFrame = function (bufs, w, h, frms, i, r, evenCrd)
 {
     var cc, cimg, cimg32, cx, cy, fr, j, mix, miy, mxx, mxy, nimg, pimg, pimg32, U32, U8, x, y
 
@@ -1029,21 +1018,21 @@ _updateFrame = function (bufs, w, h, frms, i, r, evenCrd)
     fr.img = new Uint8Array(r.width * r.height * 4)
     if (frms[i - 1].dispose === 0)
     {
-        _copyTile(pimg,w,h,fr.img,r.width,r.height,-r.x,-r.y,0)
-        return _prepareDiff(cimg,w,h,fr.img,r)
+        copyTile(pimg,w,h,fr.img,r.width,r.height,-r.x,-r.y,0)
+        return prepareDiff(cimg,w,h,fr.img,r)
     }
     else
     {
-        return _copyTile(cimg,w,h,fr.img,r.width,r.height,-r.x,-r.y,0)
+        return copyTile(cimg,w,h,fr.img,r.width,r.height,-r.x,-r.y,0)
     }
 }
 
-_prepareDiff = function (cimg, w, h, nimg, rec)
+prepareDiff = function (cimg, w, h, nimg, rec)
 {
-    return _copyTile(cimg,w,h,nimg,rec.width,rec.height,-rec.x,-rec.y,2)
+    return copyTile(cimg,w,h,nimg,rec.width,rec.height,-rec.x,-rec.y,2)
 }
 
-_filterZero = function (img, h, bpp, bpl, data, filter, levelZero)
+filterZero = function (img, h, bpp, bpl, data, filter, levelZero)
 {
     var fls, ftry, i, opts, ti, tsize, y
 
@@ -1065,7 +1054,7 @@ _filterZero = function (img, h, bpp, bpl, data, filter, levelZero)
     {
         for (var _5c_ = y = 0, _5d_ = h; (_5c_ <= _5d_ ? y < h : y > h); (_5c_ <= _5d_ ? ++y : --y))
         {
-            _filterLine(data,img,y,bpl,bpp,ftry[i])
+            filterLine(data,img,y,bpl,bpp,ftry[i])
         }
         fls.push(zlib.deflateSync(data,opts))
     }
@@ -1081,7 +1070,7 @@ _filterZero = function (img, h, bpp, bpl, data, filter, levelZero)
     return fls[ti]
 }
 
-_filterLine = function (data, img, y, bpl, bpp, type)
+filterLine = function (data, img, y, bpl, bpp, type)
 {
     var di, i, x
 

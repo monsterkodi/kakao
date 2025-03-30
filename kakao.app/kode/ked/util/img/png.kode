@@ -10,36 +10,15 @@
 ###
 
 use zlib
- 
-_bin = 
-
-    writeUshort: buff p n -> 
-
-        buff[p]   = (n>>8)  & 255   
-        buff[p+1] =  n      & 255
-        
-    writeUint:   buff p n -> 
-
-        buff[p]   = (n>>24) & 255  
-        buff[p+1] = (n>>16) & 255  
-        buff[p+2] = (n>>8)  & 255  
-        buff[p+3] =  n      & 255
-                       
-    writeASCII: data p s ->
-        
-        for i in 0...s.length
-            data[p+i] = s.charCodeAt(i)
-            
-    pad: n -> (n.length < 2) ? ("0" + n) : n
-    
-_getBPP = out ->
+             
+getBPP = out ->
     
     noc = [1 null 3 1 2 null 4][out.ctype]
     noc * out.depth
 
-_filterZero = data out off w h ->
+filterZero = data out off w h ->
 
-    bpp = _getBPP(out) 
+    bpp = getBPP(out) 
     bpl = ceil(w*bpp/8)
     bpp = ceil(bpp/8)
     
@@ -68,11 +47,11 @@ _filterZero = data out off w h ->
                     while x<bpp ➜ data[i+x] = (data[di+x] + ( data[i+x-bpl]>>>1)); x++
                     while x<bpl ➜ data[i+x] = (data[di+x] + ((data[i+x-bpl]+data[i+x-bpp])>>>1) ); x++
             ➜       
-                    while x<bpp ➜ data[i+x] = (data[di+x] + _paeth(0 data[i+x-bpl] 0)); x++
-                    while x<bpl ➜ data[i+x] = (data[di+x] + _paeth(data[i+x-bpp] data[i+x-bpl] data[i+x-bpp-bpl]) ); x++
+                    while x<bpp ➜ data[i+x] = (data[di+x] + paeth(0 data[i+x-bpl] 0)); x++
+                    while x<bpl ➜ data[i+x] = (data[di+x] + paeth(data[i+x-bpp] data[i+x-bpl] data[i+x-bpp-bpl]) ); x++
     data
 
-_paeth = a b c -> 
+paeth = a b c -> 
 
     p  = a+b-c 
     pa = (p-a) 
@@ -82,7 +61,7 @@ _paeth = a b c ->
     ⮐  b if pb*pb <= pc*pc
     ⮐  c
 
-_copyTile = sb sw sh tb tw th xoff yoff mode ->
+copyTile = sb sw sh tb tw th xoff yoff mode ->
 
     w = min sw tw
     h = min sh th
@@ -125,7 +104,7 @@ _copyTile = sb sw sh tb tw th xoff yoff mode ->
 
 crcLib = 
 
-    table: ( ->
+    table: (->
         tab = new Uint32Array(256)
         for n in 0...256
             c = n
@@ -136,12 +115,13 @@ crcLib =
                     c = c >>> 1
             tab[n] = c
         tab)()
+        
     update: c buf off len ->
         for i in 0...len 
             c = crcLib.table[(c ^ buf[off+i]) & 0xff] ^ (c >>> 8)
         c
 
-    crc: b o l ->  crcLib.update(0xffffffff b o l) ^ 0xffffffff
+    crc: b o l -> crcLib.update(0xffffffff b o l) ^ 0xffffffff
 
 addErr = er tg ti f ->
 
@@ -237,15 +217,26 @@ encode = bufs w h ps dels tabs forbidPlte ->
     
     compressPNG nimg -1
     
-    _main nimg w h dels tabs
-
-_main = nimg w h dels tabs ->
-
     tabs ?= {}
     crc = crcLib.crc 
-    wUi = _bin.writeUint 
-    wUs = _bin.writeUshort 
-    wAs = _bin.writeASCII
+    
+    wUs = buff p n -> 
+
+        buff[p]   = (n>>8)  & 255   
+        buff[p+1] =  n      & 255
+        
+    wUi = buff p n -> 
+
+        buff[p]   = (n>>24) & 255  
+        buff[p+1] = (n>>16) & 255  
+        buff[p+2] = (n>>8)  & 255  
+        buff[p+3] =  n      & 255
+                       
+    wAs = data p s ->
+        
+        for i in 0...s.length
+            data[p+i] = s.charCodeAt(i)
+    
     offset = 8 
     anim = nimg.frames.length>1 
     pltAlpha = false
@@ -389,7 +380,7 @@ compressPNG = out filter levelZero ->
         nw  = frm.rect.width
         nh  = frm.rect.height
         fdata = new Uint8Array(nh*frm.bpl+nh)
-        frm.cimg = _filterZero(frm.img nh frm.bpp frm.bpl fdata filter levelZero)
+        frm.cimg = filterZero(frm.img nh frm.bpp frm.bpl fdata filter levelZero)
 
 compress = bufs w h ps dith -> 
 
@@ -577,13 +568,13 @@ framize = bufs w h alwaysBlend evenCrd forbidPrev ->
                 frms[j-1].dispose = 2
             
             nimg = new Uint8Array(nw*nh*4)
-            _copyTile pimg w h nimg nw nh -nx -ny 0
+            copyTile pimg w h nimg nw nh -nx -ny 0
             
-            blend = _copyTile(cimg w h nimg nw nh -nx -ny 3) ? 1 : 0
+            blend = copyTile(cimg w h nimg nw nh -nx -ny 3) ? 1 : 0
             if blend == 1
-                _prepareDiff cimg w h nimg x:nx y:ny width:nw height:nh
+                prepareDiff cimg w h nimg x:nx y:ny width:nw height:nh
             else         
-                _copyTile cimg w h nimg nw nh -nx -ny 0
+                copyTile cimg w h nimg nw nh -nx -ny 0
 
         else 
             nimg = cimg.slice(0)
@@ -604,8 +595,8 @@ framize = bufs w h alwaysBlend evenCrd forbidPrev ->
             
             frms[j-1].dispose = 1
             if j-1 != 0
-                _updateFrame bufs w h frms j-1 r evenCrd
-                _updateFrame bufs w h frms j   r evenCrd
+                updateFrame bufs w h frms j-1 r evenCrd
+                updateFrame bufs w h frms j   r evenCrd
 
     area = 0
     if bufs.length != 1
@@ -614,7 +605,7 @@ framize = bufs w h alwaysBlend evenCrd forbidPrev ->
             area += frm.rect.width*frm.rect.height
     frms
 
-_updateFrame = bufs w h frms i r evenCrd ->
+updateFrame = bufs w h frms i r evenCrd ->
 
     U8     = Uint8Array 
     U32    = Uint32Array
@@ -656,16 +647,16 @@ _updateFrame = bufs w h frms i r evenCrd ->
     fr.blend = 1  
     fr.img = new Uint8Array(r.width*r.height*4)
     if frms[i-1].dispose==0
-        _copyTile    pimg w h fr.img r.width r.height -r.x -r.y 0
-        _prepareDiff cimg w h fr.img r
+        copyTile    pimg w h fr.img r.width r.height -r.x -r.y 0
+        prepareDiff cimg w h fr.img r
     else
-        _copyTile cimg w h fr.img r.width r.height -r.x -r.y 0
+        copyTile cimg w h fr.img r.width r.height -r.x -r.y 0
 
-_prepareDiff = cimg w h nimg rec ->
+prepareDiff = cimg w h nimg rec ->
 
-    _copyTile cimg w h nimg rec.width rec.height -rec.x -rec.y 2
+    copyTile cimg w h nimg rec.width rec.height -rec.x -rec.y 2
 
-_filterZero = img h bpp bpl data filter levelZero ->
+filterZero = img h bpp bpl data filter levelZero ->
 
     fls  = [] 
     ftry = [0 1 2 3 4]
@@ -677,7 +668,7 @@ _filterZero = img h bpp bpl data filter levelZero ->
         opts = level:0
     
     for i in 0...ftry.length
-        for y in 0...h ➜ _filterLine(data img y bpl bpp ftry[i])
+        for y in 0...h ➜ filterLine(data img y bpl bpp ftry[i])
         fls.push zlib.deflateSync(data opts)
     
     tsize = 1e9
@@ -687,7 +678,7 @@ _filterZero = img h bpp bpl data filter levelZero ->
             tsize = fls[i].length
     fls[ti]
 
-_filterLine = data img y bpl bpp type ->
+filterLine = data img y bpl bpp type ->
 
     i  = y*bpl 
     di = i+y
