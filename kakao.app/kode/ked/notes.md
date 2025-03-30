@@ -19,17 +19,19 @@
 ##### todo
 
 - unsaved changes 'tabs'
-- highlight line changes in differ
-- add mapscroll to differ status
-- auto open dirtree folder for current file
-- index required files
-- add results from indexer to completion
+
+- differ 
+    - highlight changed spans in modified lines
+    
+- indexer 
+    - traverse and add required files?
 
 - macro
     - set prefs
     - unicode palette
         
 - completion
+    - add results from indexer
     - preselect or highlight preview part
     - rank results by cursor distance
     - fix
@@ -55,6 +57,7 @@
     - fix delete and other issues
 
 - dirtree
+    - auto open folder for current file
     - searchable?
     - set hover highlight to editor file when loosing focus
 

@@ -124,6 +124,7 @@ function gutter extends view
             @gitBlocks.push [change.line-1 numLines mod.length]
 
         if valid @gitChanges
+            log 'gutter.onGitDiff' @gitChanges
             post.emit 'redraw'
             
     #  ███████   ███  █████████         ███████   ███████  ████████    ███████   ███      ███            

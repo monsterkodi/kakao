@@ -147,6 +147,7 @@ mapview = (function ()
             return
         }
         this.clearImages()
+        prof.start(this.state.name + '.map')
         w = this.cells.cols * t.cellsz[0]
         bytes = w * 3
         if (bytes <= 0)
@@ -220,6 +221,7 @@ mapview = (function ()
                 break
             }
         }
+        return prof.end(this.state.name + '.map')
     }
 
     mapview.prototype["drawImages"] = function ()
@@ -231,12 +233,14 @@ mapview = (function ()
         {
             return
         }
+        prof.start(this.state.name + '.map.draw')
         var list = _k_.list(this.images)
         for (y = 0; y < list.length; y++)
         {
             id = list[y]
             t.placeImage(id,this.cells.x,this.cells.y + this.rowOffset,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
         }
+        prof.end(this.state.name + '.map.draw')
         return this
     }
 

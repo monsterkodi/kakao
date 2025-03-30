@@ -12,7 +12,8 @@ function logfile
 
     @: @name ->
         
-        @stream = fs.createWriteStream '/Users/kodi/s/kakao/kakao.app/ked.log' flags:'w' autoClose:false
+        logfile = '/Users/kodi/s/kakao/kakao.app/ked.log'
+        @stream = fs.createWriteStream logfile flags:'w' autoClose:false
                 
         console.log = args... => 
             

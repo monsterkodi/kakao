@@ -167,7 +167,6 @@ function rounded
         h2  = int h/2
         
         @fill   img 0 h2 w h2 fg
-        # @fill   img 0 h2-1 w 1 @shadow
         @encode img 
 
     @borderLeft: w h fg ->
