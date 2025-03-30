@@ -26,6 +26,8 @@ function mapscr extends mapview
         
         @knobId = @imgId+0xeeee
         
+        @topLine = 0
+        
         @setColor 'bg'        theme.editor.mapscr
         @setColor 'highlight' theme.highlight.map
         @setColor 'selection' theme.selection.map
@@ -62,7 +64,7 @@ function mapscr extends mapview
     
     scrollToPixel: pixel =>
         
-        log 'scrollToPixel'
+        # log 'scrollToPixel'
         
         view = @state.s.view.asMutable()
         
@@ -79,6 +81,7 @@ function mapscr extends mapview
         
         @state.setView view
         @drawKnob()
+        
         redraw:true
         
     # 00     00   0000000   000   000   0000000  00000000  
@@ -123,7 +126,7 @@ function mapscr extends mapview
      ███  ███ █ ███  ███   ███  ███   ███  ███            ███
      ███  ███   ███  ███   ███   ███████   ████████  ███████ 
 ###
-
+              
     hide: =>
     
         ⮐  if @hidden()
@@ -155,11 +158,18 @@ function mapscr extends mapview
         
         ⮐  if empty t.pixels or @hidden() or @collapsed()
         
-        # super()
         for id,y in @images
-            t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
+            t.placeLineImage id @cells.x @cells.y @lineOffset(y) @pixelsPerRow
         
         @drawKnob()
+        
+    lineOffset: y -> (y-@topLine)*@pixelsPerRow
+        
+    pixelPos: pos -> 
+       [
+           @cells.x*@csz[0] + pos[0]*@pixelsPerCol
+           @cells.y*@csz[1] + @lineOffset(pos[1])
+       ]
         
     drawKnob: =>
         
@@ -180,12 +190,6 @@ function mapscr extends mapview
     # ███       ███   ███  ███████    ███████   ███   ███  ███████    ███████ 
     # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███       ███
     #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████ 
-
-    pixelPos: pos -> 
-        [
-            @cells.x*@csz[0] + pos[0]*@pixelsPerCol
-            @cells.y*@csz[1] + pos[1]*@pixelsPerRow
-        ]
 
     drawCursors: =>
         

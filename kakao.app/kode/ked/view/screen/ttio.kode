@@ -96,20 +96,17 @@ function TTIO extends events
     # ███        ███      ███   ███  ███       ███          ███  ███ █ ███  ███   ███  ███   ███  ███     
     # ███        ███████  ███   ███   ███████  ████████     ███  ███   ███  ███   ███   ███████   ████████
 
-    placeImage: id x y px py sx sy ->
+    placeLineImage: id cx y py ry=1 ->
         
-        for placement in 0...sy
+        for placement in 0...ry
             
             pl = py + placement
-            
-            cx = x + int(px / @cellsz[0])
             cy = y + int(pl / @cellsz[1])
-            rx = px % @cellsz[0]
-            ry = pl % @cellsz[1]
+            oy = pl % @cellsz[1]
             
             @setCursor cx cy
             
-            @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement+1},X=#{rx},Y=#{ry},C=1\x1b\\"
+            @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement+1},X=0,Y=#{oy},C=1\x1b\\"
 
     #  0000000   000   000  00000000  00000000   000       0000000   000   000  
     # 000   000  000   000  000       000   000  000      000   000   000 000   

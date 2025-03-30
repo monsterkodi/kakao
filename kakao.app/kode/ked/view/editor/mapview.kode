@@ -176,7 +176,7 @@ function mapview extends view
         # prof.start @state.name+'.map.draw'
         
         for id,y in @images
-            t.placeImage id @cells.x @cells.y+@rowOffset 0 y*@pixelsPerRow @pixelsPerCol @pixelsPerRow
+            t.placeLineImage id @cells.x @cells.y+@rowOffset y*@pixelsPerRow @pixelsPerRow
             
         # prof.end @state.name+'.map.draw'
         @

@@ -239,7 +239,7 @@ mapview = (function ()
         for (y = 0; y < list.length; y++)
         {
             id = list[y]
-            t.placeImage(id,this.cells.x,this.cells.y + this.rowOffset,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
+            t.placeLineImage(id,this.cells.x,this.cells.y + this.rowOffset,y * this.pixelsPerRow,this.pixelsPerRow)
         }
         return this
     }

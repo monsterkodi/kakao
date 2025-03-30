@@ -36,6 +36,7 @@ mapscr = (function ()
         this.state.on('view.changed',this.drawKnob)
         this.pointerType = 'pointer'
         this.knobId = this.imgId + 0xeeee
+        this.topLine = 0
         this.setColor('bg',theme.editor.mapscr)
         this.setColor('highlight',theme.highlight.map)
         this.setColor('selection',theme.selection.map)
@@ -76,7 +77,6 @@ mapscr = (function ()
     {
         var maxY, view
 
-        console.log('scrollToPixel')
         view = this.state.s.view.asMutable()
         view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / this.pixelsPerRow)
         view[1] -= 6
@@ -170,9 +170,19 @@ mapscr = (function ()
         for (y = 0; y < list.length; y++)
         {
             id = list[y]
-            t.placeImage(id,this.cells.x,this.cells.y + this.rowOffset,0,y * this.pixelsPerRow,this.pixelsPerCol,this.pixelsPerRow)
+            t.placeLineImage(id,this.cells.x,this.cells.y,this.lineOffset(y),this.pixelsPerRow)
         }
         return this.drawKnob()
+    }
+
+    mapscr.prototype["lineOffset"] = function (y)
+    {
+        return (y - this.topLine) * this.pixelsPerRow
+    }
+
+    mapscr.prototype["pixelPos"] = function (pos)
+    {
+        return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + this.lineOffset(pos[1])]
     }
 
     mapscr.prototype["drawKnob"] = function ()
@@ -190,11 +200,6 @@ mapscr = (function ()
         h = parseInt(this.state.cells.rows * this.pixelsPerRow)
         w = this.cells.cols * t.cellsz[0]
         return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,0,yr,w,h)
-    }
-
-    mapscr.prototype["pixelPos"] = function (pos)
-    {
-        return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + pos[1] * this.pixelsPerRow]
     }
 
     mapscr.prototype["drawCursors"] = function ()
