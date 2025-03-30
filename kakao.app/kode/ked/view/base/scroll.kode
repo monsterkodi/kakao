@@ -9,10 +9,10 @@
     used by any multiline editor
 ###
 
-use ../../../kxk ▪ post
-use ../../theme  ◆ theme
-use ../../util   ◆ squares sircels
-use              ◆ view
+use ../../../kxk   ▪ post
+use ../../theme    ◆ theme
+use ../../util/img ◆ squares sircels
+use                ◆ view
 
 {pow} = Math
 

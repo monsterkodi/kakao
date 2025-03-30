@@ -2,8 +2,6 @@ var _k_ = {min: function () { var m = Infinity; for (var a of arguments) { if (A
 
 var rounded
 
-import nfs from "../../kxk/nfs.js"
-
 import png from "./png.js"
 
 

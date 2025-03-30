@@ -12,7 +12,8 @@
 
 use ../../../kxk   ▪ post kseg
 use ../../../kolor ◆ kulur
-use ../../util     ◆ prof syntax squares
+use ../../util/img ◆ squares
+use ../../util     ◆ prof syntax
 use ../../theme    ◆ color theme 
 use ../base        ◆ view
 

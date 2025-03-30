@@ -7,7 +7,8 @@
 ###
 
 use ../../kxk    ▪ kseg kstr 
-use ../util      ◆ prof rounded
+use ../util      ◆ prof
+use ../util/img  ◆ rounded
 use ../theme     ◆ color theme 
 use ../view/base ◆ view
 use ./tool       ◆ belt

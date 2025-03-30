@@ -2,8 +2,6 @@ var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h);
 
 var squares
 
-import nfs from "../../kxk/nfs.js"
-
 import png from "./png.js"
 
 
@@ -47,9 +45,9 @@ squares = (function ()
 
     squares["tileImg"] = function (tw, th, fg)
     {
-        var c, img, r, _57_64_
+        var c, img, r, _56_64_
 
-        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_57_64_=fg[3]) != null ? _57_64_ : 255)) << 24])
+        this.pixlArr.set([fg[0] | fg[1] << 8 | fg[2] << 16 | (((_56_64_=fg[3]) != null ? _56_64_ : 255)) << 24])
         img = {w:tw,h:th}
         for (var _a_ = c = 0, _b_ = tw; (_a_ <= _b_ ? c < tw : c > tw); (_a_ <= _b_ ? ++c : --c))
         {

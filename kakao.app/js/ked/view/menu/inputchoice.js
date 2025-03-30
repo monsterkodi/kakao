@@ -8,8 +8,6 @@ let post = kxk.post
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 
-import rounded from "../../util/rounded.js"
-
 import view from "../base/view.js"
 import input from "../base/input.js"
 
@@ -24,7 +22,7 @@ inputchoice = (function ()
         this.screen = screen
         this.name = name
     
-        var _34_23_
+        var _33_23_
 
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -98,7 +96,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _89_23_
+        var _88_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -173,9 +171,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _149_36_
+        var choice, _148_36_
 
-        choice = ((_149_36_=this.choices.current()) != null ? _149_36_ : this.input.current())
+        choice = ((_148_36_=this.choices.current()) != null ? _148_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)

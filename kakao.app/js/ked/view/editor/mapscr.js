@@ -7,7 +7,7 @@ let post = kxk.post
 
 import theme from "../../theme/theme.js"
 
-import squares from "../../util/squares.js"
+import squares from "../../util/img/squares.js"
 
 import belt from "../../edit/tool/belt.js"
 

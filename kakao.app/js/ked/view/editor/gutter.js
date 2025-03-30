@@ -8,9 +8,10 @@ let kseg = kxk.kseg
 
 import kulur from "../../../kolor/kulur.js"
 
+import squares from "../../util/img/squares.js"
+
 import prof from "../../util/prof.js"
 import syntax from "../../util/syntax.js"
-import squares from "../../util/squares.js"
 
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
@@ -86,7 +87,7 @@ gutter = (function ()
 
     gutter.prototype["drawPreviews"] = function ()
     {
-        var idx, oldDiss, segl, syntax, _76_45_
+        var idx, oldDiss, segl, syntax, _77_45_
 
         if (_k_.empty(this.preview) || _k_.empty(this.gitChanges))
         {
@@ -96,7 +97,7 @@ gutter = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             idx = list[_a_]
-            segl = kseg(((_76_45_=this.gitChanges[idx].old) != null ? _76_45_ : ''))
+            segl = kseg(((_77_45_=this.gitChanges[idx].old) != null ? _77_45_ : ''))
             syntax = this.editor.state.syntax
             oldDiss = syntax.diss[idx]
             syntax.diss[idx] = kulur.dissect([segl],syntax.ext)
@@ -125,7 +126,7 @@ gutter = (function ()
 
     gutter.prototype["onGitDiff"] = function (diff)
     {
-        var add, change, del, firstLine, mod, modi, mods, numLines, off, _111_29_, _112_29_, _113_29_, _120_36_
+        var add, change, del, firstLine, mod, modi, mods, numLines, off, _112_29_, _113_29_, _114_29_, _121_36_
 
         this.clearChanges()
         var list = _k_.list(diff.changes)
@@ -133,9 +134,9 @@ gutter = (function ()
         {
             change = list[_a_]
             firstLine = change.line
-            mod = ((_111_29_=change.mod) != null ? _111_29_ : [])
-            add = ((_112_29_=change.add) != null ? _112_29_ : [])
-            del = ((_113_29_=change.del) != null ? _113_29_ : [])
+            mod = ((_112_29_=change.mod) != null ? _112_29_ : [])
+            add = ((_113_29_=change.add) != null ? _113_29_ : [])
+            del = ((_114_29_=change.del) != null ? _114_29_ : [])
             mods = mod.concat(add)
             numLines = mods.length
             mods = mods.concat(del)
@@ -201,7 +202,7 @@ gutter = (function ()
 
     gutter.prototype["draw"] = function ()
     {
-        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _195_99_
+        var bg, c, col, fg, hasCursor, highlighted, i, lineno, mainCursor, row, sc, selected, spansel, y, _196_99_
 
         mainCursor = this.state.mainCursor()
         for (var _a_ = row = 0, _b_ = this.cells.rows; (_a_ <= _b_ ? row < this.cells.rows : row > this.cells.rows); (_a_ <= _b_ ? ++row : --row))

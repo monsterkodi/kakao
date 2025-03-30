@@ -7,8 +7,8 @@ let post = kxk.post
 
 import theme from "../../theme/theme.js"
 
-import squares from "../../util/squares.js"
-import sircels from "../../util/sircels.js"
+import squares from "../../util/img/squares.js"
+import sircels from "../../util/img/sircels.js"
 
 import view from "./view.js"
 

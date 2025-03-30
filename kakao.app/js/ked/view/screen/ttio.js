@@ -15,7 +15,7 @@ let kstr = kxk.kstr
 
 import nfs from "../../../kxk/nfs.js"
 
-import rounded from "../../util/rounded.js"
+import rounded from "../../util/img/rounded.js"
 
 
 TTIO = (function ()

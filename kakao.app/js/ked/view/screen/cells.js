@@ -7,7 +7,7 @@ import belt from "../../edit/tool/belt.js"
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 
-import rounded from "../../util/rounded.js"
+import rounded from "../../util/img/rounded.js"
 
 
 cells = (function ()

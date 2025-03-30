@@ -11,7 +11,8 @@
 use ../kxk        ▪ karg kstr kseg slash post
 use ../kxk        ◆ nfs
 use ./index       ◆ prjcts indexer
-use ./util        ◆ logfile session help frecent watcher git rounded squares sircels
+use ./util        ◆ logfile session help frecent watcher git 
+use ./util/img    ◆ rounded squares sircels
 use ./edit/tool   ◆ belt
 use ./edit        ◆ mode
 use ./view/base   ◆ view

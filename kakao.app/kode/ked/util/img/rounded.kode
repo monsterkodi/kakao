@@ -6,8 +6,7 @@
     ███   ███   ███████    ███████   ███   ███  ███████    ████████  ███████  
 ###
 
-use ../../kxk      ◆ nfs
-use                ◆ png
+use ◆ png
 
 function rounded
 

@@ -10,7 +10,7 @@
 
 use ../../../kxk    ▪ post
 use ../../theme     ◆ theme
-use ../../util      ◆ squares
+use ../../util/img  ◆ squares
 use ../../edit/tool ◆ belt
 use                 ◆ mapview
 

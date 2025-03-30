@@ -10,9 +10,9 @@
     kitty image display
 ###
 
-use ../../../kxk ▪ events post kstr
-use ../../../kxk ◆ nfs
-use ../../util   ◆ rounded
+use ../../../kxk   ▪ events post kstr
+use ../../../kxk   ◆ nfs
+use ../../util/img ◆ rounded
 
 function TTIO extends events
 

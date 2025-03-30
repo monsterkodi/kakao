@@ -1,5 +1,5 @@
 var toExport = {}
-import squares from "../util/squares.js"
+import squares from "../util/img/squares.js"
 
 toExport["squares"] = function ()
 {

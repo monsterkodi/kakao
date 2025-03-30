@@ -6,7 +6,7 @@
     ███████    █████ ██   ███████   ███   ███  ███   ███  ████████  ███████ 
 ###
 
-use ../util ◆ squares
+use ../util/img ◆ squares
 
 ▸ squares
 

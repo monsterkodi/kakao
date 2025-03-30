@@ -7,7 +7,8 @@ let kseg = kxk.kseg
 let kstr = kxk.kstr
 
 import prof from "../util/prof.js"
-import rounded from "../util/rounded.js"
+
+import rounded from "../util/img/rounded.js"
 
 import color from "../theme/color.js"
 import theme from "../theme/theme.js"
@@ -35,7 +36,7 @@ draw = (function ()
 
     draw.prototype["draw"] = function ()
     {
-        var lines, row, view, y, _44_58_, _59_17_, _61_17_, _63_15_, _64_15_, _65_15_
+        var lines, row, view, y, _45_58_, _60_17_, _62_17_, _64_15_, _65_15_, _66_15_
 
         if (this.hidden())
         {
@@ -71,7 +72,7 @@ draw = (function ()
 
     draw.prototype["drawLine"] = function (line, y, row)
     {
-        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, linel, si, syntax, view, x, _117_41_
+        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, linel, si, syntax, view, x, _118_41_
 
         row = (row != null ? row : y - this.state.s.view[1])
         bg = this.color.bg
@@ -110,7 +111,7 @@ draw = (function ()
                     headerClass = clss
                 }
             }
-            x += ((_117_41_=kseg.segWidth(line[si])) != null ? _117_41_ : 1)
+            x += ((_118_41_=kseg.segWidth(line[si])) != null ? _118_41_ : 1)
             if (x < this.cells.cols)
             {
                 c += this.cells.add(c,row,ch,fg,bg)

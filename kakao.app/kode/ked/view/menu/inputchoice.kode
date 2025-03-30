@@ -11,7 +11,6 @@
 
 use ../../../kxk ▪ post
 use ../../theme  ◆ color theme
-use ../../util   ◆ rounded
 use ../base      ◆ view input
 use ../menu      ◆ choices
 

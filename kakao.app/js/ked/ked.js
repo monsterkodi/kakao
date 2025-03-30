@@ -20,9 +20,10 @@ import help from "./util/help.js"
 import frecent from "./util/frecent.js"
 import watcher from "./util/watcher.js"
 import git from "./util/git.js"
-import rounded from "./util/rounded.js"
-import squares from "./util/squares.js"
-import sircels from "./util/sircels.js"
+
+import rounded from "./util/img/rounded.js"
+import squares from "./util/img/squares.js"
+import sircels from "./util/img/sircels.js"
 
 import belt from "./edit/tool/belt.js"
 
@@ -234,7 +235,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _197_10_
+        var _198_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -265,7 +266,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _222_22_
+        var _223_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -605,7 +606,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _505_22_
+        var mcw, _506_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}

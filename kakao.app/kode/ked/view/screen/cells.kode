@@ -12,7 +12,7 @@
 
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ color theme
-use ../../util      ◆ rounded
+use ../../util/img  ◆ rounded
 
 function cells
 
