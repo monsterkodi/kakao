@@ -215,14 +215,14 @@ use .. ◆ kstr kseg
     
     ▸ trim
     
-        kseg.trim ' '            ▸ kseg ''
-        kseg.trim ' x '          ▸ kseg 'x'
-        kseg.trim '🖍'            kseg '🖍'  
-        kseg.trim '字的模块'         ▸ kseg '字的模块'
-        kseg.trim '🧑‍🌾'       ▸ kseg '🧑‍🌾'
-        kseg.trim '  🖍    '           ▸ kseg '🖍'  
-        kseg.trim '  字的模块    '          ▸ kseg '字的模块'
-        kseg.trim '  🧑‍🌾   '       ▸ kseg '🧑‍🌾'
+        kseg.trim ' '               ▸ kseg ''
+        kseg.trim ' x '             ▸ kseg 'x'
+        kseg.trim '🖍'               ▸ kseg '🖍'  
+        kseg.trim '字的模块'        ▸ kseg '字的模块'
+        kseg.trim '🧑‍🌾'              ▸ kseg '🧑‍🌾'
+        kseg.trim '  🖍    '         ▸ kseg '🖍'  
+        kseg.trim '  字的模块    '  ▸ kseg '字的模块'
+        kseg.trim '  🧑‍🌾   '         ▸ kseg '🧑‍🌾'
         
     # 000   000  00000000   0000000   0000000    
     # 000   000  000       000   000  000   000  
@@ -232,14 +232,14 @@ use .. ◆ kstr kseg
     
     ▸ headCount
     
-        kseg.headCount ' x ' ' ' ▸ 1
-        kseg.headCount '***xx***' '*' ▸ 3
+        kseg.headCount ' x ' ' '            ▸ 1
+        kseg.headCount '***xx***' '*'       ▸ 3
         kseg.headCount kseg('***xx***') '*' ▸ 3
 
-        kseg.headCountWord ' x ' ▸ 0
-        kseg.headCountWord 'xxx  ' ▸ 3
-        kseg.headCountWord '🧑‍🌾' ▸  0
-        kseg.headCountWord 'xx🧑‍🌾' ▸  2
+        kseg.headCountWord ' x '    ▸ 0
+        kseg.headCountWord 'xxx  '  ▸ 3
+        kseg.headCountWord '🧑‍🌾'     ▸ 0
+        kseg.headCountWord 'xx🧑‍🌾'   ▸ 2
         
     # 000000000   0000000   000  000      
     #    000     000   000  000  000      
@@ -249,14 +249,14 @@ use .. ◆ kstr kseg
     
     ▸ tailCount
 
-        kseg.tailCount ' x ' ' ' ▸ 1
-        kseg.tailCount '***xx***' '*' ▸ 3
+        kseg.tailCount ' x ' ' '            ▸ 1
+        kseg.tailCount '***xx***' '*'       ▸ 3
         kseg.tailCount kseg('***xx***') '*' ▸ 3
         
-        kseg.tailCountWord ' x ' ▸ 0
-        kseg.tailCountWord ' xxx' ▸ 3
-        kseg.tailCountWord '🧑‍🌾' ▸  0
-        kseg.tailCountWord '🧑‍🌾xx' ▸  2
+        kseg.tailCountWord ' x '    ▸ 0
+        kseg.tailCountWord ' xxx'   ▸ 3
+        kseg.tailCountWord '🧑‍🌾'     ▸ 0
+        kseg.tailCountWord '🧑‍🌾xx'   ▸ 2
         
     # 000  000   000  0000000    00000000  000   000  000000000  
     # 000  0000  000  000   000  000       0000  000     000     
@@ -266,10 +266,10 @@ use .. ◆ kstr kseg
     
     ▸ numIndent
     
-        kseg.numIndent 'a' ▸ 0
-        kseg.numIndent kseg('a') ▸ 0
-        kseg.numIndent '   b' ▸ 3
-        kseg.numIndent kseg('   ') ▸ 3
+        kseg.numIndent 'a'          ▸ 0
+        kseg.numIndent kseg('a')    ▸ 0
+        kseg.numIndent '   b'       ▸ 3
+        kseg.numIndent kseg('   ')  ▸ 3
                 
     # 000  000   000  0000000    00000000  000   000  
     # 000  0000  000  000   000  000        000 000   
@@ -295,6 +295,11 @@ use .. ◆ kstr kseg
         kseg.indexAtWidth kseg('🧑🧑') 4 ▸ 2
         kseg.indexAtWidth kseg('🧑🧑') 5 ▸ 2
         kseg.indexAtWidth kseg('🧑🧑') 6 ▸ 2
+        
+        kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾') 0 ▸ 0
+        kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾') 1 ▸ 1
+        kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾') 2 ▸ 1
+        kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾') 3 ▸ 2
     
     #  0000000  00000000   0000000   000  
     # 000       000       000        000  

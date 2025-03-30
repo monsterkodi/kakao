@@ -43,6 +43,10 @@ screen = (function ()
         w = kseg.segWidth(char)
         if (w > 1)
         {
+            if (char.length > 4)
+            {
+                char = '\x1b]66;w=2;' + char + '\x07'
+            }
             this.set(x,y,char,fg,bg)
             this.set(x + 1,y,null,fg,bg)
             return 2
@@ -162,7 +166,7 @@ screen = (function ()
                     s += fg
                     pfg = fg
                 }
-                s += (char != null ? char : '?')
+                s += char
             }
             if (y !== this.rows - 1)
             {

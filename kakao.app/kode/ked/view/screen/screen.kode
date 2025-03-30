@@ -32,12 +32,14 @@ function screen
         
         w = kseg.segWidth char
         if w > 1
+            if char.length > 4
+                char = '\x1b]66;w=2;' + char + '\x07'
             @set x   y char fg bg
             @set x+1 y null fg bg
-            ⮐ 2
+            2
         else
             @set x y char fg bg
-            ⮐ 1
+            1
     
     set: x y char fg bg =>
         
@@ -109,10 +111,13 @@ function screen
         s = ''
         pbg = ''
         pfg = ''
+        
         for y in 0...@rows
             for x in 0...@cols
+            
                 char = @c[y][x].char
                 continue if char == null
+                    
                 bg = color.bg_rgb @c[y][x].bg
                 if bg != pbg
                     s += bg
@@ -122,8 +127,9 @@ function screen
                 if fg != pfg
                     s += fg
                     pfg = fg
-                s += char ? '?'
+                s += char
             s += '\n' if y != @rows-1
+
         @t.write s
         
 export screen
