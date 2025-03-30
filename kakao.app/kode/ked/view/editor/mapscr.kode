@@ -198,6 +198,11 @@ function mapscr extends mapview
         for y in @topLine..@botLine
             id = @images[y]
             t.placeLineImage id @cells.x @cells.y @lineOffset(y) @pixelsPerRow
+            
+        if @topLine
+            t.hideImagesInRange @images[0] @images[@topLine-1]
+        if @botLine < @images.length
+            t.hideImagesInRange @images[@botLine] @images[-1]
         
         @drawKnob()
                 

@@ -207,6 +207,14 @@ mapscr = (function ()
             id = this.images[y]
             t.placeLineImage(id,this.cells.x,this.cells.y,this.lineOffset(y),this.pixelsPerRow)
         }
+        if (this.topLine)
+        {
+            t.hideImagesInRange(this.images[0],this.images[this.topLine - 1])
+        }
+        if (this.botLine < this.images.length)
+        {
+            t.hideImagesInRange(this.images[this.botLine],this.images.slice(-1)[0])
+        }
         return this.drawKnob()
     }
 
