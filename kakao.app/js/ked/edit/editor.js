@@ -153,7 +153,7 @@ editor = (function ()
 
     editor.prototype["onWheel"] = function (event)
     {
-        var inside, res, _117_25_, _118_25_, _119_25_, _123_20_
+        var inside, res, steps, _117_25_, _118_25_, _119_25_, _123_20_
 
         if (event.cell[1] >= this.cells.y + this.cells.rows)
         {
@@ -174,13 +174,26 @@ editor = (function ()
                 return res
             }
         }
+        steps = 1
+        if (event.shift)
+        {
+            steps *= 2
+        }
+        if (event.ctrl)
+        {
+            steps *= 2
+        }
+        if (event.alt)
+        {
+            steps *= 2
+        }
         switch (event.dir)
         {
             case 'up':
             case 'down':
             case 'left':
             case 'right':
-                this.state.scrollView(event.dir)
+                this.state.scrollView(event.dir,steps)
                 break
         }
 
@@ -229,7 +242,7 @@ editor = (function ()
 
     editor.prototype["onKey"] = function (key, event)
     {
-        var _190_20_, _194_21_, _199_21_
+        var _195_20_, _199_21_, _204_21_
 
         if (!this.hasFocus())
         {

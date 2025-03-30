@@ -109,16 +109,13 @@ function mapscr extends mapview
     
     scrollToPixel: pixel =>
         
-        # log 'scrollToPixel'
-        
         view = @state.s.view.asMutable()
         
-        view[1] = int (pixel[1] - @cells.y * @cells.screen.t.cellsz[1]) / @pixelsPerRow
+        view[1] = @topLine + int((pixel[1] - @mapY) / @pixelsPerRow)
         
-        view[1] -= 6 # offset so that clicking inside a header scrolls it into view
+        view[1] -= 5 # offset so that clicking inside a header scrolls it into view
         
         maxY = @state.s.lines.length - @cells.rows
-        
         view[1] = min maxY view[1] if maxY > 0
         view[1] = max 0 view[1]
         

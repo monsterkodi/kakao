@@ -125,8 +125,8 @@ mapscr = (function ()
         var maxY, view
 
         view = this.state.s.view.asMutable()
-        view[1] = parseInt((pixel[1] - this.cells.y * this.cells.screen.t.cellsz[1]) / this.pixelsPerRow)
-        view[1] -= 6
+        view[1] = this.topLine + parseInt((pixel[1] - this.mapY) / this.pixelsPerRow)
+        view[1] -= 5
         maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
         {
