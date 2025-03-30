@@ -138,8 +138,13 @@ function mapscr extends mapview
 
     calcView: ->
     
+        @mapX       = @cells.x*@csz[0]
+        @mapY       = @cells.y*@csz[1]
+        
         @mapHeight  = @cells.rows * @csz[1]
         @mapWidth   = @cells.cols * @csz[0]
+        
+        @mapBot     = @mapY + @mapHeight - @pixelsPerRow
         
         @linesInMap = int @mapHeight / @pixelsPerRow
         @knobHeight = @state.cells.rows * @pixelsPerRow
@@ -158,8 +163,8 @@ function mapscr extends mapview
         
     pixelPos: pos -> 
        [
-           @cells.x*@csz[0] + pos[0]*@pixelsPerCol
-           @cells.y*@csz[1] + @lineOffset(pos[1])
+           @mapX + pos[0]*@pixelsPerCol
+           @mapY + @lineOffset(pos[1])
        ]
     
     maxLinesToLoad: => 2000
@@ -238,26 +243,25 @@ function mapscr extends mapview
 
     drawCursors: =>
         
-        mw = @cells.cols*@csz[0]
-    
         for pos,idx in @state.s.cursors
         
-            if pos[0]*@pixelsPerCol < mw
+            [sx sy] = @pixelPos pos 
             
-                [sx sy] = @pixelPos pos 
-            
-                if idx == @state.s.main
-                    fg = theme.cursor.main
-                    sw = @pixelsPerCol*2
-                    sx -= int @pixelsPerCol/2
-                else
-                    fg = theme.cursor.multi
-                    sw = @pixelsPerCol
-                    
-                squares.place sx sy sw @pixelsPerRow fg
+            continue if sy < @mapY or sy >= @mapBot
+            continue if sx < @mapX or sx >= @mapX + @mapWidth
+        
+            if idx == @state.s.main
+                fg = theme.cursor.main
+                sw = @pixelsPerCol*2
+                sx -= int @pixelsPerCol/2
+            else
+                fg = theme.cursor.multi
+                sw = @pixelsPerCol
                 
-                if idx == @state.s.main
-                    squares.place @cells.x*@csz[0]+mw-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
+            squares.place sx sy sw @pixelsPerRow fg
+            
+            if idx == @state.s.main
+                squares.place @cells.x*@csz[0]+@mapWidth-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       
@@ -267,26 +271,29 @@ function mapscr extends mapview
     
     drawHighlights: =>
         
-        mw = @cells.cols*@csz[0]
         mc = @state.mainCursor()
         
-        rgtx = int @cells.cols*@csz[0]/@pixelsPerCol
+        xoff = @mapX + @mapWidth
         selw = @pixelsPerCol*16
         hlw  = @pixelsPerCol*8
     
         for li in belt.lineIndicesForRanges @state.s.selections
-        
+                
+            sy = @mapY + @lineOffset(li) 
+            continue if sy < @mapY or sy >= @mapBot
+            
             if @state.isSpanSelectedLine li 
                 clr = @color.selection
             else
                 clr = @color.fullysel
                 
-            [sx sy] = @pixelPos [rgtx li] 
-            squares.place sx-selw sy selw @pixelsPerRow clr 2000
+            squares.place xoff-selw sy selw @pixelsPerRow clr 2000
     
         for li in belt.lineIndicesForSpans @state.s.highlights
         
-            [sx sy] = @pixelPos [rgtx li] 
-            squares.place sx-hlw sy hlw @pixelsPerRow @color.highlight 2001
+            sy = @mapY + @lineOffset(li) 
+            continue if sy < @mapY or sy >= @mapBot
+            
+            squares.place xoff-hlw sy hlw @pixelsPerRow @color.highlight 2001
 
 export mapscr

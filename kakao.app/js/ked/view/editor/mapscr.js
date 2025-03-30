@@ -146,8 +146,11 @@ mapscr = (function ()
     {
         var editorLinesHeight, maxOffset, viewFactor
 
+        this.mapX = this.cells.x * this.csz[0]
+        this.mapY = this.cells.y * this.csz[1]
         this.mapHeight = this.cells.rows * this.csz[1]
         this.mapWidth = this.cells.cols * this.csz[0]
+        this.mapBot = this.mapY + this.mapHeight - this.pixelsPerRow
         this.linesInMap = parseInt(this.mapHeight / this.pixelsPerRow)
         this.knobHeight = this.state.cells.rows * this.pixelsPerRow
         editorLinesHeight = this.state.s.lines.length * this.pixelsPerRow
@@ -171,7 +174,7 @@ mapscr = (function ()
 
     mapscr.prototype["pixelPos"] = function (pos)
     {
-        return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + this.lineOffset(pos[1])]
+        return [this.mapX + pos[0] * this.pixelsPerCol,this.mapY + this.lineOffset(pos[1])]
     }
 
     mapscr.prototype["maxLinesToLoad"] = function ()
@@ -243,50 +246,58 @@ mapscr = (function ()
 
     mapscr.prototype["drawCursors"] = function ()
     {
-        var fg, idx, mw, pos, sw, sx, sy
+        var fg, idx, pos, sw, sx, sy
 
-        mw = this.cells.cols * this.csz[0]
         var list = _k_.list(this.state.s.cursors)
         for (idx = 0; idx < list.length; idx++)
         {
             pos = list[idx]
-            if (pos[0] * this.pixelsPerCol < mw)
-            {
-                var _b_ = this.pixelPos(pos); sx = _b_[0]; sy = _b_[1]
+            var _b_ = this.pixelPos(pos); sx = _b_[0]; sy = _b_[1]
 
-                if (idx === this.state.s.main)
-                {
-                    fg = theme.cursor.main
-                    sw = this.pixelsPerCol * 2
-                    sx -= parseInt(this.pixelsPerCol / 2)
-                }
-                else
-                {
-                    fg = theme.cursor.multi
-                    sw = this.pixelsPerCol
-                }
-                squares.place(sx,sy,sw,this.pixelsPerRow,fg)
-                if (idx === this.state.s.main)
-                {
-                    squares.place(this.cells.x * this.csz[0] + mw - this.pixelsPerCol * 4,sy,this.pixelsPerCol * 4,this.pixelsPerRow,fg,2002)
-                }
+            if (sy < this.mapY || sy >= this.mapBot)
+            {
+                continue
+            }
+            if (sx < this.mapX || sx >= this.mapX + this.mapWidth)
+            {
+                continue
+            }
+            if (idx === this.state.s.main)
+            {
+                fg = theme.cursor.main
+                sw = this.pixelsPerCol * 2
+                sx -= parseInt(this.pixelsPerCol / 2)
+            }
+            else
+            {
+                fg = theme.cursor.multi
+                sw = this.pixelsPerCol
+            }
+            squares.place(sx,sy,sw,this.pixelsPerRow,fg)
+            if (idx === this.state.s.main)
+            {
+                squares.place(this.cells.x * this.csz[0] + this.mapWidth - this.pixelsPerCol * 4,sy,this.pixelsPerCol * 4,this.pixelsPerRow,fg,2002)
             }
         }
     }
 
     mapscr.prototype["drawHighlights"] = function ()
     {
-        var clr, hlw, li, mc, mw, rgtx, selw, sx, sy
+        var clr, hlw, li, mc, selw, sy, xoff
 
-        mw = this.cells.cols * this.csz[0]
         mc = this.state.mainCursor()
-        rgtx = parseInt(this.cells.cols * this.csz[0] / this.pixelsPerCol)
+        xoff = this.mapX + this.mapWidth
         selw = this.pixelsPerCol * 16
         hlw = this.pixelsPerCol * 8
         var list = _k_.list(belt.lineIndicesForRanges(this.state.s.selections))
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             li = list[_a_]
+            sy = this.mapY + this.lineOffset(li)
+            if (sy < this.mapY || sy >= this.mapBot)
+            {
+                continue
+            }
             if (this.state.isSpanSelectedLine(li))
             {
                 clr = this.color.selection
@@ -295,17 +306,18 @@ mapscr = (function ()
             {
                 clr = this.color.fullysel
             }
-            var _b_ = this.pixelPos([rgtx,li]); sx = _b_[0]; sy = _b_[1]
-
-            squares.place(sx - selw,sy,selw,this.pixelsPerRow,clr,2000)
+            squares.place(xoff - selw,sy,selw,this.pixelsPerRow,clr,2000)
         }
         var list1 = _k_.list(belt.lineIndicesForSpans(this.state.s.highlights))
-        for (var _c_ = 0; _c_ < list1.length; _c_++)
+        for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
-            li = list1[_c_]
-            var _d_ = this.pixelPos([rgtx,li]); sx = _d_[0]; sy = _d_[1]
-
-            squares.place(sx - hlw,sy,hlw,this.pixelsPerRow,this.color.highlight,2001)
+            li = list1[_b_]
+            sy = this.mapY + this.lineOffset(li)
+            if (sy < this.mapY || sy >= this.mapBot)
+            {
+                continue
+            }
+            squares.place(xoff - hlw,sy,hlw,this.pixelsPerRow,this.color.highlight,2001)
         }
     }
 
