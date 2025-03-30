@@ -27,6 +27,7 @@ mapscr = (function ()
         this["drawKnob"] = this["drawKnob"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
         this["draw"] = this["draw"].bind(this)
+        this["maxLinesToLoad"] = this["maxLinesToLoad"].bind(this)
         this["scrollToPixel"] = this["scrollToPixel"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -110,11 +111,11 @@ mapscr = (function ()
 
     mapscr.prototype["onResize"] = function ()
     {
-        if (_k_.empty(this.cells.screen.t.pixels))
+        this.csz = this.cells.screen.t.cellsz
+        if (_k_.empty(this.csz))
         {
             return
         }
-        this.csz = this.cells.screen.t.cellsz
         this.calcView()
         return this.redraw = true
     }
@@ -137,20 +138,30 @@ mapscr = (function ()
             return
         }
         this.state.setView(view)
-        this.calcView()
         this.drawKnob()
         return {redraw:true}
     }
 
     mapscr.prototype["calcView"] = function ()
     {
+        var editorLinesHeight, maxOffset, viewFactor
+
         this.mapHeight = this.cells.rows * this.csz[1]
-        this.linesInMap = parseInt(this.mapHeight / this.pixelsPerRow)
         this.mapWidth = this.cells.cols * this.csz[0]
+        this.linesInMap = parseInt(this.mapHeight / this.pixelsPerRow)
         this.knobHeight = this.state.cells.rows * this.pixelsPerRow
-        this.topLine = 0
-        this.botLine = _k_.min(this.state.s.lines.length - 1,this.topLine + this.linesInMap)
-        console.log(`calcView top ${this.topLine} bot ${this.botLine}`)
+        editorLinesHeight = this.state.s.lines.length * this.pixelsPerRow
+        if (editorLinesHeight > this.mapHeight && this.state.s.view[1] > 0)
+        {
+            maxOffset = this.state.s.lines.length - this.linesInMap
+            viewFactor = this.state.s.view[1] / (this.state.s.lines.length - this.cells.rows)
+            this.topLine = parseInt(viewFactor * maxOffset)
+        }
+        else
+        {
+            this.topLine = 0
+        }
+        return this.botLine = _k_.min(this.state.s.lines.length - 1,this.topLine + this.linesInMap)
     }
 
     mapscr.prototype["lineOffset"] = function (y)
@@ -161,6 +172,11 @@ mapscr = (function ()
     mapscr.prototype["pixelPos"] = function (pos)
     {
         return [this.cells.x * this.csz[0] + pos[0] * this.pixelsPerCol,this.cells.y * this.csz[1] + this.lineOffset(pos[1])]
+    }
+
+    mapscr.prototype["maxLinesToLoad"] = function ()
+    {
+        return 2000
     }
 
     mapscr.prototype["draw"] = function ()
@@ -196,17 +212,15 @@ mapscr = (function ()
 
     mapscr.prototype["drawKnob"] = function ()
     {
-        var t, y, yc, yr
+        var ky
 
-        t = this.cells.screen.t
-        if (_k_.empty(t.pixels) || this.hidden() || this.collapsed())
+        this.calcView()
+        if (_k_.empty(this.csz) || this.hidden() || this.collapsed())
         {
             return
         }
-        y = this.pixelsPerRow * this.state.s.view[1] / this.csz[1]
-        yc = parseInt(y)
-        yr = parseInt((y - yc) * this.csz[1])
-        return t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y + yc,yr,this.mapWidth,this.knobHeight)
+        ky = this.lineOffset(this.state.s.view[1])
+        return this.cells.screen.t.placeImageOverlay(this.knobId,this.cells.x,this.cells.y,ky,this.mapWidth,this.knobHeight)
     }
 
     mapscr.prototype["hide"] = function ()

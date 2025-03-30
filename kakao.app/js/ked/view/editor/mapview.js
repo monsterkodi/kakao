@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var mapview
 
@@ -25,6 +25,7 @@ mapview = (function ()
         this["draw"] = this["draw"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
         this["createImages"] = this["createImages"].bind(this)
+        this["maxLinesToLoad"] = this["maxLinesToLoad"].bind(this)
         this["setSyntaxSegls"] = this["setSyntaxSegls"].bind(this)
         this["getSyntax"] = this["getSyntax"].bind(this)
         this["getSegls"] = this["getSegls"].bind(this)
@@ -58,18 +59,11 @@ mapview = (function ()
 
     mapview.prototype["hide"] = function ()
     {
-        var id
-
         if (this.hidden())
         {
             return
         }
-        var list = _k_.list(this.images)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            id = list[_a_]
-            this.cells.screen.t.hideImage(id)
-        }
+        this.cells.screen.t.hideImagesInRange(this.images[0],this.images.slice(-1)[0])
         return mapview.__super__.hide.call(this)
     }
 
@@ -138,6 +132,11 @@ mapview = (function ()
         return this.redraw = true
     }
 
+    mapview.prototype["maxLinesToLoad"] = function ()
+    {
+        return (this.cells.rows - this.rowOffset) * this.csz[1] / this.pixelsPerRow
+    }
+
     mapview.prototype["createImages"] = function ()
     {
         var bytes, charPixels, data, dataForLine, line, lines, maxX, maxY, syntax, t, w, y
@@ -158,7 +157,7 @@ mapview = (function ()
         syntax = this.getSyntax()
         data = Buffer.alloc(bytes)
         maxX = w / this.pixelsPerCol
-        maxY = (this.cells.rows - this.rowOffset) * t.cellsz[1] / this.pixelsPerRow
+        maxY = this.maxLinesToLoad()
         charPixels = (function (x, rgb)
         {
             var xr

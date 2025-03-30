@@ -118,9 +118,12 @@ function TTIO extends events
         
         if not @overlayID
             @overlayID = @sendImg rounded.rect(300 400 0 [255 255 255 2]) 1
+
+        cy = y + int(py / @cellsz[1])
+        oy = py % @cellsz[1]
         
-        @setCursor x y
-        @write "\x1b_Gq=1,a=p,i=#{@overlayID},p=#{id},X=0,Y=#{py},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
+        @setCursor x cy
+        @write "\x1b_Gq=1,a=p,i=#{@overlayID},p=#{id},X=0,Y=#{oy},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
         
     hideImageOverlay: id ->
     
@@ -195,6 +198,10 @@ function TTIO extends events
     hideImage: id ->
         
         @write "\x1b_Gq=1,a=d,d=i,i=#{id}\x1b\\"
+        
+    hideImagesInRange: start end ->
+    
+        @write "\x1b_Gq=2,a=d,d=r,x=#{start},y=#{end}\x1b\\"
             
     deleteImage: id ->
         

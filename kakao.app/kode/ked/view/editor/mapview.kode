@@ -51,8 +51,9 @@ function mapview extends view
         
         ⮐  if @hidden()
         
-        for id in @images
-            @cells.screen.t.hideImage id
+        # for id in @images
+        #     @cells.screen.t.hideImage id
+        @cells.screen.t.hideImagesInRange @images[0] @images[-1]
         
         super()
         
@@ -96,6 +97,8 @@ function mapview extends view
     # 000  000 0 000  000   000  000   000  000            000  
     # 000  000   000  000   000   0000000   00000000  0000000   
     
+    maxLinesToLoad: => (@cells.rows-@rowOffset) * @csz[1] / @pixelsPerRow
+    
     createImages: =>
         
         t = @cells.screen.t
@@ -116,7 +119,7 @@ function mapview extends view
         data  = Buffer.alloc bytes
         
         maxX  = w/@pixelsPerCol
-        maxY = (@cells.rows-@rowOffset) * t.cellsz[1] / @pixelsPerRow
+        maxY  = @maxLinesToLoad()
         
         charPixels = x rgb =>
         

@@ -94,9 +94,10 @@ function mapscr extends mapview
     
     onResize: =>
         
-        ⮐  if empty @cells.screen.t.pixels
-        
         @csz = @cells.screen.t.cellsz
+        
+        ⮐  if empty @csz
+        
         @calcView()
         @redraw = true
         
@@ -125,29 +126,33 @@ function mapscr extends mapview
         
         @state.setView view
         
-        @calcView()
         @drawKnob()
         
         redraw:true
         
-    #  ███████   ████████  ████████   ███████  ████████  █████████
-    # ███   ███  ███       ███       ███       ███          ███   
-    # ███   ███  ██████    ██████    ███████   ███████      ███   
-    # ███   ███  ███       ███            ███  ███          ███   
-    #  ███████   ███       ███       ███████   ████████     ███   
+    #  ███████   ███████   ███       ███████  ███   ███  ███  ████████  ███   ███
+    # ███       ███   ███  ███      ███       ███   ███  ███  ███       ███ █ ███
+    # ███       █████████  ███      ███        ███ ███   ███  ███████   █████████
+    # ███       ███   ███  ███      ███          ███     ███  ███       ███   ███
+    #  ███████  ███   ███  ███████   ███████      █      ███  ████████  ██     ██
 
     calcView: ->
     
         @mapHeight  = @cells.rows * @csz[1]
+        @mapWidth   = @cells.cols * @csz[0]
+        
         @linesInMap = int @mapHeight / @pixelsPerRow
+        @knobHeight = @state.cells.rows * @pixelsPerRow
         
-        @mapWidth   = @cells.cols*@csz[0]
-        @knobHeight = @state.cells.rows*@pixelsPerRow
-        
-        @topLine    = 0 
+        editorLinesHeight = @state.s.lines.length * @pixelsPerRow
+        if editorLinesHeight > @mapHeight and @state.s.view[1] > 0
+            maxOffset  = @state.s.lines.length - @linesInMap
+            viewFactor = @state.s.view[1] / (@state.s.lines.length - @cells.rows)
+            @topLine   = int viewFactor * maxOffset
+        else
+            @topLine = 0 
+            
         @botLine    = min @state.s.lines.length-1 @topLine+@linesInMap 
-        
-        log "calcView top #{@topLine} bot #{@botLine}"
 
     lineOffset: y -> (y-@topLine)*@pixelsPerRow
         
@@ -156,6 +161,8 @@ function mapscr extends mapview
            @cells.x*@csz[0] + pos[0]*@pixelsPerCol
            @cells.y*@csz[1] + @lineOffset(pos[1])
        ]
+    
+    maxLinesToLoad: => 2000
     
     ###
     ███████    ████████    ███████   ███   ███
@@ -201,16 +208,14 @@ function mapscr extends mapview
     # ███   ███  ███   ███   ███████   ███████  
 
     drawKnob: =>
+    
+        @calcView()
+                
+        ⮐  if empty @csz or @hidden() or @collapsed()
         
-        t = @cells.screen.t
+        ky = @lineOffset @state.s.view[1]
         
-        ⮐  if empty t.pixels or @hidden() or @collapsed()
-        
-        y  = @pixelsPerRow*@state.s.view[1]/@csz[1]
-        yc = int(y) 
-        yr = int((y - yc) * @csz[1])
-        
-        t.placeImageOverlay @knobId @cells.x @cells.y+yc yr @mapWidth @knobHeight
+        @cells.screen.t.placeImageOverlay @knobId @cells.x @cells.y ky @mapWidth @knobHeight
 
     hide: =>
     
