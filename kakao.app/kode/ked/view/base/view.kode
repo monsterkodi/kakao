@@ -28,6 +28,7 @@ function view extends events
         @color = {}
         @feats = {}
         @feats[f] = true for f in features
+        
         @isVisible = true
         @focusable = false
                         

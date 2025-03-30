@@ -131,18 +131,6 @@ salterMode = (function ()
         }
     }
 
-    salterMode.prototype["postDraw"] = function ()
-    {
-        var c
-
-        var list = _k_.list(this.state.s.cursors)
-        for (var _a_ = 0; _a_ < list.length; _a_++)
-        {
-            c = list[_a_]
-            this.state.cells.set_char(c[0] - this.state.s.view[0],c[1] - this.state.s.view[1],' ')
-        }
-    }
-
     salterMode.prototype["deleteSelection"] = function ()
     {
         var cursors, idx, lineids

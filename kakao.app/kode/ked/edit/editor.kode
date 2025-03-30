@@ -42,11 +42,9 @@ function editor extends draw
         
     onModesLoaded: =>
                         
-        for m in mode.names()            
+        for m in mode.names()
             if @feats[m] ➜ @state.allowedModes[m] = true
             
-        # log 'allowedModes' @feats @state.allowedModes
-                        
     # 000       0000000   000   000   0000000   000   000  000000000  
     # 000      000   000   000 000   000   000  000   000     000     
     # 000      000000000    00000    000   000  000   000     000     

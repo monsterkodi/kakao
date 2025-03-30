@@ -147,7 +147,7 @@ function mode
                 m.cursorsSet editor
                 
         if not @isActive state 'salter'
-            mode.modes['salter']?.checkCursorsSet @
+            mode.modes['salter']?.checkCursorsSet state
         
     @themeColor: state colorName defaultColor ->
     

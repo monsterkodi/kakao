@@ -219,7 +219,7 @@ mode = (function ()
         }
         if (!this.isActive(state,'salter'))
         {
-            return (mode.modes['salter'] != null ? mode.modes['salter'].checkCursorsSet(this) : undefined)
+            return (mode.modes['salter'] != null ? mode.modes['salter'].checkCursorsSet(state) : undefined)
         }
     }
 

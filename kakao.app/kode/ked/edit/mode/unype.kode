@@ -7,6 +7,7 @@
 ###
 
 use ../../../kxk ◆ kseg
+use ../../theme  ◆ theme
   
 import fonts from '../../util/fonts.json' with { type: "json" }
 
@@ -14,9 +15,10 @@ function unype
 
     @map: {}
     
-    @: -> 
+    @: ->   
     
         @name = 'unype'
+        @font = 'large'
         
         if empty unype.map
             def = fonts.default.join ' '
@@ -29,10 +31,36 @@ function unype
                         
             unype.map['full width'][' '] = '　'
     
+    # ███  ███   ███   ███████  ████████  ████████   █████████
+    # ███  ████  ███  ███       ███       ███   ███     ███   
+    # ███  ███ █ ███  ███████   ███████   ███████       ███   
+    # ███  ███  ████       ███  ███       ███   ███     ███   
+    # ███  ███   ███  ███████   ████████  ███   ███     ███   
+
     insert: text ->
     
-        if repl = unype.map['crazy'][text]
-            text = repl
+        if @font == 'large'
+     
+            text = '\x1b]66;s=2;' + text + '\x1b\x5c'
+            
+        else
+            if repl = unype.map[@font][text]
+                text = repl
+            
         text
+
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    themeColor: colorName defaultColor ->
+        
+        switch colorName
+            'cursor.multi' ➜ ⮐  theme.scroll.hover
+            'cursor.main'  ➜ ⮐  theme.scroll.dot
+        
+        defaultColor
 
 export unype

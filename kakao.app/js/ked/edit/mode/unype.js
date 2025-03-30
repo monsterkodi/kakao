@@ -4,6 +4,8 @@ var unype
 
 import kseg from "../../../kxk/kseg.js"
 
+import theme from "../../theme/theme.js"
+
 import fonts from '../../util/fonts.json' with { type : "json" }
 
 unype = (function ()
@@ -14,6 +16,7 @@ unype = (function ()
         var char, def, font, idx, text
 
         this.name = 'unype'
+        this.font = 'large'
         if (_k_.empty(unype.map))
         {
             def = fonts.default.join(' ')
@@ -43,11 +46,33 @@ unype = (function ()
     {
         var repl
 
-        if (repl = unype.map['crazy'][text])
+        if (this.font === 'large')
         {
-            text = repl
+            text = '\x1b]66;s=2;' + text + '\x1b\x5c'
+        }
+        else
+        {
+            if (repl = unype.map[this.font][text])
+            {
+                text = repl
+            }
         }
         return text
+    }
+
+    unype.prototype["themeColor"] = function (colorName, defaultColor)
+    {
+        switch (colorName)
+        {
+            case 'cursor.multi':
+                return theme.scroll.hover
+
+            case 'cursor.main':
+                return theme.scroll.dot
+
+        }
+
+        return defaultColor
     }
 
     return unype
