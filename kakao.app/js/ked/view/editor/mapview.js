@@ -24,6 +24,8 @@ mapview = (function ()
     
         this["draw"] = this["draw"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
+        this["imageForLine"] = this["imageForLine"].bind(this)
+        this["updateLine"] = this["updateLine"].bind(this)
         this["createImages"] = this["createImages"].bind(this)
         this["maxLinesToLoad"] = this["maxLinesToLoad"].bind(this)
         this["setSyntaxSegls"] = this["setSyntaxSegls"].bind(this)
@@ -139,7 +141,7 @@ mapview = (function ()
 
     mapview.prototype["createImages"] = function ()
     {
-        var bytes, charPixels, data, dataForLine, line, lines, maxX, maxY, syntax, t, w, y
+        var bytes, data, id, line, lines, maxY, t, w, y
 
         t = this.cells.screen.t
         if (_k_.empty(t.cellsz))
@@ -154,10 +156,46 @@ mapview = (function ()
             return
         }
         lines = this.getSegls()
-        syntax = this.getSyntax()
         data = Buffer.alloc(bytes)
-        maxX = w / this.pixelsPerCol
         maxY = this.maxLinesToLoad()
+        var list = _k_.list(lines)
+        for (y = 0; y < list.length; y++)
+        {
+            line = list[y]
+            this.imageForLine(data,line,y)
+            id = this.imgId + y
+            this.images.push(id)
+            t.sendImageData(data,id,w,1)
+            if (y > maxY)
+            {
+                break
+            }
+        }
+    }
+
+    mapview.prototype["updateLine"] = function (y)
+    {
+        var bytes, data, id, t, w
+
+        t = this.cells.screen.t
+        w = this.cells.cols * t.cellsz[0]
+        bytes = w * 3
+        if (bytes <= 0)
+        {
+            return
+        }
+        data = Buffer.alloc(bytes)
+        id = this.imgId + y
+        this.imageForLine(data,this.getSegls()[y],y)
+        t.deleteImage(id)
+        t.sendImageData(data,id,w,1)
+        return t.placeLineImage(id,this.cells.x,this.cells.y + this.rowOffset,y * this.pixelsPerRow,this.pixelsPerRow)
+    }
+
+    mapview.prototype["imageForLine"] = function (data, line, y, syntax)
+    {
+        var ch, charPixels, clss, f, maxX, rgb, w, x
+
         charPixels = (function (x, rgb)
         {
             var xr
@@ -169,56 +207,42 @@ mapview = (function ()
                 data[(x * this.pixelsPerCol + xr) * 3 + 2] = rgb[2]
             }
         }).bind(this)
-        dataForLine = (function (line)
+        w = data.length / 3
+        maxX = w / this.pixelsPerCol
+        syntax = this.getSyntax()
+        for (var _c_ = x = 0, _d_ = line.length; (_c_ <= _d_ ? x < line.length : x > line.length); (_c_ <= _d_ ? ++x : --x))
         {
-            var ch, clss, f, rgb, x
-
-            for (var _c_ = x = 0, _d_ = line.length; (_c_ <= _d_ ? x < line.length : x > line.length); (_c_ <= _d_ ? ++x : --x))
-            {
-                if (x > maxX)
-                {
-                    break
-                }
-                ch = line[x]
-                if (!_k_.empty(ch) && ch !== ' ')
-                {
-                    f = 0.7
-                    if (_k_.in(ch,'0█'))
-                    {
-                        clss = syntax.getClass(x,y)
-                        if (_k_.in('header',clss))
-                        {
-                            f = 2.0
-                        }
-                    }
-                    rgb = syntax.getColor(x,y)
-                    rgb = rgb.map(function (v)
-                    {
-                        return _k_.clamp(0,255,parseInt(f * v))
-                    })
-                    charPixels(x,rgb)
-                }
-                else
-                {
-                    charPixels(x,this.color.bg)
-                }
-            }
-            for (var _e_ = x = line.length, _f_ = w / this.pixelsPerCol; (_e_ <= _f_ ? x < w / this.pixelsPerCol : x > w / this.pixelsPerCol); (_e_ <= _f_ ? ++x : --x))
-            {
-                charPixels(x,this.color.bg)
-            }
-        }).bind(this)
-        var list = _k_.list(lines)
-        for (y = 0; y < list.length; y++)
-        {
-            line = list[y]
-            dataForLine(line)
-            this.images.push(this.imgId + y)
-            t.sendImageData(data,this.imgId + y,w,1)
-            if (y > maxY)
+            if (x > maxX)
             {
                 break
             }
+            ch = line[x]
+            if (!_k_.empty(ch) && ch !== ' ')
+            {
+                f = 0.7
+                if (_k_.in(ch,'0█'))
+                {
+                    clss = syntax.getClass(x,y)
+                    if (_k_.in('header',clss))
+                    {
+                        f = 2.0
+                    }
+                }
+                rgb = syntax.getColor(x,y)
+                rgb = rgb.map(function (v)
+                {
+                    return _k_.clamp(0,255,parseInt(f * v))
+                })
+                charPixels(x,rgb)
+            }
+            else
+            {
+                charPixels(x,this.color.bg)
+            }
+        }
+        for (var _e_ = x = line.length, _f_ = maxX; (_e_ <= _f_ ? x < maxX : x > maxX); (_e_ <= _f_ ? ++x : --x))
+        {
+            charPixels(x,this.color.bg)
         }
     }
 

@@ -54,7 +54,6 @@ function fileeditor extends editor
         
         @cells.meta_clear()
         @gutter.clearChanges()
-        @mapscr?.reload()
         
     onFuntreeLoaded: =>
         

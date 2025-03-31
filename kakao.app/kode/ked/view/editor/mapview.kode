@@ -111,56 +111,81 @@ function mapview extends view
         w = @cells.cols * t.cellsz[0]
         bytes = w*3
         
-        ⮐  if bytes <= 0
+        ⮐ if bytes <= 0
         
-        lines  = @getSegls()
-        syntax = @getSyntax()
+        lines = @getSegls()
         
         data  = Buffer.alloc bytes
-        
-        maxX  = w/@pixelsPerCol
+                
         maxY  = @maxLinesToLoad()
+                                
+        for line,y in lines
+            
+            @imageForLine data line y
+            id = @imgId+y
+            @images.push id
+            t.sendImageData data id w 1
+            break if y > maxY
+                
+        # prof.end @state.name+'.map'
         
+    # ███   ███  ████████   ███████     ███████   █████████  ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███     ███     ███     
+    # ███   ███  ████████   ███   ███  █████████     ███     ███████ 
+    # ███   ███  ███        ███   ███  ███   ███     ███     ███     
+    #  ███████   ███        ███████    ███   ███     ███     ████████
+
+    updateLine: y => 
+    
+        t = @cells.screen.t
+        w = @cells.cols * t.cellsz[0]
+        bytes = w*3
+        
+        ⮐  if bytes <= 0
+        
+        data = Buffer.alloc bytes
+        
+        id = @imgId+y
+        @imageForLine data @getSegls()[y] y
+        t.deleteImage id
+        t.sendImageData data id w 1
+        t.placeLineImage id @cells.x @cells.y+@rowOffset y*@pixelsPerRow @pixelsPerRow
+            
+    imageForLine: data line y syntax =>
+    
         charPixels = x rgb =>
         
             for xr in 0..@pixelsPerCol
                 data[(x*@pixelsPerCol+xr)*3+0] = rgb[0]
                 data[(x*@pixelsPerCol+xr)*3+1] = rgb[1]
                 data[(x*@pixelsPerCol+xr)*3+2] = rgb[2]
+                
+        w      = data.length / 3
+        maxX   = w/@pixelsPerCol
+        syntax = @getSyntax()
         
-        dataForLine = line =>
+        for x in 0...line.length
             
-            for x in 0...line.length
-                
-                break if x > maxX
-                                    
-                ch = line[x]
-                
-                if valid ch and ch != ' '
+            break if x > maxX
+                                
+            ch = line[x]
+            
+            if valid ch and ch != ' '
+             
+                f = 0.7
+                if ch in '0█'
+                    clss = syntax.getClass x y
+                    if 'header' in clss
+                        f = 2.0
+                rgb = syntax.getColor x y
+                rgb = rgb.map (v) -> clamp(0 255 int(f*v))
                  
-                    f = 0.7
-                    if ch in '0█'
-                        clss = syntax.getClass x y
-                        if 'header' in clss
-                            f = 2.0
-                    rgb = syntax.getColor x y
-                    rgb = rgb.map (v) -> clamp(0 255 parseInt(f*v))
-                     
-                    charPixels x rgb
-                else
-                    charPixels x @color.bg
-                        
-            for x in line.length...w/@pixelsPerCol
-                charPixels x @color.bg        
-                
-        for line,y in lines
-            
-            dataForLine line
-            @images.push @imgId+y
-            t.sendImageData data @imgId+y w 1
-            break if y > maxY
-                
-        # prof.end @state.name+'.map'
+                charPixels x rgb
+            else
+                charPixels x @color.bg
+                    
+        for x in line.length...maxX
+            charPixels x @color.bg        
             
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  

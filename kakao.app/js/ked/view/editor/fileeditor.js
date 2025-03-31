@@ -67,11 +67,8 @@ fileeditor = (function ()
     {
         this.currentFile = currentFile
     
-        var _57_15_
-
         this.cells.meta_clear()
-        this.gutter.clearChanges()
-        return (this.mapscr != null ? this.mapscr.reload() : undefined)
+        return this.gutter.clearChanges()
     }
 
     fileeditor.prototype["onFuntreeLoaded"] = function ()
@@ -235,11 +232,11 @@ fileeditor = (function ()
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _196_50_, _203_50_, _213_50_
+        var counter, currentFile, currext, ext, file, _195_50_, _202_50_, _212_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_196_50_=fileutil.counterparts[currext]) != null ? _196_50_ : [])
+        var list = ((_195_50_=fileutil.counterparts[currext]) != null ? _195_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -250,7 +247,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_203_50_=fileutil.counterparts[currext]) != null ? _203_50_ : [])
+        var list1 = ((_202_50_=fileutil.counterparts[currext]) != null ? _202_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -263,7 +260,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list2 = ((_213_50_=fileutil.counterparts[currext]) != null ? _213_50_ : [])
+        var list2 = ((_212_50_=fileutil.counterparts[currext]) != null ? _212_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -292,7 +289,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _243_69_, _333_31_
+        var col, ret, row, start, word, x, y, _242_69_, _332_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

@@ -50,9 +50,22 @@ function mapscr extends mapview
         
         @calcView()
         
+    # ███      ███  ███   ███  ████████   ███████         ███████  ███   ███   ███████   ███   ███   ███████   ████████  ███████  
+    # ███      ███  ████  ███  ███       ███             ███       ███   ███  ███   ███  ████  ███  ███        ███       ███   ███
+    # ███      ███  ███ █ ███  ███████   ███████         ███       █████████  █████████  ███ █ ███  ███  ████  ███████   ███   ███
+    # ███      ███  ███  ████  ███            ███        ███       ███   ███  ███   ███  ███  ████  ███   ███  ███       ███   ███
+    # ███████  ███  ███   ███  ████████  ███████          ███████  ███   ███  ███   ███  ███   ███   ███████   ████████  ███████  
+
     onLinesChanged: diff =>
-    
-        log "mapscr.onLinesChanged chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length}" #diff
+        
+        if diff.del.length == 0 == diff.chg.length
+            @reload()
+        else
+            if diff.chg.length and diff.del.length == 0 == diff.ins.length
+                for cli in diff.chg
+                    @updateLine cli
+            else
+                log "mapscr.onLinesChanged chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length} imgs" #diff
         
     getSegls:  => @state.segls
     getSyntax: => @state.syntax
@@ -160,7 +173,7 @@ function mapscr extends mapview
         else
             @topLine = 0 
             
-        @botLine    = min @state.s.lines.length-1 @topLine+@linesInMap 
+        @botLine = min @state.s.lines.length-1 @topLine+@linesInMap 
 
     lineOffset: y -> (y-@topLine)*@pixelsPerRow
         
