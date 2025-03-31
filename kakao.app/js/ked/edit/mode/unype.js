@@ -16,7 +16,7 @@ unype = (function ()
         var char, def, font, idx, text
 
         this.name = 'unype'
-        this.font = 'large'
+        this.font = 'crazy'
         if (_k_.empty(unype.map))
         {
             def = fonts.default.join(' ')
@@ -46,16 +46,9 @@ unype = (function ()
     {
         var repl
 
-        if (this.font === 'large')
+        if (repl = unype.map[this.font][text])
         {
-            text = '\x1b]66;s=2;' + text + '\x1b\x5c'
-        }
-        else
-        {
-            if (repl = unype.map[this.font][text])
-            {
-                text = repl
-            }
+            text = repl
         }
         return text
     }

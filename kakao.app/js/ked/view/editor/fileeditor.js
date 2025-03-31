@@ -62,8 +62,9 @@ fileeditor = (function ()
     {
         this.currentFile = currentFile
     
-        var _53_15_
+        var _54_15_
 
+        this.cells.meta_clear()
         this.gutter.clearChanges()
         return (this.mapscr != null ? this.mapscr.reload() : undefined)
     }
@@ -199,11 +200,11 @@ fileeditor = (function ()
 
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _173_50_, _179_50_, _188_50_
+        var counter, currentFile, currext, ext, file, _174_50_, _180_50_, _189_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_173_50_=fileutil.counterparts[currext]) != null ? _173_50_ : [])
+        var list = ((_174_50_=fileutil.counterparts[currext]) != null ? _174_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
@@ -213,7 +214,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list1 = ((_179_50_=fileutil.counterparts[currext]) != null ? _179_50_ : [])
+        var list1 = ((_180_50_=fileutil.counterparts[currext]) != null ? _180_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -225,7 +226,7 @@ fileeditor = (function ()
                 return
             }
         }
-        var list2 = ((_188_50_=fileutil.counterparts[currext]) != null ? _188_50_ : [])
+        var list2 = ((_189_50_=fileutil.counterparts[currext]) != null ? _189_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -254,7 +255,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _218_69_, _308_31_
+        var col, ret, row, start, word, x, y, _219_69_, _309_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

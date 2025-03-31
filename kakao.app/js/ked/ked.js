@@ -266,7 +266,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _223_22_
+        var _230_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -277,6 +277,7 @@ ked [file]
         ;(this.editor.mapscr != null ? this.editor.mapscr.reload() : undefined)
         post.emit('file.loaded',null)
         this.showEditor()
+        this.editor.grabFocus()
         return this.redraw()
     }
 
@@ -607,7 +608,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _508_22_
+        var mcw, _518_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}

@@ -275,27 +275,28 @@ state = (function ()
     
         this.s = immutable({lines:this.segls,selections:[],highlights:[],cursors:[[0,0]],main:0,view:[0,0]})
         this.syntax.clear()
-        return this.clearHistory()
+        this.h = []
+        return this.r = []
     }
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _180_15_
+        var segl, _182_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_180_15_=this.segls) != null ? _180_15_ : [])
+        this.segls = ((_182_15_=this.segls) != null ? _182_15_ : [])
         this.segls.push(segl)
         return this.changeLinesSegls()
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _189_15_
+        var segls, _191_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_189_15_=this.segls) != null ? _189_15_ : [])
+        this.segls = ((_191_15_=this.segls) != null ? _191_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.changeLinesSegls()
     }

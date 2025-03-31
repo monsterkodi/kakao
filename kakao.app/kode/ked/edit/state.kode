@@ -33,14 +33,14 @@ function state extends events
                 
         @handleKey = keys.bind @
 
-        @syntax = new syntax @name + '.syntax'
+        @syntax   = new syntax @name + '.syntax'
         @hasFocus = false
 
         @clearSingle()
 
     toggleMode: name => mode.toggle @ name if @allowedModes[name]
-    startMode: name => mode.start @ name if @allowedModes[name]
-    stopMode: name => mode.stop @ name if @allowedModes[name]
+    startMode:  name => mode.start  @ name if @allowedModes[name]
+    stopMode:   name => mode.stop   @ name if @allowedModes[name]
         
     owner: => 
         
@@ -171,7 +171,9 @@ function state extends events
             view:        [0 0]
             
         @syntax.clear()
-        @clearHistory()
+        
+        @h = []
+        @r = []
         
     addLine: line ext =>
 

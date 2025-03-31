@@ -117,6 +117,7 @@ function draw extends view
 
             x += kseg.segWidth(line[si]) ? 1
             if x < @cells.cols
+                # @cells.meta_clone c row
                 c += @cells.add c row ch fg bg
             
             if clss == 'invert_bg'

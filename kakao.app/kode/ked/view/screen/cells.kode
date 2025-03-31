@@ -43,6 +43,14 @@ function cells
     set_fg:     x y fg         => if @inside(x y) ➜ @screen.set_fg    @wx(x) @wy(y) fg
     set_fg_bg:  x y fg bg      => if @inside(x y) ➜ @screen.set_fg_bg @wx(x) @wy(y) fg bg
     
+    meta_clear: => delete @m
+    meta_pre:   x y p => if @inside(x y) ➜ @m ?= belt.metas(@cols @rows) ; @m[y][x].pre.push p
+    meta_pst:   x y p => if @inside(x y) ➜ @m ?= belt.metas(@cols @rows) ; @m[y][x].pst.push p
+    meta_clone: x y => 
+        ⮐  if empty @m 
+        # log "clone #{x} #{y} #{@m[y][x].pre} #{@m[y][x].pst}" @m[y][x]
+        @screen.meta_set @wx(x) @wy(y) @m[y][x]
+    
     #  0000000   00000000  000000000  
     # 000        000          000     
     # 000  0000  0000000      000     

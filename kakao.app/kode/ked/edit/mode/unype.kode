@@ -18,7 +18,7 @@ function unype
     @: ->   
     
         @name = 'unype'
-        @font = 'large'
+        @font = 'crazy'
         
         if empty unype.map
             def = fonts.default.join ' '
@@ -39,13 +39,8 @@ function unype
 
     insert: text ->
     
-        if @font == 'large'
-     
-            text = '\x1b]66;s=2;' + text + '\x1b\x5c'
-            
-        else
-            if repl = unype.map[@font][text]
-                text = repl
+        if repl = unype.map[@font][text]
+            text = repl
             
         text
 

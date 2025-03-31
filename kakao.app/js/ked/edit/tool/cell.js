@@ -10,6 +10,22 @@ cell = (function ()
 
     cell["cells"] = function (cols, rows)
     {
+        return this.matrix(cols,rows,(function ()
+        {
+            return {bg:[],fg:[],char:' '}
+        }))
+    }
+
+    cell["metas"] = function (cols, rows)
+    {
+        return this.matrix(cols,rows,(function ()
+        {
+            return {pre:[],pst:[]}
+        }))
+    }
+
+    cell["matrix"] = function (cols, rows, cb)
+    {
         var c, cells, l, lines
 
         lines = []
@@ -18,7 +34,7 @@ cell = (function ()
             cells = []
             for (var _c_ = c = 0, _d_ = cols; (_c_ <= _d_ ? c < cols : c > cols); (_c_ <= _d_ ? ++c : --c))
             {
-                cells.push({bg:[],fg:[],char:' '})
+                cells.push(cb())
             }
             lines.push(cells)
         }

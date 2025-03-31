@@ -217,6 +217,13 @@ function KED
     
         @editor.state.syntax.ext = 'txt'
         @editor.state.loadLines ['']
+
+#         @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
+#         @editor.cells.meta_pst 0 0 '\x07'
+#         
+#         @editor.cells.meta_pre 1 0 '\x1b]66;n=3:d=4:w=1;'
+#         @editor.cells.meta_pst 1 0 '\x07'
+        
         @t.setCursor 0 0
         @t.setTitle 'kėd'
         
@@ -225,6 +232,9 @@ function KED
         post.emit 'file.loaded' null
 
         @showEditor()
+        
+        @editor.grabFocus()
+        
         @redraw()
             
     # ████████  ███  ███      ████████   ███████  ███   ███   ███████   ███   ███   ███████   ████████
@@ -321,7 +331,7 @@ function KED
         delete @loadingFile
         
         @status.setFile slash.tilde(@currentFile)
-        
+                
         if text == undefined
             text = '○ binary ○'
         

@@ -14,13 +14,17 @@ use ../../edit/tool ◆ belt
 
 function screen
 
-    @: @t -> @init()
+    @: @t -> 
     
-    init: =>
+        @init()        
+    
+    init: => # called by ked before every screen redraw
     
         @rows = @t.rows()
         @cols = @t.cols()
-        @c = belt.cells @cols @rows 
+        
+        @c = belt.cells @cols @rows
+        # @meta_clear()
         
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -75,6 +79,21 @@ function screen
             @c[y][x].fg = fg
             @c[y][x].bg = bg
             
+    # ██     ██  ████████  █████████   ███████ 
+    # ███   ███  ███          ███     ███   ███
+    # █████████  ███████      ███     █████████
+    # ███ █ ███  ███          ███     ███   ███
+    # ███   ███  ████████     ███     ███   ███
+            
+    # meta_set: x y m =>
+    #     
+    #     if 0 <= x < @cols and 0 <= y < @rows
+    #         @m[y][x] = m
+            
+    # meta_clear: =>
+    #     
+    #     @m = belt.metas @cols @rows
+            
     #  0000000   00000000  000000000  
     # 000        000          000     
     # 000  0000  0000000      000     
@@ -117,17 +136,24 @@ function screen
             
                 char = @c[y][x].char
                 continue if char == null
-                    
+                                    
                 bg = color.bg_rgb @c[y][x].bg
                 if bg != pbg
                     s += bg
                     pbg = bg
-                    # char = '○' if char == ' '
                 fg = color.fg_rgb @c[y][x].fg
                 if fg != pfg
                     s += fg
                     pfg = fg
-                s += char.valueOf()
+                
+                # for mp in @m[y][x].pre
+                #     s += mp 
+                    
+                s += char
+                
+                # for mp in @m[y][x].pst
+                #     s += mp 
+                
             s += '\n' if y != @rows-1
 
         @t.write s

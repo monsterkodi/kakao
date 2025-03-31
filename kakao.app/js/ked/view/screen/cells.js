@@ -1,4 +1,4 @@
-var _k_ = {clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var cells
 
@@ -39,6 +39,10 @@ cells = (function ()
         this["get_fg"] = this["get_fg"].bind(this)
         this["get_bg"] = this["get_bg"].bind(this)
         this["get_char"] = this["get_char"].bind(this)
+        this["meta_clone"] = this["meta_clone"].bind(this)
+        this["meta_pst"] = this["meta_pst"].bind(this)
+        this["meta_pre"] = this["meta_pre"].bind(this)
+        this["meta_clear"] = this["meta_clear"].bind(this)
         this["set_fg_bg"] = this["set_fg_bg"].bind(this)
         this["set_fg"] = this["set_fg"].bind(this)
         this["set_bg"] = this["set_bg"].bind(this)
@@ -147,6 +151,42 @@ cells = (function ()
         {
             return this.screen.set_fg_bg(this.wx(x),this.wy(y),fg,bg)
         }
+    }
+
+    cells.prototype["meta_clear"] = function ()
+    {
+        return delete this.m
+    }
+
+    cells.prototype["meta_pre"] = function (x, y, p)
+    {
+        var _47_49_
+
+        if (this.inside(x,y))
+        {
+            this.m = ((_47_49_=this.m) != null ? _47_49_ : belt.metas(this.cols,this.rows))
+            return this.m[y][x].pre.push(p)
+        }
+    }
+
+    cells.prototype["meta_pst"] = function (x, y, p)
+    {
+        var _48_49_
+
+        if (this.inside(x,y))
+        {
+            this.m = ((_48_49_=this.m) != null ? _48_49_ : belt.metas(this.cols,this.rows))
+            return this.m[y][x].pst.push(p)
+        }
+    }
+
+    cells.prototype["meta_clone"] = function (x, y)
+    {
+        if (_k_.empty(this.m))
+        {
+            return
+        }
+        return this.screen.meta_set(this.wx(x),this.wy(y),this.m[y][x])
     }
 
     cells.prototype["get_char"] = function (x, y)
@@ -357,7 +397,7 @@ cells = (function ()
 
     cells.prototype["draw_frame"] = function (x1, y1, x2, y2, opt)
     {
-        var bg, fg, x, y, _168_16_, _176_20_, _177_20_
+        var bg, fg, x, y, _176_16_, _184_20_, _185_20_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -376,9 +416,9 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        opt.pad = ((_168_16_=opt.pad) != null ? _168_16_ : [1,0])
-        fg = ((_176_20_=opt.fg) != null ? _176_20_ : '#888')
-        bg = ((_177_20_=opt.bg) != null ? _177_20_ : null)
+        opt.pad = ((_176_16_=opt.pad) != null ? _176_16_ : [1,0])
+        fg = ((_184_20_=opt.fg) != null ? _184_20_ : '#888')
+        bg = ((_185_20_=opt.bg) != null ? _185_20_ : null)
         this.set(x1,y1,'╭',fg,bg)
         this.set(x2,y1,'╮',fg,bg)
         this.set(x1,y2,'╰',fg,bg)
@@ -404,7 +444,7 @@ cells = (function ()
 
     cells.prototype["draw_rounded_border"] = function (x1, y1, x2, y2, opt)
     {
-        var fg, zLayer, _215_24_, _216_28_
+        var fg, zLayer, _223_24_, _224_28_
 
         if (x1 < 0 && x2 < 0)
         {
@@ -423,8 +463,8 @@ cells = (function ()
             y2 = this.rows + y2
         }
         opt = (opt != null ? opt : {})
-        fg = ((_215_24_=opt.fg) != null ? _215_24_ : '#888')
-        zLayer = ((_216_28_=opt.zLayer) != null ? _216_28_ : 1000)
+        fg = ((_223_24_=opt.fg) != null ? _223_24_ : '#888')
+        zLayer = ((_224_28_=opt.zLayer) != null ? _224_28_ : 1000)
         this.img(x1,y1,'rounded.border.tl',fg,zLayer)
         this.img(x2,y1,'rounded.border.tr',fg,zLayer)
         this.img(x1,y2,'rounded.border.bl',fg,zLayer)

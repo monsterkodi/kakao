@@ -49,6 +49,7 @@ function fileeditor extends editor
         
     setCurrentFile: @currentFile =>
         
+        @cells.meta_clear()
         @gutter.clearChanges()
         @mapscr?.reload()
 
