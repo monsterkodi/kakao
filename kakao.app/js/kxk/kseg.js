@@ -152,7 +152,7 @@ kseg.words = function (any)
 {
     return kseg.infos(any,'word',function (s)
     {
-        return /\w+/.test(s)
+        return /^\w+$/.test(s)
     })
 }
 

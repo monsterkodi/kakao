@@ -117,6 +117,7 @@ use .. ◆ kstr kseg
     
         kseg.words 'a' ▸ [word:'a' index:0 segl:['a']]
         kseg.words 'ab cd'  ▸ [{word:'ab' index:0 segl:['a' 'b']}, {word:'cd' index:3 segl:['c' 'd']}]
+        kseg.words '@b.cd'  ▸ [{word:'b' index:1 segl:['b']}, {word:'cd' index:3 segl:['c' 'd']}]
         
     #  0000000  000000000   0000000   00000000   000000000   0000000  000   000  000  000000000  000   000  
     # 000          000     000   000  000   000     000     000       000 0 000  000     000     000   000  

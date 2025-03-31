@@ -64,6 +64,7 @@ bbb`),[['a','a','a'],[],['b','b','b']])
     {
         compare(kseg.words('a'),[{word:'a',index:0,segl:['a']}])
         compare(kseg.words('ab cd'),[{word:'ab',index:0,segl:['a','b']},{word:'cd',index:3,segl:['c','d']}])
+        compare(kseg.words('@b.cd'),[{word:'b',index:1,segl:['b']},{word:'cd',index:3,segl:['c','d']}])
     })
     section("startsWith", function ()
     {

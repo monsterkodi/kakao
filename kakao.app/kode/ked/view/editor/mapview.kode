@@ -164,7 +164,7 @@ function mapview extends view
                 
         while @images.length > @state.s.lines.length
             log 'pooping'
-            t.deleteImage @images.pop()
+            @cells.screen.t.deleteImage @images.pop()
             
     imageForLine: data line y syntax =>
     

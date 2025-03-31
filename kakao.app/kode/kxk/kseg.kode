@@ -204,7 +204,7 @@ kseg.chunks = any ->
 
 kseg.words = any ->
     
-    kseg.infos any 'word' (s) -> /\w+/.test(s)
+    kseg.infos any 'word' (s) -> /^\w+$/.test(s)
     
 ###
     000  000   000  00000000   0000000    0000000  

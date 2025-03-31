@@ -85,8 +85,7 @@ scroll = (function ()
     {
         var csz, maxY, rowf, view
 
-        csz = this.screen.t.cellsz
-        if (_k_.empty(csz))
+        if (_k_.empty((csz = this.screen.t.cellsz)))
         {
             return
         }
@@ -111,8 +110,7 @@ scroll = (function ()
     {
         var csz, fg, h, kh, ky, lnum, rows, w, x, y
 
-        csz = this.screen.t.cellsz
-        if (_k_.empty(csz))
+        if (_k_.empty((csz = this.screen.t.cellsz)))
         {
             return
         }
@@ -131,8 +129,8 @@ scroll = (function ()
         w = parseInt(csz[0] / 2)
         h = parseInt(kh)
         squares.place(x,parseInt(y + w / 2),w,h - w,fg)
-        sircels.place(x,y,w,((ky ? fg : this.color.dot)))
-        return sircels.place(x,y + h - w,w,(((y + h < (this.cells.y + rows) * csz[1] - 1) ? fg : this.color.dot)))
+        sircels.place(x,y,w,((ky ? fg : this.color.dot)),1111)
+        return sircels.place(x,y + h - w,w,(((y + h < (this.cells.y + rows) * csz[1] - 1) ? fg : this.color.dot)),1111)
     }
 
     return scroll
