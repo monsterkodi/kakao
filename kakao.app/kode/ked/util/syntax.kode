@@ -79,10 +79,11 @@ function syntax
                 newHash[hsh] = @hash[hsh]
             else
                 newHash[hsh] = kulur.dissect([segl] @ext)[0]
-                
+            
             if @liha[idx] != hsh
                 @diss.splice idx 1 newHash[hsh]
-                
+                @liha[idx] = hsh
+
         @hash = newHash
             
     addSegl: segl ext =>

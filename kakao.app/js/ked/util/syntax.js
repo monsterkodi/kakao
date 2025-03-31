@@ -137,6 +137,7 @@ syntax = (function ()
             if (this.liha[idx] !== hsh)
             {
                 this.diss.splice(idx,1,newHash[hsh])
+                this.liha[idx] = hsh
             }
         }
         return this.hash = newHash
@@ -177,7 +178,7 @@ syntax = (function ()
 
     syntax.prototype["getColor"] = function (x, y)
     {
-        var clss, _129_27_
+        var clss, _130_27_
 
         if (this.ansi)
         {
@@ -195,12 +196,12 @@ syntax = (function ()
         {
             console.log(`syntax.getColor - no syntax color for '${clss}'`)
         }
-        return ((_129_27_=theme.syntax[clss]) != null ? _129_27_ : [255,0,0])
+        return ((_130_27_=theme.syntax[clss]) != null ? _130_27_ : [255,0,0])
     }
 
     syntax.prototype["getAnsiColor"] = function (x, y)
     {
-        var clr, _141_24_
+        var clr, _142_24_
 
         var list = _k_.list(this.colors[y])
         for (var _a_ = 0; _a_ < list.length; _a_++)
