@@ -1,4 +1,4 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, isStr: function (o) {return typeof o === 'string' || o instanceof String}, isArr: function (o) {return Array.isArray(o)}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, copy: function (o) { return Array.isArray(o) ? o.slice() : typeof o == 'object' && o.constructor.name == 'Object' ? Object.assign({}, o) : typeof o == 'string' ? ''+o : o }, clamp: function (l,h,v) { var ll = Math.min(l,h), hh = Math.max(l,h); if (!_k_.isNum(v)) { v = ll }; if (v < ll) { v = ll }; if (v > hh) { v = hh }; if (!_k_.isNum(v)) { v = ll }; return v }, isNum: function (o) {return !isNaN(o) && !isNaN(parseFloat(o)) && (isFinite(o) || o === Infinity || o === -Infinity)}}
 
 var fileeditor
 
@@ -34,14 +34,17 @@ fileeditor = (function ()
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["jumpToCounterpart"] = this["jumpToCounterpart"].bind(this)
+        this["singleCursorAtLine"] = this["singleCursorAtLine"].bind(this)
         this["jumpToWord"] = this["jumpToWord"].bind(this)
         this["onContextChoice"] = this["onContextChoice"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
+        this["onGotoFunc"] = this["onGotoFunc"].bind(this)
         this["onGotoEof"] = this["onGotoEof"].bind(this)
         this["onGotoBof"] = this["onGotoBof"].bind(this)
         this["onGotoLine"] = this["onGotoLine"].bind(this)
         this["onGitDiff"] = this["onGitDiff"].bind(this)
         this["onGitCommit"] = this["onGitCommit"].bind(this)
+        this["onFuntreeLoaded"] = this["onFuntreeLoaded"].bind(this)
         this["setCurrentFile"] = this["setCurrentFile"].bind(this)
         features = ['scroll','gutter','mapscr','complete','filepos','replex','brckts','unype','salter','vimple','uniko']
         fileeditor.__super__.constructor.call(this,screen,name,features)
@@ -54,19 +57,30 @@ fileeditor = (function ()
         post.on('goto.line',this.onGotoLine)
         post.on('goto.bof',this.onGotoBof)
         post.on('goto.eof',this.onGotoEof)
+        post.on('goto.func',this.onGotoFunc)
         post.on('git.diff',this.onGitDiff)
         post.on('git.commit',this.onGitCommit)
+        post.on('funtree.loaded',this.onFuntreeLoaded)
     }
 
     fileeditor.prototype["setCurrentFile"] = function (currentFile)
     {
         this.currentFile = currentFile
     
-        var _54_15_
+        var _57_15_
 
         this.cells.meta_clear()
         this.gutter.clearChanges()
         return (this.mapscr != null ? this.mapscr.reload() : undefined)
+    }
+
+    fileeditor.prototype["onFuntreeLoaded"] = function ()
+    {
+        if (!_k_.empty(this.gotoFuncOnLoad))
+        {
+            this.onGotoFunc(this.gotoFuncOnLoad)
+            return delete this.gotoFuncOnLoad
+        }
     }
 
     fileeditor.prototype["onGitCommit"] = function ()
@@ -87,7 +101,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onGotoLine"] = function (row, col, view)
     {
-        var mc
+        var adjust, mc
 
         mc = this.state.mainCursor()
         col = (col != null ? col : mc[0])
@@ -101,14 +115,15 @@ fileeditor = (function ()
             }
 
         }
-        if (!_k_.empty(view))
+        if (!_k_.empty(view) && _k_.isArr(view))
         {
             this.state.setView(view)
             return this.state.setCursors([[col,row]])
         }
         else
         {
-            return this.state.setCursors([[col,row]],{adjust:'topBotDelta'})
+            adjust = (view != null ? view : 'topBotDelta')
+            return this.state.setCursors([[col,row]],{adjust:adjust})
         }
     }
 
@@ -120,6 +135,16 @@ fileeditor = (function ()
     fileeditor.prototype["onGotoEof"] = function ()
     {
         return this.state.moveCursors('eof')
+    }
+
+    fileeditor.prototype["onGotoFunc"] = function (func)
+    {
+        var li
+
+        if (li = this.funtree.lineIndexForFunc(func))
+        {
+            return this.onGotoLine(li,'ind','cursorInTopHalf')
+        }
     }
 
     fileeditor.prototype["onContext"] = function (event)
@@ -198,23 +223,34 @@ fileeditor = (function ()
         return false
     }
 
+    fileeditor.prototype["singleCursorAtLine"] = function (li)
+    {
+        if (_k_.empty(li))
+        {
+            return
+        }
+        this.state.setCursors([[0,li]],{main:'ind',adjust:'topBotDelta'})
+        return post.emit('redraw')
+    }
+
     fileeditor.prototype["jumpToCounterpart"] = async function ()
     {
-        var counter, currentFile, currext, ext, file, _174_50_, _180_50_, _189_50_
+        var counter, currentFile, currext, ext, file, _196_50_, _203_50_, _213_50_
 
         currentFile = ked_session.get('editor▸file')
         currext = slash.ext(currentFile)
-        var list = ((_174_50_=fileutil.counterparts[currext]) != null ? _174_50_ : [])
+        var list = ((_196_50_=fileutil.counterparts[currext]) != null ? _196_50_ : [])
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             ext = list[_a_]
             if (await nfs.fileExists(slash.swapExt(currentFile,ext)))
             {
+                this.gotoFuncOnLoad = this.funtree.current()
                 post.emit('file.open',slash.swapExt(currentFile,ext))
                 return
             }
         }
-        var list1 = ((_180_50_=fileutil.counterparts[currext]) != null ? _180_50_ : [])
+        var list1 = ((_203_50_=fileutil.counterparts[currext]) != null ? _203_50_ : [])
         for (var _b_ = 0; _b_ < list1.length; _b_++)
         {
             ext = list1[_b_]
@@ -222,11 +258,12 @@ fileeditor = (function ()
             file = fileutil.swapLastDir(counter,currext,ext)
             if (await nfs.fileExists(file))
             {
+                this.gotoFuncOnLoad = this.funtree.current()
                 post.emit('file.open',file)
                 return
             }
         }
-        var list2 = ((_189_50_=fileutil.counterparts[currext]) != null ? _189_50_ : [])
+        var list2 = ((_213_50_=fileutil.counterparts[currext]) != null ? _213_50_ : [])
         for (var _c_ = 0; _c_ < list2.length; _c_++)
         {
             ext = list2[_c_]
@@ -255,7 +292,7 @@ fileeditor = (function ()
 
     fileeditor.prototype["onMouse"] = function (event)
     {
-        var col, ret, row, start, word, x, y, _219_69_, _309_31_
+        var col, ret, row, start, word, x, y, _243_69_, _333_31_
 
         ret = fileeditor.__super__.onMouse.call(this,event)
         if ((ret != null ? ret.redraw : undefined))

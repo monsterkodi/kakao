@@ -14,9 +14,9 @@ use              ◆ dirtree
 
 function dircol extends view
 
-    @: screen name features ->
+    @: screen @editor features ->
         
-        super screen name features
+        super screen 'dircol' features
         
         @isVisible = false
         @active    = true

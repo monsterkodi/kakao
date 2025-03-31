@@ -18,6 +18,7 @@
 #### todo
 ##### todo
 
+- alt+z toggle git change at main cursor
 - unsaved changes 'tabs'
 
 - differ 
@@ -48,8 +49,6 @@
     - cmd+up|down: jump to prev|next file
     
 - funclist
-    - autohighlight function at main cursor
-        - use that information to jump to correct counterpart positions!
     - searchable?
     - should list md headings
 

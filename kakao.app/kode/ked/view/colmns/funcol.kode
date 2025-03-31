@@ -13,17 +13,17 @@ use              ◆ funtree
 
 function funcol extends view
 
-    @: screen name features ->
+    @: screen @editor features ->
         
-        super screen name features
+        super screen 'funcol' features
         
         @isVisible = false
         @active    = false
         
         @pointerType = 'pointer'
         
-        @knob    = new knob    screen "#{@name}_knob"
-        @funtree = new funtree screen "#{@name}_funtree" ['scrllr']       
+        @knob    = new knob    screen  "#{@name}_knob"
+        @funtree = new funtree @editor "#{@name}_funtree" ['scrllr']       
         
         @knob.frameSide = 'left'
         

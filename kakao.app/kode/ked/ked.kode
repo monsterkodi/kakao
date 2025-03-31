@@ -59,8 +59,8 @@ function KED
         @quicky   = new quicky     @screen 
         @browse   = new browse     @screen 
         @editor   = new fileeditor @screen 'editor'
-        @dircol   = new dircol     @screen 'dircol'  ['scroll' 'knob']
-        @funcol   = new funcol     @screen 'funcol'  ['scroll' 'knob']
+        @dircol   = new dircol     @screen @editor  ['scroll' 'knob']
+        @funcol   = new funcol     @screen @editor  ['scroll' 'knob']
         @finder   = new finder     @screen @editor
         @searcher = new searcher   @screen @editor
         @differ   = new differ     @screen @editor
@@ -70,6 +70,7 @@ function KED
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
 
         @editor.state.hasFocus = true
+        @editor.funtree = @funcol.funtree
         
         post.on 'redraw'        @redraw
         post.on 'window.focus'  @redraw
@@ -467,11 +468,13 @@ function KED
             'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐  @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()
-            'alt+.' 'alt+m'              ➜ ⮐  @menu.show()
+            'alt+m'                      ➜ ⮐  @menu.show()
             'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky.showProjectFiles @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
             'alt+o'                      ➜ ⮐  @editor.jumpToCounterpart()
+            'alt+,'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfPrevFunc()
+            'alt+.'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfNextFunc()
             'cmd+o' 'ctrl+o'
             'cmd+m' 'cmd+;' 'ctrl+;'     ➜ ⮐  @macro.show()
             'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)

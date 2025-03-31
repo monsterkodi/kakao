@@ -21,8 +21,10 @@ import dirtree from "./dirtree.js"
 dircol = (function ()
 {
     _k_.extend(dircol, view)
-    function dircol (screen, name, features)
+    function dircol (screen, editor, features)
     {
+        this.editor = editor
+    
         var root
 
         this["onKey"] = this["onKey"].bind(this)
@@ -37,7 +39,7 @@ dircol = (function ()
         this["setRoot"] = this["setRoot"].bind(this)
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
-        dircol.__super__.constructor.call(this,screen,name,features)
+        dircol.__super__.constructor.call(this,screen,'dircol',features)
         this.isVisible = false
         this.active = true
         this.pointerType = 'pointer'

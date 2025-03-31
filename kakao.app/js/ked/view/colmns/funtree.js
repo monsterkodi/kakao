@@ -1,4 +1,4 @@
-var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, clone: function (o,v) { v ??= new Map(); if (Array.isArray(o)) { if (!v.has(o)) {var r = []; v.set(o,r); for (var i=0; i < o.length; i++) {if (!v.has(o[i])) { v.set(o[i],_k_.clone(o[i],v)) }; r.push(v.get(o[i]))}}; return v.get(o) } else if (typeof o == 'string') { if (!v.has(o)) {v.set(o,''+o)}; return v.get(o) } else if (o != null && typeof o == 'object' && o.constructor.name == 'Object') { if (!v.has(o)) { var k, r = {}; v.set(o,r); for (k in o) { if (!v.has(o[k])) { v.set(o[k],_k_.clone(o[k],v)) }; r[k] = v.get(o[k]) }; }; return v.get(o) } else {return o} }}
 
 var funSyntax, funtree, SYMBOL
 
@@ -123,20 +123,96 @@ funSyntax = (function ()
 funtree = (function ()
 {
     _k_.extend(funtree, choices)
-    function funtree (screen, name, features)
+    function funtree (editor, name, features)
     {
+        this.editor = editor
+    
         this["onFileIndexed"] = this["onFileIndexed"].bind(this)
-        funtree.__super__.constructor.call(this,screen,name,features)
+        this["lineIndexForFunc"] = this["lineIndexForFunc"].bind(this)
+        this["lineIndexOfPrevFunc"] = this["lineIndexOfPrevFunc"].bind(this)
+        this["lineIndexOfNextFunc"] = this["lineIndexOfNextFunc"].bind(this)
+        this["lineIndexOfCurrentFunc"] = this["lineIndexOfCurrentFunc"].bind(this)
+        this["nameOfCurrentFunc"] = this["nameOfCurrentFunc"].bind(this)
+        this["selectItemForLineIndex"] = this["selectItemForLineIndex"].bind(this)
+        this["onCursorsSet"] = this["onCursorsSet"].bind(this)
+        funtree.__super__.constructor.call(this,this.editor.screen,name,features)
         this.state.syntax = new funSyntax(this)
+        this.editor.state.on('cursorsSet',this.onCursorsSet)
         post.on('file.loaded',this.clear)
         post.on('file.indexed',this.onFileIndexed)
     }
 
+    funtree.prototype["onCursorsSet"] = function ()
+    {
+        return this.selectItemForLineIndex(this.editor.state.mainCursor()[1])
+    }
+
+    funtree.prototype["selectItemForLineIndex"] = function (li)
+    {
+        var idx, item
+
+        var list = _k_.list(this.items)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            item = list[idx]
+            if (item.line - 1 <= li && (idx >= this.items.length - 1 || this.items[idx + 1].line - 1 > li))
+            {
+                this.state.setSelections([belt.rangeOfLine(this.state.s.lines,idx)])
+                this.state.setMainCursor(0,idx)
+                return
+            }
+        }
+    }
+
+    funtree.prototype["nameOfCurrentFunc"] = function ()
+    {
+        return this.current().name
+    }
+
+    funtree.prototype["lineIndexOfCurrentFunc"] = function ()
+    {
+        return this.current().line - 1
+    }
+
+    funtree.prototype["lineIndexOfNextFunc"] = function ()
+    {
+        return (this.items[this.currentIndex() + 1] != null ? this.items[this.currentIndex() + 1].line : undefined) - 1
+    }
+
+    funtree.prototype["lineIndexOfPrevFunc"] = function ()
+    {
+        return (this.items[this.currentIndex() - 1] != null ? this.items[this.currentIndex() - 1].line : undefined) - 1
+    }
+
+    funtree.prototype["lineIndexForFunc"] = function (func)
+    {
+        var item
+
+        var list = _k_.list(this.items)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            item = list[_a_]
+            if (item.name === func.name && item.class === func.class)
+            {
+                return item.line - 1
+            }
+        }
+        if (func.name === `   -> ${func.class}` && func.line)
+        {
+            return this.lineIndexForFunc({class:func.class,name:'   -> @'})
+        }
+        if (func.name === "   -> @" && func.line)
+        {
+            return this.lineIndexForFunc({class:func.class,name:`   -> ${func.class}`})
+        }
+        console.log("can't find func:",func)
+    }
+
     funtree.prototype["onFileIndexed"] = function (path, info)
     {
-        var clss, clssl, func, funcs, indt, items, name, symbol, _118_22_
+        var clss, clssl, func, funcs, indt, items, name, symbol, _158_22_
 
-        if (path !== ked_session.get('editor▸file'))
+        if (path !== this.editor.currentFile)
         {
             return
         }
@@ -150,7 +226,7 @@ funtree = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             clss = list[_a_]
-            clss.file = ((_118_22_=clss.file) != null ? _118_22_ : path)
+            clss.file = ((_158_22_=clss.file) != null ? _158_22_ : path)
             clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
         }
         var list1 = _k_.list(funcs)
@@ -200,6 +276,8 @@ funtree = (function ()
             return a.line - b.line
         })
         this.set(items,'name')
+        post.emit('funtree.loaded')
+        this.onCursorsSet()
         return post.emit('redraw')
     }
 

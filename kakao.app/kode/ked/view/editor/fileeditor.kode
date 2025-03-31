@@ -44,14 +44,23 @@ function fileeditor extends editor
         post.on 'goto.line'        @onGotoLine
         post.on 'goto.bof'         @onGotoBof
         post.on 'goto.eof'         @onGotoEof
+        post.on 'goto.func'        @onGotoFunc
         post.on 'git.diff'         @onGitDiff
         post.on 'git.commit'       @onGitCommit
+        
+        post.on 'funtree.loaded'   @onFuntreeLoaded
         
     setCurrentFile: @currentFile =>
         
         @cells.meta_clear()
         @gutter.clearChanges()
         @mapscr?.reload()
+        
+    onFuntreeLoaded: =>
+        
+        if valid @gotoFuncOnLoad
+            @onGotoFunc @gotoFuncOnLoad
+            delete @gotoFuncOnLoad
 
     onGitCommit: =>
     
@@ -91,15 +100,20 @@ function fileeditor extends editor
             switch col
                 'ind' ➜ col = belt.numIndent @state.s.lines[row]
         
-        if valid view
-            # log "fileeditor.onGotoLine #{row} #{col} #{view[0]} #{view[1]}"
+        if valid view and view is arr
             @state.setView view
             @state.setCursors [[col row]]
         else
-            @state.setCursors [[col row]] adjust:'topBotDelta'
+            adjust = view ? 'topBotDelta'
+            @state.setCursors [[col row]] adjust:adjust
             
     onGotoBof: => @state.moveCursors 'bof'
     onGotoEof: => @state.moveCursors 'eof'
+    
+    onGotoFunc: func => 
+    
+        if li = @funtree.lineIndexForFunc(func)
+            @onGotoLine li 'ind' 'cursorInTopHalf'
             
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
     # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
@@ -160,6 +174,14 @@ function fileeditor extends editor
             log "fileeditor.jumpToWord(#{word}) nothing found to jump to"
         false
             
+    singleCursorAtLine: li =>
+    
+        ⮐  if empty li
+    
+        @state.setCursors [[0 li]] main:'ind' adjust:'topBotDelta'
+        
+        post.emit 'redraw'
+            
     #  ███████   ███████   ███   ███  ███   ███  █████████  ████████  ████████   ████████    ███████   ████████   █████████
     # ███       ███   ███  ███   ███  ████  ███     ███     ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
     # ███       ███   ███  ███   ███  ███ █ ███     ███     ███████   ███████    ████████   █████████  ███████       ███   
@@ -167,13 +189,14 @@ function fileeditor extends editor
     #  ███████   ███████    ███████   ███   ███     ███     ████████  ███   ███  ███        ███   ███  ███   ███     ███   
 
     jumpToCounterpart: ○=>
-        
+            
         currentFile = ked_session.get 'editor▸file'
         currext = slash.ext currentFile
         
         for ext in fileutil.counterparts[currext] ? []
             
             if ○ nfs.fileExists slash.swapExt(currentFile, ext)
+                @gotoFuncOnLoad = @funtree.current()
                 post.emit 'file.open' slash.swapExt(currentFile, ext)
                 ⮐ 
 
@@ -183,6 +206,7 @@ function fileeditor extends editor
             file = fileutil.swapLastDir counter currext ext
             
             if ○ nfs.fileExists file
+                @gotoFuncOnLoad = @funtree.current()
                 post.emit 'file.open' file
                 ⮐ 
 

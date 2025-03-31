@@ -375,15 +375,17 @@ function state extends events
         
         opt ?= {}
         
-        if opt.adjust == 'topBotDelta'
-            topBotDelta = min 6 int(@cells.rows/4)
-        else
-            topBotDelta = 0
-
-        if y >= view[1] + @cells.rows - 1 - topBotDelta
-            view[1] = y - @cells.rows + 1 + topBotDelta
-        else if y < view[1] + topBotDelta
+        topBotDelta = max 6 int(@cells.rows/4)
+        if opt.adjust == 'cursorInTopHalf'
             view[1] = y - topBotDelta
+        else        
+            if opt.adjust != 'topBotDelta'
+                topBotDelta = 0
+    
+            if y >= view[1] + @cells.rows - 1 - topBotDelta
+                view[1] = y - @cells.rows + 1 + topBotDelta
+            else if y < view[1] + topBotDelta
+                view[1] = y - topBotDelta
 
         if view[1] > 0 and @s.lines.length <= @cells.rows
             view[1] = 0

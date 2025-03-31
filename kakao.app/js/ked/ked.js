@@ -98,8 +98,8 @@ ked [file]
         this.quicky = new quicky(this.screen)
         this.browse = new browse(this.screen)
         this.editor = new fileeditor(this.screen,'editor')
-        this.dircol = new dircol(this.screen,'dircol',['scroll','knob'])
-        this.funcol = new funcol(this.screen,'funcol',['scroll','knob'])
+        this.dircol = new dircol(this.screen,this.editor,['scroll','knob'])
+        this.funcol = new funcol(this.screen,this.editor,['scroll','knob'])
         this.finder = new finder(this.screen,this.editor)
         this.searcher = new searcher(this.screen,this.editor)
         this.differ = new differ(this.screen,this.editor)
@@ -107,6 +107,7 @@ ked [file]
         this.context = new context(this.screen)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
+        this.editor.funtree = this.funcol.funtree
         post.on('redraw',this.redraw)
         post.on('window.focus',this.redraw)
         post.on('window.blur',this.redraw)
@@ -235,7 +236,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _198_10_
+        var _199_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -266,7 +267,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _230_22_
+        var _231_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -541,7 +542,6 @@ ked [file]
             case 'ctrl+n':
                 return this.newFile()
 
-            case 'alt+.':
             case 'alt+m':
                 return this.menu.show()
 
@@ -559,6 +559,12 @@ ked [file]
 
             case 'alt+o':
                 return this.editor.jumpToCounterpart()
+
+            case 'alt+,':
+                return this.editor.singleCursorAtLine(this.funcol.funtree.lineIndexOfPrevFunc())
+
+            case 'alt+.':
+                return this.editor.singleCursorAtLine(this.funcol.funtree.lineIndexOfNextFunc())
 
             case 'cmd+o':
             case 'ctrl+o':
@@ -608,7 +614,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _518_22_
+        var mcw, _521_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}

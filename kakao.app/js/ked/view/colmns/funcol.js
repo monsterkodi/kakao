@@ -18,8 +18,10 @@ import funtree from "./funtree.js"
 funcol = (function ()
 {
     _k_.extend(funcol, view)
-    function funcol (screen, name, features)
+    function funcol (screen, editor, features)
     {
+        this.editor = editor
+    
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
@@ -27,12 +29,12 @@ funcol = (function ()
         this["onFuncolResize"] = this["onFuncolResize"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
         this["onSessionMerge"] = this["onSessionMerge"].bind(this)
-        funcol.__super__.constructor.call(this,screen,name,features)
+        funcol.__super__.constructor.call(this,screen,'funcol',features)
         this.isVisible = false
         this.active = false
         this.pointerType = 'pointer'
         this.knob = new knob(screen,`${this.name}_knob`)
-        this.funtree = new funtree(screen,`${this.name}_funtree`,['scrllr'])
+        this.funtree = new funtree(this.editor,`${this.name}_funtree`,['scrllr'])
         this.knob.frameSide = 'left'
         this.funtree.setColor('bg',theme.funtree.bg)
         this.funtree.setColor('empty',this.funtree.color.bg)
