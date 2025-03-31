@@ -25,7 +25,9 @@ mapview = (function ()
         this["draw"] = this["draw"].bind(this)
         this["drawImages"] = this["drawImages"].bind(this)
         this["imageForLine"] = this["imageForLine"].bind(this)
+        this["updateFromLine"] = this["updateFromLine"].bind(this)
         this["updateLine"] = this["updateLine"].bind(this)
+        this["lineData"] = this["lineData"].bind(this)
         this["createImages"] = this["createImages"].bind(this)
         this["maxLinesToLoad"] = this["maxLinesToLoad"].bind(this)
         this["setSyntaxSegls"] = this["setSyntaxSegls"].bind(this)
@@ -173,23 +175,52 @@ mapview = (function ()
         }
     }
 
-    mapview.prototype["updateLine"] = function (y)
+    mapview.prototype["lineData"] = function ()
     {
-        var bytes, data, id, t, w
+        var bytes, w
 
-        t = this.cells.screen.t
-        w = this.cells.cols * t.cellsz[0]
+        w = this.cells.cols * this.cells.screen.t.cellsz[0]
         bytes = w * 3
         if (bytes <= 0)
         {
             return
         }
-        data = Buffer.alloc(bytes)
+        return Buffer.alloc(bytes)
+    }
+
+    mapview.prototype["updateLine"] = function (y, data)
+    {
+        var id, t
+
+        data = (data != null ? data : this.lineData())
+        if (_k_.empty(data))
+        {
+            return
+        }
         id = this.imgId + y
         this.imageForLine(data,this.getSegls()[y],y)
+        t = this.cells.screen.t
         t.deleteImage(id)
-        t.sendImageData(data,id,w,1)
+        t.sendImageData(data,id,data.length / 3,1)
         return t.placeLineImage(id,this.cells.x,this.cells.y + this.rowOffset,y * this.pixelsPerRow,this.pixelsPerRow)
+    }
+
+    mapview.prototype["updateFromLine"] = function (y)
+    {
+        var data, li
+
+        if (data = this.lineData())
+        {
+            for (var _a_ = li = y, _b_ = this.state.s.lines.length; (_a_ <= _b_ ? li < this.state.s.lines.length : li > this.state.s.lines.length); (_a_ <= _b_ ? ++li : --li))
+            {
+                this.updateLine(li,data)
+            }
+        }
+        while (this.images.length > this.state.s.lines.length)
+        {
+            console.log('pooping')
+            t.deleteImage(this.images.pop())
+        }
     }
 
     mapview.prototype["imageForLine"] = function (data, line, y, syntax)
