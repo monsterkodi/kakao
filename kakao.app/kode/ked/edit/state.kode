@@ -101,17 +101,13 @@ function state extends events
         main = @s.main if main < 0
         main = clamp 0 @s.cursors.length-1 main
 
-        # log "#{@name} #{main} cursors" cursors
-
         @s = @s.set 'main' main
         
-        @adjustViewForMainCursor opt
+        @adjustViewForMainCursor opt if opt.adjust != false
         @swapState()
         
         mode.cursorsSet @
         @emit 'cursorsSet'
-            
-        # log "#{@name} done #{@s.cursors}"
         @
             
     textOfSelectionOrWordAtCursor: => 

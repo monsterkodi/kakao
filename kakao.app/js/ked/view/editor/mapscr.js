@@ -170,10 +170,11 @@ mapscr = (function ()
 
     mapscr.prototype["scrollToPixel"] = function (pixel)
     {
-        var maxY, view
+        var li, maxY, mc, view
 
         view = this.state.s.view.asMutable()
-        view[1] = this.topLine + parseInt((pixel[1] - this.mapY) / this.pixelsPerRow)
+        li = this.topLine + parseInt((pixel[1] - this.mapY) / this.pixelsPerRow)
+        view[1] = li
         view[1] -= 5
         maxY = this.state.s.lines.length - this.cells.rows
         if (maxY > 0)
@@ -181,11 +182,18 @@ mapscr = (function ()
             view[1] = _k_.min(maxY,view[1])
         }
         view[1] = _k_.max(0,view[1])
+        mc = this.state.mainCursor()
         if (_k_.eql(view, this.state.s.view))
         {
+            if (li !== mc[1])
+            {
+                this.state.setCursors([[mc[0],li]],{main:0,adjust:false})
+                return {redraw:true}
+            }
             return
         }
         this.state.setView(view)
+        this.state.setCursors([[mc[0],li + 5]],{main:0,adjust:false})
         this.drawKnob()
         return {redraw:true}
     }

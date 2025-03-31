@@ -18,7 +18,7 @@ misc = (function ()
 
     misc["prepareWordsForCompletion"] = function (before, turd, words)
     {
-        var balanced, beforeTurd, end, filtered, fix, fst, lst, p, push, segl, segls, strs, subw, tc, w, wds
+        var balanced, beforeTurd, end, filtered, fix, fst, idx, lst, p, push, rwd, segl, segls, strs, subw, tc, w, wds
 
         filtered = []
         var list = _k_.list(words)
@@ -45,14 +45,12 @@ misc = (function ()
                     if (w.endsWith(p.tail) && p.mismatch)
                     {
                         fix = p.mismatch[0].content[0]
-                        console.log(`◂ ${w} ${fix}`)
                         filtered.push(fix)
                         if (!_k_.empty((wds = kseg.words(fix))))
                         {
                             fst = fix.slice(0, wds[0].index + wds[0].word.length)
                             if (fst !== fix)
                             {
-                                console.log(`▴ ${w} ${fst}`)
                                 filtered.push(fst)
                             }
                         }
@@ -60,12 +58,10 @@ misc = (function ()
                     else if (p.unbalanced)
                     {
                         fix = p.unbalanced[0].content[0]
-                        console.log(`◂ ${w} ${fix}`)
                         filtered.push(fix)
                     }
                     else
                     {
-                        console.log(`skip |${w}| pepe`,p)
                     }
                     continue
                 }
@@ -84,7 +80,6 @@ misc = (function ()
                             p = pepe(fst)
                             if (!p.unbalanced || p.mismatch)
                             {
-                                console.log(`▸▸ ${fst} ${before} ${turd} ${wds[0].index + wds[0].word.length} < ${w.length}`)
                                 filtered.push(fst)
                                 continue
                             }
@@ -95,29 +90,35 @@ misc = (function ()
                         }
                         if (!balanced)
                         {
-                            console.log(`⮐  ${before} ${turd} ${lst} < ${w.length} |${w}|`)
                             continue
                         }
                     }
                 }
-                console.log(`■ ${w} ${before} ${turd}`,kseg.words(w))
                 filtered.push(w)
                 continue
             }
-            var list1 = _k_.list(kseg.words(w))
-            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            wds = kseg.words(w)
+            var list1 = _k_.list(wds)
+            for (idx = 0; idx < list1.length; idx++)
             {
-                subw = list1[_b_]
+                subw = list1[idx]
                 if (subw.word.startsWith(turd))
                 {
-                    console.log(`◆ ${w} ${before}`)
                     filtered.push(subw.word)
+                    if (idx === wds.length - 1 && subw.index + subw.word.length < w.length - 1)
+                    {
+                        rwd = w.slice(subw.index)
+                        p = pepe(rwd)
+                        if (!(p.unbalanced || p.mismatch))
+                        {
+                            filtered.push(rwd)
+                        }
+                    }
                 }
                 else if (turd.length === 1 && turd === w[subw.index - 1])
                 {
                     if (turd !== '.')
                     {
-                        console.log(`○ ${w} ${before}`)
                         filtered.push(turd.slice(-1)[0] + subw.word)
                     }
                     else
@@ -127,13 +128,11 @@ misc = (function ()
                     {
                         if (w.startsWith(before))
                         {
-                            console.log(`✔ ${w} ${before}`)
                             filtered.push(turd.slice(-1)[0] + subw.word)
                         }
                     }
                     else if (!/\d+\./.test(before) && !/\d+/.test(subw.word))
                     {
-                        console.log(`▴ ${w} ${before}`)
                         filtered.push(turd.slice(-1)[0] + subw.word)
                     }
                 }
