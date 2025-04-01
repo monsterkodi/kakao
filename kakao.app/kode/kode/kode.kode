@@ -87,7 +87,11 @@ class Kode
         
         log @text if @args.verbose
 
-        @renderer.render @ast(@text) @file
+        try
+            ast = @ast @text
+            @renderer.render ast @file
+        catch err
+            ⮐ # error should already be logged in @onError
         
     #  0000000    0000000  000000000  
     # 000   000  000          000     

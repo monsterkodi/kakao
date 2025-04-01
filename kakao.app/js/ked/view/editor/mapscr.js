@@ -103,7 +103,6 @@ mapscr = (function ()
                     }
                     this.updateLine(cli)
                 }
-                console.log(`updateFromLine ${minLine} ${this.state.s.lines.length} ${this.images.length}`)
                 return this.updateFromLine(minLine)
             }
         }

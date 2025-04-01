@@ -8,7 +8,7 @@
     takes a string and a list of delimiter pairs
     dissects the string into substrings:
         
-    "some ( nested [ stuff ] har ) har"
+    pepe "some ( nested [ stuff ] har ) har"
     
     ▸ 
     
@@ -20,7 +20,7 @@
     
     delimiter pairs with start == end don't nest and consume any content until closed:
         
-    "str '}])([{'"
+    pepe "str '}])([{'"
     
     ▸ 
     
@@ -33,11 +33,15 @@
     returns an object on mismatched or unbalanced input
 ###
 
-pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
+pepe = str opt ->
     
-    ⮐ []   if not str is str
-    ⮐ [''] if empty str
+    ⮐  []   if not str is str
+    ⮐  [''] if empty str
     
+    opt ?= {}
+    index = opt.index ? false
+    delimiters = opt.delimiters ? [['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']]
+        
     starts = delimiters.map (d) -> d[0]
     ends   = delimiters.map (d) -> d[1]
     
@@ -61,7 +65,8 @@ pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
                 break if start == pairs[last(stack).start]
                 break if isGreedy()
                 contentPush()
-                stack.push start:start, content:[]
+                stack.push start:start content:[]
+                last(stack).rng = [p] if index
                 advance start.length
                 break
 
@@ -78,13 +83,14 @@ pepe = str delimiters=[['"''"'] ["'""'"] ['('')'] ['['']'] ['{''}']] ->
                     if next.startsWith end
                         if end == pairs[last(stack).start]
                             contentPush()
+                            last(stack).rng.push p if index
                             last(stack).end = end
                             popped = stack.pop()
                             last(stack).content.push popped
                             advance end.length
                         else
                             contentPush()
-                            ⮐ mismatch:stack, tail:str[p...str.length]
+                            ⮐  mismatch:stack tail:str[p...str.length]
                         break
                 
         if p == op
@@ -122,4 +128,42 @@ pepe.depepe = pep cb ->
             r += p.end
     r
     
+###
+    ████████  ███       ███████   █████████  █████████  ████████  ███   ███
+    ███       ███      ███   ███     ███        ███     ███       ████  ███
+    ██████    ███      █████████     ███        ███     ███████   ███ █ ███
+    ███       ███      ███   ███     ███        ███     ███       ███  ████
+    ███       ███████  ███   ███     ███        ███     ████████  ███   ███
+
+    converts pepe hierarchy to list of pairs
+    
+    pepe.flatten pepe("some ( nested [ stuff ] )" index:true)
+    
+    ▸ 
+    
+    [
+        start:'(' rng:[ 5 24] end:')'
+        start:'[' rng:[14 22] end:']'
+    ]
+###
+
+pepe.flatten = pep ->
+
+    f = []
+    ⮐  f if not f is arr
+    for p in pep
+        if not p is str
+            f.push start:p.start rng:p.rng end:p.end
+            if valid p.content
+                f = f.concat pepe.flatten(p.content)
+    f
+    
+# ████████    ███████   ███  ████████    ███████
+# ███   ███  ███   ███  ███  ███   ███  ███     
+# ████████   █████████  ███  ███████    ███████ 
+# ███        ███   ███  ███  ███   ███       ███
+# ███        ███   ███  ███  ███   ███  ███████ 
+
+pepe.pairs = s -> pepe.flatten pepe(s index:true)
+        
 export pepe

@@ -65,15 +65,12 @@ function mapscr extends mapview
                 for cli in diff.chg
                     @updateLine cli
             else
-                # log "mapscr.onLinesChanged chg #{diff.chg.length} ins #{diff.ins.length} del #{diff.del.length}" #diff
                 minLine = @state.s.lines.length
                 minLine = min minLine diff.ins[0] if diff.ins.length
                 minLine = min minLine diff.del[0] if diff.del.length
                 for cli in diff.chg
                     break if cli >= minLine
                     @updateLine cli
-                # log "updateFromLine #{minLine} #{diff.ins[0]} #{diff.del[0]}"
-                log "updateFromLine #{minLine} #{@state.s.lines.length} #{@images.length}"
                 @updateFromLine minLine
         
     getSegls:  => @state.segls

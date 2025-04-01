@@ -94,6 +94,8 @@ class Kode
         this.text = text
         this.file = file
     
+        var ast
+
         if (_k_.empty(_k_.trim(this.text)))
         {
             return ''
@@ -102,7 +104,15 @@ class Kode
         {
             console.log(this.text)
         }
-        return this.renderer.render(this.ast(this.text),this.file)
+        try
+        {
+            ast = this.ast(this.text)
+            return this.renderer.render(ast,this.file)
+        }
+        catch (err)
+        {
+            return
+        }
     }
 
     ast (text)

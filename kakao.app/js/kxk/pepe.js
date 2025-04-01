@@ -1,11 +1,11 @@
-var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {isStr: function (o) {return typeof o === 'string' || o instanceof String}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isArr: function (o) {return Array.isArray(o)}}
 
 var pepe
 
 
-pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{','}']])
+pepe = function (str, opt)
 {
-    var advance, cnt, contentPush, end, ends, isGreedy, lp, next, op, p, pairs, popped, r, stack, start, starts
+    var advance, cnt, contentPush, delimiters, end, ends, index, isGreedy, lp, next, op, p, pairs, popped, r, stack, start, starts, _42_22_, _43_32_
 
     if (!(_k_.isStr(str)))
     {
@@ -15,6 +15,9 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
     {
         return ['']
     }
+    opt = (opt != null ? opt : {})
+    index = ((_42_22_=opt.index) != null ? _42_22_ : false)
+    delimiters = ((_43_32_=opt.delimiters) != null ? _43_32_ : [['"','"'],["'","'"],['(',')'],['[',']'],['{','}']])
     starts = delimiters.map(function (d)
     {
         return d[0]
@@ -65,6 +68,10 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
                 }
                 contentPush()
                 stack.push({start:start,content:[]})
+                if (index)
+                {
+                    _k_.last(stack).rng = [p]
+                }
                 advance(start.length)
                 break
             }
@@ -89,6 +96,10 @@ pepe = function (str, delimiters = [['"','"'],["'","'"],['(',')'],['[',']'],['{'
                         if (end === pairs[_k_.last(stack).start])
                         {
                             contentPush()
+                            if (index)
+                            {
+                                _k_.last(stack).rng.push(p)
+                            }
                             _k_.last(stack).end = end
                             popped = stack.pop()
                             _k_.last(stack).content.push(popped)
@@ -143,5 +154,35 @@ pepe.depepe = function (pep, cb)
         }
     }
     return r
+}
+
+pepe.flatten = function (pep)
+{
+    var f, p
+
+    f = []
+    if (!(_k_.isArr(f)))
+    {
+        return f
+    }
+    var list = _k_.list(pep)
+    for (var _d_ = 0; _d_ < list.length; _d_++)
+    {
+        p = list[_d_]
+        if (!(_k_.isStr(p)))
+        {
+            f.push({start:p.start,rng:p.rng,end:p.end})
+            if (!_k_.empty(p.content))
+            {
+                f = f.concat(pepe.flatten(p.content))
+            }
+        }
+    }
+    return f
+}
+
+pepe.pairs = function (s)
+{
+    return pepe.flatten(pepe(s,{index:true}))
 }
 export default pepe;

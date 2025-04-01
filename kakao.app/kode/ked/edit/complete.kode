@@ -22,7 +22,7 @@ function complete
         
         @color = 
             bg:       theme.complete.bg
-            complete: theme.editor.selection
+            complete: theme.selection.span
             scroll:   theme.complete.scroll
         
         @choices.setColor        'hover' bg:theme.hover.bg blur:theme.hover.bg

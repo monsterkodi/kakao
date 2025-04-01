@@ -23,6 +23,15 @@ toExport["pepe"] = function ()
         compare(pepe("A ({[B]}) C"),['A ',{start:'(',content:[{start:'{',content:[{start:'[',content:['B'],end:']'}],end:'}'}],end:')'},' C'])
         compare(pepe("A [[[B]]] C"),['A ',{start:'[',content:[{start:'[',content:[{start:'[',content:['B'],end:']'}],end:']'}],end:']'},' C'])
     })
+    section("multiple", function ()
+    {
+        compare(pepe("()[]"),[{start:'(',content:[],end:')'},{start:'[',content:[],end:']'}])
+    })
+    section("nested multiple", function ()
+    {
+        compare(pepe("{()[]}"),[{start:'{',content:[{start:'(',content:[],end:')'},{start:'[',content:[],end:']'}],end:'}'}])
+        compare(pepe("{[()()]}"),[{start:'{',content:[{start:'[',content:[{start:'(',content:[],end:')'},{start:'(',content:[],end:')'}],end:']'}],end:'}'}])
+    })
     section("unbalanced", function ()
     {
         compare(pepe("("),{unbalanced:[{content:[]},{start:'(',content:[]}]})
@@ -61,6 +70,15 @@ toExport["pepe"] = function ()
         }
         compare(pepe.depepe(pepe("A ( B ) C"),cb),"A ( b ) C")
         compare(pepe.depepe(pepe("A ({ B }) C"),cb),"A ({ b }) C")
+    })
+    section("pairs", function ()
+    {
+        compare(pepe.pairs(""),[])
+        compare(pepe.pairs("[]"),[{start:'[',rng:[0,1],end:']'}])
+        compare(pepe.pairs("[()]"),[{start:'[',rng:[0,3],end:']'},{start:'(',rng:[1,2],end:')'}])
+        compare(pepe.pairs("[()]{''}"),[{start:'[',rng:[0,3],end:']'},{start:'(',rng:[1,2],end:')'},{start:'{',rng:[4,7],end:'}'},{start:"'",rng:[5,6],end:"'"}])
+        compare(pepe.pairs("([()]{''})"),[{start:'(',rng:[0,9],end:')'},{start:'[',rng:[1,4],end:']'},{start:'(',rng:[2,3],end:')'},{start:'{',rng:[5,8],end:'}'},{start:"'",rng:[6,7],end:"'"}])
+        compare(pepe.pairs("some ( nested [ stuff ] )"),[{start:'(',rng:[5,24],end:')'},{start:'[',rng:[14,22],end:']'}])
     })
 }
 toExport["pepe"]._section_ = true
