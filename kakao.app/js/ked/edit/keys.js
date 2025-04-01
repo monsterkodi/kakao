@@ -9,25 +9,6 @@ handleKey = function (key, event)
     {
         return
     }
-    if (this.s.cursors.length === 1)
-    {
-        switch (key)
-        {
-            case 'ctrl+alt+up':
-                return this.singleCursorPage('up')
-
-            case 'ctrl+alt+down':
-                return this.singleCursorPage('down')
-
-            case 'shift+ctrl+alt+up':
-                return this.moveCursors('up',{count:16})
-
-            case 'shift+ctrl+alt+down':
-                return this.moveCursors('down',{count:16})
-
-        }
-
-    }
     switch (key)
     {
         case 'up':
@@ -41,6 +22,18 @@ handleKey = function (key, event)
 
         case 'right':
             return this.moveCursors('right')
+
+        case 'ctrl+alt+up':
+            return this.singleCursorPage('up')
+
+        case 'ctrl+alt+down':
+            return this.singleCursorPage('down')
+
+        case 'shift+ctrl+alt+up':
+            return this.moveCursors('up',{count:16})
+
+        case 'shift+ctrl+alt+down':
+            return this.moveCursors('down',{count:16})
 
         case 'cmd+left':
         case 'ctrl+left':

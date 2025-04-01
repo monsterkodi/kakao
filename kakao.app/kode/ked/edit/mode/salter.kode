@@ -127,7 +127,8 @@ function salterMode
 
     handleKey: key event ->
     
-        switch key
+        # switch key
+        switch event.combo
         
             'up'
                 if @state.s.main > 0

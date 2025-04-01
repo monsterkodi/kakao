@@ -161,7 +161,7 @@ salterMode = (function ()
     {
         var char
 
-        switch (key)
+        switch (event.combo)
         {
             case 'up':
                 if (this.state.s.main > 0)

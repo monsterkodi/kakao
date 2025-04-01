@@ -15,21 +15,18 @@ handleKey = key event -> # will be bound to state
 
     ⮐  if 'unhandled' != mode.handleKey @ key event
 
-    if @s.cursors.length == 1
-    
-        switch key
-                            
-            'ctrl+alt+up'                   ➜ ⮐  @singleCursorPage 'up'  
-            'ctrl+alt+down'                 ➜ ⮐  @singleCursorPage 'down'
-            'shift+ctrl+alt+up'             ➜ ⮐  @moveCursors 'up'    count:16
-            'shift+ctrl+alt+down'           ➜ ⮐  @moveCursors 'down'  count:16
-            
-    switch key                                   
-                                                 
+    switch key                  
+                     
         'up'                                ➜ ⮐  @moveCursors 'up'   
         'down'                              ➜ ⮐  @moveCursors 'down' 
         'left'                              ➜ ⮐  @moveCursors 'left' 
         'right'                             ➜ ⮐  @moveCursors 'right'
+                                                 
+        'ctrl+alt+up'                       ➜ ⮐  @singleCursorPage 'up'  
+        'ctrl+alt+down'                     ➜ ⮐  @singleCursorPage 'down'
+        'shift+ctrl+alt+up'                 ➜ ⮐  @moveCursors 'up'    count:16
+        'shift+ctrl+alt+down'               ➜ ⮐  @moveCursors 'down'  count:16
+            
                                                  
         'cmd+left'  'ctrl+left'             ➜ ⮐  @moveCursors ['bos' 'ind_bol']
         'cmd+right' 'ctrl+right'            ➜ ⮐  @moveCursors ['eos' 'ind_eol']
