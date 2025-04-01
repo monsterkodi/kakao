@@ -16,6 +16,7 @@ let immutable = kxk.immutable
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 let events = kxk.events
+let absMin = kxk.absMin
 
 import syntax from "../util/syntax.js"
 
@@ -162,9 +163,10 @@ state = (function ()
 
     state.prototype["setCursors"] = function (cursors, opt)
     {
-        var cur, idx, main, mainCursor
+        var cur, idx, main, mainCursor, _81_15_
 
         opt = (opt != null ? opt : {})
+        opt.mc = ((_81_15_=opt.mc) != null ? _81_15_ : this.mainCursor())
         main = opt.main
         if (_k_.isArr(main))
         {
@@ -201,10 +203,7 @@ state = (function ()
         }
         main = _k_.clamp(0,this.s.cursors.length - 1,main)
         this.s = this.s.set('main',main)
-        if (opt.adjust !== false)
-        {
-            this.adjustViewForMainCursor(opt)
-        }
+        this.adjustViewForMainCursor(opt)
         this.swapState()
         mode.cursorsSet(this)
         this.emit('cursorsSet')
@@ -284,22 +283,22 @@ state = (function ()
 
     state.prototype["addLine"] = function (line, ext)
     {
-        var segl, _178_15_
+        var segl, _181_15_
 
         segl = kseg(line)
         this.syntax.addSegl(segl,ext)
-        this.segls = ((_178_15_=this.segls) != null ? _178_15_ : [])
+        this.segls = ((_181_15_=this.segls) != null ? _181_15_ : [])
         this.segls.push(segl)
         return this.changeLinesSegls()
     }
 
     state.prototype["appendLines"] = function (lines, ext)
     {
-        var segls, _187_15_
+        var segls, _190_15_
 
         segls = kseg.segls(lines)
         this.syntax.appendSegls(segls,ext)
-        this.segls = ((_187_15_=this.segls) != null ? _187_15_ : [])
+        this.segls = ((_190_15_=this.segls) != null ? _190_15_ : [])
         this.segls = this.segls.concat(segls)
         return this.changeLinesSegls()
     }
@@ -499,20 +498,47 @@ state = (function ()
 
     state.prototype["adjustViewForMainCursor"] = function (opt)
     {
-        var topBotDelta, view, x, y
+        var botDelta, dir, dtb, dtt, topBotDelta, topDelta, view, x, y
 
+        opt = (opt != null ? opt : {})
         if (this.cells.cols <= 0 || this.cells.rows <= 0)
+        {
+            return
+        }
+        if (opt.adjust === false)
         {
             return
         }
         var _a_ = this.mainCursor(); x = _a_[0]; y = _a_[1]
 
         view = this.s.view.asMutable()
-        opt = (opt != null ? opt : {})
-        topBotDelta = _k_.max(6,parseInt(this.cells.rows / 4))
-        if (opt.adjust === 'cursorInTopHalf')
+        topBotDelta = 7
+        topDelta = 7
+        botDelta = _k_.max(topDelta,parseInt(this.cells.rows / 2))
+        if (opt.adjust === 'topDelta')
         {
-            view[1] = y - topBotDelta
+            view[1] = y - topDelta
+        }
+        else if (opt.adjust === 'topBotDeltaGrow' && opt.mc)
+        {
+            dtt = y - view[1]
+            dtb = y - (view[1] + this.cells.rows)
+            if (dtt < 0)
+            {
+                view[1] = y - topDelta
+            }
+            else if (dtb > 0)
+            {
+                view[1] = y - (this.cells.rows - botDelta)
+            }
+            else
+            {
+                dir = y - opt.mc[1]
+                if (dtt < topDelta && dir < 0 || -dtb < botDelta && dir > 0)
+                {
+                    view[1] += dir
+                }
+            }
         }
         else
         {

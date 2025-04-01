@@ -473,6 +473,21 @@ def`)
         compare(belt.positionColumns([[0,0],[0,1]]),[[[0,0],[0,1]]])
         compare(belt.positionColumns([[0,0],[0,1],[1,1]]),[[[0,0],[0,1]],[[1,1]]])
     })
+    section("indexOfExtremePositionInDirection", function ()
+    {
+        posl = [[12,3],[4,4],[3,6],[10,6],[5,7],[13,8],[2,11]]
+        compare(belt.indexOfExtremePositionInDirection(posl,'left'),6)
+        compare(belt.indexOfExtremePositionInDirection(posl,'down'),6)
+        compare(belt.indexOfExtremePositionInDirection(posl,'right'),5)
+        compare(belt.indexOfExtremePositionInDirection(posl,'up'),0)
+        posl = [[3,3],[3,4],[3,5]]
+        compare(belt.indexOfExtremePositionInDirection(posl,'left',0),0)
+        compare(belt.indexOfExtremePositionInDirection(posl,'left',1),1)
+        compare(belt.indexOfExtremePositionInDirection(posl,'left',2),2)
+        compare(belt.indexOfExtremePositionInDirection(posl,'right',0),0)
+        compare(belt.indexOfExtremePositionInDirection(posl,'right',1),1)
+        compare(belt.indexOfExtremePositionInDirection(posl,'right',2),2)
+    })
 }
 toExport["tool belt"]._section_ = true
 toExport._test_ = true

@@ -122,14 +122,15 @@ export
                 'ind_eol'   ➜ ind  = belt.numIndent(line); c[0] = c[0] < ind ? ind : kseg.width(line)
                 'ind_bol'   ➜ ind  = belt.numIndent(line); c[0] = c[0] > ind ? ind : 0
 
-        main = @s.main 
+        main   = @s.main
+        adjust = opt.adjust ? 'topBotDelta'
+        
         switch dir
-            'left'
-            'up'   ➜ main =  0
-            'right'
-            'down' ➜ main = -1
-    
-        @setCursors cursors main:main adjust:'topBotDelta'
+            'up' 'down' 'left' 'right' 
+                main = belt.indexOfExtremePositionInDirection cursors dir main
+                adjust = 'topBotDeltaGrow'
+                
+        @setCursors cursors main:main adjust:adjust
         
         true
         

@@ -187,7 +187,7 @@ mapscr = (function ()
         {
             if (li !== mc[1])
             {
-                this.state.setCursors([[mc[0],li]],{main:0,adjust:false})
+                this.state.setCursors([[mc[0],li + 5]],{main:0,adjust:false})
                 return {redraw:true}
             }
             return

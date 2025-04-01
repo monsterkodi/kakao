@@ -560,6 +560,9 @@ ked [file]
             case 'alt+o':
                 return this.editor.jumpToCounterpart()
 
+            case 'cmd+i':
+                return post.emit('differ.status')
+
             case 'alt+,':
                 return this.editor.singleCursorAtLine(this.funcol.funtree.lineIndexOfPrevFunc())
 
@@ -614,7 +617,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _521_22_
+        var mcw, _522_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}

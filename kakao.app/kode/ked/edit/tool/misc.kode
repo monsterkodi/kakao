@@ -168,5 +168,26 @@ function misc
     
         trimmed = kseg.trim(line)
         trimmed[0] == "#"
+
+    @indexOfExtremePositionInDirection: posl dir index ->
         
+        switch dir
+            'left' 'right' ➜ ci = 0
+            'up'   'down'  ➜ ci = 1
+            
+        switch dir
+            'left' 'up'    ➜ start =  Infinity  ; cmp = (a b) -> a > b
+            'right' 'down' ➜ start = -Infinity  ; cmp = (a b) -> a < b
+            
+        for pos,idx in posl
+            if cmp start pos[ci]
+                start = pos[ci]
+                exi   = idx
+                
+        if valid index and valid posl[index]    
+            if posl[exi][ci] == posl[index][ci]  
+                ⮐  index                         
+        
+        exi
+
 export misc

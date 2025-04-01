@@ -602,3 +602,21 @@ use ../edit/tool   ◆ belt
         belt.positionColumns         [[0 0] [0 1]] ▸ [[[0 0] [0 1]]]
         belt.positionColumns         [[0 0] [0 1] [1 1]] ▸ [[[0 0] [0 1]] [[1 1]]]
         
+    ▸ indexOfExtremePositionInDirection
+    
+        posl = [[12 3] [4 4] [3 6] [10 6] [5 7] [13 8] [2 11]]
+        belt.indexOfExtremePositionInDirection posl 'left'  ▸ 6
+        belt.indexOfExtremePositionInDirection posl 'down'  ▸ 6
+        belt.indexOfExtremePositionInDirection posl 'right' ▸ 5
+        belt.indexOfExtremePositionInDirection posl 'up'    ▸ 0
+        
+        posl = [[3 3] [3 4] [3 5]]
+        belt.indexOfExtremePositionInDirection posl 'left' 0 ▸ 0 
+        belt.indexOfExtremePositionInDirection posl 'left' 1 ▸ 1 
+        belt.indexOfExtremePositionInDirection posl 'left' 2 ▸ 2 
+        
+        belt.indexOfExtremePositionInDirection posl 'right' 0 ▸ 0 
+        belt.indexOfExtremePositionInDirection posl 'right' 1 ▸ 1 
+        belt.indexOfExtremePositionInDirection posl 'right' 2 ▸ 2 
+        
+        

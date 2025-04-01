@@ -292,17 +292,17 @@ funtree = (function ()
         switch (action)
         {
             case 'right':
-                post.emit('goto.line',choice.line - 1,'ind')
+                post.emit('goto.line',choice.line - 1,'ind','topDelta')
                 return
 
             case 'click':
             case 'return':
-                post.emit('goto.line',choice.line - 1,'ind')
+                post.emit('goto.line',choice.line - 1,'ind','topDelta')
                 post.emit('focus','editor')
                 return
 
             case 'drag':
-                post.emit('goto.line',choice.line - 1,'ind')
+                post.emit('goto.line',choice.line - 1,'ind','topDelta')
                 return
 
         }

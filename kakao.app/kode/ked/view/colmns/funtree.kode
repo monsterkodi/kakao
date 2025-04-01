@@ -203,19 +203,19 @@ function funtree extends choices
         
             'right'
             
-                post.emit 'goto.line' choice.line-1 'ind'
+                post.emit 'goto.line' choice.line-1 'ind' 'topDelta'
                 ⮐  
                 
             'click'
             'return'
             
-                post.emit 'goto.line' choice.line-1 'ind'
+                post.emit 'goto.line' choice.line-1 'ind' 'topDelta'
                 post.emit 'focus' 'editor'
                 ⮐  
                 
             'drag'
             
-                post.emit 'goto.line' choice.line-1 'ind'
+                post.emit 'goto.line' choice.line-1 'ind' 'topDelta'
                 ⮐  
                  
         super action choice event

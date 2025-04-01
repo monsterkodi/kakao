@@ -27,7 +27,6 @@ complete = (function ()
         this.name = this.editor.name + '_complete'
         this.choices = new choices_class(this.editor.cells.screen,`${this.name}_choices`,['scrllr'])
         this.choices.focusable = false
-        this.choices.scroll.handle = '▐'
         this.color = {bg:theme.complete.bg,complete:theme.editor.selection,scroll:theme.complete.scroll}
         this.choices.setColor('hover',{bg:theme.hover.bg,blur:theme.hover.bg})
         this.choices.setColor('bg',this.color.bg)

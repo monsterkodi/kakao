@@ -473,6 +473,7 @@ function KED
             'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
             'alt+o'                      ➜ ⮐  @editor.jumpToCounterpart()
+            'cmd+i'                      ➜ ⮐  post.emit 'differ.status'
             'alt+,'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfPrevFunc()
             'alt+.'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfNextFunc()
             'cmd+o' 'ctrl+o'

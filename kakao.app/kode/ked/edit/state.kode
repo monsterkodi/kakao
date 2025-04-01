@@ -13,7 +13,7 @@
 ###
 
 use child_process os
-use ../../kxk ▪ immutable kstr kseg events
+use ../../kxk ▪ immutable kstr kseg events absMin
 use ../util   ◆ syntax
 use ./act     ◆ del insert select join indent multi main
 use ./tool    ◆ belt
@@ -78,6 +78,8 @@ function state extends events
     setCursors: cursors opt =>
         
         opt ?= {}
+        opt.mc ?= @mainCursor()
+        
         main = opt.main
 
         if main is arr ➜ main = belt.indexOfPosInPositions main cursors
@@ -103,7 +105,8 @@ function state extends events
 
         @s = @s.set 'main' main
         
-        @adjustViewForMainCursor opt if opt.adjust != false
+        @adjustViewForMainCursor opt
+        
         @swapState()
         
         mode.cursorsSet @
@@ -363,17 +366,36 @@ function state extends events
     
     adjustViewForMainCursor: opt =>
         
+        opt ?= {}
+        
         ⮐  if @cells.cols <= 0 or @cells.rows <= 0
+        
+        ⮐  if opt.adjust == false
 
         [x y] = @mainCursor()
 
         view = @s.view.asMutable()
         
-        opt ?= {}
+        topBotDelta = 7
+        topDelta = 7
+        botDelta = max topDelta int(@cells.rows/2)
         
-        topBotDelta = max 6 int(@cells.rows/4)
-        if opt.adjust == 'cursorInTopHalf'
-            view[1] = y - topBotDelta
+        if opt.adjust == 'topDelta'
+
+            view[1] = y - topDelta
+            
+        else if opt.adjust == 'topBotDeltaGrow' and opt.mc
+        
+            dtt = y-view[1]
+            dtb = y-(view[1]+@cells.rows)
+            if dtt < 0 
+                view[1] = y - topDelta
+            else if dtb > 0
+                view[1] = y - (@cells.rows-botDelta)
+            else
+                dir = y - opt.mc[1]
+                if dtt < topDelta and dir < 0  or -dtb < botDelta and dir > 0
+                    view[1] += dir
         else        
             if opt.adjust != 'topBotDelta'
                 topBotDelta = 0

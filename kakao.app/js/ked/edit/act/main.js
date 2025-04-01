@@ -8,8 +8,11 @@ import belt from "../tool/belt.js"
 export default {
     setMain:function (m)
     {
+        var mc
+    
+        mc = this.mainCursor()
         this.s = this.s.set('main',_k_.clamp(0,this.s.cursors.length - 1,m))
-        return this.adjustViewForMainCursor({adjust:'topBotDelta'})
+        return this.adjustViewForMainCursor({adjust:'topBotDeltaGrow',mc:mc})
     },
     mainCursor:function ()
     {

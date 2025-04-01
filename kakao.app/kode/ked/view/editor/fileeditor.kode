@@ -103,7 +103,7 @@ function fileeditor extends editor
             @state.setView view
             @state.setCursors [[col row]]
         else
-            adjust = view ? 'topBotDelta'
+            adjust = view ? 'topBotDeltaGrow'
             @state.setCursors [[col row]] adjust:adjust
             
     onGotoBof: => @state.moveCursors 'bof'
@@ -112,7 +112,7 @@ function fileeditor extends editor
     onGotoFunc: func => 
     
         if li = @funtree.lineIndexForFunc(func)
-            @onGotoLine li 'ind' 'cursorInTopHalf'
+            @onGotoLine li 'ind' 'topDelta'
             
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
     # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   

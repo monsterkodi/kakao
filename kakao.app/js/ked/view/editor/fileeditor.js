@@ -119,7 +119,7 @@ fileeditor = (function ()
         }
         else
         {
-            adjust = (view != null ? view : 'topBotDelta')
+            adjust = (view != null ? view : 'topBotDeltaGrow')
             return this.state.setCursors([[col,row]],{adjust:adjust})
         }
     }
@@ -140,7 +140,7 @@ fileeditor = (function ()
 
         if (li = this.funtree.lineIndexForFunc(func))
         {
-            return this.onGotoLine(li,'ind','cursorInTopHalf')
+            return this.onGotoLine(li,'ind','topDelta')
         }
     }
 

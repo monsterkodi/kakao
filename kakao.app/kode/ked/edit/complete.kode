@@ -19,7 +19,6 @@ function complete
         
         @choices = new choices_class @editor.cells.screen "#{@name}_choices" ['scrllr']
         @choices.focusable = false
-        @choices.scroll.handle = '▐'
         
         @color = 
             bg:       theme.complete.bg

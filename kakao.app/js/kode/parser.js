@@ -550,12 +550,20 @@ Parser = (function ()
     {
         var e, rhs
 
-        this.push(`op${op.text}`)
-        if (op.text === '=' && tokens[0].type === 'block')
+        if (op.text === '=')
         {
-            this.blockAssign = true
-            tokens = tokens.shift().tokens
+            if (_k_.empty(tokens))
+            {
+                this.onError("assignment without operand",{tok:lhs})
+                return {operation:{lhs:lhs,operator:op}}
+            }
+            if (tokens[0].type === 'block')
+            {
+                this.blockAssign = true
+                tokens = tokens.shift().tokens
+            }
         }
+        this.push(`op${op.text}`)
         rhs = this.exp(tokens)
         delete this.blockAssign
         this.pop(`op${op.text}`)

@@ -83,7 +83,7 @@ export default {
     },
     moveCursors:function (dir, opt)
     {
-        var c, cursors, ind, line, lines, main, _100_22_, _99_18_
+        var adjust, c, cursors, ind, line, lines, main, _100_22_, _126_28_, _99_18_
     
         if (_k_.isArr(dir))
         {
@@ -162,19 +162,19 @@ export default {
     
         }
         main = this.s.main
+        adjust = ((_126_28_=opt.adjust) != null ? _126_28_ : 'topBotDelta')
         switch (dir)
         {
-            case 'left':
             case 'up':
-                main = 0
-                break
-            case 'right':
             case 'down':
-                main = -1
+            case 'left':
+            case 'right':
+                main = belt.indexOfExtremePositionInDirection(cursors,dir,main)
+                adjust = 'topBotDeltaGrow'
                 break
         }
     
-        this.setCursors(cursors,{main:main,adjust:'topBotDelta'})
+        this.setCursors(cursors,{main:main,adjust:adjust})
         return true
     },
     moveCursorsToStartOfSelections:function ()

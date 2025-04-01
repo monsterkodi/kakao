@@ -12,9 +12,9 @@ use ../tool      ◆ belt
 export
 
     setMain: m -> 
-        
+        mc = @mainCursor()
         @s = @s.set 'main' clamp(0 @s.cursors.length-1 m)
-        @adjustViewForMainCursor adjust:'topBotDelta'
+        @adjustViewForMainCursor adjust:'topBotDeltaGrow' mc:mc
         
     mainCursor: -> @s.cursors[@s.main].asMutable()
     

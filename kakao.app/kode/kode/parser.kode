@@ -673,12 +673,18 @@ function Parser extends parse
     #  0000000   000        00000000  000   000  000   000     000     000   0000000   000   000
 
     operation: lhs op tokens ->
-
-        @push "op#{op.text}"
         
-        if op.text == '=' and tokens[0].type == 'block'
-            @blockAssign = true
-            tokens = tokens.shift().tokens
+        if op.text == '='
+            
+            if empty tokens
+                @onError "assignment without operand" tok:lhs
+                ⮐ operation: lhs:lhs operator:op
+            
+            if tokens[0].type == 'block'
+                @blockAssign = true
+                tokens = tokens.shift().tokens
+        
+        @push "op#{op.text}"
         
         rhs = @exp tokens
         

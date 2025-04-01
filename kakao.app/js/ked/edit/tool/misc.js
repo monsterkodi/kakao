@@ -205,6 +205,62 @@ misc = (function ()
         return trimmed[0] === "#"
     }
 
+    misc["indexOfExtremePositionInDirection"] = function (posl, dir, index)
+    {
+        var ci, cmp, exi, idx, pos, start
+
+        switch (dir)
+        {
+            case 'left':
+            case 'right':
+                ci = 0
+                break
+            case 'up':
+            case 'down':
+                ci = 1
+                break
+        }
+
+        switch (dir)
+        {
+            case 'left':
+            case 'up':
+                start = Infinity
+                cmp = function (a, b)
+                {
+                    return a > b
+                }
+                break
+            case 'right':
+            case 'down':
+                start = -Infinity
+                cmp = function (a, b)
+                {
+                    return a < b
+                }
+                break
+        }
+
+        var list = _k_.list(posl)
+        for (idx = 0; idx < list.length; idx++)
+        {
+            pos = list[idx]
+            if (cmp(start,pos[ci]))
+            {
+                start = pos[ci]
+                exi = idx
+            }
+        }
+        if (!_k_.empty(index) && !_k_.empty(posl[index]))
+        {
+            if (posl[exi][ci] === posl[index][ci])
+            {
+                return index
+            }
+        }
+        return exi
+    }
+
     return misc
 })()
 
