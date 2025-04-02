@@ -303,7 +303,7 @@ function KED
 
     loadFile: p row col view ○=>
     
-        # log "loadFile #{p} #{row} #{col} #{noon view}"
+        # log "ked.loadFile #{p} #{row} #{col} #{noon view}"
         
         start = process.hrtime()
         
@@ -312,23 +312,37 @@ function KED
         else
             absFile = slash.path process.cwd() p
             
-        ⮐ if slash.samePath absFile @loadingFile
+        ⮐  if slash.samePath absFile @loadingFile
         
         @loadingFile = absFile
         
         exists =○ nfs.fileExists @loadingFile
         
         if not exists
-            log "file doesn't exist! #{@loadingFile}"
+            warn "ked.loadFile - file doesn't exist! #{@loadingFile}"
             delete @loadingFile
             ⮐ 
         
         @loadingFile =○ nfs.resolveSymlink @loadingFile
         
+        if empty @loadingFile
+            warn "ked.loadFile - #{absFile} resolved to empty!"
+            ⮐  
+        
+        ▴ 'loadingFile' @loadingFile
+        
+        readingFile = @loadingFile
+        
         text =○ nfs.readText @loadingFile
         
+        if @loadingFile != readingFile
+            # warn 'another file started loading, skip editor update'
+            ⮐  
+        
         @currentFile = @loadingFile
-
+        
+        ▴ 'currentFile' @currentFile
+        
         delete @loadingFile
         
         @status.setFile slash.tilde(@currentFile)

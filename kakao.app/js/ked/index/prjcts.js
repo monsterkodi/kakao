@@ -59,7 +59,7 @@ class prjcts
 
         if (!(_k_.isStr(file)))
         {
-            console.log('prjcts.index file not a str?',file)
+            console.error("prjcts.index - expected a string, got",file)
             return
         }
         if (file.startsWith('untitled-'))

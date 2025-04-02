@@ -26,6 +26,10 @@ function logfile
                 @write noon(obj) if args.length > 1
             else        
                 @write "▾\n"+noon(args)
+
+        console.warn = args... => 
+            
+            @write m6(args.map((a) -> r5("▴ ")+noon(a)).join(' '))
                 
         console.error = args... => 
             

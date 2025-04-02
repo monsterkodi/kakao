@@ -44,7 +44,7 @@ class prjcts
     @index: file ○=>
         
         if not file is str
-            log 'prjcts.index file not a str?' file
+            error "prjcts.index - expected a string, got" file
             ⮐  
             
         ⮐  if file.startsWith 'untitled-'

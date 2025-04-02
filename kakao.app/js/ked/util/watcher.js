@@ -32,12 +32,17 @@ watcher = (function ()
 
     watcher["watch"] = async function (path, opt)
     {
-        var dir, isDir, item, items, prjPath, w, _40_22_
+        var dir, isDir, item, items, prjPath, w, _44_22_
 
+        if (_k_.empty(path))
+        {
+            console.error("watcher.watch - can't watch empty path!")
+            return
+        }
         path = slash.untilde(path)
         isDir = await nfs.isDir(path)
         opt = (opt != null ? opt : {})
-        opt.recursive = ((_40_22_=opt.recursive) != null ? _40_22_ : true)
+        opt.recursive = ((_44_22_=opt.recursive) != null ? _44_22_ : true)
         if (isDir)
         {
             dir = path

@@ -78,13 +78,12 @@ filepos = (function ()
 
     filepos.prototype["swapPrevious"] = function ()
     {
-        var fp, lf, pf
+        var lf, pf
 
         if (filepos.fileposl.length < 2)
         {
             return
         }
-        console.log(`filepos.swapPrevious ${filepos.offset} ${filepos.fileposl.length}`,filepos.fileposl)
         if (filepos.offset)
         {
             filepos.offset = 0
@@ -96,15 +95,11 @@ filepos = (function ()
             filepos.fileposl.push(lf)
             filepos.fileposl.push(pf)
         }
-        fp = filepos.fileposl[filepos.fileposl.length - 1]
-        post.emit('status.filepos',filepos.fileposl,filepos.offset)
-        return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])
+        return this.emitOpen()
     }
 
     filepos.prototype["goBackward"] = function ()
     {
-        var fp
-
         if (filepos.fileposl.length < 2)
         {
             return
@@ -113,17 +108,12 @@ filepos = (function ()
         {
             return
         }
-        console.log(`filepos.goBackward ${filepos.offset} ${filepos.fileposl.length}`,filepos.fileposl)
         filepos.offset += 1
-        fp = filepos.fileposl[filepos.fileposl.length - filepos.offset - 1]
-        post.emit('status.filepos',filepos.fileposl,filepos.offset)
-        return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])
+        return this.emitOpen()
     }
 
     filepos.prototype["goForward"] = function ()
     {
-        var fp
-
         if (filepos.fileposl.length < 2)
         {
             return
@@ -132,8 +122,14 @@ filepos = (function ()
         {
             return
         }
-        console.log(`filepos.goForward ${filepos.offset} ${filepos.fileposl.length}`,filepos.fileposl)
         filepos.offset -= 1
+        return this.emitOpen()
+    }
+
+    filepos.prototype["emitOpen"] = function ()
+    {
+        var fp
+
         fp = filepos.fileposl[filepos.fileposl.length - filepos.offset - 1]
         post.emit('status.filepos',filepos.fileposl,filepos.offset)
         return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])

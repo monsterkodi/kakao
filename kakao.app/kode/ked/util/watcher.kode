@@ -31,6 +31,10 @@ function watcher
             @fileStats[file] = stat
 
     @watch: path opt ○->
+    
+        if empty path
+            error "watcher.watch - can't watch empty path!"
+            ⮐  
         
         path = slash.untilde path
                 

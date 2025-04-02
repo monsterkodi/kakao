@@ -1,4 +1,4 @@
-var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var frecent
 
@@ -26,10 +26,14 @@ frecent = (function ()
 
     frecent["sample"] = function (bucket, key, delta)
     {
-        var bi, item, rec, _23_30_
+        var bi, item, rec, _27_30_
 
-        console.log(`recent.sample ${bucket} ${key} ${delta}`)
-        this.buckets[bucket][key] = ((_23_30_=this.buckets[bucket][key]) != null ? _23_30_ : {rank:1,time:this.now()})
+        if (_k_.empty(key))
+        {
+            console.error("frecent.sample - needs key to sample! got",key)
+            return
+        }
+        this.buckets[bucket][key] = ((_27_30_=this.buckets[bucket][key]) != null ? _27_30_ : {rank:1,time:this.now()})
         rec = this.buckets[bucket][key]
         rec.rank += delta
         rec.time = this.now()
