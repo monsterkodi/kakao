@@ -464,7 +464,8 @@ function KED
         switch key
             
             'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
-            'alt+r' 'ctrl+r' 'cmd+r'     ➜ ⮐  @reloadFile()
+            'ctrl+r' 'cmd+r'             ➜ ⮐  @reloadFile()
+            'alt+r'                      ➜ ⮐  post.emit 'dircol.reveal' @currentFile
             'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐  @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()

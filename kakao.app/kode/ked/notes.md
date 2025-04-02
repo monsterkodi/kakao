@@ -56,7 +56,6 @@
     - fix delete and other issues
 
 - dirtree
-    - auto open folder for current file
     - searchable?
     - set hover highlight to editor file when loosing focus
 

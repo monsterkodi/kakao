@@ -103,17 +103,3 @@ use ./utils ▪ kc ke kf
         
         }
         """
-        
-    # kf  "✘" ▸ true
-    # 
-    # kf  "r = some.call((some args)" ▸ true
-    # kf  "r = some.call(some args))" ▸ true
-    #     
-    # kf  """ 
-    #     f = ->
-    #         r = some.call(some args))
-    #         log 'r' r
-    #         r
-    #     """  ▸ true
-    
-        

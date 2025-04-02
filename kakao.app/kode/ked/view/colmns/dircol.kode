@@ -29,19 +29,22 @@ function dircol extends view
         
         @crumbs.on 'action' @onCrumbsAction
         
-        @dirtree.setColor 'bg'            theme.dirtree.bg
-        @dirtree.setColor 'empty'         @dirtree.color.bg
-        @dirtree.setColor 'cursor_main'   @dirtree.color.bg
-        @dirtree.setColor 'cursor_empty'  @dirtree.color.bg
+        bg = theme.dirtree.bg
         
-        @dirtree.scroll.setColor 'bg'     @dirtree.color.bg
+        @dirtree.setColor 'bg'            bg
+        @dirtree.setColor 'empty'         bg
+        @dirtree.setColor 'cursor_main'   bg
+        @dirtree.setColor 'cursor_empty'  bg
         
-        @knob   .setColor 'bg'            @dirtree.color.bg
+        @dirtree.scroll.setColor 'bg'     bg
+        
+        @knob   .setColor 'bg'            bg
         
         @crumbs .setColor 'empty'         theme.gutter.bg
         
-        post.on 'dircol.resize' @onDircolResize
-        post.on 'dircol.toggle' @onDircolToggle
+        post.on 'dircol.reveal' @onReveal
+        post.on 'dircol.resize' @onResize
+        post.on 'dircol.toggle' @onToggle
         post.on 'dircol.root'   @setRoot
         
         post.on 'session.merge' @onSessionMerge
@@ -129,15 +132,34 @@ function dircol extends view
                 'trash' 
                     if choice.type == 'file'
                         post.emit 'file.trash' current.path
+                        
+    onReveal: p ○=>
     
+        ⮐  if @dirtree.itemForPath p
+
+        if d = @dirtree.itemForPath slash.dir(p)
+            if not d.open
+                ○ @dirtree.openDir d redraw:true
+            else
+                error "dircol.onReveal already open? #{d}"
+        else
+            if dd = @dirtree.itemForPath slash.dir(slash.dir(p))
+                if not dd.open
+                    ○ @dirtree.openDir dd
+                    ○ @dirtree.openDir d redraw:true
+                else
+                    error "dircol.onReveal already open dd? #{d}"
+            else
+                @setRoot d
+                            
     # █████████   ███████    ███████    ███████   ███      ████████
     #    ███     ███   ███  ███        ███        ███      ███     
     #    ███     ███   ███  ███  ████  ███  ████  ███      ███████ 
     #    ███     ███   ███  ███   ███  ███   ███  ███      ███     
     #    ███      ███████    ███████    ███████   ███████  ████████
 
-    onDircolResize: => @knob.doDrag = true
-    onDircolToggle: => 
+    onResize: => @knob.doDrag = true
+    onToggle: => 
         
         @toggle() if not (@visible() and @collapsed())
         @active = @visible()

@@ -525,10 +525,12 @@ ked [file]
             case 'cmd+esc':
                 return this.quit()
 
-            case 'alt+r':
             case 'ctrl+r':
             case 'cmd+r':
                 return this.reloadFile()
+
+            case 'alt+r':
+                return post.emit('dircol.reveal',this.currentFile)
 
             case 'ctrl+s':
             case 'cmd+s':
@@ -617,7 +619,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _522_22_
+        var mcw, _523_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}

@@ -34,10 +34,14 @@ class Kode
     # 000       000   000  000   000  000   000  000   000  
     # 00000000  000   000  000   000   0000000   000   000  
     
+    errorLog: msg args... =>
+        
+        console.error.apply null [msg].concat(args)
+    
     onError: msg info =>
         
         # error noon(info) #if @args.verbose
-        error @file
+        @errorLog @file
         if valid info 
             if 
                 valid info.tokens and valid info.tokens[0]
@@ -47,9 +51,9 @@ class Kode
                 valid info.line
                     li = info.line
             if valid li
-                error "#{li}:" @text.split(/\r?\n/)[li-1]
+                @errorLog "#{li}:" @text.split(/\r?\n/)[li-1]
                 
-        error msg
+        @errorLog msg
         throw msg
 
     # 00000000  000   000   0000000   000

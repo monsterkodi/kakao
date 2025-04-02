@@ -23,6 +23,7 @@ class Kode
         var _16_14_, _17_21_
 
         this.onError = this.onError.bind(this)
+        this.errorLog = this.errorLog.bind(this)
         this.args = ((_16_14_=this.args) != null ? _16_14_ : {})
         this.args.header = ((_17_21_=this.args.header) != null ? _17_21_ : true)
         this.version = '0.2.0'
@@ -37,11 +38,16 @@ class Kode
         this.renderer = new renderer(this)
     }
 
+    errorLog (msg, ...args)
+    {
+        return console.error.apply(null,[msg].concat(args))
+    }
+
     onError (msg, info)
     {
         var li
 
-        console.error(this.file)
+        this.errorLog(this.file)
         if (!_k_.empty(info))
         {
             if (!_k_.empty(info.tokens) && !_k_.empty(info.tokens[0]))
@@ -58,10 +64,10 @@ class Kode
             }
             if (!_k_.empty(li))
             {
-                console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
+                this.errorLog(`${li}:`,this.text.split(/\r?\n/)[li - 1])
             }
         }
-        console.error(msg)
+        this.errorLog(msg)
         throw msg
     }
 

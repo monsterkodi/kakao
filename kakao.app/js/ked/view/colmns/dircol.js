@@ -25,13 +25,14 @@ dircol = (function ()
     {
         this.editor = editor
     
-        var root
+        var bg, root
 
         this["onKey"] = this["onKey"].bind(this)
         this["onWheel"] = this["onWheel"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
-        this["onDircolToggle"] = this["onDircolToggle"].bind(this)
-        this["onDircolResize"] = this["onDircolResize"].bind(this)
+        this["onToggle"] = this["onToggle"].bind(this)
+        this["onResize"] = this["onResize"].bind(this)
+        this["onReveal"] = this["onReveal"].bind(this)
         this["onContextChoice"] = this["onContextChoice"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
         this["draw"] = this["draw"].bind(this)
@@ -47,15 +48,17 @@ dircol = (function ()
         this.crumbs = new crumbs(screen,`${this.name}_crumbs`)
         this.dirtree = new dirtree(screen,`${this.name}_dirtree`,['scroll'])
         this.crumbs.on('action',this.onCrumbsAction)
-        this.dirtree.setColor('bg',theme.dirtree.bg)
-        this.dirtree.setColor('empty',this.dirtree.color.bg)
-        this.dirtree.setColor('cursor_main',this.dirtree.color.bg)
-        this.dirtree.setColor('cursor_empty',this.dirtree.color.bg)
-        this.dirtree.scroll.setColor('bg',this.dirtree.color.bg)
-        this.knob.setColor('bg',this.dirtree.color.bg)
+        bg = theme.dirtree.bg
+        this.dirtree.setColor('bg',bg)
+        this.dirtree.setColor('empty',bg)
+        this.dirtree.setColor('cursor_main',bg)
+        this.dirtree.setColor('cursor_empty',bg)
+        this.dirtree.scroll.setColor('bg',bg)
+        this.knob.setColor('bg',bg)
         this.crumbs.setColor('empty',theme.gutter.bg)
-        post.on('dircol.resize',this.onDircolResize)
-        post.on('dircol.toggle',this.onDircolToggle)
+        post.on('dircol.reveal',this.onReveal)
+        post.on('dircol.resize',this.onResize)
+        post.on('dircol.toggle',this.onToggle)
         post.on('dircol.root',this.setRoot)
         post.on('session.merge',this.onSessionMerge)
         root = ked_session.get('dircol▸root',process.cwd())
@@ -72,7 +75,7 @@ dircol = (function ()
 
     dircol.prototype["onSessionMerge"] = function (recent)
     {
-        var args, root, _73_24_
+        var args, root, _76_24_
 
         if (_k_.empty(recent.dircol))
         {
@@ -137,7 +140,7 @@ dircol = (function ()
 
     dircol.prototype["onContext"] = function (event)
     {
-        var _118_29_
+        var _121_29_
 
         if ((this.dirtree.current() != null ? this.dirtree.current().type : undefined) === 'file')
         {
@@ -164,12 +167,52 @@ dircol = (function ()
         }
     }
 
-    dircol.prototype["onDircolResize"] = function ()
+    dircol.prototype["onReveal"] = async function (p)
+    {
+        var d, dd
+
+        if (this.dirtree.itemForPath(p))
+        {
+            return
+        }
+        if (d = this.dirtree.itemForPath(slash.dir(p)))
+        {
+            if (!d.open)
+            {
+                return await this.dirtree.openDir(d,{redraw:true})
+            }
+            else
+            {
+                console.error(`dircol.onReveal already open? ${d}`)
+            }
+        }
+        else
+        {
+            if (dd = this.dirtree.itemForPath(slash.dir(slash.dir(p))))
+            {
+                if (!dd.open)
+                {
+                    await this.dirtree.openDir(dd)
+                    return await this.dirtree.openDir(d,{redraw:true})
+                }
+                else
+                {
+                    console.error(`dircol.onReveal already open dd? ${d}`)
+                }
+            }
+            else
+            {
+                return this.setRoot(d)
+            }
+        }
+    }
+
+    dircol.prototype["onResize"] = function ()
     {
         return this.knob.doDrag = true
     }
 
-    dircol.prototype["onDircolToggle"] = function ()
+    dircol.prototype["onToggle"] = function ()
     {
         var cols
 
