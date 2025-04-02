@@ -136,7 +136,11 @@ function Parse extends parseutils
                 @verb 'exps block end, break!'
                 break
                 
-            if tok.text == ')'                               ➜ @verb 'exps break on )'     ; break
+            if tok.text == ')'                               
+                if '(' in @stack or 'args(' in @stack
+                    @verb 'exps break on )'     
+                    break
+                @onError 'unmatched closing bracket' tok:last(tokens)
             if tok.text in ['in''of'] and rule == 'for vals' ➜ @verb 'exps break on in|of' ; break
             if tok.type == 'nl' 
                 

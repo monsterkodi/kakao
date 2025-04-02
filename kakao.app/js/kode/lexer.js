@@ -43,8 +43,7 @@ class Lexer
 
     onError (msg, info)
     {
-        this.kode.onError(msg,info)
-        throw msg
+        return this.kode.onError(msg,info)
     }
 
     tokenize (text)

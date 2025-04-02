@@ -6,8 +6,7 @@
    000     00000000  000   000     000   
 ###
 
-use ../../../kxk ▪ kstr kutil kseg 
-use ../../../kxk ◆ pepe
+use ../../../kxk ▪ kstr kutil kseg pepe
 use              ◆ belt
 
 function pair
@@ -95,6 +94,15 @@ function pair
     # 000        000   000  000  000   000       000             000  000   000  000   000  000   000  000   000  000   000  
     # 000        000   000  000  000   000  0000000         0000000    0000000   000   000  000   000  0000000     0000000   
     
+    @spansOfNestedPairsAtPositions: lines posl ->
+        
+        rngs = []
+        
+        for pos in posl
+            for pair in pepe.pairsAtCol lines[pos[1]] pos[0]
+                rngs.push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
+        rngs
+
     @rangesOfPairsSurroundingPositions: lines pairs posl ->
         
         rngs = []

@@ -438,6 +438,16 @@ def`)
         posl = [[4,0],[4,1],[4,2],[4,3],[4,4]]
         compare(belt.rangesOfPairsSurroundingPositions(lines,pairs,posl),[[3,2,5,2],[2,3,5,3],[3,4,5,4]])
     })
+    section("spansOfNestedPairsAtPositions", function ()
+    {
+        lines = belt.linesForText(`01234567
+
+'45""6'
+'a#\{\}c'
+[[{()}]]`)
+        posl = [[4,0],[4,1],[4,2],[4,3],[4,4]]
+        compare(belt.spansOfNestedPairsAtPositions(lines,posl),[[0,2,6,2],[0,3,6,3],[0,4,7,4],[1,4,6,4],[2,4,5,4],[3,4,4,4]])
+    })
     section("openCloseSpansForPositions", function ()
     {
         segls = kseg.segls(`[[{()}]]

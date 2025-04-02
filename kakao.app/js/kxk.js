@@ -28,6 +28,7 @@ import kstr from "./kxk/kstr.js"
 import kseg from "./kxk/kseg.js"
 import kermit from "./kxk/kermit.js"
 import scooter from "./kxk/scooter.js"
+import pepe from "./kxk/pepe.js"
 import clippo from "./kxk/clippo.js"
 import kpos from "./kxk/kpos.js"
 import util from "./kxk/util.js"
@@ -39,7 +40,7 @@ import ffs from "./kxk/ffs.js"
 import walkdir from "./kxk/walkdir.js"
 import noon from "./kxk/noon.js"
 
-var list = _k_.list("dom elem post drag slash stash store prefs matchr immutable linediff karg krzl plot pretty profile keyinfo tooltip events popup scheme kstr kseg kermit scooter clippo kpos util sds fps win os ffs walkdir noon".split(' '))
+var list = _k_.list("dom elem post drag slash stash store prefs matchr immutable linediff karg krzl plot pretty profile keyinfo tooltip events popup scheme kstr kseg kermit scooter pepe clippo kpos util sds fps win os ffs walkdir noon".split(' '))
 for (var _a_ = 0; _a_ < list.length; _a_++)
 {
     exp = list[_a_]

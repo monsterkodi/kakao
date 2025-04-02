@@ -27,7 +27,7 @@ brckts = (function ()
 
     brckts.prototype["cursorsSet"] = function ()
     {
-        var cursors, lines
+        var spans
 
         if (this.state.s.selections.length)
         {
@@ -35,20 +35,24 @@ brckts = (function ()
             {
                 this.state.setHighlights([])
             }
+            console.log('cursorsSet ⮐  2')
             return
         }
         if (this.state.s.highlights.length)
         {
+            console.log('cursorsSet ⮐  1')
             if (_k_.eql(!this.allSpans, this.state.s.highlights.asMutable()))
             {
                 return
             }
         }
-        lines = this.state.s.lines
-        cursors = this.state.s.cursors
-        this.openCloseSpans = belt.openCloseSpansForPositions(lines,cursors)
-        this.stringDelimiterSpans = belt.stringDelimiterSpansForPositions(lines,cursors)
-        this.state.setHighlights(this.openCloseSpans.concat(this.stringDelimiterSpans))
+        console.log('cursorsSet ▸')
+        spans = belt.spansOfNestedPairsAtPositions(this.state.s.lines,this.state.s.cursors)
+        console.log('spans',spans)
+        if (!_k_.empty((spans = belt.spansOfNestedPairsAtPositions(this.state.s.lines,this.state.s.cursors))))
+        {
+            this.state.setHighlights(spans)
+        }
         return this.allSpans = this.state.s.highlights.asMutable()
     }
 

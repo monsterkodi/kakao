@@ -165,5 +165,15 @@ pepe.flatten = pep ->
 # ███        ███   ███  ███  ███   ███  ███████ 
 
 pepe.pairs = s -> pepe.flatten pepe(s index:true)
+
+#  ███████   █████████       ███████   ███████   ███    
+# ███   ███     ███         ███       ███   ███  ███    
+# █████████     ███         ███       ███   ███  ███    
+# ███   ███     ███         ███       ███   ███  ███    
+# ███   ███     ███          ███████   ███████   ███████
+
+pepe.pairsAtCol = s col -> 
+
+    pepe.pairs(s).filter (p) -> p.rng[0] <= col and p.rng[1] >= col
         
 export pepe

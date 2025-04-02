@@ -634,7 +634,7 @@ function Parser extends parse
                 args = []
             else
                 @push 'args('
-                args = @exps '(' tokens, ')'
+                args = @exps '(' tokens ')'
                 @pop 'args('
         else
             if tok.text in ['typeof' 'new']
@@ -651,9 +651,8 @@ function Parser extends parse
                 @shiftNewline 'implicit call ends' tokens
                 close = tokens.shift()
 
-        if open and not close 
+        if open and not close
             @onError "explicit call is missing closing bracket )" tok:tok tokens:tokens
-            # @error hdr:'call' msg:'explicit call without closing )' tokens
 
         @pop 'call'
         
@@ -819,7 +818,7 @@ function Parser extends parse
     parens: open tokens ->
 
         if tokens[0]?.text == ')'
-            ⮐ parens:
+            ⮐  parens:
                 open:  open
                 exps:  []
                 close: tokens.shift()
@@ -833,7 +832,7 @@ function Parser extends parse
         @pop '('
 
         if comp = @lcomp(exps)
-            ⮐ comp 
+            ⮐  comp 
         
         parens:
             open:  open

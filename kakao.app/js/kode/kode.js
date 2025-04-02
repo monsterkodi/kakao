@@ -47,20 +47,22 @@ class Kode
             if (!_k_.empty(info.tokens) && !_k_.empty(info.tokens[0]))
             {
                 li = info.tokens[0].line
-                console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
             }
-            if (!_k_.empty(info.tok))
+            else if (!_k_.empty(info.tok))
             {
                 li = info.tok.line
-                console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
             }
-            if (!_k_.empty(info.line))
+            else if (!_k_.empty(info.line))
             {
                 li = info.line
+            }
+            if (!_k_.empty(li))
+            {
                 console.error(`${li}:`,this.text.split(/\r?\n/)[li - 1])
             }
         }
         console.error(msg)
+        throw msg
     }
 
     eval (text, file, glob)

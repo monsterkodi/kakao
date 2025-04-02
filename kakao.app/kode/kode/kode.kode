@@ -39,17 +39,18 @@ class Kode
         # error noon(info) #if @args.verbose
         error @file
         if valid info 
-            if valid info.tokens and valid info.tokens[0]
-                li = info.tokens[0].line
-                error "#{li}:" @text.split(/\r?\n/)[li-1]
-            if valid info.tok 
-                li = info.tok.line
-                error "#{li}:" @text.split(/\r?\n/)[li-1]
-            if valid info.line
-                li = info.line
+            if 
+                valid info.tokens and valid info.tokens[0]
+                    li = info.tokens[0].line
+                valid info.tok 
+                    li = info.tok.line
+                valid info.line
+                    li = info.line
+            if valid li
                 error "#{li}:" @text.split(/\r?\n/)[li-1]
                 
         error msg
+        throw msg
 
     # 00000000  000   000   0000000   000
     # 000       000   000  000   000  000
@@ -77,13 +78,15 @@ class Kode
      0000000   0000000   000   000  000        000  0000000  00000000
      
     converts a string of kode into a string of javascript
+    
+    ⮐  undefined on lexer, parser or renderer errors
     ###
 
     @compile: text opt={} -> (new Kode(opt)).compile text
     
     compile: @text @file ->
 
-        ⮐ '' if empty trim @text
+        ⮐  '' if empty trim @text
         
         log @text if @args.verbose
 
@@ -91,7 +94,7 @@ class Kode
             ast = @ast @text
             @renderer.render ast @file
         catch err
-            ⮐ # error should already be logged in @onError
+            ⮐  # error should already be logged in @onError
         
     #  0000000    0000000  000000000  
     # 000   000  000          000     

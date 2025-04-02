@@ -2,6 +2,7 @@ var toExport = {}
 import utils from "./utils.js"
 let kc = utils.kc
 let ke = utils.ke
+let kf = utils.kf
 
 toExport["return"] = function ()
 {

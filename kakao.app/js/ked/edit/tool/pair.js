@@ -6,8 +6,7 @@ import kxk from "../../../kxk.js"
 let kstr = kxk.kstr
 let kutil = kxk.kutil
 let kseg = kxk.kseg
-
-import pepe from "../../../kxk/pepe.js"
+let pepe = kxk.pepe
 
 import belt from "./belt.js"
 
@@ -19,7 +18,7 @@ pair = (function ()
 
     pair["isUnbalancedPosition"] = function (lines, pos, char)
     {
-        var p, revs, start, _31_28_
+        var p, revs, start, _30_28_
 
         revs = {']':'[','}':'{',')':'(','"':'"',"'":"'"}
         p = pepe(kseg.str(lines[pos[1]]))
@@ -32,7 +31,7 @@ pair = (function ()
 
     pair["isRangeInString"] = function (lines, rng)
     {
-        var _40_76_
+        var _39_76_
 
         return (this.rangeOfStringSurroundingRange(lines,rng) != null)
     }
@@ -120,6 +119,25 @@ pair = (function ()
             }
         }
         return found
+    }
+
+    pair["spansOfNestedPairsAtPositions"] = function (lines, posl)
+    {
+        var pair, pos, rngs
+
+        rngs = []
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            var list1 = _k_.list(pepe.pairsAtCol(lines[pos[1]],pos[0]))
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                pair = list1[_b_]
+                rngs.push([pair.rng[0],pos[1],pair.rng[1],pos[1]])
+            }
+        }
+        return rngs
     }
 
     pair["rangesOfPairsSurroundingPositions"] = function (lines, pairs, posl)

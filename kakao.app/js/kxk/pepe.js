@@ -185,4 +185,12 @@ pepe.pairs = function (s)
 {
     return pepe.flatten(pepe(s,{index:true}))
 }
+
+pepe.pairsAtCol = function (s, col)
+{
+    return pepe.pairs(s).filter(function (p)
+    {
+        return p.rng[0] <= col && p.rng[1] >= col
+    })
+}
 export default pepe;
