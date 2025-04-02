@@ -75,12 +75,16 @@ class NFS
     
     @resolveSymlink: p ○->
         
+        if not p is str
+            error "nfs.resolveSymlink needs a string! #{p}"
+            ⮐  p
+        
         stat =○ fsp.lstat p
         if stat.isSymbolicLink()
             r =○ fsp.readlink p
             if not slash.isAbsolute r
                 r = slash.path slash.dir(p) r
-            ⮐ r
+            ⮐  r
         p
     
     # 00000000   00000000   0000000   0000000    
@@ -123,7 +127,7 @@ class NFS
     @info: p ○->
         
         try
-            ⮐ ○ fsp.stat p
+            ⮐  ○ fsp.stat p
         catch err
             error "nfs.info -- " + String(err)
             
@@ -151,7 +155,7 @@ class NFS
     @exists: p ○->
         
         try
-            ⮐ if not p?
+            ⮐  if not p?
             p = slash.absolute slash.removeLinePos(p) process.cwd()
             ○ fsp.stat p
                             
@@ -242,7 +246,7 @@ class NFS
         
         while git.length and git != "/"
             
-            ⮐ git if ○ NFS.isDir(slash.path(git '.git'))
+            ⮐  git if ○ NFS.isDir(slash.path(git '.git'))
             
             git = slash.dir git
     
@@ -258,7 +262,7 @@ class NFS
         
         while pkg.length and pkg != "/"
             
-            ⮐ pkg if ○ NFS.isFile(slash.path(pkg 'package.json'))
+            ⮐  pkg if ○ NFS.isFile(slash.path(pkg 'package.json'))
             
             pkg = slash.dir pkg
             
@@ -277,9 +281,9 @@ class NFS
         
         while pth.length and pth != "/"
             
-            ⮐ pth if ○ NFS.isDir(slash.path(pth '.git'))
-            ⮐ pth if ○ NFS.isFile(slash.path(pth 'package.json'))
-            ⮐ pth if ○ NFS.isFile(slash.path(slash.dir(pth) 'kakao.kode')) # should be done differently at some point!
+            ⮐  pth if ○ NFS.isDir(slash.path(pth '.git'))
+            ⮐  pth if ○ NFS.isFile(slash.path(pth 'package.json'))
+            ⮐  pth if ○ NFS.isFile(slash.path(slash.dir(pth) 'kakao.kode')) # should be done differently at some point!
             
             pth = slash.dir pth
             

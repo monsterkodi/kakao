@@ -189,9 +189,9 @@ syntax
     text require string                     #070   
     module require                          #050   
     punct string interpolation              #050   
-    punct string triple                     #050   
-    punct string double                     #040   
-    punct string single                     #030   
+    punct string triple                     #060   
+    punct string double                     #050   
+    punct string single                     #040   
     comment triple header highlight         #050   
     comment triple header                   #060   
     comment triple header shadow            #070   

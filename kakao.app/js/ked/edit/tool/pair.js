@@ -121,7 +121,7 @@ pair = (function ()
         return found
     }
 
-    pair["spansOfNestedPairsAtPositions"] = function (lines, posl)
+    pair["rangesOfNestedPairsAtPositions"] = function (lines, posl)
     {
         var pair, pos, rngs
 
@@ -130,7 +130,7 @@ pair = (function ()
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
             pos = list[_a_]
-            var list1 = _k_.list(pepe.pairsAtCol(lines[pos[1]],pos[0]))
+            var list1 = _k_.list(pepe.pairsAtCol(kseg.str(lines[pos[1]]),pos[0]))
             for (var _b_ = 0; _b_ < list1.length; _b_++)
             {
                 pair = list1[_b_]
@@ -138,6 +138,26 @@ pair = (function ()
             }
         }
         return rngs
+    }
+
+    pair["spansOfNestedPairsAtPositions"] = function (lines, posl)
+    {
+        var pair, pos, spans
+
+        spans = []
+        var list = _k_.list(posl)
+        for (var _a_ = 0; _a_ < list.length; _a_++)
+        {
+            pos = list[_a_]
+            var list1 = _k_.list(pepe.pairsAtCol(kseg.str(lines[pos[1]]),pos[0]))
+            for (var _b_ = 0; _b_ < list1.length; _b_++)
+            {
+                pair = list1[_b_]
+                spans.push([pair.rng[0],pos[1],pair.rng[0] + pair.start.length])
+                spans.push([pair.rng[1],pos[1],pair.rng[1] + pair.end.length])
+            }
+        }
+        return spans
     }
 
     pair["rangesOfPairsSurroundingPositions"] = function (lines, pairs, posl)

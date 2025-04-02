@@ -35,23 +35,25 @@ brckts = (function ()
             {
                 this.state.setHighlights([])
             }
-            console.log('cursorsSet ⮐  2')
             return
         }
         if (this.state.s.highlights.length)
         {
-            console.log('cursorsSet ⮐  1')
             if (_k_.eql(!this.allSpans, this.state.s.highlights.asMutable()))
             {
                 return
             }
         }
-        console.log('cursorsSet ▸')
         spans = belt.spansOfNestedPairsAtPositions(this.state.s.lines,this.state.s.cursors)
-        console.log('spans',spans)
         if (!_k_.empty((spans = belt.spansOfNestedPairsAtPositions(this.state.s.lines,this.state.s.cursors))))
         {
             this.state.setHighlights(spans)
+        }
+        else
+        {
+            this.openCloseSpans = belt.openCloseSpansForPositions(this.state.s.lines,this.state.s.cursors)
+            this.stringDelimiterSpans = belt.stringDelimiterSpansForPositions(this.state.s.cursors)
+            this.state.setHighlights(this.openCloseSpans.concat(this.stringDelimiterSpans))
         }
         return this.allSpans = this.state.s.highlights.asMutable()
     }

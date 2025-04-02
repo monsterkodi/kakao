@@ -94,14 +94,22 @@ function pair
     # 000        000   000  000  000   000       000             000  000   000  000   000  000   000  000   000  000   000  
     # 000        000   000  000  000   000  0000000         0000000    0000000   000   000  000   000  0000000     0000000   
     
-    @spansOfNestedPairsAtPositions: lines posl ->
+    @rangesOfNestedPairsAtPositions: lines posl ->
         
         rngs = []
-        
         for pos in posl
-            for pair in pepe.pairsAtCol lines[pos[1]] pos[0]
+            for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
                 rngs.push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
         rngs
+
+    @spansOfNestedPairsAtPositions: lines posl ->
+        
+        spans = []
+        for pos in posl
+            for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+                spans.push [pair.rng[0] pos[1] pair.rng[0]+pair.start.length]
+                spans.push [pair.rng[1] pos[1] pair.rng[1]+pair.end.length]
+        spans
 
     @rangesOfPairsSurroundingPositions: lines pairs posl ->
         

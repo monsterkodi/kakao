@@ -44,25 +44,18 @@ function brckts
         if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
             if @allSpans eql @state.s.highlights
                 @state.setHighlights []
-            log 'cursorsSet ⮐  2'
             ⮐  
             
         if @state.s.highlights.length     # don't highlight brackets when other highlights exist and it's different
-            log 'cursorsSet ⮐  1'
             ⮐  if not @allSpans eql @state.s.highlights.asMutable() # from the previous brckts highlight
             
-        # lines   = @state.s.lines
-        # cursors = @state.s.cursors
-#         
-        # @openCloseSpans       = belt.openCloseSpansForPositions       lines cursors
-        # @stringDelimiterSpans = belt.stringDelimiterSpansForPositions lines cursors
-#         
-        # @state.setHighlights @openCloseSpans.concat(@stringDelimiterSpans)
-        log 'cursorsSet ▸'
         spans = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors)
-        log 'spans' spans
         if valid (spans = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors))
             @state.setHighlights spans
+        else
+            @openCloseSpans       = belt.openCloseSpansForPositions @state.s.lines @state.s.cursors
+            @stringDelimiterSpans = belt.stringDelimiterSpansForPositions          @state.s.cursors
+            @state.setHighlights @openCloseSpans.concat(@stringDelimiterSpans)
         
         @allSpans = @state.s.highlights.asMutable()
 
