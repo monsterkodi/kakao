@@ -12,6 +12,7 @@ filepos = (function ()
 {
     filepos["autoStart"] = true
     filepos["fileposl"] = []
+    filepos["offset"] = 0
     function filepos (state)
     {
         this.state = state
@@ -23,27 +24,36 @@ filepos = (function ()
 
     filepos.prototype["cursorsSet"] = function ()
     {
-        var curview, file
+        var curview, file, fposl
 
         if (file = ked_session.get("editor▸file"))
         {
             curview = this.state.mainCursor().concat(this.state.s.view)
-            if (_k_.empty(filepos.fileposl))
+            fposl = filepos.fileposl
+            if (_k_.empty(fposl))
             {
-                filepos.fileposl.push([file,curview])
-            }
-            else if (filepos.fileposl.slice(-1)[0][0] === file)
-            {
-                filepos.fileposl.slice(-1)[0][1] = curview
+                fposl.push([file,curview])
             }
             else
             {
-                kutil.pullIf(filepos.fileposl,function (fp)
+                if (filepos.offset && fposl.length > 1 && fposl[fposl.length - 1 - filepos.offset][0] === file)
                 {
-                    return fp[0] === file
-                })
-                filepos.fileposl.push([file,curview])
+                    fposl[fposl.length - 1 - filepos.offset][1] = curview
+                }
+                else
+                {
+                    if (filepos.offset && fposl[fposl.length - 1 - filepos.offset][0] !== file)
+                    {
+                        filepos.offset = 0
+                    }
+                    kutil.pullIf(fposl,function (fp)
+                    {
+                        return fp[0] === file
+                    })
+                    fposl.push([file,curview])
+                }
             }
+            post.emit('status.filepos',fposl,filepos.offset)
             return ked_session.set(`editor▸filepos▸${file}`,curview)
         }
     }
@@ -66,37 +76,81 @@ filepos = (function ()
         }
     }
 
-    filepos.prototype["goBackward"] = function ()
+    filepos.prototype["swapPrevious"] = function ()
     {
-        var fp, offset
+        var fp, lf, pf
 
-        console.log(`goBackward ${filepos.fileposl.length}`,filepos.fileposl)
         if (filepos.fileposl.length < 2)
         {
             return
         }
-        offset = 2
-        fp = filepos.fileposl[filepos.fileposl.length - offset]
+        console.log(`filepos.swapPrevious ${filepos.offset} ${filepos.fileposl.length}`,filepos.fileposl)
+        if (filepos.offset)
+        {
+            filepos.offset = 0
+        }
+        else
+        {
+            lf = filepos.fileposl.pop()
+            pf = filepos.fileposl.pop()
+            filepos.fileposl.push(lf)
+            filepos.fileposl.push(pf)
+        }
+        fp = filepos.fileposl[filepos.fileposl.length - 1]
+        post.emit('status.filepos',filepos.fileposl,filepos.offset)
+        return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])
+    }
+
+    filepos.prototype["goBackward"] = function ()
+    {
+        var fp
+
+        if (filepos.fileposl.length < 2)
+        {
+            return
+        }
+        if (filepos.offset >= filepos.fileposl.length - 1)
+        {
+            return
+        }
+        console.log(`filepos.goBackward ${filepos.offset} ${filepos.fileposl.length}`,filepos.fileposl)
+        filepos.offset += 1
+        fp = filepos.fileposl[filepos.fileposl.length - filepos.offset - 1]
+        post.emit('status.filepos',filepos.fileposl,filepos.offset)
         return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])
     }
 
     filepos.prototype["goForward"] = function ()
     {
+        var fp
+
         if (filepos.fileposl.length < 2)
         {
             return
         }
+        if (filepos.offset <= 0)
+        {
+            return
+        }
+        console.log(`filepos.goForward ${filepos.offset} ${filepos.fileposl.length}`,filepos.fileposl)
+        filepos.offset -= 1
+        fp = filepos.fileposl[filepos.fileposl.length - filepos.offset - 1]
+        post.emit('status.filepos',filepos.fileposl,filepos.offset)
+        return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])
     }
 
     filepos.prototype["handleKey"] = function (key, event)
     {
         switch (key)
         {
-            case 'cmd+1':
+            case 'alt+1':
                 return this.goBackward()
 
-            case 'cmd+2':
+            case 'alt+2':
                 return this.goForward()
+
+            case 'cmd+1':
+                return this.swapPrevious()
 
         }
 

@@ -104,12 +104,26 @@ function pair
 
     @spansOfNestedPairsAtPositions: lines posl ->
         
-        spans = []
+        spans    = []
+        brackets = []
+        strings  = []
+        
         for pos in posl
+            
             for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
-                spans.push [pair.rng[0] pos[1] pair.rng[0]+pair.start.length]
-                spans.push [pair.rng[1] pos[1] pair.rng[1]+pair.end.length]
-        spans
+                open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.length]
+                close = [pair.rng[1] pos[1] pair.rng[1]+pair.end.length]
+                spans.push open
+                spans.push close
+                
+                if pair.start in '"\''
+                    strings.push open
+                    strings.push close
+                else
+                    brackets.push open
+                    brackets.push close
+                
+        [spans brackets strings]
 
     @rangesOfPairsSurroundingPositions: lines pairs posl ->
         

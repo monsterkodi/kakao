@@ -48,14 +48,18 @@ function brckts
             
         if @state.s.highlights.length     # don't highlight brackets when other highlights exist and it's different
             ⮐  if not @allSpans eql @state.s.highlights.asMutable() # from the previous brckts highlight
-            
-        spans = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors)
-        if valid (spans = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors))
-            @state.setHighlights spans
-        else
+        
+        [spans openClose strings] = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors)
+
+        if empty spans
             @openCloseSpans       = belt.openCloseSpansForPositions @state.s.lines @state.s.cursors
             @stringDelimiterSpans = belt.stringDelimiterSpansForPositions          @state.s.cursors
-            @state.setHighlights @openCloseSpans.concat(@stringDelimiterSpans)
+            spans = @openCloseSpans.concat(@stringDelimiterSpans)
+        else
+            @openCloseSpans       = openClose
+            @stringDelimiterSpans = strings
+            
+        @state.setHighlights spans
         
         @allSpans = @state.s.highlights.asMutable()
 
@@ -98,7 +102,6 @@ function brckts
         switch key
         
             "alt+cmd+'"
-            
                 if valid @stringDelimiterSpans
                     @swapStringDelimiters()
                     ⮐  

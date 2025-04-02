@@ -17,6 +17,8 @@ function frecent
     @frecent: item -> item.rank / (1+@now()-item.time)
         
     @sample: bucket key delta ->
+    
+        log "recent.sample #{bucket} #{key} #{delta}"
         
         @buckets[bucket][key] ?= rank:1 time:@now()
         

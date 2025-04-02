@@ -6,6 +6,7 @@ import kxk from "../../../kxk.js"
 let post = kxk.post
 let slash = kxk.slash
 let kstr = kxk.kstr
+let kseg = kxk.kseg
 
 import belt from "../../edit/tool/belt.js"
 
@@ -32,11 +33,14 @@ status = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onFileAction"] = this["onFileAction"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
+        this["onStatusFilepos"] = this["onStatusFilepos"].bind(this)
         status.__super__.constructor.call(this,this.screen,'status')
         this.state = this.editor.state
         this.gutter = 4
         this.file = ''
         this.drawTime = ''
+        this.fileposl = []
+        this.fileoffs = []
         this.pointerType = 'pointer'
         this.setColor('gutter',theme.gutter.bg)
         this.crumbs = new crumbs(this.screen,'status_crumbs')
@@ -45,6 +49,13 @@ status = (function ()
         this.crumbs.setColor('empty_right',theme.status.empty)
         this.crumbs.on('action',this.onCrumbsAction)
         this.statusfile.on('action',this.onFileAction)
+        post.on('status.filepos',this.onStatusFilepos)
+    }
+
+    status.prototype["onStatusFilepos"] = function (fileposl, fileoffs)
+    {
+        this.fileposl = fileposl
+        this.fileoffs = fileoffs
     }
 
     status.prototype["onCrumbsAction"] = function (action, path, event)
@@ -141,7 +152,7 @@ status = (function ()
 
     status.prototype["draw"] = function ()
     {
-        var add, ch, ci, colno, cols, cur, cursor, dty, fg, fnl, hil, i, rdo, sel, set, x, y
+        var add, ch, ci, colno, cols, cur, cursor, dty, fg, fnl, fpl, hil, i, rdo, sel, set, x, y
 
         if (this.hidden() || _k_.empty(this.file))
         {
@@ -201,10 +212,19 @@ status = (function ()
             add('','redo','dark')
         }
         add(' ','dark','dark')
+        if (this.fileposl.length > 1)
+        {
+            fpl = `${this.fileposl.length - this.fileoffs}${this.fileposl.length}`
+            for (var _c_ = i = 0, _d_ = fpl.length; (_c_ <= _d_ ? i < fpl.length : i > fpl.length); (_c_ <= _d_ ? ++i : --i))
+            {
+                add(fpl[i],((fpl[i] === '' ? color.darken(theme.status.hil) : 'hil')),'dark')
+            }
+            add(' ','dark','dark')
+        }
         if (this.state.s.cursors.length > 1)
         {
             cur = `${this.state.s.cursors.length}♦`
-            for (var _c_ = i = 0, _d_ = cur.length; (_c_ <= _d_ ? i < cur.length : i > cur.length); (_c_ <= _d_ ? ++i : --i))
+            for (var _e_ = i = 0, _f_ = cur.length; (_e_ <= _f_ ? i < cur.length : i > cur.length); (_e_ <= _f_ ? ++i : --i))
             {
                 add(cur[i],((i < cur.length - 1) ? 'cur' : color.darken(theme.status.cur)),'dark')
             }
@@ -212,7 +232,7 @@ status = (function ()
         if (this.state.s.selections.length)
         {
             sel = `${this.state.s.selections.length}≡`
-            for (var _e_ = i = 0, _f_ = sel.length; (_e_ <= _f_ ? i < sel.length : i > sel.length); (_e_ <= _f_ ? ++i : --i))
+            for (var _10_ = i = 0, _11_ = sel.length; (_10_ <= _11_ ? i < sel.length : i > sel.length); (_10_ <= _11_ ? ++i : --i))
             {
                 add(sel[i],((i < sel.length - 1) ? 'sel' : color.darken(theme.status.sel)),'dark')
             }
@@ -220,12 +240,12 @@ status = (function ()
         if (this.state.s.highlights.length)
         {
             hil = `${this.state.s.highlights.length}❇`
-            for (var _10_ = i = 0, _11_ = hil.length; (_10_ <= _11_ ? i < hil.length : i > hil.length); (_10_ <= _11_ ? ++i : --i))
+            for (var _12_ = i = 0, _13_ = hil.length; (_12_ <= _13_ ? i < hil.length : i > hil.length); (_12_ <= _13_ ? ++i : --i))
             {
                 add(hil[i],((i < hil.length - 1) ? 'hil' : color.darken(theme.status.hil)),'dark')
             }
         }
-        for (var _12_ = ci = x, _13_ = cols - 1; (_12_ <= _13_ ? ci < cols - 1 : ci > cols - 1); (_12_ <= _13_ ? ++ci : --ci))
+        for (var _14_ = ci = x, _15_ = cols - 1; (_14_ <= _15_ ? ci < cols - 1 : ci > cols - 1); (_14_ <= _15_ ? ++ci : --ci))
         {
             add(' ',null,'dark')
         }

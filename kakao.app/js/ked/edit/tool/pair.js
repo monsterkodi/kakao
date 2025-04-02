@@ -142,9 +142,11 @@ pair = (function ()
 
     pair["spansOfNestedPairsAtPositions"] = function (lines, posl)
     {
-        var pair, pos, spans
+        var brackets, close, open, pair, pos, spans, strings
 
         spans = []
+        brackets = []
+        strings = []
         var list = _k_.list(posl)
         for (var _a_ = 0; _a_ < list.length; _a_++)
         {
@@ -153,11 +155,23 @@ pair = (function ()
             for (var _b_ = 0; _b_ < list1.length; _b_++)
             {
                 pair = list1[_b_]
-                spans.push([pair.rng[0],pos[1],pair.rng[0] + pair.start.length])
-                spans.push([pair.rng[1],pos[1],pair.rng[1] + pair.end.length])
+                open = [pair.rng[0],pos[1],pair.rng[0] + pair.start.length]
+                close = [pair.rng[1],pos[1],pair.rng[1] + pair.end.length]
+                spans.push(open)
+                spans.push(close)
+                if (_k_.in(pair.start,'"\''))
+                {
+                    strings.push(open)
+                    strings.push(close)
+                }
+                else
+                {
+                    brackets.push(open)
+                    brackets.push(close)
+                }
             }
         }
-        return spans
+        return [spans,brackets,strings]
     }
 
     pair["rangesOfPairsSurroundingPositions"] = function (lines, pairs, posl)

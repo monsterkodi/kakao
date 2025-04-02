@@ -26,9 +26,10 @@ frecent = (function ()
 
     frecent["sample"] = function (bucket, key, delta)
     {
-        var bi, item, rec, _21_30_
+        var bi, item, rec, _23_30_
 
-        this.buckets[bucket][key] = ((_21_30_=this.buckets[bucket][key]) != null ? _21_30_ : {rank:1,time:this.now()})
+        console.log(`recent.sample ${bucket} ${key} ${delta}`)
+        this.buckets[bucket][key] = ((_23_30_=this.buckets[bucket][key]) != null ? _23_30_ : {rank:1,time:this.now()})
         rec = this.buckets[bucket][key]
         rec.rank += delta
         rec.time = this.now()

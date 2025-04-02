@@ -9,7 +9,7 @@
     displays currently edited file and editor state information 
 ###
 
-use ../../../kxk    ▪ post slash kstr
+use ../../../kxk    ▪ post slash kstr kseg
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ color theme
 use ../base         ◆ view crumbs 
@@ -25,6 +25,8 @@ function status extends view
         @gutter   = 4
         @file     = ''
         @drawTime = ''
+        @fileposl = []
+        @fileoffs = []
         
         @pointerType = 'pointer'
         
@@ -38,6 +40,10 @@ function status extends view
         
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction
+        
+        post.on 'status.filepos' @onStatusFilepos
+        
+    onStatusFilepos: @fileposl @fileoffs => 
         
     onCrumbsAction: action path event =>
         
@@ -154,6 +160,14 @@ function status extends view
         add '' 'redo'  'dark' if rdo
         add ' ' 'dark'  'dark'
         
+        if @fileposl.length > 1
+        
+            fpl = "#{@fileposl.length-@fileoffs}#{@fileposl.length}"
+            for i in 0...fpl.length
+                add fpl[i] (fpl[i]=='' ? color.darken(theme.status.hil) : 'hil') 'dark'
+                
+            add ' ' 'dark'  'dark'
+        
         if @state.s.cursors.length > 1
 
             cur = "#{@state.s.cursors.length}♦"
@@ -174,7 +188,9 @@ function status extends view
              
             for i in 0...hil.length
                 add hil[i] (i<hil.length-1) ? 'hil' : color.darken(theme.status.hil) 'dark'
-                
+                                
+        # fill to the right
+        
         for ci in x...cols-1
             add ' ' null 'dark'
             
