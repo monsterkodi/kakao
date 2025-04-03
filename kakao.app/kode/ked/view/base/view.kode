@@ -86,8 +86,8 @@ function view extends events
     onMouse: event => @handleHover event
     onWheel: event => log "view.onWheel #{@name}"
     
-    onMouseLeave: => post.emit 'redraw'
-    onMouseEnter: => 
+    onMouseLeave: event => post.emit 'redraw'
+    onMouseEnter: event => 
         
         if @focusable and @grabFocus is func
             @grabFocus()
@@ -101,10 +101,10 @@ function view extends events
         inside = not event.handled and @cells.isInsideEvent event
         if @hover and not inside
             @hover = false
-            @onMouseLeave()
+            @onMouseLeave event
         else if inside and not @hover
             @hover = true
-            @onMouseEnter()
+            @onMouseEnter event
         @hover
     
     onKey: key event => log "view.onKey #{@name}"

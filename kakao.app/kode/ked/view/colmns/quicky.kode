@@ -288,10 +288,13 @@ function quicky extends inputchoice
         #     @gotoDirOrOpenFile @input.current()
         #     ⮐ redraw:true
             
-        if empty choice      ➜ ⮐ redraw:false 
+        if empty choice      ➜ ⮐  redraw:false 
         # if empty choice.path ➜ ⮐ redraw:false 
 
-        @openFileInEditor choice.path 
+        if choice.type == 'dir'
+            @browseDir choice.path
+        else
+            @openFileInEditor choice.path 
         redraw:true
                 
     #  0000000    0000000  000000000  000   0000000   000   000  

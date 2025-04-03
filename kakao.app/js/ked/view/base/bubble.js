@@ -19,7 +19,6 @@ bubble = (function ()
     function bubble (screen, name)
     {
         this["onMouse"] = this["onMouse"].bind(this)
-        this["onMouseLeave"] = this["onMouseLeave"].bind(this)
         this["onMouseEnter"] = this["onMouseEnter"].bind(this)
         bubble.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
@@ -78,16 +77,10 @@ bubble = (function ()
         }
     }
 
-    bubble.prototype["onMouseEnter"] = function ()
+    bubble.prototype["onMouseEnter"] = function (event)
     {
         this.emit('action','enter')
-        return bubble.__super__.onMouseEnter.call(this)
-    }
-
-    bubble.prototype["onMouseLeave"] = function ()
-    {
-        this.emit('action','leave')
-        return bubble.__super__.onMouseLeave.call(this)
+        return bubble.__super__.onMouseEnter.call(this,event)
     }
 
     bubble.prototype["onMouse"] = function (event)

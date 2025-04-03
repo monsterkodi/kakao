@@ -8,6 +8,8 @@ let slash = kxk.slash
 let kstr = kxk.kstr
 let kseg = kxk.kseg
 
+import nfs from "../../../kxk/nfs.js"
+
 import belt from "../../edit/tool/belt.js"
 
 import filepos from "../../edit/mode/filepos.js"
@@ -62,6 +64,7 @@ status = (function ()
         this["setFile"] = this["setFile"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onFileAction"] = this["onFileAction"].bind(this)
+        this["droopCrumb"] = this["droopCrumb"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
         this["onFileposAction"] = this["onFileposAction"].bind(this)
         this["onStatusFilepos"] = this["onStatusFilepos"].bind(this)
@@ -94,7 +97,7 @@ status = (function ()
     
         if (this.fileposl.length > 1)
         {
-            return this.filepos.set({tilde:`${this.fileposl.length - this.fileoffs}${this.fileposl.length}`})
+            return this.filepos.set({tilde:`${(this.fileoffs ? this.fileposl.length - this.fileoffs - 1 : '')}${this.fileposl.length - 1}`})
         }
         else
         {
@@ -126,11 +129,7 @@ status = (function ()
                     {
                         files.shift()
                     }
-                    return post.emit('droop.show',{files:files,pos:[this.filepos.cells.x,this.filepos.cells.y + 1]})
-                }
-                else
-                {
-                    console.log('no filepos mode!?')
+                    return post.emit('droop.show',{files:files,pos:[this.filepos.cells.x + parseInt(this.filepos.cells.cols / 2),this.filepos.cells.y + 1]})
                 }
                 break
         }
@@ -151,8 +150,21 @@ status = (function ()
                     return post.emit('browse.dir',path)
                 }
                 break
+            case 'enter':
+                return this.droopCrumb(path,event)
+
         }
 
+    }
+
+    status.prototype["droopCrumb"] = async function (path, crumb)
+    {
+        var files, x
+
+        path = slash.untilde(path)
+        files = await nfs.list(path,{recursive:false})
+        x = this.crumbs.cells.x + parseInt((crumb.cols[1] + crumb.cols[0]) / 2)
+        return post.emit('droop.show',{files:files,pos:[x,this.crumbs.cells.y + 1]})
     }
 
     status.prototype["onFileAction"] = function (action, file)

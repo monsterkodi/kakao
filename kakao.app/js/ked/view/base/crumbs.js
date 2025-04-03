@@ -124,15 +124,44 @@ crumbs = (function ()
         return this.split.length - 1
     }
 
+    crumbs.prototype["colsAtSplitIndex"] = function (idx)
+    {
+        var ei, i, si
+
+        si = ei = 0
+        for (var _a_ = i = 0, _b_ = idx; (_a_ <= _b_ ? i <= idx : i >= idx); (_a_ <= _b_ ? ++i : --i))
+        {
+            if (i < idx)
+            {
+                si += this.split[i].length + 2
+            }
+            ei += this.split[i].length + 2
+        }
+        return [si,ei]
+    }
+
+    crumbs.prototype["pathAtSplitIndex"] = function (idx)
+    {
+        var path
+
+        path = slash.path.apply(null,this.split.slice(0, typeof idx === 'number' ? idx+1 : Infinity))
+        path = slash.path(this.root,path)
+        if (!(_k_.in(path[0],'~/')))
+        {
+            path = '/' + path
+        }
+        return path
+    }
+
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _111_14_
+        var padding, _129_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_111_14_=this.path) != null ? _111_14_ : '')
+        this.path = ((_129_14_=this.path) != null ? _129_14_ : '')
         if (this.path === '')
         {
             this.rounded = ''
@@ -177,7 +206,7 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _158_26_
+        var col, index, path, row, si, _176_26_
 
         var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
@@ -197,12 +226,7 @@ crumbs = (function ()
                 si = this.splitIndexAtCol(col)
                 if ((0 <= this.hoverIndex && this.hoverIndex < this.split.length))
                 {
-                    path = slash.path.apply(null,this.split.slice(0, typeof si === 'number' ? si+1 : Infinity))
-                    path = slash.path(this.root,path)
-                    if (!(_k_.in(path[0],'~/')))
-                    {
-                        path = '/' + path
-                    }
+                    path = this.pathAtSplitIndex(this.hoverIndex)
                     this.emit('action','click',path,event)
                     delete this.hoverIndex
                 }
@@ -213,6 +237,7 @@ crumbs = (function ()
                 if (this.hoverIndex !== index)
                 {
                     this.hoverIndex = index
+                    this.emit('action','enter',this.pathAtSplitIndex(index),{index:index,cols:this.colsAtSplitIndex(index)})
                     return {redraw:true}
                 }
                 break

@@ -29,6 +29,8 @@ import belt from "./edit/tool/belt.js"
 
 import mode from "./edit/mode.js"
 
+import filepos from "./edit/mode/filepos.js"
+
 import view from "./view/base/view.js"
 
 import status from "./view/status/status.js"
@@ -61,6 +63,7 @@ KED = (function ()
         this["onResize"] = this["onResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
+        this["showFileposHistory"] = this["showFileposHistory"].bind(this)
         this["showFinderOrSearcher"] = this["showFinderOrSearcher"].bind(this)
         this["onMouse"] = this["onMouse"].bind(this)
         this["onPaste"] = this["onPaste"].bind(this)
@@ -98,8 +101,8 @@ ked [file]
         this.macro = new macro(this.screen)
         this.quicky = new quicky(this.screen)
         this.browse = new browse(this.screen)
-        this.droop = new droop(this.screen)
         this.editor = new fileeditor(this.screen,'editor')
+        this.droop = new droop(this.screen,this.editor)
         this.dircol = new dircol(this.screen,this.editor,['scroll','knob'])
         this.funcol = new funcol(this.screen,this.editor,['scroll','knob'])
         this.finder = new finder(this.screen,this.editor)
@@ -238,7 +241,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _200_10_
+        var _201_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -269,7 +272,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _232_22_
+        var _233_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -374,7 +377,7 @@ ked [file]
             console.warn(`ked.loadFile - ${absFile} resolved to empty!`)
             return
         }
-        _k_.assert("kode/ked/ked.kode", 333, 8, 'loadingFile' + " this.loadingFile", this.loadingFile)
+        _k_.assert("kode/ked/ked.kode", 334, 8, 'loadingFile' + " this.loadingFile", this.loadingFile)
         readingFile = this.loadingFile
         text = await nfs.readText(this.loadingFile)
         if (this.loadingFile !== readingFile)
@@ -382,7 +385,7 @@ ked [file]
             return
         }
         this.currentFile = this.loadingFile
-        _k_.assert("kode/ked/ked.kode", 345, 8, 'currentFile' + " this.currentFile", this.currentFile)
+        _k_.assert("kode/ked/ked.kode", 346, 8, 'currentFile' + " this.currentFile", this.currentFile)
         delete this.loadingFile
         this.status.setFile(slash.tilde(this.currentFile))
         if (text === undefined)
@@ -528,6 +531,27 @@ ked [file]
         }
     }
 
+    KED.prototype["showFileposHistory"] = function ()
+    {
+        var files, scx, scy
+
+        if (filepos.fileposl.length > 1)
+        {
+            files = filepos.fileposl.map(function (fp)
+            {
+                return fp[0]
+            })
+            files = files.reverse()
+            if (filepos.offset === 0)
+            {
+                files.shift()
+            }
+            scx = parseInt(this.screen.cols / 2)
+            scy = parseInt(this.screen.rows / 2)
+            return post.emit('droop.show',{files:files,pos:[scx,scy - 6]})
+        }
+    }
+
     KED.prototype["onKey"] = function (key, event)
     {
         var handler, result
@@ -542,6 +566,9 @@ ked [file]
 
             case 'cmd+1':
                 return post.emit('filepos.swapPrevious')
+
+            case 'alt+h':
+                return this.showFileposHistory()
 
             case 'alt+q':
             case 'ctrl+q':
@@ -642,7 +669,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _542_22_
+        var mcw, _554_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}

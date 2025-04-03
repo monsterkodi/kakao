@@ -15,6 +15,7 @@ use ./util        ◆ logfile session help frecent watcher git
 use ./util/img    ◆ rounded squares sircels
 use ./edit/tool   ◆ belt
 use ./edit        ◆ mode
+use ./edit/mode   ◆ filepos
 use ./view/base   ◆ view
 use ./view/status ◆ status 
 use ./view/editor ◆ fileeditor
@@ -58,8 +59,8 @@ function KED
         @macro    = new macro      @screen        
         @quicky   = new quicky     @screen 
         @browse   = new browse     @screen 
-        @droop    = new droop      @screen 
         @editor   = new fileeditor @screen 'editor'
+        @droop    = new droop      @screen @editor 
         @dircol   = new dircol     @screen @editor  ['scroll' 'knob']
         @funcol   = new funcol     @screen @editor  ['scroll' 'knob']
         @finder   = new finder     @screen @editor
@@ -465,6 +466,17 @@ function KED
             @searcher.show @finder.input.current()
         else
             @finder.show()
+            
+    showFileposHistory: =>
+    
+        if filepos.fileposl.length > 1
+
+            files = filepos.fileposl.map (fp) -> fp[0]
+            files = files.reverse()
+            files.shift() if filepos.offset == 0
+            scx = int @screen.cols/2
+            scy = int @screen.rows/2
+            post.emit 'droop.show' files:files pos:[scx scy-6]
                 
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -481,7 +493,7 @@ function KED
             'alt+1'                      ➜ ⮐  post.emit 'filepos.goBackward'  
             'alt+2'                      ➜ ⮐  post.emit 'filepos.goForward'   
             'cmd+1'                      ➜ ⮐  post.emit 'filepos.swapPrevious'
-            
+            'alt+h'                      ➜ ⮐  @showFileposHistory()
             'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
             'ctrl+r' 'cmd+r'             ➜ ⮐  @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()

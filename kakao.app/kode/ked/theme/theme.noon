@@ -89,6 +89,9 @@ finder
 quicky
     bg                                      #111   
     frame                                   #000   
+
+droop    
+    bg                                      #222   
     
 crumbs
     fg                                      #88f   

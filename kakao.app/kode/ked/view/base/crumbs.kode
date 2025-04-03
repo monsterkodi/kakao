@@ -98,6 +98,24 @@ function crumbs extends view
                 ⮐  si
         @split.length-1
         
+    colsAtSplitIndex: idx ->
+    
+        si = ei = 0
+        
+        for i in 0..idx
+            if i < idx
+                si += @split[i].length + 2
+            ei += @split[i].length + 2
+    
+        [si ei]
+        
+    pathAtSplitIndex: idx ->
+    
+        path = slash.path.apply null @split[0..idx]
+        path = slash.path @root path
+        path = '/' + path if not path[0] in '~/'
+        path
+        
     #  0000000   0000000          000  000   000   0000000  000000000  
     # 000   000  000   000        000  000   000  000          000     
     # 000000000  000   000        000  000   000  0000000      000     
@@ -147,7 +165,7 @@ function crumbs extends view
     # 000000000  000   000  000   000  0000000   0000000   
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
-    
+
     onMouse: event =>
         
         [col row] = @eventPos event
@@ -166,9 +184,7 @@ function crumbs extends view
                 
                 si = @splitIndexAtCol col
                 if 0 <= @hoverIndex < @split.length
-                    path = slash.path.apply null @split[0..si]
-                    path = slash.path @root path
-                    path = '/' + path if not path[0] in '~/'
+                    path = @pathAtSplitIndex @hoverIndex
                     @emit 'action' 'click' path event
                     delete @hoverIndex
                 ⮐  redraw:true
@@ -178,6 +194,7 @@ function crumbs extends view
                 index = @splitIndexAtCol col
                 if @hoverIndex != index
                     @hoverIndex = index
+                    @emit 'action' 'enter' @pathAtSplitIndex(index) index:index cols:@colsAtSplitIndex(index) 
                     ⮐  redraw:true
         @hover
                     

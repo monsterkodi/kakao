@@ -10,6 +10,7 @@
 ###
 
 use ../../../kxk    ▪ post slash kstr kseg
+use ../../../kxk    ◆ nfs
 use ../../edit/tool ◆ belt
 use ../../edit/mode ◆ filepos
 use ../../theme     ◆ color theme
@@ -66,7 +67,7 @@ function status extends view
     onStatusFilepos: @fileposl @fileoffs => 
     
         if @fileposl.length > 1
-            @filepos.set tilde:"#{@fileposl.length-@fileoffs}#{@fileposl.length}"
+            @filepos.set tilde:"#{@fileoffs ? @fileposl.length-@fileoffs-1 : ''}#{@fileposl.length-1}"
         else
             @filepos.set null 
             
@@ -80,18 +81,27 @@ function status extends view
                     files = filepos.fileposl.map (fp) -> fp[0]
                     files = files.reverse()
                     files.shift() if filepos.offset == 0
-                    post.emit 'droop.show' files:files pos:[@filepos.cells.x @filepos.cells.y+1]
-                else
-                    log 'no filepos mode!?'
+                    post.emit 'droop.show' files:files pos:[@filepos.cells.x+int(@filepos.cells.cols/2) @filepos.cells.y+1]
         
     onCrumbsAction: action path event =>
-        
+    
         switch action
+        
             'click'  
                 if valid event.mods
                     post.emit 'dircol.root' path
                 else
                     post.emit 'browse.dir' path
+                    
+            'enter'
+                @droopCrumb path event
+                
+    droopCrumb: path crumb ○=>
+    
+        path = slash.untilde path
+        files =○ nfs.list path recursive:false
+        x = @crumbs.cells.x+int((crumb.cols[1]+crumb.cols[0])/2)
+        post.emit 'droop.show' files:files pos:[x @crumbs.cells.y+1]
 
     onFileAction: action file =>
         

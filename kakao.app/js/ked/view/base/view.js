@@ -128,12 +128,12 @@ view = (function ()
         console.log(`view.onWheel ${this.name}`)
     }
 
-    view.prototype["onMouseLeave"] = function ()
+    view.prototype["onMouseLeave"] = function (event)
     {
         return post.emit('redraw')
     }
 
-    view.prototype["onMouseEnter"] = function ()
+    view.prototype["onMouseEnter"] = function (event)
     {
         if (this.focusable && _k_.isFunc(this.grabFocus))
         {
@@ -154,12 +154,12 @@ view = (function ()
         if (this.hover && !inside)
         {
             this.hover = false
-            this.onMouseLeave()
+            this.onMouseLeave(event)
         }
         else if (inside && !this.hover)
         {
             this.hover = true
-            this.onMouseEnter()
+            this.onMouseEnter(event)
         }
         return this.hover
     }
