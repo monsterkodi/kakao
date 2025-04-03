@@ -1,9 +1,10 @@
-var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, trim: function (s,c=' ') {return _k_.ltrim(_k_.rtrim(s,c),c)}, ltrim: function (s,c=' ') { while (_k_.in(s[0],c)) { s = s.slice(1) } return s}, rtrim: function (s,c=' ') {while (_k_.in(s.slice(-1)[0],c)) { s = s.slice(0, s.length - 1) } return s}}
+var _k_ = {extend: function (c,p) {for (var k in p) { if (Object.hasOwn(p, k)) c[k] = p[k] } function ctor() { this.constructor = c; } ctor.prototype = p.prototype; c.prototype = new ctor(); c.__super__ = p.prototype; return c;}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
 var bubble
 
 import kxk from "../../../kxk.js"
 let slash = kxk.slash
+let kseg = kxk.kseg
 
 import theme from "../../theme/theme.js"
 
@@ -18,22 +19,14 @@ bubble = (function ()
     function bubble (screen, name)
     {
         this["onMouse"] = this["onMouse"].bind(this)
-        this["show"] = this["show"].bind(this)
         bubble.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
         this.syntax = new syntax
         this.syntax.setExt('noon')
-        this.rounded = ''
+        this.rounded = ''
         this.setColor('bg',theme.hover.blur)
         this.setColor('hover',theme.hover.bg)
         this.setColor('empty',theme.editor.bg)
-    }
-
-    bubble.prototype["layout"] = function (x, y, w, h)
-    {
-        bubble.__super__.layout.call(this,x,y,w,h)
-    
-        return this.adjustText()
     }
 
     bubble.prototype["draw"] = function ()
@@ -56,7 +49,7 @@ bubble = (function ()
             }
             else
             {
-                fg = this.syntax.getColor(x,0)
+                fg = this.syntax.getColor(x,0,ch)
                 this.cells.set(x,0,ch,fg,bg)
                 if (this.hover)
                 {
@@ -66,30 +59,21 @@ bubble = (function ()
         }
     }
 
-    bubble.prototype["adjustText"] = function ()
+    bubble.prototype["set"] = function (item)
     {
-        var _75_14_
+        this.item = item
+    
+        var _62_28_, _62_42_
 
-        this.file = ((_75_14_=this.file) != null ? _75_14_ : '')
-        this.pars = slash.parse(this.file)
-        this.syntax.setLines(['/' + this.pars.file])
-        return this.rounded = '' + this.pars.file + ''
-    }
-
-    bubble.prototype["set"] = function (file)
-    {
-        if (this.file === _k_.trim(file))
+        if (_k_.empty(this.item))
         {
-            return
+            return this.rounded = ''
         }
-        this.file = _k_.trim(file)
-        return this.adjustText()
-    }
-
-    bubble.prototype["show"] = function (file)
-    {
-        this.set(file)
-        return this.cells.rows = 1
+        else
+        {
+            ;(typeof this.syntax.setSegls === "function" ? this.syntax.setSegls(((_62_42_=this.item.segls) != null ? _62_42_ : [kseg(item.tilde)])) : undefined)
+            return this.rounded = '' + this.item.tilde + ''
+        }
     }
 
     bubble.prototype["onMouse"] = function (event)
@@ -101,7 +85,7 @@ bubble = (function ()
             case 'press':
                 if (this.hover)
                 {
-                    this.emit('action','click',this.file)
+                    this.emit('action','click',this.item)
                     return {redraw:true}
                 }
                 break

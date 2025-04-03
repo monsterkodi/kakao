@@ -8,7 +8,7 @@
     clickable file headings used by searcher
 ###
 
-use ../../../kxk ▪ slash
+use ../../../kxk ▪ slash kseg
 use ../../theme  ◆ theme
 use ../base      ◆ view crumbs bubble
 
@@ -39,7 +39,10 @@ function searcherfile extends view
     set: file ->
         
         @crumbs.set slash.dir(file)
-        @bubble.set file
+        
+        name = slash.file file
+        
+        @bubble.set tilde:name path:file segls:kseg.segls('/'+name)
         
     # ███       ███████   ███   ███   ███████   ███   ███  █████████
     # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   

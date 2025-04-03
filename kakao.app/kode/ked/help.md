@@ -12,3 +12,6 @@
     
     alt+cmd+'       swap surrounding string delimiters from ' to " or from " to '
     alt+cmd+b       select surrounding string delimiters or brackets
+    
+    alt+,           prev func
+    alt+.           next func

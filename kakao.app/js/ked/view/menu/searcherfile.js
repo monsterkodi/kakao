@@ -4,6 +4,7 @@ var searcherfile
 
 import kxk from "../../../kxk.js"
 let slash = kxk.slash
+let kseg = kxk.kseg
 
 import theme from "../../theme/theme.js"
 
@@ -35,8 +36,11 @@ searcherfile = (function ()
 
     searcherfile.prototype["set"] = function (file)
     {
+        var name
+
         this.crumbs.set(slash.dir(file))
-        return this.bubble.set(file)
+        name = slash.file(file)
+        return this.bubble.set({tilde:name,path:file,segls:kseg.segls('/' + name)})
     }
 
     searcherfile.prototype["layout"] = function (x, y, w, h)

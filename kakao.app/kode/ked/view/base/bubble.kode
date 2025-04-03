@@ -6,10 +6,12 @@
     0000000     0000000   0000000    0000000    0000000  00000000  
 
     displays some clickable text in a rounded 'bubble'
-    used by searcher to display file headings
+    used by 
+        ◆ searcher to display file headings
+        ◆ status to display filepos status
 ###
 
-use ../../../kxk ▪ slash
+use ../../../kxk ▪ slash kseg
 use ../../theme  ◆ theme 
 use ../../util   ◆ syntax
 use ../base      ◆ view
@@ -24,23 +26,11 @@ function bubble extends view
         @syntax = new syntax
         @syntax.setExt 'noon'
         
-        @rounded = ''
+        @rounded = '' # ''
         
         @setColor 'bg'    theme.hover.blur
         @setColor 'hover' theme.hover.bg 
         @setColor 'empty' theme.editor.bg
-        
-    # 000       0000000   000   000   0000000   000   000  000000000  
-    # 000      000   000   000 000   000   000  000   000     000     
-    # 000      000000000    00000    000   000  000   000     000     
-    # 000      000   000     000     000   000  000   000     000     
-    # 0000000  000   000     000      0000000    0000000      000     
-    
-    layout: x y w h ->
-    
-        super x y w h  
-        
-        @adjustText()
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -48,44 +38,30 @@ function bubble extends view
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    draw: -> 
+    draw: ->
         
         ⮐  if @hidden()
     
         super()
             
-        bg = @hover ?  @color.hover : @color.bg 
+        bg = @hover ? @color.hover : @color.bg 
         
         for ch,x in @rounded
             if ch in ''
                 @cells.set x 0 ch bg @color.empty
             else
-                fg = @syntax.getColor x 0
+                fg = @syntax.getColor x 0 ch
                 @cells.set x 0 ch fg bg 
                 @cells.adjustContrastForHighlight x 0 bg if @hover
                 
-    #  0000000   0000000          000  000   000   0000000  000000000  
-    # 000   000  000   000        000  000   000  000          000     
-    # 000000000  000   000        000  000   000  0000000      000     
-    # 000   000  000   000  000   000  000   000       000     000     
-    # 000   000  0000000     0000000    0000000   0000000      000     
-    
-    adjustText: ->
+    set: @item ->
         
-        @file ?= ''
-        @pars = slash.parse @file
-        @syntax.setLines ['/'+@pars.file]
-        @rounded = '' + @pars.file + ''
-            
-    set: file ->
-    
-        ⮐  if @file == trim file
+        if empty @item
+            @rounded = ''
+        else
+            @syntax.setSegls? @item.segls ? [kseg(item.tilde)]
+            @rounded = '' + @item.tilde + ''
         
-        @file = trim file
-        @adjustText()
-        
-    show: file => @set file ; @cells.rows = 1
-    
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
     # 000000000  000   000  000   000  0000000   0000000   
@@ -101,7 +77,7 @@ function bubble extends view
             'press' 
                 
                 if @hover
-                    @emit 'action' 'click' @file
+                    @emit 'action' 'click' @item
                     ⮐  redraw:true
         @hover
     

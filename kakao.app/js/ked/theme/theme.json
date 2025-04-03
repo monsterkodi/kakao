@@ -65,6 +65,7 @@
     "empty": "#151515",
     "dark": "#1a1a1a",
     "fg": "#888",
+    "filepos": "#666",
     "dirty": "#fa0",
     "redo": "#0d0",
     "cur": "#f00",

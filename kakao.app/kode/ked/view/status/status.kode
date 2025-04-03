@@ -12,8 +12,22 @@
 use ../../../kxk    ▪ post slash kstr kseg
 use ../../edit/tool ◆ belt
 use ../../theme     ◆ color theme
-use ../base         ◆ view crumbs 
+use ../base         ◆ view crumbs bubble 
 use                 ◆ statusfile
+
+function fileposSyntax
+
+    @: ->
+    
+        @color = {}
+        @color.number = theme.status.filepos
+        @color.symbol = color.darken @color.number 0.8
+        
+    getColor: x y ch =>
+    
+        switch ch
+            '' ➜ @color.symbol
+                ➜ @color.number
 
 function status extends view
 
@@ -34,9 +48,13 @@ function status extends view
            
         @crumbs     = new crumbs     @screen 'status_crumbs'
         @statusfile = new statusfile @screen 'status_file'
+        @filepos    = new bubble     @screen "status_filepos"
         
         @crumbs.setColor 'empty_left'  @color.gutter
         @crumbs.setColor 'empty_right' theme.status.empty
+        
+        @filepos.setColor 'empty' theme.status.empty
+        @filepos.syntax = new fileposSyntax
         
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction
@@ -44,6 +62,11 @@ function status extends view
         post.on 'status.filepos' @onStatusFilepos
         
     onStatusFilepos: @fileposl @fileoffs => 
+    
+        if @fileposl.length > 1
+            @filepos.set tilde:"#{@fileposl.length-@fileoffs}#{@fileposl.length}"
+        else
+            @filepos.set null 
         
     onCrumbsAction: action path event =>
         
@@ -67,10 +90,11 @@ function status extends view
     
     onMouse: event =>
 
-        cret = @crumbs.onMouse event
+        cret = @crumbs    .onMouse event
         sret = @statusfile.onMouse event
+        fret = @filepos   .onMouse event
         
-        ⮐  sret or cret if sret or cret
+        ⮐  sret or cret or fret if sret or cret or fret
 
         super event
         
@@ -104,16 +128,31 @@ function status extends view
         @crumbs.set slash.dir(@file)
         @statusfile.set @file
         
+    # ███       ███████   ███   ███   ███████   ███   ███  █████████
+    # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
+    # ███      █████████    █████    ███   ███  ███   ███     ███   
+    # ███      ███   ███     ███     ███   ███  ███   ███     ███   
+    # ███████  ███   ███     ███      ███████    ███████      ███   
+
     layout: x y w h =>
         
         super x y w h
         
         cw = int w/2
         
-        @crumbs.layout x+@gutter+1 y cw 1
-        @crumbs.layout x+@gutter+1 y @crumbs.rounded.length 1
-        @statusfile.layout x+@gutter+1+@crumbs.rounded.length y @statusfile.rounded.length 1
+        x += @gutter+1
         
+        @crumbs.layout x y cw 1                     # 𝜏𝖍𝚒𝖘 ⟅◯⊚𝛋𝖘 ϝ𝚒𝖘𝖍𝛾 
+        @crumbs.layout x y @crumbs.rounded.length 1 # ⟒𝖍𝛾 𝜏⟒⊚ ⟅𝕒𝛾◯𝓊𝜏𝖘?
+    
+        x += @crumbs.rounded.length
+        
+        @statusfile.layout x y @statusfile.rounded.length 1
+        
+        x += @statusfile.rounded.length
+        
+        @filepos.layout x y @filepos.rounded.length 1
+                
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
     # 000   000  0000000    000000000  000000000  
@@ -149,9 +188,11 @@ function status extends view
               
         @crumbs.draw() # dir path
         @statusfile.draw() # file
+        @filepos.draw()
         
         x += @crumbs.rounded.length
         x += @statusfile.rounded.length
+        x += @filepos.rounded.length
         
         # dirty and redo indicators
         add '' 'dark'  'empty'
@@ -159,14 +200,6 @@ function status extends view
         add ' ' 'dirty' 'dark' if dty
         add '' 'redo'  'dark' if rdo
         add ' ' 'dark'  'dark'
-        
-        if @fileposl.length > 1
-        
-            fpl = "#{@fileposl.length-@fileoffs}#{@fileposl.length}"
-            for i in 0...fpl.length
-                add fpl[i] (fpl[i]=='' ? color.darken(theme.status.hil) : 'hil') 'dark'
-                
-            add ' ' 'dark'  'dark'
         
         if @state.s.cursors.length > 1
 
