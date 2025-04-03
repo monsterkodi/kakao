@@ -252,18 +252,19 @@ editor = (function ()
         {
             if (this.complete.handleKey(key,event) !== 'unhandled')
             {
-                return
+                return true
             }
         }
         if (this.state.handleKey(key,event) !== 'unhandled')
         {
             ;(this.complete != null ? this.complete.hide() : undefined)
-            return
+            return true
         }
         if (!_k_.empty(event.char))
         {
             this.state.insert(event.char)
-            return (this.complete != null ? this.complete.complete() : undefined)
+            ;(this.complete != null ? this.complete.complete() : undefined)
+            return true
         }
         else
         {

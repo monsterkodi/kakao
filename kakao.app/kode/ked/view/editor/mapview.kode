@@ -51,8 +51,6 @@ function mapview extends view
         
         ⮐  if @hidden()
         
-        # for id in @images
-        #     @cells.screen.t.hideImage id
         @cells.screen.t.hideImagesInRange @images[0] @images[-1]
         
         super()
@@ -104,21 +102,23 @@ function mapview extends view
         t = @cells.screen.t
         ⮐  if empty t.cellsz
         
+        @csz = t.cellsz
+        
         @clearImages()
 
         # prof.start @state.name+'.map'
         
-        w = @cells.cols * t.cellsz[0]
+        w = @cells.cols * @csz[0]
         bytes = w*3
         
-        ⮐ if bytes <= 0
+        ⮐  if bytes <= 0
         
         lines = @getSegls()
         
         data  = Buffer.alloc bytes
                 
         maxY  = @maxLinesToLoad()
-                                
+        
         for line,y in lines
             
             @imageForLine data line y
@@ -214,7 +214,7 @@ function mapview extends view
         
         ⮐  if empty t.pixels or @hidden() or @collapsed()
         
-        @csz = @cells.screen.t.cellsz
+        # @csz = t.cellsz # should have been set in createImages 
         
         for id,y in @images
             t.placeLineImage id @cells.x @cells.y+@rowOffset y*@pixelsPerRow @pixelsPerRow
@@ -224,7 +224,7 @@ function mapview extends view
         
         ⮐  if @hidden() or @collapsed()
         
-        @csz = @cells.screen.t.cellsz
+        # @csz = @cells.screen.t.cellsz
                      
         @cells.fill_rect 0 0 @cells.cols-1 @cells.rows-1 ' ' null @color.bg
         

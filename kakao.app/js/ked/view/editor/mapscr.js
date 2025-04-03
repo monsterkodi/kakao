@@ -49,16 +49,20 @@ mapscr = (function ()
         this.setColor('selection',theme.selection.map)
         this.setColor('fullysel',theme.selection.mapfully)
         this.screen.t.on('preResize',this.clearImages)
+        post.on('greet.show',this.hide)
+        post.on('greet.hide',this.show)
+        post.on('popup.hide',this.show)
         post.on('popup.show',(function (name)
         {
-            if (_k_.in(name,['searcher','finder','differ']))
+            if (_k_.in(name,['differ','searcher']))
             {
-                return this.hide()
+                this.hide()
+            }
+            if (_k_.in(name,['finder']))
+            {
+                return this.show()
             }
         }).bind(this))
-        post.on('greet.show',this.hide)
-        post.on('popup.hide',this.show)
-        post.on('greet.hide',this.show)
         this.editor.state.on('lines.changed',this.onLinesChanged)
         this.calcView()
     }

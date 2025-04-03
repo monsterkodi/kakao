@@ -44,24 +44,26 @@ function input extends editor
             'return'    
                 
                 @emit 'action' 'submit' @current()
-                ⮐ 
+                ⮐  true
                 
             'up' 'down'
                 
                 @emit 'action' event.combo 
-                ⮐ 
+                ⮐  false
                 
             'right'
                 
                 if @state.mainCursor()[0] >= @current().length
                     @emit 'action' 'right'
-                    ⮐ 
+                    ⮐  true
 
         before = @current()
 
         sr = super key event
         
-        @emit 'action' 'change' @current() if before != @current()
+        if before != @current()
+            @emit 'action' 'change' @current() 
+            ⮐  true
         
         sr
         

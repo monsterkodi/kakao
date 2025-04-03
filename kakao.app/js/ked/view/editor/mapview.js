@@ -150,8 +150,9 @@ mapview = (function ()
         {
             return
         }
+        this.csz = t.cellsz
         this.clearImages()
-        w = this.cells.cols * t.cellsz[0]
+        w = this.cells.cols * this.csz[0]
         bytes = w * 3
         if (bytes <= 0)
         {
@@ -286,7 +287,6 @@ mapview = (function ()
         {
             return
         }
-        this.csz = this.cells.screen.t.cellsz
         var list = _k_.list(this.images)
         for (y = 0; y < list.length; y++)
         {
@@ -302,7 +302,6 @@ mapview = (function ()
         {
             return
         }
-        this.csz = this.cells.screen.t.cellsz
         this.cells.fill_rect(0,0,this.cells.cols - 1,this.cells.rows - 1,' ',null,this.color.bg)
         return this.drawImages()
     }

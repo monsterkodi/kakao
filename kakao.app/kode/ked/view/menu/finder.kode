@@ -122,9 +122,10 @@ function finder extends inputchoice
         else
             @choices.selectFirst()
 
+        #inputFocus = @input.hasFocus()
         @input.show()
-        @input.grabFocus()
-        super()
+        super()            # this might set focus to choices
+        @input.grabFocus() # but in finder and searcher input should always be focused
         
     #  0000000  00000000   0000000   00000000    0000000  000   000        000000000  00000000  000   000  000000000  
     # 000       000       000   000  000   000  000       000   000           000     000        000 000      000     
@@ -144,6 +145,7 @@ function finder extends inputchoice
 
         if text != @input.current()
             @input.set text
+            @input.selectAll()
             @input.state.moveCursors 'eol'
                 
         text
@@ -175,7 +177,13 @@ function finder extends inputchoice
 
     onChoicesAction: action choice ->
     
+        # log "finder.onChoicesAction #{action}"
+    
         switch action
+            'delete' 
+                @input.state.delete 'back'
+                @input.grabFocus()
+                ⮐ 
             'left' 
                 @input.grabFocus()
                 ⮐  true

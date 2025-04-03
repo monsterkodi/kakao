@@ -40,11 +40,12 @@ function mapscr extends mapview
         
         @screen.t.on 'preResize' @clearImages
         
-        post.on 'popup.show' (name) => @hide() if name in ['searcher' 'finder' 'differ']
         post.on 'greet.show' @hide
-        
-        post.on 'popup.hide' @show
         post.on 'greet.hide' @show
+        post.on 'popup.hide' @show
+        post.on 'popup.show' (name) => 
+            @hide() if name in ['differ' 'searcher']  
+            @show() if name in ['finder']
         
         @editor.state.on 'lines.changed' @onLinesChanged
         

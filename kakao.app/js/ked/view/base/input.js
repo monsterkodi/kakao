@@ -52,18 +52,18 @@ input = (function ()
         {
             case 'return':
                 this.emit('action','submit',this.current())
-                return
+                return true
 
             case 'up':
             case 'down':
                 this.emit('action',event.combo)
-                return
+                return false
 
             case 'right':
                 if (this.state.mainCursor()[0] >= this.current().length)
                 {
                     this.emit('action','right')
-                    return
+                    return true
                 }
                 break
         }
@@ -73,6 +73,7 @@ input = (function ()
         if (before !== this.current())
         {
             this.emit('action','change',this.current())
+            return true
         }
         return sr
     }

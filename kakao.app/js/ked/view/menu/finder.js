@@ -125,8 +125,8 @@ finder = (function ()
             this.choices.selectFirst()
         }
         this.input.show()
-        this.input.grabFocus()
-        return finder.__super__.show.call(this)
+        finder.__super__.show.call(this)
+        return this.input.grabFocus()
     }
 
     finder.prototype["searchText"] = function (text)
@@ -139,6 +139,7 @@ finder = (function ()
         if (text !== this.input.current())
         {
             this.input.set(text)
+            this.input.selectAll()
             this.input.state.moveCursors('eol')
         }
         return text
@@ -164,6 +165,11 @@ finder = (function ()
     {
         switch (action)
         {
+            case 'delete':
+                this.input.state.delete('back')
+                this.input.grabFocus()
+                return
+
             case 'left':
                 this.input.grabFocus()
                 return true

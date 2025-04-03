@@ -96,7 +96,7 @@ inputchoice = (function ()
 
     inputchoice.prototype["hide"] = function ()
     {
-        var _88_23_
+        var _90_23_
 
         ;(this.choices.mapscr != null ? this.choices.mapscr.hide() : undefined)
         return inputchoice.__super__.hide.call(this)
@@ -171,9 +171,9 @@ inputchoice = (function ()
 
     inputchoice.prototype["currentChoice"] = function ()
     {
-        var choice, _148_36_
+        var choice, _146_36_
 
-        choice = ((_148_36_=this.choices.current()) != null ? _148_36_ : this.input.current())
+        choice = ((_146_36_=this.choices.current()) != null ? _146_36_ : this.input.current())
         if (_k_.isStr(choice))
         {
             return choice = _k_.trim(choice)
@@ -247,11 +247,25 @@ inputchoice = (function ()
 
         }
 
+        if (this.input.hasFocus())
+        {
+            if (result = this.input.onKey(key,event))
+            {
+                this.autoHide()
+                return result
+            }
+            console.log(`focused input didn't handle key ${key}?`)
+        }
         if (result = this.choices.onKey(key,event))
         {
             if (event.char && !(_k_.in(event.char,' \n')))
             {
                 this.input.grabFocus()
+                if (result = this.input.onKey(key,event))
+                {
+                    this.autoHide()
+                    return result
+                }
             }
             else
             {
@@ -262,11 +276,6 @@ inputchoice = (function ()
                 this.autoHide()
                 return result
             }
-        }
-        if (result = this.input.onKey(key,event))
-        {
-            this.autoHide()
-            return result
         }
         return true
     }

@@ -191,15 +191,16 @@ function editor extends draw
         ⮐  if not @hasFocus()
         
         if @complete?
-            ⮐  if @complete.handleKey(key event) != 'unhandled'
+            ⮐  true if @complete.handleKey(key event) != 'unhandled'
 
         if @state.handleKey(key event) != 'unhandled'
             @complete?.hide()
-            ⮐ 
+            ⮐  true
         
         if valid event.char
             @state.insert event.char
-            @complete?.complete()                
+            @complete?.complete()
+            ⮐  true
         else
             if key.split('+')[-1] not in ['shift' 'ctrl' 'alt' 'cmd'] 
                 log "editor.onKey? |#{key}|" event 

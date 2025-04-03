@@ -77,10 +77,12 @@ function inputchoice extends view
     show: =>
 
         super()
+        
         if @choices.numFiltered()
             @choices.grabFocus()
         else if @input.visible()
             @input.grabFocus()
+            
         redraw:true
 
     hide: => 
@@ -100,14 +102,12 @@ function inputchoice extends view
 
         @choices.filter text
         @choices.state.selectLine 0
-        # @choices.state.setMainCursor @choices.state.s.lines[0].length 0
+
         @choices.state.setMainCursor 0 0
         @choicesFiltered()
         @arrange()
         
     onInputAction: action text =>
-        
-        # log 'input.choice.onInputAction' action text
         
         switch action
             'submit' ➜ ⮐  @applyChoice @choices.current()
@@ -115,8 +115,6 @@ function inputchoice extends view
             'up'          
             'down'   ➜ ⮐  @choices.moveSelection action
     
-        # log "inputchoice.onInputAction #{action} #{text} (unhandled?)"
-        
     autoHide: => @input.hide() if @autoHideInput and not @inputIsActive()
         
     #  0000000  000   000   0000000   000   0000000  00000000   0000000  
@@ -216,22 +214,23 @@ function inputchoice extends view
                 post.emit 'focus' 'editor'
                 ⮐  @hide()
 
+        if @input.hasFocus()
+            if result = @input.onKey key event
+                @autoHide()
+                ⮐  result
+            log "focused input didn't handle key #{key}?"
+
         if result = @choices.onKey key event
 
             if event.char and event.char not in ' \n'
                 @input.grabFocus()
+                if result = @input.onKey key event
+                    @autoHide()
+                    ⮐  result
             else
                 @choices.grabFocus() if key in 'down'
                 @autoHide()
                 ⮐  result
-             
-        if result = @input.onKey key event
-            
-            # @choices.grabFocus() if empty @input.current()
-            @autoHide()
-            
-            ⮐  result
-
         true
         
     # 00     00   0000000   000   000   0000000  00000000  
