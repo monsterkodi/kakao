@@ -477,9 +477,12 @@ function KED
             
         switch key
             
+            'alt+1'                      ➜ ⮐  mode.get(@editor.state 'filepos').goBackward()
+            'alt+2'                      ➜ ⮐  mode.get(@editor.state 'filepos').goForward()
+            'cmd+1'                      ➜ ⮐  mode.get(@editor.state 'filepos').swapPrevious()
+            
             'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
             'ctrl+r' 'cmd+r'             ➜ ⮐  @reloadFile()
-            'alt+r'                      ➜ ⮐  post.emit 'dircol.reveal' @currentFile
             'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐  @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()
@@ -488,14 +491,15 @@ function KED
             'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
             'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
             'alt+o'                      ➜ ⮐  @editor.jumpToCounterpart()
-            'cmd+i'                      ➜ ⮐  post.emit 'differ.status'
             'alt+,'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfPrevFunc()
             'alt+.'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfNextFunc()
             'cmd+o' 'ctrl+o'
             'cmd+m' 'cmd+;' 'ctrl+;'     ➜ ⮐  @macro.show()
             'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)
-            "cmd+'" "ctrl+'"             ➜ ⮐  post.emit 'funcol.toggle'
+            'cmd+i'                      ➜ ⮐  post.emit 'differ.status'
+            'alt+r'                      ➜ ⮐  post.emit 'dircol.reveal' @currentFile
             "cmd+\\" "ctrl+\\"           ➜ ⮐  post.emit 'dircol.toggle'
+            "cmd+'" "ctrl+'"             ➜ ⮐  post.emit 'funcol.toggle'
             
         for handler in @keyHandlers
             # ●▸ on key

@@ -135,24 +135,6 @@ filepos = (function ()
         return post.emit('file.open',fp[0],fp[1][1],fp[1][0],[fp[1][2],fp[1][3]])
     }
 
-    filepos.prototype["handleKey"] = function (key, event)
-    {
-        switch (key)
-        {
-            case 'alt+1':
-                return this.goBackward()
-
-            case 'alt+2':
-                return this.goForward()
-
-            case 'cmd+1':
-                return this.swapPrevious()
-
-        }
-
-        return 'unhandled'
-    }
-
     return filepos
 })()
 

@@ -132,19 +132,4 @@ function filepos
         post.emit 'status.filepos' filepos.fileposl filepos.offset
         post.emit 'file.open' fp[0] fp[1][1] fp[1][0] [fp[1][2] fp[1][3]]
             
-    # ███   ███  ████████  ███   ███
-    # ███  ███   ███        ███ ███ 
-    # ███████    ███████     █████  
-    # ███  ███   ███          ███   
-    # ███   ███  ████████     ███   
-
-    handleKey: key event ->
-    
-        switch key
-            'alt+1' ➜ ⮐  @goBackward()
-            'alt+2' ➜ ⮐  @goForward()
-            'cmd+1' ➜ ⮐  @swapPrevious()
-            
-        'unhandled'
-            
 export filepos

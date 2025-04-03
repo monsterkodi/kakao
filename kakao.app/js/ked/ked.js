@@ -532,6 +532,15 @@ ked [file]
 
         switch (key)
         {
+            case 'alt+1':
+                return mode.get(this.editor.state,'filepos').goBackward()
+
+            case 'alt+2':
+                return mode.get(this.editor.state,'filepos').goForward()
+
+            case 'cmd+1':
+                return mode.get(this.editor.state,'filepos').swapPrevious()
+
             case 'alt+q':
             case 'ctrl+q':
             case 'cmd+esc':
@@ -540,9 +549,6 @@ ked [file]
             case 'ctrl+r':
             case 'cmd+r':
                 return this.reloadFile()
-
-            case 'alt+r':
-                return post.emit('dircol.reveal',this.currentFile)
 
             case 'ctrl+s':
             case 'cmd+s':
@@ -574,9 +580,6 @@ ked [file]
             case 'alt+o':
                 return this.editor.jumpToCounterpart()
 
-            case 'cmd+i':
-                return post.emit('differ.status')
-
             case 'alt+,':
                 return this.editor.singleCursorAtLine(this.funcol.funtree.lineIndexOfPrevFunc())
 
@@ -594,13 +597,19 @@ ked [file]
             case 'ctrl+.':
                 return this.browse.gotoDir(slash.dir(this.currentFile))
 
-            case "cmd+'":
-            case "ctrl+'":
-                return post.emit('funcol.toggle')
+            case 'cmd+i':
+                return post.emit('differ.status')
+
+            case 'alt+r':
+                return post.emit('dircol.reveal',this.currentFile)
 
             case "cmd+\\":
             case "ctrl+\\":
                 return post.emit('dircol.toggle')
+
+            case "cmd+'":
+            case "ctrl+'":
+                return post.emit('funcol.toggle')
 
         }
 
@@ -631,7 +640,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _537_22_
+        var mcw, _541_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}
