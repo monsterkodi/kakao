@@ -68,6 +68,16 @@ function bubble extends view
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
+    onMouseEnter: => 
+    
+        @emit 'action' 'enter'
+        super()
+        
+    onMouseLeave: => 
+    
+        @emit 'action' 'leave'
+        super()
+    
     onMouse: event =>
         
         super event
@@ -79,6 +89,7 @@ function bubble extends view
                 if @hover
                     @emit 'action' 'click' @item
                     ⮐  redraw:true
+                    
         @hover
     
 export bubble

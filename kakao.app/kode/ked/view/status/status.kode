@@ -58,6 +58,7 @@ function status extends view
         
         @crumbs.on     'action' @onCrumbsAction
         @statusfile.on 'action' @onFileAction
+        @filepos.on    'action' @onFileposAction
         
         post.on 'status.filepos' @onStatusFilepos
         
@@ -67,6 +68,13 @@ function status extends view
             @filepos.set tilde:"#{@fileposl.length-@fileoffs}#{@fileposl.length}"
         else
             @filepos.set null 
+            
+    onFileposAction: action item =>
+    
+        switch action
+            'enter' ➜ log 'show filepos files'
+            'leave' ➜ log 'hide filepos files?'
+            'click' ➜ post.emit 'filepos.swapPrevious'
         
     onCrumbsAction: action path event =>
         

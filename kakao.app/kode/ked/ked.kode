@@ -477,9 +477,9 @@ function KED
             
         switch key
             
-            'alt+1'                      ➜ ⮐  mode.get(@editor.state 'filepos').goBackward()
-            'alt+2'                      ➜ ⮐  mode.get(@editor.state 'filepos').goForward()
-            'cmd+1'                      ➜ ⮐  mode.get(@editor.state 'filepos').swapPrevious()
+            'alt+1'                      ➜ ⮐  post.emit 'filepos.goBackward'  
+            'alt+2'                      ➜ ⮐  post.emit 'filepos.goForward'   
+            'cmd+1'                      ➜ ⮐  post.emit 'filepos.swapPrevious'
             
             'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
             'ctrl+r' 'cmd+r'             ➜ ⮐  @reloadFile()

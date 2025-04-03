@@ -17,8 +17,14 @@ filepos = (function ()
     {
         this.state = state
     
+        this["goForward"] = this["goForward"].bind(this)
+        this["goBackward"] = this["goBackward"].bind(this)
+        this["swapPrevious"] = this["swapPrevious"].bind(this)
         this.name = 'filepos'
         this.fileLoaded(ked_session.get("editor▸file"))
+        post.on('filepos.goBackward',this.goBackward)
+        post.on('filepos.goForward',this.goForward)
+        post.on('filepos.swapPrevious',this.swapPrevious)
         post.emit('redraw')
     }
 

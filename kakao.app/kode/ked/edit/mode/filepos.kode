@@ -30,6 +30,11 @@ function filepos
         # this shoudn't be a problem as long mode loading is fast enough.
         
         @fileLoaded ked_session.get("editor▸file") 
+        
+        post.on 'filepos.goBackward'   @goBackward
+        post.on 'filepos.goForward'    @goForward
+        post.on 'filepos.swapPrevious' @swapPrevious
+        
         post.emit 'redraw'
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████
@@ -87,7 +92,7 @@ function filepos
     #      ███  ███   ███  ███   ███  ███      
     # ███████   ██     ██  ███   ███  ███      
 
-    swapPrevious: ->
+    swapPrevious: =>
     
         ⮐  if filepos.fileposl.length < 2
         
@@ -101,7 +106,13 @@ function filepos
         
         @emitOpen()
                     
-    goBackward: ->
+    #  ███████    ███████ 
+    # ███        ███   ███
+    # ███  ████  ███   ███
+    # ███   ███  ███   ███
+    #  ███████    ███████ 
+
+    goBackward: =>
     
         ⮐  if filepos.fileposl.length < 2
         ⮐  if filepos.offset >= filepos.fileposl.length-1
@@ -110,7 +121,7 @@ function filepos
         
         @emitOpen()
     
-    goForward: ->
+    goForward: =>
     
         ⮐  if filepos.fileposl.length < 2
         ⮐  if filepos.offset <= 0

@@ -533,13 +533,13 @@ ked [file]
         switch (key)
         {
             case 'alt+1':
-                return mode.get(this.editor.state,'filepos').goBackward()
+                return post.emit('filepos.goBackward')
 
             case 'alt+2':
-                return mode.get(this.editor.state,'filepos').goForward()
+                return post.emit('filepos.goForward')
 
             case 'cmd+1':
-                return mode.get(this.editor.state,'filepos').swapPrevious()
+                return post.emit('filepos.swapPrevious')
 
             case 'alt+q':
             case 'ctrl+q':

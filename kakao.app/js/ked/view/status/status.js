@@ -61,6 +61,7 @@ status = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onFileAction"] = this["onFileAction"].bind(this)
         this["onCrumbsAction"] = this["onCrumbsAction"].bind(this)
+        this["onFileposAction"] = this["onFileposAction"].bind(this)
         this["onStatusFilepos"] = this["onStatusFilepos"].bind(this)
         status.__super__.constructor.call(this,this.screen,'status')
         this.state = this.editor.state
@@ -80,6 +81,7 @@ status = (function ()
         this.filepos.syntax = new fileposSyntax
         this.crumbs.on('action',this.onCrumbsAction)
         this.statusfile.on('action',this.onFileAction)
+        this.filepos.on('action',this.onFileposAction)
         post.on('status.filepos',this.onStatusFilepos)
     }
 
@@ -96,6 +98,23 @@ status = (function ()
         {
             return this.filepos.set(null)
         }
+    }
+
+    status.prototype["onFileposAction"] = function (action, item)
+    {
+        switch (action)
+        {
+            case 'enter':
+                console.log('show filepos files')
+                break
+            case 'leave':
+                console.log('hide filepos files?')
+                break
+            case 'click':
+                return post.emit('filepos.swapPrevious')
+
+        }
+
     }
 
     status.prototype["onCrumbsAction"] = function (action, path, event)
