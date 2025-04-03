@@ -306,7 +306,8 @@ inputchoice = (function ()
         if (event.type === 'press' && !this.hover)
         {
             post.emit('focus','editor')
-            return this.hide()
+            this.hide()
+            return
         }
         return this.hover
     }

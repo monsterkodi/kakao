@@ -669,6 +669,7 @@ wcwidth_singlewidth = [
 intable = table c ->
   
     ⮐  if c < table[0][0]
+    ⮐  if c > table[-1][1]
   
     bot = 0
     top = table.length - 1
@@ -681,7 +682,7 @@ intable = table c ->
         else if table[mid][0] > c
             top = mid - 1
         else 
-            ⮐ true
+            ⮐  true
   
 wcwidth = c ->
     

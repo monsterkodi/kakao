@@ -140,28 +140,31 @@ dircol = (function ()
 
     dircol.prototype["onContext"] = function (event)
     {
-        var _121_29_
-
-        if ((this.dirtree.current() != null ? this.dirtree.current().type : undefined) === 'file')
-        {
-            return context.show(event.cell,this.onContextChoice,["trash"])
-        }
+        return context.show(event.cell,this.onContextChoice,[" "," "," "])
     }
 
     dircol.prototype["onContextChoice"] = function (choice)
     {
-        var current
+        var current, dir
 
         if (current = this.dirtree.current())
         {
             switch (choice)
             {
-                case 'trash':
-                    if (choice.type === 'file')
-                    {
-                        return post.emit('file.trash',current.path)
-                    }
+                case '':
+                    console.log(`dircol.onContextChoice rename ${current.path}`)
                     break
+                case '':
+                    dir = current.path
+                    if (current.type === 'file')
+                    {
+                        dir = slash.dir(dir)
+                    }
+                    return post.emit('file.new_folder',dir)
+
+                case '':
+                    return post.emit('file.trash',current.path)
+
             }
 
         }

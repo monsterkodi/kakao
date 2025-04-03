@@ -51,16 +51,16 @@ function droop extends quicky
         super()
         
         sy = 0
-        bg = @color. bg
+        bg = @color.bg
         
         if @input.visible()
             sy = 2
-            bg = color.brighten(fg) if @input.hasFocus() 
+            bg = color.brighten(bg) if @input.hasFocus() 
         
-        @cells.fill_row sy 1 @cells.cols-2 ' ' null bg
-        
-        @cells.img 0             sy 'rounded.border.l' bg 1002
-        @cells.img @cells.cols-1 sy 'rounded.border.r' bg 1002
+        if @cells.y <= 1 and @input.hidden()
+            @cells.fill_row sy 1 @cells.cols-2 ' ' null bg
+            @cells.img 0             sy 'rounded.border.l' bg 1002
+            @cells.img @cells.cols-1 sy 'rounded.border.r' bg 1002
 
     onChoicesAction: action choice =>
     

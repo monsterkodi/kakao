@@ -72,7 +72,7 @@ draw = (function ()
 
     draw.prototype["drawLine"] = function (line, y, row)
     {
-        var bg, c, ch, checkColor, ci, clss, fg, firstIndex, firstSegi, headerClass, linel, si, syntax, view, x, _118_41_
+        var bg, c, ch, checkColor, ci, clss, cw, fg, firstIndex, firstSegi, headerClass, linel, si, syntax, view, x
 
         row = (row != null ? row : y - this.state.s.view[1])
         bg = this.color.bg
@@ -111,7 +111,9 @@ draw = (function ()
                     headerClass = clss
                 }
             }
-            x += ((_118_41_=kseg.segWidth(line[si])) != null ? _118_41_ : 1)
+            cw = kseg.segWidth(line[si])
+            cw = _k_.max(1,cw)
+            x += cw
             if (x < this.cells.cols)
             {
                 c += this.cells.add(c,row,ch,fg,bg)

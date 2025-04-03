@@ -88,12 +88,15 @@ droop = (function ()
             sy = 2
             if (this.input.hasFocus())
             {
-                bg = color.brighten(fg)
+                bg = color.brighten(bg)
             }
         }
-        this.cells.fill_row(sy,1,this.cells.cols - 2,' ',null,bg)
-        this.cells.img(0,sy,'rounded.border.l',bg,1002)
-        return this.cells.img(this.cells.cols - 1,sy,'rounded.border.r',bg,1002)
+        if (this.cells.y <= 1 && this.input.hidden())
+        {
+            this.cells.fill_row(sy,1,this.cells.cols - 2,' ',null,bg)
+            this.cells.img(0,sy,'rounded.border.l',bg,1002)
+            return this.cells.img(this.cells.cols - 1,sy,'rounded.border.r',bg,1002)
+        }
     }
 
     droop.prototype["onChoicesAction"] = function (action, choice)

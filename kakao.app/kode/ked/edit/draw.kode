@@ -115,9 +115,12 @@ function draw extends view
                 clss = syntax.getClass ci y
                 if clss.endsWith('header') ➜ headerClass = clss
 
-            x += kseg.segWidth(line[si]) ? 1
+            cw = kseg.segWidth line[si]
+            cw = max 1 cw # todo: this is to prevent endless loop with zero width characters, should be fixed eventually
+            x += cw
+            
             if x < @cells.cols
-                # @cells.meta_clone c row
+                # @cells.meta_clone c row # ϵ⌶⟙ℍϵℜ 𝛋𝚒⟅⟅ 𝚒𝜏 ⊚ℜ ⫐◯ 𝚒𝜏!
                 c += @cells.add c row ch fg bg
             
             if clss == 'invert_bg'

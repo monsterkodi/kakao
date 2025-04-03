@@ -289,7 +289,7 @@ status = (function ()
             }
             add(((ci - 1 < colno.length) ? colno[ci - 1] : ' '),fg,'col')
         }
-        add('','col',color.gutter)
+        add('','col',this.color.gutter)
         this.crumbs.draw()
         this.statusfile.draw()
         this.filepos.draw()
@@ -338,7 +338,7 @@ status = (function ()
         {
             add(' ',null,'dark')
         }
-        add('','dark',null)
+        add('','dark',this.color.gutter)
         ci = _k_.clamp(0,3,parseInt((this.time / (1000 * 1000) - 8) / 8))
         ch = ' •'[ci]
         fg = [[32,32,32],[0,96,0],[255,0,0],[255,255,0]][ci]

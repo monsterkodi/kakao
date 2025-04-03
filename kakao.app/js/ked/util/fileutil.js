@@ -55,9 +55,22 @@ export ${name}
         return post.emit('file.open',file,6,'eol')
     }
 
+    fileutil["newFolder"] = async function (parent)
+    {
+        var dir, res
+
+        dir = slash.path(parent,'new_folder')
+        res = await nfs.mkdir(dir)
+        if (res === dir)
+        {
+            return post.emit('redraw')
+        }
+    }
+
     return fileutil
 })()
 
 post.on('file.trash',fileutil.trash)
 post.on('file.class',fileutil.class)
+post.on('file.new_folder',fileutil.newFolder)
 export default fileutil;

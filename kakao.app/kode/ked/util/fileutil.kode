@@ -90,7 +90,21 @@ function fileutil
             
         post.emit 'file.open' file 6 'eol'
         
-post.on 'file.trash' fileutil.trash
-post.on 'file.class' fileutil.class
+    # ███   ███  ████████  ███   ███        ████████   ███████   ███      ███████    ████████  ████████ 
+    # ████  ███  ███       ███ █ ███        ███       ███   ███  ███      ███   ███  ███       ███   ███
+    # ███ █ ███  ███████   █████████        ██████    ███   ███  ███      ███   ███  ███████   ███████  
+    # ███  ████  ███       ███   ███        ███       ███   ███  ███      ███   ███  ███       ███   ███
+    # ███   ███  ████████  ██     ██        ███        ███████   ███████  ███████    ████████  ███   ███
+
+    @newFolder: parent ○->
+    
+        dir = slash.path parent 'new_folder'
+        res =○ nfs.mkdir dir
+        if res == dir
+            post.emit 'redraw'
+        
+post.on 'file.trash'      fileutil.trash
+post.on 'file.class'      fileutil.class
+post.on 'file.new_folder' fileutil.newFolder
 
 export fileutil

@@ -25,8 +25,7 @@ crumbs = (function ()
         this.setColor('hover',theme.hover.bg)
         this.setColor('bg',theme.crumbs.bg)
         this.setColor('fg',theme.crumbs.fg)
-        this.setColor('empty_left',theme.editor.bg)
-        this.setColor('empty_right',theme.editor.bg)
+        this.setColor('empty',theme.editor.bg)
     }
 
     crumbs.prototype["setColor"] = function (key, color)
@@ -36,8 +35,7 @@ crumbs = (function ()
             case 'empty':
                 this.setColor('empty_left',color)
                 this.setColor('empty_right',color)
-                return
-
+                break
         }
 
         return crumbs.__super__.setColor.call(this,key,color)
@@ -155,13 +153,13 @@ crumbs = (function ()
 
     crumbs.prototype["adjustText"] = function ()
     {
-        var padding, _129_14_
+        var padding, _127_14_
 
         if (this.hidden())
         {
             return
         }
-        this.path = ((_129_14_=this.path) != null ? _129_14_ : '')
+        this.path = ((_127_14_=this.path) != null ? _127_14_ : '')
         if (this.path === '')
         {
             this.rounded = ''
@@ -206,7 +204,7 @@ crumbs = (function ()
 
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _176_26_
+        var col, index, path, row, si, _174_26_
 
         var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 
@@ -228,7 +226,6 @@ crumbs = (function ()
                 {
                     path = this.pathAtSplitIndex(this.hoverIndex)
                     this.emit('action','click',path,event)
-                    delete this.hoverIndex
                 }
                 return {redraw:true}
 

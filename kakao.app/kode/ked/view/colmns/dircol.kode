@@ -118,20 +118,33 @@ function dircol extends view
 
     onContext: event =>
     
-        if @dirtree.current()?.type == 'file'
+        # if @dirtree.current()?.type == 'file'
     
-            context.show event.cell @onContextChoice [
-                "trash" 
-                ]
+        context.show event.cell @onContextChoice [
+            " " 
+            " " 
+            " " 
+            ]
                 
     onContextChoice: choice =>
     
         if current = @dirtree.current()
-
+            
             switch choice
-                'trash' 
-                    if choice.type == 'file'
-                        post.emit 'file.trash' current.path
+            
+                ''
+                
+                    log "dircol.onContextChoice rename #{current.path}"
+            
+                ''
+                    dir = current.path
+                    if current.type == 'file'
+                        dir = slash.dir dir
+                    post.emit 'file.new_folder' dir
+                    
+                '' 
+                    # if choice.type == 'file'
+                    post.emit 'file.trash' current.path
                         
     onReveal: p ○=>
     

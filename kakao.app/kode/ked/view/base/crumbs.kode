@@ -25,8 +25,7 @@ function crumbs extends view
         @setColor 'hover'       theme.hover.bg
         @setColor 'bg'          theme.crumbs.bg
         @setColor 'fg'          theme.crumbs.fg
-        @setColor 'empty_left'  theme.editor.bg
-        @setColor 'empty_right' theme.editor.bg
+        @setColor 'empty'       theme.editor.bg
         
     setColor: key color ->
         
@@ -34,7 +33,6 @@ function crumbs extends view
             'empty' 
                 @setColor 'empty_left'  color
                 @setColor 'empty_right' color
-                ⮐ 
         
         super key color
         
@@ -175,7 +173,7 @@ function crumbs extends view
         if not @hover
             if @hoverIndex?
                 delete @hoverIndex
-                ⮐ true
+                ⮐  true
             ⮐ 
 
         switch event.type
@@ -186,7 +184,6 @@ function crumbs extends view
                 if 0 <= @hoverIndex < @split.length
                     path = @pathAtSplitIndex @hoverIndex
                     @emit 'action' 'click' path event
-                    delete @hoverIndex
                 ⮐  redraw:true
                 
             'move'

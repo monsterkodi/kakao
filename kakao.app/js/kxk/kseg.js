@@ -567,6 +567,10 @@ intable = function (table, c)
     {
         return
     }
+    if (c > table.slice(-1)[0][1])
+    {
+        return
+    }
     bot = 0
     top = table.length - 1
     while (top >= bot)

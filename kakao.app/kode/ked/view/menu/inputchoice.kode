@@ -249,7 +249,8 @@ function inputchoice extends view
         
         if event.type == 'press' and not @hover
             post.emit 'focus' 'editor'
-            ⮐  @hide()
+            @hide() 
+            ⮐  # give other views a chance to handle the closing click
             
         @hover
 

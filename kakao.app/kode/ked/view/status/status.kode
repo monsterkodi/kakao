@@ -210,7 +210,7 @@ function status extends view
             fg = cursor[0] ? 'fg' : 'col_zero'
             fg = 'col_empty' if belt.isLinesPosOutside @state.s.lines cursor 
             add (ci-1 < colno.length) ? colno[ci-1] : ' ' fg 'col'
-        add '' 'col' color.gutter # column number end
+        add '' 'col' @color.gutter # column number end
               
         @crumbs.draw() # dir path
         @statusfile.draw() # file
@@ -253,7 +253,7 @@ function status extends view
         for ci in x...cols-1
             add ' ' null 'dark'
             
-        add '' 'dark' null
+        add '' 'dark' @color.gutter 
             
         ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
         ch = ' •'[ci] # 

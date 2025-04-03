@@ -15,7 +15,7 @@ light                         diode                     day   
 sound        ♪ ♫ ♬              volume        墳婢          record      
 bell                    heart        ❤      ❣   beat       﫵 
 pin                           flag         ⚐ ⚑           shield     賓
-power                           flash        ⚡↯          anchor      
+power                           flash        ↯            anchor      
 github                         branch           
 logo                        os             者
 clipboard                 operation           
@@ -25,7 +25,7 @@ font                        chart             
 playback     ⏹ ⏸ ⏯ ⏮ ⏺ ⏵ ⏭       question     ‼ ⁇ ⁈ ⁉  
 link                        recycle       ♻ ♲ ♺        
 cycle           ⟳ ⥀ ⥁ ↺ ↻  
-body            ⛹    
+body               
 hand                 
 speak                       
 
