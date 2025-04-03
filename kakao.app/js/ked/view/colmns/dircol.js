@@ -6,12 +6,15 @@ import kxk from "../../../kxk.js"
 let post = kxk.post
 let slash = kxk.slash
 
+import belt from "../../edit/tool/belt.js"
+
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 
 import view from "../base/view.js"
 import knob from "../base/knob.js"
 import crumbs from "../base/crumbs.js"
+import input from "../base/input.js"
 
 import context from "../menu/context.js"
 
@@ -32,6 +35,7 @@ dircol = (function ()
         this["onMouse"] = this["onMouse"].bind(this)
         this["onToggle"] = this["onToggle"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
+        this["rename"] = this["rename"].bind(this)
         this["onReveal"] = this["onReveal"].bind(this)
         this["onContextChoice"] = this["onContextChoice"].bind(this)
         this["onContext"] = this["onContext"].bind(this)
@@ -75,7 +79,7 @@ dircol = (function ()
 
     dircol.prototype["onSessionMerge"] = function (recent)
     {
-        var args, root, _76_24_
+        var args, root, _77_24_
 
         if (_k_.empty(recent.dircol))
         {
@@ -143,7 +147,7 @@ dircol = (function ()
         return context.show(event.cell,this.onContextChoice,[" "," "," "])
     }
 
-    dircol.prototype["onContextChoice"] = function (choice)
+    dircol.prototype["onContextChoice"] = async function (choice)
     {
         var current, dir
 
@@ -152,8 +156,8 @@ dircol = (function ()
             switch (choice)
             {
                 case '':
-                    console.log(`dircol.onContextChoice rename ${current.path}`)
-                    break
+                    return this.rename()
+
                 case '':
                     dir = current.path
                     if (current.type === 'file')
@@ -208,6 +212,29 @@ dircol = (function ()
                 return this.setRoot(d)
             }
         }
+    }
+
+    dircol.prototype["rename"] = function ()
+    {
+        var current, fileName, ox, w, x, y
+
+        current = this.dirtree.current()
+        ox = belt.numIndent(current.tilde) + 2
+        x = this.dirtree.cells.x + ox
+        y = this.dirtree.cells.y + this.dirtree.currentIndex()
+        w = this.dirtree.cells.cols - ox
+        fileName = slash.file(current.path)
+        return post.emit('input.popup',{text:fileName,x:x,y:y,w:w,cb:(function (res)
+        {
+            if (this.hover)
+            {
+                this.dirtree.grabFocus()
+            }
+            if (res !== fileName)
+            {
+                return post.emit('file.rename',current.path,slash.path(slash.dir(current.path),res))
+            }
+        }).bind(this)})
     }
 
     dircol.prototype["onResize"] = function ()
@@ -276,6 +303,9 @@ dircol = (function ()
         }
         switch (key)
         {
+            case 'f2':
+                return this.rename()
+
             case 'cmd+left':
             case 'ctrl+left':
                 return this.setRoot(slash.dir(this.dirtree.currentRoot))

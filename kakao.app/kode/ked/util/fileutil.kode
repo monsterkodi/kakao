@@ -103,8 +103,23 @@ function fileutil
         if res == dir
             post.emit 'redraw'
         
+    # ████████   ████████  ███   ███   ███████   ██     ██  ████████
+    # ███   ███  ███       ████  ███  ███   ███  ███   ███  ███     
+    # ███████    ███████   ███ █ ███  █████████  █████████  ███████ 
+    # ███   ███  ███       ███  ████  ███   ███  ███ █ ███  ███     
+    # ███   ███  ████████  ███   ███  ███   ███  ███   ███  ████████
+
+    @rename: oldPath newPath ○->
+        
+        ⮐  if oldPath == newPath
+        
+        res =○ nfs.move oldPath newPath
+        if res != newPath
+            error "rename failed! #{res}"
+        
 post.on 'file.trash'      fileutil.trash
 post.on 'file.class'      fileutil.class
+post.on 'file.rename'     fileutil.rename
 post.on 'file.new_folder' fileutil.newFolder
 
 export fileutil

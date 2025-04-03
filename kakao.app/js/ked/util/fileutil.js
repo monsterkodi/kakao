@@ -67,10 +67,26 @@ export ${name}
         }
     }
 
+    fileutil["rename"] = async function (oldPath, newPath)
+    {
+        var res
+
+        if (oldPath === newPath)
+        {
+            return
+        }
+        res = await nfs.move(oldPath,newPath)
+        if (res !== newPath)
+        {
+            console.error(`rename failed! ${res}`)
+        }
+    }
+
     return fileutil
 })()
 
 post.on('file.trash',fileutil.trash)
 post.on('file.class',fileutil.class)
+post.on('file.rename',fileutil.rename)
 post.on('file.new_folder',fileutil.newFolder)
 export default fileutil;

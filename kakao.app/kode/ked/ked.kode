@@ -16,7 +16,7 @@ use ./util/img    ◆ rounded squares sircels
 use ./edit/tool   ◆ belt
 use ./edit        ◆ mode
 use ./edit/mode   ◆ filepos
-use ./view/base   ◆ view
+use ./view/base   ◆ view input
 use ./view/status ◆ status 
 use ./view/editor ◆ fileeditor
 use ./view/screen ◆ screen ttio
@@ -51,6 +51,8 @@ function KED
         @t = new ttio
         
         @screen   = new screen @t
+        
+        global.ked_screen = @screen
                   
         @indexer  = new indexer
         @git      = new git
@@ -68,6 +70,9 @@ function KED
         @differ   = new differ     @screen @editor
         @status   = new status     @screen @editor
         @context  = new context    @screen
+        @input    = new input      @screen
+
+        @input.on 'action' @onInputAction
         
         log w2("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ #{b8 @session.name} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
 
@@ -77,6 +82,7 @@ function KED
         post.on 'redraw'        @redraw
         post.on 'window.focus'  @redraw
         post.on 'window.blur'   @redraw
+        post.on 'input.popup'   @onInputPopup
         post.on 'view.size'     @onViewSize
         post.on 'quicky'        @onQuicky
         post.on 'file.new'      @newFile
@@ -86,10 +92,10 @@ function KED
         post.on 'file.change'   @onFileChange
         post.on 'focus'         (name) -> # log "focus: '#{name}'"
         
-        @contextHandlers = [                                                                        @editor         @dircol @funcol ]
-        @mouseHandlers   = [ @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
-        @wheelHandlers   = [          @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
-        @keyHandlers     = [ @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
+        @contextHandlers = [                                                                               @editor         @dircol @funcol ]
+        @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
+        @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
+        @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -552,6 +558,35 @@ function KED
         sircels.onResize cols rows size cellsz
         @redraw()
         @editor.mapscr?.onResize()
+        
+    # ███  ███   ███  ████████   ███   ███  █████████       ████████    ███████   ████████   ███   ███  ████████ 
+    # ███  ████  ███  ███   ███  ███   ███     ███          ███   ███  ███   ███  ███   ███  ███   ███  ███   ███
+    # ███  ███ █ ███  ████████   ███   ███     ███          ████████   ███   ███  ████████   ███   ███  ████████ 
+    # ███  ███  ████  ███        ███   ███     ███          ███        ███   ███  ███        ███   ███  ███      
+    # ███  ███   ███  ███         ███████      ███          ███         ███████   ███         ███████   ███      
+
+    onInputPopup: opt =>
+    
+        @input.set opt.text
+        @input.state.moveCursors 'eol'
+        @input.layout opt.x opt.y opt.w 1
+        @input.grabFocus()
+        @input.orig = opt.text
+        @input.cb = opt.cb
+        @redraw()
+        
+    onInputAction: action event =>
+    
+        # log "ked.onInputAction #{action} #{event}"
+        switch action
+            'submit'
+                if @input.cb is func
+                    @input.cb @input.current()
+                @input.hide()
+            'cancel'
+                if @input.cb is func
+                    @input.cb @input.orig
+                @input.hide()
     
     # ███████    ████████    ███████   ███   ███
     # ███   ███  ███   ███  ███   ███  ███ █ ███
@@ -596,6 +631,7 @@ function KED
         @searcher.draw()
         @differ.draw()
         @context.draw()
+        @input.draw()
         # ●▪ draw
         # ●▸ render
         @screen.render()

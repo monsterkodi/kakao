@@ -16,6 +16,8 @@ input = (function ()
     function input (screen, name)
     {
         this["current"] = this["current"].bind(this)
+        this["onMouse"] = this["onMouse"].bind(this)
+        this["onMouseLeave"] = this["onMouseLeave"].bind(this)
         input.__super__.constructor.call(this,screen,name,['brckts','replex','unype'])
         this.setColor('selection_line',this.color.selection)
         this.setColor('bg',theme.quicky.bg)
@@ -26,6 +28,21 @@ input = (function ()
     input.prototype["hasFocus"] = function ()
     {
         return this.state.hasFocus
+    }
+
+    input.prototype["onMouseLeave"] = function (event)
+    {
+        this.emit('action','cancel')
+        return input.__super__.onMouseLeave.call(this,event)
+    }
+
+    input.prototype["onMouse"] = function (event)
+    {
+        if (this.hidden())
+        {
+            return
+        }
+        return input.__super__.onMouse.call(this,event)
     }
 
     input.prototype["current"] = function ()
@@ -48,6 +65,10 @@ input = (function ()
     {
         var before, sr
 
+        if (!this.hasFocus())
+        {
+            return
+        }
         switch (event.combo)
         {
             case 'return':
@@ -66,6 +87,10 @@ input = (function ()
                     return true
                 }
                 break
+            case 'esc':
+                this.emit('action','cancel')
+                return true
+
         }
 
         before = this.current()
@@ -80,7 +105,7 @@ input = (function ()
 
     input.prototype["draw"] = function ()
     {
-        if (this.hidden())
+        if (this.hidden() || this.collapsed())
         {
             return
         }

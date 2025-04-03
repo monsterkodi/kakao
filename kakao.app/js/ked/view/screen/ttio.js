@@ -373,6 +373,21 @@ TTIO = (function ()
                     case '6':
                         return 'pagedown'
 
+                    case '13':
+                        return 'f3'
+
+                    case '15':
+                        return 'f5'
+
+                    case '17':
+                        return 'f6'
+
+                    case '18':
+                        return 'f7'
+
+                    case '19':
+                        return 'f8'
+
                 }
 
             }).bind(this))()
@@ -510,6 +525,12 @@ TTIO = (function ()
             case 'Z':
                 return this.keyEventForCombo('shift+z','Z')
 
+            case 'Q':
+                return this.keyEventForCombo('f2')
+
+            case 'S':
+                return this.keyEventForCombo('f4')
+
             case 'I':
                 this.hasFocus = true
                 post.emit('window.focus')
@@ -522,7 +543,6 @@ TTIO = (function ()
 
         }
 
-        console.log(`--------------------- unhandled csi? |${csi}|`)
         return null
     }
 
@@ -764,11 +784,11 @@ TTIO = (function ()
 
     TTIO.prototype["emitMouseEvent"] = function (event)
     {
-        var diff, _533_23_, _554_20_
+        var diff, _539_23_, _560_20_
 
         if (event.type === 'press')
         {
-            this.lastClick = ((_533_23_=this.lastClick) != null ? _533_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
+            this.lastClick = ((_539_23_=this.lastClick) != null ? _539_23_ : {x:event.cell[0],y:event.cell[1],count:0,time:process.hrtime()})
             if (this.lastClick.x === event.cell[0] && this.lastClick.y === event.cell[1])
             {
                 diff = process.hrtime(this.lastClick.time)
@@ -791,7 +811,7 @@ TTIO = (function ()
             }
             event.count = this.lastClick.count
         }
-        this.lastPixels = ((_554_20_=this.lastPixels) != null ? _554_20_ : [])
+        this.lastPixels = ((_560_20_=this.lastPixels) != null ? _560_20_ : [])
         if (this.lastPixels.length >= 4)
         {
             event.delta = [event.pixel[0] - this.lastPixels[0][0],event.pixel[1] - this.lastPixels[0][1]]
@@ -850,7 +870,7 @@ TTIO = (function ()
 
     TTIO.prototype["onData"] = function (data)
     {
-        var csi, dataStr, esc, event, i, pxs, raw, seq, text, _610_23_
+        var csi, dataStr, esc, event, pxs, raw, seq, text, _616_23_
 
         if ((this.pasteBuffer != null))
         {
@@ -951,7 +971,6 @@ TTIO = (function ()
                         continue
                     }
                 }
-                console.log(`-------------- unhandled csi ${csi}`)
             }
             else if (esc)
             {
@@ -989,12 +1008,6 @@ TTIO = (function ()
                     continue
                 }
             }
-            console.log("unhandled sequence:",seq)
-            for (var _b_ = i = 0, _c_ = data.length; (_b_ <= _c_ ? i < data.length : i > data.length); (_b_ <= _c_ ? ++i : --i))
-            {
-                console.log(`${i} 0x${data[i].toString(16)} ▸${(data[i] === 0x1b ? 'esc' : String.fromCodePoint(data[i]))}◂`)
-            }
-            console.log(`${data.length} bytes ▪`)
         }
     }
 

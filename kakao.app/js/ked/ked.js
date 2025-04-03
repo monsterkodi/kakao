@@ -1,4 +1,4 @@
-var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.b8=_k_.k.F256(_k_.k.b(8));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2))
+var _k_ = {k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, assert: function (f,l,c,m,t) { if (!t) {console.log(f + ':' + l + ':' + c + ' ▴ ' + m)}}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, isFunc: function (o) {return typeof o === 'function'}};_k_.r4=_k_.k.F256(_k_.k.r(4));_k_.b8=_k_.k.F256(_k_.k.b(8));_k_.y5=_k_.k.F256(_k_.k.y(5));_k_.w2=_k_.k.F256(_k_.k.w(2))
 
 var KED
 
@@ -32,6 +32,7 @@ import mode from "./edit/mode.js"
 import filepos from "./edit/mode/filepos.js"
 
 import view from "./view/base/view.js"
+import input from "./view/base/input.js"
 
 import status from "./view/status/status.js"
 
@@ -60,6 +61,8 @@ KED = (function ()
     {
         this["draw"] = this["draw"].bind(this)
         this["redraw"] = this["redraw"].bind(this)
+        this["onInputAction"] = this["onInputAction"].bind(this)
+        this["onInputPopup"] = this["onInputPopup"].bind(this)
         this["onResize"] = this["onResize"].bind(this)
         this["onViewSize"] = this["onViewSize"].bind(this)
         this["onKey"] = this["onKey"].bind(this)
@@ -95,6 +98,7 @@ ked [file]
         this.session.on('loaded',this.onSessionLoaded)
         this.t = new ttio
         this.screen = new screen(this.t)
+        global.ked_screen = this.screen
         this.indexer = new indexer
         this.git = new git
         this.menu = new menu(this.screen)
@@ -110,12 +114,15 @@ ked [file]
         this.differ = new differ(this.screen,this.editor)
         this.status = new status(this.screen,this.editor)
         this.context = new context(this.screen)
+        this.input = new input(this.screen)
+        this.input.on('action',this.onInputAction)
         console.log(_k_.w2(`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ${_k_.b8(this.session.name)} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`))
         this.editor.state.hasFocus = true
         this.editor.funtree = this.funcol.funtree
         post.on('redraw',this.redraw)
         post.on('window.focus',this.redraw)
         post.on('window.blur',this.redraw)
+        post.on('input.popup',this.onInputPopup)
         post.on('view.size',this.onViewSize)
         post.on('quicky',this.onQuicky)
         post.on('file.new',this.newFile)
@@ -126,9 +133,9 @@ ked [file]
         post.on('focus',function (name)
         {})
         this.contextHandlers = [this.editor,this.dircol,this.funcol]
-        this.mouseHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
+        this.mouseHandlers = [this.input,this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
         this.wheelHandlers = [this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.macro,this.editor,this.dircol,this.funcol]
-        this.keyHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.menu,this.macro,this.editor,this.dircol,this.funcol]
+        this.keyHandlers = [this.input,this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.menu,this.macro,this.editor,this.dircol,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -241,7 +248,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _201_10_
+        var _207_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -272,7 +279,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _233_22_
+        var _239_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -377,7 +384,7 @@ ked [file]
             console.warn(`ked.loadFile - ${absFile} resolved to empty!`)
             return
         }
-        _k_.assert("kode/ked/ked.kode", 334, 8, 'loadingFile' + " this.loadingFile", this.loadingFile)
+        _k_.assert("kode/ked/ked.kode", 340, 8, 'loadingFile' + " this.loadingFile", this.loadingFile)
         readingFile = this.loadingFile
         text = await nfs.readText(this.loadingFile)
         if (this.loadingFile !== readingFile)
@@ -385,7 +392,7 @@ ked [file]
             return
         }
         this.currentFile = this.loadingFile
-        _k_.assert("kode/ked/ked.kode", 346, 8, 'currentFile' + " this.currentFile", this.currentFile)
+        _k_.assert("kode/ked/ked.kode", 352, 8, 'currentFile' + " this.currentFile", this.currentFile)
         delete this.loadingFile
         this.status.setFile(slash.tilde(this.currentFile))
         if (text === undefined)
@@ -669,7 +676,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _554_22_
+        var mcw, _560_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}
@@ -689,6 +696,39 @@ ked [file]
         sircels.onResize(cols,rows,size,cellsz)
         this.redraw()
         return (this.editor.mapscr != null ? this.editor.mapscr.onResize() : undefined)
+    }
+
+    KED.prototype["onInputPopup"] = function (opt)
+    {
+        this.input.set(opt.text)
+        this.input.state.moveCursors('eol')
+        this.input.layout(opt.x,opt.y,opt.w,1)
+        this.input.grabFocus()
+        this.input.orig = opt.text
+        this.input.cb = opt.cb
+        return this.redraw()
+    }
+
+    KED.prototype["onInputAction"] = function (action, event)
+    {
+        switch (action)
+        {
+            case 'submit':
+                if (_k_.isFunc(this.input.cb))
+                {
+                    this.input.cb(this.input.current())
+                }
+                return this.input.hide()
+
+            case 'cancel':
+                if (_k_.isFunc(this.input.cb))
+                {
+                    this.input.cb(this.input.orig)
+                }
+                return this.input.hide()
+
+        }
+
     }
 
     KED.prototype["redraw"] = function ()
@@ -732,6 +772,7 @@ ked [file]
         this.searcher.draw()
         this.differ.draw()
         this.context.draw()
+        this.input.draw()
         this.screen.render()
         this.t.removeImgs()
         return this.status.time = process.hrtime(start)[1]

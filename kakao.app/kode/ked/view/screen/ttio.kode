@@ -297,9 +297,14 @@ function TTIO extends events
                                    
         if csi[-1] == '~'
             key = switch csi[0..-2].split(';')[0]
-                '3' ➜ 'entf'
-                '5' ➜ 'pageup'
-                '6' ➜ 'pagedown'
+                '3'  ➜ 'entf'
+                '5'  ➜ 'pageup'
+                '6'  ➜ 'pagedown'
+                '13' ➜ 'f3'
+                '15' ➜ 'f5'
+                '17' ➜ 'f6'
+                '18' ➜ 'f7'
+                '19' ➜ 'f8'
 
         char = ''
             
@@ -369,16 +374,17 @@ function TTIO extends events
     parseCsi: csi =>
         
         switch csi
-            'H'  ➜ ⮐  @keyEventForCombo('home')
-            'F'  ➜ ⮐  @keyEventForCombo('end')
-            '3~' ➜ ⮐  @keyEventForCombo('entf')
-            '5~' ➜ ⮐  @keyEventForCombo('pageup')
-            '6~' ➜ ⮐  @keyEventForCombo('pagedown')
-            'Z'  ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
-            'I'  ➜ @hasFocus = true;  post.emit 'window.focus' ; ⮐  type:'focus'
-            'O'  ➜ @hasFocus = false; post.emit 'window.blur'  ; ⮐  type:'focus'
+            'H'      ➜ ⮐  @keyEventForCombo('home')
+            'F'      ➜ ⮐  @keyEventForCombo('end')
+            '3~'     ➜ ⮐  @keyEventForCombo('entf')
+            '5~'     ➜ ⮐  @keyEventForCombo('pageup')
+            '6~'     ➜ ⮐  @keyEventForCombo('pagedown')
+            'Z'      ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
+            'Q'      ➜ ⮐  @keyEventForCombo('f2')
+            'S'      ➜ ⮐  @keyEventForCombo('f4')
+            'I'      ➜ @hasFocus = true;  post.emit 'window.focus' ; ⮐  type:'focus'
+            'O'      ➜ @hasFocus = false; post.emit 'window.blur'  ; ⮐  type:'focus'
             
-        log "--------------------- unhandled csi? |#{csi}|" 
         null
         
     # 00000000   0000000   0000000  
@@ -697,7 +703,7 @@ function TTIO extends events
                     if event.type == 'focus'
                         continue
 
-                log "-------------- unhandled csi #{csi}"
+                # log "-------------- unhandled csi #{csi}"
                         
             else if esc
                 
@@ -723,9 +729,9 @@ function TTIO extends events
                     # @emit 'paste' kstr.clean(text)
                     continue
                             
-            log "unhandled sequence:" seq
-            for i in 0...data.length
-                log "#{i} 0x#{data[i].toString(16)} ▸#{data[i] == 0x1b ? 'esc' :String.fromCodePoint(data[i])}◂" 
-            log "#{data.length} bytes ▪"
+            # log "unhandled sequence:" seq
+            # for i in 0...data.length
+            #     log "#{i} 0x#{data[i].toString(16)} ▸#{data[i] == 0x1b ? 'esc' :String.fromCodePoint(data[i])}◂" 
+            # log "#{data.length} bytes ▪"
                 
 export TTIO

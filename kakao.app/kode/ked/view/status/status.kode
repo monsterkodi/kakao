@@ -259,8 +259,8 @@ function status extends view
         ch = ' •'[ci] # 
         fg = [[32 32 32] [0 96 0] [255 0 0] [255 255 0]][ci]
         switch ch
-            '•' ➜ #log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
-            '' ➜ log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
+            '•' ➜ 1 #log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
+            '' ➜ 1 #log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
             '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
         set cols-2 ch fg 'dark'
              

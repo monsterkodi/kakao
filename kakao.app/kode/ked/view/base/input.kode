@@ -23,8 +23,25 @@ function input extends editor
         @setColor 'bg'              theme.quicky.bg
         @setColor 'bg_blur'         theme.quicky.bg
         @setColor 'bg_focus'        theme.editor.bg
-        
+                
+    # ████████   ███████    ███████  ███   ███   ███████
+    # ███       ███   ███  ███       ███   ███  ███     
+    # ██████    ███   ███  ███       ███   ███  ███████ 
+    # ███       ███   ███  ███       ███   ███       ███
+    # ███        ███████    ███████   ███████   ███████ 
+
     hasFocus: -> @state.hasFocus
+
+    onMouseLeave: event => 
+    
+        @emit 'action' 'cancel'
+        super event
+        
+    onMouse: event =>
+    
+        ⮐  if @hidden()
+        
+        super event
 
     current:  => kseg.str @state.s.lines[0]
 
@@ -37,7 +54,15 @@ function input extends editor
         @state.selectLine 0
         @state.moveCursors 'eol'
 
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
     onKey: key event ->
+        
+        ⮐  if not @hasFocus()
         
         switch event.combo
             
@@ -56,6 +81,11 @@ function input extends editor
                 if @state.mainCursor()[0] >= @current().length
                     @emit 'action' 'right'
                     ⮐  true
+                    
+            'esc'
+            
+                @emit 'action' 'cancel'
+                ⮐  true
 
         before = @current()
 
@@ -67,9 +97,15 @@ function input extends editor
         
         sr
         
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
     draw: ->
         
-        ⮐  if @hidden()
+        ⮐ if @hidden() or @collapsed()
         
         @setColor 'bg' @hasFocus() ? @color.bg_focus : @color.bg_blur
         @setColor 'empty' @color.bg

@@ -6,11 +6,12 @@
     ███████    ███  ███   ███   ███████   ███████   ███████  
 ###
 
-use ../../../kxk ▪ post slash
-use ../../theme  ◆ color theme
-use ../base      ◆ view knob crumbs
-use ../menu      ◆ context
-use              ◆ dirtree
+use ../../../kxk    ▪ post slash
+use ../../edit/tool ◆ belt
+use ../../theme     ◆ color theme
+use ../base         ◆ view knob crumbs input
+use ../menu         ◆ context
+use                 ◆ dirtree
 
 function dircol extends view
 
@@ -126,16 +127,15 @@ function dircol extends view
             " " 
             ]
                 
-    onContextChoice: choice =>
+    onContextChoice: choice ○=>
     
         if current = @dirtree.current()
             
             switch choice
             
                 ''
-                
-                    log "dircol.onContextChoice rename #{current.path}"
-            
+                    @rename()
+                    
                 ''
                     dir = current.path
                     if current.type == 'file'
@@ -143,7 +143,6 @@ function dircol extends view
                     post.emit 'file.new_folder' dir
                     
                 '' 
-                    # if choice.type == 'file'
                     post.emit 'file.trash' current.path
                         
     onReveal: p ○=>
@@ -164,7 +163,26 @@ function dircol extends view
                     error "dircol.onReveal already open dd? #{d}"
             else
                 @setRoot d
-                            
+                
+    # ████████   ████████  ███   ███   ███████   ██     ██  ████████
+    # ███   ███  ███       ████  ███  ███   ███  ███   ███  ███     
+    # ███████    ███████   ███ █ ███  █████████  █████████  ███████ 
+    # ███   ███  ███       ███  ████  ███   ███  ███ █ ███  ███     
+    # ███   ███  ████████  ███   ███  ███   ███  ███   ███  ████████
+
+    rename: =>
+    
+        current = @dirtree.current()
+        ox = belt.numIndent(current.tilde) + 2
+        x  = @dirtree.cells.x + ox
+        y  = @dirtree.cells.y + @dirtree.currentIndex()
+        w  = @dirtree.cells.cols - ox
+        fileName = slash.file current.path
+        post.emit 'input.popup' text:fileName x:x y:y w:w cb: (res) =>
+            @dirtree.grabFocus() if @hover
+            if res != fileName
+                post.emit 'file.rename' current.path slash.path(slash.dir(current.path) res)
+    
     # █████████   ███████    ███████    ███████   ███      ████████
     #    ███     ███   ███  ███        ███        ███      ███     
     #    ███     ███   ███  ███  ████  ███  ████  ███      ███████ 
@@ -218,7 +236,7 @@ function dircol extends view
         ⮐  if not @dirtree.hasFocus()
         
         switch key
-        
+            'f2'        ➜ ⮐  @rename()
             'cmd+left'
             'ctrl+left' ➜ ⮐  @setRoot slash.dir(@dirtree.currentRoot)
             
