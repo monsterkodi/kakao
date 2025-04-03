@@ -1,0 +1,54 @@
+###
+    ███████    ████████    ███████    ███████   ████████ 
+    ███   ███  ███   ███  ███   ███  ███   ███  ███   ███
+    ███   ███  ███████    ███   ███  ███   ███  ████████ 
+    ███   ███  ███   ███  ███   ███  ███   ███  ███      
+    ███████    ███   ███   ███████    ███████   ███      
+###
+
+use ../../../kxk    ▪ post slash
+use ../../edit/tool ◆ belt
+use ../../theme     ◆ theme
+use                 ◆ quicky diritem
+
+function droop extends quicky
+
+    @: @screen ->
+
+        super @screen 'droop' 
+
+        @isVisible = false
+        
+        @setColor 'bg'     theme.quicky.bg
+        @setColor 'frame'  theme.quicky.frame
+    
+        post.on 'droop.show' @onShow
+        
+    onShow: d =>
+    
+        @pos = d.pos
+        
+        items = d.files.map (f) -> path:f
+
+        for item in items
+            item.tilde = ' '+diritem.symbolName(item)
+            
+        lines = items.map (i) -> i.tilde
+        @choicesWidth = belt.widthOfLines lines
+        @showPathItems items
+        
+    arrange: =>
+    
+        x  = @pos[0]-3
+        y  = @pos[1]
+        
+        cw = @choicesWidth+3
+        w  = cw+2 
+        
+        h  = min 10 @choices.numFiltered()
+        
+        @input.layout    x+2  y    w-4  0
+        @choices.layout  x+1  y+1  cw   h
+        @cells.layout    x    y    w    h+2
+    
+export droop

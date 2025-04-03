@@ -49,6 +49,7 @@ import browse from "./view/colmns/browse.js"
 import dircol from "./view/colmns/dircol.js"
 import funcol from "./view/colmns/funcol.js"
 import quicky from "./view/colmns/quicky.js"
+import droop from "./view/colmns/droop.js"
 
 
 KED = (function ()
@@ -97,6 +98,7 @@ ked [file]
         this.macro = new macro(this.screen)
         this.quicky = new quicky(this.screen)
         this.browse = new browse(this.screen)
+        this.droop = new droop(this.screen)
         this.editor = new fileeditor(this.screen,'editor')
         this.dircol = new dircol(this.screen,this.editor,['scroll','knob'])
         this.funcol = new funcol(this.screen,this.editor,['scroll','knob'])
@@ -121,9 +123,9 @@ ked [file]
         post.on('focus',function (name)
         {})
         this.contextHandlers = [this.editor,this.dircol,this.funcol]
-        this.mouseHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
-        this.wheelHandlers = [this.finder,this.searcher,this.differ,this.quicky,this.browse,this.macro,this.editor,this.dircol,this.funcol]
-        this.keyHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.menu,this.macro,this.editor,this.dircol,this.funcol]
+        this.mouseHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.menu,this.macro,this.editor,this.status,this.dircol,this.funcol]
+        this.wheelHandlers = [this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.macro,this.editor,this.dircol,this.funcol]
+        this.keyHandlers = [this.context,this.finder,this.searcher,this.differ,this.quicky,this.browse,this.droop,this.menu,this.macro,this.editor,this.dircol,this.funcol]
         this.t.on('key',this.onKey)
         this.t.on('mouse',this.onMouse)
         this.t.on('wheel',this.onWheel)
@@ -236,7 +238,7 @@ ked [file]
 
     KED.prototype["quit"] = async function (msg)
     {
-        var _199_10_
+        var _200_10_
 
         clearImmediate(this.redrawId)
         this.quitting = true
@@ -267,7 +269,7 @@ ked [file]
 
     KED.prototype["newFile"] = function ()
     {
-        var _231_22_
+        var _232_22_
 
         delete this.currentFile
         this.status.setFile('')
@@ -372,7 +374,7 @@ ked [file]
             console.warn(`ked.loadFile - ${absFile} resolved to empty!`)
             return
         }
-        _k_.assert("kode/ked/ked.kode", 332, 8, 'loadingFile' + " this.loadingFile", this.loadingFile)
+        _k_.assert("kode/ked/ked.kode", 333, 8, 'loadingFile' + " this.loadingFile", this.loadingFile)
         readingFile = this.loadingFile
         text = await nfs.readText(this.loadingFile)
         if (this.loadingFile !== readingFile)
@@ -380,7 +382,7 @@ ked [file]
             return
         }
         this.currentFile = this.loadingFile
-        _k_.assert("kode/ked/ked.kode", 344, 8, 'currentFile' + " this.currentFile", this.currentFile)
+        _k_.assert("kode/ked/ked.kode", 345, 8, 'currentFile' + " this.currentFile", this.currentFile)
         delete this.loadingFile
         this.status.setFile(slash.tilde(this.currentFile))
         if (text === undefined)
@@ -640,7 +642,7 @@ ked [file]
 
     KED.prototype["onResize"] = function (cols, rows, size, cellsz)
     {
-        var mcw, _541_22_
+        var mcw, _542_22_
 
         mcw = parseInt(cols / 6)
         rounded.cache = {}
@@ -698,6 +700,7 @@ ked [file]
         this.macro.draw()
         this.quicky.draw()
         this.browse.draw()
+        this.droop.draw()
         this.finder.draw()
         this.searcher.draw()
         this.differ.draw()

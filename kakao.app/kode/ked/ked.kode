@@ -20,7 +20,7 @@ use ./view/status ◆ status
 use ./view/editor ◆ fileeditor
 use ./view/screen ◆ screen ttio
 use ./view/menu   ◆ context menu macro finder searcher differ 
-use ./view/colmns ◆ browse dircol funcol quicky
+use ./view/colmns ◆ browse dircol funcol quicky droop
 
 function KED
 
@@ -58,6 +58,7 @@ function KED
         @macro    = new macro      @screen        
         @quicky   = new quicky     @screen 
         @browse   = new browse     @screen 
+        @droop    = new droop      @screen 
         @editor   = new fileeditor @screen 'editor'
         @dircol   = new dircol     @screen @editor  ['scroll' 'knob']
         @funcol   = new funcol     @screen @editor  ['scroll' 'knob']
@@ -84,10 +85,10 @@ function KED
         post.on 'file.change'   @onFileChange
         post.on 'focus'         (name) -> # log "focus: '#{name}'"
         
-        @contextHandlers = [                                                                 @editor         @dircol @funcol ]
-        @mouseHandlers   = [ @context @finder @searcher @differ @quicky @browse @menu @macro @editor @status @dircol @funcol ]
-        @wheelHandlers   = [          @finder @searcher @differ @quicky @browse       @macro @editor         @dircol @funcol ]
-        @keyHandlers     = [ @context @finder @searcher @differ @quicky @browse @menu @macro @editor         @dircol @funcol ]
+        @contextHandlers = [                                                                        @editor         @dircol @funcol ]
+        @mouseHandlers   = [ @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
+        @wheelHandlers   = [          @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
+        @keyHandlers     = [ @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
         
         @t.on 'key'    @onKey
         @t.on 'mouse'  @onMouse
@@ -578,6 +579,7 @@ function KED
         @macro.draw()
         @quicky.draw()
         @browse.draw()
+        @droop.draw()
         @finder.draw()
         @searcher.draw()
         @differ.draw()

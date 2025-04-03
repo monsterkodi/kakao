@@ -10,6 +10,17 @@ use ./utils ▪ kc kd ke
 
 ▸ switch
 
+    ▸ should be nicer
+    
+        kc  """
+            switch todo
+                a ➜ 'works'
+                b 
+                    'also works'
+                c ➜ 
+                    'does not work! but it should!'
+            """
+
     ▸ switches
 
         kc  """

@@ -20,10 +20,8 @@ function diritem
     @symbol: item ->
                           
         switch item.type
-            'file' 
-                ⮐  icons[slash.ext(item.path)] ? icons.file
-            'dir'
-                ⮐  item.open ? icons.dir_open : icons.dir_close
+            'dir' ➜ ⮐  item.open ? icons.dir_open : icons.dir_close
+                  ➜ ⮐  icons[slash.ext(item.path)] ? icons.file
                 
     @symbolName: item -> 
         

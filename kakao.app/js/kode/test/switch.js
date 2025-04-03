@@ -6,6 +6,15 @@ let ke = utils.ke
 
 toExport["switch"] = function ()
 {
+    section("should be nicer", function ()
+    {
+        kc(`switch todo
+    a ➜ 'works'
+    b 
+        'also works'
+    c ➜ 
+        'does not work! but it should!'`)
+    })
     section("switches", function ()
     {
         compare(kc(`switch a

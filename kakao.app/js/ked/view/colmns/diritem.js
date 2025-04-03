@@ -13,16 +13,15 @@ diritem = (function ()
 
     diritem["symbol"] = function (item)
     {
-        var _24_52_
+        var _24_59_
 
         switch (item.type)
         {
-            case 'file':
-                return ((_24_52_=icons[slash.ext(item.path)]) != null ? _24_52_ : icons.file)
-
             case 'dir':
                 return (item.open ? icons.dir_open : icons.dir_close)
 
+            default:
+                return ((_24_59_=icons[slash.ext(item.path)]) != null ? _24_59_ : icons.file)
         }
 
     }

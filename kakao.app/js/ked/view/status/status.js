@@ -10,6 +10,8 @@ let kseg = kxk.kseg
 
 import belt from "../../edit/tool/belt.js"
 
+import filepos from "../../edit/mode/filepos.js"
+
 import color from "../../theme/color.js"
 import theme from "../../theme/theme.js"
 
@@ -102,17 +104,35 @@ status = (function ()
 
     status.prototype["onFileposAction"] = function (action, item)
     {
+        var files
+
         switch (action)
         {
-            case 'enter':
-                console.log('show filepos files')
-                break
             case 'leave':
                 console.log('hide filepos files?')
                 break
             case 'click':
                 return post.emit('filepos.swapPrevious')
 
+            case 'enter':
+                if (filepos.fileposl.length > 1)
+                {
+                    files = filepos.fileposl.map(function (fp)
+                    {
+                        return fp[0]
+                    })
+                    files = files.reverse()
+                    if (filepos.offset === 0)
+                    {
+                        files.shift()
+                    }
+                    return post.emit('droop.show',{files:files,pos:[this.filepos.cells.x,this.filepos.cells.y + 1]})
+                }
+                else
+                {
+                    console.log('no filepos mode!?')
+                }
+                break
         }
 
     }

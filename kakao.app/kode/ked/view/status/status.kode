@@ -11,6 +11,7 @@
 
 use ../../../kxk    ▪ post slash kstr kseg
 use ../../edit/tool ◆ belt
+use ../../edit/mode ◆ filepos
 use ../../theme     ◆ color theme
 use ../base         ◆ view crumbs bubble 
 use                 ◆ statusfile
@@ -72,9 +73,16 @@ function status extends view
     onFileposAction: action item =>
     
         switch action
-            'enter' ➜ log 'show filepos files'
             'leave' ➜ log 'hide filepos files?'
             'click' ➜ post.emit 'filepos.swapPrevious'
+            'enter'
+                if filepos.fileposl.length > 1
+                    files = filepos.fileposl.map (fp) -> fp[0]
+                    files = files.reverse()
+                    files.shift() if filepos.offset == 0
+                    post.emit 'droop.show' files:files pos:[@filepos.cells.x @filepos.cells.y+1]
+                else
+                    log 'no filepos mode!?'
         
     onCrumbsAction: action path event =>
         

@@ -18,7 +18,7 @@ class index_styl
     
     parseLine: index line ->
                 
-        ⮐ if line.startsWith ' '
+        ⮐  if line.startsWith ' '
             
         if line[0] in "@#."
             if trim(line[1..]).split(/[\s\.\:]/).length == 1
