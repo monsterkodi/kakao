@@ -9,7 +9,7 @@
 use ../../kxk ▪ pickBy pullIf deleteBy kstr sds matchr slash post
 use ../../kxk ◆ nfs
 use ../util   ◆ fileutil
-use           ◆ prjcts index_utils index_kode index_styl index_js index_hpp index_mm
+use           ◆ prjcts index_utils index_kode index_styl index_js index_hpp index_mm index_nim
 
 class indexer
     
@@ -205,6 +205,7 @@ class indexer
                 fileExt == 'mm'   ➜ ⮐  @applyIndexer file fileInfo text index_mm
                 fileExt == 'styl' ➜ ⮐  @applyIndexer file fileInfo text index_styl
                 fileExt == 'kode' ➜ ⮐  @applyIndexer file fileInfo text index_kode
+                fileExt == 'nim'  ➜ ⮐  @applyIndexer file fileInfo text index_nim
                         
             # ●▪ index
         @

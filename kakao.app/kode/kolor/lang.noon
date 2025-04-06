@@ -747,7 +747,7 @@ py
         for
         while
         except
-        __init__
+# ███   ███  ███  ██     ██
         
 #  0000000  000   000  
 # 000       000   000  
@@ -1087,5 +1087,84 @@ zig
         var
         _
         
+        __init__
+
+# ████  ███  ███  ███   ███
+# ███ █ ███  ███  █████████
+# ███  ████  ███  ███ █ ███
+# ███   ███  ███  ███   ███
+
+nim
+    keyword
+        proc
+        func
+        method
+        mixin
+        else
+        try
+        except
+        echo
+        when
+        case
+        cast
+        defined
+        discard
+        defer
+        do
+        of
+        in
+        is
+        isnot
+        notin
+        not
+        or
+        and
+        let
+        var
+        ptr
+        ref
+        const
+        type
+        auto
+        enum
+        tuple
+        seq
+        shl
+        shr
+        object
+        return
+        import
+        from
+        break
+        continue
+        interface
+        converter
+        iterator
+        include
+        global
+        range
+        if
+        elif
+        else
+        for
+        while
+        except
+        export
+        yield
+    
+    nil
+        nil    
+        
+    require
+        import
+        
+    module
+        logging 
+        os 
+        osproc 
+        sequtils 
+        tables 
+        terminal 
+        times
         
         

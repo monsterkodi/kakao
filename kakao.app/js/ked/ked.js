@@ -421,7 +421,7 @@ ked [file]
         prjcts.index(this.currentFile)
         git.diff(this.currentFile)
         watcher.watch(this.currentFile)
-        this.t.setTitle(slash.name(this.status.file))
+        this.t.setTitle(slash.file(this.status.file))
         this.saveSessionFile(this.currentFile,'loaded')
         if (gitDir = await git.dir(this.currentFile))
         {

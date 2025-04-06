@@ -161,7 +161,7 @@ knrd = files=[] opt={} ○->
                     ○ fs.write tgtFile, compText if not opt.dryrun
                     log b5('✔ ') g5(slash.tilde(tgtFile))
                     
-    ○ bump() if transpiled and not opt.dryrun
+    # ○ bump() if transpiled and not opt.dryrun
     
     transpiled
         

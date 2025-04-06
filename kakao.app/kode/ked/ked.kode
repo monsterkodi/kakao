@@ -384,7 +384,7 @@ function KED
         
         watcher.watch  @currentFile
                 
-        @t.setTitle slash.name(@status.file)
+        @t.setTitle slash.file(@status.file)
         
         @saveSessionFile @currentFile 'loaded'        
         

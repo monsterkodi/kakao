@@ -6,12 +6,12 @@
         █      ███  ████████  ██     ██ 
 
     keeps track of
-        - screen cells
-        - visibility
-        - theme colors
-        - view features
-        - mouse enter and leave
-        - current popup
+        ▪ screen cells
+        ▪ visibility
+        ▪ theme colors
+        ▪ view features
+        ▪ mouse enter and leave
+        ▪ current popup
 ###
 
 use ../../../kxk ▪ events post

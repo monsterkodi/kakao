@@ -213,10 +213,6 @@ knrd = async function (files = [], opt = {})
             }
         }
     }
-    if (transpiled && !opt.dryrun)
-    {
-        await bump()
-    }
     return transpiled
 }
 knrd.bundlePath = bundlePath

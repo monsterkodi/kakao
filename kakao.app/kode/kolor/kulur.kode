@@ -1314,6 +1314,7 @@ handlers =
     md:     punct:[                   mdPunct urlPunct xmlPunct                             ] word:[ urlWord number                 ]
     fish:   punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
     py:     punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
+    nim:    punct:[              hashComment simpleString funcArgs dashArrow regexp         ] word:[ keyword number property        ]
 
 for ext in exts
     if not handlers[ext]?

@@ -29,6 +29,8 @@ toExport["kermit"] = function ()
         compare(lm(`Git.prototype["onFileChanged"] = function (file)`,`Git.prototype["●name"] = function ○args`,['"']),{name:'onFileChanged',args:'(file)'})
         compare(lm("post.on('index',(function (file)",'●name ○args',['"','.',',',"'"]),{name:'post',args:". on( ' index '  , (function (file)"})
         compare(lm('        this["onKeyUp"] = this["onKeyUp"].bind(this)','this["●name"] = this["●bind"].bind(this)',['"','.',',',"'"]),{name:'onKeyUp',bind:'onKeyUp'})
+        compare(lm("proc build() =",'proc ●name(●args) =',['(',')']),{name:'build',args:''})
+        compare(lm("proc build() : int =","proc ●name(●args) : ●type =",['(',')']),{name:'build',args:'',type:'int'})
     })
     section("simple", function ()
     {
