@@ -17,17 +17,8 @@ import kommon
 
 proc singleQuote*(line:string) : string =
 
-    # if line =~ peg"({(!\' .)*}{\'}{(!\' .)*}{\'}{(!\' .)*})+":
-    let pat = peg"""
-        full  <- ({nostr}{\'}{nostr}{\'}{nostr})+
-        nostr <- ((![\'\"] .)/(\\ [\'\"]))*
-        """
-    if line =~ pat:
-        apply(matches, proc(x: var string) = 
-            if x == "'": x = "\"")
-        return matches.join("")
-    line
-
+    "\"" & line[1..^2] & "\""
+    
 # █████████  ████████   ███  ████████   ███      ████████   ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
 #    ███     ███   ███  ███  ███   ███  ███      ███       ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
 #    ███     ███████    ███  ████████   ███      ███████   ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
@@ -51,22 +42,8 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
 # ███████   ███████    ███████      ███      ███████   ████████   ███████  ███   ███   ███████ 
 
 proc logToEcho*(line:string) : string =
-    
-    let pat = peg"""
-        full <- ({pref l}{'log'}{r post})*
-        pref <- (!(l 'log' r) . )*
-        post <- (!(l 'log' r) . )*
-        l    <- (^/\s/\;)
-        r    <- ($/\s/\()
-        """
-    if line =~ pat:
-        apply matches, proc(x: var string) = 
-            if x == "log": x = "echo"
-            
-        let res = matches.join("")
-        if res.len:
-            return res
-    line
+
+    line.replacef(peg"{\s*}{'log'}{'('/\s}", "$1echo$3")
     
 # █████████  ████████   ███████  █████████   ███████  ███   ███  ███  █████████  ████████
 #    ███     ███       ███          ███     ███       ███   ███  ███     ███     ███     
@@ -94,9 +71,8 @@ proc stringSegments*(line:string) : seq[string] =
     
     let pat = peg"""
         input   <- ({triple / string / nonstr})*
-        string  <- '"' (esc / [^"])* '"' 
-                 / "'" (esc / [^'])* "'"
-        triple  <- '\"\"\"' (esc / (!'\"\"\"' .))* '\"\"\"' 
+        string  <- '"' (esc / [^"])* '"' / "'" (esc / [^'])* "'"
+        triple  <- '\"\"\"' (esc / (!'\"\"\"' .))* ('\"\"\"' / $)
         nonstr  <- [^"']+
         esc     <- '\\' .
         """
@@ -143,8 +119,8 @@ proc statements(segments: seq[string]) : seq[seq[string]] =
                 for split in splits:
                     if split.len:
                         stmnt.add(split)
-                        stmnts.add(stmnt)
-                        stmnt = @[]
+                    stmnts.add(stmnt)
+                    stmnt = @[]
     if stmnt.len:
         if stmnts.len: 
             stmnts[^1] = stmnts[^1].concat(stmnt) 
@@ -160,27 +136,25 @@ proc statements(segments: seq[string]) : seq[seq[string]] =
 
 proc pose*(line:string, info:var TableRef[string,int]) : string =
 
+    # echo "------- line ", line 
     let sgmnts = stringSegments(line)
+    # echo "------- sgmnts ", sgmnts 
     let stmnts = statements(sgmnts)
-
-    echo "------- line ", line 
-    echo "------- statements ", stmnts
+    # echo "------- statements ", stmnts
     
     var cstmts:seq[string] = @[]
     for stmnt in stmnts:
-        echo "stmnt", stmnt
+        # echo "stmnt", stmnt
         var cgmnts:seq[string] = @[]
         for sgmnt in stmnt:
             cgmnts.add case sgmnt[0]
-                of '#': 
-                    sgmnt.tripleComment(info)
-                of '"', '\'':
-                    sgmnt.singleQuote()
-                else:
-                    sgmnt
-                        .logToEcho()
-                        .testSuite()
-        echo "cgmnts", cgmnts
+                of '#':  sgmnt.tripleComment(info)
+                of '\'': sgmnt.singleQuote()
+                of '"':  sgmnt
+                else:    sgmnt
+                            .logToEcho()
+                            .testSuite()
+        # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
 
@@ -251,6 +225,8 @@ suite "trans":
         check pose("    ▸ test") == "    test \"test\":"
         check pose("### comment") == "#[ comment"
         check pose("a=\"''\"") == "a=\"''\""
+        check pose("proc logToEcho") == "proc logToEcho"
+        check pose("let pat = peg\"\"\"") == "let pat = peg\"\"\""
         
     test "stringSegments":
     
@@ -271,10 +247,10 @@ suite "trans":
         
     test "deepEqual":
     
-        # check deepEqual(statements(@["let a=1; let b=2; let c=3"]), @[@["let a=1"], @[" let b=2"], @[" let c=3"]])
-        # check deepEqual(@{"a":1, "b":2}, @{"a":1, "b":2})
-        # check deepEqual((a:1, b:2), (a:1, b:2))
-        # check deepEqual(("a", 2), ("a", 2))
+        check deepEqual(statements(@["let a=1; let b=2; let c=3"]), @[@["let a=1"], @[" let b=2"], @[" let c=3"]])
+        check deepEqual(@{"a":1, "b":2}, @{"a":1, "b":2})
+        check deepEqual((a:1, b:2), (a:1, b:2))
+        check deepEqual(("a", 2), ("a", 2))
 
         check statements(@["let a=1; let b=2; let c=3"]) == @[@["let a=1"], @[" let b=2"], @[" let c=3"]]
         check @{"a":1, "b":2} ==  @{"a":1, "b":2}
@@ -282,7 +258,7 @@ suite "trans":
         check ("a", 2) == ("a", 2)
         
         check @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))} == @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}
-        # check deepEqual(@{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}, @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))})
+        check deepEqual(@{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}, @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))})
         
     test "peg":
         

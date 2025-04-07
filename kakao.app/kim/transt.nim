@@ -17,7 +17,7 @@ import kommon
 
 proc singleQuote*(line:string) : string =
 
-    if line =~ peg"({(!\" .)*}{\"}{(!\" .)*}{\"}{(!\" .)*})+:
+    if line =~ peg"({(!\' .)*}{\'}{(!\' .)*}{\'}{(!\' .)*})+":
         apply(matches, proc(x: var string) = 
             if x == "'": x = "\"")
         return matches.join("")
@@ -47,13 +47,13 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
 
 proc logToEcho*(line:string) : string =
     
-    let pat = peg""
+    let pat = peg"""
         full <- ({pref l}{"log"}{r post})*
         pref <- (!(l "log" r) . )*
         post <- (!(l "log" r) . )*
         l    <- (^/\s/\;)
         r    <- ($/\s/\()
-        ""
+        """
     if line =~ pat:
         apply matches, proc(x: var string) = 
             if x == "log": x = "echo"
@@ -81,14 +81,14 @@ proc stringSegments*(line:string) : seq[string] =
 
     var segments:seq[string] = @[]
     
-    let pat = peg""
+    let pat = peg"""
         input <- (stringLiteral / nonString)+
-        nonString <- ((! '"') . )+
-        stringLiteral <- '"' content '"'
+        nonString <- ((! """) . )+
+        stringLiteral <- """ content """
         content <- (escaped / notEscaped)*
         escaped <- "\\" .
-        notEscaped <- ((! '"') .)
-        ""
+        notEscaped <- ((! """) .)
+        """
     
     if line =~ pat
         echo &"matches {matches}"
