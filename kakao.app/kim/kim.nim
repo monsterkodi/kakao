@@ -1,6 +1,5 @@
 
 import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat]
-# from std/strformat import `&`
 
 import kommon
 import trans
@@ -17,7 +16,7 @@ when defined(posix):
         discard execve(getAppFilename().cstring, argv, env)
         quit(1) # only reaches here if execve fails
 
-proc build() =
+proc build() : bool =
 
     let 
         cmd = "nim c kim.nim"
@@ -26,9 +25,11 @@ proc build() =
     if exitCode != 0:
         styledEcho fgRed, "✘ ", &"{cmd}"
         echo output
+        false
     else:
         styledEcho fgGreen, "✔ ", &"{cmd}"
         # restart()
+        true
  
 proc watch(paths:seq[string]) =
 
@@ -86,12 +87,12 @@ proc watch(paths:seq[string]) =
             debug &"✔ {transpiled}"
             
         if doBuild:
-            build()
-            debug &"▸ {kimFiles}"
-            for f in kimFiles:
-                let transpiled = trans.trans(f)
-                debug &"✔ {transpiled}"
-            restart()
+            if build():
+                debug &"▸ {kimFiles}"
+                for f in kimFiles:
+                    let transpiled = trans.trans(f)
+                    debug &"✔ {transpiled}"
+                restart()
                 
         sleep 300
         

@@ -1,3 +1,0 @@
-log 'hello!!!'
-log 'gulp' arg
-log 'mult' 'iple' 'strings'

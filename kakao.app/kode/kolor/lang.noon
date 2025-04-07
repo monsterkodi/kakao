@@ -1094,7 +1094,7 @@ zig
 # ███  ████  ███  ███ █ ███
 # ███   ███  ███  ███   ███
 
-nim
+nim kim
     keyword
         proc
         func
@@ -1184,6 +1184,7 @@ nim
         streams
         strutils
         strformat
+        typetraits
         paths
         pegs
         
