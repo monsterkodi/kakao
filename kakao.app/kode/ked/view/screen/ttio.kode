@@ -382,8 +382,8 @@ function TTIO extends events
             'Z'      ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
             'Q'      ➜ ⮐  @keyEventForCombo('f2')
             'S'      ➜ ⮐  @keyEventForCombo('f4')
-            'I'      ➜ @hasFocus = true;  post.emit 'window.focus' ; ⮐  type:'focus'
-            'O'      ➜ @hasFocus = false; post.emit 'window.blur'  ; ⮐  type:'focus'
+            'I'      ➜ @hasFocus = true;  @activeMods={}; post.emit 'window.focus' ; ⮐  type:'focus'
+            'O'      ➜ @hasFocus = false; @activeMods={}; post.emit 'window.blur'  ; ⮐  type:'focus'
             
         null
         

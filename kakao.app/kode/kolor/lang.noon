@@ -1114,6 +1114,7 @@ nim
         of
         in
         is
+        isNil
         isnot
         notin
         not
@@ -1128,7 +1129,8 @@ nim
         auto
         enum
         tuple
-        seq
+        true
+        peg
         shl
         shr
         object
@@ -1149,8 +1151,21 @@ nim
         for
         while
         except
+        expect
         export
         yield
+        suite
+        test
+        check
+        require
+        default
+        typeof
+        
+    keyword type
+        int
+        string
+        array
+        seq
     
     nil
         nil    
@@ -1166,5 +1181,10 @@ nim
         tables 
         terminal 
         times
+        streams
+        strutils
+        strformat
+        paths
+        pegs
         
         

@@ -139,6 +139,16 @@
     "file_pug",
     "file_icon_pug"
   ],
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
+    "file_icon_nim",
+    "file_nim",
+    "file_icon_nim"
+  ],
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
+    "file_icon_kim",
+    "file_kim",
+    "file_icon_kim"
+  ],
   "[]": [
     "file_icon_text"
   ],

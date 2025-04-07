@@ -278,6 +278,8 @@ syntax
     file_kode                               #dc0   
     file_noon                               #f3a   
     file_cpp                                #cbb   
+    file_nim                                #cbb   
+    file_kim                                #0e0   
     file_mm                                 #0d0   
     file_h                                  #090   
     file_png                                #0a0   

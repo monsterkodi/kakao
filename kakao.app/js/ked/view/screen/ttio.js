@@ -533,11 +533,13 @@ TTIO = (function ()
 
             case 'I':
                 this.hasFocus = true
+                this.activeMods = {}
                 post.emit('window.focus')
                 return {type:'focus'}
 
             case 'O':
                 this.hasFocus = false
+                this.activeMods = {}
                 post.emit('window.blur')
                 return {type:'focus'}
 

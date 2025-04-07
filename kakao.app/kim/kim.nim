@@ -1,10 +1,9 @@
 
-import std/[logging, os, osproc, sequtils, tables, terminal, times]
+import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat]
+# from std/strformat import `&`
 
-from std/strformat import `&`
-
-converter toBool(x: int): bool = x != 0
-converter toBool(x: seq[string]): bool = x.len > 0
+import kommon
+import trans
 
 when defined(posix):
 
@@ -29,10 +28,9 @@ proc build() =
         echo output
     else:
         styledEcho fgGreen, "✔ ", &"{cmd}"
-        restart()
+        # restart()
  
-# proc watch(paths:seq[string]) =
-proc watch(paths:auto) =
+proc watch(paths:seq[string]) =
 
     addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
 
@@ -48,6 +46,7 @@ proc watch(paths:auto) =
     
         var doBuild = false
         var toTranspile:seq[string]
+        var kimFiles:seq[string]
         
         for path in paths:
         
@@ -61,6 +60,9 @@ proc watch(paths:auto) =
                 
                 if not(ext in @[".kim", ".nim"]):
                     continue
+                
+                if ext == ".kim":
+                    kimFiles.add(f)
                 
                 let modTime = getFileInfo(f).lastWriteTime
                 
@@ -76,14 +78,20 @@ proc watch(paths:auto) =
                 if ext == ".nim":
                     doBuild = true
                 elif ext == ".kim":
-                    toTranspile.add path
+                    toTranspile.add f
                 debug &"▴ {name}{ext}"
                 
         if toTranspile:
-            debug &"✔ {toTranspile}"
+            let transpiled = trans.pile(toTranspile)
+            debug &"✔ {transpiled}"
             
         if doBuild:
             build()
+            debug &"▸ {kimFiles}"
+            for f in kimFiles:
+                let transpiled = trans.trans(f)
+                debug &"✔ {transpiled}"
+            restart()
                 
         sleep 300
         

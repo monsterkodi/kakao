@@ -218,6 +218,22 @@ blockComment = ->
             pushStack type:type strong:true
         ⮐  addAndJoinValues 3 type
 
+nimComment = ->
+    
+    ⮐  if not chunk.turd or chunk.turd.length < 2
+
+    type = 'comment triple'
+
+    ⮐  if topType and topType not in ['interpolation' type]
+
+    if chunk.turd[0..2] in ["#[" "]#"]
+        
+        if topType == type
+            popStack()
+        else
+            pushStack type:type strong:true
+        ⮐  addAndJoinValues 2 type
+        
 starComment = ->
 
     ⮐  if not chunk.turd
@@ -1314,7 +1330,8 @@ handlers =
     md:     punct:[                   mdPunct urlPunct xmlPunct                             ] word:[ urlWord number                 ]
     fish:   punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
     py:     punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
-    nim:    punct:[              hashComment simpleString funcArgs dashArrow regexp         ] word:[ keyword number property        ]
+    nim:    punct:[ nimComment   hashComment simpleString funcArgs dashArrow regexp         ] word:[ keyword number property        ]
+    kim:    punct:[ blockComment hashComment simpleString funcArgs dashArrow regexp         ] word:[ keyword number property        ]
 
 for ext in exts
     if not handlers[ext]?

@@ -32,6 +32,8 @@ function diritem
             'pug'
             'styl'
             'html'
+            'kim'
+            'nim'
             'js'
             'md'
                 name = slash.name item.path

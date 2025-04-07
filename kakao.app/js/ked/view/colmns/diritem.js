@@ -38,6 +38,8 @@ diritem = (function ()
             case 'pug':
             case 'styl':
             case 'html':
+            case 'kim':
+            case 'nim':
             case 'js':
             case 'md':
                 name = slash.name(item.path)

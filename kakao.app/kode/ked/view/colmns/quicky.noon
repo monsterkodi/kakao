@@ -38,6 +38,8 @@
 ()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_html  . file_html . file_icon_html  
 ()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_css   . file_css  . file_icon_css  
 ()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_pug   . file_pug  . file_icon_pug  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_nim   . file_nim  . file_icon_nim  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_kim   . file_kim  . file_icon_kim  
 
 []     . file_icon_text
 []     . file_icon_png
