@@ -27,16 +27,26 @@ proc singleQuote*(line:string) : string =
 
 func get(info:var TableRef[string,int], key : string) : int =
 
-    if info.hasKey(key): return info[key]
+    if info.hasKey(key):
+        return info[key]
     0
 
 proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
-    # echo "info", info
+
     if line =~ peg"{(!\# .)*}{\#\#\#}{.*}":
-        info["tripleComment"] = if info.get("tripleComment"): 0 else: 1
-        let punct = if info["tripleComment"]: "#[" else: "]#"
+        info["tripleComment"] = 
+            if info.get("tripleComment"): 
+                0 
+            else:
+                1
+        let punct = 
+            if info["tripleComment"]:
+                "#[" 
+            else:
+                "]#"
         apply(matches, proc(x: var string) = 
-            if x == "###": x = punct)
+            if x == "###":
+                x = punct)
         return matches.join("")
     line
     
@@ -59,9 +69,9 @@ proc logToEcho*(line:string) : string =
 proc testSuite*(line:string) : string =
 
     if line =~ peg"^{'▸'\s*}{.*}$":
-        return &"suite \"{matches[1]}\":"
+        return  &"suite \"{matches[1]}\":"
     if line =~ peg"^{\s+}{'▸'\s*}{.*}$":
-        return &"{matches[0]}test \"{matches[2]}\":"
+        return  &"{matches[0]}test \"{matches[2]}\":"
     line
     
 #  ███████   ███████   ███       ███████   ███   ███  ███  ███████  ████████
@@ -70,12 +80,15 @@ proc testSuite*(line:string) : string =
 # ███       ███   ███  ███      ███   ███  ███  ████  ███   ███     ███     
 #  ███████   ███████   ███████   ███████   ███   ███  ███  ███████  ████████
 
-proc colonize*(line:string) : string =
+proc colonize*(seqs:var seq[string]) : seq[string] =
 
-    if line =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for')(\s+ / $)":
-        if not (line =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
-            return line & ':'
-    line
+    if seqs[0] =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)":
+        var i = seqs.len-1
+        if seqs[i][0] == "#"[0]:
+             i -= 1
+        if not (seqs[i] =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
+            seqs[i] = seqs[i] & ":"
+    seqs
 
 # ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
 # ███   ███  ███          ███     ███   ███  ███   ███  ████  ███  ███     ███   ███     
@@ -120,7 +133,7 @@ proc stringSegments*(line:string) : seq[string] =
 #    ███     ███   ███  ███  ███        ███      ███                  ███     ███     ███   ███  ███  ███  ████  ███   ███
 #    ███     ███   ███  ███  ███        ███████  ████████        ███████      ███     ███   ███  ███  ███   ███   ███████ 
 
-proc tripleString(line:string, info:var TableRef[string,int]) : int = 
+proc tripleString*(line:string, info:var TableRef[string,int]) : int = 
 
     let pat = peg"""(!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)*"""
     
@@ -144,7 +157,7 @@ proc tripleString(line:string, info:var TableRef[string,int]) : int =
 # ███       ███       ███     ███     ███   ███
 # ███  ███████   ███████      ███     ███   ███
 
-proc isStr(s:string) : bool =
+proc isStr*(s:string) : bool =
 
     s.len > 0 and s[0] in "'\""
     
@@ -154,7 +167,7 @@ proc isStr(s:string) : bool =
 #      ███     ███     ███   ███     ███     ███       ███ █ ███  ███       ███  ████     ███          ███
 # ███████      ███     ███   ███     ███     ████████  ███   ███  ████████  ███   ███     ███     ███████ 
 
-proc statements(segments: seq[string]) : seq[seq[string]] = 
+proc statements*(segments: seq[string]) : seq[seq[string]] = 
 
     var stmnts : seq[seq[string]] = @[]
     var stmnt  : seq[string]      = @[]
@@ -209,8 +222,9 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                 else:    sgmnt
                             .logToEcho()
                             .testSuite()
-                            .colonize()
                             .returnize()
+                            
+        cgmnts = cgmnts.colonize()
         # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
@@ -228,8 +242,6 @@ proc pose*(line:string) : string =
 
 proc trans*(fileIn:string) : string =
 
-    # echo "trans.trans ", fileIn
-    
     var fileOut = Path(fileIn).changeFileExt(".nim").string
     
     var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
@@ -262,123 +274,4 @@ proc pile*(files:seq[string]) : seq[string] =
             
 import std/unittest
 
-#  ███████  ███   ███  ███  █████████  ████████
-# ███       ███   ███  ███     ███     ███     
-# ███████   ███   ███  ███     ███     ███████ 
-#      ███  ███   ███  ███     ███     ███     
-# ███████    ███████   ███     ███     ████████
-
-suite "trans":
-
-    test "pose":
-        
-        check pose("log ''") == "echo \"\""
-        check pose("log()") == "echo()"
-        check pose("log 'hello'") == "echo \"hello\""
-        check pose("log('hello')") == "echo(\"hello\")"
-        check pose("log 'hello' ; log 'world'") == "echo \"hello\" ; echo \"world\""
-        check pose("log 'a';log 'b'") == "echo \"a\";echo \"b\""
-        check pose("▸ suite") == "suite \"suite\":"
-        check pose("    ▸ test") == "    test \"test\":"
-        check pose("### comment") == "#[ comment"
-        check pose("a=\"''\"") == "a=\"''\""
-        check pose("proc logToEcho") == "proc logToEcho"
-        check pose("let pat = peg\"\"\"") == "let pat = peg\"\"\""
-        check pose("if true") == "if true:"
-        check pose("if true:") == "if true:"
-        check pose("elif true") == "elif true:"
-        check pose("elif true:") == "elif true:"
-        check pose("else") == "else:"
-        check pose("else:") == "else:"
-        check pose("while true") == "while true:"
-        check pose("while true:") == "while true:"
-        check pose("if line =~ peg\"a\"") == "if line =~ peg\"a\":"
-        check pose("for i in [0..20]") == "for i in [0..20]:"
-        check pose("⮐  42") == "return  42"
-        
-    test "stringSegments":
-    
-        check stringSegments("none") == @["none"]
-        check stringSegments("n\"one\"") == @["n", "\"one\""]
-        check stringSegments("n\"one\" and \"two\" and \"three\" end") == @[
-            "n", "\"one\"", " and ", "\"two\"", " and ", "\"three\"", " end"]
-        check stringSegments("escaped(\"\\\"\")") == @["escaped(", "\"\\\"\"", ")"]
-        check stringSegments("\"'\"") == @["\"'\""]
-        check stringSegments("'\"'") == @["'\"'"]
-        check stringSegments("'\"'") == @["'\"'"]
-        check stringSegments("""'"\\''""") == @["\'\"\\\\\'"]
-        check stringSegments("hello \"\"\"'world'\"\"\" !") == @["hello ", "\"\"\"'world'\"\"\"", " !"]
-        
-    test "statements":
-    
-        check statements(@["let a=1; let b=2; let c=3"]) == @[@["let a=1"], @[" let b=2"], @[" let c=3"]]
-        
-    test "deepEqual":
-    
-        check deepEqual(statements(@["let a=1; let b=2; let c=3"]), @[@["let a=1"], @[" let b=2"], @[" let c=3"]])
-        check deepEqual(@{"a":1, "b":2}, @{"a":1, "b":2})
-        check deepEqual((a:1, b:2), (a:1, b:2))
-        check deepEqual(("a", 2), ("a", 2))
-
-        check statements(@["let a=1; let b=2; let c=3"]) == @[@["let a=1"], @[" let b=2"], @[" let c=3"]]
-        check @{"a":1, "b":2} ==  @{"a":1, "b":2}
-        check (a:1, b:2) == (a:1, b:2)
-        check ("a", 2) == ("a", 2)
-        
-        check @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))} == @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}
-        check deepEqual(@{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}, @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))})
-        
-    test "peg":
-        
-        let l = "log hello"
-        var m = default array[20, string]
-        
-        check l.match(peg"{log}", m) == true
-        check m[0] == "log" 
-        
-        m = default typeof m
-
-        check l.match(peg"{ 'log' }", m) == true
-        check m[0] == "log" 
-        
-        m = default typeof m
-        
-        check l.match(peg"{ 'log' }\s{.*}", m) == true
-        check m[0] == "log" 
-        check m[1] == "hello" 
-        
-        m = default typeof m
-        
-        check "▸ test".match(peg"^{'▸'\s*}{.*}$", m) == true
-        check m[0] == "▸ " 
-        check m[1] == "test" 
-
-    test "string":
-    
-        var s = """
-        a
-        b
-        """ 
-        check s == "        a\n        b\n        "
-        
-        s = """"""""""""
-        check s == "\"\"\"\"\"\""
-        
-        s = 
-            "a"     & '\n' &
-            "b"     & '\n' &
-            "c" 
-            
-        check s == "a\nb\nc"
-
-        s = 
-            "a\n" &
-            &"{1+1}\n" &
-            "c"
-            
-        check s == "a\n2\nc"    
-        
-    # test "Edge cases":
-    #     expect OverflowError:
-    #         discard add(high(int), 1)
     

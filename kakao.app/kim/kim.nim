@@ -1,8 +1,40 @@
 
-import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat]
+import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, parseopt]
 
 import kommon
 import trans
+
+var
+    optParser = initOptParser()
+    files: seq[string] = @[]
+    outdir    = ""
+    verbose   = false
+
+for kind, key, val in optParser.getopt():
+    case kind
+        of cmdArgument:
+            files.add(key)
+        of cmdLongOption, cmdShortOption:
+            case key
+                of "verbose", "v":
+                    verbose = true
+                of "outdir", "o":
+                    outdir = val
+                of "help", "h":
+                    echo "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
+                    echo ""
+                    echo "      transpiles kim files to nim"
+                    echo "      watches cwd if no files are given"
+                    echo ""
+                    echo "options:"
+                    echo "  -o, --outdir:DIR  output directory"
+                    echo "  -v, --verbose     verbose output"
+                    quit(1)
+                else:
+                    echo "unknown option: ", key
+                    quit(1)
+        of cmdEnd:
+            discard
 
 when defined(posix):
 
@@ -15,11 +47,11 @@ when defined(posix):
             env   = allocCStringArray(pairs)
         discard execve(getAppFilename().cstring, argv, env)
         quit(1) # only reaches here if execve fails
-
-proc build() : bool =
+        
+proc compile(file:string) : bool =
 
     let 
-        cmd = "nim c kim.nim"
+        cmd = &"nim c {file}"
         (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0:
@@ -28,8 +60,12 @@ proc build() : bool =
         false
     else:
         styledEcho fgGreen, "✔ ", &"{cmd}"
-        # restart()
         true
+
+if files.len:
+
+    let transpiled = trans.pile(files)
+    quit(transpiled.len - files.len)
  
 proc watch(paths:seq[string]) =
 
@@ -87,7 +123,7 @@ proc watch(paths:seq[string]) =
             debug &"✔ {transpiled}"
             
         if doBuild:
-            if build():
+            if compile("kim.nim"):
                 debug &"▸ {kimFiles}"
                 for f in kimFiles:
                     let transpiled = trans.trans(f)
