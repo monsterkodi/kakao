@@ -87,7 +87,7 @@ proc colonize*(seqs:var seq[string]) : seq[string] =
         if seqs[i][0] == "#"[0]
              i -= 1
         if not (seqs[i] =~ peg"(!([:] \s* $) .)+ [:] \s* $")
-            seqs[i] = seqs[1] & ':'
+            seqs[i] = seqs[i] & ':'
     seqs
 
 # ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
@@ -138,15 +138,15 @@ proc tripleString*(line:string, info:var TableRef[string,int]) : int =
     let pat = peg"""(!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)*"""
     
     var tsi = info.get("tripleString")
-    if line =~ pat:
-        if tsi == 0:
+    if line =~ pat
+        if tsi == 0
             tsi = 1
         else:
             tsi = 3
     else:
-        if tsi == 1:
+        if tsi == 1
             tsi = 2
-        elif tsi == 3:
+        elif tsi == 3
             tsi = 0
     info["tripleString"] = tsi
     tsi
@@ -172,24 +172,24 @@ proc statements*(segments: seq[string]) : seq[seq[string]] =
     var stmnts : seq[seq[string]] = @[]
     var stmnt  : seq[string]      = @[]
     
-    for seg in segments:
-        if seg.isStr:
+    for seg in segments
+        if seg.isStr
             stmnt.add seg
-        else:
+        else
             let splits = seg.split(';').toSeq()
-            if splits.len == 1:
-                if splits[0].len:
+            if splits.len == 1
+                if splits[0].len
                     stmnt.add(splits[0])
-            else: 
-                for split in splits:
-                    if split.len:
+            else
+                for split in splits
+                    if split.len
                         stmnt.add(split)
                     stmnts.add(stmnt)
                     stmnt = @[]
-    if stmnt.len:
-        if stmnts.len: 
+    if stmnt.len
+        if stmnts.len
             stmnts[^1] = stmnts[^1].concat(stmnt) 
-        else:
+        else
             stmnts.add(stmnt)
     stmnts
         
@@ -211,10 +211,10 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
     # echo "------- statements ", stmnts
     
     var cstmts:seq[string] = @[]
-    for stmnt in stmnts:
+    for stmnt in stmnts
         # echo "stmnt", stmnt
         var cgmnts:seq[string] = @[]
-        for sgmnt in stmnt:
+        for sgmnt in stmnt
             cgmnts.add case sgmnt[0]
                 of '#':  sgmnt.tripleComment(info)
                 of '\'': sgmnt.singleQuote()
@@ -268,7 +268,7 @@ proc pile*(files:seq[string]) : seq[string] =
     # echo "trans.pile", files
     
     var transpiled:seq[string]
-    for file in files:
+    for file in files
         transpiled.add trans file
     transpiled
             

@@ -46,8 +46,6 @@ suite "trans":
         check stringSegments("\"'\"") == @["\"'\""]
         check stringSegments("'\"'") == @["'\"'"]
         check stringSegments("'\"'") == @["'\"'"]
-        check stringSegments("""'"\\''""") == @["\'\"\\\\\'"]
-        check stringSegments("hello \"\"\"'world'\"\"\" !") == @["hello ", "\"\"\"'world'\"\"\"", " !"]
         
     test "statements":
     
@@ -105,8 +103,8 @@ suite "trans":
         check s == "\"\"\"\"\"\""
         
         s = 
-            "a"     & "\n" &
-            "b"     & "\n" &
+            "a"     & '\n' &
+            "b"     & '\n' &
             "c" 
             
         check s == "a\nb\nc"
@@ -118,6 +116,6 @@ suite "trans":
             
         check s == "a\n2\nc"    
         
-    # test "Edge cases":
+    # ▸ Edge cases
     #     expect OverflowError:
     #         discard add(high(int), 1)

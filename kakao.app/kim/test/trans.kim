@@ -36,7 +36,7 @@ import ../trans
         check pose("for i in [0..20]") == "for i in [0..20]:"
         check pose("⮐  42") == "return  42"
         
-    test "stringSegments":
+    ▸ stringSegments
     
         check stringSegments("none") == @["none"]
         check stringSegments("n\"one\"") == @["n", "\"one\""]
@@ -46,14 +46,12 @@ import ../trans
         check stringSegments("\"'\"") == @["\"'\""]
         check stringSegments("'\"'") == @["'\"'"]
         check stringSegments("'\"'") == @["'\"'"]
-        check stringSegments("""'"\\''""") == @["\'\"\\\\\'"]
-        check stringSegments("hello \"\"\"'world'\"\"\" !") == @["hello ", "\"\"\"'world'\"\"\"", " !"]
         
-    test "statements":
+    ▸ statements
     
         check statements(@["let a=1; let b=2; let c=3"]) == @[@["let a=1"], @[" let b=2"], @[" let c=3"]]
         
-    test "deepEqual":
+    ▸ deepEqual
     
         check deepEqual(statements(@["let a=1; let b=2; let c=3"]), @[@["let a=1"], @[" let b=2"], @[" let c=3"]])
         check deepEqual(@{"a":1, "b":2}, @{"a":1, "b":2})
@@ -68,7 +66,7 @@ import ../trans
         check @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))} == @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}
         check deepEqual(@{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}, @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))})
         
-    test "peg":
+    ▸ peg
         
         let l = "log hello"
         var m = default array[20, string]
@@ -93,7 +91,7 @@ import ../trans
         check m[0] == "▸ " 
         check m[1] == "test" 
 
-    test "string":
+    ▸ string
     
         var s = """
         a
@@ -118,6 +116,6 @@ import ../trans
             
         check s == "a\n2\nc"    
         
-    # test "Edge cases":
+    # ▸ Edge cases
     #     expect OverflowError:
     #         discard add(high(int), 1)

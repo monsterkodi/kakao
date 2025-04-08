@@ -87,7 +87,7 @@ proc colonize*(seqs:var seq[string]) : seq[string] =
         if seqs[i][0] == "#"[0]:
              i -= 1
         if not (seqs[i] =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
-            seqs[i] = seqs[1] & ":"
+            seqs[i] = seqs[i] & ":"
     seqs
 
 # ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
@@ -201,7 +201,7 @@ proc statements*(segments: seq[string]) : seq[seq[string]] =
 
 proc pose*(line:string, info:var TableRef[string,int]) : string =
 
-    # echo "------- line ", line
+    echo "------- line ", line
     let tsi = line.tripleString(info)
     if tsi: return line 
     
@@ -225,7 +225,7 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                             .returnize()
                             
         cgmnts = cgmnts.colonize()
-        # echo "cgmnts", cgmnts
+        echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
 
