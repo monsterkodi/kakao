@@ -17,9 +17,10 @@ import kommon
 
 proc singleQuote*(line:string) : string =
 
-    if line =~ peg"({(!\' .)*}{\'}{(!\' .)*}{\'}{(!\' .)*})+":
+    if line =~ peg:"({(!\' .)*}{\'}{(!\' .)*}{\'}{(!\' .)*})+":
         apply(matches, proc(x: var string) = 
-            if x == "'": x = "\"")
+            if x == :"'" 
+                x = "\"")
         return matches.join("")
     line
 
@@ -31,11 +32,20 @@ proc singleQuote*(line:string) : string =
 
 proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
     echo "info!!", info
-    if line =~ peg"{(!\# .)*}{\#\#\#}{.*}":
-        info["open"] = if info.hasKey("open") and info["open"]: 0 else: 1
-        let punct = if info["open"]: "#[" else: "]#"
+    if line =~ peg:"{(!\# .)*}{\#\#\#}{.*}"
+        info["open"] = 
+            if info.hasKey(:"open") and info["open"] 
+                0 
+            else :
+                1
+        let punct = 
+            if info[:"open"] 
+                "#[" 
+            else :
+                "]#"
         apply(matches, proc(x: var string) = 
-            if x == "###": x = punct)
+            if x == :"###" 
+                x = punct)
         return matches.join("")
     line
     
@@ -48,15 +58,16 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
 proc logToEcho*(line:string) : string =
     
     let pat = peg"""
-        full <- ({pref l}{"log"}{r post})*
-        pref <- (!(l "log" r) . )*
-        post <- (!(l "log" r) . )*
+        full <- ({pref l}{'log'}{r post})*
+        pref <- (!(l 'log' r) . )*
+        post <- (!(l 'log' r) . )*
         l    <- (^/\s/\;)
         r    <- ($/\s/\()
         """
     if line =~ pat:
         apply matches, proc(x: var string) = 
-            if x == "log": x = "echo"
+            if x == :"log" 
+                x = "echo"
             
         let res = matches.join("")
         if res.len:
@@ -71,9 +82,9 @@ proc logToEcho*(line:string) : string =
 
 proc testSuite*(line:string) : string =
 
-    if line =~ peg"^{'▸'\s*}{.*}$":
+    if line =~ peg:"^{'▸'\s*}{.*}$":
         return &"suite \"{matches[1]}\":"
-    if line =~ peg"^{\s+}{'▸'\s*}{.*}$":
+    if line =~ peg:"^{\s+}{'▸'\s*}{.*}$":
         return &"{matches[0]}test \"{matches[2]}\":"
     line
 
@@ -83,16 +94,16 @@ proc stringSegments*(line:string) : seq[string] =
     
     let pat = peg"""
         input <- (stringLiteral / nonString)+
-        nonString <- ((! """) . )+
-        stringLiteral <- """ content """
+        nonString <- ((! '"') . )+
+        stringLiteral <- '"' content '"'
         content <- (escaped / notEscaped)*
-        escaped <- "\\" .
-        notEscaped <- ((! """) .)
+        escaped <- '\\' .
+        notEscaped <- ((! '"') .)
         """
     
-    if line =~ pat
+    if line =~ pat:
         echo &"matches {matches}"
-        for match in matches
+        for match in matches:
             segments.add(match)
     else
         segments.add(line)
@@ -132,8 +143,8 @@ proc trans*(fileIn:string) : string =
     
     var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
     var streamOut = newFileStream(fileOut, fmWrite) ; defer: streamOut.close
-    if  streamIn  == nil: raise newException(IOError, "Could not open source file: " & fileIn)
-    if  streamOut == nil: raise newException(IOError, "Could not open target file: " & fileOut)
+    if  streamIn  == nil: raise newException(IOError, :"Could not open source file: " & fileIn)
+    if  streamOut == nil: raise newException(IOError, :"Could not open target file: " & fileOut)
     
     var line = ""
     var info = Table[string,int].new()

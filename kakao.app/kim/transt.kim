@@ -19,7 +19,8 @@ proc singleQuote*(line:string) : string =
 
     if line =~ peg'({(!\' .)*}{\'}{(!\' .)*}{\'}{(!\' .)*})+':
         apply(matches, proc(x: var string) = 
-            if x == "'": x = "\"")
+            if x == "'" 
+                x = "\"")
         return matches.join('')
     line
 
@@ -31,11 +32,20 @@ proc singleQuote*(line:string) : string =
 
 proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
     log 'info!!', info
-    if line =~ peg'{(!\# .)*}{\#\#\#}{.*}':
-        info['open'] = if info.hasKey('open') and info['open']: 0 else: 1
-        let punct = if info['open']: '#[' else: ']#'
+    if line =~ peg'{(!\# .)*}{\#\#\#}{.*}'
+        info['open'] = 
+            if info.hasKey('open') and info['open'] 
+                0 
+            else 
+                1
+        let punct = 
+            if info['open'] 
+                '#[' 
+            else 
+                ']#'
         apply(matches, proc(x: var string) = 
-            if x == "###": x = punct)
+            if x == "###" 
+                x = punct)
         return matches.join('')
     line
     
@@ -54,12 +64,13 @@ proc logToEcho*(line:string) : string =
         l    <- (^/\s/\;)
         r    <- ($/\s/\()
         """
-    if line =~ pat:
+    if line =~ pat
         apply matches, proc(x: var string) = 
-            if x == 'log': x = 'echo'
+            if x == 'log' 
+                x = 'echo'
             
         let res = matches.join('')
-        if res.len:
+        if res.len
             return res
     line
     
@@ -137,7 +148,7 @@ proc trans*(fileIn:string) : string =
     
     var line = ""
     var info = Table[string,int].new()
-    while streamIn.readLine(line):
+    while streamIn.readLine(line)
         line = pose(line, info)
         streamOut.writeLine(line)
     
@@ -152,7 +163,7 @@ proc trans*(fileIn:string) : string =
 proc pile*(files:seq[string]) : seq[string] =
 
     var transpiled:seq[string]
-    for file in files:
+    for file in files
         transpiled.add trans file
     transpiled
             

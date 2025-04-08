@@ -9,47 +9,52 @@
 import std/[streams, paths, tables, pegs, sequtils, strutils, strformat, unittest]
 import kommon
 
-#  ███████  ███  ███   ███   ███████   ███      ████████   ███████   ███   ███   ███████   █████████  ████████
-# ███       ███  ████  ███  ███        ███      ███       ███   ███  ███   ███  ███   ███     ███     ███     
-# ███████   ███  ███ █ ███  ███  ████  ███      ███████   ███ ██ ██  ███   ███  ███   ███     ███     ███████ 
-#      ███  ███  ███  ████  ███   ███  ███      ███       ███ ████   ███   ███  ███   ███     ███     ███     
-# ███████   ███  ███   ███   ███████   ███████  ████████   █████ ██   ███████    ███████      ███     ████████
+#  ███████  ███  ███   ███   ███████   ███      ████████         ███████   ███   ███   ███████   █████████  ████████
+# ███       ███  ████  ███  ███        ███      ███             ███   ███  ███   ███  ███   ███     ███     ███     
+# ███████   ███  ███ █ ███  ███  ████  ███      ███████         ███ ██ ██  ███   ███  ███   ███     ███     ███████ 
+#      ███  ███  ███  ████  ███   ███  ███      ███             ███ ████   ███   ███  ███   ███     ███     ███     
+# ███████   ███  ███   ███   ███████   ███████  ████████         █████ ██   ███████    ███████      ███     ████████
 
 proc singleQuote*(line:string) : string =
 
     "\"" & line[1..^2] & "\""
     
-# █████████  ████████   ███  ████████   ███      ████████   ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
-#    ███     ███   ███  ███  ███   ███  ███      ███       ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
-#    ███     ███████    ███  ████████   ███      ███████   ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
-#    ███     ███   ███  ███  ███        ███      ███       ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
-#    ███     ███   ███  ███  ███        ███████  ████████   ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+# █████████  ████████   ███  ████████   ███      ████████         ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+#    ███     ███   ███  ███  ███   ███  ███      ███             ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+#    ███     ███████    ███  ████████   ███      ███████         ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+#    ███     ███   ███  ███  ███        ███      ███             ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+#    ███     ███   ███  ███  ███        ███████  ████████         ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
+func get(info:var TableRef[string,int], key : string) : int =
+
+    if info.hasKey(key): return info[key]
+    0
 
 proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
     # echo "info", info
     if line =~ peg"{(!\# .)*}{\#\#\#}{.*}":
-        info["open"] = if info.hasKey("open") and info["open"] > 0: 0 else: 1
-        let punct = if info["open"] > 0: "#[" else: "]#"
+        info["tripleComment"] = if info.get("tripleComment"): 0 else: 1
+        let punct = if info["tripleComment"]: "#[" else: "]#"
         apply(matches, proc(x: var string) = 
             if x == "###": x = punct)
         return matches.join("")
     line
     
-# ███       ███████    ███████   █████████   ███████   ████████   ███████  ███   ███   ███████ 
-# ███      ███   ███  ███           ███     ███   ███  ███       ███       ███   ███  ███   ███
-# ███      ███   ███  ███  ████     ███     ███   ███  ███████   ███       █████████  ███   ███
-# ███      ███   ███  ███   ███     ███     ███   ███  ███       ███       ███   ███  ███   ███
-# ███████   ███████    ███████      ███      ███████   ████████   ███████  ███   ███   ███████ 
+# ███       ███████    ███████         █████████   ███████         ████████   ███████  ███   ███   ███████ 
+# ███      ███   ███  ███                 ███     ███   ███        ███       ███       ███   ███  ███   ███
+# ███      ███   ███  ███  ████           ███     ███   ███        ███████   ███       █████████  ███   ███
+# ███      ███   ███  ███   ███           ███     ███   ███        ███       ███       ███   ███  ███   ███
+# ███████   ███████    ███████            ███      ███████         ████████   ███████  ███   ███   ███████ 
 
 proc logToEcho*(line:string) : string =
 
     line.replacef(peg"{\s*}{'log'}{'('/\s}", "$1echo$3")
     
-# █████████  ████████   ███████  █████████   ███████  ███   ███  ███  █████████  ████████
-#    ███     ███       ███          ███     ███       ███   ███  ███     ███     ███     
-#    ███     ███████   ███████      ███     ███████   ███   ███  ███     ███     ███████ 
-#    ███     ███            ███     ███          ███  ███   ███  ███     ███     ███     
-#    ███     ████████  ███████      ███     ███████    ███████   ███     ███     ████████
+# █████████  ████████   ███████  █████████         ███████  ███   ███  ███  █████████  ████████
+#    ███     ███       ███          ███           ███       ███   ███  ███     ███     ███     
+#    ███     ███████   ███████      ███           ███████   ███   ███  ███     ███     ███████ 
+#    ███     ███            ███     ███                ███  ███   ███  ███     ███     ███     
+#    ███     ████████  ███████      ███           ███████    ███████   ███     ███     ████████
 
 proc testSuite*(line:string) : string =
 
@@ -58,6 +63,29 @@ proc testSuite*(line:string) : string =
     if line =~ peg"^{\s+}{'▸'\s*}{.*}$":
         return &"{matches[0]}test \"{matches[2]}\":"
     line
+    
+#  ███████   ███████   ███       ███████   ███   ███  ███  ███████  ████████
+# ███       ███   ███  ███      ███   ███  ████  ███  ███     ███   ███     
+# ███       ███   ███  ███      ███   ███  ███ █ ███  ███    ███    ███████ 
+# ███       ███   ███  ███      ███   ███  ███  ████  ███   ███     ███     
+#  ███████   ███████   ███████   ███████   ███   ███  ███  ███████  ████████
+
+proc colonize*(line:string) : string =
+
+    if line =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for')(\s+ / $)":
+        if not (line =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
+            return line & ':'
+    line
+
+# ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
+# ███   ███  ███          ███     ███   ███  ███   ███  ████  ███  ███     ███   ███     
+# ███████    ███████      ███     ███   ███  ███████    ███ █ ███  ███    ███    ███████ 
+# ███   ███  ███          ███     ███   ███  ███   ███  ███  ████  ███   ███     ███     
+# ███   ███  ████████     ███      ███████   ███   ███  ███   ███  ███  ███████  ████████
+
+proc returnize*(line:string) : string =
+
+    line.replace(peg"'⮐'", "return")
         
 #  ███████  █████████  ████████          ███████  ████████   ███████ 
 # ███          ███     ███   ███        ███       ███       ███      
@@ -72,7 +100,7 @@ proc stringSegments*(line:string) : seq[string] =
     let pat = peg"""
         input   <- ({triple / string / nonstr})*
         string  <- '"' (esc / [^"])* '"' / "'" (esc / [^'])* "'"
-        triple  <- '\"\"\"' (esc / (!'\"\"\"' .))* ('\"\"\"' / $)
+        triple  <- '\"\"\"' (esc / (!'\"\"\"' .))*  '\"\"\"'
         nonstr  <- [^"']+
         esc     <- '\\' .
         """
@@ -85,6 +113,30 @@ proc stringSegments*(line:string) : seq[string] =
         segments.add(line)
         
     segments
+    
+# █████████  ████████   ███  ████████   ███      ████████         ███████  █████████  ████████   ███  ███   ███   ███████ 
+#    ███     ███   ███  ███  ███   ███  ███      ███             ███          ███     ███   ███  ███  ████  ███  ███      
+#    ███     ███████    ███  ████████   ███      ███████         ███████      ███     ███████    ███  ███ █ ███  ███  ████
+#    ███     ███   ███  ███  ███        ███      ███                  ███     ███     ███   ███  ███  ███  ████  ███   ███
+#    ███     ███   ███  ███  ███        ███████  ████████        ███████      ███     ███   ███  ███  ███   ███   ███████ 
+
+proc tripleString(line:string, info:var TableRef[string,int]) : int = 
+
+    let pat = peg"""(!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)*"""
+    
+    var tsi = info.get("tripleString")
+    if line =~ pat:
+        if tsi == 0:
+            tsi = 1
+        else:
+            tsi = 3
+    else:
+        if tsi == 1:
+            tsi = 2
+        elif tsi == 3:
+            tsi = 0
+    info["tripleString"] = tsi
+    tsi
     
 # ███   ███████   ███████  █████████  ████████ 
 # ███  ███       ███          ███     ███   ███
@@ -136,8 +188,11 @@ proc statements(segments: seq[string]) : seq[seq[string]] =
 
 proc pose*(line:string, info:var TableRef[string,int]) : string =
 
-    # echo "------- line ", line 
-    let sgmnts = stringSegments(line)
+    # echo "------- line ", line
+    let tsi = line.tripleString(info)
+    if tsi: return line 
+    
+    let sgmnts = line.stringSegments()
     # echo "------- sgmnts ", sgmnts 
     let stmnts = statements(sgmnts)
     # echo "------- statements ", stmnts
@@ -154,6 +209,8 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                 else:    sgmnt
                             .logToEcho()
                             .testSuite()
+                            .colonize()
+                            .returnize()
         # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
@@ -227,6 +284,16 @@ suite "trans":
         check pose("a=\"''\"") == "a=\"''\""
         check pose("proc logToEcho") == "proc logToEcho"
         check pose("let pat = peg\"\"\"") == "let pat = peg\"\"\""
+        check pose("if true") == "if true:"
+        check pose("if true:") == "if true:"
+        check pose("elif true") == "elif true:"
+        check pose("elif true:") == "elif true:"
+        check pose("else") == "else:"
+        check pose("else:") == "else:"
+        check pose("while true") == "while true:"
+        check pose("while true:") == "while true:"
+        check pose("for i in [0..20]") == "for i in [0..20]:"
+        check pose("⮐  42") == "return  42"
         
     test "stringSegments":
     
@@ -284,6 +351,31 @@ suite "trans":
         check "▸ test".match(peg"^{'▸'\s*}{.*}$", m) == true
         check m[0] == "▸ " 
         check m[1] == "test" 
+
+    test "string":
+    
+        var s = """
+        a
+        b
+        """ 
+        check s == "        a\n        b\n        "
+        
+        s = """"""""""""
+        check s == "\"\"\"\"\"\""
+        
+        s = 
+            "a"     & '\n' &
+            "b"     & '\n' &
+            "c" 
+            
+        check s == "a\nb\nc"
+
+        s = 
+            "a\n" &
+            &"{1+1}\n" &
+            "c"
+            
+        check s == "a\n2\nc"    
         
     # test "Edge cases":
     #     expect OverflowError:
