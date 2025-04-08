@@ -292,6 +292,7 @@ suite "trans":
         check pose("else:") == "else:"
         check pose("while true") == "while true:"
         check pose("while true:") == "while true:"
+        check pose("if line =~ peg\"a\"") == "if line =~ peg\"a\":"
         check pose("for i in [0..20]") == "for i in [0..20]:"
         check pose("⮐  42") == "return  42"
         

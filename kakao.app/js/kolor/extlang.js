@@ -2961,6 +2961,8 @@ export default {
             "string": "keyword type",
             "array": "keyword type",
             "seq": "keyword type",
+            "TableRef": "keyword type",
+            "Table": "keyword type",
             "nil": "nil",
             "false": "nil",
             "logging": "module",
@@ -2974,6 +2976,7 @@ export default {
             "strutils": "module",
             "strformat": "module",
             "typetraits": "module",
+            "unittest": "module",
             "paths": "module",
             "pegs": "module"
         },
@@ -3045,6 +3048,8 @@ export default {
             "string": "keyword type",
             "array": "keyword type",
             "seq": "keyword type",
+            "TableRef": "keyword type",
+            "Table": "keyword type",
             "nil": "nil",
             "false": "nil",
             "logging": "module",
@@ -3058,6 +3063,7 @@ export default {
             "strutils": "module",
             "strformat": "module",
             "typetraits": "module",
+            "unittest": "module",
             "paths": "module",
             "pegs": "module"
         }
