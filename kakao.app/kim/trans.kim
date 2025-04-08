@@ -71,19 +71,22 @@ proc testSuite*(line:string) : string =
 # ███       ███   ███  ███      ███   ███  ███  ████  ███   ███     ███     
 #  ███████   ███████   ███████   ███████   ███   ███  ███  ███████  ████████
 
-proc colonize*(line:string) : string =
-
-    if line =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)":
-        if not (line =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
-            return line & ':'
-    line
+# proc colonize*(line:string) : string =
+# 
+#     if line =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)":
+#         if not (line =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
+#             return line & ':'
+#     line
 
 proc colonize*(seqs:seq[string]) : string =
 
-    if line =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)":
-        if not (line =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
-            return line & ':'
-    line
+    if seqs[0] =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)"
+        var i = seqs.len-1
+        if seqs[i][0] == "#"
+             i -= 1
+        if not (seqs[i] =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
+            seqs[i] = seqs[i] & ':'
+    seqs
 
 # ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
 # ███   ███  ███          ███     ███   ███  ███   ███  ████  ███  ███     ███   ███     
@@ -217,8 +220,9 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                 else:    sgmnt
                             .logToEcho()
                             .testSuite()
-                            .colonize()
                             .returnize()
+                            
+            cgmnts = cgmnts.colonize()
         # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
