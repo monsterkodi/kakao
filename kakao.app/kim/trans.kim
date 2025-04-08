@@ -25,7 +25,7 @@ proc singleQuote*(line:string) : string =
 #    ███     ███   ███  ███  ███        ███      ███             ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
 #    ███     ███   ███  ███  ███        ███████  ████████         ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
 
-func get(info:var TableRef[string,int], key : string) : int =
+func get(info:var TableRef[string,int], key:string) : int =
 
     if info.hasKey(key)
         return info[key]
@@ -100,11 +100,11 @@ proc returnize*(line:string) : string =
 
     line.replace(peg"'⮐'", "return")
         
-#  ███████  █████████  ████████          ███████  ████████   ███████ 
-# ███          ███     ███   ███        ███       ███       ███      
-# ███████      ███     ███████          ███████   ███████   ███  ████
-#      ███     ███     ███   ███             ███  ███       ███   ███
-# ███████      ███     ███   ███        ███████   ████████   ███████ 
+#  ███████  █████████  ████████          ███████  ████████   ███████   ██     ██  ████████  ███   ███  █████████   ███████  
+# ███          ███     ███   ███        ███       ███       ███        ███   ███  ███       ████  ███     ███     ███       
+# ███████      ███     ███████          ███████   ███████   ███  ████  █████████  ███████   ███ █ ███     ███     ███████   
+#      ███     ███     ███   ███             ███  ███       ███   ███  ███ █ ███  ███       ███  ████     ███          ███  
+# ███████      ███     ███   ███        ███████   ████████   ███████   ███   ███  ████████  ███   ███     ███     ███████   
 
 proc stringSegments*(line:string) : seq[string] = 
 
@@ -118,9 +118,9 @@ proc stringSegments*(line:string) : seq[string] =
         esc     <- '\\' .
         """
 
-    if line =~ pat:
-        for match in matches:
-            if match != "":
+    if line =~ pat
+        for match in matches
+            if match != ""
                 segments.add(match)
     else:
         segments.add(line)
@@ -225,7 +225,7 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                             .returnize()
                             
         cgmnts = cgmnts.colonize()
-        echo "cgmnts", cgmnts
+        # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
 

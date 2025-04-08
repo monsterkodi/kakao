@@ -25,7 +25,7 @@ proc singleQuote*(line:string) : string =
 #    ███     ███   ███  ███  ███        ███      ███             ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
 #    ███     ███   ███  ███  ███        ███████  ████████         ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
 
-func get(info:var TableRef[string,int], key : string) : int =
+func get(info:var TableRef[string,int], key:string) : int =
 
     if info.hasKey(key):
         return info[key]
@@ -35,17 +35,17 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
 
     if line =~ peg"{(!\# .)*}{\#\#\#}{.*}":
         info["tripleComment"] = 
-            if info.get("tripleComment"): 
+            if info.get("tripleComment") :
                 0 
-            else:
+            else :
                 1
         let punct = 
-            if info["tripleComment"]:
+            if info["tripleComment"] :
                 "#[" 
-            else:
+            else :
                 "]#"
         apply(matches, proc(x: var string) = 
-            if x == "###":
+            if x == "###" :
                 x = punct)
         return matches.join("")
     line
@@ -87,7 +87,7 @@ proc colonize*(seqs:var seq[string]) : seq[string] =
         if seqs[i][0] == "#"[0]:
              i -= 1
         if not (seqs[i] =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
-            seqs[i] = seqs[i] & ":"
+            seqs[i] = seqs[1] & ":"
     seqs
 
 # ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
@@ -100,11 +100,11 @@ proc returnize*(line:string) : string =
 
     line.replace(peg"'⮐'", "return")
         
-#  ███████  █████████  ████████          ███████  ████████   ███████ 
-# ███          ███     ███   ███        ███       ███       ███      
-# ███████      ███     ███████          ███████   ███████   ███  ████
-#      ███     ███     ███   ███             ███  ███       ███   ███
-# ███████      ███     ███   ███        ███████   ████████   ███████ 
+#  ███████  █████████  ████████          ███████  ████████   ███████   ██     ██  ████████  ███   ███  █████████   ███████  
+# ███          ███     ███   ███        ███       ███       ███        ███   ███  ███       ████  ███     ███     ███       
+# ███████      ███     ███████          ███████   ███████   ███  ████  █████████  ███████   ███ █ ███     ███     ███████   
+#      ███     ███     ███   ███             ███  ███       ███   ███  ███ █ ███  ███       ███  ████     ███          ███  
+# ███████      ███     ███   ███        ███████   ████████   ███████   ███   ███  ████████  ███   ███     ███     ███████   
 
 proc stringSegments*(line:string) : seq[string] = 
 
