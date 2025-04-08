@@ -1163,12 +1163,16 @@ nim kim
         
     keyword type
         int
+        bool
         string
         array
         seq
+        TableRef
+        Table
     
     nil
-        nil    
+        nil
+        false    
         
     require
         import
@@ -1185,6 +1189,7 @@ nim kim
         strutils
         strformat
         typetraits
+        unittest
         paths
         pegs
         
