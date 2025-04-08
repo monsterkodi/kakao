@@ -86,7 +86,7 @@ proc colonize*(seqs:var seq[string]) : seq[string] =
         var i = seqs.len-1
         if seqs[i][0] == "#"[0]:
              i -= 1
-        if not (seqs[i] =~ peg"(!([:] \s* $) .)+ [:] \s* $"):
+        if seqs[i][^1] != ":"[0]:
             seqs[i] = seqs[i] & ":"
     seqs
 
