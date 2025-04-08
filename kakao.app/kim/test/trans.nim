@@ -25,6 +25,7 @@ suite "trans":
         check pose("proc logToEcho") == "proc logToEcho"
         check pose("let pat = peg\"\"\"") == "let pat = peg\"\"\""
         check pose("if true") == "if true:"
+        check pose("if line =~ pat") == "if line =~ pat:"
         check pose("if true:") == "if true:"
         check pose("elif true") == "elif true:"
         check pose("elif true:") == "elif true:"
@@ -103,8 +104,8 @@ suite "trans":
         check s == "\"\"\"\"\"\""
         
         s = 
-            "a"     & '\n' &
-            "b"     & '\n' &
+            "a"     & "\n" &
+            "b"     & "\n" &
             "c" 
             
         check s == "a\nb\nc"

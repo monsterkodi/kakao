@@ -135,7 +135,7 @@ proc stringSegments*(line:string) : seq[string] =
 
 proc tripleString*(line:string, info:var TableRef[string,int]) : int = 
 
-    let pat = peg"""(!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)*"""
+    let pat = peg"""^ (!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)* $"""
     
     var tsi = info.get("tripleString")
     if line =~ pat
@@ -203,7 +203,8 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
 
     # echo "------- line ", line
     let tsi = line.tripleString(info)
-    if tsi: return line 
+    if tsi
+        ⮐  line 
     
     let sgmnts = line.stringSegments()
     # echo "------- sgmnts ", sgmnts 
@@ -215,10 +216,10 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
         # echo "stmnt", stmnt
         var cgmnts:seq[string] = @[]
         for sgmnt in stmnt
-            cgmnts.add case sgmnt[0]
+            cgmnts.add case sgmnt[0..<1]
                 of '#':  sgmnt.tripleComment(info)
                 of '\'': sgmnt.singleQuote()
-                of '"':  sgmnt
+                of '\"':  sgmnt
                 else:    sgmnt
                             .logToEcho()
                             .testSuite()
@@ -246,8 +247,10 @@ proc trans*(fileIn:string) : string =
     
     var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
     var streamOut = newFileStream(fileOut, fmWrite) ; defer: streamOut.close
-    if  streamIn  == nil: raise newException(IOError, "Could not open source file: " & fileIn)
-    if  streamOut == nil: raise newException(IOError, "Could not open target file: " & fileOut)
+    if  streamIn  == nil 
+        raise newException(IOError, "Could not open source file: " & fileIn)
+    if  streamOut == nil 
+        raise newException(IOError, "Could not open target file: " & fileOut)
     
     var line = ""
     var info = Table[string,int].new()

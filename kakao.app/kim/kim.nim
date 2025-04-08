@@ -9,6 +9,7 @@ var
     files: seq[string] = @[]
     outdir    = ""
     verbose   = false
+    dry       = false
 
 for kind, key, val in optParser.getopt():
     case kind
@@ -16,6 +17,8 @@ for kind, key, val in optParser.getopt():
             files.add(key)
         of cmdLongOption, cmdShortOption:
             case key
+                of "dry", "d":
+                    dry = true
                 of "verbose", "v":
                     verbose = true
                 of "outdir", "o":

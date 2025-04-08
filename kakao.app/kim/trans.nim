@@ -135,7 +135,7 @@ proc stringSegments*(line:string) : seq[string] =
 
 proc tripleString*(line:string, info:var TableRef[string,int]) : int = 
 
-    let pat = peg"""(!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)*"""
+    let pat = peg"""^ (!'\"\"\"' .)* '\"\"\"' (!'\"\"\"' .)* $"""
     
     var tsi = info.get("tripleString")
     if line =~ pat:
@@ -176,18 +176,18 @@ proc statements*(segments: seq[string]) : seq[seq[string]] =
         if seg.isStr:
             stmnt.add seg
         else:
-            let splits = seg.split(';').toSeq()
+            let splits = seg.split(";").toSeq()
             if splits.len == 1:
                 if splits[0].len:
                     stmnt.add(splits[0])
-            else: 
+            else:
                 for split in splits:
                     if split.len:
                         stmnt.add(split)
                     stmnts.add(stmnt)
                     stmnt = @[]
     if stmnt.len:
-        if stmnts.len: 
+        if stmnts.len:
             stmnts[^1] = stmnts[^1].concat(stmnt) 
         else:
             stmnts.add(stmnt)
@@ -201,9 +201,10 @@ proc statements*(segments: seq[string]) : seq[seq[string]] =
 
 proc pose*(line:string, info:var TableRef[string,int]) : string =
 
-    echo "------- line ", line
+    # echo "------- line ", line
     let tsi = line.tripleString(info)
-    if tsi: return line 
+    if tsi:
+        return  line 
     
     let sgmnts = line.stringSegments()
     # echo "------- sgmnts ", sgmnts 
@@ -215,17 +216,17 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
         # echo "stmnt", stmnt
         var cgmnts:seq[string] = @[]
         for sgmnt in stmnt:
-            cgmnts.add case sgmnt[0]
-                of '#':  sgmnt.tripleComment(info)
-                of '\'': sgmnt.singleQuote()
-                of '"':  sgmnt
+            cgmnts.add case sgmnt[0..<1]
+                of "#":  sgmnt.tripleComment(info)
+                of "\'": sgmnt.singleQuote()
+                of "\"":  sgmnt
                 else:    sgmnt
                             .logToEcho()
                             .testSuite()
                             .returnize()
                             
         cgmnts = cgmnts.colonize()
-        echo "cgmnts", cgmnts
+        # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
 
@@ -246,8 +247,10 @@ proc trans*(fileIn:string) : string =
     
     var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
     var streamOut = newFileStream(fileOut, fmWrite) ; defer: streamOut.close
-    if  streamIn  == nil: raise newException(IOError, "Could not open source file: " & fileIn)
-    if  streamOut == nil: raise newException(IOError, "Could not open target file: " & fileOut)
+    if  streamIn  == nil :
+        raise newException(IOError, "Could not open source file: " & fileIn)
+    if  streamOut == nil :
+        raise newException(IOError, "Could not open target file: " & fileOut)
     
     var line = ""
     var info = Table[string,int].new()
