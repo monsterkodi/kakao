@@ -1,15 +1,15 @@
 ###
     ███  ███   ███  ███████    ████████  ███   ███          ███   ███  ███  ██     ██
-    ███  ████  ███  ███   ███  ███        ███ ███           ████  ███  ███  ███   ███
-    ███  ███ █ ███  ███   ███  ███████     █████            ███ █ ███  ███  █████████
-    ███  ███  ████  ███   ███  ███        ███ ███           ███  ████  ███  ███ █ ███
+    ███  ████  ███  ███   ███  ███        ███ ███           ███  ███   ███  ███   ███
+    ███  ███ █ ███  ███   ███  ███████     █████            ███████    ███  █████████
+    ███  ███  ████  ███   ███  ███        ███ ███           ███  ███   ███  ███ █ ███
     ███  ███   ███  ███████    ████████  ███   ███  ██████  ███   ███  ███  ███   ███
 ###
 
 use ../../kxk ▪ kstr slash kermit
 use           ◆ index_utils
 
-function index_nim
+function index_kim
 
     @: ->
                         
@@ -59,14 +59,8 @@ function index_nim
             null
         
         if match = kermit.lineMatch(line 'proc ●name ○args' ['(' ')']) ➜ addFunc match.name
-            
-        m = line.match index_utils.nimTestRegExp
-        if m?[0]?
-            name = m[0].replaceAll(/(suite|test)/g, '▸')
-            name = name.replaceAll('"' '')
-            name = name.replaceAll(':' '')
-            addFunc name test:true
-            
+        if match = kermit.lineMatch(line '▸ ○name') ➜ addFunc line test:true
+                    
     # 00000000    0000000   00000000    0000000  00000000       000000000  00000000  000   000  000000000
     # 000   000  000   000  000   000  000       000               000     000        000 000      000
     # 00000000   000000000  0000000    0000000   0000000           000     0000000     00000       000
@@ -84,4 +78,4 @@ function index_nim
 
         @result
 
-export index_nim
+export index_kim

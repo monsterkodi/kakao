@@ -1,6 +1,6 @@
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var index_nim
+var index_kim
 
 import kxk from "../../kxk.js"
 let kstr = kxk.kstr
@@ -10,14 +10,14 @@ let kermit = kxk.kermit
 import index_utils from "./index_utils.js"
 
 
-index_nim = (function ()
+index_kim = (function ()
 {
-    function index_nim ()
+    function index_kim ()
     {}
 
-    index_nim.prototype["parseLine"] = function (index, line)
+    index_kim.prototype["parseLine"] = function (index, line)
     {
-        var addFunc, addMeth, className, classType, funcMatch, m, match, name, validFuncMatch, validFuncName
+        var addFunc, addMeth, className, classType, funcMatch, match, validFuncMatch, validFuncName
 
         if (match = kermit.lineMatch(line,'●type ●name = ●ref object'))
         {
@@ -78,17 +78,13 @@ index_nim = (function ()
         {
             addFunc(match.name)
         }
-        m = line.match(index_utils.nimTestRegExp)
-        if (((m != null ? m[0] : undefined) != null))
+        if (match = kermit.lineMatch(line,'▸ ○name'))
         {
-            name = m[0].replaceAll(/(suite|test)/g,'▸')
-            name = name.replaceAll('"','')
-            name = name.replaceAll(':','')
-            return addFunc(name,{test:true})
+            return addFunc(line,{test:true})
         }
     }
 
-    index_nim.prototype["parse"] = function (text)
+    index_kim.prototype["parse"] = function (text)
     {
         var lineIndex, lines, lineText
 
@@ -103,7 +99,7 @@ index_nim = (function ()
         return this.result
     }
 
-    return index_nim
+    return index_kim
 })()
 
-export default index_nim;
+export default index_kim;

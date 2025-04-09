@@ -17,6 +17,7 @@ index_utils = (function ()
     index_utils["funcRegExp"] = /^\s*([\w\.]+)\s*[\:\=][^\(\)\'\"]*(\(.*\))?\s*○?[=-]\>/
     index_utils["postRegExp"] = /^\s*post\.on\s+[\'\"](\w+)[\'\"]\s*\,?\s*(\(.*\))?\s*[=-]\>/
     index_utils["testRegExp"] = /^\s*(▸\s+.+)/
+    index_utils["nimTestRegExp"] = /^\s*((suite|test)\s+\"[^"]+\"\s*\:)/
     index_utils["splitRegExp"] = new RegExp("[^\\w\\d\\_]+",'g')
     index_utils["classRegExp"] = /^(\s*\S+\s*=)?\s*(class|function)\s+(\w+)/
     index_utils["classNameInLine"] = function (line)

@@ -82,7 +82,7 @@ proc testSuite*(line:string) : string =
 
 proc colonize*(seqs:var seq[string]) : seq[string] =
 
-    if seqs[0] =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)":
+    if seqs[0] =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case' / 'of')(\s+ / $)":
         var i = seqs.len-1
         if seqs[i][0] == "#"[0]:
              i -= 1
@@ -217,13 +217,17 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
         var cgmnts:seq[string] = @[]
         for sgmnt in stmnt:
             cgmnts.add case sgmnt[0..<1]
-                of "#":  sgmnt.tripleComment(info)
-                of "\'": sgmnt.singleQuote()
-                of "\"":  sgmnt
-                else:    sgmnt
-                            .logToEcho()
-                            .testSuite()
-                            .returnize()
+                of "#"  :
+                    sgmnt.tripleComment(info)
+                of "\'" :
+                    sgmnt.singleQuote()
+                of "\""  :
+                    sgmnt
+                else    :
+                    sgmnt
+                        .logToEcho()
+                        .testSuite()
+                        .returnize()
                             
         cgmnts = cgmnts.colonize()
         # echo "cgmnts", cgmnts

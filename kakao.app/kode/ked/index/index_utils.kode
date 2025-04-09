@@ -16,6 +16,7 @@ function index_utils
     @funcRegExp    : /^\s*([\w\.]+)\s*[\:\=][^\(\)\'\"]*(\(.*\))?\s*○?[=-]\>/
     @postRegExp    : /^\s*post\.on\s+[\'\"](\w+)[\'\"]\s*\,?\s*(\(.*\))?\s*[=-]\>/
     @testRegExp    : /^\s*(▸\s+.+)/
+    @nimTestRegExp : /^\s*((suite|test)\s+\"[^"]+\"\s*\:)/
     @splitRegExp   : new RegExp "[^\\w\\d\\_]+", 'g'
     @classRegExp   : /^(\s*\S+\s*=)?\s*(class|function)\s+(\w+)/
 

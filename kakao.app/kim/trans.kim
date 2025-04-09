@@ -82,7 +82,7 @@ proc testSuite*(line:string) : string =
 
 proc colonize*(seqs:var seq[string]) : seq[string] =
 
-    if seqs[0] =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case')(\s+ / $)"
+    if seqs[0] =~ peg"\s*('if' / 'elif' / 'else' / 'while' / 'for' / 'when' / 'case' / 'of')(\s+ / $)"
         var i = seqs.len-1
         if seqs[i][0] == "#"[0]
              i -= 1
@@ -122,7 +122,7 @@ proc stringSegments*(line:string) : seq[string] =
         for match in matches
             if match != ""
                 segments.add(match)
-    else:
+    else
         segments.add(line)
         
     segments
@@ -141,9 +141,9 @@ proc tripleString*(line:string, info:var TableRef[string,int]) : int =
     if line =~ pat
         if tsi == 0
             tsi = 1
-        else:
+        else
             tsi = 3
-    else:
+    else
         if tsi == 1
             tsi = 2
         elif tsi == 3
@@ -217,13 +217,17 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
         var cgmnts:seq[string] = @[]
         for sgmnt in stmnt
             cgmnts.add case sgmnt[0..<1]
-                of '#':  sgmnt.tripleComment(info)
-                of '\'': sgmnt.singleQuote()
-                of '\"':  sgmnt
-                else:    sgmnt
-                            .logToEcho()
-                            .testSuite()
-                            .returnize()
+                of '#'  
+                    sgmnt.tripleComment(info)
+                of '\'' 
+                    sgmnt.singleQuote()
+                of '\"'  
+                    sgmnt
+                else    
+                    sgmnt
+                        .logToEcho()
+                        .testSuite()
+                        .returnize()
                             
         cgmnts = cgmnts.colonize()
         # echo "cgmnts", cgmnts
@@ -254,7 +258,7 @@ proc trans*(fileIn:string) : string =
     
     var line = ""
     var info = Table[string,int].new()
-    while streamIn.readLine(line):
+    while streamIn.readLine(line)
         line = pose(line, info)
         streamOut.writeLine(line)
     

@@ -22,6 +22,7 @@ import index_js from "./index_js.js"
 import index_hpp from "./index_hpp.js"
 import index_mm from "./index_mm.js"
 import index_nim from "./index_nim.js"
+import index_kim from "./index_kim.js"
 
 class indexer
 {
@@ -222,6 +223,10 @@ class indexer
             else if (fileExt === 'nim')
             {
                 return this.applyIndexer(file,fileInfo,text,index_nim)
+            }
+            else if (fileExt === 'kim')
+            {
+                return this.applyIndexer(file,fileInfo,text,index_kim)
             }
         }).bind(this))
         return this
