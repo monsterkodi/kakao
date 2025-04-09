@@ -275,6 +275,3 @@ proc pile*(files:seq[string]) : seq[string] =
         transpiled.add trans file
     transpiled
             
-import std/unittest
-
-    

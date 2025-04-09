@@ -1331,7 +1331,7 @@ handlers =
     fish:   punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
     py:     punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
     nim:    punct:[ nimComment   hashComment simpleString funcArgs dashArrow                ] word:[ keyword number property        ]
-    kim:    punct:[ blockComment hashComment simpleString funcArgs dashArrow                ] word:[ keyword number property        ]
+    kim:    punct:[ blockComment hashComment kodePunct tripleString simpleString funcArgs dashArrow ] word:[ keyword number property        ]
 
 for ext in exts
     if not handlers[ext]?

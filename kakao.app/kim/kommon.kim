@@ -6,10 +6,16 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ###
 
-import std/[tables, typetraits]
+import std/[tables, typetraits, macros, terminal, strformat, strutils]
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
+
+# ████████   ███████   ███   ███   ███████   ███    
+# ███       ███   ███  ███   ███  ███   ███  ███    
+# ███████   ███ ██ ██  ███   ███  █████████  ███    
+# ███       ███ ████   ███   ███  ███   ███  ███    
+# ████████   █████ ██   ███████   ███   ███  ███████
 
 proc deepEqual*[T](a, b: T): bool =
 
@@ -38,5 +44,28 @@ proc deepEqual*[T](a, b: T): bool =
         if a != b
             ⮐  false
     true
+    
+# ███████    ███████     ███████ 
+# ███   ███  ███   ███  ███      
+# ███   ███  ███████    ███  ████
+# ███   ███  ███   ███  ███   ███
+# ███████    ███████     ███████ 
+
+macro dbg*(args: varargs[untyped]): untyped =
+    
+    result = newStmtList()
+    
+    let lineInfo = args[0].lineInfoObj
+    
+    result.add quote do:
+        styledEcho bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle
+    
+    for arg in args:
+        result.add quote do:
+            styledEcho fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle,
+                styleDim, " = ", resetStyle,
+                fgGreen, $`arg`, resetStyle,
+                fgBlue, " ", $typeof(`arg`), resetStyle
+
     
 

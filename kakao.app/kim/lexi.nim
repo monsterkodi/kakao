@@ -31,7 +31,7 @@ const
     alltoks  = { low(tok)..high(tok) }
     thenable = { ◆if, ◆elif }
     
-# log 'tok:'
+# log "tok:"
 # for t in tok:
 #     log &"   {t} {ord(t)}"
 

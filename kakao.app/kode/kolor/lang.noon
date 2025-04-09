@@ -1104,6 +1104,7 @@ nim kim
         try
         except
         echo
+        styledEcho
         when
         case
         cast
@@ -1120,11 +1121,8 @@ nim kim
         not
         or
         and
-        let
-        var
         ptr
         ref
-        const
         type
         auto
         enum
@@ -1145,10 +1143,13 @@ nim kim
         include
         global
         range
+        quit
         if
         elif
         else
         for
+        low
+        high
         while
         except
         expect
@@ -1158,8 +1159,10 @@ nim kim
         test
         check
         require
+        result
         default
         typeof
+        toSeq
         
     keyword type
         int
@@ -1169,6 +1172,8 @@ nim kim
         seq
         TableRef
         Table
+        varargs
+        untyped
     
     nil
         nil
@@ -1176,14 +1181,21 @@ nim kim
         
     require
         import
+    
+    punct    
+        const
+        var
+        let
         
     module
         logging 
+        macros
         os 
         osproc 
         sequtils 
         tables 
         terminal 
+        parseopt
         times
         streams
         strutils
@@ -1193,4 +1205,17 @@ nim kim
         paths
         pegs
         
+# ███   ███  ███  ██     ██
+# ███  ███   ███  ███   ███
+# ███████    ███  █████████
+# ███  ███   ███  ███ █ ███
+# ███   ███  ███  ███   ███
+
+kim
+    keyword
+        then
+        switch
+        class
+        extends
+        use
         

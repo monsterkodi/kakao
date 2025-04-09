@@ -5,6 +5,7 @@ import kommon
 import trans
 
 var
+    params = default seq[string]
     optParser = initOptParser()
     files: seq[string] = @[]
     outdir    = ""
@@ -14,8 +15,10 @@ var
 for kind, key, val in optParser.getopt():
     case kind
         of cmdArgument:
+            params.add key
             files.add(key)
         of cmdLongOption, cmdShortOption:
+            params.add "-" & key
             case key
                 of "dry", "d":
                     dry = true
@@ -38,18 +41,42 @@ for kind, key, val in optParser.getopt():
                     quit(1)
         of cmdEnd:
             discard
-
+            
 when defined(posix):
 
     import posix
     
     proc restart() =
         let 
-            argv  = allocCStringArray(commandLineParams())
             pairs = toSeq(envPairs()).mapIt(it.key & "=" & it.value)
-            env   = allocCStringArray(pairs)
-        discard execve(getAppFilename().cstring, argv, env)
+            args  = allocCStringArray(@[getAppFilename()] & params)
+        discard execv(getAppFilename().cstring, args)
         quit(1) # only reaches here if execve fails
+    
+proc logFile(f:string) =
+
+    if not verbose:
+        return
+
+    let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
+    let d = 
+        if dir.len: 
+            dir & "/" 
+        else: 
+            ""
+    let icon = 
+        if ext == ".kim": 
+            "  " 
+        else: 
+            "  "
+            
+    let color = 
+        if ext == ".kim": 
+            fgGreen
+        else:
+            fgMagenta
+
+    styledEcho color, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
         
 proc compile(file:string) : bool =
 
@@ -68,7 +95,7 @@ proc compile(file:string) : bool =
 if files.len:
 
     let transpiled = trans.pile(files)
-    quit(transpiled.len - files.len)
+    quit(transpiled.len - files.len)    
  
 proc watch(paths:seq[string]) =
 
@@ -76,17 +103,22 @@ proc watch(paths:seq[string]) =
 
     setControlCHook(proc () {.noconv.} = quit 0)
     
-    debug &"■ kim"
+    # debug &"■ kim"
 
     var modTimes: Table[string,times.Time]
     
-    debug &"● {paths}"
+    for p in paths:
+        let (dir, name, ext) = p.splitFile()
+        styledEcho fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle
+    
+    var firstLoop = true
     
     while true:
     
         var doBuild = false
         var toTranspile:seq[string]
         var kimFiles:seq[string]
+        var nimFiles:seq[string]
         
         for path in paths:
         
@@ -98,16 +130,17 @@ proc watch(paths:seq[string]) =
             
                 let (_, name, ext) = f.splitFile()
                 
-                if not(ext in @[".kim", ".nim"]):
-                    continue
-                
                 if ext == ".kim":
                     kimFiles.add(f)
+                elif ext == ".nim":
+                    nimFiles.add(f)
+                else:
+                    continue
                 
                 let modTime = getFileInfo(f).lastWriteTime
                 
                 if not modTimes.hasKey(f):
-                    debug &"○ {name}{ext}"
+                    # debug &"○ {name}{ext}"
                     modTimes[f] = modTime
                     continue
                   
@@ -120,6 +153,14 @@ proc watch(paths:seq[string]) =
                 elif ext == ".kim":
                     toTranspile.add f
                 debug &"▴ {name}{ext}"
+                
+        if firstLoop:               
+                                    
+            firstLoop = false
+            for f in kimFiles:
+                logFile f
+            for f in nimFiles:
+                logFile f
                 
         if toTranspile:
             let transpiled = trans.pile(toTranspile)
