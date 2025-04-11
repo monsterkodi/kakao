@@ -245,10 +245,30 @@ proc pose*(line:string) : string =
 #    ███     ███   ███  ███   ███  ███  ████       ███
 #    ███     ███   ███  ███   ███  ███   ███  ███████ 
 
+proc swapLastPathComponentAndExt(file: string, src: string, tgt: string): string =
+
+    let (dir, _, _) = splitFile(file.Path)
+    
+    var dirParts = dir.string.split(DirSep)
+    
+    if dirParts[0] == "" and dirParts.len == 1:
+        dirParts.delete 0..0
+    
+    for i in countdown(dirParts.high, 0):
+        if dirParts[i] == src:
+            dirParts[i] = tgt
+            break
+            
+    # echo "dirParts ", dirParts 
+    dirParts.add file.Path.changeFileExt("." & tgt).splitPath[1].string
+    dirParts.join "/"
+
 proc trans*(fileIn:string) : string =
 
-    var fileOut = Path(fileIn).changeFileExt(".nim").string
-    
+    # echo "trans.fileIn: ", fileIn
+    # var fileOut = Path(fileIn).changeFileExt(".nim").string
+    var fileOut = fileIn.swapLastPathComponentAndExt("kim", "nim")
+    # echo "trans.fileOut: ", fileOut
     var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
     var streamOut = newFileStream(fileOut, fmWrite) ; defer: streamOut.close
     if  streamIn  == nil :
@@ -272,7 +292,8 @@ proc trans*(fileIn:string) : string =
 
 proc pile*(files:seq[string]) : seq[string] =
 
-    # echo "trans.pile", files
+    # echo "trans.pile: ", files
+    # echo "trans.pile: ", currentSourcePath()
     
     var transpiled:seq[string]
     for file in files:

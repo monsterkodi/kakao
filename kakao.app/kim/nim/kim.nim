@@ -1,5 +1,5 @@
 
-import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, parseopt]
+import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt]
 
 import kommon
 import trans
@@ -12,21 +12,27 @@ var
     verbose   = false
     dry       = false
 
-for kind, key, val in optParser.getopt()
-    case kind
-        of cmdArgument
+#  ███████   ████████  █████████         ███████   ████████   █████████
+# ███        ███          ███           ███   ███  ███   ███     ███   
+# ███  ████  ███████      ███           ███   ███  ████████      ███   
+# ███   ███  ███          ███           ███   ███  ███           ███   
+#  ███████   ████████     ███            ███████   ███           ███   
+
+for kind, key, val in optParser.getopt():
+    case kind:
+        of cmdArgument:
             params.add key
             files.add(key)
-        of cmdLongOption, cmdShortOption
+        of cmdLongOption, cmdShortOption:
             params.add "-" & key
-            case key
-                of "dry", "d"
+            case key:
+                of "dry", "d":
                     dry = true
-                of "verbose", "v"
+                of "verbose", "v":
                     verbose = true
-                of "outdir", "o"
+                of "outdir", "o":
                     outdir = val
-                of "help", "h"
+                of "help", "h":
                     echo "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
                     echo ""
                     echo "      transpiles kim files to nim"
@@ -36,13 +42,19 @@ for kind, key, val in optParser.getopt()
                     echo "  -o, --outdir:DIR  output directory"
                     echo "  -v, --verbose     verbose output"
                     quit(1)
-                else
-                    echo "unknown option: ", key
+                else:
+                    echo "unknown option!: ", key
                     quit(1)
-        of cmdEnd
+        of cmdEnd:
             discard
             
-when defined(posix)
+# ████████   ████████   ███████  █████████   ███████   ████████   █████████
+# ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   
+# ███████    ███████   ███████      ███     █████████  ███████       ███   
+# ███   ███  ███            ███     ███     ███   ███  ███   ███     ███   
+# ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
+            
+when defined(posix):
 
     import posix
     
@@ -59,30 +71,30 @@ when defined(posix)
 # ███      ███   ███  ███   ███  ███       ███  ███      ███     
 # ███████   ███████    ███████   ███       ███  ███████  ████████
 
-proc logFile(f:string) =
+proc logFile(f:string, prefix:string="") =
 
-    if not verbose
+    if not verbose:
         return
 
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
     let d = 
-        if dir.len
+        if dir.len:
             dir & "/" 
-        else
+        else:
             ""
     let icon = 
-        if ext == ".kim"
+        if ext == ".kim":
             "  " 
-        else
+        else:
             "  "
             
     let color = 
-        if ext == ".kim"
+        if ext == ".kim":
             fgGreen
-        else
+        else:
             fgMagenta
 
-    styledEcho color, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
+    styledEcho color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
         
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
@@ -90,21 +102,20 @@ proc logFile(f:string) =
 # ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 
-proc compile(file:string) : bool =
+proc compile(file:string, outDir:string="bin") : bool =
 
-    let 
-        cmd = &"nim c {file}"
-        (output, exitCode) = execCmdEx(cmd)
+    let cmd = &"nim c --outDir:{outdir} {file}"
+    let (output, exitCode) = execCmdEx(cmd)
         
-    if exitCode != 0
+    if exitCode != 0:
         styledEcho fgRed, "✘ ", &"{cmd}"
         echo output
         false
-    else
+    else:
         styledEcho fgGreen, "✔ ", &"{cmd}"
         true
 
-if files.len
+if files.len:
 
     let transpiled = trans.pile(files)
     quit(transpiled.len - files.len)    
@@ -125,13 +136,13 @@ proc watch(paths:seq[string]) =
 
     var modTimes: Table[string,times.Time]
     
-    for p in paths
+    for p in paths:
         let (dir, name, ext) = p.splitFile()
         styledEcho fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle
     
     var firstLoop = true
     
-    while true
+    while true:
     
         var doBuild = false
         var toTranspile:seq[string]
@@ -140,56 +151,53 @@ proc watch(paths:seq[string]) =
         
         for path in paths:
         
-            if not dirExists(path)
+            if not dirExists(path):
             
                 continue
                 
-            for f in walkDirRec(path)
+            for f in walkDirRec(path):
             
-                let (_, name, ext) = f.splitFile()
+                let (dir, name, ext) = f.splitFile()
                 
-                if ext == ".kim"
+                if ext == ".kim":
                     kimFiles.add(f)
-                elif ext == ".nim"
+                elif ext == ".nim":
                     nimFiles.add(f)
-                else
+                else:
                     continue
                 
                 let modTime = getFileInfo(f).lastWriteTime
                 
-                if not modTimes.hasKey(f)
-                    # debug &"○ {name}{ext}"
+                if not modTimes.hasKey(f):
                     modTimes[f] = modTime
                     continue
                   
-                if modTimes[f] == modTime
+                if modTimes[f] == modTime:
                     continue
         
                 modTimes[f] = modTime
-                if ext == ".nim"
+                if ext == ".nim":
                     doBuild = true
-                elif ext == ".kim"
+                elif ext == ".kim":
                     toTranspile.add f
-                debug &"▴ {name}{ext}"
                 
         if firstLoop:
                                     
             firstLoop = false
-            for f in kimFiles
+            for f in kimFiles:
                 logFile f
-            for f in nimFiles
-                logFile f
+            # for f in nimFiles
+            #     logFile f
                 
-        if toTranspile
-            let transpiled = trans.pile(toTranspile)
-            debug &"✔ {transpiled}"
+        if toTranspile:
+            for f in trans.pile(toTranspile):
+                logFile f, "✔ "
             
-        if doBuild
-            if compile("kim.nim")
-                debug &"▸ {kimFiles}"
-                for f in kimFiles
+        if doBuild:
+            if compile("nim/kim.nim", "bin"):
+                for f in kimFiles:
                     let transpiled = trans.trans(f)
-                    debug &"✔ {transpiled}"
+                    logFile transpiled, "✔ "
                 restart()
                 
         sleep 300

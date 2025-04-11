@@ -1,5 +1,5 @@
 
-import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, parseopt]
+import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt]
 
 import kommon
 import trans
@@ -11,6 +11,12 @@ var
     outdir    = ""
     verbose   = false
     dry       = false
+
+#  ███████   ████████  █████████         ███████   ████████   █████████
+# ███        ███          ███           ███   ███  ███   ███     ███   
+# ███  ████  ███████      ███           ███   ███  ████████      ███   
+# ███   ███  ███          ███           ███   ███  ███           ███   
+#  ███████   ████████     ███            ███████   ███           ███   
 
 for kind, key, val in optParser.getopt()
     case kind
@@ -37,10 +43,16 @@ for kind, key, val in optParser.getopt()
                     echo "  -v, --verbose     verbose output"
                     quit(1)
                 else
-                    echo "unknown option: ", key
+                    echo "unknown option!: ", key
                     quit(1)
         of cmdEnd
             discard
+            
+# ████████   ████████   ███████  █████████   ███████   ████████   █████████
+# ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   
+# ███████    ███████   ███████      ███     █████████  ███████       ███   
+# ███   ███  ███            ███     ███     ███   ███  ███   ███     ███   
+# ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
             
 when defined(posix)
 
@@ -59,7 +71,7 @@ when defined(posix)
 # ███      ███   ███  ███   ███  ███       ███  ███      ███     
 # ███████   ███████    ███████   ███       ███  ███████  ████████
 
-proc logFile(f:string) =
+proc logFile(f:string, prefix:string="") =
 
     if not verbose
         return
@@ -82,7 +94,7 @@ proc logFile(f:string) =
         else
             fgMagenta
 
-    styledEcho color, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
+    styledEcho color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
         
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
@@ -90,11 +102,10 @@ proc logFile(f:string) =
 # ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 
-proc compile(file:string) : bool =
+proc compile(file:string, outDir:string="bin") : bool =
 
-    let 
-        cmd = &"nim c {file}"
-        (output, exitCode) = execCmdEx(cmd)
+    let cmd = &"nim c --outDir:{outdir} {file}"
+    let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
         styledEcho fgRed, "✘ ", &"{cmd}"
@@ -146,7 +157,7 @@ proc watch(paths:seq[string]) =
                 
             for f in walkDirRec(path)
             
-                let (_, name, ext) = f.splitFile()
+                let (dir, name, ext) = f.splitFile()
                 
                 if ext == ".kim"
                     kimFiles.add(f)
@@ -158,7 +169,6 @@ proc watch(paths:seq[string]) =
                 let modTime = getFileInfo(f).lastWriteTime
                 
                 if not modTimes.hasKey(f)
-                    # debug &"○ {name}{ext}"
                     modTimes[f] = modTime
                     continue
                   
@@ -170,26 +180,24 @@ proc watch(paths:seq[string]) =
                     doBuild = true
                 elif ext == ".kim"
                     toTranspile.add f
-                debug &"▴ {name}{ext}"
                 
         if firstLoop:
                                     
             firstLoop = false
             for f in kimFiles
                 logFile f
-            for f in nimFiles
-                logFile f
+            # for f in nimFiles
+            #     logFile f
                 
         if toTranspile
-            let transpiled = trans.pile(toTranspile)
-            debug &"✔ {transpiled}"
+            for f in trans.pile(toTranspile)
+                logFile f, "✔ "
             
         if doBuild
-            if compile("kim.nim")
-                debug &"▸ {kimFiles}"
+            if compile("nim/kim.nim", "bin")
                 for f in kimFiles
                     let transpiled = trans.trans(f)
-                    debug &"✔ {transpiled}"
+                    logFile transpiled, "✔ "
                 restart()
                 
         sleep 300
