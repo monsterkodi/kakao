@@ -1,8 +1,9 @@
 
-import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt]
+import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt, random]
 
 import kommon
 import trans
+import greet
 
 var
     params = default seq[string]
@@ -11,6 +12,8 @@ var
     outdir    = ""
     verbose   = false
     dry       = false
+    
+randomize()
 
 #  ███████   ████████  █████████         ███████   ████████   █████████
 # ███        ███          ███           ███   ███  ███   ███     ███   
@@ -112,7 +115,7 @@ proc compile(file:string, outDir:string="bin") : bool =
         echo output
         false
     else:
-        styledEcho fgGreen, "✔ ", &"{cmd}"
+        styledEcho fgGreen, "✔ ", fgWhite, cmd
         true
 
 if files.len:
@@ -130,11 +133,19 @@ proc watch(paths:seq[string]) =
 
     addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
 
-    setControlCHook(proc () {.noconv.} = quit 0)
+    setControlCHook(proc () {.noconv.} = 
+        
+        styledEcho ""
+        styledEcho fgGreen, farewells[rand(farewells.high)]
+        quit 0)
     
     # debug &"■ kim"
 
     var modTimes: Table[string,times.Time]
+    
+    styledEcho ""
+    styledEcho fgGreen, greetings[rand(greetings.high)]
+    styledEcho ""
     
     for p in paths:
         let (dir, name, ext) = p.splitFile()

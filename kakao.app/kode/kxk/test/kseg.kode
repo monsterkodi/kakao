@@ -206,6 +206,26 @@ use .. ◆ kstr kseg
         kseg.width '🧑‍🌾'          ▸ 2
         kseg.width '🧑'          ▸ 2
         
+        kseg.width '🌞'          ▸ 2
+        kseg.width '🌙'          ▸ 2
+        kseg.width '🌿'          ▸ 2
+        kseg.width '🐦'          ▸ 2
+        kseg.width '🌊'          ▸ 2
+        kseg.width '🏰'          ▸ 2
+        kseg.width '🔮'          ▸ 2
+        kseg.width '👾'          ▸ 2
+        kseg.width '🚀'          ▸ 2
+        kseg.width '🤖'          ▸ 2
+        kseg.width '🍳'          ▸ 2
+        kseg.width '🎲'          ▸ 2
+        kseg.width '🎯'          ▸ 2
+        kseg.width '🌌'          ▸ 2
+        kseg.width '🎩'          ▸ 2
+        kseg.width '📡'          ▸ 2
+        kseg.width '👽'          ▸ 2
+        kseg.width '🔭'          ▸ 2  
+        kseg.width '👋'          ▸ 2   
+                      
         kseg.width kseg("hello world") ▸ 11
         
     # 000000000  00000000   000  00     00  
