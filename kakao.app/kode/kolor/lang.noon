@@ -1202,6 +1202,7 @@ nim kim
         strformat
         typetraits
         unittest
+        unicode
         paths
         pegs
         
@@ -1217,5 +1218,12 @@ kim
         switch
         class
         extends
+        use
+        catch
+        
+    nil
+        null
+        
+    require
         use
         

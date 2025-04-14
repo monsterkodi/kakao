@@ -85,30 +85,33 @@ const
         ">":  ◆greater,
         "<":  ◆less,
         "⮐":  ◆return,
+        "➜":  ◆then,
         }.toTable()
         
     keywords = {
         "if":       ◆if,
         "in":       ◆in,
+        "is":       ◆is,
+        "of":       ◆of,
         "for":      ◆for,
-        "for":      ◆for,
-        
+        "while":    ◆while,
         "when":     ◆when,
         "then":     ◆then,
         "elif":     ◆elif,
         "else":     ◆else,
         "switch":   ◆switch,
-        "is":       ◆is,
-        "of":       ◆of,
         "break":    ◆break,
         "continue": ◆continue,
+        "return":   ◆return,
         "while":    ◆while,
         "class":    ◆class,
-        
+        "try":      ◆try,
+        "catch":    ◆catch,
         "true":     ◆true,
         "false":    ◆false,
         "null":     ◆null,
-        "return":   ◆return
+        "nil":      ◆null,
+        "use":      ◆use,
         }.toTable()
     
 type
@@ -124,10 +127,10 @@ type
 # ███   ███       ███     ███   
 # ███   ███  ███████      ███   
 
-proc ast*(lines:seq[string]) : seq[Token] =
+proc tokenSequence*(lines:seq[string]) : seq[Token] =
 
     var tokens = default seq[Token]
-    var token : Token # = Token()
+    var token : Token
 
     for index,line in lines:
         var prev  = ""
@@ -138,7 +141,7 @@ proc ast*(lines:seq[string]) : seq[Token] =
         let segs = kseg line
         while col < segs.len:
             let char = segs[col]
-            echo &"c[{col}]: {char}"
+            # echo &"c[{col}]: {char}"
             
             proc push(str = "", tk = ◆name) =
                 if token.str.len:
@@ -179,7 +182,7 @@ proc ast*(lines:seq[string]) : seq[Token] =
         
     return  tokens
     
-proc ast*(text:string) : seq[Token] =
+proc tokenSequence*(text:string) : seq[Token] =
 
-    ast text.splitLines()
+    tokenSequence text.splitLines()
     

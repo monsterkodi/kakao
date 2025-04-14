@@ -2987,6 +2987,7 @@ export default {
             "strformat": "module",
             "typetraits": "module",
             "unittest": "module",
+            "unicode": "module",
             "paths": "module",
             "pegs": "module"
         },
@@ -3084,13 +3085,16 @@ export default {
             "strformat": "module",
             "typetraits": "module",
             "unittest": "module",
+            "unicode": "module",
             "paths": "module",
             "pegs": "module",
             "then": "keyword",
             "switch": "keyword",
             "class": "keyword",
             "extends": "keyword",
-            "use": "keyword"
+            "use": "require",
+            "catch": "keyword",
+            "null": "nil"
         }
     }
 }
