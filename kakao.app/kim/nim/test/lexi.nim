@@ -10,7 +10,7 @@ import ../lexi
 
 suite "lexi":
 
-    test "ast":
+    test "single line":
     
         check ast("")  == default seq[Token]
         check ast(" ") == @[Token(str:" ", tok:◆indent, line:0, col:0)]
@@ -64,10 +64,30 @@ suite "lexi":
             Token(str:"if",   tok:◆if,          line:0, col:0),
             Token(str:"true", tok:◆true,        line:0, col:3)
             ]
+            
+        check ast("iforintruefalse") == @[Token(str:"iforintruefalse", tok:◆name, line:0, col:0)]
+            
+    # ██     ██  ███   ███  ███      █████████  ███
+    # ███   ███  ███   ███  ███         ███     ███
+    # █████████  ███   ███  ███         ███     ███
+    # ███ █ ███  ███   ███  ███         ███     ███
+    # ███   ███   ███████   ███████     ███     ███
+
+    test "multi line":
 
         check ast("if false\n    null") == @[
             Token(str:"if",    tok:◆if,         line:0, col:0),
             Token(str:"false", tok:◆false,      line:0, col:3),
             Token(str:"    ",  tok:◆indent,     line:1, col:0),
             Token(str:"null",  tok:◆null,       line:1, col:4),
+            ]
+
+        check ast("for i in l\n    ⮐  i").deepEqual @[
+            Token(str:"for",   tok:◆for,        line:0, col:0),
+            Token(str:"i",     tok:◆name,       line:0, col:4),
+            Token(str:"in",    tok:◆in,         line:0, col:6),
+            Token(str:"l",     tok:◆name,       line:0, col:9),
+            Token(str:"    ",  tok:◆indent,     line:1, col:0),
+            Token(str:"⮐",     tok:◆return,     line:1, col:4),
+            Token(str:"i",     tok:◆name,       line:1, col:7),
             ]

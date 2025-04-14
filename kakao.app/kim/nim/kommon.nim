@@ -6,11 +6,27 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ]#
 
-import std/[tables, typetraits, macros, terminal, strformat, strutils]
+import std/[tables, typetraits, macros, terminal, strformat, strutils, unicode]
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
 
+# Splits a string into grapheme clusters (user-perceived characters)
+
+# ███   ███   ███████  ████████   ███████ 
+# ███  ███   ███       ███       ███      
+# ███████    ███████   ███████   ███  ████
+# ███  ███        ███  ███       ███   ███
+# ███   ███  ███████   ████████   ███████ 
+
+proc kseg*(s:string) : seq[string] =
+  
+    var i = 0
+    while i < s.len:
+        let clusterSize = graphemeLen(s, i)
+        result.add(s.substr(i, i + clusterSize - 1))
+        i += clusterSize
+    
 # ████████   ███████   ███   ███   ███████   ███    
 # ███       ███   ███  ███   ███  ███   ███  ███    
 # ███████   ███ ██ ██  ███   ███  █████████  ███    
@@ -18,6 +34,8 @@ converter toBool*[T](x: seq[T]): bool = x.len > 0
 # ████████   █████ ██   ███████   ███   ███  ███████
 
 proc deepEqual*[T](a, b: T): bool =
+
+    # echo "deepEqual ", a, " ", b
 
     when T is (seq or array):
         if a.len != b.len:
@@ -34,9 +52,9 @@ proc deepEqual*[T](a, b: T): bool =
             if not deepEqual(valA, b[key]):
                 return  false
     elif T is object:
-        for key, valA in a.fieldPairs:
-            if not deepEqual(valA, b[key]):
-                return  false
+        if a != b:
+            echo &"{a} != {b}"
+            return  false
     elif T is tuple:
         if a != b:
             return  false

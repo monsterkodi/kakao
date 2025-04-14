@@ -83,14 +83,32 @@ const
         ">=": ◆greater_equal,
         "<=": ◆less_equal,
         ">":  ◆greater,
-        "<":  ◆less
+        "<":  ◆less,
+        "⮐":  ◆return,
         }.toTable()
         
     keywords = {
-        "if":    ◆if,
-        "true":  ◆true,
-        "false": ◆false,
-        "null":  ◆null
+        "if":       ◆if,
+        "in":       ◆in,
+        "for":      ◆for,
+        "for":      ◆for,
+        
+        "when":     ◆when,
+        "then":     ◆then,
+        "elif":     ◆elif,
+        "else":     ◆else,
+        "switch":   ◆switch,
+        "is":       ◆is,
+        "of":       ◆of,
+        "break":    ◆break,
+        "continue": ◆continue,
+        "while":    ◆while,
+        "class":    ◆class,
+        
+        "true":     ◆true,
+        "false":    ◆false,
+        "null":     ◆null,
+        "return":   ◆return
         }.toTable()
     
 type
@@ -100,9 +118,11 @@ type
         line* : int
         col*  : int
     
-# log 'tok:'
-# for t in tok:
-#     log &"   {t} {ord(t)}"
+#  ███████    ███████  █████████
+# ███   ███  ███          ███   
+# █████████  ███████      ███   
+# ███   ███       ███     ███   
+# ███   ███  ███████      ███   
 
 proc ast*(lines:seq[string]) : seq[Token] =
 
@@ -112,12 +132,13 @@ proc ast*(lines:seq[string]) : seq[Token] =
     for index,line in lines
         var prev  = ""
         let firstLineTokenIndex = tokens.len
-        log "line: ", line
+        # log "line: ", line
         var col = 0
         token = Token(line:index, col:col)
-        while col < line.len
-            let char = line[col..col]
-            # log &"c[{col}]: {char}"
+        let segs = kseg line
+        while col < segs.len
+            let char = segs[col]
+            log &"c[{col}]: {char}"
             
             proc push(str = "", tk = ◆name) =
                 if token.str.len
@@ -161,5 +182,4 @@ proc ast*(lines:seq[string]) : seq[Token] =
 proc ast*(text:string) : seq[Token] =
 
     ast text.splitLines()
-
-dbg alltoks
+    

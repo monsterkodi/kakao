@@ -10,8 +10,9 @@ var
     optParser = initOptParser()
     files: seq[string] = @[]
     outdir    = ""
+    tests     = false
     verbose   = false
-    dry       = false
+    testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(proc (r:tuple) : string = r.path)
     
 randomize()
 
@@ -29,8 +30,8 @@ for kind, key, val in optParser.getopt():
         of cmdLongOption, cmdShortOption:
             params.add "-" & key
             case key:
-                of "dry", "d":
-                    dry = true
+                of "test", "t":
+                    tests = true
                 of "verbose", "v":
                     verbose = true
                 of "outdir", "o":
@@ -43,6 +44,7 @@ for kind, key, val in optParser.getopt():
                     echo ""
                     echo "options:"
                     echo "  -o, --outdir:DIR  output directory"
+                    echo "  -t, --test        run tests"
                     echo "  -v, --verbose     verbose output"
                     quit(1)
                 else:
@@ -117,11 +119,32 @@ proc compile(file:string, outDir:string="bin") : bool =
     else:
         styledEcho fgGreen, "✔ ", fgWhite, cmd
         true
+        
+# █████████  ████████   ███████  █████████   ███████
+#    ███     ███       ███          ███     ███     
+#    ███     ███████   ███████      ███     ███████ 
+#    ███     ███            ███     ███          ███
+#    ███     ████████  ███████      ███     ███████ 
+
+proc runTests() : bool =
+    
+    for f in testFiles:
+        let cmd = &"nim r --colors:on {f}"
+        let (output, exitCode) = execCmdEx(cmd)
+        styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔")
+        if exitCode != 0:
+            styledEcho fgRed, "✘ ", &"{cmd}"
+            return  false
+    true
 
 if files.len:
 
     let transpiled = trans.pile(files)
     quit(transpiled.len - files.len)    
+    
+if tests:
+    discard runTests()
+    quit(0)
  
 # ███   ███   ███████   █████████   ███████  ███   ███
 # ███ █ ███  ███   ███     ███     ███       ███   ███
@@ -187,7 +210,8 @@ proc watch(paths:seq[string]) =
                     continue
         
                 modTimes[f] = modTime
-                if ext == ".nim":
+                if ext == ".nim" and not testFiles.contains f:
+                    # echo "doBuild ", f
                     doBuild = true
                 elif ext == ".kim":
                     toTranspile.add f
@@ -203,6 +227,8 @@ proc watch(paths:seq[string]) =
         if toTranspile:
             for f in trans.pile(toTranspile):
                 logFile f, "✔ "
+                
+            discard runTests()
             
         if doBuild:
             if compile("nim/kim.nim", "bin"):

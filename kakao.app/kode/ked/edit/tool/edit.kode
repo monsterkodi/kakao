@@ -140,8 +140,12 @@ function edit
         ⮐  [lines posl] if empty rngs
         
         for ri in rngs.length-1..0
-            
+        
             rng = rngs[ri]
+            
+            if rng[1] >= lines.length or rng[3] >= lines.length
+                warn "range out of bounds?" rng
+                continue
             
             posl = @adjustPositionsForDeletedLineRange posl lines rng
             

@@ -161,6 +161,11 @@ edit = (function ()
         for (var _a_ = ri = rngs.length - 1, _b_ = 0; (_a_ <= _b_ ? ri <= 0 : ri >= 0); (_a_ <= _b_ ? ++ri : --ri))
         {
             rng = rngs[ri]
+            if (rng[1] >= lines.length || rng[3] >= lines.length)
+            {
+                console.warn("range out of bounds?",rng)
+                continue
+            }
             posl = this.adjustPositionsForDeletedLineRange(posl,lines,rng)
             if (rng[1] === rng[3])
             {
