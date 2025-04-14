@@ -22,9 +22,14 @@ type
         ◆class,
         ◆return,
         ◆use,
+        ◆true,
+        ◆false,
+        ◆null,
+        ◆int,
+        ◆float,
+        ◆string,
         ◆try,
         ◆catch,
-        ◆string,
         ◆string_start,
         ◆string_end,
         ◆this,
@@ -40,12 +45,11 @@ type
         ◆comment,
         ◆comment_end,
         ◆indent,
+        ◆comma,
         ◆colon,
         ◆semicolon,
         ◆doubledot,
         ◆tripledot,
-        ◆int,
-        ◆float,
         ◆newline,
         ◆assign,
         ◆equal,
@@ -63,6 +67,7 @@ const
     
 const
     charTok = {
+        ",":  ◆comma,
         ":":  ◆colon,
         ";":  ◆semicolon,
         "{":  ◆bracket_open,
@@ -80,6 +85,13 @@ const
         ">":  ◆greater,
         "<":  ◆less
         }.toTable()
+        
+    keywords = {
+        "if":    ◆if,
+        "true":  ◆true,
+        "false": ◆false,
+        "null":  ◆null
+        }.toTable()
     
 type
     Token* = object
@@ -95,42 +107,55 @@ type
 proc ast*(lines:seq[string]) : seq[Token] =
 
     var tokens = default seq[Token]
-    var token = Token(line:0, col:0)
+    var token : Token # = Token()
 
     for index,line in lines
         var prev  = ""
         let firstLineTokenIndex = tokens.len
         log "line: ", line
         var col = 0
+        token = Token(line:index, col:col)
         while col < line.len
             let char = line[col..col]
-            log &"c[{col}]: {char}"
+            # log &"c[{col}]: {char}"
+            
+            proc push(str = "", tk = ◆name) =
+                if token.str.len
+                    tokens.add token
+                token = Token(str:str, tok:tk, line:index, col:col)
+            
             if char == " "
                 if tokens.len == firstLineTokenIndex and token.str.len == 0 or token.tok == ◆indent
                     token.tok = ◆indent
                     token.str.add char
                 elif prev != " "
-                    tokens.add token
-                    token = Token(line:index)
+                    push()
             else
                 let next = line[col+1..col+1]
                 if prev == " "
                     if token.tok == ◆indent
-                        tokens.add token
-                        token = Token(line:index)
+                        push()
                     token.col = col
                         
                 if charTok.hasKey (char & next)
-                    token = Token(str:(char & next), tok:charTok[(char & next)], line:index, col:col)
+                    push(char & next, charTok[char & next])
                     col += 1
                 elif charTok.hasKey char
-                    token = Token(str:char, tok:charTok[char], line:index, col:col)
+                    push(char, charTok[char])
                 else
                     token.str.add char
+                    
+                    if keywords.hasKey(token.str) and (next == " " or charTok.hasKey(next))
+                        token.tok = keywords[token.str]
+                        push()
             col += 1
             prev = char
-    if token.str.len
-        tokens.add token
+            
+        if token.str.len
+            if keywords.hasKey(token.str)
+                token.tok = keywords[token.str]
+            tokens.add token
+        
     ⮐  tokens
     
 proc ast*(text:string) : seq[Token] =

@@ -394,7 +394,7 @@ dirtree = (function ()
         dirItem.tilde = dirItem.tilde.replace(icons.dir_open,icons.dir_close)
         index = this.items.indexOf(dirItem)
         numChildren = 0
-        while (this.items[index + numChildren + 1].path.startsWith(dirItem.path))
+        while (index + numChildren + 1 < this.items.length && this.items[index + numChildren + 1].path.startsWith(dirItem.path))
         {
             numChildren += 1
         }

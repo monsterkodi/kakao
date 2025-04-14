@@ -322,7 +322,7 @@ function dirtree extends choices
         index = @items.indexOf dirItem
         
         numChildren = 0
-        while @items[index+numChildren+1].path.startsWith dirItem.path
+        while index+numChildren+1 < @items.length and @items[index+numChildren+1].path.startsWith dirItem.path
             numChildren += 1
         
         kutil.replace @items index+1 numChildren []
