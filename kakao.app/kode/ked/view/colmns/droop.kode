@@ -25,7 +25,10 @@ function droop extends quicky
         @setColor 'frame' theme.quicky.frame
     
         post.on 'droop.show' @onShow
+        post.on 'droop.hide' @onHide
         
+    onHide: => @hide()
+    
     onShow: d =>
     
         @pos = d.pos

@@ -18,6 +18,7 @@ crumbs = (function ()
     function crumbs (screen, name)
     {
         this["onMouse"] = this["onMouse"].bind(this)
+        this["onMouseLeave"] = this["onMouseLeave"].bind(this)
         this["show"] = this["show"].bind(this)
         crumbs.__super__.constructor.call(this,screen,name)
         this.pointerType = 'pointer'
@@ -202,9 +203,17 @@ crumbs = (function ()
         return this.cells.rows > 0
     }
 
+    crumbs.prototype["onMouseLeave"] = function (event)
+    {
+        var index
+
+        index = this.hoverIndex
+        return this.emit('action','leave',this.pathAtSplitIndex(index),{index:index,cols:this.colsAtSplitIndex(index)})
+    }
+
     crumbs.prototype["onMouse"] = function (event)
     {
-        var col, index, path, row, si, _174_26_
+        var col, index, path, row, si, _179_26_
 
         var _a_ = this.eventPos(event); col = _a_[0]; row = _a_[1]
 

@@ -31,11 +31,18 @@ droop = (function ()
         this["onChoicesAction"] = this["onChoicesAction"].bind(this)
         this["preview"] = this["preview"].bind(this)
         this["onShow"] = this["onShow"].bind(this)
+        this["onHide"] = this["onHide"].bind(this)
         droop.__super__.constructor.call(this,this.screen,'droop')
         this.isVisible = false
         this.setColor('bg',theme.droop.bg)
         this.setColor('frame',theme.quicky.frame)
         post.on('droop.show',this.onShow)
+        post.on('droop.hide',this.onHide)
+    }
+
+    droop.prototype["onHide"] = function ()
+    {
+        return this.hide()
     }
 
     droop.prototype["onShow"] = function (d)

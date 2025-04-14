@@ -141,6 +141,7 @@ status = (function ()
         switch (action)
         {
             case 'click':
+                clearTimeout(this.droopTimer)
                 if (!_k_.empty(event.mods))
                 {
                     return post.emit('dircol.root',path)
@@ -151,7 +152,19 @@ status = (function ()
                 }
                 break
             case 'enter':
-                return this.droopCrumb(path,event)
+                post.emit('droop.hide')
+                clearTimeout(this.droopTimer)
+                return this.droopTimer = setTimeout(((function (p, e)
+                {
+                    return (function ()
+                    {
+                        return this.droopCrumb(p,e)
+                    }).bind(this)
+                }).bind(this))(path,event),500)
+
+            case 'leave':
+                clearTimeout(this.droopTimer)
+                return delete this.droopTimer
 
         }
 
@@ -161,6 +174,8 @@ status = (function ()
     {
         var files, x
 
+        clearTimeout(this.droopTimer)
+        delete this.droopTimer
         path = slash.untilde(path)
         files = await nfs.list(path,{recursive:false})
         x = this.crumbs.cells.x + parseInt((crumb.cols[1] + crumb.cols[0]) / 2)

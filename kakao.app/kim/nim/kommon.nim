@@ -39,17 +39,22 @@ proc deepEqual*[T](a, b: T): bool =
 
     when T is (seq or array):
         if a.len != b.len:
+            echo &"{a.len} != {b.len} length differs"
             return  false
         for i in 0..<a.len:
             if not deepEqual(a[i], b[i]):
+                echo &"{a[i]} != {b[i]}"
                 return  false
     elif T is (Table or TableRef or OrderedTable):
         if a.len != b.len:
+            echo &"{a.len} != {b.len} length differs"
             return  false
         for (key, valA) in a.pairs:
             if not b.hasKey(key):
+                echo &"{key} not in {b}"
                 return  false
             if not deepEqual(valA, b[key]):
+                echo &"{valA} != {b[key]}"
                 return  false
     elif T is object:
         if a != b:
@@ -57,9 +62,11 @@ proc deepEqual*[T](a, b: T): bool =
             return  false
     elif T is tuple:
         if a != b:
+            echo &"{a} != {b}"
             return  false
     else:
         if a != b:
+            echo &"{a} != {b}"
             return  false
     true
     

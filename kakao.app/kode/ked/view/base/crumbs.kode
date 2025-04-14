@@ -164,6 +164,11 @@ function crumbs extends view
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
 
+    onMouseLeave: event =>
+     
+        index = @hoverIndex
+        @emit 'action' 'leave' @pathAtSplitIndex(index) index:index cols:@colsAtSplitIndex(index) 
+
     onMouse: event =>
         
         [col row] = @eventPos event
@@ -193,6 +198,7 @@ function crumbs extends view
                     @hoverIndex = index
                     @emit 'action' 'enter' @pathAtSplitIndex(index) index:index cols:@colsAtSplitIndex(index) 
                     ⮐  redraw:true
+
         @hover
                     
 export crumbs

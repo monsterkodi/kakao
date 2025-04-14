@@ -88,15 +88,28 @@ function status extends view
         switch action
         
             'click'  
+                
+                clearTimeout @droopTimer
                 if valid event.mods
                     post.emit 'dircol.root' path
                 else
                     post.emit 'browse.dir' path
                     
             'enter'
-                @droopCrumb path event
+                
+                post.emit 'droop.hide'
+                clearTimeout @droopTimer
+                @droopTimer = setTimeout ((p e) => =>  @droopCrumb(p e))(path event), 500
+                
+            'leave'
+                
+                clearTimeout @droopTimer
+                delete @droopTimer
                 
     droopCrumb: path crumb ○=>
+
+        clearTimeout @droopTimer
+        delete @droopTimer
     
         path = slash.untilde path
         files =○ nfs.list path recursive:false

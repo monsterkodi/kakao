@@ -121,13 +121,13 @@ type
         line* : int
         col*  : int
     
-#  ███████    ███████  █████████
-# ███   ███  ███          ███   
-# █████████  ███████      ███   
-# ███   ███       ███     ███   
-# ███   ███  ███████      ███   
+# █████████   ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
+#    ███     ███   ███  ███  ███   ███       ████  ███  ███     ███   ███     
+#    ███     ███   ███  ███████    ███████   ███ █ ███  ███    ███    ███████ 
+#    ███     ███   ███  ███  ███   ███       ███  ████  ███   ███     ███     
+#    ███      ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
 
-proc tokenSequence*(lines:seq[string]) : seq[Token] =
+proc tokenize*(lines:seq[string]) : seq[Token] =
 
     var tokens = default seq[Token]
     var token : Token
@@ -163,9 +163,16 @@ proc tokenSequence*(lines:seq[string]) : seq[Token] =
                         
                 if charTok.hasKey (char & next)
                     push(char & next, charTok[char & next])
-                    col += 1
+                    col += 2
+                    push()
+                    prev = char
+                    continue
                 elif charTok.hasKey char
                     push(char, charTok[char])
+                    col += 1
+                    push()
+                    prev = char
+                    continue
                 else
                     token.str.add char
                     
@@ -182,7 +189,7 @@ proc tokenSequence*(lines:seq[string]) : seq[Token] =
         
     ⮐  tokens
     
-proc tokenSequence*(text:string) : seq[Token] =
+proc tokenize*(text:string) : seq[Token] =
 
-    tokenSequence text.splitLines()
+    tokenize text.splitLines()
     
