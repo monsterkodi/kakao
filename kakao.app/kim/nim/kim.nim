@@ -183,6 +183,8 @@ proc watch(paths:seq[string]) =
         var kimFiles:seq[string]
         var nimFiles:seq[string]
         
+        # echo paths
+        
         for path in paths:
         
             if not dirExists(path):
@@ -214,6 +216,7 @@ proc watch(paths:seq[string]) =
                     # echo "doBuild ", f
                     doBuild = true
                 elif ext == ".kim":
+                    # echo &"totranspile {f}"
                     toTranspile.add f
                 
         if firstLoop:
@@ -221,22 +224,24 @@ proc watch(paths:seq[string]) =
             firstLoop = false
             for f in kimFiles:
                 logFile f
-            # for f in nimFiles
-            #     logFile f
+            for f in nimFiles:
+                logFile f
                 
         if toTranspile:
+            # echo &"toTranspile: {toTranspile}"
             for f in trans.pile(toTranspile):
                 logFile f, "✔ "
-                
+            # echo "transpiled"    
             discard runTests()
             
         if doBuild:
+            # echo "doBuild!"    
             if compile("nim/kim.nim", "bin"):
                 for f in kimFiles:
                     let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
-                
+        # echo "sleep"        
         sleep 300
         
 watch(@[getCurrentDir()]) 

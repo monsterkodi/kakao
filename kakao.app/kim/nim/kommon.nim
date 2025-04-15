@@ -10,14 +10,34 @@ import std/[tables, typetraits, macros, terminal, strformat, strutils, unicode]
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
+    
+proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
 
-# Splits a string into grapheme clusters (user-perceived characters)
+    if s.len > 0:
+        s.setLen(s.len - 1)
+    s
 
+proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
+
+    s.add item
+    s
+        
+proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
+    if s.len > 0:
+        s.delete 1
+    s
+        
+proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
+    s.insert @[item]
+    s
+    
 # ███   ███   ███████  ████████   ███████ 
 # ███  ███   ███       ███       ███      
 # ███████    ███████   ███████   ███  ████
 # ███  ███        ███  ███       ███   ███
 # ███   ███  ███████   ████████   ███████ 
+
+# Splits a string into grapheme clusters (user-perceived characters)
 
 proc kseg*(s:string) : seq[string] =
   

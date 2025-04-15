@@ -156,7 +156,7 @@ import ../lexi
         check tokenize("\"#{}\"") == @[
             Token(str:"\"",     tok:◆string_start,  line:0, col:0),
             Token(str:"#{",     tok:◆stripol_start, line:0, col:1),
-            Token(str:"}",      tok:◆stripol_end,   line:0, col:1),
+            Token(str:"}",      tok:◆stripol_end,   line:0, col:3),
             Token(str:"\"",     tok:◆string_end,    line:0, col:4),
             ]
             

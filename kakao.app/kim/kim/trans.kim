@@ -281,7 +281,7 @@ proc trans*(fileIn:string) : string =
     while streamIn.readLine(line)
         line = pose(line, info)
         streamOut.writeLine(line)
-    
+    # echo "trans done:: ", fileOut
     fileOut
 
 # ████████   ███  ███      ████████
@@ -298,5 +298,7 @@ proc pile*(files:seq[string]) : seq[string] =
     var transpiled:seq[string]
     for file in files
         transpiled.add trans file
+        
+    # echo "pile done:: ", transpiled
     transpiled
             

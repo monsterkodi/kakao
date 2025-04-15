@@ -1,6 +1,13 @@
 
-import std/[strformat, strutils, tables]
+import std/[strformat, strutils, tables, macros]
 import kommon
+
+# system.pop = kommon.pop
+# proc pop*[T](s: var seq[T]): seq[T] {. discardable .} =
+# 
+#     if s.len > 0:
+#         s.setLen(s.len - 1)
+#     s
 
 type
     tok* = enum
@@ -58,12 +65,22 @@ type
         ◆greater_equal,
         ◆greater,
         ◆less,
+        ◆proc,
+        ◆var,
+        ◆let
         
     toks* = set[tok]
     
 const 
     alltoks  = { low(tok)..high(tok) }
     thenable = { ◆if, ◆elif }
+    
+    openToks  = { ◆paren_open,  ◆bracket_open,  ◆square_open  }
+    closeToks = { ◆paren_close, ◆bracket_close, ◆square_close }
+    closeOpen = { 
+        ◆paren_close:   ◆paren_open, 
+        ◆bracket_close: ◆bracket_open,
+        ◆square_close:  ◆square_open }.toTable()
     
 const
     charTok = {
@@ -113,6 +130,9 @@ const
         "null":     ◆null,
         "nil":      ◆null,
         "use":      ◆use,
+        "proc":     ◆proc,
+        "var":      ◆var,
+        "let":      ◆let,
         }.toTable()
     
 type
@@ -130,8 +150,10 @@ type
 
 proc tokenize*(lines:seq[string]) : seq[Token] =
 
-    var tokens = default seq[Token]
+    var tokens    = default seq[Token]
+    var openStack = default seq[tok]
     var token : Token
+    var inStripol = false
 
     for index,line in lines
         var prev  = ""
@@ -144,10 +166,10 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
         while col < segs.len
         
             let char = segs[col]
-            let next = line[col+1]
+            
             # log &"c[{col}]: {char}"
             
-            proc push(str = "", tk = ◆name) =
+            proc pushToken(str = "", tk = ◆name) =
                 if token.str.len
                     tokens.add token
                 token = Token(str:str, tok:tk, line:index, col:col)
@@ -156,31 +178,37 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
             
                 let topTok = tokens[^1]
                 
-                if topTok.tok == ◆string_start
-
+                if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end
+            
                     token.tok = ◆string
-                    while col < segs.len-1 and segs[col] != topTok.str
+                    var delimiter = topTok.str
+                    if topTok.tok == ◆stripol_end
+                        delimiter = "\""
+                    while col < segs.len-1 and segs[col] != delimiter
                         token.str &= segs[col]
                         if segs[col] == "\\"
                             col += 1
                             token.str &= segs[col]
+                        if segs[col] == "#" and delimiter == "\"" and col < segs.len-1 and segs[col+1] == "{"
+                            # log &"delimiter {delimiter} {col} {segs[col]}"
+                            token.str &= "{"
+                            token.tok = ◆stripol_start
+                            pushToken()
+                            col += 2
+                            prev = segs[col-1]
+                            inStripol = true  
+                            break
                         col += 1
-                        if topTok.str == "\""
-                            if segs[col] == "#" and segs[col+1] == "{"
-                                token.str &= "{"
-                                token.tok = ◆stripol_start
-                                push()
-                                col += 2
-                                prev = segs[col-1]
-                                inStripol = true  
-                                continue
                                 
-                    push(topTok.str, ◆string_end)
+                    if inStripol
+                        continue
+                                
+                    pushToken(delimiter, ◆string_end)
                     if col >= segs.len-1
                         break
                     else
                         col += 1
-                        prev = topTok.str
+                        prev = delimiter
                         continue
                         
             if char == " "
@@ -188,32 +216,55 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     token.tok = ◆indent
                     token.str.add char
                 elif prev != " "
-                    push()
+                    pushToken()
             else
                 
                 if prev == " "
                     if token.tok == ◆indent
-                        push()
+                        pushToken()
                     token.col = col
+                
+                if col < segs.len-1
+                    let next = segs[col+1]
+                    if charTok.hasKey char & next
+                        pushToken(char & next, charTok[char & next])
+                        col += 2
+                        pushToken()
+                        prev = char
+                        continue
                         
-                if charTok.hasKey char & next
-                    push(char & next, charTok[char & next])
-                    col += 2
-                    push()
-                    prev = char
-                    continue
-                elif charTok.hasKey char
-                    push(char, charTok[char])
+                if charTok.hasKey char
+                
+                    if charTok[char] in openToks
+                        openStack.push(charTok[char])
+                    elif charTok[char] in closeToks
+                        # log &"closeTok {charTok[char]}"
+                        if openStack.len and openStack[^1] == closeOpen[charTok[char]]
+                            log &"popping! {charTok[char]} {openStack}"
+                            openStack.pops()
+                        elif charTok[char] == ◆bracket_close and inStripol
+                            # log "stripol_end!!"
+                            inStripol = false
+                            pushToken(char, ◆stripol_end)
+                            col += 1
+                            pushToken()
+                            token.tok = ◆string
+                            prev = char
+                            continue
+                        else
+                            log &"unmatched close? {charTok[char]} {openStack}"
+                
+                    pushToken(char, charTok[char])
                     col += 1
-                    push()
+                    pushToken()
                     prev = char
                     continue
                 else
                     token.str.add char
                     
-                    if keywords.hasKey(token.str) and (next == " " or charTok.hasKey(next))
+                    if keywords.hasKey(token.str) and (col >= segs.len-1 or segs[col+1] == " " or charTok.hasKey(segs[col+1]))
                         token.tok = keywords[token.str]
-                        push()
+                        pushToken()
             col += 1
             prev = char
             
