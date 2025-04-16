@@ -2,13 +2,6 @@
 import std/[strformat, strutils, tables, macros]
 import kommon
 
-# system.pop = kommon.pop
-# proc pop*[T](s: var seq[T]): seq[T] {. discardable .} =
-# 
-#     if s.len > 0:
-#         s.setLen(s.len - 1)
-#     s
-
 type
     tok* = enum
         ◆name,
@@ -96,6 +89,7 @@ const
         "[":  ◆square_open,
         "]":  ◆square_close,
         "=":  ◆assign,
+        "#":  ◆comment_start,
         "==": ◆equal,
         "!=": ◆not_equal,
         ">=": ◆greater_equal,
@@ -154,9 +148,9 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
     var openStack = default seq[tok]
     var token : Token
     var inStripol = false
+    var inMultiLineComment = false
 
     for index,line in lines
-        var prev  = ""
         let firstLineTokenIndex = tokens.len
         # log "line: ", line
         var col = 0
@@ -167,8 +161,6 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
         
             let char = segs[col]
             
-            # log &"c[{col}]: {char}"
-            
             proc pushToken(str = "", tk = ◆name) =
                 if token.str.len
                     tokens.add token
@@ -176,7 +168,7 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                 
             if tokens.len 
             
-                let topTok = tokens[^1]
+                var topTok = tokens[^1]
                 
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end
             
@@ -190,12 +182,10 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                             col += 1
                             token.str &= segs[col]
                         if segs[col] == "#" and delimiter == "\"" and col < segs.len-1 and segs[col+1] == "{"
-                            # log &"delimiter {delimiter} {col} {segs[col]}"
                             token.str &= "{"
                             token.tok = ◆stripol_start
-                            pushToken()
                             col += 2
-                            prev = segs[col-1]
+                            pushToken()
                             inStripol = true  
                             break
                         col += 1
@@ -208,18 +198,47 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                         break
                     else
                         col += 1
-                        prev = delimiter
                         continue
+                
+                if inMultiLineComment
+                    token.tok = ◆comment
+                    while col <= segs.len-1 and (col >= segs.len-2 or segs[col..col+2].join("") != "###")
+                        token.str &= segs[col]
+                        col += 1
+                    if col < segs.len-1
+                        pushToken("###", ◆comment_end)
+                        col += 3
+                        pushToken()
+                        inMultiLineComment = false
+                        continue
+                    else
+                        pushToken("", ◆comment)
+                    break
+                
+                if topTok.tok == ◆comment_start
+                
+                    if col == topTok.col+1 and col < segs.len-1 and segs[col] == "#" and segs[col+1] == "#"
+                        topTok.str = "###"
+                        tokens.pops()
+                        tokens.push topTok
+                        col += 2
+                        token.col += 2
+                        inMultiLineComment = true
+                        continue
+                
+                    token.tok = ◆comment
+                    token.str &= segs[col..^1].join ''
+                    break
                         
             if char == " "
                 if tokens.len == firstLineTokenIndex and token.str.len == 0 or token.tok == ◆indent
                     token.tok = ◆indent
                     token.str.add char
-                elif prev != " "
+                elif col == 0 or segs[col-1] != " "
                     pushToken()
             else
                 
-                if prev == " "
+                if col > 0 and segs[col-1] == " "
                     if token.tok == ◆indent
                         pushToken()
                     token.col = col
@@ -230,7 +249,6 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                         pushToken(char & next, charTok[char & next])
                         col += 2
                         pushToken()
-                        prev = char
                         continue
                         
                 if charTok.hasKey char
@@ -238,26 +256,19 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     if charTok[char] in openToks
                         openStack.push(charTok[char])
                     elif charTok[char] in closeToks
-                        # log &"closeTok {charTok[char]}"
                         if openStack.len and openStack[^1] == closeOpen[charTok[char]]
-                            log &"popping! {charTok[char]} {openStack}"
                             openStack.pops()
                         elif charTok[char] == ◆bracket_close and inStripol
-                            # log "stripol_end!!"
                             inStripol = false
                             pushToken(char, ◆stripol_end)
                             col += 1
                             pushToken()
                             token.tok = ◆string
-                            prev = char
                             continue
-                        else
-                            log &"unmatched close? {charTok[char]} {openStack}"
                 
                     pushToken(char, charTok[char])
                     col += 1
                     pushToken()
-                    prev = char
                     continue
                 else
                     token.str.add char
@@ -266,7 +277,6 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                         token.tok = keywords[token.str]
                         pushToken()
             col += 1
-            prev = char
             
         if token.str.len
             if keywords.hasKey(token.str)

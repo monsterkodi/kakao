@@ -114,6 +114,12 @@ suite "lexi":
             Token(str:"z",      tok:◆name,          line:2, col:7),
             ]
 
+    #  ███████  █████████  ████████   ███  ███   ███   ███████    ███████
+    # ███          ███     ███   ███  ███  ████  ███  ███        ███     
+    # ███████      ███     ███████    ███  ███ █ ███  ███  ████  ███████ 
+    #      ███     ███     ███   ███  ███  ███  ████  ███   ███       ███
+    # ███████      ███     ███   ███  ███  ███   ███   ███████   ███████ 
+
     test "strings":
     
         check tokenize("a = 'if'") == @[
@@ -145,6 +151,12 @@ suite "lexi":
             Token(str:"\"",     tok:◆string_end,    line:0, col:9),
             ]
             
+    #  ███████  █████████  ████████   ███  ████████    ███████   ███    
+    # ███          ███     ███   ███  ███  ███   ███  ███   ███  ███    
+    # ███████      ███     ███████    ███  ████████   ███   ███  ███    
+    #      ███     ███     ███   ███  ███  ███        ███   ███  ███    
+    # ███████      ███     ███   ███  ███  ███         ███████   ███████
+
     test "stripol":
     
         check tokenize("'#{}'") == @[
@@ -158,5 +170,87 @@ suite "lexi":
             Token(str:"#{",     tok:◆stripol_start, line:0, col:1),
             Token(str:"}",      tok:◆stripol_end,   line:0, col:3),
             Token(str:"\"",     tok:◆string_end,    line:0, col:4),
+            ]
+
+        check tokenize("\"#{a}\"") == @[
+            Token(str:"\"",     tok:◆string_start,  line:0, col:0),
+            Token(str:"#{",     tok:◆stripol_start, line:0, col:1),
+            Token(str:"a",      tok:◆name,          line:0, col:3),
+            Token(str:"}",      tok:◆stripol_end,   line:0, col:4),
+            Token(str:"\"",     tok:◆string_end,    line:0, col:5),
+            ]
+
+        check tokenize("\"#{abc}\"") == @[
+            Token(str:"\"",     tok:◆string_start,  line:0, col:0),
+            Token(str:"#{",     tok:◆stripol_start, line:0, col:1),
+            Token(str:"abc",    tok:◆name,          line:0, col:3),
+            Token(str:"}",      tok:◆stripol_end,   line:0, col:6),
+            Token(str:"\"",     tok:◆string_end,    line:0, col:7),
+            ]
+
+        check tokenize("\"#{a}#{b}\"") == @[
+            Token(str:"\"",     tok:◆string_start,  line:0, col:0),
+            Token(str:"#{",     tok:◆stripol_start, line:0, col:1),
+            Token(str:"a",      tok:◆name,          line:0, col:3),
+            Token(str:"}",      tok:◆stripol_end,   line:0, col:4),
+            Token(str:"#{",     tok:◆stripol_start, line:0, col:5),
+            Token(str:"b",      tok:◆name,          line:0, col:7),
+            Token(str:"}",      tok:◆stripol_end,   line:0, col:8),
+            Token(str:"\"",     tok:◆string_end,    line:0, col:9),
+            ]
+          
+    # ███████    ████████    ███████    ███████  ███   ███  ████████  █████████   ███████
+    # ███   ███  ███   ███  ███   ███  ███       ███  ███   ███          ███     ███     
+    # ███████    ███████    █████████  ███       ███████    ███████      ███     ███████ 
+    # ███   ███  ███   ███  ███   ███  ███       ███  ███   ███          ███          ███
+    # ███████    ███   ███  ███   ███   ███████  ███   ███  ████████     ███     ███████ 
+
+    test "brackets  ":
+    
+        check tokenize("{()}[{}]") == @[
+            Token(str:"{",     tok:◆bracket_open,  line:0, col:0),
+            Token(str:"(",     tok:◆paren_open,    line:0, col:1),
+            Token(str:")",     tok:◆paren_close,   line:0, col:2),
+            Token(str:"}",     tok:◆bracket_close, line:0, col:3),
+            Token(str:"[",     tok:◆square_open,   line:0, col:4),
+            Token(str:"{",     tok:◆bracket_open,  line:0, col:5),
+            Token(str:"}",     tok:◆bracket_close, line:0, col:6),
+            Token(str:"]",     tok:◆square_close,  line:0, col:7),
+            ]
+
+        check tokenize(")}]") == @[
+            Token(str:")",     tok:◆paren_close,   line:0, col:0),
+            Token(str:"}",     tok:◆bracket_close, line:0, col:1),
+            Token(str:"]",     tok:◆square_close,  line:0, col:2),
+            ]
+
+        check tokenize("[{(") == @[
+            Token(str:"[",     tok:◆square_open,   line:0, col:0),
+            Token(str:"{",     tok:◆bracket_open,  line:0, col:1),
+            Token(str:"(",     tok:◆paren_open,    line:0, col:2),
+            ]
+    
+    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████   ███████
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███     ███     
+    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███     ███████ 
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███          ███
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███     ███████ 
+
+    test "comments":
+    
+        check tokenize("#") == @[
+            Token(str:"#",        tok:◆comment_start, line:0, col:0),
+            ]
+
+        check tokenize("# if true") == @[
+            Token(str:"#",        tok:◆comment_start, line:0, col:0),
+            Token(str:" if true", tok:◆comment,       line:0, col:1),
+            ]
+
+        check tokenize("### if\n    true###") == @[
+            Token(str:"###",      tok:◆comment_start, line:0, col:0),
+            Token(str:" if",      tok:◆comment,       line:0, col:3),
+            Token(str:"    true", tok:◆comment,       line:1, col:0),
+            Token(str:"###",      tok:◆comment_end,   line:1, col:8),
             ]
             

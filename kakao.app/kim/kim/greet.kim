@@ -13,13 +13,11 @@ let greetings* = [
     "🚀 Greetings, cosmic engineer! Your code awaits launch.",
     "🤖 Salutations, human! I see you’ve brought some code to cook.", 
     "🤖 Greetings, fleshbag! Let your code ripple through the machine.",
-    "🏰 Hail, keeper of the sacred codes! The gates of transpilation stand open.",
     "🎩 Magician at the keyboard! Shall we conjure some code magic?",
     "🎩 The arcane machinery hums. Your spells, please.",
     "🎩 Your wish, my master.",
     "🎩 Your wish is my command.",    
-    "📡 Signals aligned. Watching, waiting, transpiling.",
-    "🔍 Observer mode engaged. I’ll whisper when the files change."
+    "📡 Signals aligned. Watching, waiting, transpiling."
     ]  
     
 let farewells* = [
