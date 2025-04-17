@@ -64,9 +64,7 @@ when defined(posix)
     import posix
     
     proc restart() =
-        let 
-            pairs = toSeq(envPairs()).mapIt(it.key & "=" & it.value)
-            args  = allocCStringArray(@[getAppFilename()] & params)
+        let args = allocCStringArray(@[getAppFilename()] & params)
         discard execv(getAppFilename().cstring, args)
         quit(1) # only reaches here if execve fails
     

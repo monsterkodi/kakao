@@ -25,8 +25,7 @@ type
         ◆true,
         ◆false,
         ◆null,
-        ◆int,
-        ◆float,
+        ◆number,
         ◆string,
         ◆try,
         ◆catch,
@@ -52,6 +51,10 @@ type
         ◆tripledot,
         ◆newline,
         ◆assign,
+        ◆plus_assign,
+        ◆minus_assign,
+        ◆divide_assign,
+        ◆multiply_assign,
         ◆equal,
         ◆not_equal,
         ◆less_equal,
@@ -67,14 +70,13 @@ type
 const 
     alltoks  = { low(tok)..high(tok) }
     thenable = { ◆if, ◆elif }
-    
     openToks  = { ◆paren_open,  ◆bracket_open,  ◆square_open  }
     closeToks = { ◆paren_close, ◆bracket_close, ◆square_close }
     closeOpen = { 
         ◆paren_close:   ◆paren_open, 
         ◆bracket_close: ◆bracket_open,
         ◆square_close:  ◆square_open }.toTable()
-    
+
 const
     charTok = {
         ",":  ◆comma,
@@ -88,6 +90,11 @@ const
         ")":  ◆paren_close,
         "[":  ◆square_open,
         "]":  ◆square_close,
+        "=":  ◆assign,
+        "+=": ◆plus_assign,
+        "-=": ◆minus_assign,
+        "/=": ◆divide_assign,
+        "*=": ◆multiply_assign,
         "=":  ◆assign,
         "#":  ◆comment_start,
         "==": ◆equal,
@@ -141,6 +148,33 @@ type
 #    ███     ███   ███  ███████    ███████   ███ █ ███  ███    ███    ███████ 
 #    ███     ███   ███  ███  ███   ███       ███  ████  ███   ███     ███     
 #    ███      ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
+
+import pegs
+
+proc isNumber*(str:string, next:string): bool =
+
+    if not (str =~ peg"\d")
+        ⮐  false
+
+    let numberPeg = peg"""
+        num   <- ^( hex / oct / bin / flt / dec )$
+        hex   <- '0x' [0-9a-fA-F]+
+        oct   <- '0o' [0-7]+
+        bin   <- '0b' [0-1]+
+        exp   <- ('e' / 'E') ('+' / '-')? \d+
+        flt   <- \d+ '.' \d+ exp?
+        dec   <- \d+ exp?
+        """
+    
+    if str =~ numberPeg
+        if next == "" or next == " "
+            ⮐  true
+        let combined = str & next
+        if not (combined =~ numberPeg)
+            ⮐  true
+            
+    # log &"isNumber {str} {next} {str =~ numberPeg} {(str & next) =~ numberPeg}"
+    false
 
 proc tokenize*(lines:seq[string]) : seq[Token] =
 
@@ -272,6 +306,16 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     continue
                 else
                     token.str.add char
+                    
+                    var next : string
+                    if col < segs.len-1 
+                        next = segs[col+1] 
+                    else 
+                        next = ""
+                        
+                    if isNumber(token.str, next)
+                        token.tok = ◆number
+                        pushToken()
                     
                     if keywords.hasKey(token.str) and (col >= segs.len-1 or segs[col+1] == " " or charTok.hasKey(segs[col+1]))
                         token.tok = keywords[token.str]

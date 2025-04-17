@@ -254,3 +254,58 @@ import ../lexi
             Token(str:"###",      tok:◆comment_end,   line:1, col:8),
             ]
             
+            
+    #  ███████   ████████   ████████  ████████    ███████   █████████   ███████   ████████    ███████
+    # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███   ███  ███   ███  ███     
+    # ███   ███  ████████   ███████   ███████    █████████     ███     ███   ███  ███████    ███████ 
+    # ███   ███  ███        ███       ███   ███  ███   ███     ███     ███   ███  ███   ███       ███
+    #  ███████   ███        ████████  ███   ███  ███   ███     ███      ███████   ███   ███  ███████ 
+
+    ▸ operators
+    
+        check tokenize("a += 123") == @[
+            Token(str:"a",   tok:◆name,        line:0, col:0),
+            Token(str:"+=",  tok:◆plus_assign, line:0, col:2),
+            Token(str:"123", tok:◆number,      line:0, col:5),
+            ]
+
+        check tokenize("b -= 456") == @[
+            Token(str:"b",   tok:◆name,         line:0, col:0),
+            Token(str:"-=",  tok:◆minus_assign, line:0, col:2),
+            Token(str:"456", tok:◆number,       line:0, col:5),
+            ]
+
+        check tokenize("x /= y") == @[
+            Token(str:"x",   tok:◆name,          line:0, col:0),
+            Token(str:"/=",  tok:◆divide_assign, line:0, col:2),
+            Token(str:"y",   tok:◆name,          line:0, col:5),
+            ]
+
+        check tokenize("x *= y") == @[
+            Token(str:"x",   tok:◆name,            line:0, col:0),
+            Token(str:"*=",  tok:◆multiply_assign, line:0, col:2),
+            Token(str:"y",   tok:◆name,            line:0, col:5),
+            ]
+        
+    # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████    ███████
+    # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███  ███     
+    # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████    ███████ 
+    # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███       ███
+    # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███  ███████ 
+
+    ▸ numbers
+    
+        check isNumber("123",       "4") == false
+        check isNumber("1234",      "+") == true
+        check isNumber("0xFF",      "F") == false
+        check isNumber("0xFF",      "G") == true
+        check isNumber("3.14",      "")  == true
+        check isNumber("3.14",      "x") == true
+        check isNumber("1e5",       "")  == true
+        check isNumber("1e+5",      "")  == true
+        check isNumber("1e-5",      "")  == true
+        check isNumber("0b101",     "0") == false
+        check isNumber("0b101",     "2") == true
+        check isNumber("0o755",     "7") == false
+        check isNumber("0o755",     "8") == true
+        
