@@ -309,3 +309,24 @@ suite "lexi":
         check isNumber("0o755",     "7") == false
         check isNumber("0o755",     "8") == true
         
+    # ███████     ███████   █████████   ███████
+    # ███   ███  ███   ███     ███     ███     
+    # ███   ███  ███   ███     ███     ███████ 
+    # ███   ███  ███   ███     ███          ███
+    # ███████     ███████      ███     ███████ 
+
+    test "dots":
+    
+        check tokenize(".")   == @[ Token(str:".",   tok:◆dot,       line:0, col:0) ]
+        check tokenize("..")  == @[ Token(str:"..",  tok:◆doubledot, line:0, col:0) ]
+        check tokenize("...") == @[ Token(str:"...", tok:◆tripledot, line:0, col:0) ]
+        
+        check tokenize("for i in 0..10") == @[ 
+            Token(str:"for",   tok:◆for,       line:0, col:0), 
+            Token(str:"i",     tok:◆name,      line:0, col:4), 
+            Token(str:"in",    tok:◆in,        line:0, col:6), 
+            Token(str:"0",     tok:◆number,    line:0, col:9),
+            Token(str:"..",    tok:◆doubledot, line:0, col:10),
+            Token(str:"10",    tok:◆number,    line:0, col:12) 
+            ]
+        

@@ -47,9 +47,9 @@ type
         ◆comma,
         ◆colon,
         ◆semicolon,
+        ◆dot,
         ◆doubledot,
         ◆tripledot,
-        ◆newline,
         ◆assign,
         ◆plus_assign,
         ◆minus_assign,
@@ -79,32 +79,35 @@ const
 
 const
     charTok = {
-        ",":  ◆comma,
-        ":":  ◆colon,
-        "'":  ◆string_start,
-        "\"": ◆string_start,
-        ";":  ◆semicolon,
-        "{":  ◆bracket_open,
-        "}":  ◆bracket_close,
-        "(":  ◆paren_open,
-        ")":  ◆paren_close,
-        "[":  ◆square_open,
-        "]":  ◆square_close,
-        "=":  ◆assign,
-        "+=": ◆plus_assign,
-        "-=": ◆minus_assign,
-        "/=": ◆divide_assign,
-        "*=": ◆multiply_assign,
-        "=":  ◆assign,
-        "#":  ◆comment_start,
-        "==": ◆equal,
-        "!=": ◆not_equal,
-        ">=": ◆greater_equal,
-        "<=": ◆less_equal,
-        ">":  ◆greater,
-        "<":  ◆less,
-        "⮐":  ◆return,
-        "➜":  ◆then,
+        ".":    ◆dot,
+        "..":   ◆doubledot,
+        "...":  ◆tripledot,
+        ",":    ◆comma,
+        ":":    ◆colon,
+        "'":    ◆string_start,
+        "\"":   ◆string_start,
+        ";":    ◆semicolon,
+        "{":    ◆bracket_open,
+        "}":    ◆bracket_close,
+        "(":    ◆paren_open,
+        ")":    ◆paren_close,
+        "[":    ◆square_open,
+        "]":    ◆square_close,
+        "=":    ◆assign,
+        "+=":   ◆plus_assign,
+        "-=":   ◆minus_assign,
+        "/=":   ◆divide_assign,
+        "*=":   ◆multiply_assign,
+        "=":    ◆assign,
+        "#":    ◆comment_start,
+        "==":   ◆equal,
+        "!=":   ◆not_equal,
+        ">=":   ◆greater_equal,
+        "<=":   ◆less_equal,
+        ">":    ◆greater,
+        "<":    ◆less,
+        "⮐":    ◆return,
+        "➜":    ◆then,
         }.toTable()
         
     keywords = {
@@ -279,6 +282,15 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                 
                 if col < segs.len-1
                     let next = segs[col+1]
+                    
+                    if col < segs.len-2
+                        let nextnext = segs[col+2]
+                        if charTok.hasKey char & next & nextnext
+                            pushToken(char & next & nextnext, charTok[char & next & nextnext])
+                            col += 3
+                            pushToken()
+                            continue
+                    
                     if charTok.hasKey char & next
                         pushToken(char & next, charTok[char & next])
                         col += 2
