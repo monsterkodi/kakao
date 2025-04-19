@@ -24,5 +24,6 @@ suite "pars":
         check $ast("if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4")  == "◆root\n (◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)] ◆number)"
         check $ast("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3")          == "◆root\n (◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)])"
         check $ast("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4")   == "◆root\n (◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)] ◆number)"
+        check $ast("switch x\n  a ➜ 1\n  b c ➜ 2")           == "◆root\n (◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)])"
         check $ast("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4")    == "◆root\n (◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)] ◆number)"
         

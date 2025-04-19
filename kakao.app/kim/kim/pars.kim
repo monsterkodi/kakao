@@ -242,6 +242,11 @@ proc swallow(p: var Parser) =
 
     discard p.consume()
 
+proc swallow(p: var Parser, tok: tok) =
+
+    if p.tok() == tok
+        p.swallow()
+
 proc error*(p: var Parser, msg: string) : Node =
 
     log &"parse error: {msg}"
@@ -413,28 +418,22 @@ proc parseSwitch*(p: var Parser): Node =
     let token = p.consume() # 'switch'
     let switch_value = p.expression()
     
-    log &"parseSwitch {switch_value}"
-    
     var switch_cases: seq[Node] = @[]
     var switch_default: Node
     
-    if p.tok() == ◆indent
-        p.swallow()
+    p.swallow(◆indent)
     
     while p.tok() notin {◆else, ◆then, ◆eof}
     
         switch_cases.add(p.parseSwitchCase())
         
-        if p.tok() == ◆indent
-            p.swallow()
+        p.swallow(◆indent)
     
     if p.tok() in {◆else, ◆then}
         
         p.swallow()
         switch_default = p.expression()
     
-    log &"parseSwitch {switch_cases}"
-        
     Node(
         token:          token,
         kind:           ●switch,
