@@ -83,7 +83,7 @@ suite "pars":
         check $ast("switch x\n  1 2\n    a\n  ➜ c")          == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
         check $ast("switch x\n  1 2➜\n    a\n  ➜ c")         == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
         check $ast("switch x\n  1 2 ➜ a\n  else\n    c")     == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
-        # check $ast("switch x\n  1 2 ➜ a\n  ➜\n    c")        == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
+        check $ast("switch x\n  1 2 ➜ a\n  ➜\n    c")        == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
         
     test "strings":
     

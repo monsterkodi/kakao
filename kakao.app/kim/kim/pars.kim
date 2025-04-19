@@ -403,130 +403,88 @@ proc parseIf*(p: var Parser): Node =
 #      ███  ███   ███  ███     ███     ███       ███   ███
 # ███████   ██     ██  ███     ███      ███████  ███   ███
 
-proc parseSwitchCase(p: var Parser, caseStartIndent: int): Node =
+proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
 
-    var case_when = default seq[Node]
+    var matches: seq[Node]
     let case_token = p.current()
-
-    while true
-        let current_tok = p.tok()
-        let current_token = p.current()
-
-        if current_tok == ◆then
-            p.swallow()
-            break
-        elif current_tok == ◆eof
-            ⮐  p.error("Expected '➜', end of case matches, or 'else'/'➜' for default but found EOF")
-        elif current_tok == ◆indent
-            if current_token.str.len < caseStartIndent
-                break
-            elif current_token.str.len == caseStartIndent
-                p.swallow()
-                continue
-            else 
-                break
-        else
-            let expr = p.expression()
-            if expr == nil 
-                ⮐  p.error("Failed to parse match expression")
-            case_when.add(expr)
-
-    var case_then_node: Node = nil
-
-    if p.tok() == ◆indent and p.current().str.len > caseStartIndent
+    
+    while p.tok() notin {◆then, ◆indent, ◆eof}
+        matches.add(p.expression())
+    
+    if matches.len == 0:
+        ⮐  p.error("Switch case needs at least one pattern")
+    
+    let hasInlineArrow = p.tok() == ◆then
+    if hasInlineArrow
         p.swallow()
-        case_then_node = p.expression()
-        if case_then_node == nil
-            ⮐  p.error("Expected 'then' expression after indentation")
-    else
-        let current_tok_after_when = p.tok()
-        let current_token_after_when = p.current()
-
-        if current_tok_after_when == ◆eof or current_tok_after_when in {◆else, ◆then} or (current_tok_after_when == ◆indent and current_token_after_when.str.len <= caseStartIndent) 
-
-            if case_when.len == 0
-                ⮐  p.error("Switch case must have at least one match expression")
-            ⮐  p.error("Expected 'then' expression after switch case matches")
-
-        case_then_node = p.expression()
-        if case_then_node == nil
-             ⮐  p.error("Expected 'then' expression after switch case matches")
-
-    if case_when.len == 0
-        ⮐  p.error(&"Switch case must have at least one match expression")
-
+    
+    let body = 
+        if p.tok() == ◆indent and p.current().str.len > baseIndent
+            p.swallow()
+            p.expression()
+        elif hasInlineArrow
+            p.expression()
+        else
+            nil
+    
+    if body == nil
+        return p.error("Expected case body after matches")
+    
     Node(
         token:      case_token,
         kind:       ●switchCase,
-        case_when:  case_when,
-        case_then:  case_then_node
+        case_when:  matches,
+        case_then:  body
         )
 
 proc parseSwitch*(p: var Parser): Node =
 
-    let token = p.consume() # 'switch'
-    let switch_value = p.expression() # the value being switched on
-    if switch_value == nil 
-        ⮐  p.error("Expected value after switch keyword")
-
-    var switch_cases = default seq[Node]
-    var switch_default: Node = nil
-
-    let initial_indent_token = p.current()
-    let case_indent = initial_indent_token.str.len
-
-    p.swallowError(◆indent, "Expected indentation after switch statement value")
-
-    if p.tok() == ◆eof 
-        ⮐  p.error("Expected switch cases but found end of file instead")
-
-    while true
-        let current_tok   = p.tok()
-        let current_token = p.current()
-
-        if current_tok in {◆else, ◆then, ◆eof}  
-            break
-
-        if current_tok == ◆indent
-            if current_token.str.len < case_indent
-                break
-            elif current_token.str.len == case_indent
-                let peek_token = p.peek()
-                if peek_token.tok in {◆else, ◆then}
-                    break
-                else
-                    p.swallow()
-                    continue
-            else 
-                ⮐  p.error(&"Unexpected indentation level for a new switch case")
-        else
-            let case_node = p.parseSwitchCase(case_indent)
-            if case_node == nil 
-                ⮐  nil
-            switch_cases.add(case_node)
-
-    if p.tok() == ◆indent and p.current().str.len == case_indent
-        p.swallow()
-
-    if p.tok() in {◆else, ◆then} 
+    let token  = p.consume()
+    let switch_value = p.expression()
     
-        p.swallow() # 'else' or '➜'
-
-        if p.tok() == ◆indent and p.current().str.len > case_indent
-             p.swallow()
-
-        switch_default = p.expression()
-        if switch_default == nil
-            ⮐  p.error(&"Expected default expression after 'else' or '➜'")
-
+    if switch_value == nil
+        ⮐  p.error("Expected switch value")
+    
+    let baseIndent = p.current().str.len 
+    
+    p.swallowError(◆indent, "Expected indentation after switch statement")
+    
+    var switch_cases: seq[Node]
+    
+    while p.tok() notin {◆else, ◆then, ◆eof}
+        if p.tok() == ◆indent
+            if p.current().str.len < baseIndent
+                break
+            p.swallow()
+            continue
+        let switch_case = p.parseSwitchCase(baseIndent)
+        if switch_case == nil
+            ⮐  p.error("failed to parse switch statement")
+        else
+            switch_cases.add(switch_case)
+    
+    var default: Node
+    
+    if p.tok() in {◆else, ◆then}
+        p.swallow()
+        default = 
+            if p.tok() == ◆indent and p.current().str.len > baseIndent
+                p.swallow()
+                p.expression()
+            else
+                p.expression()
+        
+        if default == nil
+            return p.error("Expected default value")
+    
     Node(
-        token:          token, 
+        token:          token,
         kind:           ●switch,
         switch_value:   switch_value,
         switch_cases:   switch_cases,
-        switch_default: switch_default
+        switch_default: default
         )
-     
+        
 # proc parseFor*(p: var Parser): Node =
 # 
 # proc parseFunction*(p: var Parser): Node =
