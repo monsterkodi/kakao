@@ -57,6 +57,10 @@ type
             of ●postOp, ●preOp
             
                 operand*        : Node 
+                
+            of ●return
+            
+                return_value*   : Node  
 
             of ●call
             
@@ -194,6 +198,9 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.operand})"
         of ●postOp
             s = &"({n.operand} {s})"
+        of ●return
+            let e = choose(n.return_value, &" {n.return_value}", "")
+            s = &"({s}{e})"
         of ●call
             s = &"({n.callee} {s} {n.callargs})"
         of ●propertyAccess
@@ -300,7 +307,10 @@ proc expression(p: var Parser, precedenceRight = 0): Node =
     while true
         
         let token = p.current()
-        let precedence = p.getPrecedence(token)
+        var precedence = p.getPrecedence(token)
+        
+        if token.tok == ◆assign
+            precedence += 1
         
         if precedenceRight >= precedence
             break
@@ -393,53 +403,130 @@ proc parseIf*(p: var Parser): Node =
 #      ███  ███   ███  ███     ███     ███       ███   ███
 # ███████   ██     ██  ███     ███      ███████  ███   ███
 
-proc parseSwitchCase(p: var Parser): Node =
+proc parseSwitchCase(p: var Parser, caseStartIndent: int): Node =
 
-    var case_when: seq[Node] = @[]
-    
+    var case_when = default seq[Node]
+    let case_token = p.current()
+
     while true
-        if p.tok() in {◆indent, ◆then}
+        let current_tok = p.tok()
+        let current_token = p.current()
+
+        if current_tok == ◆then
             p.swallow()
             break
-        case_when.add(p.expression())
-    
-    let case_then = p.expression()
-    
+        elif current_tok == ◆eof
+            ⮐  p.error("Expected '➜', end of case matches, or 'else'/'➜' for default but found EOF")
+        elif current_tok == ◆indent
+            if current_token.str.len < caseStartIndent
+                break
+            elif current_token.str.len == caseStartIndent
+                p.swallow()
+                continue
+            else 
+                break
+        else
+            let expr = p.expression()
+            if expr == nil 
+                ⮐  p.error("Failed to parse match expression")
+            case_when.add(expr)
+
+    var case_then_node: Node = nil
+
+    if p.tok() == ◆indent and p.current().str.len > caseStartIndent
+        p.swallow()
+        case_then_node = p.expression()
+        if case_then_node == nil
+            ⮐  p.error("Expected 'then' expression after indentation")
+    else
+        let current_tok_after_when = p.tok()
+        let current_token_after_when = p.current()
+
+        if current_tok_after_when == ◆eof or current_tok_after_when in {◆else, ◆then} or (current_tok_after_when == ◆indent and current_token_after_when.str.len <= caseStartIndent) 
+
+            if case_when.len == 0
+                ⮐  p.error("Switch case must have at least one match expression")
+            ⮐  p.error("Expected 'then' expression after switch case matches")
+
+        case_then_node = p.expression()
+        if case_then_node == nil
+             ⮐  p.error("Expected 'then' expression after switch case matches")
+
+    if case_when.len == 0
+        ⮐  p.error(&"Switch case must have at least one match expression")
+
     Node(
-        kind: ●switchCase,
-        case_when: case_when,
-        case_then: case_then
+        token:      case_token,
+        kind:       ●switchCase,
+        case_when:  case_when,
+        case_then:  case_then_node
         )
 
 proc parseSwitch*(p: var Parser): Node =
 
     let token = p.consume() # 'switch'
-    let switch_value = p.expression()
-    
-    var switch_cases: seq[Node] = @[]
-    var switch_default: Node
-    
-    p.swallow ◆indent
-    
-    while p.tok() notin {◆else, ◆then, ◆eof}
-    
-        switch_cases.add(p.parseSwitchCase())
-        
-        p.swallow ◆indent
-    
-    if p.tok() in {◆else, ◆then}
-        
+    let switch_value = p.expression() # the value being switched on
+    if switch_value == nil 
+        ⮐  p.error("Expected value after switch keyword")
+
+    var switch_cases = default seq[Node]
+    var switch_default: Node = nil
+
+    let initial_indent_token = p.current()
+    let case_indent = initial_indent_token.str.len
+
+    p.swallowError(◆indent, "Expected indentation after switch statement value")
+
+    if p.tok() == ◆eof 
+        ⮐  p.error("Expected switch cases but found end of file instead")
+
+    while true
+        let current_tok   = p.tok()
+        let current_token = p.current()
+
+        if current_tok in {◆else, ◆then, ◆eof}  
+            break
+
+        if current_tok == ◆indent
+            if current_token.str.len < case_indent
+                break
+            elif current_token.str.len == case_indent
+                let peek_token = p.peek()
+                if peek_token.tok in {◆else, ◆then}
+                    break
+                else
+                    p.swallow()
+                    continue
+            else 
+                ⮐  p.error(&"Unexpected indentation level for a new switch case")
+        else
+            let case_node = p.parseSwitchCase(case_indent)
+            if case_node == nil 
+                ⮐  nil
+            switch_cases.add(case_node)
+
+    if p.tok() == ◆indent and p.current().str.len == case_indent
         p.swallow()
-        switch_default = p.expression()
+
+    if p.tok() in {◆else, ◆then} 
     
+        p.swallow() # 'else' or '➜'
+
+        if p.tok() == ◆indent and p.current().str.len > case_indent
+             p.swallow()
+
+        switch_default = p.expression()
+        if switch_default == nil
+            ⮐  p.error(&"Expected default expression after 'else' or '➜'")
+
     Node(
-        token:          token,
+        token:          token, 
         kind:           ●switch,
         switch_value:   switch_value,
         switch_cases:   switch_cases,
         switch_default: switch_default
         )
-    
+     
 # proc parseFor*(p: var Parser): Node =
 # 
 # proc parseFunction*(p: var Parser): Node =
@@ -475,6 +562,13 @@ proc parseLiteral(p: var Parser): Node =
     let token = p.consume()
     Node(token:token, kind: ●literal)
 
+proc parseString(p: var Parser): Node =
+
+    p.swallow() # string start
+    let token = p.consume()
+    p.swallowError(◆string_end, "Expected closing string delimiter")
+    Node(token:token, kind: ●literal)
+
 proc parsePostOp(p: var Parser, left: Node): Node =
 
     let token = p.consume()
@@ -486,11 +580,24 @@ proc parsePreOp(p: var Parser): Node =
     let right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
+proc parseReturn(p: var Parser): Node =
+
+    let token = p.consume()
+    let right = p.expression(token)
+    Node(token:token, kind:●return, return_value:right)
+
 proc parseOperation(p: var Parser, left: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, left: left, right: right)
+        
+proc parseParenExpr(p: var Parser): Node =
+
+    discard p.consume() # '('
+    let expr = p.expression()
+    p.swallowError(◆paren_close, "Expected closing parenthesis")
+    expr
         
 #  ███████  ████████  █████████  ███   ███  ████████ 
 # ███       ███          ███     ███   ███  ███   ███
@@ -506,33 +613,41 @@ proc register(p: var Parser, t:tok, pratt: Pratt) =
 
 proc setup(p: var Parser) =
 
-    p.register(◆number,     Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆string,     Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆true,       Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆false,      Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆null,       Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆name,       Pratt(                      rhs: parseLiteral,      precedence: 0))
+    p.register(◆number,         Pratt(                      rhs: parseLiteral,      precedence: 0))
+    p.register(◆string_start,   Pratt(                      rhs: parseString,       precedence: 0))
+    p.register(◆true,           Pratt(                      rhs: parseLiteral,      precedence: 0))
+    p.register(◆false,          Pratt(                      rhs: parseLiteral,      precedence: 0))
+    p.register(◆null,           Pratt(                      rhs: parseLiteral,      precedence: 0))
+    p.register(◆name,           Pratt(                      rhs: parseLiteral,      precedence: 0))
     
-    p.register(◆return,     Pratt(                      rhs: parsePreOp,        precedence: 5))
-                         
-    p.register(◆assign,     Pratt(lhs: parseOperation,                          precedence: 10))
-                                                                                
-    p.register(◆if,         Pratt(rhs: parseIf,                                 precedence: 15))  
-    p.register(◆switch,     Pratt(rhs: parseSwitch,                             precedence: 15))  
-                                                                                
-    p.register(◆equal,      Pratt(lhs: parseOperation,                          precedence: 20))
-    p.register(◆plus,       Pratt(lhs: parseOperation,                          precedence: 30))
-    p.register(◆multiply,   Pratt(lhs: parseOperation,                          precedence: 40))
-    p.register(◆divide,     Pratt(lhs: parseOperation,                          precedence: 40))
-                                                                                
-    p.register(◆not,        Pratt(                      rhs: parsePreOp,        precedence: 50))
-    p.register(◆minus,      Pratt(lhs: parseOperation,  rhs: parsePreOp,        precedence: 50))
-                                                                                
-    p.register(◆increment,  Pratt(lhs: parsePostOp,                             precedence: 60))
-    p.register(◆decrement,  Pratt(lhs: parsePostOp,                             precedence: 60))
-                                                                                
-    p.register(◆paren_open, Pratt(lhs: parseCall,                               precedence: 70))
-    p.register(◆dot,        Pratt(lhs: parsePropertyAccess,                     precedence: 100))
+    p.register(◆return,         Pratt(                      rhs: parseReturn,       precedence: 5))
+                                
+    p.register(◆assign,         Pratt(lhs: parseOperation,                          precedence: 10))
+                                                                                    
+    p.register(◆if,             Pratt(rhs: parseIf,                                 precedence: 15))  
+    p.register(◆switch,         Pratt(rhs: parseSwitch,                             precedence: 15))  
+                                                                                    
+    p.register(◆equal,          Pratt(lhs: parseOperation,                          precedence: 20))
+    
+    p.register(◆or,             Pratt(lhs: parseOperation,                          precedence: 22))
+    p.register(◆and,            Pratt(lhs: parseOperation,                          precedence: 25))
+    
+    p.register(◆plus,           Pratt(lhs: parseOperation,                          precedence: 30))
+    
+    p.register(◆multiply,       Pratt(lhs: parseOperation,                          precedence: 40))
+    p.register(◆divide,         Pratt(lhs: parseOperation,                          precedence: 40))
+    
+                                                                                    
+    p.register(◆not,            Pratt(                      rhs: parsePreOp,        precedence: 50))
+    p.register(◆minus,          Pratt(lhs: parseOperation,  rhs: parsePreOp,        precedence: 50))
+                                                                                    
+    p.register(◆increment,      Pratt(lhs: parsePostOp,                             precedence: 60))
+    p.register(◆decrement,      Pratt(lhs: parsePostOp,                             precedence: 60))
+                                                                                    
+    p.register(◆paren_open,     Pratt(lhs: parseCall,                               precedence: 70))
+    p.register(◆dot,            Pratt(lhs: parsePropertyAccess,                     precedence: 100))
+                                
+    p.register(◆paren_open,     Pratt(                      rhs: parseParenExpr,    precedence: 1000))
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   
