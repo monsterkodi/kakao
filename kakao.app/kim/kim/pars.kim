@@ -224,12 +224,17 @@ proc `$`*(p: Parser): string =
 # ███       ███   ███  ███   ███  ███ █ ███  ███   ███     ███   
 # ███        ███████   ███   ███  ███   ███  ███   ███     ███   
 
-proc formatValue*(result:var string, n:Node, specifier: string) = result.add $n
+proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
 
 proc peek*(p: Parser, ahead: int = 1): Token =
 
     p.tokens[p.pos + ahead]
+
+proc error*(p: var Parser, msg: string) : Node =
+
+    log &"parse error: {msg}"
+    nil
 
 proc consume(p: var Parser): Token =
 
@@ -246,12 +251,14 @@ proc swallow(p: var Parser, tok: tok) =
 
     if p.tok() == tok
         p.swallow()
+        
+proc swallowError(p: var Parser, tok: tok, err: string) = 
 
-proc error*(p: var Parser, msg: string) : Node =
-
-    log &"parse error: {msg}"
-    nil
-
+    if p.tok() != tok
+        discard p.error(err)
+        ⮐  
+    p.swallow()
+    
 proc getPrecedence(p: Parser, token: Token): int =
 
     if token.tok.ord < p.pratts.len
@@ -343,21 +350,17 @@ proc parseIf*(p: var Parser): Node =
     
     var condThens: seq[Node] = @[]
     
-    if p.tok() == ◆indent
-        p.swallow() # block indentation
+    p.swallow ◆indent # block indentation
     
     var cond = p.expression() # initial condition
-    
-    if p.tok() != ◆then
-        ⮐  p.error("Expected 'then' after if condition")
-        
-    discard p.consume() # initial then
+            
+    p.swallowError(◆then, "Expected 'then' after if condition") # initial then
     
     var then = p.expression()
     
     condThens.add(Node(kind:●condThen, cond:cond, then:then))
     
-    while p.tok() == ◆elif or p.tok() == ◆indent
+    while p.tok() in {◆elif, ◆indent}
     
         p.swallow() # elif or indent
         
@@ -366,17 +369,15 @@ proc parseIf*(p: var Parser): Node =
         
         cond = p.expression()
         
-        if p.tok() != ◆then
-            ⮐  p.error("Expected 'then' after elif condition")
+        p.swallowError(◆then, "Expected 'then' after elif condition")
             
-        p.swallow() # then
-        
         then = p.expression()
         
         condThens.add(Node(kind:●condThen, cond:cond, then:then))
         
     var `else`: Node
-    if p.tok() == ◆else or p.tok() == ◆then
+    
+    if p.tok() in {◆else, ◆then}
         p.swallow() # else or then without condition
         `else` = p.expression()
     
@@ -385,7 +386,7 @@ proc parseIf*(p: var Parser): Node =
         kind:       ●if,
         cond_thens: condThens,
         `else`:     `else`
-    )
+        )
 
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
@@ -396,8 +397,6 @@ proc parseIf*(p: var Parser): Node =
 proc parseSwitchCase(p: var Parser): Node =
 
     var case_when: seq[Node] = @[]
-    
-    # log &"parseSwitchCase {p}"
     
     while true
         if p.tok() in {◆indent, ◆then}
@@ -421,13 +420,13 @@ proc parseSwitch*(p: var Parser): Node =
     var switch_cases: seq[Node] = @[]
     var switch_default: Node
     
-    p.swallow(◆indent)
+    p.swallow ◆indent
     
     while p.tok() notin {◆else, ◆then, ◆eof}
     
         switch_cases.add(p.parseSwitchCase())
         
-        p.swallow(◆indent)
+        p.swallow ◆indent
     
     if p.tok() in {◆else, ◆then}
         
