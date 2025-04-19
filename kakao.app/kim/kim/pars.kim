@@ -131,50 +131,6 @@ template choose*(cond, a, b: untyped): untyped =
     else:
         {.error: "Condition must be bool or ref type".}
 
-# ████████   ████████   ███  ███   ███  █████████        ███   ███   ███████   ███████    ████████  
-# ███   ███  ███   ███  ███  ████  ███     ███           ████  ███  ███   ███  ███   ███  ███       
-# ████████   ███████    ███  ███ █ ███     ███           ███ █ ███  ███   ███  ███   ███  ███████   
-# ███        ███   ███  ███  ███  ████     ███           ███  ████  ███   ███  ███   ███  ███       
-# ███        ███   ███  ███  ███   ███     ███           ███   ███   ███████   ███████    ████████  
-                
-proc `$`*(n: Node): string = 
-
-    var s = &"{n.token.tok}"
-    
-    case n.kind
-        of ●block
-            for e in n.expressions
-                s &= &"\n {e}"
-        of ●operation
-            s = &"({n.left} {s} {n.right})"
-        of ●preOp
-            s = &"({s} {n.operand})"
-        of ●postOp
-            s = &"({n.operand} {s})"
-        of ●call
-            s = &"({n.callee} {s} {n.callargs})"
-        of ●propertyAccess
-            s = &"({n.owner} {s} {n.property})"
-        of ●if
-            let e = choose(n.else, &" {n.else}", "")
-            s = &"({s} {n.cond_thens}{e})"
-        of ●condThen
-            s = &"({n.cond} {n.then})"
-        of ●switch
-            let e = choose(n.switch_default, &" {n.switch_default}", "")
-            s = &"({s} {n.switch_value} {n.switch_cases}{e})"
-        of ●switchCase
-            s = &"({n.case_when} {n.case_then})"
-        of ●for 
-            s = &"({s} {n.for_value} {n.for_range} {n.for_body})"
-        of ●while
-            s = &"({s} {n.while_cond} {n.while_body})"
-        of ●func
-            s = &"({s} {n.func_name} {n.func_type} {n.func_args}) {n.func_body})"
-        else
-            discard
-    s
-
 # ████████    ███████   ████████    ███████  ████████  ████████ 
 # ███   ███  ███   ███  ███   ███  ███       ███       ███   ███
 # ████████   █████████  ███████    ███████   ███████   ███████  
@@ -213,28 +169,67 @@ proc current*(p: Parser): Token =
     
 proc tok*(p: Parser) : tok = p.current().tok
 
+# ████████   ████████   ███  ███   ███  █████████  
+# ███   ███  ███   ███  ███  ████  ███     ███     
+# ████████   ███████    ███  ███ █ ███     ███     
+# ███        ███   ███  ███  ███  ████     ███     
+# ███        ███   ███  ███  ███   ███     ███     
+
 proc `$`*(p: Parser): string = 
 
     let s = &"▪▪▪ {p.current()}"
     s
 
-# ████████   ███████   ████████   ██     ██   ███████   █████████
-# ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
-# ██████    ███   ███  ███████    █████████  █████████     ███   
-# ███       ███   ███  ███   ███  ███ █ ███  ███   ███     ███   
-# ███        ███████   ███   ███  ███   ███  ███   ███     ███   
+proc `$`*(n: Node): string = 
+
+    var s = &"{n.token.tok}"
+    
+    case n.kind
+        of ●block
+            for e in n.expressions
+                s &= &"\n {e}"
+        of ●operation
+            s = &"({n.left} {s} {n.right})"
+        of ●preOp
+            s = &"({s} {n.operand})"
+        of ●postOp
+            s = &"({n.operand} {s})"
+        of ●call
+            s = &"({n.callee} {s} {n.callargs})"
+        of ●propertyAccess
+            s = &"({n.owner} {s} {n.property})"
+        of ●if
+            let e = choose(n.else, &" {n.else}", "")
+            s = &"({s} {n.cond_thens}{e})"
+        of ●condThen
+            s = &"({n.cond} {n.then})"
+        of ●switch
+            let e = choose(n.switch_default, &" {n.switch_default}", "")
+            s = &"({s} {n.switch_value} {n.switch_cases}{e})"
+        of ●switchCase
+            s = &"({n.case_when} {n.case_then})"
+        of ●for 
+            s = &"({s} {n.for_value} {n.for_range} {n.for_body})"
+        of ●while
+            s = &"({s} {n.while_cond} {n.while_body})"
+        of ●func
+            s = &"({s} {n.func_name} {n.func_type} {n.func_args}) {n.func_body})"
+        else
+            discard
+    s
 
 proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
-
-proc peek*(p: Parser, ahead: int = 1): Token =
-
-    p.tokens[p.pos + ahead]
-
 proc error*(p: var Parser, msg: string) : Node =
 
     log &"parse error: {msg}"
     nil
+    
+#  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
+# ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
+# ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
+# ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
+#  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 
 proc consume(p: var Parser): Token =
 
@@ -258,6 +253,10 @@ proc swallowError(p: var Parser, tok: tok, err: string) =
         discard p.error(err)
         ⮐  
     p.swallow()
+    
+proc peek*(p: Parser, ahead: int = 1): Token =
+
+    p.tokens[p.pos + ahead]
     
 proc getPrecedence(p: Parser, token: Token): int =
 
