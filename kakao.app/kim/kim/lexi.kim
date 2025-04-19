@@ -22,6 +22,9 @@ type
         ◆class,
         ◆return,
         ◆use,
+        ◆not,
+        ◆and,
+        ◆or,
         ◆true,
         ◆false,
         ◆null,
@@ -50,6 +53,12 @@ type
         ◆dot,
         ◆doubledot,
         ◆tripledot,
+        ◆increment,
+        ◆decrement,
+        ◆minus,
+        ◆plus,
+        ◆divide,
+        ◆multiply,
         ◆assign,
         ◆plus_assign,
         ◆minus_assign,
@@ -63,7 +72,9 @@ type
         ◆less,
         ◆proc,
         ◆var,
-        ◆let
+        ◆let,
+        ◆root,
+        ◆eof
         
     toks* = set[tok]
     
@@ -93,6 +104,12 @@ const
         ")":    ◆paren_close,
         "[":    ◆square_open,
         "]":    ◆square_close,
+        "-":    ◆minus,
+        "+":    ◆plus,
+        "++":   ◆increment,
+        "--":   ◆decrement,
+        "*":    ◆multiply,
+        "/":    ◆divide,
         "=":    ◆assign,
         "+=":   ◆plus_assign,
         "-=":   ◆minus_assign,

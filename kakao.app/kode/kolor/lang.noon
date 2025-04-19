@@ -1139,6 +1139,7 @@ nim kim
         continue
         interface
         converter
+        template
         iterator
         include
         global
