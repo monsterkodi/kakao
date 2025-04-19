@@ -33,6 +33,12 @@ type
         ●enum,
         ●eof
     
+    # ███   ███   ███████   ███████    ████████
+    # ████  ███  ███   ███  ███   ███  ███     
+    # ███ █ ███  ███   ███  ███   ███  ███████ 
+    # ███  ████  ███   ███  ███   ███  ███     
+    # ███   ███   ███████   ███████    ████████
+
     Node* = ref object
 
         token : Token
@@ -110,7 +116,7 @@ type
             else:
                 discard
                 
-template choose(cond, a, b: untyped): untyped =
+template choose*(cond, a, b: untyped): untyped =
 
     when typeof(cond) is bool:
         if cond :
@@ -124,6 +130,12 @@ template choose(cond, a, b: untyped): untyped =
             b
     else:
         {.error: "Condition must be bool or ref type".}
+
+# ████████   ████████   ███  ███   ███  █████████        ███   ███   ███████   ███████    ████████  
+# ███   ███  ███   ███  ███  ████  ███     ███           ████  ███  ███   ███  ███   ███  ███       
+# ████████   ███████    ███  ███ █ ███     ███           ███ █ ███  ███   ███  ███   ███  ███████   
+# ███        ███   ███  ███  ███  ████     ███           ███  ████  ███   ███  ███   ███  ███       
+# ███        ███   ███  ███  ███   ███     ███           ███   ███   ███████   ███████    ████████  
                 
 proc `$`*(n: Node): string = 
 
@@ -148,6 +160,11 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.cond_thens}{e})"
         of ●condThen:
             s = &"({n.cond} {n.then})"
+        of ●switch:
+            let e = choose(n.switch_default, &" {n.switch_default}", "")
+            s = &"({s} {n.switch_value} {n.switch_cases}{e})"
+        of ●switchCase:
+            s = &"({n.case_when} {n.case_then})"
         of ●for :
             s = &"({s} {n.for_value} {n.for_range} {n.for_body})"
         of ●while:
@@ -158,7 +175,11 @@ proc `$`*(n: Node): string =
             discard
     s
 
-proc formatValue*(result:var string, n:Node, specifier: string) = result.add $n
+# ████████    ███████   ████████    ███████  ████████  ████████ 
+# ███   ███  ███   ███  ███   ███  ███       ███       ███   ███
+# ████████   █████████  ███████    ███████   ███████   ███████  
+# ███        ███   ███  ███   ███       ███  ███       ███   ███
+# ███        ███   ███  ███   ███  ███████   ████████  ███   ███
 
 type
 
@@ -182,6 +203,7 @@ type
         line*   : int
         col*    : int
 
+
 proc current*(p: Parser): Token =
 
     if p.pos < p.tokens.len:
@@ -190,6 +212,20 @@ proc current*(p: Parser): Token =
     Token(tok:◆eof)
     
 proc tok*(p: Parser) : tok = p.current().tok
+
+proc `$`*(p: Parser): string = 
+
+    let s = &"▪▪▪ {p.current()}"
+    s
+
+# ████████   ███████   ████████   ██     ██   ███████   █████████
+# ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
+# ██████    ███   ███  ███████    █████████  █████████     ███   
+# ███       ███   ███  ███   ███  ███ █ ███  ███   ███     ███   
+# ███        ███████   ███   ███  ███   ███  ███   ███     ███   
+
+proc formatValue*(result:var string, n:Node, specifier: string) = result.add $n
+proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
 
 proc peek*(p: Parser, ahead: int = 1): Token =
 
@@ -270,6 +306,12 @@ proc expression(p: var Parser, tokenRight:Token ): Node =
 
     expression(p, p.getPrecedence(tokenRight))
 
+# ███████    ███       ███████    ███████  ███   ███
+# ███   ███  ███      ███   ███  ███       ███  ███ 
+# ███████    ███      ███   ███  ███       ███████  
+# ███   ███  ███      ███   ███  ███       ███  ███ 
+# ███████    ███████   ███████    ███████  ███   ███
+
 proc parseBlock*(p: var Parser): Node =
 
     var expressions = default seq[Node]
@@ -348,51 +390,57 @@ proc parseIf*(p: var Parser): Node =
 
 proc parseSwitchCase(p: var Parser): Node =
 
-    var whens: seq[Node] = @[]
+    var case_when: seq[Node] = @[]
+    
+    # echo &"parseSwitchCase {p}"
     
     while true:
-        whens.add(p.expression())
-        if p.tok() in @[◆indent, ◆then]:
+        if p.tok() in {◆indent, ◆then}:
             p.swallow()
             break
+        case_when.add(p.expression())
     
-    let then = p.expression()
+    let case_then = p.expression()
     
     Node(
         kind: ●switchCase,
-        case_when: whens,
-        case_then: then
-    )
+        case_when: case_when,
+        case_then: case_then
+        )
 
 proc parseSwitch*(p: var Parser): Node =
 
     let token = p.consume() # "switch"
-    let value = p.expression()
+    let switch_value = p.expression()
     
-    var cases: seq[Node] = @[]
-    var default: Node
+    echo &"parseSwitch {switch_value}"
+    
+    var switch_cases: seq[Node] = @[]
+    var switch_default: Node
     
     if p.tok() == ◆indent:
         p.swallow()
     
-    while p.tok() notin {◆else, ◆eof}:
+    while p.tok() notin {◆else, ◆then, ◆eof}:
     
-        cases.add(p.parseSwitchCase())
+        switch_cases.add(p.parseSwitchCase())
         
-        while p.tok() == ◆indent:
+        if p.tok() == ◆indent:
             p.swallow()
     
-    if p.tok() == ◆else:
+    if p.tok() in {◆else, ◆then}:
         
         p.swallow()
-        default = p.expression()
+        switch_default = p.expression()
+    
+    echo &"parseSwitch {switch_cases}"
         
     Node(
         token:          token,
         kind:           ●switch,
-        switch_value:   value,
-        switch_cases:   cases,
-        switch_default: default
+        switch_value:   switch_value,
+        switch_cases:   switch_cases,
+        switch_default: switch_default
         )
     
 # proc parseFor*(p: var Parser): Node =
@@ -447,6 +495,12 @@ proc parseOperation(p: var Parser, left: Node): Node =
     let right = p.expression(token)
     Node(token:token, kind: ●operation, left: left, right: right)
         
+#  ███████  ████████  █████████  ███   ███  ████████ 
+# ███       ███          ███     ███   ███  ███   ███
+# ███████   ███████      ███     ███   ███  ████████ 
+#      ███  ███          ███     ███   ███  ███      
+# ███████   ████████     ███      ███████   ███      
+
 proc register(p: var Parser, t:tok, pratt: Pratt) =
 
     if p.pratts.len <= t.ord:
@@ -483,6 +537,12 @@ proc setup(p: var Parser) =
     p.register(◆paren_open, Pratt(lhs: parseCall,                               precedence: 70))
     p.register(◆dot,        Pratt(lhs: parsePropertyAccess,                     precedence: 100))
     
+#  ███████    ███████  █████████
+# ███   ███  ███          ███   
+# █████████  ███████      ███   
+# ███   ███       ███     ███   
+# ███   ███  ███████      ███   
+
 proc ast*(text:string) : Node =
 
     var p = Parser(tokens:lexi.tokenize(text), pos:0)
