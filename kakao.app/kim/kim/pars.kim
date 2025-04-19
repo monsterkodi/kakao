@@ -405,36 +405,30 @@ proc parseIf*(p: var Parser): Node =
 
 proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
 
-    var matches: seq[Node]
+    var case_when: seq[Node]
     let case_token = p.current()
     
-    while p.tok() notin {◆then, ◆indent, ◆eof}
-        matches.add(p.expression())
+    while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}
+        case_when.add(p.expression())
     
-    if matches.len == 0:
-        ⮐  p.error("Switch case needs at least one pattern")
+    # if case_when.len == 0
+    #     ⮐  p.error("Switch case needs at least one pattern")
     
-    let hasInlineArrow = p.tok() == ◆then
-    if hasInlineArrow
-        p.swallow()
+    p.swallow ◆then
     
-    let body = 
-        if p.tok() == ◆indent and p.current().str.len > baseIndent
-            p.swallow()
-            p.expression()
-        elif hasInlineArrow
-            p.expression()
-        else
-            nil
+    if p.tok() == ◆indent and p.current().str.len > baseIndent
+        p.swallow ◆indent
+        
+    let case_then = p.expression()
     
-    if body == nil
-        return p.error("Expected case body after matches")
+    if case_then == nil
+        ⮐  p.error("Expected case body after matches")
     
     Node(
         token:      case_token,
         kind:       ●switchCase,
-        case_when:  matches,
-        case_then:  body
+        case_when:  case_when,
+        case_then:  case_then
         )
 
 proc parseSwitch*(p: var Parser): Node =
@@ -443,7 +437,7 @@ proc parseSwitch*(p: var Parser): Node =
     let switch_value = p.expression()
     
     if switch_value == nil
-        ⮐  p.error("Expected switch value")
+        ⮐  p.error("Expected value after switch keyword")
     
     let baseIndent = p.current().str.len 
     
@@ -455,7 +449,7 @@ proc parseSwitch*(p: var Parser): Node =
         if p.tok() == ◆indent
             if p.current().str.len < baseIndent
                 break
-            p.swallow()
+            p.swallow ◆indent
             continue
         let switch_case = p.parseSwitchCase(baseIndent)
         if switch_case == nil
@@ -463,26 +457,26 @@ proc parseSwitch*(p: var Parser): Node =
         else
             switch_cases.add(switch_case)
     
-    var default: Node
+    var switch_default: Node
     
     if p.tok() in {◆else, ◆then}
         p.swallow()
-        default = 
+        switch_default = 
             if p.tok() == ◆indent and p.current().str.len > baseIndent
                 p.swallow()
                 p.expression()
             else
                 p.expression()
         
-        if default == nil
-            return p.error("Expected default value")
+        if switch_default == nil
+            ⮐  p.error("Expected default value")
     
     Node(
         token:          token,
         kind:           ●switch,
         switch_value:   switch_value,
         switch_cases:   switch_cases,
-        switch_default: default
+        switch_default: switch_default
         )
         
 # proc parseFor*(p: var Parser): Node =
