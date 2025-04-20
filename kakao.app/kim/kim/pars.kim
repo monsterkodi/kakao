@@ -49,9 +49,9 @@ type
 
     Node* = ref object
 
-        token : Token
+        token* : Token
             
-        case kind*: NodeKind
+        case kind* : NodeKind
         
             of ●block:
                 
@@ -797,12 +797,12 @@ proc setup(p: var Parser) =
     p.pratt ◆and,            lOperation,        nil,            40
                                                 
     p.pratt ◆plus,           lOperation,        nil,            50
+    p.pratt ◆minus,          lOperation,        rPreOp,         50
                                                 
     p.pratt ◆multiply,       lOperation,        nil,            60
     p.pratt ◆divide,         lOperation,        nil,            60
                                                                                              
     p.pratt ◆not,            nil,               rPreOp,         70
-    p.pratt ◆minus,          lOperation,        rPreOp,         70
                                                                                              
     p.pratt ◆increment,      lPostOp,           nil,            80
     p.pratt ◆decrement,      lPostOp,           nil,            80

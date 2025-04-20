@@ -12,7 +12,7 @@ suite "pars":
     test "math ops":
         
         check $ast("1 + 5 * 3")                              == "◆\n (◆number ◆plus (◆number ◆multiply ◆number))"
-        check $ast("1 / 5 - 3")                              == "◆\n (◆number ◆divide (◆number ◆minus ◆number))"
+        check $ast("1 * 5 - 3")                              == "◆\n ((◆number ◆multiply ◆number) ◆minus ◆number)"
         check $ast("-5 - -3")                                == "◆\n ((◆minus ◆number) ◆minus (◆minus ◆number))"
         check $ast("a++ + b--")                              == "◆\n ((◆name ◆increment) ◆plus (◆name ◆decrement))"
         check $ast("1 + 2 + 3")                              == "◆\n ((◆number ◆plus ◆number) ◆plus ◆number)"

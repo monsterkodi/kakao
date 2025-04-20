@@ -1,0 +1,49 @@
+# ████████   ███   ███  ███████    ████████ 
+# ███   ███  ████  ███  ███   ███  ███   ███
+# ███████    ███ █ ███  ███   ███  ███████  
+# ███   ███  ███  ████  ███   ███  ███   ███
+# ███   ███  ███   ███  ███████    ███   ███
+
+import std/[unittest]
+import ../rndr
+
+suite "rndr":
+
+    test "empty":
+        
+        check rndr("")              == ""
+
+    test "math ops":
+        
+        check rndr("1 + 5 * 3")     == "(1 + (5 * 3))"
+        check rndr("1 / 5 - 3")     == "((1 / 5) - 3)"
+        check rndr("-5 - -3")       == "(-5 - -3)"
+        check rndr("a++ + b--")     == "(a++ + b--)"
+        check rndr("1 + 2 + 3")     == "((1 + 2) + 3)"
+        check rndr("1 * 2 + 3 * 4") == "((1 * 2) + (3 * 4))"
+        
+    test "boolean ops":
+    
+        check rndr("a && b || c")    == "((a and b) or c)"
+        check rndr("a and b or c")   == "((a and b) or c)"
+        check rndr("!a && b")        == "(not a and b)"
+        check rndr("not a && b")     == "(not a and b)"
+        check rndr("a || b && c")    == "(a or (b and c))"
+        check rndr("a or b and c")   == "(a or (b and c))"
+        check rndr("a && b == c")    == "((a and b) == c)"
+        check rndr("a and b == c")   == "((a and b) == c)"
+        check rndr("x = a || b")     == "(x = (a or b))"
+        check rndr("x = a or b")     == "(x = (a or b))"
+        check rndr("!a || !b")       == "(not a or not b)"
+        check rndr("not a or not b") == "(not a or not b)"
+        
+    test "parens":
+    
+        check rndr("(1 + 2) * 3")     == "((1 + 2) * 3)"
+        check rndr("(1)")             == "1"
+        check rndr("(a + b) * c")     == "((a + b) * c)"
+        check rndr("a * (b + c)")     == "(a * (b + c))"
+        check rndr("((1))")           == "1"
+        check rndr("(a.b).c")         == "a.b.c"
+        check rndr("a * (b + c) / d") == "((a * (b + c)) / d)"
+        check rndr("3 * (1 + 2)")     == "(3 * (1 + 2))"
