@@ -47,8 +47,14 @@ import ../pars
         
     ▸ call
     
+        check $ast("f()")                                    == "◆root\n (◆name ◆call @[])"
+        check $ast("f(g())")                                 == "◆root\n (◆name ◆call @[(◆name ◆call @[])])"
+        check $ast("f(g() / h())")                           == "◆root\n (◆name ◆call @[((◆name ◆call @[]) ◆divide (◆name ◆call @[]))])"
         check $ast("f(1)")                                   == "◆root\n (◆name ◆call @[◆number])"
         check $ast("f(1 + 2)")                               == "◆root\n (◆name ◆call @[(◆number ◆plus ◆number)])"
+        check $ast("f(1 + 2 4 + 5)")                         == "◆root\n (◆name ◆call @[(◆number ◆plus ◆number), (◆number ◆plus ◆number)])"
+        check $ast("f(1 2 3)")                               == "◆root\n (◆name ◆call @[◆number, ◆number, ◆number])"
+        check $ast("f(1 g(h(2)))")                           == "◆root\n (◆name ◆call @[◆number, (◆name ◆call @[(◆name ◆call @[◆number])])])"
         
     ▸ assign
     
@@ -102,4 +108,15 @@ import ../pars
 
         check $ast("a + if b then c else d")                 == "◆root\n (◆name ◆plus (◆if @[(◆name ◆name)] ◆name))"
         check $ast("switch x\n a ➜ if b then c")             == "◆root\n (◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])"
+        
+    ▸ tests
+    
+        check $ast("▸ a test suite")                         == "◆root\n ◆test"
+        check ast("▸ a test suite").expressions[0].kind      == ●testSuite
+        
+        check $ast("    ▸ test section")                     == "◆root\n ◆test"
+        check ast("    ▸ test section").expressions[0].kind  == ●testSection
+        
+        check $ast("    f(a) ▸ 42")                          == "◆root\n ((◆name ◆call @[◆name]) ◆test ◆number)"
+        check $ast("    f(a) ▸\n        42")                 == "◆root\n ((◆name ◆call @[◆name]) ◆test ◆number)"
         

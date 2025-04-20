@@ -73,6 +73,7 @@ type
         ◆proc,
         ◆var,
         ◆let,
+        ◆test,
         ◆root,
         ◆eof
         
@@ -128,6 +129,7 @@ const
         "!":    ◆not,
         "⮐":    ◆return,
         "➜":    ◆then,
+        "▸":    ◆test,
         }.toTable()
         
     keywords = {
@@ -198,8 +200,6 @@ proc isNumber*(str:string, next:string): bool =
         let combined = str & next
         if not (combined =~ numberPeg)
             ⮐  true
-            
-    # log &"isNumber {str} {next} {str =~ numberPeg} {(str & next) =~ numberPeg}"
     false
 
 proc tokenize*(lines:seq[string]) : seq[Token] =
@@ -211,8 +211,8 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
     var inMultiLineComment = false
 
     for index,line in lines
+
         let firstLineTokenIndex = tokens.len
-        # log "line: ", line
         var col = 0
         token = Token(line:index, col:col)
         let segs = kseg line
@@ -304,6 +304,7 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     token.col = col
                 
                 if col < segs.len-1
+                    
                     let next = segs[col+1]
                     
                     if col < segs.len-2
@@ -333,6 +334,15 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                             col += 1
                             pushToken()
                             token.tok = ◆string
+                            continue
+                            
+                    if charTok[char] == ◆test
+                        if tokens.len == 0 or tokens[^1].tok == ◆indent
+                            token.tok = ◆test
+                            while col <= segs.len-1
+                                token.str &= segs[col]
+                                col += 1
+                            pushToken()
                             continue
                 
                     pushToken(char, charTok[char])

@@ -31,6 +31,9 @@ type
         ●use, 
         ●class,
         ●enum,
+        ●testSuite,
+        ●testSection,
+        ●testCase,
         ●eof
     
     # ███   ███   ███████   ███████    ████████
@@ -116,6 +119,11 @@ type
                 func_type*      : Node
                 func_args*      : Node
                 func_body*      : Node
+                            
+            of ●testCase:
+                
+                test_expression* : Node
+                test_expected*   : Node
                 
             else:
                 discard
@@ -221,6 +229,8 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.while_cond} {n.while_body})"
         of ●func:
             s = &"({s} {n.func_name} {n.func_type} {n.func_args}) {n.func_body})"
+        of ●testCase:
+            s = &"({n.test_expression} {s} {n.test_expected})"
         else:
             discard
     s
@@ -309,7 +319,7 @@ proc expression(p: var Parser, precedenceRight = 0): Node =
         let token = p.current()
         var precedence = p.getPrecedence(token)
         
-        if token.tok == ◆assign:
+        if token.tok in {◆assign, ◆test}:
             precedence += 1
         
         if precedenceRight >= precedence:
@@ -336,6 +346,10 @@ proc expression(p: var Parser, tokenRight:Token ): Node =
 proc parseBlock*(p: var Parser): Node =
 
     var expressions = default seq[Node]
+    
+    while p.tok() == ◆indent :
+        p.swallow ◆indent # swallow indentation to enable simple test cases
+    
     var expr : Node = p.expression()
     while expr != nil:
         expressions.add expr
@@ -546,6 +560,19 @@ proc parseParenExpr(p: var Parser): Node =
     let expr = p.expression()
     p.swallowError(◆paren_close, "Expected closing parenthesis")
     expr
+    
+proc parseTestCase(p: var Parser, left: Node): Node =
+
+    let token = p.consume() # ▸
+    p.swallow(◆indent) # todo: check if indent is larger than that of the test expression
+    let right = p.expression()
+    Node(token:token, kind: ●testCase, test_expression:left, test_expected:right)
+
+proc parseTestSuite(p: var Parser): Node =
+
+    let token = p.consume() # ▸
+    let kind = choose(token.col == 0, ●testSuite, ●testSection)
+    Node(token:token, kind:kind)
         
 #  ███████  ████████  █████████  ███   ███  ████████ 
 # ███       ███          ███     ███   ███  ███   ███
@@ -560,6 +587,8 @@ proc register(p: var Parser, t:tok, pratt: Pratt) =
     p.pratts[t.ord] = pratt
 
 proc setup(p: var Parser) =
+
+    p.register(◆test,           Pratt(lhs: parseTestCase,   rhs: parseTestSuite,    precedence: 0))
 
     p.register(◆number,         Pratt(                      rhs: parseLiteral,      precedence: 0))
     p.register(◆string_start,   Pratt(                      rhs: parseString,       precedence: 0))

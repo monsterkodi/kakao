@@ -330,3 +330,20 @@ suite "lexi":
             Token(str:"10",    tok:◆number,    line:0, col:12) 
             ]
         
+    # █████████  ████████   ███████  █████████   ███████
+    #    ███     ███       ███          ███     ███     
+    #    ███     ███████   ███████      ███     ███████ 
+    #    ███     ███            ███     ███          ███
+    #    ███     ████████  ███████      ███     ███████ 
+
+    test "tests":
+    
+        check tokenize("▸ tets")       == @[ Token(str:"▸ tets", tok:◆test, line:0, col:0) ]
+        check tokenize("    ▸ sect")   == @[ Token(str:"    ", tok:◆indent, line:0, col:0), Token(str:"▸ sect", tok:◆test, line:0, col:4) ]
+        check tokenize("    a ▸ 2")    == @[ 
+            Token(str:"    ", tok:◆indent, line:0, col:0), 
+            Token(str:"a", tok:◆name,   line:0, col:4), 
+            Token(str:"▸", tok:◆test,   line:0, col:6),
+            Token(str:"2", tok:◆number, line:0, col:8),
+            ]
+        
