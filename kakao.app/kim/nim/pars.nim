@@ -28,6 +28,7 @@ type
         ●type,
         ●argType,
         ●argList,
+        ●argDefault,
         ●signature,
         ●return, 
         ●break, 
@@ -125,7 +126,12 @@ type
             of ●argType:
             
                 arg_name*       : Node    
-                arg_type*       : Node    
+                arg_type*       : Node
+                arg_default*    : Node
+                
+            of ●argDefault:
+            
+                default*        : Node
 
             of ●argList:
             
@@ -305,7 +311,7 @@ proc swallowError(p: var Parser, tok: tok, err: string) =
         return  
     p.swallow()
     
-proc peek(p: Parser, ahead: int = 1): Token =
+proc peek(p: Parser, ahead=1): Token =
 
     if p.pos + ahead < p.tokens.len:
         p.tokens[p.pos + ahead]
@@ -622,23 +628,23 @@ proc rReturnType(p: var Parser): Node =
     
     Node(token:token, kind:●signature, sig_type:sig_type)
     
-proc lArgType(p: var Parser, left: Node) : Node =
+proc lSingleArg(p: var Parser, left: Node) : Node =
 
     let token = p.consume()
     let right = p.parseType()
 
-    var n = Node(token:token, kind:●argType, arg_name:left, arg_type:right)
+    Node(token:token, kind:●argType, arg_name:left, arg_type:right)
+    
+proc lArgType(p: var Parser, left: Node) : Node =
+
+    var n = p.lSingleArg(left)
     
     if p.peek().tok in {◆val, ◆var} :
         var argList : seq[Node] = @[n]
         while p.peek(1).tok in {◆val, ◆var}:
-            let name = p.rLiteral()
-            let atok = p.consume()
-            let atyp = p.parseType()
-
-            argList.add Node(token:atok, kind:●argType, arg_name:name, arg_type:atyp)
+            argList.add p.lSingleArg(p.rLiteral())
             
-        n = Node(token:token, kind:●argList, args:argList)
+        n = Node(token:n.token, kind:●argList, args:argList)
 
     if p.tok() == ◆then:
     

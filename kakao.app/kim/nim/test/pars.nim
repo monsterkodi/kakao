@@ -56,6 +56,8 @@ suite "pars":
         check $ast("f = ➜ Node ->")                          == "◆\n (◆func ◆name @[] ◆type)"
         check $ast("f = p◆Parser ➜ Node ->")                 == "◆\n (◆func ◆name @[(◆name ◆var ◆type)] ◆type)"
         check $ast("f = s▪seq[Node] ➜ seq[Node] ->")         == "◆\n (◆func ◆name @[(◆name ◆val ◆type)] ◆type)"
+        # check $ast("f = p▪Parser ahead=1 ➜ Token ->")        == "◆\n (◆func ◆name @[(◆name ◆val ◆type) (◆name ◆val ◆default)] ◆type)"
+        # check $ast("f = p▪Parser ahead▪int=1 ➜ Token ->")    == "◆\n (◆func ◆name @[(◆name ◆val ◆type) (◆name ◆val ◆type ◆default)] ◆type)"
         
     test "call":
     
