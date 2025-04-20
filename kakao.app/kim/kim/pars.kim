@@ -367,7 +367,7 @@ proc parse*(p: var Parser): Node =
 # ███  ███     
 # ███  ███     
 
-proc parseIf*(p: var Parser): Node =
+proc parseIf(p: var Parser): Node =
 
     let token = p.consume() # if
     
@@ -580,50 +580,49 @@ proc parseTestSuite(p: var Parser): Node =
 #      ███  ███          ███     ███   ███  ███      
 # ███████   ████████     ███      ███████   ███      
 
-proc register(p: var Parser, t:tok, pratt: Pratt) =
+proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) = 
 
     if p.pratts.len <= t.ord
         p.pratts.setLen(t.ord + 1)
-    p.pratts[t.ord] = pratt
+    
+    p.pratts[t.ord] = Pratt(lhs:lhs, rhs:rhs, precedence:precedence)
 
 proc setup(p: var Parser) =
 
-    p.register(◆test,           Pratt(lhs: parseTestCase,   rhs: parseTestSuite,    precedence: 0))
+    p.pratt ◆test,           parseTestCase,         parseTestSuite,    0
+    p.pratt ◆number,         nil,                   parseLiteral,      0
+    p.pratt ◆string_start,   nil,                   parseString,       0
+    p.pratt ◆true,           nil,                   parseLiteral,      0
+    p.pratt ◆false,          nil,                   parseLiteral,      0
+    p.pratt ◆null,           nil,                   parseLiteral,      0
+    p.pratt ◆name,           nil,                   parseLiteral,      0
+                                                                      
+    p.pratt ◆return,         nil,                   parseReturn,       5
+                                                                      
+    p.pratt ◆assign,         parseOperation,        nil,              10
 
-    p.register(◆number,         Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆string_start,   Pratt(                      rhs: parseString,       precedence: 0))
-    p.register(◆true,           Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆false,          Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆null,           Pratt(                      rhs: parseLiteral,      precedence: 0))
-    p.register(◆name,           Pratt(                      rhs: parseLiteral,      precedence: 0))
-    
-    p.register(◆return,         Pratt(                      rhs: parseReturn,       precedence: 5))
+    p.pratt ◆if,             nil,                   parseIf,          15  
+    p.pratt ◆switch,         nil,                   parseSwitch,      15  
+
+    p.pratt ◆equal,          parseOperation,        nil,              20
+
+    p.pratt ◆or,             parseOperation,        nil,              22
+    p.pratt ◆and,            parseOperation,        nil,              25
+
+    p.pratt ◆plus,           parseOperation,        nil,              30
+
+    p.pratt ◆multiply,       parseOperation,        nil,              40
+    p.pratt ◆divide,         parseOperation,        nil,              40
+                                                                                           
+    p.pratt ◆not,            nil,                   parsePreOp,       50
+    p.pratt ◆minus,          parseOperation,        parsePreOp,       50
+                                                                                           
+    p.pratt ◆increment,      parsePostOp,           nil,              60
+    p.pratt ◆decrement,      parsePostOp,           nil,              60
+                                                                                     
+    p.pratt ◆dot,            parsePropertyAccess,   nil,             100
                                 
-    p.register(◆assign,         Pratt(lhs: parseOperation,                          precedence: 10))
-                                                                                    
-    p.register(◆if,             Pratt(rhs: parseIf,                                 precedence: 15))  
-    p.register(◆switch,         Pratt(rhs: parseSwitch,                             precedence: 15))  
-                                                                                    
-    p.register(◆equal,          Pratt(lhs: parseOperation,                          precedence: 20))
-    
-    p.register(◆or,             Pratt(lhs: parseOperation,                          precedence: 22))
-    p.register(◆and,            Pratt(lhs: parseOperation,                          precedence: 25))
-    
-    p.register(◆plus,           Pratt(lhs: parseOperation,                          precedence: 30))
-    
-    p.register(◆multiply,       Pratt(lhs: parseOperation,                          precedence: 40))
-    p.register(◆divide,         Pratt(lhs: parseOperation,                          precedence: 40))
-    
-                                                                                    
-    p.register(◆not,            Pratt(                      rhs: parsePreOp,        precedence: 50))
-    p.register(◆minus,          Pratt(lhs: parseOperation,  rhs: parsePreOp,        precedence: 50))
-                                                                                    
-    p.register(◆increment,      Pratt(lhs: parsePostOp,                             precedence: 60))
-    p.register(◆decrement,      Pratt(lhs: parsePostOp,                             precedence: 60))
-                                                                                    
-    p.register(◆dot,            Pratt(lhs: parsePropertyAccess,                     precedence: 100))
-                                
-    p.register(◆paren_open,     Pratt(lhs: parseCall,       rhs: parseParenExpr,    precedence: 1000))
+    p.pratt ◆paren_open,     parseCall,             parseParenExpr, 1000
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   
