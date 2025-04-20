@@ -74,8 +74,7 @@ type
         ◆var,
         ◆let,
         ◆test,
-        ◆root,
-        ◆,
+        ◆, # block
         ◆eof
         
     toks* = set[tok]
@@ -128,6 +127,8 @@ const
         "&&":   ◆and,
         "||":   ◆or,
         "!":    ◆not,
+        "->":   ◆func,
+        "=>":   ◆func,
         "⮐":    ◆return,
         "➜":    ◆then,
         "▸":    ◆test,

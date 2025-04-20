@@ -45,6 +45,12 @@ suite "pars":
         check $ast("a * (b + c) / d")                        == "◆\n ((◆name ◆multiply (◆name ◆plus ◆name)) ◆divide ◆name)"
         check $ast("3 * (1 + 2)")                            == "◆\n (◆number ◆multiply (◆number ◆plus ◆number))"        
         
+    test "func":
+    
+        check $ast("f = ->")                                 == "◆\n (◆name ◆assign (◆func @[]))"        
+        check $ast("f = a ->")                               == "◆\n (◆name ◆assign (◆func @[◆name]))"        
+        # check $ast("f = a b ->")                             == "◆\n (◆name ◆assign (◆func @[◆name, ◆name]))"        
+        
     test "call":
     
         check $ast("f()")                                    == "◆\n (◆name ◆call @[])"

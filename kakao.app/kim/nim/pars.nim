@@ -55,8 +55,8 @@ type
         
             of ●operation:
             
-                left*           : Node
-                right*          : Node
+                operand_left*   : Node
+                operand_right*  : Node
 
             of ●range:
             
@@ -123,7 +123,7 @@ type
             
                 func_name*      : Node
                 func_type*      : Node
-                func_args*      : Node
+                func_args*      : seq[Node]
                 func_body*      : Node
                             
             of ●testCase:
@@ -207,7 +207,7 @@ proc `$`*(n: Node): string =
             for e in n.expressions:
                 s &= &"\n {e}"
         of ●operation:
-            s = &"({n.left} {s} {n.right})"
+            s = &"({n.operand_left} {s} {n.operand_right})"
         of ●range:
             s = &"({n.range_start} {s} {n.range_end})"
         of ●preOp:
@@ -236,7 +236,10 @@ proc `$`*(n: Node): string =
         of ●while:
             s = &"({s} {n.while_cond} {n.while_body})"
         of ●func:
-            s = &"({s} {n.func_name} {n.func_type} {n.func_args}) {n.func_body})"
+            let f = choose(n.func_name, &" {n.func_name}", "")
+            let t = choose(n.func_type, &" {n.func_type}", "")
+            let b = choose(n.func_body, &" {n.func_body}", "")
+            s = &"({s}{f} {n.func_args}{t}{b})"
         of ●testCase:
             s = &"({n.test_expression} {s} {n.test_expected})"
         else:
@@ -591,7 +594,7 @@ proc lOperation(p: var Parser, left: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
-    Node(token:token, kind: ●operation, left: left, right: right)
+    Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
 proc lRange(p: var Parser, left: Node): Node =
 
@@ -618,7 +621,22 @@ proc rTestSuite(p: var Parser): Node =
     let token = p.consume() # ▸
     let kind = choose(token.col == 0, ●testSuite, ●testSection)
     Node(token:token, kind:kind)
+    
+proc lFunc(p: var Parser, left: Node): Node =
+
+    # echo &"lFunc {left}"
+    let token = p.consume() # ->
+    var func_args : seq[Node] = @[]
+    if left.kind == ●literal:
+        func_args.add left
+    Node(token:token, kind:●func, func_args:func_args)
+
+proc rFunc(p: var Parser): Node =
         
+    # echo "rFunc"
+    let token = p.consume() # ->
+    Node(token:token, kind:●func)
+    
 #  ███████  ████████  █████████  ███   ███  ████████ 
 # ███       ███          ███     ███   ███  ███   ███
 # ███████   ███████      ███     ███   ███  ████████ 
@@ -646,6 +664,7 @@ proc setup(p: var Parser) =
                                                                     
     p.pratt ◆assign,         lOperation,        nil,            10
 
+    p.pratt ◆func,           lFunc,             rFunc,          15
     p.pratt ◆if,             nil,               rIf,            15  
     p.pratt ◆for,            nil,               rFor,           15  
     p.pratt ◆switch,         nil,               rSwitch,        15  
