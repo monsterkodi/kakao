@@ -24,8 +24,11 @@ type
         ●switchCase,
         ●var,        
         ●propertyAccess,        
-        ●func, 
-        ●arg,
+        ●func,
+        ●type,
+        ●argType,
+        ●argList,
+        ●signature,
         ●return, 
         ●break, 
         ●continue,          
@@ -118,6 +121,20 @@ type
                 var_name*       : Node
                 var_type*       : Node
                 var_value*      : Node
+                
+            of ●argType:
+            
+                arg_name*       : Node    
+                arg_type*       : Node    
+
+            of ●argList:
+            
+                args*           : seq[Node]
+                
+            of ●signature:
+            
+                sig_args*       : seq[Node]  
+                sig_type*       : Node
                 
             of ●func:
             
@@ -240,6 +257,12 @@ proc `$`*(n: Node): string =
             let t = choose(n.func_type, &" {n.func_type}", "")
             let b = choose(n.func_body, &" {n.func_body}", "")
             s = &"({s}{f} {n.func_args}{t}{b})"
+        of ●argType:
+            s = &"({n.arg_name} {s} {n.arg_type})"
+        of ●argList:
+            s = &"({n.args})"
+        of ●signature:
+            s = &"({n.sig_args} {s} {n.sig_type})"
         of ●testCase:
             s = &"({n.test_expression} {s} {n.test_expected})"
         else:
@@ -259,7 +282,7 @@ proc error*(p: var Parser, msg: string) : Node =
 # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
 #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 
-proc consume(p: var Parser): Token =
+proc consume(p: var Parser): auto =
 
     let t = p.current()
     if p.pos < p.tokens.len:
@@ -284,7 +307,10 @@ proc swallowError(p: var Parser, tok: tok, err: string) =
     
 proc peek(p: Parser, ahead: int = 1): Token =
 
-    p.tokens[p.pos + ahead]
+    if p.pos + ahead < p.tokens.len:
+        p.tokens[p.pos + ahead]
+    else:
+        Token(tok:◆eof)
     
 proc getPrecedence(p: Parser, token: Token): int =
 
@@ -321,6 +347,7 @@ proc expression(p: var Parser, precedenceRight = 0): Node =
     
         if token.tok == ◆else:
             return  nil
+            
         return  p.error(&"expected expression but found: {token}")
         
     var left: Node = rhs(p)
@@ -444,9 +471,7 @@ proc rFor(p: var Parser): Node =
     let for_value = p.expression()
     p.swallowError(◆in, "Expected in after for value")
     let for_range = p.expression()
-    # echo &"for_range {for_range}"
     let for_body  = p.then()
-    # echo &"for_body {for_body}"
 
     Node(
         token:      token,
@@ -490,7 +515,7 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
         case_then:  case_then
         )
 
-proc rSwitch*(p: var Parser): Node =
+proc rSwitch*(p: var Parser): auto =
 
     let token = p.consume()
     let switch_value = p.expression()
@@ -538,12 +563,6 @@ proc rSwitch*(p: var Parser): Node =
         switch_default: switch_default
         )
         
-# proc parseFor*(p: var Parser): Node =
-# 
-# proc parseFunction*(p: var Parser): Node =
-# 
-# proc parseVariable*(p: var Parser): Node =
-    
 proc lCall(p: var Parser, callee: Node): Node =
 
     let token = p.consume() # (
@@ -584,6 +603,90 @@ proc rPreOp(p: var Parser): Node =
     let right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
+proc parseType(p: var Parser): Node =
+    
+    var token = p.consume()
+    token.tok = ◆type
+    
+    if p.tok() == ◆square_open:
+        while p.tok() notin {◆square_close, ◆eof}:
+            token.str &= p.consume().str
+        p.swallowError ◆square_close, "Expected closing bracket for type"
+    
+    Node(token:token, kind:●type)
+    
+proc rReturnType(p: var Parser): Node =
+
+    var token    = p.consume()
+    let sig_type = p.parseType()
+    
+    Node(token:token, kind:●signature, sig_type:sig_type)
+    
+proc lArgType(p: var Parser, left: Node) : Node =
+
+    let token = p.consume()
+    let right = p.parseType()
+
+    var n = Node(token:token, kind:●argType, arg_name:left, arg_type:right)
+    
+    if p.peek().tok in {◆val, ◆var} :
+        var argList : seq[Node] = @[n]
+        while p.peek(1).tok in {◆val, ◆var}:
+            let name = p.rLiteral()
+            let atok = p.consume()
+            let atyp = p.parseType()
+
+            argList.add Node(token:atok, kind:●argType, arg_name:name, arg_type:atyp)
+            
+        n = Node(token:token, kind:●argList, args:argList)
+
+    if p.tok() == ◆then:
+    
+        var s = p.rReturnType()
+        
+        if n.kind == ●argList:
+            s.sig_args = n.args
+        else:
+            s.sig_args = @[n]
+        n = s
+    n
+
+proc lFunc(p: var Parser, left: Node): Node =
+
+    let arrowToken = p.consume() # ->
+    
+    var funcName:  Node
+    var func_type: Node
+    var args: seq[Node] = @[]
+    
+    if left.kind == ●operation and left.token.tok == ◆assign:
+        echo &"lFunc ASSIGN {left}"
+        funcName = left.operand_left
+
+    if left.kind == ●argType:
+        args.add left
+    if left.kind == ●argList:
+        args = left.args
+    if left.kind == ●signature:
+        args = left.sig_args
+        func_type = left.sig_type
+    
+    let body = p.then()
+    
+    Node(
+        token: arrowToken,
+        kind: ●func,
+        func_name: funcName,
+        func_args: args,
+        func_type: func_type,
+        func_body: body
+        )
+
+proc rFunc(p: var Parser): Node =
+        
+    let token = p.consume() # ->
+    Node(token:token, kind:●func)
+
 proc rReturn(p: var Parser): Node =
 
     let token = p.consume()
@@ -595,6 +698,17 @@ proc lOperation(p: var Parser, left: Node): Node =
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
+
+proc lAssign(p: var Parser, left: Node): Node =
+
+    let token = p.consume()
+    let right = p.expression(token)
+
+    if left.kind == ●literal and right.kind == ●func:
+        right.func_name = left
+        right
+    else:
+        Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
 proc lRange(p: var Parser, left: Node): Node =
 
@@ -621,22 +735,7 @@ proc rTestSuite(p: var Parser): Node =
     let token = p.consume() # ▸
     let kind = choose(token.col == 0, ●testSuite, ●testSection)
     Node(token:token, kind:kind)
-    
-proc lFunc(p: var Parser, left: Node): Node =
-
-    # echo &"lFunc {left}"
-    let token = p.consume() # ->
-    var func_args : seq[Node] = @[]
-    if left.kind == ●literal:
-        func_args.add left
-    Node(token:token, kind:●func, func_args:func_args)
-
-proc rFunc(p: var Parser): Node =
-        
-    # echo "rFunc"
-    let token = p.consume() # ->
-    Node(token:token, kind:●func)
-    
+            
 #  ███████  ████████  █████████  ███   ███  ████████ 
 # ███       ███          ███     ███   ███  ███   ███
 # ███████   ███████      ███     ███   ███  ████████ 
@@ -662,7 +761,7 @@ proc setup(p: var Parser) =
                                                                   
     p.pratt ◆return,         nil,               rReturn,         5
                                                                     
-    p.pratt ◆assign,         lOperation,        nil,            10
+    p.pratt ◆assign,         lAssign,           nil,            10
 
     p.pratt ◆func,           lFunc,             rFunc,          15
     p.pratt ◆if,             nil,               rIf,            15  
@@ -687,8 +786,10 @@ proc setup(p: var Parser) =
     p.pratt ◆decrement,      lPostOp,           nil,            80
                                                                                      
     p.pratt ◆paren_open,     lCall,             rParenExpr,     90
+    p.pratt ◆val,            lArgType,          nil,           100
+    p.pratt ◆var,            lArgType,          nil,           100
+    p.pratt ◆then,           nil,               rReturnType,   100
     p.pratt ◆dot,            lPropertyAccess,   nil,           100
-                                
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   

@@ -346,4 +346,12 @@ suite "lexi":
             Token(str:"▸", tok:◆test,   line:0, col:6),
             Token(str:"2", tok:◆number, line:0, col:8),
             ]
+            
+    test "types":
+    
+        check tokenize("a▪string")    == @[ 
+            Token(str:"a",      tok:◆name,  line:0, col:0), 
+            Token(str:"▪",      tok:◆val,   line:0, col:1), 
+            Token(str:"string", tok:◆name,  line:0, col:2) 
+            ]
         

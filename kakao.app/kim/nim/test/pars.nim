@@ -47,9 +47,15 @@ suite "pars":
         
     test "func":
     
-        check $ast("f = ->")                                 == "◆\n (◆name ◆assign (◆func @[]))"        
-        check $ast("f = a ->")                               == "◆\n (◆name ◆assign (◆func @[◆name]))"        
-        # check $ast("f = a b ->")                             == "◆\n (◆name ◆assign (◆func @[◆name, ◆name]))"        
+        check $ast("->")                                     == "◆\n (◆func @[])"
+        check $ast("f = ->")                                 == "◆\n (◆func ◆name @[])"        
+        check $ast("f = a▪string ->")                        == "◆\n (◆func ◆name @[(◆name ◆val ◆type)])"        
+        check $ast("f = a▪string b▪int ->")                  == "◆\n (◆func ◆name @[(◆name ◆val ◆type), (◆name ◆val ◆type)])"        
+        check $ast("f = p◆Parser a▪string b▪int ->")         == "◆\n (◆func ◆name @[(◆name ◆var ◆type), (◆name ◆val ◆type), (◆name ◆val ◆type)])"        
+        check $ast("f = p◆Parser ->")                        == "◆\n (◆func ◆name @[(◆name ◆var ◆type)])"
+        check $ast("f = ➜ Node ->")                          == "◆\n (◆func ◆name @[] ◆type)"
+        check $ast("f = p◆Parser ➜ Node ->")                 == "◆\n (◆func ◆name @[(◆name ◆var ◆type)] ◆type)"
+        check $ast("f = s▪seq[Node] ➜ seq[Node] ->")         == "◆\n (◆func ◆name @[(◆name ◆val ◆type)] ◆type)"
         
     test "call":
     

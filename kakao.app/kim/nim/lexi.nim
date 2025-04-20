@@ -72,8 +72,10 @@ type
         ◆less,
         ◆proc,
         ◆var,
+        ◆val,
         ◆let,
         ◆test,
+        ◆type, # not really a token, used by pars to mark type annotations
         ◆, # block
         ◆eof
         
@@ -132,6 +134,8 @@ const
         "⮐":    ◆return,
         "➜":    ◆then,
         "▸":    ◆test,
+        "▪":    ◆val,
+        "◆":    ◆var,
         }.toTable()
         
     keywords = {
@@ -169,7 +173,7 @@ const
 type
     Token* = object
         str*  : string                      
-        tok*  : tok
+        tok*  : tok                
         line* : int
         col*  : int
     
