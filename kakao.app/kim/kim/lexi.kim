@@ -75,6 +75,7 @@ type
         ◆let,
         ◆test,
         ◆root,
+        ◆,
         ◆eof
         
     toks* = set[tok]

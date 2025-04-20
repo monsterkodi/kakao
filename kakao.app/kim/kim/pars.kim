@@ -363,7 +363,7 @@ proc parseBlock*(p: var Parser): Node =
         expressions.add expr
         expr = p.expression()
     
-    Node(token:Token(tok:◆root), kind:●block, expressions:expressions)
+    Node(token:Token(tok:◆), kind:●block, expressions:expressions)
     
 proc then(p: var Parser) : Node = 
 
