@@ -45,6 +45,11 @@ import ../pars
         check $ast("a * (b + c) / d")                        == "◆root\n ((◆name ◆multiply (◆name ◆plus ◆name)) ◆divide ◆name)"
         check $ast("3 * (1 + 2)")                            == "◆root\n (◆number ◆multiply (◆number ◆plus ◆number))"        
         
+    ▸ call
+    
+        check $ast("f(1)")                                   == "◆root\n (◆name ◆call @[◆number])"
+        check $ast("f(1 + 2)")                               == "◆root\n (◆name ◆call @[(◆number ◆plus ◆number)])"
+        
     ▸ assign
     
         check $ast("a = 1")                                  == "◆root\n (◆name ◆assign ◆number)"
@@ -87,14 +92,14 @@ import ../pars
         
     ▸ strings
     
-        check $ast("\"hello\"") == "◆root\n ◆string"
-        check $ast("s = \"hello\"") == "◆root\n (◆name ◆assign ◆string)"
+        check $ast("\"hello\"")                              == "◆root\n ◆string"
+        check $ast("s = \"hello\"")                          == "◆root\n (◆name ◆assign ◆string)"
         
     ▸ edge_cases
 
-        check $ast("") == "◆root"
-        check $ast("42") == "◆root\n ◆number"
+        check $ast("")                                       == "◆root"
+        check $ast("42")                                     == "◆root\n ◆number"
 
-        check $ast("a + if b then c else d")        == "◆root\n (◆name ◆plus (◆if @[(◆name ◆name)] ◆name))"
-        check $ast("switch x\n a ➜ if b then c")    == "◆root\n (◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])"
+        check $ast("a + if b then c else d")                 == "◆root\n (◆name ◆plus (◆if @[(◆name ◆name)] ◆name))"
+        check $ast("switch x\n a ➜ if b then c")             == "◆root\n (◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])"
         

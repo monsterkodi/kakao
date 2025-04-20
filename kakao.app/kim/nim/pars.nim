@@ -202,7 +202,7 @@ proc `$`*(n: Node): string =
             let e = choose(n.return_value, &" {n.return_value}", "")
             s = &"({s}{e})"
         of ●call:
-            s = &"({n.callee} {s} {n.callargs})"
+            s = &"({n.callee} ◆call {n.callargs})"
         of ●propertyAccess:
             s = &"({n.owner} {s} {n.property})"
         of ●if:
@@ -409,7 +409,7 @@ proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
     let case_token = p.current()
     
     while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}:
-        case_when.add(p.expression())
+        case_when.add p.expression()
     
     # if case_when.len == 0
     #     return  p.error("Switch case needs at least one pattern")
@@ -422,7 +422,7 @@ proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
     let case_then = p.expression()
     
     if case_then == nil:
-        return  p.error("Expected case body after matches")
+        return  p.error "Expected case body after matches"
     
     Node(
         token:      case_token,
@@ -433,11 +433,11 @@ proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
 
 proc parseSwitch*(p: var Parser): Node =
 
-    let token  = p.consume()
+    let token = p.consume()
     let switch_value = p.expression()
     
     if switch_value == nil:
-        return  p.error("Expected value after switch keyword")
+        return  p.error "Expected value after switch keyword"
     
     let baseIndent = p.current().str.len 
     
@@ -453,9 +453,9 @@ proc parseSwitch*(p: var Parser): Node =
             continue
         let switch_case = p.parseSwitchCase(baseIndent)
         if switch_case == nil:
-            return  p.error("failed to parse switch statement")
+            return  p.error "failed to parse switch statement"
         else:
-            switch_cases.add(switch_case)
+            switch_cases.add switch_case
     
     var switch_default: Node
     
@@ -469,7 +469,7 @@ proc parseSwitch*(p: var Parser): Node =
                 p.expression()
         
         if switch_default == nil:
-            return  p.error("Expected default value")
+            return  p.error "Expected default value"
     
     Node(
         token:          token,
@@ -485,29 +485,25 @@ proc parseSwitch*(p: var Parser): Node =
 # 
 # proc parseVariable*(p: var Parser): Node =
     
-proc parseArg(p: var Parser): Node =
-
-    let token = p.consume()
-    Node(token:token, kind:●arg)
-
 proc parseArgs(p: var Parser): seq[Node] =
-
+    
     var args = default seq[Node]
-    while p.peek().tok != ◆paren_close:
-        args.add p.parseArg()
+    while p.tok() != ◆paren_close:
+        args.add p.expression()
+    p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
     args    
+
+proc parseCall(p: var Parser, callee: Node): Node =
+
+    let token = p.consume() # (
+    let args  = p.parseArgs()
+    Node(token:token, kind:●call, callee:callee, callargs:args)
     
 proc parsePropertyAccess(p: var Parser, owner: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind:●propertyAccess, owner:owner, property:right)
-
-proc parseCall(p: var Parser, callee: Node): Node =
-    
-    let token = p.consume()
-    let args  = p.parseArgs()
-    Node(token:token, kind:●call, callee:callee, callargs:args)
 
 proc parseLiteral(p: var Parser): Node =
 
@@ -546,7 +542,7 @@ proc parseOperation(p: var Parser, left: Node): Node =
         
 proc parseParenExpr(p: var Parser): Node =
 
-    discard p.consume() # "("
+    p.swallow() # "("
     let expr = p.expression()
     p.swallowError(◆paren_close, "Expected closing parenthesis")
     expr
@@ -596,10 +592,9 @@ proc setup(p: var Parser) =
     p.register(◆increment,      Pratt(lhs: parsePostOp,                             precedence: 60))
     p.register(◆decrement,      Pratt(lhs: parsePostOp,                             precedence: 60))
                                                                                     
-    p.register(◆paren_open,     Pratt(lhs: parseCall,                               precedence: 70))
     p.register(◆dot,            Pratt(lhs: parsePropertyAccess,                     precedence: 100))
                                 
-    p.register(◆paren_open,     Pratt(                      rhs: parseParenExpr,    precedence: 1000))
+    p.register(◆paren_open,     Pratt(lhs: parseCall,       rhs: parseParenExpr,    precedence: 1000))
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   
