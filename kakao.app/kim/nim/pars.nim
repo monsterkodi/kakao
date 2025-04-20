@@ -264,7 +264,11 @@ proc `$`*(n: Node): string =
             let b = choose(n.func_body, &" {n.func_body}", "")
             s = &"({s}{f} {n.func_args}{t}{b})"
         of ●argType:
-            s = &"({n.arg_name} {s} {n.arg_type})"
+            let d = choose(n.arg_default, &" {n.arg_default}", "")
+            let t = choose(n.arg_type, &" {s} {n.arg_type}", "")
+            s = &"({n.arg_name}{t}{d})"
+        of ●argDefault:
+            s = &"(= {n.default})"
         of ●argList:
             s = &"({n.args})"
         of ●signature:
@@ -630,18 +634,30 @@ proc rReturnType(p: var Parser): Node =
     
 proc lSingleArg(p: var Parser, left: Node) : Node =
 
-    let token = p.consume()
-    let right = p.parseType()
+    var token : Token
+    var arg_type : Node
+    var arg_default : Node
+    
+    if p.tok() in {◆val, ◆var}:
+        token    = p.consume()
+        arg_type = p.parseType()
+    
+    if p.tok() == ◆assign:
+        arg_default = Node(
+            token: p.consume(),
+            kind: ●argDefault,
+            default: p.expression()
+            )
 
-    Node(token:token, kind:●argType, arg_name:left, arg_type:right)
+    Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
 proc lArgType(p: var Parser, left: Node) : Node =
 
     var n = p.lSingleArg(left)
     
-    if p.peek().tok in {◆val, ◆var} :
+    if p.peek().tok in {◆val, ◆var, ◆assign} :
         var argList : seq[Node] = @[n]
-        while p.peek(1).tok in {◆val, ◆var}:
+        while p.peek(1).tok in {◆val, ◆var, ◆assign}:
             argList.add p.lSingleArg(p.rLiteral())
             
         n = Node(token:n.token, kind:●argList, args:argList)
