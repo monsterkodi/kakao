@@ -18,6 +18,7 @@ type
         ●if, 
         ●condThen,
         ●for, 
+        ●range, 
         ●while,
         ●switch,
         ●switchCase,
@@ -56,6 +57,11 @@ type
             
                 left*           : Node
                 right*          : Node
+
+            of ●range:
+            
+                range_start*    : Node
+                range_end*      : Node
                 
             of ●postOp, ●preOp:
             
@@ -202,6 +208,8 @@ proc `$`*(n: Node): string =
                 s &= &"\n {e}"
         of ●operation:
             s = &"({n.left} {s} {n.right})"
+        of ●range:
+            s = &"({n.range_start} {s} {n.range_end})"
         of ●preOp:
             s = &"({s} {n.operand})"
         of ●postOp:
@@ -271,7 +279,7 @@ proc swallowError(p: var Parser, tok: tok, err: string) =
         return  
     p.swallow()
     
-proc peek*(p: Parser, ahead: int = 1): Token =
+proc peek(p: Parser, ahead: int = 1): Token =
 
     p.tokens[p.pos + ahead]
     
@@ -356,6 +364,16 @@ proc parseBlock*(p: var Parser): Node =
         expr = p.expression()
     
     Node(token:Token(tok:◆root), kind:●block, expressions:expressions)
+    
+proc then(p: var Parser) : Node = 
+
+    if p.tok() == ◆then:
+        p.swallow ◆then
+        
+    if p.tok() == ◆indent:
+        p.parseBlock()
+    else:
+        p.expression()
 
 proc parse*(p: var Parser): Node = 
 
@@ -410,6 +428,30 @@ proc rIf(p: var Parser): Node =
         cond_thens: condThens,
         `else`:     `else`
         )
+        
+# ████████   ███████   ████████ 
+# ███       ███   ███  ███   ███
+# ██████    ███   ███  ███████  
+# ███       ███   ███  ███   ███
+# ███        ███████   ███   ███
+
+proc rFor(p: var Parser): Node = 
+
+    let token = p.consume()
+    let for_value = p.expression()
+    p.swallowError(◆in, "Expected in after for value")
+    let for_range = p.expression()
+    # echo &"for_range {for_range}"
+    let for_body  = p.then()
+    # echo &"for_body {for_body}"
+
+    Node(
+        token:      token,
+        kind:       ●for,
+        for_value:  for_value,
+        for_range:  for_range,
+        for_body:   for_body
+        )
 
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
@@ -420,7 +462,7 @@ proc rIf(p: var Parser): Node =
 proc switchCase(p: var Parser, baseIndent: int): Node =
 
     var case_when: seq[Node]
-    let case_token = p.current()
+    let token = p.current()
     
     while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}:
         case_when.add p.expression()
@@ -439,7 +481,7 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
         return  p.error "Expected case body after matches"
     
     Node(
-        token:      case_token,
+        token:      token,
         kind:       ●switchCase,
         case_when:  case_when,
         case_then:  case_then
@@ -499,18 +541,15 @@ proc rSwitch*(p: var Parser): Node =
 # 
 # proc parseVariable*(p: var Parser): Node =
     
-proc parseArgs(p: var Parser): seq[Node] =
+proc lCall(p: var Parser, callee: Node): Node =
+
+    let token = p.consume() # (
     
     var args = default seq[Node]
     while p.tok() != ◆paren_close:
         args.add p.expression()
     p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
-    args    
 
-proc lCall(p: var Parser, callee: Node): Node =
-
-    let token = p.consume() # (
-    let args  = p.parseArgs()
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
 proc lPropertyAccess(p: var Parser, owner: Node): Node =
@@ -553,6 +592,12 @@ proc lOperation(p: var Parser, left: Node): Node =
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, left: left, right: right)
+
+proc lRange(p: var Parser, left: Node): Node =
+
+    let token = p.consume()
+    let right = p.expression(token)
+    Node(token:token, kind: ●range, range_start: left, range_end: right)
         
 proc rParenExpr(p: var Parser): Node =
 
@@ -602,9 +647,11 @@ proc setup(p: var Parser) =
     p.pratt ◆assign,         lOperation,        nil,            10
 
     p.pratt ◆if,             nil,               rIf,            15  
+    p.pratt ◆for,            nil,               rFor,           15  
     p.pratt ◆switch,         nil,               rSwitch,        15  
 
     p.pratt ◆equal,          lOperation,        nil,            20
+    p.pratt ◆doubledot,      lRange,            nil,            20
                                                 
     p.pratt ◆or,             lOperation,        nil,            30
     p.pratt ◆and,            lOperation,        nil,            40

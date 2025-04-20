@@ -83,6 +83,11 @@ import ../pars
         check $ast("x = if a then b else c+d")               == "◆root\n (◆name ◆assign (◆if @[(◆name ◆name)] (◆name ◆plus ◆name)))"
         
         check $ast("if a then ⮐")                            == "◆root\n (◆if @[(◆name (◆return))])"
+        check $ast("a + if b then c else d")                 == "◆root\n (◆name ◆plus (◆if @[(◆name ◆name)] ◆name))"
+        
+    ▸ for
+        check $ast("0..2")                                   == "◆root\n (◆number ◆doubledot ◆number)"
+        check $ast("for a in 0..2 ➜ true")                   == "◆root\n (◆for ◆name (◆number ◆doubledot ◆number) ◆true)"
         
     ▸ switch
     
@@ -97,19 +102,19 @@ import ../pars
         check $ast("switch x\n  1 2➜\n    a\n  ➜ c")         == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
         check $ast("switch x\n  1 2 ➜ a\n  else\n    c")     == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
         check $ast("switch x\n  1 2 ➜ a\n  ➜\n    c")        == "◆root\n (◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)"
+        check $ast("switch x\n a ➜ if b then c")             == "◆root\n (◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])"
         
     ▸ strings
     
         check $ast("\"hello\"")                              == "◆root\n ◆string"
         check $ast("s = \"hello\"")                          == "◆root\n (◆name ◆assign ◆string)"
         
-    ▸ edge_cases
+    ▸ toplevel
 
         check $ast("")                                       == "◆root"
         check $ast("42")                                     == "◆root\n ◆number"
-
-        check $ast("a + if b then c else d")                 == "◆root\n (◆name ◆plus (◆if @[(◆name ◆name)] ◆name))"
-        check $ast("switch x\n a ➜ if b then c")             == "◆root\n (◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])"
+        check $ast("true")                                   == "◆root\n ◆true"
+        check $ast("false")                                  == "◆root\n ◆false"
         
     ▸ tests
     

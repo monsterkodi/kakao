@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w8=_k_.k.F256(_k_.k.w(8))
 
-var actExt, addAndJoinValues, addValue, addValues, blockComment, blocked, chunk, chunked, chunkIndex, codeTypes, coffeePunct, coffeeWord, commentHeader, cppMacro, cppPointer, cppWord, cssWord, dashArrow, dict, dissect, escape, ext, extStack, extTop, fillComment, float, FLOAT, funcArgs, getChunk, getmatch, getValue, handl, handlers, hashComment, HEADER, HEX, HEXNUM, interpolation, jsonPunct, jsonWord, jsPunct, jsWord, keyword, kodePunct, kodeWord, kolorize, kolorizeChunks, LI, line, mdPunct, mmMacro, mmString, NEWLINE, nimComment, noonComment, noonProp, noonPunct, noonWord, notCode, number, NUMBER, obj, parse, popExt, popStack, property, PUNCT, pushExt, pushStack, ranges, regexp, setValue, shPunct, simpleString, slashComment, SPACE, stack, stacked, stackTop, starComment, swtch, syntax, thisCall, topType, tripleRegexp, tripleString, urlPunct, urlWord, xmlPunct
+var actExt, addAndJoinValues, addValue, addValues, blockComment, blocked, chunk, chunked, chunkIndex, codeTypes, coffeePunct, coffeeWord, commentHeader, cppMacro, cppPointer, cppWord, cssWord, dashArrow, dict, dissect, escape, ext, extStack, extTop, fillComment, float, FLOAT, funcArgs, getChunk, getmatch, getValue, handl, handlers, hashComment, HEADER, HEX, HEXNUM, interpolation, jsonPunct, jsonWord, jsPunct, jsWord, keyword, kodePunct, kodeWord, kolorize, kolorizeChunks, LI, line, mdPunct, mmMacro, mmString, NEWLINE, nimComment, noonComment, noonProp, noonPunct, noonWord, notCode, number, NUMBER, obj, parse, popExt, popStack, property, PUNCT, pushExt, pushStack, ranges, regexp, setValue, shPunct, simpleString, slashComment, SPACE, spaced, stack, stacked, stackTop, starComment, swtch, syntax, thisCall, topType, tripleRegexp, tripleString, urlPunct, urlWord, xmlPunct
 
 import kseg from "../kxk/kseg.js"
 
@@ -1584,9 +1584,20 @@ interpolation = function ()
     }
 }
 
+spaced = function ()
+{
+    var prev
+
+    if (prev = getChunk(-1))
+    {
+        return prev.start + prev.length < chunk.start
+    }
+    return false
+}
+
 keyword = function ()
 {
-    var _1135_61_
+    var prev
 
     if (notCode)
     {
@@ -1596,7 +1607,8 @@ keyword = function ()
     {
         return
     }
-    if (lang[ext].hasOwnProperty(chunk.match) && !(_k_.in((getChunk(-1) != null ? getChunk(-1).match : undefined),['.'])))
+    prev = getChunk(-1)
+    if (lang[ext].hasOwnProperty(chunk.match) && (!prev || (!(_k_.in(prev.match,['.'])) && (spaced() || (_k_.in(prev.match,['@','['])) || (prev.clss !== 'punct')))))
     {
         chunk.clss = lang[ext][chunk.match]
         return
@@ -1653,7 +1665,7 @@ mmString = function ()
 
 shPunct = function ()
 {
-    var _1201_42_, _1201_64_, _1204_102_, _1204_41_, _1204_82_, _1210_102_, _1210_41_, _1210_82_
+    var _1210_42_, _1210_64_, _1213_102_, _1213_41_, _1213_82_, _1219_102_, _1219_41_, _1219_82_
 
     if (notCode)
     {
@@ -1759,16 +1771,16 @@ setValue = function (d, value)
 
 getValue = function (d)
 {
-    var _1272_27_, _1272_34_
+    var _1281_27_, _1281_34_
 
-    return ((_1272_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1272_34_ : '')
+    return ((_1281_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1281_34_ : '')
 }
 
 getmatch = function (d)
 {
-    var _1273_27_, _1273_35_
+    var _1282_27_, _1282_35_
 
-    return ((_1273_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1273_35_ : '')
+    return ((_1282_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1282_35_ : '')
 }
 
 addValue = function (d, value)
@@ -1823,7 +1835,7 @@ for (ext in handlers)
 
 blocked = function (lines)
 {
-    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1427_40_, _1442_61_
+    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1436_40_, _1451_61_
 
     extStack = []
     stack = []
@@ -1931,7 +1943,7 @@ blocked = function (lines)
                         if (mtch.turd)
                         {
                             turdChunk = getChunk(-mtch.turd.length)
-                            if (mtch.turd === (((_1442_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1442_61_ : (turdChunk != null ? turdChunk.match : undefined))))
+                            if (mtch.turd === (((_1451_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1451_61_ : (turdChunk != null ? turdChunk.match : undefined))))
                             {
                                 pushExt(mtch)
                             }
@@ -2042,11 +2054,11 @@ kolorizeChunks = function (chunks = [])
 
 syntax = function (arg)
 {
-    var clines, index, lines, rngs, text, _1519_19_
+    var clines, index, lines, rngs, text, _1528_19_
 
     arg = (arg != null ? arg : {})
     text = arg.text
-    ext = ((_1519_19_=arg.ext) != null ? _1519_19_ : 'coffee')
+    ext = ((_1528_19_=arg.ext) != null ? _1528_19_ : 'coffee')
     lines = text.split(NEWLINE)
     rngs = parse(lines,ext).map(function (l)
     {

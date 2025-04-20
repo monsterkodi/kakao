@@ -1126,15 +1126,24 @@ interpolation = ->
 # 000  000   000          000     000   000  000   000  000   000  000   000
 # 000   000  00000000     000     00     00   0000000   000   000  0000000
 
+spaced = -> 
+
+    if prev = getChunk(-1)
+        ⮐  prev.start + prev.length < chunk.start
+    false
+
 keyword = ->
 
     ⮐  if notCode
 
     ⮐  if not lang[ext]
 
-    if lang[ext].hasOwnProperty(chunk.match) and getChunk(-1)?.match not in ['.']
+    prev = getChunk(-1)
+
+    if lang[ext].hasOwnProperty(chunk.match) and (not prev or (prev.match not in ['.'] and (spaced() or (prev.match in ['@''[']) or (prev.clss != 'punct'))))
+    # if lang[ext].hasOwnProperty(chunk.match) and getChunk(-1)?.match not in ['.'] and getChunk(-1)?.clss not in ['punct']
         chunk.clss = lang[ext][chunk.match]
-        ⮐ # give coffeeFunc a chance, number bails for us
+        ⮐  # give coffeeFunc a chance, number bails for us
 
 # 000   000  00     00  000
 #  000 000   000   000  000
