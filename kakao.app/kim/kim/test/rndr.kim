@@ -9,41 +9,131 @@ import ../rndr
 
 ▸ rndr
 
-    ▸ empty
-        
-        check rndr("")              == ""
+    ▸ toplevel
+
+        check rndr("")                  == ""
+        check rndr("42")                == "42"
+        check rndr("true")              == "true"
+        check rndr("false")             == "false"
+        check rndr("\"hello\"")         == "\"hello\""
 
     ▸ math ops
         
-        check rndr("1 + 5 * 3")     == "(1 + (5 * 3))"
-        check rndr("1 / 5 - 3")     == "((1 / 5) - 3)"
-        check rndr("-5 - -3")       == "(-5 - -3)"
-        check rndr("a++ + b--")     == "(a++ + b--)"
-        check rndr("1 + 2 + 3")     == "((1 + 2) + 3)"
-        check rndr("1 * 2 + 3 * 4") == "((1 * 2) + (3 * 4))"
+        check rndr("1 + 5 * 3")         == "(1 + (5 * 3))"
+        check rndr("1 / 5 - 3")         == "((1 / 5) - 3)"
+        check rndr("-5 - -3")           == "(-5 - -3)"
+        check rndr("a++ + b--")         == "(a++ + b--)"
+        check rndr("1 + 2 + 3")         == "((1 + 2) + 3)"
+        check rndr("1 * 2 + 3 * 4")     == "((1 * 2) + (3 * 4))"
         
     ▸ boolean ops
     
-        check rndr("a && b || c")    == "((a and b) or c)"
-        check rndr("a and b or c")   == "((a and b) or c)"
-        check rndr("!a && b")        == "(not a and b)"
-        check rndr("not a && b")     == "(not a and b)"
-        check rndr("a || b && c")    == "(a or (b and c))"
-        check rndr("a or b and c")   == "(a or (b and c))"
-        check rndr("a && b == c")    == "((a and b) == c)"
-        check rndr("a and b == c")   == "((a and b) == c)"
-        check rndr("x = a || b")     == "(x = (a or b))"
-        check rndr("x = a or b")     == "(x = (a or b))"
-        check rndr("!a || !b")       == "(not a or not b)"
-        check rndr("not a or not b") == "(not a or not b)"
+        check rndr("a && b || c")       == "((a and b) or c)"
+        check rndr("a and b or c")      == "((a and b) or c)"
+        check rndr("!a && b")           == "(not a and b)"
+        check rndr("not a && b")        == "(not a and b)"
+        check rndr("a || b && c")       == "(a or (b and c))"
+        check rndr("a or b and c")      == "(a or (b and c))"
+        check rndr("a && b == c")       == "((a and b) == c)"
+        check rndr("a and b == c")      == "((a and b) == c)"
+        check rndr("x = a || b")        == "x = (a or b)"
+        check rndr("x = a or b")        == "x = (a or b)"
+        check rndr("!a || !b")          == "(not a or not b)"
+        check rndr("not a or not b")    == "(not a or not b)"
         
     ▸ parens
     
-        check rndr("(1 + 2) * 3")     == "((1 + 2) * 3)"
-        check rndr("(1)")             == "1"
-        check rndr("(a + b) * c")     == "((a + b) * c)"
-        check rndr("a * (b + c)")     == "(a * (b + c))"
-        check rndr("((1))")           == "1"
-        check rndr("(a.b).c")         == "a.b.c"
-        check rndr("a * (b + c) / d") == "((a * (b + c)) / d)"
-        check rndr("3 * (1 + 2)")     == "(3 * (1 + 2))"
+        check rndr("(1 + 2) * 3")       == "((1 + 2) * 3)"
+        check rndr("(1)")               == "1"
+        check rndr("(a + b) * c")       == "((a + b) * c)"
+        check rndr("a * (b + c)")       == "(a * (b + c))"
+        check rndr("((1))")             == "1"
+        check rndr("(a.b).c")           == "a.b.c"
+        check rndr("a * (b + c) / d")   == "((a * (b + c)) / d)"
+        check rndr("3 * (1 + 2)")       == "(3 * (1 + 2))"
+        
+    ▸ func
+    
+        check rndr("f = ->")                                 == "proc f() ="
+        check rndr("f = a▪string ->")                        == "proc f(a:string) ="
+        check rndr("f = a▪string b▪int ->")                  == "proc f(a:string, b:int) ="
+        check rndr("f = p◆Parser a▪string b▪int ->")         == "proc f(p:var Parser, a:string, b:int) ="
+        check rndr("f = p◆Parser ->")                        == "proc f(p:var Parser) ="
+        check rndr("f = ➜ Node ->")                          == "proc f() : Node ="
+        check rndr("f = p◆Parser ➜ Node ->")                 == "proc f(p:var Parser) : Node ="
+        check rndr("f = s▪seq[Node] ➜ seq[Node] ->")         == "proc f(s:seq[Node]) : seq[Node] ="
+        check rndr("f = p▪Parser ahead▪int=1 ➜ Token ->")    == "proc f(p:Parser, ahead:int=1) : Token ="
+        check rndr("f = p▪Parser ahead=1 ➜ Token ->")        == "proc f(p:Parser, ahead=1) : Token ="
+        
+    ▸ call
+    
+        check rndr("f()")                                    == "f()"             
+        check rndr("f(g())")                                 == "f(g())"          
+        check rndr("f(g() / h())")                           == "f((g() / h()))"    
+        check rndr("f(1)")                                   == "f(1)"            
+        check rndr("f(1 + 2)")                               == "f((1 + 2))"        
+        check rndr("f(1 + 2 4 + 5)")                         == "f((1 + 2), (4 + 5))"  
+        check rndr("f(1 2 3)")                               == "f(1, 2, 3)"        
+        check rndr("f(1 g(h(2)))")                           == "f(1, g(h(2)))"    
+        
+    ▸ assign
+    
+        check rndr("a = 1")                                  == "a = 1"
+        check rndr("a = b = 1")                              == "a = b = 1"
+        check rndr("a = b = c = 2")                          == "a = b = c = 2"
+        
+    ▸ properties        
+        
+        check rndr("a.b")                                    == "a.b"     
+        check rndr("a.b.c")                                  == "a.b.c"   
+        check rndr("a.b()")                                  == "a.b()"   
+        check rndr("a.b().c")                                == "a.b().c" 
+        
+    ▸ if
+    
+        check rndr("if true then ⮐  false")                  == "if true: return false"                 
+        check rndr("if true then ⮐  1 else ⮐  2")            == "if true: return 1 else: return 2"           
+        check rndr("if a ➜ 1 elif b ➜ 2 elif c ➜ 3")         == "if a: 1 elif b: 2 elif c: 3"        
+        check rndr("if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4")  == "if a: 1 elif b: 2 elif c: 3 else: 4" 
+        check rndr("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3")          == "if a: 1 elif b: 2 elif c: 3"        
+        check rndr("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4")   == "if a: 1 elif b: 2 elif c: 3 else: 4" 
+        
+        check rndr("if a then if b then 1 else 2 else 3")    == "if a: if b: 1 else: 2 else: 3" 
+        check rndr("x = if a then b else c")                 == "x = if a: b else: c"              
+        check rndr("x = if a then b else c+d")               == "x = if a: b else: (c + d)"            
+        
+        check rndr("if a then ⮐")                            == "if a: return"
+        check rndr("a + if b then c else d")                 == "(a + if b: c else: d)"
+        
+    ▸ for
+    
+        check rndr("for a in 0..2 ➜ true")                   == "for a in [0..2]: true"     
+        check rndr("for a in 0..2\n  true")                  == "for a in [0..2]:\n  true"   
+        check rndr("for a in 0..2 ➜\n  true")                == "for a in [0..2]:\n  true"  
+        
+#     ▸ switch
+#     
+#         check rndr("switch x\n  a ➜ 1\n  b c ➜ 2")           == 
+#         check rndr("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4")    == 
+# 
+#         check rndr("switch x\n  1 2 ➜ a")                    == 
+#         check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b")           == 
+#         check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b\n  else c") == 
+#         check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c")    == 
+#         check rndr("switch x\n  1 2\n    a\n  ➜ c")          == 
+#         check rndr("switch x\n  1 2➜\n    a\n  ➜ c")         == 
+#         check rndr("switch x\n  1 2 ➜ a\n  else\n    c")     == 
+#         check rndr("switch x\n  1 2 ➜ a\n  ➜\n    c")        == 
+#         check rndr("switch x\n a ➜ if b then c")             == 
+        
+    ▸ strings
+    
+        check rndr("s = \"hello\"")                          == "s = \"hello\""
+        
+    # ▸ tests
+    # 
+    #     check rndr("▸ a test suite")                         == 
+    #     check rndr("    ▸ test section")                     == 
+    #     check rndr("    f(a) ▸ 42")                          == 
+    #     check rndr("    f(a) ▸\n        42")                 == 
+        

@@ -619,9 +619,11 @@ proc parseType(p: var Parser): Node =
     token.tok = ◆type
     
     if p.tok() == ◆square_open:
-        while p.tok() notin {◆square_close, ◆eof}:
-            token.str &= p.consume().str
-        p.swallowError ◆square_close, "Expected closing bracket for type"
+        while p.tok() notin {◆eof}:
+            let t = p.consume()
+            token.str &= t.str
+            if t.tok == ◆square_close:
+                break
     
     Node(token:token, kind:●type)
     
@@ -643,12 +645,14 @@ proc lSingleArg(p: var Parser, left: Node) : Node =
         arg_type = p.parseType()
     
     if p.tok() == ◆assign:
+        let t = p.consume() 
         arg_default = Node(
-            token: p.consume(),
+            token: t,
             kind: ●argDefault,
             default: p.expression()
             )
-
+        # echo &"singleArg: {arg_default}"
+        
     Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
 proc lArgType(p: var Parser, left: Node) : Node =

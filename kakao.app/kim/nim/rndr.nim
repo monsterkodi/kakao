@@ -28,19 +28,23 @@ proc dedent(r: var Rndr) = echo "dedent"
 
 proc render(r: var Rndr, n: Node)
 
+proc render(r: var Rndr, nodes: seq[Node]) =
+
+    for i,n in nodes:
+        r.render n
+        if i<nodes.len-1:
+            r.add ", "
+
 proc ▸block(r: var Rndr, n: Node) = 
 
     for exp in n.expressions:
         
         r.render exp
 
-proc ▸if(r: var Rndr, n: Node) =
-
-    echo "if"
-    
 proc ▸operation(r: var Rndr, n: Node) = 
 
-    r.add "("
+    if n.token.tok notin {◆assign}:
+        r.add "("
     r.render n.operand_left
     r.space()
     case n.token.tok:
@@ -52,7 +56,8 @@ proc ▸operation(r: var Rndr, n: Node) =
             r.addTok n
     r.space()
     r.render n.operand_right
-    r.add ")"
+    if n.token.tok notin {◆assign}:
+        r.add ")"
 
 proc ▸preOp(r: var Rndr, n: Node) = 
 
@@ -74,20 +79,75 @@ proc ▸propertyAccess(r: var Rndr, n: Node) =
     r.addTok n
     r.render n.property
 
-proc ▸condThen(r: var Rndr, n: Node)       = echo "▸condThen"
+proc ▸func(r: var Rndr, n: Node) = 
+
+    r.add "proc "
+    r.render n.func_name
+    r.add "("
+    r.render n.func_args
+    r.add ")"
+    if n.func_type != nil:
+        r.add " : "
+        r.render n.func_type
+    r.add " ="
+    
+proc ▸argType(r: var Rndr, n: Node) =
+
+    r.render n.arg_name
+    if n.arg_type != nil:
+        r.add ":"
+        if n.token.tok == ◆var:
+            r.add "var "
+        r.render n.arg_type
+    if n.arg_default != nil:
+        r.add "="
+        r.render n.arg_default.default
+
+proc ▸string(r: var Rndr, n: Node) = 
+
+    r.add "\""
+    r.addTok n
+    r.add "\""
+    
+proc ▸call(r: var Rndr, n: Node) =
+
+    r.render n.callee
+    r.add "("
+    r.render n.call_args
+    r.add ")"
+
+proc ▸if(r: var Rndr, n: Node) =
+
+    r.add "if "
+    for i,condThen in n.cond_thens:
+        # echo &"if.condThen {condThen} kind:{condThen.kind}"
+        if i > 0:
+            r.add " elif "
+        r.render condThen.cond
+        r.add ": "
+        r.render condThen.then
+    if n.else != nil   :
+        r.add " else: "
+        r.render n.else
+        
+proc ▸return(r: var Rndr, n: Node) =
+
+    r.add "return"
+    if n.return_value != nil:
+        r.space()
+        r.render n.return_value
+     
 proc ▸switch(r: var Rndr, n: Node)         = echo "▸switch"
 proc ▸switchCase(r: var Rndr, n: Node)     = echo "▸switchCase"
-proc ▸func(r: var Rndr, n: Node)           = echo "▸func"
-proc ▸call(r: var Rndr, n: Node)           = echo "▸call"
 proc ▸range(r: var Rndr, n: Node)          = echo "▸range"
-proc ▸literal(r: var Rndr, n: Node)        = echo "▸literal"
 proc ▸ident(r: var Rndr, n: Node)          = echo "▸iden"
 proc ▸var(r: var Rndr, n: Node)            = echo "▸var"
-proc ▸return(r: var Rndr, n: Node)         = echo "▸return"
 proc ▸testCase(r: var Rndr, n: Node)       = echo "▸testCase"
 
 proc render(r: var Rndr, n: Node) =
 
+    if n == nil:
+        return  
     # let b1 = true
     # let b2 = false
     # echo &"render {node.kind} {b1 and b2}"
@@ -98,14 +158,14 @@ proc render(r: var Rndr, n: Node) =
             r.▸block(n)
         of ●if:
             r.▸if(n)
-        of ●condThen:
-            r.▸condThen(n)
         of ●switch:
             r.▸switch(n)
         of ●switchCase:
             r.▸switchCase(n)
         of ●func:
             r.▸func(n)
+        of ●argType:
+            r.▸argType(n)
         of ●call:
             r.▸call(n)
         of ●operation:
@@ -124,8 +184,13 @@ proc render(r: var Rndr, n: Node) =
             r.▸return(n)
         of ●testCase:
             r.▸testCase(n)
+        of ●literal:
+            if n.token.tok == ◆string:
+                r.▸string(n)
+            else:
+                r.addTok n
         else:
-            # echo &"unhandled {n}"
+            echo &"unhandled {n}"
             r.addTok n
 
 proc rndr*(root: Node): string =
