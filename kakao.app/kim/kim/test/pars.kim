@@ -66,6 +66,8 @@ import ../pars
         
         check $ast("a.b")                                    == "◆root\n (◆name ◆dot ◆name)"
         check $ast("a.b.c")                                  == "◆root\n ((◆name ◆dot ◆name) ◆dot ◆name)"
+        check $ast("a.b()")                                  == "◆root\n ((◆name ◆dot ◆name) ◆call @[])"
+        check $ast("a.b().c")                                == "◆root\n (((◆name ◆dot ◆name) ◆call @[]) ◆dot ◆name)"
         
     ▸ if
     

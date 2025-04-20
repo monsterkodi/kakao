@@ -367,7 +367,7 @@ proc parse*(p: var Parser): Node =
 # ███  ███     
 # ███  ███     
 
-proc parseIf(p: var Parser): Node =
+proc rIf(p: var Parser): Node =
 
     let token = p.consume() # if
     
@@ -417,7 +417,7 @@ proc parseIf(p: var Parser): Node =
 #      ███  ███   ███  ███     ███     ███       ███   ███
 # ███████   ██     ██  ███     ███      ███████  ███   ███
 
-proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
+proc switchCase(p: var Parser, baseIndent: int): Node =
 
     var case_when: seq[Node]
     let case_token = p.current()
@@ -445,7 +445,7 @@ proc parseSwitchCase(p: var Parser, baseIndent: int): Node =
         case_then:  case_then
         )
 
-proc parseSwitch*(p: var Parser): Node =
+proc rSwitch*(p: var Parser): Node =
 
     let token = p.consume()
     let switch_value = p.expression()
@@ -465,7 +465,7 @@ proc parseSwitch*(p: var Parser): Node =
                 break
             p.swallow ◆indent
             continue
-        let switch_case = p.parseSwitchCase(baseIndent)
+        let switch_case = p.switchCase(baseIndent)
         if switch_case == nil:
             return  p.error "failed to parse switch statement"
         else:
@@ -507,68 +507,68 @@ proc parseArgs(p: var Parser): seq[Node] =
     p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
     args    
 
-proc parseCall(p: var Parser, callee: Node): Node =
+proc lCall(p: var Parser, callee: Node): Node =
 
     let token = p.consume() # (
     let args  = p.parseArgs()
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
-proc parsePropertyAccess(p: var Parser, owner: Node): Node =
+proc lPropertyAccess(p: var Parser, owner: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind:●propertyAccess, owner:owner, property:right)
 
-proc parseLiteral(p: var Parser): Node =
+proc rLiteral(p: var Parser): Node =
 
     let token = p.consume()
     Node(token:token, kind: ●literal)
 
-proc parseString(p: var Parser): Node =
+proc rString(p: var Parser): Node =
 
     p.swallow() # string start
     let token = p.consume()
     p.swallowError(◆string_end, "Expected closing string delimiter")
     Node(token:token, kind: ●literal)
 
-proc parsePostOp(p: var Parser, left: Node): Node =
+proc lPostOp(p: var Parser, left: Node): Node =
 
     let token = p.consume()
     Node(token:token, kind: ●postOp, operand:left)
 
-proc parsePreOp(p: var Parser): Node =
+proc rPreOp(p: var Parser): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
-proc parseReturn(p: var Parser): Node =
+proc rReturn(p: var Parser): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind:●return, return_value:right)
 
-proc parseOperation(p: var Parser, left: Node): Node =
+proc lOperation(p: var Parser, left: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, left: left, right: right)
         
-proc parseParenExpr(p: var Parser): Node =
+proc rParenExpr(p: var Parser): Node =
 
     p.swallow() # "("
     let expr = p.expression()
     p.swallowError(◆paren_close, "Expected closing parenthesis")
     expr
     
-proc parseTestCase(p: var Parser, left: Node): Node =
+proc lTestCase(p: var Parser, left: Node): Node =
 
     let token = p.consume() # ▸
     p.swallow(◆indent) # todo: check if indent is larger than that of the test expression
     let right = p.expression()
     Node(token:token, kind: ●testCase, test_expression:left, test_expected:right)
 
-proc parseTestSuite(p: var Parser): Node =
+proc rTestSuite(p: var Parser): Node =
 
     let token = p.consume() # ▸
     let kind = choose(token.col == 0, ●testSuite, ●testSection)
@@ -589,40 +589,40 @@ proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 
 proc setup(p: var Parser) =
 
-    p.pratt ◆test,           parseTestCase,         parseTestSuite,    0
-    p.pratt ◆number,         nil,                   parseLiteral,      0
-    p.pratt ◆string_start,   nil,                   parseString,       0
-    p.pratt ◆true,           nil,                   parseLiteral,      0
-    p.pratt ◆false,          nil,                   parseLiteral,      0
-    p.pratt ◆null,           nil,                   parseLiteral,      0
-    p.pratt ◆name,           nil,                   parseLiteral,      0
-                                                                      
-    p.pratt ◆return,         nil,                   parseReturn,       5
-                                                                      
-    p.pratt ◆assign,         parseOperation,        nil,              10
+    p.pratt ◆test,           lTestCase,         rTestSuite,      0
+    p.pratt ◆number,         nil,               rLiteral,        0
+    p.pratt ◆string_start,   nil,               rString,         0
+    p.pratt ◆true,           nil,               rLiteral,        0
+    p.pratt ◆false,          nil,               rLiteral,        0
+    p.pratt ◆null,           nil,               rLiteral,        0
+    p.pratt ◆name,           nil,               rLiteral,        0
+                                                                  
+    p.pratt ◆return,         nil,               rReturn,         5
+                                                                    
+    p.pratt ◆assign,         lOperation,        nil,            10
 
-    p.pratt ◆if,             nil,                   parseIf,          15  
-    p.pratt ◆switch,         nil,                   parseSwitch,      15  
+    p.pratt ◆if,             nil,               rIf,            15  
+    p.pratt ◆switch,         nil,               rSwitch,        15  
 
-    p.pratt ◆equal,          parseOperation,        nil,              20
-
-    p.pratt ◆or,             parseOperation,        nil,              22
-    p.pratt ◆and,            parseOperation,        nil,              25
-
-    p.pratt ◆plus,           parseOperation,        nil,              30
-
-    p.pratt ◆multiply,       parseOperation,        nil,              40
-    p.pratt ◆divide,         parseOperation,        nil,              40
-                                                                                           
-    p.pratt ◆not,            nil,                   parsePreOp,       50
-    p.pratt ◆minus,          parseOperation,        parsePreOp,       50
-                                                                                           
-    p.pratt ◆increment,      parsePostOp,           nil,              60
-    p.pratt ◆decrement,      parsePostOp,           nil,              60
+    p.pratt ◆equal,          lOperation,        nil,            20
+                                                
+    p.pratt ◆or,             lOperation,        nil,            30
+    p.pratt ◆and,            lOperation,        nil,            40
+                                                
+    p.pratt ◆plus,           lOperation,        nil,            50
+                                                
+    p.pratt ◆multiply,       lOperation,        nil,            60
+    p.pratt ◆divide,         lOperation,        nil,            60
+                                                                                             
+    p.pratt ◆not,            nil,               rPreOp,         70
+    p.pratt ◆minus,          lOperation,        rPreOp,         70
+                                                                                             
+    p.pratt ◆increment,      lPostOp,           nil,            80
+    p.pratt ◆decrement,      lPostOp,           nil,            80
                                                                                      
-    p.pratt ◆dot,            parsePropertyAccess,   nil,             100
+    p.pratt ◆paren_open,     lCall,             rParenExpr,     90
+    p.pratt ◆dot,            lPropertyAccess,   nil,           100
                                 
-    p.pratt ◆paren_open,     parseCall,             parseParenExpr, 1000
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   
