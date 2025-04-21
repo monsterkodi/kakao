@@ -106,9 +106,21 @@ proc ▸argType(r: var Rndr, n: Node) =
 
 proc ▸string(r: var Rndr, n: Node) = 
 
-    r.add "\""
-    r.addTok n
-    r.add "\""
+    let delimiter = n.token.str
+    
+    if n.string_stripols.len > 0
+        r.add "&"
+        
+    r.add delimiter
+    r.addTok n.string_content
+    
+    for stripol in n.string_stripols
+        r.add "{"
+        r.render stripol.stripol_xprssns
+        r.add "}"
+        r.addTok stripol.stripol_content
+    
+    r.add delimiter
     
 proc ▸call(r: var Rndr, n: Node) =
 
@@ -230,12 +242,9 @@ proc render(r: var Rndr, n: Node) =
             r.add "\":" 
         of ●testCase
             r.▸testCase(n)
-        of ●literal
-            if n.token.tok == ◆string
-                r.▸string(n)
-            else
-                r.addTok n
-        of ●type
+        of ●string
+            r.▸string(n)
+        of ●literal, ●type
             r.addTok n
         else
             log &"unhandled {n} {n.kind}"

@@ -128,6 +128,7 @@ suite "pars":
     test "strings":
     
         check $ast("s = \"hello\"")                          == "▪[(◆name ◆assign ◆string)]"
+        check $ast("s = \"\"\"hello\"\"\"")                  == "▪[(◆name ◆assign ◆string)]"
         
     test "toplevel":
 

@@ -98,51 +98,52 @@ const
 
 const
     charTok = {
-        ".":    ◆dot,
-        "..":   ◆doubledot,
-        "...":  ◆tripledot,
-        ",":    ◆comma,
-        ":":    ◆colon,
-        "'":    ◆string_start,
-        "\"":   ◆string_start,
-        ";":    ◆semicolon,
-        "{":    ◆bracket_open,
-        "}":    ◆bracket_close,
-        "(":    ◆paren_open,
-        ")":    ◆paren_close,
-        "[":    ◆square_open,
-        "]":    ◆square_close,
-        "-":    ◆minus,
-        "+":    ◆plus,
-        "++":   ◆increment,
-        "--":   ◆decrement,
-        "*":    ◆multiply,
-        "/":    ◆divide,
-        "=":    ◆assign,
-        "+=":   ◆plus_assign,
-        "-=":   ◆minus_assign,
-        "/=":   ◆divide_assign,
-        "*=":   ◆multiply_assign,
-        "=":    ◆assign,
-        "#":    ◆comment_start,
-        "==":   ◆equal,
-        "!=":   ◆not_equal,
-        ">=":   ◆greater_equal,
-        "<=":   ◆less_equal,
-        ">":    ◆greater,
-        "<":    ◆less,
-        "&&":   ◆and,
-        "||":   ◆or,
-        "!":    ◆not,
-        "->":   ◆func,
-        "=>":   ◆func,
-        "⮐":    ◆return,
-        "➜":    ◆then,
-        "▸":    ◆test,
-        "▪":    ◆val,
-        "□":    ◆val,
-        "◆":    ◆var,    
-        "◇":    ◆var,    
+        ".":        ◆dot,
+        "..":       ◆doubledot,
+        "...":      ◆tripledot,
+        ",":        ◆comma,
+        ":":        ◆colon,
+        "'":        ◆string_start,
+        "\"":       ◆string_start,
+        "\"\"\"":   ◆string_start,
+        ";":        ◆semicolon,
+        "{":        ◆bracket_open,
+        "}":        ◆bracket_close,
+        "(":        ◆paren_open,
+        ")":        ◆paren_close,
+        "[":        ◆square_open,
+        "]":        ◆square_close,
+        "-":        ◆minus,
+        "+":        ◆plus,
+        "++":       ◆increment,
+        "--":       ◆decrement,
+        "*":        ◆multiply,
+        "/":        ◆divide,
+        "=":        ◆assign,
+        "+=":       ◆plus_assign,
+        "-=":       ◆minus_assign,
+        "/=":       ◆divide_assign,
+        "*=":       ◆multiply_assign,
+        "=":        ◆assign,
+        "#":        ◆comment_start,
+        "==":       ◆equal,
+        "!=":       ◆not_equal,
+        ">=":       ◆greater_equal,
+        "<=":       ◆less_equal,
+        ">":        ◆greater,
+        "<":        ◆less,
+        "&&":       ◆and,
+        "||":       ◆or,
+        "!":        ◆not,
+        "->":       ◆func,
+        "=>":       ◆func,
+        "⮐":        ◆return,
+        "➜":        ◆then,
+        "▸":        ◆test,
+        "▪":        ◆val,
+        "□":        ◆val,
+        "◆":        ◆var,    
+        "◇":        ◆var,    
         }.toTable()
         
     keywords = {
@@ -231,9 +232,7 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
         let segs = kseg line
         
         while col < segs.len:
-        
-            let char = segs[col]
-            
+                    
             proc pushToken(str="", tk=◆name) =
                 if token.str.len:
                     tokens.add token
@@ -249,21 +248,34 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
             
                     # token.tok = ◆string
                     var delimiter = topTok.str
+                    
+                    # echo &"delimiter {delimiter}"
+                    
                     if topTok.tok == ◆stripol_end:
-                        delimiter = "\""
-                    while col < segs.len-1 and segs[col] != delimiter:
+                        delimiter = "\"" # 𝜏𝖍𝚒𝖘 𝚒𝖘 ⟒ɼ⊚∩𝚐! ϝϵ𝜏⊂𝖍 ⊂⊚ɼɼϵ⊂𝜏 𝒹ϵ⟅𝚒⫙𝚒𝜏ϵɼ!
+                    
+                    proc isAtStringEnd() : bool =
+                        # echo &"isAtStringEnd {delimiter}"
+                        if delimiter.len == 3:
+                            col <= segs.len-3 and segs[col..col+2].join("") == delimiter
+                        else:
+                            col <= segs.len-1 and segs[col] == delimiter
+                                    
+                    while not isAtStringEnd():
                         token.tok = ◆string
-                        token.str &= segs[col]
                         if segs[col] == "\\":
+                            token.str &= segs[col]
                             col += 1
                             token.str &= segs[col]
-                        if segs[col] == "#" and delimiter == "\"" and col < segs.len-1 and segs[col+1] == "{":
-                            token.str &= "{"
-                            token.tok = ◆stripol_start
+                            col += 1
+                            continue
+                        if segs[col] == "#" and delimiter in @["\"", "\"\"\""] and col < segs.len-1 and segs[col+1] == "{":
+                            pushToken("#{", ◆stripol_start)
                             col += 2
                             pushToken()
                             inStripol = true  
                             break
+                        token.str &= segs[col]
                         col += 1
                                 
                     if inStripol:
@@ -271,13 +283,14 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     
                     # echo &"push delimiter {delimiter} {col} ◆string_end {token}"
                     pushToken(delimiter, ◆string_end)
+                    col += delimiter.len
                     pushToken()
                     # echo &"top delimiter {tokens[^1]}"
                     
-                    if col >= segs.len-1:
+                    if col > segs.len-1:
                         break
                     else:
-                        col += 1
+                        # col += 1
                         continue
                 
                 if inMultiLineComment:
@@ -309,6 +322,8 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     token.tok = ◆comment
                     token.str &= segs[col..^1].join ""
                     break
+            
+            let char = segs[col]
                         
             if char == " ":
                 if tokens.len == firstLineTokenIndex and token.str.len == 0 or token.tok == ◆indent:

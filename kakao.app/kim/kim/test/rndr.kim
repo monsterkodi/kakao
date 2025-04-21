@@ -128,6 +128,8 @@ import ../rndr
     ▸ strings
     
         check rndr("s = \"hello\"")                          == "s = \"hello\""
+        check rndr("s = \"\"\"hello\"\"\"")                  == "s = \"\"\"hello\"\"\""
+        check rndr("s = \"num #{1+2} end\"")                 == "s = &\"num {(1 + 2)} end\""
         
     ▸ tests
 

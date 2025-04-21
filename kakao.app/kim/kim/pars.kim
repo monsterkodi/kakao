@@ -15,6 +15,8 @@ type
         ●block,
         ●comment,
         ●literal,
+        ●string,
+        ●stripol,
         ●identifier,  
         ●preOp, 
         ●operation, 
@@ -61,11 +63,21 @@ type
             of ●block:
                 
                 expressions*    : seq[Node]
-        
+                
             of ●operation
             
                 operand_left*   : Node
                 operand_right*  : Node
+                
+            of ●string
+            
+                string_content*  : Node
+                string_stripols* : seq[Node]
+                
+            of ●stripol
+            
+                stripol_xprssns* : seq[Node]
+                stripol_content* : Node
 
             of ●range
             
@@ -236,6 +248,12 @@ proc `$`*(n: Node): string =
             s = &"({n.operand_left} {s} {n.operand_right})"
         of ●range
             s = &"({n.range_start} {s} {n.range_end})"
+        of ●string
+            # var i = ""
+            # if n.string_stripols.len
+            #     i &= &"{n.string_stripols}"
+            let i = choose(n.string_stripols.len>0, &"{n.string_stripols}", "")
+            s = &"◆string{i}"
         of ●preOp
             s = &"({s} {n.operand})"
         of ●postOp
@@ -617,14 +635,34 @@ proc rLiteral(p: var Parser): Node =
 
 proc rString(p: var Parser): Node =
 
-    p.swallow() # string start
-    var token = p.consume()
-    if token.tok == ◆string_end
-        token.tok = ◆string # this is a bit nasty, isn't it?
-        token.str = ""      
+    let token = p.consume() # string start
+
+    let contentToken = p.consume()
+    if contentToken.tok == ◆string_end
+        Node(token:token, kind:●string, string_content:Node(token:Token(str:"", tok:◆string), kind:●literal))
     else
+        let string_content = Node(token:contentToken, kind:●literal)
+        var string_stripols : seq[Node] = @[]
+        while p.tok() notin {◆string_end, ◆eof}
+        
+            var stripol = Node(kind:●stripol)
+            p.swallowError(◆stripol_start, "Expected string interpolation start")
+            
+            var stripol_xprssns : seq[Node] = @[]
+            while p.tok() notin {◆stripol_end, ◆eof}
+                stripol_xprssns.add p.expression()
+                
+            stripol.stripol_xprssns = stripol_xprssns
+            
+            p.swallowError(◆stripol_end, "Expected string interpolation end")
+            if p.tok() notin {◆string_end, ◆eof}
+                let content = p.consume()
+                stripol.stripol_content = Node(token:content, kind:●literal)
+            string_stripols.add stripol
+            
         p.swallowError(◆string_end, "Expected closing string delimiter")
-    Node(token:token, kind:●literal)
+        
+        Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
 
 proc lPostOp(p: var Parser, left: Node): Node =
 
