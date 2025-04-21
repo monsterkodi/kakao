@@ -127,9 +127,16 @@ import ../rndr
         
     ▸ strings
     
+        check rndr("s = ''")                                 == "s = ''"
+        check rndr("s = \"\"")                               == "s = \"\""
+        check rndr("s = \"\"\"\"\"\"")                       == "s = \"\"\"\"\"\""
+        # check rndr("s = \"\"\"\n\n\"\"\"")                   == "s = \"\"\"\n\n\"\"\""
         check rndr("s = \"hello\"")                          == "s = \"hello\""
         check rndr("s = \"\"\"hello\"\"\"")                  == "s = \"\"\"hello\"\"\""
         check rndr("s = \"num #{1+2} end\"")                 == "s = &\"num {(1 + 2)} end\""
+        check rndr("s = \"\"\"num #{1+2} end\"\"\"")         == "s = &\"\"\"num {(1 + 2)} end\"\"\""
+        
+        # check rndr("s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"") == "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         
     ▸ tests
 

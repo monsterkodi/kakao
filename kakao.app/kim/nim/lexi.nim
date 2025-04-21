@@ -4,7 +4,7 @@
 # ███      ███        ███ ███   ███
 # ███████  ████████  ███   ███  ███
 
-import std/[strformat, strutils, tables, macros]
+import std/[strutils, tables]
 import kommon
 
 type
@@ -223,13 +223,16 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
     var token : Token
     var inStripol = false
     var inMultiLineComment = false
+    var delimiter = ""
 
     for index,line in lines:
-
+        
         let firstLineTokenIndex = tokens.len
         var col = 0
         token = Token(line:index, col:col)
         let segs = kseg line
+        
+        # echo &"index {index} {tokens} |{segs}|"
         
         while col < segs.len:
                     
@@ -244,37 +247,38 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
             
                 var topTok = tokens[^1]
                 
+                if topTok.tok == ◆string_start:
+                    delimiter = topTok.str
+                
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
             
-                    # token.tok = ◆string
-                    var delimiter = topTok.str
-                    
-                    # echo &"delimiter {delimiter}"
-                    
-                    if topTok.tok == ◆stripol_end:
-                        delimiter = "\"" # 𝜏𝖍𝚒𝖘 𝚒𝖘 ⟒ɼ⊚∩𝚐! ϝϵ𝜏⊂𝖍 ⊂⊚ɼɼϵ⊂𝜏 𝒹ϵ⟅𝚒⫙𝚒𝜏ϵɼ!
-                    
                     proc isAtStringEnd() : bool =
                         # echo &"isAtStringEnd {delimiter}"
+                        if col > segs.len-1 :
+                            return  true
                         if delimiter.len == 3:
                             col <= segs.len-3 and segs[col..col+2].join("") == delimiter
                         else:
                             col <= segs.len-1 and segs[col] == delimiter
                                     
                     while not isAtStringEnd():
+                    
                         token.tok = ◆string
+                        
                         if segs[col] == "\\":
                             token.str &= segs[col]
                             col += 1
                             token.str &= segs[col]
                             col += 1
                             continue
+                            
                         if segs[col] == "#" and delimiter in @["\"", "\"\"\""] and col < segs.len-1 and segs[col+1] == "{":
                             pushToken("#{", ◆stripol_start)
                             col += 2
                             pushToken()
                             inStripol = true  
                             break
+                            
                         token.str &= segs[col]
                         col += 1
                                 
@@ -282,15 +286,18 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                         continue
                     
                     # echo &"push delimiter {delimiter} {col} ◆string_end {token}"
-                    pushToken(delimiter, ◆string_end)
-                    col += delimiter.len
-                    pushToken()
+                    if col <= segs.len-1 :
+                        pushToken(delimiter, ◆string_end)
+                        col += delimiter.len
+                        pushToken()
+                    else:
+                        echo "blrrgggl----------------------------------------------"
+                        token.str &= "\n"
                     # echo &"top delimiter {tokens[^1]}"
                     
                     if col > segs.len-1:
                         break
                     else:
-                        # col += 1
                         continue
                 
                 if inMultiLineComment:
@@ -347,7 +354,10 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                         if charTok.hasKey char & next & nextnext:
                             pushToken(char & next & nextnext, charTok[char & next & nextnext])
                             col += 3
-                            pushToken()
+                            if token.tok == ◆string_start:
+                                pushToken("", ◆string)
+                            else:
+                                pushToken()
                             continue
                     
                     if charTok.hasKey char & next:
@@ -367,7 +377,10 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                             inStripol = false
                             pushToken(char, ◆stripol_end)
                             col += 1
-                            pushToken()
+                            if token.tok == ◆string_start:
+                                pushToken("", ◆string)
+                            else:
+                                pushToken()
                             token.tok = ◆string
                             continue
                             
@@ -406,6 +419,10 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
             if keywords.hasKey(token.str):
                 token.tok = keywords[token.str]
             tokens.add token
+        else:
+            if token.tok == ◆string:
+                echo "add empty string token"
+                tokens.add token
         
     return  tokens
     

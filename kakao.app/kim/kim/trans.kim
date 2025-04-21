@@ -110,6 +110,11 @@ proc stringSegments*(line:string) : seq[string] =
 
     var segments:seq[string] = @[]
     
+    # if line.len == 0
+    #     ⮐  segments
+        
+    # log &"line: |{line}|"
+    
     let pat = peg"""
         input   <- ({triple / string / nonstr})*
         string  <- '"' (esc / [^"])* '"' / "'" (esc / [^'])* "'"
@@ -299,6 +304,6 @@ proc pile*(files:seq[string]) : seq[string] =
     for file in files
         transpiled.add trans file
         
-    # echo "pile done:: ", transpiled
+    echo "pile done: ", transpiled
     transpiled
             

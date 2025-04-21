@@ -112,7 +112,8 @@ proc logFile(f:string, prefix:string="") =
 
 proc compile(file:string, outDir:string="bin") : bool =
 
-    let cmd = &"nim c --outDir:{outdir} {file}"
+    # let cmd = &"nim c --outDir:{outdir} {file}"
+    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on --debugger:native {file}"
     let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0:
@@ -216,10 +217,8 @@ proc watch(paths:seq[string]) =
         
                 modTimes[f] = modTime
                 if ext == ".nim" and not testFiles.contains f:
-                    # echo "doBuild ", f
                     doBuild = true
                 elif ext == ".kim":
-                    # echo &"totranspile {f}"
                     toTranspile.add f
                 
         if firstLoop:
@@ -231,10 +230,11 @@ proc watch(paths:seq[string]) =
                 logFile f
                 
         if toTranspile:
-            # echo &"toTranspile: {toTranspile}"
+            echo &"toTranspile: {toTranspile}"
             for f in trans.pile(toTranspile):
+                echo &"transpiled {f}"    
                 logFile f, "✔ "
-            # echo "transpiled"    
+            echo "runTests"    
             discard runTests()
             
         if doBuild:

@@ -177,6 +177,13 @@ import ../lexi
             Token(str:"\"\"\"", tok:◆string_end,    line:0, col:9),
             ]
             
+        # check tokenize("\"\"\"\n\n\"\"\"") == @[
+        #     Token(str:"\"\"\"", tok:◆string_start,  line:0, col:0),
+        #     Token(str:"",       tok:◆string,        line:1, col:0),
+        #     Token(str:"",       tok:◆string,        line:2, col:0),
+        #     Token(str:"\"\"\"", tok:◆string_end,    line:3, col:0),
+        #     ]
+            
     #  ███████  █████████  ████████   ███  ████████    ███████   ███    
     # ███          ███     ███   ███  ███  ███   ███  ███   ███  ███    
     # ███████      ███     ███████    ███  ████████   ███   ███  ███    
@@ -204,6 +211,14 @@ import ../lexi
             Token(str:"a",      tok:◆name,          line:0, col:3),
             Token(str:"}",      tok:◆stripol_end,   line:0, col:4),
             Token(str:"\"",     tok:◆string_end,    line:0, col:5),
+            ]
+
+        check tokenize("\"\"\"#{a}\"\"\"") == @[
+            Token(str:"\"\"\"", tok:◆string_start,  line:0, col:0),
+            Token(str:"#{",     tok:◆stripol_start, line:0, col:3),
+            Token(str:"a",      tok:◆name,          line:0, col:5),
+            Token(str:"}",      tok:◆stripol_end,   line:0, col:6),
+            Token(str:"\"\"\"", tok:◆string_end,    line:0, col:7),
             ]
 
         check tokenize("\"head #{a}\"") == @[
@@ -246,6 +261,20 @@ import ../lexi
             Token(str:"}",      tok:◆stripol_end,   line:0, col:14),
             Token(str:" end",   tok:◆string,        line:0, col:15),
             Token(str:"\"",     tok:◆string_end,    line:0, col:19),
+            ]
+
+        check tokenize("s = \"\"\"num #{1+2} end\"\"\"") == @[
+            Token(str:"s",       tok:◆name,          line:0, col:0),
+            Token(str:"=",       tok:◆assign,        line:0, col:2),
+            Token(str:"\"\"\"",  tok:◆string_start,  line:0, col:4),
+            Token(str:"num ",    tok:◆string,        line:0, col:7),
+            Token(str:"#{",      tok:◆stripol_start, line:0, col:11),
+            Token(str:"1",       tok:◆number,        line:0, col:13),
+            Token(str:"+",       tok:◆plus,          line:0, col:14),
+            Token(str:"2",       tok:◆number,        line:0, col:15),
+            Token(str:"}",       tok:◆stripol_end,   line:0, col:16),
+            Token(str:" end",    tok:◆string,        line:0, col:17),
+            Token(str:"\"\"\"",  tok:◆string_end,    line:0, col:21),
             ]
           
     # ███████    ████████    ███████    ███████  ███   ███  ████████  █████████   ███████
