@@ -136,6 +136,18 @@ import ../lexi
             Token(str:"'",      tok:◆string_end,    line:0, col:18),
             ]
 
+        check tokenize("\"\"") == @[
+            Token(str:"\"",     tok:◆string_start,  line:0, col:0),
+            Token(str:"\"",     tok:◆string_end,    line:0, col:1),
+            ]
+
+        check tokenize("(\"\")") == @[
+            Token(str:"(",      tok:◆paren_open,    line:0, col:0),
+            Token(str:"\"",     tok:◆string_start,  line:0, col:1),
+            Token(str:"\"",     tok:◆string_end,    line:0, col:2),
+            Token(str:")",      tok:◆paren_close,   line:0, col:3),
+            ]
+
         check tokenize("\"'\"") == @[
             Token(str:"\"",     tok:◆string_start,  line:0, col:0),
             Token(str:"'",      tok:◆string,        line:0, col:1),
@@ -149,6 +161,14 @@ import ../lexi
             Token(str:"\"",     tok:◆string_start,  line:0, col:4),
             Token(str:"'\\\"'", tok:◆string,        line:0, col:5),
             Token(str:"\"",     tok:◆string_end,    line:0, col:9),
+            ]
+            
+        check tokenize("""rndr("")""") == @[
+            Token(str:"rndr",   tok:◆name,          line:0, col:0),
+            Token(str:"(",      tok:◆paren_open,    line:0, col:4),
+            Token(str:"\"",     tok:◆string_start,  line:0, col:5),
+            Token(str:"\"",     tok:◆string_end,    line:0, col:6),
+            Token(str:")",      tok:◆paren_close,   line:0, col:7),
             ]
             
     #  ███████  █████████  ████████   ███  ████████    ███████   ███    

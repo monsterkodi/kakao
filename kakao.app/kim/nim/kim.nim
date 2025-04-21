@@ -1,3 +1,8 @@
+# ███   ███  ███  ██     ██
+# ███  ███   ███  ███   ███
+# ███████    ███  █████████
+# ███  ███   ███  ███ █ ███
+# ███   ███  ███  ███   ███
 
 import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt, random]
 

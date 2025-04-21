@@ -1,3 +1,8 @@
+# ███      ████████  ███   ███  ███
+# ███      ███        ███ ███   ███
+# ███      ███████     █████    ███
+# ███      ███        ███ ███   ███
+# ███████  ████████  ███   ███  ███
 
 import std/[strformat, strutils, tables, macros]
 import kommon
@@ -227,9 +232,11 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
         
             let char = segs[col]
             
-            proc pushToken(str = "", tk = ◆name) =
+            proc pushToken(str="", tk=◆name) =
                 if token.str.len:
                     tokens.add token
+                # else
+                #     echo &"skip adding current token {token}"
                 token = Token(str:str, tok:tk, line:index, col:col)
                 
             if tokens.len :
@@ -238,11 +245,12 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                 
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
             
-                    token.tok = ◆string
+                    # token.tok = ◆string
                     var delimiter = topTok.str
                     if topTok.tok == ◆stripol_end:
                         delimiter = "\""
                     while col < segs.len-1 and segs[col] != delimiter:
+                        token.tok = ◆string
                         token.str &= segs[col]
                         if segs[col] == "\\":
                             col += 1
@@ -258,8 +266,12 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                                 
                     if inStripol:
                         continue
-                                
+                    
+                    # echo &"push delimiter {delimiter} {col} ◆string_end {token}"
                     pushToken(delimiter, ◆string_end)
+                    pushToken()
+                    # echo &"top delimiter {tokens[^1]}"
+                    
                     if col >= segs.len-1:
                         break
                     else:

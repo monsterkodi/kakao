@@ -148,12 +148,11 @@ import ../pars
         check $ast("    f(a) ▸ 42")                          == "▪[((◆name ◆call @[◆name]) ◆test ◆number)]"
         check $ast("    f(a) ▸\n        42")                 == "▪[((◆name ◆call @[◆name]) ◆test ◆number)]"
         
-        # check $ast("▸ suite\n  ▸ test")                      == "▪[◆test, ▪[◆test]]"
+        check $ast("▸ suite\n  ▸ test")                      == "▪[◆test▪[◆test]]"
         
-#        check $ast("""
-#▸ rndr
-#    ▸ toplevel
-#        rndr("")   ▸ ""
-#        rndr("42") ▸ "42"
-#""") == "▪[◆test\n◆test\n((◆name ◆call @[◆string]) ◆test ◆string), ((◆name ◆call @[◆string]) ◆test ◆string)]"
+        check $ast("""
+▸ rndr
+   ▸ toplevel
+       rndr("")   ▸ ""
+       rndr("42") ▸ "42" """) == "▪[◆test▪[◆test▪[((◆name ◆call @[◆string]) ◆test ◆string)((◆name ◆call @[◆string]) ◆test ◆string)]]]"
         

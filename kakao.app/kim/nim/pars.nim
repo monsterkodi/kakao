@@ -1,3 +1,8 @@
+# ████████    ███████   ████████    ███████
+# ███   ███  ███   ███  ███   ███  ███     
+# ████████   █████████  ███████    ███████ 
+# ███        ███   ███  ███   ███       ███
+# ███        ███   ███  ███   ███  ███████ 
 
 import std/[strformat, strutils]
 import kommon
@@ -189,18 +194,11 @@ type
         precedence: int
          
     Parser* = object
-    
+        text    : string # used in `$` for debugging. should be removed eventually 
         tokens* : seq[Token]
         pratts* : seq[Pratt]
         pos*    : int
     
-    ParseError* = object
-    
-        msg*    : string
-        line*   : int
-        col*    : int
-
-
 proc current*(p: Parser): Token =
 
     if p.pos < p.tokens.len:
@@ -218,7 +216,10 @@ proc tok*(p: Parser) : tok = p.current().tok
 
 proc `$`*(p: Parser): string = 
 
-    let s = &"▪▪▪ {p.current()}"
+    var s = &"▪▪▪ {p.current()} {p.pos}"
+    s &= p.text
+    for t in p.tokens:
+        s &= &"\n{t}"
     s
 
 proc `$`*(n: Node): string = 
@@ -285,7 +286,7 @@ proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
 proc error*(p: var Parser, msg: string) : Node =
 
-    echo &"parse error: {msg}"
+    echo &"parse error: {msg} {p}"
     nil
     
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
@@ -617,9 +618,13 @@ proc rLiteral(p: var Parser): Node =
 proc rString(p: var Parser): Node =
 
     p.swallow() # string start
-    let token = p.consume()
-    p.swallowError(◆string_end, "Expected closing string delimiter")
-    Node(token:token, kind: ●literal)
+    var token = p.consume()
+    if token.tok == ◆string_end:
+        token.tok = ◆string # this is a bit nasty, isn
+        token.str = ""      
+    else:
+        p.swallowError(◆string_end, "Expected closing string delimiter")
+    Node(token:token, kind:●literal)
 
 proc lPostOp(p: var Parser, left: Node): Node =
 
@@ -849,7 +854,7 @@ proc setup(p: var Parser) =
 
 proc ast*(text:string) : Node =
 
-    var p = Parser(tokens:lexi.tokenize(text), pos:0)
+    var p = Parser(tokens:lexi.tokenize(text), pos:0, text:text)
     p.setup()
     p.parse()
     
