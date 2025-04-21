@@ -3,272 +3,431 @@
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
+tknz
 
-import std/[strformat, strutils, tables]
+import std/[strutils, tables]
 import kommon
 
 type
-    TokenKind* = enum
-
-        ◆indent, ◆name, ◆number, ◆string, 
-
-        ◆paren_open, ◆paren_close, 
-        ◆bracket_open, ◆bracket_close, 
-        ◆square_open, ◆square_close,
-
-        ◆string_start, ◆string_end,
+    tok* = enum
+        ◆name,
+        ◆if,
+        ◆when,
+        ◆then,
+        ◆elif,
+        ◆else,
+        ◆switch,
+        ◆for,
+        ◆in,
+        ◆is,
+        ◆of,
+        ◆break,
+        ◆continue,
+        ◆while,
+        ◆func,
+        ◆class,
+        ◆return,
+        ◆use,
+        ◆not,
+        ◆and,
+        ◆or,
+        ◆true,
+        ◆false,
+        ◆null,
+        ◆number,
+        ◆string,
+        ◆try,
+        ◆catch,
+        ◆string_start,
+        ◆string_end,
+        ◆this,
         ◆stripol_start,
         ◆stripol_end,
+        ◆paren_open,
+        ◆paren_close,
+        ◆bracket_open,
+        ◆bracket_close,
+        ◆square_open,
+        ◆square_close,
+        ◆comment_start,
+        ◆comment,
+        ◆comment_end,
+        ◆indent,
+        ◆comma,
+        ◆colon,
+        ◆semicolon,
+        ◆dot,
+        ◆doubledot,
+        ◆tripledot,
+        ◆increment,
+        ◆decrement,
+        ◆minus,
+        ◆plus,
+        ◆divide,
+        ◆multiply,
+        ◆assign,
+        ◆plus_assign,
+        ◆minus_assign,
+        ◆divide_assign,
+        ◆multiply_assign,
+        ◆equal,
+        ◆not_equal,
+        ◆less_equal,
+        ◆greater_equal,
+        ◆greater,
+        ◆less,
+        ◆proc,
+        ◆var,
+        ◆val,
+        ◆let,
+        ◆test,
+        ◆type, # not really a token, used by pars to mark type annotations
+        ◆, # block
+        ◆eof
+        
+    toks* = set[tok]
+    
+const 
+    alltoks  = { low(tok)..high(tok) }
+    thenable = { ◆if, ◆elif }
+    openToks  = { ◆paren_open,  ◆bracket_open,  ◆square_open  }
+    closeToks = { ◆paren_close, ◆bracket_close, ◆square_close }
+    closeOpen = { 
+        ◆paren_close:   ◆paren_open, 
+        ◆bracket_close: ◆bracket_open,
+        ◆square_close:  ◆square_open }.toTable()
 
-        ◆comment_start, ◆comment, ◆comment_end,
-
-        ◆assign, ◆plus, ◆minus, ◆multiply, ◆divide,
-        ◆plus_assign, ◆minus_assign, 
-        ◆multiply_assign, ◆divide_assign,
-        ◆equal, ◆not_equal, ◆greater, ◆less,
-        ◆greater_equal, ◆less_equal, ◆then, ◆return,
-
-        ◆comma, ◆semicolon, ◆dot, ◆doubledot, ◆tripledot,
-
-        ◆if, ◆else, ◆for, ◆in, ◆true, ◆false, ◆null,
-
-        ◆test, ◆val
-
+const
+    charTok = {
+        ".":        ◆dot,
+        "..":       ◆doubledot,
+        "...":      ◆tripledot,
+        ",":        ◆comma,
+        ":":        ◆colon,
+        "'":        ◆string_start,
+        "\"":       ◆string_start,
+        "\"\"\"":   ◆string_start,
+        ";":        ◆semicolon,
+        "{":        ◆bracket_open,
+        "}":        ◆bracket_close,
+        "(":        ◆paren_open,
+        ")":        ◆paren_close,
+        "[":        ◆square_open,
+        "]":        ◆square_close,
+        "-":        ◆minus,
+        "+":        ◆plus,
+        "++":       ◆increment,
+        "--":       ◆decrement,
+        "*":        ◆multiply,
+        "/":        ◆divide,
+        "=":        ◆assign,
+        "+=":       ◆plus_assign,
+        "-=":       ◆minus_assign,
+        "/=":       ◆divide_assign,
+        "*=":       ◆multiply_assign,
+        "=":        ◆assign,
+        "#":        ◆comment_start,
+        "==":       ◆equal,
+        "!=":       ◆not_equal,
+        ">=":       ◆greater_equal,
+        "<=":       ◆less_equal,
+        ">":        ◆greater,
+        "<":        ◆less,
+        "&&":       ◆and,
+        "||":       ◆or,
+        "!":        ◆not,
+        "->":       ◆func,
+        "=>":       ◆func,
+        "⮐":        ◆return,
+        "➜":        ◆then,
+        "▸":        ◆test,
+        "▪":        ◆val,
+        "□":        ◆val,
+        "◆":        ◆var,    
+        "◇":        ◆var,    
+        }.toTable()
+        
+    keywords = {
+        "if":       ◆if,
+        "in":       ◆in,
+        "is":       ◆is,
+        "of":       ◆of,
+        "for":      ◆for,
+        "while":    ◆while,
+        "when":     ◆when,
+        "then":     ◆then,
+        "elif":     ◆elif,
+        "else":     ◆else,
+        "switch":   ◆switch,
+        "break":    ◆break,
+        "continue": ◆continue,
+        "return":   ◆return,
+        "while":    ◆while,
+        "class":    ◆class,
+        "try":      ◆try,
+        "catch":    ◆catch,
+        "or":       ◆or,
+        "and":      ◆and,
+        "not":      ◆not,
+        "true":     ◆true,
+        "false":    ◆false,
+        "null":     ◆null,
+        "nil":      ◆null,
+        "use":      ◆use,
+        "proc":     ◆proc,
+        "var":      ◆var,
+        "let":      ◆let,
+        }.toTable()
+    
+type
     Token* = object
-        tok*    : TokenKind
-        str*    : string
-        line*   : int
-        col*    : int
+        str*  : string                      
+        tok*  : tok                
+        line* : int
+        col*  : int
+    
+# █████████   ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
+#    ███     ███   ███  ███  ███   ███       ████  ███  ███     ███   ███     
+#    ███     ███   ███  ███████    ███████   ███ █ ███  ███    ███    ███████ 
+#    ███     ███   ███  ███  ███   ███       ███  ████  ███   ███     ███     
+#    ███      ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
 
-proc charSetToSeq*(chars: set[char]): seq[string] =
-    result = newSeq[string]()
-    for c in chars:
-        result.add($c)
+import pegs
 
-let IdentStartChars = charSetToSeq(IdentStartChars)
-let Whitespace = charSetToSeq(Whitespace)
-let IdentChars = charSetToSeq(IdentChars)
-let Digits = charSetToSeq(Digits)
-let Digitc = @["x", "X", "b", "B", "o", "O", ".", "e", "E", "+", "-"]
+proc isNumber*(str:string, next:string): bool =
 
-proc tokenize*(text: string): seq[Token] =
+    if not (str =~ peg"\d"):
+        return  false
 
-    var line = 0
-    var i    = 0
-    var col  = 0
-    var tokens: seq[Token]
+    let numberPeg = peg"""
+        num   <- ^( hex / oct / bin / flt / dec )$
+        hex   <- '0x' [0-9a-fA-F]+
+        oct   <- '0o' [0-7]+
+        bin   <- '0b' [0-1]+
+        exp   <- ('e' / 'E') ('+' / '-')? \d+
+        flt   <- \d+ '.' \d+ exp?
+        dec   <- \d+ exp?
+        """
     
-    let input = kseg text
-    
-    proc addToken(tok: TokenKind, str: string) =
-        tokens.add(Token(tok: tok, str: str, line: line, col: col - str.len))
-    
-    proc incToken(tok: TokenKind, str: string) =
-        i += str.len
-        col += str.len
-        addToken(tok, str)
-    
-    while i < input.len:
-    
-        let c = input[i]
+    if str =~ numberPeg:
+        if next == "" or next == " ":
+            return  true
+        let combined = str & next
+        if not (combined =~ numberPeg):
+            return  true
+    false
+
+proc tokenize*(lines:seq[string]) : seq[Token] =
+
+    var tokens    = default seq[Token]
+    var openStack = default seq[tok]
+    var token : Token
+    var inStripol = false
+    var inMultiLineComment = false
+    var delimiter = ""
+
+    for index,line in lines:
         
-        if c == "\n":
-            line += 1
-            col = 0
-            i += 1
-            continue
+        let firstLineTokenIndex = tokens.len
+        var col = 0
+        token = Token(line:index, col:col)
+        let segs = kseg line
         
-        if c == " ":
-            var spaceStr = ""
-            while i < input.len and input[i] == " ":
-                spaceStr.add " "
-                i += 1
-                col += 1
-            
-            # Only add indent if it's at start of line or after newline
-            if tokens.len == 0 or tokens[^1].tok == ◆indent:
-                addToken(◆indent, spaceStr)
-            continue
+        # echo &"index {index} {tokens} |{segs}|"
+        
+        while col < segs.len:
                     
-        if c in Digits:
-            var numStr = c
-            i += 1
+            proc pushToken(str="", tk=◆name) =
+                if token.str.len:
+                    tokens.add token
+                # else
+                #     echo &"skip adding current token {token}"
+                token = Token(str:str, tok:tk, line:index, col:col)
+                
+            if tokens.len :
+            
+                var topTok = tokens[^1]
+                
+                if topTok.tok == ◆string_start:
+                    delimiter = topTok.str
+                
+                if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
+            
+                    proc isAtStringEnd() : bool =
+                        # echo &"isAtStringEnd {delimiter}"
+                        if col > segs.len-1 :
+                            return  true
+                        if delimiter.len == 3:
+                            col <= segs.len-3 and segs[col..col+2].join("") == delimiter
+                        else:
+                            col <= segs.len-1 and segs[col] == delimiter
+                                    
+                    while not isAtStringEnd():
+                    
+                        token.tok = ◆string
+                        
+                        if segs[col] == "\\":
+                            token.str &= segs[col]
+                            col += 1
+                            token.str &= segs[col]
+                            col += 1
+                            continue
+                            
+                        if segs[col] == "#" and delimiter in @["\"", "\"\"\""] and col < segs.len-1 and segs[col+1] == "{":
+                            pushToken("#{", ◆stripol_start)
+                            col += 2
+                            pushToken()
+                            inStripol = true  
+                            break
+                            
+                        token.str &= segs[col]
+                        col += 1
+                                
+                    if inStripol:
+                        continue
+                    
+                    # echo &"push delimiter {delimiter} {col} ◆string_end {token}"
+                    if col <= segs.len-1 :
+                        pushToken(delimiter, ◆string_end)
+                        col += delimiter.len
+                        pushToken()
+                    else:
+                        echo "blrrgggl----------------------------------------------"
+                        token.str &= "\n"
+                    # echo &"top delimiter {tokens[^1]}"
+                    
+                    if col > segs.len-1:
+                        break
+                    else:
+                        continue
+                
+                if inMultiLineComment:
+                    token.tok = ◆comment
+                    while col <= segs.len-1 and (col >= segs.len-2 or segs[col..col+2].join("") != "###"):
+                        token.str &= segs[col]
+                        col += 1
+                    if col < segs.len-1:
+                        pushToken("###", ◆comment_end)
+                        col += 3
+                        pushToken()
+                        inMultiLineComment = false
+                        continue
+                    else:
+                        pushToken("", ◆comment)
+                    break
+                
+                if topTok.tok == ◆comment_start:
+                
+                    if col == topTok.col+1 and col < segs.len-1 and segs[col] == "#" and segs[col+1] == "#":
+                        topTok.str = "###"
+                        tokens.pops()
+                        tokens.push topTok
+                        col += 2
+                        token.col += 2
+                        inMultiLineComment = true
+                        continue
+                
+                    token.tok = ◆comment
+                    token.str &= segs[col..^1].join ""
+                    break
+            
+            let char = segs[col]
+                        
+            if char == " ":
+                if tokens.len == firstLineTokenIndex and token.str.len == 0 or token.tok == ◆indent:
+                    token.tok = ◆indent
+                    token.str.add char
+                elif col == 0 or segs[col-1] != " ":
+                    pushToken()
+            else:
+                
+                if col > 0 and segs[col-1] == " ":
+                    if token.tok == ◆indent:
+                        pushToken()
+                    token.col = col
+                
+                if col < segs.len-1:
+                    
+                    let next = segs[col+1]
+                    
+                    if col < segs.len-2:
+                        let nextnext = segs[col+2]
+                        if charTok.hasKey char & next & nextnext:
+                            pushToken(char & next & nextnext, charTok[char & next & nextnext])
+                            col += 3
+                            if token.tok == ◆string_start:
+                                pushToken("", ◆string)
+                            else:
+                                pushToken()
+                            continue
+                    
+                    if charTok.hasKey char & next:
+                        pushToken(char & next, charTok[char & next])
+                        col += 2
+                        pushToken()
+                        continue
+                        
+                if charTok.hasKey char:
+                
+                    if charTok[char] in openToks:
+                        openStack.push(charTok[char])
+                    elif charTok[char] in closeToks:
+                        if openStack.len and openStack[^1] == closeOpen[charTok[char]]:
+                            openStack.pops()
+                        elif charTok[char] == ◆bracket_close and inStripol:
+                            inStripol = false
+                            pushToken(char, ◆stripol_end)
+                            col += 1
+                            if token.tok == ◆string_start:
+                                pushToken("", ◆string)
+                            else:
+                                pushToken()
+                            token.tok = ◆string
+                            continue
+                            
+                    if charTok[char] == ◆test:
+                        if tokens.len == 0 or tokens[^1].tok == ◆indent:
+                            token.tok = ◆test
+                            while col <= segs.len-1:
+                                token.str &= segs[col]
+                                col += 1
+                            pushToken()
+                            continue
+                
+                    pushToken(char, charTok[char])
+                    col += 1
+                    pushToken()
+                    continue
+                else:
+                    token.str.add char
+                    
+                    var next : string
+                    if col < segs.len-1 :
+                        next = segs[col+1] 
+                    else :
+                        next = ""
+                        
+                    if isNumber(token.str, next):
+                        token.tok = ◆number
+                        pushToken()
+                    
+                    if keywords.hasKey(token.str) and (col >= segs.len-1 or segs[col+1] == " " or charTok.hasKey(segs[col+1])):
+                        token.tok = keywords[token.str]
+                        pushToken()
             col += 1
             
-            while i < input.len and (input[i] in Digits or input[i] in Digitc):
-                numStr.add(input[i])
-                i += 1
-                col += 1
-            
-            addToken(◆number, numStr)
-            continue
+        if token.str.len:
+            if keywords.hasKey(token.str):
+                token.tok = keywords[token.str]
+            tokens.add token
+        else:
+            if token.tok == ◆string:
+                echo "add empty string token"
+                tokens.add token
         
-        if c in @["'", "\""]:
-            let quote = c
-            var strContent = ""
-            incToken(◆string_start, quote)
-            
-            var isTriple = false
-            if i + 1 < input.len and input[i] == quote and input[i+1] == quote:
-                isTriple = true
-                i += 2
-                col += 2
-            
-            while i < input.len:
-                if isTriple:
-                    if i + 2 < input.len and input[i] == quote and input[i+1] == quote and input[i+2] == quote:
-                        i += 3
-                        col += 3
-                        break
-                elif input[i] == quote and (i == 0 or input[i-1] != "\\"):
-                    i += 1
-                    col += 1
-                    break
-                
-                if not isTriple and quote == "\"" and i+1 < input.len and input[i] == "#" and input[i+1] == "{":
-                    if strContent.len > 0:
-                        addToken(◆string, strContent)
-                        strContent = ""
-                    incToken(◆stripol_start, "#{")
-                    continue
-                
-                if input[i] == "}" and tokens.len > 0 and tokens[^1].tok == ◆stripol_start:
-                    if strContent.len > 0:
-                        addToken(◆string, strContent)
-                        strContent = ""
-                    incToken(◆stripol_end, "}")
-                    continue
-                
-                strContent.add(input[i])
-                i += 1
-                col += 1
-            
-            if strContent.len > 0:
-                addToken(◆string, strContent)
-            
-            if isTriple:
-                incToken(◆string_end, quote & quote & quote)
-            else:
-                incToken(◆string_end, quote)
-            continue
-        
-        if c == "#":
-            var commentStr = ""
-            incToken(◆comment_start, c)
-            
-            var isMulti = false
-            if i + 1 < input.len and input[i] == "#" and input[i+1] == "#":
-                isMulti = true
-                incToken(◆comment_start, "###")
-            
-            while i < input.len:
-                if input[i] == "\n":
-                    if not isMulti:
-                        break
-                    line += 1
-                    col = 0
-                elif isMulti and i + 2 < input.len and input[i] == "#" and input[i+1] == "#" and input[i+2] == "#":
-                    incToken(◆comment_end, "###")
-                    break
-                else:
-                    commentStr.add(input[i])
-                    i += 1
-                    col += 1
-            
-            if commentStr.len > 0:
-                addToken(◆comment, commentStr)
-            continue
-        
-        if i + 1 < input.len:
-            let twoChars = input[i] & input[i+1]
-            case twoChars:
-                of "==": 
-                    incToken(◆equal, twoChars); continue
-                of "!=": 
-                    incToken(◆not_equal, twoChars); continue
-                of ">=": 
-                    incToken(◆greater_equal, twoChars); continue
-                of "<=": 
-                    incToken(◆less_equal, twoChars); continue
-                of "+=": 
-                    incToken(◆plus_assign, twoChars); continue
-                of "-=": 
-                    incToken(◆minus_assign, twoChars); continue
-                of "*=": 
-                    incToken(◆multiply_assign, twoChars); continue
-                of "/=": 
-                    incToken(◆divide_assign, twoChars); continue
-                of "..": 
-                    if i + 2 < input.len and input[i+2] == ".":
-                        incToken(◆tripledot, "..."); continue
-                    else:
-                        incToken(◆doubledot, ".."); continue
-                else: discard
-        
-        case c:
-            of "(": 
-                incToken(◆paren_open, c)
-            of ")": 
-                incToken(◆paren_close, c)
-            of "{": 
-                incToken(◆bracket_open, c)
-            of "}": 
-                incToken(◆bracket_close, c)
-            of "[": 
-                incToken(◆square_open, c)
-            of "]": 
-                incToken(◆square_close, c)
-            of ",": 
-                incToken(◆comma, c)
-            of ";": 
-                incToken(◆semicolon, c)
-            of "=": 
-                incToken(◆assign, c)
-            of "+": 
-                incToken(◆plus, c)
-            of "-": 
-                incToken(◆minus, c)
-            of "*": 
-                incToken(◆multiply, c)
-            of "/": 
-                incToken(◆divide, c)
-            of ">": 
-                incToken(◆greater, c)
-            of "<": 
-                incToken(◆less, c)
-            of ".": 
-                incToken(◆dot, c)
-            of "➜": 
-                incToken(◆then, c)
-            of "⮐": 
-                incToken(◆return, c)
-            of "▸":
-                var testStr = c
-                i += 1
-                col += 1
-                while i < input.len and input[i] notin Whitespace:
-                    testStr.add(input[i])
-                    i += 1
-                    col += 1
-                addToken(◆test, testStr)
-
-            of "▪": incToken(◆val, c)
-            else:
-                if c in IdentStartChars:
-                    var ident = c
-                    i += 1
-                    col += 1
-                    while i < input.len and input[i] in IdentChars:
-                        ident.add(input[i])
-                        i += 1
-                        col += 1
-                    
-                    let keyword = parseEnum[TokenKind](ident.toLowerAscii, ◆name)
-                    addToken(keyword, ident)
-                    continue
-                
-                # Unknown character - skip
-                i += 1
-                col += 1
+    return  tokens
     
-    result = tokens
+proc tokenize*(text:string) : seq[Token] =
+
+    tokenize text.splitLines()
+    
