@@ -396,25 +396,42 @@ proc expression(p: var Parser, tokenRight:Token ): Node =
 proc parseBlock*(p: var Parser): Node =
 
     var expressions = default seq[Node]
+    var indent: Token
     
-    while p.tok() == ◆indent 
-        p.swallow ◆indent # swallow indentation to enable simple test cases
+    if p.tok() == ◆indent
+        indent = p.consume() 
+        # log &"pars.block initial indent {indent}"
     
     var expr : Node = p.expression()
     while expr != nil
+        # log &"pars.block item {expr}"
         expressions.add expr
+        if p.tok() == ◆indent
+            let ind = p.consume() 
+            if ind.str.len < indent.str.len
+                log "pars.block outdent break"
+                break
+            if ind.str.len > indent.str.len
+                log "pars.block subblock"
+                expr = p.parseBlock()
+                continue
+        # log &"pars.block next item {p.tok}"
         expr = p.expression()
-    
-    Node(token:Token(tok:◆), kind:●block, expressions:expressions)
+    # log &"pars.block done {expressions}"
+    Node(token:indent, kind:●block, expressions:expressions)
     
 proc then(p: var Parser) : Node = 
 
     if p.tok() == ◆then
+        # log "pars.then thenned"
         p.swallow ◆then
         
     if p.tok() == ◆indent
+        # log "pars.then block"
         p.parseBlock()
     else
+        # if p.tok() != ◆eof
+        #     log &"pars.then expression {p.tok()}"
         p.expression()
 
 proc parse*(p: var Parser): Node = 
@@ -681,7 +698,7 @@ proc lArgType(p: var Parser, left: Node) : Node =
 
 proc lFunc(p: var Parser, left: Node): Node =
 
-    let arrowToken = p.consume() # ->
+    let token = p.consume() # ->
     
     var funcName:  Node
     var func_type: Node
@@ -702,7 +719,7 @@ proc lFunc(p: var Parser, left: Node): Node =
     let body = p.then()
     
     Node(
-        token: arrowToken,
+        token: token,
         kind: ●func,
         func_name: funcName,
         func_args: args,
@@ -713,7 +730,8 @@ proc lFunc(p: var Parser, left: Node): Node =
 proc rFunc(p: var Parser): Node =
         
     let token = p.consume() # ->
-    Node(token:token, kind:●func)
+    let body = p.then()
+    Node(token:token, kind:●func, func_body: body)
 
 proc rReturn(p: var Parser): Node =
 
@@ -779,45 +797,49 @@ proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 
 proc setup(p: var Parser) =
 
-    p.pratt ◆test,           lTestCase,         rTestSuite,      0
-    p.pratt ◆number,         nil,               rLiteral,        0
-    p.pratt ◆string_start,   nil,               rString,         0
-    p.pratt ◆true,           nil,               rLiteral,        0
-    p.pratt ◆false,          nil,               rLiteral,        0
-    p.pratt ◆null,           nil,               rLiteral,        0
-    p.pratt ◆name,           nil,               rLiteral,        0
-                                                                  
-    p.pratt ◆return,         nil,               rReturn,         5
+    p.pratt ◆test,              lTestCase,         rTestSuite,      0
+    p.pratt ◆number,            nil,               rLiteral,        0
+    p.pratt ◆string_start,      nil,               rString,         0
+    p.pratt ◆true,              nil,               rLiteral,        0
+    p.pratt ◆false,             nil,               rLiteral,        0
+    p.pratt ◆null,              nil,               rLiteral,        0
+    p.pratt ◆name,              nil,               rLiteral,        0
+                                                                     
+    p.pratt ◆return,            nil,               rReturn,         5
                                                                     
-    p.pratt ◆assign,         lAssign,           nil,            10
+    p.pratt ◆assign,            lAssign,           nil,            10
+    p.pratt ◆plus_assign,       lAssign,           nil,            10
+    p.pratt ◆minus_assign,      lAssign,           nil,            10
+    p.pratt ◆divide_assign,     lAssign,           nil,            10
+    p.pratt ◆multiply_assign,   lAssign,           nil,            10
 
-    p.pratt ◆func,           lFunc,             rFunc,          15
-    p.pratt ◆if,             nil,               rIf,            15  
-    p.pratt ◆for,            nil,               rFor,           15  
-    p.pratt ◆switch,         nil,               rSwitch,        15  
-
-    p.pratt ◆equal,          lOperation,        nil,            20
-    p.pratt ◆doubledot,      lRange,            nil,            20
-                                                
-    p.pratt ◆or,             lOperation,        nil,            30
-    p.pratt ◆and,            lOperation,        nil,            40
-                                                
-    p.pratt ◆plus,           lOperation,        nil,            50
-    p.pratt ◆minus,          lOperation,        rPreOp,         50
-                                                
-    p.pratt ◆multiply,       lOperation,        nil,            60
-    p.pratt ◆divide,         lOperation,        nil,            60
-                                                                                             
-    p.pratt ◆not,            nil,               rPreOp,         70
-                                                                                             
-    p.pratt ◆increment,      lPostOp,           nil,            80
-    p.pratt ◆decrement,      lPostOp,           nil,            80
-                                                                                     
-    p.pratt ◆paren_open,     lCall,             rParenExpr,     90
-    p.pratt ◆val,            lArgType,          nil,           100
-    p.pratt ◆var,            lArgType,          nil,           100
-    p.pratt ◆then,           nil,               rReturnType,   100
-    p.pratt ◆dot,            lPropertyAccess,   nil,           100
+    p.pratt ◆func,              lFunc,             rFunc,          15
+    p.pratt ◆if,                nil,               rIf,            15  
+    p.pratt ◆for,               nil,               rFor,           15  
+    p.pratt ◆switch,            nil,               rSwitch,        15  
+                                
+    p.pratt ◆equal,             lOperation,        nil,            20
+    p.pratt ◆doubledot,         lRange,            nil,            20
+                                                   
+    p.pratt ◆or,                lOperation,        nil,            30
+    p.pratt ◆and,               lOperation,        nil,            40
+                                                   
+    p.pratt ◆plus,              lOperation,        nil,            50
+    p.pratt ◆minus,             lOperation,        rPreOp,         50
+                                                   
+    p.pratt ◆multiply,          lOperation,        nil,            60
+    p.pratt ◆divide,            lOperation,        nil,            60
+                                                                                                
+    p.pratt ◆not,               nil,               rPreOp,         70
+                                                                                                
+    p.pratt ◆increment,         lPostOp,           nil,            80
+    p.pratt ◆decrement,         lPostOp,           nil,            80
+                                                                                        
+    p.pratt ◆paren_open,        lCall,             rParenExpr,     90
+    p.pratt ◆val,               lArgType,          nil,           100
+    p.pratt ◆var,               lArgType,          nil,           100
+    p.pratt ◆then,              nil,               rReturnType,   100
+    p.pratt ◆dot,               lPropertyAccess,   nil,           100
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   

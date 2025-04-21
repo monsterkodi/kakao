@@ -59,6 +59,10 @@ import ../pars
         check $ast("f = p▪Parser ahead▪int=1 ➜ Token ->")    == "▪[(◆func ◆name @[(◆name ◆val ◆type), (◆name ◆val ◆type (= ◆number))] ◆type)]"
         check $ast("f = p▪Parser ahead=1 ➜ Token ->")        == "▪[(◆func ◆name @[(◆name ◆val ◆type), (◆name (= ◆number))] ◆type)]"
         
+    ▸ func body
+    
+        check $ast("f = ->\n  b = 1 + 2\n  b += 3")          == "▪[(◆func ◆name @[] ▪[(◆name ◆assign (◆number ◆plus ◆number))(◆name ◆plus_assign ◆number)])]" 
+        
     ▸ call
     
         check $ast("f()")                                    == "▪[(◆name ◆call @[])]"
