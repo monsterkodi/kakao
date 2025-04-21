@@ -37,9 +37,10 @@ proc render(r: var Rndr, nodes: seq[Node]) =
 
 proc ▸block(r: var Rndr, n: Node) = 
 
-    for exp in n.expressions:
-        
+    for i,exp in n.expressions:
         r.render exp
+        if i<n.expressions.len-1:
+            r.add "\n"
 
 proc ▸operation(r: var Rndr, n: Node) = 
 
@@ -176,7 +177,7 @@ proc ▸switch(r: var Rndr, n: Node) =
 
 proc ▸testCase(r: var Rndr, n: Node) =
 
-    r.add "    check "
+    r.add "        check "
     r.render n.test_expression
     r.add " == "
     r.render n.test_expected
@@ -222,11 +223,11 @@ proc render(r: var Rndr, n: Node) =
         of ●testSuite:
             r.add "suite \"" 
             r.add n.token.str[4..^1] 
-            r.add "\":\n" 
+            r.add "\":" 
         of ●testSection:
             r.add "    test \"" 
             r.add n.token.str[4..^1] 
-            r.add "\":\n" 
+            r.add "\":" 
         of ●testCase:
             r.▸testCase(n)
         of ●literal:

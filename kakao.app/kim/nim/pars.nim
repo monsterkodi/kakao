@@ -394,32 +394,32 @@ proc expression(p: var Parser, tokenRight:Token ): Node =
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███████   ███████    ███████  ███   ███
 
-proc parseBlock*(p: var Parser): Node =
+proc parseBlock*(p:var Parser, indent:int = 0): Node =
 
     var expressions = default seq[Node]
-    var indent: Token
-    
+    var token: Token
+    var block_indent = indent
     if p.tok() == ◆indent:
-        indent = p.consume() 
-        # echo &"pars.block initial indent {indent}"
+        token = p.consume() 
+        block_indent = token.str.len
     
     var expr : Node = p.expression()
     while expr != nil:
-        # echo &"pars.block item {expr}"
         expressions.add expr
         if p.tok() == ◆indent:
-            let ind = p.consume() 
-            if ind.str.len < indent.str.len:
+            let ind = p.current() 
+            if ind.str.len < block_indent:
                 echo "pars.block outdent break"
+                p.swallow()
                 break
-            if ind.str.len > indent.str.len:
-                echo "pars.block subblock"
-                expr = p.parseBlock()
+            elif ind.str.len > block_indent:
+                # echo &"pars.block subblock {ind} {indent}"
+                expr = p.parseBlock(ind.str.len)
                 continue
-        # echo &"pars.block next item {p.tok}"
+            else:
+                p.swallow() 
         expr = p.expression()
-    # echo &"pars.block done {expressions}"
-    Node(token:indent, kind:●block, expressions:expressions)
+    Node(token:token, kind:●block, expressions:expressions)
     
 proc then(p: var Parser) : Node = 
 

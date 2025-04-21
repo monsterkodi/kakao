@@ -140,7 +140,9 @@ const
         "➜":    ◆then,
         "▸":    ◆test,
         "▪":    ◆val,
-        "◆":    ◆var,
+        "□":    ◆val,
+        "◆":    ◆var,    
+        "◇":    ◆var,    
         }.toTable()
         
     keywords = {
