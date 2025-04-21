@@ -120,7 +120,6 @@ proc ▸if(r: var Rndr, n: Node) =
 
     r.add "if "
     for i,condThen in n.cond_thens
-        # log &"if.condThen {condThen} kind:{condThen.kind}"
         if i > 0
             r.add " elif "
         r.render condThen.cond
@@ -130,6 +129,23 @@ proc ▸if(r: var Rndr, n: Node) =
         r.add " else: "
         r.render n.else
         
+proc ▸for(r: var Rndr, n: Node) =
+
+    r.add "for "
+    r.render n.for_value
+    r.add " in "
+    r.render n.for_range
+    r.add ": "
+    r.render n.for_body
+    
+proc ▸range(r: var Rndr, n: Node) = 
+
+    r.add "["
+    r.render n.range_start
+    r.addTok n
+    r.render n.range_end
+    r.add "]"
+        
 proc ▸return(r: var Rndr, n: Node) =
 
     r.add "return"
@@ -137,20 +153,41 @@ proc ▸return(r: var Rndr, n: Node) =
         r.space()
         r.render n.return_value
      
-proc ▸switch(r: var Rndr, n: Node)         = log '▸switch'
-proc ▸switchCase(r: var Rndr, n: Node)     = log '▸switchCase'
-proc ▸range(r: var Rndr, n: Node)          = log '▸range'
-proc ▸ident(r: var Rndr, n: Node)          = log '▸iden'
-proc ▸var(r: var Rndr, n: Node)            = log '▸var'
-proc ▸testCase(r: var Rndr, n: Node)       = log '▸testCase'
+proc ▸switch(r: var Rndr, n: Node) =
+
+    r.add "case "
+    r.render(n.switch_value)
+    r.add ":\n"
+    
+    for i,caseNode in n.switch_cases
+        if i > 0
+            r.add "\n"
+        r.add "    of "
+        for j,whenNode in caseNode.case_when
+            if j > 0
+                r.add ", "
+            r.render(whenNode)
+        r.add ": "
+        r.render(caseNode.case_then)
+    
+    if n.switch_default != nil
+        r.add "\n    else: "
+        r.render(n.switch_default)
+
+proc ▸testCase(r: var Rndr, n: Node) =
+
+    r.add "    check "
+    r.render n.test_expression
+    r.add " == "
+    r.render n.test_expected
+
+proc ▸indent(r: var Rndr, n: Node)         = log '▸indent'
+# proc ▸var(r: var Rndr, n: Node)            = log '▸var'
 
 proc render(r: var Rndr, n: Node) =
 
     if n == nil
         ⮐  
-    # let b1 = true
-    # let b2 = false
-    # log &"render {node.kind} {b1 and b2}"
     
     case n.kind
     
@@ -160,8 +197,6 @@ proc render(r: var Rndr, n: Node) =
             r.▸if(n)
         of ●switch
             r.▸switch(n)
-        of ●switchCase
-            r.▸switchCase(n)
         of ●func
             r.▸func(n)
         of ●argType
@@ -174,14 +209,24 @@ proc render(r: var Rndr, n: Node) =
             r.▸postOp(n)
         of ●preOp
             r.▸preOp(n)
+        of ●for
+            r.▸for(n)
         of ●range
             r.▸range(n)
         of ●propertyAccess
             r.▸propertyAccess(n)
-        of ●var
-            r.▸var(n)
+        # of ●var
+        #     r.▸var(n)
         of ●return
             r.▸return(n)
+        of ●testSuite
+            r.add "suite \"" 
+            r.add n.token.str[4..^1] 
+            r.add "\":\n" 
+        of ●testSection
+            r.add "    test \"" 
+            r.add n.token.str[4..^1] 
+            r.add "\":\n" 
         of ●testCase
             r.▸testCase(n)
         of ●literal
@@ -189,8 +234,10 @@ proc render(r: var Rndr, n: Node) =
                 r.▸string(n)
             else
                 r.addTok n
+        of ●type
+            r.addTok n
         else
-            log &"unhandled {n}"
+            log &"unhandled {n} {n.kind}"
             r.addTok n
 
 proc rndr*(root: Node): string =
