@@ -136,3 +136,16 @@ suite "rndr":
         check rndr("    f(a) ▸ 42")                          == "    check f(a) == 42"
         check rndr("    f(a) ▸\n        42")                 == "    check f(a) == 42"
         
+#        check rndr("""
+#▸ rndr
+#
+#    ▸ toplevel
+#
+#        rndr("")   ▸ ""
+#        rndr("42") ▸ "42"
+#""") == """
+#suite "rndr":
+#    test "toplevel":
+#        check rndr("") == ""    
+#        check rndr("42") == "42"    
+#"""

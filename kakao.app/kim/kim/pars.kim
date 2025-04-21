@@ -227,8 +227,10 @@ proc `$`*(n: Node): string =
     
     case n.kind
         of ●block
+            s = "▪["
             for e in n.expressions
-                s &= &"\n {e}"
+                s &= &"{e}"
+            s &= "]"
         of ●operation
             s = &"({n.operand_left} {s} {n.operand_right})"
         of ●range
