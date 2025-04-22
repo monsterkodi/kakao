@@ -227,20 +227,56 @@ proc push(t:Tknzr, tk:tok) =
     t.token.tok = tk
     t.pushToken()
     
-proc comment(t:Tknzr)
+proc commit(t:Tknzr, str="", tk=◆name, incr=0)
     
-proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
+#  ███████  █████████  ████████   ███  ███   ███   ███████ 
+# ███          ███     ███   ███  ███  ████  ███  ███      
+# ███████      ███     ███████    ███  ███ █ ███  ███  ████
+#      ███     ███     ███   ███  ███  ███  ████  ███   ███
+# ███████      ███     ███   ███  ███  ███   ███   ███████ 
 
-    # echo &"commit {tk}"
-    t.pushToken(str, tk, incr)
-    t.pushToken()
+proc string(t:Tknzr) =
+
+    var topTok = t.tokens[^1]
     
-    case tk:
-        of ◆comment_start:
-            t.comment()
+    assert topTok.tok in {◆string_start, ◆stripol_end}
+    
+    case topTok.tok:
+        of ◆string_start:
+            t.delimiter = topTok.str
+        of ◆stripol_end:
+            t.token.tok = ◆string
         else:
             discard
 
+    # echo &"string {t} {t.delimiter} {topTok}"
+
+    proc isAtStringEnd() : bool =
+        if t.segi > t.eol-1 :
+            return  true
+        if t.delimiter.len == 3:
+            t.segi <= t.eol-3 and t.srng(3) == t.delimiter
+        else:
+            t.segi <= t.eol-1 and t.peek(0) == t.delimiter
+                    
+    while not isAtStringEnd():
+    
+        t.token.tok = ◆string
+        
+        if t.peek(0) == "\\":
+            t.advance 2
+            continue
+            
+        if t.srng(2) == "#{" and t.delimiter in @["\"", "\"\"\""]:
+            t.commit("#{", ◆stripol_start, 2)
+            t.inStripol = true  
+            return
+        
+        t.advance 1    
+                
+    if t.segi <= t.eol-1 :
+        t.commit(t.delimiter, ◆string_end, t.delimiter.len)
+    
 #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
 # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
 # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
@@ -263,6 +299,26 @@ proc comment(t:Tknzr) =
 
     t.advanceUntil "\n"
     t.push ◆comment
+
+#  ███████   ███████   ██     ██  ██     ██  ███  █████████
+# ███       ███   ███  ███   ███  ███   ███  ███     ███   
+# ███       ███   ███  █████████  █████████  ███     ███   
+# ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+#  ███████   ███████   ███   ███  ███   ███  ███     ███   
+
+proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
+
+    # echo &"commit {tk}"
+    t.pushToken(str, tk, incr)
+    t.pushToken()
+    
+    case tk:
+        of ◆comment_start:
+            t.comment()
+        of ◆string_start, ◆stripol_end:
+            t.string()
+        else:
+            discard
 
 # █████████  ███   ███  ███   ███  ███████
 #    ███     ███  ███   ████  ███     ███ 
@@ -293,49 +349,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
         
         while t.segi < t.eol:
                                     
-            if t.tokens.len :
-            
-                var topTok = t.tokens[^1]
-                
-                if topTok.tok == ◆string_start:
-                    t.delimiter = topTok.str
-                
-                if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
-            
-                    proc isAtStringEnd() : bool =
-                        if t.segi > t.eol-1 :
-                            return  true
-                        if t.delimiter.len == 3:
-                            t.segi <= t.eol-3 and t.srng(3) == t.delimiter
-                        else:
-                            t.segi <= t.eol-1 and t.peek(0) == t.delimiter
-                                    
-                    while not isAtStringEnd():
-                    
-                        t.token.tok = ◆string
-                        
-                        if t.peek(0) == "\\":
-                            t.advance 2
-                            continue
-                            
-                        if t.peek(0) == "#" and t.delimiter in @["\"", "\"\"\""] and t.peek(1) == "{":
-                            t.commit("#{", ◆stripol_start, 2)
-                            t.inStripol = true  
-                            break
-                        
-                        t.advance 1    
-                                
-                    if t.inStripol:
-                        continue
-                    
-                    if t.segi <= t.eol-1 :
-                        t.commit(t.delimiter, ◆string_end, t.delimiter.len)
-                    
-                    if t.segi > t.eol-1:
-                        break
-                    else:
-                        continue
-                
             let char = t.peek(0)
                         
             if char == " ":
@@ -373,7 +386,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         elif punct[char] == ◆bracket_close and t.inStripol:
                             t.inStripol = false
                             t.commit(char, ◆stripol_end, 1)
-                            t.token.tok = ◆string
+                            # t.token.tok = ◆string
                             continue
                             
                     if punct[char] == ◆test:
