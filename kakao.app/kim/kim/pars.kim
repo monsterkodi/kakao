@@ -6,7 +6,8 @@
 
 import std/[strformat, strutils]
 import kommon
-import lexi
+# import lexi
+import tknz
 
 type
     NodeKind* = enum
@@ -892,7 +893,7 @@ proc setup(p: var Parser) =
 
 proc ast*(text:string) : Node =
 
-    var p = Parser(tokens:lexi.tokenize(text), pos:0, text:text)
+    var p = Parser(tokens:tokenize(text), pos:0, text:text)
     p.setup()
     p.parse()
     

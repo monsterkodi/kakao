@@ -190,6 +190,8 @@ proc srng(t:Tknzr, n:int) : string =
         e = t.segi+n
     else:
         e = t.eol
+    if e > t.segs.len:
+        return  ""
     t.segs[t.segi..<e].join("")
     
 proc advance(t:Tknzr, n:int) =
@@ -205,6 +207,8 @@ proc advance(t:Tknzr, n:int) =
 #    ███     ███   ███  ███   ███  ███████
 
 proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
+
+    # profileScope "tknz"
 
     t.segs = segs
     while t.eol < t.segs.len and t.segs[t.eol] != "\n":
@@ -315,21 +319,17 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         t.pushToken()
                     t.token.col = t.col()
                 
-                if t.segi < t.eol-1:
-                    
-                    let next = t.peek(1)
-                    
-                    if t.segi < t.eol-2:
-                        let nextnext = t.peek(2)
-                        if punct.hasKey char & next & nextnext:
-                            t.commit(char & next & nextnext, punct[char & next & nextnext], 3)
-                            if t.tokens[^1].tok == ◆string_start:
-                                t.token.tok = ◆string
-                            continue
-                    
-                    if punct.hasKey char & next:
-                        t.commit(char & next, punct[char & next], 2)
-                        continue
+                let triple = t.srng 3
+                if punct.hasKey triple:
+                    t.commit(triple, punct[triple], 3)
+                    if t.tokens[^1].tok == ◆string_start:
+                        t.token.tok = ◆string
+                    continue
+                
+                let double = t.srng 2
+                if punct.hasKey double:
+                    t.commit(double, punct[double], 2)
+                    continue
                         
                 if punct.hasKey char:
                 
@@ -377,7 +377,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             if t.token.tok == ◆string:
                 echo "add empty string token"
                 t.tokens.add t.token
-        
+
     return  t.tokens
     
 proc tokenize*(text:string) : seq[Token] =

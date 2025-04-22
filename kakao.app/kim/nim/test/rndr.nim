@@ -55,15 +55,15 @@ suite "rndr":
     test "func":
     
         check rndr("f = ->")                                 == "proc f() ="
-        check rndr("f = a▪string ->")                        == "proc f(a:string) ="
-        check rndr("f = a▪string b▪int ->")                  == "proc f(a:string, b:int) ="
-        check rndr("f = p◆Parser a▪string b▪int ->")         == "proc f(p:var Parser, a:string, b:int) ="
+        check rndr("f = a◇string ->")                        == "proc f(a:string) ="
+        check rndr("f = a◇string b◇int ->")                  == "proc f(a:string, b:int) ="
+        check rndr("f = p◆Parser a◇string b◇int ->")         == "proc f(p:var Parser, a:string, b:int) ="
         check rndr("f = p◆Parser ->")                        == "proc f(p:var Parser) ="
         check rndr("f = ➜ Node ->")                          == "proc f() : Node ="
         check rndr("f = p◆Parser ➜ Node ->")                 == "proc f(p:var Parser) : Node ="
-        check rndr("f = s▪seq[Node] ➜ seq[Node] ->")         == "proc f(s:seq[Node]) : seq[Node] ="
-        check rndr("f = p▪Parser ahead▪int=1 ➜ Token ->")    == "proc f(p:Parser, ahead:int=1) : Token ="
-        check rndr("f = p▪Parser ahead=1 ➜ Token ->")        == "proc f(p:Parser, ahead=1) : Token ="
+        check rndr("f = s◇seq[Node] ➜ seq[Node] ->")         == "proc f(s:seq[Node]) : seq[Node] ="
+        check rndr("f = p◇Parser ahead◇int=1 ➜ Token ->")    == "proc f(p:Parser, ahead:int=1) : Token ="
+        check rndr("f = p◇Parser ahead=1 ➜ Token ->")        == "proc f(p:Parser, ahead=1) : Token ="
         
     test "call":
     

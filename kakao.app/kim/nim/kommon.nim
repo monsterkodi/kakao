@@ -6,11 +6,51 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ]#
 
-import std/[tables, typetraits, macros, terminal, strformat, strutils, unicode]
+import std/[monotimes, times, tables, typetraits, macros, terminal, strformat, strutils, unicode]
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
+
+# ████████   ████████    ███████   ████████  ███  ███      ████████
+# ███   ███  ███   ███  ███   ███  ███       ███  ███      ███     
+# ████████   ███████    ███   ███  ██████    ███  ███      ███████ 
+# ███        ███   ███  ███   ███  ███       ███  ███      ███     
+# ███        ███   ███   ███████   ███       ███  ███████  ████████
+
+var
+    timers {.threadvar.}: Table[string, MonoTime]  # Thread-local storage for nesting
     
+proc profileStart*(msg: string) =
+    if not timers.contains(msg):
+        timers[msg] = getMonoTime()
+    else:
+        stderr.writeLine &"[WARNING] Duplicate profileStart for '{msg}'"
+
+proc profileStop*(msg: string) =
+    if not timers.contains(msg):
+        stderr.writeLine &"[ERROR] profileStop for unknown label '{msg}'"
+        return
+
+    let elapsed = getMonoTime() - timers[msg]
+    timers.del(msg)
+
+    if elapsed.inMicroseconds < 1000:
+        styledEcho fgBlue, msg, fgGreen, &" {elapsed.inMicroseconds} ", styleDim, "µs", resetStyle
+    else:
+        styledEcho fgBlue, msg, fgYellow, &" {elapsed.inMilliseconds} ", styleDim, "ms", resetStyle
+    
+macro profileScope*(msg: string): untyped =
+    quote do:
+        profileStart(`msg`)
+        defer:
+            profileStop(`msg`)
+    
+# ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
+# ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███
+# ████████   ███   ███  ███████   █████████  ██████  ████████   ███   ███  ████████ 
+# ███        ███   ███       ███  ███   ███    ██    ███        ███   ███  ███      
+# ███         ███████   ███████   ███   ███          ███         ███████   ███      
+
 proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
 
     if s.len > 0:

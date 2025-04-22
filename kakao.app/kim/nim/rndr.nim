@@ -6,7 +6,8 @@
 
 import std/[strformat, strutils]
 import kommon
-import lexi
+# import lexi
+import tknz
 import pars
 
 type
