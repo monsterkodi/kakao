@@ -250,24 +250,6 @@ proc pose*(line:string) : string =
 #    ███     ███   ███  ███   ███  ███  ████       ███
 #    ███     ███   ███  ███   ███  ███   ███  ███████ 
 
-proc swapLastPathComponentAndExt(file: string, src: string, tgt: string): string =
-
-    let (dir, _, _) = splitFile(file.Path)
-    
-    var dirParts = dir.string.split(DirSep)
-    
-    if dirParts[0] == "" and dirParts.len == 1:
-        dirParts.delete 0..0
-    
-    for i in countdown(dirParts.high, 0):
-        if dirParts[i] == src:
-            dirParts[i] = tgt
-            break
-            
-    # echo "dirParts ", dirParts 
-    dirParts.add file.Path.changeFileExt("." & tgt).splitPath[1].string
-    dirParts.join "/"
-
 proc trans*(fileIn:string) : string =
 
     # echo "trans.fileIn: ", fileIn
@@ -304,6 +286,6 @@ proc pile*(files:seq[string]) : seq[string] =
     for file in files
         transpiled.add trans file
         
-    echo "pile done: ", transpiled
+    # echo "pile done: ", transpiled
     transpiled
             

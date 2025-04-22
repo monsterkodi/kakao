@@ -331,7 +331,25 @@ suite "tknz":
             Token(str:"    true", tok:◆comment,       line:1, col:0),
             Token(str:"###",      tok:◆comment_end,   line:1, col:8),
             ]
-            
+
+        check tokenize("""
+# ███   ███  ███  ██     ██
+# ███  ███   ███  ███   ███
+# ███████    ███  █████████
+# ███  ███   ███  ███ █ ███
+# ███   ███  ███  ███   ███
+""") == @[
+            Token(str:"#",                          tok:◆comment_start, line:0, col:0),
+            Token(str:" ███   ███  ███  ██     ██", tok:◆comment,       line:0, col:1),
+            Token(str:"#",                          tok:◆comment_start, line:1, col:0),
+            Token(str:" ███  ███   ███  ███   ███", tok:◆comment,       line:1, col:1),
+            Token(str:"#",                          tok:◆comment_start, line:2, col:0),
+            Token(str:" ███████    ███  █████████", tok:◆comment,       line:2, col:1),
+            Token(str:"#",                          tok:◆comment_start, line:3, col:0),
+            Token(str:" ███  ███   ███  ███ █ ███", tok:◆comment,       line:3, col:1),
+            Token(str:"#",                          tok:◆comment_start, line:4, col:0),
+            Token(str:" ███   ███  ███  ███   ███", tok:◆comment,       line:4, col:1),
+            ]
             
     #  ███████   ████████   ████████  ████████    ███████   █████████   ███████   ████████    ███████
     # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███   ███  ███   ███  ███     
@@ -432,4 +450,6 @@ suite "tknz":
             Token(str:"◇",      tok:◆val,   line:0, col:1), 
             Token(str:"string", tok:◆name,  line:0, col:2) 
             ]
+            
+    
         

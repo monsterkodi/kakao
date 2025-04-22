@@ -4,7 +4,7 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 
-import std/[strformat, strutils]
+import std/[strformat, strutils, terminal]
 import kommon
 # import lexi
 import tknz
@@ -74,6 +74,10 @@ type
             
                 string_content*  : Node
                 string_stripols* : seq[Node]
+                
+            of ●comment
+            
+                comment_content* : Node
                 
             of ●stripol
             
@@ -305,7 +309,8 @@ proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
 proc error*(p: var Parser, msg: string) : Node =
 
-    log &"parse error: {msg} {p}"
+    styledEcho fgRed, $p
+    styledEcho fgYellow, &"parse error: {msg}"
     nil
     
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
@@ -664,6 +669,15 @@ proc rString(p: var Parser): Node =
         p.swallowError(◆string_end, "Expected closing string delimiter")
         
         Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
+        
+proc rComment(p: var Parser): Node = 
+
+     let token = p.consume()
+     let comment_content = Node(token:p.consume())
+     
+     # log &"rComment {token} {comment_content.token}"
+     
+     Node(token:token, kind:●comment, comment_content:comment_content)
 
 proc lPostOp(p: var Parser, left: Node): Node =
 
@@ -841,6 +855,7 @@ proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 
 proc setup(p: var Parser) =
 
+    p.pratt ◆comment_start,     nil,               rComment,        0
     p.pratt ◆test,              lTestCase,         rTestSuite,      0
     p.pratt ◆number,            nil,               rLiteral,        0
     p.pratt ◆string_start,      nil,               rString,         0
@@ -893,7 +908,9 @@ proc setup(p: var Parser) =
 
 proc ast*(text:string) : Node =
 
-    var p = Parser(tokens:tokenize(text), pos:0, text:text)
+    let tokens = tokenize text
+    # echo &"tokens {tokens}"
+    var p = Parser(tokens:tokens, pos:0, text:text)
     p.setup()
     p.parse()
     

@@ -134,7 +134,13 @@ type
         bol         : int # segi at start of current line
         eol         : int # segi at end of current line
         line        : int # current line index
-        col         : int # current col index
+    
+proc `$`*(t:Tknzr): string = 
+
+    var s = &"◆◆◆ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
+    s
+    
+proc formatValue*(result:var string, t:Tknzr, specifier: string) = result.add $t
     
 import pegs
 
@@ -164,6 +170,28 @@ proc isNumber*(str:string, next:string): bool =
 proc peek(t:Tknzr, n:int) : string = t.segs[t.segi+n]
 proc incr(t:Tknzr, n:int) =  t.segi += n
 proc col(t:Tknzr) : int = t.segi - t.bol
+proc srng(t:Tknzr, n:int) : string =
+
+    var e : int
+    if n >= 0:
+        e = t.segi+n
+    else:
+        e = t.eol
+    if e > t.segs.len:
+        return  ""
+    t.segs[t.segi..<e].join("")
+    
+proc advance(t:Tknzr, n:int) =
+
+    for s in 0..<n :
+        t.token.str &= t.peek(0)
+        t.segi += 1
+        
+proc advanceUntil(t:Tknzr, stop: string) =
+
+    while t.segi < t.segs.len and t.peek(0) != stop:
+        t.token.str &= t.peek(0)
+        t.segi += 1
     
 proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
 
@@ -177,34 +205,38 @@ proc push(t:Tknzr, tk:tok) =
     t.token.tok = tk
     t.pushToken()
     
+proc parseComment(t:Tknzr)
+    
 proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
 
     # echo &"commit {tk}"
     t.pushToken(str, tk, incr)
     t.pushToken()
     
-proc srng(t:Tknzr, n:int) : string =
-
-    var e : int
-    if n > 0:
-        e = t.segi+n
-    else:
-        e = t.eol
-    if e > t.segs.len:
-        return  ""
-    t.segs[t.segi..<e].join("")
-    
-proc advance(t:Tknzr, n:int) =
-
-    for s in 0..<n :
-        t.token.str &= t.peek(0)
-        t.segi += 1        
-    
+    case tk:
+        of ◆comment_start:
+            t.parseComment()
+        else:
+            discard
+        
 # █████████  ███   ███  ███   ███  ███████
 #    ███     ███  ███   ████  ███     ███ 
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
+
+proc parseComment(t:Tknzr) = 
+
+    if t.srng(2) == "##":
+        # echo "multilineComment"
+        t.tokens[^1].str &= "##"
+        t.incr 2
+        t.token.col += 2
+        t.inComment = true
+        return  
+
+    t.advanceUntil "\n"
+    t.push ◆comment
 
 proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
@@ -213,7 +245,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
     t.segs = segs
     while t.eol < t.segs.len and t.segs[t.eol] != "\n":
         t.eol += 1
-    # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len}"
+        
+    # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len} {t.segs}"
 
     while t.segi < t.segs.len:
         
@@ -288,22 +321,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         t.pushToken("", ◆comment)
                     break
                 
-                if topTok.tok == ◆comment_start:
-                
-                    if t.col() == topTok.col+1 and t.srng(2) == "##":
-                        topTok.str = "###"
-                        t.tokens.pops()
-                        t.tokens.push topTok
-                        t.incr 2
-                        t.token.col += 2
-                        t.inComment = true
-                        continue
-                
-                    t.token.tok = ◆comment
-                    t.token.str &= t.srng(-1)
-                    t.incr t.token.str.len
-                    break
-            
             let char = t.peek(0)
                         
             if char == " ":

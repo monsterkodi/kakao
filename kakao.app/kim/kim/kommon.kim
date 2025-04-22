@@ -6,11 +6,29 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ###
 
-import std/[monotimes, times, tables, typetraits, macros, terminal, strformat, strutils, unicode]
+import std/[monotimes, sequtils, paths, times, tables, typetraits, macros, terminal, strformat, strutils, unicode]
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
 
+proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): string =
+
+    let (dir, _, _) = splitFile(file.Path)
+    
+    var dirParts = dir.string.split(DirSep)
+    
+    if dirParts[0] == "" and dirParts.len == 1
+        dirParts.delete 0..0
+    
+    for i in countdown(dirParts.high, 0)
+        if dirParts[i] == src
+            dirParts[i] = tgt
+            break
+            
+    # echo "dirParts ", dirParts 
+    dirParts.add file.Path.changeFileExt("." & tgt).splitPath[1].string
+    dirParts.join "/"
+    
 # ████████   ████████    ███████   ████████  ███  ███      ████████
 # ███   ███  ███   ███  ███   ███  ███       ███  ███      ███     
 # ████████   ███████    ███   ███  ██████    ███  ███      ███████ 

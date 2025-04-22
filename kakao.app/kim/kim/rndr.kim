@@ -6,7 +6,6 @@
 
 import std/[strformat, strutils]
 import kommon
-# import lexi
 import tknz
 import pars
 
@@ -40,8 +39,11 @@ proc ▸block(r: var Rndr, n: Node) =
 
     for i,exp in n.expressions
         r.render exp
-        if i<n.expressions.len-1
-            r.add "\n"
+        if i < n.expressions.len-1
+            if n.expressions[i+1].token.line > exp.token.line
+                r.add "\n"
+            else
+                r.add " "
 
 proc ▸operation(r: var Rndr, n: Node) = 
 
@@ -122,6 +124,11 @@ proc ▸string(r: var Rndr, n: Node) =
         r.addTok stripol.stripol_content
     
     r.add delimiter
+    
+proc ▸comment(r: var Rndr, n: Node) = 
+
+    r.addTok n
+    r.addTok n.comment_content
     
 proc ▸call(r: var Rndr, n: Node) =
 
@@ -227,6 +234,10 @@ proc render(r: var Rndr, n: Node) =
             r.▸for(n)
         of ●range
             r.▸range(n)
+        of ●string
+            r.▸string(n)
+        of ●comment
+            r.▸comment(n)
         of ●propertyAccess
             r.▸propertyAccess(n)
         # of ●var
@@ -243,8 +254,6 @@ proc render(r: var Rndr, n: Node) =
             r.add "\":" 
         of ●testCase
             r.▸testCase(n)
-        of ●string
-            r.▸string(n)
         of ●literal, ●type
             r.addTok n
         else
@@ -259,5 +268,27 @@ proc rndr*(root: Node): string =
 
 proc rndr*(code: string): string =
 
-    rndr(ast(code))
+    let a = ast(code)
+    # echo &"ast {a}"
+    rndr(a)
+    
+proc file*(file: string) : string = 
+
+    var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
+    echo &"fileOut {fileOut}"
+    let code = file.readFile()
+    # echo &"code {code}"
+    let trns = rndr code
+    echo &"trns {trns}"
+    fileOut
+    
+proc files*(files: seq[string]): seq[string] = 
+
+    var transpiled: seq[string]
+    for f in files
+        transpiled.add file f
+        
+    # echo "render.files done: ", transpiled
+    transpiled
+        
                             
