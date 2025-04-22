@@ -183,10 +183,11 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
         
         while col < segs.len
                     
-            proc pushToken(str="", tk=◆name) =
+            proc pushToken(str="", tk=◆name, incr=0) =
                 if token.str.len
                     tokens.add token
                 token = Token(str:str, tok:tk, line:index, col:col)
+                col += incr
                 
             if tokens.len 
             
@@ -217,8 +218,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             continue
                             
                         if segs[col] == "#" and delimiter in @["\"", "\"\"\""] and col < segs.len-1 and segs[col+1] == "{"
-                            pushToken("#{", ◆stripol_start)
-                            col += 2
+                            pushToken("#{", ◆stripol_start, 2)
                             pushToken()
                             inStripol = true  
                             break
@@ -245,8 +245,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                         token.str &= segs[col]
                         col += 1
                     if col < segs.len-1
-                        pushToken("###", ◆comment_end)
-                        col += 3
+                        pushToken("###", ◆comment_end, 3)
                         pushToken()
                         inMultiLineComment = false
                         continue
@@ -291,8 +290,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     if col < segs.len-2
                         let nextnext = segs[col+2]
                         if punct.hasKey char & next & nextnext
-                            pushToken(char & next & nextnext, punct[char & next & nextnext])
-                            col += 3
+                            pushToken(char & next & nextnext, punct[char & next & nextnext], 3)
                             if token.tok == ◆string_start
                                 pushToken("", ◆string)
                             else
@@ -300,8 +298,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             continue
                     
                     if punct.hasKey char & next
-                        pushToken(char & next, punct[char & next])
-                        col += 2
+                        pushToken(char & next, punct[char & next], 2)
                         pushToken()
                         continue
                         
@@ -314,8 +311,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             openStack.pops()
                         elif punct[char] == ◆bracket_close and inStripol
                             inStripol = false
-                            pushToken(char, ◆stripol_end)
-                            col += 1
+                            pushToken(char, ◆stripol_end, 1)
                             if token.tok == ◆string_start
                                 pushToken("", ◆string)
                             else
@@ -332,8 +328,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             pushToken()
                             continue
                 
-                    pushToken(char, punct[char])
-                    col += 1
+                    pushToken(char, punct[char], 1)
                     pushToken()
                     continue
                 else
