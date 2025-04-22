@@ -116,7 +116,7 @@ type
         line* : int
         col*  : int
         
-    Tknzr* = object
+    Tknzr* = ref object
         tokens      : seq[Token]
         openStack   : seq[tok]
         token       : Token
@@ -124,8 +124,9 @@ type
         inComment   : bool
         delimiter   : string
         segi        : int
-        line        : int
         segs        : seq[string]
+        line        : int
+        col         : int
     
 # █████████   ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
 #    ███     ███   ███  ███  ███   ███       ████  ███  ███     ███   ███     
@@ -158,11 +159,9 @@ proc isNumber*(str:string, next:string): bool =
             return  true
     false
     
-proc tokenize*(graphemes:seq[string]) : seq[Token] =
+proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
 
-    var t = Tknzr()
-    
-    var segs  : seq[string]
+    var segs : seq[string]
     
     while t.segi < graphemes.len:
         
@@ -178,16 +177,16 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
             t.segi += 1
         
         let firstLineTokenIndex = t.tokens.len
-        var col = 0
-        t.token = Token(line:t.line, col:col)
+        t.col = 0
+        t.token = Token(line:t.line, col:t.col)
         
-        while col < segs.len:
+        while t.col < segs.len:
                     
             proc pushToken(str="", tk=◆name, incr=0) =
                 if t.token.str.len:
                     t.tokens.add t.token
-                t.token = Token(str:str, tok:tk, line:t.line, col:col)
-                col += incr
+                t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
+                t.col += incr
                 
             proc commit(str="", tk=◆name, incr=0) = 
                 pushToken(str, tk, incr)
@@ -195,8 +194,8 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                 
             proc advance(n=1) =
                 for s in 0..<n :
-                    t.token.str &= segs[col]
-                    col += 1
+                    t.token.str &= segs[t.col]
+                    t.col += 1
                 
             if t.tokens.len :
             
@@ -208,22 +207,22 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
             
                     proc isAtStringEnd() : bool =
-                        if col > segs.len-1 :
+                        if t.col > segs.len-1 :
                             return  true
                         if t.delimiter.len == 3:
-                            col <= segs.len-3 and segs[col..col+2].join("") == t.delimiter
+                            t.col <= segs.len-3 and segs[t.col..t.col+2].join("") == t.delimiter
                         else:
-                            col <= segs.len-1 and segs[col] == t.delimiter
+                            t.col <= segs.len-1 and segs[t.col] == t.delimiter
                                     
                     while not isAtStringEnd():
                     
                         t.token.tok = ◆string
                         
-                        if segs[col] == "\\":
+                        if segs[t.col] == "\\":
                             advance 2
                             continue
                             
-                        if segs[col] == "#" and t.delimiter in @["\"", "\"\"\""] and col < segs.len-1 and segs[col+1] == "{":
+                        if segs[t.col] == "#" and t.delimiter in @["\"", "\"\"\""] and t.col < segs.len-1 and segs[t.col+1] == "{":
                             commit("#{", ◆stripol_start, 2)
                             t.inStripol = true  
                             break
@@ -233,19 +232,19 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     if t.inStripol:
                         continue
                     
-                    if col <= segs.len-1 :
+                    if t.col <= segs.len-1 :
                         commit(t.delimiter, ◆string_end, t.delimiter.len)
                     
-                    if col > segs.len-1:
+                    if t.col > segs.len-1:
                         break
                     else:
                         continue
                 
                 if t.inComment:
                     t.token.tok = ◆comment
-                    while col <= segs.len-1 and (col >= segs.len-2 or segs[col..col+2].join("") != "###"):
+                    while t.col <= segs.len-1 and (t.col >= segs.len-2 or segs[t.col..t.col+2].join("") != "###"):
                         advance 1
-                    if col < segs.len-1:
+                    if t.col < segs.len-1:
                         commit("###", ◆comment_end, 3)
                         t.inComment = false
                         continue
@@ -255,40 +254,40 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                 
                 if topTok.tok == ◆comment_start:
                 
-                    if col == topTok.col+1 and col < segs.len-1 and segs[col] == "#" and segs[col+1] == "#":
+                    if t.col == topTok.col+1 and t.col < segs.len-1 and segs[t.col] == "#" and segs[t.col+1] == "#":
                         topTok.str = "###"
                         t.tokens.pops()
                         t.tokens.push topTok
-                        col += 2
+                        t.col += 2
                         t.token.col += 2
                         t.inComment = true
                         continue
                 
                     t.token.tok = ◆comment
-                    t.token.str &= segs[col..^1].join ""
+                    t.token.str &= segs[t.col..^1].join ""
                     break
             
-            let char = segs[col]
+            let char = segs[t.col]
                         
             if char == " ":
                 if t.tokens.len == firstLineTokenIndex and t.token.str.len == 0 or t.token.tok == ◆indent:
                     t.token.tok = ◆indent
                     t.token.str.add char
-                elif col == 0 or segs[col-1] != " ":
+                elif t.col == 0 or segs[t.col-1] != " ":
                     pushToken()
             else:
                 
-                if col > 0 and segs[col-1] == " ":
+                if t.col > 0 and segs[t.col-1] == " ":
                     if t.token.tok == ◆indent:
                         pushToken()
-                    t.token.col = col
+                    t.token.col = t.col
                 
-                if col < segs.len-1:
+                if t.col < segs.len-1:
                     
-                    let next = segs[col+1]
+                    let next = segs[t.col+1]
                     
-                    if col < segs.len-2:
-                        let nextnext = segs[col+2]
+                    if t.col < segs.len-2:
+                        let nextnext = segs[t.col+2]
                         if punct.hasKey char & next & nextnext:
                             commit(char & next & nextnext, punct[char & next & nextnext], 3)
                             if t.tokens[^1].tok == ◆string_start:
@@ -315,7 +314,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     if punct[char] == ◆test:
                         if t.tokens.len == 0 or t.tokens[^1].tok == ◆indent:
                             t.token.tok = ◆test
-                            while col <= segs.len-1:
+                            while t.col <= segs.len-1:
                                 advance 1
                             pushToken()
                             continue
@@ -326,8 +325,8 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     t.token.str.add char
                     
                     var next : string
-                    if col < segs.len-1 :
-                        next = segs[col+1] 
+                    if t.col < segs.len-1 :
+                        next = segs[t.col+1] 
                     else :
                         next = ""
                         
@@ -335,10 +334,10 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                         t.token.tok = ◆number
                         pushToken()
                     
-                    if keywords.hasKey(t.token.str) and (col >= segs.len-1 or segs[col+1] == " " or punct.hasKey(segs[col+1])):
+                    if keywords.hasKey(t.token.str) and (t.col >= segs.len-1 or segs[t.col+1] == " " or punct.hasKey(segs[t.col+1])):
                         t.token.tok = keywords[t.token.str]
                         pushToken()
-            col += 1
+            t.col += 1
             
         if t.token.str.len:
             if keywords.hasKey(t.token.str):
@@ -353,5 +352,5 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
     
 proc tokenize*(text:string) : seq[Token] =
 
-    tokenize kseg text
+    Tknzr.new.tknz kseg text
     
