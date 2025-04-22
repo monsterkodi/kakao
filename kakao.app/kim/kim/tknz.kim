@@ -170,6 +170,18 @@ proc isNumber*(str:string, next:string): bool =
 proc peek(t:Tknzr, n:int) : string = t.segs[t.segi+n]
 proc incr(t:Tknzr, n:int) =  t.segi += n
 proc col(t:Tknzr) : int = t.segi - t.bol
+
+proc nextLine(t:Tknzr) =
+
+    assert t.segs[t.segi] == "\n"
+    t.segi += 1
+    t.line += 1
+    t.bol = t.segi
+    t.eol = t.bol
+    
+    while t.eol < t.segs.len and t.segs[t.eol] != "\n"
+        t.eol += 1
+
 proc srng(t:Tknzr, n:int) : string =
 
     var e : int
@@ -192,6 +204,16 @@ proc advanceUntil(t:Tknzr, stop: string) =
     while t.segi < t.segs.len and t.peek(0) != stop
         t.token.str &= t.peek(0)
         t.segi += 1
+
+proc advanceMulti(t:Tknzr, stop: string) =
+
+    while t.segi < t.segs.len and t.srng(stop.len) != stop
+        let c = t.peek(0)
+        t.token.str &= c
+        if c == "\n"
+            t.nextLine()
+        else
+            t.segi += 1
     
 proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
 
@@ -205,7 +227,7 @@ proc push(t:Tknzr, tk:tok) =
     t.token.tok = tk
     t.pushToken()
     
-proc parseComment(t:Tknzr)
+proc comment(t:Tknzr)
     
 proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
 
@@ -215,28 +237,38 @@ proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
     
     case tk
         of ◆comment_start
-            t.parseComment()
+            t.comment()
         else
             discard
-        
+
+#  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+# ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+# ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+# ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+#  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
+proc comment(t:Tknzr) = 
+
+    if t.srng(2) == "##"
+        t.tokens[^1].str &= "##"
+        t.incr 2
+        t.token.col += 2
+        t.token.tok = ◆comment
+        t.advanceMulti "###"
+        if t.srng(3) == "###"
+            t.commit("###", ◆comment_end, 3)
+        else
+            t.pushToken("", ◆comment)
+        ⮐  
+
+    t.advanceUntil "\n"
+    t.push ◆comment
+
 # █████████  ███   ███  ███   ███  ███████
 #    ███     ███  ███   ████  ███     ███ 
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
-
-proc parseComment(t:Tknzr) = 
-
-    if t.srng(2) == "##"
-        # log "multilineComment"
-        t.tokens[^1].str &= "##"
-        t.incr 2
-        t.token.col += 2
-        t.inComment = true
-        ⮐  
-
-    t.advanceUntil "\n"
-    t.push ◆comment
 
 proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
@@ -251,12 +283,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
     while t.segi < t.segs.len
         
         if t.segs[t.segi] == "\n"
-            t.line += 1
-            t.segi += 1
-            t.bol = t.segi
-            t.eol = t.bol
-            while t.eol < t.segs.len and t.segs[t.eol] != "\n"
-                t.eol += 1
+            t.nextLine()
             # log &"line {t.line} {t.bol} {t.eol} {t.segs.len}"
             continue
                 
@@ -308,18 +335,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         break
                     else
                         continue
-                
-                if t.inComment
-                    t.token.tok = ◆comment
-                    while t.segi <= t.eol-1 and t.srng(3) != "###"
-                        t.advance 1
-                    if t.segi < t.eol-1
-                        t.commit("###", ◆comment_end, 3)
-                        t.inComment = false
-                        continue
-                    else
-                        t.pushToken("", ◆comment)
-                    break
                 
             let char = t.peek(0)
                         

@@ -123,7 +123,7 @@ proc logFile(f:string, prefix:string="") =
 proc compile(file:string, outDir:string="bin") : bool =
     profileScope 'comp'
     # let cmd = &"nim c --outDir:{outdir} {file}"
-    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on --debugger:native {file}"
+    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
@@ -146,8 +146,8 @@ proc runTests() : bool =
     for f in testFiles
         let cmd = &"nim r --colors:on {f}"
         let (output, exitCode) = execCmdEx(cmd)
-        if true
-            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m")
+        if exitCode != 0
+            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
         else
             let okCount = output.count "[OK]"
             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")

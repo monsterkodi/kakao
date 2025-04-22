@@ -327,8 +327,7 @@ suite "tknz":
 
         check tokenize("### if\n    true###") == @[
             Token(str:"###",      tok:◆comment_start, line:0, col:0),
-            Token(str:" if",      tok:◆comment,       line:0, col:3),
-            Token(str:"    true", tok:◆comment,       line:1, col:0),
+            Token(str:" if\n    true",      tok:◆comment,       line:0, col:3),
             Token(str:"###",      tok:◆comment_end,   line:1, col:8),
             ]
 
