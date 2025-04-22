@@ -160,36 +160,43 @@ proc isNumber*(str:string, next:string): bool =
         if not (combined =~ numberPeg):
             return  true
     false
+
+proc peek(t:Tknzr, n:int) : string = t.segs[t.segi+n]
+proc incr(t:Tknzr, n:int) =  t.segi += n
+proc col(t:Tknzr) : int = t.segi - t.bol
     
 proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
 
     if t.token.str.len:
         t.tokens.add t.token
-    t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
-    t.col += incr
+    t.token = Token(str:str, tok:tk, line:t.line, col:t.col())
+    t.segi += incr
+    
+proc push(t:Tknzr, tk:tok) =
+
+    t.token.tok = tk
+    t.pushToken()
     
 proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
 
     # echo &"commit {tk}"
     t.pushToken(str, tk, incr)
     t.pushToken()
-
-proc peek(t:Tknzr, n:int) : string =
-
-    t.segs[t.col+n]
     
 proc srng(t:Tknzr, n:int) : string =
 
+    var e : int
     if n > 0:
-        t.segs[t.col..t.col+n].join("")
+        e = t.segi+n
     else:
-        t.segs[t.col..^1].join("")
+        e = t.eol
+    t.segs[t.segi..<e].join("")
     
 proc advance(t:Tknzr, n:int) =
 
     for s in 0..<n :
         t.token.str &= t.peek(0)
-        t.col += 1        
+        t.segi += 1        
     
 # █████████  ███   ███  ███   ███  ███████
 #    ███     ███  ███   ████  ███     ███ 
@@ -197,35 +204,30 @@ proc advance(t:Tknzr, n:int) =
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
+proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
-    while t.eol < graphemes.len and graphemes[t.eol] != "\n":
+    t.segs = segs
+    while t.eol < t.segs.len and t.segs[t.eol] != "\n":
         t.eol += 1
-    echo &"line {t.line} {t.bol} {t.eol} {graphemes.len}"
+    # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len}"
 
-    while t.segi < graphemes.len:
+    while t.segi < t.segs.len:
         
-        if graphemes[t.segi] == "\n":
+        if t.segs[t.segi] == "\n":
             t.line += 1
             t.segi += 1
             t.bol = t.segi
             t.eol = t.bol
-            while t.eol < graphemes.len and graphemes[t.eol] != "\n":
+            while t.eol < t.segs.len and t.segs[t.eol] != "\n":
                 t.eol += 1
-            echo &"line {t.line} {t.bol} {t.eol} {graphemes.len}"
+            # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len}"
             continue
-        
-        t.segs = @[]
-        
-        while t.segi < graphemes.len and graphemes[t.segi] != "\n":
-            t.segs.add graphemes[t.segi]
-            t.segi += 1
-        
+                
         let firstLineTokenIndex = t.tokens.len
-        t.col = 0
-        t.token = Token(line:t.line, col:t.col)
+
+        t.token = Token(line:t.line, col:t.col())
         
-        while t.col < t.eol - t.bol:
+        while t.segi < t.eol:
                                     
             if t.tokens.len :
             
@@ -237,12 +239,12 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
             
                     proc isAtStringEnd() : bool =
-                        if t.col > (t.eol - t.bol)-1 :
+                        if t.segi > t.eol-1 :
                             return  true
                         if t.delimiter.len == 3:
-                            t.col <= (t.eol - t.bol)-3 and t.srng(2) == t.delimiter
+                            t.segi <= t.eol-3 and t.srng(3) == t.delimiter
                         else:
-                            t.col <= (t.eol - t.bol)-1 and t.peek(0) == t.delimiter
+                            t.segi <= t.eol-1 and t.peek(0) == t.delimiter
                                     
                     while not isAtStringEnd():
                     
@@ -252,7 +254,7 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                             t.advance 2
                             continue
                             
-                        if t.peek(0) == "#" and t.delimiter in @["\"", "\"\"\""] and t.col < (t.eol - t.bol)-1 and t.peek(1) == "{":
+                        if t.peek(0) == "#" and t.delimiter in @["\"", "\"\"\""] and t.peek(1) == "{":
                             t.commit("#{", ◆stripol_start, 2)
                             t.inStripol = true  
                             break
@@ -262,19 +264,19 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                     if t.inStripol:
                         continue
                     
-                    if t.col <= (t.eol - t.bol)-1 :
+                    if t.segi <= t.eol-1 :
                         t.commit(t.delimiter, ◆string_end, t.delimiter.len)
                     
-                    if t.col > (t.eol - t.bol)-1:
+                    if t.segi > t.eol-1:
                         break
                     else:
                         continue
                 
                 if t.inComment:
                     t.token.tok = ◆comment
-                    while t.col <= (t.eol - t.bol)-1 and (t.col >= (t.eol - t.bol)-2 or t.srng(2) != "###"):
+                    while t.segi <= t.eol-1 and t.srng(3) != "###":
                         t.advance 1
-                    if t.col < (t.eol - t.bol)-1:
+                    if t.segi < t.eol-1:
                         t.commit("###", ◆comment_end, 3)
                         t.inComment = false
                         continue
@@ -284,17 +286,18 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                 
                 if topTok.tok == ◆comment_start:
                 
-                    if t.col == topTok.col+1 and t.col < (t.eol - t.bol)-1 and t.peek(0) == "#" and t.peek(1) == "#":
+                    if t.col() == topTok.col+1 and t.srng(2) == "##":
                         topTok.str = "###"
                         t.tokens.pops()
                         t.tokens.push topTok
-                        t.col += 2
+                        t.incr 2
                         t.token.col += 2
                         t.inComment = true
                         continue
                 
                     t.token.tok = ◆comment
                     t.token.str &= t.srng(-1)
+                    t.incr t.token.str.len
                     break
             
             let char = t.peek(0)
@@ -303,20 +306,20 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                 if t.tokens.len == firstLineTokenIndex and t.token.str.len == 0 or t.token.tok == ◆indent:
                     t.token.tok = ◆indent
                     t.token.str.add char
-                elif t.col == 0 or t.peek(-1) != " ":
+                elif t.col() == 0 or t.peek(-1) != " ":
                     t.pushToken()
             else:
                 
-                if t.col > 0 and t.peek(-1) == " ":
+                if t.col() > 0 and t.peek(-1) == " ":
                     if t.token.tok == ◆indent:
                         t.pushToken()
-                    t.token.col = t.col
+                    t.token.col = t.col()
                 
-                if t.col < (t.eol - t.bol)-1:
+                if t.segi < t.eol-1:
                     
                     let next = t.peek(1)
                     
-                    if t.col < (t.eol - t.bol)-2:
+                    if t.segi < t.eol-2:
                         let nextnext = t.peek(2)
                         if punct.hasKey char & next & nextnext:
                             t.commit(char & next & nextnext, punct[char & next & nextnext], 3)
@@ -343,10 +346,9 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                             
                     if punct[char] == ◆test:
                         if t.tokens.len == 0 or t.tokens[^1].tok == ◆indent:
-                            t.token.tok = ◆test
-                            while t.col <= (t.eol - t.bol)-1:
+                            while t.segi <= t.eol-1:
                                 t.advance 1
-                            t.pushToken()
+                            t.push ◆test
                             continue
                 
                     t.commit(char, punct[char], 1)
@@ -355,19 +357,17 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                     t.token.str.add char
                     
                     var next : string
-                    if t.col < (t.eol - t.bol)-1 :
+                    if t.segi < t.eol-1 :
                         next = t.peek(1) 
                     else :
                         next = ""
                         
                     if isNumber(t.token.str, next):
-                        t.token.tok = ◆number
-                        t.pushToken()
+                        t.push ◆number
                     
-                    if keywords.hasKey(t.token.str) and (t.col >= (t.eol - t.bol)-1 or t.peek(1) == " " or punct.hasKey(t.peek(1))):
-                        t.token.tok = keywords[t.token.str]
-                        t.pushToken()
-            t.col += 1
+                    if keywords.hasKey(t.token.str) and (t.segi >= t.eol-1 or t.peek(1) == " " or punct.hasKey(t.peek(1))):
+                        t.push keywords[t.token.str]
+            t.incr 1
             
         if t.token.str.len:
             if keywords.hasKey(t.token.str):
