@@ -427,9 +427,9 @@ import ../tknz
             
     ▸ types
     
-        check tokenize("a▪string")    == @[ 
+        check tokenize("a◇string")    == @[ 
             Token(str:"a",      tok:◆name,  line:0, col:0), 
-            Token(str:"▪",      tok:◆val,   line:0, col:1), 
+            Token(str:"◇",      tok:◆val,   line:0, col:1), 
             Token(str:"string", tok:◆name,  line:0, col:2) 
             ]
         

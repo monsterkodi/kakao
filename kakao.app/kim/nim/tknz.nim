@@ -101,8 +101,6 @@ for kt in { ◆if..◆test }:
 punct["\""]     = ◆string_start
 punct["\"\"\""] = ◆string_start
 
-echo &"punct {punct}"
-    
 const 
     openToks  = { ◆paren_open,  ◆bracket_open,  ◆square_open  }
     closeToks = { ◆paren_close, ◆bracket_close, ◆square_close }
@@ -110,56 +108,6 @@ const
         ◆paren_close:   ◆paren_open, 
         ◆bracket_close: ◆bracket_open,
         ◆square_close:  ◆square_open }.toTable()
-
-const
-    charTok = {
-        ".":        ◆dot,
-        "..":       ◆doubledot,
-        "...":      ◆tripledot,
-        ",":        ◆comma,
-        ":":        ◆colon,
-        "'":        ◆string_start,
-        "\"":       ◆string_start,
-        "\"\"\"":   ◆string_start,
-        ";":        ◆semicolon,
-        "{":        ◆bracket_open,
-        "}":        ◆bracket_close,
-        "(":        ◆paren_open,
-        ")":        ◆paren_close,
-        "[":        ◆square_open,
-        "]":        ◆square_close,
-        "-":        ◆minus,
-        "+":        ◆plus,
-        "++":       ◆increment,
-        "--":       ◆decrement,
-        "*":        ◆multiply,
-        "/":        ◆divide,
-        "=":        ◆assign,
-        "+=":       ◆plus_assign,
-        "-=":       ◆minus_assign,
-        "/=":       ◆divide_assign,
-        "*=":       ◆multiply_assign,
-        "=":        ◆assign,
-        "#":        ◆comment_start,
-        "==":       ◆equal,
-        "!=":       ◆not_equal,
-        ">=":       ◆greater_equal,
-        "<=":       ◆less_equal,
-        ">":        ◆greater,
-        "<":        ◆less,
-        "&&":       ◆and,
-        "||":       ◆or,
-        "!":        ◆not,
-        "->":       ◆func,
-        "=>":       ◆func,
-        "⮐":        ◆return,
-        "➜":        ◆then,
-        "▸":        ◆test,
-        "▪":        ◆val,
-        "□":        ◆val,
-        "◆":        ◆var,    
-        "◇":        ◆var,    
-        }.toTable()
         
 type
     Token* = object
@@ -342,8 +290,8 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     
                     if col < segs.len-2:
                         let nextnext = segs[col+2]
-                        if charTok.hasKey char & next & nextnext:
-                            pushToken(char & next & nextnext, charTok[char & next & nextnext])
+                        if punct.hasKey char & next & nextnext:
+                            pushToken(char & next & nextnext, punct[char & next & nextnext])
                             col += 3
                             if token.tok == ◆string_start:
                                 pushToken("", ◆string)
@@ -351,20 +299,20 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                                 pushToken()
                             continue
                     
-                    if charTok.hasKey char & next:
-                        pushToken(char & next, charTok[char & next])
+                    if punct.hasKey char & next:
+                        pushToken(char & next, punct[char & next])
                         col += 2
                         pushToken()
                         continue
                         
-                if charTok.hasKey char:
+                if punct.hasKey char:
                 
-                    if charTok[char] in openToks:
-                        openStack.push(charTok[char])
-                    elif charTok[char] in closeToks:
-                        if openStack.len and openStack[^1] == closeOpen[charTok[char]]:
+                    if punct[char] in openToks:
+                        openStack.push(punct[char])
+                    elif punct[char] in closeToks:
+                        if openStack.len and openStack[^1] == closeOpen[punct[char]]:
                             openStack.pops()
-                        elif charTok[char] == ◆bracket_close and inStripol:
+                        elif punct[char] == ◆bracket_close and inStripol:
                             inStripol = false
                             pushToken(char, ◆stripol_end)
                             col += 1
@@ -375,7 +323,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             token.tok = ◆string
                             continue
                             
-                    if charTok[char] == ◆test:
+                    if punct[char] == ◆test:
                         if tokens.len == 0 or tokens[^1].tok == ◆indent:
                             token.tok = ◆test
                             while col <= segs.len-1:
@@ -384,7 +332,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             pushToken()
                             continue
                 
-                    pushToken(char, charTok[char])
+                    pushToken(char, punct[char])
                     col += 1
                     pushToken()
                     continue
@@ -401,7 +349,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                         token.tok = ◆number
                         pushToken()
                     
-                    if keywords.hasKey(token.str) and (col >= segs.len-1 or segs[col+1] == " " or charTok.hasKey(segs[col+1])):
+                    if keywords.hasKey(token.str) and (col >= segs.len-1 or segs[col+1] == " " or punct.hasKey(segs[col+1])):
                         token.tok = keywords[token.str]
                         pushToken()
             col += 1
