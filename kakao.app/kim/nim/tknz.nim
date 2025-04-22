@@ -189,6 +189,15 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                 token = Token(str:str, tok:tk, line:index, col:col)
                 col += incr
                 
+            proc commit(str="", tk=◆name, incr=0) = 
+                pushToken(str, tk, incr)
+                pushToken()
+                
+            proc advance(n=1) =
+                for s in 0..<n :
+                    token.str &= segs[col]
+                    col += 1
+                
             if tokens.len :
             
                 var topTok = tokens[^1]
@@ -211,28 +220,21 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                         token.tok = ◆string
                         
                         if segs[col] == "\\":
-                            token.str &= segs[col]
-                            col += 1
-                            token.str &= segs[col]
-                            col += 1
+                            advance 2
                             continue
                             
                         if segs[col] == "#" and delimiter in @["\"", "\"\"\""] and col < segs.len-1 and segs[col+1] == "{":
-                            pushToken("#{", ◆stripol_start, 2)
-                            pushToken()
+                            commit("#{", ◆stripol_start, 2)
                             inStripol = true  
                             break
-                            
-                        token.str &= segs[col]
-                        col += 1
+                        
+                        advance 1    
                                 
                     if inStripol:
                         continue
                     
                     if col <= segs.len-1 :
-                        pushToken(delimiter, ◆string_end)
-                        col += delimiter.len
-                        pushToken()
+                        commit(delimiter, ◆string_end, delimiter.len)
                     
                     if col > segs.len-1:
                         break
@@ -242,11 +244,9 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                 if inMultiLineComment:
                     token.tok = ◆comment
                     while col <= segs.len-1 and (col >= segs.len-2 or segs[col..col+2].join("") != "###"):
-                        token.str &= segs[col]
-                        col += 1
+                        advance 1
                     if col < segs.len-1:
-                        pushToken("###", ◆comment_end, 3)
-                        pushToken()
+                        commit("###", ◆comment_end, 3)
                         inMultiLineComment = false
                         continue
                     else:
@@ -298,8 +298,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             continue
                     
                     if punct.hasKey char & next:
-                        pushToken(char & next, punct[char & next], 2)
-                        pushToken()
+                        commit(char & next, punct[char & next], 2)
                         continue
                         
                 if punct.hasKey char:
@@ -323,13 +322,11 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                         if tokens.len == 0 or tokens[^1].tok == ◆indent:
                             token.tok = ◆test
                             while col <= segs.len-1:
-                                token.str &= segs[col]
-                                col += 1
+                                advance 1
                             pushToken()
                             continue
                 
-                    pushToken(char, punct[char], 1)
-                    pushToken()
+                    commit(char, punct[char], 1)
                     continue
                 else:
                     token.str.add char
