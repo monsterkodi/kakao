@@ -3,93 +3,107 @@
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
-tknz
 
-import std/[strutils, tables]
+import std/[strutils, strformat, tables, enumutils, sets]
 import kommon
 
 type
     tok* = enum
         ◆name,
+        # keywords
         ◆if,
         ◆when,
-        ◆then,
+        ◆then               = "➜"
         ◆elif,
         ◆else,
         ◆switch,
+        ◆while,
         ◆for,
         ◆in,
         ◆is,
         ◆of,
         ◆break,
         ◆continue,
-        ◆while,
-        ◆func,
         ◆class,
-        ◆return,
         ◆use,
-        ◆not,
-        ◆and,
-        ◆or,
-        ◆true,
-        ◆false,
-        ◆null,
-        ◆number,
-        ◆string,
         ◆try,
         ◆catch,
-        ◆string_start,
+        ◆let,
+        ◆var                = "◆"
+        ◆val                = "◇"
+        ◆not                = "!" 
+        ◆and                = "&&" 
+        ◆or                 = "||" 
+        ◆true               = "✔"  
+        ◆false              = "✘"  
+        ◆null               = "nil"
+        ◆func               = "->"
+        ◆proc               = "=>"
+        ◆return             = "⮐"
+        # literals
+        ◆number,
+        ◆string,
+        ◆string_start       = "'"
         ◆string_end,
-        ◆this,
-        ◆stripol_start,
+        ◆stripol_start      = "#{"
         ◆stripol_end,
-        ◆paren_open,
-        ◆paren_close,
-        ◆bracket_open,
-        ◆bracket_close,
-        ◆square_open,
-        ◆square_close,
-        ◆comment_start,
+        
+        ◆comment_start      = "#"
         ◆comment,
         ◆comment_end,
-        ◆indent,
-        ◆comma,
-        ◆colon,
-        ◆semicolon,
-        ◆dot,
-        ◆doubledot,
-        ◆tripledot,
-        ◆increment,
-        ◆decrement,
-        ◆minus,
-        ◆plus,
-        ◆divide,
-        ◆multiply,
-        ◆assign,
-        ◆plus_assign,
-        ◆minus_assign,
-        ◆divide_assign,
-        ◆multiply_assign,
-        ◆equal,
-        ◆not_equal,
-        ◆less_equal,
-        ◆greater_equal,
-        ◆greater,
-        ◆less,
-        ◆proc,
-        ◆var,
-        ◆val,
-        ◆let,
-        ◆test,
+        # punct
+        ◆paren_open         = "("
+        ◆paren_close        = ")"       
+        ◆bracket_open       = "{"
+        ◆bracket_close      = "}"       
+        ◆square_open        = "["       
+        ◆square_close       = "]"        
+        ◆comma              = ","
+        ◆colon              = ":"
+        ◆semicolon          = ";"
+        ◆dot                = "."
+        ◆doubledot          = ".."
+        ◆tripledot          = "..."
+        ◆minus              = "-"  
+        ◆plus               = "+"  
+        ◆increment          = "++" 
+        ◆decrement          = "--" 
+        ◆divide             = "/"
+        ◆multiply           = "*"
+        ◆assign             = "="
+        ◆plus_assign        = "+="
+        ◆minus_assign       = "-="
+        ◆divide_assign      = "/="
+        ◆multiply_assign    = "*="
+        ◆equal              = "=="
+        ◆not_equal          = "!="
+        ◆less_equal         = "<="
+        ◆greater_equal      = ">="
+        ◆greater            = ">"
+        ◆less               = "<"
+        ◆test               = "▸"
         ◆type, # not really a token, used by pars to mark type annotations
         ◆, # block
+        ◆indent,
         ◆eof
         
     toks* = set[tok]
+
+var keywords = initTable[string, tok]()
+for kt in { ◆if..◆return }:
+    keywords[symbolName(kt)[3..^1]] = kt
+keywords["nil"] = ◆null
+
+var punct = initTable[string, tok]()
+for kt in { ◆if..◆test }:
+    if symbolName(kt) != $kt:
+        punct[$kt] = kt
+punct["\""]     = ◆string_start
+punct["\"\"\""] = ◆string_start
+
+echo &"punct {punct}"
     
 const 
-    alltoks  = { low(tok)..high(tok) }
-    thenable = { ◆if, ◆elif }
     openToks  = { ◆paren_open,  ◆bracket_open,  ◆square_open  }
     closeToks = { ◆paren_close, ◆bracket_close, ◆square_close }
     closeOpen = { 
@@ -147,38 +161,6 @@ const
         "◇":        ◆var,    
         }.toTable()
         
-    keywords = {
-        "if":       ◆if,
-        "in":       ◆in,
-        "is":       ◆is,
-        "of":       ◆of,
-        "for":      ◆for,
-        "while":    ◆while,
-        "when":     ◆when,
-        "then":     ◆then,
-        "elif":     ◆elif,
-        "else":     ◆else,
-        "switch":   ◆switch,
-        "break":    ◆break,
-        "continue": ◆continue,
-        "return":   ◆return,
-        "while":    ◆while,
-        "class":    ◆class,
-        "try":      ◆try,
-        "catch":    ◆catch,
-        "or":       ◆or,
-        "and":      ◆and,
-        "not":      ◆not,
-        "true":     ◆true,
-        "false":    ◆false,
-        "null":     ◆null,
-        "nil":      ◆null,
-        "use":      ◆use,
-        "proc":     ◆proc,
-        "var":      ◆var,
-        "let":      ◆let,
-        }.toTable()
-    
 type
     Token* = object
         str*  : string                      
@@ -217,31 +199,45 @@ proc isNumber*(str:string, next:string): bool =
             return  true
     false
 
-proc tokenize*(lines:seq[string]) : seq[Token] =
+proc tokenize*(graphemes:seq[string]) : seq[Token] =
 
     var tokens    = default seq[Token]
     var openStack = default seq[tok]
+    
     var token : Token
+    
     var inStripol = false
     var inMultiLineComment = false
     var delimiter = ""
-
-    for index,line in lines:
+    
+    var segi  = 0
+    var index = 0
+    var segs  : seq[string]
+    
+    while segi < graphemes.len:
+        
+        if graphemes[segi] == "\n":
+            index += 1
+            segi += 1
+            continue
+        
+        segs = @[]
+        
+        while segi < graphemes.len and graphemes[segi] != "\n":
+            segs.add graphemes[segi]
+            segi += 1
+        
+        # echo &"segs {segs}"
         
         let firstLineTokenIndex = tokens.len
         var col = 0
         token = Token(line:index, col:col)
-        let segs = kseg line
-        
-        # echo &"index {index} {tokens} |{segs}|"
         
         while col < segs.len:
                     
             proc pushToken(str="", tk=◆name) =
                 if token.str.len:
                     tokens.add token
-                # else
-                #     echo &"skip adding current token {token}"
                 token = Token(str:str, tok:tk, line:index, col:col)
                 
             if tokens.len :
@@ -254,7 +250,6 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
             
                     proc isAtStringEnd() : bool =
-                        # echo &"isAtStringEnd {delimiter}"
                         if col > segs.len-1 :
                             return  true
                         if delimiter.len == 3:
@@ -286,15 +281,10 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
                     if inStripol:
                         continue
                     
-                    # echo &"push delimiter {delimiter} {col} ◆string_end {token}"
                     if col <= segs.len-1 :
                         pushToken(delimiter, ◆string_end)
                         col += delimiter.len
                         pushToken()
-                    else:
-                        echo "blrrgggl----------------------------------------------"
-                        token.str &= "\n"
-                    # echo &"top delimiter {tokens[^1]}"
                     
                     if col > segs.len-1:
                         break
@@ -429,5 +419,5 @@ proc tokenize*(lines:seq[string]) : seq[Token] =
     
 proc tokenize*(text:string) : seq[Token] =
 
-    tokenize text.splitLines()
+    tokenize kseg text
     
