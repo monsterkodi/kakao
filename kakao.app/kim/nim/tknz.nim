@@ -159,10 +159,25 @@ proc isNumber*(str:string, next:string): bool =
             return  true
     false
     
+proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
+
+    if t.token.str.len:
+        t.tokens.add t.token
+    t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
+    t.col += incr
+    
+proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
+
+    t.pushToken(str, tk, incr)
+    t.pushToken()
+    
+proc advance(t:Tknzr, n=1) =
+    for s in 0..<n :
+        t.token.str &= t.segs[t.col]
+        t.col += 1
+    
 proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
 
-    var segs : seq[string]
-    
     while t.segi < graphemes.len:
         
         if graphemes[t.segi] == "\n":
@@ -170,33 +185,18 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
             t.segi += 1
             continue
         
-        segs = @[]
+        t.segs = @[]
         
         while t.segi < graphemes.len and graphemes[t.segi] != "\n":
-            segs.add graphemes[t.segi]
+            t.segs.add graphemes[t.segi]
             t.segi += 1
         
         let firstLineTokenIndex = t.tokens.len
         t.col = 0
         t.token = Token(line:t.line, col:t.col)
         
-        while t.col < segs.len:
-                    
-            proc pushToken(str="", tk=◆name, incr=0) =
-                if t.token.str.len:
-                    t.tokens.add t.token
-                t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
-                t.col += incr
-                
-            proc commit(str="", tk=◆name, incr=0) = 
-                pushToken(str, tk, incr)
-                pushToken()
-                
-            proc advance(n=1) =
-                for s in 0..<n :
-                    t.token.str &= segs[t.col]
-                    t.col += 1
-                
+        while t.col < t.segs.len:
+                                    
             if t.tokens.len :
             
                 var topTok = t.tokens[^1]
@@ -207,54 +207,54 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                 if topTok.tok == ◆string_start or topTok.tok == ◆stripol_end:
             
                     proc isAtStringEnd() : bool =
-                        if t.col > segs.len-1 :
+                        if t.col > t.segs.len-1 :
                             return  true
                         if t.delimiter.len == 3:
-                            t.col <= segs.len-3 and segs[t.col..t.col+2].join("") == t.delimiter
+                            t.col <= t.segs.len-3 and t.segs[t.col..t.col+2].join("") == t.delimiter
                         else:
-                            t.col <= segs.len-1 and segs[t.col] == t.delimiter
+                            t.col <= t.segs.len-1 and t.segs[t.col] == t.delimiter
                                     
                     while not isAtStringEnd():
                     
                         t.token.tok = ◆string
                         
-                        if segs[t.col] == "\\":
-                            advance 2
+                        if t.segs[t.col] == "\\":
+                            t.advance 2
                             continue
                             
-                        if segs[t.col] == "#" and t.delimiter in @["\"", "\"\"\""] and t.col < segs.len-1 and segs[t.col+1] == "{":
-                            commit("#{", ◆stripol_start, 2)
+                        if t.segs[t.col] == "#" and t.delimiter in @["\"", "\"\"\""] and t.col < t.segs.len-1 and t.segs[t.col+1] == "{":
+                            t.commit("#{", ◆stripol_start, 2)
                             t.inStripol = true  
                             break
                         
-                        advance 1    
+                        t.advance 1    
                                 
                     if t.inStripol:
                         continue
                     
-                    if t.col <= segs.len-1 :
-                        commit(t.delimiter, ◆string_end, t.delimiter.len)
+                    if t.col <= t.segs.len-1 :
+                        t.commit(t.delimiter, ◆string_end, t.delimiter.len)
                     
-                    if t.col > segs.len-1:
+                    if t.col > t.segs.len-1:
                         break
                     else:
                         continue
                 
                 if t.inComment:
                     t.token.tok = ◆comment
-                    while t.col <= segs.len-1 and (t.col >= segs.len-2 or segs[t.col..t.col+2].join("") != "###"):
-                        advance 1
-                    if t.col < segs.len-1:
-                        commit("###", ◆comment_end, 3)
+                    while t.col <= t.segs.len-1 and (t.col >= t.segs.len-2 or t.segs[t.col..t.col+2].join("") != "###"):
+                        t.advance 1
+                    if t.col < t.segs.len-1:
+                        t.commit("###", ◆comment_end, 3)
                         t.inComment = false
                         continue
                     else:
-                        pushToken("", ◆comment)
+                        t.pushToken("", ◆comment)
                     break
                 
                 if topTok.tok == ◆comment_start:
                 
-                    if t.col == topTok.col+1 and t.col < segs.len-1 and segs[t.col] == "#" and segs[t.col+1] == "#":
+                    if t.col == topTok.col+1 and t.col < t.segs.len-1 and t.segs[t.col] == "#" and t.segs[t.col+1] == "#":
                         topTok.str = "###"
                         t.tokens.pops()
                         t.tokens.push topTok
@@ -264,38 +264,38 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                         continue
                 
                     t.token.tok = ◆comment
-                    t.token.str &= segs[t.col..^1].join ""
+                    t.token.str &= t.segs[t.col..^1].join ""
                     break
             
-            let char = segs[t.col]
+            let char = t.segs[t.col]
                         
             if char == " ":
                 if t.tokens.len == firstLineTokenIndex and t.token.str.len == 0 or t.token.tok == ◆indent:
                     t.token.tok = ◆indent
                     t.token.str.add char
-                elif t.col == 0 or segs[t.col-1] != " ":
-                    pushToken()
+                elif t.col == 0 or t.segs[t.col-1] != " ":
+                    t.pushToken()
             else:
                 
-                if t.col > 0 and segs[t.col-1] == " ":
+                if t.col > 0 and t.segs[t.col-1] == " ":
                     if t.token.tok == ◆indent:
-                        pushToken()
+                        t.pushToken()
                     t.token.col = t.col
                 
-                if t.col < segs.len-1:
+                if t.col < t.segs.len-1:
                     
-                    let next = segs[t.col+1]
+                    let next = t.segs[t.col+1]
                     
-                    if t.col < segs.len-2:
-                        let nextnext = segs[t.col+2]
+                    if t.col < t.segs.len-2:
+                        let nextnext = t.segs[t.col+2]
                         if punct.hasKey char & next & nextnext:
-                            commit(char & next & nextnext, punct[char & next & nextnext], 3)
+                            t.commit(char & next & nextnext, punct[char & next & nextnext], 3)
                             if t.tokens[^1].tok == ◆string_start:
                                 t.token.tok = ◆string
                             continue
                     
                     if punct.hasKey char & next:
-                        commit(char & next, punct[char & next], 2)
+                        t.commit(char & next, punct[char & next], 2)
                         continue
                         
                 if punct.hasKey char:
@@ -307,36 +307,36 @@ proc tknz(t:Tknzr, graphemes:seq[string]) : seq[Token] =
                             t.openStack.pops()
                         elif punct[char] == ◆bracket_close and t.inStripol:
                             t.inStripol = false
-                            commit(char, ◆stripol_end, 1)
+                            t.commit(char, ◆stripol_end, 1)
                             t.token.tok = ◆string
                             continue
                             
                     if punct[char] == ◆test:
                         if t.tokens.len == 0 or t.tokens[^1].tok == ◆indent:
                             t.token.tok = ◆test
-                            while t.col <= segs.len-1:
-                                advance 1
-                            pushToken()
+                            while t.col <= t.segs.len-1:
+                                t.advance 1
+                            t.pushToken()
                             continue
                 
-                    commit(char, punct[char], 1)
+                    t.commit(char, punct[char], 1)
                     continue
                 else:
                     t.token.str.add char
                     
                     var next : string
-                    if t.col < segs.len-1 :
-                        next = segs[t.col+1] 
+                    if t.col < t.segs.len-1 :
+                        next = t.segs[t.col+1] 
                     else :
                         next = ""
                         
                     if isNumber(t.token.str, next):
                         t.token.tok = ◆number
-                        pushToken()
+                        t.pushToken()
                     
-                    if keywords.hasKey(t.token.str) and (t.col >= segs.len-1 or segs[t.col+1] == " " or punct.hasKey(segs[t.col+1])):
+                    if keywords.hasKey(t.token.str) and (t.col >= t.segs.len-1 or t.segs[t.col+1] == " " or punct.hasKey(t.segs[t.col+1])):
                         t.token.tok = keywords[t.token.str]
-                        pushToken()
+                        t.pushToken()
             t.col += 1
             
         if t.token.str.len:
