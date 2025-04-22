@@ -115,6 +115,17 @@ type
         tok*  : tok                
         line* : int
         col*  : int
+        
+    Tknzr* = object
+        tokens      : seq[Token]
+        openStack   : seq[tok]
+        token       : Token
+        inStripol   : bool
+        inComment   : bool
+        delimiter   : string
+        segi        : int
+        index       : int
+        segs        : seq[string]
     
 # █████████   ███████   ███   ███  ████████  ███   ███  ███  ███████  ████████
 #    ███     ███   ███  ███  ███   ███       ████  ███  ███     ███   ███     
@@ -146,7 +157,7 @@ proc isNumber*(str:string, next:string): bool =
         if not (combined =~ numberPeg)
             ⮐  true
     false
-
+    
 proc tokenize*(graphemes:seq[string]) : seq[Token] =
 
     var tokens    = default seq[Token]
@@ -155,7 +166,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
     var token : Token
     
     var inStripol = false
-    var inMultiLineComment = false
+    var inComment = false
     var delimiter = ""
     
     var segi  = 0
@@ -174,8 +185,6 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
         while segi < graphemes.len and graphemes[segi] != "\n"
             segs.add graphemes[segi]
             segi += 1
-        
-        # log &"segs {segs}"
         
         let firstLineTokenIndex = tokens.len
         var col = 0
@@ -241,13 +250,13 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     else
                         continue
                 
-                if inMultiLineComment
+                if inComment
                     token.tok = ◆comment
                     while col <= segs.len-1 and (col >= segs.len-2 or segs[col..col+2].join("") != "###")
                         advance 1
                     if col < segs.len-1
                         commit("###", ◆comment_end, 3)
-                        inMultiLineComment = false
+                        inComment = false
                         continue
                     else
                         pushToken("", ◆comment)
@@ -261,7 +270,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                         tokens.push topTok
                         col += 2
                         token.col += 2
-                        inMultiLineComment = true
+                        inComment = true
                         continue
                 
                     token.tok = ◆comment
@@ -290,11 +299,9 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                     if col < segs.len-2
                         let nextnext = segs[col+2]
                         if punct.hasKey char & next & nextnext
-                            pushToken(char & next & nextnext, punct[char & next & nextnext], 3)
-                            if token.tok == ◆string_start
-                                pushToken("", ◆string)
-                            else
-                                pushToken()
+                            commit(char & next & nextnext, punct[char & next & nextnext], 3)
+                            if tokens[^1].tok == ◆string_start
+                                token.tok = ◆string
                             continue
                     
                     if punct.hasKey char & next
@@ -310,11 +317,7 @@ proc tokenize*(graphemes:seq[string]) : seq[Token] =
                             openStack.pops()
                         elif punct[char] == ◆bracket_close and inStripol
                             inStripol = false
-                            pushToken(char, ◆stripol_end, 1)
-                            if token.tok == ◆string_start
-                                pushToken("", ◆string)
-                            else
-                                pushToken()
+                            commit(char, ◆stripol_end, 1)
                             token.tok = ◆string
                             continue
                             
