@@ -138,6 +138,12 @@ suite "pars":
         check $ast("false")                                  == "▪[✘]"
         check $ast("\"hello\"")                              == "▪[◆string]"
         
+    test "use":
+    
+        check $ast("use std ▪ unittest")                     == "▪[(◆use ◆name ▪ @[◆name])]"
+        check $ast("use rndr")                               == "▪[(◆use ◆name)]"
+        check $ast("use ../rndr")                            == "▪[(◆use ◆name)]"
+        
     test "tests":
     
         check $ast("▸ a test suite")                         == "▪[▸]"

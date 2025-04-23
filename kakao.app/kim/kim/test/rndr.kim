@@ -89,6 +89,16 @@ import ../rndr
         check rndr("a.b()")                                  == "a.b()"   
         check rndr("a.b().c")                                == "a.b().c" 
         
+    ▸ use
+    
+        check rndr("use std ▪ unittest")                     == "import std/[unittest]"
+        check rndr("use std ▪ pegs strutils strformat")      == "import std/[pegs, strutils, strformat]"
+        check rndr("use rndr")                               == "import rndr"
+        check rndr("use ./rndr")                             == "import ./rndr"
+        check rndr("use ../rndr")                            == "import ../rndr"
+        check rndr("use ../../rel")                          == "import ../../rel"
+        check rndr("use ../../rel ▪ s1 s2")                  == "import ../../rel/[s1, s2]"
+        
     ▸ if
     
         check rndr("if true then ⮐  false")                  == "if true: return false"                 

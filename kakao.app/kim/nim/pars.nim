@@ -6,7 +6,6 @@
 
 import std/[strformat, strutils, terminal]
 import kommon
-# import lexi
 import tknz
 
 type
@@ -170,6 +169,12 @@ type
                 func_type*      : Node
                 func_args*      : seq[Node]
                 func_body*      : Node
+                
+            of ●use:
+            
+                use_module*     : Node
+                use_kind*       : Node
+                use_items*      : seq[Node]
                             
             of ●testCase:
                 
@@ -299,6 +304,10 @@ proc `$`*(n: Node): string =
             s = &"({n.args})"
         of ●signature:
             s = &"({n.sig_args} {s} {n.sig_type})"
+        of ●use:
+            let k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
+            let i = choose(n.use_items.len>0, &" {n.use_items}", "")
+            s = &"({s} {n.use_module}{k}{i})"
         of ●testCase:
             s = &"({n.test_expression} {s} {n.test_expected})"
         else:
@@ -319,7 +328,7 @@ proc error*(p: var Parser, msg: string) : Node =
 # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
 #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 
-proc consume(p: var Parser): auto =
+proc consume(p: var Parser): Token =
 
     let t = p.current()
     if p.pos < p.tokens.len:
@@ -348,6 +357,8 @@ proc peek(p: Parser, ahead=1): Token =
         p.tokens[p.pos + ahead]
     else:
         Token(tok:◆eof)
+        
+proc atEnd(p:Parser): bool = p.pos >= p.tokens.len
     
 proc getPrecedence(p: Parser, token: Token): int =
 
@@ -444,6 +455,31 @@ proc parseBlock*(p:var Parser, indent:int = 0): Node =
                 p.swallow() 
         expr = p.expression()
     Node(token:token, kind:●block, expressions:expressions)
+    
+proc parseList*(p:var Parser) : seq[Node] = 
+
+    var list : seq[Node] = @[]
+    let line = p.current().line
+    var expr : Node = p.expression()
+    while expr != nil:
+        list.add expr
+        expr = p.expression()
+    list
+
+proc parseModule*(p:var Parser) : Node = 
+
+    let line = p.current().line
+    
+    var s = ""
+    while p.current().line == line and p.current().str notin @["▪", "◆"]:
+        s &= p.consume().str       
+        if p.atEnd():
+            echo "atEnd!"
+            break 
+        
+    let n = Node(token:Token(str:s))
+    echo &"parseModule {s}"
+    n
     
 proc then(p: var Parser) : Node = 
 
@@ -669,13 +705,22 @@ proc rString(p: var Parser): Node =
         p.swallowError(◆string_end, "Expected closing string delimiter")
         
         Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
+
+proc rUse(p: var Parser): Node =
+
+    let token = p.consume()
+    let use_module = p.parseModule()
+    if not p.atEnd():
+        let use_kind = p.expression()
+        let use_items  = p.parseList()
+        Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
+    else:
+        Node(token:token, kind:●use, use_module:use_module) 
         
 proc rComment(p: var Parser): Node = 
 
      let token = p.consume()
      let comment_content = Node(token:p.consume())
-     
-     # echo &"rComment {token} {comment_content.token}"
      
      Node(token:token, kind:●comment, comment_content:comment_content)
 
@@ -728,7 +773,6 @@ proc lSingleArg(p: var Parser, left: Node) : Node =
             kind: ●argDefault,
             default: p.expression()
             )
-        # echo &"singleArg: {arg_default}"
         
     Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
@@ -856,6 +900,7 @@ proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 proc setup(p: var Parser) =
 
     p.pratt ◆comment_start,     nil,               rComment,        0
+    p.pratt ◆use,               nil,               rUse,            0
     p.pratt ◆test,              lTestCase,         rTestSuite,      0
     p.pratt ◆number,            nil,               rLiteral,        0
     p.pratt ◆string_start,      nil,               rString,         0

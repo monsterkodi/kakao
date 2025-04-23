@@ -125,6 +125,15 @@ proc ▸string(r: var Rndr, n: Node) =
     
     r.add delimiter
     
+proc ▸use(r: var Rndr, n: Node) = 
+    
+    r.add "import "
+    r.addTok n.use_module
+    if n.use_kind != nil and n.use_kind.token.str == "▪":
+        r.add "/["
+        r.render n.use_items
+        r.add "]"
+    
 proc ▸comment(r: var Rndr, n: Node) = 
 
     r.addTok n
@@ -238,6 +247,8 @@ proc render(r: var Rndr, n: Node) =
             r.▸string(n)
         of ●comment:
             r.▸comment(n)
+        of ●use:
+            r.▸use(n)
         of ●propertyAccess:
             r.▸propertyAccess(n)
         # of ●var

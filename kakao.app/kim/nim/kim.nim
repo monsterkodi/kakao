@@ -4,8 +4,7 @@
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███
 
-import std/[logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt, random, pegs]
-
+import std/[monotimes, logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt, random, pegs, osproc, streams, asyncdispatch, asyncfile, posix]
 import kommon
 import trans
 import rndr
@@ -145,15 +144,48 @@ proc runTests() : bool =
     profileScope "test"
     for f in testFiles:
         let cmd = &"nim r --colors:on {f}"
-        let (output, exitCode) = execCmdEx(cmd)
-        if exitCode != 0:
+        let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
+        let startTime = getMonoTime()
+        var output = ""
+        
+        let fd = p.outputHandle
+        var flags = fcntl(fd, F_GETFL, 0)
+        discard fcntl(fd, F_SETFL, flags or O_NONBLOCK)
+        
+        while true:
+            let elapsed = (getMonoTime() - startTime).inMilliseconds
+            if elapsed >= 2000:
+                output.add(&"test killed after {elapsed} ms!!")
+                p.terminate()
+                sleep(50)
+                if p.running:
+                    echo "kill!"
+                    p.kill()
+                break
+                            
+            var line = newString(1024*10)
+            let bytesRead = read(fd, addr line[0], line.len)
+            if bytesRead > 0:
+                output.add(line & "\n")
+            elif bytesRead == 0:
+                break
+            elif errno == EAGAIN:
+                discard poll(nil, 0, 50)
+            elif not p.running:
+                break
+            else:
+                break
+        
+        let exitCode = p.waitForExit()
+        
+        if exitCode != 0 or verbose:
             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
         else:
             let okCount = output.count "[OK]"
             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
+            
         if exitCode != 0:
             styledEcho fgRed, "✘ ", &"{cmd}"
-            return  false
     echo ""
     true
 

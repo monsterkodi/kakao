@@ -450,5 +450,26 @@ import ../tknz
             Token(str:"string", tok:◆name,  line:0, col:2) 
             ]
             
+    # ███   ███   ███████  ████████
+    # ███   ███  ███       ███     
+    # ███   ███  ███████   ███████ 
+    # ███   ███       ███  ███     
+    #  ███████   ███████   ████████
+
+    ▸ use
+    
+        check tokenize("use std ▪ unittest") == @[ 
+            Token(str:"use",      tok:◆use,  line:0, col:0), 
+            Token(str:"std",      tok:◆name, line:0, col:4), 
+            Token(str:"▪",        tok:◆name, line:0, col:8), 
+            Token(str:"unittest", tok:◆name, line:0, col:10)
+            ]
+        
+        check tokenize("use ../rndr") == @[ 
+            Token(str:"use",      tok:◆use,       line:0, col:0), 
+            Token(str:"..",       tok:◆doubledot, line:0, col:4),
+            Token(str:"/",        tok:◆divide,    line:0, col:6),
+            Token(str:"rndr",     tok:◆name,      line:0, col:7)
+            ]
     
         
