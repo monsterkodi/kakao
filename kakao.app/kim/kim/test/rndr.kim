@@ -99,6 +99,8 @@ import ../rndr
         check rndr("use ../../rel")                          == "import ../../rel"
         check rndr("use ../../rel ▪ s1 s2")                  == "import ../../rel/[s1, s2]"
         
+        check rndr("import ../../rel/[s1, s2]")              == "import ../../rel/[s1, s2]"
+        
     ▸ if
     
         check rndr("if true then ⮐  false")                  == "if true: return false"                 
@@ -140,17 +142,16 @@ import ../rndr
         check rndr("s = ''")                                 == "s = ''"
         check rndr("s = \"\"")                               == "s = \"\""
         check rndr("s = \"\"\"\"\"\"")                       == "s = \"\"\"\"\"\""
-        # check rndr("s = \"\"\"\n\n\"\"\"")                   == "s = \"\"\"\n\n\"\"\""
+        check rndr("s = \"\"\"\n\n\"\"\"")                   == "s = \"\"\"\n\n\"\"\""
         check rndr("s = \"hello\"")                          == "s = \"hello\""
         check rndr("s = \"\"\"hello\"\"\"")                  == "s = \"\"\"hello\"\"\""
         check rndr("s = \"num #{1+2} end\"")                 == "s = &\"num {(1 + 2)} end\""
         check rndr("s = \"\"\"num #{1+2} end\"\"\"")         == "s = &\"\"\"num {(1 + 2)} end\"\"\""
-        
-        # check rndr("s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"") == "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
+        check rndr("s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"") == "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         
     ▸ comments
     
-        check rndr("1 + 1 # addition")                       == "(1 + 1) # addition"
+        check rndr("two = 1 + 1 # addition")                       == "two = (1 + 1) # addition"
         
         check rndr("""
 # ███   ███  ███  ██     ██

@@ -41,6 +41,7 @@ type
         ●break, 
         ●continue,          
         ●use, 
+        ●import,
         ●class,
         ●enum,
         ●testSuite,
@@ -474,12 +475,9 @@ proc parseModule*(p:var Parser) : Node =
     while p.current().line == line and p.current().str notin @["▪", "◆"]:
         s &= p.consume().str       
         if p.atEnd():
-            echo "atEnd!"
             break 
         
-    let n = Node(token:Token(str:s))
-    echo &"parseModule {s}"
-    n
+    Node(token:Token(str:s))
     
 proc then(p: var Parser) : Node = 
 
@@ -675,6 +673,11 @@ proc rLiteral(p: var Parser): Node =
     let token = p.consume()
     Node(token:token, kind: ●literal)
 
+proc rImport(p: var Parser): Node =
+
+    let token = p.consume()
+    Node(token:token, kind: ●import)
+    
 proc rString(p: var Parser): Node =
 
     let token = p.consume() # string start
@@ -900,6 +903,7 @@ proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 proc setup(p: var Parser) =
 
     p.pratt ◆comment_start,     nil,               rComment,        0
+    p.pratt ◆import,            nil,               rImport,         0
     p.pratt ◆use,               nil,               rUse,            0
     p.pratt ◆test,              lTestCase,         rTestSuite,      0
     p.pratt ◆number,            nil,               rLiteral,        0

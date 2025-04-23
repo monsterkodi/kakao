@@ -63,6 +63,22 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         inc rgs 11 'bla' ▸ 'dictionary key'
         
     # ███   ███  ███  ██     ██
+    # ████  ███  ███  ███   ███
+    # ███ █ ███  ███  █████████
+    # ███  ████  ███  ███ █ ███
+    # ███   ███  ███  ███   ███
+
+    ▸ nim
+    
+        lang 'nim'
+        
+        dss = dissect "proc f(str:string)"
+        log "dss" dss
+        
+        inc dss[0] 0 "proc"   ▸ 'keyword'
+        inc dss[0] 5 "string" ▸ 'type'
+        
+    # ███   ███  ███  ██     ██
     # ███  ███   ███  ███   ███
     # ███████    ███  █████████
     # ███  ███   ███  ███ █ ███

@@ -116,12 +116,12 @@ proc ▸string(r: var Rndr, n: Node) =
         
     r.add delimiter
     r.addTok n.string_content
-    
     for stripol in n.string_stripols
         r.add "{"
         r.render stripol.stripol_xprssns
         r.add "}"
-        r.addTok stripol.stripol_content
+        if stripol.stripol_content != nil
+            r.addTok stripol.stripol_content
     
     r.add delimiter
     
@@ -265,7 +265,7 @@ proc render(r: var Rndr, n: Node) =
             r.add "\":" 
         of ●testCase
             r.▸testCase(n)
-        of ●literal, ●type
+        of ●literal, ●type, ●import
             r.addTok n
         else
             log &"unhandled {n} {n.kind}"

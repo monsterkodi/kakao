@@ -1192,18 +1192,25 @@ nim kim
         let
         
     module
-        logging 
-        macros
         os 
+        sets
+        times
+        posix
         osproc 
-        sequtils 
         tables 
+        macros
+        random
+        streams
+        logging 
         terminal 
         parseopt
-        times
-        streams
         strutils
+        sequtils 
+        enumutils
         strformat
+        monotimes
+        asyncfile
+        asyncdispatch
         typetraits
         unittest
         unicode

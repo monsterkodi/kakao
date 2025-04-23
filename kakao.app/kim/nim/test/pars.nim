@@ -129,6 +129,9 @@ suite "pars":
     
         check $ast("s = \"hello\"")                          == "▪[(◆name = ◆string)]"
         check $ast("s = \"\"\"hello\"\"\"")                  == "▪[(◆name = ◆string)]"
+        check $ast("s = \"\"\"\n\n\"\"\"")                   == "▪[(◆name = ◆string)]"
+        check $ast("s = \"\"\"num #{1+2} end\"\"\"")         == "▪[(◆name = ◆string@[◆name])]"
+        check $ast("s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\"")     == "▪[(◆name = ◆string@[◆name, ◆name])]"
         
     test "toplevel":
 
@@ -143,6 +146,8 @@ suite "pars":
         check $ast("use std ▪ unittest")                     == "▪[(◆use ◆name ▪ @[◆name])]"
         check $ast("use rndr")                               == "▪[(◆use ◆name)]"
         check $ast("use ../rndr")                            == "▪[(◆use ◆name)]"
+        
+        check $ast("import ../../rel/[s1, s2]")              == "▪[◆import]"
         
     test "tests":
     

@@ -25,6 +25,7 @@ type
         ◆break,
         ◆continue,
         ◆class,
+        ◆import,
         ◆use,
         ◆try,
         ◆catch,
@@ -127,7 +128,6 @@ type
         openStack   : seq[tok]
         token       : Token
         inStripol   : bool
-        inComment   : bool
         delimiter   : string
         segi        : int
         segs        : seq[string]
@@ -249,10 +249,12 @@ proc string(t:Tknzr) =
         else:
             discard
 
-    # echo &"string {t} {t.delimiter} {topTok}"
+    # echo &"-------------- string {t} {t.delimiter} {topTok}"
 
     proc isAtStringEnd() : bool =
-        if t.segi > t.eol-1 :
+        if t.delimiter.len == 1 and t.segi >= t.eol:
+            return  true
+        if t.segi >= t.segs.len:
             return  true
         if t.delimiter.len == 3:
             t.segi <= t.eol-3 and t.srng(3) == t.delimiter
@@ -263,7 +265,8 @@ proc string(t:Tknzr) =
     
         t.token.tok = ◆string
         
-        if t.peek(0) == "\\":
+        let c = t.peek(0)
+        if c == "\\":
             t.advance 2
             continue
             
@@ -271,8 +274,12 @@ proc string(t:Tknzr) =
             t.commit("#{", ◆stripol_start, 2)
             t.inStripol = true  
             return
-        
-        t.advance 1    
+
+        t.token.str &= c
+        if c == "\n":
+            t.nextLine()
+        else:
+            t.segi += 1
                 
     if t.segi <= t.eol-1 :
         t.commit(t.delimiter, ◆string_end, t.delimiter.len)
@@ -299,6 +306,12 @@ proc comment(t:Tknzr) =
 
     t.advanceUntil "\n"
     t.push ◆comment
+    
+proc `import`(t:Tknzr) = 
+
+    t.segi += 1 # 𝓢⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾 
+    t.advanceUntil "\n"
+    t.push ◆import
 
 #  ███████   ███████   ██     ██  ██     ██  ███  █████████
 # ███       ███   ███  ███   ███  ███   ███  ███     ███   
@@ -386,7 +399,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         elif punct[char] == ◆bracket_close and t.inStripol:
                             t.inStripol = false
                             t.commit(char, ◆stripol_end, 1)
-                            # t.token.tok = ◆string
                             continue
                             
                     if punct[char] == ◆test:
@@ -411,7 +423,11 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         t.push ◆number
                     
                     if keywords.hasKey(t.token.str) and (t.segi >= t.eol-1 or t.peek(1) == " " or punct.hasKey(t.peek(1))):
-                        t.push keywords[t.token.str]
+                        case keywords[t.token.str]:
+                            of ◆import:
+                                t.import()
+                            else:
+                                t.push keywords[t.token.str]
             t.incr 1
             
         if t.token.str.len:

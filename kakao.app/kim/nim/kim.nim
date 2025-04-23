@@ -140,7 +140,7 @@ proc compile(file:string, outDir:string="bin") : bool =
 #    ███     ███            ███     ███          ███
 #    ███     ████████  ███████      ███     ███████ 
 
-proc runTests() : bool =
+proc runTests() =
     profileScope "test"
     for f in testFiles:
         let cmd = &"nim r --colors:on {f}"
@@ -159,7 +159,6 @@ proc runTests() : bool =
                 p.terminate()
                 sleep(50)
                 if p.running:
-                    echo "kill!"
                     p.kill()
                 break
                             
@@ -187,7 +186,6 @@ proc runTests() : bool =
         if exitCode != 0:
             styledEcho fgRed, "✘ ", &"{cmd}"
     echo ""
-    true
 
 if files.len:
 
@@ -200,7 +198,7 @@ if files.len:
         quit(transpiled.len - files.len)    
 
 if tests:
-    discard runTests()
+    runTests()
     quit(0)
  
 # ███   ███   ███████   █████████   ███████  ███   ███
@@ -287,18 +285,18 @@ proc watch(paths:seq[string]) =
             for f in trans.pile(toTranspile):
                 verb &"transpiled {f}"    
                 logFile f, "✔ "
-            verb "runTests"    
-            discard runTests()
+            # verb "runTests"    
+            runTests()
             
         if doBuild:
-            # echo "doBuild!"    
+            # verb "doBuild"    
             if compile("nim/kim.nim", "bin"):
                 for f in kimFiles:
                     let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
         # echo "sleep"        
-        sleep 300
+        sleep 200
         
 watch(@[getCurrentDir()]) 
                  
