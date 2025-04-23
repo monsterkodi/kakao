@@ -82,6 +82,13 @@ proc ▸propertyAccess(r: var Rndr, n: Node) =
     r.render n.owner
     r.addTok n
     r.render n.property
+    
+proc ▸arrayLike(r: var Rndr, n: Node) = 
+
+    r.render n.array_like
+    r.add "["
+    r.render n.array_args
+    r.add "]"
 
 proc ▸func(r: var Rndr, n: Node) = 
 
@@ -94,6 +101,9 @@ proc ▸func(r: var Rndr, n: Node) =
         r.add " : "
         r.render n.func_type
     r.add " ="
+    if n.func_body != nil:
+        r.add " "
+        r.render n.func_body
     
 proc ▸argType(r: var Rndr, n: Node) =
 
@@ -106,6 +116,20 @@ proc ▸argType(r: var Rndr, n: Node) =
     if n.arg_default != nil:
         r.add "="
         r.render n.arg_default.default
+        
+proc ▸var(r: var Rndr, n: Node) =
+
+    if n.token.tok == ◆var:
+        r.add "var "
+    else:
+        r.add "let "
+    r.render n.var_name
+    if n.var_type != nil:
+        r.add " : "
+        r.render n.var_type
+    if n.var_value != nil:
+        r.add " = "
+        r.render n.var_value.default
 
 proc ▸string(r: var Rndr, n: Node) = 
 
@@ -251,8 +275,10 @@ proc render(r: var Rndr, n: Node) =
             r.▸use(n)
         of ●propertyAccess:
             r.▸propertyAccess(n)
-        # of ●var
-        #     r.▸var(n)
+        of ●arrayLike:
+            r.▸arrayLike(n)
+        of ●var:
+            r.▸var(n)
         of ●return:
             r.▸return(n)
         of ●testSuite:

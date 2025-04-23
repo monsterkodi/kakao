@@ -11,14 +11,15 @@ use rndr
 use greet
 
 # params = default seq[string]
-optParser = initOptParser()
-# files: seq[string] = @[]
-outdir    = ""
-tests     = false
-verbose   = false
-transpile = false
-# testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(proc (r:tuple) : string = r.path)
-#     
+◆optParser = initOptParser()
+◆files     ◇ seq[string] = @[]
+◆outdir    = ""
+◆tests     = false
+◆verbose   = false
+◆transpile = false
+
+testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(r◇tuple➜string -> r.path)
+
 # randomize()
 # 
 # proc verb(msg: string) = 

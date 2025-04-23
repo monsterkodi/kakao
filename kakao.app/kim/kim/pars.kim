@@ -31,6 +31,7 @@ type
         ●switchCase,
         ●var,        
         ●propertyAccess,        
+        ●arrayLike,
         ●func,
         ●type,
         ●argType,
@@ -106,6 +107,11 @@ type
             
                 owner*          : Node
                 property*       : Node
+                
+            of ●arrayLike
+            
+                array_like*     : Node
+                array_args*     : seq[Node]
                 
             of ●if 
             
@@ -301,6 +307,10 @@ proc `$`*(n: Node): string =
             s = &"({n.arg_name}{t}{d})"
         of ●argDefault
             s = &"(= {n.default})"
+        of ●var
+            let v = choose(n.var_value, &" {n.var_value}", "")
+            let t = choose(n.var_type, &" {n.arg_type}", "")
+            s = &"({s} {n.var_name}{t}{v})"
         of ●argList
             s = &"({n.args})"
         of ●signature
@@ -618,6 +628,17 @@ proc lCall(p: var Parser, callee: Node): Node =
 
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
+proc lArrayLike(p: var Parser, array_like: Node): Node =
+
+    let token = p.consume() # [
+    
+    var args = default seq[Node]
+    while p.tok() != ◆square_close
+        args.add p.expression()
+    p.swallowError(◆square_close, "Missing closing square bracket for array access")    
+
+    Node(token:token, kind:●arrayLike, array_like:array_like, array_args:args)
+    
 proc lPropertyAccess(p: var Parser, owner: Node): Node =
 
     let token = p.consume()
@@ -710,6 +731,10 @@ proc rReturnType(p: var Parser): Node =
     
     Node(token:token, kind:●signature, sig_type:sig_type)
     
+proc value(p: var Parser) : Node =
+
+    p.expression(-1)
+    
 proc lSingleArg(p: var Parser, left: Node) : Node =
 
     var token : Token
@@ -725,13 +750,17 @@ proc lSingleArg(p: var Parser, left: Node) : Node =
         arg_default = Node(
             token: t,
             kind: ●argDefault,
-            default: p.expression()
+            default: p.value()
             )
         
     Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
 proc lArgType(p: var Parser, left: Node) : Node =
 
+    if left.kind != ●literal
+        log &"lArgType {left.kind}"
+        ⮐  
+    
     var n = p.lSingleArg(left)
     
     if p.peek().tok in {◆val, ◆var, ◆assign} 
@@ -751,6 +780,27 @@ proc lArgType(p: var Parser, left: Node) : Node =
             s.sig_args = @[n]
         n = s
     n
+    
+proc atIndent(p: var Parser) : bool =
+
+    p.current().col == 0 or p.peek(-1).tok == ◆indent
+    
+proc rVar(p: var Parser) : Node =
+
+    log &"rVal {p}"
+    
+    if p.atIndent()
+    
+        let token = p.consume()
+        if p.peek().tok in {◆val, ◆var, ◆assign} 
+            var n = p.lSingleArg p.rLiteral()
+            log &"singleArgResult {n}"
+            ⮐  Node(token:token, kind:●var, var_name:n.arg_name, var_type:n.arg_type, var_value:n.arg_default) 
+    nil
+
+proc rLet(p: var Parser) : Node =
+
+    nil
 
 # ████████  ███   ███  ███   ███   ███████
 # ███       ███   ███  ████  ███  ███     
@@ -883,7 +933,11 @@ proc expression(p: var Parser, precedenceRight = 0): Node =
             
         ⮐  p.error(&"expected expression but found: {token}")
         
-    var left: Node = rhs(p)
+    var node: Node = rhs(p)
+
+    if precedenceRight < 0
+        # if lhs recursion disabled
+        ⮐  node
 
     while true
         
@@ -900,9 +954,12 @@ proc expression(p: var Parser, precedenceRight = 0): Node =
         if lhs == nil
             break
             
-        left = lhs(p, left)
-    
-    left
+        let lhn = lhs(p, node)
+        if lhn != nil
+            node = lhn
+        else
+            break
+    node
             
 # ████████   ████████    ███████   █████████  █████████
 # ███   ███  ███   ███  ███   ███     ███        ███   
@@ -967,10 +1024,12 @@ proc setup(p: var Parser) =
     p.pratt ◆decrement,         lPostOp,           nil,            80
                                                                                         
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
-    p.pratt ◆val,               lArgType,          nil,           100
-    p.pratt ◆var,               lArgType,          nil,           100
+    p.pratt ◆val,               lArgType,          rVar,          100
+    p.pratt ◆var,               lArgType,          rVar,          100
+    p.pratt ◆let,               nil,               rVar,          101
     p.pratt ◆then,              nil,               rReturnType,   100
     p.pratt ◆dot,               lPropertyAccess,   nil,           100
+    p.pratt ◆square_open,       lArrayLike,        nil,           100
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   

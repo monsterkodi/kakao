@@ -52,6 +52,23 @@ import ../rndr
         check rndr("a * (b + c) / d")   == "((a * (b + c)) / d)"
         check rndr("3 * (1 + 2)")       == "(3 * (1 + 2))"
         
+    ▸ vars
+    
+        check rndr("◆optParser = initOptParser()")           == "var optParser = initOptParser()"
+        check rndr("◆str = \"\"\n◆bool = false\n◆num = 1")   == "var str = \"\"\nvar bool = false\nvar num = 1"
+        
+    ▸ arg types
+    
+        check rndr("files     ◇ seq[string] = @[]")          == "files:seq[string]=@[]" 
+        check rndr("files     ◆ seq[string] = @[]")          == "files:var seq[string]=@[]" 
+    
+    ▸ var types
+    
+        check rndr("var files ◇ seq[string] = @[]")          == "var files : seq[string] = @[]" 
+        check rndr("let files ◇ seq[string] = @[]")          == "let files : seq[string] = @[]" 
+        check rndr("◆files ◇ seq[string] = @[]")             == "var files : seq[string] = @[]" 
+        check rndr("◇files ◇ seq[string] = @[]")             == "let files : seq[string] = @[]" 
+        
     ▸ func
     
         check rndr("f = ->")                                 == "proc f() ="
@@ -64,6 +81,8 @@ import ../rndr
         check rndr("f = s◇seq[Node] ➜ seq[Node] ->")         == "proc f(s:seq[Node]) : seq[Node] ="
         check rndr("f = p◇Parser ahead◇int=1 ➜ Token ->")    == "proc f(p:Parser, ahead:int=1) : Token ="
         check rndr("f = p◇Parser ahead=1 ➜ Token ->")        == "proc f(p:Parser, ahead=1) : Token ="
+        check rndr("l.map(r◇tuple➜string -> r.path)")        == "l.map(proc (r:tuple) : string = r.path)"
+        check rndr("l.map(r ◇ tuple ➜ string -> r.path)")    == "l.map(proc (r:tuple) : string = r.path)"
         
     ▸ call
     
@@ -75,6 +94,8 @@ import ../rndr
         check rndr("f(1 + 2 4 + 5)")                         == "f((1 + 2), (4 + 5))"  
         check rndr("f(1 2 3)")                               == "f(1, 2, 3)"        
         check rndr("f(1 g(h(2)))")                           == "f(1, g(h(2)))"    
+        check rndr("f = dir(a().b() / \"x\").toSeq()")       == "f = dir((a().b() / \"x\")).toSeq()"
+        check rndr("f = dir(a().b()[0] / \"x\").toSeq()")    == "f = dir((a().b()[0] / \"x\")).toSeq()"
         
     ▸ assign
     

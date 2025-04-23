@@ -29,9 +29,9 @@ type
         ◆use,
         ◆try,
         ◆catch,
-        ◆let,
-        ◆var                = "◆"
+        ◆let                = "◇"
         ◆val                = "◇"
+        ◆var                = "◆"
         ◆not                = "!" 
         ◆and                = "&&" 
         ◆or                 = "||" 

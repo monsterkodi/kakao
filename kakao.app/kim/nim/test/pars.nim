@@ -151,6 +151,14 @@ suite "pars":
         
         check $ast("import ../../rel/[s1, s2]")              == "▪[◆import]"
         
+    test "var":
+        
+        check $ast("var a = 1")                              == "▪[(◆ ◆name (= ◆number))]"
+        check $ast("let a = 1")                              == "▪[(◇ ◆name (= ◆number))]"
+        check $ast("◆a = 1")                                 == "▪[(◆ ◆name (= ◆number))]"
+        check $ast("◇a = 1")                                 == "▪[(◇ ◆name (= ◆number))]"
+        check $ast("◆str = \"\"\n◆bool = false\n◆num = 1")   == "▪[(◆ ◆name (= ◆string))(◆ ◆name (= ✘))(◆ ◆name (= ◆number))]"
+        
     test "tests":
     
         check $ast("▸ a test suite")                         == "▪[▸]"
