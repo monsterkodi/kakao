@@ -146,6 +146,8 @@ suite "pars":
         check $ast("use std ▪ unittest")                     == "▪[(◆use ◆name ▪ @[◆name])]"
         check $ast("use rndr")                               == "▪[(◆use ◆name)]"
         check $ast("use ../rndr")                            == "▪[(◆use ◆name)]"
+        check $ast("use std ▪ os logging\nuse kommon")       == "▪[(◆use ◆name ▪ @[◆name, ◆name])(◆use ◆name)]"
+        check $ast("use std ▪ a b c\nuse d\nuse e\nuse f")   == "▪[(◆use ◆name ▪ @[◆name, ◆name, ◆name])(◆use ◆name)(◆use ◆name)(◆use ◆name)]" 
         
         check $ast("import ../../rel/[s1, s2]")              == "▪[◆import]"
         

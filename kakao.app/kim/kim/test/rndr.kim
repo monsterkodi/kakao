@@ -82,6 +82,14 @@ import ../rndr
         check rndr("a = b = 1")                              == "a = b = 1"
         check rndr("a = b = c = 2")                          == "a = b = c = 2"
         
+        check rndr("""
+a = 1
+# comment
+b = false""") == """
+a = 1
+# comment
+b = false"""
+        
     ▸ properties        
         
         check rndr("a.b")                                    == "a.b"     
@@ -100,6 +108,8 @@ import ../rndr
         check rndr("use ../../rel ▪ s1 s2")                  == "import ../../rel/[s1, s2]"
         
         check rndr("import ../../rel/[s1, s2]")              == "import ../../rel/[s1, s2]"
+        check rndr("use std ▪ os logging\nuse kommon")       == "import std/[os, logging]\nimport kommon"
+        check rndr("use std ▪ a b c\nuse d\nuse e\nuse f")   == "import std/[a, b, c]\nimport d\nimport e\nimport f"
         
     ▸ if
     

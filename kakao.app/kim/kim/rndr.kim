@@ -286,11 +286,11 @@ proc rndr*(code: string): string =
 proc file*(file: string) : string = 
 
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    echo &"fileOut {fileOut}"
+    log &"fileOut {fileOut}"
     let code = file.readFile()
     # echo &"code {code}"
     let trns = rndr code
-    echo &"trns {trns}"
+    log &"{trns}"
     fileOut
     
 proc files*(files: seq[string]): seq[string] = 

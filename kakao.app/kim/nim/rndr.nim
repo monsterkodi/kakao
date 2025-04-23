@@ -290,7 +290,7 @@ proc file*(file: string) : string =
     let code = file.readFile()
     # echo &"code {code}"
     let trns = rndr code
-    echo &"trns {trns}"
+    echo &"{trns}"
     fileOut
     
 proc files*(files: seq[string]): seq[string] = 

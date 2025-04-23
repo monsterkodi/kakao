@@ -377,48 +377,7 @@ proc leftHandSide(p: Parser, token: Token): LHS =
     if token.tok.ord < p.pratts.len
         ⮐  p.pratts[token.tok.ord].lhs
 
-# ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
-# ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
-# ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
-# ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
-# ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
-
-proc expression(p: var Parser, precedenceRight = 0): Node =
-
-    let token = p.current()
-    
-    if token.tok == ◆eof
-        ⮐  nil
-    
-    let rhs = p.rightHandSide(token)
-    
-    if rhs == nil
-    
-        if token.tok == ◆else
-            ⮐  nil
-            
-        ⮐  p.error(&"expected expression but found: {token}")
-        
-    var left: Node = rhs(p)
-
-    while true
-        
-        let token = p.current()
-        var precedence = p.getPrecedence(token)
-        
-        if token.tok in {◆assign, ◆test}
-            precedence += 1
-        
-        if precedenceRight >= precedence
-            break
-    
-        let lhs = p.leftHandSide(token)
-        if lhs == nil
-            break
-            
-        left = lhs(p, left)
-    
-    left
+proc expression(p: var Parser, precedenceRight = 0): Node
     
 proc expression(p: var Parser, tokenRight:Token ): Node =
 
@@ -463,18 +422,19 @@ proc parseList*(p:var Parser) : seq[Node] =
     let line = p.current().line
     var expr : Node = p.expression()
     while expr != nil
-        list.add expr
+        list.add expr        
+        if p.current().line != line
+            break
         expr = p.expression()
     list
 
 proc parseModule*(p:var Parser) : Node = 
 
     let line = p.current().line
-    
     var s = ""
-    while p.current().line == line and p.current().str notin @["▪", "◆"]
-        s &= p.consume().str       
-        if p.atEnd()
+    while p.current().str notin @["▪", "◆"]
+        s &= p.consume().str
+        if p.atEnd() or p.current().line != line
             break 
         
     Node(token:Token(str:s))
@@ -482,15 +442,11 @@ proc parseModule*(p:var Parser) : Node =
 proc then(p: var Parser) : Node = 
 
     if p.tok() == ◆then
-        # log "pars.then thenned"
         p.swallow ◆then
         
     if p.tok() == ◆indent
-        # log "pars.then block"
         p.parseBlock()
     else
-        # if p.tok() != ◆eof
-        #     log &"pars.then expression {p.tok()}"
         p.expression()
 
 proc parse*(p: var Parser): Node = 
@@ -678,6 +634,12 @@ proc rImport(p: var Parser): Node =
     let token = p.consume()
     Node(token:token, kind: ●import)
     
+#  ███████  █████████  ████████   ███  ███   ███   ███████ 
+# ███          ███     ███   ███  ███  ████  ███  ███      
+# ███████      ███     ███████    ███  ███ █ ███  ███  ████
+#      ███     ███     ███   ███  ███  ███  ████  ███   ███
+# ███████      ███     ███   ███  ███  ███   ███   ███████ 
+
 proc rString(p: var Parser): Node =
 
     let token = p.consume() # string start
@@ -713,7 +675,7 @@ proc rUse(p: var Parser): Node =
 
     let token = p.consume()
     let use_module = p.parseModule()
-    if not p.atEnd()
+    if not p.atEnd() and p.current().line == token.line
         let use_kind = p.expression()
         let use_items  = p.parseList()
         Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
@@ -726,17 +688,6 @@ proc rComment(p: var Parser): Node =
      let comment_content = Node(token:p.consume())
      
      Node(token:token, kind:●comment, comment_content:comment_content)
-
-proc lPostOp(p: var Parser, left: Node): Node =
-
-    let token = p.consume()
-    Node(token:token, kind: ●postOp, operand:left)
-
-proc rPreOp(p: var Parser): Node =
-
-    let token = p.consume()
-    let right = p.expression(token)
-    Node(token:token, kind:●preOp, operand:right)
 
 proc parseType(p: var Parser): Node =
     
@@ -801,6 +752,12 @@ proc lArgType(p: var Parser, left: Node) : Node =
         n = s
     n
 
+# ████████  ███   ███  ███   ███   ███████
+# ███       ███   ███  ████  ███  ███     
+# ██████    ███   ███  ███ █ ███  ███     
+# ███       ███   ███  ███  ████  ███     
+# ███        ███████   ███   ███   ███████
+
 proc lFunc(p: var Parser, left: Node): Node =
 
     let token = p.consume() # ->
@@ -844,11 +801,28 @@ proc rReturn(p: var Parser): Node =
     let right = p.expression(token)
     Node(token:token, kind:●return, return_value:right)
 
+#  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
+# ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
+# ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
+# ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
+#  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
+
 proc lOperation(p: var Parser, left: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
+
+proc lPostOp(p: var Parser, left: Node): Node =
+
+    let token = p.consume()
+    Node(token:token, kind: ●postOp, operand:left)
+
+proc rPreOp(p: var Parser): Node =
+
+    let token = p.consume()
+    let right = p.expression(token)
+    Node(token:token, kind:●preOp, operand:right)
 
 proc lAssign(p: var Parser, left: Node): Node =
 
@@ -886,12 +860,55 @@ proc rTestSuite(p: var Parser): Node =
     let token = p.consume() # ▸
     let kind = choose(token.col == 0, ●testSuite, ●testSection)
     Node(token:token, kind:kind)
+
+# ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
+# ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
+# ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
+# ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
+# ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
+
+proc expression(p: var Parser, precedenceRight = 0): Node =
+
+    let token = p.current()
+    
+    if token.tok == ◆eof
+        ⮐  nil
+    
+    let rhs = p.rightHandSide(token)
+    
+    if rhs == nil
+    
+        if token.tok == ◆else
+            ⮐  nil
             
-#  ███████  ████████  █████████  ███   ███  ████████ 
-# ███       ███          ███     ███   ███  ███   ███
-# ███████   ███████      ███     ███   ███  ████████ 
-#      ███  ███          ███     ███   ███  ███      
-# ███████   ████████     ███      ███████   ███      
+        ⮐  p.error(&"expected expression but found: {token}")
+        
+    var left: Node = rhs(p)
+
+    while true
+        
+        let token = p.current()
+        var precedence = p.getPrecedence(token)
+        
+        if token.tok in {◆assign, ◆test}
+            precedence += 1
+        
+        if precedenceRight >= precedence
+            break
+    
+        let lhs = p.leftHandSide(token)
+        if lhs == nil
+            break
+            
+        left = lhs(p, left)
+    
+    left
+            
+# ████████   ████████    ███████   █████████  █████████
+# ███   ███  ███   ███  ███   ███     ███        ███   
+# ████████   ███████    █████████     ███        ███   
+# ███        ███   ███  ███   ███     ███        ███   
+# ███        ███   ███  ███   ███     ███        ███   
 
 proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) = 
 
@@ -899,6 +916,12 @@ proc pratt(p: var Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
         p.pratts.setLen(t.ord + 1)
     
     p.pratts[t.ord] = Pratt(lhs:lhs, rhs:rhs, precedence:precedence)
+
+#  ███████  ████████  █████████  ███   ███  ████████ 
+# ███       ███          ███     ███   ███  ███   ███
+# ███████   ███████      ███     ███   ███  ████████ 
+#      ███  ███          ███     ███   ███  ███      
+# ███████   ████████     ███      ███████   ███      
 
 proc setup(p: var Parser) =
 

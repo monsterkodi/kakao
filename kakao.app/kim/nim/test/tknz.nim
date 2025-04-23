@@ -485,7 +485,18 @@ suite "tknz":
             Token(str:"/",        tok:◆divide,          line:0, col:6),
             Token(str:"rndr",     tok:◆name,            line:0, col:7)
             ]
+            
+        check tokenize("use std ▪ os logging\nuse kommon") == @[ 
+            Token(str:"use",      tok:◆use,             line:0, col:0), 
+            Token(str:"std",      tok:◆name,            line:0, col:4), 
+            Token(str:"▪",        tok:◆name,            line:0, col:8), 
+            Token(str:"os",       tok:◆name,            line:0, col:10),
+            Token(str:"logging",  tok:◆name,            line:0, col:13),
+            Token(str:"use",      tok:◆use,             line:1, col:0),
+            Token(str:"kommon",   tok:◆name,            line:1, col:4), 
+            ]
     
         check tokenize("import ../../rel/[s1, s2]") == @[ 
             Token(str:"import ../../rel/[s1, s2]",   tok:◆import, line:0, col:0)
             ]
+            
