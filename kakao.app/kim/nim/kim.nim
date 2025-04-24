@@ -192,6 +192,7 @@ if files.len:
 
     if transpile:
         echo &"transpile {files}"
+        profileScope "translate"
         let transpiled = rndr.files(files)
         quit(transpiled.len - files.len)    
     else:

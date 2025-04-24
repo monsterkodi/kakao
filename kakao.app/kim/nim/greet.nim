@@ -1,5 +1,6 @@
 
 let greetings* = [
+    "🌞 Todays motto: Optimize for maximum joy, with escape hatches for future regrets.",
     "🌞 Rise and shine! What shall we craft today?",
     "🌙 Salutations! Let's crunch some code cookies.",
     "🚀 Systems nominal! Your code awaits transformation.",

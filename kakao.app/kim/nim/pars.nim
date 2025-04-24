@@ -255,8 +255,10 @@ proc tok(p: Parser) : tok = p.current().tok
 
 proc `$`(p: Parser): string = 
 
-    var s = &"▪▪▪ {p.current()} {p.pos}\n"
-    s &= p.text
+    var s = &"▪▪▪ {p.current()} {p.pos}"
+    if p.tok() != ◆eof:
+        let l = p.text.split("\n")[p.current().line]
+        s &= &"\n{p.current().line}: {l}"
     # for t in p.tokens
     #     s &= &"\n{t}"
     s
@@ -349,10 +351,13 @@ proc `$`*(n: Node): string =
 
 proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
-proc error(p: var Parser, msg: string) : Node =
+proc error(p: var Parser, msg: string, token=Token(tok:◆eof)) : Node =
 
     styledEcho fgRed, $p
     styledEcho fgYellow, &"parse error: {msg}"
+    if token.tok != ◆eof    :
+        let line = p.text.split("\n")[token.line]
+        styledEcho fgGreen, &"{token}: {line}"
     nil
     
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
@@ -591,7 +596,7 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
     let case_then = p.then()
                 
     if case_then == nil:
-        return  p.error "Expected case body after match(es)"
+        return  p.error("Expected case body after match(es)", token)
     
     Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
 
@@ -601,7 +606,7 @@ proc rSwitch(p: var Parser): auto =
     let switch_value = p.expression()
     
     if switch_value == nil:
-        return  p.error "Expected value after switch keyword"
+        return  p.error("Expected value after switch keyword", token)
     
     let baseIndent = p.current().str.len 
     
@@ -617,7 +622,7 @@ proc rSwitch(p: var Parser): auto =
             continue
         let switch_case = p.switchCase(baseIndent)
         if switch_case == nil:
-            return  p.error "Failed to parse switch case"
+            return  p.error("Failed to parse switch case", token)
         else:
             switch_cases.add switch_case
     
@@ -633,7 +638,7 @@ proc rSwitch(p: var Parser): auto =
                 p.expression()
         
         if switch_default == nil:
-            return  p.error "Expected default value"
+            return  p.error("Expected default value", token)
     
     Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
         
