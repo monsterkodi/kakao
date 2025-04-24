@@ -30,7 +30,6 @@ type
         ◆try,
         ◆catch,
         ◆let                = "◇"
-        ◆val                = "◇"
         ◆var                = "◆"
         ◆not                = "!" 
         ◆and                = "&&" 
@@ -53,6 +52,7 @@ type
         ◆comment,
         ◆comment_end,
 
+        ◆val                = "◇"
         ◆paren_open         = "("
         ◆paren_close        = ")"       
         ◆bracket_open       = "{"

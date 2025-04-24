@@ -25,6 +25,7 @@ type
         ●if, 
         ●condThen,
         ●for, 
+        ●list,
         ●range, 
         ●while,
         ●switch,
@@ -145,6 +146,10 @@ type
                 for_range*      : Node
                 for_body*       : Node
                 
+            of ●list
+            
+                list_values*    : seq[Node] 
+                
             of ●var
             
                 var_name*       : Node
@@ -245,14 +250,17 @@ proc tok*(p: Parser) : tok = p.current().tok
 
 proc `$`*(p: Parser): string = 
 
-    var s = &"▪▪▪ {p.current()} {p.pos}"
+    var s = &"▪▪▪ {p.current()} {p.pos}\n"
     s &= p.text
-    for t in p.tokens
-        s &= &"\n{t}"
+    # for t in p.tokens
+    #     s &= &"\n{t}"
     s
 
 proc `$`*(n: Node): string = 
 
+    if n == nil
+        ⮐  "NIL"
+        
     var s = &"{n.token.tok}"
     
     case n.kind
@@ -292,8 +300,11 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.switch_value} {n.switch_cases}{e})"
         of ●switchCase
             s = &"({n.case_when} {n.case_then})"
-        of ●for 
-            s = &"({s} {n.for_value} {n.for_range} {n.for_body})"
+        of ●for
+            let b = choose(n.for_body, &" {n.for_body}", "")
+            s = &"({s} {n.for_value} in {n.for_range}{b})"
+        of ●list
+            s = &"{n.list_values}"
         of ●while
             s = &"({s} {n.while_cond} {n.while_body})"
         of ●func
@@ -393,6 +404,8 @@ proc expression(p: var Parser, tokenRight:Token ): Node =
 
     expression(p, p.getPrecedence(tokenRight))
 
+proc value(p: var Parser) : Node = p.expression(-1)
+
 # ███████    ███       ███████    ███████  ███   ███
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███      ███   ███  ███       ███████  
@@ -479,9 +492,7 @@ proc rIf(p: var Parser): Node =
     
     var cond = p.expression() # initial condition
             
-    p.swallowError(◆then, "Expected 'then' after if condition") # initial then
-    
-    var then = p.expression()
+    var then = p.then()
     
     condThens.add(Node(kind:●condThen, cond:cond, then:then))
     
@@ -506,12 +517,7 @@ proc rIf(p: var Parser): Node =
         p.swallow() # else or then without condition
         `else` = p.expression()
     
-    Node(
-        token:      token,
-        kind:       ●if,
-        cond_thens: condThens,
-        `else`:     `else`
-        )
+    Node(token:token, kind:●if, cond_thens:condThens,`else`:`else`)
         
 # ████████   ███████   ████████ 
 # ███       ███   ███  ███   ███
@@ -519,21 +525,30 @@ proc rIf(p: var Parser): Node =
 # ███       ███   ███  ███   ███
 # ███        ███████   ███   ███
 
+proc parseList(p: var Parser, stop: tok) : Node =
+
+    let token = p.current()
+                                
+    var list_values: seq[Node]
+
+    while p.tok() != stop
+        list_values.add p.value()
+        p.swallow ◆comma
+    
+    if list_values.len == 1
+        list_values[0]
+    else
+        Node(token:token, kind:●list, list_values:list_values)
+
 proc rFor(p: var Parser): Node = 
 
     let token = p.consume()
-    let for_value = p.expression()
-    p.swallowError(◆in, "Expected in after for value")
+    let for_value = p.parseList ◆in
+    p.swallowError(◆in, "Expected 'in' after for value")
     let for_range = p.expression()
     let for_body  = p.then()
 
-    Node(
-        token:      token,
-        kind:       ●for,
-        for_value:  for_value,
-        for_range:  for_range,
-        for_body:   for_body
-        )
+    Node( token:token, kind:●for, for_value:for_value, for_range:for_range, for_body:for_body )
 
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
@@ -562,12 +577,7 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
     if case_then == nil
         ⮐  p.error "Expected case body after matches"
     
-    Node(
-        token:      token,
-        kind:       ●switchCase,
-        case_when:  case_when,
-        case_then:  case_then
-        )
+    Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
 
 proc rSwitch*(p: var Parser): auto =
 
@@ -609,13 +619,7 @@ proc rSwitch*(p: var Parser): auto =
         if switch_default == nil
             ⮐  p.error "Expected default value"
     
-    Node(
-        token:          token,
-        kind:           ●switch,
-        switch_value:   switch_value,
-        switch_cases:   switch_cases,
-        switch_default: switch_default
-        )
+    Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
         
 proc lCall(p: var Parser, callee: Node): Node =
 
@@ -730,11 +734,7 @@ proc rReturnType(p: var Parser): Node =
     let sig_type = p.parseType()
     
     Node(token:token, kind:●signature, sig_type:sig_type)
-    
-proc value(p: var Parser) : Node =
-
-    p.expression(-1)
-    
+        
 proc lSingleArg(p: var Parser, left: Node) : Node =
 
     var token : Token
@@ -747,18 +747,13 @@ proc lSingleArg(p: var Parser, left: Node) : Node =
     
     if p.tok() == ◆assign
         let t = p.consume() 
-        arg_default = Node(
-            token: t,
-            kind: ●argDefault,
-            default: p.value()
-            )
+        arg_default = Node(token:t, kind:●argDefault, default:p.value())
         
     Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
 proc lArgType(p: var Parser, left: Node) : Node =
 
     if left.kind != ●literal
-        log &"lArgType {left.kind}"
         ⮐  
     
     var n = p.lSingleArg(left)
@@ -787,14 +782,11 @@ proc atIndent(p: var Parser) : bool =
     
 proc rVar(p: var Parser) : Node =
 
-    log &"rVal {p}"
-    
     if p.atIndent()
     
         let token = p.consume()
         if p.peek().tok in {◆val, ◆var, ◆assign} 
             var n = p.lSingleArg p.rLiteral()
-            log &"singleArgResult {n}"
             ⮐  Node(token:token, kind:●var, var_name:n.arg_name, var_type:n.arg_type, var_value:n.arg_default) 
     nil
 

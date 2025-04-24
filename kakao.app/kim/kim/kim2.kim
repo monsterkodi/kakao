@@ -20,24 +20,24 @@ use greet
 
 testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(r◇tuple➜string -> r.path)
 
-# randomize()
-# 
-# proc verb(msg: string) = 
-# 
-#     if verbose
-#         log msg 
-# 
-# #  ███████   ████████  █████████         ███████   ████████   █████████
-# # ███        ███          ███           ███   ███  ███   ███     ███   
-# # ███  ████  ███████      ███           ███   ███  ████████      ███   
-# # ███   ███  ███          ███           ███   ███  ███           ███   
-# #  ███████   ████████     ███            ███████   ███           ███   
-# 
-# for kind, key, val in optParser.getopt()
-#     case kind
-#         of cmdArgument
-#             params.add key
-#             files.add(key)
+randomize()
+
+verb = msg◇string -> 
+
+    if verbose
+        log msg 
+
+#  ███████   ████████  █████████         ███████   ████████   █████████
+# ███        ███          ███           ███   ███  ███   ███     ███   
+# ███  ████  ███████      ███           ███   ███  ████████      ███   
+# ███   ███  ███          ███           ███   ███  ███           ███   
+#  ███████   ████████     ███            ███████   ███           ███   
+
+for kind, key, val in optParser.getopt()
+    case kind
+        of cmdArgument
+            params.add key
+            files.add(key)
 #         of cmdLongOption, cmdShortOption
 #             params.add "-" & key
 #             case key

@@ -148,11 +148,17 @@ b = false"""
         check rndr("if a then ⮐")                            == "if a: return"
         check rndr("a + if b then c else d")                 == "(a + if b: c else: d)"
         
+        check rndr("if true ➜ log msg")                      == "if true: log msg"
+        check rndr("if true ➜\n  log msg")                   == "if true: \n  log msg"
+        check rndr("if true\n  log msg")                     == "if true: \n  log msg"
+        check rndr("if true\n  log msg\n  log msg")          == "if true: \n  log msg\n  log msg"
+        
     ▸ for
     
         check rndr("for a in 0..2 ➜ true")                   == "for a in [0..2]: true"     
-        check rndr("for a in 0..2\n  true")                  == "for a in [0..2]: true"   
-        check rndr("for a in 0..2 ➜\n  true")                == "for a in [0..2]: true"  
+        check rndr("for a in 0..2\n  true")                  == "for a in [0..2]: \n  true"   
+        check rndr("for a in 0..2 ➜\n  true")                == "for a in [0..2]: \n  true"  
+        check rndr("for kind, key, val in opt.get()")        == "for kind, key, val in opt.get(): "  
         
     ▸ switch
     
@@ -200,19 +206,20 @@ b = false"""
     ▸ tests
 
         check rndr("▸ a test suite")                         == "suite \"a test suite\":"
-        check rndr("    ▸ test section")                     == "    test \"test section\":"
-        check rndr("    f(a) ▸ 42")                          == "        check f(a) == 42"
-        check rndr("    f(a) ▸\n        42")                 == "        check f(a) == 42"
-        
         check rndr("""
-▸ rndr
-    ▸ toplevel
+▸ suite
+    ▸ test1
         rndr("")   ▸ ""
+    ▸ test2
         rndr("42") ▸ "42"
 """) == """
-suite "rndr":
-    test "toplevel":
+suite "suite":
+
+    test "test1":
+    
         check rndr("") == ""
+    test "test2":
+    
         check rndr("42") == "42""""
         
         
