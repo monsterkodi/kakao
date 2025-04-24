@@ -18,13 +18,6 @@ type
 proc add(r: var Rndr, text: string)     = r.s &= text
 proc space(r: var Rndr)                 = r.s &= " "
 proc addTok(r: var Rndr, n: Node)       = r.s &= n.token.str
-proc addLine(r: var Rndr, text: string) = 
-
-    r.s &= text
-
-proc indent(r: var Rndr) = echo "indent"
- 
-proc dedent(r: var Rndr) = echo "dedent"
 
 proc render(r: var Rndr, n: Node)
 
@@ -40,7 +33,6 @@ proc ▸block(r: var Rndr, n: Node) =
     var idt : string
     if n.token.tok == ◆indent:
         idt = n.token.str
-        echo &"block {n.token}"
         r.add "\n" & idt
         
     for i,exp in n.expressions:
@@ -222,14 +214,17 @@ proc ▸return(r: var Rndr, n: Node) =
      
 proc ▸switch(r: var Rndr, n: Node) =
 
-    r.add "case "
+    var idt = " ".repeat n.token.col
+    
+    r.add idt & "case "
     r.render(n.switch_value)
-    r.add ":\n"
+    r.add ":"
+    
+    var cdt = " ".repeat n.switch_cases[0].token.col
     
     for i,caseNode in n.switch_cases:
-        if i > 0:
-            r.add "\n"
-        r.add "    of "
+        r.add "\n" & cdt
+        r.add "of "
         for j,whenNode in caseNode.case_when:
             if j > 0:
                 r.add ", "
@@ -238,7 +233,8 @@ proc ▸switch(r: var Rndr, n: Node) =
         r.render(caseNode.case_then)
     
     if n.switch_default != nil:
-        r.add "\n    else: "
+        r.add "\n" & cdt
+        r.add "else: "
         r.render(n.switch_default)
 
 proc ▸testCase(r: var Rndr, n: Node) =
@@ -249,7 +245,6 @@ proc ▸testCase(r: var Rndr, n: Node) =
     r.render n.test_expected
 
 proc ▸indent(r: var Rndr, n: Node)         = echo "▸indent"
-# proc ▸var(r: var Rndr, n: Node)            = log "▸var"
 
 proc render(r: var Rndr, n: Node) =
 

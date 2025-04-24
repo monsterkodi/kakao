@@ -34,8 +34,8 @@ verb = msg◇string ->
 #  ███████   ████████     ███            ███████   ███           ███   
 
 for kind, key, val in optParser.getopt():
-    case kind:
-        of cmdArgument:
+    switch kind
+        cmdArgument
             params.add key
             files.add(key)
 #         of cmdLongOption, cmdShortOption

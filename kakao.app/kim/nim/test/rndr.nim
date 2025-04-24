@@ -162,17 +162,17 @@ b = false"""
         
     test "switch":
     
-        check rndr("switch x\n  a ➜ 1\n  b c ➜ 2")           == "case x:\n    of a: 1\n    of b, c: 2"
-        check rndr("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4")    == "case x:\n    of a: 1\n    of b, c: 2\n    else: 4"
-        check rndr("switch x\n  1 2 ➜ a")                    == "case x:\n    of 1, 2: a"
-        check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b")           == "case x:\n    of 1, 2: a\n    of 3: b"
-        check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b\n  else c") == "case x:\n    of 1, 2: a\n    of 3: b\n    else: c"
-        check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c")    == "case x:\n    of 1, 2: a\n    of 3: b\n    else: c"
-        check rndr("switch x\n  1 2\n    a\n  ➜ c")          == "case x:\n    of 1, 2: a\n    else: c"
-        check rndr("switch x\n  1 2➜\n    a\n  ➜ c")         == "case x:\n    of 1, 2: a\n    else: c"
-        check rndr("switch x\n  1 2 ➜ a\n  else\n    c")     == "case x:\n    of 1, 2: a\n    else: c"
-        check rndr("switch x\n  1 2 ➜ a\n  ➜\n    c")        == "case x:\n    of 1, 2: a\n    else: c"
-        check rndr("switch x\n a ➜ if b then c")             == "case x:\n    of a: if b: c"
+        check rndr("switch x\n  a ➜ 1\n  b c ➜ 2")           == "case x:\n  of a: 1\n  of b, c: 2"
+        check rndr("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4")    == "case x:\n  of a: 1\n  of b, c: 2\n  else: 4"
+        check rndr("switch x\n  1 2 ➜ a")                    == "case x:\n  of 1, 2: a"
+        check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b")           == "case x:\n  of 1, 2: a\n  of 3: b"
+        check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b\n  else c") == "case x:\n  of 1, 2: a\n  of 3: b\n  else: c"
+        check rndr("switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c")    == "case x:\n  of 1, 2: a\n  of 3: b\n  else: c"
+        check rndr("switch x\n  1 2\n    a\n  ➜ c")          == "case x:\n  of 1, 2: \n    a\n  else: c"
+        check rndr("switch x\n  1 2➜\n    a\n  ➜ c")         == "case x:\n  of 1, 2: \n    a\n  else: c"
+        check rndr("switch x\n  1 2 ➜ a\n  else\n    c")     == "case x:\n  of 1, 2: a\n  else: c"
+        check rndr("switch x\n  1 2 ➜ a\n  ➜\n    c")        == "case x:\n  of 1, 2: a\n  else: c"
+        check rndr("switch x\n a ➜ if b then c")             == "case x:\n of a: if b: c"
         
     test "strings":
     

@@ -427,7 +427,7 @@ proc parseBlock*(p:var Parser, indent:int = 0): Node =
         if p.tok() == ◆indent:
             let ind = p.current() 
             if ind.str.len < block_indent:
-                echo "pars.block outdent break"
+                # echo "pars.block outdent break"
                 p.swallow()
                 break
             elif ind.str.len > block_indent:
@@ -564,18 +564,10 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
     while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}:
         case_when.add p.expression()
     
-    # if case_when.len == 0
-    #     return  p.error("Switch case needs at least one pattern")
-    
-    p.swallow ◆then
-    
-    if p.tok() == ◆indent and p.current().str.len > baseIndent:
-        p.swallow ◆indent
-        
-    let case_then = p.expression()
-    
+    let case_then = p.then()
+                
     if case_then == nil:
-        return  p.error "Expected case body after matches"
+        return  p.error "Expected case body after match(es)"
     
     Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
 
@@ -601,7 +593,7 @@ proc rSwitch*(p: var Parser): auto =
             continue
         let switch_case = p.switchCase(baseIndent)
         if switch_case == nil:
-            return  p.error "failed to parse switch statement"
+            return  p.error "Failed to parse switch case"
         else:
             switch_cases.add switch_case
     
