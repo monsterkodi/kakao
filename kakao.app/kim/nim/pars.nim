@@ -187,6 +187,10 @@ type
                 use_module*     : Node
                 use_kind*       : Node
                 use_items*      : seq[Node]
+                
+            of ●testSuite, ●testSection:
+            
+                test_block*     : Node
                             
             of ●testCase:
                 
@@ -231,16 +235,17 @@ type
         text    : string # used in `$` for debugging. should be removed eventually 
         tokens* : seq[Token]
         pratts* : seq[Pratt]
+        blocks* : seq[Node]
         pos*    : int
     
-proc current*(p: Parser): Token =
+proc current(p: Parser): Token =
 
     if p.pos < p.tokens.len:
         return  p.tokens[p.pos]
         
     Token(tok:◆eof)
     
-proc tok*(p: Parser) : tok = p.current().tok
+proc tok(p: Parser) : tok = p.current().tok
 
 # ████████   ████████   ███  ███   ███  █████████  
 # ███   ███  ███   ███  ███  ████  ███     ███     
@@ -248,7 +253,7 @@ proc tok*(p: Parser) : tok = p.current().tok
 # ███        ███   ███  ███  ███  ████     ███     
 # ███        ███   ███  ███  ███   ███     ███     
 
-proc `$`*(p: Parser): string = 
+proc `$`(p: Parser): string = 
 
     var s = &"▪▪▪ {p.current()} {p.pos}\n"
     s &= p.text
@@ -267,7 +272,10 @@ proc `$`*(n: Node): string =
         of ●block:
             s = "▪["
             for e in n.expressions:
-                s &= &"{e}"
+                if e != nil:
+                    s &= &"{e}"
+                else:
+                    s &= "NIL"
             s &= "]"
         of ●operation:
             s = &"({n.operand_left} {s} {n.operand_right})"
@@ -330,6 +338,12 @@ proc `$`*(n: Node): string =
             let k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
             let i = choose(n.use_items.len>0, &" {n.use_items}", "")
             s = &"({s} {n.use_module}{k}{i})"
+        of ●testSuite:
+            let b = choose(n.test_block, &" {n.test_block}", "")
+            s = &"({s} suite{b})"
+        of ●testSection:
+            let b = choose(n.test_block, &" {n.test_block}", "")
+            s = &"({s} section{b})"
         of ●testCase:
             s = &"({n.test_expression} {s} {n.test_expected})"
         else:
@@ -338,7 +352,7 @@ proc `$`*(n: Node): string =
 
 proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
-proc error*(p: var Parser, msg: string) : Node =
+proc error(p: var Parser, msg: string) : Node =
 
     styledEcho fgRed, $p
     styledEcho fgYellow, &"parse error: {msg}"
@@ -412,34 +426,53 @@ proc value(p: var Parser) : Node = p.expression(-1)
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███████   ███████    ███████  ███   ███
 
-proc parseBlock*(p:var Parser, indent:int = 0): Node =
+proc parseBlock(p:var Parser, bn:Node=nil): Node =
 
-    var expressions = default seq[Node]
     var token: Token
-    var block_indent = indent
+    var block_indent : int
     if p.tok() == ◆indent:
         token = p.consume() 
-        block_indent = token.str.len
+        block_indent = p.current().col
+    
+    var bn = bn
+    if bn == nil:
+        bn = Node(token:token, kind:●block, expressions:default seq[Node])
+        
+    # echo &"pars.block {block_indent} {token} {p.current()} {p.blocks.len}"
+    
+    if block_indent > 0:
+        echo &"pars.block stack start |>|> {block_indent} {p.blocks.len}"
+        p.blocks.add bn
     
     var expr : Node = p.expression()
     while expr != nil:
-        expressions.add expr
+        bn.expressions.add expr
         if p.tok() == ◆indent:
-            let ind = p.current() 
-            if ind.str.len < block_indent:
-                # echo "pars.block outdent break"
-                p.swallow()
+            let ind = p.current().str.len
+            if ind < block_indent:
+                echo &"pars.block outdent {ind} <| {block_indent} {p.blocks.len}"
+                if p.blocks.len:
+                    bn = p.blocks.pop()
                 break
-            elif ind.str.len > block_indent:
-                # echo &"pars.block subblock {ind} {indent}"
-                expr = p.parseBlock(ind.str.len)
+            elif ind > block_indent:
+                echo &"pars.block indent {ind} |> {block_indent}"
+                # p.blocks.add bn
+                expr = p.parseBlock()
+                bn = p.blocks.pop()
                 continue
             else:
-                p.swallow() 
+                p.swallow()
+                
+        if p.current().col < block_indent:
+            echo &"pars.block OUTDENT {p.current().col} <| {block_indent} {p.blocks.len} {p.current()}"
+            # if p.blocks.len
+            #     bn = p.blocks.pop()
+            break
+            
         expr = p.expression()
-    Node(token:token, kind:●block, expressions:expressions)
-    
-proc parseList*(p:var Parser) : seq[Node] = 
+    bn
+        
+proc parseList(p:var Parser) : seq[Node] = 
 
     var list : seq[Node] = @[]
     let line = p.current().line
@@ -451,7 +484,7 @@ proc parseList*(p:var Parser) : seq[Node] =
         expr = p.expression()
     list
 
-proc parseModule*(p:var Parser) : Node = 
+proc parseModule(p:var Parser) : Node = 
 
     let line = p.current().line
     var s = ""
@@ -472,10 +505,6 @@ proc then(p: var Parser) : Node =
     else:
         p.expression()
 
-proc parse*(p: var Parser): Node = 
-
-    parseBlock(p)
-    
 # ███  ████████
 # ███  ███     
 # ███  ██████  
@@ -505,6 +534,12 @@ proc rIf(p: var Parser): Node =
     
     while p.tok() in {◆elif, ◆indent}:
     
+        # echo &"condThen {p.current} {ifIndent} {condIndt}"
+        if p.tok() == ◆indent:
+            if p.current().str.len < condIndt or p.current().str.len == ifIndent == condIndt :
+                # echo "outdent in condThen list"
+                break
+                
         p.swallow() # elif or indent
         
         if p.tok() == ◆then:
@@ -512,9 +547,7 @@ proc rIf(p: var Parser): Node =
         
         cond = p.expression()
         
-        p.swallowError(◆then, "Expected 'then' after elif condition")
-            
-        then = p.expression()
+        then = p.then()
         
         condThens.add(Node(kind:●condThen, cond:cond, then:then))
         
@@ -578,7 +611,7 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
     
     Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
 
-proc rSwitch*(p: var Parser): auto =
+proc rSwitch(p: var Parser): auto =
 
     let token = p.consume()
     let switch_value = p.expression()
@@ -899,8 +932,12 @@ proc lTestCase(p: var Parser, left: Node): Node =
 proc rTestSuite(p: var Parser): Node =
 
     let token = p.consume() # ▸
-    let kind = choose(token.col == 0, ●testSuite, ●testSection)
-    Node(token:token, kind:kind)
+    let test_block = p.then()
+    # let kind = choose(token.col == 0, ●testSuite, ●testSection)
+    if token.col == 0:
+        Node(token:token, kind:●testSuite, test_block:test_block)
+    else:
+        Node(token:token, kind:●testSection, test_block:test_block)
 
 # ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
 # ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
@@ -912,16 +949,19 @@ proc expression(p: var Parser, precedenceRight = 0): Node =
 
     let token = p.current()
     
+    if p.tok() == ◆indent and p.blocks.len > 0:
+        echo "block stack!!!"
+        if token.str.len == p.blocks[^1].token.col:
+            p.swallow()
+            return  p.blocks[^1]    
+    
     if token.tok == ◆eof:
         return  nil
     
     let rhs = p.rightHandSide(token)
     
     if rhs == nil:
-    
-        if token.tok == ◆else:
-            return  nil
-            
+                
         return  p.error(&"expected expression but found: {token}")
         
     var node: Node = rhs(p)
@@ -1034,5 +1074,5 @@ proc ast*(text:string) : Node =
     # echo &"tokens {tokens}"
     var p = Parser(tokens:tokens, pos:0, text:text)
     p.setup()
-    p.parse()
+    p.parseBlock()
     

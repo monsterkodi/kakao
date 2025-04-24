@@ -33,39 +33,40 @@ verb = msg◇string ->
 # ███   ███  ███          ███           ███   ███  ███           ███   
 #  ███████   ████████     ███            ███████   ███           ███   
 
-for kind, key, val in optParser.getopt()
+for kind key val in optParser.getopt()
+
     switch kind
         cmdArgument
             params.add key
             files.add(key)
-#         of cmdLongOption, cmdShortOption
-#             params.add "-" & key
-#             case key
-#                 of "test"
-#                     tests = true
-#                 of "verbose", "v"
-#                     verbose = true
-#                 of "outdir", "o"
-#                     outdir = val
-#                 of "transpile", "t"
-#                     transpile = true
-#                 of "help", "h"
-#                     echo "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
-#                     echo ""
-#                     echo "      transpiles kim files to nim"
-#                     echo "      watches cwd if no files are given"
-#                     echo ""
-#                     echo "options:"
-#                     echo "  -o --outdir:DIR  output directory"
-#                     echo "  -t --transpile   log transpilat"
-#                     echo "     --test        run tests"
-#                     echo "  -v --verbose     verbose output"
-#                     quit(1)
-#                 else
-#                     echo "unknown option!: ", key
-#                     quit(1)
-#         of cmdEnd
-#             discard
+        cmdLongOption cmdShortOption
+            params.add "-" & key
+            switch key
+                "test"
+                    tests = true
+                "verbose" "v"
+                    verbose = true
+                "outdir" "o"
+                    outdir = val
+                "transpile" "t"
+                    transpile = true
+                "help" "h"
+                    echo "usage: " getAppFilename().extractFilename " [options] [file.kim ...]"
+                    echo ""
+                    echo "      transpiles kim files to nim"
+                    echo "      watches cwd if no files are given"
+                    echo ""
+                    echo "options:"
+                    echo "  -o --outdir:DIR  output directory"
+                    echo "  -t --transpile   log transpilat"
+                    echo "     --test        run tests"
+                    echo "  -v --verbose     verbose output"
+                    quit(1)
+                ➜ 
+                    echo "unknown option: " key
+                    quit(1)
+        cmdEnd
+            discard
 #                         
 # # ████████   ████████   ███████  █████████   ███████   ████████   █████████
 # # ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   

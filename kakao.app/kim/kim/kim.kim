@@ -142,6 +142,7 @@ proc compile(file:string, outDir:string="bin") : bool =
 
 proc runTests() =
     profileScope 'test'
+    echo "\x1bc"
     for f in testFiles
         let cmd = &"nim r --colors:on {f}"
         let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})

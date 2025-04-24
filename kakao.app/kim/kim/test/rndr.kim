@@ -187,7 +187,7 @@ b = false"""
         check rndr("s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"") == "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         
     ▸ blocks
-    
+  
         check rndr("""
 f = ->
     g = ->
@@ -211,30 +211,29 @@ proc f() =
         2
     1"""
 
-#         check rndr("""
-# f = -> 
-#     if 1
-#         2
-# # dedent""") == """
-# proc f() =
-#     if 1:
-#         2
-# # dedent
-# """
+        check rndr("""
+f = -> 
+    if 1
+        2
+# dedent""") == """
+proc f() = 
+    if 1: 
+        2
+# dedent"""
 
-#         check rndr("""
-# f = -> 
-#     g = -> 
-#         2
-#         2
-#     1
-# 0""") == """
-# f() = 
-#     proc g() = 
-#         2
-#         2
-#     1
-# """
+        check rndr("""
+f = -> 
+    g = -> 
+        2
+        2
+    1
+0""") == """
+proc f() = 
+    proc g() = 
+        2
+        2
+    1
+0"""
 
     ▸ comments
     
@@ -255,7 +254,7 @@ proc f() =
         
     ▸ tests
 
-        check rndr("▸ a test suite")                         == "suite \"a test suite\":"
+        check rndr("▸ a test suite")                         == "suite \"a test suite\": "
         check rndr("""
 ▸ suite
     ▸ test1
@@ -263,13 +262,10 @@ proc f() =
     ▸ test2
         rndr("42") ▸ "42"
 """) == """
-suite "suite":
-
-    test "test1":
-    
+suite "suite": 
+    test "test1": 
         check rndr("") == ""
-    test "test2":
-    
+    test "test2": 
         check rndr("42") == "42""""
         
         

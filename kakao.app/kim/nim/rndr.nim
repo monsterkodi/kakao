@@ -244,7 +244,16 @@ proc ▸testCase(r: var Rndr, n: Node) =
     r.add " == "
     r.render n.test_expected
 
-proc ▸indent(r: var Rndr, n: Node)         = echo "▸indent"
+proc ▸testSuite(r:var Rndr, n:Node) =
+
+    if n.kind == ●testSuite:
+        r.add "suite"
+    else:
+        r.add "test"
+    r.add " \"" 
+    r.add n.token.str[4..^1] 
+    r.add "\": "
+    r.render n.test_block
 
 proc render(r: var Rndr, n: Node) =
 
@@ -291,14 +300,8 @@ proc render(r: var Rndr, n: Node) =
             r.▸var(n)
         of ●return:
             r.▸return(n)
-        of ●testSuite:
-            r.add "suite \"" 
-            r.add n.token.str[4..^1] 
-            r.add "\":" 
-        of ●testSection:
-            r.add "test \"" 
-            r.add n.token.str[4..^1] 
-            r.add "\":" 
+        of ●testSuite, ●testSection:
+            r.▸testSuite(n)
         of ●testCase:
             r.▸testCase(n)
         of ●literal, ●type, ●import:

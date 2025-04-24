@@ -166,25 +166,25 @@ suite "pars":
         
     test "tests":
     
-        check $ast("▸ a test suite")                         == "▪[▸]"
+        check $ast("▸ a test suite")                         == "▪[(▸ suite)]"
         check ast("▸ a test suite").expressions[0].kind      == ●testSuite
         
-        check $ast("    ▸ test section")                     == "▪[▸]"
+        check $ast("    ▸ test section")                     ==  "▪[(▸ section)]"
         check ast("    ▸ test section").expressions[0].kind  == ●testSection
         
         check $ast("    f(a) ▸ 42")                          == "▪[((◆name ◆call @[◆name]) ▸ ◆number)]"
         check $ast("    f(a) ▸\n        42")                 == "▪[((◆name ◆call @[◆name]) ▸ ◆number)]"
         
-        check $ast("▸ suite\n  ▸ test")                      == "▪[▸▪[▸]]"
+        check $ast("▸ suite\n  ▸ test")                      == "▪[(▸ suite ▪[(▸ section)])]"
         
         check $ast("""
 ▸ rndr
    ▸ toplevel
        rndr("")   ▸ ""
-       rndr("42") ▸ "42" """) == "▪[▸▪[▸▪[((◆name ◆call @[◆string]) ▸ ◆string)((◆name ◆call @[◆string]) ▸ ◆string)]]]"
-        
-        
+       rndr("42") ▸ "42" """) == "▪[(▸ suite ▪[(▸ section ▪[((◆name ◆call @[◆string]) ▸ ◆string)((◆name ◆call @[◆string]) ▸ ◆string)])])]"
+
     test "blocks":
+    
         check $ast("""
 f = -> 
     if x
@@ -199,4 +199,15 @@ f = ->
         2
     1
 """) == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])]"
+
+        echo "▸▸▸"
+
+        check $ast("""
+f = -> 
+    g = -> 
+        2
+        2
+    1
+0
+0""") == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])◆number◆number]"
         
