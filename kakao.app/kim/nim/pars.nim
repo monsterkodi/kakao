@@ -282,9 +282,6 @@ proc `$`*(n: Node): string =
         of ●range:
             s = &"({n.range_start} {s} {n.range_end})"
         of ●string:
-            # var i = ""
-            # if n.string_stripols.len
-            #     i &= &"{n.string_stripols}"
             let i = choose(n.string_stripols.len>0, &"{n.string_stripols}", "")
             s = &"◆string{i}"
         of ●preOp:
@@ -438,25 +435,15 @@ proc parseBlock(p:var Parser, bn:Node=nil): Node =
     if bn == nil:
         bn = Node(token:token, kind:●block, expressions:default seq[Node])
         
-    # echo &"pars.block {block_indent} {token} {p.current()} {p.blocks.len}"
-    
-    if block_indent > 0:
-        echo &"pars.block stack start |>|> {block_indent} {p.blocks.len}"
-        p.blocks.add bn
-    
     var expr : Node = p.expression()
     while expr != nil:
         bn.expressions.add expr
         if p.tok() == ◆indent:
             let ind = p.current().str.len
             if ind < block_indent:
-                echo &"pars.block outdent {ind} <| {block_indent} {p.blocks.len}"
-                if p.blocks.len:
-                    bn = p.blocks.pop()
                 break
             elif ind > block_indent:
-                echo &"pars.block indent {ind} |> {block_indent}"
-                # p.blocks.add bn
+                p.blocks.add bn
                 expr = p.parseBlock()
                 bn = p.blocks.pop()
                 continue
@@ -464,9 +451,6 @@ proc parseBlock(p:var Parser, bn:Node=nil): Node =
                 p.swallow()
                 
         if p.current().col < block_indent:
-            echo &"pars.block OUTDENT {p.current().col} <| {block_indent} {p.blocks.len} {p.current()}"
-            # if p.blocks.len
-            #     bn = p.blocks.pop()
             break
             
         expr = p.expression()
@@ -948,12 +932,6 @@ proc rTestSuite(p: var Parser): Node =
 proc expression(p: var Parser, precedenceRight = 0): Node =
 
     let token = p.current()
-    
-    if p.tok() == ◆indent and p.blocks.len > 0:
-        echo "block stack!!!"
-        if token.str.len == p.blocks[^1].token.col:
-            p.swallow()
-            return  p.blocks[^1]    
     
     if token.tok == ◆eof:
         return  nil
