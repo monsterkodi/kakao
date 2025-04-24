@@ -485,10 +485,17 @@ proc parse*(p: var Parser): Node =
 proc rIf(p: var Parser): Node =
 
     let token = p.consume() # if
-    
     var condThens: seq[Node] = @[]
+
+    let ifIndent = token.col
+    var condIndt = ifIndent
     
-    p.swallow ◆indent # block indentation
+    if p.tok() == ◆indent
+        condIndt = p.current().str.len
+        if condIndt <= ifIndent
+            log &"ifIndent {ifIndent} condIndt {condIndt} {p.current()}"
+            ⮐  p.error "Expected indentation after 'if' without condition"
+        p.swallow ◆indent # block indentation
     
     var cond = p.expression() # initial condition
             
@@ -511,13 +518,13 @@ proc rIf(p: var Parser): Node =
         
         condThens.add(Node(kind:●condThen, cond:cond, then:then))
         
-    var `else`: Node
+    var elseBranch: Node
     
     if p.tok() in {◆else, ◆then}
         p.swallow() # else or then without condition
-        `else` = p.expression()
+        elseBranch = p.expression()
     
-    Node(token:token, kind:●if, cond_thens:condThens,`else`:`else`)
+    Node(token:token, kind:●if, cond_thens:condThens,`else`:elseBranch)
         
 # ████████   ███████   ████████ 
 # ███       ███   ███  ███   ███

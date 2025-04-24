@@ -183,3 +183,20 @@ suite "pars":
        rndr("")   ▸ ""
        rndr("42") ▸ "42" """) == "▪[▸▪[▸▪[((◆name ◆call @[◆string]) ▸ ◆string)((◆name ◆call @[◆string]) ▸ ◆string)]]]"
         
+        
+    test "blocks":
+        check $ast("""
+f = -> 
+    if x
+        2
+    1
+""") == "▪[(-> ◆name @[] ▪[(◆if @[(◆name ▪[◆number])])◆number])]"
+
+        check $ast("""
+f = -> 
+    g = -> 
+        2
+        2
+    1
+""") == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])]"
+        

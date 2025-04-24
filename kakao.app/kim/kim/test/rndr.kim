@@ -186,6 +186,56 @@ b = false"""
         check rndr("s = \"\"\"num #{1+2} end\"\"\"")         == "s = &\"\"\"num {(1 + 2)} end\"\"\""
         check rndr("s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"") == "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         
+    ▸ blocks
+    
+        check rndr("""
+f = ->
+    g = ->
+        2
+        2
+    1""") == """
+proc f() = 
+    proc g() = 
+        2
+        2
+    1"""
+    
+        check rndr("""
+f = -> 
+    if x
+        2
+    1
+""")  == """
+proc f() = 
+    if x: 
+        2
+    1"""
+
+#         check rndr("""
+# f = -> 
+#     if 1
+#         2
+# # dedent""") == """
+# proc f() =
+#     if 1:
+#         2
+# # dedent
+# """
+
+#         check rndr("""
+# f = -> 
+#     g = -> 
+#         2
+#         2
+#     1
+# 0""") == """
+# f() = 
+#     proc g() = 
+#         2
+#         2
+#     1
+# """
+
     ▸ comments
     
         check rndr("two = 1 + 1 # addition")                       == "two = (1 + 1) # addition"
