@@ -5,225 +5,231 @@
 # ███        ███   ███  ███   ███  ███████ 
 
 import std/[unittest]
+import ../kommon
 import ../pars
+    
+template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
 
 ▸ pars
 
     ▸ math ops
         
-        check $ast("1 + 5 * 3")                              == "▪[(◆number + (◆number * ◆number))]"
-        check $ast("1 * 5 - 3")                              == "▪[((◆number * ◆number) - ◆number)]"
-        check $ast("-5 - -3")                                == "▪[((- ◆number) - (- ◆number))]"
-        check $ast("a++ + b--")                              == "▪[((◆name ++) + (◆name --))]"
-        check $ast("1 + 2 + 3")                              == "▪[((◆number + ◆number) + ◆number)]"
-        check $ast("1 * 2 + 3 * 4")                          == "▪[((◆number * ◆number) + (◆number * ◆number))]"
+        t "1 + 5 * 3"                               , "▪[(◆number + (◆number * ◆number))]"
+        t "1 * 5 - 3"                               , "▪[((◆number * ◆number) - ◆number)]"
+        t "-5 - -3"                                 , "▪[((- ◆number) - (- ◆number))]"
+        t "a++ + b--"                               , "▪[((◆name ++) + (◆name --))]"
+        t "1 + 2 + 3"                               , "▪[((◆number + ◆number) + ◆number)]"
+        t "1 * 2 + 3 * 4"                           , "▪[((◆number * ◆number) + (◆number * ◆number))]"
         
     ▸ boolean ops
     
-        check $ast("a && b || c")                            == "▪[((◆name && ◆name) || ◆name)]"
-        check $ast("a and b or c")                           == "▪[((◆name && ◆name) || ◆name)]"
-        check $ast("!a && b")                                == "▪[((! ◆name) && ◆name)]"
-        check $ast("not a && b")                             == "▪[((! ◆name) && ◆name)]"
-        check $ast("a || b && c")                            == "▪[(◆name || (◆name && ◆name))]"
-        check $ast("a or b and c")                           == "▪[(◆name || (◆name && ◆name))]"
-        check $ast("a && b == c")                            == "▪[((◆name && ◆name) == ◆name)]"
-        check $ast("a and b == c")                           == "▪[((◆name && ◆name) == ◆name)]"
-        check $ast("x = a || b")                             == "▪[(◆name = (◆name || ◆name))]"
-        check $ast("x = a or b")                             == "▪[(◆name = (◆name || ◆name))]"
-        check $ast("!a || !b")                               == "▪[((! ◆name) || (! ◆name))]"
-        check $ast("not a or not b")                         == "▪[((! ◆name) || (! ◆name))]"
+        t "a && b || c"                             , "▪[((◆name && ◆name) || ◆name)]"
+        t "a and b or c"                            , "▪[((◆name && ◆name) || ◆name)]"
+        t "!a && b"                                 , "▪[((! ◆name) && ◆name)]"
+        t "not a && b"                              , "▪[((! ◆name) && ◆name)]"
+        t "a || b && c"                             , "▪[(◆name || (◆name && ◆name))]"
+        t "a or b and c"                            , "▪[(◆name || (◆name && ◆name))]"
+        t "a && b == c"                             , "▪[((◆name && ◆name) == ◆name)]"
+        t "a and b == c"                            , "▪[((◆name && ◆name) == ◆name)]"
+        t "x = a || b"                              , "▪[(◆name = (◆name || ◆name))]"
+        t "x = a or b"                              , "▪[(◆name = (◆name || ◆name))]"
+        t "!a || !b"                                , "▪[((! ◆name) || (! ◆name))]"
+        t "not a or not b"                          , "▪[((! ◆name) || (! ◆name))]"
 
     ▸ parens
     
-        check $ast("(1 + 2) * 3")                            == "▪[((◆number + ◆number) * ◆number)]"
-        check $ast("(1)")                                    == "▪[◆number]"
-        check $ast("(a + b) * c")                            == "▪[((◆name + ◆name) * ◆name)]"
-        check $ast("a * (b + c)")                            == "▪[(◆name * (◆name + ◆name))]"
-        check $ast("((1))")                                  == "▪[◆number]"
-        check $ast("(a.b).c")                                == "▪[((◆name . ◆name) . ◆name)]"
+        t "(1 + 2) * 3"                             , "▪[((◆number + ◆number) * ◆number)]"
+        t "(1)"                                     , "▪[◆number]"
+        t "(a + b) * c"                             , "▪[((◆name + ◆name) * ◆name)]"
+        t "a * (b + c)"                             , "▪[(◆name * (◆name + ◆name))]"
+        t "((1))"                                   , "▪[◆number]"
+        t "(a.b).c"                                 , "▪[((◆name . ◆name) . ◆name)]"
         
-        check $ast("a * (b + c) / d")                        == "▪[((◆name * (◆name + ◆name)) / ◆name)]"
-        check $ast("3 * (1 + 2)")                            == "▪[(◆number * (◆number + ◆number))]"
+        t "a * (b + c) / d"                         , "▪[((◆name * (◆name + ◆name)) / ◆name)]"
+        t "3 * (1 + 2)"                             , "▪[(◆number * (◆number + ◆number))]"
         
     ▸ func
     
-        check $ast("->")                                     == "▪[(-> @[])]"
-        check $ast("f = ->")                                 == "▪[(-> ◆name @[])]" 
-        check $ast("f = a◇string ->")                        == "▪[(-> ◆name @[(◆name ◇ ◆type)])]"
-        check $ast("f = a◇string b◇int ->")                  == "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type)])]"
-        check $ast("f = p◆Parser a◇string b◇int ->")         == "▪[(-> ◆name @[(◆name ◆ ◆type), (◆name ◇ ◆type), (◆name ◇ ◆type)])]"
-        check $ast("f = p◆Parser ->")                        == "▪[(-> ◆name @[(◆name ◆ ◆type)])]"
-        check $ast("f = ➜ Node ->")                          == "▪[(-> ◆name @[] ◆type)]"
-        check $ast("f = p◆Parser ➜ Node ->")                 == "▪[(-> ◆name @[(◆name ◆ ◆type)] ◆type)]"
-        check $ast("f = s◇seq[Node] ➜ seq[Node] ->")         == "▪[(-> ◆name @[(◆name ◇ ◆type)] ◆type)]"
-        check $ast("f = p◇Parser ahead◇int=1 ➜ Token ->")    == "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type (= ◆number))] ◆type)]"
-        check $ast("f = p◇Parser ahead=1 ➜ Token ->")        == "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name (= ◆number))] ◆type)]"
+        t "->"                                      , "▪[(-> @[])]"
+        t "f = ->"                                  , "▪[(-> ◆name @[])]" 
+        t "f = a◇string ->"                         , "▪[(-> ◆name @[(◆name ◇ ◆type)])]"
+        t "f = a◇string b◇int ->"                   , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type)])]"
+        t "f = p◆Parser a◇string b◇int ->"          , "▪[(-> ◆name @[(◆name ◆ ◆type), (◆name ◇ ◆type), (◆name ◇ ◆type)])]"
+        t "f = p◆Parser ->"                         , "▪[(-> ◆name @[(◆name ◆ ◆type)])]"
+        t "f = ➜ Node ->"                           , "▪[(-> ◆name @[] ◆type)]"
+        t "f = p◆Parser ➜ Node ->"                  , "▪[(-> ◆name @[(◆name ◆ ◆type)] ◆type)]"
+        t "f = s◇seq[Node] ➜ seq[Node] ->"          , "▪[(-> ◆name @[(◆name ◇ ◆type)] ◆type)]"
+        t "f = p◇Parser ahead◇int=1 ➜ Token ->"     , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type (= ◆number))] ◆type)]"
+        t "f = p◇Parser ahead=1 ➜ Token ->"         , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name (= ◆number))] ◆type)]"
         
     ▸ func body
     
-        check $ast("f = ->\n  b = 1 + 2\n  b += 3")          == "▪[(-> ◆name @[] ▪[(◆name = (◆number + ◆number))(◆name += ◆number)])]" 
+        t "f = ->\n  b = 1 + 2\n  b += 3"           , "▪[(-> ◆name @[] ▪[(◆name = (◆number + ◆number))(◆name += ◆number)])]" 
         
     ▸ call
     
-        check $ast("f()")                                    == "▪[(◆name ◆call @[])]"
-        check $ast("f(g())")                                 == "▪[(◆name ◆call @[(◆name ◆call @[])])]"
-        check $ast("f(g() / h())")                           == "▪[(◆name ◆call @[((◆name ◆call @[]) / (◆name ◆call @[]))])]"
-        check $ast("f(1)")                                   == "▪[(◆name ◆call @[◆number])]"
-        check $ast("f(1 + 2)")                               == "▪[(◆name ◆call @[(◆number + ◆number)])]"
-        check $ast("f(1 + 2 4 + 5)")                         == "▪[(◆name ◆call @[(◆number + ◆number), (◆number + ◆number)])]"
-        check $ast("f(1 2 3)")                               == "▪[(◆name ◆call @[◆number, ◆number, ◆number])]"
-        check $ast("f(1 g(h(2)))")                           == "▪[(◆name ◆call @[◆number, (◆name ◆call @[(◆name ◆call @[◆number])])])]"
+        t "f()"                                     , "▪[(◆name ◆call @[])]"
+        t "f(g())"                                  , "▪[(◆name ◆call @[(◆name ◆call @[])])]"
+        t "f(g() / h())"                            , "▪[(◆name ◆call @[((◆name ◆call @[]) / (◆name ◆call @[]))])]"
+        t "f(1)"                                    , "▪[(◆name ◆call @[◆number])]"
+        t "f(1 + 2)"                                , "▪[(◆name ◆call @[(◆number + ◆number)])]"
+        t "f(1 + 2 4 + 5)"                          , "▪[(◆name ◆call @[(◆number + ◆number), (◆number + ◆number)])]"
+        t "f(1 2 3)"                                , "▪[(◆name ◆call @[◆number, ◆number, ◆number])]"
+        t "f(1 g(h(2)))"                            , "▪[(◆name ◆call @[◆number, (◆name ◆call @[(◆name ◆call @[◆number])])])]"
     
     ▸ implicit call    
     
-        check $ast("f a")                                    ==  "▪[(◆name ◆call @[◆name])]"
+        t "f a"                                     , "▪[(◆name ◆call @[◆name])]"
         
     ▸ arglist
     
-        check $ast("f(a, b, c)")                             == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
-        # check $ast("f a, b, c")                              == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
-        # check $ast("(a, b, c) = f()")                        == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
-        # check $ast("(a b c) = f()")                          == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
+        t "f(a, b, c)"                              , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
+        t "f a, b, c"                               , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
+        t "(a, b, c) = f()"                         , "▪[(@[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
+        # ϝ𝚒𝓍⫙ϵ!
+        # t "(a b c) = f()"                         , "▪[(@[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         
     ▸ assign
     
-        check $ast("a = 1")                                  == "▪[(◆name = ◆number)]"
-        check $ast("a = b = 1")                              == "▪[(◆name = (◆name = ◆number))]"
-        check $ast("a = b = c = 2")                          == "▪[(◆name = (◆name = (◆name = ◆number)))]"
+        t "a = 1"                                   , "▪[(◆name = ◆number)]"
+        t "a = b = 1"                               , "▪[(◆name = (◆name = ◆number))]"
+        t "a = b = c = 2"                           , "▪[(◆name = (◆name = (◆name = ◆number)))]"
+        
+        t "(a, b) = c"                              , "▪[(@[◆name, ◆name] = ◆name)]"
         
     ▸ properties        
         
-        check $ast("a.b")                                    == "▪[(◆name . ◆name)]"
-        check $ast("a.b.c")                                  == "▪[((◆name . ◆name) . ◆name)]"
-        check $ast("a.b()")                                  == "▪[((◆name . ◆name) ◆call @[])]"
-        check $ast("a.b().c")                                == "▪[(((◆name . ◆name) ◆call @[]) . ◆name)]"
+        t "a.b"                                     , "▪[(◆name . ◆name)]"
+        t "a.b.c"                                   , "▪[((◆name . ◆name) . ◆name)]"
+        t "a.b()"                                   , "▪[((◆name . ◆name) ◆call @[])]"
+        t "a.b().c"                                 , "▪[(((◆name . ◆name) ◆call @[]) . ◆name)]"
         
     ▸ if
     
-        check $ast("if true then ⮐  false")                  == "▪[(◆if @[(✔ (⮐ ✘))])]"
-        check $ast("if true then ⮐  1 else ⮐  2")            == "▪[(◆if @[(✔ (⮐ ◆number))] (⮐ ◆number))]"
-        check $ast("if a ➜ 1 elif b ➜ 2 elif c ➜ 3")         == "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)])]"
-        check $ast("if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4")  == "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)] ◆number)]"
-        check $ast("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3")          == "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)])]"
-        check $ast("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4")   == "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)] ◆number)]"
+        t "if true then ⮐  false"                   , "▪[(◆if @[(✔ (⮐ ✘))])]"
+        t "if true then ⮐  1 else ⮐  2"             , "▪[(◆if @[(✔ (⮐ ◆number))] (⮐ ◆number))]"
+        t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3"          , "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)])]"
+        t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4"   , "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)] ◆number)]"
+        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3"           , "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)])]"
+        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4"    , "▪[(◆if @[(◆name ◆number), (◆name ◆number), (◆name ◆number)] ◆number)]"
         
-        check $ast("if a then if b then 1 else 2 else 3")    == "▪[(◆if @[(◆name (◆if @[(◆name ◆number)] ◆number))] ◆number)]"
-        check $ast("x = if a then b else c")                 == "▪[(◆name = (◆if @[(◆name ◆name)] ◆name))]"
-        check $ast("x = if a then b else c+d")               == "▪[(◆name = (◆if @[(◆name ◆name)] (◆name + ◆name)))]"
+        t "if a then if b then 1 else 2 else 3"     , "▪[(◆if @[(◆name (◆if @[(◆name ◆number)] ◆number))] ◆number)]"
+        t "x = if a then b else c"                  , "▪[(◆name = (◆if @[(◆name ◆name)] ◆name))]"
+        t "x = if a then b else c+d"                , "▪[(◆name = (◆if @[(◆name ◆name)] (◆name + ◆name)))]"
         
-        check $ast("if a then ⮐")                            == "▪[(◆if @[(◆name (⮐))])]"
-        check $ast("a + if b then c else d")                 == "▪[(◆name + (◆if @[(◆name ◆name)] ◆name))]"
+        t "if a then ⮐"                             , "▪[(◆if @[(◆name (⮐))])]"
+        t "a + if b then c else d"                  , "▪[(◆name + (◆if @[(◆name ◆name)] ◆name))]"
         
-        check $ast("if true\n  log msg")                     == "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆name])])])]"
-        check $ast("if true\n  log(1)\n  log(2)")            == "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆number])(◆name ◆call @[◆number])])])]"
+        t "if true\n  log msg"                      , "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆name])])])]"
+        t "if true\n  log(1)\n  log(2)"             , "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆number])(◆name ◆call @[◆number])])])]"
         
     ▸ for
     
-        check $ast("0..2")                                   == "▪[(◆number .. ◆number)]"
-        check $ast("for a in 0..2 ➜ true")                   == "▪[(◆for ◆name in (◆number .. ◆number) ✔)]"
-        check $ast("for a in 0..2\n  true")                  == "▪[(◆for ◆name in (◆number .. ◆number) ▪[✔])]"
-        check $ast("for a in 0..2 ➜\n  true")                == "▪[(◆for ◆name in (◆number .. ◆number) ▪[✔])]"
-        check $ast("for key val in a")                       == "▪[(◆for @[◆name, ◆name] in ◆name)]"  
-        check $ast("for kind, key, val in a")                == "▪[(◆for @[◆name, ◆name, ◆name] in ◆name)]"  
+        t "0..2"                                    , "▪[(◆number .. ◆number)]"
+        t "for a in 0..2 ➜ true"                    , "▪[(◆for ◆name in (◆number .. ◆number) ✔)]"
+        t "for a in 0..2\n  true"                   , "▪[(◆for ◆name in (◆number .. ◆number) ▪[✔])]"
+        t "for a in 0..2 ➜\n  true"                 , "▪[(◆for ◆name in (◆number .. ◆number) ▪[✔])]"
+        t "for key val in a"                        , "▪[(◆for @[◆name, ◆name] in ◆name)]"  
+        t "for kind, key, val in a"                 , "▪[(◆for @[◆name, ◆name, ◆name] in ◆name)]"  
         
     ▸ switch
     
-        check $ast("switch x\n  a ➜ 1\n  b c ➜ 2")           == "▪[(◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)])]"
-        check $ast("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4")    == "▪[(◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)] ◆number)]"
+        t "switch x\n  a ➜ 1\n  b c ➜ 2"            , "▪[(◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)])]"
+        t "switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4"     , "▪[(◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)] ◆number)]"
 
-        check $ast("switch x\n  1 2 ➜ a")                    == "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)])]"
-        check $ast("switch x\n  1 2 ➜ a\n  3 ➜ b")           == "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name), (@[◆number] ◆name)])]"
-        check $ast("switch x\n  1 2 ➜ a\n  3 ➜ b\n  else c") == "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name), (@[◆number] ◆name)] ◆name)]"
-        check $ast("switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c")    == "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name), (@[◆number] ◆name)] ◆name)]"
-        check $ast("switch x\n  1 2\n    a\n  ➜ c")          == "▪[(◆switch ◆name @[(@[◆number, ◆number] ▪[◆name])] ◆name)]"
-        check $ast("switch x\n  1 2➜\n    a\n  ➜ c")         == "▪[(◆switch ◆name @[(@[◆number, ◆number] ▪[◆name])] ◆name)]"
-        check $ast("switch x\n  1 2 ➜ a\n  else\n    c")     == "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
-        check $ast("switch x\n  1 2 ➜ a\n  ➜\n    c")        == "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
-        check $ast("switch x\n a ➜ if b then c")             == "▪[(◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])]"
+        t "switch x\n  1 2 ➜ a"                     , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)])]"
+        t "switch x\n  1 2 ➜ a\n  3 ➜ b"            , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name), (@[◆number] ◆name)])]"
+        t "switch x\n  1 2 ➜ a\n  3 ➜ b\n  else c"  , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name), (@[◆number] ◆name)] ◆name)]"
+        t "switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c"     , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name), (@[◆number] ◆name)] ◆name)]"
+        t "switch x\n  1 2\n    a\n  ➜ c"           , "▪[(◆switch ◆name @[(@[◆number, ◆number] ▪[◆name])] ◆name)]"
+        t "switch x\n  1 2➜\n    a\n  ➜ c"          , "▪[(◆switch ◆name @[(@[◆number, ◆number] ▪[◆name])] ◆name)]"
+        t "switch x\n  1 2 ➜ a\n  else\n    c"      , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
+        t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
+        t "switch x\n a ➜ if b then c"              , "▪[(◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])]"
         
     ▸ strings
     
-        check $ast("s = \"hello\"")                          == "▪[(◆name = ◆string)]"
-        check $ast("s = \"\"\"hello\"\"\"")                  == "▪[(◆name = ◆string)]"
-        check $ast("s = \"\"\"\n\n\"\"\"")                   == "▪[(◆name = ◆string)]"
-        check $ast("s = \"\"\"num #{1+2} end\"\"\"")         == "▪[(◆name = ◆string@[◆name])]"
-        check $ast("s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\"")     == "▪[(◆name = ◆string@[◆name, ◆name])]"
+        t "s = \"hello\""                           , "▪[(◆name = ◆string)]"
+        t "s = \"\"\"hello\"\"\""                   , "▪[(◆name = ◆string)]"
+        t "s = \"\"\"\n\n\"\"\""                    , "▪[(◆name = ◆string)]"
+        t "s = \"\"\"num #{1+2} end\"\"\""          , "▪[(◆name = ◆string@[◆name])]"
+        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\""      , "▪[(◆name = ◆string@[◆name, ◆name])]"
         
     ▸ toplevel
 
-        check $ast("")                                       == "▪[]"
-        check $ast("42")                                     == "▪[◆number]"
-        check $ast("true")                                   == "▪[✔]"
-        check $ast("false")                                  == "▪[✘]"
-        check $ast("\"hello\"")                              == "▪[◆string]"
+        t ""                                        , "▪[]"
+        t "42"                                      , "▪[◆number]"
+        t "true"                                    , "▪[✔]"
+        t "false"                                   , "▪[✘]"
+        t "\"hello\""                               , "▪[◆string]"
         
     ▸ use
     
-        check $ast("use rndr")                               == "▪[(◆use ◆name)]"
-        check $ast("use std ▪ unittest")                     == "▪[(◆use ◆name ▪ @[◆name])]"
-        check $ast("use ../rndr")                            == "▪[(◆use ◆name)]"
-        check $ast("use std ▪ os logging\nuse kommon")       == "▪[(◆use ◆name ▪ @[◆name, ◆name])(◆use ◆name)]"
-        check $ast("use std ▪ a b c\nuse d\nuse e\nuse f")   == "▪[(◆use ◆name ▪ @[◆name, ◆name, ◆name])(◆use ◆name)(◆use ◆name)(◆use ◆name)]" 
+        t "use rndr"                                , "▪[(◆use ◆name)]"
+        t "use std ▪ unittest"                      , "▪[(◆use ◆name ▪ @[◆name])]"
+        t "use ../rndr"                             , "▪[(◆use ◆name)]"
+        t "use std ▪ os logging\nuse kommon"        , "▪[(◆use ◆name ▪ @[◆name, ◆name])(◆use ◆name)]"
+        t "use std ▪ a b c\nuse d\nuse e\nuse f"    , "▪[(◆use ◆name ▪ @[◆name, ◆name, ◆name])(◆use ◆name)(◆use ◆name)(◆use ◆name)]" 
 
-        check $ast("import ../../rel/[s1, s2]")              == "▪[◆import]"
+        t "import ../../rel/[s1, s2]"               , "▪[◆import]"
         
     ▸ var
         
-        check $ast("var a = 1")                              == "▪[(◆ ◆name (= ◆number))]"
-        check $ast("let a = 1")                              == "▪[(◇ ◆name (= ◆number))]"
-        check $ast("◆a = 1")                                 == "▪[(◆ ◆name (= ◆number))]"
-        check $ast("◇a = 1")                                 == "▪[(◇ ◆name (= ◆number))]"
-        check $ast("◆str = \"\"\n◆bool = false\n◆num = 1")   == "▪[(◆ ◆name (= ◆string))(◆ ◆name (= ✘))(◆ ◆name (= ◆number))]"
+        t "var a = 1"                               , "▪[(◆ ◆name (= ◆number))]"
+        t "let a = 1"                               , "▪[(◇ ◆name (= ◆number))]"
+        t "◆a = 1"                                  , "▪[(◆ ◆name (= ◆number))]"
+        t "◇a = 1"                                  , "▪[(◇ ◆name (= ◆number))]"
+        t "◆str = \"\"\n◆bool = false\n◆num = 1"    , "▪[(◆ ◆name (= ◆string))(◆ ◆name (= ✘))(◆ ◆name (= ◆number))]"
         
     ▸ tests
     
-        check $ast("▸ a test suite")                         == "▪[(▸ suite)]"
+        t "▸ a test suite"                          , "▪[(▸ suite)]"
         check ast("▸ a test suite").expressions[0].kind      == ●testSuite
         
-        check $ast("    ▸ test section")                     ==  "▪[(▸ section)]"
+        t "    ▸ test section"                      , "▪[(▸ section)]"
         check ast("    ▸ test section").expressions[0].kind  == ●testSection
         
-        check $ast("    f(a) ▸ 42")                          == "▪[((◆name ◆call @[◆name]) ▸ ◆number)]"
-        check $ast("    f(a) ▸\n        42")                 == "▪[((◆name ◆call @[◆name]) ▸ ◆number)]"
+        t "    f(a) ▸ 42"                           , "▪[((◆name ◆call @[◆name]) ▸ ◆number)]"
+        t "    f(a) ▸\n        42"                  , "▪[((◆name ◆call @[◆name]) ▸ ◆number)]"
         
-        check $ast("▸ suite\n  ▸ test")                      == "▪[(▸ suite ▪[(▸ section)])]"
+        t "▸ suite\n  ▸ test"                       , "▪[(▸ suite ▪[(▸ section)])]"
         
-        check $ast("""
+        t """
 ▸ rndr
    ▸ toplevel
        rndr("")   ▸ ""
-       rndr("42") ▸ "42" """) == "▪[(▸ suite ▪[(▸ section ▪[((◆name ◆call @[◆string]) ▸ ◆string)((◆name ◆call @[◆string]) ▸ ◆string)])])]"
+       rndr("42") ▸ "42" """  , "▪[(▸ suite ▪[(▸ section ▪[((◆name ◆call @[◆string]) ▸ ◆string)((◆name ◆call @[◆string]) ▸ ◆string)])])]"
 
     ▸ blocks
     
-        check $ast("""
+        t """
 f = -> 
     if x
         2
     1
-""") == "▪[(-> ◆name @[] ▪[(◆if @[(◆name ▪[◆number])])◆number])]"
+"""  , "▪[(-> ◆name @[] ▪[(◆if @[(◆name ▪[◆number])])◆number])]"
 
-        check $ast("""
+        t """
 f = -> 
     g = -> 
         2
         2
     1
-""") == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])]"
+"""  , "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])]"
 
-        check $ast("""
+        t """
 f = -> 
     g = -> 
         2
         2
     1
 0
-0""") == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])◆number◆number]"
+0"""  , "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])◆number◆number]"
 
-        check $ast("""
+        t """
 ◇icon = 
-    if ext == ".kim"
+    if ex == ".kim"
         "  "
     else
-        "  """") == "▪[(◇ ◆name (= ▪[(◆if @[((◆name == ◆string) ▪[◆string])] ▪[◆string])]))]"
+        "  """"  , "▪[(◇ ◆name (= ▪[(◆if @[((◆name == ◆string) ▪[◆string])] ▪[◆string])]))]"
         

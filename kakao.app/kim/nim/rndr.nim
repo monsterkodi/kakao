@@ -28,15 +28,16 @@ proc rnd(r: var Rndr, nodes: seq[Node]) =
             r.add ", "
 
 proc ▸block(r: var Rndr, n: Node) = 
-
     var idt : string
     if n.token.tok == ◆indent:
+        # echo &"rndr.block {n} {n.token}"
         idt = n.token.str
         r.add "\n" & idt
         
     for i,exp in n.expressions:
         r.rnd exp
         if i < n.expressions.len-1:
+            # echo &"{n.expressions[i+1].token} > {exp.token}"
             if n.expressions[i+1].token.line > exp.token.line:
                 r.add "\n" & idt
             else:
@@ -324,11 +325,11 @@ proc renderCode*(code: string): string =
 proc file*(file: string) : string = 
 
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    echo &"fileOut {fileOut}"
+    # echo &"fileOut {fileOut}"
     let code = file.readFile()
     # echo &"code {code}"
     let trns = renderCode code
-    echo &"{trns}"
+    # echo &"{trns}"
     fileOut
     
 proc files*(files: seq[string]): seq[string] = 

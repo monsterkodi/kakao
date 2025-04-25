@@ -356,11 +356,17 @@ proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
 proc error(p: Parser, msg: string, token=Token(tok:◆eof)) : Node =
 
-    styledEcho fgRed, $p
-    styledEcho fgYellow, &"parse error: {msg}"
-    if token.tok != ◆eof    
+    # styledEcho fgRed, $p
+    styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
+    if token.tok != ◆eof
         let line = p.text.split("\n")[token.line]
-        styledEcho fgGreen, &"{token}: {line}"
+        # styledEcho fgGreen, &"{token}: {line}"
+        styledEcho fgGreen, &"{line}"
+    elif p.tok != ◆eof
+        let line = p.text.split("\n")[p.current().line]
+        # styledEcho fgGreen,  &"\n{p.current().line}: {line}"
+        styledEcho fgGreen,  &"{line}"
+        
     nil
     
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
@@ -553,7 +559,7 @@ proc rIf(p: Parser): Node =
     # log &"rIf {p}"
 
     let token = p.consume() # if
-    var condThens: seq[Node] = @[]
+    var condThens: seq[Node]
 
     let ifIndent = token.col
     var condIndt = ifIndent
@@ -569,11 +575,12 @@ proc rIf(p: Parser): Node =
             
     var then = p.then()
     
-    condThens.add(Node(kind:●condThen, cond:cond, then:then))
+    condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
     
     while p.tok() in {◆elif, ◆indent}
     
         # log &"condThen {p.current()} {ifIndent} {condIndt}"
+        # let condToken = p.current()
         if p.tok() == ◆indent
             if p.current().str.len < condIndt or p.current().str.len == ifIndent == condIndt 
                 # log "outdent in condThen list"
@@ -589,7 +596,7 @@ proc rIf(p: Parser): Node =
         
         then = p.then()
         
-        condThens.add(Node(kind:●condThen, cond:cond, then:then))
+        condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
         
     var elseBranch: Node
     # log &"before else {p.current()}"
@@ -702,7 +709,20 @@ proc lImplicitCall(p: Parser, callee: Node): Node =
 
     let args = p.parseCallArgList()
     
-    Node(kind:●call, callee:callee, callargs:args)
+    Node(token:callee.token, kind:●call, callee:callee, callargs:args)
+    
+proc parseParenList(p: Parser): seq[Node] =
+
+    let token = p.consume() # (
+    
+    var args : seq[Node]
+    while p.tok() != ◆paren_close and p.tok() != ◆eof
+        args.add p.expression()
+        p.swallow ◆comma
+        
+    p.swallowError(◆paren_close, "Missing closing parenthesis for call arguments")
+    
+    args
         
 proc lCall(p: Parser, callee: Node): Node =
 
@@ -972,11 +992,12 @@ proc lRange(p: Parser, left: Node): Node =
         
 proc rParenExpr(p: Parser): Node =
 
-    p.swallow() # '('
-    let expr = p.expression()
-    # log &"rParenExpr ( {expr}"
-    p.swallowError(◆paren_close, "Expected closing parenthesis")
-    expr
+    let token = p.current() # (
+    let expr = p.parseParenList()
+    if expr.len == 1
+        expr[0]
+    else
+        Node(token:token, kind:●list, list_values:expr)
     
 proc lTestCase(p: Parser, left: Node): Node =
 
@@ -1002,7 +1023,7 @@ proc rTestSuite(p: Parser): Node =
 # ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
 
 ###
-   ◆R      ◆LR     ◆L      ◆R      ◆L      ◆L
+   ◆R      ◆LR     ◆L      ◆R      ◆L      ◆LR     ◆R 
    │       │       │       │       │       │ 
    ◆R➜●    │       │       ◆R➜●    │       │ 
       │    │       │          │    │       │
@@ -1022,7 +1043,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
     
     if rhs == nil
                 
-        ⮐  p.error(&"expected expression but found: {token}")
+        ⮐  p.error(&"Expected expression but found {token.str}")
         
     var node: Node = rhs(p)
 

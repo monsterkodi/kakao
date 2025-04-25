@@ -5,25 +5,10 @@
 # ███   ███  ███   ███  ███████    ███   ███
 
 import std/[unittest, macros, strformat, terminal]
+import ../kommon
 import ../rndr
-
-type lineInfo = tuple[filename: string, line: int, column: int]
-
-proc cmp(a:string, b:string, l:lineInfo) = 
-
-    let r = renderCode a
-    if r != b:
-        echo ""
-        styledEcho fgWhite, styleDim, l.filename, ":", resetStyle, fgWhite, $l.line
-        styledEcho fgBlue,    a
-        styledEcho fgMagenta, "|>"
-        styledEcho fgGreen,   b
-        styledEcho fgRed,     "!="
-        styledEcho fgYellow,  r
-        echo ""
-        fail()
     
-template t(a:string, b:string): untyped = cmp(a, b, instantiationInfo())
+template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo())
 
 suite "rndr":
 
@@ -118,9 +103,11 @@ suite "rndr":
     test "arglist":
     
         t "f(a, b, c)"        , "f(a, b, c)"
-        # t "f a, b, c"         , "f(a, b, c)"
-        # t "f a b c"           , "f(a(b(c)))"
+        t "f a, b, c"         , "f(a, b, c)"
+        t "f a b c"           , "f(a, b, c)"
+        t "f 1 '2' false"     , "f(1, '2', false)"
         
+        # t "(a, b) = c"        , "(a, b) = c"
         # t "(a, b, c) = f()"   , "(a, b, c) = f()"
         # t "(a b c) = f()"     , "(a, b, c) = f()"
         
