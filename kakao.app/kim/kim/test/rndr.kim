@@ -278,4 +278,16 @@ suite "suite":
     test "test2": 
         check rndr("42") == "42""""
         
+#         check rndr("""
+# ◇icon = 
+#     if ext == ".kim"
+#         "  "
+#     else
+#         "  """") == """
+# let icon = 
+#     if ext == ".kim"
+#         "  "
+#     else
+#         "  """"
+        
         

@@ -210,4 +210,11 @@ f = ->
     1
 0
 0""") == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])◆number◆number]"
+
+        check $ast("""
+◇icon = 
+    if ext == ".kim"
+        "  "
+    else
+        "  """") == "▪[(◇ ◆name (= ▪[(◆if @[((◆name == ◆string) ▪[◆string])] ▪[◆string])]))]"
         

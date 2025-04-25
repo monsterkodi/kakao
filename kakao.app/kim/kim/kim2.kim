@@ -67,13 +67,13 @@ for kind key val in optParser.getopt()
                     quit(1)
         cmdEnd
             discard
-#                         
-# # ████████   ████████   ███████  █████████   ███████   ████████   █████████
-# # ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   
-# # ███████    ███████   ███████      ███     █████████  ███████       ███   
-# # ███   ███  ███            ███     ███     ███   ███  ███   ███     ███   
-# # ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
-#             
+                        
+# ████████   ████████   ███████  █████████   ███████   ████████   █████████
+# ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   
+# ███████    ███████   ███████      ███     █████████  ███████       ███   
+# ███   ███  ███            ███     ███     ███   ███  ███   ███     ███   
+# ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
+            
 # when defined(posix)
 # 
 #     import posix
@@ -82,126 +82,126 @@ for kind key val in optParser.getopt()
 #         let args = allocCStringArray(@[getAppFilename()] & params)
 #         discard execv(getAppFilename().cstring, args)
 #         quit(1) # only reaches here if execve fails
-#     
-# # ███       ███████    ███████   ████████  ███  ███      ████████
-# # ███      ███   ███  ███        ███       ███  ███      ███     
-# # ███      ███   ███  ███  ████  ██████    ███  ███      ███████ 
-# # ███      ███   ███  ███   ███  ███       ███  ███      ███     
-# # ███████   ███████    ███████   ███       ███  ███████  ████████
-# 
-# proc logFile(f:string, prefix:string="") =
-# 
-#     if not verbose
-#         return
-# 
-#     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
-#     let d = 
-#         if dir.len
-#             dir & "/" 
-#         else
-#             ""
-#     let icon = 
-#         if ext == ".kim"
-#             "  " 
-#         else
-#             "  "
-#             
-#     let color = 
-#         if ext == ".kim"
-#             fgGreen
-#         else
-#             fgMagenta
-# 
-#     styledEcho color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
-#         
-# #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
-# # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
-# # ███       ███   ███  █████████  ████████   ███  ███      ███████ 
-# # ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
-# #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
-# 
-# proc compile(file:string, outDir:string="bin") : bool =
-#     profileScope 'comp'
-#     # let cmd = &"nim c --outDir:{outdir} {file}"
-#     let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
-#     let (output, exitCode) = execCmdEx(cmd)
-#         
-#     if exitCode != 0
-#         styledEcho fgRed, "✘ ", &"{cmd}"
-#         echo output
-#         false
-#     else
-#         if verbose
-#             styledEcho fgGreen, "✔ ", fgWhite, cmd
-#         true
-#         
-# # █████████  ████████   ███████  █████████   ███████
-# #    ███     ███       ███          ███     ███     
-# #    ███     ███████   ███████      ███     ███████ 
-# #    ███     ███            ███     ███          ███
-# #    ███     ████████  ███████      ███     ███████ 
-# 
-# proc runTests() =
-#     profileScope 'test'
-#     for f in testFiles
-#         let cmd = &"nim r --colors:on {f}"
-#         let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
-#         let startTime = getMonoTime()
-#         var output = ""
-#         
-#         let fd = p.outputHandle
-#         var flags = fcntl(fd, F_GETFL, 0)
-#         discard fcntl(fd, F_SETFL, flags or O_NONBLOCK)
-#         
-#         while true
-#             let elapsed = (getMonoTime() - startTime).inMilliseconds
-#             if elapsed >= 2000
-#                 output.add(&"test killed after {elapsed} ms!!")
-#                 p.terminate()
-#                 sleep(50)
-#                 if p.running
-#                     p.kill()
-#                 break
-#                             
-#             var line = newString(1024*10)
-#             let bytesRead = read(fd, addr line[0], line.len)
-#             if bytesRead > 0
-#                 output.add(line & "\n")
-#             elif bytesRead == 0
-#                 break
-#             elif errno == EAGAIN
-#                 discard poll(nil, 0, 50)
-#             elif not p.running
-#                 break
-#             else
-#                 break
-#         
-#         let exitCode = p.waitForExit()
-#         
-#         if exitCode != 0 or verbose
-#             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
-#         else
-#             let okCount = output.count "[OK]"
-#             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
-#             
-#         if exitCode != 0
-#             styledEcho fgRed, "✘ ", &"{cmd}"
-#     echo ""
-# 
-# if files.len
-# 
-#     if transpile
-#         log &"transpile {files}"
-#         let transpiled = rndr.files(files)
-#         quit(transpiled.len - files.len)    
-#     else
-#         let transpiled = trans.pile(files)
-#         quit(transpiled.len - files.len)    
-# 
-# if tests
-#     runTests()
-#     quit(0)
-#  
+    
+# ███       ███████    ███████   ████████  ███  ███      ████████
+# ███      ███   ███  ███        ███       ███  ███      ███     
+# ███      ███   ███  ███  ████  ██████    ███  ███      ███████ 
+# ███      ███   ███  ███   ███  ███       ███  ███      ███     
+# ███████   ███████    ███████   ███       ███  ███████  ████████
+
+logFile = f◇string prefix="" ->
+
+    if not verbose
+        return
+
+    # let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
+    ◇d = 
+        if dir.len
+            dir & "/" 
+        else
+            ""
+    ◇icon = 
+        if ext == ".kim"
+            "  "
+        else
+            "  "
+            
+    ◇color = 
+        if ext == ".kim"
+            fgGreen
+        else
+            fgMagenta
+
+    styledEcho color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
+        
+#  ███████   ███████   ██     ██  ████████   ███  ███      ████████
+# ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
+# ███       ███   ███  █████████  ████████   ███  ███      ███████ 
+# ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
+#  ███████   ███████   ███   ███  ███        ███  ███████  ████████
+
+compile = file◇string outDir="bin" ➜ bool ->
+    profileScope 'comp'
+    # let cmd = &"nim c --outDir:{outdir} {file}"
+    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
+    let (output, exitCode) = execCmdEx(cmd)
+        
+    if exitCode != 0
+        styledEcho fgRed, "✘ ", &"{cmd}"
+        echo output
+        false
+    else
+        if verbose
+            styledEcho fgGreen, "✔ ", fgWhite, cmd
+        true
+        
+# █████████  ████████   ███████  █████████   ███████
+#    ███     ███       ███          ███     ███     
+#    ███     ███████   ███████      ███     ███████ 
+#    ███     ███            ███     ███          ███
+#    ███     ████████  ███████      ███     ███████ 
+
+runTests = ->
+    profileScope 'test'
+    for f in testFiles
+        let cmd = &"nim r --colors:on {f}"
+        let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
+        let startTime = getMonoTime()
+        var output = ""
+        
+        let fd = p.outputHandle
+        var flags = fcntl(fd, F_GETFL, 0)
+        discard fcntl(fd, F_SETFL, flags or O_NONBLOCK)
+        
+        while true
+            let elapsed = (getMonoTime() - startTime).inMilliseconds
+            if elapsed >= 2000
+                output.add(&"test killed after {elapsed} ms!!")
+                p.terminate()
+                sleep(50)
+                if p.running
+                    p.kill()
+                break
+                            
+            var line = newString(1024*10)
+            let bytesRead = read(fd, addr line[0], line.len)
+            if bytesRead > 0
+                output.add(line & "\n")
+            elif bytesRead == 0
+                break
+            elif errno == EAGAIN
+                discard poll(nil, 0, 50)
+            elif not p.running
+                break
+            else
+                break
+        
+        let exitCode = p.waitForExit()
+        
+        if exitCode != 0 or verbose
+            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
+        else
+            let okCount = output.count "[OK]"
+            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
+            
+        if exitCode != 0
+            styledEcho fgRed, "✘ ", &"{cmd}"
+    echo ""
+
+if files.len
+
+    if transpile
+        log &"transpile {files}"
+        let transpiled = rndr.files(files)
+        quit(transpiled.len - files.len)    
+    else
+        let transpiled = trans.pile(files)
+        quit(transpiled.len - files.len)    
+
+if tests
+    runTests()
+    quit(0)
+ 
 # # ███   ███   ███████   █████████   ███████  ███   ███
 # # ███ █ ███  ███   ███     ███     ███       ███   ███
 # # █████████  █████████     ███     ███       █████████
