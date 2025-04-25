@@ -18,8 +18,8 @@ proc cmp(a:string, b:string, l:lineInfo) =
         styledEcho fgBlue,    a
         styledEcho fgMagenta, "|>"
         styledEcho fgGreen,   b
-        styledEcho fgYellow,  "!="
-        styledEcho fgRed,     r
+        styledEcho fgRed,     "!="
+        styledEcho fgYellow,  r
         echo ""
         fail()
     

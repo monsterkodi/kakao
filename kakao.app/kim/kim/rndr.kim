@@ -15,16 +15,15 @@ type
         indent      : int
         needsIndent : bool
 
-proc add(r: var Rndr, text: string)     = r.s &= text
-proc space(r: var Rndr)                 = r.s &= " "
-proc addTok(r: var Rndr, n: Node)       = r.s &= n.token.str
+proc add(r: var Rndr, text: string) = r.s &= text
+proc spc(r: var Rndr)               = r.s &= " "
+proc tok(r: var Rndr, n: Node)      = r.s &= n.token.str
+proc rnd(r: var Rndr, n: Node)
 
-proc render(r: var Rndr, n: Node)
-
-proc render(r: var Rndr, nodes: seq[Node]) =
+proc rnd(r: var Rndr, nodes: seq[Node]) =
 
     for i,n in nodes
-        r.render n
+        r.rnd n
         if i<nodes.len-1
             r.add ", "
 
@@ -36,7 +35,7 @@ proc ▸block(r: var Rndr, n: Node) =
         r.add "\n" & idt
         
     for i,exp in n.expressions
-        r.render exp
+        r.rnd exp
         if i < n.expressions.len-1
             if n.expressions[i+1].token.line > exp.token.line
                 r.add "\n" & idt
@@ -47,17 +46,17 @@ proc ▸operation(r: var Rndr, n: Node) =
 
     if n.token.tok notin {◆assign}
         r.add "("
-    r.render n.operand_left
-    r.space()
+    r.rnd n.operand_left
+    r.spc()
     case n.token.tok
         of ◆and
             r.add 'and'
         of ◆or
             r.add 'or'
         else 
-            r.addTok n
-    r.space()
-    r.render n.operand_right
+            r.tok n
+    r.spc()
+    r.rnd n.operand_right
     if n.token.tok notin {◆assign}
         r.add ")"
 
@@ -66,54 +65,54 @@ proc ▸preOp(r: var Rndr, n: Node) =
     if n.token.tok == ◆not
         r.add "not "
     else
-        r.addTok n
+        r.tok n
         
-    r.render n.operand
+    r.rnd n.operand
     
 proc ▸postOp(r: var Rndr, n: Node) = 
 
-    r.render n.operand
-    r.addTok n
+    r.rnd n.operand
+    r.tok n
     
 proc ▸propertyAccess(r: var Rndr, n: Node) = 
 
-    r.render n.owner
-    r.addTok n
-    r.render n.property
+    r.rnd n.owner
+    r.tok n
+    r.rnd n.property
     
 proc ▸arrayLike(r: var Rndr, n: Node) = 
 
-    r.render n.array_like
+    r.rnd n.array_like
     r.add "["
-    r.render n.array_args
+    r.rnd n.array_args
     r.add "]"
 
 proc ▸func(r: var Rndr, n: Node) = 
 
     r.add "proc "
-    r.render n.func_name
+    r.rnd n.func_name
     r.add "("
-    r.render n.func_args
+    r.rnd n.func_args
     r.add ")"
     if n.func_type != nil
         r.add " : "
-        r.render n.func_type
+        r.rnd n.func_type
     r.add " ="
     if n.func_body != nil
         r.add " "
-        r.render n.func_body
+        r.rnd n.func_body
     
 proc ▸argType(r: var Rndr, n: Node) =
 
-    r.render n.arg_name
+    r.rnd n.arg_name
     if n.arg_type != nil
         r.add ":"
         if n.token.tok == ◆var
             r.add "var "
-        r.render n.arg_type
+        r.rnd n.arg_type
     if n.arg_default != nil
         r.add "="
-        r.render n.arg_default.default
+        r.rnd n.arg_default.default
         
 proc ▸var(r: var Rndr, n: Node) =
 
@@ -121,13 +120,13 @@ proc ▸var(r: var Rndr, n: Node) =
         r.add "var "
     else
         r.add "let "
-    r.render n.var_name
+    r.rnd n.var_name
     if n.var_type != nil
         r.add " : "
-        r.render n.var_type
+        r.rnd n.var_type
     if n.var_value != nil
         r.add " = "
-        r.render n.var_value.default
+        r.rnd n.var_value.default
 
 proc ▸string(r: var Rndr, n: Node) = 
 
@@ -137,35 +136,35 @@ proc ▸string(r: var Rndr, n: Node) =
         r.add "&"
         
     r.add delimiter
-    r.addTok n.string_content
+    r.tok n.string_content
     for stripol in n.string_stripols
         r.add "{"
-        r.render stripol.stripol_xprssns
+        r.rnd stripol.stripol_xprssns
         r.add "}"
         if stripol.stripol_content != nil
-            r.addTok stripol.stripol_content
+            r.tok stripol.stripol_content
     
     r.add delimiter
     
 proc ▸use(r: var Rndr, n: Node) = 
     
     r.add "import "
-    r.addTok n.use_module
+    r.tok n.use_module
     if n.use_kind != nil and n.use_kind.token.str == '▪'
         r.add "/["
-        r.render n.use_items
+        r.rnd n.use_items
         r.add "]"
     
 proc ▸comment(r: var Rndr, n: Node) = 
 
-    r.addTok n
-    r.addTok n.comment_content
+    r.tok n
+    r.tok n.comment_content
     
 proc ▸call(r: var Rndr, n: Node) =
 
-    r.render n.callee
+    r.rnd n.callee
     r.add "("
-    r.render n.call_args
+    r.rnd n.call_args
     r.add ")"
 
 proc ▸if(r: var Rndr, n: Node) =
@@ -174,50 +173,50 @@ proc ▸if(r: var Rndr, n: Node) =
     for i,condThen in n.cond_thens
         if i > 0
             r.add " elif "
-        r.render condThen.cond
+        r.rnd condThen.cond
         r.add ": "
-        r.render condThen.then
+        r.rnd condThen.then
     if n.else != nil   
         r.add " else: "
-        r.render n.else
+        r.rnd n.else
         
 proc ▸for(r: var Rndr, n: Node) =
 
     r.add "for "
-    r.render n.for_value
+    r.rnd n.for_value
     r.add " in "
-    r.render n.for_range
+    r.rnd n.for_range
     r.add ": "
-    r.render n.for_body
+    r.rnd n.for_body
     
 proc ▸list(r: var Rndr, n: Node) =
 
     for i,item in n.list_values
-        r.render item
+        r.rnd item
         if i < n.list_values.len-1
             r.add ", "
     
 proc ▸range(r: var Rndr, n: Node) = 
 
     r.add "["
-    r.render n.range_start
-    r.addTok n
-    r.render n.range_end
+    r.rnd n.range_start
+    r.tok n
+    r.rnd n.range_end
     r.add "]"
         
 proc ▸return(r: var Rndr, n: Node) =
 
     r.add "return"
     if n.return_value != nil
-        r.space()
-        r.render n.return_value
+        r.spc()
+        r.rnd n.return_value
      
 proc ▸switch(r: var Rndr, n: Node) =
 
     var idt = ' '.repeat n.token.col
     
     r.add idt & "case "
-    r.render(n.switch_value)
+    r.rnd(n.switch_value)
     r.add ":"
     
     var cdt = ' '.repeat n.switch_cases[0].token.col
@@ -228,23 +227,23 @@ proc ▸switch(r: var Rndr, n: Node) =
         for j,whenNode in caseNode.case_when
             if j > 0
                 r.add ", "
-            r.render(whenNode)
+            r.rnd(whenNode)
         r.add ": "
-        r.render(caseNode.case_then)
+        r.rnd(caseNode.case_then)
     
     if n.switch_default != nil
         r.add "\n" & cdt
         r.add "else: "
-        r.render(n.switch_default)
+        r.rnd(n.switch_default)
 
 proc ▸testCase(r: var Rndr, n: Node) =
 
     r.add "check "
-    r.render n.test_expression
+    r.rnd n.test_expression
     r.add " == "
-    r.render n.test_expected
+    r.rnd n.test_expected
 
-proc ▸testSuite(r:var Rndr, n:Node) =
+proc ▸testSuite(r: var Rndr, n:Node) =
 
     if n.kind == ●testSuite
         r.add "suite"
@@ -253,9 +252,9 @@ proc ▸testSuite(r:var Rndr, n:Node) =
     r.add " \"" 
     r.add n.token.str[4..^1] 
     r.add "\": "
-    r.render n.test_block
+    r.rnd n.test_block
 
-proc render(r: var Rndr, n: Node) =
+proc rnd(r: var Rndr, n: Node) =
 
     if n == nil
         ⮐  
@@ -305,15 +304,15 @@ proc render(r: var Rndr, n: Node) =
         of ●testCase
             r.▸testCase(n)
         of ●literal, ●type, ●import
-            r.addTok n
+            r.tok n
         else
             log &"unhandled {n} {n.kind}"
-            r.addTok n
+            r.tok n
 
 proc renderNode*(root: Node): string =
 
     var r = Rndr()
-    r.render(root)
+    r.rnd(root)
     r.s
 
 proc renderCode*(code: string): string =
