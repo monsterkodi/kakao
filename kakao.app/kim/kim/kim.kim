@@ -177,8 +177,7 @@ proc runTests() =
                 break
         
         let exitCode = p.waitForExit()
-        
-        if exitCode != 0 or verbose
+        if exitCode != 0 or verbose or f.endsWith("pars.nim")
             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
         else
             let okCount = output.count "[OK]"

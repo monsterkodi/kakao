@@ -73,6 +73,17 @@ suite "pars":
         check $ast("f(1 + 2 4 + 5)")                         == "▪[(◆name ◆call @[(◆number + ◆number), (◆number + ◆number)])]"
         check $ast("f(1 2 3)")                               == "▪[(◆name ◆call @[◆number, ◆number, ◆number])]"
         check $ast("f(1 g(h(2)))")                           == "▪[(◆name ◆call @[◆number, (◆name ◆call @[(◆name ◆call @[◆number])])])]"
+    
+    test "implicit call    ":
+    
+        check $ast("f a")                                    ==  "▪[(◆name ◆call @[◆name])]"
+        
+    test "arglist":
+    
+        check $ast("f(a, b, c)")                             == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
+        # check $ast("f a, b, c")                              == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
+        # check $ast("(a, b, c) = f()")                        == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
+        # check $ast("(a b c) = f()")                          == "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
         
     test "assign":
     
@@ -103,7 +114,7 @@ suite "pars":
         check $ast("if a then ⮐")                            == "▪[(◆if @[(◆name (⮐))])]"
         check $ast("a + if b then c else d")                 == "▪[(◆name + (◆if @[(◆name ◆name)] ◆name))]"
         
-        check $ast("if true\n  log msg")                     == "▪[(◆if @[(✔ ▪[◆name◆name])])]"
+        check $ast("if true\n  log msg")                     == "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆name])])])]"
         check $ast("if true\n  log(1)\n  log(2)")            == "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆number])(◆name ◆call @[◆number])])])]"
         
     test "for":
@@ -148,12 +159,12 @@ suite "pars":
         
     test "use":
     
-        check $ast("use std ▪ unittest")                     == "▪[(◆use ◆name ▪ @[◆name])]"
         check $ast("use rndr")                               == "▪[(◆use ◆name)]"
+        check $ast("use std ▪ unittest")                     == "▪[(◆use ◆name ▪ @[◆name])]"
         check $ast("use ../rndr")                            == "▪[(◆use ◆name)]"
         check $ast("use std ▪ os logging\nuse kommon")       == "▪[(◆use ◆name ▪ @[◆name, ◆name])(◆use ◆name)]"
         check $ast("use std ▪ a b c\nuse d\nuse e\nuse f")   == "▪[(◆use ◆name ▪ @[◆name, ◆name, ◆name])(◆use ◆name)(◆use ◆name)(◆use ◆name)]" 
-        
+
         check $ast("import ../../rel/[s1, s2]")              == "▪[◆import]"
         
     test "var":
@@ -199,8 +210,6 @@ f = ->
         2
     1
 """) == "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])]"
-
-        echo "▸▸▸"
 
         check $ast("""
 f = -> 

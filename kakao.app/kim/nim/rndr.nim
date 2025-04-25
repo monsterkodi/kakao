@@ -310,17 +310,17 @@ proc render(r: var Rndr, n: Node) =
             echo &"unhandled {n} {n.kind}"
             r.addTok n
 
-proc rndr*(root: Node): string =
+proc renderNode*(root: Node): string =
 
     var r = Rndr()
     r.render(root)
     r.s
 
-proc rndr*(code: string): string =
+proc renderCode*(code: string): string =
 
     let a = ast(code)
     # echo &"ast {a}"
-    rndr(a)
+    renderNode(a)
     
 proc file*(file: string) : string = 
 
@@ -328,7 +328,7 @@ proc file*(file: string) : string =
     echo &"fileOut {fileOut}"
     let code = file.readFile()
     # echo &"code {code}"
-    let trns = rndr code
+    let trns = renderCode code
     echo &"{trns}"
     fileOut
     

@@ -112,7 +112,7 @@ logFile = f◇string prefix="" ->
         else:
             fgMagenta
 
-    styledEcho color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
+    styledEcho color prefix styleDim icon resetStyle color styleBright d styleBright name resetStyle # styleDim ext resetStyle
         
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
@@ -127,12 +127,12 @@ compile = file◇string outDir="bin" ➜ bool ->
     let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0:
-        styledEcho fgRed, "✘ ", &"{cmd}"
+        styledEcho fgRed "✘ " &"{cmd}"
         echo output
         false
     else:
         if verbose:
-            styledEcho fgGreen, "✔ ", fgWhite, cmd
+            styledEcho fgGreen "✔ " fgWhite cmd
         true
         
 # █████████  ████████   ███████  █████████   ███████
