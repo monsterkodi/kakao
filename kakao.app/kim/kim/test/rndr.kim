@@ -235,6 +235,16 @@ proc f() =
     1
 0"""
 
+        check rndr("""
+switch kind
+    cmdEnd
+        discard
+# comment""") == """
+case kind:
+    of cmdEnd: 
+        discard
+# comment"""
+
     ▸ comments
     
         check rndr("two = 1 + 1 # addition")                       == "two = (1 + 1) # addition"

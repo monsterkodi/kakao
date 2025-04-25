@@ -255,10 +255,13 @@ proc tok(p: Parser) : tok = p.current().tok
 
 proc `$`(p: Parser): string = 
 
-    var s = &"▪▪▪ {p.current()} {p.pos}"
+    var s : string
     if p.tok() != ◆eof
+        s = &"▪▪▪ {p.current()} {p.pos}"
         let l = p.text.split("\n")[p.current().line]
         s &= &"\n{p.current().line}: {l}"
+    else
+        s = p.text
     # for t in p.tokens
     #     s &= &"\n{t}"
     s
@@ -593,12 +596,30 @@ proc switchCase(p: var Parser, baseIndent: int): Node =
     while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}
         case_when.add p.expression()
     
+    log &"switchCase case_when {case_when}"
+    
     let case_then = p.then()
                 
     if case_then == nil
         ⮐  p.error("Expected case body after match(es)", token)
     
+    log &"switchCase of {case_when} ➜ {case_then}"
+    
     Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
+
+proc isDedent(p: var Parser, indent:int): bool =
+
+    if p.tok() == ◆indent
+        p.current().str.len < indent
+    else
+        p.current().col < indent
+        
+proc swallowSameIndent(p: var Parser, indent:int): bool = 
+
+    if p.tok() == ◆indent and p.current().str.len == indent
+        p.swallow()
+        ⮐  true
+    false
 
 proc rSwitch(p: var Parser): auto =
 
@@ -615,11 +636,12 @@ proc rSwitch(p: var Parser): auto =
     var switch_cases: seq[Node]
     
     while p.tok() notin {◆else, ◆then, ◆eof}
-        if p.tok() == ◆indent
-            if p.current().str.len < baseIndent
-                break
-            p.swallow ◆indent
+    
+        if p.isDedent baseIndent
+            break
+        if p.swallowSameIndent baseIndent
             continue
+
         let switch_case = p.switchCase(baseIndent)
         if switch_case == nil
             ⮐  p.error("Failed to parse switch case", token)
