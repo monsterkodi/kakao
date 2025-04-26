@@ -44,7 +44,7 @@ proc ▸block(r: var Rndr, n: Node) =
 
 proc ▸operation(r: var Rndr, n: Node) = 
 
-    if n.token.tok notin {◆assign}
+    if n.token.tok notin {◆assign, ◆ampersand}
         r.add "("
     r.rnd n.operand_left
     r.spc()
@@ -57,7 +57,7 @@ proc ▸operation(r: var Rndr, n: Node) =
             r.tok n
     r.spc()
     r.rnd n.operand_right
-    if n.token.tok notin {◆assign}
+    if n.token.tok notin {◆assign, ◆ampersand}
         r.add ")"
 
 proc ▸preOp(r: var Rndr, n: Node) = 
@@ -79,6 +79,13 @@ proc ▸propertyAccess(r: var Rndr, n: Node) =
     r.rnd n.owner
     r.tok n
     r.rnd n.property
+
+proc ▸arrayAccess(r: var Rndr, n: Node) = 
+
+    r.rnd n.array_owner
+    r.add "["
+    r.rnd n.array_index
+    r.add "]"
     
 proc ▸arrayLike(r: var Rndr, n: Node) = 
 
@@ -169,15 +176,24 @@ proc ▸call(r: var Rndr, n: Node) =
 
 proc ▸if(r: var Rndr, n: Node) =
 
-    r.add "if "
+    var idt = ' '.repeat n.token.col
+    var line = n.token.line
+    
+    r.add idt & "if "
     for i,condThen in n.cond_thens
         if i > 0
-            r.add " elif "
+            if condThen.token.line > line
+                r.add "\n" & idt & "elif "
+            else
+                r.add " elif "
         r.rnd condThen.cond
         r.add ": "
         r.rnd condThen.then
     if n.else != nil   
-        r.add " else: "
+        if n.else.token.line > line
+            r.add "\n" & idt & "else: "
+        else
+            r.add " else: "
         r.rnd n.else
         
 proc ▸for(r: var Rndr, n: Node) =
@@ -218,6 +234,13 @@ proc ▸return(r: var Rndr, n: Node) =
     if n.return_value != nil
         r.spc()
         r.rnd n.return_value
+
+proc ▸discard(r: var Rndr, n: Node) =
+
+    r.add "discard"
+    if n.discard_value != nil
+        r.spc()
+        r.rnd n.discard_value
      
 proc ▸switch(r: var Rndr, n: Node) =
 
@@ -301,17 +324,21 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸use(n)
         of ●propertyAccess
             r.▸propertyAccess(n)
+        of ●arrayAccess
+            r.▸arrayAccess(n)
         of ●arrayLike
             r.▸arrayLike(n)
         of ●var
             r.▸var(n)
         of ●return
             r.▸return(n)
+        of ●discard
+            r.▸discard(n)
         of ●testSuite, ●testSection
             r.▸testSuite(n)
         of ●testCase
             r.▸testCase(n)
-        of ●literal, ●type, ●import
+        of ●literal, ●type, ●import, ●keyword
             r.tok n
         else
             log &"unhandled {n} {n.kind}"

@@ -12,7 +12,7 @@ use greet
 
 # params = default seq[string]
 ◆optParser = initOptParser()
-◆files     ◇ seq[string] = @[]
+◆files     ◇ seq[string]
 ◆outdir    = ""
 ◆tests     = false
 ◆verbose   = false
@@ -145,7 +145,7 @@ runTests = ->
     profileScope "test"
     for f in testFiles:
         let cmd = &"nim r --colors:on {f}"
-        let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
+        # let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
         let startTime = getMonoTime()
         var output = ""
         
@@ -156,7 +156,7 @@ runTests = ->
         while true:
             let elapsed = (getMonoTime() - startTime).inMilliseconds
             if elapsed >= 2000:
-                output.add(&"test killed after {elapsed} ms!!")
+                output.add("test killed after #{elapsed} ms!!")
                 p.terminate()
                 sleep(50)
                 if p.running:
@@ -164,7 +164,7 @@ runTests = ->
                 break
                             
             var line = newString(1024*10)
-            let bytesRead = read(fd, addr line[0], line.len)
+            # let bytesRead = read(fd, addr line[0], line.len)
             if bytesRead > 0:
                 output.add(line & "\n")
             elif bytesRead == 0:
@@ -182,16 +182,16 @@ runTests = ->
             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
         else:
             let okCount = output.count "[OK]"
-            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
+            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", "#{ansiStyleCode styleDim} ✔ #{okCount}")
             
         if exitCode != 0:
-            styledEcho fgRed, "✘ ", &"{cmd}"
+            styledEcho fgRed, "✘ ", "#{cmd}"
     echo ""
 
 if files.len:
 
     if transpile:
-        echo &"transpile {files}"
+        echo "transpile #{files}"
         let transpiled = rndr.files(files)
         quit(transpiled.len - files.len)    
     else:

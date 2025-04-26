@@ -23,6 +23,7 @@ type
         ◆of,
         ◆break,
         ◆continue,
+        ◆discard,
         ◆class,
         ◆import,
         ◆use,
@@ -68,6 +69,7 @@ type
         ◆plus               = "+"  
         ◆increment          = "++" 
         ◆decrement          = "--" 
+        ◆ampersand          = "&"
         ◆divide             = "/"
         ◆multiply           = "*"
         ◆assign             = "="

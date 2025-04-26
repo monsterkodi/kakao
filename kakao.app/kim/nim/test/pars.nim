@@ -34,6 +34,13 @@ suite "pars":
         t "x = a or b"                              , "▪[(◆name = (◆name || ◆name))]"
         t "!a || !b"                                , "▪[((! ◆name) || (! ◆name))]"
         t "not a or not b"                          , "▪[((! ◆name) || (! ◆name))]"
+        
+    test "comparison ops":
+    
+        t "a == b"                                  , "▪[(◆name == ◆name)]"
+        t "a != b"                                  , "▪[(◆name != ◆name)]"
+        t "a >= b"                                  , "▪[(◆name >= ◆name)]"
+        t "a <= b"                                  , "▪[(◆name <= ◆name)]"
 
     test "parens":
     
@@ -46,6 +53,9 @@ suite "pars":
         
         t "a * (b + c) / d"                         , "▪[((◆name * (◆name + ◆name)) / ◆name)]"
         t "3 * (1 + 2)"                             , "▪[(◆number * (◆number + ◆number))]"
+        
+    test "types":
+        t "files ◇ seq[string] = @[]"               , "▪[(◆name ◇ ◆type (= (◆name[])))]"         
         
     test "func":
     
@@ -96,12 +106,16 @@ suite "pars":
         
         t "(a, b) = c"                              , "▪[(◆[◆name, ◆name] = ◆name)]"
         
-    test "properties        ":
+    test "property access        ":
         
         t "a.b"                                     , "▪[(◆name . ◆name)]"
         t "a.b.c"                                   , "▪[((◆name . ◆name) . ◆name)]"
         t "a.b()"                                   , "▪[((◆name . ◆name) ◆call @[])]"
         t "a.b().c"                                 , "▪[(((◆name . ◆name) ◆call @[]) . ◆name)]"
+        
+    test "array access":
+    
+        t "a[0]"                                    , "▪[(◆name[◆number])]"
         
     test "if":
     
@@ -121,6 +135,8 @@ suite "pars":
         
         t "if true\n  log msg"                      , "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆name])])])]"
         t "if true\n  log(1)\n  log(2)"             , "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆number])(◆name ◆call @[◆number])])])]"
+        
+        t "if a ➜ 1\nelif b == 2 ➜ 2"               , "▪[(◆if @[(◆name ◆number), ((◆name == ◆number) ◆number)])]"
         
     test "for":
     
@@ -145,6 +161,15 @@ suite "pars":
         t "switch x\n  1 2 ➜ a\n  else\n    c"      , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
         t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
         t "switch x\n a ➜ if b then c"              , "▪[(◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])]"
+        
+    test "while":
+    
+        t "while true"                              , "▪[(◆while ✔)]"
+        t "while false ➜ 1"                         , "▪[(◆while ✘ ◆number)]"
+        t "while false ➜\n 1"                       , "▪[(◆while ✘ ▪[◆number])]"
+        t "while false\n 1"                         , "▪[(◆while ✘ ▪[◆number])]"
+        t "while 2\n continue"                      , "▪[(◆while ◆number ▪[◆continue])]"
+        t "while 2\n break"                         , "▪[(◆while ◆number ▪[◆break])]"
         
     test "strings":
     

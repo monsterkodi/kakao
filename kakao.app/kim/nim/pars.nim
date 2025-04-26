@@ -16,7 +16,7 @@ type
         ●literal,
         ●string,
         ●stripol,
-        ●identifier,  
+        ●keyword,  
         ●preOp, 
         ●operation, 
         ●postOp,
@@ -31,6 +31,7 @@ type
         ●switchCase,
         ●var,        
         ●propertyAccess,        
+        ●arrayAccess,
         ●arrayLike,
         ●func,
         ●type,
@@ -39,6 +40,7 @@ type
         ●argDefault,
         ●signature,
         ●return, 
+        ●discard, 
         ●break, 
         ●continue,          
         ●use, 
@@ -98,6 +100,10 @@ type
             
                 return_value*   : Node  
 
+            of ●discard:
+            
+                discard_value*  : Node  
+
             of ●call:
             
                 callee*         : Node
@@ -112,6 +118,11 @@ type
             
                 array_like*     : Node
                 array_args*     : seq[Node]
+
+            of ●arrayAccess:
+            
+                array_owner*    : Node
+                array_index*    : Node
                 
             of ●if :
             
@@ -316,7 +327,8 @@ proc `$`*(n: Node): string =
             s = &"{n.list_values}"
             s = "◆" & s[1..^1]
         of ●while:
-            s = &"({s} {n.while_cond} {n.while_body})"
+            let b = choose(n.while_body, &" {n.while_body}", "")
+            s = &"({s} {n.while_cond}{b})"
         of ●func:
             let f = choose(n.func_name, &" {n.func_name}", "")
             let t = choose(n.func_type, &" {n.func_type}", "")
@@ -328,6 +340,11 @@ proc `$`*(n: Node): string =
             s = &"({n.arg_name}{t}{d})"
         of ●argDefault:
             s = &"(= {n.default})"
+        # of ●arrayLike
+        #     s = &"({n.array_like}[{n.array_args}])"
+        of ●arrayAccess:
+            let i = choose(n.array_index, &"{n.array_index}", "")
+            s = &"({n.array_owner}[{i}])"
         of ●var:
             let v = choose(n.var_value, &" {n.var_value}", "")
             let t = choose(n.var_type, &" {n.arg_type}", "")
@@ -360,12 +377,12 @@ proc error(p: Parser, msg: string, token=Token(tok:◆eof)) : Node =
     styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
     if token.tok != ◆eof:
         let line = p.text.split("\n")[token.line]
-        # styledEcho fgGreen, &"{token}: {line}"
-        styledEcho fgGreen, &"{line}"
+        styledEcho fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, &"{line}"
+        # styledEcho fgGreen, &"{line}"
     elif p.tok != ◆eof:
         let line = p.text.split("\n")[p.current().line]
-        # styledEcho fgGreen,  &"\n{p.current().line}: {line}"
-        styledEcho fgGreen,  &"{line}"
+        styledEcho fgWhite, styleDim, &"{p.current().line}", resetStyle, fgGreen, &"{line}"
+        # styledEcho fgGreen,  &"{line}"
         
     nil
     
@@ -620,7 +637,21 @@ proc rFor(p: Parser): Node =
     let for_range = p.expression()
     let for_body  = p.then()
 
-    Node( token:token, kind:●for, for_value:for_value, for_range:for_range, for_body:for_body )
+    Node(token:token, kind:●for, for_value:for_value, for_range:for_range, for_body:for_body)
+
+# ███   ███  ███   ███  ███  ███      ████████
+# ███ █ ███  ███   ███  ███  ███      ███     
+# █████████  █████████  ███  ███      ███████ 
+# ███   ███  ███   ███  ███  ███      ███     
+# ██     ██  ███   ███  ███  ███████  ████████
+
+proc rWhile(p: Parser): Node =
+
+    let token = p.consume()
+    let while_cond = p.expression()
+    let while_body = p.then()
+
+    Node(token:token, kind:●while, while_cond:while_cond, while_body:while_body)
 
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
@@ -743,12 +774,24 @@ proc lArrayLike(p: Parser, array_like: Node): Node =
 
     let token = p.consume() # [
     
-    var args = default seq[Node]
+    var args : seq[Node]
     while p.tok() != ◆square_close:
         args.add p.expression()
-    p.swallowError(◆square_close, "Missing closing square bracket for array access")    
+    p.swallowError(◆square_close, "Missing closing square bracket for array")
 
     Node(token:token, kind:●arrayLike, array_like:array_like, array_args:args)
+
+proc lArrayAccess(p: Parser, array_owner: Node): Node =
+
+    let token = p.consume() # [
+    if p.tok() == ◆square_close:
+        p.swallow()
+        Node(token:token, kind:●arrayAccess, array_owner:array_owner)
+    else:
+        let array_index = p.expression()
+        p.swallowError(◆square_close, "Missing closing square bracket for array access")
+        
+        Node(token:token, kind:●arrayAccess, array_owner:array_owner, array_index:array_index)
     
 proc lPropertyAccess(p: Parser, owner: Node): Node =
 
@@ -760,6 +803,11 @@ proc rLiteral(p: Parser): Node =
 
     let token = p.consume()
     Node(token:token, kind: ●literal)
+
+proc rKeyword(p: Parser): Node =
+
+    let token = p.consume()
+    Node(token:token, kind: ●keyword)
     
 proc rImport(p: Parser): Node =
 
@@ -853,8 +901,9 @@ proc lSingleArg(p: Parser, left: Node) : Node =
         arg_type = p.parseType()
     
     if p.tok() == ◆assign:
-        let t = p.consume() 
-        arg_default = Node(token:t, kind:●argDefault, default:p.value())
+        let t = p.consume()
+        let defaultNode = p.expression() 
+        arg_default = Node(token:t, kind:●argDefault, default:defaultNode)
         
     Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
@@ -950,6 +999,15 @@ proc rReturn(p: Parser): Node =
     let right = p.expression(token)
     Node(token:token, kind:●return, return_value:right)
 
+proc rDiscard(p: Parser): Node =
+
+    let token = p.consume()
+    if p.isDedent token.col:
+        Node(token:token, kind:●discard)
+    else:
+        let right = p.value()
+        Node(token:token, kind:●discard, discard_value:right)
+
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
 # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
@@ -1043,7 +1101,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
     
     if rhs == nil:
                 
-        return  p.error(&"Expected expression but found {token.str}")
+        return  p.error(&"Expected expression but found {token.str}", token)
         
     var node: Node = rhs(p)
 
@@ -1127,8 +1185,12 @@ proc setup(p: Parser) =
     p.pratt ◆import,            nil,               rImport,         0
     p.pratt ◆use,               nil,               rUse,            0
     p.pratt ◆return,            nil,               rReturn,         0
+    p.pratt ◆discard,           nil,               rDiscard,        0
     p.pratt ◆indent,            nil,               rBlock,          0
     p.pratt ◆test,              lTestCase,         rTestSuite,      0
+    
+    p.pratt ◆continue,          nil,               rKeyword,        0
+    p.pratt ◆break,             nil,               rKeyword,        0
                                                                     
     p.pratt ◆assign,            lAssign,           nil,            10
     p.pratt ◆plus_assign,       lAssign,           nil,            10
@@ -1139,10 +1201,18 @@ proc setup(p: Parser) =
     p.pratt ◆if,                nil,               rIf,            15  
     p.pratt ◆for,               nil,               rFor,           15  
     p.pratt ◆switch,            nil,               rSwitch,        15  
+    p.pratt ◆while,             nil,               rWhile,         15  
     p.pratt ◆func,              lFunc,             rFunc,          15
                                 
     p.pratt ◆equal,             lOperation,        nil,            20
+    p.pratt ◆not_equal,         lOperation,        nil,            20
+    p.pratt ◆greater_equal,     lOperation,        nil,            20
+    p.pratt ◆less_equal,        lOperation,        nil,            20
+    p.pratt ◆less,              lOperation,        nil,            20
+    p.pratt ◆greater,           lOperation,        nil,            20
+    
     p.pratt ◆doubledot,         lRange,            nil,            20
+    p.pratt ◆ampersand,         lOperation,        nil,            20
                                                    
     p.pratt ◆or,                lOperation,        nil,            30
     p.pratt ◆and,               lOperation,        nil,            40
@@ -1158,7 +1228,7 @@ proc setup(p: Parser) =
     p.pratt ◆increment,         lPostOp,           nil,            80
     p.pratt ◆decrement,         lPostOp,           nil,            80
                                                                                         
-    p.pratt ◆square_open,       lArrayLike,        nil,            90
+    p.pratt ◆square_open,       lArrayAccess,      nil,           103
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
     p.pratt ◆then,              nil,               rReturnType,    99
     p.pratt ◆val,               lArgType,          rVar,          100

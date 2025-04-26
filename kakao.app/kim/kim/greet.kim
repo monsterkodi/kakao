@@ -5,7 +5,6 @@ let greetings* = [
     "💋 Less clutter, more wonder!",
     "💋 The best code is no code.",
     "💋 Less is always beautifuller!",
-    "💋 Simple does it — and does it best.",
     "💋 Simplicity: the shortcut to ‘heck yes!’",
     "💋 If it’s hard to explain, it’s probably wrong.",
     "💋 Uncomplicate your code and your mind will dance.",

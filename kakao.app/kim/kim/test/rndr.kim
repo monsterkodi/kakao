@@ -43,6 +43,10 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
         t "!a || !b"          , "(not a or not b)"
         t "not a or not b"    , "(not a or not b)"
         
+    ▸ ampersand
+    
+        t "a & b"             , "a & b"
+        
     ▸ parens
     
         t "(1 + 2) * 3"       , "((1 + 2) * 3)"
@@ -152,8 +156,8 @@ b = false"""
         t "if true then ⮐  1 else ⮐  2"            , "if true: return 1 else: return 2"           
         t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3"         , "if a: 1 elif b: 2 elif c: 3"        
         t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4"  , "if a: 1 elif b: 2 elif c: 3 else: 4" 
-        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3"          , "if a: 1 elif b: 2 elif c: 3"        
-        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4"   , "if a: 1 elif b: 2 elif c: 3 else: 4" 
+        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3"          , "if a: 1\nelif b: 2\nelif c: 3"        
+        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4"   , "if a: 1\nelif b: 2\nelif c: 3\nelse: 4" 
         
         t "if a then if b then 1 else 2 else 3"    , "if a: if b: 1 else: 2 else: 3" 
         t "x = if a then b else c"                 , "x = if a: b else: c"              
@@ -291,6 +295,30 @@ suite "suite":
         check x == ""
     test "test2": 
         check xy == "42""""
+        
+    ▸ misc
+    
+        t """    
+if bytesRead > 0
+    output.add(line & "\n")
+elif bytesRead == 0
+    break
+elif errno == EAGAIN
+    discard poll(nil, 0, 50)
+elif not p.running
+    break
+else
+    break""" , """
+if (bytesRead > 0): 
+    output.add(line & "\n")
+elif (bytesRead == 0): 
+    break
+elif (errno == EAGAIN): 
+    discard poll(nil, 0, 50)
+elif not p.running: 
+    break
+else: 
+    break"""
         
 #         t """
 # ◇icon = 

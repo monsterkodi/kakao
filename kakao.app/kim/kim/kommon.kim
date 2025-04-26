@@ -17,16 +17,22 @@ export terminal
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
+proc indent*(s:string, i=4) : string = 
+
+    let idt = ' '.repeat i
+    let lines = s.split "\n"
+    idt & lines.join "\n" & idt
+
 proc testCmp*(a:string, r:auto, b:auto, l:lineInfo) = 
 
     if r != b
         echo ""
         styledEcho fgWhite, $l.line, fgWhite, styleDim, ":",  l.filename.split(".")[0]
-        styledEcho fgBlue,    &"    {a}"
+        styledEcho fgBlue,    indent($a)
         styledEcho fgMagenta, "|>"
-        styledEcho fgGreen,   &"    {b}"
+        styledEcho fgGreen,   indent($b)
         # styledEcho fgRed,     "!="
-        styledEcho fgYellow,  &"    {r}"
+        styledEcho fgYellow,  indent($r)
         styledEcho fgRed, styleDim, "<|"
         fail()
 
