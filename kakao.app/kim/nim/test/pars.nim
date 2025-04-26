@@ -50,11 +50,13 @@ suite "pars":
         t "a * (b + c)"                             , "▪[(◆name * (◆name + ◆name))]"
         t "((1))"                                   , "▪[◆number]"
         t "(a.b).c"                                 , "▪[((◆name . ◆name) . ◆name)]"
+        t "a.b.c"                                   , "▪[((◆name . ◆name) . ◆name)]"
         
         t "a * (b + c) / d"                         , "▪[((◆name * (◆name + ◆name)) / ◆name)]"
         t "3 * (1 + 2)"                             , "▪[(◆number * (◆number + ◆number))]"
         
     test "types":
+    
         t "files ◇ seq[string] = @[]"               , "▪[(◆name ◇ ◆type (= (◆name[])))]"         
         
     test "func":
@@ -70,6 +72,10 @@ suite "pars":
         t "f = s◇seq[Node] ➜ seq[Node] ->"          , "▪[(-> ◆name @[(◆name ◇ ◆type)] ◆type)]"
         t "f = p◇Parser ahead◇int=1 ➜ Token ->"     , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type (= ◆number))] ◆type)]"
         t "f = p◇Parser ahead=1 ➜ Token ->"         , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name (= ◆number))] ◆type)]"
+        
+        t "f = i ◇ int ->"                          , "▪[(-> ◆name @[(◆name ◇ ◆type)])]"
+        t "f = a ◇ int b ◇ int ->"                  , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type)])]"
+        t "f = a ◇ int = 1 ->"                      , "▪[(-> ◆name @[(◆name ◇ ◆type (= ◆number))])]"
         
     test "func body":
     
@@ -89,6 +95,13 @@ suite "pars":
     test "implicit call    ":
     
         t "f a"                                     , "▪[(◆name ◆call @[◆name])]"
+        t "f a.b"                                   , "▪[(◆name ◆call @[(◆name . ◆name)])]"
+        t "f a.b, c"                                , "▪[(◆name ◆call @[(◆name . ◆name), ◆name])]"
+        t "f a.b c"                                 , "▪[(◆name ◆call @[(◆name . ◆name), ◆name])]"
+        t "f(a.b c)"                                , "▪[(◆name ◆call @[(◆name . ◆name), ◆name])]"
+        t "f a.b(c)"                                , "▪[(◆name ◆call @[((◆name . ◆name) ◆call @[◆name])])]"
+        t "f a[0] c"                                , "▪[(◆name ◆call @[(◆name[◆number]), ◆name])]"
+        t "f(a[0] c)"                               , "▪[(◆name ◆call @[(◆name[◆number]), ◆name])]"
         
     test "arglist":
     

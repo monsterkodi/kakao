@@ -11,7 +11,7 @@ import rndr
 import greet
 
 var
-    params = default seq[string]
+    params    : seq[string]
     optParser = initOptParser()
     files     : seq[string]
     outdir    = ""

@@ -364,7 +364,7 @@ proc file*(file: string) : string =
     let code = file.readFile()
     # echo &"code {code}"
     let trns = renderCode code
-    # echo &"{trns}"
+    echo &"{trns}"
     fileOut
     
 proc files*(files: seq[string]): seq[string] = 

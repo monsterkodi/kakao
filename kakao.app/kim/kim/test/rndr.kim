@@ -87,8 +87,13 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
         t "f = s◇seq[Node] ➜ seq[Node] ->"         , "proc f(s:seq[Node]) : seq[Node] ="
         t "f = p◇Parser ahead◇int=1 ➜ Token ->"    , "proc f(p:Parser, ahead:int=1) : Token ="
         t "f = p◇Parser ahead=1 ➜ Token ->"        , "proc f(p:Parser, ahead=1) : Token ="
+        
         t "l.map(r◇tuple➜string -> r.path)"        , "l.map(proc (r:tuple) : string = r.path)"
         t "l.map(r ◇ tuple ➜ string -> r.path)"    , "l.map(proc (r:tuple) : string = r.path)"
+        
+        t "f = i ◇ int ->"                         , "proc f(i:int) ="
+        t "f = a ◇ int b ◇ int ->"                 , "proc f(a:int, b:int) ="
+        # t "f = a ◇ int = 1 ->"                     , "proc f(a:int=1) ="
         
     ▸ call
     

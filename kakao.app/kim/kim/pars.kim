@@ -242,11 +242,12 @@ type
         precedence: int
          
     Parser* = ref object
-        text    : string # used in `$` for debugging. should be removed eventually 
-        tokens* : seq[Token]
-        pratts* : seq[Pratt]
-        blocks* : seq[Node]
-        pos*    : int
+        text     : string # used in `$` for debugging. should be removed eventually 
+        tokens*  : seq[Token]
+        pratts*  : seq[Pratt]
+        blocks*  : seq[Node]
+        implicit : bool
+        pos*     : int
     
 proc current(p: Parser): Token =
 
@@ -511,14 +512,14 @@ proc parseCallArgList(p:Parser) : seq[Node] =
     # log "parseCallArgList"
     var list : seq[Node]
     let line = p.current().line
-    var expr : Node = p.value()
+    var expr : Node = p.expression(-1)
     while expr != nil
         list.add expr        
         if p.current().line != line
             # log "parseCallArgList linebreak"
             break
         p.swallow ◆comma
-        expr = p.value()
+        expr = p.expression(-1)
     list
 
 proc parseNames(p:Parser) : seq[Node] = 
@@ -753,7 +754,9 @@ proc rSwitch(p: Parser): auto =
         
 proc lImplicitCall(p: Parser, callee: Node): Node =
 
+    p.implicit = true
     let args = p.parseCallArgList()
+    p.implicit = false
     
     Node(token:callee.token, kind:●call, callee:callee, callargs:args)
     
@@ -807,17 +810,19 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
         p.swallowError(◆square_close, "Missing closing square bracket for array access")
         
         Node(token:token, kind:●arrayAccess, array_owner:array_owner, array_index:array_index)
-    
-proc lPropertyAccess(p: Parser, owner: Node): Node =
-
-    let token = p.consume()
-    let right = p.expression(token)
-    Node(token:token, kind:●propertyAccess, owner:owner, property:right)
 
 proc rLiteral(p: Parser): Node =
 
     let token = p.consume()
     Node(token:token, kind: ●literal)
+    
+proc lPropertyAccess(p: Parser, owner: Node): Node =
+
+    let token = p.consume() # .
+    # let right = p.expression(token)
+    # let right = p.value()
+    let right = p.rLiteral()
+    Node(token:token, kind:●propertyAccess, owner:owner, property:right)
 
 proc rKeyword(p: Parser): Node =
 
@@ -982,21 +987,26 @@ proc lFunc(p: Parser, left: Node): Node =
 
     let token = p.consume() # ->
     
+    log &"lFunc {token}"    
+    
     var funcName:  Node
     var func_type: Node
-    var args: seq[Node] = @[]
+    var args: seq[Node]
     
     if left.kind == ●operation and left.token.tok == ◆assign
         log &"lFunc ASSIGN {left}"
         funcName = left.operand_left
 
-    if left.kind == ●argType
-        args.add left
-    if left.kind == ●argList
-        args = left.args
-    if left.kind == ●signature
-        args = left.sig_args
-        func_type = left.sig_type
+    case left.kind
+        of ●argType
+            args.add left
+        of ●argList
+            args = left.args
+        of ●signature
+            args = left.sig_args
+            func_type = left.sig_type
+        else
+            log &"lFunc left.kind {left.kind}"
     
     let body = p.then()
     
@@ -1010,8 +1020,8 @@ proc lFunc(p: Parser, left: Node): Node =
         )
 
 proc rFunc(p: Parser): Node =
-        
     let token = p.consume() # ->
+    log &"rFunc {token}"    
     let body = p.then()
     Node(token:token, kind:●func, func_body: body)
 
@@ -1116,7 +1126,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
 
     let token = p.current()
     
-    if token.tok in {◆eof, ◆stripol_end}
+    if token.tok in {◆eof, ◆stripol_end, ◆paren_close}
         ⮐  nil
     
     let rhs = p.rightHandSide(token)
@@ -1140,12 +1150,10 @@ proc expression(p: Parser, precedenceRight = 0): Node =
         if token.tok in {◆assign, ◆test}
             precedence += 1
         
+        let lhs = p.leftHandSide(token)
+        
         if precedenceRight >= precedence
             # log &"▸□◂ {token}" 
-            
-            const callable = {
-                ◆name,
-                }
             
             const notimplicit = {
                 ◆eof, 
@@ -1156,20 +1164,18 @@ proc expression(p: Parser, precedenceRight = 0): Node =
                 ◆string_start, ◆comment_start, 
                 ◆paren_open, ◆paren_close, ◆square_close, ◆bracket_close, ◆stripol_end
                 }
-            if node.token.line==token.line and token.tok notin notimplicit
-                # log &"implicit call? {node} {token}"
-                
-                if node.token.tok in callable
-                    # log &"implicit call! {node} {token} {precedenceRight}"
+            if p.implicit == false and node.token.line==token.line and token.tok notin notimplicit
+                # log &"implicit? {token} {node.token.tok}"
+                if node.token.tok in {◆name} 
+                    # log &"implicit call! {node} {node.token} {token} {precedence} {precedenceRight}"
                     node = p.lImplicitCall node
             break
     
-        let lhs = p.leftHandSide(token)
         if lhs == nil
             # log &"▸?◂ {token}" 
             break
             
-        let lhn = lhs(p, node)
+        let lhn = p.lhs(node)
         if lhn != nil
             node = lhn
         else
@@ -1250,7 +1256,7 @@ proc setup(p: Parser) =
     p.pratt ◆increment,         lPostOp,           nil,            80
     p.pratt ◆decrement,         lPostOp,           nil,            80
                                                                                         
-    p.pratt ◆square_open,       lArrayAccess,      nil,           103
+    p.pratt ◆square_open,       lArrayAccess,      nil,            90
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
     p.pratt ◆then,              nil,               rReturnType,    99
     p.pratt ◆val,               lArgType,          rVar,          100
