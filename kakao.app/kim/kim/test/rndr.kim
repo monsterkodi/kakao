@@ -190,7 +190,7 @@ b = false"""
         t "switch x\n  1 2➜\n    a\n  ➜ c"         , "case x:\n  of 1, 2: \n    a\n  else: c"
         t "switch x\n  1 2 ➜ a\n  else\n    c"     , "case x:\n  of 1, 2: a\n  else: c"
         t "switch x\n  1 2 ➜ a\n  ➜\n    c"        , "case x:\n  of 1, 2: a\n  else: c"
-        # t "switch x\n a ➜ if b then c"             , "case x:\n of a: if b: c"
+        t "switch x\n a ➜ if b then c"             , "case x:\n of a: if b: c"
         
     ▸ strings
     
@@ -203,6 +203,9 @@ b = false"""
         t "s = \"num #{1+2} end\""                 , "s = &\"num {(1 + 2)} end\""
         t "s = \"\"\"num #{1+2} end\"\"\""         , "s = &\"\"\"num {(1 + 2)} end\"\"\""
         t "s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"" , "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
+        t "s = \"#{o}\""                           , "s = &\"{o}\""
+        t "let cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
+          "let cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
         
     ▸ blocks
   

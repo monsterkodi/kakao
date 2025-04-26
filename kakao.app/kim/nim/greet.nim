@@ -11,7 +11,6 @@ let greetings* = [
     "🌞 A child’s laugh, a sunbeam’s path — why bend what is straight?",
     "🌈 Go with the flow, catch joy like dandelion fluff.",
     "🌈 Optimize for maximum joy, with escape hatches for future regrets.",
-    "🌈 Semicolons are optional — joy isn’t.",
     "🌞 Rise and shine! What shall we craft today?",
     "👋 Salutations! Let's crunch some code cookies.",
     "🚀 Systems nominal! Your code awaits transformation.",

@@ -179,7 +179,7 @@ proc runTests() =
         
         proc fgc(c:auto) : auto = ansiForegroundColorCode(c)
         let exitCode = p.waitForExit()
-        if exitCode != 0 or verbose or f.endsWith("pars.nim")
+        if exitCode != 0 or verbose
             #or f.endsWith("pars.nim")
             styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸")
                              .replace("[OK]",     fgc(fgGreen) & "✔\x1b[0m")

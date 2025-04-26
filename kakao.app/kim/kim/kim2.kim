@@ -121,13 +121,13 @@ logFile = f◇string prefix="" ->
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 
 compile = file◇string outDir="bin" ➜ bool ->
-    profileScope 'comp'
+    profileScope 'comp'       
     # let cmd = &"nim c --outDir:{outdir} {file}"
-    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
+    let cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
     let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
-        styledEcho fgRed "✘ " &"{cmd}"
+        styledEcho fgRed "✘ " "#{cmd}"
         echo output
         false
     else
@@ -144,7 +144,7 @@ compile = file◇string outDir="bin" ➜ bool ->
 runTests = ->
     profileScope 'test'
     for f in testFiles
-        let cmd = &"nim r --colors:on {f}"
+        let cmd = "nim r --colors:on #{f}"
         # let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
         let startTime = getMonoTime()
         var output = ""

@@ -297,8 +297,16 @@ proc `$`*(n: Node): string =
         of ●range
             s = &"({n.range_start} {s} {n.range_end})"
         of ●string
-            let i = choose(n.string_stripols.len>0, &"{n.string_stripols}", "")
-            s = &"◆string{i}"
+            var ips = ""
+            for i,s in n.string_stripols
+                if i == 0
+                    ips &= "#{"
+                ips &= $s.stripol_xprssns
+                if 0 < i < n.string_stripols.len-1
+                    ips &= " "
+                if i == n.string_stripols.len-1
+                    ips &= "}"
+            s = &"◆string{ips}"
         of ●preOp
             s = &"({s} {n.operand})"
         of ●postOp
@@ -411,6 +419,7 @@ proc swallow(p: Parser, tok: tok) =
 proc swallowError(p: Parser, tok: tok, err: string) = 
 
     if p.tok() != tok
+        discard p.error(&"Expected {tok} to swallow, but found {p.tok()} instead")
         discard p.error(err)
         ⮐  
     p.swallow()
@@ -830,31 +839,38 @@ proc rString(p: Parser): Node =
 
     let token = p.consume() # string start
 
-    let contentToken = p.consume()
-    if contentToken.tok == ◆string_end
+    if p.tok() == ◆string_end
+        p.swallow()
         Node(token:token, kind:●string, string_content:Node(token:Token(str:"", tok:◆string), kind:●literal))
     else
-        let string_content = Node(token:contentToken, kind:●literal)
-        var string_stripols : seq[Node] = @[]
+        var string_content : Node 
+        if p.tok() != ◆stripol_start
+            string_content = Node(token:p.consume(), kind:●literal)
+        else
+            string_content = Node(token:Token(str:"", tok:◆string, line:p.current().line, col:p.current().col), kind:●literal)
+        var string_stripols : seq[Node]
         while p.tok() notin {◆string_end, ◆eof}
         
-            var stripol = Node(kind:●stripol)
             p.swallowError(◆stripol_start, "Expected string interpolation start")
             
-            var stripol_xprssns : seq[Node] = @[]
+            var stripol = Node(token:p.current(), kind:●stripol)
+            
+            var stripol_xprssns : seq[Node]
             while p.tok() notin {◆stripol_end, ◆eof}
-                stripol_xprssns.add p.expression()
+                let xpr = p.expression()
+                stripol_xprssns.add xpr
                 
             stripol.stripol_xprssns = stripol_xprssns
             
             p.swallowError(◆stripol_end, "Expected string interpolation end")
             if p.tok() notin {◆string_end, ◆eof}
-                let content = p.consume()
-                stripol.stripol_content = Node(token:content, kind:●literal)
+                stripol.stripol_content = Node(token:p.consume(), kind:●literal)
+            
+            # log &"stripol stripol {stripol}"
             string_stripols.add stripol
             
         p.swallowError(◆string_end, "Expected closing string delimiter")
-        
+        # log &"string_stripols {string_stripols}"
         Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
 
 proc rUse(p: Parser): Node =
@@ -1100,14 +1116,14 @@ proc expression(p: Parser, precedenceRight = 0): Node =
 
     let token = p.current()
     
-    if token.tok == ◆eof
+    if token.tok in {◆eof, ◆stripol_end}
         ⮐  nil
     
     let rhs = p.rightHandSide(token)
     
     if rhs == nil
-                
-        ⮐  p.error(&"Expected expression but found {token.str}", token)
+    
+        ⮐  p.error(&"Expected expression but found {token.str} {token}", token)
         
     var node: Node = rhs(p)
 
@@ -1138,7 +1154,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
                 ◆then, ◆else,
                 ◆or, ◆and, ◆divide, ◆multiply, ◆equal,
                 ◆string_start, ◆comment_start, 
-                ◆paren_open, ◆paren_close, ◆square_close, ◆bracket_close
+                ◆paren_open, ◆paren_close, ◆square_close, ◆bracket_close, ◆stripol_end
                 }
             if node.token.line==token.line and token.tok notin notimplicit
                 # log &"implicit call? {node} {token}"

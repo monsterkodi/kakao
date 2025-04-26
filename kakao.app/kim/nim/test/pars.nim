@@ -176,8 +176,12 @@ suite "pars":
         t "s = \"hello\""                           , "▪[(◆name = ◆string)]"
         t "s = \"\"\"hello\"\"\""                   , "▪[(◆name = ◆string)]"
         t "s = \"\"\"\n\n\"\"\""                    , "▪[(◆name = ◆string)]"
-        t "s = \"\"\"num #{1+2} end\"\"\""          , "▪[(◆name = ◆string@[◆name])]"
-        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\""      , "▪[(◆name = ◆string@[◆name, ◆name])]"
+        t "s = \"\"\"num #{1+2} end\"\"\""          , "▪[(◆name = ◆string#{@[(◆number + ◆number)]})]"
+        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\""      , "▪[(◆name = ◆string#{@[◆number] @[◆number]})]"
+        
+        t "\"a #{1} e\""                            , "▪[◆string#{@[◆number]}]"
+        t "\"a #{1}\""                              , "▪[◆string#{@[◆number]}]"
+        t "\"#{1}\""                                , "▪[◆string#{@[◆number]}]"
         
     test "toplevel":
 
