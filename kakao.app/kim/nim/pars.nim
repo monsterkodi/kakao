@@ -584,7 +584,7 @@ proc rIf(p: Parser): Node =
     if p.tok() == ◆indent:
         condIndt = p.current().str.len
         if condIndt <= ifIndent:
-            echo &"ifIndent {ifIndent} condIndt {condIndt} {p.current()}"
+            # echo &"ifIndent {ifIndent} condIndt {condIndt} {p.current()}"
             return  p.error "Expected indentation after 'if' without condition"
         p.swallow ◆indent # block indentation
     
@@ -597,15 +597,19 @@ proc rIf(p: Parser): Node =
     while p.tok() in {◆elif, ◆indent}:
     
         # echo &"condThen {p.current()} {ifIndent} {condIndt}"
-        # let condToken = p.current()
         if p.tok() == ◆indent:
-            if p.current().str.len < condIndt or p.current().str.len == ifIndent == condIndt :
-                # echo "outdent in condThen list"
-                p.swallow()
+            if p.current().str.len < ifIndent:
                 break
+            if ifIndent < condIndt :
+                if p.current().str.len < condIndt:
+                    break
+            if p.peek(1).tok != ◆elif and p.current().str.len == ifIndent:
+                break
+            p.swallow ◆indent
+            if p.tok() == ◆indent:
+                continue
                 
-        p.swallow() # elif or indent
-        # echo &"condThen {p.current()} after elif or indent"
+        p.swallow(◆elif)
         if p.tok() in {◆then, ◆else}:
             break # then without condition -> else
         
@@ -616,7 +620,9 @@ proc rIf(p: Parser): Node =
         condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
         
     var elseBranch: Node
-    # echo &"before else {p.current()}"
+    
+    p.swallow(◆indent)
+    
     if p.tok() in {◆else, ◆then}:
         p.swallow() # else or then without condition
         elseBranch = p.expression()

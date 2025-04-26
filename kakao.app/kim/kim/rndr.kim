@@ -31,6 +31,7 @@ proc ▸block(r: var Rndr, n: Node) =
     if n.token.tok == ◆indent
         # log &"rndr.block {n} {n.token}"
         idt = n.token.str
+        # r.add "\n" & idt
         r.add "\n" & idt
         
     for i,exp in n.expressions
@@ -179,7 +180,7 @@ proc ▸if(r: var Rndr, n: Node) =
     var idt = ' '.repeat n.token.col
     var line = n.token.line
     
-    r.add idt & "if "
+    r.add "if "
     for i,condThen in n.cond_thens
         if i > 0
             if condThen.token.line > line
