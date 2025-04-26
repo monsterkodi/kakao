@@ -345,6 +345,9 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
     # profileScope "tknz"
 
     t.segs = segs
+    
+    # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len} {t.segs}"
+    
     while t.eol < t.segs.len and t.segs[t.eol] != "\n":
         t.eol += 1
         
@@ -352,30 +355,36 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
     while t.segi < t.segs.len:
         
+        # echo &"{t.segi} ▪ {t.segs[t.segi]}"
+        
         if t.segs[t.segi] == "\n":
+        
             t.nextLine()
-            # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len}"
+            # echo &"line {t.line} {t.segi} {t.bol} {t.eol} {t.segs.len}"
+            if t.segi >= t.segs.len:
+                # echo "eof"
+                break
+            t.token = Token(tok: ◆indent, line:t.line, col:t.col()) 
+            # echo &"indent {t.token}"
+            while t.peek(0) == " ":
+                t.advance 1
+            t.tokens.add t.token
             continue
                 
-        let firstLineTokenIndex = t.tokens.len
-
         t.token = Token(line:t.line, col:t.col())
         
         while t.segi < t.eol:
                                     
             let char = t.peek(0)
+            
+            # echo &"{t.segi} ▸ {char}"
                         
             if char == " ":
-                if t.tokens.len == firstLineTokenIndex and t.token.str.len == 0 or t.token.tok == ◆indent:
-                    t.token.tok = ◆indent
-                    t.token.str.add char
-                elif t.col() == 0 or t.peek(-1) != " ":
+                if t.segi > 0 and t.peek(-1) != " ":
                     t.pushToken()
             else:
                 
                 if t.col() > 0 and t.peek(-1) == " ":
-                    if t.token.tok == ◆indent:
-                        t.pushToken()
                     t.token.col = t.col()
                 
                 let triple = t.srng 3
@@ -429,7 +438,10 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                                 t.import()
                             else:
                                 t.push keywords[t.token.str]
+            # echo "t.incr"
             t.incr 1
+        
+        # echo &"eol {t.segi} {t.segs.len}"
             
         if t.token.str.len:
             if keywords.hasKey(t.token.str):

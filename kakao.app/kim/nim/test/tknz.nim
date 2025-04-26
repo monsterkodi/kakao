@@ -15,11 +15,11 @@ suite "tknz":
     test "single line":
     
         t ""  , default seq[Token]
-        t " " , @[tk(" ", ◆indent,       0, 0)]
+        t " "  , default seq[Token]
+
         t "a" , @[tk("a", ◆name,         0, 0)]
         
         t "    a" , @[
-            tk("    ",   ◆indent,        0, 0),
             tk("a",      ◆name,          0, 4)]
             
         t "a = b" , @[
@@ -79,7 +79,16 @@ suite "tknz":
     # ███   ███   ███████   ███████     ███     ███
 
     test "multi line":
-
+    
+        t "a\nb\n1\nfalse", @[
+            tk("a",         ◆name,          0, 0),
+            tk("",          ◆indent,        1, 0),
+            tk("b",         ◆name,          1, 0),
+            tk("",          ◆indent,        2, 0),
+            tk("1",         ◆number,        2, 0),
+            tk("",          ◆indent,        3, 0),
+            tk("false",     ◆false,         3, 0)]
+    
         t "if false\n    null" , @[
             tk("if",        ◆if,            0, 0),
             tk("false",     ◆false,         0, 3),
@@ -338,12 +347,16 @@ suite "tknz":
 """ , @[
             tk("#",                          ◆comment_start, 0, 0),
             tk(" ███   ███  ███  ██     ██", ◆comment,       0, 1),
+            tk("",                           ◆indent,        1, 0),
             tk("#",                          ◆comment_start, 1, 0),
             tk(" ███  ███   ███  ███   ███", ◆comment,       1, 1),
+            tk("",                           ◆indent,        2, 0),
             tk("#",                          ◆comment_start, 2, 0),
             tk(" ███████    ███  █████████", ◆comment,       2, 1),
+            tk("",                           ◆indent,        3, 0),
             tk("#",                          ◆comment_start, 3, 0),
             tk(" ███  ███   ███  ███ █ ███", ◆comment,       3, 1),
+            tk("",                           ◆indent,        4, 0),
             tk("#",                          ◆comment_start, 4, 0),
             tk(" ███   ███  ███  ███   ███", ◆comment,       4, 1)]
             
@@ -432,9 +445,8 @@ suite "tknz":
     test "tests":
     
         t "▸ tets"       , @[ tk("▸ tets", ◆test, 0, 0) ]
-        t "    ▸ sect"   , @[ tk("    ", ◆indent, 0, 0), tk("▸ sect", ◆test, 0, 4) ]
+        t "    ▸ sect"   , @[ tk("▸ sect", ◆test, 0, 4) ]
         t "    a ▸ 2"    , @[ 
-            tk("    ",      ◆indent,        0, 0), 
             tk("a",         ◆name,          0, 4), 
             tk("▸",         ◆test,          0, 6),
             tk("2",         ◆number,        0, 8)]
@@ -472,6 +484,7 @@ suite "tknz":
             tk("▪",         ◆name,          0, 8), 
             tk("os",        ◆name,          0, 10),
             tk("logging",   ◆name,          0, 13),
+            tk("",          ◆indent,        1, 0),
             tk("use",       ◆use,           1, 0),
             tk("kommon",    ◆name,          1, 4)]
     
