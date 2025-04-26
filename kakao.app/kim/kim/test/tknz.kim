@@ -60,20 +60,18 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
         t "a_c, d23" , @[
             tk("a_c",    ◆name,          0, 0),
             tk(",",      ◆comma,         0, 3),
-            tk("d23",    ◆name,          0, 5)
-            ]
+            tk("d23",    ◆name,          0, 5)]
 
         t "if true" , @[
             tk("if",     ◆if,            0, 0),
-            tk("true",   ◆true,          0, 3)
-            ]
+            tk("true",   ◆true,          0, 3)]
             
         t "iforintruefalse" , @[tk("iforintruefalse", ◆name, 0, 0)]
+        
         t "ifor intrue falselse" , @[
             tk("ifor",   ◆name,          0, 0),
             tk("intrue", ◆name,          0, 5),
-            tk("falselse", ◆name,        0, 12)
-            ]
+            tk("falselse", ◆name,        0, 12)]
             
     # ██     ██  ███   ███  ███      █████████  ███
     # ███   ███  ███   ███  ███         ███     ███
@@ -87,8 +85,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("if",     ◆if,            0, 0),
             tk("false",  ◆false,         0, 3),
             tk("    ",   ◆indent,        1, 0),
-            tk("null",   ◆null,          1, 4),
-            ]
+            tk("null",   ◆null,          1, 4)]
 
         t "for i in l\n    ⮐  i" , @[
             tk("for",    ◆for,           0, 0),
@@ -97,8 +94,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("l",      ◆name,          0, 9),
             tk("    ",   ◆indent,        1, 0),
             tk("⮐",      ◆return,        1, 4),
-            tk("i",      ◆name,          1, 7),
-            ]
+            tk("i",      ◆name,          1, 7)]
 
         t "for x,y in l\n  if x ➜ y\n  else z" , @[
             tk("for",    ◆for,           0, 0),
@@ -114,8 +110,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("y",      ◆name,          1, 9),
             tk("  ",     ◆indent,        2, 0),
             tk("else",   ◆else,          2, 2),
-            tk("z",      ◆name,          2, 7),
-            ]
+            tk("z",      ◆name,          2, 7)]
 
     #  ███████  █████████  ████████   ███  ███   ███   ███████    ███████
     # ███          ███     ███   ███  ███  ████  ███  ███        ███     
@@ -130,32 +125,27 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("=",      ◆assign,        0, 2),
             tk("'",      ◆string_start,  0, 4),
             tk("if",     ◆string,        0, 5),
-            tk("'",      ◆string_end,    0, 7),
-            ]
+            tk("'",      ◆string_end,    0, 7)]
 
         t "'if then it\\'s = 2'" , @[
             tk("'",      ◆string_start,  0, 0),
             tk("if then it\\'s = 2", ◆string,  0, 1),
-            tk("'",      ◆string_end,    0, 18),
-            ]
+            tk("'",      ◆string_end,    0, 18)]
 
         t "\"\"" , @[
             tk("\"",     ◆string_start,  0, 0),
-            tk("\"",     ◆string_end,    0, 1),
-            ]
+            tk("\"",     ◆string_end,    0, 1)]
 
         t "(\"\")" , @[
             tk("(",      ◆paren_open,    0, 0),
             tk("\"",     ◆string_start,  0, 1),
             tk("\"",     ◆string_end,    0, 2),
-            tk(")",      ◆paren_close,   0, 3),
-            ]
+            tk(")",      ◆paren_close,   0, 3)]
 
         t "\"'\"" , @[
             tk("\"",     ◆string_start,  0, 0),
             tk("'",      ◆string,        0, 1),
-            tk("\"",     ◆string_end,    0, 2),
-            ]
+            tk("\"",     ◆string_end,    0, 2)]
             
         t "\"'\" \"'\\\"'\"" , @[
             tk("\"",     ◆string_start,  0, 0),
@@ -163,28 +153,24 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("\"",     ◆string_end,    0, 2),
             tk("\"",     ◆string_start,  0, 4),
             tk("'\\\"'", ◆string,        0, 5),
-            tk("\"",     ◆string_end,    0, 9),
-            ]
+            tk("\"",     ◆string_end,    0, 9)]
             
         t """rndr("")""" , @[
             tk("rndr",   ◆name,          0, 0),
             tk("(",      ◆paren_open,    0, 4),
             tk("\"",     ◆string_start,  0, 5),
             tk("\"",     ◆string_end,    0, 6),
-            tk(")",      ◆paren_close,   0, 7),
-            ]
+            tk(")",      ◆paren_close,   0, 7)]
 
         t "\"\"\"triple\"\"\"" , @[
             tk("\"\"\"", ◆string_start,  0, 0),
             tk("triple", ◆string,        0, 3),
-            tk("\"\"\"", ◆string_end,    0, 9),
-            ]
+            tk("\"\"\"", ◆string_end,    0, 9)]
             
         t "\"\"\"\n\n\"\"\"" , @[
             tk("\"\"\"", ◆string_start,  0, 0),
             tk("\n\n",   ◆string,        0, 3),
-            tk("\"\"\"", ◆string_end,    2, 0),
-            ]
+            tk("\"\"\"", ◆string_end,    2, 0)]
             
         t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\"" , @[
             tk("s",      ◆name,          0, 0),
@@ -198,8 +184,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("#{",     ◆stripol_start, 2, 3),
             tk("2",      ◆number,        2, 5),
             tk("}",      ◆stripol_end,   2, 6),
-            tk("\"\"\"", ◆string_end,    2, 7),
-            ]
+            tk("\"\"\"", ◆string_end,    2, 7)]
             
     #  ███████  █████████  ████████   ███  ████████    ███████   ███    
     # ███          ███     ███   ███  ███  ███   ███  ███   ███  ███    
@@ -212,31 +197,27 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
         t "'#{}'" , @[
             tk("'",      ◆string_start,  0, 0),
             tk("#{}",    ◆string,        0, 1),
-            tk("'",      ◆string_end,    0, 4),
-            ]
+            tk("'",      ◆string_end,    0, 4)]
 
         t "\"#{}\"" , @[
             tk("\"",     ◆string_start,  0, 0),
             tk("#{",     ◆stripol_start, 0, 1),
             tk("}",      ◆stripol_end,   0, 3),
-            tk("\"",     ◆string_end,    0, 4),
-            ]
+            tk("\"",     ◆string_end,    0, 4)]
 
         t "\"#{a}\"" , @[
             tk("\"",     ◆string_start,  0, 0),
             tk("#{",     ◆stripol_start, 0, 1),
             tk("a",      ◆name,          0, 3),
             tk("}",      ◆stripol_end,   0, 4),
-            tk("\"",     ◆string_end,    0, 5),
-            ]
+            tk("\"",     ◆string_end,    0, 5)]
 
         t "\"\"\"#{a}\"\"\"" , @[
             tk("\"\"\"", ◆string_start,  0, 0),
             tk("#{",     ◆stripol_start, 0, 3),
             tk("a",      ◆name,          0, 5),
             tk("}",      ◆stripol_end,   0, 6),
-            tk("\"\"\"", ◆string_end,    0, 7),
-            ]
+            tk("\"\"\"", ◆string_end,    0, 7)]
 
         t "\"head #{a}\"" , @[
             tk("\"",     ◆string_start,  0, 0),
@@ -244,16 +225,14 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("#{",     ◆stripol_start, 0, 6),
             tk("a",      ◆name,          0, 8),
             tk("}",      ◆stripol_end,   0, 9),
-            tk("\"",     ◆string_end,    0, 10),
-            ]
+            tk("\"",     ◆string_end,    0, 10)]
 
         t "\"#{abc}\"" , @[
             tk("\"",     ◆string_start,  0, 0),
             tk("#{",     ◆stripol_start, 0, 1),
             tk("abc",    ◆name,          0, 3),
             tk("}",      ◆stripol_end,   0, 6),
-            tk("\"",     ◆string_end,    0, 7),
-            ]
+            tk("\"",     ◆string_end,    0, 7)]
 
         t "\"#{a}#{b}\"" , @[
             tk("\"",     ◆string_start,  0, 0),
@@ -263,8 +242,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("#{",     ◆stripol_start, 0, 5),
             tk("b",      ◆name,          0, 7),
             tk("}",      ◆stripol_end,   0, 8),
-            tk("\"",     ◆string_end,    0, 9),
-            ]
+            tk("\"",     ◆string_end,    0, 9)]
             
         t "s = \"num #{1+2} end\"" , @[
             tk("s",      ◆name,          0, 0),
@@ -277,8 +255,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("2",      ◆number,        0, 13),
             tk("}",      ◆stripol_end,   0, 14),
             tk(" end",   ◆string,        0, 15),
-            tk("\"",     ◆string_end,    0, 19),
-            ]
+            tk("\"",     ◆string_end,    0, 19)]
 
         t "s = \"\"\"num #{1+2} end\"\"\"" , @[
             tk("s",       ◆name,          0, 0),
@@ -291,8 +268,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("2",       ◆number,        0, 15),
             tk("}",       ◆stripol_end,   0, 16),
             tk(" end",    ◆string,        0, 17),
-            tk("\"\"\"",  ◆string_end,    0, 21),
-            ]
+            tk("\"\"\"",  ◆string_end,    0, 21)]
           
     # ███████    ████████    ███████    ███████  ███   ███  ████████  █████████   ███████
     # ███   ███  ███   ███  ███   ███  ███       ███  ███   ███          ███     ███     
@@ -310,20 +286,17 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("[",     ◆square_open,   0, 4),
             tk("{",     ◆bracket_open,  0, 5),
             tk("}",     ◆bracket_close, 0, 6),
-            tk("]",     ◆square_close,  0, 7),
-            ]
+            tk("]",     ◆square_close,  0, 7)]
 
         t ")}]" , @[
             tk(")",     ◆paren_close,   0, 0),
             tk("}",     ◆bracket_close, 0, 1),
-            tk("]",     ◆square_close,  0, 2),
-            ]
+            tk("]",     ◆square_close,  0, 2)]
 
         t "[{(" , @[
             tk("[",     ◆square_open,   0, 0),
             tk("{",     ◆bracket_open,  0, 1),
-            tk("(",     ◆paren_open,    0, 2),
-            ]
+            tk("(",     ◆paren_open,    0, 2)]
     
     #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████   ███████
     # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███     ███     
@@ -334,19 +307,16 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
     ▸ comments
     
         t "#" , @[
-            tk("#",        ◆comment_start, 0, 0),
-            ]
+            tk("#",        ◆comment_start, 0, 0)]
 
         t "# if true" , @[
             tk("#",        ◆comment_start, 0, 0),
-            tk(" if true", ◆comment,       0, 1),
-            ]
+            tk(" if true", ◆comment,       0, 1)]
 
         t "### if\n    true###" , @[
             tk("###",           ◆comment_start, 0, 0),
             tk(" if\n    true", ◆comment,       0, 3),
-            tk("###",           ◆comment_end,   1, 8),
-            ]
+            tk("###",           ◆comment_end,   1, 8)]
 
         t """
 # ███   ███  ███  ██     ██
@@ -364,8 +334,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("#",                          ◆comment_start, 3, 0),
             tk(" ███  ███   ███  ███ █ ███", ◆comment,       3, 1),
             tk("#",                          ◆comment_start, 4, 0),
-            tk(" ███   ███  ███  ███   ███", ◆comment,       4, 1),
-            ]
+            tk(" ███   ███  ███  ███   ███", ◆comment,       4, 1)]
             
     #  ███████   ████████   ████████  ████████    ███████   █████████   ███████   ████████    ███████
     # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███   ███  ███   ███  ███     
@@ -378,26 +347,22 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
         t "a += 123" , @[
             tk("a",   ◆name,        0, 0),
             tk("+=",  ◆plus_assign, 0, 2),
-            tk("123", ◆number,      0, 5),
-            ]
+            tk("123", ◆number,      0, 5)]
 
         t "b -= 456" , @[
             tk("b",   ◆name,         0, 0),
             tk("-=",  ◆minus_assign, 0, 2),
-            tk("456", ◆number,       0, 5),
-            ]
+            tk("456", ◆number,       0, 5)]
 
         t "x /= y" , @[
             tk("x",   ◆name,          0, 0),
             tk("/=",  ◆divide_assign, 0, 2),
-            tk("y",   ◆name,          0, 5),
-            ]
+            tk("y",   ◆name,          0, 5)]
 
         t "x *= y" , @[
             tk("x",   ◆name,            0, 0),
             tk("*=",  ◆multiply_assign, 0, 2),
-            tk("y",   ◆name,            0, 5),
-            ]
+            tk("y",   ◆name,            0, 5)]
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████    ███████
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███  ███     
@@ -429,18 +394,17 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
 
     ▸ dots
     
-        t "."   , @[ tk(".",   ◆dot,       0, 0) ]
-        t ".."  , @[ tk("..",  ◆doubledot, 0, 0) ]
-        t "..." , @[ tk("...", ◆tripledot, 0, 0) ]
+        t "."   , @[ tk(".",   ◆dot,        0, 0)]
+        t ".."  , @[ tk("..",  ◆doubledot,  0, 0)]
+        t "..." , @[ tk("...", ◆tripledot,  0, 0)]
         
         t "for i in 0..10" , @[ 
-            tk("for",   ◆for,       0, 0), 
-            tk("i",     ◆name,      0, 4), 
-            tk("in",    ◆in,        0, 6), 
-            tk("0",     ◆number,    0, 9),
-            tk("..",    ◆doubledot, 0, 10),
-            tk("10",    ◆number,    0, 12) 
-            ]
+            tk("for",       ◆for,           0, 0), 
+            tk("i",         ◆name,          0, 4), 
+            tk("in",        ◆in,            0, 6), 
+            tk("0",         ◆number,        0, 9),
+            tk("..",        ◆doubledot,     0, 10),
+            tk("10",        ◆number,        0, 12)]
         
     # █████████  ████████   ███████  █████████   ███████
     #    ███     ███       ███          ███     ███     
@@ -453,19 +417,17 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
         t "▸ tets"       , @[ tk("▸ tets", ◆test, 0, 0) ]
         t "    ▸ sect"   , @[ tk("    ", ◆indent, 0, 0), tk("▸ sect", ◆test, 0, 4) ]
         t "    a ▸ 2"    , @[ 
-            tk("    ", ◆indent, 0, 0), 
-            tk("a", ◆name,   0, 4), 
-            tk("▸", ◆test,   0, 6),
-            tk("2", ◆number, 0, 8),
-            ]
+            tk("    ",      ◆indent,        0, 0), 
+            tk("a",         ◆name,          0, 4), 
+            tk("▸",         ◆test,          0, 6),
+            tk("2",         ◆number,        0, 8)]
             
     ▸ types
     
         t "a◇string"    , @[ 
-            tk("a",      ◆name,  0, 0), 
-            tk("◇",      ◆val,   0, 1), 
-            tk("string", ◆name,  0, 2) 
-            ]
+            tk("a",         ◆name,          0, 0), 
+            tk("◇",         ◆val,           0, 1), 
+            tk("string",    ◆name,          0, 2)]
             
     # ███   ███   ███████  ████████
     # ███   ███  ███       ███     
@@ -476,30 +438,26 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
     ▸ use
     
         t "use std ▪ unittest" , @[ 
-            tk("use",      ◆use,             0, 0), 
-            tk("std",      ◆name,            0, 4), 
-            tk("▪",        ◆name,            0, 8), 
-            tk("unittest", ◆name,            0, 10)
-            ]
+            tk("use",       ◆use,           0, 0), 
+            tk("std",       ◆name,          0, 4), 
+            tk("▪",         ◆name,          0, 8), 
+            tk("unittest",  ◆name,          0, 10)]
         
         t "use ../rndr" , @[ 
-            tk("use",      ◆use,             0, 0), 
-            tk("..",       ◆doubledot,       0, 4),
-            tk("/",        ◆divide,          0, 6),
-            tk("rndr",     ◆name,            0, 7)
-            ]
+            tk("use",       ◆use,           0, 0), 
+            tk("..",        ◆doubledot,     0, 4),
+            tk("/",         ◆divide,        0, 6),
+            tk("rndr",      ◆name,          0, 7)]
             
         t "use std ▪ os logging\nuse kommon" , @[ 
-            tk("use",      ◆use,             0, 0), 
-            tk("std",      ◆name,            0, 4), 
-            tk("▪",        ◆name,            0, 8), 
-            tk("os",       ◆name,            0, 10),
-            tk("logging",  ◆name,            0, 13),
-            tk("use",      ◆use,             1, 0),
-            tk("kommon",   ◆name,            1, 4), 
-            ]
+            tk("use",       ◆use,           0, 0), 
+            tk("std",       ◆name,          0, 4), 
+            tk("▪",         ◆name,          0, 8), 
+            tk("os",        ◆name,          0, 10),
+            tk("logging",   ◆name,          0, 13),
+            tk("use",       ◆use,           1, 0),
+            tk("kommon",    ◆name,          1, 4)]
     
         t "import ../../rel/[s1, s2]" , @[ 
-            tk("import ../../rel/[s1, s2]",   ◆import, 0, 0)
-            ]
+            tk("import ../../rel/[s1, s2]",   ◆import, 0, 0)]
             
