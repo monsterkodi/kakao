@@ -9,16 +9,17 @@
 import std/[unittest, monotimes, sequtils, paths, times, tables, typetraits, macros, terminal, strformat, strutils, unicode]
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
-proc testCmp*(a:string, r:string, b:string, l:lineInfo) = 
+
+proc testCmp*(a:string, r:auto, b:auto, l:lineInfo) = 
 
     if r != b:
         echo ""
         styledEcho fgWhite, styleDim, l.filename, ":", resetStyle, fgWhite, $l.line
         styledEcho fgBlue,    a
         styledEcho fgMagenta, "|>"
-        styledEcho fgGreen,   b
+        styledEcho fgGreen,   $b
         styledEcho fgRed,     "!="
-        styledEcho fgYellow,  r
+        styledEcho fgYellow,  $r
         echo ""
         fail()
 
