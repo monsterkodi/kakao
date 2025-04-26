@@ -4,7 +4,7 @@
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███
 
-import std/[monotimes, logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt, random, pegs, osproc, streams, asyncdispatch, asyncfile, posix]
+import std/[os, osproc, parseopt, random, streams, asyncdispatch, asyncfile, posix]
 import kommon
 import trans
 import rndr
@@ -13,7 +13,7 @@ import greet
 var
     params = default seq[string]
     optParser = initOptParser()
-    files: seq[string] = @[]
+    files     : seq[string]
     outdir    = ""
     tests     = false
     verbose   = false
@@ -111,7 +111,8 @@ proc logFile(f:string, prefix:string="") =
         else:
             fgMagenta
 
-    styledEcho color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
+    styledEcho color, prefix, styleDim, icon, resetStyle, 
+               color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
         
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
@@ -176,13 +177,17 @@ proc runTests() =
             else:
                 break
         
+        proc fgc(c:auto) : auto = ansiForegroundColorCode(c)
         let exitCode = p.waitForExit()
         if exitCode != 0 or verbose :
             #or f.endsWith("pars.nim")
-            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
+            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸")
+                             .replace("[OK]",     fgc(fgGreen) & "✔\x1b[0m")
+                             .replace("[FAILED]", fgc(fgRed) & "✘\x1b[0m")
         else:
             let okCount = output.count "[OK]"
-            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
+            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸")
+                             .replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
             
         if exitCode != 0:
             styledEcho fgRed, "✘ ", &"{cmd}"
@@ -211,16 +216,12 @@ if tests:
 
 proc watch(paths:seq[string]) =
 
-    addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
-
     setControlCHook(proc () {.noconv.} = 
         
         styledEcho ""
         styledEcho fgGreen, farewells[rand(farewells.high)]
         quit 0)
     
-    # debug &"■ kim"
-
     var modTimes: Table[string,times.Time]
     
     styledEcho ""
@@ -229,7 +230,9 @@ proc watch(paths:seq[string]) =
     
     for p in paths:
         let (dir, name, ext) = p.splitFile()
-        styledEcho fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle
+        styledEcho fgBlue, styleDim, "● ", resetStyle, 
+            styleBright, fgBlue, dir, " ", resetStyle, 
+            styleBright, fgYellow, name, styleDim, ext, resetStyle
     
     var firstLoop = true
     
@@ -239,8 +242,6 @@ proc watch(paths:seq[string]) =
         var toTranspile:seq[string]
         var kimFiles:seq[string]
         var nimFiles:seq[string]
-        
-        # echo paths
         
         for path in paths:
         
@@ -297,7 +298,6 @@ proc watch(paths:seq[string]) =
                     let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
-        # echo "sleep"        
         sleep 200
         
 watch(@[getCurrentDir()]) 

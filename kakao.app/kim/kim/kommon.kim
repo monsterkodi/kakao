@@ -6,7 +6,14 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ###
 
-import std/[unittest, monotimes, sequtils, paths, times, tables, typetraits, macros, terminal, strformat, strutils, unicode]
+import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
+
+export monotimes, times
+export sequtils,  tables,    typetraits
+export enumutils, sets
+export strutils,  strformat, unicode,    pegs
+export unittest,  macros
+export terminal
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
@@ -14,13 +21,13 @@ proc testCmp*(a:string, r:auto, b:auto, l:lineInfo) =
 
     if r != b
         echo ""
-        styledEcho fgWhite, styleDim, l.filename, ":", resetStyle, fgWhite, $l.line
-        styledEcho fgBlue,    a
+        styledEcho fgWhite, $l.line, fgWhite, styleDim, ":",  l.filename.split(".")[0]
+        styledEcho fgBlue,    &"    {a}"
         styledEcho fgMagenta, "|>"
-        styledEcho fgGreen,   $b
-        styledEcho fgRed,     "!="
-        styledEcho fgYellow,  $r
-        echo ""
+        styledEcho fgGreen,   &"    {b}"
+        # styledEcho fgRed,     "!="
+        styledEcho fgYellow,  &"    {r}"
+        styledEcho fgRed, styleDim, "<|"
         fail()
 
 converter toBool*(x: int): bool = x != 0

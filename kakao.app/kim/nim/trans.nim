@@ -6,7 +6,7 @@
        ███     ███   ███  ███   ███  ███   ███  ███████ 
 ]#
 
-import std/[streams, paths, tables, pegs, sequtils, strutils, strformat, unittest]
+import std/[streams, paths]
 import kommon
 
 #  ███████  ███  ███   ███   ███████   ███      ████████         ███████   ███   ███   ███████   █████████  ████████

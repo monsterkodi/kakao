@@ -4,7 +4,6 @@
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-import std/[strutils, strformat, tables, enumutils, sets]
 import kommon
 
 type

@@ -4,7 +4,6 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-import std/[strformat, strutils]
 import kommon
 import tknz
 import pars
@@ -184,7 +183,13 @@ proc ▸if(r: var Rndr, n: Node) =
 proc ▸for(r: var Rndr, n: Node) =
 
     r.add "for "
-    r.rnd n.for_value
+    if n.for_value.kind == ●list
+        for i,v in n.for_value.list_values
+            r.rnd v
+            if i < n.for_value.list_values.len-1
+                r.add ", "
+    else
+        r.rnd n.for_value
     r.add " in "
     r.rnd n.for_range
     r.add ": "
@@ -192,10 +197,12 @@ proc ▸for(r: var Rndr, n: Node) =
     
 proc ▸list(r: var Rndr, n: Node) =
 
+    r.add "("
     for i,item in n.list_values
         r.rnd item
         if i < n.list_values.len-1
             r.add ", "
+    r.add ")"
     
 proc ▸range(r: var Rndr, n: Node) = 
 

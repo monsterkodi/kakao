@@ -4,7 +4,6 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-import std/[unittest, macros, strformat, terminal]
 import ../kommon
 import ../rndr
     
@@ -107,9 +106,10 @@ suite "rndr":
         t "f a b c"           , "f(a, b, c)"
         t "f 1 '2' false"     , "f(1, '2', false)"
         
-        # t "(a, b) = c"        , "(a, b) = c"
-        # t "(a, b, c) = f()"   , "(a, b, c) = f()"
-        # t "(a b c) = f()"     , "(a, b, c) = f()"
+    test "tuple assign":
+    
+        t "(a, b) = c"        , "(a, b) = c"
+        t "(a, b, c) = f()"   , "(a, b, c) = f()"
         
     test "assign":
     

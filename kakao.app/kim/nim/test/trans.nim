@@ -4,7 +4,6 @@
 #    ███     ███   ███  ███   ███  ███  ████       ███         ███     ███            ███     ███     
 #    ███     ███   ███  ███   ███  ███   ███  ███████          ███     ████████  ███████      ███     
 
-import std/[pegs, strutils, strformat, unittest]
 import ../kommon
 import ../trans
 

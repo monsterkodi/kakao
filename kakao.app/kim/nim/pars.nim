@@ -4,7 +4,6 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 
-import std/[strformat, strutils, terminal]
 import kommon
 import tknz
 
@@ -315,6 +314,7 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.for_value} in {n.for_range}{b})"
         of ●list:
             s = &"{n.list_values}"
+            s = "◆" & s[1..^1]
         of ●while:
             s = &"({s} {n.while_cond} {n.while_body})"
         of ●func:

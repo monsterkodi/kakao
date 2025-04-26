@@ -4,7 +4,6 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 
-import std/[unittest]
 import ../kommon
 import ../pars
     
@@ -85,7 +84,7 @@ suite "pars":
     
         t "f(a, b, c)"                              , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
         t "f a, b, c"                               , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
-        t "(a, b, c) = f()"                         , "▪[(@[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
+        t "(a, b, c) = f()"                         , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         # ϝ𝚒𝓍⫙ϵ!
         # t "(a b c) = f()"                         , "▪[(@[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         
@@ -95,7 +94,7 @@ suite "pars":
         t "a = b = 1"                               , "▪[(◆name = (◆name = ◆number))]"
         t "a = b = c = 2"                           , "▪[(◆name = (◆name = (◆name = ◆number)))]"
         
-        t "(a, b) = c"                              , "▪[(@[◆name, ◆name] = ◆name)]"
+        t "(a, b) = c"                              , "▪[(◆[◆name, ◆name] = ◆name)]"
         
     test "properties        ":
         
@@ -129,8 +128,8 @@ suite "pars":
         t "for a in 0..2 ➜ true"                    , "▪[(◆for ◆name in (◆number .. ◆number) ✔)]"
         t "for a in 0..2\n  true"                   , "▪[(◆for ◆name in (◆number .. ◆number) ▪[✔])]"
         t "for a in 0..2 ➜\n  true"                 , "▪[(◆for ◆name in (◆number .. ◆number) ▪[✔])]"
-        t "for key val in a"                        , "▪[(◆for @[◆name, ◆name] in ◆name)]"  
-        t "for kind, key, val in a"                 , "▪[(◆for @[◆name, ◆name, ◆name] in ◆name)]"  
+        t "for key val in a"                        , "▪[(◆for ◆[◆name, ◆name] in ◆name)]"  
+        t "for kind, key, val in a"                 , "▪[(◆for ◆[◆name, ◆name, ◆name] in ◆name)]"  
         
     test "switch":
     
