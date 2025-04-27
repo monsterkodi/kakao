@@ -162,8 +162,8 @@ type
                 
             of ●var:
             
-                var_name*       : Node
                 var_type*       : Node
+                var_name*       : Node
                 var_value*      : Node
                 
             of ●argType:
@@ -182,14 +182,12 @@ type
                 
             of ●signature:
             
-                sig_args*       : seq[Node]  
+                sig_args*       : Node
                 sig_type*       : Node
                 
             of ●func:
             
-                func_name*      : Node
-                func_type*      : Node
-                func_args*      : seq[Node]
+                func_signature* : Node
                 func_body*      : Node
                 
             of ●use:
@@ -339,10 +337,9 @@ proc `$`*(n: Node): string =
             let b = choose(n.while_body, &" {n.while_body}", "")
             s = &"({s} {n.while_cond}{b})"
         of ●func:
-            let f = choose(n.func_name, &" {n.func_name}", "")
-            let t = choose(n.func_type, &" {n.func_type}", "")
-            let b = choose(n.func_body, &" {n.func_body}", "")
-            s = &"({s}{f} {n.func_args}{t}{b})"
+            let sig = choose(n.func_signature, &"{n.func_signature} ", "")
+            let bdy = choose(n.func_body, &" {n.func_body}", "")
+            s = &"({sig}{s}{bdy})"
         of ●argType:
             let d = choose(n.arg_default, &" {n.arg_default}", "")
             let t = choose(n.arg_type, &" {s} {n.arg_type}", "")
@@ -355,9 +352,11 @@ proc `$`*(n: Node): string =
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
         of ●var:
-            let v = choose(n.var_value, &" {n.var_value}", "")
-            let t = choose(n.var_type, &" {n.arg_type}", "")
-            s = &"({s} {n.var_name}{t}{v})"
+            let t = choose(n.var_type, &"{n.var_type}", "")
+            let v = choose(n.var_value, &" (= {n.var_value})", "")
+            s = &"({s}{t} {n.var_name}{v})"
+        of ●type:
+            s = &"type({n.token.str})"
         of ●argList:
             s = &"({n.args})"
         of ●signature:
@@ -431,6 +430,10 @@ proc peek(p: Parser, ahead=1): Token =
         p.tokens[p.pos + ahead]
     else:
         Token(tok:◆eof)
+        
+proc atIndent(p: Parser) : bool =
+
+    p.current().col == 0 or p.peek(-1).tok == ◆indent
         
 proc atEnd(p:Parser): bool = p.pos >= p.tokens.len
     
@@ -934,44 +937,43 @@ proc lSingleArg(p: Parser, left: Node) : Node =
         
     Node(token:token, kind:●argType, arg_name:left, arg_type:arg_type, arg_default:arg_default)
     
-proc lArgType(p: Parser, left: Node) : Node =
-
-    if left.kind != ●literal:
-        return  
-    
-    var n = p.lSingleArg(left)
-    
-    if p.peek().tok in {◆val, ◆var, ◆assign} :
-        var argList : seq[Node] = @[n]
-        while p.peek(1).tok in {◆val, ◆var, ◆assign}:
-            argList.add p.lSingleArg(p.rLiteral())
-            
-        n = Node(token:n.token, kind:●argList, args:argList)
-
-    if p.tok() == ◆then:
-    
-        var s = p.rReturnType()
+# proc lArgType(p: Parser, left: Node) : Node =
+# 
+#     if left.kind != ●literal
+#         ⮐  
+#     
+#     var n = p.lSingleArg(left)
+#     
+#     if p.peek().tok in {◆val, ◆var, ◆assign} 
+#         var argList : seq[Node] = @[n]
+#         while p.peek(1).tok in {◆val, ◆var, ◆assign}
+#             argList.add p.lSingleArg(p.rLiteral())
+#             
+#         n = Node(token:n.token, kind:●argList, args:argList)
+# 
+#     if p.tok() == ◆then
+#     
+#         var s = p.rReturnType()
+#         
+#         if n.kind == ●argList
+#             s.sig_args = n.args
+#         else
+#             s.sig_args = @[n]
+#         n = s
+#     n
         
-        if n.kind == ●argList:
-            s.sig_args = n.args
-        else:
-            s.sig_args = @[n]
-        n = s
-    n
-    
-proc atIndent(p: Parser) : bool =
-
-    p.current().col == 0 or p.peek(-1).tok == ◆indent
-    
 proc rVar(p: Parser) : Node =
 
-    if p.atIndent():
+    let token    = p.consume() # ◆ or ◇
+    let var_type = p.parseType()
+    let var_name = p.value()
+    var var_value : Node
     
-        let token = p.consume()
-        if p.peek().tok in {◆val, ◆var, ◆assign} :
-            var n = p.lSingleArg p.rLiteral()
-            return  Node(token:token, kind:●var, var_name:n.arg_name, var_type:n.arg_type, var_value:n.arg_default) 
-    nil
+    if p.tok() == ◆assign:
+        let t = p.consume() # =
+        var_value = p.expression() 
+    
+    Node(token:token, kind:●var, var_type:var_type, var_name:var_name, var_value:var_value)
 
 proc rLet(p: Parser) : Node =
 
@@ -989,41 +991,41 @@ proc lFunc(p: Parser, left: Node): Node =
     
     echo &"lFunc {token}"    
     
-    var funcName:  Node
-    var func_type: Node
-    var args: seq[Node]
+    # var funcName:  Node
+    # var func_type: Node
+    # var args: seq[Node]
     
-    if left.kind == ●operation and left.token.tok == ◆assign:
-        echo &"lFunc ASSIGN {left}"
-        funcName = left.operand_left
+    # if left.kind == ●operation and left.token.tok == ◆assign
+    #     echo &"lFunc ASSIGN {left}"
+    #     funcName = left.operand_left
 
-    case left.kind:
-        of ●argType:
-            args.add left
-        of ●argList:
-            args = left.args
-        of ●signature:
-            args = left.sig_args
-            func_type = left.sig_type
-        else:
-            echo &"lFunc left.kind {left.kind}"
+    # case left.kind
+    #     of ●argType
+    #         args.add left
+    #     of ●argList
+    #         args = left.args
+    #     of ●signature
+    #         args = left.sig_args
+    #         func_type = left.sig_type
+    #     else
+    #         echo &"lFunc left.kind {left.kind}"
     
-    let body = p.then()
+    
+    let func_body = p.then()
     
     Node(
         token: token,
         kind: ●func,
-        func_name: funcName,
-        func_args: args,
-        func_type: func_type,
-        func_body: body
+        func_signature: left,
+        func_body: func_body
         )
 
 proc rFunc(p: Parser): Node =
     let token = p.consume() # ->
-    echo &"rFunc {token}"    
-    let body = p.then()
-    Node(token:token, kind:●func, func_body: body)
+    echo &"rFunc {token} {p.current()}"    
+    let func_body = p.then()
+    echo &"rFunc {token} {func_body}"    
+    Node(token:token, kind:●func, func_body:func_body)
 
 proc rReturn(p: Parser): Node =
 
@@ -1068,11 +1070,7 @@ proc lAssign(p: Parser, left: Node): Node =
     let token = p.consume()
     let right = p.expression(token)
 
-    if left.kind == ●literal and right.kind == ●func:
-        right.func_name = left
-        right
-    else:
-        Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
+    Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
 proc lRange(p: Parser, left: Node): Node =
 
@@ -1259,8 +1257,11 @@ proc setup(p: Parser) =
     p.pratt ◆square_open,       lArrayAccess,      nil,            90
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
     p.pratt ◆then,              nil,               rReturnType,    99
-    p.pratt ◆val,               lArgType,          rVar,          100
-    p.pratt ◆var,               lArgType,          rVar,          100
+    # p.pratt ◆val,               lArgType,          rVar,          100
+    # p.pratt ◆var,               lArgType,          rVar,          100
+    # p.pratt ◆let,               nil,               rVar,          101
+    p.pratt ◆val,               nil,               rVar,          100
+    p.pratt ◆var,               nil,               rVar,          100
     p.pratt ◆let,               nil,               rVar,          101
     p.pratt ◆dot,               lPropertyAccess,   nil,           102
     

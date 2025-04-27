@@ -57,29 +57,45 @@ template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
         
     ▸ types
     
-        t "files ◇ seq[string] = @[]"               , "▪[(◆name ◇ ◆type (= (◆name[])))]"         
+        t "◇int i"                                  , "▪[(◇type(int) ◆name)]"
+        t "◆int i"                                  , "▪[(◆type(int) ◆name)]"
+        t "◇string s"                               , "▪[(◇type(string) ◆name)]"
+        t "◆string s"                               , "▪[(◆type(string) ◆name)]"
+        t "◇seq[string] s"                          , "▪[(◇type(seq[string]) ◆name)]"
+        t "◆seq[string] s"                          , "▪[(◆type(seq[string]) ◆name)]"
+        t "◇Parser p"                               , "▪[(◇type(Parser) ◆name)]"
+        t "◆Parser p"                               , "▪[(◆type(Parser) ◆name)]"
+
+        t "◇int i = 1"                              , "▪[(◇type(int) ◆name (= ◆number))]"
+        t "◇int i = 1+1"                            , "▪[(◇type(int) ◆name (= (◆number + ◆number)))]"
+        
+        t "◆string s = \"a\""                       , "▪[(◆type(string) ◆name (= ◆string))]"
+        t "◆string s = \"a\" & \"b\""               , "▪[(◆type(string) ◆name (= (◆string & ◆string)))]"
+        
+        t "◇seq[string] s = @[]"                    , "▪[(◇type(seq[string]) ◆name (= (◆name[])))]"
         
     ▸ func
     
-        t "->"                                      , "▪[(-> @[])]"
-        t "f = ->"                                  , "▪[(-> ◆name @[])]" 
-        t "f = a◇string ->"                         , "▪[(-> ◆name @[(◆name ◇ ◆type)])]"
-        t "f = a◇string b◇int ->"                   , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type)])]"
-        t "f = p◆Parser a◇string b◇int ->"          , "▪[(-> ◆name @[(◆name ◆ ◆type), (◆name ◇ ◆type), (◆name ◇ ◆type)])]"
-        t "f = p◆Parser ->"                         , "▪[(-> ◆name @[(◆name ◆ ◆type)])]"
-        t "f = ➜ Node ->"                           , "▪[(-> ◆name @[] ◆type)]"
-        t "f = p◆Parser ➜ Node ->"                  , "▪[(-> ◆name @[(◆name ◆ ◆type)] ◆type)]"
-        t "f = s◇seq[Node] ➜ seq[Node] ->"          , "▪[(-> ◆name @[(◆name ◇ ◆type)] ◆type)]"
-        t "f = p◇Parser ahead◇int=1 ➜ Token ->"     , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type (= ◆number))] ◆type)]"
-        t "f = p◇Parser ahead=1 ➜ Token ->"         , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name (= ◆number))] ◆type)]"
+        t "->"                                      , "▪[(->)]"
+        t "f = ->"                                  , "▪[(◆name = (->))]" 
         
-        t "f = i ◇ int ->"                          , "▪[(-> ◆name @[(◆name ◇ ◆type)])]"
-        t "f = a ◇ int b ◇ int ->"                  , "▪[(-> ◆name @[(◆name ◇ ◆type), (◆name ◇ ◆type)])]"
-        t "f = a ◇ int = 1 ->"                      , "▪[(-> ◆name @[(◆name ◇ ◆type (= ◆number))])]"
+        t "◇int i ->"                               , "▪[((◇type(int) ◆name) ->)]"
+        # t "f = ◇string a ->"                        , "▪[(-> ◆name @[(◇type ◆name)])]"
+        # t "f = ◇string a ◇int b ->"                 , "▪[(-> ◆name @[(◇type ◆name), (◇type ◆name)])]"
+        # t "f = ◆Parser p ◇string a ◇int b ->"       , "▪[(-> ◆name @[(◆type ◆name), (◇type ◆name), (◇type ◆name)])]"
+        # t "f = ◆Parser p ->"                        , "▪[(-> ◆name @[(◆type ◆name)])]"
+        # t "f = ➜Node ->"                            , "▪[(-> ◆name @[] ➜type)]"
+        # t "f = ◆Parser p ➜Node ->"                  , "▪[(-> ◆name @[(◆type ◆name )] ➜type)]"
+        # t "f = ◇seq[Node] s ➜seq[Node] ->"          , "▪[(-> ◆name @[(◇type ◆name )] ➜type)]"
+        # t "f = ◇Parser p ◇int ahead=1 ➜Token ->"    , "▪[(-> ◆name @[(◇type ◆name ), (◇type ◆name (= ◆number))] ➜type)]"
+        # t "f = ◇Parser p ahead=1 ➜Token ->"         , "▪[(-> ◆name @[(◇type ◆name ), (◆name (= ◆number))] ➜type)]"
+        # t "f = ◇int i ->"                           , "▪[(-> ◆name @[(◇type ◆name )])]"
+        # t "f = ◇int a ◇int b ->"                    , "▪[(-> ◆name @[(◇type ◆name ), (◇type ◆name)])]"
+        # t "f = ◇int a = 1 ->"                       , "▪[(-> ◆name @[(◇type ◆name  (= ◆number))])]"
         
     ▸ func body
     
-        t "f = ->\n  b = 1 + 2\n  b += 3"           , "▪[(-> ◆name @[] ▪[(◆name = (◆number + ◆number))(◆name += ◆number)])]" 
+        t "f = ->\n  b = 1 + 2\n  b += 3"           , "▪[(◆name = (-> ▪[(◆name = (◆number + ◆number))(◆name += ◆number)]))]" 
         
     ▸ call
     
@@ -214,13 +230,13 @@ template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
 
         t "import ../../rel/[s1, s2]"               , "▪[◆import]"
         
-    ▸ var
+    # ▸ var
         
-        t "var a = 1"                               , "▪[(◆ ◆name (= ◆number))]"
-        t "let a = 1"                               , "▪[(◇ ◆name (= ◆number))]"
-        t "◆a = 1"                                  , "▪[(◆ ◆name (= ◆number))]"
-        t "◇a = 1"                                  , "▪[(◇ ◆name (= ◆number))]"
-        t "◆str = \"\"\n◆bool = false\n◆num = 1"    , "▪[(◆ ◆name (= ◆string))(◆ ◆name (= ✘))(◆ ◆name (= ◆number))]"
+        # t "var a = 1"                               , "▪[(◆ ◆name (= ◆number))]"
+        # t "let a = 1"                               , "▪[(◇ ◆name (= ◆number))]"
+        # t "◆a = 1"                                  , "▪[(◆ ◆name (= ◆number))]"
+        # t "◇a = 1"                                  , "▪[(◇ ◆name (= ◆number))]"
+        # t "◆str = \"\"\n◆bool = false\n◆num = 1"    , "▪[(◆ ◆name (= ◆string))(◆ ◆name (= ✘))(◆ ◆name (= ◆number))]"
         
     ▸ tests
     
@@ -248,7 +264,7 @@ f = ->
     if x
         2
     1
-"""  , "▪[(-> ◆name @[] ▪[(◆if @[(◆name ▪[◆number])])◆number])]"
+"""  , "▪[(◆name = (-> ▪[(◆if @[(◆name ▪[◆number])])◆number]))]"
 
         t """
 f = -> 
@@ -256,7 +272,7 @@ f = ->
         2
         2
     1
-"""  , "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])]"
+"""  , "▪[(◆name = (-> ▪[(◆name = (-> ▪[◆number◆number]))◆number]))]"
 
         t """
 f = -> 
@@ -265,12 +281,12 @@ f = ->
         2
     1
 0
-0"""  , "▪[(-> ◆name @[] ▪[(-> ◆name @[] ▪[◆number◆number])◆number])◆number◆number]"
+0"""  , "▪[(◆name = (-> ▪[(◆name = (-> ▪[◆number◆number]))◆number]))◆number◆number]"
 
         t """
-◇icon = 
+icon = 
     if ex == ".kim"
         "  "
     else
-        "  """"  , "▪[(◇ ◆name (= ▪[(◆if @[((◆name == ◆string) ▪[◆string])] ▪[◆string])]))]"
+        "  """"  , "▪[(◆name = ▪[(◆if @[((◆name == ◆string) ▪[◆string])] ▪[◆string])])]"
         

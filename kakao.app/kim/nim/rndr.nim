@@ -43,7 +43,29 @@ proc ▸block(r: var Rndr, n: Node) =
             else:
                 r.add " "
 
+proc ▸proc(r: var Rndr, n: Node) = 
+
+    let f = n.operand_right
+    
+    r.add "proc "
+    r.rnd n.operand_left
+    r.add "("
+    if f.func_signature != nil and f.func_signature.sig_args != nil:
+        r.rnd f.func_signature.sig_args
+    r.add ")"
+    if f.func_signature != nil and f.func_signature.sig_type != nil:
+        r.add " : "
+        r.rnd f.func_signature.sig_type
+    r.add " ="
+    if f.func_body != nil:
+        r.add " "
+        r.rnd f.func_body
+
 proc ▸operation(r: var Rndr, n: Node) = 
+
+    if n.token.tok == ◆assign and n.operand_right.token.tok == ◆func:
+        r.▸proc n
+        return  
 
     if n.token.tok notin {◆assign, ◆ampersand}:
         r.add "("
@@ -98,18 +120,19 @@ proc ▸arrayLike(r: var Rndr, n: Node) =
 proc ▸func(r: var Rndr, n: Node) = 
 
     r.add "proc "
-    r.rnd n.func_name
+    # r.rnd n.func_name
     r.add "("
-    r.rnd n.func_args
+    if n.func_signature != nil and n.func_signature.sig_args != nil:
+        r.rnd n.func_signature.sig_args
     r.add ")"
-    if n.func_type != nil:
+    if n.func_signature != nil and n.func_signature.sig_type != nil:
         r.add " : "
-        r.rnd n.func_type
+        r.rnd n.func_signature.sig_type
     r.add " ="
     if n.func_body != nil:
         r.add " "
         r.rnd n.func_body
-    
+            
 proc ▸argType(r: var Rndr, n: Node) =
 
     r.rnd n.arg_name
@@ -299,8 +322,8 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸if(n)
         of ●switch:
             r.▸switch(n)
-        of ●func:
-            r.▸func(n)
+        # of ●func
+        #     r.▸func(n)
         of ●argType:
             r.▸argType(n)
         of ●call:
