@@ -77,18 +77,19 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
     #     t "◆files ◇ seq[string] = @[]"             , "var files : seq[string] = @[]" 
     #     t "◇files ◇ seq[string] = @[]"             , "let files : seq[string] = @[]" 
         
-    # ▸ func
+    ▸ func
     
-        # t "f = ->"                                 , "proc f() ="
-        # t "f = a◇string ->"                        , "proc f(a:string) ="
-        # t "f = a◇string b◇int ->"                  , "proc f(a:string, b:int) ="
-        # t "f = p◆Parser a◇string b◇int ->"         , "proc f(p:var Parser, a:string, b:int) ="
-        # t "f = p◆Parser ->"                        , "proc f(p:var Parser) ="
-        # t "f = ➜ Node ->"                          , "proc f() : Node ="
-        # t "f = p◆Parser ➜ Node ->"                 , "proc f(p:var Parser) : Node ="
-        # t "f = s◇seq[Node] ➜ seq[Node] ->"         , "proc f(s:seq[Node]) : seq[Node] ="
-        # t "f = p◇Parser ahead◇int=1 ➜ Token ->"    , "proc f(p:Parser, ahead:int=1) : Token ="
-        # t "f = p◇Parser ahead=1 ➜ Token ->"        , "proc f(p:Parser, ahead=1) : Token ="
+        t "f = ->"                                 , "proc f ="
+        # t "f = a=1 ->"                             , "proc f(a = 1) ="
+        t "f = ◇string a ->"                       , "proc f(a : string) ="
+        t "f = ◇string a ◇int b ->"                , "proc f(a : string, b : int) ="
+        t "f = ◆Parser p ->"                       , "proc f(p : var Parser) ="
+        t "f = ◆Parser p ◇string a ◇int b ->"      , "proc f(p : var Parser, a : string, b : int) ="
+        t "f = ➜ Node ->"                          , "proc f() : Node ="
+        t "f = ◆Parser p ➜ Node ->"                , "proc f(p : var Parser) : Node ="
+        t "f = ◇seq[Node] s ➜ seq[Node] ->"        , "proc f(s : seq[Node]) : seq[Node] ="
+        t "f = ◇Parser p ◇int ahead=1 ➜ Token ->"  , "proc f(p : Parser, ahead : int = 1) : Token ="
+        # t "f = ◇Parser p ahead=1 ➜ Token ->"       , "proc f(p : Parser, ahead = 1) : Token ="
         # 
         # t "l.map(r◇tuple➜string -> r.path)"        , "l.map(proc (r:tuple) : string = r.path)"
         # t "l.map(r ◇ tuple ➜ string -> r.path)"    , "l.map(proc (r:tuple) : string = r.path)"
@@ -113,9 +114,9 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
     ▸ arglist
     
         t "f(a, b, c)"        , "f(a, b, c)"
-        t "f a, b, c"         , "f(a, b, c)"
-        t "f a b c"           , "f(a, b, c)"
-        t "f 1 '2' false"     , "f(1, '2', false)"
+        t "g a, b, c"         , "g(a, b, c)"
+        t "h a b c"           , "h(a, b, c)"
+        t "i 1 '2' false"     , "i(1, '2', false)"
         
     ▸ tuple assign
     
@@ -222,8 +223,8 @@ f = ->
         2
         2
     1""" , """
-proc f() = 
-    proc g() = 
+proc f = 
+    proc g = 
         2
         2
     1"""
@@ -234,7 +235,7 @@ f = ->
         2
     1
 """  , """
-proc f() = 
+proc f = 
     if x: 
         2
     1"""
@@ -244,7 +245,7 @@ f = ->
     if 1
         2
 # dedent""" , """
-proc f() = 
+proc f = 
     if 1: 
         2
 # dedent"""
@@ -256,8 +257,8 @@ f = ->
         2
     1
 0""" , """
-proc f() = 
-    proc g() = 
+proc f = 
+    proc g = 
         2
         2
     1

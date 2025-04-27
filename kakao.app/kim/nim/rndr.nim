@@ -10,9 +10,10 @@ import pars
 
 type
     Rndr = object
-        s           : string
-        indent      : int
-        needsIndent : bool
+        s               : string
+        # indent          : int
+        # needsIndent     : bool
+        annotateVarArg  : bool
 
 proc add(r: var Rndr, text: string) = r.s &= text
 proc spc(r: var Rndr)               = r.s &= " "
@@ -49,13 +50,14 @@ proc ▸proc(r: var Rndr, n: Node) =
     
     r.add "proc "
     r.rnd n.operand_left
-    r.add "("
-    if f.func_signature != nil and f.func_signature.sig_args != nil:
-        r.rnd f.func_signature.sig_args
-    r.add ")"
-    if f.func_signature != nil and f.func_signature.sig_type != nil:
-        r.add " : "
-        r.rnd f.func_signature.sig_type
+    r.rnd f.func_signature
+    # r.add "("
+    # if f.func_signature != nil and f.func_signature.sig_args != nil
+    #     r.rnd f.func_signature.sig_args
+    # r.add ")"
+    # if f.func_signature != nil and f.func_signature.sig_type != nil
+    #     r.add " : "
+    #     r.rnd f.func_signature.sig_type
     r.add " ="
     if f.func_body != nil:
         r.add " "
@@ -63,13 +65,18 @@ proc ▸proc(r: var Rndr, n: Node) =
 
 proc ▸operation(r: var Rndr, n: Node) = 
 
-    if n.token.tok == ◆assign and n.operand_right.token.tok == ◆func:
-        r.▸proc n
-        return  
+    if n.token.tok == ◆assign :
+        if n.operand_right.token.tok == ◆func:
+            r.▸proc n
+            return  
 
     if n.token.tok notin {◆assign, ◆ampersand}:
         r.add "("
+    if n.token.tok == ◆assign and n.operand_left.kind == ●list:
+        r.add "("
     r.rnd n.operand_left
+    if n.token.tok == ◆assign and n.operand_left.kind == ●list:
+        r.add ")"
     r.spc()
     case n.token.tok:
         of ◆and:
@@ -120,44 +127,55 @@ proc ▸arrayLike(r: var Rndr, n: Node) =
 proc ▸func(r: var Rndr, n: Node) = 
 
     r.add "proc "
-    # r.rnd n.func_name
-    r.add "("
-    if n.func_signature != nil and n.func_signature.sig_args != nil:
-        r.rnd n.func_signature.sig_args
-    r.add ")"
-    if n.func_signature != nil and n.func_signature.sig_type != nil:
-        r.add " : "
-        r.rnd n.func_signature.sig_type
+    echo "▸func"
+    r.annotateVarArg = true
+    r.rnd n.func_signature
+    echo "◂func"
+    r.annotateVarArg = false
     r.add " ="
     if n.func_body != nil:
         r.add " "
         r.rnd n.func_body
-            
-proc ▸argType(r: var Rndr, n: Node) =
 
-    r.rnd n.arg_name
-    if n.arg_type != nil:
-        r.add ":"
-        if n.token.tok == ◆var:
-            r.add "var "
-        r.rnd n.arg_type
-    if n.arg_default != nil:
-        r.add "="
-        r.rnd n.arg_default.default
+proc ▸signature(r: var Rndr, n:Node) =
+
+    r.add "("
+    r.annotateVarArg = true
+    r.rnd n.sig_args
+    r.annotateVarArg = false
+    r.add ")"
+    if n.sig_type != nil:
+        r.add " : "
+        r.rnd n.sig_type
+            
+# proc ▸argType(r: var Rndr, n: Node) =
+# 
+#     r.rnd n.arg_name
+#     if n.arg_type != nil
+#         r.add ":"
+#         if n.token.tok == ◆var
+#             r.add "var "
+#         r.rnd n.arg_type
+#     if n.arg_default != nil
+#         r.add "="
+#         r.rnd n.arg_default.default
         
 proc ▸var(r: var Rndr, n: Node) =
 
-    if n.token.tok == ◆var:
-        r.add "var "
-    else:
-        r.add "let "
+    echo &"{n.token.tok} {r.annotateVarArg}"
+    # if n.token.tok == ◆var
+    #     r.add "var "
+    # else
+    #     r.add "let "
     r.rnd n.var_name
     if n.var_type != nil:
         r.add " : "
+        if n.token.tok == ◆var and r.annotateVarArg:
+            r.add "var "
         r.rnd n.var_type
     if n.var_value != nil:
         r.add " = "
-        r.rnd n.var_value.default
+        r.rnd n.var_value
 
 proc ▸string(r: var Rndr, n: Node) = 
 
@@ -237,12 +255,12 @@ proc ▸for(r: var Rndr, n: Node) =
     
 proc ▸list(r: var Rndr, n: Node) =
 
-    r.add "("
+    # r.add "("
     for i,item in n.list_values:
         r.rnd item
         if i < n.list_values.len-1:
             r.add ", "
-    r.add ")"
+    # r.add ")"
     
 proc ▸range(r: var Rndr, n: Node) = 
 
@@ -324,8 +342,10 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸switch(n)
         # of ●func
         #     r.▸func(n)
-        of ●argType:
-            r.▸argType(n)
+        # of ●argType
+        #     r.▸argType(n)
+        of ●signature:
+            r.▸signature(n)
         of ●call:
             r.▸call(n)
         of ●operation:
