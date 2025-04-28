@@ -8,29 +8,28 @@ import kommon
 
 type
     tok* = enum
-        ◆name,
-
-        ◆if,
-        ◆when,
+        ◆name
+        ◆if
+        ◆when
         ◆then               = "➜"
-        ◆elif,
-        ◆else,
-        ◆switch,
-        ◆while,
-        ◆for,
-        ◆in,
-        ◆is,
-        ◆of,
-        ◆break,
-        ◆continue,
-        ◆discard,
-        ◆class,
-        ◆import,
-        ◆use,
-        ◆try,
-        ◆catch,
-        ◆let                = "◇"
-        ◆var                = "◆"
+        ◆elif
+        ◆else
+        ◆switch
+        ◆while
+        ◆for
+        ◆in
+        ◆is
+        ◆of
+        ◆break
+        ◆continue
+        ◆discard
+        ◆class
+        ◆import
+        ◆use
+        ◆try
+        ◆catch
+        ◆let                
+        ◆var                
         ◆not                = "!" 
         ◆and                = "&&" 
         ◆or                 = "||" 
@@ -41,18 +40,19 @@ type
         ◆proc               = "=>"
         ◆return             = "⮐"
 
-        ◆number,
-        ◆string,
+        ◆number
+        ◆string
         ◆string_start       = "'"
-        ◆string_end,
+        ◆string_end
         ◆stripol_start      = "#{"
-        ◆stripol_end,
+        ◆stripol_end
         
         ◆comment_start      = "#"
-        ◆comment,
-        ◆comment_end,
+        ◆comment
+        ◆comment_end
 
-        ◆val                = "◇"
+        ◆val_type           = "◇"
+        ◆var_type           = "◆"
         ◆paren_open         = "("
         ◆paren_close        = ")"       
         ◆bracket_open       = "{"
@@ -85,9 +85,9 @@ type
         ◆greater            = ">"
         ◆less               = "<"
         ◆test               = "▸"
-        ◆type, # not really a token, used by pars to mark type annotations
-        ◆, # block
-        ◆indent,
+        ◆type  # not really a token, used by pars to mark type annotations
+        ◆  # block
+        ◆indent
         ◆eof
         
     toks* = set[tok]
@@ -320,7 +320,6 @@ proc modbracket(t:Tknzr) =
     
 proc `import`(t:Tknzr) = 
 
-    t.segi += 1 # 𝓢⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾 
     t.advanceUntil "\n"
     t.push ◆import
 
@@ -367,19 +366,22 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
     while t.segi < t.segs.len
         
-        # log &"{t.segi} ▪ {t.segs[t.segi]}"
+        # log &"{t.line} {t.bol} {t.eol} ◆ {t.segi} / {t.segs[t.segi]}"
         
         if t.segs[t.segi] == "\n"
         
             t.nextLine()
             # log &"line {t.line} {t.segi} {t.bol} {t.eol} {t.segs.len}"
             if t.segi >= t.segs.len
-                # log "eof"
+                # log "eof1"
                 break
             t.token = Token(tok: ◆indent, line:t.line, col:t.col()) 
             # log &"indent {t.token}"
-            while t.peek(0) == " "
+            while t.segi < t.segs.len and t.peek(0) == " "
                 t.advance 1
+            if t.segi >= t.segs.len
+                # log "eof2"
+                break
             t.tokens.add t.token
             continue
                 
@@ -436,23 +438,25 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.commit(char, punct[char], 1)
                     continue
                 else
-                    t.token.str.add char
+                    # t.token.str.add char
+                    t.advance 1
                     
                     var next : string
-                    if t.segi < t.eol-1 
-                        next = t.peek(1) 
+                    if t.segi <= t.eol-1 
+                        next = t.peek(0) 
                     else 
                         next = ""
                         
                     if isNumber(t.token.str, next)
                         t.push ◆number
                     
-                    if keywords.hasKey(t.token.str) and (t.segi >= t.eol-1 or t.peek(1) == " " or punct.hasKey(t.peek(1)))
+                    if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0)))
                         case keywords[t.token.str]
                             of ◆import
                                 t.import()
                             else
                                 t.push keywords[t.token.str]
+                    continue
             # log "t.incr"
             t.incr 1
         
@@ -466,7 +470,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             if t.token.tok == ◆string
                 log "add empty string token"
                 t.tokens.add t.token
-
+                
+    # log "⮐  tokens"
     ⮐  t.tokens
     
 proc tokenize*(text:string) : seq[Token] =

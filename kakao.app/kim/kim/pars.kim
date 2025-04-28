@@ -7,185 +7,191 @@
 import kommon
 import tknz
 
-type
-    NodeKind* = enum
+type NodeKind* = enum
     
-        ●error,
-        ●block,
-        ●comment,
-        ●literal,
-        ●string,
-        ●stripol,
-        ●keyword,  
-        ●preOp, 
-        ●operation, 
-        ●postOp,
-        ●call,
-        ●if, 
-        ●condThen,
-        ●for, 
-        ●list,
-        ●range, 
-        ●while,
-        ●switch,
-        ●switchCase,
-        ●var,        
-        ●propertyAccess,        
-        ●arrayAccess,
-        ●arrayLike,
-        ●func,
-        ●type,
-        ●signature,
-        ●return, 
-        ●discard, 
-        ●break, 
-        ●continue,          
-        ●use, 
-        ●import,
-        ●class,
-        ●enum,
-        ●testSuite,
-        ●testSection,
-        ●testCase,
-        ●eof
+    ●error
+    ●block
+    ●comment
+    ●literal
+    ●string
+    ●stripol
+    ●keyword  
+    ●preOp 
+    ●operation 
+    ●postOp
+    ●call
+    ●if,
+    ●condThen
+    ●for 
+    ●list
+    ●curly
+    ●squarely
+    ●range 
+    ●while
+    ●switch
+    ●switchCase
+    ●var        
+    ●let        
+    ●propertyAccess        
+    ●arrayAccess
+    ●arrayLike
+    ●func
+    ●type
+    ●signature
+    ●return 
+    ●discard 
+    ●break 
+    ●continue          
+    ●use 
+    ●import
+    ●class
+    ●enum
+    ●testSuite
+    ●testSection
+    ●testCase
+    ●eof
     
-    # ███   ███   ███████   ███████    ████████
-    # ████  ███  ███   ███  ███   ███  ███     
-    # ███ █ ███  ███   ███  ███   ███  ███████ 
-    # ███  ████  ███   ███  ███   ███  ███     
-    # ███   ███   ███████   ███████    ████████
+# ███   ███   ███████   ███████    ████████
+# ████  ███  ███   ███  ███   ███  ███     
+# ███ █ ███  ███   ███  ███   ███  ███████ 
+# ███  ████  ███   ███  ███   ███  ███     
+# ███   ███   ███████   ███████    ████████
 
-    Node* = ref object
+type Node* = ref object
 
-        token* : Token
-            
-        case kind* : NodeKind
+    token* : Token
         
-            of ●block
-                
-                expressions*    : seq[Node]
-                
-            of ●operation
+    case kind* : NodeKind
+    
+        of ●block
             
-                operand_left*   : Node
-                operand_right*  : Node
-                
-            of ●string
+            expressions*    : seq[Node]
             
-                string_content*  : Node
-                string_stripols* : seq[Node]
-                
-            of ●comment
+        of ●operation
+        
+            operand_left*   : Node
+            operand_right*  : Node
             
-                comment_content* : Node
-                
-            of ●stripol
+        of ●string
+        
+            string_content*  : Node
+            string_stripols* : seq[Node]
             
-                stripol_xprssns* : seq[Node]
-                stripol_content* : Node
-
-            of ●range
+        of ●comment
+        
+            comment_content* : Node
             
-                range_start*    : Node
-                range_end*      : Node
-                
-            of ●postOp, ●preOp
+        of ●stripol
+        
+            stripol_xprssns* : seq[Node]
+            stripol_content* : Node
+    
+        of ●range
+        
+            range_start*    : Node
+            range_end*      : Node
             
-                operand*        : Node 
-                
-            of ●return
+        of ●postOp, ●preOp
+        
+            operand*        : Node 
             
-                return_value*   : Node  
-
-            of ●discard
+        of ●return
+        
+            return_value*   : Node  
+    
+        of ●discard
+        
+            discard_value*  : Node  
+    
+        of ●call
+        
+            callee*         : Node
+            call_args*      : seq[Node]
+    
+        of ●propertyAccess
+        
+            owner*          : Node
+            property*       : Node
             
-                discard_value*  : Node  
-
-            of ●call
+        of ●arrayAccess
+        
+            array_owner*    : Node
+            array_index*    : Node
             
-                callee*         : Node
-                call_args*      : seq[Node]
-
-            of ●propertyAccess
+        of ●if
+            # also handles when
+            cond_thens*     : seq[Node]
+            `else`*         : Node
             
-                owner*          : Node
-                property*       : Node
-                
-            of ●arrayAccess
+        of ●condThen
+        
+            cond*           : Node
+            then*           : Node
             
-                array_owner*    : Node
-                array_index*    : Node
-                
-            of ●if
-                # also handles when
-                cond_thens*     : seq[Node]
-                `else`*         : Node
-                
-            of ●condThen
+        of ●switch
             
-                cond*           : Node
-                then*           : Node
-                
-            of ●switch
-                
-                switch_value*   : Node
-                switch_cases*   : seq[Node]
-                switch_default* : Node
-                
-            of ●switchCase
+            switch_value*   : Node
+            switch_cases*   : seq[Node]
+            switch_default* : Node
             
-                case_when*      : seq[Node]
-                case_then*      : Node
-                
-            of ●while
+        of ●switchCase
+        
+            case_when*      : seq[Node]
+            case_then*      : Node
             
-                while_cond*     : Node
-                while_body*     : Node
-                
-            of ●for
+        of ●while
+        
+            while_cond*     : Node
+            while_body*     : Node
             
-                for_value*      : Node
-                for_range*      : Node
-                for_body*       : Node
-                
-            of ●list
+        of ●for
+        
+            for_value*      : Node
+            for_range*      : Node
+            for_body*       : Node
             
-                list_values*    : seq[Node] 
-                
-            of ●var
+        of ●list, ●curly, ●squarely
+        
+            list_values*    : seq[Node] 
             
-                var_type*       : Node
-                var_name*       : Node
-                var_value*      : Node
-                
-            of ●signature
+        of ●var
+        
+            var_type*       : Node
+            var_name*       : Node
+            var_value*      : Node
             
-                sig_args*       : Node
-                sig_type*       : Node
-                
-            of ●func
+        of ●let
             
-                func_signature* : Node
-                func_mod*       : Node
-                func_body*      : Node
-                
-            of ●use
+            let_expr*       : Node
             
-                use_module*     : Node
-                use_kind*       : Node
-                use_items*      : seq[Node]
-                
-            of ●testSuite, ●testSection
+        of ●signature
+        
+            sig_args*       : Node
+            sig_type*       : Node
             
-                test_block*     : Node
-                            
-            of ●testCase
-                
-                test_expression* : Node
-                test_expected*   : Node
-                
-            else
-                discard
+        of ●func
+        
+            func_signature* : Node
+            func_mod*       : Node
+            func_body*      : Node
+            
+        of ●use
+        
+            use_module*     : Node
+            use_kind*       : Node
+            use_items*      : seq[Node]
+            
+        of ●testSuite, ●testSection
+        
+            test_block*     : Node
+                        
+        of ●testCase
+            
+            test_expression* : Node
+            test_expected*   : Node
+            
+        else
+            discard
                 
 template choose*(cond, a, b: untyped): untyped =
 
@@ -312,6 +318,12 @@ proc `$`*(n: Node): string =
         of ●list
             s = &"{n.list_values}"
             s = "◆" & s[1..^1]
+        of ●curly
+            s = &"{n.list_values}"
+            s = "{" & s[2..^2] & "}"
+        of ●squarely
+            s = &"{n.list_values}"
+            s = "[" & s[1..^1] & "]]"
         of ●while
             let b = choose(n.while_body, &" {n.while_body}", "")
             s = &"({s} {n.while_cond}{b})"
@@ -475,7 +487,7 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
                 # log &">>>>>>>>>>>>>>>>>>>> block level ●func, merge! {prevExpr} ++++ {expr}"
                 if prevExpr.operand_right.kind == ●operation
                     var varToken = prevExpr.operand_right.operand_left.token
-                    varToken.tok = ◆val
+                    varToken.tok = ◆val_type
                     let varNode = Node(token:varToken, kind:●var, var_name:prevExpr.operand_right.operand_left, var_value:prevExpr.operand_right.operand_right)
                     expr.func_signature.sig_args.list_values.unshift(varNode)
                 else
@@ -503,25 +515,21 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
     bn
     
 proc rBlock(p:Parser) : Node =
-    # log &"rBlock {p}"
+
     p.parseBlock()
     
 proc rSymbol(p: Parser): Node =
 
-    let token = p.consume()
-    # log &"symbol {token}"
-    Node(token:token, kind: ●literal)
+    Node(token:p.consume(), kind: ●literal)
         
 proc parseCallArgList(p:Parser) : seq[Node] = 
 
-    # log "parseCallArgList"
     var list : seq[Node]
     let line = p.current().line
     var expr : Node = p.expression(-1)
     while expr != nil
         list.add expr        
         if p.current().line != line
-            # log "parseCallArgList linebreak"
             break
         p.swallow ◆comma
         expr = p.expression(-1)
@@ -660,19 +668,9 @@ proc rFor(p: Parser): Node =
 
     Node(token:token, kind:●for, for_value:for_value, for_range:for_range, for_body:for_body)
 
-# ███   ███  ███   ███  ███  ███      ████████
-# ███ █ ███  ███   ███  ███  ███      ███     
-# █████████  █████████  ███  ███      ███████ 
-# ███   ███  ███   ███  ███  ███      ███     
-# ██     ██  ███   ███  ███  ███████  ████████
-
 proc rWhile(p: Parser): Node =
 
-    let token = p.consume()
-    let while_cond = p.expression()
-    let while_body = p.then()
-
-    Node(token:token, kind:●while, while_cond:while_cond, while_body:while_body)
+    Node(token:p.consume(), kind:●while, while_cond:p.expression(), while_body:p.then())
 
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
@@ -794,6 +792,19 @@ proc parseParenList(p: Parser): seq[Node] =
     p.swallowError(◆paren_close, "Missing closing parenthesis for call arguments")
     
     args
+    
+proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
+
+    let token = p.consume()
+    
+    var args : seq[Node]
+    while p.tok() != close and p.tok() != ◆eof
+        args.add p.expression()
+        p.swallow ◆comma
+        
+    p.swallowError(close, "Missing closing bracket")
+    
+    args
         
 proc lCall(p: Parser, callee: Node): Node =
 
@@ -824,24 +835,23 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
 proc rLiteral(p: Parser): Node =
 
-    let token = p.consume()
-    Node(token:token, kind: ●literal)
+    Node(token:p.consume(), kind: ●literal)
     
 proc lPropertyAccess(p: Parser, owner: Node): Node =
 
-    let token = p.consume() # .
-    let right = p.rLiteral()
-    Node(token:token, kind:●propertyAccess, owner:owner, property:right)
+    Node(token:p.consume(), kind:●propertyAccess, owner:owner, property:p.rLiteral())
 
 proc rKeyword(p: Parser): Node =
 
-    let token = p.consume()
-    Node(token:token, kind: ●keyword)
+    Node(token:p.consume(), kind: ●keyword)
     
 proc rImport(p: Parser): Node =
 
-    let token = p.consume()
-    Node(token:token, kind: ●import)
+    Node(token:p.consume(), kind: ●import)
+    
+proc rLet(p: Parser): Node =
+
+    Node(token:p.consume(), kind: ●let, let_expr:p.expression())
     
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
@@ -900,10 +910,7 @@ proc rUse(p: Parser): Node =
         
 proc rComment(p: Parser): Node = 
 
-     let token = p.consume()
-     let comment_content = Node(token:p.consume())
-     
-     Node(token:token, kind:●comment, comment_content:comment_content)
+     Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
 
 proc parseType(p: Parser): Node =
     
@@ -921,10 +928,7 @@ proc parseType(p: Parser): Node =
     
 proc rReturnType(p: Parser): Node =
 
-    var token    = p.consume() # ➜
-    let sig_type = p.parseType()
-    
-    Node(token:token, kind:●signature, sig_type:sig_type)
+    Node(token:p.consume(), kind:●signature, sig_type:p.parseType())
 
 proc lReturnType(p: Parser, left: Node): Node =
 
@@ -935,7 +939,7 @@ proc lReturnType(p: Parser, left: Node): Node =
         if left.kind == ●operation 
             if left.token.tok == ◆assign
                 var sig = p.rReturnType()
-                let vartoken = Token(tok:◆val, line:left.token.line, col:left.token.col)
+                let vartoken = Token(tok:◆val_type, line:left.token.line, col:left.token.col)
                 let varNode  = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
                 sig.sig_args = Node(token:left.token, kind:●list, list_values: @[varNode])
                 ⮐  sig
@@ -1025,11 +1029,11 @@ proc lFunc(p: Parser, left: Node): Node =
         if left.operand_left.token.col == 0 
             # log &"lFunc OP= {left} at line start"
             var left = left
-            let vartoken = Token(tok:◆val, line:left.operand_right.token.line,col:left.operand_right.token.col)
+            let vartoken = Token(tok:◆val_type, line:left.operand_right.token.line,col:left.operand_right.token.col)
             left.operand_right = p.lFunc(Node(token:vartoken, kind:●var, var_name:left.operand_right))
             ⮐  left
             
-        let vartoken = Token(tok:◆val, line:left.operand_left.token.line,col:left.operand_left.token.col)
+        let vartoken = Token(tok:◆val_type, line:left.operand_left.token.line,col:left.operand_left.token.col)
         # log &"lFunc OP= {left} {vartoken}"
         let varNode = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
         let sig_args = Node(token:vartoken, kind:●list, list_values: @[varNode])
@@ -1041,11 +1045,11 @@ proc lFunc(p: Parser, left: Node): Node =
         for i,a in sig_args.list_values
             if a.kind == ●operation and a.token.tok == ◆assign
                 # log &"lFunc list -> >{a.operand_left} = {a.operand_right}< -> ●var"
-                let vartoken = Token(tok:◆val, line:a.operand_left.token.line,col:a.operand_left.token.col)
+                let vartoken = Token(tok:◆val_type, line:a.operand_left.token.line,col:a.operand_left.token.col)
                 sig_args.list_values[i] = Node(token:vartoken, kind:●var, var_name:a.operand_left, var_value:a.operand_right)
             elif a.kind == ●literal and a.token.tok == ◆name
                 # log &"lFunc list -> |>{a.token.tok}<| -> ●var"
-                let vartoken = Token(tok:◆val, line:a.token.line,col:a.token.col)
+                let vartoken = Token(tok:◆val_type, line:a.token.line,col:a.token.col)
                 sig_args.list_values[i] = Node(token:vartoken, kind:●var, var_name:a)
         # log &"lFunc list -> sig_args {sig_args}"
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
@@ -1105,12 +1109,11 @@ proc lOperation(p: Parser, left: Node): Node =
 
     let token = p.consume()
     let right = p.expression(token)
-    Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
+    Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
 
 proc lPostOp(p: Parser, left: Node): Node =
 
-    let token = p.consume()
-    Node(token:token, kind: ●postOp, operand:left)
+    Node(token:p.consume(), kind: ●postOp, operand:left)
 
 proc rPreOp(p: Parser): Node =
 
@@ -1133,9 +1136,15 @@ proc lRange(p: Parser, left: Node): Node =
         
 proc rParenExpr(p: Parser): Node =
 
-    let token = p.current() # (
-    let expr = p.parseParenList()
-    Node(token:token, kind:●list, list_values:expr)
+    Node(token:p.current(), kind:●list, list_values:p.parseParenList())
+
+proc rCurly(p: Parser): Node =
+
+    Node(token:p.current(), kind:●curly, list_values:p.parseDelimitedList(◆bracket_open, ◆bracket_close))
+
+proc rSquarely(p: Parser): Node =
+
+    Node(token:p.current(), kind:●squarely, list_values:p.parseDelimitedList(◆square_open, ◆square_close))
     
 proc lTestCase(p: Parser, left: Node): Node =
 
@@ -1252,6 +1261,8 @@ proc setup(p: Parser) =
     p.pratt ◆name,              lSymbolList,       rSymbol,        13 # higher than assign
     p.pratt ◆import,            nil,               rImport,         0
     p.pratt ◆use,               nil,               rUse,            0
+    p.pratt ◆let,               nil,               rLet,            0
+    p.pratt ◆var,               nil,               rLet,            0
     p.pratt ◆return,            nil,               rReturn,         0
     p.pratt ◆discard,           nil,               rDiscard,        0
     p.pratt ◆indent,            nil,               rBlock,          0
@@ -1297,11 +1308,12 @@ proc setup(p: Parser) =
     p.pratt ◆increment,         lPostOp,           nil,            80
     p.pratt ◆decrement,         lPostOp,           nil,            80
 
-    p.pratt ◆square_open,       lArrayAccess,      nil,            90
+    p.pratt ◆square_open,       lArrayAccess,      rSquarely,      90
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
+    p.pratt ◆bracket_open,      nil,               rCurly,         90
     p.pratt ◆then,              lReturnType,       rReturnType,    99
-    p.pratt ◆val,               lVarList,          rVar,          100
-    p.pratt ◆var,               lVarList,          rVar,          100
+    p.pratt ◆val_type,          lVarList,          rVar,          100
+    p.pratt ◆var_type,          lVarList,          rVar,          100
     p.pratt ◆dot,               lPropertyAccess,   nil,           102
     
 #  ███████    ███████  █████████

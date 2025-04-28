@@ -11,8 +11,6 @@ import pars
 type
     Rndr = object
         s               : string
-        # indent          : int
-        # needsIndent     : bool
         annotateVarArg  : bool
 
 proc add(r: var Rndr, text: string) = r.s &= text
@@ -82,6 +80,12 @@ proc ▸operation(r: var Rndr, n: Node) =
     r.rnd n.operand_right
     if n.token.tok notin {◆assign, ◆ampersand}:
         r.add ")"
+        
+proc ▸let(r: var Rndr, n: Node) = 
+
+    r.tok n
+    r.add " "
+    r.rnd n.let_expr
 
 proc ▸preOp(r: var Rndr, n: Node) = 
 
@@ -140,7 +144,7 @@ proc ▸var(r: var Rndr, n: Node) =
     r.rnd n.var_name
     if n.var_type != nil:
         r.add " : "
-        if n.token.tok == ◆var and r.annotateVarArg:
+        if n.token.tok == ◆var_type and r.annotateVarArg:
             r.add "var "
         r.rnd n.var_type
     if n.var_value != nil:
@@ -236,6 +240,24 @@ proc ▸list(r: var Rndr, n: Node) =
         r.rnd item
         if i < n.list_values.len-1:
             r.add ", "
+
+proc ▸curly(r: var Rndr, n: Node) =
+
+    r.add "{"
+    for i,item in n.list_values:
+        r.rnd item
+        if i < n.list_values.len-1:
+            r.add ", "
+    r.add "}"
+
+proc ▸squarely(r: var Rndr, n: Node) =
+
+    r.add "@["
+    for i,item in n.list_values:
+        r.rnd item
+        if i < n.list_values.len-1:
+            r.add ", "
+    r.add "]"
     
 proc ▸range(r: var Rndr, n: Node) = 
 
@@ -333,6 +355,10 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸while(n)
         of ●list:
             r.▸list(n)
+        of ●curly:
+            r.▸curly(n)
+        of ●squarely:
+            r.▸squarely(n)
         of ●range:
             r.▸range(n)
         of ●string:
@@ -347,6 +373,8 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸arrayAccess(n)
         of ●var:
             r.▸var(n)
+        of ●let:
+            r.▸let(n)
         of ●return:
             r.▸return(n)
         of ●discard:

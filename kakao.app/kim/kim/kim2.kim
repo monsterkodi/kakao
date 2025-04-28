@@ -10,15 +10,15 @@ use trans
 use rndr
 use greet
 
-params    = default seq[string]
-optParser = initOptParser()
-◇ seq[string] files     
-outdir    = ""
-tests     = false
-verbose   = false
-transpile = false
+var params    = default seq[string]
+var optParser = initOptParser()
+var ◇seq[string] files     
+var outdir    = ""
+var tests     = false
+var verbose   = false
+var transpile = false
 
-testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
+var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
 
 randomize()
 
@@ -90,7 +90,7 @@ logFile = ◇string f prefix="" ->
 
     if not verbose
         ⮐  
-    # let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
+    let (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len ➜ dir & "/" ➜ ""
     icon  = if ext == ".kim" ➜ "  " ➜ "  "
     color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
@@ -106,8 +106,8 @@ logFile = ◇string f prefix="" ->
 compile = ◇string file outDir="bin" ➜ bool ->
     profileScope 'comp'       
     # let cmd = &"nim c --outDir:{outdir} {file}"
-    cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
-    (output, exitCode) = execCmdEx(cmd)
+    let cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
+    let (output exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
         styledEcho fgRed "✘ " "#{cmd}"
@@ -117,7 +117,7 @@ compile = ◇string file outDir="bin" ➜ bool ->
         if verbose
             styledEcho fgGreen "✔ " fgWhite cmd
         true
-        
+
 # █████████  ████████   ███████  █████████   ███████
 #    ███     ███       ███          ███     ███     
 #    ███     ███████   ███████      ███     ███████ 
@@ -127,17 +127,17 @@ compile = ◇string file outDir="bin" ➜ bool ->
 runTests = ->
     profileScope 'test'
     for f in testFiles
-        cmd = "nim r --colors:on #{f}"
-        # let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
-        startTime = getMonoTime()
-        output = ""
+        let cmd = "nim r --colors:on #{f}"
+        let p = startProcess(command = "nim", args = ["r", f], options = {poStdErrToStdOut, poUsePath})
+        let startTime = getMonoTime()
+        var output = ""
         
-        fd = p.outputHandle
-        flags = fcntl(fd, F_GETFL, 0)
+        var fd = p.outputHandle
+        var flags = fcntl(fd, F_GETFL, 0)
         discard fcntl(fd, F_SETFL, flags or O_NONBLOCK)
         
         while true
-            elapsed = (getMonoTime() - startTime).inMilliseconds
+            let elapsed = (getMonoTime() - startTime).inMilliseconds
             if elapsed >= 2000
                 output.add("test killed after #{elapsed} ms!!")
                 p.terminate()
@@ -146,8 +146,8 @@ runTests = ->
                     p.kill()
                 break
                             
-            line = newString(1024*10)
-            # let bytesRead = read(fd, addr line[0], line.len)
+            var line = newString(1024*10)
+            let bytesRead = read(fd, addr(line[0]), line.len)
             if bytesRead > 0
                 output.add(line & "\n")
             elif bytesRead == 0
@@ -159,7 +159,7 @@ runTests = ->
             else
                 break
         
-        exitCode = p.waitForExit()
+        let exitCode = p.waitForExit()
         
         if exitCode != 0 or verbose
             styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
@@ -175,10 +175,10 @@ if files.len
 
     if transpile
         log "transpile #{files}"
-        transpiled = rndr.files(files)
+        let transpiled = rndr.files(files)
         quit(transpiled.len - files.len)    
     else
-        transpiled = trans.pile(files)
+        let transpiled = trans.pile(files)
         quit(transpiled.len - files.len)    
 
 if tests
@@ -201,24 +201,24 @@ watch = ◆seq[string] paths ->
         styledEcho fgGreen, farewells[rand(farewells.high)]
         quit 0)
     
-    ◇Table[string,times.Time] modTimes
+    var ◇Table[string,times.Time] modTimes
     
     styledEcho ''
     styledEcho fgGreen, greetings[rand(greetings.high)]
     styledEcho ''
     
     for p in paths
-        (dir, name, ext) = p.splitFile()
+        let (dir, name, ext) = p.splitFile()
         styledEcho fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle
     
-    firstLoop = true
+    var firstLoop = true
     
     while true
     
-        doBuild = false
-        ◇seq[string] toTranspile
-        ◇seq[string] kimFiles
-        ◇seq[string] nimFiles
+        var doBuild = false
+        var ◇seq[string] toTranspile
+        var ◇seq[string] kimFiles
+        var ◇seq[string] nimFiles
         
         # log paths
         
@@ -230,7 +230,7 @@ watch = ◆seq[string] paths ->
                 
             for f in walkDirRec(path)
             
-                (dir, name, ext) = f.splitFile()
+                let (dir name ext) = f.splitFile()
                 
                 if ext == ".kim"
                     kimFiles.add(f)
@@ -239,7 +239,7 @@ watch = ◆seq[string] paths ->
                 else
                     continue
                 
-                modTime = getFileInfo(f).lastWriteTime
+                let modTime = getFileInfo(f).lastWriteTime
                 
                 if not modTimes.hasKey(f)
                     modTimes[f] = modTime
@@ -263,9 +263,9 @@ watch = ◆seq[string] paths ->
                 logFile f
                 
         if toTranspile
-            verb &"toTranspile: {toTranspile}"
+            verb "toTranspile: #{toTranspile}"
             for f in trans.pile(toTranspile)
-                verb &"transpiled {f}"    
+                verb "transpiled #{f}"    
                 logFile f, "✔ "
             # verb 'runTests'    
             runTests()
@@ -274,7 +274,7 @@ watch = ◆seq[string] paths ->
             # verb 'doBuild'    
             if compile("nim/kim.nim", "bin")
                 for f in kimFiles
-                    transpiled = trans.trans(f)
+                    let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
         # log 'sleep'        

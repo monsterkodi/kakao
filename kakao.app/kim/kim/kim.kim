@@ -121,6 +121,7 @@ proc logFile(f:string, prefix:string="") =
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 
 proc compile(file:string, outDir:string="bin") : bool =
+
     profileScope 'comp'
     # let cmd = &"nim c --outDir:{outdir} {file}"
     let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
@@ -196,9 +197,9 @@ proc runTests() =
 if files.len
 
     if transpile
-        log &"transpile {files}"
-        profileScope 'translate'
+        # profileStart 'translate'
         let transpiled = rndr.files(files)
+        # profileStop 'translate'
         quit(transpiled.len - files.len)    
     else
         let transpiled = trans.pile(files)

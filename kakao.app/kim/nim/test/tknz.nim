@@ -466,7 +466,7 @@ suite "tknz":
     
         t "a◇string"    , @[ 
             tk("a",         ◆name,          0, 0), 
-            tk("◇",         ◆val,           0, 1), 
+            tk("◇",         ◆val_type,      0, 1), 
             tk("string",    ◆name,          0, 2)]
             
     # ███   ███   ███████  ████████

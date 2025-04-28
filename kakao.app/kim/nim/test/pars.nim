@@ -55,6 +55,11 @@ suite "pars":
         t "a * (b + c) / d"                         , "▪[((◆name * ◆[(◆name + ◆name)]) / ◆name)]"
         t "3 * (1 + 2)"                             , "▪[(◆number * ◆[(◆number + ◆number)])]"
         
+    test "brackets":
+    
+        t "options = {poStdErrToStdOut, poUsePath}" , "▪[(◆name = {◆name, ◆name})]"
+        t "args = [\"r\", f]"                       , "▪[(◆name = [[◆string, ◆name]]])]"
+        
     test "types":
     
         t "◇int i"                                  , "▪[(◇type(int) ◆name)]"
