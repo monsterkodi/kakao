@@ -317,6 +317,17 @@ suite "tknz":
             tk("[",         ◆square_open,   0, 1),
             tk("0",         ◆number,        0, 2),
             tk("]",         ◆square_close,  0, 3)]
+            
+    test "mod":
+    
+        t "setControlCHook(() {.noconv.} ->" , @[
+            tk("setControlCHook", ◆name, 0, 0),
+            tk("(", ◆paren_open,   0, 15),
+            tk("(", ◆paren_open,   0, 16),
+            tk(")", ◆paren_close,  0, 17),
+            tk("{.noconv.}", ◆mod, 0, 19),
+            tk("->", ◆func, 0, 30),
+            ]
     
     #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████   ███████
     # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███     ███     

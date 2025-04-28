@@ -73,13 +73,12 @@ for kind key val in optParser.getopt()
 # ███   ███  ███            ███     ███     ███   ███  ███   ███     ███   
 # ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
             
-# when defined(posix)
-#     import posix
-#     
-#     proc restart() =
-#         let args = allocCStringArray(@[getAppFilename()] & params)
-#         discard execv(getAppFilename().cstring, args)
-#         quit(1) # only reaches here if execve fails
+when defined(posix)
+    use posix
+    restart = () ->
+        args = allocCStringArray(@[getAppFilename()] & params)
+        discard execv(getAppFilename().cstring, args)
+        quit(1) # only reaches here if execve fails
     
 # ███       ███████    ███████   ████████  ███  ███      ████████
 # ███      ███   ███  ███        ███       ███  ███      ███     
@@ -196,11 +195,11 @@ watch = ◆seq[string] paths ->
 
     addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
     
-    # setControlCHook(proc () {.noconv.} = 
-    #     
-    #     styledEcho ''
-    #     styledEcho fgGreen, farewells[rand(farewells.high)]
-    #     quit 0)
+    setControlCHook(() ->  {.noconv.}
+        
+        styledEcho ''
+        styledEcho fgGreen, farewells[rand(farewells.high)]
+        quit 0)
     
     ◇Table[string,times.Time] modTimes
     
@@ -280,5 +279,5 @@ watch = ◆seq[string] paths ->
                 restart()
         # log 'sleep'        
         sleep 200
-        
+
 watch @[getCurrentDir()]

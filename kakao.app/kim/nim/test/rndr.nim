@@ -89,6 +89,8 @@ suite "rndr":
         t "f = ◇int a ◇int b ->"                   , "proc f(a : int, b : int) ="
         t "f = ◇int a = 1 ->"                      , "proc f(a : int = 1) ="
         
+        t "setHook(() -> {.noconv.} quit 0)"       , "setHook(proc () {.noconv.} = quit(0))"
+        
     test "call":
     
         t "f()"                                    , "f()"             

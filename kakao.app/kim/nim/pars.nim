@@ -111,18 +111,13 @@ type
                 owner*          : Node
                 property*       : Node
                 
-            of ●arrayLike:
-            
-                array_like*     : Node
-                array_args*     : seq[Node]
-
             of ●arrayAccess:
             
                 array_owner*    : Node
                 array_index*    : Node
                 
-            of ●if :
-            
+            of ●if:
+                # also handles when
                 cond_thens*     : seq[Node]
                 `else`*         : Node
                 
@@ -171,6 +166,7 @@ type
             of ●func:
             
                 func_signature* : Node
+                func_mod*       : Node
                 func_body*      : Node
                 
             of ●use:
@@ -321,10 +317,9 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.while_cond}{b})"
         of ●func:
             let sig = choose(n.func_signature, &"{n.func_signature} ", "")
+            let mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
             let bdy = choose(n.func_body, &" {n.func_body}", "")
-            s = &"({sig}{s}{bdy})"
-        # of ●arrayLike
-        #     s = &"({n.array_like}[{n.array_args}])"
+            s = &"({sig}{s}{mdf}{bdy})"
         of ●arrayAccess:
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
@@ -595,7 +590,7 @@ proc rIf(p: Parser): Node =
 
     # echo &"rIf {p}"
 
-    let token = p.consume() # if
+    let token = p.consume() # if or when
     var condThens: seq[Node]
 
     let ifIndent = token.col
@@ -815,17 +810,6 @@ proc lCall(p: Parser, callee: Node): Node =
 
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
-proc lArrayLike(p: Parser, array_like: Node): Node =
-
-    let token = p.consume() # [
-    
-    var args : seq[Node]
-    while p.tok() != ◆square_close:
-        args.add p.expression()
-    p.swallowError(◆square_close, "Missing closing square bracket for array")
-
-    Node(token:token, kind:●arrayLike, array_like:array_like, array_args:args)
-
 proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.consume() # [
@@ -1073,15 +1057,27 @@ proc lFunc(p: Parser, left: Node): Node =
     #     echo &"UNEXPECTED SIGNATURE {left}"
     
     let token = p.consume() # ->
+    
+    var func_mod : Node
+    if p.tok == ◆mod:
+        func_mod = p.rLiteral
+    
     let func_body = p.then()
     
-    Node(token:token, kind:●func, func_signature:func_signature, func_body:func_body)
+    Node(token:token, kind:●func, func_signature:func_signature, func_mod:func_mod, func_body:func_body)
 
 proc rFunc(p: Parser): Node =
+
     let token = p.consume() # ->
     # echo &"rFunc {token} {p.current()}"    
+    
+    var func_mod : Node
+    if p.tok == ◆mod:
+        func_mod = p.rLiteral
+    
     let func_body = p.then()
-    # echo &"rFunc {token} {func_body}"    
+    # echo &"rFunc {token} {func_body}"
+    
     Node(token:token, kind:●func, func_body:func_body)
 
 proc rReturn(p: Parser): Node =
@@ -1248,6 +1244,7 @@ proc setup(p: Parser) =
 
     p.pratt ◆true,              nil,               rLiteral,        0
     p.pratt ◆false,             nil,               rLiteral,        0
+    p.pratt ◆mod,               nil,               rLiteral,        0
     p.pratt ◆null,              nil,               rLiteral,        0
     p.pratt ◆number,            nil,               rLiteral,        0
     p.pratt ◆string_start,      nil,               rString,         0
@@ -1270,6 +1267,7 @@ proc setup(p: Parser) =
     p.pratt ◆multiply_assign,   lAssign,           nil,            10
 
     p.pratt ◆if,                nil,               rIf,            20  
+    p.pratt ◆when,              nil,               rIf,            20  
     p.pratt ◆for,               nil,               rFor,           20  
     p.pratt ◆switch,            nil,               rSwitch,        20  
     p.pratt ◆while,             nil,               rWhile,         20  

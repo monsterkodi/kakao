@@ -110,19 +110,15 @@ proc ▸arrayAccess(r: var Rndr, n: Node) =
     r.rnd n.array_index
     r.add "]"
     
-proc ▸arrayLike(r: var Rndr, n: Node) = 
-
-    r.rnd n.array_like
-    r.add "["
-    r.rnd n.array_args
-    r.add "]"
-
 proc ▸func(r: var Rndr, n: Node) = 
 
     r.add "proc "
     r.annotateVarArg = true
     r.rnd n.func_signature
     r.annotateVarArg = false
+    if n.func_mod != nil:
+        r.add " "
+        r.tok n.func_mod
     r.add " ="
     if n.func_body != nil:
         r.add " "
@@ -195,7 +191,8 @@ proc ▸if(r: var Rndr, n: Node) =
     var idt = " ".repeat n.token.col
     var line = n.token.line
     
-    r.add "if "
+    r.tok n
+    r.add " "
     for i,condThen in n.cond_thens:
         if i > 0:
             if condThen.token.line > line:
@@ -348,8 +345,6 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸propertyAccess(n)
         of ●arrayAccess:
             r.▸arrayAccess(n)
-        of ●arrayLike:
-            r.▸arrayLike(n)
         of ●var:
             r.▸var(n)
         of ●return:

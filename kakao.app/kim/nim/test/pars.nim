@@ -28,8 +28,8 @@ suite "pars":
         t "not a && b"                              , "▪[((! ◆name) && ◆name)]"
         t "a || b && c"                             , "▪[(◆name || (◆name && ◆name))]"
         t "a or b and c"                            , "▪[(◆name || (◆name && ◆name))]"
-        t "a && b == c"                             , "▪[((◆name && ◆name) == ◆name)]"
-        t "a and b == c"                            , "▪[((◆name && ◆name) == ◆name)]"
+        t "a && b == c"                             , "▪[(◆name && (◆name == ◆name))]"
+        t "a and b == c"                            , "▪[(◆name && (◆name == ◆name))]"
         t "x = a || b"                              , "▪[(◆name = (◆name || ◆name))]"
         t "x = a or b"                              , "▪[(◆name = (◆name || ◆name))]"
         t "!a || !b"                                , "▪[((! ◆name) || (! ◆name))]"
@@ -116,6 +116,13 @@ suite "pars":
         t "f = a=1 b=2 ->"                          , "▪[(◆name = (◆[(◇ ◆name (= ◆number)), (◇ ◆name (= ◆number))] ->))]" 
         t "f = ◇Parser p ahead=1 ->"                , "▪[(◆name = (◆[(◇type(Parser) ◆name), (◇ ◆name (= ◆number))] ->))]"
         t "f = ◇Parser p ahead=1 ➜Token ->"         , "▪[(◆name = (◆[(◇type(Parser) ◆name), (◇ ◆name (= ◆number))] ➜ type(Token) ->))]"
+        
+    test "func modfifier":
+    
+        t "{.noconv.}"                              , "▪[{.]"
+        t "() -> {.noconv.}"                        , "▪[(◆[] -> {.noconv.} )]"
+        t "a = () -> {.noconv.}"                    , "▪[(◆name = (◆[] -> {.noconv.} ))]"
+        t "setHook(() -> {.noconv.}\n  1 + 2)"      , "▪[(◆name ◆call @[(◆[] -> {.noconv.}  ▪[(◆number + ◆number)])])]"
         
     test "func body":
     

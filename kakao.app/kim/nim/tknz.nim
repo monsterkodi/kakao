@@ -57,6 +57,7 @@ type
         ◆paren_close        = ")"       
         ◆bracket_open       = "{"
         ◆bracket_close      = "}"       
+        ◆mod                = "{."
         ◆square_open        = "["       
         ◆square_close       = "]"        
         ◆comma              = ","
@@ -202,7 +203,7 @@ proc advance(t:Tknzr, n:int) =
         
 proc advanceUntil(t:Tknzr, stop: string) =
 
-    while t.segi < t.segs.len and t.peek(0) != stop:
+    while t.segi < t.segs.len and t.srng(stop.len) != stop:
         t.token.str &= t.peek(0)
         t.segi += 1
 
@@ -308,6 +309,15 @@ proc comment(t:Tknzr) =
     t.advanceUntil "\n"
     t.push ◆comment
     
+proc modbracket(t:Tknzr) =
+
+    t.pushToken()
+    t.token.tok = ◆mod
+    t.advance 1
+    t.advanceUntil ".}"
+    t.advance 2
+    t.pushToken()
+    
 proc `import`(t:Tknzr) = 
 
     t.segi += 1 # 𝓢⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾 
@@ -331,6 +341,8 @@ proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
             t.comment()
         of ◆string_start, ◆stripol_end:
             t.string()
+        of ◆mod:
+            t.modbracket()
         else:
             discard
 
@@ -396,7 +408,10 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                 
                 let double = t.srng 2
                 if punct.hasKey double:
-                    t.commit(double, punct[double], 2)
+                    if punct[double] == ◆mod                        :
+                        t.modbracket()
+                    else:
+                        t.commit(double, punct[double], 2)
                     continue
                         
                 if punct.hasKey char:
