@@ -1252,7 +1252,7 @@ proc setup(p: Parser) =
     p.pratt ◆number,            nil,               rLiteral,        0
     p.pratt ◆string_start,      nil,               rString,         0
     p.pratt ◆comment_start,     nil,               rComment,        0
-    p.pratt ◆name,              lSymbolList,       rSymbol,        13
+    p.pratt ◆name,              lSymbolList,       rSymbol,        13 # higher than assign
     p.pratt ◆import,            nil,               rImport,         0
     p.pratt ◆use,               nil,               rUse,            0
     p.pratt ◆return,            nil,               rReturn,         0
@@ -1269,36 +1269,36 @@ proc setup(p: Parser) =
     p.pratt ◆divide_assign,     lAssign,           nil,            10
     p.pratt ◆multiply_assign,   lAssign,           nil,            10
 
-    p.pratt ◆if,                nil,               rIf,            15  
-    p.pratt ◆for,               nil,               rFor,           15  
-    p.pratt ◆switch,            nil,               rSwitch,        15  
-    p.pratt ◆while,             nil,               rWhile,         15  
-    p.pratt ◆func,              lFunc,             rFunc,          15
-                                
-    p.pratt ◆equal,             lOperation,        nil,            20
-    p.pratt ◆not_equal,         lOperation,        nil,            20
-    p.pratt ◆greater_equal,     lOperation,        nil,            20
-    p.pratt ◆less_equal,        lOperation,        nil,            20
-    p.pratt ◆less,              lOperation,        nil,            20
-    p.pratt ◆greater,           lOperation,        nil,            20
+    p.pratt ◆if,                nil,               rIf,            20  
+    p.pratt ◆for,               nil,               rFor,           20  
+    p.pratt ◆switch,            nil,               rSwitch,        20  
+    p.pratt ◆while,             nil,               rWhile,         20  
+    p.pratt ◆func,              lFunc,             rFunc,          20
     
-    p.pratt ◆doubledot,         lRange,            nil,            20
-    p.pratt ◆ampersand,         lOperation,        nil,            20
-                                                   
-    p.pratt ◆or,                lOperation,        nil,            30
-    p.pratt ◆and,               lOperation,        nil,            40
+    p.pratt ◆or,                lOperation,        nil,            30 
+    p.pratt ◆and,               lOperation,        nil,            31 
+                                
+    p.pratt ◆equal,             lOperation,        nil,            40
+    p.pratt ◆not_equal,         lOperation,        nil,            40
+    p.pratt ◆greater_equal,     lOperation,        nil,            40
+    p.pratt ◆less_equal,        lOperation,        nil,            40
+    p.pratt ◆less,              lOperation,        nil,            40
+    p.pratt ◆greater,           lOperation,        nil,            40
+    
+    p.pratt ◆doubledot,         lRange,            nil,            40
+    p.pratt ◆ampersand,         lOperation,        nil,            40
                                                    
     p.pratt ◆plus,              lOperation,        nil,            50
     p.pratt ◆minus,             lOperation,        rPreOp,         50
                                                    
     p.pratt ◆multiply,          lOperation,        nil,            60
     p.pratt ◆divide,            lOperation,        nil,            60
-                                                                                                
+
     p.pratt ◆not,               nil,               rPreOp,         70
-                                                                                                
+
     p.pratt ◆increment,         lPostOp,           nil,            80
     p.pratt ◆decrement,         lPostOp,           nil,            80
-                                                                                        
+
     p.pratt ◆square_open,       lArrayAccess,      nil,            90
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
     p.pratt ◆then,              lReturnType,       rReturnType,    99

@@ -120,10 +120,8 @@ proc ▸arrayLike(r: var Rndr, n: Node) =
 proc ▸func(r: var Rndr, n: Node) = 
 
     r.add "proc "
-    echo "▸func"
     r.annotateVarArg = true
     r.rnd n.func_signature
-    echo "◂func"
     r.annotateVarArg = false
     r.add " ="
     if n.func_body != nil:
@@ -229,6 +227,12 @@ proc ▸for(r: var Rndr, n: Node) =
     r.add ": "
     r.rnd n.for_body
     
+proc ▸while(r: var Rndr, n: Node) =
+
+   r.add "while "
+   r.rnd n.while_cond
+   r.rnd n.while_body
+    
 proc ▸list(r: var Rndr, n: Node) =
 
     for i,item in n.list_values:
@@ -328,6 +332,8 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸preOp(n)
         of ●for:
             r.▸for(n)
+        of ●while:
+            r.▸while(n)
         of ●list:
             r.▸list(n)
         of ●range:
