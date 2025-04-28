@@ -168,6 +168,8 @@ template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
         t "read fd addr(line[0]) l.len"             , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]"
         t "let r = read fd addr(line[0]) l.len"     , "▪[(◆let (◆name = (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])))]"
         
+        t "f a # comment"                           , "▪[(◆name ◆call @[◆name])#]"
+        
     ▸ arglist
     
         t "f(a, b, c)"                              , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"

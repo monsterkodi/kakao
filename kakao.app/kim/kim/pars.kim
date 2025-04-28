@@ -240,7 +240,14 @@ proc current(p: Parser): Token =
         
     Token(tok:◆eof, line: -1, col: -1)
     
-proc tok(p: Parser) : tok = p.current().tok
+proc tok(p: Parser) : tok = p.current.tok
+
+proc peek(p: Parser, ahead=1): Token =
+
+    if p.pos + ahead < p.tokens.len
+        p.tokens[p.pos + ahead]
+    else
+        Token(tok:◆eof)
 
 # ████████   ████████   ███  ███   ███  █████████  
 # ███   ███  ███   ███  ███  ████  ███     ███     
@@ -251,10 +258,10 @@ proc tok(p: Parser) : tok = p.current().tok
 proc `$`(p: Parser): string = 
 
     var s : string
-    if p.tok() != ◆eof
-        s = &"▪▪▪ {p.current()} {p.pos}"
-        let l = p.text.split("\n")[p.current().line]
-        s &= &"\n{p.current().line}: {l}"
+    if p.tok != ◆eof
+        s = &"▪▪▪ {p.current} {p.pos}"
+        let l = p.text.split("\n")[p.current.line]
+        s &= &"\n{p.current.line}: {l}"
     else
         s = p.text
     # for t in p.tokens
@@ -375,8 +382,8 @@ proc error(p: Parser, msg: string, token=Token(tok:◆eof)) : Node =
         styledEcho fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, &"{line}"
         # styledEcho fgGreen, &"{line}"
     elif p.tok != ◆eof
-        let line = p.text.split("\n")[p.current().line]
-        styledEcho fgWhite, styleDim, &"{p.current().line}", resetStyle, fgGreen, &"{line}"
+        let line = p.text.split("\n")[p.current.line]
+        styledEcho fgWhite, styleDim, &"{p.current.line}", resetStyle, fgGreen, &"{line}"
         # styledEcho fgGreen,  &"{line}"
         
     nil
@@ -389,7 +396,7 @@ proc error(p: Parser, msg: string, token=Token(tok:◆eof)) : Node =
 
 proc consume(p: Parser): Token =
 
-    let t = p.current()
+    let t = p.current
     if p.pos < p.tokens.len
         p.pos += 1
     t
@@ -400,43 +407,36 @@ proc swallow(p: Parser) =
 
 proc swallow(p: Parser, tok: tok) =
 
-    if p.tok() == tok
+    if p.tok == tok
         p.swallow()
         
 proc swallowError(p: Parser, tok: tok, err: string) = 
 
-    if p.tok() != tok
-        discard p.error(&"Expected {tok} to swallow, but found {p.tok()} instead")
+    if p.tok != tok
+        discard p.error(&"Expected {tok} to swallow, but found {p.tok} instead")
         discard p.error(err)
         ⮐  
     p.swallow()
             
 proc swallowSameIndent(p: Parser, indent:int): bool = 
 
-    if p.tok() == ◆indent and p.current().str.len == indent
+    if p.tok == ◆indent and p.current.str.len == indent
         p.swallow()
         ⮐  true
     false
     
-proc peek(p: Parser, ahead=1): Token =
-
-    if p.pos + ahead < p.tokens.len
-        p.tokens[p.pos + ahead]
-    else
-        Token(tok:◆eof)
-        
 proc atIndent(p: Parser) : bool =
 
-    p.current().col == 0 or p.peek(-1).tok == ◆indent
+    p.current.col == 0 or p.peek(-1).tok == ◆indent
         
 proc atEnd(p:Parser): bool = p.pos >= p.tokens.len
 
 proc isDedent(p: Parser, indent:int): bool =
 
-    if p.tok() == ◆indent
-        p.current().str.len < indent
+    if p.tok == ◆indent
+        p.current.str.len < indent
     else
-        p.current().col < indent
+        p.current.col < indent
     
 proc getPrecedence(p: Parser, token: Token): int =
 
@@ -472,9 +472,9 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
 
     var token: Token
     var block_indent : int
-    if p.tok() == ◆indent
+    if p.tok == ◆indent
         token = p.consume() 
-        block_indent = p.current().col
+        block_indent = p.current.col
     
     var bn = bn
     if bn == nil
@@ -499,8 +499,8 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
                 expr = prevExpr
                 
         bn.expressions.add expr
-        if p.tok() == ◆indent
-            let ind = p.current().str.len
+        if p.tok == ◆indent
+            let ind = p.current.str.len
             if ind < block_indent
                 break
             elif ind > block_indent
@@ -511,7 +511,7 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
             else
                 p.swallow()
                 
-        if p.current().col < block_indent
+        if p.current.col < block_indent
             break
             
         expr = p.expression()
@@ -524,7 +524,7 @@ proc rBlock(p:Parser) : Node =
 proc isTokenAhead(p: Parser, tokAhead:tok) : bool =
 
     var n = 0
-    var c = p.current()
+    var c = p.current
     let line = c.line
     while c.tok != ◆eof
         if c.line > line
@@ -540,11 +540,13 @@ proc parseCallArgList(p:Parser) : seq[Node] =
     p.implicit = true
     p.listless = true
     var list : seq[Node]
-    let line = p.current().line
+    let line = p.current.line
     var expr : Node = p.expression()
     while expr != nil
         list.add expr        
-        if p.current().line != line
+        if p.current.line != line
+            break
+        if p.tok in {◆comment_start}
             break
         p.swallow ◆comma
         expr = p.expression()
@@ -579,12 +581,12 @@ proc rSymbol(p: Parser): Node =
 proc parseNames(p:Parser) : seq[Node] = 
 
     var list : seq[Node]
-    let line = p.current().line
+    let line = p.current.line
     p.implicit = true
     var expr : Node = p.rSymbol()
     while expr != nil
         list.add expr        
-        if p.current().line != line
+        if p.current.line != line
             break
         p.swallow ◆comma
         expr = p.rSymbol()
@@ -593,14 +595,14 @@ proc parseNames(p:Parser) : seq[Node] =
 
 proc parseNamesUntil(p: Parser, stop: tok) : Node =
 
-    let token = p.current()
+    let token = p.current
                                 
     var list_values: seq[Node]
     p.implicit = true
-    while p.tok() != stop
-        if p.tok() == ◆eof
+    while p.tok != stop
+        if p.tok == ◆eof
             ⮐  p.error("Missing 'in' for 'for' loop (eof detected)!", token)
-        if p.current().line != token.line
+        if p.current.line != token.line
             ⮐  p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
         list_values.add p.rSymbol()
         p.swallow ◆comma
@@ -612,21 +614,21 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
 
 proc parseModule(p:Parser) : Node = 
 
-    let line = p.current().line
+    let line = p.current.line
     var s = ""
-    while p.current().str notin @["▪", "◆"]
+    while p.current.str notin @["▪", "◆"]
         s &= p.consume().str
-        if p.atEnd() or p.current().line != line
+        if p.atEnd() or p.current.line != line
             break 
         
     Node(token:Token(str:s))
     
 proc then(p: Parser) : Node = 
 
-    if p.tok() == ◆then
+    if p.tok == ◆then
         p.swallow ◆then
         
-    if p.tok() == ◆indent
+    if p.tok == ◆indent
         p.parseBlock()
     else
         p.expression()
@@ -647,10 +649,10 @@ proc rIf(p: Parser): Node =
     let ifIndent = token.col
     var condIndt = ifIndent
     
-    if p.tok() == ◆indent
-        condIndt = p.current().str.len
+    if p.tok == ◆indent
+        condIndt = p.current.str.len
         if condIndt <= ifIndent
-            # log &"ifIndent {ifIndent} condIndt {condIndt} {p.current()}"
+            # log &"ifIndent {ifIndent} condIndt {condIndt} {p.current}"
             ⮐  p.error "Expected indentation after 'if' without condition"
         p.swallow ◆indent # block indentation
     
@@ -660,23 +662,23 @@ proc rIf(p: Parser): Node =
     
     condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
     
-    while p.tok() in {◆elif, ◆indent}
+    while p.tok in {◆elif, ◆indent}
     
-        # log &"condThen {p.current()} {ifIndent} {condIndt}"
-        if p.tok() == ◆indent
-            if p.current().str.len < ifIndent
+        # log &"condThen {p.current} {ifIndent} {condIndt}"
+        if p.tok == ◆indent
+            if p.current.str.len < ifIndent
                 break
             if ifIndent < condIndt 
-                if p.current().str.len < condIndt
+                if p.current.str.len < condIndt
                     break
-            if p.peek(1).tok != ◆elif and p.current().str.len == ifIndent
+            if p.peek(1).tok != ◆elif and p.current.str.len == ifIndent
                 break
             p.swallow ◆indent
-            if p.tok() == ◆indent
+            if p.tok == ◆indent
                 continue
                 
         p.swallow(◆elif)
-        if p.tok() in {◆then, ◆else}
+        if p.tok in {◆then, ◆else}
             break # then without condition -> else
         
         cond = p.expression()
@@ -689,7 +691,7 @@ proc rIf(p: Parser): Node =
     
     p.swallow(◆indent)
     
-    if p.tok() in {◆else, ◆then}
+    if p.tok in {◆else, ◆then}
         p.swallow() # else or then without condition
         elseBranch = p.expression()
     
@@ -724,10 +726,10 @@ proc rWhile(p: Parser): Node =
 proc switchCase(p: Parser, baseIndent: int): Node =
 
     var case_when: seq[Node]
-    let token = p.current()
+    let token = p.current
     
     p.implicit = true
-    while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}
+    while p.tok notin {◆else, ◆then, ◆indent, ◆eof}
         case_when.add p.value()
         p.swallow ◆comma
     p.implicit = false
@@ -751,13 +753,13 @@ proc rSwitch(p: Parser): auto =
     if switch_value == nil
         ⮐  p.error("Expected value after switch keyword", token)
     
-    let baseIndent = p.current().str.len 
+    let baseIndent = p.current.str.len 
     
     p.swallowError(◆indent, "Expected indentation after switch statement")
     
     var switch_cases: seq[Node]
     
-    while p.tok() notin {◆else, ◆then, ◆eof}
+    while p.tok notin {◆else, ◆then, ◆eof}
     
         if p.isDedent baseIndent
             break
@@ -772,10 +774,10 @@ proc rSwitch(p: Parser): auto =
     
     var switch_default: Node
     
-    if p.tok() in {◆else, ◆then}
+    if p.tok in {◆else, ◆then}
         p.swallow()
         switch_default = 
-            if p.tok() == ◆indent and p.current().str.len > baseIndent
+            if p.tok == ◆indent and p.current.str.len > baseIndent
                 p.swallow()
                 p.expression()
             else
@@ -792,7 +794,7 @@ proc parseParenList(p: Parser): seq[Node] =
     
     var args : seq[Node]
     p.implicit = true
-    while p.tok() != ◆paren_close and p.tok() != ◆eof
+    while p.tok != ◆paren_close and p.tok != ◆eof
         args.add p.expression()
         p.swallow ◆comma
     p.swallowError(◆paren_close, "Missing closing parenthesis")
@@ -808,7 +810,7 @@ proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
     
     var args : seq[Node]
     p.implicit = true
-    while p.tok() != close and p.tok() != ◆eof
+    while p.tok != close and p.tok != ◆eof
         args.add p.expression()
         p.swallow ◆comma
     p.swallowError(close, "Missing closing bracket")
@@ -821,7 +823,7 @@ proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
 proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.consume() # [
-    if p.tok() == ◆square_close
+    if p.tok == ◆square_close
         p.swallow()
         Node(token:token, kind:●arrayAccess, array_owner:array_owner)
     else
@@ -860,31 +862,31 @@ proc rString(p: Parser): Node =
 
     let token = p.consume() # string start
 
-    if p.tok() == ◆string_end
+    if p.tok == ◆string_end
         p.swallow()
         Node(token:token, kind:●string, string_content:Node(token:Token(str:"", tok:◆string), kind:●literal))
     else
         var string_content : Node 
-        if p.tok() != ◆stripol_start
+        if p.tok != ◆stripol_start
             string_content = Node(token:p.consume(), kind:●literal)
         else
-            string_content = Node(token:Token(str:"", tok:◆string, line:p.current().line, col:p.current().col), kind:●literal)
+            string_content = Node(token:Token(str:"", tok:◆string, line:p.current.line, col:p.current.col), kind:●literal)
         var string_stripols : seq[Node]
-        while p.tok() notin {◆string_end, ◆eof}
+        while p.tok notin {◆string_end, ◆eof}
         
             p.swallowError(◆stripol_start, "Expected string interpolation start")
             
-            var stripol = Node(token:p.current(), kind:●stripol)
+            var stripol = Node(token:p.current, kind:●stripol)
             
             var stripol_xprssns : seq[Node]
-            while p.tok() notin {◆stripol_end, ◆eof}
+            while p.tok notin {◆stripol_end, ◆eof}
                 let xpr = p.expression()
                 stripol_xprssns.add xpr
                 
             stripol.stripol_xprssns = stripol_xprssns
             
             p.swallowError(◆stripol_end, "Expected string interpolation end")
-            if p.tok() notin {◆string_end, ◆eof}
+            if p.tok notin {◆string_end, ◆eof}
                 stripol.stripol_content = Node(token:p.consume(), kind:●literal)
             
             # log &"stripol stripol {stripol}"
@@ -898,7 +900,7 @@ proc rUse(p: Parser): Node =
 
     let token = p.consume()
     let use_module = p.parseModule()
-    if not p.atEnd() and p.current().line == token.line
+    if not p.atEnd() and p.current.line == token.line
         let use_kind = p.rSymbol()
         let use_items  = p.parseNames()
         Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
@@ -914,8 +916,8 @@ proc parseType(p: Parser): Node =
     var token = p.consume()
     token.tok = ◆type
     
-    if p.tok() == ◆square_open
-        while p.tok() notin {◆eof}
+    if p.tok == ◆square_open
+        while p.tok notin {◆eof}
             let t = p.consume()
             token.str &= t.str
             if t.tok == ◆square_close
@@ -956,7 +958,7 @@ proc rVar(p: Parser) : Node =
     let var_name = p.value()
     var var_value : Node
     
-    if p.tok() == ◆assign
+    if p.tok == ◆assign
         let t = p.consume() # =
         var_value = p.expression() 
     
@@ -969,7 +971,7 @@ proc lSymbolList(p: Parser, left: Node) : Node =
 
     case left.kind 
         of ●list
-            # log &"lSymbolList ●list: {left} {p.current()}"
+            # log &"lSymbolList ●list: {left} {p.current}"
             var list_values = left.list_values
             # todo: check if all list items are symbols?
             list_values.add p.rSymbol()
@@ -977,7 +979,7 @@ proc lSymbolList(p: Parser, left: Node) : Node =
         of ●literal
             if left.token.tok != ◆name
                 ⮐  
-            # log &"lSymbolList ●literal: {left} {p.current()}"
+            # log &"lSymbolList ●literal: {left} {p.current}"
             var list_values : seq[Node]
             list_values.add left
             list_values.add p.rSymbol()
@@ -987,7 +989,7 @@ proc lSymbolList(p: Parser, left: Node) : Node =
 
 proc lVarList(p: Parser, left: Node) : Node =
     
-    # log &"lVarList {left} {p.current()}"
+    # log &"lVarList {left} {p.current}"
     
     case left.kind 
         of ●list
@@ -1069,7 +1071,7 @@ proc lFunc(p: Parser, left: Node): Node =
 proc rFunc(p: Parser): Node =
 
     let token = p.consume() # ->
-    # log &"rFunc {token} {p.current()}"    
+    # log &"rFunc {token} {p.current}"    
     
     var func_mod : Node
     if p.tok == ◆mod
@@ -1132,15 +1134,15 @@ proc lRange(p: Parser, left: Node): Node =
         
 proc rParenExpr(p: Parser): Node =
 
-    Node(token:p.current(), kind:●list, list_values:p.parseParenList())
+    Node(token:p.current, kind:●list, list_values:p.parseParenList())
 
 proc rCurly(p: Parser): Node =
 
-    Node(token:p.current(), kind:●curly, list_values:p.parseDelimitedList(◆bracket_open, ◆bracket_close))
+    Node(token:p.current, kind:●curly, list_values:p.parseDelimitedList(◆bracket_open, ◆bracket_close))
 
 proc rSquarely(p: Parser): Node =
 
-    Node(token:p.current(), kind:●squarely, list_values:p.parseDelimitedList(◆square_open, ◆square_close))
+    Node(token:p.current, kind:●squarely, list_values:p.parseDelimitedList(◆square_open, ◆square_close))
     
 proc lTestCase(p: Parser, left: Node): Node =
 
@@ -1177,7 +1179,7 @@ proc rTestSuite(p: Parser): Node =
 
 proc expression(p: Parser, precedenceRight = 0): Node =
 
-    let token = p.current()
+    let token = p.current
     # log &"expression {p}"
     if token.tok in {◆eof, ◆stripol_end, ◆paren_close}
         ⮐  nil
@@ -1197,7 +1199,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
 
     while true
         
-        let token = p.current()
+        let token = p.current
         var precedence = p.getPrecedence(token)
         
         if token.tok in {◆assign, ◆test}

@@ -49,19 +49,18 @@ for kind, key, val in optParser.getopt():
                 of "transpile", "t": 
                     transpile = true
                 of "help", "h": 
-                    echo "usage: " getAppFilename().extractFilename " [options] [file.kim ...]"
-                    echo ""
-                    echo "      transpiles kim files to nim"
-                    echo "      watches cwd if no files are given"
-                    echo ""
-                    echo "options:"
-                    echo "  -o --outdir:DIR  output directory"
-                    echo "  -t --transpile   log transpilat"
-                    echo "     --test        run tests"
-                    echo "  -v --verbose     verbose output"
+                    echo("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
+                    echo("")
+                    echo("      transpiles kim files to nim")
+                    echo("      watches cwd if no files are given")
+                    echo("")
+                    echo("options:")
+                    echo("  -o --outdir:DIR  output directory")
+                    echo("  -t --transpile   log transpilat")
+                    echo("     --test        run tests")
+                    echo("  -v --verbose     verbose output")
                     quit(1)
-                else: echo
-            "unknown option: " key
+                else: echo("unknown option: ", key)
             
                     quit(1)
         of cmdEnd: 
@@ -90,7 +89,7 @@ proc logFile(f : string, prefix = "") =
 
     if not verbose: 
         return 
-    let (dir(name, ext)) = f.relativePath(getCurrentDir()).splitFile()
+    let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len: dir & "/" else: ""
     icon = if (ext == ".kim"): "  " else: "  "
     color = if (ext == ".kim"): fgGreen else: fgMagenta
@@ -104,19 +103,19 @@ proc logFile(f : string, prefix = "") =
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 
 proc compile(file : string, outDir = "bin") : bool = 
-    profileScope 'comp'
+    profileScope('comp')
     # let cmd = &"nim c --outDir:{outdir} {file}"
     let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
-    let (output(exitCode)) = execCmdEx(cmd)
+    let (output, exitCode) = execCmdEx(cmd)
     
         
     if (exitCode != 0): 
-        styledEcho(fgRed) "✘ " &"{cmd}"
+        styledEcho(fgRed, "✘ ", &"{cmd}")
         echo(output)
         false
     else: 
         if verbose: 
-            styledEcho(fgGreen) "✔ " fgWhite(cmd)
+            styledEcho(fgGreen, "✔ ", fgWhite, cmd)
         true
         
 # █████████  ████████   ███████  █████████   ███████
@@ -126,7 +125,7 @@ proc compile(file : string, outDir = "bin") : bool =
 #    ███     ████████  ███████      ███     ███████ 
 
 proc runTests = 
-    profileScope 'test'
+    profileScope('test')
     for f in testFiles: 
         let cmd = &"nim r --colors:on {f}"
         let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
@@ -168,15 +167,15 @@ proc runTests =
             styledEcho(output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m"))
         else: 
             okCount = output.count "[OK]"
-            styledEcho(output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg, "'[OK]' .+", &"{ansiStyleCode(styleDim)} ✔ {okCount}"))
+            styledEcho(output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg, "'[OK]' .+", &"{ansiStyleCode, styleDim} ✔ {okCount}"))
         if (exitCode != 0): 
             styledEcho(fgRed, "✘ ", &"{cmd}")
-        echo ""
+        echo("")
         
 if files.len: 
 
     if transpile: 
-        log &"transpile {files}"
+        log(&"transpile {files}")
         let transpiled = rndr.files(files)
         quit((transpiled.len - files.len))
     else: 
@@ -198,15 +197,15 @@ proc watch(paths : var seq[string]) =
 
     setControlCHook(proc () {.noconv.} = 
         
-        styledEcho ''
+        styledEcho('')
         styledEcho(fgGreen, farewells[rand(farewells.high)])
         quit(0))
 
     var modTimes : Table[string,times.Time]
 
-    styledEcho ''
+    styledEcho('')
     styledEcho(fgGreen, greetings[rand(greetings.high)])
-    styledEcho ''
+    styledEcho('')
 
     for p in paths: 
         let (dir, name, ext) = p.splitFile()
@@ -231,7 +230,7 @@ proc watch(paths : var seq[string]) =
             
             for f in walkDirRec(path): 
             
-                let (dir(name, ext)) = f.splitFile()
+                let (dir, name, ext) = f.splitFile()
             
                 if (ext == ".kim"): 
                     kimFiles.add(f)
@@ -262,9 +261,9 @@ proc watch(paths : var seq[string]) =
                 logFile(f)
                                     
         if toTranspile: 
-            verb &"toTranspile: {toTranspile}"
+            verb(&"toTranspile: {toTranspile}")
             for f in trans.pile(toTranspile): 
-                verb &"transpiled {f}"
+                verb(&"transpiled {f}")
                 logFile(f, "✔ ")
             # verb 'runTests'    
             runTests()

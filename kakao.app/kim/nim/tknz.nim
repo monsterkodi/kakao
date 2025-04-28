@@ -221,7 +221,7 @@ proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
 
     if t.token.str.len:
         t.tokens.add t.token
-    t.token = Token(str:str, tok:tk, line:t.line, col:t.col())
+    t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
     t.segi += incr
     
 proc push(t:Tknzr, tk:tok) =
@@ -375,7 +375,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             if t.segi >= t.segs.len:
                 # echo "eof1"
                 break
-            t.token = Token(tok: ◆indent, line:t.line, col:t.col()) 
+            t.token = Token(tok: ◆indent, line:t.line, col:t.col) 
             # echo &"indent {t.token}"
             while t.segi < t.segs.len and t.peek(0) == " ":
                 t.advance 1
@@ -385,7 +385,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             t.tokens.add t.token
             continue
                 
-        t.token = Token(line:t.line, col:t.col())
+        t.token = Token(line:t.line, col:t.col)
         
         while t.segi < t.eol:
                                     
@@ -398,8 +398,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.pushToken()
             else:
                 
-                if t.col() > 0 and t.peek(-1) == " ":
-                    t.token.col = t.col()
+                if t.col > 0 and t.peek(-1) == " ":
+                    t.token.col = t.col
                 
                 let triple = t.srng 3
                 if punct.hasKey triple:
