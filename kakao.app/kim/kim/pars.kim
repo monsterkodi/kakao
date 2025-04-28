@@ -520,27 +520,64 @@ proc rBlock(p:Parser) : Node =
 
     p.parseBlock()
     
-proc rSymbol(p: Parser): Node =
+proc isTokenAhead(p: Parser, tokAhead:tok) : bool =
 
-    Node(token:p.consume(), kind: ●literal)
-        
+    var n = 0
+    var c = p.current()
+    let line = c.line
+    while c.tok != ◆eof
+        if c.line > line
+            ⮐  false
+        if c.tok == tokAhead
+            ⮐  true
+        n += 1
+        c = p.peek n
+    false    
+    
 proc parseCallArgList(p:Parser) : seq[Node] = 
 
+    p.implicit = true
     var list : seq[Node]
     let line = p.current().line
-    var expr : Node = p.expression(-1)
+    var expr : Node = p.expression()
     while expr != nil
         list.add expr        
         if p.current().line != line
             break
         p.swallow ◆comma
-        expr = p.expression(-1)
+        expr = p.expression()
+    p.implicit = false
     list
+    
+proc lCall(p: Parser, callee: Node): Node =
 
+    let token = p.consume() # (
+    let args = p.parseCallArgList()
+    p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
+    Node(token:token, kind:●call, callee:callee, callargs:args)
+    
+proc rSymbol(p: Parser): Node =
+
+    let token = p.consume()
+    let currt = p.peek(0)
+    if not p.implicit and currt.tok notin {◆indent} and not p.isTokenAhead(◆func)
+        if currt.col > token.col+token.str.len
+            const optoks= { ◆then, ◆else, ◆elif, ◆test,
+                            ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
+                            ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
+                            ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
+            if currt.tok notin optoks
+                # log &"implicit! {token} {p}"
+                let args = p.parseCallArgList()
+                ⮐  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
+
+    Node(token:token, kind:●literal)
+        
 proc parseNames(p:Parser) : seq[Node] = 
 
     var list : seq[Node]
     let line = p.current().line
+    p.implicit = true
     var expr : Node = p.rSymbol()
     while expr != nil
         list.add expr        
@@ -548,6 +585,7 @@ proc parseNames(p:Parser) : seq[Node] =
             break
         p.swallow ◆comma
         expr = p.rSymbol()
+    p.implicit = false
     list
 
 proc parseNamesUntil(p: Parser, stop: tok) : Node =
@@ -555,7 +593,7 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
     let token = p.current()
                                 
     var list_values: seq[Node]
-
+    p.implicit = true
     while p.tok() != stop
         if p.tok() == ◆eof
             ⮐  p.error("Missing 'in' for 'for' loop (eof detected)!", token)
@@ -563,7 +601,7 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
             ⮐  p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
         list_values.add p.rSymbol()
         p.swallow ◆comma
-    
+    p.implicit = false
     if list_values.len == 1
         list_values[0]
     else
@@ -685,9 +723,11 @@ proc switchCase(p: Parser, baseIndent: int): Node =
     var case_when: seq[Node]
     let token = p.current()
     
+    p.implicit = true
     while p.tok() notin {◆else, ◆then, ◆indent, ◆eof}
         case_when.add p.value()
         p.swallow ◆comma
+    p.implicit = false
     
     # log &"switchCase case_when {case_when}"
     
@@ -742,56 +782,18 @@ proc rSwitch(p: Parser): auto =
             ⮐  p.error("Expected default value", token)
     
     Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
-
-proc isTokenAhead(p: Parser, tokAhead:tok) : bool =
-
-    var n = 0
-    var c = p.current()
-    let line = c.line
-    while c.tok != ◆eof
-        if c.line > line
-            ⮐  false
-        if c.tok == tokAhead
-            ⮐  true
-        n += 1
-        c = p.peek n
-    false    
         
-proc lImplicitCall(p: Parser, callee: Node): Node =
-
-    let token = p.current()
-
-    const notimplicit = {
-        ◆eof, 
-        ◆dot, ◆comma, ◆semicolon, 
-        ◆test, ◆func,
-        ◆then, ◆else,
-        ◆or, ◆and, ◆divide, ◆multiply, ◆equal,
-        ◆string_start, ◆comment_start, 
-        ◆paren_open, ◆paren_close, ◆square_close, ◆bracket_close, ◆stripol_end
-        }
-    if p.implicit == false and callee.token.line==token.line and token.tok notin notimplicit
-        # log &"implicit? {token} {callee.token.tok}"
-        if callee.token.tok in {◆name} and not p.isTokenAhead(◆func) and not p.isTokenAhead(◆assign)
-            log &"----------------------------- implicit call! {callee} {callee.token}"
-
-            p.implicit = true
-            let args = p.parseCallArgList()
-            p.implicit = false
-            
-            ⮐  Node(token:callee.token, kind:●call, callee:callee, callargs:args)
-    callee
-    
 proc parseParenList(p: Parser): seq[Node] =
 
     let token = p.consume() # (
     
     var args : seq[Node]
+    p.implicit = true
     while p.tok() != ◆paren_close and p.tok() != ◆eof
         args.add p.expression()
         p.swallow ◆comma
-        
     p.swallowError(◆paren_close, "Missing closing parenthesis")
+    p.implicit = false
     if args.len == 1 and args[0].kind == ●list
         # log "convert single (list) to seq"
         ⮐  args[0].list_values
@@ -802,31 +804,17 @@ proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
     let token = p.consume()
     
     var args : seq[Node]
+    p.implicit = true
     while p.tok() != close and p.tok() != ◆eof
         args.add p.expression()
         p.swallow ◆comma
-        
     p.swallowError(close, "Missing closing bracket")
+    p.implicit = false
     if args.len == 1 and args[0].kind == ●list
         # log "convert single [list] to seq"
         ⮐  args[0].list_values
     args
         
-proc lCall(p: Parser, callee: Node): Node =
-
-    let token = p.consume() # (
-    p.implicit = true
-    var args : seq[Node]
-    while p.tok() != ◆paren_close and p.tok() != ◆eof
-        args.add p.expression()
-        p.swallow ◆comma
-        
-    # log &"lCall args: {args}"
-        
-    p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
-    p.implicit = false
-    Node(token:token, kind:●call, callee:callee, callargs:args)
-    
 proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.consume() # [
@@ -972,13 +960,6 @@ proc rVar(p: Parser) : Node =
     Node(token:token, kind:●var, var_type:var_type, var_name:var_name, var_value:var_value)
 
 proc lSymbolList(p: Parser, left: Node) : Node =
-
-    # if left.kind in {●list, ●literal} and p.peek(1).tok in {◆dot, ◆comma, ◆square_open, ◆paren_open}
-    if left.kind in {●list, ●literal} and p.peek(1).tok in {◆dot, ◆comma, ◆square_open, ◆paren_open}
-        # log &"+++++++++++++++++++++++ implicit call {left} {p.current()}"
-        if left.kind == ●literal and left.token.tok != ◆name
-            ⮐  
-        ⮐  p.lImplicitCall left
 
     case left.kind 
         of ●list
@@ -1219,12 +1200,9 @@ proc expression(p: Parser, precedenceRight = 0): Node =
         let lhs = p.leftHandSide(token)
         
         if precedenceRight >= precedence
-            # log &"▸□◂ {token}" 
-            node = p.lImplicitCall node
             break
     
         if lhs == nil
-            # log &"▸?◂ {token}" 
             break
             
         let lhn = p.lhs(node)
@@ -1232,11 +1210,6 @@ proc expression(p: Parser, precedenceRight = 0): Node =
             node = lhn
         else
             break 
-            
-    if node.kind == ●list and node.list_values[0].token.tok == ◆name and not p.isTokenAhead(◆assign)
-        # log &"expression node == ●list, implicit call! {node}"
-        node = Node(token:node.token, kind:●call, callee:node.list_values[0], callargs:node.list_values[1..^1])
-                       
     node
             
 # ████████   ████████    ███████   █████████  █████████

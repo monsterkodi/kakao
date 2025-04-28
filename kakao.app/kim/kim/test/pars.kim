@@ -162,9 +162,9 @@ template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
         t "read(fd, 1)"                             , "▪[(◆name ◆call @[◆name, ◆number])]" 
         t "read(fd 1)"                              , "▪[(◆name ◆call @[◆name, ◆number])]" 
         t "read fd, 1"                              , "▪[(◆name ◆call @[◆name, ◆number])]" 
-        # t "read fd 1"                               , "▪[(◆name ◆call @[◆name, ◆number])]" 
+        t "read fd 1"                               , "▪[(◆name ◆call @[◆name, ◆number])]" 
         # t "read(fd addr(line[0]) line.len)"         , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]" 
-        # t "read fd addr 1"                         , "▪[(◆name ◆call @[◆name, ◆name ◆number])]"
+        t "read fd addr 1"                         , "▪[(◆name ◆call @[◆name, ◆name, ◆number])]"
         # t "read fd addr(line[0]) l.len"            , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]"
         # t "let r = read fd addr(line[0]) l.len"    , "▪[(◆let (◆name = (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])))]"
         
