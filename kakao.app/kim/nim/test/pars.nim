@@ -163,18 +163,17 @@ suite "pars":
         t "read(fd 1)"                              , "▪[(◆name ◆call @[◆name, ◆number])]" 
         t "read fd, 1"                              , "▪[(◆name ◆call @[◆name, ◆number])]" 
         t "read fd 1"                               , "▪[(◆name ◆call @[◆name, ◆number])]" 
-        # t "read(fd addr(line[0]) line.len)"         , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]" 
-        t "read fd addr 1"                         , "▪[(◆name ◆call @[◆name, ◆name, ◆number])]"
-        # t "read fd addr(line[0]) l.len"            , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]"
-        # t "let r = read fd addr(line[0]) l.len"    , "▪[(◆let (◆name = (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])))]"
+        t "read(fd addr(line[0]) line.len)"         , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]" 
+        t "read fd addr 1"                          , "▪[(◆name ◆call @[◆name, ◆name, ◆number])]"
+        t "read fd addr(line[0]) l.len"             , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]"
+        t "let r = read fd addr(line[0]) l.len"     , "▪[(◆let (◆name = (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])))]"
         
     test "arglist":
     
         t "f(a, b, c)"                              , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
         t "f a, b, c"                               , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
         t "(a, b, c) = f()"                         , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
-        # ϝ𝚒𝓍⫙ϵ!
-        # t "(a b c) = f()"                         , "▪[(@[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
+        t "(a b c) = f()"                           , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         
     test "assign":
     
@@ -184,7 +183,7 @@ suite "pars":
         
         t "(a, b) = c"                              , "▪[(◆[◆name, ◆name] = ◆name)]"
         t "(a b) = c"                               , "▪[(◆[◆name, ◆name] = ◆name)]"
-        # let (dir name ext) = 
+        t "let (dir name ext) = triple"             , "▪[(◆let (◆[◆name, ◆name, ◆name] = ◆name))]"
         
     test "property access        ":
         

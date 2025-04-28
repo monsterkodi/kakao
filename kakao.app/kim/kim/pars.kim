@@ -230,6 +230,7 @@ type
         pratts*  : seq[Pratt]
         blocks*  : seq[Node]
         implicit : bool
+        listless : bool
         pos*     : int
     
 proc current(p: Parser): Token =
@@ -537,6 +538,7 @@ proc isTokenAhead(p: Parser, tokAhead:tok) : bool =
 proc parseCallArgList(p:Parser) : seq[Node] = 
 
     p.implicit = true
+    p.listless = true
     var list : seq[Node]
     let line = p.current().line
     var expr : Node = p.expression()
@@ -546,6 +548,7 @@ proc parseCallArgList(p:Parser) : seq[Node] =
             break
         p.swallow ◆comma
         expr = p.expression()
+    p.listless = false
     p.implicit = false
     list
     
@@ -961,6 +964,9 @@ proc rVar(p: Parser) : Node =
 
 proc lSymbolList(p: Parser, left: Node) : Node =
 
+    if p.listless
+        ⮐  
+
     case left.kind 
         of ●list
             # log &"lSymbolList ●list: {left} {p.current()}"
@@ -1241,6 +1247,7 @@ proc setup(p: Parser) =
     p.pratt ◆string_start,      nil,               rString,         0
     p.pratt ◆comment_start,     nil,               rComment,        0
     p.pratt ◆name,              lSymbolList,       rSymbol,        13 # higher than assign
+    # p.pratt ◆name,              nil,               rSymbol,        13 # higher than assign
     p.pratt ◆import,            nil,               rImport,         0
     p.pratt ◆use,               nil,               rUse,            0
     p.pratt ◆let,               nil,               rLet,            0
