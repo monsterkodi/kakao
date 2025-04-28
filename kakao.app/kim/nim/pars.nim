@@ -472,10 +472,22 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
         
     var expr : Node = p.expression()
     while expr != nil:
-        if expr.kind == ●list and expr.list_values[0].token.tok == ◆name:
-            echo &">>>>>>>>>>>>>>>>>>>> block level expr == ●list, implicit call? {expr}"
-        #     let calltoken = expr.token
-        #     expr = Node(token:calltoken, kind:●call, callee:expr.list_values[0], callargs:expr.list_values[1..^1])
+    
+        if expr.kind == ●func and bn.expressions.len:
+            var prevExpr = bn.expressions[^1]
+            if prevExpr.token.line == expr.token.line and prevExpr.token.tok == ◆assign:
+                prevExpr = bn.expressions.pop()
+                # echo &">>>>>>>>>>>>>>>>>>>> block level ●func, merge! {prevExpr} ++++ {expr}"
+                if prevExpr.operand_right.kind == ●operation:
+                    var varToken = prevExpr.operand_right.operand_left.token
+                    varToken.tok = ◆val
+                    let varNode = Node(token:varToken, kind:●var, var_name:prevExpr.operand_right.operand_left, var_value:prevExpr.operand_right.operand_right)
+                    expr.func_signature.sig_args.list_values.unshift(varNode)
+                else:
+                    expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
+                prevExpr.operand_right = expr
+                expr = prevExpr
+                
         bn.expressions.add expr
         if p.tok() == ◆indent:
             let ind = p.current().str.len
@@ -932,16 +944,28 @@ proc rReturnType(p: Parser): Node =
 
 proc lReturnType(p: Parser, left: Node): Node =
 
-    if left.kind in {●list, ●var}:
-        var sig = p.rReturnType()
-        sig.sig_args = left
-        # echo &"lReturnType {left} {p.current()} {sig}"
-        return  sig
+    if not p.isTokenAhead(◆func):
+        return  
+
+    if left.kind in {●list, ●var, ●operation}:
+        if left.kind == ●operation :
+            if left.token.tok == ◆assign:
+                var sig = p.rReturnType()
+                let vartoken = Token(tok:◆val, line:left.token.line, col:left.token.col)
+                let varNode  = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
+                sig.sig_args = Node(token:left.token, kind:●list, list_values: @[varNode])
+                return  sig
+        elif left.kind == ●list:
+            var sig = p.rReturnType()
+            sig.sig_args = left
+            return  sig
+        elif left.kind == ●var:
+            var sig = p.rReturnType()
+            sig.sig_args = Node(token:left.token, kind:●list, list_values: @[left])
+            return  sig
                     
 proc rVar(p: Parser) : Node =
 
-    # echo &"rVar {p.current()}"
-    
     let token    = p.consume() # ◆ or ◇
     let var_type = p.parseType()
     let var_name = p.value()
@@ -1020,10 +1044,13 @@ proc lFunc(p: Parser, left: Node): Node =
             let vartoken = Token(tok:◆val, line:left.operand_right.token.line,col:left.operand_right.token.col)
             left.operand_right = p.lFunc(Node(token:vartoken, kind:●var, var_name:left.operand_right))
             return  left
+            
         let vartoken = Token(tok:◆val, line:left.operand_left.token.line,col:left.operand_left.token.col)
         # echo &"lFunc OP= {left} {vartoken}"
-        let sig_args = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
+        let varNode = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
+        let sig_args = Node(token:vartoken, kind:●list, list_values: @[varNode])
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
+        
     elif left.kind == ●list:
         # echo &"lFunc list -> signature |{left}|"
         var sig_args = left
@@ -1039,8 +1066,9 @@ proc lFunc(p: Parser, left: Node): Node =
         # echo &"lFunc list -> sig_args {sig_args}"
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
     elif left.kind == ●var:
-        # echo "lFunc var -> signature"
-        func_signature = Node(token:left.token, kind:●signature, sig_args:left)
+        # echo "lFunc var -> signature" 
+        let sig_args = Node(token:left.token, kind:●list, list_values: @[left])
+        func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
     # else
     #     echo &"UNEXPECTED SIGNATURE {left}"
     

@@ -12,8 +12,8 @@ import greet
 
 var
     params    : seq[string]
-    optParser = initOptParser()
     files     : seq[string]
+    optParser = initOptParser()
     outdir    = ""
     tests     = false
     verbose   = false

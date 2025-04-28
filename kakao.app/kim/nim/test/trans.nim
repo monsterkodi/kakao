@@ -116,6 +116,3 @@ suite "trans":
             
         check s == "a\n2\nc"    
         
-    # ▸ Edge cases
-    #     expect OverflowError:
-    #         discard add(high(int), 1)

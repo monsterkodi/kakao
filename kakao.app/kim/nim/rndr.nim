@@ -51,13 +51,6 @@ proc ▸proc(r: var Rndr, n: Node) =
     r.add "proc "
     r.rnd n.operand_left
     r.rnd f.func_signature
-    # r.add "("
-    # if f.func_signature != nil and f.func_signature.sig_args != nil
-    #     r.rnd f.func_signature.sig_args
-    # r.add ")"
-    # if f.func_signature != nil and f.func_signature.sig_type != nil
-    #     r.add " : "
-    #     r.rnd f.func_signature.sig_type
     r.add " ="
     if f.func_body != nil:
         r.add " "
@@ -148,25 +141,8 @@ proc ▸signature(r: var Rndr, n:Node) =
         r.add " : "
         r.rnd n.sig_type
             
-# proc ▸argType(r: var Rndr, n: Node) =
-# 
-#     r.rnd n.arg_name
-#     if n.arg_type != nil
-#         r.add ":"
-#         if n.token.tok == ◆var
-#             r.add "var "
-#         r.rnd n.arg_type
-#     if n.arg_default != nil
-#         r.add "="
-#         r.rnd n.arg_default.default
-        
 proc ▸var(r: var Rndr, n: Node) =
 
-    echo &"{n.token.tok} {r.annotateVarArg}"
-    # if n.token.tok == ◆var
-    #     r.add "var "
-    # else
-    #     r.add "let "
     r.rnd n.var_name
     if n.var_type != nil:
         r.add " : "
@@ -255,12 +231,10 @@ proc ▸for(r: var Rndr, n: Node) =
     
 proc ▸list(r: var Rndr, n: Node) =
 
-    # r.add "("
     for i,item in n.list_values:
         r.rnd item
         if i < n.list_values.len-1:
             r.add ", "
-    # r.add ")"
     
 proc ▸range(r: var Rndr, n: Node) = 
 
@@ -340,10 +314,8 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸if(n)
         of ●switch:
             r.▸switch(n)
-        # of ●func
-        #     r.▸func(n)
-        # of ●argType
-        #     r.▸argType(n)
+        of ●func:
+            r.▸func(n)
         of ●signature:
             r.▸signature(n)
         of ●call:

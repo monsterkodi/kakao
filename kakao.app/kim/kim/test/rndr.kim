@@ -63,24 +63,15 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
         t "optParser = initOptParser()"             , "optParser = initOptParser()"
         t "str = \"\"\nbool = false\nnum = 1"       , "str = \"\"\nbool = false\nnum = 1"
         
-    # ▸ arg types
-    # 
-    #     # t "files     ◇ seq[string] = @[]"          , "files:seq[string]=@[]" 
-    #     # t "files     ◆ seq[string] = @[]"          , "files:var seq[string]=@[]" 
-    #     t "◇seq[string] files = @[]"                 , "files:seq[string]=@[]" 
-    #     t "◆seq[string] files = @[]"                 , "files:var seq[string]=@[]" 
+    ▸ arg types
     
-    # ▸ var types
-    # 
-    #     t "var files ◇ seq[string] = @[]"          , "var files : seq[string] = @[]" 
-    #     t "let files ◇ seq[string] = @[]"          , "let files : seq[string] = @[]" 
-    #     t "◆files ◇ seq[string] = @[]"             , "var files : seq[string] = @[]" 
-    #     t "◇files ◇ seq[string] = @[]"             , "let files : seq[string] = @[]" 
-        
+        t "◇seq[string] files = @[]"               , "files : seq[string] = @[]" 
+        t "◇ seq[string] files      = @[]"         , "files : seq[string] = @[]" 
+    
     ▸ func
     
         t "f = ->"                                 , "proc f ="
-        # t "f = a=1 ->"                             , "proc f(a = 1) ="
+        t "f = a=1 ->"                             , "proc f(a = 1) ="
         t "f = ◇string a ->"                       , "proc f(a : string) ="
         t "f = ◇string a ◇int b ->"                , "proc f(a : string, b : int) ="
         t "f = ◆Parser p ->"                       , "proc f(p : var Parser) ="
@@ -89,14 +80,14 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
         t "f = ◆Parser p ➜ Node ->"                , "proc f(p : var Parser) : Node ="
         t "f = ◇seq[Node] s ➜ seq[Node] ->"        , "proc f(s : seq[Node]) : seq[Node] ="
         t "f = ◇Parser p ◇int ahead=1 ➜ Token ->"  , "proc f(p : Parser, ahead : int = 1) : Token ="
-        # t "f = ◇Parser p ahead=1 ➜ Token ->"       , "proc f(p : Parser, ahead = 1) : Token ="
-        # 
-        # t "l.map(r◇tuple➜string -> r.path)"        , "l.map(proc (r:tuple) : string = r.path)"
-        # t "l.map(r ◇ tuple ➜ string -> r.path)"    , "l.map(proc (r:tuple) : string = r.path)"
-        # 
-        # t "f = i ◇ int ->"                         , "proc f(i:int) ="
-        # t "f = a ◇ int b ◇ int ->"                 , "proc f(a:int, b:int) ="
-        # t "f = a ◇ int = 1 ->"                     , "proc f(a:int=1) ="
+        t "f = ◇Parser p ahead=1 ➜ Token ->"       , "proc f(p : Parser, ahead = 1) : Token ="
+         
+        t "l.map(◇tuple r ➜string -> r.path)"      , "l.map(proc (r : tuple) : string = r.path)"
+        t "l.map(◇ tuple r  ➜ string -> r.path)"   , "l.map(proc (r : tuple) : string = r.path)"
+
+        t "f = ◇int i ->"                          , "proc f(i : int) ="
+        t "f = ◇int a ◇int b ->"                   , "proc f(a : int, b : int) ="
+        t "f = ◇int a = 1 ->"                      , "proc f(a : int = 1) ="
         
     ▸ call
     
@@ -212,8 +203,8 @@ b = false"""
         t "s = \"\"\"num #{1+2} end\"\"\""         , "s = &\"\"\"num {(1 + 2)} end\"\"\""
         t "s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\"" , "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         t "s = \"#{o}\""                           , "s = &\"{o}\""
-        # t "let cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
-        #   "let cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
+        t "cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
+          "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
         
     ▸ blocks
   
