@@ -134,7 +134,7 @@ runTests = ->
         
         var fd = p.outputHandle
         var flags = fcntl(fd, F_GETFL, 0)
-        discard fcntl(fd, F_SETFL, flags or O_NONBLOCK)
+        discard fcntl(fd F_SETFL flags or O_NONBLOCK)
         
         while true:
             let elapsed = (getMonoTime() - startTime).inMilliseconds
@@ -146,7 +146,7 @@ runTests = ->
                     p.kill()
                 break
                             
-            var line = newString(1024*10)
+            var line = newString 1024*10
             let bytesRead = read(fd, addr(line[0]), line.len)
             if bytesRead > 0:
                 output.add(line & "\n")
@@ -208,7 +208,7 @@ watch = ◆seq[string] paths ->
     styledEcho ""
     
     for p in paths:
-        let (dir, name, ext) = p.splitFile()
+        let (dir name ext) = p.splitFile()
         styledEcho fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle
     
     var firstLoop = true

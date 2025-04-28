@@ -1,4 +1,3 @@
-transpile @["kim/kim2.kim"]
 # ███   ███  ███  ██     ██
 # ███  ███   ███  ███   ███
 # ███████    ███  █████████
@@ -11,15 +10,15 @@ import trans
 import rndr
 import greet
 
-params = default(seq[string])
-optParser = initOptParser()
-files : seq[string]
-outdir = ""
-tests = false
-verbose = false
-transpile = false
+var params = default(seq[string])
+var optParser = initOptParser()
+var files : seq[string]
+var outdir = ""
+var tests = false
+var verbose = false
+var transpile = false
 
-testFiles = walkDir((currentSourcePath().splitFile()[0] / "test")).toSeq().map(proc (r : tuple) : string = r.path)
+var testFiles = walkDir((currentSourcePath().splitFile()[0] / "test")).toSeq().map(proc (r : tuple) : string = r.path)
 
 randomize()
 
@@ -91,7 +90,7 @@ proc logFile(f : string, prefix = "") =
 
     if not verbose: 
         return 
-    # let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
+    let (dir(name, ext)) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len: dir & "/" else: ""
     icon = if (ext == ".kim"): "  " else: "  "
     color = if (ext == ".kim"): fgGreen else: fgMagenta
@@ -107,8 +106,8 @@ proc logFile(f : string, prefix = "") =
 proc compile(file : string, outDir = "bin") : bool = 
     profileScope 'comp'
     # let cmd = &"nim c --outDir:{outdir} {file}"
-    cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
-    (output, exitCode) = execCmdEx(cmd)
+    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
+    let (output(exitCode)) = execCmdEx(cmd)
     
         
     if (exitCode != 0): 
@@ -119,26 +118,27 @@ proc compile(file : string, outDir = "bin") : bool =
         if verbose: 
             styledEcho(fgGreen) "✔ " fgWhite(cmd)
         true
-        # █████████  ████████   ███████  █████████   ███████
-        #    ███     ███       ███          ███     ███     
-        #    ███     ███████   ███████      ███     ███████ 
-        #    ███     ███            ███     ███          ███
-        #    ███     ████████  ███████      ███     ███████ 
         
+# █████████  ████████   ███████  █████████   ███████
+#    ███     ███       ███          ███     ███     
+#    ███     ███████   ███████      ███     ███████ 
+#    ███     ███            ███     ███          ███
+#    ███     ████████  ███████      ███     ███████ 
+
 proc runTests = 
     profileScope 'test'
     for f in testFiles: 
-        cmd = &"nim r --colors:on {f}"
-        # let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
-        startTime = getMonoTime()
-        output = ""
+        let cmd = &"nim r --colors:on {f}"
+        let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})
+        let startTime = getMonoTime()
+        var output = ""
     
-        fd = p.outputHandle
-        flags = fcntl(fd, F_GETFL, 0)
+        var fd = p.outputHandle
+        var flags = fcntl(fd, F_GETFL, 0)
         discard fcntl(fd, F_SETFL, (flags or O_NONBLOCK))
     
         while true
-            elapsed = (getMonoTime() - startTime).inMilliseconds
+            let elapsed = (getMonoTime() - startTime).inMilliseconds
             if (elapsed >= 2000): 
                 output.add(&"test killed after {elapsed} ms!!")
                 p.terminate()
@@ -148,8 +148,8 @@ proc runTests =
                 break
                 
                             
-            line = newString((1024 * 10))
-            # let bytesRead = read(fd, addr line[0], line.len)
+            var line = newString((1024 * 10))
+            let bytesRead = read(fd, addr(line[0]), line.len)
             if (bytesRead > 0): 
                 output.add(line & "\n")
             elif (bytesRead == 0): 
@@ -162,7 +162,7 @@ proc runTests =
                 break
                             
         
-        exitCode = p.waitForExit()
+        let exitCode = p.waitForExit()
         
         if ((exitCode != 0) or verbose): 
             styledEcho(output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m"))
@@ -177,10 +177,10 @@ if files.len:
 
     if transpile: 
         log &"transpile {files}"
-        transpiled = rndr.files(files)
+        let transpiled = rndr.files(files)
         quit((transpiled.len - files.len))
     else: 
-        transpiled = trans.pile(files)
+        let transpiled = trans.pile(files)
         quit((transpiled.len - files.len))
 
 if tests: 
@@ -202,24 +202,24 @@ proc watch(paths : var seq[string]) =
         styledEcho(fgGreen, farewells[rand(farewells.high)])
         quit(0))
 
-    modTimes : Table[string,times.Time]
+    var modTimes : Table[string,times.Time]
 
     styledEcho ''
     styledEcho(fgGreen, greetings[rand(greetings.high)])
     styledEcho ''
 
     for p in paths: 
-        (dir, name, ext) = p.splitFile()
+        let (dir, name, ext) = p.splitFile()
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
 
-    firstLoop = true
+    var firstLoop = true
 
     while true
     
-        doBuild = false
-        toTranspile : seq[string]
-        kimFiles : seq[string]
-        nimFiles : seq[string]
+        var doBuild = false
+        var toTranspile : seq[string]
+        var kimFiles : seq[string]
+        var nimFiles : seq[string]
     
         # log paths
     
@@ -231,7 +231,7 @@ proc watch(paths : var seq[string]) =
             
             for f in walkDirRec(path): 
             
-                (dir, name, ext) = f.splitFile()
+                let (dir(name, ext)) = f.splitFile()
             
                 if (ext == ".kim"): 
                     kimFiles.add(f)
@@ -240,7 +240,7 @@ proc watch(paths : var seq[string]) =
                 else: 
                     continue
             
-                modTime = getFileInfo(f).lastWriteTime
+                let modTime = getFileInfo(f).lastWriteTime
             
                 if not modTimes.hasKey(f): 
                     modTimes[f] = modTime
@@ -262,9 +262,9 @@ proc watch(paths : var seq[string]) =
                 logFile(f)
                                     
         if toTranspile: 
-            verb & "toTranspile: {toTranspile}"
+            verb &"toTranspile: {toTranspile}"
             for f in trans.pile(toTranspile): 
-                verb & "transpiled {f}"
+                verb &"transpiled {f}"
                 logFile(f, "✔ ")
             # verb 'runTests'    
             runTests()
@@ -272,7 +272,7 @@ proc watch(paths : var seq[string]) =
             # verb 'doBuild'    
             if compile("nim/kim.nim", "bin"): 
                 for f in kimFiles: 
-                    transpiled = trans.trans(f)
+                    let transpiled = trans.trans(f)
                     logFile(transpiled, "✔ ")
                 restart()
         # log 'sleep'        

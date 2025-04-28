@@ -182,13 +182,13 @@ proc runTests() =
         let exitCode = p.waitForExit()
         if exitCode != 0 or verbose:
             #or f.endsWith("pars.nim")
-            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸")
+            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸\x1b[0m")
                              .replace("[OK]",     fgc(fgGreen) & "✔\x1b[0m")
                              .replace("[FAILED]", fgc(fgRed) & "✘\x1b[0m")
         else:
             let okCount = output.count "[OK]"
-            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸")
-                             .replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}")
+            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸\x1b[0m")
+                             .replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}\x1b[0m")
             
         if exitCode != 0:
             styledEcho fgRed, "✘ ", &"{cmd}"
