@@ -9,15 +9,12 @@
 import std/[streams, paths]
 import kommon
 
-#  ███████  ███  ███   ███   ███████   ███      ████████         ███████   ███   ███   ███████   █████████  ████████
-# ███       ███  ████  ███  ███        ███      ███             ███   ███  ███   ███  ███   ███     ███     ███     
-# ███████   ███  ███ █ ███  ███  ████  ███      ███████         ███ ██ ██  ███   ███  ███   ███     ███     ███████ 
-#      ███  ███  ███  ████  ███   ███  ███      ███             ███ ████   ███   ███  ███   ███     ███     ███     
-# ███████   ███  ███   ███   ███████   ███████  ████████         █████ ██   ███████    ███████      ███     ████████
-
 proc singleQuote*(line:string) : string =
 
-    "\"" & line[1..^2] & "\""
+    if line.len > 3:
+        "\"" & line[1..^2] & "\""
+    else:
+        line
     
 # █████████  ████████   ███  ████████   ███      ████████         ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
 #    ███     ███   ███  ███  ███   ███  ███      ███             ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
@@ -50,22 +47,10 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
         return matches.join("")
     line
     
-# ███       ███████    ███████         █████████   ███████         ████████   ███████  ███   ███   ███████ 
-# ███      ███   ███  ███                 ███     ███   ███        ███       ███       ███   ███  ███   ███
-# ███      ███   ███  ███  ████           ███     ███   ███        ███████   ███       █████████  ███   ███
-# ███      ███   ███  ███   ███           ███     ███   ███        ███       ███       ███   ███  ███   ███
-# ███████   ███████    ███████            ███      ███████         ████████   ███████  ███   ███   ███████ 
-
 proc logToEcho*(line:string) : string =
 
     line.replacef(peg"{\s*}{'log'}{'('/\s}", "$1echo$3")
     
-# █████████  ████████   ███████  █████████         ███████  ███   ███  ███  █████████  ████████
-#    ███     ███       ███          ███           ███       ███   ███  ███     ███     ███     
-#    ███     ███████   ███████      ███           ███████   ███   ███  ███     ███     ███████ 
-#    ███     ███            ███     ███                ███  ███   ███  ███     ███     ███     
-#    ███     ████████  ███████      ███           ███████    ███████   ███     ███     ████████
-
 proc testSuite*(line:string) : string =
 
     if line =~ peg"^{'▸'\s*}{.*}$":
@@ -90,12 +75,6 @@ proc colonize*(seqs:var seq[string]) : seq[string] =
             seqs[i] = seqs[i] & ":"
     seqs
 
-# ████████   ████████  █████████  ███   ███  ████████   ███   ███  ███  ███████  ████████
-# ███   ███  ███          ███     ███   ███  ███   ███  ████  ███  ███     ███   ███     
-# ███████    ███████      ███     ███   ███  ███████    ███ █ ███  ███    ███    ███████ 
-# ███   ███  ███          ███     ███   ███  ███   ███  ███  ████  ███   ███     ███     
-# ███   ███  ████████     ███      ███████   ███   ███  ███   ███  ███  ███████  ████████
-
 proc returnize*(line:string) : string =
 
     line.replace(peg"'⮐'", "return")
@@ -109,11 +88,6 @@ proc returnize*(line:string) : string =
 proc stringSegments*(line:string) : seq[string] = 
 
     var segments:seq[string] = @[]
-    
-    # if line.len == 0
-    #     return  segments
-        
-    # echo &"line: |{line}|"
     
     let pat = peg"""
         input   <- ({triple / string / nonstr})*
@@ -156,12 +130,6 @@ proc tripleString*(line:string, info:var TableRef[string,int]) : int =
     info["tripleString"] = tsi
     tsi
     
-# ███   ███████   ███████  █████████  ████████ 
-# ███  ███       ███          ███     ███   ███
-# ███  ███████   ███████      ███     ███████  
-# ███       ███       ███     ███     ███   ███
-# ███  ███████   ███████      ███     ███   ███
-
 proc isStr*(s:string) : bool =
 
     s.len > 0 and s[0] in "'\""
@@ -181,7 +149,7 @@ proc statements*(segments: seq[string]) : seq[seq[string]] =
         if seg.isStr:
             stmnt.add seg
         else:
-            let splits = seg.split(";").toSeq()
+            let splits = seg.split(';').toSeq()
             if splits.len == 1:
                 if splits[0].len:
                     stmnt.add(splits[0])
@@ -206,25 +174,21 @@ proc statements*(segments: seq[string]) : seq[seq[string]] =
 
 proc pose*(line:string, info:var TableRef[string,int]) : string =
 
-    # echo "------- line ", line
     let tsi = line.tripleString(info)
     if tsi:
         return  line 
     
     let sgmnts = line.stringSegments()
-    # echo "------- sgmnts ", sgmnts 
     let stmnts = statements(sgmnts)
-    # echo "------- statements ", stmnts
     
     var cstmts:seq[string] = @[]
     for stmnt in stmnts:
-        # echo "stmnt", stmnt
         var cgmnts:seq[string] = @[]
         for sgmnt in stmnt:
             cgmnts.add case sgmnt[0..<1]
                 of "#"  :
                     sgmnt.tripleComment(info)
-                of "\'" :
+                of "'" :
                     sgmnt.singleQuote()
                 of "\""  :
                     sgmnt
@@ -235,7 +199,6 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                         .returnize()
                             
         cgmnts = cgmnts.colonize()
-        # echo "cgmnts", cgmnts
         cstmts.add(cgmnts.join(""))
     cstmts.join(";")
 
@@ -252,10 +215,7 @@ proc pose*(line:string) : string =
 
 proc trans*(fileIn:string) : string =
 
-    # echo "trans.fileIn: ", fileIn
-    # var fileOut = Path(fileIn).changeFileExt(".nim").string
     var fileOut = fileIn.swapLastPathComponentAndExt("kim", "nim")
-    # echo "trans.fileOut: ", fileOut
     var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
     var streamOut = newFileStream(fileOut, fmWrite) ; defer: streamOut.close
     if  streamIn  == nil :
@@ -268,7 +228,6 @@ proc trans*(fileIn:string) : string =
     while streamIn.readLine(line):
         line = pose(line, info)
         streamOut.writeLine(line)
-    # echo "trans done:: ", fileOut
     fileOut
 
 # ████████   ███  ███      ████████
@@ -279,13 +238,8 @@ proc trans*(fileIn:string) : string =
 
 proc pile*(files:seq[string]) : seq[string] =
 
-    # echo "trans.pile: ", files
-    # echo "trans.pile: ", currentSourcePath()
-    
     var transpiled:seq[string]
     for file in files:
         transpiled.add trans file
-        
-    # echo "pile done: ", transpiled
     transpiled
             

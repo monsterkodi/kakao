@@ -39,7 +39,7 @@ for kind, key, val in optParser.getopt():
             params.add key
             files.add(key)
         of cmdLongOption, cmdShortOption:
-            params.add "-" & key
+            params.add '-' & key
             case key:
                 of "test":
                     tests = true

@@ -153,7 +153,10 @@ proc ▸var(r: var Rndr, n: Node) =
 
 proc ▸string(r: var Rndr, n: Node) = 
 
-    let delimiter = n.token.str
+    var delimiter = n.token.str
+    
+    if delimiter == "'" and n.string_content.token.str.len > 1:
+        delimiter = "\""
     
     if n.string_stripols.len > 0:
         r.add "&"
@@ -192,7 +195,7 @@ proc ▸call(r: var Rndr, n: Node) =
 
 proc ▸if(r: var Rndr, n: Node) =
 
-    var idt = " ".repeat n.token.col
+    var idt = ' '.repeat n.token.col
     var line = n.token.line
     
     r.tok n
@@ -283,13 +286,13 @@ proc ▸discard(r: var Rndr, n: Node) =
      
 proc ▸switch(r: var Rndr, n: Node) =
 
-    var idt = " ".repeat n.token.col
+    var idt = ' '.repeat n.token.col
     
     r.add idt & "case "
     r.rnd(n.switch_value)
     r.add ":"
     
-    var cdt = " ".repeat n.switch_cases[0].token.col
+    var cdt = ' '.repeat n.switch_cases[0].token.col
     
     for i,caseNode in n.switch_cases:
         r.add "\n" & cdt
@@ -354,70 +357,4 @@ proc rnd(r: var Rndr, n: Node) =
         of ●while:
             r.▸while(n)
         of ●list:
-            r.▸list(n)
-        of ●curly:
-            r.▸curly(n)
-        of ●squarely:
-            r.▸squarely(n)
-        of ●range:
-            r.▸range(n)
-        of ●string:
-            r.▸string(n)
-        of ●comment:
-            r.▸comment(n)
-        of ●use:
-            r.▸use(n)
-        of ●propertyAccess:
-            r.▸propertyAccess(n)
-        of ●arrayAccess:
-            r.▸arrayAccess(n)
-        of ●var:
-            r.▸var(n)
-        of ●let:
-            r.▸let(n)
-        of ●return:
-            r.▸return(n)
-        of ●discard:
-            r.▸discard(n)
-        of ●testSuite, ●testSection:
-            r.▸testSuite(n)
-        of ●testCase:
-            r.▸testCase(n)
-        of ●literal, ●type, ●import, ●keyword:
-            r.tok n
-        else:
-            echo &"unhandled {n} {n.kind}"
-            r.tok n
-
-proc renderNode*(root: Node): string =
-
-    var r = Rndr()
-    r.rnd(root)
-    r.s
-
-proc renderCode*(code: string): string =
-
-    let a = ast(code)
-    # echo &"ast {a}"
-    renderNode(a)
-    
-proc file*(file: string) : string = 
-
-    var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    # echo &"fileOut {fileOut}"
-    let code = file.readFile()
-    # echo &"code {code}"
-    let trns = renderCode code
-    echo &"{trns}"
-    fileOut
-    
-proc files*(files: seq[string]): seq[string] = 
-
-    var transpiled: seq[string]
-    for f in files:
-        transpiled.add file f
-        
-    # echo "render.files done: ", transpiled
-    transpiled
-        
-                            
+       

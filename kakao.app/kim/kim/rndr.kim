@@ -153,7 +153,10 @@ proc ▸var(r: var Rndr, n: Node) =
 
 proc ▸string(r: var Rndr, n: Node) = 
 
-    let delimiter = n.token.str
+    var delimiter = n.token.str
+    
+    if delimiter == "'" and n.string_content.token.str.len > 1
+        delimiter = "\""
     
     if n.string_stripols.len > 0
         r.add "&"

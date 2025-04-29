@@ -39,7 +39,7 @@ for kind, key, val in optParser.getopt()
             params.add key
             files.add(key)
         of cmdLongOption, cmdShortOption
-            params.add "-" & key
+            params.add '-' & key
             case key
                 of "test"
                     tests = true
@@ -219,15 +219,15 @@ proc watch(paths:seq[string]) =
 
     setControlCHook(proc () {.noconv.} = 
         
-        styledEcho ''
+        styledEcho ""
         styledEcho fgGreen, farewells[rand(farewells.high)]
         quit 0)
     
     var modTimes: Table[string,times.Time]
     
-    styledEcho ''
+    styledEcho ""
     styledEcho fgGreen, greetings[rand(greetings.high)]
-    styledEcho ''
+    styledEcho ""
     
     for p in paths
         let (dir, name, ext) = p.splitFile()

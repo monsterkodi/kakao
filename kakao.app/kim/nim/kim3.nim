@@ -38,7 +38,7 @@ for kind, key, val in optParser.getopt():
             params.add key
             files.add(key)
         of cmdLongOption, cmdShortOption: 
-            params.add "-" & key
+            params.add '-' & key
                         case key:
                 of "test": 
                     tests = true
@@ -48,19 +48,19 @@ for kind, key, val in optParser.getopt():
                     outdir = val
                 of "transpile", "t": 
                     transpile = true
-                of "help", "h": 
-                    echo("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
-                    echo("")
-                    echo("      transpiles kim files to nim")
-                    echo("      watches cwd if no files are given")
-                    echo("")
-                    echo("options:")
-                    echo("  -o --outdir:DIR  output directory")
-                    echo("  -t --transpile   log transpilat")
-                    echo("     --test        run tests")
-                    echo("  -v --verbose     verbose output")
+                of "help", 'h': 
+                    log("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
+                    log("")
+                    log("      transpiles kim files to nim")
+                    log("      watches cwd if no files are given")
+                    log("")
+                    log("options:")
+                    log("  -o --outdir:DIR  output directory")
+                    log("  -t --transpile   log transpilat")
+                    log("     --test        run tests")
+                    log("  -v --verbose     verbose output")
                     quit(1)
-                else: echo("unknown option: ", key)
+                else: log("unknown option: ", key)
             
                     quit(1)
         of cmdEnd: 
@@ -103,7 +103,7 @@ proc logFile(f : string, prefix = "") =
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 
 proc compile(file : string, outDir = "bin") : bool = 
-    profileScope('comp')
+    profileScope("comp")
     # let cmd = &"nim c --outDir:{outdir} {file}"
     let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
@@ -125,7 +125,7 @@ proc compile(file : string, outDir = "bin") : bool =
 #    ███     ████████  ███████      ███     ███████ 
 
 proc runTests = 
-    profileScope('test')
+    profileScope("test")
     for f in testFiles: 
         let cmd = &"nim r --colors:on {f}"
         let p = startProcess(command = "nim", args = @["r", f], options = {poStdErrToStdOut, poUsePath})

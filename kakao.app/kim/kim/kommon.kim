@@ -11,7 +11,7 @@ import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, st
 export monotimes, times
 export sequtils,  tables,    typetraits
 export enumutils, sets
-export strutils,  strformat, unicode,    pegs
+export strutils,  strformat, unicode, pegs
 export unittest,  macros
 export terminal
 
@@ -53,7 +53,6 @@ proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): strin
             dirParts[i] = tgt
             break
             
-    # echo "dirParts ", dirParts 
     dirParts.add file.Path.changeFileExt("." & tgt).splitPath[1].string
     dirParts.join "/"
     
@@ -63,8 +62,7 @@ proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): strin
 # ███        ███   ███  ███   ███  ███       ███  ███      ███     
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
 
-var
-    timers {.threadvar.}: Table[string, MonoTime]  # Thread-local storage for nesting
+var timers : Table[string, MonoTime]
     
 proc profileStart*(msg: string) =
     if not timers.contains(msg):
@@ -141,8 +139,6 @@ proc kseg*(s:string) : seq[string] =
 
 proc deepEqual*[T](a, b: T): bool =
 
-    # log "deepEqual ", a, " ", b
-
     when T is (seq or array)
         if a.len != b.len
             echo &"{a.len} != {b.len} length differs"
@@ -197,6 +193,3 @@ macro dbg*(args: varargs[untyped]): untyped =
                 styleDim, " = ", resetStyle,
                 fgGreen, $`arg`, resetStyle,
                 fgBlue, " ", $typeof(`arg`), resetStyle
-
-    
-

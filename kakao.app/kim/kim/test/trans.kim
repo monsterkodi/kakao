@@ -11,12 +11,12 @@ import ../trans
 
     ▸ pose
         
-        check pose("log ''") == "echo \"\""
+        check pose("log ''") == "echo ''"
         check pose("log()") == "echo()"
         check pose("log 'hello'") == "echo \"hello\""
         check pose("log('hello')") == "echo(\"hello\")"
         check pose("log 'hello' ; log 'world'") == "echo \"hello\" ; echo \"world\""
-        check pose("log 'a';log 'b'") == "echo \"a\";echo \"b\""
+        check pose("log 'a';log 'aa'") == "echo 'a';echo \"aa\""
         check pose("▸ suite") == "suite \"suite\":"
         check pose("    ▸ test") == "    test \"test\":"
         check pose("### comment") == "#[ comment"

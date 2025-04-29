@@ -357,30 +357,20 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
     t.segs = segs
     
-    # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len} {t.segs}"
-    
     while t.eol < t.segs.len and t.segs[t.eol] != "\n":
         t.eol += 1
         
-    # echo &"line {t.line} {t.bol} {t.eol} {t.segs.len} {t.segs}"
-
     while t.segi < t.segs.len:
-        
-        # echo &"{t.line} {t.bol} {t.eol} ◆ {t.segi} / {t.segs[t.segi]}"
         
         if t.segs[t.segi] == "\n":
         
             t.nextLine()
-            # echo &"line {t.line} {t.segi} {t.bol} {t.eol} {t.segs.len}"
             if t.segi >= t.segs.len:
-                # echo "eof1"
                 break
             t.token = Token(tok: ◆indent, line:t.line, col:t.col) 
-            # echo &"indent {t.token}"
             while t.segi < t.segs.len and t.peek(0) == " ":
                 t.advance 1
             if t.segi >= t.segs.len:
-                # echo "eof2"
                 break
             t.tokens.add t.token
             continue
@@ -391,8 +381,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                                     
             let char = t.peek(0)
             
-            # echo &"{t.segi} ▸ {char}"
-                        
             if char == " ":
                 if t.segi > 0 and t.peek(-1) != " ":
                     t.pushToken()
@@ -438,7 +426,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.commit(char, punct[char], 1)
                     continue
                 else:
-                    # t.token.str.add char
                     t.advance 1
                     
                     var next : string
@@ -457,11 +444,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                             else:
                                 t.push keywords[t.token.str]
                     continue
-            # echo "t.incr"
             t.incr 1
         
-        # echo &"eol {t.segi} {t.segs.len}"
-            
         if t.token.str.len:
             if keywords.hasKey(t.token.str):
                 t.token.tok = keywords[t.token.str]
@@ -471,7 +455,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                 echo "add empty string token"
                 t.tokens.add t.token
                 
-    # echo "⮐  tokens"
     return  t.tokens
     
 proc tokenize*(text:string) : seq[Token] =

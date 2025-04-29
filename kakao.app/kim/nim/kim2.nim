@@ -39,7 +39,7 @@ for kind key val in optParser.getopt():
             params.add key
             files.add(key)
         cmdLongOption cmdShortOption
-            params.add "-" & key
+            params.add '-' & key
             switch key
                 "test"
                     tests = true
@@ -105,7 +105,6 @@ logFile = ◇string f prefix="" ->
 
 compile = ◇string file outDir="bin" ➜ bool ->
     profileScope "comp"       
-    # let cmd = &"nim c --outDir:{outdir} {file}"
     let cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
     let (output exitCode) = execCmdEx(cmd)
         
@@ -174,7 +173,6 @@ runTests = ->
 if files.len:
 
     if transpile:
-        echo "transpile #{files}"
         let transpiled = rndr.files(files)
         quit(transpiled.len - files.len)    
     else:
@@ -197,15 +195,15 @@ watch = ◆seq[string] paths ->
     
     setControlCHook(() ->  {.noconv.}
         
-        styledEcho ""
+        styledEcho ''
         styledEcho fgGreen, farewells[rand(farewells.high)]
         quit 0)
     
     var ◇Table[string,times.Time] modTimes
     
-    styledEcho ""
+    styledEcho ''
     styledEcho fgGreen, greetings[rand(greetings.high)]
-    styledEcho ""
+    styledEcho ''
     
     for p in paths:
         let (dir name ext) = p.splitFile()
@@ -219,8 +217,6 @@ watch = ◆seq[string] paths ->
         var ◇seq[string] toTranspile
         var ◇seq[string] kimFiles
         var ◇seq[string] nimFiles
-        
-        # echo paths
         
         for path in paths:
         
@@ -267,17 +263,14 @@ watch = ◆seq[string] paths ->
             for f in trans.pile(toTranspile):
                 verb "transpiled #{f}"    
                 logFile f, "✔ "
-            # verb "runTests"    
             runTests()
             
         if doBuild:
-            # verb "doBuild"    
             if compile("nim/kim.nim", "bin"):
                 for f in kimFiles:
                     let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
-        # echo "sleep"        
         sleep 200
 
 watch @[getCurrentDir()]

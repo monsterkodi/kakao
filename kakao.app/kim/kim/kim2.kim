@@ -39,30 +39,30 @@ for kind key val in optParser.getopt()
             params.add key
             files.add(key)
         cmdLongOption cmdShortOption
-            params.add "-" & key
+            params.add '-' & key
             switch key
-                "test"
+                'test'
                     tests = true
-                "verbose" "v"
+                'verbose' "v"
                     verbose = true
-                "outdir" "o"
+                'outdir' "o"
                     outdir = val
-                "transpile" "t"
+                'transpile' "t"
                     transpile = true
-                "help" "h"
-                    echo "usage: " getAppFilename().extractFilename " [options] [file.kim ...]"
-                    echo ""
-                    echo "      transpiles kim files to nim"
-                    echo "      watches cwd if no files are given"
-                    echo ""
-                    echo "options:"
-                    echo "  -o --outdir:DIR  output directory"
-                    echo "  -t --transpile   log transpilat"
-                    echo "     --test        run tests"
-                    echo "  -v --verbose     verbose output"
+                'help' "h"
+                    log "usage: " getAppFilename().extractFilename " [options] [file.kim ...]"
+                    log ""
+                    log "      transpiles kim files to nim"
+                    log "      watches cwd if no files are given"
+                    log ""
+                    log "options:"
+                    log "  -o --outdir:DIR  output directory"
+                    log "  -t --transpile   log transpilat"
+                    log "     --test        run tests"
+                    log "  -v --verbose     verbose output"
                     quit(1)
                 ➜ 
-                    echo "unknown option: " key
+                    log "unknown option: " key
                     quit(1)
         cmdEnd
             discard
@@ -105,7 +105,6 @@ logFile = ◇string f prefix="" ->
 
 compile = ◇string file outDir="bin" ➜ bool ->
     profileScope 'comp'       
-    # let cmd = &"nim c --outDir:{outdir} {file}"
     let cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
     let (output exitCode) = execCmdEx(cmd)
         
@@ -174,7 +173,6 @@ runTests = ->
 if files.len
 
     if transpile
-        log "transpile #{files}"
         let transpiled = rndr.files(files)
         quit(transpiled.len - files.len)    
     else
@@ -219,8 +217,6 @@ watch = ◆seq[string] paths ->
         var ◇seq[string] toTranspile
         var ◇seq[string] kimFiles
         var ◇seq[string] nimFiles
-        
-        # log paths
         
         for path in paths
         
@@ -267,17 +263,14 @@ watch = ◆seq[string] paths ->
             for f in trans.pile(toTranspile)
                 verb "transpiled #{f}"    
                 logFile f, "✔ "
-            # verb 'runTests'    
             runTests()
             
         if doBuild
-            # verb 'doBuild'    
             if compile("nim/kim.nim", "bin")
                 for f in kimFiles
                     let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
-        # log 'sleep'        
         sleep 200
 
 watch @[getCurrentDir()]
