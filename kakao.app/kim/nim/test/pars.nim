@@ -193,6 +193,23 @@ suite "pars":
         t "a.b.c"                                   , "▪[((◆name . ◆name) . ◆name)]"
         t "a.b()"                                   , "▪[((◆name . ◆name) ◆call @[])]"
         t "a.b().c"                                 , "▪[(((◆name . ◆name) ◆call @[]) . ◆name)]"
+        t "f().g().h()"                             , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
+        t "f()\n .g()\n .h()"                       , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
+        t "a = f().g().h()"                         , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
+        t "a = f()\n    .g()\n    .h()"             , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
+        t "log f().g().h()"                         , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
+        t "log f()\n    .g()\n    .h()"             , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
+        
+        t """
+if 1
+    log output.replace("[O]" fg(fgYellow) & "▸")
+              .replace("[P]" fg(fgGreen) & "✔")
+              .replace("[Q]" fg(fgRed) & "✘")
+else
+    count = output.count("[R]")
+    log output.replace("[S]" fg(fgYellow) & "▸")
+              .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◆if @[(◆number ▪[(◆name ◆call @[((((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])] ▪[(◆name = ((◆name . ◆name) ◆call @[◆string]))(◆name ◆call @[((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])]"
+        
         
     test "array access":
     
@@ -218,6 +235,21 @@ suite "pars":
         t "if true\n  log(1)\n  log(2)"             , "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆number])(◆name ◆call @[◆number])])])]"
         
         t "if a ➜ 1\nelif b == 2 ➜ 2"               , "▪[(◆if @[(◆name ◆number), ((◆name == ◆number) ◆number)])]"
+
+        t """
+if 
+    cond
+        true
+    else
+        break"""                                    , "▪[(◆if @[(◆name ▪[✔])] ▪[◆break])]"
+
+        t """
+if 
+    cond
+        true
+    # comment
+    else
+        break"""                                    , "▪[(◆if @[(◆name ▪[✔])] ▪[◆break])]"
         
     test "for":
     
@@ -241,8 +273,38 @@ suite "pars":
         t "switch x\n  1 2➜\n    a\n  ➜ c"          , "▪[(◆switch ◆name @[(@[◆number, ◆number] ▪[◆name])] ◆name)]"
         t "switch x\n  1 2 ➜ a\n  else\n    c"      , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
         t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "▪[(◆switch ◆name @[(@[◆number, ◆number] ◆name)] ◆name)]"
-        t "switch x\n a ➜ if b then c"              , "▪[(◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])]"
+        t "switch x\n a ➜ if b then c"              , "▪[(◆switch ◆name @[(@[◆name] (◆if @[(◆name ◆name)]))])]"        
         
+        t """
+switch ext
+    ".kim"  ➜ fun()
+    else continue"""                                , "▪[(◆switch ◆name @[(@[◆string] (◆name ◆call @[]))] ◆continue)]"
+
+        t """
+switch ext
+    ".kim"  ➜ fun()
+            ➜ continue"""                           , "▪[(◆switch ◆name @[(@[◆string] (◆name ◆call @[]))] ◆continue)]"
+
+    test "tailIf":
+    
+        t "1*2 if true"                             , "▪[(◆if @[(✔ (◆number * ◆number))])]"                
+        t "1 if true"                               , "▪[(◆if @[(✔ ◆number)])]"                
+        t "break if true"                           , "▪[(◆if @[(✔ ◆break)])]"                
+        t "continue if true"                        , "▪[(◆if @[(✔ ◆continue)])]"                
+        t "⮐  if true"                              , "▪[(◆if @[(✔ (⮐))])]"
+        t "⮐  1 + 2 if 3 + 4"                       , "▪[(◆if @[((◆number + ◆number) (⮐ (◆number + ◆number)))])]"
+        
+    test "no tailIf":
+    
+        t "⮐  if true ➜ 1"                          , "▪[(⮐ (◆if @[(✔ ◆number)]))]"
+        t "⮐  if\n    true ➜ 1"                     , "▪[(⮐ (◆if @[(✔ ◆number)]))]"
+        
+        t """
+if 1
+    2
+if x
+    y"""                                            , "▪[(◆if @[(◆number ▪[◆number])])(◆if @[(◆name ▪[◆name])])]"
+    
     test "while":
     
         t "while true"                              , "▪[(◆while ✔)]"

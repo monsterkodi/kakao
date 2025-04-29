@@ -7,7 +7,7 @@
 ]#
 
 import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
-
+import system/ansi_c 
 export monotimes, times
 export sequtils,  tables,    typetraits
 export enumutils, sets
@@ -16,6 +16,21 @@ export unittest,  macros
 export terminal
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
+proc fg*(c:auto) : auto = ansiForegroundColorCode(c)
+proc sc*(c:auto) : auto = ansiStyleCode(c)
+
+proc underscore*(n: uint64): string =
+    var s = $(n)
+    result = newStringOfCap(s.len + (s.len - 1) div 3)
+    
+    var count = 0
+    for i in countdown(s.high, 0):
+        if count != 0 and count mod 3 == 0:
+          result.add('_')
+        result.add(s[i])
+        inc(count)
+  
+    result = reversed(result)
 
 proc indent*(s:string, i=4) : string = 
 
@@ -62,32 +77,58 @@ proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): strin
 # ███        ███   ███  ███   ███  ███       ███  ███      ███     
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
 
-var timers : Table[string, MonoTime]
+var timers : Table[string, tuple[m:MonoTime, t:uint64]]
+proc mach_absolute_time(): uint64 {.importc, header: "<mach/mach_time.h>".}
     
 proc profileStart*(msg: string) =
+
     if not timers.contains(msg):
-        timers[msg] = getMonoTime()
+        timers[msg] = (getMonoTime(), mach_absolute_time())
     else:
         stderr.writeLine &"[WARNING] Duplicate profileStart for '{msg}'"
 
 proc profileStop*(msg: string) =
+    
     if not timers.contains(msg):
         stderr.writeLine &"[ERROR] profileStop for unknown label '{msg}'"
         return
 
-    let elapsed = getMonoTime() - timers[msg]
-    timers.del(msg)
+    let mono = getMonoTime() - timers[msg][0]
+    let tick = mach_absolute_time() - timers[msg][1]
+    var mons = ""
 
-    if elapsed.inMicroseconds < 1000:
-        styledEcho fgBlue, msg, fgGreen, &" {elapsed.inMicroseconds} ", styleDim, "µs", resetStyle
+    if mono.inMicroseconds < 1000:
+        mons = &" {mono.inMicroseconds} {sc(styleDim)}µs "
     else:
-        styledEcho fgBlue, msg, fgYellow, &" {elapsed.inMilliseconds} ", styleDim, "ms", resetStyle
+        mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
+                
+    styledEcho fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle
+        
+    timers.del(msg)
     
 macro profileScope*(msg: string): untyped =
     quote do:
         profileStart(`msg`)
         defer:
             profileStop(`msg`)
+
+var tickTimers : Table[string, uint64]
+
+proc tickStart*(msg: string) =
+    if not tickTimers.contains(msg):
+        # GC_disableOrc()
+        tickTimers[msg] = mach_absolute_time()
+    else:
+        stderr.writeLine &"[WARNING] Duplicate tickStart for '{msg}'"
+
+proc tickStop*(msg: string) =
+    if not tickTimers.contains(msg):
+        stderr.writeLine &"[ERROR] tickStop for unknown label '{msg}'"
+        return
+    let elapsed = mach_absolute_time() - tickTimers[msg]
+    styledEcho fgBlue, msg, fgGreen, &" {elapsed} ", styleDim, "ticks", resetStyle
+    # GC_enableOrc()
+    tickTimers.del(msg)
     
 # ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
 # ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███

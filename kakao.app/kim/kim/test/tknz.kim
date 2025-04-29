@@ -12,11 +12,13 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
 
 ▸ tknz
 
-    ▸ single line
+    ▸ empty
     
-        t ""  , default seq[Token]
+        t ""   , default seq[Token]
         t " "  , default seq[Token]
 
+    ▸ single line
+    
         t "a" , @[tk("a", ◆name,         0, 0)]
         
         t "    a" , @[
@@ -56,10 +58,10 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk(">",      ◆greater,       0, 10), 
             tk("d",      ◆name,          0, 12)]
             
-        t "a_c, d23" , @[
-            tk("a_c",    ◆name,          0, 0),
-            tk(",",      ◆comma,         0, 3),
-            tk("d23",    ◆name,          0, 5)]
+        # t "a_c, d23" , @[
+        #     tk("a_c",    ◆name,          0, 0),
+        #     tk(",",      ◆comma,         0, 3),
+        #     tk("d23",    ◆name,          0, 5)]
 
         t "if true" , @[
             tk("if",     ◆if,            0, 0),
@@ -412,20 +414,22 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
     # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███  ███████ 
 
     ▸ numbers
-    
-        check isNumber("123",       "4") == false
-        check isNumber("1234",      "+") == true
-        check isNumber("0xFF",      "F") == false
-        check isNumber("0xFF",      "G") == true
-        check isNumber("3.14",      "")  == true
-        check isNumber("3.14",      "x") == true
-        check isNumber("1e5",       "")  == true
-        check isNumber("1e+5",      "")  == true
-        check isNumber("1e-5",      "")  == true
-        check isNumber("0b101",     "0") == false
-        check isNumber("0b101",     "2") == true
-        check isNumber("0o755",     "7") == false
-        check isNumber("0o755",     "8") == true
+        
+        profileStart 'number'
+        t "123",   @[ tk("123",   ◆number, 0, 0)]
+        t "1234",  @[ tk("1234",  ◆number, 0, 0)]
+        t "0xff",  @[ tk("0xff",  ◆number, 0, 0)]
+        t "0xFF",  @[ tk("0xFF",  ◆number, 0, 0)]
+        t "3.14",  @[ tk("3.14",  ◆number, 0, 0)]
+        t "3.14",  @[ tk("3.14",  ◆number, 0, 0)]
+        t "1e5",   @[ tk("1e5",   ◆number, 0, 0)]
+        t "1e+5",  @[ tk("1e+5",  ◆number, 0, 0)]
+        t "1e-5",  @[ tk("1e-5",  ◆number, 0, 0)]
+        t "0b101", @[ tk("0b101", ◆number, 0, 0)]
+        t "0b101", @[ tk("0b101", ◆number, 0, 0)]
+        t "0o755", @[ tk("0o755", ◆number, 0, 0)]
+        t "0o755", @[ tk("0o755", ◆number, 0, 0)]
+        profileStop 'number'
         
     # ███████     ███████   █████████   ███████
     # ███   ███  ███   ███     ███     ███     

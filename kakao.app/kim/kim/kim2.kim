@@ -88,8 +88,7 @@ when defined(posix)
 
 logFile = ◇string f prefix="" ->
 
-    if not verbose
-        ⮐  
+    ⮐  if not verbose
     let (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len ➜ dir & "/" ➜ ""
     icon  = if ext == ".kim" ➜ "  " ➜ "  "
@@ -110,11 +109,10 @@ compile = ◇string file outDir="bin" ➜ bool ->
         
     if exitCode != 0
         styledEcho fgRed "✘ " "#{cmd}"
-        echo output
+        log output
         false
     else
-        if verbose
-            styledEcho fgGreen "✔ " fgWhite cmd
+        if verbose ➜ styledEcho fgGreen "✔ " fgWhite cmd
         true
 
 # █████████  ████████   ███████  █████████   ███████
@@ -132,7 +130,7 @@ runTests = ->
         var output = ""
         
         var fd = p.outputHandle
-        var flags = fcntl(fd, F_GETFL, 0)
+        var flags = fcntl fd F_GETFL 0
         discard fcntl(fd F_SETFL flags or O_NONBLOCK)
         
         while true
@@ -146,38 +144,42 @@ runTests = ->
                 break
                             
             var line = newString 1024*10
-            let bytesRead = read(fd, addr(line[0]), line.len)
-            if bytesRead > 0
-                output.add(line & "\n")
-            elif bytesRead == 0
-                break
-            elif errno == EAGAIN
-                discard poll(nil, 0, 50)
-            elif not p.running
-                break
-            else
-                break
+            let bytesRead = read fd addr(line[0]) line.len
+            if 
+                bytesRead > 0
+                    output.add(line & "\n")
+                errno == EAGAIN
+                    discard poll(nil, 0, 50)
+                # bytesRead == 0
+                #     break
+                # not p.running
+                #     break
+                else
+                    break
         
         let exitCode = p.waitForExit()
         
         if exitCode != 0 or verbose
-            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
+            styledEcho output.replace("[Suite]" ansiForegroundColorCode(fgYellow) & "▸")
+                             .replace("[OK]" ansiForegroundColorCode(fgGreen) & "✔\x1b[0m")
+                             .replace("[FAILED]" ansiForegroundColorCode(fgRed) & "✘\x1b[0m")
         else
-            okCount = output.count "[OK]"
-            styledEcho output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg"'[OK]' .+", "#{ansiStyleCode styleDim} ✔ #{okCount}")
+            okCount = output.count("[OK]")
+            styledEcho output.replace("[Suite]" ansiForegroundColorCode(fgYellow) & "▸")
+                             .replace(peg"'[OK]' .+" "#{ansiStyleCode styleDim} ✔ #{okCount}")
             
         if exitCode != 0
-            styledEcho fgRed, "✘ ", "#{cmd}"
+            styledEcho fgRed "✘ " "#{cmd}"
     echo ""
 
 if files.len
 
     if transpile
-        let transpiled = rndr.files(files)
-        quit(transpiled.len - files.len)    
+        let transpiled = rndr.files files
+        quit transpiled.len - files.len
     else
-        let transpiled = trans.pile(files)
-        quit(transpiled.len - files.len)    
+        let transpiled = trans.pile files
+        quit transpiled.len - files.len
 
 if tests
     runTests()
@@ -196,8 +198,9 @@ watch = ◆seq[string] paths ->
     setControlCHook(() ->  {.noconv.}
         
         styledEcho ''
-        styledEcho fgGreen, farewells[rand(farewells.high)]
-        quit 0)
+        styledEcho fgGreen farewells[rand(farewells.high)]
+        quit 0
+        )
     
     var ◇Table[string,times.Time] modTimes
     
@@ -207,7 +210,7 @@ watch = ◆seq[string] paths ->
     
     for p in paths
         let (dir name ext) = p.splitFile()
-        styledEcho fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle
+        styledEcho fgBlue styleDim "● " resetStyle styleBright fgBlue dir " " resetStyle styleBright fgYellow name styleDim ext resetStyle
     
     var firstLoop = true
     
@@ -228,12 +231,10 @@ watch = ◆seq[string] paths ->
             
                 let (dir name ext) = f.splitFile()
                 
-                if ext == ".kim"
-                    kimFiles.add(f)
-                elif ext == ".nim"
-                    nimFiles.add(f)
-                else
-                    continue
+                switch ext
+                    ".kim"  ➜ kimFiles.add(f)
+                    ".nim"  ➜ nimFiles.add(f)
+                            ➜ continue
                 
                 let modTime = getFileInfo(f).lastWriteTime
                 

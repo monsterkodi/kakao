@@ -1,3 +1,4 @@
+TAILIF (⮐) 90 90
 # ███   ███  ███  ██     ██
 # ███  ███   ███  ███   ███
 # ███████    ███  █████████
@@ -33,13 +34,13 @@ proc verb(msg : string) =
 #  ███████   ████████     ███            ███████   ███           ███   
 
 for kind, key, val in optParser.getopt(): 
-        case kind:
+    case kind:
         of cmdArgument: 
             params.add key
             files.add(key)
         of cmdLongOption, cmdShortOption: 
             params.add '-' & key
-                        case key:
+            case key:
                 of "test": 
                     tests = true
                 of "verbose", "v": 
@@ -48,7 +49,7 @@ for kind, key, val in optParser.getopt():
                     outdir = val
                 of "transpile", "t": 
                     transpile = true
-                of "help", 'h': 
+                of "help", "h": 
                     log("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
                     log("")
                     log("      transpiles kim files to nim")
@@ -87,12 +88,12 @@ when defined(posix):
 
 proc logFile(f : string, prefix = "") = 
 
-    if not verbose: 
-        return 
+    if not verbose: return
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len: dir & "/" else: ""
     icon = if (ext == ".kim"): "  " else: "  "
     color = if (ext == ".kim"): fgGreen else: fgMagenta
+
     styledEcho(color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle) # styleDim ext resetStyle
     
         
@@ -104,18 +105,16 @@ proc logFile(f : string, prefix = "") =
 
 proc compile(file : string, outDir = "bin") : bool = 
     profileScope("comp")
-    # let cmd = &"nim c --outDir:{outdir} {file}"
     let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
     
         
     if (exitCode != 0): 
         styledEcho(fgRed, "✘ ", &"{cmd}")
-        echo(output)
+        log(output)
         false
     else: 
-        if verbose: 
-            styledEcho(fgGreen, "✔ ", fgWhite, cmd)
+        if verbose: styledEcho(fgGreen, "✔ ", fgWhite, cmd)
         true
         
 # █████████  ████████   ███████  █████████   ███████
@@ -136,7 +135,7 @@ proc runTests =
         var flags = fcntl(fd, F_GETFL, 0)
         discard fcntl(fd, F_SETFL, (flags or O_NONBLOCK))
     
-        while true
+        while true: 
             let elapsed = (getMonoTime() - startTime).inMilliseconds
             if (elapsed >= 2000): 
                 output.add(&"test killed after {elapsed} ms!!")
@@ -150,15 +149,11 @@ proc runTests =
             var line = newString((1024 * 10))
             let bytesRead = read(fd, addr(line[0]), line.len)
             if (bytesRead > 0): 
-                output.add(line & "\n")
-            elif (bytesRead == 0): 
-                break
+                    output.add(line & "\n")
             elif (errno == EAGAIN): 
-                discard poll(nil, 0, 50)
-            elif not p.running: 
-                break
+                    discard poll(nil, 0, 50)
             else: 
-                break
+                    break
                             
         
         let exitCode = p.waitForExit()
@@ -166,7 +161,7 @@ proc runTests =
         if ((exitCode != 0) or verbose): 
             styledEcho(output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace("[OK]", ansiForegroundColorCode(fgGreen) & "✔\x1b[0m").replace("[FAILED]", ansiForegroundColorCode(fgRed) & "✘\x1b[0m"))
         else: 
-            okCount = output.count "[OK]"
+            okCount = output.count("[OK]")
             styledEcho(output.replace("[Suite]", ansiForegroundColorCode(fgYellow) & "▸").replace(peg, "'[OK]' .+", &"{ansiStyleCode, styleDim} ✔ {okCount}"))
         if (exitCode != 0): 
             styledEcho(fgRed, "✘ ", &"{cmd}")
@@ -175,11 +170,10 @@ proc runTests =
 if files.len: 
 
     if transpile: 
-        log(&"transpile {files}")
-        let transpiled = rndr.files(files)
+        let transpiled = rndr.files files
         quit((transpiled.len - files.len))
     else: 
-        let transpiled = trans.pile(files)
+        let transpiled = trans.pile files
         quit((transpiled.len - files.len))
 
 if tests: 
@@ -213,14 +207,12 @@ proc watch(paths : var seq[string]) =
 
     var firstLoop = true
 
-    while true
+    while true: 
     
         var doBuild = false
         var toTranspile : seq[string]
         var kimFiles : seq[string]
         var nimFiles : seq[string]
-    
-        # log paths
     
         for path in paths: 
         
@@ -232,12 +224,10 @@ proc watch(paths : var seq[string]) =
             
                 let (dir, name, ext) = f.splitFile()
             
-                if (ext == ".kim"): 
-                    kimFiles.add(f)
-                elif (ext == ".nim"): 
-                    nimFiles.add(f)
-                else: 
-                    continue
+                case ext:
+                    of ".kim": kimFiles.add(f)
+                    of ".nim": nimFiles.add(f)
+                    else: continue
             
                 let modTime = getFileInfo(f).lastWriteTime
             
@@ -265,16 +255,13 @@ proc watch(paths : var seq[string]) =
             for f in trans.pile(toTranspile): 
                 verb(&"transpiled {f}")
                 logFile(f, "✔ ")
-            # verb 'runTests'    
             runTests()
         if doBuild: 
-            # verb 'doBuild'    
             if compile("nim/kim.nim", "bin"): 
                 for f in kimFiles: 
                     let transpiled = trans.trans(f)
                     logFile(transpiled, "✔ ")
                 restart()
-        # log 'sleep'        
         sleep(200)
                                     
 watch(@[getCurrentDir()])

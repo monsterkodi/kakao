@@ -187,8 +187,8 @@ type Node* = ref object
                         
         of ●testCase:
             
-            test_expression* : Node
-            test_expected*   : Node
+            test_value*     : Node
+            test_expected*  : Node
             
         else:
             discard
@@ -231,6 +231,7 @@ type
         blocks*  : seq[Node]
         implicit : bool
         listless : bool
+        returning: bool
         pos*     : int
     
 proc current(p: Parser): Token =
@@ -364,7 +365,7 @@ proc `$`*(n: Node): string =
             let b = choose(n.test_block, &" {n.test_block}", "")
             s = &"({s} section{b})"
         of ●testCase:
-            s = &"({n.test_expression} {s} {n.test_expected})"
+            s = &"({n.test_value} {s} {n.test_expected})"
         else:
             discard
     s
@@ -432,6 +433,16 @@ proc isDedent(p: Parser, indent:int): bool =
         p.current.str.len < indent
     else:
         p.current.col < indent
+        
+proc isNextLineIndented(p: Parser, token:Token): bool =
+
+    var n = 0
+    while p.peek(n).tok != ◆indent:
+        n += 1
+        if p.peek(n).tok == ◆eof:
+            return  false
+        
+    return  p.peek(n).str.len > token.col
     
 proc getPrecedence(p: Parser, token: Token): int =
 
@@ -515,7 +526,7 @@ proc rBlock(p:Parser) : Node =
 
     p.parseBlock()
     
-proc isTokenAhead(p: Parser, tokAhead:tok) : bool =
+proc isTokAhead(p: Parser, tokAhead:tok) : bool =
 
     var n = 0
     var c = p.current
@@ -559,7 +570,7 @@ proc rSymbol(p: Parser): Node =
 
     let token = p.consume()
     let currt = p.peek(0)
-    if not p.implicit and currt.tok notin {◆indent} and not p.isTokenAhead(◆func):
+    if not p.implicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
         if currt.col > token.col+token.str.len:
             const optoks= { ◆then, ◆else, ◆elif, ◆test,
                             ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
@@ -654,7 +665,7 @@ proc rIf(p: Parser): Node =
     
     while p.tok in {◆elif, ◆indent}:
     
-        if p.tok == ◆indent:
+        if p.tok == ◆indent            :
             if p.current.str.len < ifIndent:
                 break
             if ifIndent < condIndt :
@@ -663,6 +674,9 @@ proc rIf(p: Parser): Node =
             if p.peek(1).tok != ◆elif and p.current.str.len == ifIndent:
                 break
             p.swallow ◆indent
+            if p.tok == ◆comment_start:
+                p.swallow()
+                p.swallow ◆comment
             if p.tok == ◆indent:
                 continue
                 
@@ -685,6 +699,25 @@ proc rIf(p: Parser): Node =
         elseBranch = p.expression()
     
     Node(token:token, kind:●if, cond_thens:condThens,`else`:elseBranch)
+
+# █████████   ███████   ███  ███         ███  ████████
+#    ███     ███   ███  ███  ███         ███  ███     
+#    ███     █████████  ███  ███         ███  ██████  
+#    ███     ███   ███  ███  ███         ███  ███     
+#    ███     ███   ███  ███  ███████     ███  ███     
+
+proc lTailIf(p: Parser, left: Node) : Node =
+
+    if p.returning:
+        return  
+    if left.token.line != p.current.line:
+        return  
+    echo &"TAILIF {left} {left.token.line} {p.current.line}"
+    let token = p.consume()
+    var cond  = p.expression()
+    let condThen = Node(token:cond.token, kind:●condThen, cond:cond, then:left)
+
+    Node(token:token, kind:●if, cond_thens: @[condThen])
         
 # ████████   ███████   ████████ 
 # ███       ███   ███  ███   ███
@@ -745,8 +778,10 @@ proc rSwitch(p: Parser): auto =
     var switch_cases: seq[Node]
     
     while p.tok notin {◆else, ◆then, ◆eof}:
-    
         if p.isDedent baseIndent:
+            break
+        if p.tok == ◆indent and p.peek(1).tok == ◆then:
+            p.swallow() # indent followed by a ➜ is else
             break
         if p.swallowSameIndent baseIndent:
             continue
@@ -912,7 +947,7 @@ proc rReturnType(p: Parser): Node =
 
 proc lReturnType(p: Parser, left: Node): Node =
 
-    if not p.isTokenAhead(◆func):
+    if not p.isTokAhead(◆func):
         return  
 
     if left.kind in {●list, ●var, ●operation}:
@@ -1048,11 +1083,24 @@ proc rFunc(p: Parser): Node =
     
     Node(token:token, kind:●func, func_body:func_body)
 
+proc isThenlessIf(p:Parser, token:Token) : bool =
+
+    if p.isNextLineIndented token:
+        return  false
+
+    not p.isTokAhead ◆then
+
 proc rReturn(p: Parser): Node =
 
     let token = p.consume()
-    let right = p.expression(token)
-    Node(token:token, kind:●return, return_value:right)
+    
+    if p.tok == ◆if and p.isThenlessIf(token):
+        Node(token:token, kind:●return)
+    else:
+        p.returning = true
+        let right = p.expression(token)
+        p.returning = false
+        Node(token:token, kind:●return, return_value:right)
 
 proc rDiscard(p: Parser): Node =
 
@@ -1115,7 +1163,7 @@ proc lTestCase(p: Parser, left: Node): Node =
     let token = p.consume() # ▸
     p.swallow(◆indent) # todo: check if indent is larger than that of the test expression
     let right = p.expression()
-    Node(token:token, kind: ●testCase, test_expression:left, test_expected:right)
+    Node(token:token, kind: ●testCase, test_value:left, test_expected:right)
 
 proc rTestSuite(p: Parser): Node =
 
@@ -1180,6 +1228,10 @@ proc expression(p: Parser, precedenceRight = 0): Node =
             node = lhn
         else:
             break 
+            
+        if p.tok == ◆indent and p.peek(1).tok in {◆dot}:
+             p.swallow()
+             node = p.lPropertyAccess node
     node
             
 # ████████   ████████    ███████   █████████  █████████
@@ -1229,7 +1281,7 @@ proc setup(p: Parser) =
     p.pratt ◆divide_assign,     lAssign,           nil,            10
     p.pratt ◆multiply_assign,   lAssign,           nil,            10
 
-    p.pratt ◆if,                nil,               rIf,            20  
+    p.pratt ◆if,                lTailIf,           rIf,            20  
     p.pratt ◆when,              nil,               rIf,            20  
     p.pratt ◆for,               nil,               rFor,           20  
     p.pratt ◆switch,            nil,               rSwitch,        20  

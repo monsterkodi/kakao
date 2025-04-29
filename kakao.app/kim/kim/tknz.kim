@@ -144,34 +144,11 @@ proc `$`*(t:Tknzr): string =
     
 proc formatValue*(result:var string, t:Tknzr, specifier: string) = result.add $t
     
-import pegs
-
-proc isNumber*(str:string, next:string): bool =
-
-    if not (str =~ peg"\d")
-        ⮐  false
-
-    let numberPeg = peg"""
-        num   <- ^( hex / oct / bin / flt / dec )$
-        hex   <- '0x' [0-9a-fA-F]+
-        oct   <- '0o' [0-7]+
-        bin   <- '0b' [0-1]+
-        exp   <- ('e' / 'E') ('+' / '-')? \d+
-        flt   <- \d+ '.' \d+ exp?
-        dec   <- \d+ exp?
-        """
-    
-    if str =~ numberPeg
-        if next == "" or next == " "
-            ⮐  true
-        let combined = str & next
-        if not (combined =~ numberPeg)
-            ⮐  true
-    false
-
-proc peek(t:Tknzr, n:int) : string = t.segs[t.segi+n]
-proc incr(t:Tknzr, n:int) =  t.segi += n
-proc col(t:Tknzr) : int = t.segi - t.bol
+proc char(t:Tknzr) : char           = t.segs[t.segi][0]
+proc char(t:Tknzr, n: int) : char   = t.segs[t.segi+n][0]
+proc peek(t:Tknzr, n: int) : string = t.segs[t.segi+n]
+proc incr(t:Tknzr, n: int) = t.segi += n
+proc col(t:Tknzr) : int    = t.segi - t.bol
 
 proc nextLine(t:Tknzr) =
 
@@ -200,6 +177,11 @@ proc advance(t:Tknzr, n:int) =
     for s in 0..<n 
         t.token.str &= t.peek(0)
         t.segi += 1
+
+proc advance(t:Tknzr, charset:set[char]) =
+    
+    while t.segi < t.segs.len and t.peek(0)[0] in charset
+        t.advance(1)
         
 proc advanceUntil(t:Tknzr, stop: string) =
 
@@ -286,6 +268,48 @@ proc string(t:Tknzr) =
     if t.segi <= t.eol-1 
         t.commit(t.delimiter, ◆string_end, t.delimiter.len)
     
+    
+# ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
+# ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+# ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
+# ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
+# ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
+
+proc number(t:Tknzr) =
+
+    t.pushToken("", ◆number)
+
+    let l = t.segs.len
+    
+    if t.segi < l-1 and t.segs[t.segi] == "0" 
+        if t.segs[t.segi+1] == "x"
+            t.advance 2
+            t.advance {'0'..'9', 'a'..'f', 'A'..'F'}
+            t.pushToken()
+            ⮐   
+        if t.segs[t.segi+1] == "b"
+            t.advance 2
+            t.advance {'0', '1'}
+            t.pushToken()
+            ⮐   
+        if t.segs[t.segi+1] == "o"
+            t.advance 2
+            t.advance {'0'..'7' }
+            t.pushToken()
+            ⮐   
+            
+    t.advance {'0'..'9'}
+        
+    if t.segi < l-1 and t.char == '.' and t.char(1) in {'0'..'9'}
+        t.advance 1
+        t.advance {'0'..'9'}
+
+    if t.segi < l-1 and t.char == 'e' and t.char(1) in {'0'..'9', '+', '-'}
+        t.advance 2
+        t.advance {'0'..'9'}
+    
+    t.pushToken()
+    
 #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
 # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
 # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
@@ -331,7 +355,6 @@ proc `import`(t:Tknzr) =
 
 proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
 
-    # log &"commit {tk}"
     t.pushToken(str, tk, incr)
     t.pushToken()
     
@@ -426,17 +449,12 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.commit(char, punct[char], 1)
                     continue
                 else
+                    if t.token.str.len == 0 and t.char in {'0'..'9'}
+                        t.number()
+                        continue
+                    
                     t.advance 1
-                    
-                    var next : string
-                    if t.segi <= t.eol-1 
-                        next = t.peek(0) 
-                    else 
-                        next = ""
-                        
-                    if isNumber(t.token.str, next)
-                        t.push ◆number
-                    
+                     
                     if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0)))
                         case keywords[t.token.str]
                             of ◆import

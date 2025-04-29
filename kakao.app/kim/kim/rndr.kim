@@ -235,6 +235,7 @@ proc ▸while(r: var Rndr, n: Node) =
 
    r.add "while "
    r.rnd n.while_cond
+   r.add ": "
    r.rnd n.while_body
     
 proc ▸list(r: var Rndr, n: Node) =
@@ -288,7 +289,7 @@ proc ▸switch(r: var Rndr, n: Node) =
 
     var idt = ' '.repeat n.token.col
     
-    r.add idt & "case "
+    r.add "case "
     r.rnd(n.switch_value)
     r.add ":"
     
@@ -312,7 +313,7 @@ proc ▸switch(r: var Rndr, n: Node) =
 proc ▸testCase(r: var Rndr, n: Node) =
 
     r.add "check "
-    r.rnd n.test_expression
+    r.rnd n.test_value
     r.add " == "
     r.rnd n.test_expected
 

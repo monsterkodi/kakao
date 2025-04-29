@@ -235,6 +235,7 @@ proc ▸while(r: var Rndr, n: Node) =
 
    r.add "while "
    r.rnd n.while_cond
+   r.add ": "
    r.rnd n.while_body
     
 proc ▸list(r: var Rndr, n: Node) =
@@ -288,7 +289,7 @@ proc ▸switch(r: var Rndr, n: Node) =
 
     var idt = ' '.repeat n.token.col
     
-    r.add idt & "case "
+    r.add "case "
     r.rnd(n.switch_value)
     r.add ":"
     
@@ -312,7 +313,7 @@ proc ▸switch(r: var Rndr, n: Node) =
 proc ▸testCase(r: var Rndr, n: Node) =
 
     r.add "check "
-    r.rnd n.test_expression
+    r.rnd n.test_value
     r.add " == "
     r.rnd n.test_expected
 
@@ -357,4 +358,70 @@ proc rnd(r: var Rndr, n: Node) =
         of ●while:
             r.▸while(n)
         of ●list:
-       
+            r.▸list(n)
+        of ●curly:
+            r.▸curly(n)
+        of ●squarely:
+            r.▸squarely(n)
+        of ●range:
+            r.▸range(n)
+        of ●string:
+            r.▸string(n)
+        of ●comment:
+            r.▸comment(n)
+        of ●use:
+            r.▸use(n)
+        of ●propertyAccess:
+            r.▸propertyAccess(n)
+        of ●arrayAccess:
+            r.▸arrayAccess(n)
+        of ●var:
+            r.▸var(n)
+        of ●let:
+            r.▸let(n)
+        of ●return:
+            r.▸return(n)
+        of ●discard:
+            r.▸discard(n)
+        of ●testSuite, ●testSection:
+            r.▸testSuite(n)
+        of ●testCase:
+            r.▸testCase(n)
+        of ●literal, ●type, ●import, ●keyword:
+            r.tok n
+        else:
+            echo &"unhandled {n} {n.kind}"
+            r.tok n
+
+proc renderNode*(root: Node): string =
+
+    var r = Rndr()
+    r.rnd(root)
+    r.s
+
+proc renderCode*(code: string): string =
+
+    let a = ast(code)
+    # echo &"ast {a}"
+    renderNode(a)
+    
+proc file*(file: string) : string = 
+
+    var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
+    # echo &"fileOut {fileOut}"
+    let code = file.readFile()
+    # echo &"code {code}"
+    let trns = renderCode code
+    echo &"{trns}"
+    fileOut
+    
+proc files*(files: seq[string]): seq[string] = 
+
+    var transpiled: seq[string]
+    for f in files:
+        transpiled.add file f
+        
+    # echo "render.files done: ", transpiled
+    transpiled
+        
+                            

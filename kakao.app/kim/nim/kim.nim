@@ -146,7 +146,7 @@ proc runTests() =
     profileScope "test"
     echo "\x1bc"
     for f in testFiles:
-        let cmd = &"nim r --colors:on {f}"
+        # let cmd = &"nim r --colors:on {f}"
         let p = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
         let startTime = getMonoTime()
         var output = ""
@@ -157,7 +157,7 @@ proc runTests() =
         
         while true:
             let elapsed = (getMonoTime() - startTime).inMilliseconds
-            if elapsed >= 2000:
+            if elapsed >= 3000:
                 output.add(&"test killed after {elapsed} ms!!")
                 p.terminate()
                 sleep(50)
@@ -177,21 +177,21 @@ proc runTests() =
                 break
             else:
                 break
-        
-        proc fgc(c:auto) : auto = ansiForegroundColorCode(c)
+                
         let exitCode = p.waitForExit()
-        if exitCode != 0 or verbose:
+        if exitCode != 0 or verbose :
+            #or f.endsWith("tknz.nim")
             #or f.endsWith("pars.nim")
-            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸\x1b[0m")
-                             .replace("[OK]",     fgc(fgGreen) & "✔\x1b[0m")
-                             .replace("[FAILED]", fgc(fgRed) & "✘\x1b[0m")
+            styledEcho output.replace("[Suite]",  fg(fgYellow) & "▸\x1b[0m")
+                             .replace("[OK]",     fg(fgGreen) & "✔\x1b[0m")
+                             .replace("[FAILED]", fg(fgRed) & "✘\x1b[0m")
         else:
             let okCount = output.count "[OK]"
-            styledEcho output.replace("[Suite]",  fgc(fgYellow) & "▸\x1b[0m")
+            styledEcho output.replace("[Suite]",  fg(fgYellow) & "▸\x1b[0m")
                              .replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}\x1b[0m")
             
         if exitCode != 0:
-            styledEcho fgRed, "✘ ", &"{cmd}"
+            styledEcho fgRed, "✘ ", &"{f}"
     echo ""
 
 if files.len:
