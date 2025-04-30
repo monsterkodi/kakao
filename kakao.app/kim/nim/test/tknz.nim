@@ -58,10 +58,10 @@ suite "tknz":
             tk(">",      ◆greater,       0, 10), 
             tk("d",      ◆name,          0, 12)]
             
-        # t "a_c, d23" , @[
-        #     tk("a_c",    ◆name,          0, 0),
-        #     tk(",",      ◆comma,         0, 3),
-        #     tk("d23",    ◆name,          0, 5)]
+        t "a_c, d23" , @[
+            tk("a_c",    ◆name,          0, 0),
+            tk(",",      ◆comma,         0, 3),
+            tk("d23",    ◆name,          0, 5)]
 
         t "if true" , @[
             tk("if",     ◆if,            0, 0),

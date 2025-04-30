@@ -1,4 +1,3 @@
-TAILIF (⮐) 90 90
 # ███   ███  ███  ██     ██
 # ███  ███   ███  ███   ███
 # ███████    ███  █████████
@@ -169,12 +168,8 @@ proc runTests =
         
 if files.len: 
 
-    if transpile: 
-        let transpiled = rndr.files files
-        quit((transpiled.len - files.len))
-    else: 
-        let transpiled = trans.pile files
-        quit((transpiled.len - files.len))
+    let transpiled = if transpile: rndr.files(files) else: trans.pile(files)
+    quit((transpiled.len - files.len))
 
 if tests: 
     runTests()
@@ -245,11 +240,10 @@ proc watch(paths : var seq[string]) =
         if firstLoop: 
                                     
             firstLoop = false
-            for f in kimFiles: 
-                logFile(f)
-            for f in nimFiles: 
-                logFile(f)
-                                    
+            for f in kimFiles: logFile(f)
+            for f in nimFiles: logFile(f)
+            
+                
         if toTranspile: 
             verb(&"toTranspile: {toTranspile}")
             for f in trans.pile(toTranspile): 
@@ -259,9 +253,8 @@ proc watch(paths : var seq[string]) =
         if doBuild: 
             if compile("nim/kim.nim", "bin"): 
                 for f in kimFiles: 
-                    let transpiled = trans.trans(f)
-                    logFile(transpiled, "✔ ")
+                    logFile(trans.trans(f), "✔ ")
                 restart()
         sleep(200)
-                                    
+                
 watch(@[getCurrentDir()])

@@ -8,6 +8,7 @@ import ../kommon
 import ../pars
     
 template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
+template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
 
 suite "pars":
 
@@ -341,6 +342,9 @@ if x
         t "use ../rndr"                             , "▪[(◆use ◆name)]"
         t "use std ▪ os logging\nuse kommon"        , "▪[(◆use ◆name ▪ @[◆name, ◆name])(◆use ◆name)]"
         t "use std ▪ a b c\nuse d\nuse e\nuse f"    , "▪[(◆use ◆name ▪ @[◆name, ◆name, ◆name])(◆use ◆name)(◆use ◆name)(◆use ◆name)]" 
+
+        s "use a b c", ast("use a b c").expressions[0].use_module.token.str, "a b c"
+        # check ast("use a b c").expressions[0].use_module.token.str == "a b c" 
 
         t "import ../../rel/[s1, s2]"               , "▪[◆import]"
         

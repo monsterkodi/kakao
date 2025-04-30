@@ -4,7 +4,7 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-import ../kommon
+import ../kommon 
 import ../rndr
     
 template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo())
@@ -150,6 +150,8 @@ b = false"""
         t "import ../../rel/[s1, s2]"              , "import ../../rel/[s1, s2]"
         t "use std ▪ os logging\nuse kommon"       , "import std/[os, logging]\nimport kommon"
         t "use std ▪ a b c\nuse d\nuse e\nuse f"   , "import std/[a, b, c]\nimport d\nimport e\nimport f"
+        
+        t "use a b c"                              , "import a\nimport b\nimport c"
         
     test "if":
     

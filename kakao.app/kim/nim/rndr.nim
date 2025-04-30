@@ -173,9 +173,14 @@ proc ▸string(r: var Rndr, n: Node) =
     r.add delimiter
     
 proc ▸use(r: var Rndr, n: Node) = 
+
+    var split = n.use_module.token.str.split " "
+    while split.len > 1:
+        r.add &"import {split[0]}\n" 
+        split = split.shift
     
     r.add "import "
-    r.tok n.use_module
+    r.add split[0]
     if n.use_kind != nil and n.use_kind.token.str == "▪":
         r.add "/["
         r.rnd n.use_items

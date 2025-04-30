@@ -5,10 +5,7 @@
 # ███   ███  ███  ███   ███
 
 use std ▪ monotimes logging os osproc sequtils tables terminal times strformat strutils parseopt random pegs osproc streams asyncdispatch asyncfile posix
-use kommon
-use trans
-use rndr
-use greet
+use kommon trans rndr greet
 
 var params    = default seq[string]
 var optParser = initOptParser()
@@ -174,12 +171,8 @@ runTests = ->
 
 if files.len
 
-    if transpile
-        let transpiled = rndr.files files
-        quit transpiled.len - files.len
-    else
-        let transpiled = trans.pile files
-        quit transpiled.len - files.len
+    let transpiled = if transpile ➜ rndr.files(files) ➜ trans.pile(files)
+    quit transpiled.len - files.len
 
 if tests
     runTests()
@@ -254,10 +247,8 @@ watch = ◆seq[string] paths ->
         if firstLoop
                                     
             firstLoop = false
-            for f in kimFiles
-                logFile f
-            for f in nimFiles
-                logFile f
+            for f in kimFiles ➜ logFile f
+            for f in nimFiles ➜ logFile f
                 
         if toTranspile
             verb "toTranspile: #{toTranspile}"
@@ -269,8 +260,7 @@ watch = ◆seq[string] paths ->
         if doBuild
             if compile("nim/kim.nim", "bin")
                 for f in kimFiles
-                    let transpiled = trans.trans(f)
-                    logFile transpiled, "✔ "
+                    logFile trans.trans(f), "✔ "
                 restart()
         sleep 200
 

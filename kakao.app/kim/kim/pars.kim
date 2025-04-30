@@ -621,9 +621,12 @@ proc parseModule(p:Parser) : Node =
     let line = p.current.line
     var s = ""
     while p.current.str notin @["▪", "◆"]
+        let e = p.current.col + p.current.str.len
         s &= p.consume().str
         if p.atEnd() or p.current.line != line
             break 
+        if p.current.col > e and p.current.str notin @["▪", "◆"] 
+            s &= " "
         
     Node(token:Token(str:s))
     
@@ -712,7 +715,7 @@ proc lTailIf(p: Parser, left: Node) : Node =
         ⮐  
     if left.token.line != p.current.line
         ⮐  
-    log &"TAILIF {left} {left.token.line} {p.current.line}"
+    # log &"TAILIF {left} {left.token.line} {p.current.line}"
     let token = p.consume()
     var cond  = p.expression()
     let condThen = Node(token:cond.token, kind:●condThen, cond:cond, then:left)

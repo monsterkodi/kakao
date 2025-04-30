@@ -149,7 +149,7 @@ proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
         
 proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
     if s.len > 0:
-        s.delete 1
+        s.delete 0
     s
         
 proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
