@@ -185,7 +185,6 @@ proc watch(paths : var seq[string]) =
     addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
 
     setControlCHook(proc () {.noconv.} = 
-        
         styledEcho('')
         styledEcho(fgGreen, farewells[rand(farewells.high)])
         quit(0))

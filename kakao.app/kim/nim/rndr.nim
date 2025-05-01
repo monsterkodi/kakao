@@ -74,7 +74,11 @@ proc ▸operation(r: var Rndr, n: Node) =
         else :
             r.tok n
     r.spc()
+    if n.token.tok == ◆assign and n.operand_right.kind == ●list:
+        r.add "("
     r.rnd n.operand_right
+    if n.token.tok == ◆assign and n.operand_right.kind == ●list:
+        r.add ")"
     if n.token.tok notin {◆assign, ◆ampersand}:
         r.add ")"
         

@@ -113,6 +113,9 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
         
         t "log a"                                  , "echo(a)"
         
+        t "let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", 
+          "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})"
+        
     ▸ arglist
     
         t "f(a, b, c)"        , "f(a, b, c)"
@@ -123,7 +126,10 @@ template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo(
     ▸ tuple assign
     
         t "(a, b) = c"        , "(a, b) = c"
+        t "(a b) = c"         , "(a, b) = c"
         t "(a, b, c) = f()"   , "(a, b, c) = f()"
+        t "(a b c) = f()"     , "(a, b, c) = f()"
+        t "(a b c) = (c b a)" , "(a, b, c) = (c, b, a)"
         
     ▸ assign
     

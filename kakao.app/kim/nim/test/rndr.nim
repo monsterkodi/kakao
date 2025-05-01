@@ -113,6 +113,9 @@ suite "rndr":
         
         t "log a"                                  , "echo(a)"
         
+        t "let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", 
+          "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})"
+        
     test "arglist":
     
         t "f(a, b, c)"        , "f(a, b, c)"
@@ -123,7 +126,10 @@ suite "rndr":
     test "tuple assign":
     
         t "(a, b) = c"        , "(a, b) = c"
+        t "(a b) = c"         , "(a, b) = c"
         t "(a, b, c) = f()"   , "(a, b, c) = f()"
+        t "(a b c) = f()"     , "(a, b, c) = f()"
+        t "(a b c) = (c b a)" , "(a, b, c) = (c, b, a)"
         
     test "assign":
     

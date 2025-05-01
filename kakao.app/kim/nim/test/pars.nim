@@ -177,6 +177,7 @@ suite "pars":
         t "f a, b, c"                               , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
         t "(a, b, c) = f()"                         , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         t "(a b c) = f()"                           , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
+        t "(a b c) = (c b a)"                       , "▪[(◆[◆name, ◆name, ◆name] = ◆[◆name, ◆name, ◆name])]"
         
     test "var":
     

@@ -122,7 +122,7 @@ runTests = ->
     profileScope 'test'
     for f in testFiles
         let cmd = "nim r --colors:on #{f}"
-        let p = startProcess(command = "nim", args = ["r", f], options = {poStdErrToStdOut, poUsePath})
+        let p = startProcess command = "nim" args = ["r" f] options = {poStdErrToStdOut poUsePath}
         let startTime = getMonoTime()
         var output = ""
         
@@ -186,10 +186,9 @@ if tests
 
 watch = ◆seq[string] paths ->
 
-    addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
+    addHandler(newConsoleLogger(fmtStr = "▸ " useStderr = true))
     
-    setControlCHook(() ->  {.noconv.}
-        
+    setControlCHook(() -> {.noconv.}
         styledEcho ''
         styledEcho fgGreen farewells[rand(farewells.high)]
         quit 0
@@ -198,7 +197,7 @@ watch = ◆seq[string] paths ->
     var modTimes ◇Table[string,times.Time]
     
     styledEcho ''
-    styledEcho fgGreen, greetings[rand(greetings.high)]
+    styledEcho fgGreen greetings[rand(greetings.high)]
     styledEcho ''
     
     for p in paths
@@ -254,13 +253,13 @@ watch = ◆seq[string] paths ->
             verb "toTranspile: #{toTranspile}"
             for f in trans.pile(toTranspile)
                 verb "transpiled #{f}"    
-                logFile f, "✔ "
+                logFile f "✔ "
             runTests()
             
         if doBuild
-            if compile("nim/kim.nim", "bin")
+            if compile("nim/kim.nim" "bin")
                 for f in kimFiles
-                    logFile trans.trans(f), "✔ "
+                    logFile trans.trans(f) "✔ "
                 restart()
         sleep 200
 
