@@ -337,6 +337,9 @@ if x
         t "\"a #{1}\""                              , "▪[◆string#{@[◆number]}]"
         t "\"#{1}\""                                , "▪[◆string#{@[◆number]}]"
         
+        t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""         , "▪[(◆name ◆call @[◆string, ◆string])]"
+        t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""     , "▪[(◆name ◆call @[◆string, ◆string])]"
+        
     ▸ toplevel
 
         t ""                                        , "▪[]"
@@ -354,7 +357,6 @@ if x
         t "use std ▪ a b c\nuse d\nuse e\nuse f"    , "▪[(◆use ◆name ▪ @[◆name, ◆name, ◆name])(◆use ◆name)(◆use ◆name)(◆use ◆name)]" 
 
         s "use a b c", ast("use a b c").expressions[0].use_module.token.str, "a b c"
-        # check ast("use a b c").expressions[0].use_module.token.str == "a b c" 
 
         t "import ../../rel/[s1, s2]"               , "▪[◆import]"
         

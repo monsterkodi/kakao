@@ -37,6 +37,19 @@ proc indent*(s:string, i=4) : string =
     let idt = ' '.repeat i
     let lines = s.split "\n"
     idt & lines.join "\n" & idt
+    
+proc indentLen*(s:string) : int =
+    var i = 0
+    while i < s.len and s[i] == ' '
+        i += 1
+    i
+    
+proc indentLen*(lines:seq[string]) : int = 
+
+    var m = high(int)
+    for l in lines
+        m = min(m, indentLen(l))
+    m
 
 proc testCmp*(a:string, r:auto, b:auto, l:lineInfo) = 
 

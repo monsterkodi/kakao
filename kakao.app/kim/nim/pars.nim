@@ -551,16 +551,17 @@ proc isTokAhead(p: Parser, tokAhead:tok) : bool =
         c = p.peek n
     false    
     
-proc parseCallArgList(p:Parser) : seq[Node] = 
+proc parseCallArgs(p:Parser) : seq[Node] = 
 
     p.implicit = true
     p.listless = true
     var list : seq[Node]
     let line = p.current.line
     var expr : Node = p.expression()
+    
     while expr != nil:
         list.add expr        
-        if p.current.line != line:
+        if p.current.line != line and p.tok != ◆comma:
             break
         if p.tok in {◆comment_start}:
             break
@@ -573,7 +574,7 @@ proc parseCallArgList(p:Parser) : seq[Node] =
 proc lCall(p: Parser, callee: Node): Node =
 
     let token = p.consume() # (
-    let args = p.parseCallArgList()
+    let args = p.parseCallArgs()
     p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
@@ -589,7 +590,7 @@ proc rSymbol(p: Parser): Node =
                             ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
                             ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
             if currt.tok notin optoks:
-                let args = p.parseCallArgList()
+                let args = p.parseCallArgs()
                 return  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
 
     Node(token:token, kind:●literal)

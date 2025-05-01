@@ -7,7 +7,7 @@
 import ../kommon 
 import ../rndr
     
-template t(a:string, b:string) = testCmp(a, renderCode(a), b, instantiationInfo())
+template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())
 
 suite "rndr":
 
@@ -229,6 +229,34 @@ b = false"""
         t "s = \"#{o}\""                           , "s = &\"{o}\""
         t "cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
           "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
+          
+    test "triple strings":
+    
+        t "s = \"\"\"hello world\"\"\""                , "s = \"\"\"hello world\"\"\""  
+        t "s = \"\"\"hello\nworld\"\"\""               , "s = \"\"\"hello\nworld\"\"\""  
+        t "s = \"\"\"hello\n    world\"\"\""           , "s = \"\"\"hello\nworld\"\"\""  
+        t "s = \"\"\"hello\n    world\n    \"\"\""     , "s = \"\"\"hello\nworld\n\"\"\""  
+        t "s = \"\"\"hello\n        world\n    \"\"\"" , "s = \"\"\"hello\n    world\n\"\"\""  
+        t "s = \"\"\"hello\nworld\n    \"\"\""         , "s = \"\"\"hello\nworld\n    \"\"\""
+        
+        t "s = \"\"\"\n    #{1+1}\n\"\"\""             , "s = &\"\"\"\n    {(1 + 1)}\n\"\"\""
+        t "s = \"\"\"\n    #{1+1}\n    #{2+2}\n\"\"\"" , "s = &\"\"\"\n    {(1 + 1)}\n    {(2 + 2)}\n\"\"\""
+        
+        t "\"\"\"\n\"\"\""                             , "\"\"\"\n\"\"\""
+        t "\"\"\"\n    \"\"\""                         , "\"\"\"\n\"\"\""
+        t "\"\"\"\n    a = 1\"\"\""                    , "\"\"\"\na = 1\"\"\""
+        t "\"\"\"\n    a = 1\n    b = 2\"\"\""         , "\"\"\"\na = 1\nb = 2\"\"\""
+        t "\"\"\"\n    a = 1\n    b = 2\n\"\"\""       , "\"\"\"\n    a = 1\n    b = 2\n\"\"\""
+        t "\"\"\"\n        a = 1\n        b = 2\n    \"\"\""       , "\"\"\"\n    a = 1\n    b = 2\n\"\"\""
+        
+        t "t \"a\" , \"b\""                            , "t(\"a\", \"b\")"
+        t "t \"a\",\n  \"b\""                          , "t(\"a\", \n  \"b\")"
+        
+        t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""            , "t(\"\"\"a\"\"\", \"\"\"b\"\"\")"
+        t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""        , "t(\"\"\"\na\"\"\", \"\"\"\nb\"\"\")"
+        t "t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"", "t(\"\"\"\na = 1\"\"\", \"\"\"\nb = 2\"\"\")"
+        t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")"
+        t "t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t(\"\"\"\n    a = 1\n    b = 2\n\"\"\")"
         
     test "blocks":
   
