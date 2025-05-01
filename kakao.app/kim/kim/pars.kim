@@ -20,7 +20,7 @@ type NodeKind* = enum
     ●operation 
     ●postOp
     ●call
-    ●if,
+    ●if
     ●condThen
     ●for 
     ●list
@@ -30,6 +30,7 @@ type NodeKind* = enum
     ●while
     ●switch
     ●switchCase
+    ●arg
     ●var        
     ●let        
     ●propertyAccess        
@@ -153,11 +154,17 @@ type Node* = ref object
         of ●list, ●curly, ●squarely
         
             list_values*    : seq[Node] 
+
+        of ●arg
+        
+            arg_type*       : Node
+            arg_name*       : Node
+            arg_value*      : Node
             
         of ●var
         
-            var_type*       : Node
             var_name*       : Node
+            var_type*       : Node
             var_value*      : Node
             
         of ●let
@@ -342,10 +349,14 @@ proc `$`*(n: Node): string =
         of ●arrayAccess
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
+        of ●arg
+            let t = choose(n.arg_type, &"{n.arg_type}", "")
+            let v = choose(n.arg_value, &" (= {n.arg_value})", "")
+            s = &"({s}{t} {n.arg_name}{v})"
         of ●var
-            let t = choose(n.var_type, &"{n.var_type}", "")
+            let t = choose(n.var_type, &" {s}{n.var_type}", "")
             let v = choose(n.var_value, &" (= {n.var_value})", "")
-            s = &"({s}{t} {n.var_name}{v})"
+            s = &"({n.var_name}{t}{v})"
         of ●let
             s = &"({s} {n.let_expr})"
         of ●type
@@ -494,10 +505,10 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
             if prevExpr.token.line == expr.token.line and prevExpr.token.tok == ◆assign
                 prevExpr = bn.expressions.pop()
                 if prevExpr.operand_right.kind == ●operation
-                    var varToken = prevExpr.operand_right.operand_left.token
-                    varToken.tok = ◆val_type
-                    let varNode = Node(token:varToken, kind:●var, var_name:prevExpr.operand_right.operand_left, var_value:prevExpr.operand_right.operand_right)
-                    expr.func_signature.sig_args.list_values.unshift(varNode)
+                    var argtoken = prevExpr.operand_right.operand_left.token
+                    argtoken.tok = ◆val_type
+                    let argnode = Node(token:argtoken, kind:●arg, arg_name:prevExpr.operand_right.operand_left, arg_value:prevExpr.operand_right.operand_right)
+                    expr.func_signature.sig_args.list_values.unshift(argnode)
                 else
                     expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
                 prevExpr.operand_right = expr
@@ -573,6 +584,7 @@ proc rSymbol(p: Parser): Node =
     if not p.implicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func)
         if currt.col > token.col+token.str.len
             const optoks= { ◆then, ◆else, ◆elif, ◆test,
+                            ◆val_type, ◆var_type,
                             ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
                             ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
                             ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
@@ -840,6 +852,20 @@ proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
     if args.len == 1 and args[0].kind == ●list
         ⮐  args[0].list_values
     args
+
+proc parseType(p: Parser): Node =
+    
+    var token = p.consume()
+    token.tok = ◆type
+    
+    if p.tok == ◆square_open
+        while p.tok notin {◆eof}
+            let t = p.consume()
+            token.str &= t.str
+            if t.tok == ◆square_close
+                break
+    
+    Node(token:token, kind:●type)
         
 proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
@@ -869,9 +895,28 @@ proc rImport(p: Parser): Node =
 
     Node(token:p.consume(), kind: ●import)
     
+proc parseVar(p: Parser): Node = 
+
+    var token = p.current()
+    let var_name = p.value()
+    var var_value : Node
+    var var_type  : Node
+    
+    if p.tok == ◆assign
+        p.swallow()
+        var_value = p.expression()
+    elif p.tok in {◆val_type, ◆var_type}
+        token = p.consume()
+        var_type = p.parseType()
+        if p.tok == ◆assign
+            p.swallow()
+            var_value = p.expression()
+    
+    Node(token:token, kind: ●var, var_name:var_name, var_type:var_type, var_value:var_value)
+    
 proc rLet(p: Parser): Node =
 
-    Node(token:p.consume(), kind: ●let, let_expr:p.expression())
+    Node(token:p.consume(), kind: ●let, let_expr:p.parseVar())
     
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
@@ -929,20 +974,6 @@ proc rUse(p: Parser): Node =
 proc rComment(p: Parser): Node = 
 
      Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
-
-proc parseType(p: Parser): Node =
-    
-    var token = p.consume()
-    token.tok = ◆type
-    
-    if p.tok == ◆square_open
-        while p.tok notin {◆eof}
-            let t = p.consume()
-            token.str &= t.str
-            if t.tok == ◆square_close
-                break
-    
-    Node(token:token, kind:●type)
     
 proc rReturnType(p: Parser): Node =
 
@@ -953,35 +984,48 @@ proc lReturnType(p: Parser, left: Node): Node =
     if not p.isTokAhead(◆func)
         ⮐  
 
-    if left.kind in {●list, ●var, ●operation}
+    if left.kind in {●list, ●arg, ●operation}
         if left.kind == ●operation 
             if left.token.tok == ◆assign
                 var sig = p.rReturnType()
-                let vartoken = Token(tok:◆val_type, line:left.token.line, col:left.token.col)
-                let varNode  = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
-                sig.sig_args = Node(token:left.token, kind:●list, list_values: @[varNode])
+                let argtoken = Token(tok:◆val_type, line:left.token.line, col:left.token.col)
+                let argNode  = Node(token:argtoken, kind:●arg, arg_name:left.operand_left, arg_value:left.operand_right)
+                sig.sig_args = Node(token:left.token, kind:●list, list_values: @[argNode])
                 ⮐  sig
         elif left.kind == ●list
             var sig = p.rReturnType()
             sig.sig_args = left
             ⮐  sig
-        elif left.kind == ●var
+        elif left.kind == ●arg
             var sig = p.rReturnType()
             sig.sig_args = Node(token:left.token, kind:●list, list_values: @[left])
             ⮐  sig
                     
-proc rVar(p: Parser) : Node =
+proc rArg(p: Parser) : Node =
 
     let token    = p.consume() # ◆ or ◇
+    let arg_type = p.parseType()
+    let arg_name = p.value()
+    var arg_value : Node
+    
+    if p.tok == ◆assign
+        let t = p.consume() # =
+        arg_value = p.expression() 
+    
+    Node(token:token, kind:●arg, arg_type:arg_type, arg_name:arg_name, arg_value:arg_value)
+
+proc lVar(p: Parser, left: Node) : Node =
+
+    if left.token.tok != ◆name
+        ⮐  
+    let token    = p.consume() # ◆ or ◇
     let var_type = p.parseType()
-    let var_name = p.value()
     var var_value : Node
     
     if p.tok == ◆assign
         let t = p.consume() # =
         var_value = p.expression() 
-    
-    Node(token:token, kind:●var, var_type:var_type, var_name:var_name, var_value:var_value)
+    Node(token:token, kind:●var, var_name:left, var_type:var_type, var_value:var_value)
 
 proc lSymbolList(p: Parser, left: Node) : Node =
 
@@ -1004,20 +1048,23 @@ proc lSymbolList(p: Parser, left: Node) : Node =
         else
             discard
 
-proc lVarList(p: Parser, left: Node) : Node =
+proc lArgList(p: Parser, left: Node) : Node =
     
     case left.kind 
         of ●list
             var list_values = left.list_values
-            list_values.add p.rVar()
+            list_values.add p.rArg()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        of ●var
+        of ●arg
             var list_values : seq[Node]
             list_values.add left
-            list_values.add p.rVar()
+            list_values.add p.rArg()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
+        of ●literal
+            if left.token.tok == ◆name
+                ⮐  p.lVar left
         else
-            ⮐  
+            discard
 
 # ████████  ███   ███  ███   ███   ███████
 # ███       ███   ███  ████  ███  ███     
@@ -1027,7 +1074,7 @@ proc lVarList(p: Parser, left: Node) : Node =
 
 proc lFunc(p: Parser, left: Node): Node =
 
-    if left.kind notin {●signature, ●list, ●var, ●operation}
+    if left.kind notin {●signature, ●list, ●arg, ●operation}
         ⮐ 
         
     var func_signature = left
@@ -1041,12 +1088,12 @@ proc lFunc(p: Parser, left: Node): Node =
             ⮐  
         if left.operand_left.token.col == 0 
             var left = left
-            let vartoken = Token(tok:◆val_type, line:left.operand_right.token.line,col:left.operand_right.token.col)
-            left.operand_right = p.lFunc(Node(token:vartoken, kind:●var, var_name:left.operand_right))
+            let argtoken = Token(tok:◆val_type, line:left.operand_right.token.line,col:left.operand_right.token.col)
+            left.operand_right = p.lFunc(Node(token:argtoken, kind:●arg, arg_name:left.operand_right))
             ⮐  left
             
         let vartoken = Token(tok:◆val_type, line:left.operand_left.token.line,col:left.operand_left.token.col)
-        let varNode = Node(token:vartoken, kind:●var, var_name:left.operand_left, var_value:left.operand_right)
+        let varNode = Node(token:vartoken, kind:●arg, arg_name:left.operand_left, arg_value:left.operand_right)
         let sig_args = Node(token:vartoken, kind:●list, list_values: @[varNode])
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
         
@@ -1054,13 +1101,13 @@ proc lFunc(p: Parser, left: Node): Node =
         var sig_args = left
         for i,a in sig_args.list_values
             if a.kind == ●operation and a.token.tok == ◆assign
-                let vartoken = Token(tok:◆val_type, line:a.operand_left.token.line,col:a.operand_left.token.col)
-                sig_args.list_values[i] = Node(token:vartoken, kind:●var, var_name:a.operand_left, var_value:a.operand_right)
+                let argtoken = Token(tok:◆val_type, line:a.operand_left.token.line,col:a.operand_left.token.col)
+                sig_args.list_values[i] = Node(token:argtoken, kind:●arg, arg_name:a.operand_left, arg_value:a.operand_right)
             elif a.kind == ●literal and a.token.tok == ◆name
-                let vartoken = Token(tok:◆val_type, line:a.token.line,col:a.token.col)
-                sig_args.list_values[i] = Node(token:vartoken, kind:●var, var_name:a)
+                let argtoken = Token(tok:◆val_type, line:a.token.line,col:a.token.col)
+                sig_args.list_values[i] = Node(token:argtoken, kind:●arg, arg_name:a)
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
-    elif left.kind == ●var
+    elif left.kind == ●arg
         let sig_args = Node(token:left.token, kind:●list, list_values: @[left])
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
     
@@ -1319,8 +1366,8 @@ proc setup(p: Parser) =
     p.pratt ◆paren_open,        lCall,             rParenExpr,     90
     p.pratt ◆bracket_open,      nil,               rCurly,         90
     p.pratt ◆then,              lReturnType,       rReturnType,    99
-    p.pratt ◆val_type,          lVarList,          rVar,          100
-    p.pratt ◆var_type,          lVarList,          rVar,          100
+    p.pratt ◆val_type,          lArgList,          rArg,          100
+    p.pratt ◆var_type,          lArgList,          rArg,          100
     p.pratt ◆dot,               lPropertyAccess,   nil,           102
     
 #  ███████    ███████  █████████

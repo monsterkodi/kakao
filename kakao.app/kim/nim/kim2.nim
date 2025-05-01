@@ -7,9 +7,9 @@
 use std ▪ monotimes logging os osproc sequtils tables terminal times strformat strutils parseopt random pegs osproc streams asyncdispatch asyncfile posix
 use kommon trans rndr greet
 
-var params    = default seq[string]
 var optParser = initOptParser()
-var ◇seq[string] files     
+var params    ◇ seq[string]
+var files     ◇ seq[string] 
 var outdir    = ""
 var tests     = false
 var verbose   = false
@@ -195,7 +195,7 @@ watch = ◆seq[string] paths ->
         quit 0
         )
     
-    var ◇Table[string,times.Time] modTimes
+    var modTimes ◇Table[string,times.Time]
     
     styledEcho ''
     styledEcho fgGreen, greetings[rand(greetings.high)]
@@ -210,9 +210,9 @@ watch = ◆seq[string] paths ->
     while true:
     
         var doBuild = false
-        var ◇seq[string] toTranspile
-        var ◇seq[string] kimFiles
-        var ◇seq[string] nimFiles
+        var toTranspile ◇seq[string] 
+        var kimFiles    ◇seq[string] 
+        var nimFiles    ◇seq[string] 
         
         for path in paths:
         

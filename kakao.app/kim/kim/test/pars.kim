@@ -158,7 +158,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         
         t "f 1 '2' false"                           , "▪[(◆name ◆call @[◆number, ◆string, ✘])]"
         
-        t "let r = read(fd, addr(line[0]), l.len)"  , "▪[(◆let (◆name = (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])))]"
+        t "let r = read(fd, addr(line[0]), l.len)"  , "▪[(◆let (◆name (= (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)]))))]"
         
         t "read(fd, 1)"                             , "▪[(◆name ◆call @[◆name, ◆number])]" 
         t "read(fd 1)"                              , "▪[(◆name ◆call @[◆name, ◆number])]" 
@@ -167,7 +167,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "read(fd addr(line[0]) line.len)"         , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]" 
         t "read fd addr 1"                          , "▪[(◆name ◆call @[◆name, ◆name, ◆number])]"
         t "read fd addr(line[0]) l.len"             , "▪[(◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])]"
-        t "let r = read fd addr(line[0]) l.len"     , "▪[(◆let (◆name = (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)])))]"
+        t "let r = read fd addr(line[0]) l.len"     , "▪[(◆let (◆name (= (◆name ◆call @[◆name, (◆name ◆call @[(◆name[◆number])]), (◆name . ◆name)]))))]"
         
         t "f a # comment"                           , "▪[(◆name ◆call @[◆name])#]"
         
@@ -178,6 +178,15 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "(a, b, c) = f()"                         , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         t "(a b c) = f()"                           , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         
+    ▸ var
+    
+        t "var a"                                   , "▪[(◆var (◆name))]"
+        t "var a=1"                                 , "▪[(◆var (◆name (= ◆number)))]"
+        t "var a ◇int"                              , "▪[(◆var (◆name ◇type(int)))]"
+        t "a ◇int"                                  , "▪[(◆name ◇type(int))]"
+        t "a ◇int=1"                                , "▪[(◆name ◇type(int) (= ◆number))]"
+        t "a ◇int=1+2"                              , "▪[(◆name ◇type(int) (= (◆number + ◆number)))]"
+        
     ▸ assign
     
         t "a = 1"                                   , "▪[(◆name = ◆number)]"
@@ -186,7 +195,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         
         t "(a, b) = c"                              , "▪[(◆[◆name, ◆name] = ◆name)]"
         t "(a b) = c"                               , "▪[(◆[◆name, ◆name] = ◆name)]"
-        t "let (dir name ext) = triple"             , "▪[(◆let (◆[◆name, ◆name, ◆name] = ◆name))]"
+        t "let (dir name ext) = triple"             , "▪[(◆let (◆[◆name, ◆name, ◆name] (= ◆name)))]"
         
     ▸ property access        
         

@@ -10,8 +10,8 @@ import trans
 import rndr
 import greet
 
-var params = default(seq[string])
 var optParser = initOptParser()
+var params : seq[string]
 var files : seq[string]
 var outdir = ""
 var tests = false
@@ -25,7 +25,7 @@ randomize()
 proc verb(msg : string) = 
 
     if verbose: 
-        log(msg)
+        echo(msg)
 #  ███████   ████████  █████████         ███████   ████████   █████████
 # ███        ███          ███           ███   ███  ███   ███     ███   
 # ███  ████  ███████      ███           ███   ███  ████████      ███   
@@ -49,18 +49,18 @@ for kind, key, val in optParser.getopt():
                 of "transpile", "t": 
                     transpile = true
                 of "help", "h": 
-                    log("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
-                    log("")
-                    log("      transpiles kim files to nim")
-                    log("      watches cwd if no files are given")
-                    log("")
-                    log("options:")
-                    log("  -o --outdir:DIR  output directory")
-                    log("  -t --transpile   log transpilat")
-                    log("     --test        run tests")
-                    log("  -v --verbose     verbose output")
+                    echo("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
+                    echo("")
+                    echo("      transpiles kim files to nim")
+                    echo("      watches cwd if no files are given")
+                    echo("")
+                    echo("options:")
+                    echo("  -o --outdir:DIR  output directory")
+                    echo("  -t --transpile   log transpilat")
+                    echo("     --test        run tests")
+                    echo("  -v --verbose     verbose output")
                     quit(1)
-                else: log("unknown option: ", key)
+                else: echo("unknown option: ", key)
             
                     quit(1)
         of cmdEnd: 
@@ -110,7 +110,7 @@ proc compile(file : string, outDir = "bin") : bool =
         
     if (exitCode != 0): 
         styledEcho(fgRed, "✘ ", &"{cmd}")
-        log(output)
+        echo(output)
         false
     else: 
         if verbose: styledEcho(fgGreen, "✔ ", fgWhite, cmd)

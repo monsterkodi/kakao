@@ -28,15 +28,12 @@ proc rnd(r: var Rndr, nodes: seq[Node]) =
 proc ▸block(r: var Rndr, n: Node) = 
     var idt : string
     if n.token.tok == ◆indent:
-        # echo &"rndr.block {n} {n.token}"
         idt = n.token.str
-        # r.add "\n" & idt
         r.add "\n" & idt
         
     for i,exp in n.expressions:
         r.rnd exp
         if i < n.expressions.len-1:
-            # echo &"{n.expressions[i+1].token} > {exp.token}"
             if n.expressions[i+1].token.line > exp.token.line:
                 r.add "\n" & idt
             else:
@@ -141,15 +138,29 @@ proc ▸signature(r: var Rndr, n:Node) =
             
 proc ▸var(r: var Rndr, n: Node) =
 
+    if n.var_name.kind == ●list:
+        r.add "("
     r.rnd n.var_name
+    if n.var_name.kind == ●list:
+        r.add ")"
     if n.var_type != nil:
         r.add " : "
-        if n.token.tok == ◆var_type and r.annotateVarArg:
-            r.add "var "
         r.rnd n.var_type
     if n.var_value != nil:
         r.add " = "
         r.rnd n.var_value
+
+proc ▸arg(r: var Rndr, n: Node) =
+
+    r.rnd n.arg_name
+    if n.arg_type != nil:
+        r.add " : "
+        if n.token.tok == ◆var_type and r.annotateVarArg:
+            r.add "var "
+        r.rnd n.arg_type
+    if n.arg_value != nil:
+        r.add " = "
+        r.rnd n.arg_value
 
 proc ▸string(r: var Rndr, n: Node) = 
 
@@ -193,7 +204,10 @@ proc ▸comment(r: var Rndr, n: Node) =
     
 proc ▸call(r: var Rndr, n: Node) =
 
-    r.rnd n.callee
+    if n.callee.token.str == "log":
+        r.add "echo"
+    else:
+        r.rnd n.callee
     r.add "("
     r.rnd n.call_args
     r.add ")"
@@ -382,6 +396,8 @@ proc rnd(r: var Rndr, n: Node) =
             r.▸arrayAccess(n)
         of ●var:
             r.▸var(n)
+        of ●arg:
+            r.▸arg(n)
         of ●let:
             r.▸let(n)
         of ●return:
