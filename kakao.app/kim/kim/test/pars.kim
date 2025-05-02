@@ -205,7 +205,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
     ▸ arrays
     
         t "a = [ 1  2 ]"                            , "▪[(◆name = [[◆number, ◆number]]])]"
-        # t "a = [\n    1\n    2\n    ]"              , "▪[(◆name = [[◆number, ◆number]]])]"
+        t "a = [\n    1\n    2\n    ]"              , "▪[(◆name = [[◆number, ◆number]]])]"
         
     ▸ property access        
         

@@ -599,6 +599,16 @@ proc isTokAhead(p: Parser, tokAhead:tok) : bool =
 # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
 #  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
 
+proc swallowIndent(p:Parser, col:int) : bool = 
+
+    p.swallow ◆comma
+    if p.tok == ◆indent:
+        if p.current.str.len > col:
+            p.swallow()
+        else:
+            return  true
+    false
+    
 proc parseCallArgs(p:Parser, col:int) : seq[Node] = 
 
     p.explicit = true
@@ -607,13 +617,9 @@ proc parseCallArgs(p:Parser, col:int) : seq[Node] =
     let line = p.current.line
     var expr : Node = p.expression()
     while expr != nil:
-        list.add expr        
-        p.swallow ◆comma
-        if p.tok == ◆indent:
-            if p.current.str.len > col:
-                p.swallow()
-            else:
-                break
+        list.add expr
+        if p.swallowIndent(col):
+            break
         if p.tok in {◆comment_start}:
             break
         expr = p.expression()
@@ -698,14 +704,18 @@ proc parseParenList(p: Parser): seq[Node] =
 proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
 
     let token = p.consume()
-    
     var args : seq[Node]
+    
     p.explicit = true
-    while p.tok != close and p.tok != ◆eof:
-        args.add p.expression()
-        p.swallow ◆comma
+    while true:
+        discard p.swallowIndent(-1)
+        if p.tok != close and p.tok != ◆eof:
+            args.add p.expression()
+        else:
+            break
     p.swallowError(close, "Missing closing bracket")
     p.explicit = false
+    
     if args.len == 1 and args[0].kind == ●list:
         return  args[0].list_values
     args

@@ -205,7 +205,7 @@ suite "pars":
     test "arrays":
     
         t "a = [ 1  2 ]"                            , "▪[(◆name = [[◆number, ◆number]]])]"
-        # t "a = [\n    1\n    2\n    ]"              , "▪[(◆name = [[◆number, ◆number]]])]"
+        t "a = [\n    1\n    2\n    ]"              , "▪[(◆name = [[◆number, ◆number]]])]"
         
     test "property access        ":
         
