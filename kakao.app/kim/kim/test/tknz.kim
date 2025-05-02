@@ -121,6 +121,18 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("  ",        ◆indent,        2, 0),
             tk("else",      ◆else,          2, 2),
             tk("z",         ◆name,          2, 7)]
+            
+        t "if\n   \n   \n  true\n        \n   \n    yes\n \n  \n \n     \n  2   \n \n   \n \n    3", @[
+            tk("if",        ◆if,            0, 0),
+            tk("  ",        ◆indent,        3, 0),
+            tk("true",      ◆true,          3, 2),
+            tk("    ",      ◆indent,        6, 0),
+            tk("yes",       ◆name,          6, 4),
+            tk("  ",        ◆indent,       11, 0),
+            tk("2",         ◆number,       11, 2),
+            tk("    ",      ◆indent,       15, 0),
+            tk("3",         ◆number,       15, 4),
+            ]
 
     #  ███████  █████████  ████████   ███  ███   ███   ███████    ███████
     # ███          ███     ███   ███  ███  ████  ███  ███        ███     

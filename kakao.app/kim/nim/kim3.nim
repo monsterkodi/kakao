@@ -1,27 +1,23 @@
+
 # ███   ███  ███  ██     ██
 # ███  ███   ███  ███   ███
 # ███████    ███  █████████
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███
-
 import std/[monotimes, logging, os, osproc, sequtils, tables, terminal, times, strformat, strutils, parseopt, random, pegs, osproc, streams, asyncdispatch, asyncfile, posix]
 import kommon
 import trans
 import rndr
 import greet
-
 var optParser = initOptParser()
 var params : seq[string]
 var files : seq[string]
-var outdir = ""
 var tests = false
 var verbose = false
 var transpile = false
-
+var outdir = ""
 var testFiles = walkDir((currentSourcePath().splitFile()[0] / "test")).toSeq().map(proc (r : tuple) : string = r.path)
-
 randomize()
-
 proc verb(msg : string) = 
 
     if verbose: 
@@ -31,7 +27,6 @@ proc verb(msg : string) =
 # ███  ████  ███████      ███           ███   ███  ████████      ███   
 # ███   ███  ███          ███           ███   ███  ███           ███   
 #  ███████   ████████     ███            ███████   ███           ███   
-
 for kind, key, val in optParser.getopt(): 
     case kind:
         of cmdArgument: 
@@ -64,28 +59,24 @@ for kind, key, val in optParser.getopt():
             
                     quit(1)
         of cmdEnd: 
-            discard 
-                        
-# ████████   ████████   ███████  █████████   ███████   ████████   █████████
+            discard # ████████   ████████   ███████  █████████   ███████   ████████   █████████
 # ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   
 # ███████    ███████   ███████      ███     █████████  ███████       ███   
 # ███   ███  ███            ███     ███     ███   ███  ███   ███     ███   
 # ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
 
-            
-when defined(posix): 
+            when defined(posix): 
     import posix
     proc restart() = 
         args = allocCStringArray(@[getAppFilename()] & params)
         discard execv(getAppFilename().cstring, args)
         quit(1) # only reaches here if execve fails
-# ███       ███████    ███████   ████████  ███  ███      ████████
-# ███      ███   ███  ███        ███       ███  ███      ███     
-# ███      ███   ███  ███  ████  ██████    ███  ███      ███████ 
-# ███      ███   ███  ███   ███  ███       ███  ███      ███     
-# ███████   ███████    ███████   ███       ███  ███████  ████████
-
-proc logFile(f : string, prefix = "") = 
+            # ███       ███████    ███████   ████████  ███  ███      ████████
+            # ███      ███   ███  ███        ███       ███  ███      ███     
+            # ███      ███   ███  ███  ████  ██████    ███  ███      ███████ 
+            # ███      ███   ███  ███   ███  ███       ███  ███      ███     
+            # ███████   ███████    ███████   ███       ███  ███████  ████████
+            proc logFile(f : string, prefix = "") = 
 
     if not verbose: return
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
@@ -95,14 +86,12 @@ proc logFile(f : string, prefix = "") =
 
     styledEcho(color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle) # styleDim ext resetStyle
     
-        
-#  ███████   ███████   ██     ██  ████████   ███  ███      ████████
-# ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
-# ███       ███   ███  █████████  ████████   ███  ███      ███████ 
-# ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
-#  ███████   ███████   ███   ███  ███        ███  ███████  ████████
-
-proc compile(file : string, outDir = "bin") : bool = 
+        #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
+        # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
+        # ███       ███   ███  █████████  ████████   ███  ███      ███████ 
+        # ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
+        #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
+        proc compile(file : string, outDir = "bin") : bool = 
     profileScope("comp")
     let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
@@ -115,14 +104,12 @@ proc compile(file : string, outDir = "bin") : bool =
     else: 
         if verbose: styledEcho(fgGreen, "✔ ", fgWhite, cmd)
         true
-        
-# █████████  ████████   ███████  █████████   ███████
-#    ███     ███       ███          ███     ███     
-#    ███     ███████   ███████      ███     ███████ 
-#    ███     ███            ███     ███          ███
-#    ███     ████████  ███████      ███     ███████ 
-
-proc runTests = 
+        # █████████  ████████   ███████  █████████   ███████
+        #    ███     ███       ███          ███     ███     
+        #    ███     ███████   ███████      ███     ███████ 
+        #    ███     ███            ███     ███          ███
+        #    ███     ████████  ███████      ███     ███████ 
+        proc runTests = 
     profileScope("test")
     for f in testFiles: 
         let cmd = &"nim r --colors:on {f}"
@@ -165,12 +152,10 @@ proc runTests =
         if (exitCode != 0): 
             styledEcho(fgRed, "✘ ", &"{cmd}")
         echo("")
-        
-if files.len: 
+        if files.len: 
 
     let transpiled = if transpile: rndr.files(files) else: trans.pile(files)
     quit((transpiled.len - files.len))
-
 if tests: 
     runTests()
     quit(0)
@@ -179,7 +164,6 @@ if tests:
 # █████████  █████████     ███     ███       █████████
 # ███   ███  ███   ███     ███     ███       ███   ███
 # ██     ██  ███   ███     ███      ███████  ███   ███
-
 proc watch(paths : var seq[string]) = 
 
     addHandler(newConsoleLogger(fmtStr = "▸ ", useStderr = true))
@@ -255,5 +239,4 @@ proc watch(paths : var seq[string]) =
                     logFile(trans.trans(f), "✔ ")
                 restart()
         sleep(200)
-                
-watch(@[getCurrentDir()])
+                watch(@[getCurrentDir()])

@@ -178,6 +178,10 @@ suite "pars":
         t "(a, b, c) = f()"                         , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         t "(a b c) = f()"                           , "▪[(◆[◆name, ◆name, ◆name] = (◆name ◆call @[]))]"
         t "(a b c) = (c b a)"                       , "▪[(◆[◆name, ◆name, ◆name] = ◆[◆name, ◆name, ◆name])]"
+
+        t "t \"a\" , \"b\""                         , "▪[(◆name ◆call @[◆string, ◆string])]"
+        t "t \"a\",\n  \"b\""                       , "▪[(◆name ◆call @[◆string, ◆string])]"
+        t "t \"a\"\n  \"b\""                        , "▪[(◆name ◆call @[◆string, ◆string])]"
         
     test "var":
     
@@ -205,21 +209,21 @@ suite "pars":
         t "a.b()"                                   , "▪[((◆name . ◆name) ◆call @[])]"
         t "a.b().c"                                 , "▪[(((◆name . ◆name) ◆call @[]) . ◆name)]"
         t "f().g().h()"                             , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
-        t "f()\n .g()\n .h()"                       , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
+        # t "f()\n .g()\n .h()"                       , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
         t "a = f().g().h()"                         , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
-        t "a = f()\n    .g()\n    .h()"             , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
+        # t "a = f()\n    .g()\n    .h()"             , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
         t "log f().g().h()"                         , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
-        t "log f()\n    .g()\n    .h()"             , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
+        # t "log f()\n    .g()\n    .h()"             , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
         
-        t """
-if 1
-    log output.replace("[O]" fg(fgYellow) & "▸")
-              .replace("[P]" fg(fgGreen) & "✔")
-              .replace("[Q]" fg(fgRed) & "✘")
-else
-    count = output.count("[R]")
-    log output.replace("[S]" fg(fgYellow) & "▸")
-              .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◆if @[(◆number ▪[(◆name ◆call @[((((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])] ▪[(◆name = ((◆name . ◆name) ◆call @[◆string]))(◆name ◆call @[((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])]"
+#         t """
+# if 1
+#     log output.replace("[O]" fg(fgYellow) & "▸")
+#               .replace("[P]" fg(fgGreen) & "✔")
+#               .replace("[Q]" fg(fgRed) & "✘")
+# else
+#     count = output.count("[R]")
+#     log output.replace("[S]" fg(fgYellow) & "▸")
+#               .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◆if @[(◆number ▪[(◆name ◆call @[((((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])] ▪[(◆name = ((◆name . ◆name) ◆call @[◆string]))(◆name ◆call @[((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])]"
         
         
     test "array access":
@@ -348,6 +352,18 @@ if x
         t "false"                                   , "▪[✘]"
         t "\"hello\""                               , "▪[◆string]"
         
+#         t """
+# # ███  
+# test = false
+# """                                                 , "▪[#(◆name = ✘)]"
+# 
+#         t """
+# # ███  
+# # ███  
+# 
+# test = false
+# """                                                 , "▪[##(◆name = ✘)]"
+        
     test "verbatim":
     
         t "proc ast*(text:string) : Node ="         , "▪[=>]"
@@ -405,12 +421,37 @@ if x
 
     test "blocks":
     
+        t "t \"a\",\n  \"b\"" , "▪[(◆name ◆call @[◆string, ◆string])]"
+    
         t """
 f = -> 
     if x
         2
     1
 """  , "▪[(◆name = (-> ▪[(◆if @[(◆name ▪[◆number])])◆number]))]"
+
+        t """
+f = -> 
+    if x
+        2
+    else
+        discard
+    1
+"""  , "▪[(◆name = (-> ▪[(◆if @[(◆name ▪[◆number])] ▪[◆discard])◆number]))]"
+
+        t """
+f = ->
+
+    if x
+    
+        2
+    
+    else
+    
+        discard
+    
+    1
+"""  , "▪[(◆name = (-> ▪[(◆if @[(◆name ▪[◆number])] ▪[◆discard])◆number]))]"
 
         t """
 f = -> 

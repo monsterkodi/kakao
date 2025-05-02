@@ -49,7 +49,7 @@ type NodeKind* = enum
     ●converter
     ●macro
     ●proc
-    ●typedef
+    ●typeDef
     ●enum
     ●class
     ●member
@@ -519,13 +519,13 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
 
     var token: Token
     var block_indent : int
-    if p.tok == ◆indent
+    while p.tok == ◆indent
         token = p.consume() 
         block_indent = p.current.col
     
     var bn = bn
     if bn == nil
-        bn = Node(token:token, kind:●block, expressions:default seq[Node])
+        bn = Node(token:token, kind:●block, expressions: @[])
         
     var expr : Node = p.expression()
     
@@ -563,11 +563,15 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
             
         expr = p.expression()
     bn
-    
-proc rBlock(p:Parser) : Node =
 
-    p.parseBlock()
-    
+proc expressionOrIndentedBlock(p: Parser, token:Token, col:int): Node =
+
+    if p.tok == ◆indent
+        if p.current.str.len > col
+            ⮐  p.parseBlock()
+    else
+        ⮐  p.expression(token)
+        
 proc isTokAhead(p: Parser, tokAhead:tok) : bool =
 
     var n = 0
@@ -582,21 +586,23 @@ proc isTokAhead(p: Parser, tokAhead:tok) : bool =
         c = p.peek n
     false    
     
-proc parseCallArgs(p:Parser) : seq[Node] = 
+proc parseCallArgs(p:Parser, col:int) : seq[Node] = 
 
     p.implicit = true
     p.listless = true
     var list : seq[Node]
     let line = p.current.line
     var expr : Node = p.expression()
-    
     while expr != nil
         list.add expr        
-        if p.current.line != line and p.tok != ◆comma
-            break
+        p.swallow ◆comma
+        if p.tok == ◆indent
+            if p.current.str.len > col
+                p.swallow()
+            else
+                break
         if p.tok in {◆comment_start}
             break
-        p.swallow ◆comma
         expr = p.expression()
     p.listless = false
     p.implicit = false
@@ -605,7 +611,7 @@ proc parseCallArgs(p:Parser) : seq[Node] =
 proc lCall(p: Parser, callee: Node): Node =
 
     let token = p.consume() # (
-    let args = p.parseCallArgs()
+    let args = p.parseCallArgs(callee.token.col)
     p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
@@ -621,7 +627,7 @@ proc rSymbol(p: Parser): Node =
                             ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
                             ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
             if currt.tok notin optoks
-                let args = p.parseCallArgs()
+                let args = p.parseCallArgs(token.col)
                 ⮐  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
 
     Node(token:token, kind:●literal)
@@ -743,7 +749,7 @@ proc rIf(p: Parser): Node =
     
     if p.tok in {◆else, ◆then}
         p.swallow() # else or then without condition
-        elseBranch = p.expression()
+        elseBranch = p.then()
     
     Node(token:token, kind:●if, cond_thens:condThens,`else`:elseBranch)
 
@@ -925,7 +931,7 @@ proc rKeyword(p: Parser): Node =
     
 proc rImport(p: Parser): Node = Node(token:p.consume(), kind: ●import)
 proc rProc(p: Parser): Node = Node(token:p.consume(), kind: ●proc)
-proc rTypeDef(p: Parser): Node = Node(token:p.consume(), kind: ●typedef)
+proc rTypeDef(p: Parser): Node = Node(token:p.consume(), kind: ●typeDef)
 proc rMacro(p: Parser): Node = Node(token:p.consume(), kind: ●macro)
 proc rTemplate(p: Parser): Node = Node(token:p.consume(), kind: ●template)
 proc rConverter(p: Parser): Node = Node(token:p.consume(), kind: ●converter)
@@ -1229,7 +1235,7 @@ proc rPreOp(p: Parser): Node =
 proc lAssign(p: Parser, left: Node): Node =
 
     let token = p.consume()
-    let right = p.expression(token)
+    let right = p.expressionOrIndentedBlock(token, left.token.col)
 
     Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
@@ -1390,7 +1396,6 @@ proc setup(p: Parser) =
     p.pratt ◆var,               nil,               rLet,            0
     p.pratt ◆return,            nil,               rReturn,         0
     p.pratt ◆discard,           nil,               rDiscard,        0
-    p.pratt ◆indent,            nil,               rBlock,          0
     p.pratt ◆test,              lTestCase,         rTestSuite,      0
     
     p.pratt ◆class,             nil,               rClass,          0

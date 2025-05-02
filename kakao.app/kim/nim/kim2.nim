@@ -1,3 +1,4 @@
+
 # ███   ███  ███  ██     ██
 # ███  ███   ███  ███   ███
 # ███████    ███  █████████
@@ -7,15 +8,15 @@
 use std ▪ monotimes logging os osproc sequtils tables terminal times strformat strutils parseopt random pegs osproc streams asyncdispatch asyncfile posix
 use kommon trans rndr greet
 
-var optParser = initOptParser()
-var params    ◇ seq[string]
-var files     ◇ seq[string] 
-var outdir    = ""
-var tests     = false
-var verbose   = false
-var transpile = false
+optParser = initOptParser()
+params    ◇ seq[string]
+files     ◇ seq[string] 
+tests     = false
+verbose   = false
+transpile = false
+outdir    = ""
 
-var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
+testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
 
 randomize()
 

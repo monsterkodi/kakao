@@ -395,6 +395,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                 t.advance 1
             if t.segi >= t.segs.len
                 break
+            if t.tokens[^1].tok == ◆indent
+                t.tokens.pops()
             t.tokens.add t.token
             continue
                 

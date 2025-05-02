@@ -472,7 +472,7 @@ proc rnd(r: Rndr, n: Node) =
             r.▸testSuite(n)
         of ●testCase:
             r.▸testCase(n)
-        of ●literal, ●keyword:
+        of ●literal, ●keyword, ●type:
             r.tok n
         of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter :
             r.tok n
@@ -480,7 +480,7 @@ proc rnd(r: Rndr, n: Node) =
             echo &"unhandled {n} {n.kind}"
             r.tok n
 
-proc render*(code: string, autovar=false): string =
+proc render*(code:string, autovar=true): string =
 
     var root = ast(code)
     if autovar:
@@ -496,8 +496,7 @@ proc file*(file: string) : string =
     # echo &"fileOut {fileOut}"
     let code = file.readFile()
     # echo &"code {code}"
-    let trns = render(code)
-    echo &"{trns}"
+    echo render(code)
     fileOut
     
 proc files*(files: seq[string]): seq[string] = 
