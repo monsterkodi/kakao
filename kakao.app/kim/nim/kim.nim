@@ -142,8 +142,9 @@ proc compile(file:string, outDir:string="bin") : bool =
 #    ███     ███            ███     ███          ███
 #    ███     ████████  ███████      ███     ███████ 
 
-proc runTests() =
+proc runTests() : bool =
     profileScope "test"
+    var fail = false
     echo "\x1bc"
     for f in testFiles:
         # let cmd = &"nim r --colors:on {f}"
@@ -192,7 +193,9 @@ proc runTests() =
             
         if exitCode != 0:
             styledEcho fgRed, "✘ ", &"{f}"
+            fail = true
     echo ""
+    not fail
 
 if files.len:
 
@@ -206,7 +209,7 @@ if files.len:
         quit(transpiled.len - files.len)    
 
 if tests:
-    runTests()
+    discard runTests()
     quit(0)
  
 # ███   ███   ███████   █████████   ███████  ███   ███
@@ -290,7 +293,8 @@ proc watch(paths:seq[string]) =
                 verb &"transpiled {f}"    
                 logFile f, "✔ "
             # verb "runTests"    
-            runTests()
+            if not runTests():
+                doBuild = false
             
         if doBuild:
             # verb "doBuild"    
@@ -299,6 +303,7 @@ proc watch(paths:seq[string]) =
                     let transpiled = trans.trans(f)
                     logFile transpiled, "✔ "
                 restart()
+                
         sleep 200
         
 watch(@[getCurrentDir()]) 

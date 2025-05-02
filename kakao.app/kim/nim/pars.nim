@@ -485,6 +485,13 @@ proc isNextLineIndented(p: Parser, token:Token): bool =
         
     return  p.peek(n).str.len > token.col
     
+proc isThenlessIf(p:Parser, token:Token) : bool =
+
+    if p.isNextLineIndented token:
+        return  false
+
+    not p.isTokAhead ◆then
+    
 proc getPrecedence(p: Parser, token: Token): int =
 
     if token.tok.ord < p.pratts.len:
@@ -586,6 +593,12 @@ proc isTokAhead(p: Parser, tokAhead:tok) : bool =
         c = p.peek n
     false    
     
+#  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
+# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
+# ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
+# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
+#  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
+
 proc parseCallArgs(p:Parser, col:int) : seq[Node] = 
 
     p.implicit = true
@@ -608,30 +621,95 @@ proc parseCallArgs(p:Parser, col:int) : seq[Node] =
     p.implicit = false
     list
     
-proc lCall(p: Parser, callee: Node): Node =
+# █████████  ███   ███  ████████   ████████
+#    ███      ███ ███   ███   ███  ███     
+#    ███       █████    ████████   ███████ 
+#    ███        ███     ███        ███     
+#    ███        ███     ███        ████████
+
+proc parseType(p: Parser): Node =
+    
+    var token = p.consume()
+    token.tok = ◆type
+    
+    if p.tok == ◆square_open:
+        while p.tok notin {◆eof}:
+            let t = p.consume()
+            token.str &= t.str
+            if t.tok == ◆square_close:
+                break
+    
+    Node(token:token, kind:●type)
+    
+proc parseVar(p: Parser): Node = 
+
+    var token = p.current()
+    let var_name = p.value()
+    var var_value : Node
+    var var_type  : Node
+    
+    if p.tok == ◆assign:
+        p.swallow()
+        var_value = p.expression()
+    elif p.tok in {◆val_type, ◆var_type}:
+        token = p.consume()
+        var_type = p.parseType()
+        if p.tok == ◆assign:
+            p.swallow()
+            var_value = p.expression()
+    
+    Node(token:token, kind: ●var, var_name:var_name, var_type:var_type, var_value:var_value)
+    
+proc parseModule(p:Parser) : Node = 
+
+    let line = p.current.line
+    var s = ""
+    while p.current.str notin @["▪", "◆"]:
+        let e = p.current.col + p.current.str.len
+        s &= p.consume().str
+        if p.atEnd() or p.current.line != line:
+            break 
+        if p.current.col > e and p.current.str notin @["▪", "◆"] :
+            s &= " "
+        
+    Node(token:Token(str:s))    
+
+# ███      ███   ███████  █████████
+# ███      ███  ███          ███   
+# ███      ███  ███████      ███   
+# ███      ███       ███     ███   
+# ███████  ███  ███████      ███   
+
+proc parseParenList(p: Parser): seq[Node] =
 
     let token = p.consume() # (
-    let args = p.parseCallArgs(callee.token.col)
-    p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
-    Node(token:token, kind:●call, callee:callee, callargs:args)
     
-proc rSymbol(p: Parser): Node =
+    var args : seq[Node]
+    p.implicit = true
+    while p.tok != ◆paren_close and p.tok != ◆eof:
+        args.add p.expression()
+        p.swallow ◆comma
+    p.swallowError(◆paren_close, "Missing closing parenthesis")
+    p.implicit = false
+    if args.len == 1 and args[0].kind == ●list:
+        return  args[0].list_values
+    args
+    
+proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
 
     let token = p.consume()
-    let currt = p.peek(0)
-    if not p.implicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
-        if currt.col > token.col+token.str.len:
-            const optoks= { ◆then, ◆else, ◆elif, ◆test,
-                            ◆val_type, ◆var_type, ◆colon,
-                            ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
-                            ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
-                            ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
-            if currt.tok notin optoks:
-                let args = p.parseCallArgs(token.col)
-                return  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
-
-    Node(token:token, kind:●literal)
-        
+    
+    var args : seq[Node]
+    p.implicit = true
+    while p.tok != close and p.tok != ◆eof:
+        args.add p.expression()
+        p.swallow ◆comma
+    p.swallowError(close, "Missing closing bracket")
+    p.implicit = false
+    if args.len == 1 and args[0].kind == ●list:
+        return  args[0].list_values
+    args
+    
 proc parseNames(p:Parser) : seq[Node] = 
 
     var list : seq[Node]
@@ -665,21 +743,13 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
         list_values[0]
     else:
         Node(token:token, kind:●list, list_values:list_values)
-
-proc parseModule(p:Parser) : Node = 
-
-    let line = p.current.line
-    var s = ""
-    while p.current.str notin @["▪", "◆"]:
-        let e = p.current.col + p.current.str.len
-        s &= p.consume().str
-        if p.atEnd() or p.current.line != line:
-            break 
-        if p.current.col > e and p.current.str notin @["▪", "◆"] :
-            s &= " "
-        
-    Node(token:Token(str:s))
     
+# █████████  ███   ███  ████████  ███   ███
+#    ███     ███   ███  ███       ████  ███
+#    ███     █████████  ███████   ███ █ ███
+#    ███     ███   ███  ███       ███  ████
+#    ███     ███   ███  ████████  ███   ███
+
 proc then(p: Parser) : Node = 
 
     if p.tok == ◆then:
@@ -689,7 +759,44 @@ proc then(p: Parser) : Node =
         p.parseBlock()
     else:
         p.expression()
+    
+#  ███████   ███████   ███      ███    
+# ███       ███   ███  ███      ███    
+# ███       █████████  ███      ███    
+# ███       ███   ███  ███      ███    
+#  ███████  ███   ███  ███████  ███████
 
+proc lCall(p: Parser, callee: Node): Node =
+
+    let token = p.consume() # (
+    let args = p.parseCallArgs(callee.token.col)
+    p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
+    Node(token:token, kind:●call, callee:callee, callargs:args)
+    
+proc rSymbol(p: Parser): Node =
+
+    let token = p.consume()
+    let currt = p.peek(0)
+    
+    # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
+    # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
+    # ███  █████████  ████████   ███      ███  ███       ███     ███   
+    # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
+    # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
+
+    if not p.implicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
+        if currt.col > token.col+token.str.len:
+            const optoks= { ◆then, ◆else, ◆elif, ◆test,
+                            ◆val_type, ◆var_type, ◆colon,
+                            ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
+                            ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
+                            ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
+            if currt.tok notin optoks:
+                let args = p.parseCallArgs(token.col)
+                return  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
+
+    Node(token:token, kind:●literal)
+        
 # ███  ████████
 # ███  ███     
 # ███  ██████  
@@ -860,51 +967,7 @@ proc rSwitch(p: Parser): auto =
             return  p.error("Expected default value", token)
     
     Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
-        
-proc parseParenList(p: Parser): seq[Node] =
-
-    let token = p.consume() # (
-    
-    var args : seq[Node]
-    p.implicit = true
-    while p.tok != ◆paren_close and p.tok != ◆eof:
-        args.add p.expression()
-        p.swallow ◆comma
-    p.swallowError(◆paren_close, "Missing closing parenthesis")
-    p.implicit = false
-    if args.len == 1 and args[0].kind == ●list:
-        return  args[0].list_values
-    args
-    
-proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
-
-    let token = p.consume()
-    
-    var args : seq[Node]
-    p.implicit = true
-    while p.tok != close and p.tok != ◆eof:
-        args.add p.expression()
-        p.swallow ◆comma
-    p.swallowError(close, "Missing closing bracket")
-    p.implicit = false
-    if args.len == 1 and args[0].kind == ●list:
-        return  args[0].list_values
-    args
-
-proc parseType(p: Parser): Node =
-    
-    var token = p.consume()
-    token.tok = ◆type
-    
-    if p.tok == ◆square_open:
-        while p.tok notin {◆eof}:
-            let t = p.consume()
-            token.str &= t.str
-            if t.tok == ◆square_close:
-                break
-    
-    Node(token:token, kind:●type)
-        
+                
 proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.consume() # [
@@ -929,32 +992,13 @@ proc rKeyword(p: Parser): Node =
 
     Node(token:p.consume(), kind: ●keyword)
     
-proc rImport(p: Parser): Node = Node(token:p.consume(), kind: ●import)
-proc rProc(p: Parser): Node = Node(token:p.consume(), kind: ●proc)
-proc rTypeDef(p: Parser): Node = Node(token:p.consume(), kind: ●typeDef)
-proc rMacro(p: Parser): Node = Node(token:p.consume(), kind: ●macro)
-proc rTemplate(p: Parser): Node = Node(token:p.consume(), kind: ●template)
-proc rConverter(p: Parser): Node = Node(token:p.consume(), kind: ●converter)
-    
-proc parseVar(p: Parser): Node = 
-
-    var token = p.current()
-    let var_name = p.value()
-    var var_value : Node
-    var var_type  : Node
-    
-    if p.tok == ◆assign:
-        p.swallow()
-        var_value = p.expression()
-    elif p.tok in {◆val_type, ◆var_type}:
-        token = p.consume()
-        var_type = p.parseType()
-        if p.tok == ◆assign:
-            p.swallow()
-            var_value = p.expression()
-    
-    Node(token:token, kind: ●var, var_name:var_name, var_type:var_type, var_value:var_value)
-    
+proc rImport    (p: Parser): Node = Node(token:p.consume(), kind: ●import)
+proc rProc      (p: Parser): Node = Node(token:p.consume(), kind: ●proc)
+proc rTypeDef   (p: Parser): Node = Node(token:p.consume(), kind: ●typeDef)
+proc rMacro     (p: Parser): Node = Node(token:p.consume(), kind: ●macro)
+proc rTemplate  (p: Parser): Node = Node(token:p.consume(), kind: ●template)
+proc rConverter (p: Parser): Node = Node(token:p.consume(), kind: ●converter)
+        
 proc rLet(p: Parser): Node =
 
     Node(token:p.consume(), kind: ●let, let_expr:p.parseVar())
@@ -1181,13 +1225,6 @@ proc rFunc(p: Parser): Node =
     let func_body = p.then()
     
     Node(token:token, kind:●func, func_body:func_body)
-
-proc isThenlessIf(p:Parser, token:Token) : bool =
-
-    if p.isNextLineIndented token:
-        return  false
-
-    not p.isTokAhead ◆then
 
 proc rReturn(p: Parser): Node =
 
