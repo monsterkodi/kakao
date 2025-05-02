@@ -209,21 +209,21 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "a.b()"                                   , "▪[((◆name . ◆name) ◆call @[])]"
         t "a.b().c"                                 , "▪[(((◆name . ◆name) ◆call @[]) . ◆name)]"
         t "f().g().h()"                             , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
-        # t "f()\n .g()\n .h()"                       , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
+        t "f()\n .g()\n .h()"                       , "▪[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])]"
         t "a = f().g().h()"                         , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
-        # t "a = f()\n    .g()\n    .h()"             , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
+        t "a = f()\n    .g()\n    .h()"             , "▪[(◆name = (((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[]))]"
         t "log f().g().h()"                         , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
-        # t "log f()\n    .g()\n    .h()"             , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
+        t "log f()\n    .g()\n    .h()"             , "▪[(◆name ◆call @[(((((◆name ◆call @[]) . ◆name) ◆call @[]) . ◆name) ◆call @[])])]"
         
-#         t """
-# if 1
-#     log output.replace("[O]" fg(fgYellow) & "▸")
-#               .replace("[P]" fg(fgGreen) & "✔")
-#               .replace("[Q]" fg(fgRed) & "✘")
-# else
-#     count = output.count("[R]")
-#     log output.replace("[S]" fg(fgYellow) & "▸")
-#               .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◆if @[(◆number ▪[(◆name ◆call @[((((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])] ▪[(◆name = ((◆name . ◆name) ◆call @[◆string]))(◆name ◆call @[((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])]"
+        t """
+if 1
+    log output.replace("[O]" fg(fgYellow) & "▸")
+              .replace("[P]" fg(fgGreen) & "✔")
+              .replace("[Q]" fg(fgRed) & "✘")
+else
+    count = output.count("[R]")
+    log output.replace("[S]" fg(fgYellow) & "▸")
+              .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◆if @[(◆number ▪[(◆name ◆call @[((((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])] ▪[(◆name = ((◆name . ◆name) ◆call @[◆string]))(◆name ◆call @[((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])]"
         
         
     ▸ array access
@@ -351,18 +351,18 @@ if x
         t "true"                                    , "▪[✔]"
         t "false"                                   , "▪[✘]"
         t "\"hello\""                               , "▪[◆string]"
+        t "\n\n# comment\n\n"                       , "▪[#]"
         
-#         t """
-# # ███  
-# test = false
-# """                                                 , "▪[#(◆name = ✘)]"
-# 
-#         t """
-# # ███  
-# # ███  
-# 
-# test = false
-# """                                                 , "▪[##(◆name = ✘)]"
+        t """
+# ███  
+test = false
+"""                                                 , "▪[#(◆name = ✘)]"
+
+        t """
+# ███  
+# ███  
+test = false
+"""                                                 , "▪[##(◆name = ✘)]"
         
     ▸ verbatim
     

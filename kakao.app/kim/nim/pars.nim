@@ -1459,6 +1459,7 @@ proc setup(p: Parser) =
 proc ast*(text:string) : Node =
 
     let tokens = tokenize text
+    # echo &"ast* {tokens}"
     var p = Parser(tokens:tokens, pos:0, text:text)
     p.setup()
     p.parseBlock()

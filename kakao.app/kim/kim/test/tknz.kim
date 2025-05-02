@@ -352,16 +352,21 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
     ▸ comments
     
         t "#" , @[
-            tk("#",         ◆comment_start, 0, 0)]
+            tk("#",                         ◆comment_start, 0, 0)]
                             
         t "# if true" , @[  
-            tk("#",         ◆comment_start, 0, 0),
-            tk(" if true",  ◆comment,       0, 1)]
+            tk("#",                         ◆comment_start, 0, 0),
+            tk(" if true",                  ◆comment,       0, 1)]
 
         t "### if\n    true###" , @[
-            tk("###",           ◆comment_start, 0, 0),
-            tk(" if\n    true", ◆comment,       0, 3),
-            tk("###",           ◆comment_end,   1, 8)]
+            tk("###",                       ◆comment_start, 0, 0),
+            tk(" if\n    true",             ◆comment,       0, 3),
+            tk("###",                       ◆comment_end,   1, 8)]
+            
+        t "\n\n# comment\n\n" , @[
+            tk("#",                         ◆comment_start, 2, 0),
+            tk(" comment",                  ◆comment,       2, 1),
+            tk("",                          ◆indent,        3, 0)]
 
         t """
 # ███   ███  ███  ██     ██

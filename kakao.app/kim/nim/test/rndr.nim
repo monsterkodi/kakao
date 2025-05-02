@@ -19,6 +19,8 @@ suite "rndr":
         t "true"                                    , "true"
         t "false"                                   , "false"
         t "\"hello\""                               , "\"hello\""
+        t "# comment"                               , "# comment"
+        t "\n\n# comment\n\n"                       , "# comment"
                                                     
     test "math ops                                      ":
                                                     
@@ -268,7 +270,9 @@ b = false"""
 # ███  
 
 test = false
+
 params ◇ seq[string]
+
 """ , """
 # ███  
 var test = false

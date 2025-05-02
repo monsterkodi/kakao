@@ -153,19 +153,26 @@ proc col(t:Tknzr) : int    = t.segi - t.bol
 proc nextLine(t:Tknzr) =
 
     assert t.segs[t.segi] == "\n"
-    t.segi += 1
+    t.incr 1
     t.line += 1
     t.bol = t.segi
     t.eol = t.bol
     
     while t.eol < t.segs.len and t.segs[t.eol] != "\n"
         t.eol += 1
+        
+proc lineIncr(t:Tknzr, c:string) =
+
+    if c == "\n"
+        t.nextLine()
+    else
+        t.incr 1
 
 proc srng(t:Tknzr, n:int) : string =
 
     var e : int
     if n >= 0
-        e = t.segi+n
+        e = t.segi + n
     else
         e = t.eol
     if e > t.segs.len
@@ -176,7 +183,7 @@ proc advance(t:Tknzr, n:int) =
 
     for s in 0..<n 
         t.token.str &= t.peek(0)
-        t.segi += 1
+        t.incr 1
 
 proc advance(t:Tknzr, charset:set[char]) =
     
@@ -187,24 +194,21 @@ proc advanceUntil(t:Tknzr, stop: string) =
 
     while t.segi < t.segs.len and t.srng(stop.len) != stop
         t.token.str &= t.peek(0)
-        t.segi += 1
+        t.incr 1
 
 proc advanceMulti(t:Tknzr, stop: string) =
 
     while t.segi < t.segs.len and t.srng(stop.len) != stop
         let c = t.peek(0)
         t.token.str &= c
-        if c == "\n"
-            t.nextLine()
-        else
-            t.segi += 1
+        t.lineIncr c
     
 proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
 
     if t.token.str.len
         t.tokens.add t.token
     t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
-    t.segi += incr
+    t.incr incr
     
 proc push(t:Tknzr, tk:tok) =
 
@@ -260,10 +264,7 @@ proc string(t:Tknzr) =
             return
 
         t.token.str &= c
-        if c == "\n"
-            t.nextLine()
-        else
-            t.segi += 1
+        t.lineIncr c
                 
     if t.segi <= t.eol-1 
         t.commit(t.delimiter, ◆string_end, t.delimiter.len)
@@ -380,6 +381,9 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
 
     t.segs = segs
     
+    while t.segi < t.segs.len and t.segs[t.segi] in @["\n", " "]
+        t.lineIncr t.segs[t.segi]
+
     while t.eol < t.segs.len and t.segs[t.eol] != "\n"
         t.eol += 1
         
