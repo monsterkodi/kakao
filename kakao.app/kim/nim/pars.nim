@@ -1068,7 +1068,9 @@ proc rUse(p: Parser): Node =
         
 proc rComment(p: Parser): Node = 
 
-     Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
+    let n = Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
+    p.swallow ◆comment_end
+    n
     
 proc rReturnType(p: Parser): Node =
 

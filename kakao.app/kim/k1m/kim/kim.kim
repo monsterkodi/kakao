@@ -200,9 +200,7 @@ proc runTests() : bool =
 if files.len
 
     if transpile
-        # profileStart 'translate'
         let transpiled = rndr.files(files)
-        # profileStop 'translate'
         quit(transpiled.len - files.len)    
     else
         let transpiled = trans.pile(files)

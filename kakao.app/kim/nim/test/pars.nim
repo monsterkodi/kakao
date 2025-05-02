@@ -404,6 +404,10 @@ test = false
         t "class Node\n member:string"              , "▪[(◆class ◆name ▪[(◆name : ◆name)])]"
         t "class Node\n member:string\n i:int"      , "▪[(◆class ◆name ▪[(◆name : ◆name)(◆name : ◆name)])]"
         t "class Node\n member:string\ni:int"       , "▪[(◆class ◆name ▪[(◆name : ◆name)])(◆name : ◆name)]"
+
+    test "comments":
+    
+        t "###\n\nhello from\na comment###\na = 1"  , "▪[#(◆name = ◆number)]"
         
     test "tests":
     

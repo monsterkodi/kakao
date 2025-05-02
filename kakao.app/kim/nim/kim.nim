@@ -257,6 +257,9 @@ proc watch(paths:seq[string]) =
             
                 let (dir, name, ext) = f.splitFile()
                 
+                if dir.find("k1m") >= 0:
+                    continue
+                
                 if ext == ".kim":
                     kimFiles.add(f)
                 elif ext == ".nim":

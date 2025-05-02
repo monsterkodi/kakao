@@ -1,5 +1,5 @@
 
-let greetings* = @[
+let greetings* = [
     "💋 Keep It Simple, Stupid!",
     "💋 Overthink less, grin more!",
     "💋 Less clutter, more wonder!",
@@ -20,9 +20,9 @@ let greetings* = @[
     "🎩 Magician at the keyboard! Let's conjure some magic.",
     "🎩 Flexible beats flawless — everytime.",
     "🎩 Stay open, stay awesome.",
-    ]  
+    ]
     
-let farewells* = @[
+let farewells* = [
     "👋 Good bye! May your code always compile.",
     "👋 Good bye! May your brackets always align.",
     "👋 Farewell! May your brackets nest flawlessly.",
