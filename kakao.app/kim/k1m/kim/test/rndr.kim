@@ -10,9 +10,9 @@ import ../rndr
 template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationInfo())
 template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
 
-suite "rndr":
+▸ rndr
 
-    test "toplevel":
+    ▸ toplevel
 
         t ""                                        , ""
         t "43"                                      , "43"
@@ -22,7 +22,7 @@ suite "rndr":
         t "# comment"                               , "# comment"
         t "\n\n# comment\n\n"                       , "# comment"
                                                     
-    test "math ops                                      ":
+    ▸ math ops                                      
                                                     
         t "1 + 5 * 3"                               , "(1 + (5 * 3))"
         t "1 / 5 - 3"                               , "((1 / 5) - 3)"
@@ -31,7 +31,7 @@ suite "rndr":
         t "1 + 2 + 3"                               , "((1 + 2) + 3)"
         t "1 * 2 + 3 * 4"                           , "((1 * 2) + (3 * 4))"
                                                     
-    test "boolean ops                                   ":
+    ▸ boolean ops                                   
                                                     
         t "a && b || c"                             , "((a and b) or c)"
         t "a and b or c"                            , "((a and b) or c)"
@@ -46,11 +46,11 @@ suite "rndr":
         t "!a || !b"                                , "(not a or not b)"
         t "not a or not b"                          , "(not a or not b)"
                                                     
-    test "ampersand                                     ":
+    ▸ ampersand                                     
                                                     
         t "a & b"                                   , "a & b"
                                                     
-    test "parens                                        ":
+    ▸ parens                                        
                                                     
         t "(1 + 2) * 3"                             , "((1 + 2) * 3)"
         t "(1)"                                     , "1"
@@ -61,7 +61,7 @@ suite "rndr":
         t "a * (b + c) / d"                         , "((a * (b + c)) / d)"
         t "3 * (1 + 2)"                             , "(3 * (1 + 2))"
         
-    test "vars":
+    ▸ vars
     
         t "optParser = initOptParser()"             , "optParser = initOptParser()"
         t "str = \"\"\nbool = false\nnum = 1"       , "str = \"\"\nbool = false\nnum = 1"
@@ -73,12 +73,12 @@ suite "rndr":
         t "let i"                                   , "let i"
         t "let (output exitCode) = execCmdEx(cmd)"  , "let (output, exitCode) = execCmdEx(cmd)"
         
-    test "arg types":
+    ▸ arg types
     
         t "◇seq[string] files = @[]"                , "files : seq[string] = @[]" 
         t "◇ seq[string] files      = @[]"          , "files : seq[string] = @[]" 
     
-    test "func":
+    ▸ func
     
         t "f = ->"                                  , "proc f ="
         t "f = a=1 ->"                              , "proc f(a = 1) ="
@@ -101,7 +101,7 @@ suite "rndr":
                                                     
         t "setHook(() -> {.noconv.} quit(0))"       , "setHook(proc () {.noconv.} = quit(0))"
         
-    test "call":
+    ▸ call
     
         t "f()"                                     , "f()"             
         t "f(g())"                                  , "f(g())"          
@@ -119,7 +119,7 @@ suite "rndr":
         t "let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", 
           "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})"
         
-    test "arglist":
+    ▸ arglist
     
         t "f(a, b, c)"                              , "f(a, b, c)"
         t "g a, b, c"                               , "g(a, b, c)"
@@ -129,7 +129,7 @@ suite "rndr":
         t "t \"a\",\n  \"b\""                       , "t(\"a\", \"b\")"
         t "t \"a\"\n  \"b\""                        , "t(\"a\", \"b\")"
         
-    test "tuple assign":
+    ▸ tuple assign
     
         t "(a, b) = c"                              , "(a, b) = c"
         t "(a b) = c"                               , "(a, b) = c"
@@ -137,7 +137,7 @@ suite "rndr":
         t "(a b c) = f()"                           , "(a, b, c) = f()"
         t "(a b c) = (c b a)"                       , "(a, b, c) = (c, b, a)"
         
-    test "assign":
+    ▸ assign
     
         t "a = 1"                                   , "a = 1"
         t "a = b = 1"                               , "a = b = 1"
@@ -150,30 +150,28 @@ b = false""" , """
 a = 1
 # comment
 b = false"""
-
-    test "arrays":
-    
-        t "a = [ 1  2 ]"                            , "a = @[1, 2]"
-        # t "a = [\n    1\n    2\n    ]"              , "a = @[\n    1\n    2\n    ]"
-    
-#         t """
-# let greetings = [
-#     "💋 Keep It Simple, Stupid!",
-#     "💋 Overthink less, grin more!"
-#     ]""" , """
-# let greetings = @[
-#     "💋 Keep It Simple, Stupid!",
-#     "💋 Overthink less, grin more!"
-#     ]"""
         
-    test "properties        ":
+    ▸ arrays
+    
+        t """
+        
+let greetings* = [
+    "💋 Keep It Simple, Stupid!",
+    "💋 Overthink less, grin more!"
+    ]""" , """
+let greetings* = @[
+    "💋 Keep It Simple, Stupid!!",
+    "💋 Overthink less, grin more!"
+    ]"""
+        
+    ▸ properties        
         
         t "a.b"                                     , "a.b"     
         t "a.b.c"                                   , "a.b.c"   
         t "a.b()"                                   , "a.b()"   
         t "a.b().c"                                 , "a.b().c" 
                                                     
-    test "use                                           ":
+    ▸ use                                           
                                                     
         t "use std ▪ unittest"                      , "import std/[unittest]"
         t "use std ▪ pegs strutils strformat"       , "import std/[pegs, strutils, strformat]"
@@ -189,7 +187,7 @@ b = false"""
                                                     
         t "use a b c"                               , "import a\nimport b\nimport c"
                                                     
-    test "if                                            ":
+    ▸ if                                            
                                                     
         t "if true then ⮐  false"                   , "if true: return false"                 
         t "if true then ⮐  1 else ⮐  2"             , "if true: return 1 else: return 2"           
@@ -210,14 +208,14 @@ b = false"""
         t "if true\n  log msg"                      , "if true: \n  echo(msg)"
         t "if true\n  log msg\n  log msg"           , "if true: \n  echo(msg)\n  echo(msg)"
                                                     
-    test "for                                           ":
+    ▸ for                                           
                                                     
         t "for a in 0..2 ➜ true"                    , "for a in [0..2]: true"     
         t "for a in 0..2\n  true"                   , "for a in [0..2]: \n  true"   
         t "for a in 0..2 ➜\n  true"                 , "for a in [0..2]: \n  true"  
         t "for kind, key, val in opt.get()"         , "for kind, key, val in opt.get(): "  
                                                     
-    test "switch                                        ":
+    ▸ switch                                        
                                                     
         t "switch x\n  a ➜ 1\n  b c ➜ 2"            , "case x:\n  of a: 1\n  of b, c: 2"
         t "switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4"     , "case x:\n  of a: 1\n  of b, c: 2\n  else: 4"
@@ -231,7 +229,7 @@ b = false"""
         t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "case x:\n  of 1, 2: a\n  else: c"
         t "switch x\n a ➜ if b then c"              , "case x:\n of a: if b: c"
                                                     
-    test "strings                                       ":
+    ▸ strings                                       
                                                     
         t "s = ''"                                  , "s = ''"
         t "s = \"\""                                , "s = \"\""
@@ -251,7 +249,7 @@ b = false"""
         t "cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
           "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
           
-    test "triple strings":
+    ▸ triple strings
     
         t "s = \"\"\"hello world\"\"\""                , "s = \"\"\"hello world\"\"\""  
         t "s = \"\"\"hello\nworld\"\"\""               , "s = \"\"\"hello\nworld\"\"\""  
@@ -276,7 +274,7 @@ b = false"""
         t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")"
         t "t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t(\"\"\"\n    a = 1\n    b = 2\n\"\"\")"
         
-    test "autovar":
+    ▸ autovar
     
         v "a=1\nb=2\nc=b"                               , "var a = 1\nvar b = 2\nvar c = b"
         v "a=1\nb=2\nc=b\na=b\nb=2\nc=4"                , "var a = 1\nvar b = 2\nvar c = b\na = b\nb = 2\nc = 4"
@@ -319,7 +317,7 @@ proc f =
         var c = 0
     var c = 3"""
         
-    test "blocks":
+    ▸ blocks
   
         t """
 f = ->
@@ -378,7 +376,7 @@ case kind:
         discard
 # comment"""
 
-    test "enum":
+    ▸ enum
     
         t "enum ABC\n a\n b\n c"                         , "type ABC = enum\n a\n b\n c"
         t """enum tok
@@ -387,7 +385,7 @@ case kind:
     ◆when
     ◆then = "➜""""
     
-    test "class":
+    ▸ class
     
         t "class ABC\n a:int\n b:int\n c:int"            , "type ABC = ref object\n a: int\n b: int\n c: int"
         
@@ -413,7 +411,7 @@ case kind:
                 eol: int
                 line: int"""
     
-    test "comments":
+    ▸ comments
     
         t "two = 1 + 1 # addition"                       , "two = (1 + 1) # addition"
         
@@ -430,7 +428,7 @@ case kind:
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███"""
         
-    test "tests":
+    ▸ tests
 
         t "▸ a test suite"                         , "suite \"a test suite\": "
         t """
@@ -446,7 +444,7 @@ suite "suite":
     test "test2": 
         check xy == "42""""
         
-    test "misc":
+    ▸ misc
     
         t """    
 if bytesRead > 0
@@ -482,13 +480,13 @@ icon =
     else: 
         "  """"
         
-    test "verbatim1":
+    ▸ verbatim1
         t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
-    test "verbatim2":
+    ▸ verbatim2
         t "proc ast*(text:string) : Node =", "proc ast*(text:string) : Node ="
-    test "verbatim3":
+    ▸ verbatim3
         t "converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0"
-    test "verbatim4":
+    ▸ verbatim4
         t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
-    test "verbatim5":
+    ▸ verbatim5
         t "macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped ="

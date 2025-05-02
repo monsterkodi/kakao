@@ -248,20 +248,20 @@ type RHS = proc(p: Parser): Node
 type LHS = proc(p: Parser, left: Node): Node
     
 type Pratt = object
-        rhs: RHS
-        lhs: LHS
-        precedence: int
+        rhs         : RHS
+        lhs         : LHS
+        precedence  : int
          
 type Parser* = ref object
-        text     : string # used in `$` for debugging. should be removed eventually 
-        tokens*  : seq[Token]
-        pratts*  : seq[Pratt]
-        blocks*  : seq[Node]
-        implicit : bool
-        listless : bool
-        returning: bool
-        typeless : bool
-        pos*     : int
+        tokens*     : seq[Token]
+        pratts*     : seq[Pratt]
+        blocks*     : seq[Node]
+        pos*        : int
+        explicit    : bool
+        listless    : bool
+        returning   : bool
+        typeless    : bool
+        text        : string # used in `$` for debugging. should be removed eventually 
     
 proc current(p: Parser): Token =
 
@@ -601,7 +601,7 @@ proc isTokAhead(p: Parser, tokAhead:tok) : bool =
 
 proc parseCallArgs(p:Parser, col:int) : seq[Node] = 
 
-    p.implicit = true
+    p.explicit = true
     p.listless = true
     var list : seq[Node]
     let line = p.current.line
@@ -618,7 +618,7 @@ proc parseCallArgs(p:Parser, col:int) : seq[Node] =
             break
         expr = p.expression()
     p.listless = false
-    p.implicit = false
+    p.explicit = false
     list
     
 # █████████  ███   ███  ████████   ████████
@@ -685,12 +685,12 @@ proc parseParenList(p: Parser): seq[Node] =
     let token = p.consume() # (
     
     var args : seq[Node]
-    p.implicit = true
+    p.explicit = true
     while p.tok != ◆paren_close and p.tok != ◆eof:
         args.add p.expression()
         p.swallow ◆comma
     p.swallowError(◆paren_close, "Missing closing parenthesis")
-    p.implicit = false
+    p.explicit = false
     if args.len == 1 and args[0].kind == ●list:
         return  args[0].list_values
     args
@@ -700,12 +700,12 @@ proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
     let token = p.consume()
     
     var args : seq[Node]
-    p.implicit = true
+    p.explicit = true
     while p.tok != close and p.tok != ◆eof:
         args.add p.expression()
         p.swallow ◆comma
     p.swallowError(close, "Missing closing bracket")
-    p.implicit = false
+    p.explicit = false
     if args.len == 1 and args[0].kind == ●list:
         return  args[0].list_values
     args
@@ -714,7 +714,7 @@ proc parseNames(p:Parser) : seq[Node] =
 
     var list : seq[Node]
     let line = p.current.line
-    p.implicit = true
+    p.explicit = true
     var expr : Node = p.rSymbol()
     while expr != nil:
         list.add expr        
@@ -722,7 +722,7 @@ proc parseNames(p:Parser) : seq[Node] =
             break
         p.swallow ◆comma
         expr = p.rSymbol()
-    p.implicit = false
+    p.explicit = false
     list
 
 proc parseNamesUntil(p: Parser, stop: tok) : Node =
@@ -730,7 +730,7 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
     let token = p.current
                                 
     var list_values: seq[Node]
-    p.implicit = true
+    p.explicit = true
     while p.tok != stop:
         if p.tok == ◆eof:
             return  p.error("Missing 'in' for 'for' loop (eof detected)!", token)
@@ -738,7 +738,7 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
             return  p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
         list_values.add p.rSymbol()
         p.swallow ◆comma
-    p.implicit = false
+    p.explicit = false
     if list_values.len == 1:
         list_values[0]
     else:
@@ -784,7 +784,7 @@ proc rSymbol(p: Parser): Node =
     # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
     # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
-    if not p.implicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
+    if not p.explicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
         if currt.col > token.col+token.str.len:
             const optoks= { ◆then, ◆else, ◆elif, ◆test,
                             ◆val_type, ◆var_type, ◆colon,
@@ -910,11 +910,11 @@ proc switchCase(p: Parser, baseIndent: int): Node =
     var case_when: seq[Node]
     let token = p.current
     
-    p.implicit = true
+    p.explicit = true
     while p.tok notin {◆else, ◆then, ◆indent, ◆eof}:
         case_when.add p.value()
         p.swallow ◆comma
-    p.implicit = false
+    p.explicit = false
     
     let case_then = p.then()
                 

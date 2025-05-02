@@ -150,21 +150,19 @@ b = false""" , """
 a = 1
 # comment
 b = false"""
-
+        
     test "arrays":
     
-        t "a = [ 1  2 ]"                            , "a = @[1, 2]"
-        # t "a = [\n    1\n    2\n    ]"              , "a = @[\n    1\n    2\n    ]"
-    
-#         t """
-# let greetings = [
-#     "💋 Keep It Simple, Stupid!",
-#     "💋 Overthink less, grin more!"
-#     ]""" , """
-# let greetings = @[
-#     "💋 Keep It Simple, Stupid!",
-#     "💋 Overthink less, grin more!"
-#     ]"""
+        t """
+        
+let greetings* = [
+    "💋 Keep It Simple, Stupid!",
+    "💋 Overthink less, grin more!"
+    ]""" , """
+let greetings* = @[
+    "💋 Keep It Simple, Stupid!!",
+    "💋 Overthink less, grin more!"
+    ]"""
         
     test "properties        ":
         

@@ -10,9 +10,9 @@ import ../pars
 template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
 template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
 
-▸ pars
+suite "pars":
 
-    ▸ math ops
+    test "math ops":
         
         t "1 + 5 * 3"                               , "▪[(◆number + (◆number * ◆number))]"
         t "1 * 5 - 3"                               , "▪[((◆number * ◆number) - ◆number)]"
@@ -21,7 +21,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "1 + 2 + 3"                               , "▪[((◆number + ◆number) + ◆number)]"
         t "1 * 2 + 3 * 4"                           , "▪[((◆number * ◆number) + (◆number * ◆number))]"
         
-    ▸ boolean ops
+    test "boolean ops":
     
         t "a && b || c"                             , "▪[((◆name && ◆name) || ◆name)]"
         t "a and b or c"                            , "▪[((◆name && ◆name) || ◆name)]"
@@ -36,14 +36,14 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "!a || !b"                                , "▪[((! ◆name) || (! ◆name))]"
         t "not a or not b"                          , "▪[((! ◆name) || (! ◆name))]"
         
-    ▸ comparison ops
+    test "comparison ops":
     
         t "a == b"                                  , "▪[(◆name == ◆name)]"
         t "a != b"                                  , "▪[(◆name != ◆name)]"
         t "a >= b"                                  , "▪[(◆name >= ◆name)]"
         t "a <= b"                                  , "▪[(◆name <= ◆name)]"
 
-    ▸ parens
+    test "parens":
     
         t "(1 + 2) * 3"                             , "▪[(◆[(◆number + ◆number)] * ◆number)]"
         t "(1)"                                     , "▪[◆[◆number]]"
@@ -56,12 +56,12 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "a * (b + c) / d"                         , "▪[((◆name * ◆[(◆name + ◆name)]) / ◆name)]"
         t "3 * (1 + 2)"                             , "▪[(◆number * ◆[(◆number + ◆number)])]"
         
-    ▸ brackets
+    test "brackets":
     
         t "options = {poStdErrToStdOut, poUsePath}" , "▪[(◆name = {◆name, ◆name})]"
         t "args = [\"r\", f]"                       , "▪[(◆name = [[◆string, ◆name]]])]"
         
-    ▸ types
+    test "types":
     
         t "◇int i"                                  , "▪[(◇type(int) ◆name)]"
         t "◆int i"                                  , "▪[(◆type(int) ◆name)]"
@@ -80,7 +80,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         
         t "◇seq[string] s = @[]"                    , "▪[(◇type(seq[string]) ◆name (= (◆name[])))]"
         
-    ▸ func
+    test "func":
     
         t "->"                                      , "▪[(->)]"
         t "f = ->"                                  , "▪[(◆name = (->))]" 
@@ -123,18 +123,18 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "f = ◇Parser p ahead=1 ->"                , "▪[(◆name = (◆[(◇type(Parser) ◆name), (◇ ◆name (= ◆number))] ->))]"
         t "f = ◇Parser p ahead=1 ➜Token ->"         , "▪[(◆name = (◆[(◇type(Parser) ◆name), (◇ ◆name (= ◆number))] ➜ type(Token) ->))]"
         
-    ▸ func modfifier
+    test "func modfifier":
     
         t "{.noconv.}"                              , "▪[{.]"
         t "() -> {.noconv.}"                        , "▪[(◆[] -> {.noconv.} )]"
         t "a = () -> {.noconv.}"                    , "▪[(◆name = (◆[] -> {.noconv.} ))]"
         t "setHook(() -> {.noconv.}\n  1 + 2)"      , "▪[(◆name ◆call @[(◆[] -> {.noconv.}  ▪[(◆number + ◆number)])])]"
         
-    ▸ func body
+    test "func body":
     
         t "f = ->\n  b = 1 + 2\n  b += 3"           , "▪[(◆name = (-> ▪[(◆name = (◆number + ◆number))(◆name += ◆number)]))]" 
         
-    ▸ call
+    test "call":
     
         t "f()"                                     , "▪[(◆name ◆call @[])]"
         t "f(g())"                                  , "▪[(◆name ◆call @[(◆name ◆call @[])])]"
@@ -145,7 +145,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "f(1 2 3)"                                , "▪[(◆name ◆call @[◆number, ◆number, ◆number])]"
         t "f(1 g(h(2)))"                            , "▪[(◆name ◆call @[◆number, (◆name ◆call @[(◆name ◆call @[◆number])])])]"
     
-    ▸ implicit call    
+    test "implicit call    ":
     
         t "f a"                                     , "▪[(◆name ◆call @[◆name])]"
         t "f a.b"                                   , "▪[(◆name ◆call @[(◆name . ◆name)])]"
@@ -171,7 +171,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         
         t "f a # comment"                           , "▪[(◆name ◆call @[◆name])#]"
         
-    ▸ arglist
+    test "arglist":
     
         t "f(a, b, c)"                              , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
         t "f a, b, c"                               , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
@@ -183,7 +183,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "t \"a\",\n  \"b\""                       , "▪[(◆name ◆call @[◆string, ◆string])]"
         t "t \"a\"\n  \"b\""                        , "▪[(◆name ◆call @[◆string, ◆string])]"
         
-    ▸ var
+    test "var":
     
         t "var a"                                   , "▪[(◆var (◆name))]"
         t "var a=1"                                 , "▪[(◆var (◆name (= ◆number)))]"
@@ -192,7 +192,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "a ◇int=1"                                , "▪[(◆name ◇type(int) (= ◆number))]"
         t "a ◇int=1+2"                              , "▪[(◆name ◇type(int) (= (◆number + ◆number)))]"
         
-    ▸ assign
+    test "assign":
     
         t "a = 1"                                   , "▪[(◆name = ◆number)]"
         t "a = b = 1"                               , "▪[(◆name = (◆name = ◆number))]"
@@ -201,13 +201,8 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "(a, b) = c"                              , "▪[(◆[◆name, ◆name] = ◆name)]"
         t "(a b) = c"                               , "▪[(◆[◆name, ◆name] = ◆name)]"
         t "let (dir name ext) = triple"             , "▪[(◆let (◆[◆name, ◆name, ◆name] (= ◆name)))]"
-
-    ▸ arrays
-    
-        t "a = [ 1  2 ]"                            , "▪[(◆name = [[◆number, ◆number]]])]"
-        # t "a = [\n    1\n    2\n    ]"              , "▪[(◆name = [[◆number, ◆number]]])]"
         
-    ▸ property access        
+    test "property access        ":
         
         t "a.b"                                     , "▪[(◆name . ◆name)]"
         t "a.b.c"                                   , "▪[((◆name . ◆name) . ◆name)]"
@@ -231,11 +226,11 @@ else
               .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◆if @[(◆number ▪[(◆name ◆call @[((((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])] ▪[(◆name = ((◆name . ◆name) ◆call @[◆string]))(◆name ◆call @[((((◆name . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)]) . ◆name) ◆call @[◆string, ((◆name ◆call @[◆name]) & ◆string)])])])]"
         
         
-    ▸ array access
+    test "array access":
     
         t "a[0]"                                    , "▪[(◆name[◆number])]"
         
-    ▸ if
+    test "if":
     
         t "if true then ⮐  false"                   , "▪[(◆if @[(✔ (⮐ ✘))])]"
         t "if true then ⮐  1 else ⮐  2"             , "▪[(◆if @[(✔ (⮐ ◆number))] (⮐ ◆number))]"
@@ -271,7 +266,7 @@ if
     else
         break"""                                    , "▪[(◆if @[(◆name ▪[✔])] ▪[◆break])]"
         
-    ▸ for
+    test "for":
     
         t "0..2"                                    , "▪[(◆number .. ◆number)]"
         t "for a in 0..2 ➜ true"                    , "▪[(◆for ◆name in (◆number .. ◆number) ✔)]"
@@ -280,7 +275,7 @@ if
         t "for key val in a"                        , "▪[(◆for ◆[◆name, ◆name] in ◆name)]"  
         t "for kind, key, val in a"                 , "▪[(◆for ◆[◆name, ◆name, ◆name] in ◆name)]"  
         
-    ▸ switch
+    test "switch":
     
         t "switch x\n  a ➜ 1\n  b c ➜ 2"            , "▪[(◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)])]"
         t "switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4"     , "▪[(◆switch ◆name @[(@[◆name] ◆number), (@[◆name, ◆name] ◆number)] ◆number)]"
@@ -305,7 +300,7 @@ switch ext
     ".kim"  ➜ fun()
             ➜ continue"""                           , "▪[(◆switch ◆name @[(@[◆string] (◆name ◆call @[]))] ◆continue)]"
 
-    ▸ tailIf
+    test "tailIf":
     
         t "1*2 if true"                             , "▪[(◆if @[(✔ (◆number * ◆number))])]"                
         t "1 if true"                               , "▪[(◆if @[(✔ ◆number)])]"                
@@ -314,7 +309,7 @@ switch ext
         t "⮐  if true"                              , "▪[(◆if @[(✔ (⮐))])]"
         t "⮐  1 + 2 if 3 + 4"                       , "▪[(◆if @[((◆number + ◆number) (⮐ (◆number + ◆number)))])]"
         
-    ▸ no tailIf
+    test "no tailIf":
     
         t "⮐  if true ➜ 1"                          , "▪[(⮐ (◆if @[(✔ ◆number)]))]"
         t "⮐  if\n    true ➜ 1"                     , "▪[(⮐ (◆if @[(✔ ◆number)]))]"
@@ -325,7 +320,7 @@ if 1
 if x
     y"""                                            , "▪[(◆if @[(◆number ▪[◆number])])(◆if @[(◆name ▪[◆name])])]"
     
-    ▸ while
+    test "while":
     
         t "while true"                              , "▪[(◆while ✔)]"
         t "while false ➜ 1"                         , "▪[(◆while ✘ ◆number)]"
@@ -334,7 +329,7 @@ if x
         t "while 2\n continue"                      , "▪[(◆while ◆number ▪[◆continue])]"
         t "while 2\n break"                         , "▪[(◆while ◆number ▪[◆break])]"
         
-    ▸ strings
+    test "strings":
     
         t "s = \"hello\""                           , "▪[(◆name = ◆string)]"
         t "s = \"\"\"hello\"\"\""                   , "▪[(◆name = ◆string)]"
@@ -349,7 +344,7 @@ if x
         t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""         , "▪[(◆name ◆call @[◆string, ◆string])]"
         t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""     , "▪[(◆name ◆call @[◆string, ◆string])]"
         
-    ▸ toplevel
+    test "toplevel":
 
         t ""                                        , "▪[]"
         t "42"                                      , "▪[◆number]"
@@ -369,11 +364,11 @@ test = false
 test = false
 """                                                 , "▪[##(◆name = ✘)]"
         
-    ▸ verbatim
+    test "verbatim":
     
         t "proc ast*(text:string) : Node ="         , "▪[=>]"
         
-    ▸ use
+    test "use":
     
         t "use rndr"                                , "▪[(◆use ◆name)]"
         t "use std ▪ unittest"                      , "▪[(◆use ◆name ▪ @[◆name])]"
@@ -385,7 +380,7 @@ test = false
 
         t "import ../../rel/[s1, s2]"               , "▪[◆import]"
         
-    ▸ enum
+    test "enum":
     
         t "enum Kind"                               , "▪[(◆enum ◆name)]"
         t "enum Kind\na"                            , "▪[(◆enum ◆name)◆name]"
@@ -398,14 +393,14 @@ test = false
                     ◆then   = "➜"
             """, "▪[(◆enum ◆name ▪[◆name(◆name = ◆string)])]"
         
-    ▸ class
+    test "class":
     
         t "class Node"                              , "▪[(◆class ◆name ▪[])]"
         t "class Node\n member:string"              , "▪[(◆class ◆name ▪[(◆name : ◆name)])]"
         t "class Node\n member:string\n i:int"      , "▪[(◆class ◆name ▪[(◆name : ◆name)(◆name : ◆name)])]"
         t "class Node\n member:string\ni:int"       , "▪[(◆class ◆name ▪[(◆name : ◆name)])(◆name : ◆name)]"
         
-    ▸ tests
+    test "tests":
     
         t "▸ a test suite"                          , "▪[(▸ suite)]"
         check ast("▸ a test suite").expressions[0].kind      == ●testSuite
@@ -424,7 +419,7 @@ test = false
        rndr("")   ▸ ""
        rndr("42") ▸ "42" """  , "▪[(▸ suite ▪[(▸ section ▪[((◆name ◆call @[◆string]) ▸ ◆string)((◆name ◆call @[◆string]) ▸ ◆string)])])]"
 
-    ▸ blocks
+    test "blocks":
     
         t "t \"a\",\n  \"b\"" , "▪[(◆name ◆call @[◆string, ◆string])]"
     
