@@ -368,6 +368,10 @@ proc `$`*(n: Node): string =
             let mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
             let bdy = choose(n.func_body, &" {n.func_body}", "")
             s = &"({sig}{s}{mdf}{bdy})"
+        of ●signature:
+            let a = choose(n.sig_args, &"{n.sig_args}", "")
+            let t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
+            s = &"{a}{t}"
         of ●arrayAccess:
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
@@ -383,10 +387,6 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.let_expr})"
         of ●type:
             s = &"type({n.token.str})"
-        of ●signature:
-            let a = choose(n.sig_args, &"{n.sig_args}", "")
-            let t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
-            s = &"{a}{t}"
         of ●use:
             let k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
             let i = choose(n.use_items.len>0, &" {n.use_items}", "")

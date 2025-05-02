@@ -476,20 +476,39 @@ suite "tknz":
 
     test "tests":
     
-        t "▸ tets"       , @[ tk("▸ tets", ◆test, 0, 0) ]
-        t "    ▸ sect"   , @[ tk("▸ sect", ◆test, 0, 4) ]
-        t "    a ▸ 2"    , @[ 
-            tk("a",         ◆name,          0, 4), 
-            tk("▸",         ◆test,          0, 6),
-            tk("2",         ◆number,        0, 8)]
+        t "▸ tets"          , @[ tk("▸ tets", ◆test, 0, 0) ]
+        t "    ▸ sect"      , @[ tk("▸ sect", ◆test, 0, 4) ]
+        t "    a ▸ 2"       , @[ 
+            tk("a",             ◆name,          0, 4), 
+            tk("▸",             ◆test,          0, 6),
+            tk("2",             ◆number,        0, 8)]
             
     test "types":
     
-        t "a◇string"    , @[ 
-            tk("a",         ◆name,          0, 0), 
-            tk("◇",         ◆val_type,      0, 1), 
-            tk("string",    ◆name,          0, 2)]
+        t "a◇string"        , @[ 
+            tk("a",             ◆name,          0, 0), 
+            tk("◇",             ◆val_type,      0, 1), 
+            tk("string",        ◆name,          0, 2)]
             
+    test "export*":
+    
+
+        t "exp* ="            , @[
+            tk("exp*",          ◆name,          0, 0), 
+            tk("=",             ◆assign,        0, 5)]
+
+        t "exp* :"            , @[
+            tk("exp*",          ◆name,          0, 0), 
+            tk(":",             ◆colon,         0, 5)]
+            
+        t "class exp*\n    "  , @[
+            tk("class",         ◆class,         0, 0),
+            tk("exp*",          ◆name,          0, 6)]
+            
+        # t "proc exp* ("       , @[
+        #     tk("exp*",          ◆name,          0, 0), 
+        #     tk("(",             ◆paren_open,    0, 5)]
+
     # ███   ███   ███████  ████████
     # ███   ███  ███       ███     
     # ███   ███  ███████   ███████ 

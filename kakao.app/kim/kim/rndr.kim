@@ -52,7 +52,10 @@ proc ▸proc(r: Rndr, n: Node) =
     let f = n.operand_right
     
     r.add "proc "
-    r.rnd n.operand_left
+    if n.operand_left.token.str[0] == '$'
+        r.add "`$`" & n.operand_left.token.str[1..^1]
+    else
+        r.rnd n.operand_left
     r.rnd f.func_signature
     r.add " ="
     if f.func_body != nil

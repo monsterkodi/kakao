@@ -101,6 +101,8 @@ suite "rndr":
                                                     
         t "setHook(() -> {.noconv.} quit(0))"       , "setHook(proc () {.noconv.} = quit(0))"
         
+        t "$* = ◇Tknzr t ➜string ->"                , "proc `$`*(t : Tknzr) : string ="
+        
     test "call":
     
         t "f()"                                     , "f()"             
@@ -479,13 +481,13 @@ icon =
     else: 
         "  """"
         
-    test "verbatim1":
-        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
-    test "verbatim2":
+    test "proc":
         t "proc ast*(text:string) : Node =", "proc ast*(text:string) : Node ="
-    test "verbatim3":
+    test "converter":
         t "converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0"
-    test "verbatim4":
-        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
-    test "verbatim5":
+    test "template":
+        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
+    test "macro":
         t "macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped ="
+    test "type":
+        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"

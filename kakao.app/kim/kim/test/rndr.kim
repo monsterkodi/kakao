@@ -101,6 +101,8 @@ template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                                                     
         t "setHook(() -> {.noconv.} quit(0))"       , "setHook(proc () {.noconv.} = quit(0))"
         
+        t "$* = ◇Tknzr t ➜string ->"                , "proc `$`*(t : Tknzr) : string ="
+        
     ▸ call
     
         t "f()"                                     , "f()"             
@@ -479,13 +481,13 @@ icon =
     else: 
         "  """"
         
-    ▸ verbatim1
-        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
-    ▸ verbatim2
+    ▸ proc
         t "proc ast*(text:string) : Node =", "proc ast*(text:string) : Node ="
-    ▸ verbatim3
+    ▸ converter
         t "converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0"
-    ▸ verbatim4
-        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
-    ▸ verbatim5
+    ▸ template
+        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
+    ▸ macro
         t "macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped ="
+    ▸ type
+        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
