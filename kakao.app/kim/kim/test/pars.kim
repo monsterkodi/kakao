@@ -80,6 +80,8 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         
         t "◇seq[string] s = @[]"                    , "▪[(◇type(seq[string]) ◆name (= (◆name[])))]"
         
+        t "◇seq[Table[string,bool]] s"              , "▪[(◇type(seq[Table[string,bool]]) ◆name)]"
+        
     ▸ func
     
         t "->"                                      , "▪[(->)]"
@@ -171,6 +173,10 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         
         t "f a # comment"                           , "▪[(◆name ◆call @[◆name])#]"
         
+        t "a = f 1"                                 , "▪[(◆name = (◆name ◆call @[◆number]))]"
+        t "a = b.f 1"                               , "▪[(◆name = ((◆name . ◆name) ◆call @[◆number]))]"
+        t "a.b.c 2"                                 , "▪[(((◆name . ◆name) . ◆name) ◆call @[◆number])]"
+        
     ▸ arglist
     
         t "f(a, b, c)"                              , "▪[(◆name ◆call @[◆name, ◆name, ◆name])]"
@@ -255,6 +261,10 @@ else
         t "if true\n  log(1)\n  log(2)"             , "▪[(◆if @[(✔ ▪[(◆name ◆call @[◆number])(◆name ◆call @[◆number])])])]"
         
         t "if a ➜ 1\nelif b == 2 ➜ 2"               , "▪[(◆if @[(◆name ◆number), ((◆name == ◆number) ◆number)])]"
+        
+        t "if hasKey(name) ➜ 1"                     , "▪[(◆if @[((◆name ◆call @[◆name]) ◆number)])]"
+        t "if hasKey name ➜ 1"                      , "▪[(◆if @[((◆name ◆call @[◆name]) ◆number)])]"
+        t "if map.hasKey name ➜ 1"                  , "▪[(◆if @[(((◆name . ◆name) ◆call @[◆name]) ◆number)])]"
 
         t """
 if 
@@ -313,6 +323,9 @@ switch ext
         t "continue if true"                        , "▪[(◆if @[(✔ ◆continue)])]"                
         t "⮐  if true"                              , "▪[(◆if @[(✔ (⮐))])]"
         t "⮐  1 + 2 if 3 + 4"                       , "▪[(◆if @[((◆number + ◆number) (⮐ (◆number + ◆number)))])]"
+        t "⮐  if map.hasKey(name)"                  , "▪[(◆if @[(((◆name . ◆name) ◆call @[◆name]) (⮐))])]"
+        t "⮐  if hasKey name"                       , "▪[(◆if @[((◆name ◆call @[◆name]) (⮐))])]"
+        t "⮐  if map.hasKey name"                   , "▪[(◆if @[(((◆name . ◆name) ◆call @[◆name]) (⮐))])]"
         
     ▸ no tailIf
     

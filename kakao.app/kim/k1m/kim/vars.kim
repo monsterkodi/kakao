@@ -8,16 +8,14 @@
     inserts var keywords for assignment operations
 ###
 
-import kommon
-import tknz
-import pars
+use kommon tknz pars
 
-type Scoper* = ref object
-    vars* : seq[Table[string,bool]]
+class Scoper*
+    vars* ◇seq[Table[string,bool]]
 
-proc `$`*(v:Scoper): string = 
+$* = ◇Scoper v ➜string -> 
 
-    var s = ""
+    s = ""
     s &= $v.vars
     s
 
@@ -32,14 +30,12 @@ proc scope(s:Scoper, body:Node) : Node
     
 proc exp(s:Scoper, body:Node, i:int, e:Node) =
     
-    if e == nil
-        ⮐  
+    ⮐  if e == nil
         
     proc insert(name:string, expr:Node) =
         
         for map in s.vars
-            if map.hasKey name
-                ⮐  
+            ⮐  if map.hasKey(name)
             
         var let_expr = Node(token:Token(tok:◆let, str:"var", line:expr.token.line), kind:●let, let_expr:expr)
 

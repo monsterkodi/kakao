@@ -485,6 +485,20 @@ proc isNextLineIndented(p: Parser, token:Token): bool =
         
     return  p.peek(n).str.len > token.col
     
+proc isTokAhead(p: Parser, tokAhead:tok) : bool =
+
+    var n = 0
+    var c = p.current
+    let line = c.line
+    while c.tok != ◆eof:
+        if c.line > line:
+            return  false
+        if c.tok == tokAhead:
+            return  true
+        n += 1
+        c = p.peek n
+    false    
+
 proc isThenlessIf(p:Parser, token:Token) : bool =
 
     if p.isNextLineIndented token:
@@ -578,21 +592,7 @@ proc expressionOrIndentedBlock(p: Parser, token:Token, col:int): Node =
             return  p.parseBlock()
     else:
         return  p.expression(token)
-        
-proc isTokAhead(p: Parser, tokAhead:tok) : bool =
-
-    var n = 0
-    var c = p.current
-    let line = c.line
-    while c.tok != ◆eof:
-        if c.line > line:
-            return  false
-        if c.tok == tokAhead:
-            return  true
-        n += 1
-        c = p.peek n
-    false    
-    
+            
 #  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
 # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
 # ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
@@ -620,7 +620,7 @@ proc parseCallArgs(p:Parser, col:int) : seq[Node] =
         list.add expr
         if p.swallowIndent(col):
             break
-        if p.tok in {◆comment_start}:
+        if p.tok in {◆comment_start, ◆then}:
             break
         expr = p.expression()
     p.listless = false
@@ -639,11 +639,16 @@ proc parseType(p: Parser): Node =
     token.tok = ◆type
     
     if p.tok == ◆square_open:
+        var opened = 0
         while p.tok notin {◆eof}:
             let t = p.consume()
             token.str &= t.str
-            if t.tok == ◆square_close:
-                break
+            if t.tok == ◆square_open:
+                opened += 1
+            elif t.tok == ◆square_close:
+                opened -= 1
+                if opened == 0:
+                    break
     
     Node(token:token, kind:●type)
     
@@ -783,16 +788,15 @@ proc lCall(p: Parser, callee: Node): Node =
     p.swallowError(◆paren_close, "Missing closing paren for call arguments")    
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
-proc rSymbol(p: Parser): Node =
+# ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
+# ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
+# ███  █████████  ████████   ███      ███  ███       ███     ███   
+# ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
+# ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
-    let token = p.consume()
+proc isImplicitCallPossible(p: Parser, token: Token) : bool =     
+
     let currt = p.peek(0)
-    
-    # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
-    # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
-    # ███  █████████  ████████   ███      ███  ███       ███     ███   
-    # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
-    # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
     if not p.explicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
         if currt.col > token.col+token.str.len:
@@ -802,8 +806,16 @@ proc rSymbol(p: Parser): Node =
                             ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
                             ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
             if currt.tok notin optoks:
-                let args = p.parseCallArgs(token.col)
-                return  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
+                return  true
+    false
+    
+proc rSymbol(p: Parser): Node =
+
+    let token = p.consume()
+
+    if p.isImplicitCallPossible token:
+        let args = p.parseCallArgs(token.col)
+        return  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
 
     Node(token:token, kind:●literal)
         
@@ -879,10 +891,12 @@ proc rIf(p: Parser): Node =
 proc lTailIf(p: Parser, left: Node) : Node =
 
     if p.returning:
-        return  
+        return 
+        
     if left.token.line != p.current.line:
         return  
-    # echo &"TAILIF {left} {left.token.line} {p.current.line}"
+        
+    echo &"TAILIF {left} {left.token.line} {p.current.line} {p.explicit}"
     let token = p.consume()
     var cond  = p.expression()
     let condThen = Node(token:cond.token, kind:●condThen, cond:cond, then:left)
@@ -996,7 +1010,14 @@ proc rLiteral(p: Parser): Node =
     
 proc lPropertyAccess(p: Parser, owner: Node): Node =
 
-    Node(token:p.consume(), kind:●propertyAccess, owner:owner, property:p.rLiteral())
+    let token = p.consume()
+    let property = p.rLiteral()
+    
+    let n = Node(token:token, kind:●propertyAccess, owner:owner, property:property)
+    
+    if p.isImplicitCallPossible property.token:
+        return  Node(token:token, kind:●call, callee:n, callargs:p.parseCallArgs(token.col))
+    n
 
 proc rKeyword(p: Parser): Node =
 

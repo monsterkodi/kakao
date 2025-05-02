@@ -456,7 +456,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                             t.push ◆test
                             continue
                             
-                    if t.tokens.len > 0 and t.tokens[^1].tok == ◆multiply and punct[char] in {◆assign, ◆colon, ◆paren_open}:
+                    if t.tokens.len > 0 and t.tokens[^1].tok == ◆multiply and punct[char] in {◆assign, ◆colon, ◆paren_open, ◆var_type, ◆val_type}:
                         if punct[char] != ◆paren_open or t.tokens[^2].tok in {◆proc, ◆template, ◆macro}:
                             t.tokens.pops()
                             t.tokens[^1].str &= "*"

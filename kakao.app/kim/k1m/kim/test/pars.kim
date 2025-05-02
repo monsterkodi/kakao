@@ -308,6 +308,7 @@ switch ext
         t "continue if true"                        , "▪[(◆if @[(✔ ◆continue)])]"                
         t "⮐  if true"                              , "▪[(◆if @[(✔ (⮐))])]"
         t "⮐  1 + 2 if 3 + 4"                       , "▪[(◆if @[((◆number + ◆number) (⮐ (◆number + ◆number)))])]"
+        t "⮐  if map.hasKey(name)"                  , "▪[]"
         
     ▸ no tailIf
     

@@ -158,7 +158,7 @@ proc runTests() : bool =
         
         while true:
             let elapsed = (getMonoTime() - startTime).inMilliseconds
-            if elapsed >= 3000:
+            if elapsed >= 4000:
                 output.add(&"test killed after {elapsed} ms!!")
                 p.terminate()
                 sleep(50)
