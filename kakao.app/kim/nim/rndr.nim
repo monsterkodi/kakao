@@ -8,11 +8,10 @@ import kommon
 import tknz
 import pars
 
-type
-    Rndr = ref object
-        code            : string
-        s               : string
-        annotateVarArg  : bool
+type Rndr = ref object
+    code            : string
+    s               : string
+    annotateVarArg  : bool
 
 proc `$`*(r: Rndr): string = 
     var s = ""
@@ -366,6 +365,26 @@ proc ▸switch(r: Rndr, n: Node) =
         r.add "\n" & cdt
         r.add "else: "
         r.rnd(n.switch_default)
+        
+proc ▸enum(r: Rndr, n: Node) =
+
+    r.add "type "
+    r.rnd n.enum_name
+    r.add " = enum"
+    r.rnd n.enum_body
+    
+proc ▸class(r: Rndr, n: Node) =
+
+    r.add "type "
+    r.rnd n.class_name
+    r.add " = ref object"
+    r.rnd n.class_body
+
+proc ▸member(r: Rndr, n: Node) =
+
+    r.rnd n.member_key
+    r.add ": "
+    r.rnd n.member_value
 
 proc ▸testCase(r: Rndr, n: Node) =
 
@@ -442,6 +461,12 @@ proc rnd(r: Rndr, n: Node) =
             r.▸return(n)
         of ●discard:
             r.▸discard(n)
+        of ●enum:
+            r.▸enum(n)
+        of ●class:
+            r.▸class(n)
+        of ●member:
+            r.▸member(n)
         of ●testSuite, ●testSection:
             r.▸testSuite(n)
         of ●testCase:

@@ -45,8 +45,9 @@ type NodeKind* = enum
     ●continue          
     ●use 
     ●import
-    ●class
     ●enum
+    ●class
+    ●member
     ●testSuite
     ●testSection
     ●testCase
@@ -188,6 +189,21 @@ type Node* = ref object
             use_kind*       : Node
             use_items*      : seq[Node]
             
+        of ●class:
+            
+            class_name*     : Node
+            class_body*     : Node
+            
+        of ●member:
+        
+            member_key*     : Node
+            member_value*   : Node
+            
+        of ●enum:
+            
+            enum_name*      : Node
+            enum_body*      : Node
+            
         of ●testSuite, ●testSection:
         
             test_block*     : Node
@@ -221,17 +237,17 @@ template choose*(cond, a, b: untyped): untyped =
 # ███        ███   ███  ███   ███       ███  ███       ███   ███
 # ███        ███   ███  ███   ███  ███████   ████████  ███   ███
 
-type
+{.experimental: "codeReordering".}
 
-    RHS = proc(p: Parser): Node
-    LHS = proc(p: Parser, left: Node): Node
+type RHS = proc(p: Parser): Node
+type LHS = proc(p: Parser, left: Node): Node
     
-    Pratt = object
+type Pratt = object
         rhs: RHS
         lhs: LHS
         precedence: int
          
-    Parser* = ref object
+type Parser* = ref object
         text     : string # used in `$` for debugging. should be removed eventually 
         tokens*  : seq[Token]
         pratts*  : seq[Pratt]
@@ -239,6 +255,7 @@ type
         implicit : bool
         listless : bool
         returning: bool
+        typeless : bool
         pos*     : int
     
 proc current(p: Parser): Token =
@@ -369,6 +386,14 @@ proc `$`*(n: Node): string =
             let k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
             let i = choose(n.use_items.len>0, &" {n.use_items}", "")
             s = &"({s} {n.use_module}{k}{i})"
+        of ●enum    :
+            let b = choose(n.enum_body, &" {n.enum_body}", "")
+            s = &"({s} {n.enum_name}{b})"
+        of ●class    :
+            let b = choose(n.class_body, &" {n.class_body}", "")
+            s = &"({s} {n.class_name}{b})"
+        of ●member:
+            s = &"({n.member_key} {s} {n.member_value})"
         of ●testSuite:
             let b = choose(n.test_block, &" {n.test_block}", "")
             s = &"({s} suite{b})"
@@ -498,6 +523,7 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
         bn = Node(token:token, kind:●block, expressions:default seq[Node])
         
     var expr : Node = p.expression()
+    
     while expr != nil:
     
         if expr.kind == ●func and bn.expressions.len:
@@ -585,7 +611,7 @@ proc rSymbol(p: Parser): Node =
     if not p.implicit and currt.tok notin {◆indent} and not p.isTokAhead(◆func):
         if currt.col > token.col+token.str.len:
             const optoks= { ◆then, ◆else, ◆elif, ◆test,
-                            ◆val_type, ◆var_type,
+                            ◆val_type, ◆var_type, ◆colon,
                             ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
                             ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
                             ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
@@ -1004,7 +1030,15 @@ proc lReturnType(p: Parser, left: Node): Node =
                     
 proc rArg(p: Parser) : Node =
 
-    let token    = p.consume() # ◆ or ◇
+    let token = p.consume() # ◆ or ◇
+    
+    if p.typeless:
+        var nameToken = p.consume()
+        nameToken.tok = ◆name
+        nameToken.str = token.str & nameToken.str
+        nameToken.col = token.col
+        return  Node(token:nameToken, kind:●literal)
+
     let arg_type = p.parseType()
     let arg_name = p.value()
     var arg_value : Node
@@ -1208,6 +1242,29 @@ proc rCurly(p: Parser): Node =
 proc rSquarely(p: Parser): Node =
 
     Node(token:p.current, kind:●squarely, list_values:p.parseDelimitedList(◆square_open, ◆square_close))
+
+proc rEnum(p: Parser) : Node = 
+
+    let token = p.consume()
+    let enum_name = p.value()
+    var enum_body : Node
+    if p.isNextLineIndented token:
+        p.typeless = true
+        enum_body = p.parseBlock()
+        p.typeless = false
+    Node(token:token, kind:●enum, enum_name:enum_name, enum_body:enum_body)
+    
+proc rClass(p: Parser) : Node = 
+
+    let token = p.consume()
+    let class_name = p.value()
+    let class_body = p.parseBlock()
+    Node(token:token, kind:●class, class_name:class_name, class_body:class_body)
+    
+proc lMember(p: Parser, left: Node) : Node =
+
+    let token = p.consume()
+    Node(token:token, kind:●member, member_key:left, member_value:p.expression())
     
 proc lTestCase(p: Parser, left: Node): Node =
 
@@ -1322,6 +1379,10 @@ proc setup(p: Parser) =
     p.pratt ◆discard,           nil,               rDiscard,        0
     p.pratt ◆indent,            nil,               rBlock,          0
     p.pratt ◆test,              lTestCase,         rTestSuite,      0
+    
+    p.pratt ◆class,             nil,               rClass,          0
+    p.pratt ◆enum,              nil,               rEnum,           0
+    p.pratt ◆colon,             lMember,           nil,            10
     
     p.pratt ◆continue,          nil,               rKeyword,        0
     p.pratt ◆break,             nil,               rKeyword,        0

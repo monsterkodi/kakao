@@ -360,6 +360,26 @@ if x
 
         t "import ../../rel/[s1, s2]"               , "▪[◆import]"
         
+    test "enum":
+    
+        t "enum Kind"                               , "▪[(◆enum ◆name)]"
+        t "enum Kind\na"                            , "▪[(◆enum ◆name)◆name]"
+        t "enum Kind\n  a\n  b"                     , "▪[(◆enum ◆name ▪[◆name◆name])]"
+        t "enum Kind\n  a\n  b\nc"                  , "▪[(◆enum ◆name ▪[◆name◆name])◆name]"
+        
+        t """
+            enum tok
+                    ◆when
+                    ◆then   = "➜"
+            """, "▪[(◆enum ◆name ▪[◆name(◆name = ◆string)])]"
+        
+    test "class":
+    
+        t "class Node"                              , "▪[(◆class ◆name ▪[])]"
+        t "class Node\n member:string"              , "▪[(◆class ◆name ▪[(◆name : ◆name)])]"
+        t "class Node\n member:string\n i:int"      , "▪[(◆class ◆name ▪[(◆name : ◆name)(◆name : ◆name)])]"
+        t "class Node\n member:string\ni:int"       , "▪[(◆class ◆name ▪[(◆name : ◆name)])(◆name : ◆name)]"
+        
     test "tests":
     
         t "▸ a test suite"                          , "▪[(▸ suite)]"
