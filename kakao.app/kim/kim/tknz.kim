@@ -25,6 +25,10 @@ type tok* = enum
         ◆enum
         ◆class
         ◆import
+        ◆template
+        ◆macro
+        ◆converter
+        ◆type  
         ◆use
         ◆try
         ◆catch
@@ -85,7 +89,6 @@ type tok* = enum
         ◆greater            = ">"
         ◆less               = "<"
         ◆test               = "▸"
-        ◆type  # not really a token, used by pars to mark type annotations
         ◆  # block
         ◆indent
         ◆eof
@@ -339,10 +342,10 @@ proc modbracket(t:Tknzr) =
     t.advance 2
     t.pushToken()
     
-proc `import`(t:Tknzr) = 
+proc verbatim(t:Tknzr, tk:tok) = 
 
     t.advanceUntil "\n"
-    t.push ◆import
+    t.push tk
 
 #  ███████   ███████   ██     ██  ██     ██  ███  █████████
 # ███       ███   ███  ███   ███  ███   ███  ███     ███   
@@ -454,8 +457,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                      
                     if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0)))
                         case keywords[t.token.str]
-                            of ◆import
-                                t.import()
+                            of ◆proc, ◆type, ◆import, ◆macro, ◆template, ◆converter
+                                t.verbatim(keywords[t.token.str])
                             else
                                 t.push keywords[t.token.str]
                     continue

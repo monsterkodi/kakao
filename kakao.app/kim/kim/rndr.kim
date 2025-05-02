@@ -472,7 +472,9 @@ proc rnd(r: Rndr, n: Node) =
             r.▸testSuite(n)
         of ●testCase
             r.▸testCase(n)
-        of ●literal, ●type, ●import, ●keyword
+        of ●literal, ●keyword
+            r.tok n
+        of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
             r.tok n
         else
             log &"unhandled {n} {n.kind}"

@@ -453,4 +453,13 @@ icon =
     else: 
         "  """"
         
-        
+    test "verbatim1":
+        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
+    test "verbatim2":
+        t "proc ast*(text:string) : Node =", "proc ast*(text:string) : Node ="
+    test "verbatim3":
+        t "converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0"
+    test "verbatim4":
+        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
+    test "verbatim5":
+        t "macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped ="

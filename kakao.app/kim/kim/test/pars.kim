@@ -348,6 +348,10 @@ if x
         t "false"                                   , "▪[✘]"
         t "\"hello\""                               , "▪[◆string]"
         
+    ▸ verbatim
+    
+        t "proc ast*(text:string) : Node ="         , "▪[=>]"
+        
     ▸ use
     
         t "use rndr"                                , "▪[(◆use ◆name)]"

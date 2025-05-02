@@ -45,6 +45,11 @@ type NodeKind* = enum
     ●continue          
     ●use 
     ●import
+    ●template
+    ●converter
+    ●macro
+    ●proc
+    ●typedef
     ●enum
     ●class
     ●member
@@ -918,9 +923,12 @@ proc rKeyword(p: Parser): Node =
 
     Node(token:p.consume(), kind: ●keyword)
     
-proc rImport(p: Parser): Node =
-
-    Node(token:p.consume(), kind: ●import)
+proc rImport(p: Parser): Node = Node(token:p.consume(), kind: ●import)
+proc rProc(p: Parser): Node = Node(token:p.consume(), kind: ●proc)
+proc rTypeDef(p: Parser): Node = Node(token:p.consume(), kind: ●typedef)
+proc rMacro(p: Parser): Node = Node(token:p.consume(), kind: ●macro)
+proc rTemplate(p: Parser): Node = Node(token:p.consume(), kind: ●template)
+proc rConverter(p: Parser): Node = Node(token:p.consume(), kind: ●converter)
     
 proc parseVar(p: Parser): Node = 
 
@@ -1372,6 +1380,11 @@ proc setup(p: Parser) =
     p.pratt ◆comment_start,     nil,               rComment,        0
     p.pratt ◆name,              lSymbolList,       rSymbol,        13 # higher than assign
     p.pratt ◆import,            nil,               rImport,         0
+    p.pratt ◆macro,             nil,               rMacro,          0
+    p.pratt ◆template,          nil,               rTemplate,       0
+    p.pratt ◆converter,         nil,               rConverter,      0
+    p.pratt ◆proc,              nil,               rProc,           0
+    p.pratt ◆type,              nil,               rTypeDef,        0
     p.pratt ◆use,               nil,               rUse,            0
     p.pratt ◆let,               nil,               rLet,            0
     p.pratt ◆var,               nil,               rLet,            0

@@ -5,7 +5,7 @@
        ███     ███   ███  ███   ███       ███
         █      ███   ███  ███   ███  ███████ 
 
-    walks through an abstract syntax tree and collects vars
+    inserts var keywords for assignment operations
 ]#
 
 import kommon
@@ -14,41 +14,16 @@ import pars
 
 type Scoper* = ref object
     vars* : seq[Table[string,bool]]
-    args* : seq[Table[string,bool]]
 
 proc `$`*(v:Scoper): string = 
 
     var s = ""
     s &= $v.vars
-    s &= $v.args
     s
 
 proc exp(s:Scoper, body:Node, i:int, e:Node)
-        
-# 00000000  000   000  000   000   0000000  
-# 000       000   000  0000  000  000       
-# 000000    000   000  000 0 000  000       
-# 000       000   000  000  0000  000       
-# 000        0000000   000   000   0000000  
-    
-proc fun(s:Scoper, f:Node) = 
+proc scope(s:Scoper, body:Node) : Node
 
-    s.vars.push initTable[string,bool]()
-    s.args.push initTable[string,bool]()
-    
-    # for arg in f.args?.parens.exps
-    #     if t = arg.text
-    #         s.args[-1][t] = t
-    #     else if t = arg.operation?.lhs?.text
-    #         s.args[-1][t] = t
-    
-    echo &"f before {f}"    
-    for i,e in f.func_body.expressions:
-        s.exp f.func_body, i, e 
-    echo &"f after {f}"    
-    s.vars.pops()
-    s.args.pops()
-        
 # 00000000  000   000  00000000   
 # 000        000 000   000   000  
 # 0000000     00000    00000000   
@@ -60,15 +35,9 @@ proc exp(s:Scoper, body:Node, i:int, e:Node) =
     if e == nil:
         return  
         
-    # echo &"exp {e}"
-    
     proc insert(name:string, expr:Node) =
         
         for map in s.vars:
-            if map.hasKey name:
-                return  
-            
-        for map in s.args:
             if map.hasKey name:
                 return  
             
@@ -80,7 +49,7 @@ proc exp(s:Scoper, body:Node, i:int, e:Node) =
     
     if e.kind == ●operation:
         if e.operand_right.kind == ●func:
-            s.fun e.operand_right
+            discard s.scope e.operand_right.func_body
         elif e.token.tok == ◆assign:
             let lhs = e.operand_left
             if lhs.kind == ●literal:
@@ -98,13 +67,11 @@ proc scope(s:Scoper, body:Node) : Node =
         return  body
 
     s.vars.push initTable[string,bool]()
-    # s.args.push initTable[string,bool]()
 
     for i,e in body.expressions:
         s.exp body, i, e 
 
     s.vars.pops()
-    # s.args.pops()
     body
     
 proc variables*(body:Node) : Node = 
