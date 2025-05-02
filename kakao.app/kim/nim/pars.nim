@@ -1393,16 +1393,16 @@ proc setup(p: Parser) =
     p.pratt ◆divide_assign,     lAssign,           nil,            10
     p.pratt ◆multiply_assign,   lAssign,           nil,            10
 
-    p.pratt ◆if,                lTailIf,           rIf,            20  
-    p.pratt ◆when,              nil,               rIf,            20  
-    p.pratt ◆for,               nil,               rFor,           20  
-    p.pratt ◆switch,            nil,               rSwitch,        20  
-    p.pratt ◆while,             nil,               rWhile,         20  
+    p.pratt ◆if,                lTailIf,           rIf,            20
+    p.pratt ◆when,              nil,               rIf,            20
+    p.pratt ◆for,               nil,               rFor,           20
+    p.pratt ◆switch,            nil,               rSwitch,        20
+    p.pratt ◆while,             nil,               rWhile,         20
     p.pratt ◆func,              lFunc,             rFunc,          20
     
-    p.pratt ◆or,                lOperation,        nil,            30 
-    p.pratt ◆and,               lOperation,        nil,            31 
-                                
+    p.pratt ◆or,                lOperation,        nil,            30
+    p.pratt ◆and,               lOperation,        nil,            31
+
     p.pratt ◆equal,             lOperation,        nil,            40
     p.pratt ◆not_equal,         lOperation,        nil,            40
     p.pratt ◆greater_equal,     lOperation,        nil,            40

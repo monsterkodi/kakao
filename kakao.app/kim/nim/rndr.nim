@@ -7,6 +7,7 @@
 import kommon
 import tknz
 import pars
+import vars
 
 type Rndr = ref object
     code            : string
@@ -477,9 +478,11 @@ proc rnd(r: Rndr, n: Node) =
             echo &"unhandled {n} {n.kind}"
             r.tok n
 
-proc render*(code: string): string =
+proc render*(code: string, autovar=false): string =
 
-    let root = ast(code)
+    var root = ast(code)
+    if autovar:
+        root = variables(root)
     # echo &"root {root}"
     var r = Rndr(code:code)
     r.rnd(root)

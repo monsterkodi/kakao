@@ -1,0 +1,112 @@
+#[
+    ███   ███   ███████   ████████    ███████
+    ███   ███  ███   ███  ███   ███  ███     
+     ███ ███   █████████  ███████    ███████ 
+       ███     ███   ███  ███   ███       ███
+        █      ███   ███  ███   ███  ███████ 
+
+    walks through an abstract syntax tree and collects vars
+]#
+
+import kommon
+import tknz
+import pars
+
+type Scoper* = ref object
+    vars* : seq[Table[string,bool]]
+    args* : seq[Table[string,bool]]
+
+proc `$`*(v:Scoper): string = 
+
+    var s = ""
+    s &= $v.vars
+    s &= $v.args
+    s
+
+proc exp(s:Scoper, body:Node, i:int, e:Node)
+        
+# 00000000  000   000  000   000   0000000  
+# 000       000   000  0000  000  000       
+# 000000    000   000  000 0 000  000       
+# 000       000   000  000  0000  000       
+# 000        0000000   000   000   0000000  
+    
+proc fun(s:Scoper, f:Node) = 
+
+    s.vars.push initTable[string,bool]()
+    s.args.push initTable[string,bool]()
+    
+    # for arg in f.args?.parens.exps
+    #     if t = arg.text
+    #         s.args[-1][t] = t
+    #     else if t = arg.operation?.lhs?.text
+    #         s.args[-1][t] = t
+    
+    echo &"f before {f}"    
+    for i,e in f.func_body.expressions:
+        s.exp f.func_body, i, e 
+    echo &"f after {f}"    
+    s.vars.pops()
+    s.args.pops()
+        
+# 00000000  000   000  00000000   
+# 000        000 000   000   000  
+# 0000000     00000    00000000   
+# 000        000 000   000        
+# 00000000  000   000  000        
+    
+proc exp(s:Scoper, body:Node, i:int, e:Node) =
+    
+    if e == nil:
+        return  
+        
+    # echo &"exp {e}"
+    
+    proc insert(name:string, expr:Node) =
+        
+        for map in s.vars:
+            if map.hasKey name:
+                return  
+            
+        for map in s.args:
+            if map.hasKey name:
+                return  
+            
+        var let_expr = Node(token:Token(tok:◆let, str:"var", line:expr.token.line), kind:●let, let_expr:expr)
+
+        body.expressions[i] = let_expr
+
+        s.vars[^1][name] = true
+    
+    if e.kind == ●operation:
+        if e.operand_right.kind == ●func:
+            s.fun e.operand_right
+        elif e.token.tok == ◆assign:
+            let lhs = e.operand_left
+            if lhs.kind == ●literal:
+                insert lhs.token.str, e
+                    
+#  0000000   0000000   0000000   00000000   00000000  
+# 000       000       000   000  000   000  000       
+# 0000000   000       000   000  00000000   0000000   
+#      000  000       000   000  000        000       
+# 0000000    0000000   0000000   000        00000000  
+    
+proc scope(s:Scoper, body:Node) : Node =
+    
+    if body.expressions.len == 0:
+        return  body
+
+    s.vars.push initTable[string,bool]()
+    # s.args.push initTable[string,bool]()
+
+    for i,e in body.expressions:
+        s.exp body, i, e 
+
+    s.vars.pops()
+    # s.args.pops()
+    body
+    
+proc variables*(body:Node) : Node = 
+
+    Scoper().scope body

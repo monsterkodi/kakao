@@ -117,8 +117,8 @@ const
 #    ███     ███   ███  ███   ███  ███████  ███   ███
 
 type Token* = object
-        str*  : string                      
-        tok*  : tok                
+        str*  : string
+        tok*  : tok
         line* : int
         col*  : int
         
@@ -418,7 +418,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                 
                 let double = t.srng 2
                 if punct.hasKey double
-                    if punct[double] == ◆mod                        
+                    if punct[double] == ◆mod
                         t.modbracket()
                     else
                         t.commit(double, punct[double], 2)
