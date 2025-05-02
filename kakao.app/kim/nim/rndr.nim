@@ -240,8 +240,15 @@ proc ▸use(r: Rndr, n: Node) =
     
 proc ▸comment(r: Rndr, n: Node) = 
 
-    r.tok n
+    if n.token.str == "###":
+        r.add "#["
+    else:
+        r.tok n
+        
     r.tok n.comment_content
+    
+    if n.token.str == "###":
+        r.add "]#"
     
 proc ▸call(r: Rndr, n: Node) =
 
