@@ -1447,6 +1447,7 @@ proc setup(p: Parser) =
     p.pratt ◆minus_assign,      lAssign,           nil,            10
     p.pratt ◆divide_assign,     lAssign,           nil,            10
     p.pratt ◆multiply_assign,   lAssign,           nil,            10
+    p.pratt ◆ampersand_assign,  lAssign,           nil,            10
 
     p.pratt ◆if,                lTailIf,           rIf,            20
     p.pratt ◆when,              nil,               rIf,            20

@@ -804,7 +804,7 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
                             ◆val_type, ◆var_type, ◆colon,
                             ◆plus, ◆minus, ◆divide, ◆multiply, ◆and, ◆or, ◆ampersand, 
                             ◆equal, ◆not_equal, ◆greater_equal, ◆less_equal, ◆greater, ◆less,
-                            ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign}
+                            ◆assign, ◆divide_assign, ◆multiply_assign, ◆plus_assign, ◆minus_assign, ◆ampersand_assign}
             if currt.tok notin optoks:
                 return  true
     false
@@ -896,7 +896,7 @@ proc lTailIf(p: Parser, left: Node) : Node =
     if left.token.line != p.current.line:
         return  
         
-    echo &"TAILIF {left} {left.token.line} {p.current.line} {p.explicit}"
+    # echo &"TAILIF {left} {left.token.line} {p.current.line} {p.explicit}"
     let token = p.consume()
     var cond  = p.expression()
     let condThen = Node(token:cond.token, kind:●condThen, cond:cond, then:left)
@@ -1480,6 +1480,7 @@ proc setup(p: Parser) =
     p.pratt ◆minus_assign,      lAssign,           nil,            10
     p.pratt ◆divide_assign,     lAssign,           nil,            10
     p.pratt ◆multiply_assign,   lAssign,           nil,            10
+    p.pratt ◆ampersand_assign,  lAssign,           nil,            10
 
     p.pratt ◆if,                lTailIf,           rIf,            20
     p.pratt ◆when,              nil,               rIf,            20

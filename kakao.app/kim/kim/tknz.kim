@@ -82,6 +82,7 @@ type tok* = enum
         ◆minus_assign       = "-="
         ◆divide_assign      = "/="
         ◆multiply_assign    = "*="
+        ◆ampersand_assign   = "&="
         ◆equal              = "=="
         ◆not_equal          = "!="
         ◆less_equal         = "<="

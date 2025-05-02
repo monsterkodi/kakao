@@ -399,30 +399,34 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
     ▸ operators
     
         t "a += 123" , @[
-            tk("a",   ◆name,        0, 0),
-            tk("+=",  ◆plus_assign, 0, 2),
-            tk("123", ◆number,      0, 5)]
+            tk("a",   ◆name,                0, 0),
+            tk("+=",  ◆plus_assign,         0, 2),
+            tk("123", ◆number,              0, 5)]
 
         t "b -= 456" , @[
-            tk("b",   ◆name,         0, 0),
-            tk("-=",  ◆minus_assign, 0, 2),
-            tk("456", ◆number,       0, 5)]
+            tk("b",   ◆name,                0, 0),
+            tk("-=",  ◆minus_assign,        0, 2),
+            tk("456", ◆number,              0, 5)]
 
         t "x /= y" , @[
-            tk("x",   ◆name,          0, 0),
-            tk("/=",  ◆divide_assign, 0, 2),
-            tk("y",   ◆name,          0, 5)]
+            tk("x",   ◆name,                0, 0),
+            tk("/=",  ◆divide_assign,       0, 2),
+            tk("y",   ◆name,                0, 5)]
 
         t "x *= y" , @[
-            tk("x",   ◆name,            0, 0),
-            tk("*=",  ◆multiply_assign, 0, 2),
-            tk("y",   ◆name,            0, 5)]
+            tk("x",   ◆name,                0, 0),
+            tk("*=",  ◆multiply_assign,     0, 2),
+            tk("y",   ◆name,                0, 5)]
 
         t "x != y" , @[
-            tk("x",   ◆name,            0, 0),
-            tk("!=",  ◆not_equal,       0, 2),
-            tk("y",   ◆name,            0, 5)]
-
+            tk("x",   ◆name,                0, 0),
+            tk("!=",  ◆not_equal,           0, 2),
+            tk("y",   ◆name,                0, 5)]
+    
+        t "s &= v" , @[
+            tk("s",   ◆name,                0, 0),
+            tk("&=",  ◆ampersand_assign,    0, 2),
+            tk("v",   ◆name,                0, 5)]
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████    ███████
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███  ███     

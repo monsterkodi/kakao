@@ -207,6 +207,8 @@ suite "pars":
         t "(a, b) = c"                              , "▪[(◆[◆name, ◆name] = ◆name)]"
         t "(a b) = c"                               , "▪[(◆[◆name, ◆name] = ◆name)]"
         t "let (dir name ext) = triple"             , "▪[(◆let (◆[◆name, ◆name, ◆name] (= ◆name)))]"
+        
+        t "s &= v"                                  , "▪[(◆name &= ◆name)]"
 
     test "arrays":
     
