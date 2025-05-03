@@ -305,8 +305,13 @@ elif (e.kind == ●var):
         t "s = \"\"\"num #{1+2} end\"\"\""          , "s = &\"\"\"num {(1 + 2)} end\"\"\""
         t "s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\""  , "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         t "s = \"#{o}\""                            , "s = &\"{o}\""
+        t "s = \"(#{s}#{e})\""                      , "s = &\"({s}{e})\""
+        
         t "cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
           "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
+          
+        t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")",
+          "let e = choose(n.return_value, &\" {n.return_value}\", \"\")"
           
     test "triple strings":
     

@@ -277,15 +277,15 @@ proc ▸if(r: Rndr, n: Node) =
                 r.add "\n" & idt & "elif "
             else
                 r.add " elif "
-        r.rnd condThen.cond
+        r.rnd condThen.condition
         r.add ": "
-        r.rnd condThen.then
-    if n.else != nil   
-        if n.else.token.line > line
+        r.rnd condThen.then_branch
+    if n.else_branch != nil   
+        if n.else_branch.token.line > line
             r.add "\n" & idt & "else: "
         else
             r.add " else: "
-        r.rnd n.else
+        r.rnd n.else_branch
         
 proc ▸for(r: Rndr, n: Node) =
 

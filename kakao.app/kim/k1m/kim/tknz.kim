@@ -4,115 +4,114 @@
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-import kommon
+use kommon
 
-type tok* = enum
-        ◆name
-        ◆if
-        ◆when
-        ◆then               = "➜"
-        ◆elif
-        ◆else
-        ◆switch
-        ◆while
-        ◆for
-        ◆in
-        ◆is
-        ◆of
-        ◆break
-        ◆continue
-        ◆discard
-        ◆enum
-        ◆class
-        ◆import
-        ◆template
-        ◆macro
-        ◆converter
-        ◆type  
-        ◆use
-        ◆try
-        ◆catch
-        ◆let                
-        ◆var                
-        ◆not                = "!" 
-        ◆and                = "&&" 
-        ◆or                 = "||" 
-        ◆true               = "✔"  
-        ◆false              = "✘"  
-        ◆null               = "nil"
-        ◆func               = "->"
-        ◆proc               = "=>"
-        ◆return             = "⮐"
-
-        ◆number
-        ◆string
-        ◆string_start       = "'"
-        ◆string_end
-        ◆stripol_start      = "#{"
-        ◆stripol_end
+enum tok*
         
-        ◆comment_start      = "#"
-        ◆comment
-        ◆comment_end
-
-        ◆val_type           = "◇"
-        ◆var_type           = "◆"
-        ◆paren_open         = "("
-        ◆paren_close        = ")"       
-        ◆bracket_open       = "{"
-        ◆bracket_close      = "}"       
-        ◆mod                = "{."
-        ◆square_open        = "["       
-        ◆square_close       = "]"        
-        ◆comma              = ","
-        ◆colon              = ":"
-        ◆semicolon          = ";"
-        ◆dot                = "."
-        ◆doubledot          = ".."
-        ◆tripledot          = "..."
-        ◆minus              = "-"  
-        ◆plus               = "+"  
-        ◆increment          = "++" 
-        ◆decrement          = "--" 
-        ◆ampersand          = "&"
-        ◆divide             = "/"
-        ◆multiply           = "*"
-        ◆assign             = "="
-        ◆plus_assign        = "+="
-        ◆minus_assign       = "-="
-        ◆divide_assign      = "/="
-        ◆multiply_assign    = "*="
-        ◆ampersand_assign   = "&="
-        ◆equal              = "=="
-        ◆not_equal          = "!="
-        ◆less_equal         = "<="
-        ◆greater_equal      = ">="
-        ◆greater            = ">"
-        ◆less               = "<"
-        ◆test               = "▸"
-        ◆  # block
-        ◆indent
-        ◆eof
+        ◂name
+        ◂if
+        ◂when
+        ◂then               = "➜"
+        ◂elif
+        ◂else
+        ◂switch
+        ◂while
+        ◂for
+        ◂in
+        ◂notin
+        ◂is
+        ◂of
+        ◂break
+        ◂continue
+        ◂discard
+        ◂enum
+        ◂class
+        ◂import
+        ◂template
+        ◂macro
+        ◂converter
+        ◂type  
+        ◂use
+        ◂try
+        ◂catch
+        ◂let                
+        ◂var                
+        ◂not                = "!" 
+        ◂and                = "&&" 
+        ◂or                 = "||" 
+        ◂true               = "✔"  
+        ◂false              = "✘"  
+        ◂null               = "nil"
+        ◂func               = "->"
+        ◂proc               = "=>"
+        ◂return             = "⮐"
+        ◂number
+        ◂string
+        ◂string_start       = "'"
+        ◂string_end
+        ◂stripol_start      = "\#{"
+        ◂stripol_end
+        ◂comment_start      = "#"
+        ◂comment
+        ◂comment_end
+        ◂val_type           = "◇"
+        ◂var_type           = "◆"
+        ◂paren_open         = "("
+        ◂paren_close        = ")"       
+        ◂bracket_open       = "{"
+        ◂bracket_close      = "}"       
+        ◂mod                = "{."
+        ◂square_open        = "["       
+        ◂square_close       = "]"        
+        ◂comma              = ","
+        ◂colon              = ":"
+        ◂semicolon          = ";"
+        ◂dot                = "."
+        ◂doubledot          = ".."
+        ◂tripledot          = "..."
+        ◂minus              = "-"  
+        ◂plus               = "+"  
+        ◂increment          = "++" 
+        ◂decrement          = "--" 
+        ◂ampersand          = "&"
+        ◂divide             = "/"
+        ◂multiply           = "*"
+        ◂assign             = "="
+        ◂plus_assign        = "+="
+        ◂minus_assign       = "-="
+        ◂divide_assign      = "/="
+        ◂multiply_assign    = "*="
+        ◂ampersand_assign   = "&="
+        ◂equal              = "=="
+        ◂not_equal          = "!="
+        ◂less_equal         = "<="
+        ◂greater_equal      = ">="
+        ◂greater            = ">"
+        ◂less               = "<"
+        ◂test               = "▸"
+        ◂
+        ◂indent
+        ◂eof
         
 var keywords = initTable[string, tok]()
-for kt in { ◆if..◆return }
+for kt in { ◂if..◂return }
     keywords[symbolName(kt)[3..^1]] = kt
-keywords["nil"] = ◆null
+keywords["nil"] = ◂null
 
 var punct = initTable[string, tok]()
-for kt in { ◆if..◆test }
+for kt in { ◂if..◂test }
     if symbolName(kt) != $kt
         punct[$kt] = kt
-punct["\""]     = ◆string_start
-punct["\"\"\""] = ◆string_start
+punct["\""]     = ◂string_start
+punct["\"\"\""] = ◂string_start
 
 const 
-    openToks  = { ◆paren_open,  ◆bracket_open,  ◆square_open  }
-    closeToks = { ◆paren_close, ◆bracket_close, ◆square_close }
+    openToks  = { ◂paren_open,  ◂bracket_open,  ◂square_open  }
+    closeToks = { ◂paren_close, ◂bracket_close, ◂square_close }
     closeOpen = { 
-        ◆paren_close:   ◆paren_open, 
-        ◆bracket_close: ◆bracket_open,
-        ◆square_close:  ◆square_open }.toTable()
+        ◂paren_close:   ◂paren_open, 
+        ◂bracket_close: ◂bracket_open,
+        ◂square_close:  ◂square_open }.toTable()
         
 # █████████  ███   ███  ███   ███  ███████  ████████ 
 #    ███     ███  ███   ████  ███     ███   ███   ███
@@ -140,7 +139,7 @@ type Tknzr* = ref object
     
 proc `$`*(t:Tknzr): string = 
 
-    var s = &"◆◆◆ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
+    var s = "◂▸ #{t.line} #{t.token} #{t.bol} #{t.segi} #{t.eol}"
     s
     
 proc formatValue*(result:var string, t:Tknzr, specifier: string) = result.add $t
@@ -178,11 +177,11 @@ proc srng(t:Tknzr, n:int) : string =
         e = t.eol
     if e > t.segs.len
         ⮐  ""
-    t.segs[t.segi..<e].join("")
+    t.segs[t.segi...e].join("")
     
 proc advance(t:Tknzr, n:int) =
 
-    for s in 0..<n 
+    for s in 0...n 
         t.token.str &= t.peek(0)
         t.incr 1
 
@@ -204,7 +203,7 @@ proc advanceMulti(t:Tknzr, stop: string) =
         t.token.str &= c
         t.lineIncr c
     
-proc pushToken(t:Tknzr, str="", tk=◆name, incr=0) =
+proc pushToken(t:Tknzr, str="", tk=◂name, incr=0) =
 
     if t.token.str.len
         t.tokens.add t.token
@@ -216,7 +215,7 @@ proc push(t:Tknzr, tk:tok) =
     t.token.tok = tk
     t.pushToken()
     
-proc commit(t:Tknzr, str="", tk=◆name, incr=0)
+proc commit(t:Tknzr, str="", tk=◂name, incr=0)
     
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
@@ -228,17 +227,17 @@ proc string(t:Tknzr) =
 
     var topTok = t.tokens[^1]
     
-    assert topTok.tok in {◆string_start, ◆stripol_end}
+    assert topTok.tok in {◂string_start, ◂stripol_end}
     
-    case topTok.tok
-        of ◆string_start
+    switch topTok.tok
+        ◂string_start
             t.delimiter = topTok.str
-        of ◆stripol_end
-            t.token.tok = ◆string
+        ◂stripol_end
+            t.token.tok = ◂string
         else
             discard
 
-    # log &"-------------- string {t} {t.delimiter} {topTok}"
+    # log "-------------- string #{t} #{t.delimiter} #{topTok}"
 
     proc isAtStringEnd() : bool =
         if t.delimiter.len == 1 and t.segi >= t.eol
@@ -252,15 +251,15 @@ proc string(t:Tknzr) =
                     
     while not isAtStringEnd()
     
-        t.token.tok = ◆string
+        t.token.tok = ◂string
         
         let c = t.peek(0)
         if c == "\\"
             t.advance 2
             continue
             
-        if t.srng(2) == "#{" and t.delimiter in @["\"", "\"\"\""]
-            t.commit("#{", ◆stripol_start, 2)
+        if t.srng(2) == "\#{" and t.delimiter in @["\"", "\"\"\""]
+            t.commit("\#{", ◂stripol_start, 2)
             t.inStripol = true  
             return
 
@@ -268,7 +267,7 @@ proc string(t:Tknzr) =
         t.lineIncr c
                 
     if t.segi <= t.eol-1 
-        t.commit(t.delimiter, ◆string_end, t.delimiter.len)
+        t.commit(t.delimiter, ◂string_end, t.delimiter.len)
     
     
 # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
@@ -279,7 +278,7 @@ proc string(t:Tknzr) =
 
 proc number(t:Tknzr) =
 
-    t.pushToken("", ◆number)
+    t.pushToken("", ◂number)
 
     let l = t.segs.len
     
@@ -324,21 +323,21 @@ proc comment(t:Tknzr) =
         t.tokens[^1].str &= "##"
         t.incr 2
         t.token.col += 2
-        t.token.tok = ◆comment
+        t.token.tok = ◂comment
         t.advanceMulti "###"
         if t.srng(3) == "###"
-            t.commit("###", ◆comment_end, 3)
+            t.commit("###", ◂comment_end, 3)
         else
-            t.pushToken("", ◆comment)
+            t.pushToken("", ◂comment)
         ⮐  
 
     t.advanceUntil "\n"
-    t.push ◆comment
+    t.push ◂comment
     
 proc modbracket(t:Tknzr) =
 
     t.pushToken()
-    t.token.tok = ◆mod
+    t.token.tok = ◂mod
     t.advance 1
     t.advanceUntil ".}"
     t.advance 2
@@ -355,17 +354,17 @@ proc verbatim(t:Tknzr, tk:tok) =
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
 #  ███████   ███████   ███   ███  ███   ███  ███     ███   
 
-proc commit(t:Tknzr, str="", tk=◆name, incr=0) =
+proc commit(t:Tknzr, str="", tk=◂name, incr=0) =
 
     t.pushToken(str, tk, incr)
     t.pushToken()
     
-    case tk
-        of ◆comment_start
+    switch tk
+        ◂comment_start
             t.comment()
-        of ◆string_start, ◆stripol_end
+        ◂string_start, ◂stripol_end
             t.string()
-        of ◆mod
+        ◂mod
             t.modbracket()
         else
             discard
@@ -392,15 +391,19 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
         
         if t.segs[t.segi] == "\n"
         
+            if t.tokens.len > 1 and t.tokens[^1].tok == ◂multiply and t.tokens[^2].tok == ◂name
+                t.tokens.pops()
+                t.tokens[^1].str &= "*"
+        
             t.nextLine()
             if t.segi >= t.segs.len
                 break
-            t.token = Token(tok: ◆indent, line:t.line, col:t.col) 
+            t.token = Token(tok: ◂indent, line:t.line, col:t.col) 
             while t.segi < t.segs.len and t.peek(0) == " "
                 t.advance 1
             if t.segi >= t.segs.len
                 break
-            if t.tokens[^1].tok == ◆indent
+            if t.tokens[^1].tok == ◂indent
                 t.tokens.pops()
             t.tokens.add t.token
             continue
@@ -422,13 +425,13 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                 let triple = t.srng 3
                 if punct.hasKey triple
                     t.commit(triple, punct[triple], 3)
-                    if t.tokens[^1].tok == ◆string_start
-                        t.token.tok = ◆string
+                    if t.tokens[^1].tok == ◂string_start
+                        t.token.tok = ◂string
                     continue
                 
                 let double = t.srng 2
                 if punct.hasKey double
-                    if punct[double] == ◆mod
+                    if punct[double] == ◂mod
                         t.modbracket()
                     else
                         t.commit(double, punct[double], 2)
@@ -441,17 +444,22 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     elif punct[char] in closeToks
                         if t.openStack.len and t.openStack[^1] == closeOpen[punct[char]]
                             t.openStack.pops()
-                        elif punct[char] == ◆bracket_close and t.inStripol
+                        elif punct[char] == ◂bracket_close and t.inStripol
                             t.inStripol = false
-                            t.commit(char, ◆stripol_end, 1)
+                            t.commit(char, ◂stripol_end, 1)
                             continue
                             
-                    if punct[char] == ◆test
-                        if t.tokens.len == 0 or t.tokens[^1].tok == ◆indent
+                    if punct[char] == ◂test
+                        if t.tokens.len == 0 or t.tokens[^1].tok == ◂indent
                             while t.segi <= t.eol-1
                                 t.advance 1
-                            t.push ◆test
+                            t.push ◂test
                             continue
+                            
+                    if t.tokens.len > 0 and t.tokens[^1].tok == ◂multiply and punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type}
+                        if punct[char] != ◂paren_open or t.tokens[^2].tok in {◂proc, ◂template, ◂macro}
+                            t.tokens.pops()
+                            t.tokens[^1].str &= "*"
                 
                     t.commit(char, punct[char], 1)
                     continue
@@ -463,8 +471,8 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.advance 1
                      
                     if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0)))
-                        case keywords[t.token.str]
-                            of ◆proc, ◆type, ◆import, ◆macro, ◆template, ◆converter
+                        switch keywords[t.token.str]
+                            ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter
                                 t.verbatim(keywords[t.token.str])
                             else
                                 t.push keywords[t.token.str]
@@ -475,10 +483,6 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             if keywords.hasKey(t.token.str)
                 t.token.tok = keywords[t.token.str]
             t.tokens.add t.token
-        else
-            if t.token.tok == ◆string
-                log "add empty string token"
-                t.tokens.add t.token
                 
     ⮐  t.tokens
     

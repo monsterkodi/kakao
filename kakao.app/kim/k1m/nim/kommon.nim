@@ -22,7 +22,7 @@ proc underscore*(n: uint64): string =
     result = newStringOfCap((s.len + (s.len - 1)), div(3))
     var count = 0
     for i in countdown(s.high, 0): 
-        if ((count != 0) and count(mod, (3 == 0))): 
+        if ((count != 0) and (mod(count, 3) == 0)): 
           result.add('_')
         result.add(s[i])
         inc(count)

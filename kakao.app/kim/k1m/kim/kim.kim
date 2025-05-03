@@ -10,15 +10,14 @@ import trans
 import rndr
 import greet
 
-var
-    params    : seq[string]
-    files     : seq[string]
-    optParser = initOptParser()
-    outdir    = ""
-    tests     = false
-    verbose   = false
-    transpile = false
-    testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(proc (r:tuple) : string = r.path)
+var params    : seq[string]
+var files     : seq[string]
+var optParser = initOptParser()
+var outdir    = ""
+var tests     = false
+var verbose   = false
+var transpile = false
+var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
     
 randomize()
 
@@ -34,37 +33,37 @@ proc verb(msg: string) =
 #  ███████   ████████     ███            ███████   ███           ███   
 
 for kind, key, val in optParser.getopt()
-    case kind
-        of cmdArgument
+    switch kind
+        cmdArgument
             params.add key
             files.add(key)
-        of cmdLongOption, cmdShortOption
+        cmdLongOption, cmdShortOption
             params.add '-' & key
-            case key
-                of "test"
+            switch key
+                "test"
                     tests = true
-                of "verbose", "v"
+                "verbose" "v"
                     verbose = true
-                of "outdir", "o"
+                "outdir" "o"
                     outdir = val
-                of "transpile", "t"
+                "transpile" "t"
                     transpile = true
-                of "help", "h"
-                    echo "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
-                    echo ""
-                    echo "      transpiles kim files to nim"
-                    echo "      watches cwd if no files are given"
-                    echo ""
-                    echo "options:"
-                    echo "  -o --outdir:DIR  output directory"
-                    echo "  -t --transpile   log transpilat"
-                    echo "     --test        run tests"
-                    echo "  -v --verbose     verbose output"
+                "help" "h"
+                    log "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
+                    log ""
+                    log "      transpiles kim files to nim"
+                    log "      watches cwd if no files are given"
+                    log ""
+                    log "options:"
+                    log "  -o --outdir:DIR  output directory"
+                    log "  -t --transpile   log transpilat"
+                    log "     --test        run tests"
+                    log "  -v --verbose     verbose output"
                     quit(1)
-                else
-                    echo "unknown option!: ", key
+                ➜ 
+                    log "unknown option!: " key
                     quit(1)
-        of cmdEnd
+        cmdEnd
             discard
                         
 # ████████   ████████   ███████  █████████   ███████   ████████   █████████
@@ -94,22 +93,9 @@ proc logFile(f:string, prefix:string="") =
         return
 
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
-    let d = 
-        if dir.len
-            dir & "/" 
-        else
-            ""
-    let icon = 
-        if ext == ".kim"
-            "  " 
-        else
-            "  "
-            
-    let color = 
-        if ext == ".kim"
-            fgGreen
-        else
-            fgMagenta
+    let d = if dir.len ➜ dir & "/" ➜ ""
+    let icon = if ext == ".kim" ➜ "  " ➜ "  "
+    let color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
 
     styledEcho color, prefix, styleDim, icon, resetStyle, 
                color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
@@ -124,11 +110,11 @@ proc compile(file:string, outDir:string="bin") : bool =
 
     profileScope 'comp'
     # let cmd = &"nim c --outDir:{outdir} {file}"
-    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
+    let cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
     let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
-        styledEcho fgRed, "✘ ", &"{cmd}"
+        styledEcho fgRed, "✘ ", "#{cmd}"
         echo output
         false
     else
@@ -158,8 +144,8 @@ proc runTests() : bool =
         
         while true
             let elapsed = (getMonoTime() - startTime).inMilliseconds
-            if elapsed >= 3000
-                output.add(&"test killed after {elapsed} ms!!")
+            if elapsed >= 4000
+                output.add("test killed after #{elapsed} ms!!")
                 p.terminate()
                 sleep(50)
                 if p.running
@@ -189,10 +175,10 @@ proc runTests() : bool =
         else
             let okCount = output.count "[OK]"
             styledEcho output.replace("[Suite]",  fg(fgYellow) & "▸\x1b[0m")
-                             .replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}\x1b[0m")
+                             .replace(peg"'[OK]' .+", "#{ansiStyleCode styleDim} ✔ #{okCount}\x1b[0m")
             
         if exitCode != 0
-            styledEcho fgRed, "✘ ", &"{f}"
+            styledEcho fgRed, "✘ ", "#{f}"
             fail = true
     echo ""
     not fail
@@ -200,7 +186,9 @@ proc runTests() : bool =
 if files.len
 
     if transpile
+        # profileStart 'translate'
         let transpiled = rndr.files(files)
+        # profileStop 'translate'
         quit(transpiled.len - files.len)    
     else
         let transpiled = trans.pile(files)
@@ -218,7 +206,7 @@ if tests
 
 proc watch(paths:seq[string]) =
 
-    setControlCHook(proc () {.noconv.} = 
+    setControlCHook(() -> {.noconv.}
         
         styledEcho ""
         styledEcho fgGreen, farewells[rand(farewells.high)]
@@ -245,7 +233,7 @@ proc watch(paths:seq[string]) =
         var kimFiles:seq[string]
         var nimFiles:seq[string]
         
-        for path in paths:
+        for path in paths
         
             if not dirExists(path)
             
@@ -254,6 +242,9 @@ proc watch(paths:seq[string]) =
             for f in walkDirRec(path)
             
                 let (dir, name, ext) = f.splitFile()
+                
+                if dir.find("k1m") >= 0
+                    continue
                 
                 if ext == ".kim"
                     kimFiles.add(f)

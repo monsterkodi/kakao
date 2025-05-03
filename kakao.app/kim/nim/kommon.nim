@@ -238,7 +238,7 @@ macro dbg*(args: varargs[untyped]): untyped =
     
     let lineInfo = args[0].lineInfoObj
     
-    result.add quote do:
+    result.add quote do: 
         styledEcho bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle
     
     for arg in args:

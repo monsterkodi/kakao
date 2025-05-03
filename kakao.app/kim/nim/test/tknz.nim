@@ -297,6 +297,20 @@ suite "tknz":
             tk("}",         ◂stripol_end,   0, 16),
             tk(" end",      ◂string,        0, 17),
             tk("\"\"\"",    ◂string_end,    0, 21)]
+            
+        t "s = \"(#{s}#{e})\"", @[
+            tk("s",         ◂name,          0, 0),
+            tk("=",         ◂assign,        0, 2),
+            tk("\"",        ◂string_start,  0, 4),
+            tk("(",         ◂string,        0, 5),
+            tk("#{",        ◂stripol_start, 0, 6),
+            tk("s",         ◂name,          0, 8),
+            tk("}",         ◂stripol_end,   0, 9),
+            tk("#{",        ◂stripol_start, 0, 10),
+            tk("e",         ◂name,          0, 12),
+            tk("}",         ◂stripol_end,   0, 13),
+            tk(")",         ◂string,        0, 14),
+            tk("\"",        ◂string_end,    0, 15)]
           
     # ███████    ████████    ███████    ███████  ███   ███  ████████  █████████   ███████
     # ███   ███  ███   ███  ███   ███  ███       ███  ███   ███          ███     ███     
@@ -451,6 +465,14 @@ suite "tknz":
         t "0o755", @[ tk("0o755", ◂number, 0, 0)]
         t "0o755", @[ tk("0o755", ◂number, 0, 0)]
         profileStop "number"
+        
+    test "keywords":
+    
+        t "for ◂for in ◂in", @[ 
+            tk("for",  ◂for,  0, 0),
+            tk("◂for", ◂name, 0, 4),
+            tk("in",   ◂in,   0, 9),
+            tk("◂in",  ◂name, 0, 12)]
         
     # ███████     ███████   █████████   ███████
     # ███   ███  ███   ███     ███     ███     

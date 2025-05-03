@@ -397,6 +397,11 @@ if x
         t "while 2\n continue"                      , "▪[(◂while ◂number ▪[◂continue])]"
         t "while 2\n break"                         , "▪[(◂while ◂number ▪[◂break])]"
         
+    test "not in ":
+    
+        t "while a notin b"                         , "▪[(◂while (◂name ◂notin ◂name))]"
+        t "while a not in b"                        , "▪[(◂while (◂name ◂notin ◂name))]"
+        
     test "strings":
     
         t "s = \"hello\""                           , "▪[(◂name = ◂string)]"
@@ -411,6 +416,10 @@ if x
         
         t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""         , "▪[(◂name ◂call @[◂string, ◂string])]"
         t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""     , "▪[(◂name ◂call @[◂string, ◂string])]"
+        
+        t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")", "▪[(◂let (◂name (= (◂name ◂call @[(◂name . ◂name), ◂string#{@[(◂name . ◂name)]}, ◂string]))))]"
+        
+        t "s = \"(#{s}#{e})\""                      , "▪[(◂name = ◂string#{@[◂name] @[◂name]})]"
         
     test "toplevel":
 

@@ -35,7 +35,7 @@ proc rnd(r: Rndr, nodes: seq[Node]) =
 
 proc ▸block(r: Rndr, n: Node) = 
     var idt : string
-    if n.token.tok == ◆indent
+    if n.token.tok == ◂indent
         idt = n.token.str
         r.add "\n" & idt
         
@@ -52,7 +52,10 @@ proc ▸proc(r: Rndr, n: Node) =
     let f = n.operand_right
     
     r.add "proc "
-    r.rnd n.operand_left
+    if n.operand_left.token.str[0] == '$'
+        r.add "`$`" & n.operand_left.token.str[1..^1]
+    else
+        r.rnd n.operand_left
     r.rnd f.func_signature
     r.add " ="
     if f.func_body != nil
@@ -61,33 +64,33 @@ proc ▸proc(r: Rndr, n: Node) =
 
 proc ▸operation(r: Rndr, n: Node) = 
 
-    if n.token.tok == ◆assign 
-        if n.operand_right.token.tok == ◆func
+    if n.token.tok == ◂assign 
+        if n.operand_right.token.tok == ◂func
             r.▸proc n
             ⮐  
 
-    if n.token.tok notin {◆assign, ◆ampersand}
+    if n.token.tok not in {◂assign, ◂ampersand}
         r.add "("
-    if n.token.tok == ◆assign and n.operand_left.kind == ●list
+    if n.token.tok == ◂assign and n.operand_left.kind == ●list
         r.add "("
     r.rnd n.operand_left
-    if n.token.tok == ◆assign and n.operand_left.kind == ●list
+    if n.token.tok == ◂assign and n.operand_left.kind == ●list
         r.add ")"
     r.spc()
-    case n.token.tok
-        of ◆and
+    switch n.token.tok
+        ◂and
             r.add 'and'
-        of ◆or
+        ◂or
             r.add 'or'
         else 
             r.tok n
     r.spc()
-    if n.token.tok == ◆assign and n.operand_right.kind == ●list
+    if n.token.tok == ◂assign and n.operand_right.kind == ●list
         r.add "("
     r.rnd n.operand_right
-    if n.token.tok == ◆assign and n.operand_right.kind == ●list
+    if n.token.tok == ◂assign and n.operand_right.kind == ●list
         r.add ")"
-    if n.token.tok notin {◆assign, ◆ampersand}
+    if n.token.tok not in {◂assign, ◂ampersand}
         r.add ")"
         
 proc ▸let(r: Rndr, n: Node) = 
@@ -98,7 +101,7 @@ proc ▸let(r: Rndr, n: Node) =
 
 proc ▸preOp(r: Rndr, n: Node) = 
 
-    if n.token.tok == ◆not
+    if n.token.tok == ◂not
         r.add "not "
     else
         r.tok n
@@ -167,7 +170,7 @@ proc ▸arg(r: Rndr, n: Node) =
     r.rnd n.arg_name
     if n.arg_type != nil
         r.add " : "
-        if n.token.tok == ◆var_type and r.annotateVarArg
+        if n.token.tok == ◂var_type and r.annotateVarArg
             r.add "var "
         r.rnd n.arg_type
     if n.arg_value != nil
@@ -207,7 +210,7 @@ proc ▸string(r: Rndr, n: Node) =
             r.tok n
         else
             var lines = n.token.str.split "\n"
-            for i in 1..<lines.len
+            for i in 1...lines.len
                 lines[i] = lines[i][mill..^1]
             r.add lines.join "\n"
         
@@ -237,8 +240,15 @@ proc ▸use(r: Rndr, n: Node) =
     
 proc ▸comment(r: Rndr, n: Node) = 
 
-    r.tok n
+    if n.token.str == "###"
+        r.add "#["
+    else
+        r.tok n
+        
     r.tok n.comment_content
+    
+    if n.token.str == "###"
+        r.add "]#"
     
 proc ▸call(r: Rndr, n: Node) =
 
@@ -248,10 +258,12 @@ proc ▸call(r: Rndr, n: Node) =
         r.rnd n.callee
     if n.callee.token.str != "export"
         r.add "("
+    else
+        r.add " "
     r.rnd n.call_args
     if n.callee.token.str != "export"
         r.add ")"
-
+        
 proc ▸if(r: Rndr, n: Node) =
 
     var idt = ' '.repeat n.token.col
@@ -275,7 +287,7 @@ proc ▸if(r: Rndr, n: Node) =
             r.add " else: "
         r.rnd n.else
         
-proc ▸for(r: Rndr, n: Node) =
+proc ▸forloop(r: Rndr, n: Node) =
 
     r.add "for "
     if n.for_value.kind == ●list
@@ -412,71 +424,71 @@ proc rnd(r: Rndr, n: Node) =
     if n == nil
         ⮐  
     
-    case n.kind
+    switch n.kind
     
-        of ●block
+        ●block
             r.▸block(n)
-        of ●if
+        ●if
             r.▸if(n)
-        of ●switch
+        ●switch
             r.▸switch(n)
-        of ●func
+        ●func
             r.▸func(n)
-        of ●signature
+        ●signature
             r.▸signature(n)
-        of ●call
+        ●call
             r.▸call(n)
-        of ●operation
+        ●operation
             r.▸operation(n)
-        of ●postOp
+        ●postOp
             r.▸postOp(n)
-        of ●preOp
+        ●preOp
             r.▸preOp(n)
-        of ●for
-            r.▸for(n)
-        of ●while
+        ●for
+            r.▸forloop(n)
+        ●while
             r.▸while(n)
-        of ●list
+        ●list
             r.▸list(n)
-        of ●curly
+        ●curly
             r.▸curly(n)
-        of ●squarely
+        ●squarely
             r.▸squarely(n)
-        of ●range
+        ●range
             r.▸range(n)
-        of ●string
+        ●string
             r.▸string(n)
-        of ●comment
+        ●comment
             r.▸comment(n)
-        of ●use
+        ●use
             r.▸use(n)
-        of ●propertyAccess
+        ●propertyAccess
             r.▸propertyAccess(n)
-        of ●arrayAccess
+        ●arrayAccess
             r.▸arrayAccess(n)
-        of ●var
+        ●var
             r.▸var(n)
-        of ●arg
+        ●arg
             r.▸arg(n)
-        of ●let
+        ●let
             r.▸let(n)
-        of ●return
+        ●return
             r.▸return(n)
-        of ●discard
+        ●discard
             r.▸discard(n)
-        of ●enum
+        ●enum
             r.▸enum(n)
-        of ●class
+        ●class
             r.▸class(n)
-        of ●member
+        ●member
             r.▸member(n)
-        of ●testSuite, ●testSection
+        ●testSuite, ●testSection
             r.▸testSuite(n)
-        of ●testCase
+        ●testCase
             r.▸testCase(n)
-        of ●literal, ●keyword, ●type
+        ●literal, ●keyword, ●type
             r.tok n
-        of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
+        ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
             r.tok n
         else
             log &"unhandled {n} {n.kind}"

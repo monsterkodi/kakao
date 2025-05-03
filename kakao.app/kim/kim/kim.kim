@@ -10,15 +10,14 @@ import trans
 import rndr
 import greet
 
-var
-    params    : seq[string]
-    files     : seq[string]
-    optParser = initOptParser()
-    outdir    = ""
-    tests     = false
-    verbose   = false
-    transpile = false
-    testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(proc (r:tuple) : string = r.path)
+var params    : seq[string]
+var files     : seq[string]
+var optParser = initOptParser()
+var outdir    = ""
+var tests     = false
+var verbose   = false
+var transpile = false
+var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(proc (r:tuple) : string = r.path)
     
 randomize()
 

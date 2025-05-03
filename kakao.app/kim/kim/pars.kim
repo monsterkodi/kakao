@@ -128,12 +128,12 @@ type Node* = ref object
         of ●if
             # also handles when
             cond_thens*     : seq[Node]
-            `else`*         : Node
+            else_branch*    : Node
             
         of ●condThen
         
-            cond*           : Node
-            then*           : Node
+            condition*      : Node
+            then_branch*    : Node
             
         of ●switch
             
@@ -320,7 +320,7 @@ proc `$`*(n: Node): string =
             var ips = ""
             for i,s in n.string_stripols
                 if i == 0
-                    ips &= "#{"
+                    ips &= "#"&"{"
                 ips &= $s.stripol_xprssns
                 if 0 < i < n.string_stripols.len-1
                     ips &= " "
@@ -332,17 +332,17 @@ proc `$`*(n: Node): string =
         of ●postOp
             s = &"({n.operand} {s})"
         of ●return
-            let e = choose(n.return_value, &" {n.return_value}", "")
+            let e = choose(n.return_value, " "& $n.return_value, "")
             s = &"({s}{e})"
         of ●call
             s = &"({n.callee} ◂call {n.callargs})"
         of ●propertyAccess
             s = &"({n.owner} {s} {n.property})"
         of ●if
-            let e = choose(n.else, &" {n.else}", "")
+            let e = choose(n.else_branch, &" {n.else_branch}", "")
             s = &"({s} {n.cond_thens}{e})"
         of ●condThen
-            s = &"({n.cond} {n.then})"
+            s = &"({n.condition} {n.then_branch})"
         of ●switch
             let e = choose(n.switch_default, &" {n.switch_default}", "")
             s = &"({s} {n.switch_value} {n.switch_cases}{e})"
@@ -350,7 +350,33 @@ proc `$`*(n: Node): string =
             s = &"({n.case_when} {n.case_then})"
         of ●for
             let b = choose(n.for_body, &" {n.for_body}", "")
+            
             s = &"({s} {n.for_value} in {n.for_range}{b})"
+                        
+            # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
+            # 
+            # s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
+            #
+            # s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
+            # 
+            # s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
+            # 
+            # s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
+            # 
+            # s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
+            # 
+            # s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
+            # 
+            # s = &"(«s» «n.for_value» in «n.for_range»«b»)"
+            # 
+            # s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
+            # 
+            # s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
+            # 
+            # s = &"(s n.for_value in n.for_rangeb)"
+            # 
+            # s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
+            
         of ●list
             s = &"{n.list_values}"
             s = "◂" & s[1..^1]
@@ -802,7 +828,7 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
         if currt.col > token.col+token.str.len
             const optoks= { ◂then, ◂else, ◂elif, ◂test,
                             ◂val_type, ◂var_type, ◂colon,
-                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin,
+                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
                             ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less,
                             ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
             if currt.tok notin optoks
@@ -839,11 +865,11 @@ proc rIf(p: Parser): Node =
             ⮐  p.error "Expected indentation after 'if' without condition"
         p.swallow ◂indent # block indentation
     
-    var cond = p.expression() # initial condition
+    var condition = p.expression() # initial condition
             
-    var then = p.then()
+    var then_branch = p.then()
     
-    condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
+    condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
     
     var outdent = false
     
@@ -869,22 +895,22 @@ proc rIf(p: Parser): Node =
         if p.tok in {◂then, ◂else}
             break # then without condition -> else
         
-        cond = p.expression()
+        condition = p.expression()
         
-        then = p.then()
+        then_branch = p.then()
         
-        condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
+        condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
         
-    var elseBranch: Node
+    var else_branch: Node
 
     if not outdent    
         p.swallow(◂indent)
         
         if p.tok in {◂else, ◂then}
             p.swallow() # else or then without condition
-            elseBranch = p.then()
+            else_branch = p.then()
     
-    Node(token:token, kind:●if, cond_thens:condThens,`else`:elseBranch)
+    Node(token:token, kind:●if, cond_thens:condThens, else_branch:else_branch)
 
 # █████████   ███████   ███  ███         ███  ████████
 #    ███     ███   ███  ███  ███         ███  ███     
@@ -900,10 +926,9 @@ proc lTailIf(p: Parser, left: Node) : Node =
     if left.token.line != p.current.line
         ⮐  
         
-    # log &"TAILIF {left} {left.token.line} {p.current.line} {p.explicit}"
     let token = p.consume()
-    var cond  = p.expression()
-    let condThen = Node(token:cond.token, kind:●condThen, cond:cond, then:left)
+    var condition = p.expression()
+    let condThen = Node(token:condition.token, kind:●condThen, condition:condition, then_branch:left)
 
     Node(token:token, kind:●if, cond_thens: @[condThen])
         
@@ -1060,6 +1085,7 @@ proc rString(p: Parser): Node =
             string_content = Node(token:p.consume(), kind:●literal)
         else
             string_content = Node(token:Token(str:"", tok:◂string, line:p.current.line, col:p.current.col), kind:●literal)
+            
         var string_stripols : seq[Node]
         while p.tok notin {◂string_end, ◂eof}
         
@@ -1075,8 +1101,10 @@ proc rString(p: Parser): Node =
             stripol.stripol_xprssns = stripol_xprssns
             
             p.swallowError(◂stripol_end, "Expected string interpolation end")
-            if p.tok notin {◂string_end, ◂eof}
+            if p.tok notin {◂stripol_start, ◂string_end, ◂eof}
                 stripol.stripol_content = Node(token:p.consume(), kind:●literal)
+            elif p.tok == ◂stripol_start
+                stripol.stripol_content = Node(token:Token(str:"", tok:◂string, line:p.current.line, col:p.current.col), kind:●literal)
             
             string_stripols.add stripol
             
@@ -1302,6 +1330,16 @@ proc lOperation(p: Parser, left: Node): Node =
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
+    
+proc lNotIn(p: Parser, left: Node): Node =
+
+    if p.peek(1).tok == ◂in
+        var token = p.consume()
+        token.str = "notin"
+        token.tok = ◂notin
+        p.swallow()
+        let right = p.expression(token)
+        ⮐  Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
 
 proc lPostOp(p: Parser, left: Node): Node =
 
@@ -1309,7 +1347,7 @@ proc lPostOp(p: Parser, left: Node): Node =
 
 proc rPreOp(p: Parser): Node =
 
-    let token = p.consume()
+    let token = p.consume()    
     let right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
@@ -1500,8 +1538,10 @@ proc setup(p: Parser) =
     p.pratt ◂while,             nil,               rWhile,         20
     p.pratt ◂func,              lFunc,             rFunc,          20
     
-    p.pratt ◂is,                lOperation,        nil,            28
-    p.pratt ◂in,                lOperation,        nil,            29
+    p.pratt ◂is,                lOperation,        nil,            25
+    p.pratt ◂in,                lOperation,        nil,            26
+    p.pratt ◂notin,             lOperation,        nil,            26
+    
     p.pratt ◂or,                lOperation,        nil,            30
     p.pratt ◂and,               lOperation,        nil,            31
 
@@ -1522,7 +1562,7 @@ proc setup(p: Parser) =
     p.pratt ◂multiply,          lOperation,        nil,            60
     p.pratt ◂divide,            lOperation,        nil,            60
 
-    p.pratt ◂not,               nil,               rPreOp,         70
+    p.pratt ◂not,               lNotIn,            rPreOp,         70
 
     p.pratt ◂increment,         lPostOp,           nil,            80
     p.pratt ◂decrement,         lPostOp,           nil,            80
