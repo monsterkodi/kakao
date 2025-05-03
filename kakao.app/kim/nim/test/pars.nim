@@ -151,8 +151,8 @@ suite "pars":
     
         t "Token(tok:◂let)"                         , "▪[(◂name ◂call @[(◂name : ◂name)])]"
     
-        # t "Node(token:Token(tok:◂let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", 
-        #   "▪[(◂name ◂call @[(◂name : (◂name ◂call @[(◂name : ◂name), (◂name : ◂string), (◂name : ((◂name . ◂name) . ◂name))])), (◂name : ◂name), (◂name : ◂name)])]"
+        t "Node(token:Token(tok:◂let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", 
+          "▪[(◂name ◂call @[(◂name : (◂name ◂call @[(◂name : ◂name), (◂name : ◂string), (◂name : ((◂name . ◂name) . ◂name))])), (◂name : ◂name), (◂name : ◂name)])]"
     
     test "implicit call    ":
     
@@ -222,6 +222,10 @@ suite "pars":
         t "a = [ 1  2 ]"                            , "▪[(◂name = [[◂number, ◂number]]])]"
         t "a = [\n    1\n    2\n    ]"              , "▪[(◂name = [[◂number, ◂number]]])]"
         
+    test "tables":
+        
+        t "a = initTable[string,bool]()"            , "▪[(◂name = ((◂name[◂[◂name, ◂name]]) ◂call @[]))]"
+        
     test "property access        ":
         
         t "a.b"                                     , "▪[(◂name . ◂name)]"
@@ -289,6 +293,43 @@ if
     # comment
     else
         break"""                                    , "▪[(◂if @[(◂name ▪[✔])] ▪[◂break])]"
+
+        t """
+if a
+    if b
+        1
+elif e
+    2"""                                            , "▪[(◂if @[(◂name ▪[(◂if @[(◂name ▪[◂number])])]), (◂name ▪[◂number])])]"
+
+        t """
+if a
+    if b
+        if c
+            1
+elif e
+    2"""                                            , "▪[(◂if @[(◂name ▪[(◂if @[(◂name ▪[(◂if @[(◂name ▪[◂number])])])])]), (◂name ▪[◂number])])]"
+
+
+        t """
+if a
+    if b
+        1
+    elif c
+        if d
+            2
+elif e
+    4"""                                            , "▪[(◂if @[(◂name ▪[(◂if @[(◂name ▪[◂number]), (◂name ▪[(◂if @[(◂name ▪[◂number])])])])]), (◂name ▪[◂number])])]"            
+
+        t """
+if e.kind == ●operation
+    if e.operand_right.kind == ●func
+        discard s.scope e.operand_right.func_body
+    elif e.token.tok == ◂assign
+        let lhs = e.operand_left
+        if lhs.kind == ●literal
+            insert lhs.token.str, e
+elif e.kind == ●var
+    insert e.var_name.token.str, e"""               , "▪[(◂if @[(((◂name . ◂name) == ◂name) ▪[(◂if @[((((◂name . ◂name) . ◂name) == ◂name) ▪[((◂discard . ◂name) ◂call @[((◂name . ◂name) . ◂name)])]), ((((◂name . ◂name) . ◂name) == ◂name) ▪[(◂let (◂name (= (◂name . ◂name))))(◂if @[(((◂name . ◂name) == ◂name) ▪[(◂name ◂call @[((◂name . ◂name) . ◂name), ◂name])])])])])]), (((◂name . ◂name) == ◂name) ▪[(◂name ◂call @[(((◂name . ◂name) . ◂name) . ◂name), ◂name])])])]"
         
     test "for":
     

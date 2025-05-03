@@ -270,6 +270,18 @@ if
     else
         break"""                                    , "▪[(◆if @[(◆name ▪[✔])] ▪[◆break])]"
         
+#         t """
+# if e.kind == ●operation
+#     if e.operand_right.kind == ●func
+#         discard s.scope e.operand_right.func_body
+#     elif e.token.tok == ◂assign
+#         let lhs = e.operand_left
+#         if lhs.kind == ●literal
+#             insert lhs.token.str, e
+# elif e.kind == ●var
+#     insert e.var_name.token.str, e""", ""
+                
+        
     ▸ for
     
         t "0..2"                                    , "▪[(◆number .. ◆number)]"

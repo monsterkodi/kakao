@@ -157,6 +157,8 @@ b = false"""
     
         t "a = [ 1  2 ]"                            , "a = @[1, 2]"
         t "a = [\n    1\n    2\n    ]"              , "a = @[1, 2]"
+        
+        t "s.vars.push initTable[string,bool]()"    , "s.vars.push(initTable[string, bool]())" 
     
         t """
 let greetings = [
@@ -208,6 +210,57 @@ let greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin mor
         t "if true ➜\n  log msg"                    , "if true: \n  echo(msg)"
         t "if true\n  log msg"                      , "if true: \n  echo(msg)"
         t "if true\n  log msg\n  log msg"           , "if true: \n  echo(msg)\n  echo(msg)"
+        t """
+if a
+    if b
+        if c
+            1
+elif e
+    2""" , """
+if a: 
+    if b: 
+        if c: 
+            1
+elif e: 
+    2"""
+        
+        t """
+if a
+    if b
+        1
+    elif c
+        if d
+            2
+elif e
+    4""", """
+if a: 
+    if b: 
+        1
+    elif c: 
+        if d: 
+            2
+elif e: 
+    4"""
+        
+        t """
+if e.kind == ●operation
+    if e.operand_right.kind == ●func
+        discard s.scope e.operand_right.func_body
+    elif e.token.tok == ◂assign
+        let lhs = e.operand_left
+        if lhs.kind == ●literal
+            insert lhs.token.str, e
+elif e.kind == ●var
+    insert e.var_name.token.str, e""", """
+if (e.kind == ●operation): 
+    if (e.operand_right.kind == ●func): 
+        discard s.scope(e.operand_right.func_body)
+    elif (e.token.tok == ◂assign): 
+        let lhs = e.operand_left
+        if (lhs.kind == ●literal): 
+            insert(lhs.token.str, e)
+elif (e.kind == ●var): 
+    insert(e.var_name.token.str, e)"""
                                                     
     test "for                                           ":
                                                     

@@ -819,11 +819,11 @@ proc rSymbol(p: Parser): Node =
 
     Node(token:token, kind:●literal)
         
-# ███  ████████
-# ███  ███     
-# ███  ██████  
-# ███  ███     
-# ███  ███     
+# ███  ████████                             ███  ████████                               ███  ████████  
+# ███  ███                                  ███  ███                                    ███  ███       
+# ███  ██████                               ███  ██████                                 ███  ██████    
+# ███  ███                                  ███  ███                                    ███  ███       
+# ███  ███                                  ███  ███                                    ███  ███       
 
 proc rIf(p: Parser): Node =
 
@@ -845,10 +845,13 @@ proc rIf(p: Parser): Node =
     
     condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
     
+    var outdent = false
+    
     while p.tok in {◂elif, ◂indent}
     
         if p.tok == ◂indent            
             if p.current.str.len < ifIndent
+                outdent = true
                 break
             if ifIndent < condIndt 
                 if p.current.str.len < condIndt
@@ -873,12 +876,13 @@ proc rIf(p: Parser): Node =
         condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
         
     var elseBranch: Node
-    
-    p.swallow(◂indent)
-    
-    if p.tok in {◂else, ◂then}
-        p.swallow() # else or then without condition
-        elseBranch = p.then()
+
+    if not outdent    
+        p.swallow(◂indent)
+        
+        if p.tok in {◂else, ◂then}
+            p.swallow() # else or then without condition
+            elseBranch = p.then()
     
     Node(token:token, kind:●if, cond_thens:condThens,`else`:elseBranch)
 
@@ -994,15 +998,18 @@ proc rSwitch(p: Parser): auto =
                 
 proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
-    let token = p.consume() # [
-    if p.tok == ◂square_close
-        p.swallow()
-        Node(token:token, kind:●arrayAccess, array_owner:array_owner)
-    else
-        let array_index = p.expression()
-        p.swallowError(◂square_close, "Missing closing square bracket for array access")
+    let token = p.current()
+    let array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
+    var array_index = 
+        case array_indices.len
+            of 0
+                nil
+            of 1
+                array_indices[0]
+            else
+                Node(token:token, kind:●list, list_values:array_indices)
         
-        Node(token:token, kind:●arrayAccess, array_owner:array_owner, array_index:array_index)
+    Node(token:token, kind:●arrayAccess, array_owner:array_owner, array_index:array_index)
 
 proc rLiteral(p: Parser): Node =
 
