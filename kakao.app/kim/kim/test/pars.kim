@@ -365,6 +365,10 @@ switch ext
     ".kim"  ➜ fun()
             ➜ continue"""                           , "▪[(◂switch ◂name @[(@[◂string] (◂name ◂call @[]))] ◂continue)]"
 
+    ▸ case
+    
+        t "case x\n  of a\n    1\n  of b, c\n    2" , "▪[(◂switch ◂name @[(@[◂name] ▪[◂number]), (@[◂name, ◂name] ▪[◂number])])]"
+
     ▸ tailIf
     
         t "1*2 if true"                             , "▪[(◂if @[(✔ (◂number * ◂number))])]"                
@@ -408,7 +412,7 @@ if x
         t "s = \"\"\"hello\"\"\""                   , "▪[(◂name = ◂string)]"
         t "s = \"\"\"\n\n\"\"\""                    , "▪[(◂name = ◂string)]"
         t "s = \"\"\"num #{1+2} end\"\"\""          , "▪[(◂name = ◂string#{@[(◂number + ◂number)]})]"
-        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\""      , "▪[(◂name = ◂string#{@[◂number] @[◂number]})]"
+        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\""      , "▪[(◂name = ◂string#{@[◂number]@[◂number]})]"
         
         t "\"a #{1} e\""                            , "▪[◂string#{@[◂number]}]"
         t "\"a #{1}\""                              , "▪[◂string#{@[◂number]}]"
@@ -419,7 +423,7 @@ if x
         
         t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")", "▪[(◂let (◂name (= (◂name ◂call @[(◂name . ◂name), ◂string#{@[(◂name . ◂name)]}, ◂string]))))]"
         
-        t "s = \"(#{s}#{e})\""                      , "▪[(◂name = ◂string#{@[◂name] @[◂name]})]"
+        t "s = \"(#{s}#{e})\""                      , "▪[(◂name = ◂string#{@[◂name]@[◂name]})]"
         
     ▸ toplevel
 

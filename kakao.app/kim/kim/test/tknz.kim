@@ -213,7 +213,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("&",         ◂ampersand,     0, 2),
             tk("b",         ◂name,          0, 4),
             ]
-            
+                        
     #  ███████  █████████  ████████   ███  ████████    ███████   ███    
     # ███          ███     ███   ███  ███  ███   ███  ███   ███  ███    
     # ███████      ███     ███████    ███  ████████   ███   ███  ███    
@@ -311,6 +311,13 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("}",         ◂stripol_end,   0, 13),
             tk(")",         ◂string,        0, 14),
             tk("\"",        ◂string_end,    0, 15)]
+            
+        t "&\"{s}\"", @[
+            tk("\"",        ◂string_start,  0, 1),
+            tk("{",         ◂stripol_start, 0, 2),
+            tk("s",         ◂name,          0, 3),
+            tk("}",         ◂stripol_end,   0, 4),
+            tk("\"",        ◂string_end,    0, 5)]
           
     # ███████    ████████    ███████    ███████  ███   ███  ████████  █████████   ███████
     # ███   ███  ███   ███  ███   ███  ███       ███  ███   ███          ███     ███     
@@ -450,7 +457,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
 
     ▸ numbers
         
-        profileStart 'number'
+        # profileStart 'number'
         t "123",   @[ tk("123",   ◂number, 0, 0)]
         t "1234",  @[ tk("1234",  ◂number, 0, 0)]
         t "0xff",  @[ tk("0xff",  ◂number, 0, 0)]
@@ -464,7 +471,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
         t "0b101", @[ tk("0b101", ◂number, 0, 0)]
         t "0o755", @[ tk("0o755", ◂number, 0, 0)]
         t "0o755", @[ tk("0o755", ◂number, 0, 0)]
-        profileStop 'number'
+        # profileStop 'number'
         
     ▸ keywords
     

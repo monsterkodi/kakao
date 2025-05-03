@@ -4,9 +4,10 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 
-use kommon tknz
+import kommon
+import tknz
 
-enum NodeKind*
+type NodeKind* = enum
     
     ●error
     ●block
@@ -67,152 +68,152 @@ type Node* = ref object
 
     token* : Token
         
-    switch kind* : NodeKind
+    case kind* : NodeKind
     
-        ●block
+        of ●block
             
             expressions*    : seq[Node]
             
-        ●operation
+        of ●operation
         
             operand_left*   : Node
             operand_right*  : Node
             
-        ●string
+        of ●string
         
             string_content*  : Node
             string_stripols* : seq[Node]
             
-        ●comment
+        of ●comment
         
             comment_content* : Node
             
-        ●stripol
+        of ●stripol
         
             stripol_xprssns* : seq[Node]
             stripol_content* : Node
     
-        ●range
+        of ●range
         
             range_start*    : Node
             range_end*      : Node
             
-        ●postOp, ●preOp
+        of ●postOp, ●preOp
         
             operand*        : Node 
             
-        ●return
+        of ●return
         
             return_value*   : Node  
     
-        ●discard
+        of ●discard
         
             discard_value*  : Node  
     
-        ●call
+        of ●call
         
             callee*         : Node
             call_args*      : seq[Node]
     
-        ●propertyAccess
+        of ●propertyAccess
         
             owner*          : Node
             property*       : Node
             
-        ●arrayAccess
+        of ●arrayAccess
         
             array_owner*    : Node
             array_index*    : Node
             
-        ●if
+        of ●if
             # also handles when
             cond_thens*     : seq[Node]
-            `else`*         : Node
+            else_branch*    : Node
             
-        ●condThen
+        of ●condThen
         
-            cond*           : Node
-            then*           : Node
+            condition*      : Node
+            then_branch*    : Node
             
-        ●switch
+        of ●switch
             
             switch_value*   : Node
             switch_cases*   : seq[Node]
             switch_default* : Node
             
-        ●switchCase
+        of ●switchCase
         
             case_when*      : seq[Node]
             case_then*      : Node
             
-        ●while
+        of ●while
         
             while_cond*     : Node
             while_body*     : Node
             
-        ●for
+        of ●for
         
             for_value*      : Node
             for_range*      : Node
             for_body*       : Node
             
-        ●list, ●curly, ●squarely
+        of ●list, ●curly, ●squarely
         
             list_values*    : seq[Node] 
 
-        ●arg
+        of ●arg
         
             arg_type*       : Node
             arg_name*       : Node
             arg_value*      : Node
             
-        ●var
+        of ●var
         
             var_name*       : Node
             var_type*       : Node
             var_value*      : Node
             
-        ●let
+        of ●let
             
             let_expr*       : Node
             
-        ●signature
+        of ●signature
         
             sig_args*       : Node
             sig_type*       : Node
             
-        ●func
+        of ●func
         
             func_signature* : Node
             func_mod*       : Node
             func_body*      : Node
             
-        ●use
+        of ●use
         
             use_module*     : Node
             use_kind*       : Node
             use_items*      : seq[Node]
             
-        ●class
+        of ●class
             
             class_name*     : Node
             class_body*     : Node
             
-        ●member
+        of ●member
         
             member_key*     : Node
             member_value*   : Node
             
-        ●enum
+        of ●enum
             
             enum_name*      : Node
             enum_body*      : Node
             
-        ●testSuite, ●testSection
+        of ●testSuite, ●testSection
         
             test_block*     : Node
                         
-        ●testCase
+        of ●testCase
             
             test_value*     : Node
             test_expected*  : Node
@@ -288,9 +289,9 @@ proc `$`(p: Parser): string =
 
     var s : string
     if p.tok != ◂eof
-        s = "▪▪▪ #{p.current} #{p.pos}"
+        s = &"▪▪▪ {p.current} {p.pos}"
         let l = p.text.split("\n")[p.current.line]
-        s &= "\n#{p.current.line}: #{l}"
+        s &= &"\n{p.current.line}: {l}"
     else
         s = p.text
     s
@@ -300,112 +301,138 @@ proc `$`*(n: Node): string =
     if n == nil
         ⮐  "NIL"
         
-    var s = "#{n.token.tok}"
+    var s = &"{n.token.tok}"
     
-    switch n.kind
-        ●block
+    case n.kind
+        of ●block
             s = "▪["
             for e in n.expressions
                 if e != nil
-                    s &= "#{e}"
+                    s &= &"{e}"
                 else
                     s &= "NIL"
             s &= "]"
-        ●operation
-            s = "(#{n.operand_left} #{s} #{n.operand_right})"
-        ●range
-            s = "(#{n.range_start} #{s} #{n.range_end})"
-        ●string
+        of ●operation
+            s = &"({n.operand_left} {s} {n.operand_right})"
+        of ●range
+            s = &"({n.range_start} {s} {n.range_end})"
+        of ●string
             var ips = ""
             for i,s in n.string_stripols
                 if i == 0
-                    ips &= "\#{"
+                    ips &= "#" & "{"
                 ips &= $s.stripol_xprssns
                 if 0 < i and i < n.string_stripols.len-1
                     ips &= " "
                 if i == n.string_stripols.len-1
                     ips &= "}"
-            s = "◂string#{ips}"
-        ●preOp
-            s = "(#{s} #{n.operand})"
-        ●postOp
-            s = "(#{n.operand} #{s})"
-        ●return
-            let e = choose(n.return_value, " #{n.return_value}", "")
-            s = "(#{s}#{e})"
-        ●call
-            s = "(#{n.callee} ◂call #{n.callargs})"
-        ●propertyAccess
-            s = "(#{n.owner} #{s} #{n.property})"
-        ●if
-            let e = choose(n.else, " #{n.else}", "")
-            s = "(#{s} #{n.cond_thens}#{e})"
-        ●condThen
-            s = "(#{n.cond} #{n.then})"
-        ●switch
-            let e = choose(n.switch_default, " #{n.switch_default}", "")
-            s = "(#{s} #{n.switch_value} #{n.switch_cases}#{e})"
-        ●switchCase
-            s = "(#{n.case_when} #{n.case_then})"
-        ●for
-            let b = choose(n.for_body, " #{n.for_body}", "")
-            s = "(#{s} #{n.for_value} in #{n.for_range}#{b})"
-        ●list
-            s = "#{n.list_values}"
+            s = &"◂string{ips}"
+        of ●preOp
+            s = &"({s} {n.operand})"
+        of ●postOp
+            s = &"({n.operand} {s})"
+        of ●return
+            let e = choose(n.return_value, " "& $n.return_value, "")
+            s = &"({s}{e})"
+        of ●call
+            s = &"({n.callee} ◂call {n.callargs})"
+        of ●propertyAccess
+            s = &"({n.owner} {s} {n.property})"
+        of ●if
+            let e = choose(n.else_branch, &" {n.else_branch}", "")
+            s = &"({s} {n.cond_thens}{e})"
+        of ●condThen
+            s = &"({n.condition} {n.then_branch})"
+        of ●switch
+            let e = choose(n.switch_default, &" {n.switch_default}", "")
+            s = &"({s} {n.switch_value} {n.switch_cases}{e})"
+        of ●switchCase
+            s = &"({n.case_when} {n.case_then})"
+        of ●for
+            let b = choose(n.for_body, &" {n.for_body}", "")
+            
+            s = &"({s} {n.for_value} in {n.for_range}{b})"
+                        
+            # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
+            # 
+            # s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
+            #
+            # s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
+            # 
+            # s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
+            # 
+            # s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
+            # 
+            # s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
+            # 
+            # s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
+            # 
+            # s = &"(«s» «n.for_value» in «n.for_range»«b»)"
+            # 
+            # s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
+            # 
+            # s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
+            # 
+            # s = &"(s n.for_value in n.for_rangeb)"
+            # 
+            # s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
+            
+        of ●list
+            s = &"{n.list_values}"
             s = "◂" & s[1..^1]
-        ●curly
-            s = "#{n.list_values}"
+        of ●curly
+            s = &"{n.list_values}"
             s = "{" & s[2..^2] & "}"
-        ●squarely
-            s = "#{n.list_values}"
+        of ●squarely
+            s = &"{n.list_values}"
             s = "[" & s[1..^1] & "]]"
-        ●while
-            let b = choose(n.while_body, " #{n.while_body}", "")
-            s = "(#{s} #{n.while_cond}#{b})"
-        ●func
-            let sig = choose(n.func_signature, "#{n.func_signature} ", "")
-            let mdf = choose(n.func_mod, " #{n.func_mod.token.str} ", "")
-            let bdy = choose(n.func_body, " #{n.func_body}", "")
-            s = "(#{sig}#{s}#{mdf}#{bdy})"
-        ●signature
-            let a = choose(n.sig_args, "#{n.sig_args}", "")
-            let t = choose(n.sig_type, " ➜ #{n.sig_type}", "")
-            s = "#{a}#{t}"
-        ●arrayAccess
-            let i = choose(n.array_index, "#{n.array_index}", "")
-            s = "(#{n.array_owner}[#{i}])"
-        ●arg
-            let t = choose(n.arg_type, "#{n.arg_type}", "")
-            let v = choose(n.arg_value, " (= #{n.arg_value})", "")
-            s = "(#{s}#{t} #{n.arg_name}#{v})"
-        ●var
-            let t = choose(n.var_type, " #{s}#{n.var_type}", "")
-            let v = choose(n.var_value, " (= #{n.var_value})", "")
-            s = "(#{n.var_name}#{t}#{v})"
-        ●let
-            s = "(#{s} #{n.let_expr})"
-        ●type
-            s = "type(#{n.token.str})"
-        ●use
-            let k = choose(n.use_kind, " #{n.use_kind.token.str}", "")
-            let i = choose(n.use_items.len>0, " #{n.use_items}", "")
-            s = "(#{s} #{n.use_module}#{k}#{i})"
-        ●enum    
-            let b = choose(n.enum_body, " #{n.enum_body}", "")
-            s = "(#{s} #{n.enum_name}#{b})"
-        ●class    
-            let b = choose(n.class_body, " #{n.class_body}", "")
-            s = "(#{s} #{n.class_name}#{b})"
-        ●member
-            s = "(#{n.member_key} #{s} #{n.member_value})"
-        ●testSuite
-            let b = choose(n.test_block, " #{n.test_block}", "")
-            s = "(#{s} suite#{b})"
-        ●testSection
-            let b = choose(n.test_block, " #{n.test_block}", "")
-            s = "(#{s} section#{b})"
-        ●testCase
-            s = "(#{n.test_value} #{s} #{n.test_expected})"
+        of ●while
+            let b = choose(n.while_body, &" {n.while_body}", "")
+            s = &"({s} {n.while_cond}{b})"
+        of ●func
+            let sig = choose(n.func_signature, &"{n.func_signature} ", "")
+            let mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
+            let bdy = choose(n.func_body, &" {n.func_body}", "")
+            s = &"({sig}{s}{mdf}{bdy})"
+        of ●signature
+            let a = choose(n.sig_args, &"{n.sig_args}", "")
+            let t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
+            s = &"{a}{t}"
+        of ●arrayAccess
+            let i = choose(n.array_index, &"{n.array_index}", "")
+            s = &"({n.array_owner}[{i}])"
+        of ●arg
+            let t = choose(n.arg_type, &"{n.arg_type}", "")
+            let v = choose(n.arg_value, &" (= {n.arg_value})", "")
+            s = &"({s}{t} {n.arg_name}{v})"
+        of ●var
+            let t = choose(n.var_type, &" {s}{n.var_type}", "")
+            let v = choose(n.var_value, &" (= {n.var_value})", "")
+            s = &"({n.var_name}{t}{v})"
+        of ●let
+            s = &"({s} {n.let_expr})"
+        of ●type
+            s = &"type({n.token.str})"
+        of ●use
+            let k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
+            let i = choose(n.use_items.len>0, &" {n.use_items}", "")
+            s = &"({s} {n.use_module}{k}{i})"
+        of ●enum    
+            let b = choose(n.enum_body, &" {n.enum_body}", "")
+            s = &"({s} {n.enum_name}{b})"
+        of ●class    
+            let b = choose(n.class_body, &" {n.class_body}", "")
+            s = &"({s} {n.class_name}{b})"
+        of ●member
+            s = &"({n.member_key} {s} {n.member_value})"
+        of ●testSuite
+            let b = choose(n.test_block, &" {n.test_block}", "")
+            s = &"({s} suite{b})"
+        of ●testSection
+            let b = choose(n.test_block, &" {n.test_block}", "")
+            s = &"({s} section{b})"
+        of ●testCase
+            s = &"({n.test_value} {s} {n.test_expected})"
         else
             discard
     s
@@ -417,10 +444,10 @@ proc error(p: Parser, msg: string, token=Token(tok:◂eof)) : Node =
     styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
     if token.tok != ◂eof
         let line = p.text.split("\n")[token.line]
-        styledEcho fgWhite, styleDim, "#{token.line}", resetStyle, fgGreen, "#{line}"
+        styledEcho fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, &"{line}"
     elif p.tok != ◂eof
         let line = p.text.split("\n")[p.current.line]
-        styledEcho fgWhite, styleDim, "#{p.current.line}", resetStyle, fgGreen, "#{line}"
+        styledEcho fgWhite, styleDim, &"{p.current.line}", resetStyle, fgGreen, &"{line}"
         
     nil
     
@@ -449,7 +476,7 @@ proc swallow(p: Parser, tok: tok) =
 proc swallowError(p: Parser, tok: tok, err: string) = 
 
     if p.tok != tok
-        discard p.error("Expected #{tok} to swallow, but found #{p.tok} instead")
+        discard p.error(&"Expected {tok} to swallow, but found {p.tok} instead")
         discard p.error(err)
         ⮐  
     p.swallow()
@@ -639,7 +666,7 @@ proc parseType(p: Parser): Node =
     
     if p.tok == ◂square_open
         var opened = 0
-        while p.tok not in {◂eof}
+        while p.tok notin {◂eof}
             let t = p.consume()
             token.str &= t.str
             if t.tok == ◂square_open
@@ -674,12 +701,12 @@ proc parseModule(p:Parser) : Node =
 
     let line = p.current.line
     var s = ""
-    while p.current.str not in @["▪", "◆"]
+    while p.current.str notin @["▪", "◆"]
         let e = p.current.col + p.current.str.len
         s &= p.consume().str
         if p.atEnd() or p.current.line != line
             break 
-        if p.current.col > e and p.current.str not in @["▪", "◆"] 
+        if p.current.col > e and p.current.str notin @["▪", "◆"] 
             s &= " "
         
     Node(token:Token(str:s))    
@@ -747,7 +774,7 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
     p.explicit = true
     while p.tok != stop
         if p.tok == ◂eof
-            ⮐  p.error("Missing 'in' for 'for' loop (edetected)!", token)
+            ⮐  p.error("Missing 'in' for 'for' loop (eof detected)!", token)
         if p.current.line != token.line
             ⮐  p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
         list_values.add p.rSymbol()
@@ -797,14 +824,14 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
 
     let currt = p.peek(0)
 
-    if not p.explicit and currt.tok not in {◂indent} and not p.isTokAhead(◂func)
+    if not p.explicit and currt.tok notin {◂indent} and not p.isTokAhead(◂func)
         if currt.col > token.col+token.str.len
             const optoks= { ◂then, ◂else, ◂elif, ◂test,
                             ◂val_type, ◂var_type, ◂colon,
-                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂not in,
+                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
                             ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less,
                             ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
-            if currt.tok not in optoks
+            if currt.tok notin optoks
                 ⮐  true
     false
     
@@ -838,11 +865,11 @@ proc rIf(p: Parser): Node =
             ⮐  p.error "Expected indentation after 'if' without condition"
         p.swallow ◂indent # block indentation
     
-    var cond = p.expression() # initial condition
+    var condition = p.expression() # initial condition
             
-    var then = p.then()
+    var then_branch = p.then()
     
-    condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
+    condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
     
     var outdent = false
     
@@ -868,22 +895,22 @@ proc rIf(p: Parser): Node =
         if p.tok in {◂then, ◂else}
             break # then without condition -> else
         
-        cond = p.expression()
+        condition = p.expression()
         
-        then = p.then()
+        then_branch = p.then()
         
-        condThens.add(Node(token:cond.token, kind:●condThen, cond:cond, then:then))
+        condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
         
-    var elseBranch: Node
+    var else_branch: Node
 
     if not outdent    
         p.swallow(◂indent)
         
         if p.tok in {◂else, ◂then}
             p.swallow() # else or then without condition
-            elseBranch = p.then()
+            else_branch = p.then()
     
-    Node(token:token, kind:●if, cond_thens:condThens,`else`:elseBranch)
+    Node(token:token, kind:●if, cond_thens:condThens, else_branch:else_branch)
 
 # █████████   ███████   ███  ███         ███  ████████
 #    ███     ███   ███  ███  ███         ███  ███     
@@ -899,10 +926,9 @@ proc lTailIf(p: Parser, left: Node) : Node =
     if left.token.line != p.current.line
         ⮐  
         
-    # log "TAILIF {left} {left.token.line} {p.current.line} {p.explicit}"
     let token = p.consume()
-    var cond  = p.expression()
-    let condThen = Node(token:cond.token, kind:●condThen, cond:cond, then:left)
+    var condition = p.expression()
+    let condThen = Node(token:condition.token, kind:●condThen, condition:condition, then_branch:left)
 
     Node(token:token, kind:●if, cond_thens: @[condThen])
         
@@ -938,7 +964,7 @@ proc switchCase(p: Parser, baseIndent: int): Node =
     let token = p.current
     
     p.explicit = true
-    while p.tok not in {◂else, ◂then, ◂indent, ◂eof}
+    while p.tok notin {◂else, ◂then, ◂indent, ◂eof}
         case_when.add p.value()
         p.swallow ◂comma
     p.explicit = false
@@ -964,7 +990,7 @@ proc rSwitch(p: Parser): auto =
     
     var switch_cases: seq[Node]
     
-    while p.tok not in {◂else, ◂then, ◂eof}
+    while p.tok notin {◂else, ◂then, ◂eof}
         if p.isDedent baseIndent
             break
         if p.tok == ◂indent and p.peek(1).tok == ◂then
@@ -999,11 +1025,10 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.current()
     let array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
-    var array_index = 
-        switch array_indices.len
-            0
+    var array_index = case array_indices.len
+            of 0
                 nil
-            1
+            of 1
                 array_indices[0]
             else
                 Node(token:token, kind:●list, list_values:array_indices)
@@ -1061,21 +1086,21 @@ proc rString(p: Parser): Node =
             string_content = Node(token:Token(str:"", tok:◂string, line:p.current.line, col:p.current.col), kind:●literal)
             
         var string_stripols : seq[Node]
-        while p.tok not in {◂string_end, ◂eof}
+        while p.tok notin {◂string_end, ◂eof}
         
             p.swallowError(◂stripol_start, "Expected string interpolation start")
             
             var stripol = Node(token:p.current, kind:●stripol)
             
             var stripol_xprssns : seq[Node]
-            while p.tok not in {◂stripol_end, ◂eof}
+            while p.tok notin {◂stripol_end, ◂eof}
                 let xpr = p.expression()
                 stripol_xprssns.add xpr
                 
             stripol.stripol_xprssns = stripol_xprssns
             
             p.swallowError(◂stripol_end, "Expected string interpolation end")
-            if p.tok not in {◂stripol_start, ◂string_end, ◂eof}
+            if p.tok notin {◂stripol_start, ◂string_end, ◂eof}
                 stripol.stripol_content = Node(token:p.consume(), kind:●literal)
             elif p.tok == ◂stripol_start
                 stripol.stripol_content = Node(token:Token(str:"", tok:◂string, line:p.current.line, col:p.current.col), kind:●literal)
@@ -1167,13 +1192,13 @@ proc lSymbolList(p: Parser, left: Node) : Node =
     if p.listless
         ⮐  
 
-    switch left.kind 
-        ●list
+    case left.kind 
+        of ●list
             var list_values = left.list_values
             # todo: check if all list items are symbols?
             list_values.add p.rSymbol()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        ●literal
+        of ●literal
             if left.token.tok != ◂name
                 ⮐  
             var list_values : seq[Node]
@@ -1185,17 +1210,17 @@ proc lSymbolList(p: Parser, left: Node) : Node =
 
 proc lArgList(p: Parser, left: Node) : Node =
     
-    switch left.kind 
-        ●list
+    case left.kind 
+        of ●list
             var list_values = left.list_values
             list_values.add p.rArg()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        ●arg
+        of ●arg
             var list_values : seq[Node]
             list_values.add left
             list_values.add p.rArg()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        ●literal
+        of ●literal
             if left.token.tok == ◂name
                 ⮐  p.lVar left
         else
@@ -1209,12 +1234,12 @@ proc lArgList(p: Parser, left: Node) : Node =
 
 proc lFunc(p: Parser, left: Node): Node =
 
-    if left.kind not in {●signature, ●list, ●arg, ●operation}
+    if left.kind notin {●signature, ●list, ●arg, ●operation}
         ⮐ 
         
     var func_signature = left
     
-    # log "lFunc LEFT {left}"
+    # log &"lFunc LEFT {left}"
     
     if left.kind == ●operation
         if left.token.tok != ◂assign
@@ -1304,6 +1329,16 @@ proc lOperation(p: Parser, left: Node): Node =
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
+    
+proc lNotIn(p: Parser, left: Node): Node =
+
+    if p.peek(1).tok == ◂in
+        var token = p.consume()
+        token.str = "notin"
+        token.tok = ◂notin
+        p.swallow()
+        let right = p.expression(token)
+        ⮐  Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
 
 proc lPostOp(p: Parser, left: Node): Node =
 
@@ -1311,7 +1346,7 @@ proc lPostOp(p: Parser, left: Node): Node =
 
 proc rPreOp(p: Parser): Node =
 
-    let token = p.consume()
+    let token = p.consume()    
     let right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
@@ -1366,7 +1401,7 @@ proc lMember(p: Parser, left: Node) : Node =
 proc lTestCase(p: Parser, left: Node): Node =
 
     let token = p.consume() # ▸
-    p.swallow(◂indent) # todo: check if indent is larger than that the test expression
+    p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
     let right = p.expression()
     Node(token:token, kind: ●testCase, test_value:left, test_expected:right)
 
@@ -1405,7 +1440,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
     
     if rhs == nil
     
-        ⮐  p.error("Expected expression but found {token.str} {token}", token)
+        ⮐  p.error(&"Expected expression but found {token.str} {token}", token)
         
     var node: Node = rhs(p)
 
@@ -1502,8 +1537,10 @@ proc setup(p: Parser) =
     p.pratt ◂while,             nil,               rWhile,         20
     p.pratt ◂func,              lFunc,             rFunc,          20
     
-    p.pratt ◂is,                lOperation,        nil,            28
-    p.pratt ◂in,                lOperation,        nil,            29
+    p.pratt ◂is,                lOperation,        nil,            25
+    p.pratt ◂in,                lOperation,        nil,            26
+    p.pratt ◂notin,             lOperation,        nil,            26
+    
     p.pratt ◂or,                lOperation,        nil,            30
     p.pratt ◂and,               lOperation,        nil,            31
 
@@ -1524,7 +1561,7 @@ proc setup(p: Parser) =
     p.pratt ◂multiply,          lOperation,        nil,            60
     p.pratt ◂divide,            lOperation,        nil,            60
 
-    p.pratt ◂not,               nil,               rPreOp,         70
+    p.pratt ◂not,               lNotIn,            rPreOp,         70
 
     p.pratt ◂increment,         lPostOp,           nil,            80
     p.pratt ◂decrement,         lPostOp,           nil,            80
@@ -1546,7 +1583,7 @@ proc setup(p: Parser) =
 proc ast*(text:string) : Node =
 
     let tokens = tokenize text
-    # log "ast* {tokens}"
+    # log &"ast* {tokens}"
     var p = Parser(tokens:tokens, pos:0, text:text)
     p.setup()
     p.parseBlock()

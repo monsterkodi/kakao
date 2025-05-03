@@ -223,17 +223,17 @@ type Node* = ref object
                 
 template choose*(cond, a, b: untyped): untyped =
 
-    when typeof(cond) is bool:
+    when typeof(cond) is bool
         if cond 
             a 
         else 
             b
-    elif typeof(cond) is ref:
+    elif typeof(cond) is ref
         if cond != nil 
             a 
         else 
             b
-    else:
+    else
         {.error: "Condition must be bool or ref type".}
 
 # ████████    ███████   ████████    ███████  ████████  ████████ 
@@ -320,9 +320,9 @@ proc `$`*(n: Node): string =
             var ips = ""
             for i,s in n.string_stripols
                 if i == 0
-                    ips &= "#"&"{"
+                    ips &= "#" & "{"
                 ips &= $s.stripol_xprssns
-                if 0 < i < n.string_stripols.len-1
+                if 0 < i and i < n.string_stripols.len-1
                     ips &= " "
                 if i == n.string_stripols.len-1
                     ips &= "}"
@@ -1025,8 +1025,7 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.current()
     let array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
-    var array_index = 
-        case array_indices.len
+    var array_index = case array_indices.len
             of 0
                 nil
             of 1
