@@ -69,7 +69,7 @@ proc ▸operation(r: Rndr, n: Node) =
             r.▸proc n
             ⮐  
 
-    if n.token.tok not in {◂assign, ◂ampersand}
+    if n.token.tok notin {◂assign, ◂ampersand}
         r.add "("
     if n.token.tok == ◂assign and n.operand_left.kind == ●list
         r.add "("
@@ -77,10 +77,10 @@ proc ▸operation(r: Rndr, n: Node) =
     if n.token.tok == ◂assign and n.operand_left.kind == ●list
         r.add ")"
     r.spc()
-    switch n.token.tok
-        ◂and
+    case n.token.tok
+        of ◂and
             r.add 'and'
-        ◂or
+        of ◂or
             r.add 'or'
         else 
             r.tok n
@@ -90,7 +90,7 @@ proc ▸operation(r: Rndr, n: Node) =
     r.rnd n.operand_right
     if n.token.tok == ◂assign and n.operand_right.kind == ●list
         r.add ")"
-    if n.token.tok not in {◂assign, ◂ampersand}
+    if n.token.tok notin {◂assign, ◂ampersand}
         r.add ")"
         
 proc ▸let(r: Rndr, n: Node) = 
@@ -210,7 +210,7 @@ proc ▸string(r: Rndr, n: Node) =
             r.tok n
         else
             var lines = n.token.str.split "\n"
-            for i in 1...lines.len
+            for i in 1..<lines.len
                 lines[i] = lines[i][mill..^1]
             r.add lines.join "\n"
         
@@ -277,17 +277,17 @@ proc ▸if(r: Rndr, n: Node) =
                 r.add "\n" & idt & "elif "
             else
                 r.add " elif "
-        r.rnd condThen.cond
+        r.rnd condThen.condition
         r.add ": "
-        r.rnd condThen.then
-    if n.else != nil   
-        if n.else.token.line > line
+        r.rnd condThen.then_branch
+    if n.else_branch != nil   
+        if n.else_branch.token.line > line
             r.add "\n" & idt & "else: "
         else
             r.add " else: "
-        r.rnd n.else
+        r.rnd n.else_branch
         
-proc ▸forloop(r: Rndr, n: Node) =
+proc ▸for(r: Rndr, n: Node) =
 
     r.add "for "
     if n.for_value.kind == ●list
@@ -424,71 +424,71 @@ proc rnd(r: Rndr, n: Node) =
     if n == nil
         ⮐  
     
-    switch n.kind
+    case n.kind
     
-        ●block
+        of ●block
             r.▸block(n)
-        ●if
+        of ●if
             r.▸if(n)
-        ●switch
+        of ●switch
             r.▸switch(n)
-        ●func
+        of ●func
             r.▸func(n)
-        ●signature
+        of ●signature
             r.▸signature(n)
-        ●call
+        of ●call
             r.▸call(n)
-        ●operation
+        of ●operation
             r.▸operation(n)
-        ●postOp
+        of ●postOp
             r.▸postOp(n)
-        ●preOp
+        of ●preOp
             r.▸preOp(n)
-        ●for
-            r.▸forloop(n)
-        ●while
+        of ●for
+            r.▸for(n)
+        of ●while
             r.▸while(n)
-        ●list
+        of ●list
             r.▸list(n)
-        ●curly
+        of ●curly
             r.▸curly(n)
-        ●squarely
+        of ●squarely
             r.▸squarely(n)
-        ●range
+        of ●range
             r.▸range(n)
-        ●string
+        of ●string
             r.▸string(n)
-        ●comment
+        of ●comment
             r.▸comment(n)
-        ●use
+        of ●use
             r.▸use(n)
-        ●propertyAccess
+        of ●propertyAccess
             r.▸propertyAccess(n)
-        ●arrayAccess
+        of ●arrayAccess
             r.▸arrayAccess(n)
-        ●var
+        of ●var
             r.▸var(n)
-        ●arg
+        of ●arg
             r.▸arg(n)
-        ●let
+        of ●let
             r.▸let(n)
-        ●return
+        of ●return
             r.▸return(n)
-        ●discard
+        of ●discard
             r.▸discard(n)
-        ●enum
+        of ●enum
             r.▸enum(n)
-        ●class
+        of ●class
             r.▸class(n)
-        ●member
+        of ●member
             r.▸member(n)
-        ●testSuite, ●testSection
+        of ●testSuite, ●testSection
             r.▸testSuite(n)
-        ●testCase
+        of ●testCase
             r.▸testCase(n)
-        ●literal, ●keyword, ●type
+        of ●literal, ●keyword, ●type
             r.tok n
-        ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
+        of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
             r.tok n
         else
             log &"unhandled {n} {n.kind}"
