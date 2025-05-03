@@ -35,7 +35,7 @@ proc rnd(r: Rndr, nodes: seq[Node]) =
 
 proc ▸block(r: Rndr, n: Node) = 
     var idt : string
-    if n.token.tok == ◆indent:
+    if n.token.tok == ◂indent:
         idt = n.token.str
         r.add "\n" & idt
         
@@ -64,33 +64,33 @@ proc ▸proc(r: Rndr, n: Node) =
 
 proc ▸operation(r: Rndr, n: Node) = 
 
-    if n.token.tok == ◆assign :
-        if n.operand_right.token.tok == ◆func:
+    if n.token.tok == ◂assign :
+        if n.operand_right.token.tok == ◂func:
             r.▸proc n
             return  
 
-    if n.token.tok notin {◆assign, ◆ampersand}:
+    if n.token.tok notin {◂assign, ◂ampersand}:
         r.add "("
-    if n.token.tok == ◆assign and n.operand_left.kind == ●list:
+    if n.token.tok == ◂assign and n.operand_left.kind == ●list:
         r.add "("
     r.rnd n.operand_left
-    if n.token.tok == ◆assign and n.operand_left.kind == ●list:
+    if n.token.tok == ◂assign and n.operand_left.kind == ●list:
         r.add ")"
     r.spc()
     case n.token.tok:
-        of ◆and:
+        of ◂and:
             r.add "and"
-        of ◆or:
+        of ◂or:
             r.add "or"
         else :
             r.tok n
     r.spc()
-    if n.token.tok == ◆assign and n.operand_right.kind == ●list:
+    if n.token.tok == ◂assign and n.operand_right.kind == ●list:
         r.add "("
     r.rnd n.operand_right
-    if n.token.tok == ◆assign and n.operand_right.kind == ●list:
+    if n.token.tok == ◂assign and n.operand_right.kind == ●list:
         r.add ")"
-    if n.token.tok notin {◆assign, ◆ampersand}:
+    if n.token.tok notin {◂assign, ◂ampersand}:
         r.add ")"
         
 proc ▸let(r: Rndr, n: Node) = 
@@ -101,7 +101,7 @@ proc ▸let(r: Rndr, n: Node) =
 
 proc ▸preOp(r: Rndr, n: Node) = 
 
-    if n.token.tok == ◆not:
+    if n.token.tok == ◂not:
         r.add "not "
     else:
         r.tok n
@@ -170,7 +170,7 @@ proc ▸arg(r: Rndr, n: Node) =
     r.rnd n.arg_name
     if n.arg_type != nil:
         r.add " : "
-        if n.token.tok == ◆var_type and r.annotateVarArg:
+        if n.token.tok == ◂var_type and r.annotateVarArg:
             r.add "var "
         r.rnd n.arg_type
     if n.arg_value != nil:

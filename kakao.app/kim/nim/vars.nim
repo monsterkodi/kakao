@@ -41,7 +41,7 @@ proc exp(s:Scoper, body:Node, i:int, e:Node) =
             if map.hasKey name:
                 return  
             
-        var let_expr = Node(token:Token(tok:◆let, str:"var", line:expr.token.line), kind:●let, let_expr:expr)
+        var let_expr = Node(token:Token(tok:◂let, str:"var", line:expr.token.line), kind:●let, let_expr:expr)
 
         body.expressions[i] = let_expr
 
@@ -50,7 +50,7 @@ proc exp(s:Scoper, body:Node, i:int, e:Node) =
     if e.kind == ●operation:
         if e.operand_right.kind == ●func:
             discard s.scope e.operand_right.func_body
-        elif e.token.tok == ◆assign:
+        elif e.token.tok == ◂assign:
             let lhs = e.operand_left
             if lhs.kind == ●literal:
                 insert lhs.token.str, e

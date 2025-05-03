@@ -145,6 +145,10 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "f(1 2 3)"                                , "▪[(◆name ◆call @[◆number, ◆number, ◆number])]"
         t "f(1 g(h(2)))"                            , "▪[(◆name ◆call @[◆number, (◆name ◆call @[(◆name ◆call @[◆number])])])]"
     
+    ▸ constructor call
+    
+        t "Node(token:Token(tok:◆let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", ""
+    
     ▸ implicit call    
     
         t "f a"                                     , "▪[(◆name ◆call @[◆name])]"
