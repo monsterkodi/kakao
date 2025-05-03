@@ -246,9 +246,11 @@ proc ▸call(r: Rndr, n: Node) =
         r.add "echo"
     else
         r.rnd n.callee
-    r.add "("
+    if n.callee.token.str != "export"
+        r.add "("
     r.rnd n.call_args
-    r.add ")"
+    if n.callee.token.str != "export"
+        r.add ")"
 
 proc ▸if(r: Rndr, n: Node) =
 

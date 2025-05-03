@@ -18,6 +18,7 @@ type tok* = enum
         ◂while
         ◂for
         ◂in
+        ◂notin
         ◂is
         ◂of
         ◂break

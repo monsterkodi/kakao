@@ -159,6 +159,7 @@ b = false"""
         t "a = [\n    1\n    2\n    ]"              , "a = @[1, 2]"
         
         t "s.vars.push initTable[string,bool]()"    , "s.vars.push(initTable[string, bool]())" 
+        t "let mono = getMonoTime() - timers[msg][0]", "let mono = (getMonoTime() - timers[msg][0])"
     
         t """
 let greetings = [
@@ -261,6 +262,10 @@ if (e.kind == ●operation):
             insert(lhs.token.str, e)
 elif (e.kind == ●var): 
     insert(e.var_name.token.str, e)"""
+
+    ▸ when
+    
+        t "when T is (seq or array)"                , "when (T is (seq or array)): "
                                                     
     ▸ for                                           
                                                     

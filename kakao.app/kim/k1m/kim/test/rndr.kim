@@ -229,6 +229,10 @@ if e.kind == ●operation
             insert lhs.token.str, e
 elif e.kind == ●var
     insert e.var_name.token.str, e"""
+
+    ▸ when
+    
+        t "when T is (seq or array)"                , "when T is (seq or array)"
                                                     
     ▸ for                                           
                                                     

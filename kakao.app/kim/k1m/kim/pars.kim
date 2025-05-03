@@ -1234,7 +1234,9 @@ proc rReturn(p: Parser): Node =
         Node(token:token, kind:●return)
     else
         p.returning = true
-        let right = p.expression(token)
+        var right : Node 
+        if p.tok != ◆indent or p.isNextLineIndented(token)
+            right = p.expression(token)
         p.returning = false
         Node(token:token, kind:●return, return_value:right)
 

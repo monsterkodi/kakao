@@ -802,7 +802,7 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
         if currt.col > token.col+token.str.len
             const optoks= { ◂then, ◂else, ◂elif, ◂test,
                             ◂val_type, ◂var_type, ◂colon,
-                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, 
+                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin,
                             ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less,
                             ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
             if currt.tok notin optoks
@@ -1274,7 +1274,11 @@ proc rReturn(p: Parser): Node =
         Node(token:token, kind:●return)
     else
         p.returning = true
-        let right = p.expression(token)
+
+        var right : Node 
+        if p.tok != ◂indent or p.isNextLineIndented(token)
+            right = p.expression(token)
+        
         p.returning = false
         Node(token:token, kind:●return, return_value:right)
 
@@ -1496,6 +1500,8 @@ proc setup(p: Parser) =
     p.pratt ◂while,             nil,               rWhile,         20
     p.pratt ◂func,              lFunc,             rFunc,          20
     
+    p.pratt ◂is,                lOperation,        nil,            28
+    p.pratt ◂in,                lOperation,        nil,            29
     p.pratt ◂or,                lOperation,        nil,            30
     p.pratt ◂and,               lOperation,        nil,            31
 
@@ -1507,6 +1513,7 @@ proc setup(p: Parser) =
     p.pratt ◂greater,           lOperation,        nil,            40
     
     p.pratt ◂doubledot,         lRange,            nil,            40
+    p.pratt ◂tripledot,         lRange,            nil,            40
     p.pratt ◂ampersand,         lOperation,        nil,            40
                                                    
     p.pratt ◂plus,              lOperation,        nil,            50
