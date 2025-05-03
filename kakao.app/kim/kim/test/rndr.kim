@@ -269,9 +269,9 @@ elif (e.kind == ●var):
                                                     
     ▸ for                                           
                                                     
-        t "for a in 0..2 ➜ true"                    , "for a in [0..2]: true"     
-        t "for a in 0..2\n  true"                   , "for a in [0..2]: \n  true"   
-        t "for a in 0..2 ➜\n  true"                 , "for a in [0..2]: \n  true"  
+        t "for a in 0..2 ➜ true"                    , "for a in 0..2: true"     
+        t "for a in 0..2\n  true"                   , "for a in 0..2: \n  true"   
+        t "for a in 0..2 ➜\n  true"                 , "for a in 0..2: \n  true"  
         t "for kind, key, val in opt.get()"         , "for kind, key, val in opt.get(): "  
                                                     
     ▸ switch                                        
@@ -312,6 +312,9 @@ elif (e.kind == ●var):
           
         t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")",
           "let e = choose(n.return_value, &\" {n.return_value}\", \"\")"
+          
+        t "p = peg\"abc\""                          , "p = peg\"abc\"" 
+        t "if line =~ peg\"abc\""                   , "if (line =~ peg\"abc\"): " 
           
     ▸ triple strings
     
@@ -566,7 +569,13 @@ icon =
         t "converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0"
     ▸ template
         t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
+        
     ▸ macro
+    
         t "macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped ="
+        
+        t "quote do:\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)" 
+        t "quote\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)" 
+        
     ▸ type
         t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"

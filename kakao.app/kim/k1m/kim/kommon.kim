@@ -6,14 +6,13 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ###
 
-use std ▪ monotimes times sequtils paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
-use system/ansi_c 
-
-export monotimes times
-export sequtils  tables    typetraits
-export enumutils sets
-export strutils  strformat unicode pegs
-export unittest  macros
+import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
+import system/ansi_c 
+export monotimes, times
+export sequtils,  tables,    typetraits
+export enumutils, sets
+export strutils,  strformat, unicode, pegs
+export unittest,  macros
 export terminal
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
@@ -21,16 +20,14 @@ proc fg*(c:auto) : auto = ansiForegroundColorCode(c)
 proc sc*(c:auto) : auto = ansiStyleCode(c)
 
 proc underscore*(n: uint64): string =
-    var s = $(n)
-    result = newStringOfCap(s.len + (s.len - 1) div 3)
-    
+    var s = $n
+    result = newStringOfCap(s.len + (s.len - 1).div(3))
     var count = 0
     for i in countdown(s.high, 0)
-        if count != 0 and mod(count 3) == 0
+        if count != 0 and count.mod(3) == 0
           result.add('_')
         result.add(s[i])
         inc(count)
-  
     result = reversed(result)
 
 proc indent*(s:string, i=4) : string = 
@@ -71,11 +68,10 @@ converter toBool*[T](x: seq[T]): bool = x.len > 0
 proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): string =
 
     let (dir, _, _) = splitFile(file.Path)
-    
     var dirParts = dir.string.split(DirSep)
     
     if dirParts[0] == "" and dirParts.len == 1
-        dirParts.delete 0..0
+        dirParts.delete(0..0)
     
     for i in countdown(dirParts.high, 0)
         if dirParts[i] == src
@@ -99,12 +95,12 @@ proc profileStart*(msg: string) =
     if not timers.contains(msg)
         timers[msg] = (getMonoTime(), mach_absolute_time())
     else
-        stderr.writeLine "[WARNING] Duplicate profileStart for '#{msg}'"
+        stderr.writeLine &"[WARNING] Duplicate profileStart for '{msg}'"
 
 proc profileStop*(msg: string) =
     
     if not timers.contains(msg)
-        stderr.writeLine "[ERROR] profileStop for unknown label '#{msg}'"
+        stderr.writeLine &"[ERROR] profileStop for unknown label '{msg}'"
         return
 
     let mono = getMonoTime() - timers[msg][0]
@@ -112,19 +108,18 @@ proc profileStop*(msg: string) =
     var mons = ""
 
     if mono.inMicroseconds < 1000
-        mons = " #{mono.inMicroseconds} #{sc(styleDim)}µs "
+        mons = &" {mono.inMicroseconds} {sc(styleDim)}µs "
     else
-        mons = " #{mono.inMilliseconds} #{sc(styleDim)}ms "
+        mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
                 
     styledEcho fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle
         
     timers.del(msg)
     
 macro profileScope*(msg: string): untyped =
-    quote do
+    quote do:
         profileStart(`msg`)
-        defer
-            profileStop(`msg`)
+        defer: profileStop(`msg`)
 
 var tickTimers : Table[string, uint64]
 
@@ -133,14 +128,14 @@ proc tickStart*(msg: string) =
         # GC_disableOrc()
         tickTimers[msg] = mach_absolute_time()
     else
-        stderr.writeLine "[WARNING] Duplicate tickStart for '#{msg}'"
+        stderr.writeLine &"[WARNING] Duplicate tickStart for '{msg}'"
 
 proc tickStop*(msg: string) =
     if not tickTimers.contains(msg)
-        stderr.writeLine "[ERROR] tickStop for unknown label '#{msg}'"
+        stderr.writeLine &"[ERROR] tickStop for unknown label '{msg}'"
         return
     let elapsed = mach_absolute_time() - tickTimers[msg]
-    styledEcho fgBlue, msg, fgGreen, " #{elapsed} ", styleDim, "ticks", resetStyle
+    styledEcho fgBlue, msg, fgGreen, &" {elapsed} ", styleDim, "ticks", resetStyle
     # GC_enableOrc()
     tickTimers.del(msg)
     
@@ -196,34 +191,34 @@ proc deepEqual*[T](a, b: T): bool =
 
     when T is (seq or array)
         if a.len != b.len
-            echo "#{a.len} != #{b.len} length differs"
+            echo &"{a.len} != {b.len} length differs"
             ⮐  false
-        for i in 0...a.len
+        for i in 0..<a.len
             if not deepEqual(a[i], b[i])
-                echo "#{a[i]} != #{b[i]}"
+                echo &"{a[i]} != {b[i]}"
                 ⮐  false
     elif T is (Table or TableRef or OrderedTable)
         if a.len != b.len
-            echo "#{a.len} != #{b.len} length differs"
+            echo &"{a.len} != {b.len} length differs"
             ⮐  false
-        for (key, valA) in a.pairs
+        for key, valA in a.pairs
             if not b.hasKey(key)
-                echo "#{key} not in #{b}"
+                echo &"{key} not in {b}"
                 ⮐  false
             if not deepEqual(valA, b[key])
-                echo "#{valA} != #{b[key]}"
+                echo &"{valA} != {b[key]}"
                 ⮐  false
     elif T is object
         if a != b
-            echo "#{a} != #{b}"
+            echo &"{a} != {b}"
             ⮐  false
     elif T is tuple
         if a != b
-            echo "#{a} != #{b}"
+            echo &"{a} != {b}"
             ⮐  false
     else
         if a != b
-            echo "#{a} != #{b}"
+            echo &"{a} != {b}"
             ⮐  false
     true
     
@@ -239,12 +234,12 @@ macro dbg*(args: varargs[untyped]): untyped =
     
     let lineInfo = args[0].lineInfoObj
     
-    result.add quote do
-        styledEcho bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle
+    result.add quote do:
+        styledEcho(bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle)
     
     for arg in args
-        result.add quote do
-            styledEcho fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle,
+        result.add quote do:
+            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle,
                 styleDim, " = ", resetStyle,
                 fgGreen, $`arg`, resetStyle,
-                fgBlue, " ", $typeof(`arg`), resetStyle
+                fgBlue, " ", $typeof(`arg`), resetStyle)

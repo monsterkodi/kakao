@@ -28,6 +28,7 @@ type tok* = enum
         ◂import
         ◂template
         ◂macro
+        ◂quote
         ◂converter
         ◂type  
         ◂use
@@ -79,6 +80,7 @@ type tok* = enum
         ◂divide             = "/"
         ◂multiply           = "*"
         ◂assign             = "="
+        ◂match              = "=~"
         ◂plus_assign        = "+="
         ◂minus_assign       = "-="
         ◂divide_assign      = "/="
@@ -152,6 +154,13 @@ proc peek(t:Tknzr, n: int) : string = t.segs[t.segi+n]
 proc incr(t:Tknzr, n: int) = t.segi += n
 proc col(t:Tknzr) : int    = t.segi - t.bol
 
+proc peekSafe(t:Tknzr, n: int) : string = 
+
+    if t.segi+n < t.segs.len :
+        t.segs[t.segi+n]
+    else:
+        ""
+    
 proc nextLine(t:Tknzr) =
 
     assert t.segs[t.segi] == "\n"
@@ -409,7 +418,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             if t.segi >= t.segs.len:
                 break
             t.token = Token(tok: ◂indent, line:t.line, col:t.col) 
-            while t.segi < t.segs.len and t.peek(0) == " ":
+            while t.peekSafe(0) == " ":
                 t.advance 1
             if t.segi >= t.segs.len:
                 break
@@ -433,6 +442,11 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.token.col = t.col
                 
                 let triple = t.srng 3
+                
+                if triple == "..<":
+                    t.commit("...", ◂tripledot, 3)
+                    continue
+                
                 if punct.hasKey triple:
                     t.commit(triple, punct[triple], 3)
                     if t.tokens[^1].tok == ◂string_start:
@@ -484,15 +498,20 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     
                     t.advance 1
                     
-                    if t.segi < t.segs.len and t.peek(0) == " ":
-                        if t.token.str == "case":
-                            t.token.str = "switch"
-                            t.push ◂switch
-                            continue
-                        if t.token.str == "of":
-                            t.token.str = ""
-                            # t.token.col += 3
-                            continue
+                    if t.peekSafe(0) == " ":
+                        case t.token.str :
+                            of "case":
+                                t.token.str = "switch"
+                                t.push ◂switch
+                                continue
+                            of "of":
+                                t.token.str = ""
+                                continue
+                            of "quote":
+                                if t.srng(4) == " do:":
+                                    t.incr 4
+                                    t.push ◂quote
+                                    continue
                      
                     if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0))):
                         case keywords[t.token.str]:

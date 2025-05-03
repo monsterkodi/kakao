@@ -48,6 +48,7 @@ type NodeKind* = enum
     ●template
     ●converter
     ●macro
+    ●quote
     ●proc
     ●typeDef
     ●enum
@@ -81,6 +82,7 @@ type Node* = ref object
             
         of ●string:
         
+            string_prefix*   : Node
             string_content*  : Node
             string_stripols* : seq[Node]
             
@@ -209,6 +211,10 @@ type Node* = ref object
             enum_name*      : Node
             enum_body*      : Node
             
+        of ●quote:
+            
+            quote_body*     : Node
+            
         of ●testSuite, ●testSection:
         
             test_block*     : Node
@@ -326,13 +332,14 @@ proc `$`*(n: Node): string =
                     ips &= " "
                 if i == n.string_stripols.len-1:
                     ips &= "}"
-            s = &"◂string{ips}"
+            let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
+            s = &"◂{p}string{ips}"
         of ●preOp:
             s = &"({s} {n.operand})"
         of ●postOp:
             s = &"({n.operand} {s})"
         of ●return:
-            let e = choose(n.return_value, " "& $n.return_value, "")
+            let e = choose(n.return_value, " " & $n.return_value, "")
             s = &"({s}{e})"
         of ●call:
             s = &"({n.callee} ◂call {n.callargs})"
@@ -425,6 +432,8 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.class_name}{b})"
         of ●member:
             s = &"({n.member_key} {s} {n.member_value})"
+        of ●quote:
+            s = &"({s} {n.quote_body})"
         of ●testSuite:
             let b = choose(n.test_block, &" {n.test_block}", "")
             s = &"({s} suite{b})"
@@ -829,7 +838,7 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
             const optoks= { ◂then, ◂else, ◂elif, ◂test,
                             ◂val_type, ◂var_type, ◂colon,
                             ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
-                            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less,
+                            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match,
                             ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
             if currt.tok notin optoks:
                 return  true
@@ -838,6 +847,11 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
 proc rSymbol(p: Parser): Node =
 
     let token = p.consume()
+    
+    if token.str in ["peg", "re", "r"] and p.tok == ◂string_start and token.col + token.str.len == p.current.col:
+        var n = p.rString()
+        n.string_prefix = Node(token:token, kind:●literal)
+        return  n
 
     if p.isImplicitCallPossible token:
         let args = p.parseCallArgs(token.col)
@@ -1317,6 +1331,10 @@ proc rDiscard(p: Parser): Node =
     else:
         let right = p.value()
         Node(token:token, kind:●discard, discard_value:right)
+        
+proc rQuote(p: Parser): Node =
+
+    Node(token:p.consume(), kind:●quote, quote_body:p.then())
 
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
@@ -1514,6 +1532,7 @@ proc setup(p: Parser) =
     p.pratt ◂var,               nil,               rLet,            0
     p.pratt ◂return,            nil,               rReturn,         0
     p.pratt ◂discard,           nil,               rDiscard,        0
+    p.pratt ◂quote,             nil,               rQuote,          0
     p.pratt ◂test,              lTestCase,         rTestSuite,      0
     
     p.pratt ◂class,             nil,               rClass,          0
@@ -1550,6 +1569,7 @@ proc setup(p: Parser) =
     p.pratt ◂less_equal,        lOperation,        nil,            40
     p.pratt ◂less,              lOperation,        nil,            40
     p.pratt ◂greater,           lOperation,        nil,            40
+    p.pratt ◂match,             lOperation,        nil,            40
     
     p.pratt ◂doubledot,         lRange,            nil,            40
     p.pratt ◂tripledot,         lRange,            nil,            40

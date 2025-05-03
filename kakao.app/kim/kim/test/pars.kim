@@ -425,6 +425,10 @@ if x
         
         t "s = \"(#{s}#{e})\""                      , "▪[(◂name = ◂string#{@[◂name]@[◂name]})]"
         
+        t "peg = peg\"abc\""                        , "▪[(◂name = ◂pegstring)]"
+        t "raw = r\"abc\""                          , "▪[(◂name = ◂rstring)]"
+        t "reg = re\"abc\""                         , "▪[(◂name = ◂restring)]"
+        
     ▸ toplevel
 
         t ""                                        , "▪[]"

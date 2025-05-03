@@ -6,7 +6,7 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ]#
 import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
-import system/ansi_c
+import system/ansi_c 
 export monotimes, times
 export sequtils, tables, typetraits
 export enumutils, sets
@@ -18,11 +18,11 @@ proc fg*(c:auto) : auto = ansiForegroundColorCode(c)
 proc sc*(c:auto) : auto = ansiStyleCode(c)
 proc underscore*(n: uint64): string =
 
-    var s = $(n)
-    result = newStringOfCap((s.len + (s.len - 1)), div(3))
+    var s = $n
+    result = newStringOfCap((s.len + (s.len - 1).div(3)))
     var count = 0
     for i in countdown(s.high, 0): 
-        if ((count != 0) and (mod(count, 3) == 0)): 
+        if ((count != 0) and (count.mod(3) == 0)): 
           result.add('_')
         result.add(s[i])
         inc(count)
@@ -63,7 +63,7 @@ proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): strin
     let (dir, _, _) = splitFile(file.Path)
     var dirParts = dir.string.split(DirSep)
     if ((dirParts[0] == "") and (dirParts.len == 1)): 
-        dirParts.delete([0..0])
+        dirParts.delete(0..0)
     for i in countdown(dirParts.high, 0): 
         if (dirParts[i] == src): 
             dirParts[i] = tgt
@@ -99,7 +99,9 @@ proc profileStop*(msg: string) =
     timers.del(msg)
 macro profileScope*(msg: string): untyped =
 
-    quote(do, profileStart(`msg`), defer, profileStop(`msg`))
+    quote do: 
+        profileStart(`msg`)
+        defer: profileStop(`msg`)
 var tickTimers: Table[string, uint64]
 proc tickStart*(msg: string) =
 
@@ -164,7 +166,7 @@ proc deepEqual*[T](a, b: T): bool =
         if (a.len != b.len): 
             echo(&"{a.len} != {b.len} length differs")
             return false
-        for i in [0...a.len]: 
+        for i in 0...a.len: 
             if not deepEqual(a[i], b[i]): 
                 echo(&"{a[i]} != {b[i]}")
                 return false
@@ -172,7 +174,7 @@ proc deepEqual*[T](a, b: T): bool =
         if (a.len != b.len): 
             echo(&"{a.len} != {b.len} length differs")
             return false
-        for (, key, valA, ) in a.pairs: 
+        for key, valA in a.pairs: 
             if not b.hasKey(key): 
                 echo(&"{key} not in {b}")
                 return false
@@ -201,10 +203,8 @@ macro dbg*(args: varargs[untyped]): untyped =
 
     result = newStmtList()
     let lineInfo = args[0].lineInfoObj
-    result.add(quote, do)
-    
-        styledEcho(bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle)
+    result.add(quote do: 
+        styledEcho(bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle))
     for arg in args: 
-        result.add(quote, do)
-        
-            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle, styleDim, " = ", resetStyle, fgGreen, $`arg`, resetStyle, fgBlue, " ", $typeof(`arg`), resetStyle)
+        result.add(quote do: 
+            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle, styleDim, " = ", resetStyle, fgGreen, $`arg`, resetStyle, fgBlue, " ", $typeof(`arg`), resetStyle))

@@ -20,16 +20,14 @@ proc fg*(c:auto) : auto = ansiForegroundColorCode(c)
 proc sc*(c:auto) : auto = ansiStyleCode(c)
 
 proc underscore*(n: uint64): string =
-    var s = $(n)
-    result = newStringOfCap(s.len + (s.len - 1) div 3)
-    
+    var s = $n
+    result = newStringOfCap(s.len + (s.len - 1).div(3))
     var count = 0
     for i in countdown(s.high, 0)
-        if count != 0 and count mod 3 == 0
+        if count != 0 and count.mod(3) == 0
           result.add('_')
         result.add(s[i])
         inc(count)
-  
     result = reversed(result)
 
 proc indent*(s:string, i=4) : string = 
@@ -70,11 +68,10 @@ converter toBool*[T](x: seq[T]): bool = x.len > 0
 proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): string =
 
     let (dir, _, _) = splitFile(file.Path)
-    
     var dirParts = dir.string.split(DirSep)
     
     if dirParts[0] == "" and dirParts.len == 1
-        dirParts.delete 0..0
+        dirParts.delete(0..0)
     
     for i in countdown(dirParts.high, 0)
         if dirParts[i] == src
@@ -122,8 +119,7 @@ proc profileStop*(msg: string) =
 macro profileScope*(msg: string): untyped =
     quote do:
         profileStart(`msg`)
-        defer:
-            profileStop(`msg`)
+        defer: profileStop(`msg`)
 
 var tickTimers : Table[string, uint64]
 
@@ -151,7 +147,7 @@ proc tickStop*(msg: string) =
 
 proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
 
-    if s.len > 0:
+    if s.len > 0
         s.setLen(s.len - 1)
     s
 
@@ -161,7 +157,7 @@ proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
     s
         
 proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
-    if s.len > 0:
+    if s.len > 0
         s.delete 0
     s
         
@@ -180,7 +176,7 @@ proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
 proc kseg*(s:string) : seq[string] =
   
     var i = 0
-    while i < s.len:
+    while i < s.len
         let clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, i + clusterSize - 1))
         i += clusterSize
@@ -205,7 +201,7 @@ proc deepEqual*[T](a, b: T): bool =
         if a.len != b.len
             echo &"{a.len} != {b.len} length differs"
             ⮐  false
-        for (key, valA) in a.pairs
+        for key, valA in a.pairs
             if not b.hasKey(key)
                 echo &"{key} not in {b}"
                 ⮐  false
@@ -238,12 +234,12 @@ macro dbg*(args: varargs[untyped]): untyped =
     
     let lineInfo = args[0].lineInfoObj
     
-    result.add quote do: 
-        styledEcho bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle
+    result.add quote do:
+        styledEcho(bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle)
     
     for arg in args
         result.add quote do:
-            styledEcho fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle,
+            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle,
                 styleDim, " = ", resetStyle,
                 fgGreen, $`arg`, resetStyle,
-                fgBlue, " ", $typeof(`arg`), resetStyle
+                fgBlue, " ", $typeof(`arg`), resetStyle)

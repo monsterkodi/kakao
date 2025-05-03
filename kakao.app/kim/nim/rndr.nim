@@ -64,6 +64,10 @@ proc ▸proc(r: Rndr, n: Node) =
 
 proc ▸operation(r: Rndr, n: Node) = 
 
+    if n == nil or n.operand_left == nil or n.operand_right == nil:
+        echo &"DAFUK? {n} {n.token}"
+        return  
+
     if n.token.tok == ◂assign :
         if n.operand_right.token.tok == ◂func:
             r.▸proc n
@@ -186,6 +190,8 @@ proc ▸string(r: Rndr, n: Node) =
     
     if n.string_stripols.len > 0:
         r.add "&"
+    elif n.string_prefix != nil:
+        r.tok n.string_prefix
         
     r.add delimiter
     
@@ -336,11 +342,11 @@ proc ▸squarely(r: Rndr, n: Node) =
     
 proc ▸range(r: Rndr, n: Node) = 
 
-    r.add "["
+    # r.add "["
     r.rnd n.range_start
     r.tok n
     r.rnd n.range_end
-    r.add "]"
+    # r.add "]"
         
 proc ▸return(r: Rndr, n: Node) =
 
@@ -355,6 +361,11 @@ proc ▸discard(r: Rndr, n: Node) =
     if n.discard_value != nil:
         r.spc()
         r.rnd n.discard_value
+
+proc ▸quote(r: Rndr, n: Node) =
+
+    r.add "quote do: "
+    r.rnd n.quote_body
      
 proc ▸switch(r: Rndr, n: Node) =
 
@@ -480,6 +491,8 @@ proc rnd(r: Rndr, n: Node) =
             r.▸enum(n)
         of ●class:
             r.▸class(n)
+        of ●quote:
+            r.▸quote(n)
         of ●member:
             r.▸member(n)
         of ●testSuite, ●testSection:

@@ -22,7 +22,7 @@ proc singleQuote*(line:string) : string =
 #    ███     ███   ███  ███  ███        ███      ███             ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
 #    ███     ███   ███  ███  ███        ███████  ████████         ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
 
-func get(info:var TableRef[string,int], key:string) : int =
+proc get(info:var TableRef[string,int], key:string) : int =
 
     if info.hasKey(key):
         return info[key]
@@ -31,16 +31,15 @@ func get(info:var TableRef[string,int], key:string) : int =
 proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
 
     if line =~ peg"{(!\# .)*}{\#\#\#}{.*}":
-        info["tripleComment"] = 
-            if info.get("tripleComment") :
-                0 
-            else :
-                1
-        let punct = 
-            if info["tripleComment"] :
-                "#[" 
-            else :
-                "]#"
+        if info.get("tripleComment") :
+            info["tripleComment"] = 0 
+        else :
+            info["tripleComment"] = 1
+        var punct = ""
+        if info["tripleComment"] :
+            punct = "#[" 
+        else :
+            punct = "]#"
         apply(matches, proc(x: var string) = 
             if x == "###" :
                 x = punct)
@@ -193,10 +192,7 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
                 of "\""  :
                     sgmnt
                 else    :
-                    sgmnt
-                        .logToEcho()
-                        .testSuite()
-                        .returnize()
+                    sgmnt.logToEcho().testSuite().returnize()
                             
         cgmnts = cgmnts.colonize()
         cstmts.add(cgmnts.join(""))
@@ -216,8 +212,10 @@ proc pose*(line:string) : string =
 proc trans*(fileIn:string) : string =
 
     var fileOut = fileIn.swapLastPathComponentAndExt("kim", "nim")
-    var streamIn  = newFileStream(fileIn,  fmRead)  ; defer: streamIn.close
-    var streamOut = newFileStream(fileOut, fmWrite) ; defer: streamOut.close
+    var streamIn  = newFileStream(fileIn,  fmRead)  
+    defer: streamIn.close
+    var streamOut = newFileStream(fileOut, fmWrite) 
+    defer: streamOut.close
     if  streamIn  == nil :
         raise newException(IOError, "Could not open source file: " & fileIn)
     if  streamOut == nil :

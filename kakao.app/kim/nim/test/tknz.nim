@@ -485,6 +485,12 @@ suite "tknz":
             tk("r",    ◂name,  0, 0),
             tk(".",    ◂dot,   0, 1),
             tk("▸for", ◂name,  0, 2)]
+            
+        t "quote", @[ 
+            tk("quote", ◂quote,  0, 0)]
+
+        t "quote do:", @[ 
+            tk("quote", ◂quote,  0, 0)]
         
     # ███████     ███████   █████████   ███████
     # ███   ███  ███   ███     ███     ███     
@@ -497,6 +503,7 @@ suite "tknz":
         t "."   , @[ tk(".",   ◂dot,        0, 0)]
         t ".."  , @[ tk("..",  ◂doubledot,  0, 0)]
         t "..." , @[ tk("...", ◂tripledot,  0, 0)]
+        t "..<" , @[ tk("...", ◂tripledot,  0, 0)]
         
         t "for i in 0..10" , @[ 
             tk("for",       ◂for,           0, 0), 
