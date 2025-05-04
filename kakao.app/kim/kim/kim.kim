@@ -6,7 +6,7 @@
 
 import std/[os, osproc, parseopt, random, streams, asyncdispatch, asyncfile, posix]
 import kommon
-import trans
+# import trans
 import rndr
 import greet
 
@@ -90,8 +90,8 @@ when defined(posix)
 
 proc logFile(f:string, prefix:string="") =
 
-    if not verbose
-        return
+    # if not verbose
+    #     return
 
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
     let d = 
@@ -145,7 +145,7 @@ proc compile(file:string, outDir:string="bin") : bool =
 proc runTests() : bool =
     profileScope 'test'
     var fail = false
-    echo "\x1bc"
+    
     for f in testFiles
         # let cmd = &"nim r --colors:on {f}"
         let p = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
@@ -199,14 +199,14 @@ proc runTests() : bool =
 
 if files.len
 
-    if transpile
-        # profileStart 'translate'
-        let transpiled = rndr.files(files)
-        # profileStop 'translate'
-        quit(transpiled.len - files.len)    
-    else
-        let transpiled = trans.pile(files)
-        quit(transpiled.len - files.len)    
+    # if transpile
+    # profileStart 'translate'
+    let transpiled = rndr.files(files)
+    # profileStop 'translate'
+    quit(transpiled.len - files.len)    
+    # else
+    #     let transpiled = trans.pile(files)
+    #     quit(transpiled.len - files.len)    
 
 if tests
     discard runTests()
@@ -283,29 +283,32 @@ proc watch(paths:seq[string]) =
                 elif ext == ".kim"
                     toTranspile.add f
                 
-        if firstLoop
-                                    
+        if firstLoop                                    
             firstLoop = false
-            for f in kimFiles
-                logFile f
-            for f in nimFiles
-                logFile f
+            if verbose
+                for f in kimFiles
+                    logFile f
+                for f in nimFiles
+                    logFile f
                 
         if toTranspile
+            echo "\x1bc"
             verb &"toTranspile: {toTranspile}"
-            for f in trans.pile(toTranspile)
-                verb &"transpiled {f}"    
-                logFile f, "✔ "
-            # verb 'runTests'    
+            # for f in trans.pile(toTranspile)
+            #     logFile f, "✔ "
+            for f in toTranspile
+                logFile f, "▸ "
+                let r = rndr.file f
+                logFile r, "✔ "
             if not runTests()
                 doBuild = false
             
         if doBuild
             # verb 'doBuild'    
             if compile("nim/kim.nim", "bin")
-                for f in kimFiles
-                    let transpiled = trans.trans(f)
-                    logFile transpiled, "✔ "
+                # for f in kimFiles
+                #     let transpiled = trans.trans(f)
+                #     logFile transpiled, "✔ "
                 restart()
                 
         sleep 200

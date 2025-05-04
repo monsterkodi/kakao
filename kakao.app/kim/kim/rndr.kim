@@ -525,10 +525,11 @@ proc render*(code:string, autovar=true): string =
 proc file*(file: string) : string = 
 
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    # log &"fileOut {fileOut}"
-    let code = file.readFile()
+    let kimCode = file.readFile()
     # echo &"code {code}"
-    log render(code)
+    let nimCode = render kimCode 
+    # log &"▸▸▸ {fileOut} {nimCode.len}"
+    fileOut.writeFile nimCode
     fileOut
     
 proc files*(files: seq[string]): seq[string] = 
