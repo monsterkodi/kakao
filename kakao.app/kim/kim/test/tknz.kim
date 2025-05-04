@@ -14,8 +14,8 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
 
     ▸ empty
     
-        t ""   , default seq[Token]
-        t " "  , default seq[Token]
+        t ""   , default(seq[Token])
+        t " "  , default(seq[Token])
 
     ▸ single line
     
@@ -194,16 +194,16 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("\n\n",      ◂string,        0, 3),
             tk("\"\"\"",    ◂string_end,    2, 0)]
             
-        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\"" , @[
+        t "s = \"\"\"\nl1 #" & "{1}\nl2 #" & "{2}\"\"\"" , @[
             tk("s",         ◂name,          0, 0),
             tk("=",         ◂assign,        0, 2),
             tk("\"\"\"",    ◂string_start,  0, 4),
             tk("\nl1 ",     ◂string,        0, 7),
-            tk("#{",        ◂stripol_start, 1, 3),
+            tk("#" & "{",   ◂stripol_start, 1, 3),
             tk("1",         ◂number,        1, 5),
             tk("}",         ◂stripol_end,   1, 6),
             tk("\nl2 ",     ◂string,        1, 7),
-            tk("#{",        ◂stripol_start, 2, 3),
+            tk("#" & "{",   ◂stripol_start, 2, 3),
             tk("2",         ◂number,        2, 5),
             tk("}",         ◂stripol_end,   2, 6),
             tk("\"\"\"",    ◂string_end,    2, 7)]
@@ -222,62 +222,62 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
 
     ▸ stripol
     
-        t "'#{}'" , @[
+        t "'#" & "{}'" , @[
             tk("'",         ◂string_start,  0, 0),
-            tk("#{}",       ◂string,        0, 1),
+            tk("#" & "{}",  ◂string,        0, 1),
             tk("'",         ◂string_end,    0, 4)]
 
-        t "\"#{}\"" , @[
+        t "\"#" & "{}\"" , @[
             tk("\"",        ◂string_start,  0, 0),
-            tk("#{",        ◂stripol_start, 0, 1),
+            tk("#" & "{",   ◂stripol_start, 0, 1),
             tk("}",         ◂stripol_end,   0, 3),
             tk("\"",        ◂string_end,    0, 4)]
 
-        t "\"#{a}\"" , @[
+        t "\"#" & "{a}\"" , @[
             tk("\"",        ◂string_start,  0, 0),
-            tk("#{",        ◂stripol_start, 0, 1),
+            tk("#" & "{",   ◂stripol_start, 0, 1),
             tk("a",         ◂name,          0, 3),
             tk("}",         ◂stripol_end,   0, 4),
             tk("\"",        ◂string_end,    0, 5)]
 
-        t "\"\"\"#{a}\"\"\"" , @[
+        t "\"\"\"#" & "{a}\"\"\"" , @[
             tk("\"\"\"",    ◂string_start,  0, 0),
-            tk("#{",        ◂stripol_start, 0, 3),
+            tk("#" & "{",   ◂stripol_start, 0, 3),
             tk("a",         ◂name,          0, 5),
             tk("}",         ◂stripol_end,   0, 6),
             tk("\"\"\"",    ◂string_end,    0, 7)]
 
-        t "\"head #{a}\"" , @[
+        t "\"head #" & "{a}\"" , @[
             tk("\"",        ◂string_start,  0, 0),
             tk("head ",     ◂string,        0, 1),
-            tk("#{",        ◂stripol_start, 0, 6),
+            tk("#" & "{",   ◂stripol_start, 0, 6),
             tk("a",         ◂name,          0, 8),
             tk("}",         ◂stripol_end,   0, 9),
             tk("\"",        ◂string_end,    0, 10)]
 
-        t "\"#{abc}\"" , @[
+        t "\"#" & "{abc}\"" , @[
             tk("\"",        ◂string_start,  0, 0),
-            tk("#{",        ◂stripol_start, 0, 1),
+            tk("#" & "{",   ◂stripol_start, 0, 1),
             tk("abc",       ◂name,          0, 3),
             tk("}",         ◂stripol_end,   0, 6),
             tk("\"",        ◂string_end,    0, 7)]
 
-        t "\"#{a}#{b}\"" , @[
+        t "\"#" & "{a}#" & "{b}\"" , @[
             tk("\"",        ◂string_start,  0, 0),
-            tk("#{",        ◂stripol_start, 0, 1),
+            tk("#" & "{",   ◂stripol_start, 0, 1),
             tk("a",         ◂name,          0, 3),
             tk("}",         ◂stripol_end,   0, 4),
-            tk("#{",        ◂stripol_start, 0, 5),
+            tk("#" & "{",        ◂stripol_start, 0, 5),
             tk("b",         ◂name,          0, 7),
             tk("}",         ◂stripol_end,   0, 8),
             tk("\"",        ◂string_end,    0, 9)]
             
-        t "s = \"num #{1+2} end\"" , @[
+        t "s = \"num #" & "{1+2} end\"" , @[
             tk("s",         ◂name,          0, 0),
             tk("=",         ◂assign,        0, 2),
             tk("\"",        ◂string_start,  0, 4),
             tk("num ",      ◂string,        0, 5),
-            tk("#{",        ◂stripol_start, 0, 9),
+            tk("#" & "{",   ◂stripol_start, 0, 9),
             tk("1",         ◂number,        0, 11),
             tk("+",         ◂plus,          0, 12),
             tk("2",         ◂number,        0, 13),
@@ -285,12 +285,12 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk(" end",      ◂string,        0, 15),
             tk("\"",        ◂string_end,    0, 19)]
 
-        t "s = \"\"\"num #{1+2} end\"\"\"" , @[
+        t "s = \"\"\"num #" & "{1+2} end\"\"\"" , @[
             tk("s",         ◂name,          0, 0),
             tk("=",         ◂assign,        0, 2),
             tk("\"\"\"",    ◂string_start,  0, 4),
             tk("num ",      ◂string,        0, 7),
-            tk("#{",        ◂stripol_start, 0, 11),
+            tk("#" & "{",   ◂stripol_start, 0, 11),
             tk("1",         ◂number,        0, 13),
             tk("+",         ◂plus,          0, 14),
             tk("2",         ◂number,        0, 15),
@@ -298,15 +298,15 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk(" end",      ◂string,        0, 17),
             tk("\"\"\"",    ◂string_end,    0, 21)]
             
-        t "s = \"(#{s}#{e})\"", @[
+        t "s = \"(#" & "{s}#" & "{e})\"", @[
             tk("s",         ◂name,          0, 0),
             tk("=",         ◂assign,        0, 2),
             tk("\"",        ◂string_start,  0, 4),
             tk("(",         ◂string,        0, 5),
-            tk("#{",        ◂stripol_start, 0, 6),
+            tk("#" & "{",   ◂stripol_start, 0, 6),
             tk("s",         ◂name,          0, 8),
             tk("}",         ◂stripol_end,   0, 9),
-            tk("#{",        ◂stripol_start, 0, 10),
+            tk("#" & "{",   ◂stripol_start, 0, 10),
             tk("e",         ◂name,          0, 12),
             tk("}",         ◂stripol_end,   0, 13),
             tk(")",         ◂string,        0, 14),

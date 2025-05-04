@@ -301,16 +301,16 @@ elif (e.kind == ●var):
         t "s = \"\"\"\n\n\"\"\""                    , "s = \"\"\"\n\n\"\"\""
         t "s = \"hello\""                           , "s = \"hello\""
         t "s = \"\"\"hello\"\"\""                   , "s = \"\"\"hello\"\"\""
-        t "s = \"num #{1+2} end\""                  , "s = &\"num {(1 + 2)} end\""
-        t "s = \"\"\"num #{1+2} end\"\"\""          , "s = &\"\"\"num {(1 + 2)} end\"\"\""
-        t "s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\""  , "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
-        t "s = \"#{o}\""                            , "s = &\"{o}\""
-        t "s = \"(#{s}#{e})\""                      , "s = &\"({s}{e})\""
+        t "s = \"num #" & "{1+2} end\""             , "s = &\"num {(1 + 2)} end\""
+        t "s = \"\"\"num #" & "{1+2} end\"\"\""     , "s = &\"\"\"num {(1 + 2)} end\"\"\""
+        t "s = \"\"\"\nl1 #" & "{1+2}\nl2 #" & "{2-3}\"\"\""  , "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
+        t "s = \"#" & "{o}\""                       , "s = &\"{o}\""
+        t "s = \"(#" & "{s}#" & "{e})\""            , "s = &\"({s}{e})\""
         
-        t "cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
+        t "cmd = \"nim c --outDir:#" & "{outdir} --stackTrace:on --lineTrace:on #" & "{file}\"", 
           "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
           
-        t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")",
+        t "let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")",
           "let e = choose(n.return_value, &\" {n.return_value}\", \"\")"
           
         t "p = peg\"abc\""                          , "p = peg\"abc\"" 
@@ -325,8 +325,8 @@ elif (e.kind == ●var):
         t "s = \"\"\"hello\n        world\n    \"\"\"" , "s = \"\"\"hello\n    world\n\"\"\""  
         t "s = \"\"\"hello\nworld\n    \"\"\""         , "s = \"\"\"hello\nworld\n    \"\"\""
         
-        t "s = \"\"\"\n    #{1+1}\n\"\"\""             , "s = &\"\"\"\n    {(1 + 1)}\n\"\"\""
-        t "s = \"\"\"\n    #{1+1}\n    #{2+2}\n\"\"\"" , "s = &\"\"\"\n    {(1 + 1)}\n    {(2 + 2)}\n\"\"\""
+        t "s = \"\"\"\n    #" & "{1+1}\n\"\"\""             , "s = &\"\"\"\n    {(1 + 1)}\n\"\"\""
+        t "s = \"\"\"\n    #" & "{1+1}\n    #" & "{2+2}\n\"\"\"" , "s = &\"\"\"\n    {(1 + 1)}\n    {(2 + 2)}\n\"\"\""
         
         t "\"\"\"\n\"\"\""                             , "\"\"\"\n\"\"\""
         t "\"\"\"\n    \"\"\""                         , "\"\"\"\n\"\"\""
@@ -446,11 +446,7 @@ case kind:
     ▸ enum
     
         t "enum ABC\n a\n b\n c"                         , "type ABC = enum\n a\n b\n c"
-        t """enum tok
-    ◆when
-    ◆then   = "➜"""", """type tok = enum
-    ◆when
-    ◆then = "➜""""
+        t "enum tok\n  ◆when\n  ◆then = \"➜\"\n  ◆if"    , "type tok = enum\n  ◆when\n  ◆then = \"➜\"\n  ◆if"
     
     ▸ class
     
@@ -520,12 +516,13 @@ case kind:
         x   ▸ ""
     ▸ test2
         xy  ▸ "42"
-""" , """
+    1""" , """
 suite "suite": 
     test "test1": 
         check x == ""
     test "test2": 
-        check xy == "42""""
+        check xy == "42"
+    1"""
         
     ▸ misc
     

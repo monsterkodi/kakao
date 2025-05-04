@@ -230,6 +230,18 @@ proc `$`*(n: Node): string =
         return "NIL"
     var s = &"{n.token.tok}"
     case n.kind:
+           of ●string: 
+            var ips = ""
+            for i, s in n.string_stripols: 
+                if (i == 0): 
+                    (ips &= "<")
+                (ips &= $s.stripol_xprssns)
+                if ((0 < i) and (i < (n.string_stripols.len - 1))): 
+                    (ips &= " ")
+                if (i == (n.string_stripols.len - 1)): 
+                    (ips &= ">")
+            let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
+            s = &"◂{p}string{ips}"
            of ●block: 
             s = "▪["
             for e in n.expressions: 
@@ -242,18 +254,6 @@ proc `$`*(n: Node): string =
             s = &"({n.operand_left} {s} {n.operand_right})"
            of ●range: 
             s = &"({n.range_start} {s} {n.range_end})"
-           of ●string: 
-            var ips = ""
-            for i, s in n.string_stripols: 
-                if (i == 0): 
-                    (ips &= "#" & "{")
-                (ips &= $s.stripol_xprssns)
-                if ((0 < i) and (i < (n.string_stripols.len - 1))): 
-                    (ips &= " ")
-                if (i == (n.string_stripols.len - 1)): 
-                    (ips &= "}")
-            let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
-            s = &"◂{p}string{ips}"
            of ●preOp: 
             s = &"({s} {n.operand})"
            of ●postOp: 
@@ -572,7 +572,8 @@ proc parseVar(p: Parser): Node =
     var var_type: Node
     if (p.tok == ◂assign): 
         p.swallow()
-        var_value = p.expression()
+        # var_value = p.expression()
+        var_value = p.then()
     elif (p.tok in {◂val_type, ◂var_type}): 
         token = p.consume()
         var_type = p.parseType()

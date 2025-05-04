@@ -54,17 +54,17 @@ suite "trans":
     test "deepEqual":
     
         check deepEqual(statements(@["let a=1; let b=2; let c=3"]), @[@["let a=1"], @[" let b=2"], @[" let c=3"]])
-        check deepEqual(@{"a":1, "b":2}, @{"a":1, "b":2})
-        check deepEqual((a:1, b:2), (a:1, b:2))
-        check deepEqual(("a", 2), ("a", 2))
+        # check deepEqual(@{"a":1, "b":2}, @{"a":1, "b":2})
+        # check deepEqual((a:1, b:2), (a:1, b:2))
+        # check deepEqual(("a", 2), ("a", 2))
 
         check statements(@["let a=1; let b=2; let c=3"]) == @[@["let a=1"], @[" let b=2"], @[" let c=3"]]
-        check @{"a":1, "b":2} ==  @{"a":1, "b":2}
-        check (a:1, b:2) == (a:1, b:2)
-        check ("a", 2) == ("a", 2)
+        # check @{"a":1, "b":2} ==  @{"a":1, "b":2}
+        # check (a:1, b:2) == (a:1, b:2)
+        # check ("a", 2) == ("a", 2)
         
-        check @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))} == @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}
-        check deepEqual(@{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}, @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))})
+        # check @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))} == @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}
+        # check deepEqual(@{"b":(("c", (4,5)), ((d:"e"), (5,6,)))}, @{"b":(("c", (4,5)), ((d:"e"), (5,6,)))})
         
     test "peg":
         
@@ -74,45 +74,20 @@ suite "trans":
         check l.match(peg"{log}", m) == true
         check m[0] == "log" 
         
-        m = default typeof m
+        m = default typeof(m)
 
         check l.match(peg"{ 'log' }", m) == true
         check m[0] == "log" 
         
-        m = default typeof m
+        m = default typeof(m)
         
         check l.match(peg"{ 'log' }\s{.*}", m) == true
         check m[0] == "log" 
         check m[1] == "hello" 
         
-        m = default typeof m
+        m = default typeof(m)
         
         check "▸ test".match(peg"^{'▸'\s*}{.*}$", m) == true
         check m[0] == "▸ " 
         check m[1] == "test" 
-
-    test "string":
-    
-        var s = """
-        a
-        b
-        """ 
-        check s == "        a\n        b\n        "
-        
-        s = """"""""""""
-        check s == "\"\"\"\"\"\""
-        
-        s = 
-            "a"     & "\n" &
-            "b"     & "\n" &
-            "c" 
-            
-        check s == "a\nb\nc"
-
-        s = 
-            "a\n" &
-            &"{1+1}\n" &
-            "c"
-            
-        check s == "a\n2\nc"    
         

@@ -166,7 +166,7 @@ proc deepEqual*[T](a, b: T): bool =
         if (a.len != b.len): 
             echo(&"{a.len} != {b.len} length differs")
             return false
-        for i in 0...a.len: 
+        for i in 0..<a.len: 
             if not deepEqual(a[i], b[i]): 
                 echo(&"{a[i]} != {b[i]}")
                 return false

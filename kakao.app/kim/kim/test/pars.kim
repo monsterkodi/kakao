@@ -411,19 +411,19 @@ if x
         t "s = \"hello\""                           , "▪[(◂name = ◂string)]"
         t "s = \"\"\"hello\"\"\""                   , "▪[(◂name = ◂string)]"
         t "s = \"\"\"\n\n\"\"\""                    , "▪[(◂name = ◂string)]"
-        t "s = \"\"\"num #{1+2} end\"\"\""          , "▪[(◂name = ◂string<@[(◂number + ◂number)]>)]"
-        t "s = \"\"\"\nl1 #{1}\nl2 #{2}\"\"\""      , "▪[(◂name = ◂string<@[◂number]@[◂number]>)]"
         
-        t "\"a #{1} e\""                            , "▪[◂string<@[◂number]>]"
-        t "\"a #{1}\""                              , "▪[◂string<@[◂number]>]"
-        t "\"#{1}\""                                , "▪[◂string<@[◂number]>]"
         
         t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""         , "▪[(◂name ◂call @[◂string, ◂string])]"
         t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""     , "▪[(◂name ◂call @[◂string, ◂string])]"
         
-        t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")", "▪[(◂let (◂name (= (◂name ◂call @[(◂name . ◂name), ◂string<@[(◂name . ◂name)]>, ◂string]))))]"
+        t "let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")", "▪[(◂let (◂name (= (◂name ◂call @[(◂name . ◂name), ◂string<@[(◂name . ◂name)]>, ◂string]))))]"
         
-        t "s = \"(#{s}#{e})\""                      , "▪[(◂name = ◂string<@[◂name]@[◂name]>)]"
+        t "s = \"\"\"num #" & "{1+2} end\"\"\""           , "▪[(◂name = ◂string<@[(◂number + ◂number)]>)]"
+        t "s = \"\"\"\nl1 #" & "{1}\nl2 #" & "{2}\"\"\""  , "▪[(◂name = ◂string<@[◂number]@[◂number]>)]"
+        t "\"a #" & "{1} e\""                       , "▪[◂string<@[◂number]>]"
+        t "\"a #" & "{1}\""                         , "▪[◂string<@[◂number]>]"
+        t "\"#" & "{1}\""                           , "▪[◂string<@[◂number]>]"
+        t "s = \"(#" & "{s}#" & "{e})\""            , "▪[(◂name = ◂string<@[◂name]@[◂name]>)]"
         
         t "peg = peg\"abc\""                        , "▪[(◂name = ◂pegstring)]"
         t "raw = r\"abc\""                          , "▪[(◂name = ◂rstring)]"
