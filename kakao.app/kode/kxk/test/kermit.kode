@@ -57,9 +57,13 @@ use .. ◆ kermit
         lm '        this["onKeyUp"] = this["onKeyUp"].bind(this)' 'this["●name"] = this["●bind"].bind(this)' ['"''.'','"'"] ▸
             name:'onKeyUp'
             bind:'onKeyUp'
-            
+        
         lm "proc build() =" 'proc ●name(●args) =' ['(' ')'] ▸ name:'build' args:''
         lm "proc build() : int =" "proc ●name(●args) : ●type =" ['(' ')'] ▸ name:'build' args:'' type:'int'
+        
+        lm 'logFile = ◇string f prefix="" ->' '●name = ○args ->' ▸ name:'logFile' args:'◇string f prefix=""' 
+        lm 'myfunc = args ->' '●name = ○args ->' ▸ name:'myfunc' args:"args" 
+        lm 'nofunc = args' '●name = ○args ->' ▸ undefined
 
     #  0000000  000  00     00  00000000   000      00000000  
     # 000       000  000   000  000   000  000      000       

@@ -98,6 +98,18 @@ macro profileScope*(msg: string): untyped =
     quote do: 
         profileStart(`msg`)
         defer: profileStop(`msg`)
+# ███   ███   ███████  ████████   ███████ 
+# ███  ███   ███       ███       ███      
+# ███████    ███████   ███████   ███  ████
+# ███  ███        ███  ███       ███   ███
+# ███   ███  ███████   ████████   ███████ 
+# Splits a string into grapheme clusters (user-perceived characters)
+proc kseg*(s : string) : seq[string] = 
+    var i = 0
+    while (i < s.len): 
+        let clusterSize = graphemeLen(s, i)
+        result.add(s.substr(i, ((i + clusterSize) - 1)))
+        (i += clusterSize)
 # ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
 # ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███
 # ████████   ███   ███  ███████   █████████  ██████  ████████   ███   ███  ████████ 
@@ -119,18 +131,6 @@ proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
 
     s.insert(@[item])
     s
-# ███   ███   ███████  ████████   ███████ 
-# ███  ███   ███       ███       ███      
-# ███████    ███████   ███████   ███  ████
-# ███  ███        ███  ███       ███   ███
-# ███   ███  ███████   ████████   ███████ 
-# Splits a string into grapheme clusters (user-perceived characters)
-proc kseg*(s : string) : seq[string] = 
-    var i = 0
-    while (i < s.len): 
-        let clusterSize = graphemeLen(s, i)
-        result.add(s.substr(i, ((i + clusterSize) - 1)))
-        (i += clusterSize)
 # ████████   ███████   ███   ███   ███████   ███    
 # ███       ███   ███  ███   ███  ███   ███  ███    
 # ███████   ███ ██ ██  ███   ███  █████████  ███    

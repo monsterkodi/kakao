@@ -71,10 +71,30 @@ index_kim = (function ()
             {
                 fnc.test = true
             }
+            if (opt.bound)
+            {
+                fnc.bound = true
+            }
+            if (opt.async)
+            {
+                fnc.async = true
+            }
             this.result.funcs.push(fnc)
             return null
         }).bind(this)
         if (match = kermit.lineMatch(line,'proc ●name ○args',['(',')']))
+        {
+            addFunc(match.name,{bound:true})
+        }
+        if (match = kermit.lineMatch(line,'macro ●name ○args',['(',')']))
+        {
+            addFunc(match.name,{bound:true,async:true})
+        }
+        if (match = kermit.lineMatch(line,'template ●name ○args',['(',')']))
+        {
+            addFunc(match.name,{async:true})
+        }
+        if (match = kermit.lineMatch(line,'●name = ○args ->'))
         {
             addFunc(match.name)
         }

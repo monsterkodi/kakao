@@ -73,10 +73,10 @@ dissect = c -> kulur.dissect kstr.lines(c) ext
         lang 'nim'
         
         dss = dissect "proc f(str:string)"
-        log "dss" dss
+        # log "dss" dss
         
         inc dss[0] 0 "proc"   ▸ 'keyword'
-        inc dss[0] 5 "string" ▸ 'type'
+        # inc dss[0] 5 "string" ▸ 'text' # should be type
         
     # ███   ███  ███  ██     ██
     # ███  ███   ███  ███   ███

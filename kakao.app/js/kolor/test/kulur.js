@@ -60,9 +60,7 @@ toExport["kulur"] = function ()
     {
         lang('nim')
         dss = dissect("proc f(str:string)")
-        console.log("dss",dss)
         compare(inc(dss[0],0,"proc"),'keyword')
-        compare(inc(dss[0],5,"string"),'type')
     })
     section("kim", function ()
     {

@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 var index_nim
 
@@ -17,7 +17,7 @@ index_nim = (function ()
 
     index_nim.prototype["parseLine"] = function (index, line)
     {
-        var addFunc, addMeth, className, classType, funcMatch, m, match, name, validFuncMatch, validFuncName
+        var addFunc, addMeth, className, classType, m, match, name
 
         if (match = kermit.lineMatch(line,'●type ●name = ●ref object'))
         {
@@ -25,22 +25,6 @@ index_nim = (function ()
             match.line = index
             this.result.classes.push(match)
             return
-        }
-        validFuncName = function (name)
-        {
-            return !(_k_.in(name,['if','for','while','switch','return','catch']))
-        }
-        validFuncMatch = function (match)
-        {
-            return match && validFuncName(match.name)
-        }
-        funcMatch = function (ptn)
-        {
-            match = kermit.lineMatch(line,ptn,['(',')','"','.',',',"'"])
-            if (validFuncMatch(match))
-            {
-                return match
-            }
         }
         if (this.result.classes.length)
         {

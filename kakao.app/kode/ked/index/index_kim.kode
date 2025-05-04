@@ -54,11 +54,17 @@ function index_kim
         addFunc = name opt={} =>
             
             fnc = name:name, line:index
-            fnc.test = true if opt.test
+            fnc.test  = true if opt.test
+            fnc.bound = true if opt.bound
+            fnc.async = true if opt.async
             @result.funcs.push fnc
             null
         
-        if match = kermit.lineMatch(line 'proc ●name ○args' ['(' ')']) ➜ addFunc match.name
+        if match = kermit.lineMatch(line 'proc ●name ○args' ['(' ')']) ➜ addFunc match.name bound:true
+        if match = kermit.lineMatch(line 'macro ●name ○args' ['(' ')']) ➜ addFunc match.name bound:true async:true
+        if match = kermit.lineMatch(line 'template ●name ○args' ['(' ')']) ➜ addFunc match.name async:true
+        
+        if match = kermit.lineMatch(line '●name = ○args ->') ➜ addFunc match.name
         if match = kermit.lineMatch(line '▸ ○name') ➜ addFunc line test:true
                     
     # 00000000    0000000   00000000    0000000  00000000       000000000  00000000  000   000  000000000

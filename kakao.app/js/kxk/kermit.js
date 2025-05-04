@@ -58,6 +58,7 @@ lineMatch = function (line, pt, splitlist)
         splt = splitWords(splt,sl)
         cpt = splitWords(cpt,sl)
     }
+    console.log("lineMatch",splt,cpt)
     if (_k_.empty(splt))
     {
         return
@@ -87,24 +88,53 @@ lineMatch = function (line, pt, splitlist)
             {
                 case '●':
                     rslt[varName] = splt[si]
+                    si++
+                    ci++
+                    continue
                     break
                 case '○':
-                    rslt[varName] = splt.slice(si).join(' ')
-                    varName = null
-                    break
+                    if (ci === cpt.length - 1)
+                    {
+                        rslt[varName] = splt.slice(si).join(' ')
+                        return rslt
+                    }
+                    else
+                    {
+                        if (cpt[ci + 1] === splt[si])
+                        {
+                            weakMatch = false
+                            ci += 1
+                            continue
+                        }
+                    }
                     break
             }
 
-            si++
-            ci++
-            continue
         }
-        if (weakMatch && varName && !_k_.empty(splt[si + 1]))
+        if (weakMatch && varName)
         {
-            rslt[varName] += ' ' + splt[si]
-            si++
-            continue
+            if (!_k_.empty(rslt[varName]))
+            {
+                rslt[varName] += ' ' + splt[si]
+            }
+            else
+            {
+                rslt[varName] = splt[si]
+            }
+            if (si < splt.length - 1)
+            {
+                si++
+                continue
+            }
+            else
+            {
+                break
+            }
         }
+        return
+    }
+    if (ci < cpt.length)
+    {
         return
     }
     if (ci === cpt.length && varName && si < splt.length)

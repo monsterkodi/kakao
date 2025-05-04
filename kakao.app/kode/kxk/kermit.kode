@@ -33,7 +33,7 @@ splitWords = (words, splitBy) ->
 lineMatch = (line, pt, splitlist) ->
     
     tln = trim line
-    ⮐ if empty tln
+    ⮐  if empty tln
     
     splt = tln.split /\s+/
     cpt  = trim(pt).split /\s+/
@@ -42,9 +42,9 @@ lineMatch = (line, pt, splitlist) ->
         splt = splitWords splt, sl
         cpt  = splitWords cpt, sl
         
-    # log splt, cpt
+    log "lineMatch", splt, cpt
         
-    ⮐ if empty splt
+    ⮐  if empty splt
     
     strongMatch = false
     weakMatch = false
@@ -59,6 +59,7 @@ lineMatch = (line, pt, splitlist) ->
         cp = cpt[ci]
         
         if cp == splt[si]
+            # log "strong #{si} #{ci}"
             strongMatch = true
             varName = null
             si++
@@ -66,33 +67,46 @@ lineMatch = (line, pt, splitlist) ->
             continue
             
         if cp?[0] in '●○'
-            
             weakMatch = true
+            # log "weak #{si} #{ci} #{cp}"
             varName = cp[1..]
             switch cp[0]
-                '●' ➜ rslt[varName] = splt[si]
+                '●' 
+                    rslt[varName] = splt[si]
+                    si++
+                    ci++
+                    continue
                 '○' 
-                    rslt[varName] = splt[si..].join ' '
-                    varName = null
-                    break
-            si++
-            ci++
-            continue
+                    if ci == cpt.length-1 # last capture pattern ➜ swallow rest of split
+                        rslt[varName] = splt[si..].join ' '
+                        ⮐  rslt
+                    else
+                        if cpt[ci+1] == splt[si] # strong match ➜ advance and continue
+                            weakMatch = false
+                            ci += 1
+                            continue
             
-        if weakMatch and varName and valid splt[si+1]
-            
-            rslt[varName] += ' ' + splt[si]
-            si++
-            continue
+        if weakMatch and varName
+            if valid rslt[varName]
+                rslt[varName] += ' ' + splt[si]
+            else
+                rslt[varName] = splt[si]
+            if si < splt.length-1
+                si++
+                continue
+            else
+                break
 
         # log "kermit no match |#{line}| #{cpt}" ci, cp
         ⮐ 
+    
+    ⮐  if ci < cpt.length # not all capture patterns matched
     
     if ci == cpt.length and varName and si < splt.length
         rslt[varName] += ' ' + splt[si..].join(' ')
     
     # log rslt, strongMatch, weakMatch
-    ⮐ rslt if strongMatch or weakMatch
+    ⮐  rslt if strongMatch or weakMatch
 
 #  0000000   0000000    0000000    00     00   0000000   000000000   0000000  000   000  
 # 000   000  000   000  000   000  000   000  000   000     000     000       000   000  

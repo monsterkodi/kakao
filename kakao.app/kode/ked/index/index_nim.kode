@@ -27,15 +27,6 @@ function index_nim
             @result.classes.push match
             ⮐ 
     
-        validFuncName =  name  -> name not in ['if''for''while''switch''return''catch']
-        validFuncMatch = match -> match and validFuncName(match.name)
-                
-        funcMatch = ptn ->
-            
-            match = kermit.lineMatch line ptn ['(' ')' '"' '.' ',' "'"]
-            if validFuncMatch match
-                match
-        
         if @result.classes.length
             
             className = @result.classes[-1].name

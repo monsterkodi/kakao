@@ -261,16 +261,17 @@ class Parser*
         typeless    : bool
         text        : string # used in `$` for debugging. should be removed eventually 
     
-proc current(p: Parser): Token =
+current = ◇Parser p ➜Token ->
 
     if p.pos < p.tokens.len
         ⮐  p.tokens[p.pos]
         
     Token(tok:◂eof, line: -1, col: -1)
     
-proc tok(p: Parser) : tok = p.current.tok
+tok = ◇Parser p ➜tok -> 
+    p.current.tok
 
-proc peek(p: Parser, ahead=1): Token =
+peek = ◇Parser p ahead=1 ➜Token ->
 
     if p.pos + ahead < p.tokens.len
         p.tokens[p.pos + ahead]
@@ -283,7 +284,7 @@ proc peek(p: Parser, ahead=1): Token =
 # ███        ███   ███  ███  ███  ████     ███     
 # ███        ███   ███  ███  ███   ███     ███     
 
-proc `$`(p: Parser): string = 
+$ = ◇Parser p ➜string ->
 
     var s : string
     if p.tok != ◂eof
@@ -294,7 +295,7 @@ proc `$`(p: Parser): string =
         s = p.text
     s
 
-proc `$`*(n: Node): string = 
+$* = ◇Node n ➜string ->
 
     if n == nil
         ⮐  "NIL"
@@ -426,9 +427,10 @@ proc `$`*(n: Node): string =
             discard
     s
 
-proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
-proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
-proc error(p: Parser, msg: string, token=Token(tok:◂eof)) : Node =
+# proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
+# proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
+
+error = ◇Parser p ◇string msg token=Token(tok:◂eof) ➜Node ->
 
     styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
     if token.tok != ◂eof
@@ -446,23 +448,23 @@ proc error(p: Parser, msg: string, token=Token(tok:◂eof)) : Node =
 # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
 #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 
-proc consume(p: Parser): Token =
+consume = ◇Parser p ➜Token ->
 
     let t = p.current
     if p.pos < p.tokens.len
         p.pos += 1
     t
 
-proc swallow(p: Parser) =
+swallow = ◇Parser p ->
 
     discard p.consume()
 
-proc swallow(p: Parser, tok: tok) =
+swallow = ◇Parser p ◇tok tok ->
 
     if p.tok == tok
         p.swallow()
         
-proc swallowError(p: Parser, tok: tok, err: string) = 
+swallowError = ◇Parser p ◇tok tok ◇string err ->
 
     if p.tok != tok
         discard p.error(&"Expected {tok} to swallow, but found {p.tok} instead")
@@ -470,27 +472,29 @@ proc swallowError(p: Parser, tok: tok, err: string) =
         ⮐  
     p.swallow()
             
-proc swallowSameIndent(p: Parser, indent:int): bool = 
+swallowSameIndent = ◇Parser p ◇int indent ➜bool ->
 
     if p.tok == ◂indent and p.current.str.len == indent
         p.swallow()
         ⮐  true
     false
     
-proc atIndent(p: Parser) : bool =
+atIndent = ◇Parser p ➜bool ->  
 
     p.current.col == 0 or p.peek(-1).tok == ◂indent
         
-proc atEnd(p:Parser): bool = p.pos >= p.tokens.len
+atEnd = ◇Parser p ➜bool ->  
 
-proc isDedent(p: Parser, indent:int): bool =
+    p.pos >= p.tokens.len
+
+isDedent = ◇Parser p ◇int indent ➜bool ->  
 
     if p.tok == ◂indent
         p.current.str.len < indent
     else
         p.current.col < indent
         
-proc isNextLineIndented(p: Parser, token:Token): bool =
+isNextLineIndented = ◇Parser p ◇Token token ➜bool -> 
 
     var n = 0
     while p.peek(n).tok != ◂indent
@@ -500,7 +504,7 @@ proc isNextLineIndented(p: Parser, token:Token): bool =
         
     ⮐  p.peek(n).str.len > token.col
     
-proc isTokAhead(p: Parser, tokAhead:tok) : bool =
+isTokAhead = ◇Parser p ◇tok tokAhead ➜bool ->
 
     var n = 0
     var c = p.current
@@ -514,25 +518,25 @@ proc isTokAhead(p: Parser, tokAhead:tok) : bool =
         c = p.peek n
     false    
 
-proc isThenlessIf(p:Parser, token:Token) : bool =
+isThenlessIf = ◇Parser p ◇Token token ➜bool ->
 
     if p.isNextLineIndented token
         ⮐  false
 
     not p.isTokAhead ◂then
     
-proc getPrecedence(p: Parser, token: Token): int =
+getPrecedence = ◇Parser p ◇Token token ➜int ->
 
     if token.tok.ord < p.pratts.len
         ⮐  p.pratts[token.tok.ord].precedence
     0
     
-proc rightHandSide(p: Parser, token: Token): RHS =
+rightHandSide = ◇Parser p ◇Token token ➜RHS ->
 
     if token.tok.ord < p.pratts.len
         ⮐  p.pratts[token.tok.ord].rhs
 
-proc leftHandSide(p: Parser, token: Token): LHS =
+leftHandSide = ◇Parser p ◇Token token ➜LHS ->
 
     if token.tok.ord < p.pratts.len
         ⮐  p.pratts[token.tok.ord].lhs
