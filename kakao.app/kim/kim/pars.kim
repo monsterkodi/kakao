@@ -4,10 +4,9 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 
-import kommon
-import tknz
+use kommon tknz
 
-type NodeKind* = enum
+enum NodeKind*
     
     ●error
     ●block
@@ -65,7 +64,7 @@ type NodeKind* = enum
 # ███  ████  ███   ███  ███   ███  ███     
 # ███   ███   ███████   ███████    ████████
 
-type Node* = ref object
+class Node*
 
     token* : Token
         
@@ -229,18 +228,12 @@ type Node* = ref object
                 
 template choose*(cond, a, b: untyped): untyped =
 
-    when typeof(cond) is bool
-        if cond 
-            a 
-        else 
-            b
-    elif typeof(cond) is ref
-        if cond != nil 
-            a 
-        else 
-            b
-    else
-        {.error: "Condition must be bool or ref type".}
+    when 
+        typeof(cond) is bool 
+            if cond ➜ a ➜ b
+        typeof(cond) is ref
+            if cond != nil ➜ a ➜ b
+        ➜ {.error: "Condition must be bool or ref type".}
 
 # ████████    ███████   ████████    ███████  ████████  ████████ 
 # ███   ███  ███   ███  ███   ███  ███       ███       ███   ███
@@ -258,7 +251,7 @@ type Pratt = object
         lhs         : LHS
         precedence  : int
          
-type Parser* = ref object
+class Parser*
         tokens*     : seq[Token]
         pratts*     : seq[Pratt]
         blocks*     : seq[Node]
@@ -309,10 +302,10 @@ proc `$`*(n: Node): string =
         
     var s = &"{n.token.tok}"
     
-    case n.kind
-        of ●string
+    switch n.kind
+        ●string
             var ips = ""
-            for i,s in n.string_stripols
+            for i s in n.string_stripols
                 if i == 0
                     ips &= "<"
                 ips &= $s.stripol_xprssns
@@ -322,7 +315,7 @@ proc `$`*(n: Node): string =
                     ips &= ">"
             let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
             s = &"◂{p}string{ips}"
-        of ●block
+        ●block
             s = "▪["
             for e in n.expressions
                 if e != nil
@@ -330,117 +323,105 @@ proc `$`*(n: Node): string =
                 else
                     s &= "NIL"
             s &= "]"
-        of ●operation
+        ●operation
             s = &"({n.operand_left} {s} {n.operand_right})"
-        of ●range
+        ●range
             s = &"({n.range_start} {s} {n.range_end})"
-        of ●preOp
+        ●preOp
             s = &"({s} {n.operand})"
-        of ●postOp
+        ●postOp
             s = &"({n.operand} {s})"
-        of ●return
+        ●return
             let e = choose(n.return_value, " " & $n.return_value, "")
             s = &"({s}{e})"
-        of ●call
+        ●call
             s = &"({n.callee} ◂call {n.callargs})"
-        of ●propertyAccess
+        ●propertyAccess
             s = &"({n.owner} {s} {n.property})"
-        of ●if
+        ●if
             let e = choose(n.else_branch, &" {n.else_branch}", "")
             s = &"({s} {n.cond_thens}{e})"
-        of ●condThen
+        ●condThen
             s = &"({n.condition} {n.then_branch})"
-        of ●switch
+        ●switch
             let e = choose(n.switch_default, &" {n.switch_default}", "")
             s = &"({s} {n.switch_value} {n.switch_cases}{e})"
-        of ●switchCase
+        ●switchCase
             s = &"({n.case_when} {n.case_then})"
-        of ●for
+        ●for
             let b = choose(n.for_body, &" {n.for_body}", "")
-            
             s = &"({s} {n.for_value} in {n.for_range}{b})"
                         
             # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
-            # 
             # s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
-            #
             # s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
-            # 
             # s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
-            # 
             # s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
-            # 
             # s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
-            # 
             # s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
-            # 
             # s = &"(«s» «n.for_value» in «n.for_range»«b»)"
-            # 
             # s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
-            # 
             # s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
-            # 
             # s = &"(s n.for_value in n.for_rangeb)"
-            # 
             # s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
             
-        of ●list
+        ●list
             s = &"{n.list_values}"
             s = "◂" & s[1..^1]
-        of ●curly
+        ●curly
             s = &"{n.list_values}"
             s = "{" & s[2..^2] & "}"
-        of ●squarely
+        ●squarely
             s = &"{n.list_values}"
             s = "[" & s[1..^1] & "]]"
-        of ●while
+        ●while
             let b = choose(n.while_body, &" {n.while_body}", "")
             s = &"({s} {n.while_cond}{b})"
-        of ●func
+        ●func
             let sig = choose(n.func_signature, &"{n.func_signature} ", "")
             let mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
             let bdy = choose(n.func_body, &" {n.func_body}", "")
             s = &"({sig}{s}{mdf}{bdy})"
-        of ●signature
+        ●signature
             let a = choose(n.sig_args, &"{n.sig_args}", "")
             let t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
             s = &"{a}{t}"
-        of ●arrayAccess
+        ●arrayAccess
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
-        of ●arg
+        ●arg
             let t = choose(n.arg_type, &"{n.arg_type}", "")
             let v = choose(n.arg_value, &" (= {n.arg_value})", "")
             s = &"({s}{t} {n.arg_name}{v})"
-        of ●var
+        ●var
             let t = choose(n.var_type, &" {s}{n.var_type}", "")
             let v = choose(n.var_value, &" (= {n.var_value})", "")
             s = &"({n.var_name}{t}{v})"
-        of ●let
+        ●let
             s = &"({s} {n.let_expr})"
-        of ●type
+        ●type
             s = &"type({n.token.str})"
-        of ●use
+        ●use
             let k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
             let i = choose(n.use_items.len>0, &" {n.use_items}", "")
             s = &"({s} {n.use_module}{k}{i})"
-        of ●enum    
+        ●enum    
             let b = choose(n.enum_body, &" {n.enum_body}", "")
             s = &"({s} {n.enum_name}{b})"
-        of ●class    
+        ●class    
             let b = choose(n.class_body, &" {n.class_body}", "")
             s = &"({s} {n.class_name}{b})"
-        of ●member
+        ●member
             s = &"({n.member_key} {s} {n.member_value})"
-        of ●quote
+        ●quote
             s = &"({s} {n.quote_body})"
-        of ●testSuite
+        ●testSuite
             let b = choose(n.test_block, &" {n.test_block}", "")
             s = &"({s} suite{b})"
-        of ●testSection
+        ●testSection
             let b = choose(n.test_block, &" {n.test_block}", "")
             s = &"({s} section{b})"
-        of ●testCase
+        ●testCase
             s = &"({n.test_value} {s} {n.test_expected})"
         else
             discard
@@ -910,7 +891,6 @@ proc rIf(p: Parser): Node =
             break # then without condition -> else
         
         condition = p.expression()
-        
         then_branch = p.then()
         
         condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
@@ -934,11 +914,8 @@ proc rIf(p: Parser): Node =
 
 proc lTailIf(p: Parser, left: Node) : Node =
 
-    if p.returning
-        ⮐ 
-        
-    if left.token.line != p.current.line
-        ⮐  
+    ⮐  if p.returning
+    ⮐  if left.token.line != p.current.line
         
     let token = p.consume()
     var condition = p.expression()
@@ -1024,12 +1001,6 @@ proc rSwitch(p: Parser): auto =
     if p.tok in {◂else, ◂then}
         p.swallow()
         switch_default = p.then()
-            # if p.tok == ◂indent and p.current.str.len > baseIndent
-            #     p.swallow()
-            #     p.expression()
-            # else
-            #     p.expression()
-        
         if switch_default == nil
             ⮐  p.error("Expected default value", token)
     
@@ -1039,13 +1010,11 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
 
     let token = p.current()
     let array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
-    var array_index = case array_indices.len
-            of 0
-                nil
-            of 1
-                array_indices[0]
-            else
-                Node(token:token, kind:●list, list_values:array_indices)
+    var array_index = 
+        switch array_indices.len
+            0 ➜ nil
+            1 ➜ array_indices[0]
+              ➜ Node(token:token, kind:●list, list_values:array_indices)
         
     Node(token:token, kind:●arrayAccess, array_owner:array_owner, array_index:array_index)
 
@@ -1206,38 +1175,38 @@ proc lSymbolList(p: Parser, left: Node) : Node =
     if p.listless
         ⮐  
 
-    case left.kind 
-        of ●list
+    switch left.kind 
+        ●list
             var list_values = left.list_values
             # todo: check if all list items are symbols?
             list_values.add p.rSymbol()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        of ●literal
+        ●literal
             if left.token.tok != ◂name
                 ⮐  
             var list_values : seq[Node]
             list_values.add left
             list_values.add p.rSymbol()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        else
+        ➜ 
             discard
 
 proc lArgList(p: Parser, left: Node) : Node =
     
-    case left.kind 
-        of ●list
+    switch left.kind 
+        ●list
             var list_values = left.list_values
             list_values.add p.rArg()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        of ●arg
+        ●arg
             var list_values : seq[Node]
             list_values.add left
             list_values.add p.rArg()
             ⮐  Node(token:left.token, kind:●list, list_values:list_values)
-        of ●literal
+        ●literal
             if left.token.tok == ◂name
                 ⮐  p.lVar left
-        else
+        ➜ 
             discard
 
 # ████████  ███   ███  ███   ███   ███████
@@ -1513,86 +1482,86 @@ proc pratt(p: Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 
 proc setup(p: Parser) =
 
-    p.pratt ◂true,              nil,               rLiteral,        0
-    p.pratt ◂false,             nil,               rLiteral,        0
-    p.pratt ◂mod,               nil,               rLiteral,        0
-    p.pratt ◂null,              nil,               rLiteral,        0
-    p.pratt ◂number,            nil,               rLiteral,        0
-    p.pratt ◂string_start,      nil,               rString,         0
-    p.pratt ◂comment_start,     nil,               rComment,        0
-    p.pratt ◂name,              lSymbolList,       rSymbol,        13 # higher than assign
-    p.pratt ◂import,            nil,               rImport,         0
-    p.pratt ◂macro,             nil,               rMacro,          0
-    p.pratt ◂template,          nil,               rTemplate,       0
-    p.pratt ◂converter,         nil,               rConverter,      0
-    p.pratt ◂proc,              nil,               rProc,           0
-    p.pratt ◂type,              nil,               rTypeDef,        0
-    p.pratt ◂use,               nil,               rUse,            0
-    p.pratt ◂let,               nil,               rLet,            0
-    p.pratt ◂var,               nil,               rLet,            0
-    p.pratt ◂return,            nil,               rReturn,         0
-    p.pratt ◂discard,           nil,               rDiscard,        0
-    p.pratt ◂quote,             nil,               rQuote,          0
-    p.pratt ◂test,              lTestCase,         rTestSuite,      0
+    p.pratt ◂true              nil               rLiteral        0
+    p.pratt ◂false             nil               rLiteral        0
+    p.pratt ◂mod               nil               rLiteral        0
+    p.pratt ◂null              nil               rLiteral        0
+    p.pratt ◂number            nil               rLiteral        0
+    p.pratt ◂string_start      nil               rString         0
+    p.pratt ◂comment_start     nil               rComment        0
+    p.pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
+    p.pratt ◂import            nil               rImport         0
+    p.pratt ◂macro             nil               rMacro          0
+    p.pratt ◂template          nil               rTemplate       0
+    p.pratt ◂converter         nil               rConverter      0
+    p.pratt ◂proc              nil               rProc           0
+    p.pratt ◂type              nil               rTypeDef        0
+    p.pratt ◂use               nil               rUse            0
+    p.pratt ◂let               nil               rLet            0
+    p.pratt ◂var               nil               rLet            0
+    p.pratt ◂return            nil               rReturn         0
+    p.pratt ◂discard           nil               rDiscard        0
+    p.pratt ◂quote             nil               rQuote          0
+    p.pratt ◂test              lTestCase         rTestSuite      0
     
-    p.pratt ◂class,             nil,               rClass,          0
-    p.pratt ◂enum,              nil,               rEnum,           0
-    p.pratt ◂colon,             lMember,           nil,            10
+    p.pratt ◂class             nil               rClass          0
+    p.pratt ◂enum              nil               rEnum           0
+    p.pratt ◂colon             lMember           nil            10
     
-    p.pratt ◂continue,          nil,               rKeyword,        0
-    p.pratt ◂break,             nil,               rKeyword,        0
+    p.pratt ◂continue          nil               rKeyword        0
+    p.pratt ◂break             nil               rKeyword        0
                                                                     
-    p.pratt ◂assign,            lAssign,           nil,            10
-    p.pratt ◂plus_assign,       lAssign,           nil,            10
-    p.pratt ◂minus_assign,      lAssign,           nil,            10
-    p.pratt ◂divide_assign,     lAssign,           nil,            10
-    p.pratt ◂multiply_assign,   lAssign,           nil,            10
-    p.pratt ◂ampersand_assign,  lAssign,           nil,            10
+    p.pratt ◂assign            lAssign           nil            10
+    p.pratt ◂plus_assign       lAssign           nil            10
+    p.pratt ◂minus_assign      lAssign           nil            10
+    p.pratt ◂divide_assign     lAssign           nil            10
+    p.pratt ◂multiply_assign   lAssign           nil            10
+    p.pratt ◂ampersand_assign  lAssign           nil            10
 
-    p.pratt ◂if,                lTailIf,           rIf,            20
-    p.pratt ◂when,              nil,               rIf,            20
-    p.pratt ◂for,               nil,               rFor,           20
-    p.pratt ◂switch,            nil,               rSwitch,        20
-    p.pratt ◂while,             nil,               rWhile,         20
-    p.pratt ◂func,              lFunc,             rFunc,          20
+    p.pratt ◂if                lTailIf           rIf            20
+    p.pratt ◂when              nil               rIf            20
+    p.pratt ◂for               nil               rFor           20
+    p.pratt ◂switch            nil               rSwitch        20
+    p.pratt ◂while             nil               rWhile         20
+    p.pratt ◂func              lFunc             rFunc          20
     
-    p.pratt ◂or,                lOperation,        nil,            30
-    p.pratt ◂and,               lOperation,        nil,            31
+    p.pratt ◂or                lOperation        nil            30
+    p.pratt ◂and               lOperation        nil            31
     
-    p.pratt ◂is,                lOperation,        nil,            32
-    p.pratt ◂in,                lOperation,        nil,            33
-    p.pratt ◂notin,             lOperation,        nil,            34
+    p.pratt ◂is                lOperation        nil            32
+    p.pratt ◂in                lOperation        nil            33
+    p.pratt ◂notin             lOperation        nil            34
 
-    p.pratt ◂equal,             lOperation,        nil,            40
-    p.pratt ◂not_equal,         lOperation,        nil,            40
-    p.pratt ◂greater_equal,     lOperation,        nil,            40
-    p.pratt ◂less_equal,        lOperation,        nil,            40
-    p.pratt ◂less,              lOperation,        nil,            40
-    p.pratt ◂greater,           lOperation,        nil,            40
-    p.pratt ◂match,             lOperation,        nil,            40
+    p.pratt ◂equal             lOperation        nil            40
+    p.pratt ◂not_equal         lOperation        nil            40
+    p.pratt ◂greater_equal     lOperation        nil            40
+    p.pratt ◂less_equal        lOperation        nil            40
+    p.pratt ◂less              lOperation        nil            40
+    p.pratt ◂greater           lOperation        nil            40
+    p.pratt ◂match             lOperation        nil            40
     
-    p.pratt ◂doubledot,         lRange,            nil,            40
-    p.pratt ◂tripledot,         lRange,            nil,            40
-    p.pratt ◂ampersand,         lOperation,        nil,            40
+    p.pratt ◂doubledot         lRange            nil            40
+    p.pratt ◂tripledot         lRange            nil            40
+    p.pratt ◂ampersand         lOperation        nil            40
                                                    
-    p.pratt ◂plus,              lOperation,        nil,            50
-    p.pratt ◂minus,             lOperation,        rPreOp,         50
+    p.pratt ◂plus              lOperation        nil            50
+    p.pratt ◂minus             lOperation        rPreOp         50
                                                    
-    p.pratt ◂multiply,          lOperation,        nil,            60
-    p.pratt ◂divide,            lOperation,        nil,            60
+    p.pratt ◂multiply          lOperation        nil            60
+    p.pratt ◂divide            lOperation        nil            60
 
-    p.pratt ◂not,               lNotIn,            rPreOp,         70
+    p.pratt ◂not               lNotIn            rPreOp         70
 
-    p.pratt ◂increment,         lPostOp,           nil,            80
-    p.pratt ◂decrement,         lPostOp,           nil,            80
+    p.pratt ◂increment         lPostOp           nil            80
+    p.pratt ◂decrement         lPostOp           nil            80
 
-    p.pratt ◂square_open,       lArrayAccess,      rSquarely,      90
-    p.pratt ◂paren_open,        lCall,             rParenExpr,     90
-    p.pratt ◂bracket_open,      nil,               rCurly,         90
-    p.pratt ◂then,              lReturnType,       rReturnType,    99
-    p.pratt ◂val_type,          lArgList,          rArg,          100
-    p.pratt ◂var_type,          lArgList,          rArg,          100
-    p.pratt ◂dot,               lPropertyAccess,   nil,           102
+    p.pratt ◂square_open       lArrayAccess      rSquarely      90
+    p.pratt ◂paren_open        lCall             rParenExpr     90
+    p.pratt ◂bracket_open      nil               rCurly         90
+    p.pratt ◂then              lReturnType       rReturnType    99
+    p.pratt ◂val_type          lArgList          rArg          100
+    p.pratt ◂var_type          lArgList          rArg          100
+    p.pratt ◂dot               lPropertyAccess   nil           102
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   

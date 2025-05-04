@@ -110,7 +110,7 @@ proc runTests() : bool =
         discard fcntl(fd, F_SETFL, (flags or O_NONBLOCK))
         while true: 
             let elapsed = (getMonoTime() - startTime).inMilliseconds
-            if (elapsed >= 8000): 
+            if (elapsed >= 5000): 
                 fail = true
                 output.add(&"test killed after {elapsed} ms!!")
                 p.terminate()
