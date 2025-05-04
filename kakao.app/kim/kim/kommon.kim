@@ -6,13 +6,13 @@
     ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
 ###
 
-import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
-import system/ansi_c 
-export monotimes, times
-export sequtils,  tables,    typetraits
-export enumutils, sets
-export strutils,  strformat, unicode, pegs
-export unittest,  macros
+use std ▪ monotimes times sequtils paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
+use system/ansi_c 
+export monotimes times
+export sequtils  tables    typetraits
+export enumutils sets
+export strutils  strformat unicode pegs
+export unittest  macros
 export terminal
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
@@ -146,19 +146,15 @@ proc tickStop*(msg: string) =
 # ███         ███████   ███████   ███   ███          ███         ███████   ███      
 
 proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
-
-    if s.len > 0
-        s.setLen(s.len - 1)
+    if s.len > 0 ➜ s.setLen(s.len - 1)
     s
 
 proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
-
     s.add item
     s
         
 proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
-    if s.len > 0
-        s.delete 0
+    if s.len > 0 ➜ s.delete 0
     s
         
 proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
@@ -234,12 +230,11 @@ macro dbg*(args: varargs[untyped]): untyped =
     
     let lineInfo = args[0].lineInfoObj
     
-    result.add quote do:
-        styledEcho(bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle)
+    result.add quote
+        styledEcho bgBlue styleBright `lineInfo`.filename styleDim ":" $`lineInfo`.line resetStyle
     
     for arg in args
-        result.add quote do:
-            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle,
-                styleDim, " = ", resetStyle,
-                fgGreen, $`arg`, resetStyle,
-                fgBlue, " ", $typeof(`arg`), resetStyle)
+        result.add quote
+            styledEcho(fgYellow styleBright "  " `arg`.astToStr() resetStyle
+                styleDim " = " resetStyle fgGreen $`arg` resetStyle
+                fgBlue " " $typeof(`arg`) resetStyle)
