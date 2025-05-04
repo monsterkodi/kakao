@@ -4,12 +4,9 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-import kommon
-import tknz
-import pars
-import vars
+use kommon tknz pars vars
 
-type Rndr = ref object
+class Rndr
     code            : string
     s               : string
     annotateVarArg  : bool
@@ -262,11 +259,14 @@ proc ▸call(r: Rndr, n: Node) =
         r.add "echo"
     else
         r.rnd n.callee
+        
     if n.callee.token.str != "export"
         r.add "("
     else
         r.add " "
+        
     r.rnd n.call_args
+    
     if n.callee.token.str != "export"
         r.add ")"
         
@@ -277,7 +277,8 @@ proc ▸if(r: Rndr, n: Node) =
     
     r.tok n
     r.add " "
-    for i,condThen in n.cond_thens
+    
+    for i condThen in n.cond_thens
         if i > 0
             if condThen.token.line > line
                 r.add "\n" & idt & "elif "
@@ -286,6 +287,7 @@ proc ▸if(r: Rndr, n: Node) =
         r.rnd condThen.condition
         r.add ": "
         r.rnd condThen.then_branch
+        
     if n.else_branch != nil   
         if n.else_branch.token.line > line
             r.add "\n" & idt & "else: "
@@ -390,11 +392,7 @@ proc ▸switch(r: Rndr, n: Node) =
     
     if n.switch_default != nil
         r.add "\n" & cdt
-        # if n.switch_default.kind in [●list, ●block]
-        #     r.add "else:\n" & cdt & " "
-        # else
         r.add "else: "
-        # log &"n.switch_default.kind {n.switch_default} {n.switch_default.kind}"
         r.rnd(n.switch_default)
         
 proc ▸enum(r: Rndr, n: Node) =
@@ -437,78 +435,77 @@ proc ▸testSuite(r: Rndr, n:Node) =
 
 proc rnd(r: Rndr, n: Node) =
 
-    if n == nil
-        ⮐  
+    ⮐  if n == nil
     
-    case n.kind
+    switch n.kind
     
-        of ●block
+        ●block
             r.▸block(n)
-        of ●if
+        ●if
             r.▸if(n)
-        of ●switch
+        ●switch
             r.▸switch(n)
-        of ●func
+        ●func
             r.▸func(n)
-        of ●signature
+        ●signature
             r.▸signature(n)
-        of ●call
+        ●call
             r.▸call(n)
-        of ●operation
+        ●operation
             r.▸operation(n)
-        of ●postOp
+        ●postOp
             r.▸postOp(n)
-        of ●preOp
+        ●preOp
             r.▸preOp(n)
-        of ●for
+        ●for
             r.▸for(n)
-        of ●while
+        ●while
             r.▸while(n)
-        of ●list
+        ●list
             r.▸list(n)
-        of ●curly
+        ●curly
             r.▸curly(n)
-        of ●squarely
+        ●squarely
             r.▸squarely(n)
-        of ●range
+        ●range
             r.▸range(n)
-        of ●string
+        ●string
             r.▸string(n)
-        of ●comment
+        ●comment
             r.▸comment(n)
-        of ●use
+        ●use
             r.▸use(n)
-        of ●propertyAccess
+        ●propertyAccess
             r.▸propertyAccess(n)
-        of ●arrayAccess
+        ●arrayAccess
             r.▸arrayAccess(n)
-        of ●var
+        ●var
             r.▸var(n)
-        of ●arg
+        ●arg
             r.▸arg(n)
-        of ●let
+        ●let
             r.▸let(n)
-        of ●return
+        ●return
             r.▸return(n)
-        of ●discard
+        ●discard
             r.▸discard(n)
-        of ●enum
+        ●enum
             r.▸enum(n)
-        of ●class
+        ●class
             r.▸class(n)
-        of ●quote
+        ●quote
             r.▸quote(n)
-        of ●member
+        ●member
             r.▸member(n)
-        of ●testSuite, ●testSection
+        ●testSuite, ●testSection
             r.▸testSuite(n)
-        of ●testCase
+        ●testCase
             r.▸testCase(n)
-        of ●literal, ●keyword, ●type
+        ●literal, ●keyword, ●type
             r.tok n
-        of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
+        ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
             r.tok n
-        else
+        ➜ 
             log &"unhandled {n} {n.kind}"
             r.tok n
 
@@ -534,7 +531,7 @@ proc file*(file: string) : string =
     
 proc files*(files: seq[string]): seq[string] = 
 
-    var transpiled: seq[string]
+    var transpiled ◇ seq[string]
     for f in files
         transpiled.add file(f)
         

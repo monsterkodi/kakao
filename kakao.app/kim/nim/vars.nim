@@ -7,75 +7,56 @@
 
     inserts var keywords for assignment operations
 ]#
-
 import kommon
 import tknz
 import pars
-
 type Scoper* = ref object
-    vars* : seq[Table[string,bool]]
-
+    vars*: seq[Table[string, bool]]
 proc `$`*(v:Scoper): string = 
 
     var s = ""
-    s &= $v.vars
+    (s &= $v.vars)
     s
-
 proc exp(s:Scoper, body:Node, i:int, e:Node)
 proc scope(s:Scoper, body:Node) : Node
-
 # 00000000  000   000  00000000   
 # 000        000 000   000   000  
 # 0000000     00000    00000000   
 # 000        000 000   000        
 # 00000000  000   000  000        
-    
 proc exp(s:Scoper, body:Node, i:int, e:Node) =
-    
-    if e == nil:
-        return  
-        
+
+    if (e == nil): return
     proc insert(name:string, expr:Node) =
-        
-        for map in s.vars:
-            if map.hasKey name:
-                return  
-            
-        var let_expr = Node(token:Token(tok:◂let, str:"var", line:expr.token.line), kind:●let, let_expr:expr)
-
-        body.expressions[i] = let_expr
-
-        s.vars[^1][name] = true
     
-    if e.kind == ●operation:
-        if e.operand_right.kind == ●func:
-            discard s.scope e.operand_right.func_body
-        elif e.token.tok == ◂assign:
+        for map in s.vars: 
+            if map.hasKey(name): return
+        var let_expr = Node(token: Token(tok: ◂let, str: "var", line: expr.token.line), kind: ●let, let_expr: expr)
+        body.expressions[i] = let_expr
+        s.vars[^1][name] = true
+    if (e.kind == ●operation): 
+        if (e.operand_right.kind == ●func): 
+            discard s.scope(e.operand_right.func_body)
+        elif (e.token.tok == ◂assign): 
             let lhs = e.operand_left
-            if lhs.kind == ●literal:
-                insert lhs.token.str, e
-    elif e.kind == ●var:
-        insert e.var_name.token.str, e
-                    
+            if (lhs.kind == ●literal): 
+                insert(lhs.token.str, e)
+    elif (e.kind == ●var): 
+        insert(e.var_name.token.str, e)
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       
 # 0000000   000       000   000  00000000   0000000   
 #      000  000       000   000  000        000       
 # 0000000    0000000   0000000   000        00000000  
-    
 proc scope(s:Scoper, body:Node) : Node =
-    
-    if body.expressions.len == 0:
-        return  body
 
-    s.vars.push initTable[string,bool]()
-
-    for i,e in body.expressions:
-        s.exp body, i, e 
-
+    if (body.expressions.len == 0): 
+        return body
+    s.vars.push(initTable[string, bool]())
+    for i, e in body.expressions: 
+        s.exp(body, i, e)
     s.vars.pops()
     body
-    
 proc variables*(body:Node) : Node = 
 
-    Scoper().scope body
+    Scoper().scope(body)

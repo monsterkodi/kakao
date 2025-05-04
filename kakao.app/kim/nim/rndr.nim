@@ -8,7 +8,6 @@ import tknz
 import pars
 import vars
 type Rndr = ref object
-
     code: string
     s: string
     annotateVarArg: bool
@@ -340,11 +339,7 @@ proc ▸switch(r: Rndr, n: Node) =
         r.rnd(caseNode.case_then)
     if (n.switch_default != nil): 
         r.add("\n" & cdt)
-        # if n.switch_default.kind in [●list, ●block]
-        #     r.add "else:\n" & cdt & " "
-        # else
         r.add("else: ")
-        # log &"n.switch_default.kind {n.switch_default} {n.switch_default.kind}"
         r.rnd(n.switch_default)
 proc ▸enum(r: Rndr, n: Node) =
 
@@ -381,76 +376,75 @@ proc ▸testSuite(r: Rndr, n:Node) =
     r.rnd(n.test_block)
 proc rnd(r: Rndr, n: Node) =
 
-    if (n == nil): 
-        return
+    if (n == nil): return
     case n.kind:
-           of ●block: 
+        of ●block: 
             r.▸block(n)
-           of ●if: 
+        of ●if: 
             r.▸if(n)
-           of ●switch: 
+        of ●switch: 
             r.▸switch(n)
-           of ●func: 
+        of ●func: 
             r.▸func(n)
-           of ●signature: 
+        of ●signature: 
             r.▸signature(n)
-           of ●call: 
+        of ●call: 
             r.▸call(n)
-           of ●operation: 
+        of ●operation: 
             r.▸operation(n)
-           of ●postOp: 
+        of ●postOp: 
             r.▸postOp(n)
-           of ●preOp: 
+        of ●preOp: 
             r.▸preOp(n)
-           of ●for: 
+        of ●for: 
             r.▸for(n)
-           of ●while: 
+        of ●while: 
             r.▸while(n)
-           of ●list: 
+        of ●list: 
             r.▸list(n)
-           of ●curly: 
+        of ●curly: 
             r.▸curly(n)
-           of ●squarely: 
+        of ●squarely: 
             r.▸squarely(n)
-           of ●range: 
+        of ●range: 
             r.▸range(n)
-           of ●string: 
+        of ●string: 
             r.▸string(n)
-           of ●comment: 
+        of ●comment: 
             r.▸comment(n)
-           of ●use: 
+        of ●use: 
             r.▸use(n)
-           of ●propertyAccess: 
+        of ●propertyAccess: 
             r.▸propertyAccess(n)
-           of ●arrayAccess: 
+        of ●arrayAccess: 
             r.▸arrayAccess(n)
-           of ●var: 
+        of ●var: 
             r.▸var(n)
-           of ●arg: 
+        of ●arg: 
             r.▸arg(n)
-           of ●let: 
+        of ●let: 
             r.▸let(n)
-           of ●return: 
+        of ●return: 
             r.▸return(n)
-           of ●discard: 
+        of ●discard: 
             r.▸discard(n)
-           of ●enum: 
+        of ●enum: 
             r.▸enum(n)
-           of ●class: 
+        of ●class: 
             r.▸class(n)
-           of ●quote: 
+        of ●quote: 
             r.▸quote(n)
-           of ●member: 
+        of ●member: 
             r.▸member(n)
-           of ●testSuite, ●testSection: 
+        of ●testSuite, ●testSection: 
             r.▸testSuite(n)
-           of ●testCase: 
+        of ●testCase: 
             r.▸testCase(n)
-           of ●literal, ●keyword, ●type: 
+        of ●literal, ●keyword, ●type: 
             r.tok(n)
-           of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter: 
+        of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter: 
             r.tok(n)
-           else: 
+        else: 
             echo(&"unhandled {n} {n.kind}")
             r.tok(n)
 proc render*(code:string, autovar=true): string =
@@ -473,7 +467,7 @@ proc file*(file: string) : string =
     fileOut
 proc files*(files: seq[string]): seq[string] = 
 
-    var transpiled: seq[string]
+    var transpiled : seq[string]
     for f in files: 
         transpiled.add(file(f))
     # echo "render.files done: ", transpiled
