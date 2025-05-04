@@ -763,11 +763,17 @@ proc switchCase(p : Parser, baseIndent : int) : Node =
     var case_when : seq[Node]
     var token = p.current
     var first = p.firstLineToken()
-    p.explicit = true
-    while (p.tok notin {◂else, ◂then, ◂indent, ◂eof}): 
+    while (p.tok notin {◂else, ◂then, ◂eof}): 
+        if (p.tok == ◂indent): 
+            if (p.peek(1).tok == ◂then): 
+                return # indent followed by a ➜ is else
+            if not p.swallowSameIndent(baseIndent): 
+                break
+        if p.isDedent(baseIndent): return
+        p.explicit = true
         case_when.add(p.value())
+        p.explicit = false
         p.swallow(◂comma)
-    p.explicit = false
     var case_then = p.thenIndented(first)
     if (case_then == nil): 
         return p.error("Expected case body after match(es)", token)

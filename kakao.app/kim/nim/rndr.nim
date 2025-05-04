@@ -373,11 +373,10 @@ proc rnd(r : Rndr, n : Node) =
         of ●member: r.▸member(n)
         of ●testCase: r.▸testCase(n)
         of ●testSuite, ●testSection: r.▸testSuite(n)
-        of ●literal, ●keyword, ●type: r.tok(n)
-        of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter: r.tok(n)
+        of ●literal, ●keyword, ●type, ●typeDef, ●import, ●proc, ●macro, ●template, ●converter: r.tok(n)
         else: 
-            echo(&"unhandled {n} {n.kind}")
-            r.tok(n)
+                          echo(&"unhandled {n} {n.kind}")
+                          r.tok(n)
 proc render*(code : string, autovar = true) : string = 
     var root = ast(code)
     if autovar: 

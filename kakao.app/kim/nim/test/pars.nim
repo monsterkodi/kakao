@@ -280,6 +280,15 @@ switch ext
 switch ext
     ".kim"  ➜ fun()
             ➜ continue""", "▪[(◂switch ◂name @[(@[◂string] (◂name ◂call @[]))] ◂continue)]")
+        t("""
+switch a
+    ●testSuite ●testSection ➜ r.▸testSuite n
+""", "▪[(◂switch ◂name @[(@[◂name, ◂name] ((◂name . ◂name) ◂call @[◂name]))])]")
+        t("""
+switch a
+    ●testSuite 
+    ●testSection ➜ r.▸testSuite n
+""", "▪[(◂switch ◂name @[(@[◂name, ◂name] ((◂name . ◂name) ◂call @[◂name]))])]")
     test "case": 
         t("case x\n  of a\n    1\n  of b, c\n    2", "▪[(◂switch ◂name @[(@[◂name] ▪[◂number]), (@[◂name, ◂name] ▪[◂number])])]")
     test "tailIf": 

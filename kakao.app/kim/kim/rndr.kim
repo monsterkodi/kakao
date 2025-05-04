@@ -470,12 +470,20 @@ rnd = ◇Rndr r ◇Node n ->
         ●quote          ➜ r.▸quote          n
         ●member         ➜ r.▸member         n
         ●testCase       ➜ r.▸testCase       n
-        ●testSuite ●testSection ➜ r.▸testSuite n
-        ●literal ●keyword ●type ➜ r.tok n
-        ●typeDef ●import ●proc ●macro ●template ●converter ➜ r.tok n
-        ➜ 
-            log "unhandled #{n} #{n.kind}"
-            r.tok n
+        ●testSuite 
+        ●testSection    ➜ r.▸testSuite      n
+        ●literal 
+        ●keyword 
+        ●type           
+        ●typeDef 
+        ●import 
+        ●proc 
+        ●macro 
+        ●template 
+        ●converter      ➜ r.tok             n
+                        ➜ 
+                          log "unhandled #{n} #{n.kind}"
+                          r.tok n
 
 render* = ◇string code autovar=true ➜string ->
 

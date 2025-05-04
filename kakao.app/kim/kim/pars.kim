@@ -987,14 +987,23 @@ rWhile = ◇Parser p ➜Node ->
 switchCase = ◇Parser p ◇int baseIndent ➜Node ->
 
     case_when ◇ seq[Node]
-    token = p.current
-    first = p.firstLineToken()
+    token     = p.current
+    first     = p.firstLineToken()
     
-    p.explicit = true
-    while p.tok notin {◂else, ◂then, ◂indent, ◂eof}
+    while p.tok notin {◂else, ◂then, ◂eof}
+    
+        if p.tok == ◂indent
+            if p.peek(1).tok == ◂then
+                ⮐  # indent followed by a ➜ is else
+            if not p.swallowSameIndent baseIndent
+                break
+
+        ⮐  if p.isDedent baseIndent
+    
+        p.explicit = true
         case_when.add p.value()
+        p.explicit = false
         p.swallow ◂comma
-    p.explicit = false
     
     case_then = p.thenIndented(first)
                 
