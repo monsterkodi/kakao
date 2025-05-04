@@ -539,7 +539,8 @@ elif errno == EAGAIN
 elif not p.running
     break
 else
-    break""" , """
+    break
+""" , """
 if (bytesRead > 0): 
     output.add(line & "\n")
 elif (bytesRead == 0): 
@@ -554,14 +555,16 @@ else:
         t """
 icon = 
     if ext == ".kim"
-        "  "
+        " "
     else
-        "  """" , """
+        " "
+    1""" , """
 icon = 
     if (ext == ".kim"): 
-        "  "
+        " "
     else: 
-        "  """"
+        " "
+    1"""
         
     ▸ proc
         t "proc ast*(text:string) : Node =", "proc ast*(text:string) : Node ="

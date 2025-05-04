@@ -310,6 +310,18 @@ proc `$`*(n: Node): string =
     var s = &"{n.token.tok}"
     
     case n.kind:
+        of ●string:
+            var ips = ""
+            for i,s in n.string_stripols:
+                if i == 0:
+                    ips &= "<"
+                ips &= $s.stripol_xprssns
+                if 0 < i and i < n.string_stripols.len-1:
+                    ips &= " "
+                if i == n.string_stripols.len-1:
+                    ips &= ">"
+            let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
+            s = &"◂{p}string{ips}"
         of ●block:
             s = "▪["
             for e in n.expressions:
@@ -322,18 +334,6 @@ proc `$`*(n: Node): string =
             s = &"({n.operand_left} {s} {n.operand_right})"
         of ●range:
             s = &"({n.range_start} {s} {n.range_end})"
-        of ●string:
-            var ips = ""
-            for i,s in n.string_stripols:
-                if i == 0:
-                    ips &= "#" & "{"
-                ips &= $s.stripol_xprssns
-                if 0 < i and i < n.string_stripols.len-1:
-                    ips &= " "
-                if i == n.string_stripols.len-1:
-                    ips &= "}"
-            let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
-            s = &"◂{p}string{ips}"
         of ●preOp:
             s = &"({s} {n.operand})"
         of ●postOp:

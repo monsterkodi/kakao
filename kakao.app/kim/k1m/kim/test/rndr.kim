@@ -101,6 +101,8 @@ template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                                                     
         t "setHook(() -> {.noconv.} quit(0))"       , "setHook(proc () {.noconv.} = quit(0))"
         
+        t "$* = ◇Tknzr t ➜string ->"                , "proc `$`*(t : Tknzr) : string ="
+        
     ▸ call
     
         t "f()"                                     , "f()"             
@@ -150,21 +152,21 @@ b = false""" , """
 a = 1
 # comment
 b = false"""
-        
+
     ▸ arrays
     
-        t "s.vars.push initTable[string,bool]()"    , "s.vars.push initTable[string,bool]()" 
+        t "a = [ 1  2 ]"                            , "a = @[1, 2]"
+        t "a = [\n    1\n    2\n    ]"              , "a = @[1, 2]"
+        
+        t "s.vars.push initTable[string,bool]()"    , "s.vars.push(initTable[string, bool]())" 
+        t "let mono = getMonoTime() - timers[msg][0]", "let mono = (getMonoTime() - timers[msg][0])"
     
         t """
-        
-let greetings* = [
+let greetings = [
     "💋 Keep It Simple, Stupid!",
     "💋 Overthink less, grin more!"
     ]""" , """
-let greetings* = @[
-    "💋 Keep It Simple, Stupid!!",
-    "💋 Overthink less, grin more!"
-    ]"""
+let greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!"]"""
         
     ▸ properties        
         
@@ -209,7 +211,38 @@ let greetings* = @[
         t "if true ➜\n  log msg"                    , "if true: \n  echo(msg)"
         t "if true\n  log msg"                      , "if true: \n  echo(msg)"
         t "if true\n  log msg\n  log msg"           , "if true: \n  echo(msg)\n  echo(msg)"
-
+        t """
+if a
+    if b
+        if c
+            1
+elif e
+    2""" , """
+if a: 
+    if b: 
+        if c: 
+            1
+elif e: 
+    2"""
+        
+        t """
+if a
+    if b
+        1
+    elif c
+        if d
+            2
+elif e
+    4""", """
+if a: 
+    if b: 
+        1
+    elif c: 
+        if d: 
+            2
+elif e: 
+    4"""
+        
         t """
 if e.kind == ●operation
     if e.operand_right.kind == ●func
@@ -220,25 +253,25 @@ if e.kind == ●operation
             insert lhs.token.str, e
 elif e.kind == ●var
     insert e.var_name.token.str, e""", """
-if e.kind == ●operation
-    if e.operand_right.kind == ●func
-        discard s.scope e.operand_right.func_body
-    elif e.token.tok == ◂assign
+if (e.kind == ●operation): 
+    if (e.operand_right.kind == ●func): 
+        discard s.scope(e.operand_right.func_body)
+    elif (e.token.tok == ◂assign): 
         let lhs = e.operand_left
-        if lhs.kind == ●literal
-            insert lhs.token.str, e
-elif e.kind == ●var
-    insert e.var_name.token.str, e"""
+        if (lhs.kind == ●literal): 
+            insert(lhs.token.str, e)
+elif (e.kind == ●var): 
+    insert(e.var_name.token.str, e)"""
 
     ▸ when
     
-        t "when T is (seq or array)"                , "when T is (seq or array)"
+        t "when T is (seq or array)"                , "when (T is (seq or array)): "
                                                     
     ▸ for                                           
                                                     
-        t "for a in 0..2 ➜ true"                    , "for a in [0..2]: true"     
-        t "for a in 0..2\n  true"                   , "for a in [0..2]: \n  true"   
-        t "for a in 0..2 ➜\n  true"                 , "for a in [0..2]: \n  true"  
+        t "for a in 0..2 ➜ true"                    , "for a in 0..2: true"     
+        t "for a in 0..2\n  true"                   , "for a in 0..2: \n  true"   
+        t "for a in 0..2 ➜\n  true"                 , "for a in 0..2: \n  true"  
         t "for kind, key, val in opt.get()"         , "for kind, key, val in opt.get(): "  
                                                     
     ▸ switch                                        
@@ -251,8 +284,8 @@ elif e.kind == ●var
         t "switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c"     , "case x:\n  of 1, 2: a\n  of 3: b\n  else: c"
         t "switch x\n  1 2\n    a\n  ➜ c"           , "case x:\n  of 1, 2: \n    a\n  else: c"
         t "switch x\n  1 2➜\n    a\n  ➜ c"          , "case x:\n  of 1, 2: \n    a\n  else: c"
-        t "switch x\n  1 2 ➜ a\n  else\n    c"      , "case x:\n  of 1, 2: a\n  else: c"
-        t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "case x:\n  of 1, 2: a\n  else: c"
+        t "switch x\n  1 2 ➜ a\n  else\n    c"      , "case x:\n  of 1, 2: a\n  else: \n    c"
+        t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "case x:\n  of 1, 2: a\n  else: \n    c"
         t "switch x\n a ➜ if b then c"              , "case x:\n of a: if b: c"
                                                     
     ▸ strings                                       
@@ -272,8 +305,16 @@ elif e.kind == ●var
         t "s = \"\"\"num #{1+2} end\"\"\""          , "s = &\"\"\"num {(1 + 2)} end\"\"\""
         t "s = \"\"\"\nl1 #{1+2}\nl2 #{2-3}\"\"\""  , "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
         t "s = \"#{o}\""                            , "s = &\"{o}\""
+        t "s = \"(#{s}#{e})\""                      , "s = &\"({s}{e})\""
+        
         t "cmd = \"nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}\"", 
           "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
+          
+        t "let e = choose(n.return_value, \" #{n.return_value}\", \"\")",
+          "let e = choose(n.return_value, &\" {n.return_value}\", \"\")"
+          
+        t "p = peg\"abc\""                          , "p = peg\"abc\"" 
+        t "if line =~ peg\"abc\""                   , "if (line =~ peg\"abc\"): " 
           
     ▸ triple strings
     
@@ -453,6 +494,22 @@ case kind:
 # ███████    ███  █████████
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███"""
+
+        t """
+###
+    ███   ███  ███  ██     ██
+    ███  ███   ███  ███   ███
+    ███████    ███  █████████
+    ███  ███   ███  ███ █ ███
+    ███   ███  ███  ███   ███
+###""" , """
+#[
+    ███   ███  ███  ██     ██
+    ███  ███   ███  ███   ███
+    ███████    ███  █████████
+    ███  ███   ███  ███ █ ███
+    ███   ███  ███  ███   ███
+]#"""
         
     ▸ tests
 
@@ -482,7 +539,8 @@ elif errno == EAGAIN
 elif not p.running
     break
 else
-    break""" , """
+    break
+""" , """
 if (bytesRead > 0): 
     output.add(line & "\n")
 elif (bytesRead == 0): 
@@ -497,22 +555,30 @@ else:
         t """
 icon = 
     if ext == ".kim"
-        "  "
+        " "
     else
-        "  """" , """
+        " "
+    1""" , """
 icon = 
     if (ext == ".kim"): 
-        "  "
+        " "
     else: 
-        "  """"
+        " "
+    1"""
         
-    ▸ verbatim1
-        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
-    ▸ verbatim2
+    ▸ proc
         t "proc ast*(text:string) : Node =", "proc ast*(text:string) : Node ="
-    ▸ verbatim3
+    ▸ converter
         t "converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0"
-    ▸ verbatim4
-        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
-    ▸ verbatim5
+    ▸ template
+        t "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())"
+        
+    ▸ macro
+    
         t "macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped ="
+        
+        t "quote do:\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)" 
+        t "quote\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)" 
+        
+    ▸ type
+        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
