@@ -14,12 +14,13 @@ export strutils, strformat, unicode, pegs
 export unittest, macros
 export terminal
 type lineInfo* = tuple[filename: string, line: int, column: int]
-proc fg*(c:auto) : auto = ansiForegroundColorCode(c)
-proc sc*(c:auto) : auto = ansiStyleCode(c)
-proc underscore*(n: uint64): string =
-
+proc fg*(c : auto) : auto = 
+    ansiForegroundColorCode(c)
+proc sc*(c : auto) : auto = 
+    ansiStyleCode(c)
+proc underscore*(n : uint64) : string = 
     var s = $n
-    result = newStringOfCap((s.len + (s.len - 1).div(3)))
+    var result = newStringOfCap((s.len + (s.len - 1).div(3)))
     var count = 0
     for i in countdown(s.high, 0): 
         if ((count != 0) and (count.mod(3) == 0)): 
@@ -27,39 +28,34 @@ proc underscore*(n: uint64): string =
         result.add(s[i])
         inc(count)
     result = reversed(result)
-proc indent*(s:string, i=4) : string = 
-
+proc indent*(s : string, i = 4) : string = 
     let idt = ' '.repeat(i)
     let lines = s.split("\n")
     idt & lines.join("\n" & idt)
-proc indentLen*(s:string) : int =
-
+proc indentLen*(s : string) : int = 
     var i = 0
     while ((i < s.len) and (s[i] == ' ')): 
         (i += 1)
     i
-proc indentLen*(lines:seq[string]) : int = 
-
+proc indentLen*(lines : seq[string]) : int = 
     var m = high(int)
     for l in lines: 
         m = min(m, indentLen(l))
     m
-proc testCmp*(a:string, r:auto, b:auto, l:lineInfo) = 
-
+proc testCmp*(a : string, r : auto, b : auto, l : lineInfo) = 
     if (r != b): 
         echo("")
         styledEcho(fgWhite, $l.line, fgWhite, styleDim, ":", l.filename.split(".")[0])
         styledEcho(fgBlue, indent($a))
         styledEcho(fgMagenta, "|>")
         styledEcho(fgGreen, indent($b))
-        # styledEcho fgRed,     "!="
+        # styledEcho fgRed     "!="
         styledEcho(fgYellow, indent($r))
         styledEcho(fgRed, styleDim, "<|")
         fail()
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
-proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): string =
-
+proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : string = 
     let (dir, _, _) = splitFile(file.Path)
     var dirParts = dir.string.split(DirSep)
     if ((dirParts[0] == "") and (dirParts.len == 1)): 
@@ -77,14 +73,13 @@ proc swapLastPathComponentAndExt*(file: string, src: string, tgt: string): strin
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
 var timers: Table[string, tuple[m: MonoTime, t: uint64]]
 proc mach_absolute_time(): uint64 {.importc, header: "<mach/mach_time.h>".}
-proc profileStart*(msg: string) =
-
+proc profileStart*(msg : string) = 
+    # GC_disableOrc()
     if not timers.contains(msg): 
         timers[msg] = (getMonoTime(), mach_absolute_time())
     else: 
         stderr.writeLine(&"[WARNING] Duplicate profileStart for '{msg}'")
-proc profileStop*(msg: string) =
-
+proc profileStop*(msg : string) = 
     if not timers.contains(msg): 
         stderr.writeLine(&"[ERROR] profileStop for unknown label '{msg}'")
         return
@@ -96,29 +91,13 @@ proc profileStop*(msg: string) =
     else: 
         mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
     styledEcho(fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle)
+    # GC_enableOrc()    
     timers.del(msg)
 macro profileScope*(msg: string): untyped =
 
     quote do: 
         profileStart(`msg`)
         defer: profileStop(`msg`)
-var tickTimers: Table[string, uint64]
-proc tickStart*(msg: string) =
-
-    if not tickTimers.contains(msg): 
-        # GC_disableOrc()
-        tickTimers[msg] = mach_absolute_time()
-    else: 
-        stderr.writeLine(&"[WARNING] Duplicate tickStart for '{msg}'")
-proc tickStop*(msg: string) =
-
-    if not tickTimers.contains(msg): 
-        stderr.writeLine(&"[ERROR] tickStop for unknown label '{msg}'")
-        return
-    let elapsed = (mach_absolute_time() - tickTimers[msg])
-    styledEcho(fgBlue, msg, fgGreen, &" {elapsed} ", styleDim, "ticks", resetStyle)
-    # GC_enableOrc()
-    tickTimers.del(msg)
 # ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
 # ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███
 # ████████   ███   ███  ███████   █████████  ██████  ████████   ███   ███  ████████ 
@@ -146,8 +125,7 @@ proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
 # ███  ███        ███  ███       ███   ███
 # ███   ███  ███████   ████████   ███████ 
 # Splits a string into grapheme clusters (user-perceived characters)
-proc kseg*(s:string) : seq[string] =
-
+proc kseg*(s : string) : seq[string] = 
     var i = 0
     while (i < s.len): 
         let clusterSize = graphemeLen(s, i)
@@ -161,36 +139,36 @@ proc kseg*(s:string) : seq[string] =
 proc deepEqual*[T](a, b: T): bool =
 
     when (T is (seq or array)): 
-        if (a.len != b.len): 
-            echo(&"{a.len} != {b.len} length differs")
-            return false
-        for i in 0..<a.len: 
-            if not deepEqual(a[i], b[i]): 
-                echo(&"{a[i]} != {b[i]}")
+            if (a.len != b.len): 
+                echo(&"{a.len} != {b.len} length differs")
                 return false
+            for i in 0..<a.len: 
+                if not deepEqual(a[i], b[i]): 
+                    echo(&"{a[i]} != {b[i]}")
+                    return false
     elif (T is ((Table or TableRef) or OrderedTable)): 
-        if (a.len != b.len): 
-            echo(&"{a.len} != {b.len} length differs")
-            return false
-        for key, valA in a.pairs: 
-            if not b.hasKey(key): 
-                echo(&"{key} not in {b}")
+            if (a.len != b.len): 
+                echo(&"{a.len} != {b.len} length differs")
                 return false
-            if not deepEqual(valA, b[key]): 
-                echo(&"{valA} != {b[key]}")
-                return false
+            for key, valA in a.pairs: 
+                if not b.hasKey(key): 
+                    echo(&"{key} not in {b}")
+                    return false
+                if not deepEqual(valA, b[key]): 
+                    echo(&"{valA} != {b[key]}")
+                    return false
     elif (T is object): 
-        if (a != b): 
-            echo(&"{a} != {b}")
-            return false
+            if (a != b): 
+                echo(&"{a} != {b}")
+                return false
     elif (T is tuple): 
-        if (a != b): 
-            echo(&"{a} != {b}")
-            return false
+            if (a != b): 
+                echo(&"{a} != {b}")
+                return false
     else: 
-        if (a != b): 
-            echo(&"{a} != {b}")
-            return false
+            if (a != b): 
+                echo(&"{a} != {b}")
+                return false
     true
 # ███████    ███████     ███████ 
 # ███   ███  ███   ███  ███      
