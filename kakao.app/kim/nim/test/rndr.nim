@@ -3,7 +3,7 @@
 # ███████    ███ █ ███  ███   ███  ███████  
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
-import ../kommon 
+import ../kommon
 import ../rndr
 template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationInfo())
 template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())

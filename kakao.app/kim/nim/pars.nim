@@ -63,100 +63,99 @@ type NodeKind* = enum
 type Node* = ref object
     token*: Token
     case kind*: NodeKind:
-           of ●block: 
+        of ●block: 
             expressions*: seq[Node]
-           of ●operation: 
+        of ●operation: 
             operand_left*: Node
             operand_right*: Node
-           of ●string: 
+        of ●string: 
             string_prefix*: Node
             string_content*: Node
             string_stripols*: seq[Node]
-           of ●comment: 
+        of ●comment: 
             comment_content*: Node
-           of ●stripol: 
+        of ●stripol: 
             stripol_xprssns*: seq[Node]
             stripol_content*: Node
-           of ●range: 
+        of ●range: 
             range_start*: Node
             range_end*: Node
-           of ●postOp, ●preOp: 
+        of ●postOp, ●preOp: 
             operand*: Node
-           of ●return: 
+        of ●return: 
             return_value*: Node
-           of ●discard: 
+        of ●discard: 
             discard_value*: Node
-           of ●call: 
+        of ●call: 
             callee*: Node
             call_args*: seq[Node]
-           of ●propertyAccess: 
+        of ●propertyAccess: 
             owner*: Node
             property*: Node
-           of ●arrayAccess: 
+        of ●arrayAccess: 
             array_owner*: Node
             array_index*: Node
-           of ●if: 
+        of ●if: 
             # also handles when
             cond_thens*: seq[Node]
             else_branch*: Node
-           of ●condThen: 
+        of ●condThen: 
             condition*: Node
             then_branch*: Node
-           of ●switch: 
+        of ●switch: 
             switch_value*: Node
             switch_cases*: seq[Node]
             switch_default*: Node
-           of ●switchCase: 
+        of ●switchCase: 
             case_when*: seq[Node]
             case_then*: Node
-           of ●while: 
+        of ●while: 
             while_cond*: Node
             while_body*: Node
-           of ●for: 
+        of ●for: 
             for_value*: Node
             for_range*: Node
             for_body*: Node
-           of ●list, ●curly, ●squarely: 
+        of ●list, ●curly, ●squarely: 
             list_values*: seq[Node]
-           of ●arg: 
+        of ●arg: 
             arg_type*: Node
             arg_name*: Node
             arg_value*: Node
-           of ●var: 
+        of ●var: 
             var_name*: Node
             var_type*: Node
             var_value*: Node
-           of ●let: 
+        of ●let: 
             let_expr*: Node
-           of ●signature: 
+        of ●signature: 
             sig_args*: Node
             sig_type*: Node
-           of ●func: 
+        of ●func: 
             func_signature*: Node
             func_mod*: Node
             func_body*: Node
-           of ●use: 
+        of ●use: 
             use_module*: Node
             use_kind*: Node
             use_items*: seq[Node]
-           of ●class: 
+        of ●class: 
             class_name*: Node
             class_body*: Node
-           of ●member: 
+        of ●member: 
             member_key*: Node
             member_value*: Node
-           of ●enum: 
+        of ●enum: 
             enum_name*: Node
             enum_body*: Node
-           of ●quote: 
+        of ●quote: 
             quote_body*: Node
-           of ●testSuite, ●testSection: 
+        of ●testSuite, ●testSection: 
             test_block*: Node
-           of ●testCase: 
+        of ●testCase: 
             test_value*: Node
             test_expected*: Node
-           else: 
-            discard
+        else: discard
 template choose*(cond, a, b: untyped): untyped =
 
     when (typeof(cond) is bool): 
