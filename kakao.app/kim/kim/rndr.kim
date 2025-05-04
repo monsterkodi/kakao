@@ -11,27 +11,26 @@ class Rndr
     s               : string
     annotateVarArg  : bool
 
-proc `$`*(r: Rndr): string = 
-    var s = ""
+$* = ◇Rndr r ➜string ->
+    s = ""
     s &= "▸"
     s &= r.code
     s &= "◂"
     s
 
-proc add(r: Rndr, text: string) = r.s &= text
-proc spc(r: Rndr)               = r.s &= " "
-proc tok(r: Rndr, n: Node)      = r.s &= n.token.str
-proc rnd(r: Rndr, n: Node)
-
-proc rnd(r: Rndr, nodes: seq[Node]) =
+add = ◇Rndr r ◇string text -> r.s &= text
+spc = ◇Rndr r              -> r.s &= " "
+tok = ◇Rndr r ◇Node n      -> r.s &= n.token.str
+rnd = ◇Rndr r ◇Node n      ->
+rnd = ◇Rndr r ◇seq[Node] nodes ->
 
     for i,n in nodes
         r.rnd n
         if i<nodes.len-1
             r.add ", "
 
-proc ▸block(r: Rndr, n: Node) = 
-    var idt : string
+▸block = ◇Rndr r ◇Node n -> 
+    idt ◇string
     if n.token.tok == ◂indent
         idt = n.token.str
         r.add "\n" & idt
@@ -44,13 +43,13 @@ proc ▸block(r: Rndr, n: Node) =
             else
                 r.add " "
 
-proc ▸proc(r: Rndr, n: Node) = 
+▸proc = ◇Rndr r ◇Node n -> 
 
     if n == nil or n.operand_left == nil or n.operand_right == nil
         log &"DAFUK? {n} {n.token}"
         ⮐  
 
-    let f = n.operand_right
+    f = n.operand_right
     
     r.add "proc "
     if n.operand_left.token.str[0] == '$'
@@ -58,12 +57,12 @@ proc ▸proc(r: Rndr, n: Node) =
     else
         r.rnd n.operand_left
     r.rnd f.func_signature
-    if f.func_body != nil
+    if f.func_body
         r.add " ="
         r.add " "
         r.rnd f.func_body
 
-proc ▸operation(r: Rndr, n: Node) = 
+▸operation = ◇Rndr r ◇Node n -> 
 
     if n == nil or n.operand_left == nil or n.operand_right == nil
         log &"DAFUK? {n} {n.token}"
@@ -82,13 +81,10 @@ proc ▸operation(r: Rndr, n: Node) =
     if n.token.tok == ◂assign and n.operand_left.kind == ●list
         r.add ")"
     r.spc()
-    case n.token.tok
-        of ◂and
-            r.add 'and'
-        of ◂or
-            r.add 'or'
-        else 
-            r.tok n
+    switch n.token.tok
+        ◂and ➜ r.add 'and'
+        ◂or  ➜ r.add 'or'
+             ➜ r.tok n
     r.spc()
     if n.token.tok == ◂assign and n.operand_right.kind == ●list
         r.add "("
@@ -98,13 +94,13 @@ proc ▸operation(r: Rndr, n: Node) =
     if n.token.tok notin {◂assign, ◂ampersand}
         r.add ")"
         
-proc ▸let(r: Rndr, n: Node) = 
+▸let = ◇Rndr r ◇Node n -> 
 
     r.tok n
     r.add " "
     r.rnd n.let_expr
 
-proc ▸preOp(r: Rndr, n: Node) = 
+▸preOp = ◇Rndr r ◇Node n -> 
 
     if n.token.tok == ◂not
         r.add "not "
@@ -113,92 +109,92 @@ proc ▸preOp(r: Rndr, n: Node) =
         
     r.rnd n.operand
     
-proc ▸postOp(r: Rndr, n: Node) = 
+▸postOp = ◇Rndr r ◇Node n -> 
 
     r.rnd n.operand
     r.tok n
     
-proc ▸propertyAccess(r: Rndr, n: Node) = 
+▸propertyAccess = ◇Rndr r ◇Node n -> 
 
     r.rnd n.owner
     r.tok n
     r.rnd n.property
 
-proc ▸arrayAccess(r: Rndr, n: Node) = 
+▸arrayAccess = ◇Rndr r ◇Node n -> 
 
     r.rnd n.array_owner
     r.add "["
     r.rnd n.array_index
     r.add "]"
     
-proc ▸func(r: Rndr, n: Node) = 
+▸func = ◇Rndr r ◇Node n -> 
 
     r.add "proc "
     r.annotateVarArg = true
     r.rnd n.func_signature
     r.annotateVarArg = false
-    if n.func_mod != nil
+    if n.func_mod
         r.add " "
         r.tok n.func_mod
-    if n.func_body != nil
+    if n.func_body
         r.add " ="
         r.add " "
         r.rnd n.func_body
 
-proc ▸signature(r: Rndr, n:Node) =
+▸signature = ◇Rndr r ◇Node n ->
 
     r.add "("
     r.annotateVarArg = true
     r.rnd n.sig_args
     r.annotateVarArg = false
     r.add ")"
-    if n.sig_type != nil
+    if n.sig_type
         r.add " : "
         r.rnd n.sig_type
             
-proc ▸var(r: Rndr, n: Node) =
+▸var = ◇Rndr r ◇Node n ->
 
     if n.var_name.kind == ●list
         r.add "("
     r.rnd n.var_name
     if n.var_name.kind == ●list
         r.add ")"
-    if n.var_type != nil
+    if n.var_type
         r.add " : "
         r.rnd n.var_type
-    if n.var_value != nil
+    if n.var_value
         r.add " = "
         r.rnd n.var_value
 
-proc ▸arg(r: Rndr, n: Node) =
+▸arg = ◇Rndr r ◇Node n ->
 
     r.rnd n.arg_name
-    if n.arg_type != nil
+    if n.arg_type
         r.add " : "
         if n.token.tok == ◂var_type and r.annotateVarArg
             r.add "var "
         r.rnd n.arg_type
-    if n.arg_value != nil
+    if n.arg_value
         r.add " = "
         r.rnd n.arg_value
 
-proc ▸string(r: Rndr, n: Node) = 
+▸string = ◇Rndr r ◇Node n -> 
 
-    var delimiter = n.token.str
+    delimiter = n.token.str
     
     if delimiter == "'" and n.string_content.token.str.len > 1
         delimiter = "\""
     
     if n.string_stripols.len > 0
         r.add "&"
-    elif n.string_prefix != nil
+    elif n.string_prefix
         r.tok n.string_prefix
         
     r.add delimiter
     
-    var sct = n.string_content.token.str
+    sct = n.string_content.token.str
 
-    var mill = high(int)
+    mill = high(int)
     if delimiter == "\"\"\""
         var lines = n.string_content.token.str.split "\n"
         if lines.len > 1
@@ -206,13 +202,13 @@ proc ▸string(r: Rndr, n: Node) =
             mill = min(mill, ill)
                 
         for stripol in n.string_stripols
-            if stripol.stripol_content != nil
+            if stripol.stripol_content
                 lines = stripol.stripol_content.token.str.split "\n"
                 if lines.len > 1
                     let ill = indentLen(lines[1..^1])
                     mill = min(mill, ill)
         
-    proc demill(n:Node) = 
+    demill = ◇Node n -> 
         if mill == 0
             r.tok n
         else
@@ -231,9 +227,9 @@ proc ▸string(r: Rndr, n: Node) =
     
     r.add delimiter
     
-proc ▸use(r: Rndr, n: Node) = 
+▸use = ◇Rndr r ◇Node n -> 
 
-    var split = n.use_module.token.str.split " "
+    split = n.use_module.token.str.split " "
     while split.len > 1
         r.add &"import {split[0]}\n" 
         split = split.shift
@@ -245,7 +241,7 @@ proc ▸use(r: Rndr, n: Node) =
         r.rnd n.use_items
         r.add "]"
     
-proc ▸comment(r: Rndr, n: Node) = 
+▸comment = ◇Rndr r ◇Node n -> 
 
     if n.token.str == "###"
         r.add "#["
@@ -257,7 +253,7 @@ proc ▸comment(r: Rndr, n: Node) =
     if n.token.str == "###"
         r.add "]#"
     
-proc ▸call(r: Rndr, n: Node) =
+▸call = ◇Rndr r ◇Node n ->
 
     if n.callee.token.str == "log"
         r.add "echo"
@@ -274,10 +270,10 @@ proc ▸call(r: Rndr, n: Node) =
     if n.callee.token.str != "export"
         r.add ")"
         
-proc ▸if(r: Rndr, n: Node) =
+▸if = ◇Rndr r ◇Node n ->
 
-    var idt = ' '.repeat n.token.col
-    var line = n.token.line
+    idt = ' '.repeat n.token.col
+    line = n.token.line
     
     r.tok n
     r.add " "
@@ -292,14 +288,14 @@ proc ▸if(r: Rndr, n: Node) =
         r.add ": "
         r.rnd condThen.then_branch
         
-    if n.else_branch != nil   
+    if n.else_branch   
         if n.else_branch.token.line > line
             r.add "\n" & idt & "else: "
         else
             r.add " else: "
         r.rnd n.else_branch
         
-proc ▸for(r: Rndr, n: Node) =
+▸for = ◇Rndr r ◇Node n ->
 
     r.add "for "
     if n.for_value.kind == ●list
@@ -314,21 +310,21 @@ proc ▸for(r: Rndr, n: Node) =
     r.add ": "
     r.rnd n.for_body
     
-proc ▸while(r: Rndr, n: Node) =
+▸while = ◇Rndr r ◇Node n ->
 
    r.add "while "
    r.rnd n.while_cond
    r.add ": "
    r.rnd n.while_body
     
-proc ▸list(r: Rndr, n: Node) =
+▸list = ◇Rndr r ◇Node n ->
 
     for i,item in n.list_values
         r.rnd item
         if i < n.list_values.len-1
             r.add ", "
 
-proc ▸curly(r: Rndr, n: Node) =
+▸curly = ◇Rndr r ◇Node n ->
 
     r.add "{"
     for i,item in n.list_values
@@ -337,7 +333,7 @@ proc ▸curly(r: Rndr, n: Node) =
             r.add ", "
     r.add "}"
 
-proc ▸squarely(r: Rndr, n: Node) =
+▸squarely = ◇Rndr r ◇Node n ->
 
     r.add "@["
     for i,item in n.list_values
@@ -346,7 +342,7 @@ proc ▸squarely(r: Rndr, n: Node) =
             r.add ", "
     r.add "]"
     
-proc ▸range(r: Rndr, n: Node) = 
+▸range = ◇Rndr r ◇Node n -> 
 
     r.rnd n.range_start
     if n.token.str == "..."
@@ -355,34 +351,34 @@ proc ▸range(r: Rndr, n: Node) =
         r.tok n
     r.rnd n.range_end
         
-proc ▸return(r: Rndr, n: Node) =
+▸return = ◇Rndr r ◇Node n ->
 
     r.add "return"
-    if n.return_value != nil
+    if n.return_value
         r.spc()
         r.rnd n.return_value
 
-proc ▸discard(r: Rndr, n: Node) =
+▸discard = ◇Rndr r ◇Node n ->
 
     r.add "discard"
-    if n.discard_value != nil
+    if n.discard_value
         r.spc()
         r.rnd n.discard_value
 
-proc ▸quote(r: Rndr, n: Node) =
+▸quote = ◇Rndr r ◇Node n ->
 
     r.add "quote do: "
     r.rnd n.quote_body
      
-proc ▸switch(r: Rndr, n: Node) =
+▸switch = ◇Rndr r ◇Node n ->
 
-    var idt = ' '.repeat n.token.col
+    idt = ' '.repeat n.token.col
     
     r.add "case "
     r.rnd(n.switch_value)
     r.add ":"
     
-    var cdt = ' '.repeat n.switch_cases[0].token.col
+    cdt = ' '.repeat n.switch_cases[0].token.col
     
     for i,caseNode in n.switch_cases
         r.add "\n" & cdt
@@ -394,39 +390,39 @@ proc ▸switch(r: Rndr, n: Node) =
         r.add ": "
         r.rnd(caseNode.case_then)
     
-    if n.switch_default != nil
+    if n.switch_default
         r.add "\n" & cdt
         r.add "else: "
         r.rnd(n.switch_default)
         
-proc ▸enum(r: Rndr, n: Node) =
+▸enum = ◇Rndr r ◇Node n ->
 
     r.add "type "
     r.rnd n.enum_name
     r.add " = enum"
     r.rnd n.enum_body
     
-proc ▸class(r: Rndr, n: Node) =
+▸class = ◇Rndr r ◇Node n ->
 
     r.add "type "
     r.rnd n.class_name
     r.add " = ref object"
     r.rnd n.class_body
 
-proc ▸member(r: Rndr, n: Node) =
+▸member = ◇Rndr r ◇Node n ->
 
     r.rnd n.member_key
     r.add ": "
     r.rnd n.member_value
 
-proc ▸testCase(r: Rndr, n: Node) =
+▸testCase = ◇Rndr r ◇Node n ->
 
     r.add "check "
     r.rnd n.test_value
     r.add " == "
     r.rnd n.test_expected
 
-proc ▸testSuite(r: Rndr, n:Node) =
+▸testSuite = ◇Rndr r ◇Node n ->
 
     if n.kind == ●testSuite
         r.add "suite"
@@ -437,108 +433,74 @@ proc ▸testSuite(r: Rndr, n:Node) =
     r.add "\": "
     r.rnd n.test_block
 
-proc rnd(r: Rndr, n: Node) =
-    # log "rnd #{n}"
+rnd = ◇Rndr r ◇Node n ->
+
     ⮐  if n == nil
     
     switch n.kind
     
-        ●block
-            r.▸block(n)
-        ●if
-            r.▸if(n)
-        ●switch
-            r.▸switch(n)
-        ●func
-            r.▸func(n)
-        ●signature
-            r.▸signature(n)
-        ●call
-            r.▸call(n)
-        ●operation
-            r.▸operation(n)
-        ●postOp
-            r.▸postOp(n)
-        ●preOp
-            r.▸preOp(n)
-        ●for
-            r.▸for(n)
-        ●while
-            r.▸while(n)
-        ●list
-            r.▸list(n)
-        ●curly
-            r.▸curly(n)
-        ●squarely
-            r.▸squarely(n)
-        ●range
-            r.▸range(n)
-        ●string
-            r.▸string(n)
-        ●comment
-            r.▸comment(n)
-        ●use
-            r.▸use(n)
-        ●propertyAccess
-            r.▸propertyAccess(n)
-        ●arrayAccess
-            r.▸arrayAccess(n)
-        ●var
-            r.▸var(n)
-        ●arg
-            r.▸arg(n)
-        ●let
-            r.▸let(n)
-        ●return
-            r.▸return(n)
-        ●discard
-            r.▸discard(n)
-        ●enum
-            r.▸enum(n)
-        ●class
-            r.▸class(n)
-        ●quote
-            r.▸quote(n)
-        ●member
-            r.▸member(n)
-        ●testSuite, ●testSection
-            r.▸testSuite(n)
-        ●testCase
-            r.▸testCase(n)
-        ●literal, ●keyword, ●type
-            r.tok n
-        ●typeDef, ●import, ●proc, ●macro, ●template, ●converter 
-            r.tok n
+        ●block          ➜ r.▸block(n)
+        ●if             ➜ r.▸if(n)
+        ●switch         ➜ r.▸switch(n)
+        ●func           ➜ r.▸func(n)
+        ●signature      ➜ r.▸signature(n)
+        ●call           ➜ r.▸call(n)
+        ●operation      ➜ r.▸operation(n)
+        ●postOp         ➜ r.▸postOp(n)
+        ●preOp          ➜ r.▸preOp(n)
+        ●for            ➜ r.▸for(n)
+        ●while          ➜ r.▸while(n)
+        ●list           ➜ r.▸list(n)
+        ●curly          ➜ r.▸curly(n)
+        ●squarely       ➜ r.▸squarely(n)
+        ●range          ➜ r.▸range(n)
+        ●string         ➜ r.▸string(n)
+        ●comment        ➜ r.▸comment(n)
+        ●use            ➜ r.▸use(n)
+        ●propertyAccess ➜ r.▸propertyAccess(n)
+        ●arrayAccess    ➜ r.▸arrayAccess(n)
+        ●var            ➜ r.▸var(n)
+        ●arg            ➜ r.▸arg(n)
+        ●let            ➜ r.▸let(n)
+        ●return         ➜ r.▸return(n)
+        ●discard        ➜ r.▸discard(n)
+        ●enum           ➜ r.▸enum(n)
+        ●class          ➜ r.▸class(n)
+        ●quote          ➜ r.▸quote(n)
+        ●member         ➜ r.▸member(n)
+        ●testCase       ➜ r.▸testCase(n)
+        ●testSuite ●testSection ➜ r.▸testSuite(n)
+        ●literal ●keyword ●type ➜ r.tok(n)
+        ●typeDef ●import ●proc ●macro ●template ●converter ➜ r.tok n
         ➜ 
             log &"unhandled {n} {n.kind}"
             r.tok n
 
-proc render*(code:string, autovar=true): string =
+render* = ◇string code autovar=true ➜string ->
 
-    var root = ast(code)
+    root = ast(code)
     if autovar
         root = variables(root)
     # echo &"root {root}"
-    var r = Rndr(code:code)
+    r = Rndr(code:code)
     r.rnd(root)
     r.s
     
-proc file*(file: string) : string = 
+file* = ◇string file ➜string ->
 
-    var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    let kimCode = file.readFile()
+    fileOut = file.swapLastPathComponentAndExt("kim", "nim")
+    kimCode = file.readFile()
     # echo &"code {code}"
-    let nimCode = render kimCode 
+    nimCode = render kimCode 
     # log &"▸▸▸ {fileOut} {nimCode.len}"
     fileOut.writeFile nimCode
     fileOut
     
-proc files*(files: seq[string]): seq[string] = 
+files* = ◇seq[string] files ➜seq[string] ->
 
-    var transpiled ◇ seq[string]
+    transpiled ◇ seq[string]
     for f in files
         transpiled.add file(f)
-        
     # echo "render.files done: ", transpiled
     transpiled
         

@@ -55,6 +55,7 @@ proc testCmp*(a : string, r : auto, b : auto, l : lineInfo) =
         fail()
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
+converter toBool*[T: ref object](x: T): bool = x != nil
 proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : string = 
     let (dir, _, _) = splitFile(file.Path)
     var dirParts = dir.string.split(DirSep)

@@ -69,6 +69,7 @@ testCmp* = ◇string a ◇auto r ◇auto b  ◇lineInfo l ->
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
+converter toBool*[T: ref object](x: T): bool = x != nil
 
 swapLastPathComponentAndExt* = ◇string file ◇string src ◇string tgt ➜string ->
 
