@@ -30,7 +30,8 @@ rnd = ◇Rndr r ◇seq[Node] nodes ->
             r.add ", "
 
 ▸block = ◇Rndr r ◇Node n -> 
-    idt ◇string
+
+    idt ◇ string
     if n.token.tok == ◂indent
         idt = n.token.str
         r.add "\n" & idt
@@ -439,41 +440,41 @@ rnd = ◇Rndr r ◇Node n ->
     
     switch n.kind
     
-        ●block          ➜ r.▸block(n)
-        ●if             ➜ r.▸if(n)
-        ●switch         ➜ r.▸switch(n)
-        ●func           ➜ r.▸func(n)
-        ●signature      ➜ r.▸signature(n)
-        ●call           ➜ r.▸call(n)
-        ●operation      ➜ r.▸operation(n)
-        ●postOp         ➜ r.▸postOp(n)
-        ●preOp          ➜ r.▸preOp(n)
-        ●for            ➜ r.▸for(n)
-        ●while          ➜ r.▸while(n)
-        ●list           ➜ r.▸list(n)
-        ●curly          ➜ r.▸curly(n)
-        ●squarely       ➜ r.▸squarely(n)
-        ●range          ➜ r.▸range(n)
-        ●string         ➜ r.▸string(n)
-        ●comment        ➜ r.▸comment(n)
-        ●use            ➜ r.▸use(n)
-        ●propertyAccess ➜ r.▸propertyAccess(n)
-        ●arrayAccess    ➜ r.▸arrayAccess(n)
-        ●var            ➜ r.▸var(n)
-        ●arg            ➜ r.▸arg(n)
-        ●let            ➜ r.▸let(n)
-        ●return         ➜ r.▸return(n)
-        ●discard        ➜ r.▸discard(n)
-        ●enum           ➜ r.▸enum(n)
-        ●class          ➜ r.▸class(n)
-        ●quote          ➜ r.▸quote(n)
-        ●member         ➜ r.▸member(n)
-        ●testCase       ➜ r.▸testCase(n)
-        ●testSuite ●testSection ➜ r.▸testSuite(n)
-        ●literal ●keyword ●type ➜ r.tok(n)
+        ●block          ➜ r.▸block          n
+        ●if             ➜ r.▸if             n
+        ●switch         ➜ r.▸switch         n
+        ●func           ➜ r.▸func           n
+        ●signature      ➜ r.▸signature      n
+        ●call           ➜ r.▸call           n
+        ●operation      ➜ r.▸operation      n
+        ●postOp         ➜ r.▸postOp         n
+        ●preOp          ➜ r.▸preOp          n
+        ●for            ➜ r.▸for            n
+        ●while          ➜ r.▸while          n
+        ●list           ➜ r.▸list           n
+        ●curly          ➜ r.▸curly          n
+        ●squarely       ➜ r.▸squarely       n
+        ●range          ➜ r.▸range          n
+        ●string         ➜ r.▸string         n
+        ●comment        ➜ r.▸comment        n
+        ●use            ➜ r.▸use            n
+        ●propertyAccess ➜ r.▸propertyAccess n
+        ●arrayAccess    ➜ r.▸arrayAccess    n
+        ●var            ➜ r.▸var            n
+        ●arg            ➜ r.▸arg            n
+        ●let            ➜ r.▸let            n
+        ●return         ➜ r.▸return         n
+        ●discard        ➜ r.▸discard        n
+        ●enum           ➜ r.▸enum           n
+        ●class          ➜ r.▸class          n
+        ●quote          ➜ r.▸quote          n
+        ●member         ➜ r.▸member         n
+        ●testCase       ➜ r.▸testCase       n
+        ●testSuite ●testSection ➜ r.▸testSuite n
+        ●literal ●keyword ●type ➜ r.tok n
         ●typeDef ●import ●proc ●macro ●template ●converter ➜ r.tok n
         ➜ 
-            log &"unhandled {n} {n.kind}"
+            log "unhandled #{n} #{n.kind}"
             r.tok n
 
 render* = ◇string code autovar=true ➜string ->
@@ -481,7 +482,6 @@ render* = ◇string code autovar=true ➜string ->
     root = ast(code)
     if autovar
         root = variables(root)
-    # echo &"root {root}"
     r = Rndr(code:code)
     r.rnd(root)
     r.s
@@ -490,9 +490,7 @@ file* = ◇string file ➜string ->
 
     fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     kimCode = file.readFile()
-    # echo &"code {code}"
     nimCode = render kimCode 
-    # log &"▸▸▸ {fileOut} {nimCode.len}"
     fileOut.writeFile nimCode
     fileOut
     
@@ -501,7 +499,6 @@ files* = ◇seq[string] files ➜seq[string] ->
     transpiled ◇ seq[string]
     for f in files
         transpiled.add file(f)
-    # echo "render.files done: ", transpiled
     transpiled
         
                             

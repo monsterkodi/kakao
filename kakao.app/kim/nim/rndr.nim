@@ -59,7 +59,7 @@ proc ▸operation(r : Rndr, n : Node) =
         return
     if (n.token.tok == ◂assign): 
         if (n.operand_right.token.tok == ◂func): 
-            r.▸proc n
+            r.▸proc(n)
             return
     if (n.token.tok notin {◂assign, ◂ampersand}): 
         r.add("(")
@@ -382,23 +382,19 @@ proc render*(code : string, autovar = true) : string =
     var root = ast(code)
     if autovar: 
         root = variables(root)
-    # echo &"root {root}"
     var r = Rndr(code: code)
     r.rnd(root)
     r.s
 proc file*(file : string) : string = 
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     var kimCode = file.readFile()
-    # echo &"code {code}"
     var nimCode = render(kimCode)
-    # log &"▸▸▸ {fileOut} {nimCode.len}"
     fileOut.writeFile(nimCode)
     fileOut
 proc files*(files : seq[string]) : seq[string] = 
     var transpiled : seq[string]
     for f in files: 
         transpiled.add(file(f))
-    # echo "render.files done: ", transpiled
     transpiled
     
         

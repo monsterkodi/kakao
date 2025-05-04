@@ -7,6 +7,7 @@
 ###
 
 use std ▪ monotimes times sequtils paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
+
 use system/ansi_c
 
 export monotimes times
@@ -142,6 +143,13 @@ kseg* = ◇string s ➜seq[string] ->
         let clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, i + clusterSize - 1))
         i += clusterSize
+        
+ksegWidth* = ◇string s ➜int -> 
+
+    var i = 0
+    while i < s.len
+        inc(result)
+        i += graphemeLen(s, i)
     
 # ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
 # ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███

@@ -812,6 +812,7 @@ thenIndented = ◇Parser p ◇Token token ➜Node ->
 
     if p.tok == ◂then
         p.swallow ◂then
+        # log "thenIndented #{token} #{p.tok}"
         
     if p.tok == ◂indent
         # log "thenIndented #{p}"
@@ -822,7 +823,10 @@ thenIndented = ◇Parser p ◇Token token ➜Node ->
         # log "thenIndented ✘"
         ⮐  nil
     else
-        ⮐  p.expression()
+        # log "thenIndented e? #{p} {p.current()}"
+        let e = p.expression()
+        # log "thenIndented e: #{e}"
+        ⮐  e
     
 #  ███████   ███████   ███      ███    
 # ███       ███   ███  ███      ███    
@@ -843,12 +847,13 @@ lCall = ◇Parser p ◇Node callee ➜Node ->
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
-isImplicitCallPossible = ◇Parser p ◇Token token ➜bool ->
+isImplicitCallPossible = ◇Parser p ➜bool ->
 
-    let currt = p.peek(0)
-
+    currt = p.peek(0)
+    token = p.peek(-1)
+    
     if not p.explicit and currt.tok notin {◂indent} and not p.isTokAhead(◂func)
-        if currt.col > token.col+token.str.len
+        if currt.col > token.col+ksegWidth(token.str)
             let optoks = { ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
                            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
@@ -859,14 +864,14 @@ isImplicitCallPossible = ◇Parser p ◇Token token ➜bool ->
     
 rSymbol = ◇Parser p ➜Node ->
 
-    let token = p.consume()
+    token = p.consume()
     
     if token.str in ["peg", "re", "r"] and p.tok == ◂string_start and token.col + token.str.len == p.current.col
         var n = p.rString()
         n.string_prefix = Node(token:token, kind:●literal)
         ⮐  n
 
-    if p.isImplicitCallPossible token
+    if p.isImplicitCallPossible()
         let args = p.parseCallArgs(token.col)
         ⮐  Node(token:token, kind:●call, callee:Node(token:token, kind:●literal), callargs:args)
 
@@ -880,11 +885,10 @@ rSymbol = ◇Parser p ➜Node ->
 
 rIf = ◇Parser p ➜Node ->
 
-    let token = p.consume() # if or when
-    var condThens: seq[Node]
-
-    let ifIndent = token.col
-    var condIndt = ifIndent
+    token     = p.consume() # if or when
+    condThens ◇ seq[Node]
+    ifIndent  = token.col
+    condIndt  = ifIndent
     
     if p.tok == ◂indent
         condIndt = p.current.str.len
@@ -892,13 +896,12 @@ rIf = ◇Parser p ➜Node ->
             ⮐  p.error "Expected indentation after 'if' without condition"
         p.swallow ◂indent # block indentation
     
-    var condition = p.expression() # initial condition
-            
-    var then_branch = p.thenBlock()
+    condition = p.expression() # initial condition
+    then_branch = p.thenBlock()
     
     condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
     
-    var outdent = false
+    outdent = false
     
     while p.tok in {◂elif, ◂indent}
     
@@ -927,7 +930,7 @@ rIf = ◇Parser p ➜Node ->
         
         condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
         
-    var else_branch: Node
+    else_branch ◇ Node
 
     if not outdent    
         p.swallow(◂indent)
@@ -949,9 +952,9 @@ lTailIf = ◇Parser p ◇Node left ➜Node ->
     ⮐  if p.returning
     ⮐  if left.token.line != p.current.line
         
-    let token = p.consume()
-    var condition = p.expression()
-    let condThen = Node(token:condition.token, kind:●condThen, condition:condition, then_branch:left)
+    token = p.consume()
+    condition = p.expression()
+    condThen = Node(token:condition.token, kind:●condThen, condition:condition, then_branch:left)
 
     Node(token:token, kind:●if, cond_thens: @[condThen])
         
@@ -963,11 +966,11 @@ lTailIf = ◇Parser p ◇Node left ➜Node ->
 
 rFor = ◇Parser p ➜Node ->
 
-    let token = p.consume()
-    let for_value = p.parseNamesUntil ◂in
+    token = p.consume()
+    for_value = p.parseNamesUntil ◂in
     p.swallowError(◂in, "Expected 'in' after for value")
-    let for_range = p.expression()
-    let for_body  = p.thenBlock()
+    for_range = p.expression()
+    for_body  = p.thenBlock()
 
     Node(token:token, kind:●for, for_value:for_value, for_range:for_range, for_body:for_body)
 
@@ -983,8 +986,9 @@ rWhile = ◇Parser p ➜Node ->
 
 switchCase = ◇Parser p ◇int baseIndent ➜Node ->
 
-    var case_when: seq[Node]
-    let token = p.current
+    case_when ◇ seq[Node]
+    token = p.current
+    first = p.firstLineToken()
     
     p.explicit = true
     while p.tok notin {◂else, ◂then, ◂indent, ◂eof}
@@ -992,7 +996,7 @@ switchCase = ◇Parser p ◇int baseIndent ➜Node ->
         p.swallow ◂comma
     p.explicit = false
     
-    let case_then = p.thenBlock()
+    case_then = p.thenIndented(first)
                 
     if case_then == nil
         ⮐  p.error("Expected case body after match(es)", token)
@@ -1001,17 +1005,17 @@ switchCase = ◇Parser p ◇int baseIndent ➜Node ->
 
 rSwitch = ◇Parser p ➜Node ->
 
-    let token = p.consume()
-    let switch_value = p.expression()
+    token = p.consume()
+    switch_value = p.expression()
     
     if switch_value == nil
         ⮐  p.error("Expected value after switch keyword", token)
     
-    let baseIndent = p.current.str.len 
+    baseIndent = p.current.str.len 
     
     p.swallowError(◂indent, "Expected indentation after switch statement")
     
-    var switch_cases: seq[Node]
+    switch_cases ◇ seq[Node]
     
     while p.tok notin {◂else, ◂then, ◂eof}
         if p.isDedent baseIndent
@@ -1028,7 +1032,7 @@ rSwitch = ◇Parser p ➜Node ->
         else
             switch_cases.add switch_case
     
-    var switch_default: Node
+    switch_default ◇ Node
     
     if p.tok in {◂else, ◂then}
         p.swallow()
@@ -1040,9 +1044,9 @@ rSwitch = ◇Parser p ➜Node ->
                 
 lArrayAccess = ◇Parser p ◇Node array_owner ➜Node ->
 
-    let token = p.current()
-    let array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
-    var array_index = 
+    token = p.current()
+    array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
+    array_index = 
         switch array_indices.len
             0 ➜ nil
             1 ➜ array_indices[0]
@@ -1052,12 +1056,12 @@ lArrayAccess = ◇Parser p ◇Node array_owner ➜Node ->
 
 lPropertyAccess = ◇Parser p ◇Node owner ➜Node ->
 
-    let token = p.consume()
-    let property = p.rLiteral()
+    token = p.consume()
+    property = p.rLiteral()
     
-    let n = Node(token:token, kind:●propertyAccess, owner:owner, property:property)
+    n = Node(token:token, kind:●propertyAccess, owner:owner, property:property)
     
-    if p.isImplicitCallPossible property.token
+    if p.isImplicitCallPossible()
         ⮐  Node(token:token, kind:●call, callee:n, callargs:p.parseCallArgs(token.col))
     n
 
@@ -1081,7 +1085,7 @@ rQuote      = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●quote,    
 
 rString = ◇Parser p ➜Node ->
 
-    let token = p.consume() # string start
+    token = p.consume() # string start
 
     if p.tok == ◂string_end
         p.swallow()
@@ -1120,18 +1124,21 @@ rString = ◇Parser p ➜Node ->
 
 rUse = ◇Parser p ➜Node ->
 
-    let token = p.consume()
-    let use_module = p.parseModule()
+    token = p.consume()
+    p.explicit = true
+    use_module = p.parseModule()
     if not p.atEnd() and p.current.line == token.line
         let use_kind = p.rSymbol()
         let use_items  = p.parseNames()
+        p.explicit = false
         Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
     else
+        p.explicit = false
         Node(token:token, kind:●use, use_module:use_module) 
         
 rComment = ◇Parser p ➜Node ->
 
-    let n = Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
+    n = Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
     p.swallow ◂comment_end
     n
     
@@ -1159,7 +1166,7 @@ lReturnType = ◇Parser p ◇Node left ➜Node ->
                     
 rArg = ◇Parser p ➜Node ->
 
-    let token = p.consume() # ◆ or ◇
+    token = p.consume() # ◆ or ◇
     
     if p.typeless
         var nameToken = p.consume()
@@ -1168,9 +1175,9 @@ rArg = ◇Parser p ➜Node ->
         nameToken.col = token.col
         ⮐  Node(token:nameToken, kind:●literal)
 
-    let arg_type = p.parseType()
-    let arg_name = p.value()
-    var arg_value : Node
+    arg_type  = p.parseType()
+    arg_name  = p.value()
+    arg_value ◇ Node
     
     if p.tok == ◂assign
         let t = p.consume() # =
@@ -1180,11 +1187,11 @@ rArg = ◇Parser p ➜Node ->
 
 lVar = ◇Parser p ◇Node left ➜Node ->
 
-    if left.token.tok != ◂name
-        ⮐  
-    let token    = p.consume() # ◆ or ◇
-    let var_type = p.parseType()
-    var var_value : Node
+    ⮐  if left.token.tok != ◂name
+        
+    token     = p.consume() # ◆ or ◇
+    var_type  = p.parseType()
+    var_value ◇ Node
     
     if p.tok == ◂assign
         let t = p.consume() # =
@@ -1193,8 +1200,7 @@ lVar = ◇Parser p ◇Node left ➜Node ->
 
 lSymbolList = ◇Parser p ◇Node left ➜Node ->
 
-    if p.listless
-        ⮐  
+    ⮐  if p.listless
 
     switch left.kind 
         ●list
@@ -1238,18 +1244,15 @@ lArgList = ◇Parser p ◇Node left ➜Node ->
 
 lFunc = ◇Parser p ◇Node left ➜Node ->
 
-    if left.kind notin {●signature, ●list, ●arg, ●operation}
-        ⮐ 
+    ⮐  if left.kind notin {●signature, ●list, ●arg, ●operation}
         
-    var func_signature = left
-    
-    # log &"lFunc LEFT {left}"
+    func_signature = left
     
     if left.kind == ●operation
-        if left.token.tok != ◂assign
-            ⮐  
-        if left.operand_left.token.tok != ◂name
-            ⮐  
+        ⮐  if left.token.tok != ◂assign
+            
+        ⮐  if left.operand_left.token.tok != ◂name
+            
         if left.operand_left.token.col == 0 
             var left = left
             let argtoken = Token(tok:◂val_type, line:left.operand_right.token.line,col:left.operand_right.token.col)
@@ -1275,40 +1278,40 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
         let sig_args = Node(token:left.token, kind:●list, list_values: @[left])
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
     
-    let firstToken = p.firstLineToken()
-    let token = p.consume()
+    firstToken = p.firstLineToken()
+    token = p.consume()
     
-    var func_mod : Node
+    func_mod ◇Node
     if p.tok == ◂mod
         func_mod = p.rLiteral
     
-    let func_body = p.thenIndented firstToken
+    func_body = p.thenIndented firstToken
     
     Node(token:token, kind:●func, func_signature:func_signature, func_mod:func_mod, func_body:func_body)
 
 rFunc = ◇Parser p ➜Node ->
 
-    let firstToken = p.firstLineToken()
-    let token = p.consume()
+    firstToken = p.firstLineToken()
+    token = p.consume()
     
-    var func_mod : Node
+    func_mod ◇ Node
     if p.tok == ◂mod
         func_mod = p.rLiteral
     
-    let func_body = p.thenIndented firstToken
+    func_body = p.thenIndented firstToken
     
     Node(token:token, kind:●func, func_body:func_body)
 
 rReturn = ◇Parser p ➜Node ->
 
-    let token = p.consume()
+    token = p.consume()
     
     if p.tok == ◂if and p.isThenlessIf(token)
         Node(token:token, kind:●return)
     else
         p.returning = true
 
-        var right : Node 
+        var right ◇ Node 
         if p.tok != ◂indent or p.isNextLineIndented(token)
             right = p.expression(token)
         
@@ -1317,7 +1320,7 @@ rReturn = ◇Parser p ➜Node ->
 
 rDiscard = ◇Parser p ➜Node ->
 
-    let token = p.consume()
+    token = p.consume()
     if p.isDedent token.col
         Node(token:token, kind:●discard)
     else
@@ -1332,8 +1335,8 @@ rDiscard = ◇Parser p ➜Node ->
 
 lOperation = ◇Parser p ◇Node left ➜Node ->
 
-    let token = p.consume()
-    let right = p.expression(token)
+    token = p.consume()
+    right = p.expression(token)
     Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
     
 lNotIn = ◇Parser p ◇Node left ➜Node ->
@@ -1352,21 +1355,21 @@ lPostOp = ◇Parser p ◇Node left ➜Node ->
 
 rPreOp = ◇Parser p ➜Node ->
 
-    let token = p.consume()    
-    let right = p.expression(token)
+    token = p.consume()    
+    right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
 lAssign = ◇Parser p ◇Node left ➜Node ->
 
-    let token = p.consume()
-    let right = p.expressionOrIndentedBlock(token, left.token.col)
+    token = p.consume()
+    right = p.expressionOrIndentedBlock(token, left.token.col)
 
     Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
 lRange = ◇Parser p ◇Node left ➜Node ->
 
-    let token = p.consume()
-    let right = p.expression(token)
+    token = p.consume()
+    right = p.expression(token)
     Node(token:token, kind: ●range, range_start: left, range_end: right)
         
 rParenExpr = ◇Parser p ➜Node ->
@@ -1383,9 +1386,9 @@ rSquarely = ◇Parser p ➜Node ->
 
 rEnum = ◇Parser p ➜Node ->
 
-    let token = p.consume()
-    let enum_name = p.value()
-    var enum_body : Node
+    token = p.consume()
+    enum_name = p.value()
+    enum_body ◇ Node
     if p.isNextLineIndented token
         p.typeless = true
         enum_body = p.parseBlock()
@@ -1394,27 +1397,27 @@ rEnum = ◇Parser p ➜Node ->
     
 rClass = ◇Parser p ➜Node ->
 
-    let token = p.consume()
-    let class_name = p.value()
-    let class_body = p.parseBlock()
+    token = p.consume()
+    class_name = p.value()
+    class_body = p.parseBlock()
     Node(token:token, kind:●class, class_name:class_name, class_body:class_body)
     
 lMember = ◇Parser p ◇Node left ➜Node ->
 
-    let token = p.consume()
+    token = p.consume()
     Node(token:token, kind:●member, member_key:left, member_value:p.expression())
     
 lTestCase = ◇Parser p ◇Node left ➜Node ->
 
-    let token = p.consume() # ▸
+    token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
     let right = p.expression()
     Node(token:token, kind: ●testCase, test_value:left, test_expected:right)
 
 rTestSuite = ◇Parser p ➜Node ->
 
-    let token = p.consume() # ▸
-    let test_block = p.thenBlock()
+    token = p.consume() # ▸
+    test_block = p.thenBlock()
     if token.col == 0
         Node(token:token, kind:●testSuite, test_block:test_block)
     else
@@ -1438,16 +1441,16 @@ rTestSuite = ◇Parser p ➜Node ->
 
 expression = ◇Parser p precedenceRight=0 ➜Node ->
 
-    let token = p.current
+    token = p.current
     if token.tok in {◂eof, ◂stripol_end, ◂paren_close}
         ⮐  nil
 
-    let rhs = p.rightHandSide(token)
+    rhs = p.rightHandSide(token)
     
     if rhs == nil
         ⮐  p.error(&"Expected expression but found {token.str} {token}", token)
         
-    var node = rhs(p)
+    node = rhs(p)
     
     if precedenceRight < -1
         ⮐  node
@@ -1591,9 +1594,9 @@ setup = ◇Parser p ->
 
 ast* = ◇string text ➜Node ->
 
-    let tokens = tokenize text
+    tokens = tokenize text
     # log &"ast* {tokens}"
-    var p = Parser(tokens:tokens, pos:0, text:text)
+    p = Parser(tokens:tokens, pos:0, text:text)
     p.setup()
     p.parseBlock()
     

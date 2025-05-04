@@ -111,6 +111,11 @@ proc kseg*(s : string) : seq[string] =
         let clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, ((i + clusterSize) - 1)))
         (i += clusterSize)
+proc ksegWidth*(s : string) : int = 
+    var i = 0
+    while (i < s.len): 
+        inc(result)
+        (i += graphemeLen(s, i))
 # ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
 # ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███
 # ████████   ███   ███  ███████   █████████  ██████  ████████   ███   ███  ████████ 

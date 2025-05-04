@@ -354,6 +354,9 @@ elif e.kind == ●var
         t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "▪[(◂switch ◂name @[(@[◂number, ◂number] ◂name)] ▪[◂name])]"
         t "switch x\n a ➜ if b then c"              , "▪[(◂switch ◂name @[(@[◂name] (◂if @[(◂name ◂name)]))])]"        
         
+        t "switch a\n  ●block ➜ r.▸block(n)"        , "▪[(◂switch ◂name @[(@[◂name] ((◂name . ◂name) ◂call @[◂name]))])]"
+        t "switch a\n  ●block ➜ r.▸block n"         , "▪[(◂switch ◂name @[(@[◂name] ((◂name . ◂name) ◂call @[◂name]))])]"
+        
         t """
 switch ext
     ".kim"  ➜ fun()
