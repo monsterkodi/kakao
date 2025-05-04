@@ -5,7 +5,6 @@
 # ███   ███  ███  ███   ███
 import std/[os, osproc, parseopt, random, streams, asyncdispatch, asyncfile, posix]
 import kommon
-# import trans
 import rndr
 import greet
 var params: seq[string]
@@ -14,14 +13,10 @@ var optParser = initOptParser()
 var outdir = ""
 var tests = false
 var verbose = false
-var transpile = false
-proc dotPath(r:tuple) : string = r.path
-var testFiles = walkDir((currentSourcePath().splitFile()[0] / "test")).toSeq().map(dotPath)
+var testFiles = walkDir((currentSourcePath().splitFile()[0] / "test")).toSeq().map(proc (r : tuple) : string = r.path)
 randomize()
-proc verb(msg: string) = 
-
-    if verbose: 
-        echo(msg)
+proc verb(msg : string) = 
+    if verbose: echo(msg)
 #  ███████   ████████  █████████         ███████   ████████   █████████
 # ███        ███          ███           ███   ███  ███   ███     ███   
 # ███  ████  ███████      ███           ███   ███  ████████      ███   
@@ -29,36 +24,33 @@ proc verb(msg: string) =
 #  ███████   ████████     ███            ███████   ███           ███   
 for kind, key, val in optParser.getopt(): 
     case kind:
-           of cmdArgument: 
+        of cmdArgument: 
             params.add(key)
             files.add(key)
-           of cmdLongOption, cmdShortOption: 
+        of cmdLongOption, cmdShortOption: 
             params.add('-' & key)
             case key:
-                   of "test": 
+                of "test": 
                     tests = true
-                   of "verbose", "v": 
+                of "verbose", "v": 
                     verbose = true
-                   of "outdir", "o": 
+                of "outdir", "o": 
                     outdir = val
-                   of "transpile", "t": 
-                    transpile = true
-                   of "help", "h": 
-                    echo("usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]")
+                of "help", "h": 
+                    echo("usage: ", getAppFilename().extractFilename(), " [options] [file.kim ...]")
                     echo("")
                     echo("      transpiles kim files to nim")
                     echo("      watches cwd if no files are given")
                     echo("")
                     echo("options:")
                     echo("  -o --outdir:DIR  output directory")
-                    echo("  -t --transpile   log transpilat")
                     echo("     --test        run tests")
                     echo("  -v --verbose     verbose output")
                     quit(1)
-                   else: 
+                else: 
                     echo("unknown option!: ", key)
                     quit(1)
-           of cmdEnd: 
+        of cmdEnd: 
             discard
 # ████████   ████████   ███████  █████████   ███████   ████████   █████████
 # ███   ███  ███       ███          ███     ███   ███  ███   ███     ███   
@@ -67,51 +59,33 @@ for kind, key, val in optParser.getopt():
 # ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
 when defined(posix): 
     import posix
-    proc restart() =
-    
+    proc restart = 
         let args = allocCStringArray(@[getAppFilename()] & params)
-        discard execv(getAppFilename().cstring, args)
+        discard execv(getAppFilename().cstring(), args)
         quit(1) # only reaches here if execve fails
 # ███       ███████    ███████   ████████  ███  ███      ████████
 # ███      ███   ███  ███        ███       ███  ███      ███     
 # ███      ███   ███  ███  ████  ██████    ███  ███      ███████ 
 # ███      ███   ███  ███   ███  ███       ███  ███      ███     
 # ███████   ███████    ███████   ███       ███  ███████  ████████
-proc logFile(f:string, prefix:string="") =
-
-    # if not verbose
-    #     return
+proc logFile(f : string, prefix = "") = 
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
-    let d = 
-        if dir.len: 
-            dir & "/"
-        else: 
-            ""
-    let icon = 
-        if (ext == ".kim"): 
-            "  "
-        else: 
-            "  "
-    let color = 
-        if (ext == ".kim"): 
-            fgGreen
-        else: 
-            fgMagenta
+    let d = if dir.len: dir & "/" else: ""
+    let icon = if (ext == ".kim"): "  " else: "  "
+    let color = if (ext == ".kim"): fgGreen else: fgMagenta
     styledEcho(color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle)
-    #, styleDim, ext, resetStyle
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
 # ███       ███   ███  █████████  ████████   ███  ███      ███████ 
 # ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
-proc compile(file:string, outDir:string="bin") : bool =
-
+proc compile(file : string, outDir = "bin") : bool = 
     profileScope("comp")
-    # let cmd = &"nim c --outDir:{outdir} {file}"
-    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
+    let cmd = &"nim c --outDir={outdir} {file}"
+    # let cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
-        styledEcho(fgRed, "✘ ", &"{cmd}")
+        styledEcho(fgRed, "✘ ", $cmd)
         echo(output)
         false
     else: 
@@ -123,8 +97,7 @@ proc compile(file:string, outDir:string="bin") : bool =
 #    ███     ███████   ███████      ███     ███████ 
 #    ███     ███            ███     ███          ███
 #    ███     ████████  ███████      ███     ███████ 
-proc runTests() : bool =
-
+proc runTests() : bool = 
     profileScope("test")
     var fail = false
     for f in testFiles: 
@@ -137,7 +110,8 @@ proc runTests() : bool =
         discard fcntl(fd, F_SETFL, (flags or O_NONBLOCK))
         while true: 
             let elapsed = (getMonoTime() - startTime).inMilliseconds
-            if (elapsed >= 4000): 
+            if (elapsed >= 8000): 
+                fail = true
                 output.add(&"test killed after {elapsed} ms!!")
                 p.terminate()
                 sleep(50)
@@ -146,38 +120,26 @@ proc runTests() : bool =
                 break
             var line = newString((1024 * 10))
             let bytesRead = read(fd, addr(line[0]), line.len)
-            if (bytesRead > 0): 
-                output.add(line & "\n")
-            elif (bytesRead == 0): 
-                break
-            elif (errno == EAGAIN): 
-                discard poll(nil, 0, 50)
-            elif not p.running: 
-                break
-            else: 
-                break
+            if (bytesRead > 0): output.add(line & "\n")
+            elif (bytesRead == 0): break
+            elif (errno == EAGAIN): discard poll(nil, 0, 50)
+            else: break
         let exitCode = p.waitForExit()
-        if ((exitCode != 0) or verbose): 
-            #or f.endsWith("tknz.nim")
-            #or f.endsWith("pars.nim")
+        if (((exitCode != 0) or verbose) or fail): 
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace("[OK]", fg(fgGreen) & "✔\x1b[0m").replace("[FAILED]", fg(fgRed) & "✘\x1b[0m"))
         else: 
             let okCount = output.count("[OK]")
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace(peg"'[OK]' .+", &"{ansiStyleCode(styleDim)} ✔ {okCount}\x1b[0m"))
         if (exitCode != 0): 
-            styledEcho(fgRed, "✘ ", &"{f}")
+            styledEcho(fgRed, "✘ ", $f)
             fail = true
     echo("")
     not fail
 if files.len: 
-    # if transpile
     # profileStart 'translate'
     let transpiled = rndr.files(files)
     # profileStop 'translate'
     quit((transpiled.len - files.len))
-    # else
-    #     let transpiled = trans.pile(files)
-    #     quit(transpiled.len - files.len)    
 if tests: 
     discard runTests()
     quit(0)
@@ -186,15 +148,14 @@ if tests:
 # █████████  █████████     ███     ███       █████████
 # ███   ███  ███   ███     ███     ███       ███   ███
 # ██     ██  ███   ███     ███      ███████  ███   ███
-proc watch(paths:seq[string]) =
-
+proc watch(paths : seq[string]) = 
     proc hook() {.noconv.} = 
     
         styledEcho("")
         styledEcho(fgGreen, farewells[rand(farewells.high)])
         quit(0)
     setControlCHook(hook)
-    var modTimes: Table[string, times.Time]
+    var modTimes : Table[string,times.Time]
     styledEcho("")
     styledEcho(fgGreen, greetings[rand(greetings.high)])
     styledEcho("")
@@ -204,9 +165,9 @@ proc watch(paths:seq[string]) =
     var firstLoop = true
     while true: 
         var doBuild = false
-        var toTranspile: seq[string]
-        var kimFiles: seq[string]
-        var nimFiles: seq[string]
+        var toTranspile : seq[string]
+        var kimFiles : seq[string]
+        var nimFiles : seq[string]
         for path in paths: 
             if not dirExists(path): 
                 continue
@@ -214,12 +175,9 @@ proc watch(paths:seq[string]) =
                 let (dir, name, ext) = f.splitFile()
                 if (dir.find("k1m") >= 0): 
                     continue
-                if (ext == ".kim"): 
-                    kimFiles.add(f)
-                elif (ext == ".nim"): 
-                    nimFiles.add(f)
-                else: 
-                    continue
+                if (ext == ".kim"): kimFiles.add(f)
+                elif (ext == ".nim"): nimFiles.add(f)
+                else: continue
                 let modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 
                     modTimes[f] = modTime
@@ -234,15 +192,10 @@ proc watch(paths:seq[string]) =
         if firstLoop: 
             firstLoop = false
             if verbose: 
-                for f in kimFiles: 
-                    logFile(f)
-                for f in nimFiles: 
-                    logFile(f)
+                for f in kimFiles: logFile(f)
+                for f in nimFiles: logFile(f)
         if toTranspile: 
             echo("\x1bc")
-            verb(&"toTranspile: {toTranspile}")
-            # for f in trans.pile(toTranspile)
-            #     logFile f, "✔ "
             for f in toTranspile: 
                 logFile(f, "▸ ")
                 let r = rndr.file(f)
@@ -250,11 +203,7 @@ proc watch(paths:seq[string]) =
             if not runTests(): 
                 doBuild = false
         if doBuild: 
-            # verb 'doBuild'    
             if compile("nim/kim.nim", "bin"): 
-                # for f in kimFiles
-                #     let transpiled = trans.trans(f)
-                #     logFile transpiled, "✔ "
                 restart()
         sleep(200)
 watch(@[getCurrentDir()])
