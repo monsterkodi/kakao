@@ -43,6 +43,9 @@ proc ▸block(r: Rndr, n: Node) =
                 r.add(" ")
 proc ▸proc(r: Rndr, n: Node) = 
 
+    if (((n == nil) or (n.operand_left == nil)) or (n.operand_right == nil)): 
+        echo(&"DAFUK? {n} {n.token}")
+        return
     let f = n.operand_right
     r.add("proc ")
     if (n.operand_left.token.str[0] == '$'): 
@@ -50,8 +53,8 @@ proc ▸proc(r: Rndr, n: Node) =
     else: 
         r.rnd(n.operand_left)
     r.rnd(f.func_signature)
-    r.add(" =")
     if (f.func_body != nil): 
+        r.add(" =")
         r.add(" ")
         r.rnd(f.func_body)
 proc ▸operation(r: Rndr, n: Node) = 
@@ -122,8 +125,8 @@ proc ▸func(r: Rndr, n: Node) =
     if (n.func_mod != nil): 
         r.add(" ")
         r.tok(n.func_mod)
-    r.add(" =")
     if (n.func_body != nil): 
+        r.add(" =")
         r.add(" ")
         r.rnd(n.func_body)
 proc ▸signature(r: Rndr, n:Node) =
@@ -376,6 +379,7 @@ proc ▸testSuite(r: Rndr, n:Node) =
     r.rnd(n.test_block)
 proc rnd(r: Rndr, n: Node) =
 
+    # log "rnd #{n}"
     if (n == nil): return
     case n.kind:
         of ●block: 

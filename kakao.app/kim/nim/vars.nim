@@ -12,20 +12,18 @@ import tknz
 import pars
 type Scoper* = ref object
     vars*: seq[Table[string, bool]]
-proc `$`*(v:Scoper): string = 
-
+proc `$`*(v : Scoper) : string = 
     var s = ""
     (s &= $v.vars)
     s
-proc exp(s:Scoper, body:Node, i:int, e:Node)
-proc scope(s:Scoper, body:Node) : Node
+proc exp(s : Scoper, body : Node, i : int, e : Node)
+proc scope(s : Scoper, body : Node) : Node
 # 00000000  000   000  00000000   
 # 000        000 000   000   000  
 # 0000000     00000    00000000   
 # 000        000 000   000        
 # 00000000  000   000  000        
-proc exp(s:Scoper, body:Node, i:int, e:Node) =
-
+proc exp(s : Scoper, body : Node, i : int, e : Node) = 
     if (e == nil): return
     proc insert(name:string, expr:Node) =
     
@@ -48,15 +46,13 @@ proc exp(s:Scoper, body:Node, i:int, e:Node) =
 # 0000000   000       000   000  00000000   0000000   
 #      000  000       000   000  000        000       
 # 0000000    0000000   0000000   000        00000000  
-proc scope(s:Scoper, body:Node) : Node =
-
-    if (body.expressions.len == 0): 
+proc scope(s : Scoper, body : Node) : Node = 
+    if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 
         return body
     s.vars.push(initTable[string, bool]())
     for i, e in body.expressions: 
         s.exp(body, i, e)
     s.vars.pops()
     body
-proc variables*(body:Node) : Node = 
-
+proc variables*(body : Node) : Node = 
     Scoper().scope(body)

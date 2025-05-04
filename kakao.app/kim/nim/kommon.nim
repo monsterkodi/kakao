@@ -20,14 +20,14 @@ proc sc*(c : auto) : auto =
     ansiStyleCode(c)
 proc underscore*(n : uint64) : string = 
     var s = $n
-    var result = newStringOfCap((s.len + (s.len - 1).div(3)))
+    var r = newStringOfCap((s.len + (s.len - 1).div(3)))
     var count = 0
     for i in countdown(s.high, 0): 
         if ((count != 0) and (count.mod(3) == 0)): 
           result.add('_')
-        result.add(s[i])
+        r.add(s[i])
         inc(count)
-    result = reversed(result)
+    reversed(r)
 proc indent*(s : string, i = 4) : string = 
     let idt = ' '.repeat(i)
     let lines = s.split("\n")

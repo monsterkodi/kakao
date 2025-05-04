@@ -502,7 +502,8 @@ isNextLineIndented = ◇Parser p ◇Token token ➜bool ->
         if p.peek(n).tok == ◂eof
             ⮐  false
         
-    ⮐  p.peek(n).str.len > token.col
+    let idt = if token.tok == ◂indent ➜ token.str.len ➜ token.col
+    ⮐  p.peek(n).str.len > idt
     
 isTokAhead = ◇Parser p ◇tok tokAhead ➜bool ->
 
@@ -517,6 +518,16 @@ isTokAhead = ◇Parser p ◇tok tokAhead ➜bool ->
         n += 1
         c = p.peek n
     false    
+
+firstLineToken = ◇Parser p ➜Token ->
+
+    line = p.current.line
+    tpos = p.tokens.len
+    while tpos > 0
+        if p.tokens[tpos-1].line < line
+            break
+        tpos -= 1
+    p.tokens[tpos]
 
 isThenlessIf = ◇Parser p ◇Token token ➜bool ->
 
@@ -541,13 +552,15 @@ leftHandSide = ◇Parser p ◇Token token ➜LHS ->
     if token.tok.ord < p.pratts.len
         ⮐  p.pratts[token.tok.ord].lhs
 
-proc expression(p: Parser, precedenceRight = 0): Node
-    
-proc expression(p: Parser, tokenRight:Token ): Node =
+expression = ◇Parser p precedenceRight=0 ➜Node ->
+
+expression = ◇Parser p ◇Token tokenRight ➜Node ->
 
     expression(p, p.getPrecedence(tokenRight))
 
-proc value(p: Parser) : Node = p.expression(-2)
+value = ◇Parser p ➜Node ->
+
+    p.expression(-2)
 
 # ███████    ███       ███████    ███████  ███   ███
 # ███   ███  ███      ███   ███  ███       ███  ███ 
@@ -555,10 +568,11 @@ proc value(p: Parser) : Node = p.expression(-2)
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███████   ███████    ███████  ███   ███
 
-proc parseBlock(p:Parser, bn:Node=nil): Node =
+parseBlock = ◇Parser p ◇Node bn=nil ➜Node ->
 
     var token: Token
     var block_indent : int
+    
     while p.tok == ◂indent
         token = p.consume() 
         block_indent = p.current.col
@@ -598,13 +612,13 @@ proc parseBlock(p:Parser, bn:Node=nil): Node =
             else
                 p.swallow()
                 
-        if p.current.col < block_indent
+        if p.atEnd() or p.current.col < block_indent
             break
             
         expr = p.expression()
     bn
 
-proc expressionOrIndentedBlock(p: Parser, token:Token, col:int): Node =
+expressionOrIndentedBlock = ◇Parser p ◇Token token ◇int col ➜Node ->
 
     if p.tok == ◂indent
         if p.current.str.len > col
@@ -618,7 +632,7 @@ proc expressionOrIndentedBlock(p: Parser, token:Token, col:int): Node =
 # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
 #  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
 
-proc swallowIndent(p:Parser, col:int) : bool = 
+swallowIndent = ◇Parser p ◇int col ➜bool ->
 
     p.swallow ◂comma
     if p.tok == ◂indent
@@ -628,7 +642,7 @@ proc swallowIndent(p:Parser, col:int) : bool =
             ⮐  true
     false
     
-proc parseCallArgs(p:Parser, col:int) : seq[Node] = 
+parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
 
     p.explicit = true
     p.listless = true
@@ -652,7 +666,7 @@ proc parseCallArgs(p:Parser, col:int) : seq[Node] =
 #    ███        ███     ███        ███     
 #    ███        ███     ███        ████████
 
-proc parseType(p: Parser): Node =
+parseType = ◇Parser p ➜Node ->
     
     var token = p.consume()
     token.tok = ◂type
@@ -671,7 +685,7 @@ proc parseType(p: Parser): Node =
     
     Node(token:token, kind:●type)
     
-proc parseVar(p: Parser): Node = 
+parseVar = ◇Parser p ➜Node ->
 
     var token = p.current()
     let var_name = p.value()
@@ -680,8 +694,7 @@ proc parseVar(p: Parser): Node =
     
     if p.tok == ◂assign
         p.swallow()
-        # var_value = p.expression()
-        var_value = p.then()
+        var_value = p.thenBlock()
     elif p.tok in {◂val_type, ◂var_type}
         token = p.consume()
         var_type = p.parseType()
@@ -691,7 +704,7 @@ proc parseVar(p: Parser): Node =
     
     Node(token:token, kind: ●var, var_name:var_name, var_type:var_type, var_value:var_value)
     
-proc parseModule(p:Parser) : Node = 
+parseModule = ◇Parser p ➜Node ->
 
     let line = p.current.line
     var s = ""
@@ -711,7 +724,7 @@ proc parseModule(p:Parser) : Node =
 # ███      ███       ███     ███   
 # ███████  ███  ███████      ███   
 
-proc parseParenList(p: Parser): seq[Node] =
+parseParenList = ◇Parser p ➜seq[Node] ->
 
     let token = p.consume() # (
     
@@ -726,7 +739,7 @@ proc parseParenList(p: Parser): seq[Node] =
         ⮐  args[0].list_values
     args
     
-proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
+parseDelimitedList = ◇Parser p ◇tok open ◇tok close ➜seq[Node] ->
 
     let token = p.consume()
     var args : seq[Node]
@@ -745,7 +758,7 @@ proc parseDelimitedList(p: Parser, open:tok, close:tok): seq[Node] =
         ⮐  args[0].list_values
     args
     
-proc parseNames(p:Parser) : seq[Node] = 
+parseNames = ◇Parser p ➜seq[Node] -> 
 
     var list : seq[Node]
     let line = p.current.line
@@ -760,7 +773,7 @@ proc parseNames(p:Parser) : seq[Node] =
     p.explicit = false
     list
 
-proc parseNamesUntil(p: Parser, stop: tok) : Node =
+parseNamesUntil = ◇Parser p ◇tok stop ➜Node -> 
 
     let token = p.current
                                 
@@ -785,7 +798,7 @@ proc parseNamesUntil(p: Parser, stop: tok) : Node =
 #    ███     ███   ███  ███       ███  ████
 #    ███     ███   ███  ████████  ███   ███
 
-proc then(p: Parser) : Node = 
+thenBlock = ◇Parser p ➜Node ->
 
     if p.tok == ◂then
         p.swallow ◂then
@@ -794,6 +807,22 @@ proc then(p: Parser) : Node =
         p.parseBlock()
     else
         p.expression()
+        
+thenIndented = ◇Parser p ◇Token token ➜Node ->
+
+    if p.tok == ◂then
+        p.swallow ◂then
+        
+    if p.tok == ◂indent
+        # log "thenIndented #{p}"
+        # log "first #{token} current #{p.current}"
+        if p.isNextLineIndented(token)
+            # log "thenIndented ✔"
+            ⮐  p.parseBlock()
+        # log "thenIndented ✘"
+        ⮐  nil
+    else
+        ⮐  p.expression()
     
 #  ███████   ███████   ███      ███    
 # ███       ███   ███  ███      ███    
@@ -801,7 +830,7 @@ proc then(p: Parser) : Node =
 # ███       ███   ███  ███      ███    
 #  ███████  ███   ███  ███████  ███████
 
-proc lCall(p: Parser, callee: Node): Node =
+lCall = ◇Parser p ◇Node callee ➜Node ->
 
     let token = p.consume() # (
     let args = p.parseCallArgs(callee.token.col)
@@ -814,7 +843,7 @@ proc lCall(p: Parser, callee: Node): Node =
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
-proc isImplicitCallPossible(p: Parser, token: Token) : bool =     
+isImplicitCallPossible = ◇Parser p ◇Token token ➜bool ->
 
     let currt = p.peek(0)
 
@@ -828,7 +857,7 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
                 ⮐  true
     false
     
-proc rSymbol(p: Parser): Node =
+rSymbol = ◇Parser p ➜Node ->
 
     let token = p.consume()
     
@@ -849,7 +878,7 @@ proc rSymbol(p: Parser): Node =
 # ███  ███                                  ███  ███                                    ███  ███       
 # ███  ███                                  ███  ███                                    ███  ███       
 
-proc rIf(p: Parser): Node =
+rIf = ◇Parser p ➜Node ->
 
     let token = p.consume() # if or when
     var condThens: seq[Node]
@@ -865,7 +894,7 @@ proc rIf(p: Parser): Node =
     
     var condition = p.expression() # initial condition
             
-    var then_branch = p.then()
+    var then_branch = p.thenBlock()
     
     condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
     
@@ -894,7 +923,7 @@ proc rIf(p: Parser): Node =
             break # then without condition -> else
         
         condition = p.expression()
-        then_branch = p.then()
+        then_branch = p.thenBlock()
         
         condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
         
@@ -905,7 +934,7 @@ proc rIf(p: Parser): Node =
         
         if p.tok in {◂else, ◂then}
             p.swallow() # else or then without condition
-            else_branch = p.then()
+            else_branch = p.thenBlock()
     
     Node(token:token, kind:●if, cond_thens:condThens, else_branch:else_branch)
 
@@ -915,7 +944,7 @@ proc rIf(p: Parser): Node =
 #    ███     ███   ███  ███  ███         ███  ███     
 #    ███     ███   ███  ███  ███████     ███  ███     
 
-proc lTailIf(p: Parser, left: Node) : Node =
+lTailIf = ◇Parser p ◇Node left ➜Node ->
 
     ⮐  if p.returning
     ⮐  if left.token.line != p.current.line
@@ -932,19 +961,19 @@ proc lTailIf(p: Parser, left: Node) : Node =
 # ███       ███   ███  ███   ███
 # ███        ███████   ███   ███
 
-proc rFor(p: Parser): Node = 
+rFor = ◇Parser p ➜Node ->
 
     let token = p.consume()
     let for_value = p.parseNamesUntil ◂in
     p.swallowError(◂in, "Expected 'in' after for value")
     let for_range = p.expression()
-    let for_body  = p.then()
+    let for_body  = p.thenBlock()
 
     Node(token:token, kind:●for, for_value:for_value, for_range:for_range, for_body:for_body)
 
-proc rWhile(p: Parser): Node =
+rWhile = ◇Parser p ➜Node ->
 
-    Node(token:p.consume(), kind:●while, while_cond:p.expression(), while_body:p.then())
+    Node(token:p.consume(), kind:●while, while_cond:p.expression(), while_body:p.thenBlock())
 
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
@@ -952,7 +981,7 @@ proc rWhile(p: Parser): Node =
 #      ███  ███   ███  ███     ███     ███       ███   ███
 # ███████   ██     ██  ███     ███      ███████  ███   ███
 
-proc switchCase(p: Parser, baseIndent: int): Node =
+switchCase = ◇Parser p ◇int baseIndent ➜Node ->
 
     var case_when: seq[Node]
     let token = p.current
@@ -963,14 +992,14 @@ proc switchCase(p: Parser, baseIndent: int): Node =
         p.swallow ◂comma
     p.explicit = false
     
-    let case_then = p.then()
+    let case_then = p.thenBlock()
                 
     if case_then == nil
         ⮐  p.error("Expected case body after match(es)", token)
     
     Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
 
-proc rSwitch(p: Parser): auto =
+rSwitch = ◇Parser p ➜Node ->
 
     let token = p.consume()
     let switch_value = p.expression()
@@ -1003,13 +1032,13 @@ proc rSwitch(p: Parser): auto =
     
     if p.tok in {◂else, ◂then}
         p.swallow()
-        switch_default = p.then()
+        switch_default = p.thenBlock()
         if switch_default == nil
             ⮐  p.error("Expected default value", token)
     
     Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
                 
-proc lArrayAccess(p: Parser, array_owner: Node): Node =
+lArrayAccess = ◇Parser p ◇Node array_owner ➜Node ->
 
     let token = p.current()
     let array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
@@ -1021,11 +1050,7 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
         
     Node(token:token, kind:●arrayAccess, array_owner:array_owner, array_index:array_index)
 
-proc rLiteral(p: Parser): Node =
-
-    Node(token:p.consume(), kind: ●literal)
-    
-proc lPropertyAccess(p: Parser, owner: Node): Node =
+lPropertyAccess = ◇Parser p ◇Node owner ➜Node ->
 
     let token = p.consume()
     let property = p.rLiteral()
@@ -1036,20 +1061,17 @@ proc lPropertyAccess(p: Parser, owner: Node): Node =
         ⮐  Node(token:token, kind:●call, callee:n, callargs:p.parseCallArgs(token.col))
     n
 
-proc rKeyword(p: Parser): Node =
-
-    Node(token:p.consume(), kind: ●keyword)
-    
-proc rImport    (p: Parser): Node = Node(token:p.consume(), kind: ●import)
-proc rProc      (p: Parser): Node = Node(token:p.consume(), kind: ●proc)
-proc rTypeDef   (p: Parser): Node = Node(token:p.consume(), kind: ●typeDef)
-proc rMacro     (p: Parser): Node = Node(token:p.consume(), kind: ●macro)
-proc rTemplate  (p: Parser): Node = Node(token:p.consume(), kind: ●template)
-proc rConverter (p: Parser): Node = Node(token:p.consume(), kind: ●converter)
-        
-proc rLet(p: Parser): Node =
-
-    Node(token:p.consume(), kind: ●let, let_expr:p.parseVar())
+rLiteral    = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●literal)
+rKeyword    = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●keyword)
+rImport     = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)
+rProc       = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●proc)
+rTypeDef    = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●typeDef)
+rMacro      = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●macro)
+rTemplate   = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●template)
+rConverter  = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●converter)
+rLet        = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●let,       let_expr:p.parseVar())
+rReturnType = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●signature, sig_type:p.parseType())
+rQuote      = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●quote,     quote_body:p.thenBlock())
     
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
@@ -1057,7 +1079,7 @@ proc rLet(p: Parser): Node =
 #      ███     ███     ███   ███  ███  ███  ████  ███   ███
 # ███████      ███     ███   ███  ███  ███   ███   ███████ 
 
-proc rString(p: Parser): Node =
+rString = ◇Parser p ➜Node ->
 
     let token = p.consume() # string start
 
@@ -1096,7 +1118,7 @@ proc rString(p: Parser): Node =
         p.swallowError(◂string_end, "Expected closing string delimiter")
         Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
 
-proc rUse(p: Parser): Node =
+rUse = ◇Parser p ➜Node ->
 
     let token = p.consume()
     let use_module = p.parseModule()
@@ -1107,17 +1129,13 @@ proc rUse(p: Parser): Node =
     else
         Node(token:token, kind:●use, use_module:use_module) 
         
-proc rComment(p: Parser): Node = 
+rComment = ◇Parser p ➜Node ->
 
     let n = Node(token:p.consume(), kind:●comment, comment_content:Node(token:p.consume()))
     p.swallow ◂comment_end
     n
     
-proc rReturnType(p: Parser): Node =
-
-    Node(token:p.consume(), kind:●signature, sig_type:p.parseType())
-
-proc lReturnType(p: Parser, left: Node): Node =
+lReturnType = ◇Parser p ◇Node left ➜Node ->
 
     if not p.isTokAhead(◂func)
         ⮐  
@@ -1139,7 +1157,7 @@ proc lReturnType(p: Parser, left: Node): Node =
             sig.sig_args = Node(token:left.token, kind:●list, list_values: @[left])
             ⮐  sig
                     
-proc rArg(p: Parser) : Node =
+rArg = ◇Parser p ➜Node ->
 
     let token = p.consume() # ◆ or ◇
     
@@ -1160,7 +1178,7 @@ proc rArg(p: Parser) : Node =
     
     Node(token:token, kind:●arg, arg_type:arg_type, arg_name:arg_name, arg_value:arg_value)
 
-proc lVar(p: Parser, left: Node) : Node =
+lVar = ◇Parser p ◇Node left ➜Node ->
 
     if left.token.tok != ◂name
         ⮐  
@@ -1173,7 +1191,7 @@ proc lVar(p: Parser, left: Node) : Node =
         var_value = p.expression() 
     Node(token:token, kind:●var, var_name:left, var_type:var_type, var_value:var_value)
 
-proc lSymbolList(p: Parser, left: Node) : Node =
+lSymbolList = ◇Parser p ◇Node left ➜Node ->
 
     if p.listless
         ⮐  
@@ -1194,7 +1212,7 @@ proc lSymbolList(p: Parser, left: Node) : Node =
         ➜ 
             discard
 
-proc lArgList(p: Parser, left: Node) : Node =
+lArgList = ◇Parser p ◇Node left ➜Node ->
     
     switch left.kind 
         ●list
@@ -1218,7 +1236,7 @@ proc lArgList(p: Parser, left: Node) : Node =
 # ███       ███   ███  ███  ████  ███     
 # ███        ███████   ███   ███   ███████
 
-proc lFunc(p: Parser, left: Node): Node =
+lFunc = ◇Parser p ◇Node left ➜Node ->
 
     if left.kind notin {●signature, ●list, ●arg, ●operation}
         ⮐ 
@@ -1257,29 +1275,31 @@ proc lFunc(p: Parser, left: Node): Node =
         let sig_args = Node(token:left.token, kind:●list, list_values: @[left])
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
     
-    let token = p.consume() # ->
+    let firstToken = p.firstLineToken()
+    let token = p.consume()
     
     var func_mod : Node
     if p.tok == ◂mod
         func_mod = p.rLiteral
     
-    let func_body = p.then()
+    let func_body = p.thenIndented firstToken
     
     Node(token:token, kind:●func, func_signature:func_signature, func_mod:func_mod, func_body:func_body)
 
-proc rFunc(p: Parser): Node =
+rFunc = ◇Parser p ➜Node ->
 
-    let token = p.consume() # ->
+    let firstToken = p.firstLineToken()
+    let token = p.consume()
     
     var func_mod : Node
     if p.tok == ◂mod
         func_mod = p.rLiteral
     
-    let func_body = p.then()
+    let func_body = p.thenIndented firstToken
     
     Node(token:token, kind:●func, func_body:func_body)
 
-proc rReturn(p: Parser): Node =
+rReturn = ◇Parser p ➜Node ->
 
     let token = p.consume()
     
@@ -1295,7 +1315,7 @@ proc rReturn(p: Parser): Node =
         p.returning = false
         Node(token:token, kind:●return, return_value:right)
 
-proc rDiscard(p: Parser): Node =
+rDiscard = ◇Parser p ➜Node ->
 
     let token = p.consume()
     if p.isDedent token.col
@@ -1304,23 +1324,19 @@ proc rDiscard(p: Parser): Node =
         let right = p.value()
         Node(token:token, kind:●discard, discard_value:right)
         
-proc rQuote(p: Parser): Node =
-
-    Node(token:p.consume(), kind:●quote, quote_body:p.then())
-
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
 # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
 # ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
 #  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
 
-proc lOperation(p: Parser, left: Node): Node =
+lOperation = ◇Parser p ◇Node left ➜Node ->
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
     
-proc lNotIn(p: Parser, left: Node): Node =
+lNotIn = ◇Parser p ◇Node left ➜Node ->
 
     if p.peek(1).tok == ◂in
         var token = p.consume()
@@ -1330,42 +1346,42 @@ proc lNotIn(p: Parser, left: Node): Node =
         let right = p.expression(token)
         ⮐  Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
 
-proc lPostOp(p: Parser, left: Node): Node =
+lPostOp = ◇Parser p ◇Node left ➜Node ->
 
     Node(token:p.consume(), kind: ●postOp, operand:left)
 
-proc rPreOp(p: Parser): Node =
+rPreOp = ◇Parser p ➜Node ->
 
     let token = p.consume()    
     let right = p.expression(token)
     Node(token:token, kind:●preOp, operand:right)
 
-proc lAssign(p: Parser, left: Node): Node =
+lAssign = ◇Parser p ◇Node left ➜Node ->
 
     let token = p.consume()
     let right = p.expressionOrIndentedBlock(token, left.token.col)
 
     Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
-proc lRange(p: Parser, left: Node): Node =
+lRange = ◇Parser p ◇Node left ➜Node ->
 
     let token = p.consume()
     let right = p.expression(token)
     Node(token:token, kind: ●range, range_start: left, range_end: right)
         
-proc rParenExpr(p: Parser): Node =
+rParenExpr = ◇Parser p ➜Node ->
 
     Node(token:p.current, kind:●list, list_values:p.parseParenList())
 
-proc rCurly(p: Parser): Node =
+rCurly = ◇Parser p ➜Node ->
 
     Node(token:p.current, kind:●curly, list_values:p.parseDelimitedList(◂bracket_open, ◂bracket_close))
 
-proc rSquarely(p: Parser): Node =
+rSquarely = ◇Parser p ➜Node ->
 
     Node(token:p.current, kind:●squarely, list_values:p.parseDelimitedList(◂square_open, ◂square_close))
 
-proc rEnum(p: Parser) : Node = 
+rEnum = ◇Parser p ➜Node ->
 
     let token = p.consume()
     let enum_name = p.value()
@@ -1376,29 +1392,29 @@ proc rEnum(p: Parser) : Node =
         p.typeless = false
     Node(token:token, kind:●enum, enum_name:enum_name, enum_body:enum_body)
     
-proc rClass(p: Parser) : Node = 
+rClass = ◇Parser p ➜Node ->
 
     let token = p.consume()
     let class_name = p.value()
     let class_body = p.parseBlock()
     Node(token:token, kind:●class, class_name:class_name, class_body:class_body)
     
-proc lMember(p: Parser, left: Node) : Node =
+lMember = ◇Parser p ◇Node left ➜Node ->
 
     let token = p.consume()
     Node(token:token, kind:●member, member_key:left, member_value:p.expression())
     
-proc lTestCase(p: Parser, left: Node): Node =
+lTestCase = ◇Parser p ◇Node left ➜Node ->
 
     let token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
     let right = p.expression()
     Node(token:token, kind: ●testCase, test_value:left, test_expected:right)
 
-proc rTestSuite(p: Parser): Node =
+rTestSuite = ◇Parser p ➜Node ->
 
     let token = p.consume() # ▸
-    let test_block = p.then()
+    let test_block = p.thenBlock()
     if token.col == 0
         Node(token:token, kind:●testSuite, test_block:test_block)
     else
@@ -1420,24 +1436,23 @@ proc rTestSuite(p: Parser): Node =
                       ▾                       ▾
 ###
 
-proc expression(p: Parser, precedenceRight = 0): Node =
+expression = ◇Parser p precedenceRight=0 ➜Node ->
 
     let token = p.current
     if token.tok in {◂eof, ◂stripol_end, ◂paren_close}
         ⮐  nil
-    
+
     let rhs = p.rightHandSide(token)
     
     if rhs == nil
-    
         ⮐  p.error(&"Expected expression but found {token.str} {token}", token)
         
-    var node: Node = rhs(p)
-
+    var node = rhs(p)
+    
     if precedenceRight < -1
         ⮐  node
 
-    while true
+    while not p.atEnd()
         
         let token = p.current
         var precedence = p.getPrecedence(token)
@@ -1447,6 +1462,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
         
         let lhs = p.leftHandSide(token)
         
+        
         if precedenceRight >= precedence
             break
     
@@ -1454,6 +1470,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
             break
             
         let lhn = p.lhs(node)
+        
         if lhn != nil
             node = lhn
         else
@@ -1470,7 +1487,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
 # ███        ███   ███  ███   ███     ███        ███   
 # ███        ███   ███  ███   ███     ███        ███   
 
-proc pratt(p: Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) = 
+pratt = ◇Parser p ◇tok t ◇LHS lhs ◇RHS rhs ◇int precedence ->
 
     if p.pratts.len <= t.ord
         p.pratts.setLen(t.ord + 1)
@@ -1483,7 +1500,7 @@ proc pratt(p: Parser, t:tok, lhs:LHS, rhs:RHS, precedence:int) =
 #      ███  ███          ███     ███   ███  ███      
 # ███████   ████████     ███      ███████   ███      
 
-proc setup(p: Parser) =
+setup = ◇Parser p ->
 
     p.pratt ◂true              nil               rLiteral        0
     p.pratt ◂false             nil               rLiteral        0
@@ -1572,7 +1589,7 @@ proc setup(p: Parser) =
 # ███   ███       ███     ███   
 # ███   ███  ███████      ███   
 
-proc ast*(text:string) : Node =
+ast* = ◇string text ➜Node ->
 
     let tokens = tokenize text
     # log &"ast* {tokens}"
