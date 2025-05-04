@@ -17,7 +17,8 @@ var outdir    = ""
 var tests     = false
 var verbose   = false
 var transpile = false
-var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
+proc dotPath(r:tuple) : string = r.path
+var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(dotPath)
     
 randomize()
 
@@ -33,37 +34,37 @@ proc verb(msg: string) =
 #  ███████   ████████     ███            ███████   ███           ███   
 
 for kind, key, val in optParser.getopt()
-    switch kind
-        cmdArgument
+    case kind
+        of cmdArgument
             params.add key
             files.add(key)
-        cmdLongOption, cmdShortOption
+        of cmdLongOption, cmdShortOption
             params.add '-' & key
-            switch key
-                "test"
+            case key
+                of "test"
                     tests = true
-                "verbose" "v"
+                of "verbose", "v"
                     verbose = true
-                "outdir" "o"
+                of "outdir", "o"
                     outdir = val
-                "transpile" "t"
+                of "transpile", "t"
                     transpile = true
-                "help" "h"
-                    log "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
-                    log ""
-                    log "      transpiles kim files to nim"
-                    log "      watches cwd if no files are given"
-                    log ""
-                    log "options:"
-                    log "  -o --outdir:DIR  output directory"
-                    log "  -t --transpile   log transpilat"
-                    log "     --test        run tests"
-                    log "  -v --verbose     verbose output"
+                of "help", "h"
+                    echo "usage: ", getAppFilename().extractFilename, " [options] [file.kim ...]"
+                    echo ""
+                    echo "      transpiles kim files to nim"
+                    echo "      watches cwd if no files are given"
+                    echo ""
+                    echo "options:"
+                    echo "  -o --outdir:DIR  output directory"
+                    echo "  -t --transpile   log transpilat"
+                    echo "     --test        run tests"
+                    echo "  -v --verbose     verbose output"
                     quit(1)
-                ➜ 
-                    log "unknown option!: " key
+                else
+                    echo "unknown option!: ", key
                     quit(1)
-        cmdEnd
+        of cmdEnd
             discard
                         
 # ████████   ████████   ███████  █████████   ███████   ████████   █████████
@@ -93,9 +94,22 @@ proc logFile(f:string, prefix:string="") =
         return
 
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
-    let d = if dir.len ➜ dir & "/" ➜ ""
-    let icon = if ext == ".kim" ➜ "  " ➜ "  "
-    let color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
+    let d = 
+        if dir.len
+            dir & "/" 
+        else
+            ""
+    let icon = 
+        if ext == ".kim"
+            "  " 
+        else
+            "  "
+            
+    let color = 
+        if ext == ".kim"
+            fgGreen
+        else
+            fgMagenta
 
     styledEcho color, prefix, styleDim, icon, resetStyle, 
                color, styleBright, d, styleBright, name, resetStyle #, styleDim, ext, resetStyle
@@ -110,11 +124,11 @@ proc compile(file:string, outDir:string="bin") : bool =
 
     profileScope 'comp'
     # let cmd = &"nim c --outDir:{outdir} {file}"
-    let cmd = "nim c --outDir:#{outdir} --stackTrace:on --lineTrace:on #{file}"
+    let cmd = &"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
-        styledEcho fgRed, "✘ ", "#{cmd}"
+        styledEcho fgRed, "✘ ", &"{cmd}"
         echo output
         false
     else
@@ -145,7 +159,7 @@ proc runTests() : bool =
         while true
             let elapsed = (getMonoTime() - startTime).inMilliseconds
             if elapsed >= 4000
-                output.add("test killed after #{elapsed} ms!!")
+                output.add(&"test killed after {elapsed} ms!!")
                 p.terminate()
                 sleep(50)
                 if p.running
@@ -153,7 +167,7 @@ proc runTests() : bool =
                 break
                             
             var line = newString(1024*10)
-            let bytesRead = read(fd, addr line[0], line.len)
+            let bytesRead = read(fd, addr(line[0]), line.len)
             if bytesRead > 0
                 output.add(line & "\n")
             elif bytesRead == 0
@@ -175,10 +189,10 @@ proc runTests() : bool =
         else
             let okCount = output.count "[OK]"
             styledEcho output.replace("[Suite]",  fg(fgYellow) & "▸\x1b[0m")
-                             .replace(peg"'[OK]' .+", "#{ansiStyleCode styleDim} ✔ #{okCount}\x1b[0m")
+                             .replace(peg"'[OK]' .+", &"{ansiStyleCode(styleDim)} ✔ {okCount}\x1b[0m")
             
         if exitCode != 0
-            styledEcho fgRed, "✘ ", "#{f}"
+            styledEcho fgRed, "✘ ", &"{f}"
             fail = true
     echo ""
     not fail
@@ -206,11 +220,12 @@ if tests
 
 proc watch(paths:seq[string]) =
 
-    setControlCHook(() -> {.noconv.}
-        
+    proc hook() {.noconv.} = 
         styledEcho ""
         styledEcho fgGreen, farewells[rand(farewells.high)]
-        quit 0)
+        quit 0
+        
+    setControlCHook hook
     
     var modTimes: Table[string,times.Time]
     

@@ -17,7 +17,8 @@ var outdir    = ""
 var tests     = false
 var verbose   = false
 var transpile = false
-var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(proc (r:tuple) : string = r.path)
+proc dotPath(r:tuple) : string = r.path
+var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(dotPath)
     
 randomize()
 
@@ -166,7 +167,7 @@ proc runTests() : bool =
                 break
                             
             var line = newString(1024*10)
-            let bytesRead = read(fd, addr line[0], line.len)
+            let bytesRead = read(fd, addr(line[0]), line.len)
             if bytesRead > 0:
                 output.add(line & "\n")
             elif bytesRead == 0:
@@ -188,7 +189,7 @@ proc runTests() : bool =
         else:
             let okCount = output.count "[OK]"
             styledEcho output.replace("[Suite]",  fg(fgYellow) & "▸\x1b[0m")
-                             .replace(peg"'[OK]' .+", &"{ansiStyleCode styleDim} ✔ {okCount}\x1b[0m")
+                             .replace(peg"'[OK]' .+", &"{ansiStyleCode(styleDim)} ✔ {okCount}\x1b[0m")
             
         if exitCode != 0:
             styledEcho fgRed, "✘ ", &"{f}"
@@ -219,11 +220,12 @@ if tests:
 
 proc watch(paths:seq[string]) =
 
-    setControlCHook(proc () {.noconv.} = 
-        
+    proc hook() {.noconv.} = 
         styledEcho ""
         styledEcho fgGreen, farewells[rand(farewells.high)]
-        quit 0)
+        quit 0
+        
+    setControlCHook hook
     
     var modTimes: Table[string,times.Time]
     

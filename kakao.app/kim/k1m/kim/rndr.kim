@@ -64,6 +64,10 @@ proc ▸proc(r: Rndr, n: Node) =
 
 proc ▸operation(r: Rndr, n: Node) = 
 
+    if n == nil or n.operand_left == nil or n.operand_right == nil
+        log &"DAFUK? {n} {n.token}"
+        ⮐  
+
     if n.token.tok == ◂assign 
         if n.operand_right.token.tok == ◂func
             r.▸proc n
@@ -186,6 +190,8 @@ proc ▸string(r: Rndr, n: Node) =
     
     if n.string_stripols.len > 0
         r.add "&"
+    elif n.string_prefix != nil
+        r.tok n.string_prefix
         
     r.add delimiter
     
@@ -212,7 +218,7 @@ proc ▸string(r: Rndr, n: Node) =
             var lines = n.token.str.split "\n"
             for i in 1..<lines.len
                 lines[i] = lines[i][mill..^1]
-            r.add lines.join "\n"
+            r.add lines.join("\n")
         
     demill n.string_content
     for stripol in n.string_stripols
@@ -336,11 +342,12 @@ proc ▸squarely(r: Rndr, n: Node) =
     
 proc ▸range(r: Rndr, n: Node) = 
 
-    r.add "["
     r.rnd n.range_start
-    r.tok n
+    if n.token.str == "..."
+        r.add "..<"
+    else
+        r.tok n
     r.rnd n.range_end
-    r.add "]"
         
 proc ▸return(r: Rndr, n: Node) =
 
@@ -355,6 +362,11 @@ proc ▸discard(r: Rndr, n: Node) =
     if n.discard_value != nil
         r.spc()
         r.rnd n.discard_value
+
+proc ▸quote(r: Rndr, n: Node) =
+
+    r.add "quote do: "
+    r.rnd n.quote_body
      
 proc ▸switch(r: Rndr, n: Node) =
 
@@ -378,7 +390,11 @@ proc ▸switch(r: Rndr, n: Node) =
     
     if n.switch_default != nil
         r.add "\n" & cdt
+        # if n.switch_default.kind in [●list, ●block]
+        #     r.add "else:\n" & cdt & " "
+        # else
         r.add "else: "
+        # log &"n.switch_default.kind {n.switch_default} {n.switch_default.kind}"
         r.rnd(n.switch_default)
         
 proc ▸enum(r: Rndr, n: Node) =
@@ -480,6 +496,8 @@ proc rnd(r: Rndr, n: Node) =
             r.▸enum(n)
         of ●class
             r.▸class(n)
+        of ●quote
+            r.▸quote(n)
         of ●member
             r.▸member(n)
         of ●testSuite, ●testSection
@@ -517,7 +535,7 @@ proc files*(files: seq[string]): seq[string] =
 
     var transpiled: seq[string]
     for f in files
-        transpiled.add file f
+        transpiled.add file(f)
         
     # echo "render.files done: ", transpiled
     transpiled

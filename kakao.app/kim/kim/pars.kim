@@ -696,7 +696,8 @@ proc parseVar(p: Parser): Node =
     
     if p.tok == ◂assign
         p.swallow()
-        var_value = p.expression()
+        # var_value = p.expression()
+        var_value = p.then()
     elif p.tok in {◂val_type, ◂var_type}
         token = p.consume()
         var_type = p.parseType()
@@ -835,11 +836,10 @@ proc isImplicitCallPossible(p: Parser, token: Token) : bool =
 
     if not p.explicit and currt.tok notin {◂indent} and not p.isTokAhead(◂func)
         if currt.col > token.col+token.str.len
-            const optoks= { ◂then, ◂else, ◂elif, ◂test,
-                            ◂val_type, ◂var_type, ◂colon,
-                            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
-                            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match,
-                            ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
+            let optoks = { ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
+                           ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
+                           ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
+                           ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
             if currt.tok notin optoks
                 ⮐  true
     false
@@ -1023,12 +1023,12 @@ proc rSwitch(p: Parser): auto =
     
     if p.tok in {◂else, ◂then}
         p.swallow()
-        switch_default = 
-            if p.tok == ◂indent and p.current.str.len > baseIndent
-                p.swallow()
-                p.expression()
-            else
-                p.expression()
+        switch_default = p.then()
+            # if p.tok == ◂indent and p.current.str.len > baseIndent
+            #     p.swallow()
+            #     p.expression()
+            # else
+            #     p.expression()
         
         if switch_default == nil
             ⮐  p.error("Expected default value", token)
@@ -1556,12 +1556,12 @@ proc setup(p: Parser) =
     p.pratt ◂while,             nil,               rWhile,         20
     p.pratt ◂func,              lFunc,             rFunc,          20
     
-    p.pratt ◂is,                lOperation,        nil,            25
-    p.pratt ◂in,                lOperation,        nil,            26
-    p.pratt ◂notin,             lOperation,        nil,            26
-    
     p.pratt ◂or,                lOperation,        nil,            30
     p.pratt ◂and,               lOperation,        nil,            31
+    
+    p.pratt ◂is,                lOperation,        nil,            32
+    p.pratt ◂in,                lOperation,        nil,            33
+    p.pratt ◂notin,             lOperation,        nil,            34
 
     p.pratt ◂equal,             lOperation,        nil,            40
     p.pratt ◂not_equal,         lOperation,        nil,            40

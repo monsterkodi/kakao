@@ -47,7 +47,7 @@ proc ▸proc(r: Rndr, n: Node) =
     let f = n.operand_right
     r.add("proc ")
     if (n.operand_left.token.str[0] == '$'): 
-        r.add("`$`" & n.operand_left.token.str[[1..^1]])
+        r.add("`$`" & n.operand_left.token.str[1..^1])
     else: 
         r.rnd(n.operand_left)
     r.rnd(f.func_signature)
@@ -57,6 +57,9 @@ proc ▸proc(r: Rndr, n: Node) =
         r.rnd(f.func_body)
 proc ▸operation(r: Rndr, n: Node) = 
 
+    if (((n == nil) or (n.operand_left == nil)) or (n.operand_right == nil)): 
+        echo(&"DAFUK? {n} {n.token}")
+        return
     if (n.token.tok == ◂assign): 
         if (n.operand_right.token.tok == ◂func): 
             r.▸proc n
@@ -74,7 +77,8 @@ proc ▸operation(r: Rndr, n: Node) =
             r.add("and")
            of ◂or: 
             r.add("or")
-           else: r.tok(n)
+           else: 
+            r.tok(n)
     r.spc()
     if ((n.token.tok == ◂assign) and (n.operand_right.kind == ●list)): 
         r.add("(")
@@ -164,19 +168,21 @@ proc ▸string(r: Rndr, n: Node) =
         delimiter = "\""
     if (n.string_stripols.len > 0): 
         r.add("&")
+    elif (n.string_prefix != nil): 
+        r.tok(n.string_prefix)
     r.add(delimiter)
     var sct = n.string_content.token.str
     var mill = high(int)
     if (delimiter == "\"\"\""): 
         var lines = n.string_content.token.str.split("\n")
         if (lines.len > 1): 
-            let ill = indentLen(lines[[1..^1]])
+            let ill = indentLen(lines[1..^1])
             mill = min(mill, ill)
         for stripol in n.string_stripols: 
             if (stripol.stripol_content != nil): 
                 lines = stripol.stripol_content.token.str.split("\n")
                 if (lines.len > 1): 
-                    let ill = indentLen(lines[[1..^1]])
+                    let ill = indentLen(lines[1..^1])
                     mill = min(mill, ill)
     proc demill(n:Node) = 
     
@@ -184,9 +190,9 @@ proc ▸string(r: Rndr, n: Node) =
             r.tok(n)
         else: 
             var lines = n.token.str.split("\n")
-            for i in [1...lines.len]: 
-                lines[i] = lines[i][[mill..^1]]
-            r.add(lines.join, "\n")
+            for i in 1..<lines.len: 
+                lines[i] = lines[i][mill..^1]
+            r.add(lines.join("\n"))
     demill(n.string_content)
     for stripol in n.string_stripols: 
         r.add("{")
@@ -294,11 +300,12 @@ proc ▸squarely(r: Rndr, n: Node) =
     r.add("]")
 proc ▸range(r: Rndr, n: Node) = 
 
-    r.add("[")
     r.rnd(n.range_start)
-    r.tok(n)
+    if (n.token.str == "..."): 
+        r.add("..<")
+    else: 
+        r.tok(n)
     r.rnd(n.range_end)
-    r.add("]")
 proc ▸return(r: Rndr, n: Node) =
 
     r.add("return")
@@ -311,6 +318,10 @@ proc ▸discard(r: Rndr, n: Node) =
     if (n.discard_value != nil): 
         r.spc()
         r.rnd(n.discard_value)
+proc ▸quote(r: Rndr, n: Node) =
+
+    r.add("quote do: ")
+    r.rnd(n.quote_body)
 proc ▸switch(r: Rndr, n: Node) =
 
     var idt = ' '.repeat(n.token.col)
@@ -329,7 +340,11 @@ proc ▸switch(r: Rndr, n: Node) =
         r.rnd(caseNode.case_then)
     if (n.switch_default != nil): 
         r.add("\n" & cdt)
+        # if n.switch_default.kind in [●list, ●block]
+        #     r.add "else:\n" & cdt & " "
+        # else
         r.add("else: ")
+        # log &"n.switch_default.kind {n.switch_default} {n.switch_default.kind}"
         r.rnd(n.switch_default)
 proc ▸enum(r: Rndr, n: Node) =
 
@@ -361,7 +376,7 @@ proc ▸testSuite(r: Rndr, n:Node) =
     else: 
         r.add("test")
     r.add(" \"")
-    r.add(n.token.str[[4..^1]])
+    r.add(n.token.str[4..^1])
     r.add("\": ")
     r.rnd(n.test_block)
 proc rnd(r: Rndr, n: Node) =
@@ -423,6 +438,8 @@ proc rnd(r: Rndr, n: Node) =
             r.▸enum(n)
            of ●class: 
             r.▸class(n)
+           of ●quote: 
+            r.▸quote(n)
            of ●member: 
             r.▸member(n)
            of ●testSuite, ●testSection: 
@@ -433,8 +450,8 @@ proc rnd(r: Rndr, n: Node) =
             r.tok(n)
            of ●typeDef, ●import, ●proc, ●macro, ●template, ●converter: 
             r.tok(n)
-           else: echo(&"unhandled {n} {n.kind}")
-    
+           else: 
+            echo(&"unhandled {n} {n.kind}")
             r.tok(n)
 proc render*(code:string, autovar=true): string =
 
@@ -457,7 +474,7 @@ proc files*(files: seq[string]): seq[string] =
 
     var transpiled: seq[string]
     for f in files: 
-        transpiled.add(file, f)
+        transpiled.add(file(f))
     # echo "render.files done: ", transpiled
     transpiled
     

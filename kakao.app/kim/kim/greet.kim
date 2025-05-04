@@ -10,7 +10,7 @@ let greetings* = [
     "💋 Uncomplicate your code and your mind will dance.",
     "🌞 A child’s laugh, a sunbeam’s path — why bend what is straight?",
     "🌈 Go with the flow, catch joy like dandelion fluff.",
-    "🌈 Optimize for maximum joy, with escape hatches for future regrets.",
+    "🌈 Aim for maximum joy, anticipate future regrets.",
     "🌞 Rise and shine! What shall we craft today?",
     "👋 Salutations! Let's crunch some code cookies.",
     "🚀 Systems nominal! Your code awaits transformation.",

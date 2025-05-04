@@ -40,9 +40,10 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
             punct = "#[" 
         else 
             punct = "]#"
-        apply(matches, proc(x: var string) = 
-            if x == "###" 
-                x = punct)
+        let f = proc(x: var string) = 
+            if x == "###"
+                x = punct
+        apply(matches, f)
         return matches.join("")
     line
     
@@ -238,6 +239,6 @@ proc pile*(files:seq[string]) : seq[string] =
 
     var transpiled:seq[string]
     for file in files
-        transpiled.add trans file
+        transpiled.add trans(file)
     transpiled
             

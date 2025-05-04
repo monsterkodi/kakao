@@ -35,8 +35,11 @@ proc tripleComment*(line:string, info:var TableRef[string,int]) : string =
             punct = "#["
         else: 
             punct = "]#"
-        apply(matches, proc(x: var string) = , if (x == "###"): 
-                x = punct)
+        let f = proc(x: var string) = 
+        
+            if (x == "###"): 
+                x = punct
+        apply(matches, f)
         return matches.join("")
     line
 proc logToEcho*(line:string) : string =
@@ -111,7 +114,7 @@ proc tripleString*(line:string, info:var TableRef[string,int]) : int =
     tsi
 proc isStr*(s:string) : bool =
 
-    (((s.len > 0) and s[0]) in "'\"")
+    ((s.len > 0) and (s[0] in "'\""))
 #  ███████  █████████   ███████   █████████  ████████  ██     ██  ████████  ███   ███  █████████   ███████
 # ███          ███     ███   ███     ███     ███       ███   ███  ███       ████  ███     ███     ███     
 # ███████      ███     █████████     ███     ███████   █████████  ███████   ███ █ ███     ███     ███████ 
@@ -157,7 +160,7 @@ proc pose*(line:string, info:var TableRef[string,int]) : string =
     for stmnt in stmnts: 
         var cgmnts: seq[string] = @[]
         for sgmnt in stmnt: 
-            cgmnts.add(case sgmnt[0...1]:
+            cgmnts.add(case sgmnt[0..<1]:
                    of "#": 
                     sgmnt.tripleComment(info)
                    of "'": 
@@ -203,5 +206,5 @@ proc pile*(files:seq[string]) : seq[string] =
 
     var transpiled: seq[string]
     for file in files: 
-        transpiled.add(trans, file)
+        transpiled.add(trans(file))
     transpiled

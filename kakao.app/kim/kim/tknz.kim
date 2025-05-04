@@ -50,7 +50,7 @@ type tok* = enum
         ◂string
         ◂string_start       = "'"
         ◂string_end
-        ◂stripol_start      = "#{"
+        ◂stripol_start      = "#" & "{"
         ◂stripol_end
         
         ◂comment_start      = "#"
@@ -531,5 +531,5 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
     
 proc tokenize*(text:string) : seq[Token] =
 
-    Tknzr.new.tknz kseg text
+    Tknzr.new.tknz kseg(text)
     

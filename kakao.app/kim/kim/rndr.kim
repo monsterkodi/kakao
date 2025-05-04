@@ -218,7 +218,7 @@ proc ▸string(r: Rndr, n: Node) =
             var lines = n.token.str.split "\n"
             for i in 1..<lines.len
                 lines[i] = lines[i][mill..^1]
-            r.add lines.join "\n"
+            r.add lines.join("\n")
         
     demill n.string_content
     for stripol in n.string_stripols
@@ -342,11 +342,12 @@ proc ▸squarely(r: Rndr, n: Node) =
     
 proc ▸range(r: Rndr, n: Node) = 
 
-    # r.add "["
     r.rnd n.range_start
-    r.tok n
+    if n.token.str == "..."
+        r.add "..<"
+    else
+        r.tok n
     r.rnd n.range_end
-    # r.add "]"
         
 proc ▸return(r: Rndr, n: Node) =
 
@@ -389,7 +390,11 @@ proc ▸switch(r: Rndr, n: Node) =
     
     if n.switch_default != nil
         r.add "\n" & cdt
+        # if n.switch_default.kind in [●list, ●block]
+        #     r.add "else:\n" & cdt & " "
+        # else
         r.add "else: "
+        # log &"n.switch_default.kind {n.switch_default} {n.switch_default.kind}"
         r.rnd(n.switch_default)
         
 proc ▸enum(r: Rndr, n: Node) =
@@ -530,7 +535,7 @@ proc files*(files: seq[string]): seq[string] =
 
     var transpiled: seq[string]
     for f in files
-        transpiled.add file f
+        transpiled.add file(f)
         
     # echo "render.files done: ", transpiled
     transpiled

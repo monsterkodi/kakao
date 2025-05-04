@@ -46,6 +46,7 @@ type NodeKind* = enum
     ●template
     ●converter
     ●macro
+    ●quote
     ●proc
     ●typeDef
     ●enum
@@ -70,6 +71,7 @@ type Node* = ref object
             operand_left*: Node
             operand_right*: Node
            of ●string: 
+            string_prefix*: Node
             string_content*: Node
             string_stripols*: seq[Node]
            of ●comment: 
@@ -148,12 +150,15 @@ type Node* = ref object
            of ●enum: 
             enum_name*: Node
             enum_body*: Node
+           of ●quote: 
+            quote_body*: Node
            of ●testSuite, ●testSection: 
             test_block*: Node
            of ●testCase: 
             test_value*: Node
             test_expected*: Node
-           else: discard
+           else: 
+            discard
 template choose*(cond, a, b: untyped): untyped =
 
     when (typeof(cond) is bool): 
@@ -191,7 +196,7 @@ type Parser* = ref object
         listless: bool
         returning: bool
         typeless: bool
-        text: string(# used in `$` for debugging. should be removed eventually )
+        text: string # used in `$` for debugging. should be removed eventually 
 proc current(p: Parser): Token =
 
     if (p.pos < p.tokens.len): 
@@ -247,7 +252,8 @@ proc `$`*(n: Node): string =
                     (ips &= " ")
                 if (i == (n.string_stripols.len - 1)): 
                     (ips &= "}")
-            s = &"◂string{ips}"
+            let p = choose(n.string_prefix, $n.string_prefix.token.str, "")
+            s = &"◂{p}string{ips}"
            of ●preOp: 
             s = &"({s} {n.operand})"
            of ●postOp: 
@@ -297,13 +303,13 @@ proc `$`*(n: Node): string =
             # s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
            of ●list: 
             s = &"{n.list_values}"
-            s = "◂" & s[[1..^1]]
+            s = "◂" & s[1..^1]
            of ●curly: 
             s = &"{n.list_values}"
-            s = "{" & s[[2..^2]] & "}"
+            s = "{" & s[2..^2] & "}"
            of ●squarely: 
             s = &"{n.list_values}"
-            s = "[" & s[[1..^1]] & "]]"
+            s = "[" & s[1..^1] & "]]"
            of ●while: 
             let b = choose(n.while_body, &" {n.while_body}", "")
             s = &"({s} {n.while_cond}{b})"
@@ -343,6 +349,8 @@ proc `$`*(n: Node): string =
             s = &"({s} {n.class_name}{b})"
            of ●member: 
             s = &"({n.member_key} {s} {n.member_value})"
+           of ●quote: 
+            s = &"({s} {n.quote_body})"
            of ●testSuite: 
             let b = choose(n.test_block, &" {n.test_block}", "")
             s = &"({s} suite{b})"
@@ -351,7 +359,8 @@ proc `$`*(n: Node): string =
             s = &"({s} section{b})"
            of ●testCase: 
             s = &"({n.test_value} {s} {n.test_expected})"
-           else: discard
+           else: 
+            discard
     s
 proc formatValue*(result:var string, n:Node,   specifier: string) = result.add $n
 proc formatValue*(result:var string, p:Parser, specifier: string) = result.add $p
@@ -580,7 +589,7 @@ proc parseModule(p:Parser) : Node =
         (s &= p.consume().str)
         if (p.atEnd() or (p.current.line != line)): 
             break
-        if (((p.current.col > e) and p.current.str) notin @["▪", "◆"]): 
+        if ((p.current.col > e) and (p.current.str notin @["▪", "◆"])): 
             (s &= " ")
     Node(token: Token(str: s))
 # ███      ███   ███████  █████████
@@ -680,15 +689,19 @@ proc lCall(p: Parser, callee: Node): Node =
 proc isImplicitCallPossible(p: Parser, token: Token) : bool =     
 
     let currt = p.peek(0)
-    if ((not p.explicit and currt.tok) notin ({◂indent} and not p.isTokAhead(◂func))): 
+    if ((not p.explicit and (currt.tok notin {◂indent})) and not p.isTokAhead(◂func)): 
         if (currt.col > (token.col + token.str.len)): 
-            const(optoks = {◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign})
+            let optoks = {◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
             if (currt.tok notin optoks): 
                 return true
     false
 proc rSymbol(p: Parser): Node =
 
     let token = p.consume()
+    if (((token.str in @["peg", "re", "r"]) and (p.tok == ◂string_start)) and ((token.col + token.str.len) == p.current.col)): 
+        var n = p.rString()
+        n.string_prefix = Node(token: token, kind: ●literal)
+        return n
     if p.isImplicitCallPossible(token): 
         let args = p.parseCallArgs(token.col)
         return Node(token: token, kind: ●call, callee: Node(token: token, kind: ●literal), callargs: args)
@@ -816,12 +829,13 @@ proc rSwitch(p: Parser): auto =
     var switch_default: Node
     if (p.tok in {◂else, ◂then}): 
         p.swallow()
-        switch_default = 
-            if ((p.tok == ◂indent) and (p.current.str.len > baseIndent)): 
-                p.swallow()
-                p.expression()
-            else: 
-                p.expression()
+        switch_default = p.then()
+        
+            # if p.tok == ◂indent and p.current.str.len > baseIndent
+            #     p.swallow()
+            #     p.expression()
+            # else
+            #     p.expression()
         if (switch_default == nil): 
             return p.error("Expected default value", token)
     Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
@@ -834,7 +848,8 @@ proc lArrayAccess(p: Parser, array_owner: Node): Node =
                 nil
                of 1: 
                 array_indices[0]
-               else: Node(token: token, kind: ●list, list_values: array_indices)
+               else: 
+                Node(token: token, kind: ●list, list_values: array_indices)
     Node(token: token, kind: ●arrayAccess, array_owner: array_owner, array_index: array_index)
 proc rLiteral(p: Parser): Node =
 
@@ -975,7 +990,8 @@ proc lSymbolList(p: Parser, left: Node) : Node =
             list_values.add(left)
             list_values.add(p.rSymbol())
             return Node(token: left.token, kind: ●list, list_values: list_values)
-           else: discard
+           else: 
+            discard
 proc lArgList(p: Parser, left: Node) : Node =
 
     case left.kind:
@@ -991,7 +1007,8 @@ proc lArgList(p: Parser, left: Node) : Node =
            of ●literal: 
             if (left.token.tok == ◂name): 
                 return p.lVar(left)
-           else: discard
+           else: 
+            discard
 # ████████  ███   ███  ███   ███   ███████
 # ███       ███   ███  ████  ███  ███     
 # ██████    ███   ███  ███ █ ███  ███     
@@ -1064,6 +1081,9 @@ proc rDiscard(p: Parser): Node =
     else: 
         let right = p.value()
         Node(token: token, kind: ●discard, discard_value: right)
+proc rQuote(p: Parser): Node =
+
+    Node(token: p.consume(), kind: ●quote, quote_body: p.then())
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
 # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
@@ -1184,7 +1204,7 @@ proc expression(p: Parser, precedenceRight = 0): Node =
             node = lhn
         else: 
             break
-        if (((p.tok == ◂indent) and p.peek(1).tok) in {◂dot}): 
+        if ((p.tok == ◂indent) and (p.peek(1).tok in {◂dot})): 
              p.swallow()
              node = p.lPropertyAccess(node)
     node
@@ -1224,6 +1244,7 @@ proc setup(p: Parser) =
     p.pratt(◂var, nil, rLet, 0)
     p.pratt(◂return, nil, rReturn, 0)
     p.pratt(◂discard, nil, rDiscard, 0)
+    p.pratt(◂quote, nil, rQuote, 0)
     p.pratt(◂test, lTestCase, rTestSuite, 0)
     p.pratt(◂class, nil, rClass, 0)
     p.pratt(◂enum, nil, rEnum, 0)
@@ -1242,17 +1263,18 @@ proc setup(p: Parser) =
     p.pratt(◂switch, nil, rSwitch, 20)
     p.pratt(◂while, nil, rWhile, 20)
     p.pratt(◂func, lFunc, rFunc, 20)
-    p.pratt(◂is, lOperation, nil, 25)
-    p.pratt(◂in, lOperation, nil, 26)
-    p.pratt(◂notin, lOperation, nil, 26)
     p.pratt(◂or, lOperation, nil, 30)
     p.pratt(◂and, lOperation, nil, 31)
+    p.pratt(◂is, lOperation, nil, 32)
+    p.pratt(◂in, lOperation, nil, 33)
+    p.pratt(◂notin, lOperation, nil, 34)
     p.pratt(◂equal, lOperation, nil, 40)
     p.pratt(◂not_equal, lOperation, nil, 40)
     p.pratt(◂greater_equal, lOperation, nil, 40)
     p.pratt(◂less_equal, lOperation, nil, 40)
     p.pratt(◂less, lOperation, nil, 40)
     p.pratt(◂greater, lOperation, nil, 40)
+    p.pratt(◂match, lOperation, nil, 40)
     p.pratt(◂doubledot, lRange, nil, 40)
     p.pratt(◂tripledot, lRange, nil, 40)
     p.pratt(◂ampersand, lOperation, nil, 40)

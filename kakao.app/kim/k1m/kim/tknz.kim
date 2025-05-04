@@ -4,9 +4,9 @@
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-use kommon
+import kommon
 
-enum tok*
+type tok* = enum
         
         ◂name
         ◂if
@@ -20,7 +20,6 @@ enum tok*
         ◂in
         ◂notin
         ◂is
-        ◂of
         ◂break
         ◂continue
         ◂discard
@@ -29,6 +28,7 @@ enum tok*
         ◂import
         ◂template
         ◂macro
+        ◂quote
         ◂converter
         ◂type  
         ◂use
@@ -45,15 +45,18 @@ enum tok*
         ◂func               = "->"
         ◂proc               = "=>"
         ◂return             = "⮐"
+
         ◂number
         ◂string
         ◂string_start       = "'"
         ◂string_end
-        ◂stripol_start      = "\#{"
+        ◂stripol_start      = "#" & "{"
         ◂stripol_end
+        
         ◂comment_start      = "#"
         ◂comment
         ◂comment_end
+
         ◂val_type           = "◇"
         ◂var_type           = "◆"
         ◂paren_open         = "("
@@ -77,6 +80,7 @@ enum tok*
         ◂divide             = "/"
         ◂multiply           = "*"
         ◂assign             = "="
+        ◂match              = "=~"
         ◂plus_assign        = "+="
         ◂minus_assign       = "-="
         ◂divide_assign      = "/="
@@ -89,7 +93,7 @@ enum tok*
         ◂greater            = ">"
         ◂less               = "<"
         ◂test               = "▸"
-        ◂
+        ◂  # block
         ◂indent
         ◂eof
         
@@ -139,7 +143,7 @@ type Tknzr* = ref object
     
 proc `$`*(t:Tknzr): string = 
 
-    var s = "◂▸ #{t.line} #{t.token} #{t.bol} #{t.segi} #{t.eol}"
+    var s = &"◂▸ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
     s
     
 proc formatValue*(result:var string, t:Tknzr, specifier: string) = result.add $t
@@ -150,6 +154,13 @@ proc peek(t:Tknzr, n: int) : string = t.segs[t.segi+n]
 proc incr(t:Tknzr, n: int) = t.segi += n
 proc col(t:Tknzr) : int    = t.segi - t.bol
 
+proc peekSafe(t:Tknzr, n: int) : string = 
+
+    if t.segi+n < t.segs.len 
+        t.segs[t.segi+n]
+    else
+        ""
+    
 proc nextLine(t:Tknzr) =
 
     assert t.segs[t.segi] == "\n"
@@ -177,11 +188,11 @@ proc srng(t:Tknzr, n:int) : string =
         e = t.eol
     if e > t.segs.len
         ⮐  ""
-    t.segs[t.segi...e].join("")
+    t.segs[t.segi..<e].join("")
     
 proc advance(t:Tknzr, n:int) =
 
-    for s in 0...n 
+    for s in 0..<n 
         t.token.str &= t.peek(0)
         t.incr 1
 
@@ -229,15 +240,23 @@ proc string(t:Tknzr) =
     
     assert topTok.tok in {◂string_start, ◂stripol_end}
     
-    switch topTok.tok
-        ◂string_start
+    var ampersand = false
+    var stripolStart = "#" & "{"
+    
+    case topTok.tok
+        of ◂string_start
             t.delimiter = topTok.str
-        ◂stripol_end
+            if t.tokens.len > 1 and t.tokens[^2].tok == ◂ampersand
+                if t.tokens[^2].col == t.tokens[^1].col-1
+                    t.tokens.delete(t.tokens.len-2..t.tokens.len-2)
+                    stripolStart = "{"
+                    ampersand = true
+        of ◂stripol_end
             t.token.tok = ◂string
         else
             discard
 
-    # log "-------------- string #{t} #{t.delimiter} #{topTok}"
+    # log &"-------------- string {t} {t.delimiter} {topTok}"
 
     proc isAtStringEnd() : bool =
         if t.delimiter.len == 1 and t.segi >= t.eol
@@ -257,18 +276,18 @@ proc string(t:Tknzr) =
         if c == "\\"
             t.advance 2
             continue
-            
-        if t.srng(2) == "\#{" and t.delimiter in @["\"", "\"\"\""]
-            t.commit("\#{", ◂stripol_start, 2)
-            t.inStripol = true  
-            return
+        
+        if t.delimiter in @["\"", "\"\"\""]
+            if t.srng(stripolStart.len) == stripolStart
+                t.commit(stripolStart, ◂stripol_start, stripolStart.len)
+                t.inStripol = true  
+                return
 
         t.token.str &= c
         t.lineIncr c
                 
     if t.segi <= t.eol-1 
         t.commit(t.delimiter, ◂string_end, t.delimiter.len)
-    
     
 # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
 # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
@@ -359,12 +378,12 @@ proc commit(t:Tknzr, str="", tk=◂name, incr=0) =
     t.pushToken(str, tk, incr)
     t.pushToken()
     
-    switch tk
-        ◂comment_start
+    case tk
+        of ◂comment_start
             t.comment()
-        ◂string_start, ◂stripol_end
+        of ◂string_start, ◂stripol_end
             t.string()
-        ◂mod
+        of ◂mod
             t.modbracket()
         else
             discard
@@ -399,7 +418,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
             if t.segi >= t.segs.len
                 break
             t.token = Token(tok: ◂indent, line:t.line, col:t.col) 
-            while t.segi < t.segs.len and t.peek(0) == " "
+            while t.peekSafe(0) == " "
                 t.advance 1
             if t.segi >= t.segs.len
                 break
@@ -423,6 +442,11 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                     t.token.col = t.col
                 
                 let triple = t.srng 3
+                
+                if triple == "..<"
+                    t.commit("...", ◂tripledot, 3)
+                    continue
+                
                 if punct.hasKey triple
                     t.commit(triple, punct[triple], 3)
                     if t.tokens[^1].tok == ◂string_start
@@ -450,7 +474,11 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                             continue
                             
                     if punct[char] == ◂test
-                        if t.tokens.len == 0 or t.tokens[^1].tok == ◂indent
+                        if t.peek(1) notin [" ", "\n"]
+                            t.token.tok = ◂name
+                            t.advance 1
+                            continue
+                        if t.tokens.len == 0 or t.tokens[^1].tok == ◂indent and t.peek(1) == " " 
                             while t.segi <= t.eol-1
                                 t.advance 1
                             t.push ◂test
@@ -469,10 +497,25 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                         continue
                     
                     t.advance 1
+                    
+                    if t.peekSafe(0) == " "
+                        case t.token.str 
+                            of "case"
+                                t.token.str = "switch"
+                                t.push ◂switch
+                                continue
+                            of "of"
+                                t.token.str = ""
+                                continue
+                            of "quote"
+                                if t.srng(4) == " do:"
+                                    t.incr 4
+                                    t.push ◂quote
+                                    continue
                      
                     if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0)))
-                        switch keywords[t.token.str]
-                            ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter
+                        case keywords[t.token.str]
+                            of ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter
                                 t.verbatim(keywords[t.token.str])
                             else
                                 t.push keywords[t.token.str]
@@ -488,5 +531,5 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
     
 proc tokenize*(text:string) : seq[Token] =
 
-    Tknzr.new.tknz kseg text
+    Tknzr.new.tknz kseg(text)
     

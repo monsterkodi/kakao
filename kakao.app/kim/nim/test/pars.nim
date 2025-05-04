@@ -351,8 +351,8 @@ elif e.kind == ●var
         t "switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c"     , "▪[(◂switch ◂name @[(@[◂number, ◂number] ◂name), (@[◂number] ◂name)] ◂name)]"
         t "switch x\n  1 2\n    a\n  ➜ c"           , "▪[(◂switch ◂name @[(@[◂number, ◂number] ▪[◂name])] ◂name)]"
         t "switch x\n  1 2➜\n    a\n  ➜ c"          , "▪[(◂switch ◂name @[(@[◂number, ◂number] ▪[◂name])] ◂name)]"
-        t "switch x\n  1 2 ➜ a\n  else\n    c"      , "▪[(◂switch ◂name @[(@[◂number, ◂number] ◂name)] ◂name)]"
-        t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "▪[(◂switch ◂name @[(@[◂number, ◂number] ◂name)] ◂name)]"
+        t "switch x\n  1 2 ➜ a\n  else\n    c"      , "▪[(◂switch ◂name @[(@[◂number, ◂number] ◂name)] ▪[◂name])]"
+        t "switch x\n  1 2 ➜ a\n  ➜\n    c"         , "▪[(◂switch ◂name @[(@[◂number, ◂number] ◂name)] ▪[◂name])]"
         t "switch x\n a ➜ if b then c"              , "▪[(◂switch ◂name @[(@[◂name] (◂if @[(◂name ◂name)]))])]"        
         
         t """
@@ -562,7 +562,18 @@ f = ->
         t """
 icon = 
     if ex == ".kim"
-        "  "
+        " "
     else
-        "  """"  , "▪[(◂name = ▪[(◂if @[((◂name == ◂string) ▪[◂string])] ▪[◂string])])]"
+        " """"  , "▪[(◂name = ▪[(◂if @[((◂name == ◂string) ▪[◂string])] ▪[◂string])])]"
+        
+        t "icon = if ext == \".kim\" ➜ \"  \" ➜ \"  \"" , "▪[(◂name = (◂if @[((◂name == ◂string) ◂string)] ◂string))]"
+        t "let icon = if ext == \".kim\" ➜ \"  \" ➜ \"  \"" , "▪[(◂let (◂name (= (◂if @[((◂name == ◂string) ◂string)] ◂string))))]"
+        
+        t """
+let icon = 
+    if ext == ".kim"
+        " " 
+    else
+        " """" , "▪[(◂let (◂name (= ▪[(◂if @[((◂name == ◂string) ▪[◂string])] ▪[◂string])])))]"
+        
         
