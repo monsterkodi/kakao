@@ -11,13 +11,10 @@
 use kommon tknz pars
 
 class Scoper*
+    
     vars* : seq[Table[string,bool]]
 
-$* = ◇Scoper v ➜string ->
-
-    s = ""
-    s &= $v.vars
-    s
+$* = ◇Scoper v ➜string -> $v.vars
 
 exp   = ◇Scoper s ◇Node body ◇int i ◇Node e ->
 scope = ◇Scoper s ◇Node body ➜Node ->
@@ -32,26 +29,31 @@ exp = ◇Scoper s ◇Node body ◇int i ◇Node e ->
     
     ⮐  if e == nil
         
-    proc insert(name:string, expr:Node) =
+    insert = ◇string name ◇Node expr ->
         
         for map in s.vars
             ⮐  if map.hasKey name
             
-        var let_expr = Node(token:Token(tok:◂let, str:"var", line:expr.token.line), kind:●let, let_expr:expr)
-
-        body.expressions[i] = let_expr
-
+        body.expressions[i] = Node(token:Token(tok:◂let str:"var" line:expr.token.line) kind:●let, let_expr:expr)
         s.vars[^1][name] = true
     
-    if e.kind == ●operation
-        if e.operand_right.kind == ●func
-            discard s.scope e.operand_right.func_body
-        elif e.token.tok == ◂assign
-            let lhs = e.operand_left
-            if lhs.kind == ●literal
-                insert lhs.token.str, e
-    elif e.kind == ●var
-        insert e.var_name.token.str, e
+    switch e.kind 
+        ●operation
+            if e.operand_right.kind == ●func
+                discard s.scope e.operand_right.func_body
+            elif e.token.tok == ◂assign
+                let lhs = e.operand_left
+                if lhs.kind == ●literal
+                    insert lhs.token.str e
+        ●var
+            insert e.var_name.token.str e
+            
+        ●if
+            for condThen in e.condThens
+                discard s.scope condThen.then_branch
+            discard s.scope e.else_branch  
+        ➜ 
+            discard
                     
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       

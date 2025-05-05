@@ -120,7 +120,8 @@ suite "rndr":
         t("""
 a = 1
 # comment
-b = false""", """
+b = false
+""", """
 a = 1
 # comment
 b = false""")
@@ -133,7 +134,8 @@ b = false""")
 let greetings = [
     "💋 Keep It Simple, Stupid!",
     "💋 Overthink less, grin more!"
-    ]""", """
+    ]
+""", """
 let greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!"]""")
     test "properties        ": 
         t("a.b", "a.b")
@@ -174,7 +176,8 @@ if a
         if c
             1
 elif e
-    2""", """
+    2
+""", """
 if a: 
     if b: 
         if c: 
@@ -189,7 +192,8 @@ if a
         if d
             2
 elif e
-    4""", """
+    4
+""", """
 if a: 
     if b: 
         1
@@ -207,7 +211,8 @@ if e.kind == ●operation
         if lhs.kind == ●literal
             insert lhs.token.str, e
 elif e.kind == ●var
-    insert e.var_name.token.str, e""", """
+    insert e.var_name.token.str, e
+""", """
 if (e.kind == ●operation): 
     if (e.operand_right.kind == ●func): 
         discard s.scope(e.operand_right.func_body)
@@ -294,7 +299,8 @@ var params : seq[string]""")
 f = ->
     g = ->
         a = 2
-    b = 3""", """
+    b = 3
+""", """
 proc f = 
     proc g = 
         var a = 2
@@ -306,7 +312,8 @@ f = ->
         b = 2
         a = 1
         c = 0
-    c = 3""", """
+    c = 3
+""", """
 proc f = 
     var a = 1
     proc g = 
@@ -314,13 +321,24 @@ proc f =
         a = 1
         var c = 0
     var c = 3""")
+        v("""
+if true
+    a = 1
+else
+    b = 1
+""", """
+if true: 
+    var a = 1
+else: 
+    var b = 1""")
     test "blocks": 
         t("""
 f = ->
     g = ->
         2
         2
-    1""", """
+    1
+""", """
 proc f = 
     proc g = 
         2
@@ -340,7 +358,8 @@ proc f =
 f = -> 
     if 1
         2
-# dedent""", """
+# dedent
+""", """
 proc f = 
     if 1: 
         2
@@ -351,7 +370,8 @@ f = ->
         2
         2
     1
-0""", """
+0
+""", """
 proc f = 
     proc g = 
         2
@@ -362,7 +382,8 @@ proc f =
 switch kind
     cmdEnd
         discard
-# comment""", """
+# comment
+""", """
 case kind:
     of cmdEnd: 
         discard
@@ -372,27 +393,30 @@ case kind:
         t("enum tok\n  ◆when\n  ◆then = \"➜\"\n  ◆if", "type tok = enum\n  ◆when\n  ◆then = \"➜\"\n  ◆if")
     test "class": 
         t("class ABC\n a:int\n b:int\n c:int", "type ABC = ref object\n a: int\n b: int\n c: int")
-        t("""class Tknzr
-tokens      : seq[Token]
-openStack   : seq[tok]
-token       : Token
-inStripol   : bool
-delimiter   : string
-segi        : int
-segs        : seq[string]
-bol         : int
-eol         : int
-line        : int""", """type Tknzr = ref object
-tokens: seq[Token]
-openStack: seq[tok]
-token: Token
-inStripol: bool
-delimiter: string
-segi: int
-segs: seq[string]
-bol: int
-eol: int
-line: int""")
+        t("""
+class Tknzr
+    tokens      : seq[Token]
+    openStack   : seq[tok]
+    token       : Token
+    inStripol   : bool
+    delimiter   : string
+    segi        : int
+    segs        : seq[string]
+    bol         : int
+    eol         : int
+    line        : int
+""", """
+type Tknzr = ref object
+    tokens: seq[Token]
+    openStack: seq[tok]
+    token: Token
+    inStripol: bool
+    delimiter: string
+    segi: int
+    segs: seq[string]
+    bol: int
+    eol: int
+    line: int""")
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) # addition")
         t("""
@@ -414,7 +438,8 @@ line: int""")
     ███████    ███  █████████
     ███  ███   ███  ███ █ ███
     ███   ███  ███  ███   ███
-###""", """
+###
+""", """
 #[
     ███   ███  ███  ██     ██
     ███  ███   ███  ███   ███
@@ -430,7 +455,8 @@ line: int""")
         x   ▸ ""
     ▸ test2
         xy  ▸ "42"
-    1""", """
+    1
+""", """
 suite "suite": 
     test "test1": 
         check x == ""
@@ -466,7 +492,8 @@ icon =
         " "
     else
         " "
-    1""", """
+    1
+""", """
 icon = 
     if (ext == ".kim"): 
         " "
