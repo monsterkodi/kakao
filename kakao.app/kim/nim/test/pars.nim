@@ -185,7 +185,8 @@ if 1
 else
     count = output.count("[R]")
     log output.replace("[S]" fg(fgYellow) & "▸")
-              .replace("[T]" fg(fgGeen)   & "▸")""", "▪[(◂if @[(◂number ▪[(◂name ◂call @[((((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])] ▪[(◂name = ((◂name . ◂name) ◂call @[◂string]))(◂name ◂call @[((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])]")
+              .replace("[T]" fg(fgGeen)   & "▸")
+""", "▪[(◂if @[(◂number ▪[(◂name ◂call @[((((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])] ▪[(◂name = ((◂name . ◂name) ◂call @[◂string]))(◂name ◂call @[((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])]")
     test "array access": 
         t("a[0]", "▪[(◂name[◂number])]")
     test "if": 
