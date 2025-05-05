@@ -203,7 +203,7 @@ proc peek(p : Parser, ahead = 1) : Token =
 # ███        ███   ███  ███  ███  ████     ███     
 # ███        ███   ███  ███  ███   ███     ███     
 proc `$`(p : Parser) : string = 
-    var s: string
+    var s = ""
     if (p.tok != ◂eof): 
         s = &"▪▪▪ {p.current} {p.pos}"
         let l = p.text.split("\n")[p.current.line]
@@ -354,7 +354,7 @@ proc error(p : Parser, msg : string, token = Token(tok: ◂eof)) : Node =
 # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
 #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 proc consume(p : Parser) : Token = 
-    let t = p.current
+    var t = p.current
     if (p.pos < p.tokens.len): 
         (p.pos += 1)
     t
@@ -389,12 +389,12 @@ proc isNextLineIndented(p : Parser, token : Token) : bool =
         (n += 1)
         if (p.peek(n).tok == ◂eof): 
             return false
-    let idt = if (token.tok == ◂indent): token.str.len else: token.col
+    var idt = if (token.tok == ◂indent): token.str.len else: token.col
     return (p.peek(n).str.len > idt)
 proc isTokAhead(p : Parser, tokAhead : tok) : bool = 
     var n = 0
     var c = p.current
-    let line = c.line
+    var line = c.line
     while (c.tok != ◂eof): 
         if (c.line > line): 
             return false
@@ -436,15 +436,15 @@ proc value(p : Parser) : Node =
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███████   ███████    ███████  ███   ███
 proc parseBlock(p : Parser, bn : Node = nil) : Node = 
-    var token: Token
-    var block_indent: int
+    var token : Token
+    var block_indent : int
     while (p.tok == ◂indent): 
         token = p.consume()
         block_indent = p.current.col
     var bn = bn
     if (bn == nil): 
         bn = Node(token: token, kind: ●block, expressions: @[])
-    var expr: Node = p.expression()
+    var expr = p.expression()
     while (expr != nil): 
         if ((expr.kind == ●func) and bn.expressions.len): 
             var prevExpr = bn.expressions[^1]
@@ -497,9 +497,9 @@ proc swallowIndent(p : Parser, col : int) : bool =
 proc parseCallArgs(p : Parser, col : int) : seq[Node] = 
     p.explicit = true
     p.listless = true
-    var list: seq[Node]
-    let line = p.current.line
-    var expr: Node = p.expression()
+    var list : seq[Node]
+    var line = p.current.line
+    var expr = p.expression()
     while (expr != nil): 
         list.add(expr)
         if p.swallowIndent(col): 
@@ -532,9 +532,9 @@ proc parseType(p : Parser) : Node =
     Node(token: token, kind: ●type)
 proc parseVar(p : Parser) : Node = 
     var token = p.current()
-    let var_name = p.value()
-    var var_value: Node
-    var var_type: Node
+    var var_name = p.value()
+    var var_value : Node
+    var var_type : Node
     if (p.tok == ◂assign): 
         p.swallow()
         var_value = p.thenBlock()
@@ -546,7 +546,7 @@ proc parseVar(p : Parser) : Node =
             var_value = p.expression()
     Node(token: token, kind: ●var, var_name: var_name, var_type: var_type, var_value: var_value)
 proc parseModule(p : Parser) : Node = 
-    let line = p.current.line
+    var line = p.current.line
     var s = ""
     while (p.current.str notin @["▪", "◆"]): 
         let e = (p.current.col + p.current.str.len)
@@ -562,8 +562,8 @@ proc parseModule(p : Parser) : Node =
 # ███      ███       ███     ███   
 # ███████  ███  ███████      ███   
 proc parseParenList(p : Parser) : seq[Node] = 
-    let token = p.consume() # (
-    var args: seq[Node]
+    var token = p.consume() # (
+    var args : seq[Node]
     p.explicit = true
     while ((p.tok != ◂paren_close) and (p.tok != ◂eof)): 
         args.add(p.expression())
@@ -574,8 +574,8 @@ proc parseParenList(p : Parser) : seq[Node] =
         return args[0].list_values
     args
 proc parseDelimitedList(p : Parser, open : tok, close : tok) : seq[Node] = 
-    let token = p.consume()
-    var args: seq[Node]
+    var token = p.consume()
+    var args : seq[Node]
     p.explicit = true
     while true: 
         discard p.swallowIndent(-1)
@@ -589,10 +589,10 @@ proc parseDelimitedList(p : Parser, open : tok, close : tok) : seq[Node] =
         return args[0].list_values
     args
 proc parseNames(p : Parser) : seq[Node] = 
-    var list: seq[Node]
-    let line = p.current.line
+    var list : seq[Node]
+    var line = p.current.line
     p.explicit = true
-    var expr: Node = p.rSymbol()
+    var expr = p.rSymbol()
     while (expr != nil): 
         list.add(expr)
         if (p.current.line != line): 
@@ -602,8 +602,8 @@ proc parseNames(p : Parser) : seq[Node] =
     p.explicit = false
     list
 proc parseNamesUntil(p : Parser, stop : tok) : Node = 
-    let token = p.current
-    var list_values: seq[Node]
+    var token = p.current
+    var list_values : seq[Node]
     p.explicit = true
     while (p.tok != stop): 
         if (p.tok == ◂eof): 
@@ -632,19 +632,12 @@ proc thenBlock(p : Parser) : Node =
 proc thenIndented(p : Parser, token : Token) : Node = 
     if (p.tok == ◂then): 
         p.swallow(◂then)
-        # log "thenIndented #{token} #{p.tok}"
     if (p.tok == ◂indent): 
-        # log "thenIndented #{p}"
-        # log "first #{token} current #{p.current}"
         if p.isNextLineIndented(token): 
-            # log "thenIndented ✔"
             return p.parseBlock()
-        # log "thenIndented ✘"
         return nil
     else: 
-        # log "thenIndented e? #{p} {p.current()}"
         let e = p.expression()
-        # log "thenIndented e: #{e}"
         return e
 #  ███████   ███████   ███      ███    
 # ███       ███   ███  ███      ███    
@@ -652,8 +645,8 @@ proc thenIndented(p : Parser, token : Token) : Node =
 # ███       ███   ███  ███      ███    
 #  ███████  ███   ███  ███████  ███████
 proc lCall(p : Parser, callee : Node) : Node = 
-    let token = p.consume() # (
-    let args = p.parseCallArgs(callee.token.col)
+    var token = p.consume() # (
+    var args = p.parseCallArgs(callee.token.col)
     p.swallowError(◂paren_close, "Missing closing paren for call arguments")
     Node(token: token, kind: ●call, callee: callee, callargs: args)
 # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
@@ -840,7 +833,7 @@ proc rString(p : Parser) : Node =
         p.swallow()
         Node(token: token, kind: ●string, string_content: Node(token: Token(str: "", tok: ◂string), kind: ●literal))
     else: 
-        var string_content: Node
+        var string_content : Node
         if (p.tok != ◂stripol_start): 
             string_content = Node(token: p.consume(), kind: ●literal)
         else: 
@@ -1077,7 +1070,7 @@ proc lMember(p : Parser, left : Node) : Node =
 proc lTestCase(p : Parser, left : Node) : Node = 
     var token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
-    let right = p.expression()
+    var right = p.expression()
     Node(token: token, kind: ●testCase, test_value: left, test_expected: right)
 proc rTestSuite(p : Parser) : Node = 
     var token = p.consume() # ▸

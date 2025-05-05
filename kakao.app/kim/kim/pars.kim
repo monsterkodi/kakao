@@ -286,7 +286,7 @@ peek = ◇Parser p ahead=1 ➜Token ->
 
 $ = ◇Parser p ➜string ->
 
-    var s : string
+    s = ""
     if p.tok != ◂eof
         s = &"▪▪▪ {p.current} {p.pos}"
         let l = p.text.split("\n")[p.current.line]
@@ -450,7 +450,7 @@ error = ◇Parser p ◇string msg token=Token(tok:◂eof) ➜Node ->
 
 consume = ◇Parser p ➜Token ->
 
-    let t = p.current
+    t = p.current
     if p.pos < p.tokens.len
         p.pos += 1
     t
@@ -496,20 +496,20 @@ isDedent = ◇Parser p ◇int indent ➜bool ->
         
 isNextLineIndented = ◇Parser p ◇Token token ➜bool -> 
 
-    var n = 0
+    n = 0
     while p.peek(n).tok != ◂indent
         n += 1
         if p.peek(n).tok == ◂eof
             ⮐  false
         
-    let idt = if token.tok == ◂indent ➜ token.str.len ➜ token.col
+    idt = if token.tok == ◂indent ➜ token.str.len ➜ token.col
     ⮐  p.peek(n).str.len > idt
     
 isTokAhead = ◇Parser p ◇tok tokAhead ➜bool ->
 
-    var n = 0
-    var c = p.current
-    let line = c.line
+    n = 0
+    c = p.current
+    line = c.line
     while c.tok != ◂eof
         if c.line > line
             ⮐  false
@@ -570,18 +570,18 @@ value = ◇Parser p ➜Node ->
 
 parseBlock = ◇Parser p ◇Node bn=nil ➜Node ->
 
-    var token: Token
-    var block_indent : int
+    token        ◇ Token
+    block_indent ◇ int
     
     while p.tok == ◂indent
         token = p.consume() 
         block_indent = p.current.col
     
-    var bn = bn
+    bn = bn
     if bn == nil
         bn = Node(token:token, kind:●block, expressions: @[])
         
-    var expr : Node = p.expression()
+    expr = p.expression()
     
     while expr != nil
     
@@ -646,9 +646,9 @@ parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
 
     p.explicit = true
     p.listless = true
-    var list : seq[Node]
-    let line = p.current.line
-    var expr : Node = p.expression()
+    list ◇ seq[Node]
+    line = p.current.line
+    expr = p.expression()
     while expr != nil
         list.add expr
         if p.swallowIndent(col)
@@ -668,7 +668,7 @@ parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
 
 parseType = ◇Parser p ➜Node ->
     
-    var token = p.consume()
+    token = p.consume()
     token.tok = ◂type
     
     if p.tok == ◂square_open
@@ -687,10 +687,10 @@ parseType = ◇Parser p ➜Node ->
     
 parseVar = ◇Parser p ➜Node ->
 
-    var token = p.current()
-    let var_name = p.value()
-    var var_value : Node
-    var var_type  : Node
+    token     = p.current()
+    var_name  = p.value()
+    var_value ◇ Node
+    var_type  ◇ Node
     
     if p.tok == ◂assign
         p.swallow()
@@ -706,8 +706,8 @@ parseVar = ◇Parser p ➜Node ->
     
 parseModule = ◇Parser p ➜Node ->
 
-    let line = p.current.line
-    var s = ""
+    line = p.current.line
+    s = ""
     while p.current.str notin @["▪", "◆"]
         let e = p.current.col + p.current.str.len
         s &= p.consume().str
@@ -726,9 +726,9 @@ parseModule = ◇Parser p ➜Node ->
 
 parseParenList = ◇Parser p ➜seq[Node] ->
 
-    let token = p.consume() # (
+    token = p.consume() # (
+    args  ◇ seq[Node]
     
-    var args : seq[Node]
     p.explicit = true
     while p.tok != ◂paren_close and p.tok != ◂eof
         args.add p.expression()
@@ -741,8 +741,8 @@ parseParenList = ◇Parser p ➜seq[Node] ->
     
 parseDelimitedList = ◇Parser p ◇tok open ◇tok close ➜seq[Node] ->
 
-    let token = p.consume()
-    var args : seq[Node]
+    token = p.consume()
+    args  ◇ seq[Node]
     
     p.explicit = true
     while true
@@ -760,10 +760,10 @@ parseDelimitedList = ◇Parser p ◇tok open ◇tok close ➜seq[Node] ->
     
 parseNames = ◇Parser p ➜seq[Node] -> 
 
-    var list : seq[Node]
-    let line = p.current.line
+    list ◇ seq[Node]
+    line = p.current.line
     p.explicit = true
-    var expr : Node = p.rSymbol()
+    expr = p.rSymbol()
     while expr != nil
         list.add expr        
         if p.current.line != line
@@ -775,9 +775,9 @@ parseNames = ◇Parser p ➜seq[Node] ->
 
 parseNamesUntil = ◇Parser p ◇tok stop ➜Node -> 
 
-    let token = p.current
+    token = p.current
                                 
-    var list_values: seq[Node]
+    list_values ◇ seq[Node]
     p.explicit = true
     while p.tok != stop
         if p.tok == ◂eof
@@ -812,20 +812,13 @@ thenIndented = ◇Parser p ◇Token token ➜Node ->
 
     if p.tok == ◂then
         p.swallow ◂then
-        # log "thenIndented #{token} #{p.tok}"
         
     if p.tok == ◂indent
-        # log "thenIndented #{p}"
-        # log "first #{token} current #{p.current}"
         if p.isNextLineIndented(token)
-            # log "thenIndented ✔"
             ⮐  p.parseBlock()
-        # log "thenIndented ✘"
         ⮐  nil
     else
-        # log "thenIndented e? #{p} {p.current()}"
         let e = p.expression()
-        # log "thenIndented e: #{e}"
         ⮐  e
     
 #  ███████   ███████   ███      ███    
@@ -836,8 +829,8 @@ thenIndented = ◇Parser p ◇Token token ➜Node ->
 
 lCall = ◇Parser p ◇Node callee ➜Node ->
 
-    let token = p.consume() # (
-    let args = p.parseCallArgs(callee.token.col)
+    token = p.consume() # (
+    args = p.parseCallArgs(callee.token.col)
     p.swallowError(◂paren_close, "Missing closing paren for call arguments")    
     Node(token:token, kind:●call, callee:callee, callargs:args)
     
@@ -1098,7 +1091,7 @@ rString = ◇Parser p ➜Node ->
         p.swallow()
         Node(token:token, kind:●string, string_content:Node(token:Token(str:"", tok:◂string), kind:●literal))
     else
-        var string_content : Node 
+        string_content ◇ Node 
         if p.tok != ◂stripol_start
             string_content = Node(token:p.consume(), kind:●literal)
         else
@@ -1418,7 +1411,7 @@ lTestCase = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
-    let right = p.expression()
+    right = p.expression()
     Node(token:token, kind: ●testCase, test_value:left, test_expected:right)
 
 rTestSuite = ◇Parser p ➜Node ->

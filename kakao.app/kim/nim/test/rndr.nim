@@ -322,15 +322,33 @@ proc f =
         var c = 0
     var c = 3""")
         v("""
+x = 0
+y ◇ int
+var z ◇ int
+var q = 1
 if true
     a = 1
+    x = 2
+    z = 3
 else
     b = 1
+    a = 1
+    y = 3
+    q = 4
 """, """
+var x = 0
+var y : int
+var z : int
+var q = 1
 if true: 
     var a = 1
+    x = 2
+    z = 3
 else: 
-    var b = 1""")
+    var b = 1
+    var a = 1
+    y = 3
+    q = 4""")
     test "blocks": 
         t("""
 f = ->
