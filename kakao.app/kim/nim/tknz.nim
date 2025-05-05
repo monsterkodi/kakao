@@ -431,6 +431,7 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                                     t.incr(4)
                                     t.push(◂quote)
                                     continue
+                            else: discard
                     if (keywords.hasKey(t.token.str) and (((t.segi >= t.eol) or (t.peek(0) == " ")) or punct.hasKey(t.peek(0)))): 
                         case keywords[t.token.str]:
                             of ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter: 

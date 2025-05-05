@@ -290,6 +290,12 @@ switch a
     ●testSuite 
     ●testSection ➜ r.▸testSuite n
 """, "▪[(◂switch ◂name @[(@[◂name, ◂name] ((◂name . ◂name) ◂call @[◂name]))])]")
+        t("""
+switch z
+    y
+        true
+1
+""", "▪[(◂switch ◂name @[(@[◂name] ▪[✔])])◂number]")
     test "case": 
         t("case x\n  of a\n    1\n  of b, c\n    2", "▪[(◂switch ◂name @[(@[◂name] ▪[◂number]), (@[◂name, ◂name] ▪[◂number])])]")
     test "tailIf": 

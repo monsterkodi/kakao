@@ -999,7 +999,7 @@ switchCase = ◇Parser p ◇int baseIndent ➜Node ->
             if not p.swallowSameIndent baseIndent
                 break
 
-        ⮐  if p.tok in {◂else, ◂eof} or p.isDedent baseIndent
+        ⮐  if p.tok in {◂else, ◂eof} or p.isDedent(baseIndent)
 
         break if p.tok == ◂then
     
@@ -1008,7 +1008,9 @@ switchCase = ◇Parser p ◇int baseIndent ➜Node ->
         p.explicit = false
         p.swallow ◂comma
     
-    case_then = p.thenIndented(first)
+    ⮐  if p.isDedent baseIndent
+
+    case_then = p.thenIndented first
                 
     if case_then == nil
         ⮐  p.error("Expected case body after match(es)", token)

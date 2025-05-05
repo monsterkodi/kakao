@@ -776,6 +776,7 @@ proc switchCase(p : Parser, baseIndent : int) : Node =
         case_when.add(p.value())
         p.explicit = false
         p.swallow(◂comma)
+    if p.isDedent(baseIndent): return
     var case_then = p.thenIndented(first)
     if (case_then == nil): 
         return p.error("Expected case body after match(es)", token)

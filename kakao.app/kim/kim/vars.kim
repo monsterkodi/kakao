@@ -48,12 +48,12 @@ exp = ◇Scoper s ◇Node body ◇int i ◇Node e ->
         ●var
             insert e.var_name.token.str e
             
-        ●if
-            for condThen in e.condThens
-                discard s.scope condThen.then_branch
-            discard s.scope e.else_branch  
-        ➜ 
-            discard
+        ➜ discard
+            
+    # ●if
+    #     for condThen in e.condThens
+    #         discard s.scope condThen.then_branch
+    #     discard s.scope e.else_branch  
                     
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       

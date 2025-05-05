@@ -37,12 +37,11 @@ proc exp(s : Scoper, body : Node, i : int, e : Node) =
                     insert(lhs.token.str, e)
         of ●var: 
             insert(e.var_name.token.str, e)
-        of ●if: 
-            for condThen in e.condThens: 
-                discard s.scope(condThen.then_branch)
-            discard s.scope(e.else_branch)
-        else: 
-            discard
+        else: discard
+    # ●if
+    #     for condThen in e.condThens
+    #         discard s.scope condThen.then_branch
+    #     discard s.scope e.else_branch  
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       
 # 0000000   000       000   000  00000000   0000000   
