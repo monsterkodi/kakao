@@ -127,24 +127,19 @@ type Tknzr* = ref object
         bol: int # segi at start of current line
         eol: int # segi at end of current line
         line: int # current line index
-proc `$`*(t:Tknzr): string = 
-
-    var s = &"◂▸ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
-    s
-proc formatValue*(result:var string, t:Tknzr, specifier: string) = result.add $t
-proc char(t:Tknzr) : char           = t.segs[t.segi][0]
-proc char(t:Tknzr, n: int) : char   = t.segs[t.segi+n][0]
-proc peek(t:Tknzr, n: int) : string = t.segs[t.segi+n]
-proc incr(t:Tknzr, n: int) = t.segi += n
-proc col(t:Tknzr) : int    = t.segi - t.bol
-proc peekSafe(t:Tknzr, n: int) : string = 
-
+proc `$`*(t : Tknzr) : string = 
+    &"◂▸ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
+proc char(t : Tknzr) : char = t.segs[t.segi][0]
+proc char(t : Tknzr, n : int) : char = t.segs[(t.segi + n)][0]
+proc peek(t : Tknzr, n : int) : string = t.segs[(t.segi + n)]
+proc incr(t : Tknzr, n : int) = (t.segi += n)
+proc col(t : Tknzr) : int = (t.segi - t.bol)
+proc peekSafe(t : Tknzr, n : int) : string = 
     if ((t.segi + n) < t.segs.len): 
         t.segs[(t.segi + n)]
     else: 
         ""
-proc nextLine(t:Tknzr) =
-
+proc nextLine(t : Tknzr) = 
     assert((t.segs[t.segi] == "\n"))
     t.incr(1)
     (t.line += 1)
@@ -152,15 +147,13 @@ proc nextLine(t:Tknzr) =
     t.eol = t.bol
     while ((t.eol < t.segs.len) and (t.segs[t.eol] != "\n")): 
         (t.eol += 1)
-proc lineIncr(t:Tknzr, c:string) =
-
+proc lineIncr(t : Tknzr, c : string) = 
     if (c == "\n"): 
         t.nextLine()
     else: 
         t.incr(1)
-proc srng(t:Tknzr, n:int) : string =
-
-    var e: int
+proc srng(t : Tknzr, n : int) : string = 
+    var e : int
     if (n >= 0): 
         e = (t.segi + n)
     else: 
@@ -168,22 +161,18 @@ proc srng(t:Tknzr, n:int) : string =
     if (e > t.segs.len): 
         return ""
     t.segs[t.segi..<e].join("")
-proc advance(t:Tknzr, n:int) =
-
+proc advance(t : Tknzr, n : int) = 
     for s in 0..<n: 
         (t.token.str &= t.peek(0))
         t.incr(1)
-proc advance(t:Tknzr, charset:set[char]) =
-
+proc advance(t : Tknzr, charset : set[char]) = 
     while ((t.segi < t.segs.len) and (t.peek(0)[0] in charset)): 
         t.advance(1)
-proc advanceUntil(t:Tknzr, stop: string) =
-
+proc advanceUntil(t : Tknzr, stop : string) = 
     while ((t.segi < t.segs.len) and (t.srng(stop.len) != stop)): 
         (t.token.str &= t.peek(0))
         t.incr(1)
-proc advanceMulti(t:Tknzr, stop: string) =
-
+proc advanceMulti(t : Tknzr, stop : string) = 
     while ((t.segi < t.segs.len) and (t.srng(stop.len) != stop)): 
         let c = t.peek(0)
         (t.token.str &= c)
@@ -194,8 +183,7 @@ proc pushToken(t:Tknzr, str="", tk=◂name, incr=0) =
         t.tokens.add(t.token)
     t.token = Token(str: str, tok: tk, line: t.line, col: t.col)
     t.incr(incr)
-proc push(t:Tknzr, tk:tok) =
-
+proc push(t : Tknzr, tk : tok) = 
     t.token.tok = tk
     t.pushToken()
 proc commit(t:Tknzr, str="", tk=◂name, incr=0)
@@ -204,8 +192,7 @@ proc commit(t:Tknzr, str="", tk=◂name, incr=0)
 # ███████      ███     ███████    ███  ███ █ ███  ███  ████
 #      ███     ███     ███   ███  ███  ███  ████  ███   ███
 # ███████      ███     ███   ███  ███  ███   ███   ███████ 
-proc string(t:Tknzr) =
-
+proc string(t : Tknzr) = 
     var topTok = t.tokens[^1]
     assert((topTok.tok in {◂string_start, ◂stripol_end}))
     var ampersand = false
@@ -222,9 +209,7 @@ proc string(t:Tknzr) =
             t.token.tok = ◂string
         else: 
             discard
-    # log &"-------------- string {t} {t.delimiter} {topTok}"
-    proc isAtStringEnd() : bool =
-    
+    proc isAtStringEnd() : bool = 
         if ((t.delimiter.len == 1) and (t.segi >= t.eol)): 
             return true
         if (t.segi >= t.segs.len): 
@@ -253,10 +238,9 @@ proc string(t:Tknzr) =
 # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
 # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
 # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
-proc number(t:Tknzr) =
-
+proc number(t : Tknzr) = 
     t.pushToken("", ◂number)
-    let l = t.segs.len
+    var l = t.segs.len
     if ((t.segi < (l - 1)) and (t.segs[t.segi] == "0")): 
         if (t.segs[(t.segi + 1)] == "x"): 
             t.advance(2)
@@ -286,8 +270,7 @@ proc number(t:Tknzr) =
 # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
 #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
-proc comment(t:Tknzr) = 
-
+proc comment(t : Tknzr) = 
     if (t.srng(2) == "##"): 
         (t.tokens[^1].str &= "##")
         t.incr(2)
@@ -301,16 +284,14 @@ proc comment(t:Tknzr) =
         return
     t.advanceUntil("\n")
     t.push(◂comment)
-proc modbracket(t:Tknzr) =
-
+proc modbracket(t : Tknzr) = 
     t.pushToken()
     t.token.tok = ◂mod
     t.advance(1)
     t.advanceUntil(".}")
     t.advance(2)
     t.pushToken()
-proc verbatim(t:Tknzr, tk:tok) = 
-
+proc verbatim(t : Tknzr, tk : tok) = 
     t.advanceUntil("\n")
     t.push(tk)
 #  ███████   ███████   ██     ██  ██     ██  ███  █████████
@@ -336,8 +317,7 @@ proc commit(t:Tknzr, str="", tk=◂name, incr=0) =
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
-proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
-
+proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] = 
     # profileScope "tknz"
     t.segs = segs
     while ((t.segi < t.segs.len) and (t.segs[t.segi] in @["\n", " "])): 
@@ -444,6 +424,5 @@ proc tknz(t:Tknzr, segs:seq[string]) : seq[Token] =
                 t.token.tok = keywords[t.token.str]
             t.tokens.add(t.token)
     return t.tokens
-proc tokenize*(text:string) : seq[Token] =
-
+proc tokenize*(text : string) : seq[Token] = 
     Tknzr.new.tknz(kseg(text))

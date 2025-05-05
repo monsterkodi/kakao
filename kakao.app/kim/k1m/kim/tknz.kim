@@ -141,10 +141,9 @@ type Tknzr* = ref object
         eol         : int # segi at end of current line
         line        : int # current line index
     
-proc `$`*(t:Tknzr): string = 
+$* = ◇Tknzr t ➜string ->
 
-    var s = &"◂▸ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
-    s
+    "◂▸ #{t.line} #{t.token} #{t.bol} #{t.segi} #{t.eol}"
     
 proc formatValue*(result:var string, t:Tknzr, specifier: string) = result.add $t
     
