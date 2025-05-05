@@ -990,15 +990,18 @@ switchCase = ◇Parser p ◇int baseIndent ➜Node ->
     token     = p.current
     first     = p.firstLineToken()
     
-    while p.tok notin {◂else, ◂then, ◂eof}
+    while true
     
         if p.tok == ◂indent
-            if p.peek(1).tok == ◂then
+            if case_when.len == 0 and p.peek(1).tok == ◂then
+                p.swallow()
                 ⮐  # indent followed by a ➜ is else
             if not p.swallowSameIndent baseIndent
                 break
 
-        ⮐  if p.isDedent baseIndent
+        ⮐  if p.tok in {◂else, ◂eof} or p.isDedent baseIndent
+
+        break if p.tok == ◂then
     
         p.explicit = true
         case_when.add p.value()
@@ -1026,20 +1029,13 @@ rSwitch = ◇Parser p ➜Node ->
     
     switch_cases ◇ seq[Node]
     
-    while p.tok notin {◂else, ◂then, ◂eof}
-        if p.isDedent baseIndent
-            break
-        if p.tok == ◂indent and p.peek(1).tok == ◂then
-            p.swallow() # indent followed by a ➜ is else
-            break
-        if p.swallowSameIndent baseIndent
-            continue
+    while true 
 
         let switch_case = p.switchCase(baseIndent)
-        if switch_case == nil
-            ⮐  p.error("Failed to parse switch case", token)
-        else
+        if switch_case
             switch_cases.add switch_case
+        else
+            break
     
     switch_default ◇ Node
     

@@ -763,13 +763,15 @@ proc switchCase(p : Parser, baseIndent : int) : Node =
     var case_when : seq[Node]
     var token = p.current
     var first = p.firstLineToken()
-    while (p.tok notin {◂else, ◂then, ◂eof}): 
+    while true: 
         if (p.tok == ◂indent): 
-            if (p.peek(1).tok == ◂then): 
+            if ((case_when.len == 0) and (p.peek(1).tok == ◂then)): 
+                p.swallow()
                 return # indent followed by a ➜ is else
             if not p.swallowSameIndent(baseIndent): 
                 break
-        if p.isDedent(baseIndent): return
+        if ((p.tok in {◂else, ◂eof}) or p.isDedent(baseIndent)): return
+        if (p.tok == ◂then): break
         p.explicit = true
         case_when.add(p.value())
         p.explicit = false
@@ -786,19 +788,12 @@ proc rSwitch(p : Parser) : Node =
     var baseIndent = p.current.str.len
     p.swallowError(◂indent, "Expected indentation after switch statement")
     var switch_cases : seq[Node]
-    while (p.tok notin {◂else, ◂then, ◂eof}): 
-        if p.isDedent(baseIndent): 
-            break
-        if ((p.tok == ◂indent) and (p.peek(1).tok == ◂then)): 
-            p.swallow() # indent followed by a ➜ is else
-            break
-        if p.swallowSameIndent(baseIndent): 
-            continue
+    while true: 
         let switch_case = p.switchCase(baseIndent)
-        if (switch_case == nil): 
-            return p.error("Failed to parse switch case", token)
-        else: 
+        if switch_case: 
             switch_cases.add(switch_case)
+        else: 
+            break
     var switch_default : Node
     if (p.tok in {◂else, ◂then}): 
         p.swallow()
