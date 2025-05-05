@@ -395,6 +395,7 @@ proc isTokAhead(p : Parser, tokAhead : tok) : bool =
     var n = 0
     var c = p.current
     var line = c.line
+    # log "isTokAhead #{tokAhead} #{line}"
     while (c.tok != ◂eof): 
         if (c.line > line): 
             return false
@@ -654,15 +655,15 @@ proc lCall(p : Parser, callee : Node) : Node =
 # ███  █████████  ████████   ███      ███  ███       ███     ███   
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
+var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
 proc isImplicitCallPossible(p : Parser) : bool = 
+    if p.explicit: return false
     var currt = p.peek(0)
-    var token = p.peek(-1)
-    if ((not p.explicit and (currt.tok notin {◂indent})) and not p.isTokAhead(◂func)): 
-        if (currt.col > (token.col + ksegWidth(token.str))): 
-            let optoks = {◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
-            if (currt.tok notin optoks): 
-                return true
-    false
+    if (currt.tok in optoks): return false
+    var prevt = p.peek(-1)
+    if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
+    if p.isTokAhead(◂func): return false
+    true
 proc rSymbol(p : Parser) : Node = 
     var token = p.consume()
     if (((token.str in @["peg", "re", "r"]) and (p.tok == ◂string_start)) and ((token.col + token.str.len) == p.current.col)): 
@@ -956,6 +957,7 @@ proc lFunc(p : Parser, left : Node) : Node =
     if (left.kind notin {●signature, ●list, ●arg, ●operation}): return
     var func_signature = left
     if (left.kind == ●operation): 
+        # log "lfunc op #{left}"
         if (left.token.tok != ◂assign): return
         if (left.operand_left.token.tok != ◂name): return
         if (left.operand_left.token.col == 0): 
@@ -968,6 +970,7 @@ proc lFunc(p : Parser, left : Node) : Node =
         let sig_args = Node(token: vartoken, kind: ●list, list_values: @[varNode])
         func_signature = Node(token: left.token, kind: ●signature, sig_args: sig_args)
     elif (left.kind == ●list): 
+        # log "lfunc list"
         var sig_args = left
         for i, a in sig_args.list_values: 
             if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
@@ -978,6 +981,7 @@ proc lFunc(p : Parser, left : Node) : Node =
                 sig_args.list_values[i] = Node(token: argtoken, kind: ●arg, arg_name: a)
         func_signature = Node(token: left.token, kind: ●signature, sig_args: sig_args)
     elif (left.kind == ●arg): 
+        # log "lfunc arg"
         let sig_args = Node(token: left.token, kind: ●list, list_values: @[left])
         func_signature = Node(token: left.token, kind: ●signature, sig_args: sig_args)
     var firstToken = p.firstLineToken()
@@ -1210,8 +1214,13 @@ proc setup(p : Parser) =
 # ███   ███       ███     ███   
 # ███   ███  ███████      ███   
 proc ast*(text : string) : Node = 
+    # profileStart 'tknz'
     var tokens = tokenize(text)
+    # profileStop 'tknz'
     # log &"ast* {tokens}"
+    # profileStart 'pars'
     var p = Parser(tokens: tokens, pos: 0, text: text)
     p.setup()
-    p.parseBlock()
+    var b = p.parseBlock()
+    # profileStop 'pars'
+    b

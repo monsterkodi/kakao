@@ -378,13 +378,20 @@ proc rnd(r : Rndr, n : Node) =
                           echo(&"unhandled {n} {n.kind}")
                           r.tok(n)
 proc render*(code : string, autovar = true) : string = 
+    # profileStart "ast"
     var root = ast(code)
+    # profileStop "ast"
     if autovar: 
+        # profileStart "vars"
         root = variables(root)
+        # profileStop "vars"
     var r = Rndr(code: code)
+    # profileStart "rnd"
     r.rnd(root)
+    # profileStop "rnd"
     r.s
 proc file*(file : string) : string = 
+    profileScope("rndr.file")
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     var kimCode = file.readFile()
     var nimCode = render(kimCode)

@@ -487,14 +487,22 @@ rnd = ◇Rndr r ◇Node n ->
 
 render* = ◇string code autovar=true ➜string ->
 
+    # profileStart "ast"
     root = ast(code)
+    # profileStop "ast"
     if autovar
+        # profileStart "vars"
         root = variables(root)
+        # profileStop "vars"
     r = Rndr(code:code)
+    # profileStart "rnd"
     r.rnd(root)
+    # profileStop "rnd"
     r.s
     
 file* = ◇string file ➜string ->
+
+    profileScope "rndr.file"
 
     fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     kimCode = file.readFile()

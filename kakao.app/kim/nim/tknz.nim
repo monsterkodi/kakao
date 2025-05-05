@@ -153,14 +153,15 @@ proc lineIncr(t : Tknzr, c : string) =
     else: 
         t.incr(1)
 proc srng(t : Tknzr, n : int) : string = 
-    var e : int
-    if (n >= 0): 
-        e = (t.segi + n)
-    else: 
-        e = t.eol
-    if (e > t.segs.len): 
-        return ""
+    var e = if (n >= 0): (t.segi + n) else: t.eol
+    if (e > t.segs.len): return ""
     t.segs[t.segi..<e].join("")
+proc scmp(t : Tknzr, s : string) : bool = 
+    var ss = kseg(s)
+    for n in 0..<ss.len: 
+        if ((t.segi + n) >= t.segs.len): return false
+        if (t.segs[(t.segi + n)] != ss[n]): return false
+    true
 proc advance(t : Tknzr, n : int) = 
     for s in 0..<n: 
         (t.token.str &= t.peek(0))
@@ -169,11 +170,11 @@ proc advance(t : Tknzr, charset : set[char]) =
     while ((t.segi < t.segs.len) and (t.peek(0)[0] in charset)): 
         t.advance(1)
 proc advanceUntil(t : Tknzr, stop : string) = 
-    while ((t.segi < t.segs.len) and (t.srng(stop.len) != stop)): 
+    while ((t.segi < t.segs.len) and not t.scmp(stop)): 
         (t.token.str &= t.peek(0))
         t.incr(1)
 proc advanceMulti(t : Tknzr, stop : string) = 
-    while ((t.segi < t.segs.len) and (t.srng(stop.len) != stop)): 
+    while ((t.segi < t.segs.len) and not t.scmp(stop)): 
         let c = t.peek(0)
         (t.token.str &= c)
         t.lineIncr(c)
@@ -214,10 +215,7 @@ proc string(t : Tknzr) =
             return true
         if (t.segi >= t.segs.len): 
             return true
-        if (t.delimiter.len == 3): 
-            ((t.segi <= (t.eol - 3)) and (t.srng(3) == t.delimiter))
-        else: 
-            ((t.segi <= (t.eol - 1)) and (t.peek(0) == t.delimiter))
+        t.scmp(t.delimiter)
     while not isAtStringEnd(): 
         t.token.tok = ◂string
         let c = t.peek(0)
@@ -225,7 +223,7 @@ proc string(t : Tknzr) =
             t.advance(2)
             continue
         if (t.delimiter in @["\"", "\"\"\""]): 
-            if (t.srng(stripolStart.len) == stripolStart): 
+            if t.scmp(stripolStart): 
                 t.commit(stripolStart, ◂stripol_start, stripolStart.len)
                 t.inStripol = true
                 return
@@ -271,13 +269,13 @@ proc number(t : Tknzr) =
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
 #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
 proc comment(t : Tknzr) = 
-    if (t.srng(2) == "##"): 
+    if t.scmp("##"): 
         (t.tokens[^1].str &= "##")
         t.incr(2)
         (t.token.col += 2)
         t.token.tok = ◂comment
         t.advanceMulti("###")
-        if (t.srng(3) == "###"): 
+        if t.scmp("###"): 
             t.commit("###", ◂comment_end, 3)
         else: 
             t.pushToken("", ◂comment)
@@ -407,7 +405,7 @@ proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] =
                                 t.token.str = ""
                                 continue
                             of "quote": 
-                                if (t.srng(4) == " do:"): 
+                                if t.scmp(" do:"): 
                                     t.incr(4)
                                     t.push(◂quote)
                                     continue

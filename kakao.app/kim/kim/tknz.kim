@@ -178,14 +178,17 @@ lineIncr = ◇Tknzr t ◇string c ->
 
 srng = ◇Tknzr t ◇int n ➜string ->
 
-    e ◇ int
-    if n >= 0
-        e = t.segi + n
-    else
-        e = t.eol
-    if e > t.segs.len
-        ⮐  ""
-    t.segs[t.segi..<e].join("")
+    e = if n >= 0 ➜ t.segi + n ➜ t.eol
+    ⮐  "" if e > t.segs.len
+    t.segs[t.segi...e].join("")
+    
+scmp = ◇Tknzr t ◇string s ➜bool ->
+
+    ss = kseg s
+    for n in 0...ss.len
+        ⮐  false if t.segi+n >= t.segs.len
+        ⮐  false if t.segs[t.segi+n] != ss[n]
+    true
     
 advance = ◇Tknzr t ◇int n ->
 
@@ -200,13 +203,13 @@ advance = ◇Tknzr t ◇set[char] charset ->
         
 advanceUntil = ◇Tknzr t ◇string stop ->
 
-    while t.segi < t.segs.len and t.srng(stop.len) != stop
+    while t.segi < t.segs.len and not t.scmp(stop)
         t.token.str &= t.peek(0)
         t.incr 1
 
 advanceMulti = ◇Tknzr t ◇string stop ->
 
-    while t.segi < t.segs.len and t.srng(stop.len) != stop
+    while t.segi < t.segs.len and not t.scmp(stop)
         let c = t.peek(0)
         t.token.str &= c
         t.lineIncr c
@@ -258,10 +261,7 @@ string = ◇Tknzr t ->
             ⮐  true
         if t.segi >= t.segs.len
             ⮐  true
-        if t.delimiter.len == 3
-            t.segi <= t.eol-3 and t.srng(3) == t.delimiter
-        else
-            t.segi <= t.eol-1 and t.peek(0) == t.delimiter
+        t.scmp(t.delimiter)
                     
     while not isAtStringEnd()
     
@@ -273,7 +273,7 @@ string = ◇Tknzr t ->
             continue
         
         if t.delimiter in @["\"", "\"\"\""]
-            if t.srng(stripolStart.len) == stripolStart
+            if t.scmp(stripolStart)
                 t.commit(stripolStart, ◂stripol_start, stripolStart.len)
                 t.inStripol = true  
                 return
@@ -333,13 +333,13 @@ number = ◇Tknzr t ->
 
 comment = ◇Tknzr t ->
 
-    if t.srng(2) == "##"
+    if t.scmp("##")
         t.tokens[^1].str &= "##"
         t.incr 2
         t.token.col += 2
         t.token.tok = ◂comment
         t.advanceMulti "###"
-        if t.srng(3) == "###"
+        if t.scmp("###")
             t.commit("###", ◂comment_end, 3)
         else
             t.pushToken("", ◂comment)
@@ -503,7 +503,7 @@ tknz = ◇Tknzr t ◇seq[string] segs ➜seq[Token] ->
                                 t.token.str = ""
                                 continue
                             "quote"
-                                if t.srng(4) == " do:"
+                                if t.scmp(" do:")
                                     t.incr 4
                                     t.push ◂quote
                                     continue

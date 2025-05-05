@@ -79,6 +79,10 @@ suite "rndr":
         t("setHook(() -> {.noconv.} quit(0))", "setHook(proc () {.noconv.} = quit(0))")
         t("$* = ◇Tknzr t ➜string ->", "proc `$`*(t : Tknzr) : string")
         t("$ = ◇Tknzr t ➜string ->", "proc `$`(t : Tknzr) : string")
+        t("commit = ◇Tknzr t i=0 ->", "proc commit(t : Tknzr, i = 0)")
+        t("commit = ◇Tknzr t i=◂assign ->", "proc commit(t : Tknzr, i = ◂assign)")
+        t("commit = ◇Tknzr t i=\"\" ->", "proc commit(t : Tknzr, i = \"\")")
+        # t "commit = ◇Tknzr t a=1 b=2 ->"            "proc commit(t : Tknzr, a = 1, b = 2)"
         t("expression = ◇Parser p precedenceRight=0 ➜Node ->\nx", "proc expression(p : Parser, precedenceRight = 0) : Node\nx")
         v("rImport = ◇Parser p ➜Node ->\n    Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = \n    Node(token: p.consume(), kind: ●import)")
         v("rImport = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = Node(token: p.consume(), kind: ●import)")

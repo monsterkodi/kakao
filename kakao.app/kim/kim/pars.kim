@@ -510,6 +510,9 @@ isTokAhead = ◇Parser p ◇tok tokAhead ➜bool ->
     n = 0
     c = p.current
     line = c.line
+    
+    # log "isTokAhead #{tokAhead} #{line}"
+    
     while c.tok != ◂eof
         if c.line > line
             ⮐  false
@@ -840,20 +843,25 @@ lCall = ◇Parser p ◇Node callee ➜Node ->
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
+optoks = {  ◂indent, ◂eof,
+            ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
+            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
+            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
+            ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
+
 isImplicitCallPossible = ◇Parser p ➜bool ->
 
+    ⮐  false if p.explicit
+
     currt = p.peek(0)
-    token = p.peek(-1)
     
-    if not p.explicit and currt.tok notin {◂indent} and not p.isTokAhead(◂func)
-        if currt.col > token.col+ksegWidth(token.str)
-            let optoks = { ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
-                           ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
-                           ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
-                           ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
-            if currt.tok notin optoks
-                ⮐  true
-    false
+    ⮐  false if currt.tok in optoks
+    
+    prevt = p.peek(-1)
+    
+    ⮐  false if currt.col <= prevt.col+ksegWidth(prevt.str)
+    ⮐  false if p.isTokAhead(◂func)
+    true
     
 rSymbol = ◇Parser p ➜Node ->
 
@@ -1249,6 +1257,9 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
     func_signature = left
     
     if left.kind == ●operation
+    
+        # log "lfunc op #{left}"
+        
         ⮐  if left.token.tok != ◂assign
             
         ⮐  if left.operand_left.token.tok != ◂name
@@ -1265,6 +1276,9 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
         
     elif left.kind == ●list
+    
+        # log "lfunc list"
+        
         var sig_args = left
         for i,a in sig_args.list_values
             if a.kind == ●operation and a.token.tok == ◂assign
@@ -1274,7 +1288,11 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
                 let argtoken = Token(tok:◂val_type, line:a.token.line,col:a.token.col)
                 sig_args.list_values[i] = Node(token:argtoken, kind:●arg, arg_name:a)
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
+        
     elif left.kind == ●arg
+    
+        # log "lfunc arg"
+        
         let sig_args = Node(token:left.token, kind:●list, list_values: @[left])
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
     
@@ -1465,7 +1483,6 @@ expression = ◇Parser p precedenceRight=0 ➜Node ->
         
         let lhs = p.leftHandSide(token)
         
-        
         if precedenceRight >= precedence
             break
     
@@ -1594,9 +1611,15 @@ setup = ◇Parser p ->
 
 ast* = ◇string text ➜Node ->
 
+    # profileStart 'tknz'
     tokens = tokenize text
+    # profileStop 'tknz'
     # log &"ast* {tokens}"
+    # profileStart 'pars'
     p = Parser(tokens:tokens, pos:0, text:text)
     p.setup()
-    p.parseBlock()
+    b = p.parseBlock()
+    # profileStop 'pars'
+    b
+    
     
