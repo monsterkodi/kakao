@@ -7,8 +7,8 @@ import std/[os, osproc, parseopt, random, streams, asyncdispatch, asyncfile, pos
 import kommon
 import rndr
 import greet
-var params: seq[string]
-var files: seq[string]
+var params : seq[string]
+var files : seq[string]
 var optParser = initOptParser()
 var outdir = ""
 var tests = false
@@ -70,9 +70,9 @@ when defined(posix):
 # ███████   ███████    ███████   ███       ███  ███████  ████████
 proc logFile(f : string, prefix = "") = 
     let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
-    let d = if dir.len: dir & "/" else: ""
-    let icon = if (ext == ".kim"): "  " else: "  "
-    let color = if (ext == ".kim"): fgGreen else: fgMagenta
+    var d = if dir.len: dir & "/" else: ""
+    var icon = if (ext == ".kim"): "  " else: "  "
+    var color = if (ext == ".kim"): fgGreen else: fgMagenta
     styledEcho(color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle)
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
@@ -81,7 +81,7 @@ proc logFile(f : string, prefix = "") =
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 proc compile(file : string, outDir = "bin") : bool = 
     profileScope("comp")
-    let cmd = &"nim c --outDir={outdir} {file}"
+    var cmd = &"nim c --outDir={outdir} {file}"
     # let cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
     let (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
@@ -137,7 +137,7 @@ proc runTests() : bool =
     not fail
 if files.len: 
     # profileStart 'translate'
-    let transpiled = rndr.files(files)
+    var transpiled = rndr.files(files)
     # profileStop 'translate'
     quit((transpiled.len - files.len))
 if tests: 

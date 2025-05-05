@@ -25,9 +25,9 @@ sc* = ◇auto c ➜auto ->
     ansiStyleCode(c)
 
 underscore* = ◇uint64 n ➜string ->
-    var s = $n
+    s = $n
     r = newStringOfCap(s.len + (s.len - 1).div(3))
-    var count = 0
+    count = 0
     for i in countdown(s.high, 0)
         if count != 0 and count.mod(3) == 0
           result.add('_')
@@ -37,20 +37,20 @@ underscore* = ◇uint64 n ➜string ->
 
 indent* = ◇string s i=4 ➜string ->
 
-    let idt = ' '.repeat i
-    let lines = s.split "\n"
+    idt = ' '.repeat i
+    lines = s.split "\n"
     idt & lines.join "\n" & idt
     
 indentLen* = ◇string s ➜int ->
 
-    var i = 0
+    i = 0
     while i < s.len and s[i] == ' '
         i += 1
     i
     
 indentLen* = ◇seq[string] lines ➜int -> 
 
-    var m = high(int)
+    m = high(int)
     for l in lines
         m = min(m, indentLen(l))
     m
@@ -75,7 +75,7 @@ converter toBool*[T: ref object](x: T): bool = x != nil
 swapLastPathComponentAndExt* = ◇string file ◇string src ◇string tgt ➜string ->
 
     let (dir _ _) = splitFile(file.Path)
-    var dirParts = dir.string.split(DirSep)
+    dirParts = dir.string.split(DirSep)
     
     if dirParts[0] == "" and dirParts.len == 1
         dirParts.delete(0..0)
@@ -110,9 +110,9 @@ profileStop* = ◇string msg ->
         stderr.writeLine &"[ERROR] profileStop for unknown label '{msg}'"
         ⮐  
 
-    let mono = getMonoTime() - timers[msg][0]
-    let tick = mach_absolute_time() - timers[msg][1]
-    var mons = ""
+    mono = getMonoTime() - timers[msg][0]
+    tick = mach_absolute_time() - timers[msg][1]
+    mons = ""
 
     if mono.inMicroseconds < 1000
         mons = &" {mono.inMicroseconds} {sc(styleDim)}µs "
@@ -138,7 +138,7 @@ macro profileScope*(msg: string): untyped =
 
 kseg* = ◇string s ➜seq[string] ->
   
-    var i = 0
+    i = 0
     while i < s.len
         let clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, i + clusterSize - 1))
@@ -146,7 +146,7 @@ kseg* = ◇string s ➜seq[string] ->
         
 ksegWidth* = ◇string s ➜int -> 
 
-    var i = 0
+    i = 0
     while i < s.len
         inc(result)
         i += graphemeLen(s, i)

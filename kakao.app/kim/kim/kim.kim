@@ -7,14 +7,14 @@
 use std ▪ os osproc parseopt random streams asyncdispatch asyncfile posix
 use kommon rndr greet
 
-var params    : seq[string]
-var files     : seq[string]
-var optParser = initOptParser()
-var outdir    = ""
-var tests     = false
-var verbose   = false
+params    ◇ seq[string]
+files     ◇ seq[string]
+optParser = initOptParser()
+outdir    = ""
+tests     = false
+verbose   = false
 
-var testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
+testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
     
 randomize()
 
@@ -82,9 +82,9 @@ when defined(posix)
 logFile = ◇string f prefix="" ->
 
     let (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
-    let d = if dir.len ➜ dir & "/" ➜ ""
-    let icon = if ext == ".kim" ➜ "  " ➜ "  "
-    let color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
+    d = if dir.len ➜ dir & "/" ➜ ""
+    icon = if ext == ".kim" ➜ "  " ➜ "  "
+    color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
 
     styledEcho color prefix styleDim icon resetStyle
                color styleBright d styleBright name resetStyle
@@ -98,7 +98,7 @@ logFile = ◇string f prefix="" ->
 compile = ◇string file outDir="bin" ➜bool ->
 
     profileScope 'comp'
-    let cmd = "nim c --outDir=#{outdir} #{file}"
+    cmd = "nim c --outDir=#{outdir} #{file}"
     # let cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
     let (output exitCode) = execCmdEx(cmd)
         
@@ -120,7 +120,7 @@ compile = ◇string file outDir="bin" ➜bool ->
 runTests = ➜bool ->
 
     profileScope 'test'
-    var fail = false
+    fail = false
     
     for f in testFiles
         # let cmd = &"nim r --colors:on {f}"
@@ -170,7 +170,7 @@ runTests = ➜bool ->
 if files.len
 
     # profileStart 'translate'
-    let transpiled = rndr.files(files)
+    transpiled = rndr.files(files)
     # profileStop 'translate'
     quit transpiled.len - files.len
 

@@ -29,8 +29,8 @@ proc underscore*(n : uint64) : string =
         inc(count)
     reversed(r)
 proc indent*(s : string, i = 4) : string = 
-    let idt = ' '.repeat(i)
-    let lines = s.split("\n")
+    var idt = ' '.repeat(i)
+    var lines = s.split("\n")
     idt & lines.join("\n" & idt)
 proc indentLen*(s : string) : int = 
     var i = 0
@@ -84,8 +84,8 @@ proc profileStop*(msg : string) =
     if not timers.contains(msg): 
         stderr.writeLine(&"[ERROR] profileStop for unknown label '{msg}'")
         return
-    let mono = (getMonoTime() - timers[msg][0])
-    let tick = (mach_absolute_time() - timers[msg][1])
+    var mono = (getMonoTime() - timers[msg][0])
+    var tick = (mach_absolute_time() - timers[msg][1])
     var mons = ""
     if (mono.inMicroseconds < 1000): 
         mons = &" {mono.inMicroseconds} {sc(styleDim)}µs "
