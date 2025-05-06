@@ -141,8 +141,8 @@ if files.len:
     # profileStop 'translate'
     quit((transpiled.len - files.len))
 if tests: 
-    discard runTests()
-    quit(0)
+    var exit = if runTests(): 0 else: 1
+    quit(exit)
 #  ███████  █████████   ███████    ███████   ████████
 # ███          ███     ███   ███  ███        ███     
 # ███████      ███     █████████  ███  ████  ███████ 

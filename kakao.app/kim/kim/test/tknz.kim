@@ -536,7 +536,6 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             
     ▸ export*
     
-
         t "exp* ="              @[
             tk("exp*",          ◂name,          0, 0) 
             tk("=",             ◂assign,        0, 5)]
@@ -549,9 +548,8 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("class",         ◂class,         0, 0)
             tk("exp*",          ◂name,          0, 6)]
             
-        # t "proc exp* ("         @[
-        #     tk("exp*",          ◂name,          0, 0) 
-        #     tk("(",             ◂paren_open,    0, 5)]
+        t "proc exp* ("         @[
+            tk("proc exp* (",   ◂proc,          0, 0)]
 
     # ███   ███   ███████  ████████
     # ███   ███  ███       ███     

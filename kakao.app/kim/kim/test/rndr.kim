@@ -110,7 +110,7 @@ template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
         
         t "expression = ◇Parser p precedenceRight=0 ➜Node ->\nx" "proc expression(p : Parser, precedenceRight = 0) : Node\nx"
         
-        t "spc = ◇Rndr r -> r.s &= \" \""           "proc spc(r : Rndr) = r.s &= \" \""
+        t "spc = ◇Rndr r -> r.s &= \" \""           "proc spc(r : Rndr) = (r.s &= \" \")"
         
         v "rImport = ◇Parser p ➜Node ->\n    Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = \n    Node(token: p.consume(), kind: ●import)"
         v "rImport = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = Node(token: p.consume(), kind: ●import)"

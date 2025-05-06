@@ -162,9 +162,7 @@ suite "tknz":
         t("exp* =", @[tk("exp*", ◂name, 0, 0), tk("=", ◂assign, 0, 5)])
         t("exp* :", @[tk("exp*", ◂name, 0, 0), tk(":", ◂colon, 0, 5)])
         t("class exp*\n    ", @[tk("class", ◂class, 0, 0), tk("exp*", ◂name, 0, 6)])
-        # t "proc exp* ("         @[
-        #     tk("exp*",          ◂name,          0, 0) 
-        #     tk("(",             ◂paren_open,    0, 5)]
+        t("proc exp* (", @[tk("proc exp* (", ◂proc, 0, 0)])
     # ███   ███   ███████  ████████
     # ███   ███  ███       ███     
     # ███   ███  ███████   ███████ 

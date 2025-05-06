@@ -176,8 +176,8 @@ if files.len
 
 if tests
 
-    discard runTests()
-    quit 0
+    exit = if runTests() ➜ 0 ➜ 1
+    quit exit
     
 #  ███████  █████████   ███████    ███████   ████████
 # ███          ███     ███   ███  ███        ███     

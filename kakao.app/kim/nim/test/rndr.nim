@@ -84,7 +84,7 @@ suite "rndr":
         t("commit = ◇Tknzr t i=\"\" ->", "proc commit(t : Tknzr, i = \"\")")
         t("commit = ◇Tknzr t a=1 b=2 ->", "proc commit(t : Tknzr, a = 1, b = 2)")
         t("expression = ◇Parser p precedenceRight=0 ➜Node ->\nx", "proc expression(p : Parser, precedenceRight = 0) : Node\nx")
-        t("spc = ◇Rndr r -> r.s &= \" \"", "proc spc(r : Rndr) = r.s &= \" \"")
+        t("spc = ◇Rndr r -> r.s &= \" \"", "proc spc(r : Rndr) = (r.s &= \" \")")
         v("rImport = ◇Parser p ➜Node ->\n    Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = \n    Node(token: p.consume(), kind: ●import)")
         v("rImport = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = Node(token: p.consume(), kind: ●import)")
         v("f1 = ◇typ p -> p.a()\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) = p.a()\nproc f2(p : typ) = p.b()")
