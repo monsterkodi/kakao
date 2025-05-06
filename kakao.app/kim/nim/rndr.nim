@@ -155,13 +155,13 @@ proc ▸string(r : Rndr, n : Node) =
     if (delimiter == "\"\"\""): 
         var lines = n.string_content.token.str.split("\n")
         if (lines.len > 1): 
-            let ill = indentLen(lines[1..^1])
+            var ill = indentLen(lines[1..^1])
             mill = min(mill, ill)
         for stripol in n.string_stripols: 
             if stripol.stripol_content: 
                 lines = stripol.stripol_content.token.str.split("\n")
                 if (lines.len > 1): 
-                    let ill = indentLen(lines[1..^1])
+                    var ill = indentLen(lines[1..^1])
                     mill = min(mill, ill)
     proc demill(n : Node) = 
         if (mill == 0): 

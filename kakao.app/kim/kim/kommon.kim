@@ -10,18 +10,16 @@ use std ▪ monotimes times sequtils paths tables typetraits strformat strutils 
 
 use system/ansi_c
 
-export monotimes times
-export sequtils  tables    typetraits
-export enumutils sets
+export monotimes times unittest  macros
+export sequtils  enumutils sets  tables typetraits
 export strutils  strformat unicode pegs
-export unittest  macros
 export terminal
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
-fg* = ◇auto c ➜auto ->
+fg* = ◇auto c ➜string ->
     ansiForegroundColorCode(c)
-sc* = ◇auto c ➜auto ->
+sc* = ◇auto c ➜string ->
     ansiStyleCode(c)
 
 underscore* = ◇uint64 n ➜string ->
@@ -95,8 +93,7 @@ swapLastPathComponentAndExt* = ◇string file ◇string src ◇string tgt ➜str
 # ███        ███   ███  ███   ███  ███       ███  ███      ███     
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
 
-var timers : Table[string, tuple[m:MonoTime, t:uint64]]
-# proc mach_absolute_time(): uint64 {.importc, header: "<mach/mach_time.h>".}
+timers ◇ Table[string, tuple[m:MonoTime, t:uint64]]
 mach_absolute_time = ➜uint64 -> {.importc, header: "<mach/mach_time.h>".}
     
 profileStart* = ◇string msg ->
@@ -142,7 +139,7 @@ kseg* = ◇string s ➜seq[string] ->
   
     i = 0
     while i < s.len
-        let clusterSize = graphemeLen(s, i)
+        clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, i + clusterSize - 1))
         i += clusterSize
         

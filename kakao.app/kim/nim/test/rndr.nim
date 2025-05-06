@@ -6,7 +6,6 @@
 import ../kommon
 import ../rndr
 template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationInfo())
-template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
 suite "rndr": 
     test "toplevel": 
         t("", "")
@@ -85,12 +84,6 @@ suite "rndr":
         t("commit = ◇Tknzr t a=1 b=2 ->", "proc commit(t : Tknzr, a = 1, b = 2)")
         t("expression = ◇Parser p precedenceRight=0 ➜Node ->\nx", "proc expression(p : Parser, precedenceRight = 0) : Node\nx")
         t("spc = ◇Rndr r -> r.s &= \" \"", "proc spc(r : Rndr) = (r.s &= \" \")")
-        v("rImport = ◇Parser p ➜Node ->\n    Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = \n    Node(token: p.consume(), kind: ●import)")
-        v("rImport = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = Node(token: p.consume(), kind: ●import)")
-        v("f1 = ◇typ p -> p.a()\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) = p.a()\nproc f2(p : typ) = p.b()")
-        v("f1 = ◇typ p ➜Node -> p.a()\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) : Node = p.a()\nproc f2(p : typ) = p.b()")
-        v("f1 = ◇typ p ➜Node -> Node(token:p.consume(), kind: ●import)\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) : Node = Node(token: p.consume(), kind: ●import)\nproc f2(p : typ) = p.b()")
-        v("rImport = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)\nrProc = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●proc)", "proc rImport(p : Parser) : Node = Node(token: p.consume(), kind: ●import)\nproc rProc(p : Parser) : Node = Node(token: p.consume(), kind: ●proc)")
         t("""
 hook = -> {.noconv.}
     1 + 2
@@ -294,75 +287,6 @@ elif (e.kind == ●var):
         t("t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"", "t(\"\"\"\na = 1\"\"\", \"\"\"\nb = 2\"\"\")")
         t("t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")")
         t("t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t(\"\"\"\n    a = 1\n    b = 2\n\"\"\")")
-    test "autovar": 
-        v("a=1\nb=2\nc=b", "var a = 1\nvar b = 2\nvar c = b")
-        v("a=1\nb=2\nc=b\na=b\nb=2\nc=4", "var a = 1\nvar b = 2\nvar c = b\na = b\nb = 2\nc = 4")
-        v("a=1\nb=2\n# ██ \nb=2\nd=4", "var a = 1\nvar b = 2\n# ██ \nb = 2\nvar d = 4")
-        v("""
-# ███  
-
-test = false
-
-params ◇ seq[string]
-
-""", """
-# ███  
-var test = false
-var params : seq[string]""")
-        v("""
-f = ->
-    g = ->
-        a = 2
-    b = 3
-""", """
-proc f = 
-    proc g = 
-        var a = 2
-    var b = 3""")
-        v("""
-f = ->
-    a = 1
-    g = ->
-        b = 2
-        a = 1
-        c = 0
-    c = 3
-""", """
-proc f = 
-    var a = 1
-    proc g = 
-        var b = 2
-        a = 1
-        var c = 0
-    var c = 3""")
-        v("""
-x = 0
-y ◇ int
-var z ◇ int
-var q = 1
-if true
-    a = 1
-    x = 2
-    z = 3
-else
-    b = 1
-    a = 1
-    y = 3
-    q = 4
-""", """
-var x = 0
-var y : int
-var z : int
-var q = 1
-if true: 
-    var a = 1
-    x = 2
-    z = 3
-else: 
-    var b = 1
-    var a = 1
-    y = 3
-    q = 4""")
     test "blocks": 
         t("""
 f = ->

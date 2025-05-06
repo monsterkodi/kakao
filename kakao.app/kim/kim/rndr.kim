@@ -197,24 +197,24 @@ sigBody = ◇Rndr r ◇Node n ->
 
     mill = high(int)
     if delimiter == "\"\"\""
-        var lines = n.string_content.token.str.split "\n"
+        lines = n.string_content.token.str.split "\n"
         if lines.len > 1
-            let ill = indentLen(lines[1..^1])
+            ill = indentLen(lines[1..^1])
             mill = min(mill, ill)
                 
         for stripol in n.string_stripols
             if stripol.stripol_content
                 lines = stripol.stripol_content.token.str.split "\n"
                 if lines.len > 1
-                    let ill = indentLen(lines[1..^1])
+                    ill = indentLen(lines[1..^1])
                     mill = min(mill, ill)
         
     demill = ◇Node n -> 
         if mill == 0
             r.tok n
         else
-            var lines = n.token.str.split "\n"
-            for i in 1..<lines.len
+            lines = n.token.str.split "\n"
+            for i in 1...lines.len
                 lines[i] = lines[i][mill..^1]
             r.add lines.join("\n")
         

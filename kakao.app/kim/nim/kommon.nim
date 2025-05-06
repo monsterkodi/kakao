@@ -7,16 +7,14 @@
 ]#
 import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
 import system/ansi_c
-export monotimes, times
-export sequtils, tables, typetraits
-export enumutils, sets
+export monotimes, times, unittest, macros
+export sequtils, enumutils, sets, tables, typetraits
 export strutils, strformat, unicode, pegs
-export unittest, macros
 export terminal
 type lineInfo* = tuple[filename: string, line: int, column: int]
-proc fg*(c : auto) : auto = 
+proc fg*(c : auto) : string = 
     ansiForegroundColorCode(c)
-proc sc*(c : auto) : auto = 
+proc sc*(c : auto) : string = 
     ansiStyleCode(c)
 proc underscore*(n : uint64) : string = 
     var s = $n
@@ -73,8 +71,7 @@ proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : s
 # ████████   ███████    ███   ███  ██████    ███  ███      ███████ 
 # ███        ███   ███  ███   ███  ███       ███  ███      ███     
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
-var timers: Table[string, tuple[m: MonoTime, t: uint64]]
-# proc mach_absolute_time(): uint64 {.importc, header: "<mach/mach_time.h>".}
+var timers : Table[string,tuple[m:MonoTime,t:uint64]]
 proc mach_absolute_time() : uint64 {.importc, header: "<mach/mach_time.h>".}
 proc profileStart*(msg : string) = 
     # GC_disableOrc()
@@ -110,7 +107,7 @@ macro profileScope*(msg: string): untyped =
 proc kseg*(s : string) : seq[string] = 
     var i = 0
     while (i < s.len): 
-        let clusterSize = graphemeLen(s, i)
+        var clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, ((i + clusterSize) - 1)))
         (i += clusterSize)
 proc ksegWidth*(s : string) : int = 

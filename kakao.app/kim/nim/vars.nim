@@ -33,7 +33,7 @@ proc exp(s : Scoper, body : Node, i : int, e : Node) =
             if (e.operand_right.kind == ●func): 
                 s.branch(e.operand_right.func_body)
             elif (e.token.tok == ◂assign): 
-                let lhs = e.operand_left
+                var lhs = e.operand_left
                 if (lhs.kind == ●literal): 
                     insert(lhs.token.str, e)
         of ●var: 
@@ -49,6 +49,14 @@ proc exp(s : Scoper, body : Node, i : int, e : Node) =
             for condThen in e.condThens: 
                 s.branch(condThen.then_branch)
             s.branch(e.else_branch)
+        of ●for: 
+            s.branch(e.for_body)
+        of ●while: 
+            s.branch(e.while_body)
+        of ●switch: 
+            for switchCase in e.switch_cases: 
+                s.branch(switchCase.case_then)
+            s.branch(e.switch_default)
         else: discard
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       

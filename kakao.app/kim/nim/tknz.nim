@@ -339,14 +339,14 @@ proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] =
             continue
         t.token = Token(line: t.line, col: t.col)
         while (t.segi < t.eol): 
-            let char = t.peek(0)
+            var char = t.peek(0)
             if (char == " "): 
                 if ((t.segi > 0) and (t.peek(-1) != " ")): 
                     t.pushToken()
             else: 
                 if ((t.col > 0) and (t.peek(-1) == " ")): 
                     t.token.col = t.col
-                let triple = t.srng(3)
+                var triple = t.srng(3)
                 if (triple == "..<"): 
                     t.commit("...", ◂tripledot, 3)
                     continue
@@ -355,7 +355,7 @@ proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] =
                     if (t.tokens[^1].tok == ◂string_start): 
                         t.token.tok = ◂string
                     continue
-                let double = t.srng(2)
+                var double = t.srng(2)
                 if punct.hasKey(double): 
                     if (punct[double] == ◂mod): 
                         t.modbracket()

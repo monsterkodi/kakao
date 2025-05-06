@@ -43,7 +43,7 @@ exp = ◇Scoper s ◇Node body ◇int i ◇Node e ->
             if e.operand_right.kind == ●func
                 s.branch e.operand_right.func_body
             elif e.token.tok == ◂assign
-                let lhs = e.operand_left
+                lhs = e.operand_left
                 if lhs.kind == ●literal
                     insert lhs.token.str e
         ●var
@@ -59,6 +59,14 @@ exp = ◇Scoper s ◇Node body ◇int i ◇Node e ->
             for condThen in e.condThens
                 s.branch condThen.then_branch
             s.branch e.else_branch
+        ●for
+            s.branch e.for_body
+        ●while
+            s.branch e.while_body
+        ●switch
+            for switchCase in e.switch_cases
+                s.branch switchCase.case_then
+            s.branch e.switch_default
             
         ➜ discard
                     
