@@ -185,6 +185,7 @@ type Parser* = ref object
         listless: bool
         returning: bool
         typeless: bool
+        failed: bool
         text: string # used in `$` for debugging. should be removed eventually 
 proc current(p : Parser) : Token = 
     if (p.pos < p.tokens.len): 
@@ -214,7 +215,7 @@ proc `$`(p : Parser) : string =
 proc `$`*(n : Node) : string = 
     if (n == nil): 
         return "NIL"
-    var s = &"{n.token.tok}"
+    var s = $n.token.tok
     case n.kind:
         of ●string: 
             var ips = ""
@@ -289,21 +290,21 @@ proc `$`*(n : Node) : string =
             let b = choose(n.while_body, &" {n.while_body}", "")
             s = &"({s} {n.while_cond}{b})"
         of ●func: 
-            let sig = choose(n.func_signature, &"{n.func_signature} ", "")
+            let sig = choose(n.func_signature, $n.func_signature, "")
             let mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
             let bdy = choose(n.func_body, &" {n.func_body}", "")
             s = &"({sig}{s}{mdf}{bdy})"
         of ●signature: 
-            let a = choose(n.sig_args, &"{n.sig_args}", "")
+            let a = if (n.sig_args and n.sig_args.list_values.len): $n.sig_args else: ""
             let t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
             s = &"{a}{t}"
         of ●arrayAccess: 
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
         of ●arg: 
-            let t = choose(n.arg_type, &"{n.arg_type}", "")
+            let t = choose(n.arg_type, &"{s}{n.arg_type} ", "")
             let v = choose(n.arg_value, &" (= {n.arg_value})", "")
-            s = &"({s}{t} {n.arg_name}{v})"
+            s = &"({t}{n.arg_name}{v})"
         of ●var: 
             let t = choose(n.var_type, &" {s}{n.var_type}", "")
             let v = choose(n.var_value, &" (= {n.var_value})", "")
@@ -347,6 +348,7 @@ proc error(p : Parser, msg : string, token = Token(tok: ◂eof)) : Node =
     elif (p.tok != ◂eof): 
         let line = p.text.split("\n")[p.current.line]
         styledEcho(fgWhite, styleDim, &"{p.current.line}", resetStyle, fgGreen, &"{line}")
+    p.failed = true
     nil
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
 # ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
@@ -412,6 +414,16 @@ proc firstLineToken(p : Parser) : Token =
             break
         (tpos -= 1)
     p.tokens[tpos]
+proc lineIndent(p : Parser, line : int) : int = 
+    var tpos = p.tokens.len
+    while (tpos > 0): 
+        if (p.tokens[(tpos - 1)].line < line): 
+            break
+        (tpos -= 1)
+    if (p.tokens[tpos].tok == ◂indent): 
+        p.tokens[tpos].str.len
+    else: 
+        p.tokens[tpos].col
 proc isThenlessIf(p : Parser, token : Token) : bool = 
     if p.isNextLineIndented(token): 
         return false
@@ -713,6 +725,7 @@ proc rIf(p : Parser) : Node =
         if (p.tok in {◂then, ◂else}): 
             break # then without condition -> else
         condition = p.expression()
+        p.swallow(◂comment)
         then_branch = p.thenBlock()
         condThens.add(Node(token: condition.token, kind: ●condThen, condition: condition, then_branch: then_branch))
     var else_branch : Node
@@ -999,6 +1012,52 @@ proc rFunc(p : Parser) : Node =
         func_mod = p.rLiteral
     var func_body = p.thenIndented(firstToken)
     Node(token: token, kind: ●func, func_body: func_body)
+proc parseSignature(p : Parser) : Node = 
+    var sig_args = Node(token: p.current(), kind: ●list, list_values: @[])
+    var sig_type : Node
+    var parens = false
+    if (p.tok == ◂paren_open): 
+        p.swallow()
+        parens = true
+    while true: 
+        var token = p.current()
+        var arg_type : Node = nil
+        if (p.tok in {◂var_type, ◂val_type}): 
+            p.swallow() # ◆ or ◇
+            arg_type = p.parseType()
+        if (p.tok != ◂name): 
+            break
+        var arg_name = p.value()
+        var arg_value : Node
+        if (p.tok == ◂assign): 
+            p.swallow() # =
+            arg_value = p.expression()
+        p.swallow(◂comma)
+        sig_args.list_values.add(Node(token: token, kind: ●arg, arg_type: arg_type, arg_name: arg_name, arg_value: arg_value))
+    if parens: 
+        if (p.tok != ◂paren_close): return
+        p.swallow()
+    if (p.tok == ◂then): 
+        p.swallow()
+        sig_type = p.parseType()
+    if (p.tok != ◂func): 
+        return
+    Node(token: sig_args.token, kind: ●signature, sig_args: sig_args, sig_type: sig_type)
+proc funcOrExpression(p : Parser, token : Token) : Node = 
+    var col = p.lineIndent(token.line)
+    if p.isTokAhead(◂func): 
+        var startPos = p.pos
+        var func_signature : Node
+        if (p.tok != ◂func): 
+            func_signature = p.parseSignature()
+        if (p.tok == ◂func): 
+            var ftoken = p.consume()
+            var func_mod = if (p.tok == ◂mod): p.rLiteral() else: nil
+            var func_body = p.expressionOrIndentedBlock(Token(tok: ◂null), col)
+            return Node(token: ftoken, kind: ●func, func_signature: func_signature, func_mod: func_mod, func_body: func_body)
+        else: 
+            p.pos = startPos
+    p.expressionOrIndentedBlock(token, col)
 proc rReturn(p : Parser) : Node = 
     var token = p.consume()
     if ((p.tok == ◂if) and p.isThenlessIf(token)): 
@@ -1042,7 +1101,7 @@ proc rPreOp(p : Parser) : Node =
     Node(token: token, kind: ●preOp, operand: right)
 proc lAssign(p : Parser, left : Node) : Node = 
     var token = p.consume()
-    var right = p.expressionOrIndentedBlock(token, left.token.col)
+    var right = p.funcOrExpression(token)
     Node(token: token, kind: ●operation, operand_left: left, operand_right: right)
 proc lRange(p : Parser, left : Node) : Node = 
     var token = p.consume()
@@ -1070,7 +1129,8 @@ proc rClass(p : Parser) : Node =
     Node(token: token, kind: ●class, class_name: class_name, class_body: class_body)
 proc lMember(p : Parser, left : Node) : Node = 
     var token = p.consume()
-    Node(token: token, kind: ●member, member_key: left, member_value: p.expression())
+    var right = p.funcOrExpression(token)
+    Node(token: token, kind: ●member, member_key: left, member_value: right)
 proc lTestCase(p : Parser, left : Node) : Node = 
     var token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
@@ -1223,4 +1283,5 @@ proc ast*(text : string) : Node =
     p.setup()
     var b = p.parseBlock()
     # profileStop 'pars'
+    if p.failed: return nil
     b

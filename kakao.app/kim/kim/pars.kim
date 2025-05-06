@@ -259,6 +259,7 @@ class Parser*
         listless    : bool
         returning   : bool
         typeless    : bool
+        failed      : bool
         text        : string # used in `$` for debugging. should be removed eventually 
     
 current = ◇Parser p ➜Token ->
@@ -300,7 +301,7 @@ $* = ◇Node n ➜string ->
     if n == nil
         ⮐  "NIL"
         
-    var s = &"{n.token.tok}"
+    var s = $n.token.tok
     
     switch n.kind
         ●string
@@ -378,21 +379,21 @@ $* = ◇Node n ➜string ->
             let b = choose(n.while_body, &" {n.while_body}", "")
             s = &"({s} {n.while_cond}{b})"
         ●func
-            let sig = choose(n.func_signature, &"{n.func_signature} ", "")
+            let sig = choose(n.func_signature, $n.func_signature, "")
             let mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
             let bdy = choose(n.func_body, &" {n.func_body}", "")
             s = &"({sig}{s}{mdf}{bdy})"
         ●signature
-            let a = choose(n.sig_args, &"{n.sig_args}", "")
+            let a = if n.sig_args and n.sig_args.list_values.len ➜ $n.sig_args ➜ ""
             let t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
             s = &"{a}{t}"
         ●arrayAccess
             let i = choose(n.array_index, &"{n.array_index}", "")
             s = &"({n.array_owner}[{i}])"
         ●arg
-            let t = choose(n.arg_type, &"{n.arg_type}", "")
+            let t = choose(n.arg_type, &"{s}{n.arg_type} ", "")
             let v = choose(n.arg_value, &" (= {n.arg_value})", "")
-            s = &"({s}{t} {n.arg_name}{v})"
+            s = &"({t}{n.arg_name}{v})"
         ●var
             let t = choose(n.var_type, &" {s}{n.var_type}", "")
             let v = choose(n.var_value, &" (= {n.var_value})", "")
@@ -439,7 +440,7 @@ error = ◇Parser p ◇string msg token=Token(tok:◂eof) ➜Node ->
     elif p.tok != ◂eof
         let line = p.text.split("\n")[p.current.line]
         styledEcho fgWhite, styleDim, &"{p.current.line}", resetStyle, fgGreen, &"{line}"
-        
+    p.failed = true    
     nil
     
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
@@ -531,6 +532,19 @@ firstLineToken = ◇Parser p ➜Token ->
             break
         tpos -= 1
     p.tokens[tpos]
+    
+lineIndent = ◇Parser p ◇int line ➜int ->
+
+    tpos = p.tokens.len
+    while tpos > 0
+        if p.tokens[tpos-1].line < line
+            break
+        tpos -= 1
+
+    if p.tokens[tpos].tok == ◂indent
+        p.tokens[tpos].str.len
+    else
+        p.tokens[tpos].col
 
 isThenlessIf = ◇Parser p ◇Token token ➜bool ->
 
@@ -927,6 +941,7 @@ rIf = ◇Parser p ➜Node ->
             break # then without condition -> else
         
         condition = p.expression()
+        p.swallow ◂comment
         then_branch = p.thenBlock()
         
         condThens.add(Node(token:condition.token, kind:●condThen, condition:condition, then_branch:then_branch))
@@ -1320,6 +1335,72 @@ rFunc = ◇Parser p ➜Node ->
     
     Node(token:token, kind:●func, func_body:func_body)
 
+parseSignature = ◇Parser p ➜Node ->
+
+    sig_args = Node(token:p.current(), kind:●list, list_values:@[])
+    sig_type ◇ Node
+    
+    parens = false
+    if p.tok == ◂paren_open
+        p.swallow()
+        parens = true
+    
+    while true
+        
+        var token     = p.current()
+        var arg_type  ◇ Node = nil
+        
+        if p.tok in {◂var_type, ◂val_type}
+        
+            p.swallow() # ◆ or ◇
+            arg_type  = p.parseType()
+                        
+        if p.tok != ◂name        
+            break
+                
+        var arg_name  = p.value()
+        var arg_value ◇ Node
+
+        if p.tok == ◂assign
+            p.swallow() # =
+            arg_value = p.expression() 
+            
+        p.swallow ◂comma
+        
+        sig_args.list_values.add Node(token:token, kind:●arg, arg_type:arg_type, arg_name:arg_name, arg_value:arg_value)
+    
+    if parens 
+        ⮐  if p.tok != ◂paren_close
+        p.swallow()
+
+    if p.tok == ◂then
+        p.swallow()
+        sig_type = p.parseType()
+
+    if p.tok != ◂func
+        ⮐  
+        
+    Node(token:sig_args.token, kind:●signature, sig_args:sig_args, sig_type:sig_type)
+
+funcOrExpression = ◇Parser p ◇Token token ➜Node ->
+
+    col = p.lineIndent token.line
+
+    if p.isTokAhead ◂func
+        startPos = p.pos
+        func_signature ◇ Node
+        if p.tok != ◂func
+            func_signature = p.parseSignature()
+        if p.tok == ◂func
+            ftoken = p.consume()
+            func_mod = if p.tok == ◂mod ➜ p.rLiteral() ➜ nil
+            func_body = p.expressionOrIndentedBlock(Token(tok:◂null), col)
+            ⮐  Node(token:ftoken, kind:●func, func_signature:func_signature, func_mod:func_mod, func_body:func_body)
+        else
+            p.pos = startPos
+    
+    p.expressionOrIndentedBlock(token, col)
+
 rReturn = ◇Parser p ➜Node ->
 
     token = p.consume()
@@ -1380,7 +1461,7 @@ rPreOp = ◇Parser p ➜Node ->
 lAssign = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume()
-    right = p.expressionOrIndentedBlock(token, left.token.col)
+    right = p.funcOrExpression(token)
 
     Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
 
@@ -1423,7 +1504,8 @@ rClass = ◇Parser p ➜Node ->
 lMember = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume()
-    Node(token:token, kind:●member, member_key:left, member_value:p.expression())
+    right = p.funcOrExpression(token)
+    Node(token:token, kind:●member, member_key:left, member_value:right)
     
 lTestCase = ◇Parser p ◇Node left ➜Node ->
 
@@ -1620,6 +1702,7 @@ ast* = ◇string text ➜Node ->
     p.setup()
     b = p.parseBlock()
     # profileStop 'pars'
+    ⮐  nil if p.failed
     b
     
     

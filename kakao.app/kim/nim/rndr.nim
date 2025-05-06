@@ -380,6 +380,7 @@ proc rnd(r : Rndr, n : Node) =
 proc render*(code : string, autovar = true) : string = 
     # profileStart "ast"
     var root = ast(code)
+    if not root: return ""
     # profileStop "ast"
     if autovar: 
         # profileStart "vars"
@@ -391,12 +392,15 @@ proc render*(code : string, autovar = true) : string =
     # profileStop "rnd"
     r.s
 proc file*(file : string) : string = 
-    profileScope("rndr.file")
+    profileScope(file)
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     var kimCode = file.readFile()
     var nimCode = render(kimCode)
-    fileOut.writeFile(nimCode)
-    fileOut
+    if nimCode: 
+        fileOut.writeFile(nimCode)
+        fileOut
+    else: 
+        ""
 proc files*(files : seq[string]) : seq[string] = 
     var transpiled : seq[string]
     for f in files: 

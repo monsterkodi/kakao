@@ -13,7 +13,7 @@ var optParser = initOptParser()
 var outdir = ""
 var tests = false
 var verbose = false
-var testFiles = walkDir((currentSourcePath().splitFile()[0] / "test")).toSeq().map(proc (r : tuple) : string = r.path)
+var testFiles = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
 randomize()
 proc verb(msg : string) = 
     if verbose: echo(msg)
@@ -30,7 +30,7 @@ for kind, key, val in optParser.getopt():
         of cmdLongOption, cmdShortOption: 
             params.add('-' & key)
             case key:
-                of "test": 
+                of "test", "t": 
                     tests = true
                 of "verbose", "v": 
                     verbose = true
@@ -133,7 +133,7 @@ proc runTests() : bool =
         if (exitCode != 0): 
             styledEcho(fgRed, "✘ ", $f)
             fail = true
-    echo("")
+    # log ""
     not fail
 if files.len: 
     # profileStart 'translate'
@@ -143,6 +143,34 @@ if files.len:
 if tests: 
     discard runTests()
     quit(0)
+#  ███████  █████████   ███████    ███████   ████████
+# ███          ███     ███   ███  ███        ███     
+# ███████      ███     █████████  ███  ████  ███████ 
+#      ███     ███     ███   ███  ███   ███  ███     
+# ███████      ███     ███   ███   ███████   ████████
+proc stage(kimFiles : seq[string], src : string, dst : string) : bool = 
+    profileStart(dst & " ")
+    for f in kimFiles: 
+        copyFileWithPermissions(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
+    for f in kimFiles: 
+        let (output, exitCode) = execCmdEx(&"{src}/bin/kim " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
+        if (exitCode != 0): 
+            echo(output)
+            logFile(f, "✘ ")
+            return false
+        # else
+        #     log output[0..^2].replace(getCurrentDir(), ".")
+    profileStop(dst & " ")
+    if compile(&"{dst}/nim/kim.nim", &"{dst}/bin"): 
+        profileStart("test")
+        let (output, exitCode) = execCmdEx(&"{dst}/bin/kim --test")
+        profileStop("test")
+        if (exitCode == 0): 
+            return true
+        else: 
+            echo(output)
+    echo(&"✘ {dst}")
+    false
 # ███   ███   ███████   █████████   ███████  ███   ███
 # ███ █ ███  ███   ███     ███     ███       ███   ███
 # █████████  █████████     ███     ███       █████████
@@ -164,20 +192,14 @@ proc watch(paths : seq[string]) =
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
     var firstLoop = true
     while true: 
-        var doBuild = false
         var toTranspile : seq[string]
         var kimFiles : seq[string]
-        var nimFiles : seq[string]
         for path in paths: 
             if not dirExists(path): 
                 continue
             for f in walkDirRec(path): 
-                let (dir, name, ext) = f.splitFile()
-                if (dir.find("k1m") >= 0): 
-                    continue
-                if (ext == ".kim"): kimFiles.add(f)
-                elif (ext == ".nim"): nimFiles.add(f)
-                else: continue
+                let (_, _, ext) = f.splitFile()
+                if (ext == ".kim"): kimFiles.add(f) else: continue
                 let modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 
                     modTimes[f] = modTime
@@ -185,25 +207,24 @@ proc watch(paths : seq[string]) =
                 if (modTimes[f] == modTime): 
                     continue
                 modTimes[f] = modTime
-                if ((ext == ".nim") and not testFiles.contains(f)): 
-                    doBuild = true
-                elif (ext == ".kim"): 
+                if (ext == ".kim"): 
                     toTranspile.add(f)
         if firstLoop: 
             firstLoop = false
             if verbose: 
                 for f in kimFiles: logFile(f)
-                for f in nimFiles: logFile(f)
         if toTranspile: 
             echo("\x1bc")
             for f in toTranspile: 
                 logFile(f, "▸ ")
-                let r = rndr.file(f)
-                logFile(r, "✔ ")
-            if not runTests(): 
-                doBuild = false
-        if doBuild: 
-            if compile("nim/kim.nim", "bin"): 
-                restart()
+            if stage(kimFiles, ".", "k1m"): 
+                if stage(kimFiles, "k1m", "k2m"): 
+                    echo("-> deploy")
+                    for f in kimFiles: 
+                        let srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
+                        let tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
+                        copyFileWithPermissions(srcNim, tgtNim)
+                    if compile("k2m/nim/kim.nim", "bin"): 
+                        restart()
         sleep(200)
-watch(@[getCurrentDir()])
+watch(@[getCurrentDir() & "/kim"])

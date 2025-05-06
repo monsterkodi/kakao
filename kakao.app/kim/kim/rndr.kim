@@ -489,6 +489,9 @@ render* = ◇string code autovar=true ➜string ->
 
     # profileStart "ast"
     root = ast(code)
+    
+    ⮐  "" if not root
+    
     # profileStop "ast"
     if autovar
         # profileStart "vars"
@@ -496,19 +499,22 @@ render* = ◇string code autovar=true ➜string ->
         # profileStop "vars"
     r = Rndr(code:code)
     # profileStart "rnd"
-    r.rnd(root)
+    r.rnd root
     # profileStop "rnd"
     r.s
     
 file* = ◇string file ➜string ->
 
-    profileScope "rndr.file"
+    profileScope file
 
     fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     kimCode = file.readFile()
     nimCode = render kimCode 
-    fileOut.writeFile nimCode
-    fileOut
+    if nimCode
+        fileOut.writeFile nimCode
+        fileOut
+    else
+        ""
     
 files* = ◇seq[string] files ➜seq[string] ->
 

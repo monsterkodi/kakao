@@ -54,6 +54,7 @@ proc testCmp*(a : string, r : auto, b : auto, l : lineInfo) =
         styledEcho(fgRed, styleDim, "<|")
         fail()
 converter toBool*(x: int): bool = x != 0
+converter toBool*(x: string): bool = x.len > 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
 converter toBool*[T: ref object](x: T): bool = x != nil
 proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : string = 

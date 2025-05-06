@@ -14,7 +14,7 @@ outdir    = ""
 tests     = false
 verbose   = false
 
-testFiles = walkDir(currentSourcePath().splitFile()[0] / "test").toSeq().map(◇tuple r ➜string -> r.path)
+testFiles = walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "test").toSeq().map(◇tuple r ➜string -> r.path)
     
 randomize()
 
@@ -35,7 +35,7 @@ for kind key val in optParser.getopt()
         cmdLongOption cmdShortOption
             params.add '-' & key
             switch key
-                "test"
+                "test" "t"
                     tests = true
                 "verbose" "v"
                     verbose = true
@@ -164,7 +164,7 @@ runTests = ➜bool ->
         if exitCode != 0
             styledEcho fgRed "✘ " $f
             fail = true
-    log ""
+    # log ""
     not fail
 
 if files.len
@@ -175,8 +175,42 @@ if files.len
     quit transpiled.len - files.len
 
 if tests
+
     discard runTests()
     quit 0
+    
+#  ███████  █████████   ███████    ███████   ████████
+# ███          ███     ███   ███  ███        ███     
+# ███████      ███     █████████  ███  ████  ███████ 
+#      ███     ███     ███   ███  ███   ███  ███     
+# ███████      ███     ███   ███   ███████   ████████
+
+stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
+
+    profileStart dst & " "
+    for f in kimFiles 
+        copyFileWithPermissions(f, f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
+    
+    for f in kimFiles 
+        let (output exitCode) = execCmdEx("#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
+        if exitCode != 0
+            log output
+            logFile f "✘ "
+            ⮐  false
+        # else
+        #     log output[0..^2].replace(getCurrentDir(), ".")
+    profileStop dst & " "
+        
+    if compile("#{dst}/nim/kim.nim" "#{dst}/bin")
+        profileStart "test"
+        let (output exitCode) = execCmdEx("#{dst}/bin/kim --test")
+        profileStop "test"
+        if exitCode == 0
+            ⮐  true
+        else
+            log output
+    log "✘ #{dst}"
+    false
  
 # ███   ███   ███████   █████████   ███████  ███   ███
 # ███ █ ███  ███   ███     ███     ███       ███   ███
@@ -209,10 +243,8 @@ watch = ◇seq[string] paths ->
     
     while true
     
-        var doBuild     = false
         var toTranspile ◇ seq[string]
         var kimFiles    ◇ seq[string]
-        var nimFiles    ◇ seq[string]
         
         for path in paths
         
@@ -222,15 +254,9 @@ watch = ◇seq[string] paths ->
                 
             for f in walkDirRec(path)
             
-                let (dir name ext) = f.splitFile()
+                let (_ _ ext) = f.splitFile()
                 
-                if dir.find("k1m") >= 0
-                    continue
-                
-                if 
-                    ext == ".kim" ➜ kimFiles.add(f)
-                    ext == ".nim" ➜ nimFiles.add(f)
-                                  ➜ continue
+                if ext == ".kim" ➜ kimFiles.add(f) ➜ continue
                 
                 let modTime = getFileInfo(f).lastWriteTime
                 
@@ -242,31 +268,29 @@ watch = ◇seq[string] paths ->
                     continue
         
                 modTimes[f] = modTime
-                if ext == ".nim" and not testFiles.contains f
-                    doBuild = true
-                elif ext == ".kim"
+                if ext == ".kim"
                     toTranspile.add f
                 
         if firstLoop                                    
             firstLoop = false
             if verbose
                 for f in kimFiles ➜ logFile f
-                for f in nimFiles ➜ logFile f
                 
         if toTranspile
             log "\x1bc"
             for f in toTranspile
                 logFile f "▸ "
-                let r = rndr.file f
-                logFile r "✔ "
-            if not runTests()
-                doBuild = false
-            
-        if doBuild
-            if compile("nim/kim.nim" "bin")
-                restart()
                 
+            if stage(kimFiles "." "k1m")
+                if stage(kimFiles "k1m" "k2m")
+                    log "-> deploy"
+                    for f in kimFiles 
+                        let srcNim = f.replace("/kim/kim/" "/kim/k2m/nim/").replace(".kim" ".nim")
+                        let tgtNim = f.replace("/kim/kim/" "/kim/nim/").replace(".kim" ".nim")
+                        copyFileWithPermissions(srcNim, tgtNim)
+                    if compile("k2m/nim/kim.nim" "bin")
+                        restart()
         sleep 200
         
-watch @[getCurrentDir()]
+watch @[getCurrentDir() & "/kim"]
                  
