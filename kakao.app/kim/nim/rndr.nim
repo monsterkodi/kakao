@@ -38,21 +38,28 @@ proc ▸block(r : Rndr, n : Node) =
                 r.add("\n" & idt)
             else: 
                 r.add(" ")
+proc sigBody(r : Rndr, n : Node) = 
+    r.annotateVarArg = true
+    r.rnd(n.func_signature)
+    r.annotateVarArg = false
+    if n.func_mod: 
+        r.add(" ")
+        r.tok(n.func_mod)
+    if n.func_body: 
+        r.add(" =")
+        r.add(" ")
+        r.rnd(n.func_body)
+proc ▸func(r : Rndr, n : Node) = 
+    r.add("proc ")
+    r.sigBody(n)
 proc ▸proc(r : Rndr, n : Node) = 
-    if (((n == nil) or (n.operand_left == nil)) or (n.operand_right == nil)): 
-        echo(&"DAFUK? {n} {n.token}")
-        return
     var f = n.operand_right
     r.add("proc ")
     if (n.operand_left.token.str[0] == '$'): 
         r.add("`$`" & n.operand_left.token.str[1..^1])
     else: 
         r.rnd(n.operand_left)
-    r.rnd(f.func_signature)
-    if f.func_body: 
-        r.add(" =")
-        r.add(" ")
-        r.rnd(f.func_body)
+    r.sigBody(n.operand_right)
 proc ▸operation(r : Rndr, n : Node) = 
     if (((n == nil) or (n.operand_left == nil)) or (n.operand_right == nil)): 
         echo(&"DAFUK? {n} {n.token}")
@@ -103,18 +110,6 @@ proc ▸arrayAccess(r : Rndr, n : Node) =
     r.add("[")
     r.rnd(n.array_index)
     r.add("]")
-proc ▸func(r : Rndr, n : Node) = 
-    r.add("proc ")
-    r.annotateVarArg = true
-    r.rnd(n.func_signature)
-    r.annotateVarArg = false
-    if n.func_mod: 
-        r.add(" ")
-        r.tok(n.func_mod)
-    if n.func_body: 
-        r.add(" =")
-        r.add(" ")
-        r.rnd(n.func_body)
 proc ▸signature(r : Rndr, n : Node) = 
     r.add("(")
     r.annotateVarArg = true

@@ -74,7 +74,8 @@ proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : s
 # ███        ███   ███  ███   ███  ███       ███  ███      ███     
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
 var timers: Table[string, tuple[m: MonoTime, t: uint64]]
-proc mach_absolute_time(): uint64 {.importc, header: "<mach/mach_time.h>".}
+# proc mach_absolute_time(): uint64 {.importc, header: "<mach/mach_time.h>".}
+proc mach_absolute_time() : uint64 {.importc, header: "<mach/mach_time.h>".}
 proc profileStart*(msg : string) = 
     # GC_disableOrc()
     if not timers.contains(msg): 

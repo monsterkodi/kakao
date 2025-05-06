@@ -214,7 +214,7 @@ advanceMulti = ◇Tknzr t ◇string stop ->
         t.token.str &= c
         t.lineIncr c
     
-proc pushToken(t:Tknzr, str="", tk=◂name, incr=0) =
+pushToken = ◇Tknzr t str="" tk=◂name incr=0 ->
 
     if t.token.str.len
         t.tokens.add t.token
@@ -226,7 +226,7 @@ push = ◇Tknzr t ◇tok tk ->
     t.token.tok = tk
     t.pushToken()
     
-proc commit(t:Tknzr, str="", tk=◂name, incr=0)
+commit = ◇Tknzr t str="" tk=◂name incr=0 ->
     
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
@@ -368,7 +368,7 @@ verbatim = ◇Tknzr t ◇tok tk ->
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
 #  ███████   ███████   ███   ███  ███   ███  ███     ███   
 
-proc commit(t:Tknzr, str="", tk=◂name, incr=0) =
+commit = ◇Tknzr t str="" tk=◂name incr=0 ->
 
     t.pushToken(str, tk, incr)
     t.pushToken()

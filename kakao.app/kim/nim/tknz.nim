@@ -178,8 +178,7 @@ proc advanceMulti(t : Tknzr, stop : string) =
         let c = t.peek(0)
         (t.token.str &= c)
         t.lineIncr(c)
-proc pushToken(t:Tknzr, str="", tk=◂name, incr=0) =
-
+proc pushToken(t : Tknzr, str = "", tk = ◂name, incr = 0) = 
     if t.token.str.len: 
         t.tokens.add(t.token)
     t.token = Token(str: str, tok: tk, line: t.line, col: t.col)
@@ -187,7 +186,7 @@ proc pushToken(t:Tknzr, str="", tk=◂name, incr=0) =
 proc push(t : Tknzr, tk : tok) = 
     t.token.tok = tk
     t.pushToken()
-proc commit(t:Tknzr, str="", tk=◂name, incr=0)
+proc commit(t : Tknzr, str = "", tk = ◂name, incr = 0)
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
 # ███████      ███     ███████    ███  ███ █ ███  ███  ████
@@ -297,8 +296,7 @@ proc verbatim(t : Tknzr, tk : tok) =
 # ███       ███   ███  █████████  █████████  ███     ███   
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
 #  ███████   ███████   ███   ███  ███   ███  ███     ███   
-proc commit(t:Tknzr, str="", tk=◂name, incr=0) =
-
+proc commit(t : Tknzr, str = "", tk = ◂name, incr = 0) = 
     t.pushToken(str, tk, incr)
     t.pushToken()
     case tk:

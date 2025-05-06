@@ -60,7 +60,7 @@ for kind, key, val in optParser.getopt():
 when defined(posix): 
     import posix
     proc restart = 
-        let args = allocCStringArray(@[getAppFilename()] & params)
+        var args = allocCStringArray(@[getAppFilename()] & params)
         discard execv(getAppFilename().cstring(), args)
         quit(1) # only reaches here if execve fails
 # ███       ███████    ███████   ████████  ███  ███      ████████
@@ -102,29 +102,29 @@ proc runTests() : bool =
     var fail = false
     for f in testFiles: 
         # let cmd = &"nim r --colors:on {f}"
-        let p = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
+        let process = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
         let startTime = getMonoTime()
         var output = ""
-        let fd = p.outputHandle
-        var flags = fcntl(fd, F_GETFL, 0)
-        discard fcntl(fd, F_SETFL, (flags or O_NONBLOCK))
+        let outhnd = process.outputHandle
+        var flags = fcntl(outhnd, F_GETFL, 0)
+        discard fcntl(outhnd, F_SETFL, (flags or O_NONBLOCK))
         while true: 
             let elapsed = (getMonoTime() - startTime).inMilliseconds
             if (elapsed >= 5000): 
                 fail = true
                 output.add(&"test killed after {elapsed} ms!!")
-                p.terminate()
+                process.terminate()
                 sleep(50)
-                if p.running: 
-                    p.kill()
+                if process.running: 
+                    process.kill()
                 break
             var line = newString((1024 * 10))
-            let bytesRead = read(fd, addr(line[0]), line.len)
+            let bytesRead = read(outhnd, addr(line[0]), line.len)
             if (bytesRead > 0): output.add(line & "\n")
             elif (bytesRead == 0): break
             elif (errno == EAGAIN): discard poll(nil, 0, 50)
             else: break
-        let exitCode = p.waitForExit()
+        let exitCode = process.waitForExit()
         if (((exitCode != 0) or verbose) or fail): 
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace("[OK]", fg(fgGreen) & "✔\x1b[0m").replace("[FAILED]", fg(fgRed) & "✘\x1b[0m"))
         else: 
@@ -177,8 +177,7 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
 # ███   ███  ███   ███     ███     ███       ███   ███
 # ██     ██  ███   ███     ███      ███████  ███   ███
 proc watch(paths : seq[string]) = 
-    proc hook() {.noconv.} = 
-    
+    proc hook {.noconv.} = 
         styledEcho("")
         styledEcho(fgGreen, farewells[rand(farewells.high)])
         quit(0)

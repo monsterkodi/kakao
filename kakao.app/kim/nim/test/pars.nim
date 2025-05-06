@@ -98,11 +98,17 @@ suite "pars":
         t("f = ◇Parser p a=1 b=2 ->", "▪[(◂name = (◂[(◇type(Parser) ◂name), (◂name (= ◂number)), (◂name (= ◂number))]->))]")
         t("f = ◇Rndr r ->\n    a += 1", "▪[(◂name = (◂[(◇type(Rndr) ◂name)]-> ▪[(◂name += ◂number)]))]")
         t("f = ◇Rndr r -> a += 1", "▪[(◂name = (◂[(◇type(Rndr) ◂name)]-> (◂name += ◂number)))]")
+        t("f = ◇Rndr r tok=◂assign ->", "▪[(◂name = (◂[(◇type(Rndr) ◂name), (◂name (= ◂name))]->))]")
+        t("f = ◇Typ t str=\"\" tk=◂name incr=0 ->", "▪[(◂name = (◂[(◇type(Typ) ◂name), (◂name (= ◂string)), (◂name (= ◂name)), (◂name (= ◂number))]->))]")
     test "func modfifier": 
         t("{.noconv.}", "▪[{.]")
         t("() -> {.noconv.}", "▪[(-> {.noconv.} )]")
         t("a = () -> {.noconv.}", "▪[(◂name = (-> {.noconv.} ))]")
         t("setHook(() -> {.noconv.}\n  1 + 2)", "▪[(◂name ◂call @[(-> {.noconv.}  ▪[(◂number + ◂number)])])]")
+        t("""
+hook = -> {.noconv.}
+    1 + 2
+""", "▪[(◂name = (-> {.noconv.}  ▪[(◂number + ◂number)]))]")
     test "func body": 
         t("f = ->\n  b = 1 + 2\n  b += 3", "▪[(◂name = (-> ▪[(◂name = (◂number + ◂number))(◂name += ◂number)]))]")
     test "call": 

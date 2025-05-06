@@ -1001,7 +1001,7 @@ proc lFunc(p : Parser, left : Node) : Node =
     var token = p.consume()
     var func_mod : Node
     if (p.tok == ◂mod): 
-        func_mod = p.rLiteral
+        func_mod = p.rLiteral()
     var func_body = p.thenIndented(firstToken)
     Node(token: token, kind: ●func, func_signature: func_signature, func_mod: func_mod, func_body: func_body)
 proc rFunc(p : Parser) : Node = 
@@ -1009,7 +1009,7 @@ proc rFunc(p : Parser) : Node =
     var token = p.consume()
     var func_mod : Node
     if (p.tok == ◂mod): 
-        func_mod = p.rLiteral
+        func_mod = p.rLiteral()
     var func_body = p.thenIndented(firstToken)
     Node(token: token, kind: ●func, func_body: func_body)
 proc parseSignature(p : Parser) : Node = 
@@ -1031,7 +1031,7 @@ proc parseSignature(p : Parser) : Node =
         var arg_value : Node
         if (p.tok == ◂assign): 
             p.swallow() # =
-            arg_value = p.expression()
+            arg_value = p.value()
         p.swallow(◂comma)
         sig_args.list_values.add(Node(token: token, kind: ●arg, arg_type: arg_type, arg_name: arg_name, arg_value: arg_value))
     if parens: 
@@ -1050,6 +1050,8 @@ proc funcOrExpression(p : Parser, token : Token) : Node =
         var func_signature : Node
         if (p.tok != ◂func): 
             func_signature = p.parseSignature()
+            if not func_signature: 
+                echo(&"FAIL {p}")
         if (p.tok == ◂func): 
             var ftoken = p.consume()
             var func_mod = if (p.tok == ◂mod): p.rLiteral() else: nil

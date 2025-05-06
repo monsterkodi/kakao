@@ -1316,7 +1316,7 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
     
     func_mod ◇Node
     if p.tok == ◂mod
-        func_mod = p.rLiteral
+        func_mod = p.rLiteral()
     
     func_body = p.thenIndented firstToken
     
@@ -1329,7 +1329,7 @@ rFunc = ◇Parser p ➜Node ->
     
     func_mod ◇ Node
     if p.tok == ◂mod
-        func_mod = p.rLiteral
+        func_mod = p.rLiteral()
     
     func_body = p.thenIndented firstToken
     
@@ -1355,7 +1355,7 @@ parseSignature = ◇Parser p ➜Node ->
             p.swallow() # ◆ or ◇
             arg_type  = p.parseType()
                         
-        if p.tok != ◂name        
+        if p.tok != ◂name
             break
                 
         var arg_name  = p.value()
@@ -1363,7 +1363,7 @@ parseSignature = ◇Parser p ➜Node ->
 
         if p.tok == ◂assign
             p.swallow() # =
-            arg_value = p.expression() 
+            arg_value = p.value()
             
         p.swallow ◂comma
         
@@ -1391,6 +1391,8 @@ funcOrExpression = ◇Parser p ◇Token token ➜Node ->
         func_signature ◇ Node
         if p.tok != ◂func
             func_signature = p.parseSignature()
+            if not func_signature
+                log "FAIL #{p}"
         if p.tok == ◂func
             ftoken = p.consume()
             func_mod = if p.tok == ◂mod ➜ p.rLiteral() ➜ nil

@@ -91,6 +91,15 @@ suite "rndr":
         v("f1 = ◇typ p ➜Node -> p.a()\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) : Node = p.a()\nproc f2(p : typ) = p.b()")
         v("f1 = ◇typ p ➜Node -> Node(token:p.consume(), kind: ●import)\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) : Node = Node(token: p.consume(), kind: ●import)\nproc f2(p : typ) = p.b()")
         v("rImport = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●import)\nrProc = ◇Parser p ➜Node -> Node(token:p.consume(), kind: ●proc)", "proc rImport(p : Parser) : Node = Node(token: p.consume(), kind: ●import)\nproc rProc(p : Parser) : Node = Node(token: p.consume(), kind: ●proc)")
+        t("""
+hook = -> {.noconv.}
+    1 + 2
+""", """
+proc hook {.noconv.} = 
+    (1 + 2)""")
+        t("pushToken = ◇Tknzr t str=2 tk=3 incr=0 ->", "proc pushToken(t : Tknzr, str = 2, tk = 3, incr = 0)")
+        t("pushToken = ◇Tknzr t str=\"\" incr=0 ->", "proc pushToken(t : Tknzr, str = \"\", incr = 0)")
+        t("pushToken = ◇Tknzr t str=\"\" tk=◂name incr=0 ->", "proc pushToken(t : Tknzr, str = \"\", tk = ◂name, incr = 0)")
     test "call": 
         t("f()", "f()")
         t("f(g())", "f(g())")

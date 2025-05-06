@@ -44,25 +44,39 @@ rnd = ◇Rndr r ◇seq[Node] nodes ->
             else
                 r.add " "
 
-▸proc = ◇Rndr r ◇Node n -> 
+sigBody = ◇Rndr r ◇Node n ->
 
-    if n == nil or n.operand_left == nil or n.operand_right == nil
-        log &"DAFUK? {n} {n.token}"
-        ⮐  
+    r.annotateVarArg = true
+    r.rnd n.func_signature
+    r.annotateVarArg = false
+    
+    if n.func_mod
+        r.add " "
+        r.tok n.func_mod
+        
+    if n.func_body
+        r.add " ="
+        r.add " "
+        r.rnd n.func_body
+
+▸func = ◇Rndr r ◇Node n -> 
+    
+    r.add "proc "
+    r.sigBody n
+
+▸proc = ◇Rndr r ◇Node n -> 
 
     f = n.operand_right
     
     r.add "proc "
+    
     if n.operand_left.token.str[0] == '$'
         r.add "`$`" & n.operand_left.token.str[1..^1]
     else
         r.rnd n.operand_left
-    r.rnd f.func_signature
-    if f.func_body
-        r.add " ="
-        r.add " "
-        r.rnd f.func_body
-
+    
+    r.sigBody n.operand_right    
+        
 ▸operation = ◇Rndr r ◇Node n -> 
 
     if n == nil or n.operand_left == nil or n.operand_right == nil
@@ -128,20 +142,6 @@ rnd = ◇Rndr r ◇seq[Node] nodes ->
     r.rnd n.array_index
     r.add "]"
     
-▸func = ◇Rndr r ◇Node n -> 
-
-    r.add "proc "
-    r.annotateVarArg = true
-    r.rnd n.func_signature
-    r.annotateVarArg = false
-    if n.func_mod
-        r.add " "
-        r.tok n.func_mod
-    if n.func_body
-        r.add " ="
-        r.add " "
-        r.rnd n.func_body
-
 ▸signature = ◇Rndr r ◇Node n ->
 
     r.add "("
