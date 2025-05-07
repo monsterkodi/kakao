@@ -217,7 +217,7 @@ proc string(t : Tknzr) =
         t.scmp(t.delimiter)
     while not isAtStringEnd(): 
         t.token.tok = ◂string
-        let c = t.peek(0)
+        var c = t.peek(0)
         if (c == "\\"): 
             t.advance(2)
             continue

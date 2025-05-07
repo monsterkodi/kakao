@@ -267,7 +267,7 @@ string = ◇Tknzr t ->
     
         t.token.tok = ◂string
         
-        let c = t.peek(0)
+        c = t.peek(0)
         if c == "\\"
             t.advance 2
             continue

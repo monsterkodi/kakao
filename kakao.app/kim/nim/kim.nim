@@ -102,14 +102,14 @@ proc runTests() : bool =
     var fail = false
     for f in testFiles: 
         # let cmd = &"nim r --colors:on {f}"
-        let process = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
-        let startTime = getMonoTime()
+        var process = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
+        var startTime = getMonoTime()
         var output = ""
-        let outhnd = process.outputHandle
+        var outhnd = process.outputHandle
         var flags = fcntl(outhnd, F_GETFL, 0)
         discard fcntl(outhnd, F_SETFL, (flags or O_NONBLOCK))
         while true: 
-            let elapsed = (getMonoTime() - startTime).inMilliseconds
+            var elapsed = (getMonoTime() - startTime).inMilliseconds
             if (elapsed >= 5000): 
                 fail = true
                 output.add(&"test killed after {elapsed} ms!!")
@@ -119,16 +119,16 @@ proc runTests() : bool =
                     process.kill()
                 break
             var line = newString((1024 * 10))
-            let bytesRead = read(outhnd, addr(line[0]), line.len)
+            var bytesRead = read(outhnd, addr(line[0]), line.len)
             if (bytesRead > 0): output.add(line & "\n")
             elif (bytesRead == 0): break
             elif (errno == EAGAIN): discard poll(nil, 0, 50)
             else: break
-        let exitCode = process.waitForExit()
+        var exitCode = process.waitForExit()
         if (((exitCode != 0) or verbose) or fail): 
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace("[OK]", fg(fgGreen) & "✔\x1b[0m").replace("[FAILED]", fg(fgRed) & "✘\x1b[0m"))
         else: 
-            let okCount = output.count("[OK]")
+            var okCount = output.count("[OK]")
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace(peg"'[OK]' .+", &"{ansiStyleCode(styleDim)} ✔ {okCount}\x1b[0m"))
         if (exitCode != 0): 
             styledEcho(fgRed, "✘ ", $f)
@@ -199,7 +199,7 @@ proc watch(paths : seq[string]) =
             for f in walkDirRec(path): 
                 let (_, _, ext) = f.splitFile()
                 if (ext == ".kim"): kimFiles.add(f) else: continue
-                let modTime = getFileInfo(f).lastWriteTime
+                var modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 
                     modTimes[f] = modTime
                     continue
@@ -220,8 +220,8 @@ proc watch(paths : seq[string]) =
                 if stage(kimFiles, "k1m", "k2m"): 
                     echo("-> deploy")
                     for f in kimFiles: 
-                        let srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
-                        let tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
+                        var srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
+                        var tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
                         copyFileWithPermissions(srcNim, tgtNim)
                     if compile("k2m/nim/kim.nim", "bin"): 
                         restart()
