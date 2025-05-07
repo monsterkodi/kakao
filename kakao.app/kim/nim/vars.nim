@@ -34,8 +34,10 @@ proc exp(s : Scoper, body : Node, i : int, e : Node) =
                 s.branch(e.operand_right.func_body)
             elif (e.token.tok == ◂assign): 
                 var lhs = e.operand_left
-                if (lhs.kind == ●literal): 
+                if (lhs.kind in {●literal, ●list}): 
                     insert(lhs.token.str, e)
+                # else
+                #     log "vars lhs #{lhs}"
         of ●var: 
             insert(e.var_name.token.str, e)
         of ●let: 

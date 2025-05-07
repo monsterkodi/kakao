@@ -81,7 +81,7 @@ when defined(posix)
 
 logFile = ◇string f prefix="" ->
 
-    let (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
+    (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len ➜ dir & "/" ➜ ""
     icon = if ext == ".kim" ➜ "  " ➜ "  "
     color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
@@ -99,8 +99,8 @@ compile = ◇string file outDir="bin" ➜bool ->
 
     profileScope 'comp'
     cmd = "nim c --outDir=#{outdir} #{file}"
-    # let cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
-    let (output exitCode) = execCmdEx(cmd)
+    # cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
+    (output exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
         styledEcho fgRed "✘ " $cmd
@@ -123,7 +123,7 @@ runTests = ➜bool ->
     fail = false
     
     for f in testFiles
-        # let cmd = &"nim r --colors:on {f}"
+        # cmd = &"nim r --colors:on {f}"
         process = startProcess(command = "nim" args = @["r" f] options = {poInteractive poUsePath})
         startTime = getMonoTime()
         output = ""
@@ -191,7 +191,7 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
         copyFileWithPermissions(f, f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
     
     for f in kimFiles 
-        let (output exitCode) = execCmdEx("#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
+        (output exitCode) = execCmdEx("#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
         if exitCode != 0
             log output
             logFile f "✘ "
@@ -202,7 +202,7 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
         
     if compile("#{dst}/nim/kim.nim" "#{dst}/bin")
         profileStart "test"
-        let (output exitCode) = execCmdEx("#{dst}/bin/kim --test")
+        (output exitCode) = execCmdEx("#{dst}/bin/kim --test")
         profileStop "test"
         if exitCode == 0
             ⮐  true
@@ -233,7 +233,7 @@ watch = ◇seq[string] paths ->
     styledEcho ""
     
     for p in paths
-        let (dir name ext) = p.splitFile()
+        (dir name ext) = p.splitFile()
         styledEcho fgBlue styleDim "● " resetStyle
             styleBright fgBlue dir " " resetStyle 
             styleBright fgYellow name styleDim ext resetStyle
@@ -253,7 +253,7 @@ watch = ◇seq[string] paths ->
                 
             for f in walkDirRec(path)
             
-                let (_ _ ext) = f.splitFile()
+                (_ _ ext) = f.splitFile()
                 
                 if ext == ".kim" ➜ kimFiles.add(f) ➜ continue
                 

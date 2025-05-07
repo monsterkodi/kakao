@@ -30,6 +30,8 @@ params ◇ seq[string]
 # ███  
 var test = false
 var params : seq[string]""")
+        v("let (output exitCode) = execCmdEx(cmd)", "let (output, exitCode) = execCmdEx(cmd)")
+        v("(output exitCode) = execCmdEx(cmd)", "var (output, exitCode) = execCmdEx(cmd)")
     test "func": 
         v("rImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = \n    var n = Node(token: p.consume(), kind: ●import)")
         v("rImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\n    n = nil", "proc rImport(p : Parser) : Node = \n    var n = Node(token: p.consume(), kind: ●import)\n    n = nil")

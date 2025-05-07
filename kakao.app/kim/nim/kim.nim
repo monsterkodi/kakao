@@ -69,7 +69,7 @@ when defined(posix):
 # ███      ███   ███  ███   ███  ███       ███  ███      ███     
 # ███████   ███████    ███████   ███       ███  ███████  ████████
 proc logFile(f : string, prefix = "") = 
-    let (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
+    var (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
     var d = if dir.len: dir & "/" else: ""
     var icon = if (ext == ".kim"): "  " else: "  "
     var color = if (ext == ".kim"): fgGreen else: fgMagenta
@@ -82,8 +82,8 @@ proc logFile(f : string, prefix = "") =
 proc compile(file : string, outDir = "bin") : bool = 
     profileScope("comp")
     var cmd = &"nim c --outDir={outdir} {file}"
-    # let cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
-    let (output, exitCode) = execCmdEx(cmd)
+    # cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
+    var (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
         styledEcho(fgRed, "✘ ", $cmd)
         echo(output)
@@ -101,7 +101,7 @@ proc runTests() : bool =
     profileScope("test")
     var fail = false
     for f in testFiles: 
-        # let cmd = &"nim r --colors:on {f}"
+        # cmd = &"nim r --colors:on {f}"
         var process = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
         var startTime = getMonoTime()
         var output = ""
@@ -153,7 +153,7 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     for f in kimFiles: 
         copyFileWithPermissions(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
     for f in kimFiles: 
-        let (output, exitCode) = execCmdEx(&"{src}/bin/kim " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
+        var (output, exitCode) = execCmdEx(&"{src}/bin/kim " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
         if (exitCode != 0): 
             echo(output)
             logFile(f, "✘ ")
@@ -163,7 +163,7 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     profileStop(dst & " ")
     if compile(&"{dst}/nim/kim.nim", &"{dst}/bin"): 
         profileStart("test")
-        let (output, exitCode) = execCmdEx(&"{dst}/bin/kim --test")
+        var (output, exitCode) = execCmdEx(&"{dst}/bin/kim --test")
         profileStop("test")
         if (exitCode == 0): 
             return true
@@ -187,7 +187,7 @@ proc watch(paths : seq[string]) =
     styledEcho(fgGreen, greetings[rand(greetings.high)])
     styledEcho("")
     for p in paths: 
-        let (dir, name, ext) = p.splitFile()
+        var (dir, name, ext) = p.splitFile()
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
     var firstLoop = true
     while true: 
@@ -197,7 +197,7 @@ proc watch(paths : seq[string]) =
             if not dirExists(path): 
                 continue
             for f in walkDirRec(path): 
-                let (_, _, ext) = f.splitFile()
+                var (_, _, ext) = f.splitFile()
                 if (ext == ".kim"): kimFiles.add(f) else: continue
                 var modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 

@@ -12,19 +12,19 @@ template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
 
     ▸ toplevel
     
-        v "optParser = initOptParser()"             , "var optParser = initOptParser()"
-        v "str = \"\"\nbool = false\nnum = 1"       , "var str = \"\"\nvar bool = false\nvar num = 1"
-        v "s ◇string"                               , "var s : string"
-        v "i ◇int = 1"                              , "var i : int = 1"
-        v "l ◇seq[int]"                             , "var l : seq[int]"
+        v "optParser = initOptParser()"             "var optParser = initOptParser()"
+        v "str = \"\"\nbool = false\nnum = 1"       "var str = \"\"\nvar bool = false\nvar num = 1"
+        v "s ◇string"                               "var s : string"
+        v "i ◇int = 1"                              "var i : int = 1"
+        v "l ◇seq[int]"                             "var l : seq[int]"
                                                     
-        v "var i"                                   , "var i"
-        v "let i"                                   , "let i"
-        v "let (output exitCode) = execCmdEx(cmd)"  , "let (output, exitCode) = execCmdEx(cmd)"
+        v "var i"                                   "var i"
+        v "let i"                                   "let i"
+        v "let (output exitCode) = execCmdEx(cmd)"  "let (output, exitCode) = execCmdEx(cmd)"
                     
-        v "a=1\nb=2\nc=b"                               , "var a = 1\nvar b = 2\nvar c = b"
-        v "a=1\nb=2\nc=b\na=b\nb=2\nc=4"                , "var a = 1\nvar b = 2\nvar c = b\na = b\nb = 2\nc = 4"
-        v "a=1\nb=2\n# ██ \nb=2\nd=4"                   , "var a = 1\nvar b = 2\n# ██ \nb = 2\nvar d = 4"
+        v "a=1\nb=2\nc=b"                           "var a = 1\nvar b = 2\nvar c = b"
+        v "a=1\nb=2\nc=b\na=b\nb=2\nc=4"            "var a = 1\nvar b = 2\nvar c = b\na = b\nb = 2\nc = 4"
+        v "a=1\nb=2\n# ██ \nb=2\nd=4"               "var a = 1\nvar b = 2\n# ██ \nb = 2\nvar d = 4"
         
         v   """
             # ███  
@@ -37,6 +37,10 @@ template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
             # ███  
             var test = false
             var params : seq[string]"""
+            
+        v "let (output exitCode) = execCmdEx(cmd)"  "let (output, exitCode) = execCmdEx(cmd)"        
+        v "(output exitCode) = execCmdEx(cmd)"      "var (output, exitCode) = execCmdEx(cmd)"        
+        
     
     ▸ func
     
