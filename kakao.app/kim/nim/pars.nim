@@ -5,6 +5,7 @@
 # ███        ███   ███  ███   ███  ███████ 
 import kommon
 import tknz
+export kommon, tknz
 type NodeKind* = enum
     ●error
     ●block

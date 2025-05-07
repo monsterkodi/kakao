@@ -7,6 +7,7 @@ import kommon
 import tknz
 import pars
 import vars
+import clss
 type Rndr = ref object
     code: string
     s: string
@@ -376,6 +377,7 @@ proc render*(code : string, autovar = true) : string =
     # profileStart "ast"
     var root = ast(code)
     if not root: return ""
+    root = classify(root)
     # profileStop "ast"
     if autovar: 
         # profileStart "vars"
@@ -399,7 +401,9 @@ proc file*(file : string) : string =
 proc files*(files : seq[string]) : seq[string] = 
     var transpiled : seq[string]
     for f in files: 
-        transpiled.add(file(f))
+        var nimFile = file(f)
+        if nimFile: 
+            transpiled.add(nimFile)
     transpiled
     
         

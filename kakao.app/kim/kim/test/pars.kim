@@ -520,6 +520,12 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "class Node\n member:string\n i:int"      "▪[(◂class ◂name ▪[(◂name : ◂name)(◂name : ◂name)])]"
         t "class Node\n member:string\ni:int"       "▪[(◂class ◂name ▪[(◂name : ◂name)])(◂name : ◂name)]"
 
+    ▸ this
+    
+        t "@ : ->"                                  "▪[(◂name : (->))]"
+        t "@name : ->"                              "▪[(◂name : (->))]"
+        t "name : @a=1 ->"                          "▪[(◂name : (◂[(◂name (= ◂number))]->))]"
+
     ▸ comments
     
         t "###\n\nhello from\na comment###\na = 1"  "▪[#(◂name = ◂number)]"

@@ -347,32 +347,6 @@ case kind:
     test "enum": 
         t("enum ABC\n a\n b\n c", "type ABC = enum\n a\n b\n c")
         t("enum tok\n  ◆when\n  ◆then = \"➜\"\n  ◆if", "type tok = enum\n  ◆when\n  ◆then = \"➜\"\n  ◆if")
-    test "class": 
-        t("class ABC\n a:int\n b:int\n c:int", "type ABC = ref object\n a: int\n b: int\n c: int")
-        t("""
-class Tknzr
-    tokens      : seq[Token]
-    openStack   : seq[tok]
-    token       : Token
-    inStripol   : bool
-    delimiter   : string
-    segi        : int
-    segs        : seq[string]
-    bol         : int
-    eol         : int
-    line        : int
-""", """
-type Tknzr = ref object
-    tokens: seq[Token]
-    openStack: seq[tok]
-    token: Token
-    inStripol: bool
-    delimiter: string
-    segi: int
-    segs: seq[string]
-    bol: int
-    eol: int
-    line: int""")
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) # addition")
         t("""

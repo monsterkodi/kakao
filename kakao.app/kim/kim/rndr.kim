@@ -4,7 +4,7 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-use kommon tknz pars vars
+use kommon tknz pars vars clss
 
 class Rndr
     code            : string
@@ -492,6 +492,8 @@ render* = ◇string code autovar=true ➜string ->
     
     ⮐  "" if not root
     
+    root = classify(root)
+    
     # profileStop "ast"
     if autovar
         # profileStart "vars"
@@ -520,7 +522,9 @@ files* = ◇seq[string] files ➜seq[string] ->
 
     transpiled ◇ seq[string]
     for f in files
-        transpiled.add file(f)
+        nimFile = file(f)
+        if nimFile
+            transpiled.add nimFile
     transpiled
         
                             

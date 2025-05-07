@@ -65,6 +65,14 @@ testCmp* = ◇string a ◇auto r ◇auto b  ◇lineInfo l ->
         styledEcho fgYellow  indent($r)
         styledEcho fgRed styleDim "<|"
         fail()
+        
+proc pullIf*[T](s: seq[T], pred: proc(x: T): bool): (seq[T], seq[T]) =
+
+    for item in s
+        if pred(item)
+            result[0].add(item)
+        else
+            result[1].add(item)
 
 converter toBool*(x: int): bool = x != 0
 converter toBool*(x: string): bool = x.len > 0

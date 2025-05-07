@@ -1,0 +1,49 @@
+#  ███████  ███       ███████   ███████
+# ███       ███      ███       ███     
+# ███       ███      ███████   ███████ 
+# ███       ███           ███       ███
+#  ███████  ███████  ███████   ███████ 
+
+use pars
+
+methodify = ◇Node clss ➜seq[Node] ->
+    
+    isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
+    
+    (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
+
+    clss.class_body.expressions = members
+    
+    className = clss.class_name.token.str
+    
+    convert = ◇Node it ➜Node -> 
+        let token = Token(tok:◂assign, line:it.token.line, col:it.token.col)
+        var funcn = it.member_value
+        var arg_type = Node(token:Token(tok:◂val_type str:className) kind:●type)
+        var arg_name = Node(token:Token(tok:◂name str:"this") kind:●literal)
+        var this_arg = Node(kind:●arg arg_type:arg_type arg_name:arg_name)
+        if funcn.func_signature
+            funcn.func_signature.sig_args.list_values.unshift this_arg
+        else
+            var sig_args = Node(kind:●list, list_values:@[this_arg])
+            funcn.func_signature = Node(kind:●signature, sig_args:sig_args)
+        Node(token:token, kind:●operation, operand_left:it.member_key, operand_right:funcn)
+
+    methods = funcs.map convert
+    
+    methods
+
+classify* = ◇Node body ➜Node ->
+
+    if body == nil or body.kind != ●block or body.expressions.len == 0
+        ⮐  body 
+
+    for i e in body.expressions
+    
+        if e.kind == ●class
+        
+            methods = methodify e
+            log "methods>>> #{methods}"
+            body.expressions.insert methods i+1
+
+    body

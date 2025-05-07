@@ -6,6 +6,8 @@
 
 use kommon tknz
 
+export kommon tknz
+
 enum NodeKind*
     
     ●error

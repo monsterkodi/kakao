@@ -5,7 +5,8 @@
        ███     ███   ███  ███   ███       ███
         █      ███   ███  ███   ███  ███████ 
 
-    inserts var keywords for assignment operations
+    inserts var keywords for firs assignment 
+    operations in scope
 ]#
 import kommon
 import tknz
@@ -23,28 +24,35 @@ proc branch(s : Scoper, body : Node) = discard s.scope(body)
 # 00000000  000   000  000        
 proc exp(s : Scoper, body : Node, i : int, e : Node) = 
     if (e == nil): return
+    proc add(name : string) = s.vars[^1][name] = true
     proc insert(name : string, expr : Node) = 
         for map in s.vars: 
             if map.hasKey(name): return
         body.expressions[i] = Node(token: Token(tok: ◂let, str: "var", line: expr.token.line), kind: ●let, let_expr: expr)
-        s.vars[^1][name] = true
+        add(name)
     case e.kind:
         of ●operation: 
             if (e.operand_right.kind == ●func): 
                 s.branch(e.operand_right.func_body)
             elif (e.token.tok == ◂assign): 
                 var lhs = e.operand_left
-                if (lhs.kind in {●literal, ●list}): 
-                    insert(lhs.token.str, e)
+                case lhs.kind:
+                    of ●literal: 
+                        insert(lhs.token.str, e)
+                    of ●list: 
+                        insert(lhs.token.str, e)
+                        for item in lhs.list_values: 
+                            add(item.token.str)
+                    else: discard
                 # else
                 #     log "vars lhs #{lhs}"
         of ●var: 
             insert(e.var_name.token.str, e)
         of ●let: 
             if ((e.let_expr.kind == ●operation) and (e.let_expr.token.tok == ◂assign)): 
-                s.vars[^1][e.let_expr.operand_left.token.str] = true
+                add(e.let_expr.operand_left.token.str)
             elif (e.let_expr.kind == ●var): 
-                s.vars[^1][e.let_expr.var_name.token.str] = true
+                add(e.let_expr.var_name.token.str)
             else: 
                 echo(&"unhandled let type {e} {e.let_expr}")
         of ●if: 

@@ -158,3 +158,16 @@ while z:
     a = 2
     b = 3
     d = (a - b)""")
+    test "list assign": 
+        v("""
+(a b c) = (1 2 3)
+a = 4
+b = 5
+c = 6
+d = 7
+""", """
+var (a, b, c) = (1, 2, 3)
+a = 4
+b = 5
+c = 6
+var d = 7""")

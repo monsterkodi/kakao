@@ -392,6 +392,10 @@ enum tok
         t("class Node\n member:string", "▪[(◂class ◂name ▪[(◂name : ◂name)])]")
         t("class Node\n member:string\n i:int", "▪[(◂class ◂name ▪[(◂name : ◂name)(◂name : ◂name)])]")
         t("class Node\n member:string\ni:int", "▪[(◂class ◂name ▪[(◂name : ◂name)])(◂name : ◂name)]")
+    test "this": 
+        t("@ : ->", "▪[(◂name : (->))]")
+        t("@name : ->", "▪[(◂name : (->))]")
+        t("name : @a=1 ->", "▪[(◂name : (◂[(◂name (= ◂number))]->))]")
     test "comments": 
         t("###\n\nhello from\na comment###\na = 1", "▪[#(◂name = ◂number)]")
     test "tests": 
