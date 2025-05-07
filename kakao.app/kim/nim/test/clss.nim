@@ -1,4 +1,3 @@
-import ../kommon
 import ../rndr
 template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
 suite "class": 
@@ -46,13 +45,23 @@ proc inc(this : A, a1 : int) : int =
 class A
     m : int
     fun: -> 
-        m = 1
-    inc: ◇int a1 ➜int ->
-        a1 + 1
+        @m = 1
 """, """
 type A = ref object
     m: int
 proc fun(this : A) = 
-        var m = 1
-proc inc(this : A, a1 : int) : int = 
-        (a1 + 1)""")
+        this.m = 1""")
+        #     t   """
+        #         class A
+        #             m : int
+        #             fun: -> 
+        #                 @m = 1
+        #             inc: ◇int a1 ➜int ->
+        #                 @m += 1
+        #         """ """
+        #         type A = ref object
+        #             m: int
+        #         proc fun(this : A) = 
+        #                 this.m = 1
+        #         proc inc(this : A, a1 : int) : int = 
+        #                 (this.m += 1)"""

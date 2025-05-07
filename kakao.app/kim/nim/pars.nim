@@ -3,9 +3,8 @@
 # ████████   █████████  ███████    ███████ 
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
-import kommon
 import tknz
-export kommon, tknz
+export tknz
 type NodeKind* = enum
     ●error
     ●block
@@ -182,8 +181,8 @@ type Parser* = ref object
         pratts*: seq[Pratt]
         blocks*: seq[Node]
         pos*: int
-        explicit: bool
-        listless: bool
+        explicit: int
+        listless: int
         returning: bool
         typeless: bool
         failed: bool
@@ -507,8 +506,8 @@ proc swallowIndent(p : Parser, col : int) : bool =
             return true
     false
 proc parseCallArgs(p : Parser, col : int) : seq[Node] = 
-    p.explicit = true
-    p.listless = true
+    (p.explicit += 1)
+    (p.listless += 1)
     var list : seq[Node]
     var line = p.current.line
     var expr = p.expression()
@@ -519,8 +518,8 @@ proc parseCallArgs(p : Parser, col : int) : seq[Node] =
         if (p.tok in {◂comment_start, ◂then}): 
             break
         expr = p.expression()
-    p.listless = false
-    p.explicit = false
+    (p.listless -= 1)
+    (p.explicit -= 1)
     list
 # █████████  ███   ███  ████████   ████████
 #    ███      ███ ███   ███   ███  ███     
@@ -576,19 +575,19 @@ proc parseModule(p : Parser) : Node =
 proc parseParenList(p : Parser) : seq[Node] = 
     var token = p.consume() # (
     var args : seq[Node]
-    p.explicit = true
+    (p.explicit += 1)
     while ((p.tok != ◂paren_close) and (p.tok != ◂eof)): 
         args.add(p.expression())
         p.swallow(◂comma)
     p.swallowError(◂paren_close, "Missing closing parenthesis")
-    p.explicit = false
+    (p.explicit -= 1)
     if ((args.len == 1) and (args[0].kind == ●list)): 
         return args[0].list_values
     args
 proc parseDelimitedList(p : Parser, open : tok, close : tok) : seq[Node] = 
     var token = p.consume()
     var args : seq[Node]
-    p.explicit = true
+    (p.explicit += 1)
     while true: 
         discard p.swallowIndent(-1)
         if ((p.tok != close) and (p.tok != ◂eof)): 
@@ -596,14 +595,14 @@ proc parseDelimitedList(p : Parser, open : tok, close : tok) : seq[Node] =
         else: 
             break
     p.swallowError(close, "Missing closing bracket")
-    p.explicit = false
+    (p.explicit -= 1)
     if ((args.len == 1) and (args[0].kind == ●list)): 
         return args[0].list_values
     args
 proc parseNames(p : Parser) : seq[Node] = 
     var list : seq[Node]
     var line = p.current.line
-    p.explicit = true
+    (p.explicit += 1)
     var expr = p.rSymbol()
     while (expr != nil): 
         list.add(expr)
@@ -611,12 +610,12 @@ proc parseNames(p : Parser) : seq[Node] =
             break
         p.swallow(◂comma)
         expr = p.rSymbol()
-    p.explicit = false
+    (p.explicit -= 1)
     list
 proc parseNamesUntil(p : Parser, stop : tok) : Node = 
     var token = p.current
     var list_values : seq[Node]
-    p.explicit = true
+    (p.explicit += 1)
     while (p.tok != stop): 
         if (p.tok == ◂eof): 
             return p.error("Missing 'in' for 'for' loop (eof detected)!", token)
@@ -624,7 +623,7 @@ proc parseNamesUntil(p : Parser, stop : tok) : Node =
             return p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
         list_values.add(p.rSymbol())
         p.swallow(◂comma)
-    p.explicit = false
+    (p.explicit -= 1)
     if (list_values.len == 1): 
         list_values[0]
     else: 
@@ -777,9 +776,9 @@ proc switchCase(p : Parser, baseIndent : int) : Node =
                 break
         if ((p.tok in {◂else, ◂eof}) or p.isDedent(baseIndent)): return
         if (p.tok == ◂then): break
-        p.explicit = true
+        (p.explicit += 1)
         case_when.add(p.value())
-        p.explicit = false
+        (p.explicit -= 1)
         p.swallow(◂comma)
     if p.isDedent(baseIndent): return
     var case_then = p.thenIndented(first)
@@ -869,15 +868,15 @@ proc rString(p : Parser) : Node =
         Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
 proc rUse(p : Parser) : Node = 
     var token = p.consume()
-    p.explicit = true
+    (p.explicit += 1)
     var use_module = p.parseModule()
     if (not p.atEnd() and (p.current.line == token.line)): 
         var use_kind = p.rSymbol()
         var use_items = p.parseNames()
-        p.explicit = false
+        (p.explicit -= 1)
         Node(token: token, kind: ●use, use_module: use_module, use_kind: use_kind, use_items: use_items)
     else: 
-        p.explicit = false
+        (p.explicit -= 1)
         Node(token: token, kind: ●use, use_module: use_module)
 proc rComment(p : Parser) : Node = 
     var n = Node(token: p.consume(), kind: ●comment, comment_content: Node(token: p.consume()))

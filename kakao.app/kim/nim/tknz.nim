@@ -3,7 +3,8 @@
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
-import kommon
+import komn
+export komn
 type tok* = enum
     ◂name
     ◂if

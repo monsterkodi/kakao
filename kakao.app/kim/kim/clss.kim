@@ -6,28 +6,73 @@
 
 use pars
 
-methodify = ◇Node clss ➜seq[Node] ->
+type NodeIt = proc(node:Node):Node
+
+defaultToken = Token(tok:◂name)
+
+nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
+    n = Node kind:kind token:token
+    switch kind
+        ●arg
+            n.arg_type = args[0]
+            n.arg_name = args[1]
+        ●propertyAccess 
+            n.owner    = args[0]
+            n.property = args[1]
+        ●operation
+            n.operand_left  = args[0]
+            n.operand_right = args[1]
+        ●list
+            n.list_values   = @(args)
+        ➜ discard
+    n
+
+traverse = ◇Node n ◇NodeIt iter ➜ Node -> 
+    n = n
+    switch n.kind
+        ●block
+            for i e in n.expressions
+                n.expressions.splice i 1 @[traverse(e iter)]
+        ●literal
+            n = iter n
+        ●operation
+            n.operand_left  = traverse n.operand_left  iter
+            n.operand_right = traverse n.operand_right iter
+        ➜ 
+            log "unhandled #{n.kind}"
+    n
+
+methodify = ◇Node clss ➜ seq[Node] ->
     
     isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
     
-    (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
+    (funcs members) = pullIf(clss.class_body.expressions isMethod)
 
     clss.class_body.expressions = members
     
     className = clss.class_name.token.str
     
-    convert = ◇Node it ➜Node -> 
-        let token = Token(tok:◂assign, line:it.token.line, col:it.token.col)
-        var funcn = it.member_value
-        var arg_type = Node(token:Token(tok:◂val_type str:className) kind:●type)
-        var arg_name = Node(token:Token(tok:◂name str:"this") kind:●literal)
-        var this_arg = Node(kind:●arg arg_type:arg_type arg_name:arg_name)
+    thisify = ◇Node n ➜ Node -> 
+        if n.token.tok == ◂name and n.token.str[0] == '@'
+            owner    = nod(●literal Token(tok:◂name str:"this"))
+            property = nod(●literal Token(tok:◂name str:n.token.str[1..^1]))
+            ⮐  nod(●propertyAccess  Token(tok:◂dot  str:".") owner, property)
+        n
+    
+    convert = ◇Node it ➜ Node -> 
+        token = Token(tok:◂assign, line:it.token.line, col:it.token.col)
+        funcn = it.member_value
+        arg_type = nod ●type    Token(tok:◂val_type str:className)
+        arg_name = nod ●literal Token(tok:◂name str:"this")
+        this_arg = nod ●arg     Token(tok:◂type) arg_type arg_name
         if funcn.func_signature
             funcn.func_signature.sig_args.list_values.unshift this_arg
         else
-            var sig_args = Node(kind:●list, list_values:@[this_arg])
+            sig_args = nod(●list, Token(tok:◂square_open), this_arg)
             funcn.func_signature = Node(kind:●signature, sig_args:sig_args)
-        Node(token:token, kind:●operation, operand_left:it.member_key, operand_right:funcn)
+            
+        funcn.func_body = traverse funcn.func_body thisify
+        nod ●operation token it.member_key funcn
 
     methods = funcs.map convert
     
@@ -43,7 +88,6 @@ classify* = ◇Node body ➜Node ->
         if e.kind == ●class
         
             methods = methodify e
-            log "methods>>> #{methods}"
             body.expressions.insert methods i+1
 
     body

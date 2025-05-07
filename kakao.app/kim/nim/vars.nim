@@ -8,8 +8,6 @@
     inserts var keywords for firs assignment 
     operations in scope
 ]#
-import kommon
-import tknz
 import pars
 type Scoper* = ref object
     vars*: seq[Table[string, bool]]

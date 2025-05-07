@@ -3,7 +3,6 @@
 # ████████   █████████  ███████    ███████ 
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
-import ../kommon
 import ../pars
 template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
 template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
@@ -146,6 +145,12 @@ hook = -> {.noconv.}
         t("a = f 1", "▪[(◂name = (◂name ◂call @[◂number]))]")
         t("a = b.f 1", "▪[(◂name = ((◂name . ◂name) ◂call @[◂number]))]")
         t("a.b.c 2", "▪[(((◂name . ◂name) . ◂name) ◂call @[◂number])]")
+    test "not implicit": 
+        t("a = f arg token typ name", "▪[(◂name = (◂name ◂call @[◂name, ◂name, ◂name, ◂name]))]")
+        t("a = f arg Token(tok:◂type) typ, name", "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]")
+        t("a = f arg Token(tok:◂type) typ name", "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]")
+        # t "a = f(●arg, Token(tok:◂type), type, name)"  ""
+        # t "a = f(●arg Token(tok:◂type) type name)"  ""
     test "arglist": 
         t("f(a, b, c)", "▪[(◂name ◂call @[◂name, ◂name, ◂name])]")
         t("f a, b, c", "▪[(◂name ◂call @[◂name, ◂name, ◂name])]")

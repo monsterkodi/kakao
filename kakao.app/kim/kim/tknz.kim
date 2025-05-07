@@ -4,7 +4,8 @@
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-import kommon
+import komn
+export komn
 
 enum tok*
         

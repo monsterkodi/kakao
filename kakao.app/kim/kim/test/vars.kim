@@ -4,7 +4,7 @@
 #    ███     ███   ███  ███   ███       ███
 #     █      ███   ███  ███   ███  ███████ 
 
-use ../kommon ../rndr
+use ../rndr
     
 template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
 

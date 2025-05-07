@@ -4,9 +4,9 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 
-use kommon tknz
+use tknz
 
-export kommon tknz
+export tknz
 
 enum NodeKind*
     
@@ -257,8 +257,8 @@ class Parser*
         pratts*     : seq[Pratt]
         blocks*     : seq[Node]
         pos*        : int
-        explicit    : bool
-        listless    : bool
+        explicit    : int
+        listless    : int
         returning   : bool
         typeless    : bool
         failed      : bool
@@ -660,8 +660,8 @@ swallowIndent = ◇Parser p ◇int col ➜bool ->
     
 parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
 
-    p.explicit = true
-    p.listless = true
+    p.explicit += 1
+    p.listless += 1
     list ◇ seq[Node]
     line = p.current.line
     expr = p.expression()
@@ -672,8 +672,8 @@ parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
         if p.tok in {◂comment_start, ◂then}
             break
         expr = p.expression()
-    p.listless = false
-    p.explicit = false
+    p.listless -= 1
+    p.explicit -= 1
     list
     
 # █████████  ███   ███  ████████   ████████
@@ -745,12 +745,12 @@ parseParenList = ◇Parser p ➜seq[Node] ->
     token = p.consume() # (
     args  ◇ seq[Node]
     
-    p.explicit = true
+    p.explicit += 1
     while p.tok != ◂paren_close and p.tok != ◂eof
         args.add p.expression()
         p.swallow ◂comma
     p.swallowError(◂paren_close, "Missing closing parenthesis")
-    p.explicit = false
+    p.explicit -= 1
     if args.len == 1 and args[0].kind == ●list
         ⮐  args[0].list_values
     args
@@ -760,7 +760,7 @@ parseDelimitedList = ◇Parser p ◇tok open ◇tok close ➜seq[Node] ->
     token = p.consume()
     args  ◇ seq[Node]
     
-    p.explicit = true
+    p.explicit += 1
     while true
         discard p.swallowIndent(-1)
         if p.tok != close and p.tok != ◂eof
@@ -768,7 +768,7 @@ parseDelimitedList = ◇Parser p ◇tok open ◇tok close ➜seq[Node] ->
         else
             break
     p.swallowError(close, "Missing closing bracket")
-    p.explicit = false
+    p.explicit -= 1
     
     if args.len == 1 and args[0].kind == ●list
         ⮐  args[0].list_values
@@ -778,7 +778,7 @@ parseNames = ◇Parser p ➜seq[Node] ->
 
     list ◇ seq[Node]
     line = p.current.line
-    p.explicit = true
+    p.explicit += 1
     expr = p.rSymbol()
     while expr != nil
         list.add expr        
@@ -786,7 +786,7 @@ parseNames = ◇Parser p ➜seq[Node] ->
             break
         p.swallow ◂comma
         expr = p.rSymbol()
-    p.explicit = false
+    p.explicit -= 1
     list
 
 parseNamesUntil = ◇Parser p ◇tok stop ➜Node -> 
@@ -794,7 +794,7 @@ parseNamesUntil = ◇Parser p ◇tok stop ➜Node ->
     token = p.current
                                 
     list_values ◇ seq[Node]
-    p.explicit = true
+    p.explicit += 1
     while p.tok != stop
         if p.tok == ◂eof
             ⮐  p.error("Missing 'in' for 'for' loop (eof detected)!", token)
@@ -802,7 +802,7 @@ parseNamesUntil = ◇Parser p ◇tok stop ➜Node ->
             ⮐  p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
         list_values.add p.rSymbol()
         p.swallow ◂comma
-    p.explicit = false
+    p.explicit -= 1
     if list_values.len == 1
         list_values[0]
     else
@@ -1017,9 +1017,9 @@ switchCase = ◇Parser p ◇int baseIndent ➜Node ->
 
         break if p.tok == ◂then
     
-        p.explicit = true
+        p.explicit += 1
         case_when.add p.value()
-        p.explicit = false
+        p.explicit -= 1
         p.swallow ◂comma
     
     ⮐  if p.isDedent baseIndent
@@ -1146,15 +1146,15 @@ rString = ◇Parser p ➜Node ->
 rUse = ◇Parser p ➜Node ->
 
     token = p.consume()
-    p.explicit = true
+    p.explicit += 1
     use_module = p.parseModule()
     if not p.atEnd() and p.current.line == token.line
         use_kind = p.rSymbol()
         use_items  = p.parseNames()
-        p.explicit = false
+        p.explicit -= 1
         Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
     else
-        p.explicit = false
+        p.explicit -= 1
         Node(token:token, kind:●use, use_module:use_module) 
         
 rComment = ◇Parser p ➜Node ->

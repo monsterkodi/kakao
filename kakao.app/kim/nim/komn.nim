@@ -51,13 +51,6 @@ proc testCmp*(a : string, r : auto, b : auto, l : lineInfo) =
         styledEcho(fgYellow, indent($r))
         styledEcho(fgRed, styleDim, "<|")
         fail()
-proc pullIf*[T](s: seq[T], pred: proc(x: T): bool): (seq[T], seq[T]) =
-
-    for item in s: 
-        if pred(item): 
-            result[0].add(item)
-        else: 
-            result[1].add(item)
 converter toBool*(x: int): bool = x != 0
 converter toBool*(x: string): bool = x.len > 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
@@ -105,6 +98,20 @@ macro profileScope*(msg: string): untyped =
     quote do: 
         profileStart(`msg`)
         defer: profileStop(`msg`)
+# ███████    ███████     ███████ 
+# ███   ███  ███   ███  ███      
+# ███   ███  ███████    ███  ████
+# ███   ███  ███   ███  ███   ███
+# ███████    ███████     ███████ 
+macro dbg*(args: varargs[untyped]): untyped =
+
+    result = newStmtList()
+    let lineInfo = args[0].lineInfoObj
+    result.add(quote do: 
+        styledEcho bgBlue styleBright `lineInfo`.filename styleDim ":" $`lineInfo`.line resetStyle)
+    for arg in args: 
+        result.add(quote do: 
+            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle, styleDim, " = ", resetStyle, fgGreen, $`arg`, resetStyle, fgBlue, " ", $typeof(`arg`), resetStyle))
 # ███   ███   ███████  ████████   ███████ 
 # ███  ███   ███       ███       ███      
 # ███████    ███████   ███████   ███  ████
@@ -122,27 +129,6 @@ proc ksegWidth*(s : string) : int =
     while (i < s.len): 
         inc(result)
         (i += graphemeLen(s, i))
-# ████████   ███   ███   ███████  ███   ███          ████████    ███████   ████████ 
-# ███   ███  ███   ███  ███       ███   ███    ██    ███   ███  ███   ███  ███   ███
-# ████████   ███   ███  ███████   █████████  ██████  ████████   ███   ███  ████████ 
-# ███        ███   ███       ███  ███   ███    ██    ███        ███   ███  ███      
-# ███         ███████   ███████   ███   ███          ███         ███████   ███      
-proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
-
-    if (s.len > 0): s.setLen((s.len - 1))
-    s
-proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
-
-    s.add(item)
-    s
-proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
-
-    if (s.len > 0): s.delete(0)
-    s
-proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
-
-    s.insert(@[item])
-    s
 # ████████   ███████   ███   ███   ███████   ███    
 # ███       ███   ███  ███   ███  ███   ███  ███    
 # ███████   ███ ██ ██  ███   ███  █████████  ███    
@@ -182,17 +168,40 @@ proc deepEqual*[T](a, b: T): bool =
                 echo(&"{a} != {b}")
                 return false
     true
-# ███████    ███████     ███████ 
-# ███   ███  ███   ███  ███      
-# ███   ███  ███████    ███  ████
-# ███   ███  ███   ███  ███   ███
-# ███████    ███████     ███████ 
-macro dbg*(args: varargs[untyped]): untyped =
+#  ███████  ████████   ███████   ███   ███  ████████  ███   ███   ███████  ████████   ███████
+# ███       ███       ███   ███  ███   ███  ███       ████  ███  ███       ███       ███     
+# ███████   ███████   ███ ██ ██  ███   ███  ███████   ███ █ ███  ███       ███████   ███████ 
+#      ███  ███       ███ ████   ███   ███  ███       ███  ████  ███       ███            ███
+# ███████   ████████   █████ ██   ███████   ████████  ███   ███   ███████  ████████  ███████ 
+proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
 
-    result = newStmtList()
-    let lineInfo = args[0].lineInfoObj
-    result.add(quote do: 
-        styledEcho bgBlue styleBright `lineInfo`.filename styleDim ":" $`lineInfo`.line resetStyle)
-    for arg in args: 
-        result.add(quote do: 
-            styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle, styleDim(" = ", resetStyle, fgGreen, $`arg`, resetStyle), fgBlue(" ", $typeof(`arg`), resetStyle)))
+    if (s.len > 0): s.setLen((s.len - 1))
+    s
+proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
+
+    s.add(item)
+    s
+proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
+
+    if (s.len > 0): s.delete(0)
+    s
+proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
+
+    s.insert(@[item])
+    s
+proc pullIf*[T](s: seq[T], pred: proc(x: T): bool): (seq[T], seq[T]) =
+
+    for item in s: 
+        if pred(item): 
+            result[0].add(item)
+        else: 
+            result[1].add(item)
+proc splice*[T](s: var seq[T], start: int, delcnt: int = high(int), items: varargs[T]): seq[T]  {. discardable .} =
+
+    let start = if (start < 0): max((s.len + start), 0) else: min(start, s.len)
+    let delcnt = min(delcnt, (s.len - start))
+    # result = s[start ... start + delcnt]
+    s.delete(start..<(start + delcnt))
+    for i, item in items: 
+        s.insert(item, (start + i))
+    s

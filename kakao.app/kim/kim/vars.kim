@@ -9,7 +9,7 @@
     operations in scope
 ###
 
-use kommon tknz pars
+use pars
 
 class Scoper*
     

@@ -3,11 +3,10 @@
 # ███████    ███ █ ███  ███   ███  ███████  
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
-import kommon
-import tknz
 import pars
 import vars
 import clss
+export pars
 type Rndr = ref object
     code: string
     s: string

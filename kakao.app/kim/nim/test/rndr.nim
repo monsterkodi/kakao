@@ -3,7 +3,6 @@
 # ███████    ███ █ ███  ███   ███  ███████  
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
-import ../kommon
 import ../rndr
 template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationInfo())
 suite "rndr": 

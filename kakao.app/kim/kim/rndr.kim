@@ -4,7 +4,8 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-use kommon tknz pars vars clss
+use pars vars clss
+export pars
 
 class Rndr
     code            : string
