@@ -51,17 +51,49 @@ type A = ref object
     m: int
 proc fun(this : A) = 
         this.m = 1""")
-        #     t   """
-        #         class A
-        #             m : int
-        #             fun: -> 
-        #                 @m = 1
-        #             inc: ◇int a1 ➜int ->
-        #                 @m += 1
-        #         """ """
-        #         type A = ref object
-        #             m: int
-        #         proc fun(this : A) = 
-        #                 this.m = 1
-        #         proc inc(this : A, a1 : int) : int = 
-        #                 (this.m += 1)"""
+        t("""
+class A
+    m : int
+    sqr: -> 
+        @m = @m * @m
+    inc: ◇int a1 ➜int ->
+        @sqr() + @inc(@m)
+""", """
+type A = ref object
+    m: int
+proc sqr(this : A) = 
+        this.m = (this.m * this.m)
+proc inc(this : A, a1 : int) : int = 
+        (this.sqr() + this.inc(this.m))""")
+        t("""
+class A
+    m : int
+    n : int
+    o : int
+    loop: ->
+        for i in @m
+            switch @m
+                @m ➜ @m
+                @n ➜ @n
+                   ➜ @o
+        if @m ➜ @n ➜ @o
+        if @m
+            @n
+        else
+            @o
+""", """
+type A = ref object
+    m: int
+    n: int
+    o: int
+proc loop(this : A) = 
+        for i in this.m: 
+            case this.m:
+                of this.m: this.m
+                of this.n: this.n
+                else: this.o
+        if this.m: this.n else: this.o
+        if this.m: 
+            this.n
+        else: 
+            this.o""")

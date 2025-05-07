@@ -33,8 +33,31 @@ proc traverse(n : Node, iter : NodeIt) : Node =
         of ●operation: 
             n.operand_left = traverse(n.operand_left, iter)
             n.operand_right = traverse(n.operand_right, iter)
+        of ●call: 
+            n.callee = traverse(n.callee, iter)
+            for i, e in n.call_args: 
+                n.call_args.splice(i, 1, @[traverse(e, iter)])
+        of ●for: 
+            n.for_body = traverse(n.for_body, iter)
+            n.for_range = traverse(n.for_range, iter)
+        of ●if: 
+            for i, e in n.cond_thens: 
+                n.cond_thens.splice(i, 1, @[traverse(e, iter)])
+            n.else_branch = traverse(n.else_branch, iter)
+        of ●condThen: 
+            n.condition = traverse(n.condition, iter)
+            n.then_branch = traverse(n.then_branch, iter)
+        of ●switch: 
+            n.switch_value = traverse(n.switch_value, iter)
+            for i, e in n.switch_cases: 
+                n.switch_cases.splice(i, 1, @[traverse(e, iter)])
+            n.switch_default = traverse(n.switch_default, iter)
+        of ●switchCase: 
+            for i, e in n.case_when: 
+                n.case_when.splice(i, 1, @[traverse(e, iter)])
+            n.case_then = traverse(n.case_then, iter)
         else: 
-            echo(&"unhandled {n.kind}")
+            echo(&"clss.traverse -- unhandled {n.kind}")
     n
 proc methodify(clss : Node) : seq[Node] = 
     proc isMethod(it : Node) : bool = ((it.kind == ●member) and (it.member_value.kind == ●func))
