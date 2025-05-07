@@ -173,20 +173,26 @@ type RHS = proc(p: Parser): Node
 type LHS = proc(p: Parser, left: Node): Node
 type Pratt = object
 
-        rhs: RHS
-        lhs: LHS
-        precedence: int
+    rhs: RHS
+    lhs: LHS
+    precedence: int
 type Parser* = ref object
-        tokens*: seq[Token]
-        pratts*: seq[Pratt]
-        blocks*: seq[Node]
-        pos*: int
-        explicit: int
-        listless: int
-        returning: bool
-        typeless: bool
-        failed: bool
-        text: string # used in `$` for debugging. should be removed eventually 
+    tokens*: seq[Token]
+    pratts*: seq[Pratt]
+    blocks*: seq[Node]
+    pos*: int
+    explicit: int
+    listless: int
+    returning: bool
+    typeless: bool
+    failed: bool
+    text: string # used in `$` for debugging. should be removed eventually 
+    # current: ➜Token ->
+    # 
+    #     if @pos < @tokens.len
+    #         ⮐  @tokens[this.pos]
+    #         
+    #     Token(tok:◂eof, line: -1, col: -1)
 proc current(p : Parser) : Token = 
     if (p.pos < p.tokens.len): 
         return p.tokens[p.pos]

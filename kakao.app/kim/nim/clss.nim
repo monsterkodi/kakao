@@ -5,7 +5,7 @@
 #  ███████  ███████  ███████   ███████ 
 import pars
 type NodeIt = proc(node:Node):Node
-var defaultToken = Token(tok: ◂name)
+proc tkn(tok = ◂name, str = "", line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
 proc nod(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
     var n = Node(kind: kind, token: token)
     case kind:
@@ -20,9 +20,12 @@ proc nod(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.operand_right = args[1]
         of ●list: 
             n.list_values = @(args)
+        of ●signature: 
+            n.sig_args = args[0]
         else: discard
     n
 proc traverse(n : Node, iter : NodeIt) : Node = 
+    if (n == nil): return
     var n = n
     case n.kind:
         of ●block: 
@@ -56,6 +59,13 @@ proc traverse(n : Node, iter : NodeIt) : Node =
             for i, e in n.case_when: 
                 n.case_when.splice(i, 1, @[traverse(e, iter)])
             n.case_then = traverse(n.case_then, iter)
+        of ●propertyAccess: 
+            n.owner = traverse(n.owner, iter)
+        of ●arrayAccess: 
+            n.array_owner = traverse(n.array_owner, iter)
+            n.array_index = traverse(n.array_index, iter)
+        of ●return: 
+            n.return_value = traverse(n.return_value, iter)
         else: 
             echo(&"clss.traverse -- unhandled {n.kind}")
     n
@@ -64,23 +74,25 @@ proc methodify(clss : Node) : seq[Node] =
     var (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
     clss.class_body.expressions = members
     var className = clss.class_name.token.str
+    if (className[^1] == '*'): 
+        className = className[0..^2]
     proc thisify(n : Node) : Node = 
         if ((n.token.tok == ◂name) and (n.token.str[0] == '@')): 
-            var owner = nod(●literal, Token(tok: ◂name, str: "this"))
-            var property = nod(●literal, Token(tok: ◂name, str: n.token.str[1..^1]))
-            return nod(●propertyAccess, Token(tok: ◂dot, str: "."), owner, property)
+            var owner = nod(●literal, tkn(◂name, "this"))
+            var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
+            return nod(●propertyAccess, tkn(◂dot, "."), owner, property)
         n
     proc convert(it : Node) : Node = 
         var token = Token(tok: ◂assign, line: it.token.line, col: it.token.col)
         var funcn = it.member_value
-        var arg_type = nod(●type, Token(tok: ◂val_type, str: className))
-        var arg_name = nod(●literal, Token(tok: ◂name, str: "this"))
-        var this_arg = nod(●arg, Token(tok: ◂type), arg_type, arg_name)
+        var arg_type = nod(●type, tkn(◂val_type, className))
+        var arg_name = nod(●literal, tkn(◂name, "this"))
+        var this_arg = nod(●arg, tkn(◂type), arg_type, arg_name)
         if funcn.func_signature: 
             funcn.func_signature.sig_args.list_values.unshift(this_arg)
         else: 
-            var sig_args = nod(●list, Token(tok: ◂square_open), this_arg)
-            funcn.func_signature = Node(kind: ●signature, sig_args: sig_args)
+            var sig_args = nod(●list, tkn(◂square_open), this_arg)
+            funcn.func_signature = nod(●signature, tkn(), sig_args)
         funcn.func_body = traverse(funcn.func_body, thisify)
         nod(●operation, token, it.member_key, funcn)
     var methods = funcs.map(convert)

@@ -66,11 +66,13 @@ proc sqr(this : A) =
 proc inc(this : A, a1 : int) : int = 
         (this.sqr() + this.inc(this.m))""")
         t("""
-class A
+class A*
     m : int
     n : int
     o : int
     loop: ->
+        if @m < @n.len
+            ⮐  @o[@m]
         for i in @m
             switch @m
                 @m ➜ @m
@@ -82,11 +84,13 @@ class A
         else
             @o
 """, """
-type A = ref object
+type A* = ref object
     m: int
     n: int
     o: int
 proc loop(this : A) = 
+        if (this.m < this.n.len): 
+            return this.o[this.m]
         for i in this.m: 
             case this.m:
                 of this.m: this.m

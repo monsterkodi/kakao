@@ -125,8 +125,7 @@ logFile = ◇string f prefix="" ->
 compile = ◇string file outDir="bin" ➜bool ->
 
     profileScope 'comp'
-    cmd = "nim c --outDir=#{outdir} #{file}"
-    # cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
+    cmd = "nim c --colors:on --outDir=#{outdir} --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     (output exitCode) = execCmdEx(cmd)
         
     if exitCode != 0
@@ -150,8 +149,9 @@ runTests = ➜bool ->
     fail = false
     
     for f in testFiles
-        # cmd = &"nim r --colors:on {f}"
-        process = startProcess(command = "nim" args = @["r" f] options = {poInteractive poUsePath})
+        args = @["r" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
+        process = startProcess(command = "nim" args = args options = {poInteractive poUsePath})
+        defer: process.close()
         startTime = getMonoTime()
         output = ""
         outhnd = process.outputHandle
@@ -181,13 +181,17 @@ runTests = ➜bool ->
         if exitCode != 0 or verbose or fail
             styledEcho output.replace("[Suite]"  fg(fgYellow) & "▸\x1b[0m")
                              .replace("[OK]"     fg(fgGreen) & "✔\x1b[0m")
-                             .replace("[FAILED]" fg(fgRed) & "✘\x1b[0m")
+                             .replace("[FAILED]" fg(fgRed) & "✘\x1b[0m")                             
         else
             okCount = output.count "[OK]"
             styledEcho output.replace("[Suite]"  fg(fgYellow) & "▸\x1b[0m")
                              .replace(peg"'[OK]' .+" "#{ansiStyleCode(styleDim)} ✔ #{okCount}\x1b[0m")
             
+        for line in process.errorStream.lines
+            log line
+        
         if exitCode != 0
+            # echo output
             styledEcho fgRed "✘ " $f
             fail = true
     # log ""

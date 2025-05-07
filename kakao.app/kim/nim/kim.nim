@@ -81,8 +81,7 @@ proc logFile(f : string, prefix = "") =
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
 proc compile(file : string, outDir = "bin") : bool = 
     profileScope("comp")
-    var cmd = &"nim c --outDir={outdir} {file}"
-    # cmd = &"nim c --outDir={outdir} --stackTrace:on --lineTrace:on {file}"
+    var cmd = &"nim c --colors:on --outDir={outdir} --stackTrace:on --lineTrace:on --warning:User:off {file}"
     var (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
         styledEcho(fgRed, "✘ ", $cmd)
@@ -101,8 +100,9 @@ proc runTests() : bool =
     profileScope("test")
     var fail = false
     for f in testFiles: 
-        # cmd = &"nim r --colors:on {f}"
-        var process = startProcess(command = "nim", args = @["r", f], options = {poInteractive, poUsePath})
+        var args = @["r", "--colors:on", "--stackTrace:on", "--lineTrace:on", "--warning:User:off", f]
+        var process = startProcess(command = "nim", args = args, options = {poInteractive, poUsePath})
+        defer: process.close()
         var startTime = getMonoTime()
         var output = ""
         var outhnd = process.outputHandle
@@ -130,7 +130,10 @@ proc runTests() : bool =
         else: 
             var okCount = output.count("[OK]")
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace(peg"'[OK]' .+", &"{ansiStyleCode(styleDim)} ✔ {okCount}\x1b[0m"))
+        for line in process.errorStream.lines: 
+            echo(line)
         if (exitCode != 0): 
+            # echo output
             styledEcho(fgRed, "✘ ", $f)
             fail = true
     # log ""

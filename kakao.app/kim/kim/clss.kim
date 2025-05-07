@@ -8,7 +8,7 @@ use pars
 
 type NodeIt = proc(node:Node):Node
 
-defaultToken = Token(tok:◂name)
+tkn = tok=◂name str="" line=-1 col=-1 ➜ Token -> Token(tok:tok str:str line:line col:col)
 
 nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     n = Node kind:kind token:token
@@ -24,10 +24,15 @@ nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
             n.operand_right = args[1]
         ●list
             n.list_values   = @(args)
+        ●signature 
+            n.sig_args      = args[0]
         ➜ discard
     n
 
 traverse = ◇Node n ◇NodeIt iter ➜ Node -> 
+
+    ⮐  if n == nil
+    
     n = n
     switch n.kind
         ●block
@@ -61,6 +66,13 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
             for i e in n.case_when
                 n.case_when.splice i 1 @[traverse(e iter)]
             n.case_then = traverse n.case_then iter
+        ●propertyAccess
+            n.owner = traverse n.owner iter
+        ●arrayAccess
+            n.array_owner = traverse n.array_owner iter
+            n.array_index = traverse n.array_index iter
+        ●return
+            n.return_value = traverse n.return_value iter
         ➜ 
             log "clss.traverse -- unhandled #{n.kind}"
     n
@@ -74,25 +86,27 @@ methodify = ◇Node clss ➜ seq[Node] ->
     clss.class_body.expressions = members
     
     className = clss.class_name.token.str
+    if className[^1] == '*'
+        className = className[0..^2]
     
     thisify = ◇Node n ➜ Node -> 
         if n.token.tok == ◂name and n.token.str[0] == '@'
-            owner    = nod(●literal Token(tok:◂name str:"this"))
-            property = nod(●literal Token(tok:◂name str:n.token.str[1..^1]))
-            ⮐  nod(●propertyAccess  Token(tok:◂dot  str:".") owner, property)
+            owner    = nod ●literal tkn(◂name "this")
+            property = nod ●literal tkn(◂name n.token.str[1..^1])
+            ⮐  nod ●propertyAccess  tkn(◂dot  ".") owner property
         n
     
     convert = ◇Node it ➜ Node -> 
         token = Token(tok:◂assign, line:it.token.line, col:it.token.col)
         funcn = it.member_value
-        arg_type = nod ●type    Token(tok:◂val_type str:className)
-        arg_name = nod ●literal Token(tok:◂name str:"this")
-        this_arg = nod ●arg     Token(tok:◂type) arg_type arg_name
+        arg_type = nod ●type    tkn(◂val_type className)
+        arg_name = nod ●literal tkn(◂name "this")
+        this_arg = nod ●arg     tkn(◂type) arg_type arg_name
         if funcn.func_signature
             funcn.func_signature.sig_args.list_values.unshift this_arg
         else
-            sig_args = nod(●list, Token(tok:◂square_open), this_arg)
-            funcn.func_signature = Node(kind:●signature, sig_args:sig_args)
+            sig_args = nod ●list tkn(◂square_open) this_arg
+            funcn.func_signature = nod ●signature tkn() sig_args
             
         funcn.func_body = traverse funcn.func_body thisify
         nod ●operation token it.member_key funcn
