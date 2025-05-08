@@ -187,23 +187,16 @@ type Parser* = ref object
     typeless: bool
     failed: bool
     text: string # used in `$` for debugging. should be removed eventually 
-    # current: ➜Token ->
-    # 
-    #     if @pos < @tokens.len
-    #         ⮐  @tokens[this.pos]
-    #         
-    #     Token(tok:◂eof, line: -1, col: -1)
-proc current(p : Parser) : Token = 
-    if (p.pos < p.tokens.len): 
-        return p.tokens[p.pos]
-    Token(tok: ◂eof, line: -1, col: -1)
-proc tok(p : Parser) : tok = 
-    p.current.tok
-proc peek(p : Parser, ahead = 1) : Token = 
-    if ((p.pos + ahead) < p.tokens.len): 
-        p.tokens[(p.pos + ahead)]
-    else: 
-        Token(tok: ◂eof)
+proc current(this : Parser) : Token = 
+        if (this.pos < this.tokens.len): 
+            return this.tokens[this.pos]
+        tkn(◂eof)
+proc tok(this : Parser) : tok = this.current.tok
+proc peek(this : Parser, ahead = 1) : Token = 
+        if ((this.pos + ahead) < this.tokens.len): 
+            this.tokens[(this.pos + ahead)]
+        else: 
+            tkn(◂eof)
 # ████████   ████████   ███  ███   ███  █████████  
 # ███   ███  ███   ███  ███  ████  ███     ███     
 # ████████   ███████    ███  ███ █ ███     ███     
@@ -854,7 +847,7 @@ proc rString(p : Parser) : Node =
         if (p.tok != ◂stripol_start): 
             string_content = Node(token: p.consume(), kind: ●literal)
         else: 
-            string_content = Node(token: Token(str: "", tok: ◂string, line: p.current.line, col: p.current.col), kind: ●literal)
+            string_content = Node(token: tkn(◂string, "", p.current.line, p.current.col), kind: ●literal)
         var string_stripols : seq[Node]
         while (p.tok notin {◂string_end, ◂eof}): 
             p.swallowError(◂stripol_start, "Expected string interpolation start")
@@ -868,7 +861,7 @@ proc rString(p : Parser) : Node =
             if (p.tok notin {◂stripol_start, ◂string_end, ◂eof}): 
                 stripol.stripol_content = Node(token: p.consume(), kind: ●literal)
             elif (p.tok == ◂stripol_start): 
-                stripol.stripol_content = Node(token: Token(str: "", tok: ◂string, line: p.current.line, col: p.current.col), kind: ●literal)
+                stripol.stripol_content = Node(token: tkn(◂string, p.current.line, p.current.col), kind: ●literal)
             string_stripols.add(stripol)
         p.swallowError(◂string_end, "Expected closing string delimiter")
         Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
@@ -894,7 +887,7 @@ proc lReturnType(p : Parser, left : Node) : Node =
         if (left.kind == ●operation): 
             if (left.token.tok == ◂assign): 
                 var sig = p.rReturnType()
-                var argtoken = Token(tok: ◂val_type, line: left.token.line, col: left.token.col)
+                var argtoken = tkn(◂val_type, "", left.token.line, left.token.col)
                 var argNode = Node(token: argtoken, kind: ●arg, arg_name: left.operand_left, arg_value: left.operand_right)
                 sig.sig_args = Node(token: left.token, kind: ●list, list_values: @[argNode])
                 return sig
@@ -977,7 +970,7 @@ proc lFunc(p : Parser, left : Node) : Node =
         if (left.operand_left.token.tok != ◂name): return
         if (left.operand_left.token.col == 0): 
             var left = left
-            var argtoken = Token(tok: ◂val_type, line: left.operand_right.token.line, col: left.operand_right.token.col)
+            var argtoken = tkn(◂val_type, left.operand_right.token.line, left.operand_right.token.col)
             left.operand_right = p.lFunc(Node(token: argtoken, kind: ●arg, arg_name: left.operand_right))
             return left
         var vartoken = Token(tok: ◂val_type, line: left.operand_left.token.line, col: left.operand_left.token.col)
@@ -989,10 +982,10 @@ proc lFunc(p : Parser, left : Node) : Node =
         var sig_args = left
         for i, a in sig_args.list_values: 
             if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
-                var argtoken = Token(tok: ◂val_type, line: a.operand_left.token.line, col: a.operand_left.token.col)
+                var argtoken = tkn(◂val_type, a.operand_left.token.line, a.operand_left.token.col)
                 sig_args.list_values[i] = Node(token: argtoken, kind: ●arg, arg_name: a.operand_left, arg_value: a.operand_right)
             elif ((a.kind == ●literal) and (a.token.tok == ◂name)): 
-                var argtoken = Token(tok: ◂val_type, line: a.token.line, col: a.token.col)
+                var argtoken = tkn(◂val_type, a.token.line, a.token.col)
                 sig_args.list_values[i] = Node(token: argtoken, kind: ●arg, arg_name: a)
         func_signature = Node(token: left.token, kind: ●signature, sig_args: sig_args)
     elif (left.kind == ●arg): 
@@ -1057,7 +1050,7 @@ proc funcOrExpression(p : Parser, token : Token) : Node =
         if (p.tok == ◂func): 
             var ftoken = p.consume()
             var func_mod = if (p.tok == ◂mod): p.rLiteral() else: nil
-            var func_body = p.expressionOrIndentedBlock(Token(tok: ◂null), col)
+            var func_body = p.expressionOrIndentedBlock(tkn(◂null), col)
             return Node(token: ftoken, kind: ●func, func_signature: func_signature, func_mod: func_mod, func_body: func_body)
         else: 
             p.pos = startPos

@@ -8,8 +8,6 @@ use pars
 
 type NodeIt = proc(node:Node):Node
 
-tkn = tok=◂name str="" line=-1 col=-1 ➜ Token -> Token(tok:tok str:str line:line col:col)
-
 nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     n = Node kind:kind token:token
     switch kind

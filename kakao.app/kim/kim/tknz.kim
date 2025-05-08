@@ -141,6 +141,9 @@ class Tknzr*
         bol         : int # segi at start of current line
         eol         : int # segi at end of current line
         line        : int # current line index
+
+tkn* = ◇tok tok ◇string str line=-1 col=-1 ➜ Token -> Token(tok:tok str:str line:line col:col)
+tkn* =  tok=◂name           line=-1 col=-1 ➜ Token -> Token(tok:tok str:""  line:line col:col)
     
 $* = ◇Tknzr t ➜string ->
 
@@ -219,7 +222,7 @@ pushToken = ◇Tknzr t str="" tk=◂name incr=0 ->
 
     if t.token.str.len
         t.tokens.add t.token
-    t.token = Token(str:str, tok:tk, line:t.line, col:t.col)
+    t.token = tkn(tk str t.line t.col)
     t.incr incr
     
 push = ◇Tknzr t ◇tok tk ->
@@ -413,7 +416,7 @@ tknz = ◇Tknzr t ◇seq[string] segs ➜seq[Token] ->
             t.nextLine()
             if t.segi >= t.segs.len
                 break
-            t.token = Token(tok: ◂indent, line:t.line, col:t.col) 
+            t.token = tkn(◂indent "" t.line t.col) 
             while t.peekSafe(0) == " "
                 t.advance 1
             if t.segi >= t.segs.len
@@ -423,7 +426,7 @@ tknz = ◇Tknzr t ◇seq[string] segs ➜seq[Token] ->
             t.tokens.add t.token
             continue
                 
-        t.token = Token(line:t.line, col:t.col)
+        t.token = tkn(◂name "" t.line t.col)
         
         while t.segi < t.eol
                                     

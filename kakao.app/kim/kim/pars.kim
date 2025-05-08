@@ -264,28 +264,21 @@ class Parser*
     failed      : bool
     text        : string # used in `$` for debugging. should be removed eventually 
 
-    # current: ➜Token ->
-    # 
-    #     if @pos < @tokens.len
-    #         ⮐  @tokens[this.pos]
-    #         
-    #     Token(tok:◂eof, line: -1, col: -1)
+    current: ➜Token ->
     
-current = ◇Parser p ➜Token ->
-    if p.pos < p.tokens.len
-        ⮐  p.tokens[p.pos]
-        
-    Token(tok:◂eof, line: -1, col: -1)
+        if @pos < @tokens.len
+            ⮐  @tokens[@pos]
+            
+        tkn(◂eof)
     
-tok = ◇Parser p ➜tok -> 
-    p.current.tok
+    tok: ➜tok -> @current.tok
 
-peek = ◇Parser p ahead=1 ➜Token ->
-
-    if p.pos + ahead < p.tokens.len
-        p.tokens[p.pos + ahead]
-    else
-        Token(tok:◂eof)
+    peek: ahead=1 ➜Token ->
+    
+        if @pos + ahead < @tokens.len
+            @tokens[@pos + ahead]
+        else
+            tkn(◂eof)
 
 # ████████   ████████   ███  ███   ███  █████████  
 # ███   ███  ███   ███  ███  ████  ███     ███     
@@ -1122,7 +1115,7 @@ rString = ◇Parser p ➜Node ->
         if p.tok != ◂stripol_start
             string_content = Node(token:p.consume(), kind:●literal)
         else
-            string_content = Node(token:Token(str:"", tok:◂string, line:p.current.line, col:p.current.col), kind:●literal)
+            string_content = Node(token:tkn(◂string "" p.current.line p.current.col), kind:●literal)
             
         string_stripols ◇ seq[Node]
         while p.tok notin {◂string_end, ◂eof}
@@ -1142,7 +1135,7 @@ rString = ◇Parser p ➜Node ->
             if p.tok notin {◂stripol_start, ◂string_end, ◂eof}
                 stripol.stripol_content = Node(token:p.consume(), kind:●literal)
             elif p.tok == ◂stripol_start
-                stripol.stripol_content = Node(token:Token(str:"", tok:◂string, line:p.current.line, col:p.current.col), kind:●literal)
+                stripol.stripol_content = Node(token:tkn(◂string p.current.line p.current.col), kind:●literal)
             
             string_stripols.add stripol
             
@@ -1177,7 +1170,7 @@ lReturnType = ◇Parser p ◇Node left ➜Node ->
         if left.kind == ●operation 
             if left.token.tok == ◂assign
                 sig = p.rReturnType()
-                argtoken = Token(tok:◂val_type, line:left.token.line, col:left.token.col)
+                argtoken = tkn(◂val_type "" left.token.line left.token.col)
                 argNode  = Node(token:argtoken, kind:●arg, arg_name:left.operand_left, arg_value:left.operand_right)
                 sig.sig_args = Node(token:left.token, kind:●list, list_values: @[argNode])
                 ⮐  sig
@@ -1284,7 +1277,7 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
             
         if left.operand_left.token.col == 0 
             left = left
-            argtoken = Token(tok:◂val_type, line:left.operand_right.token.line,col:left.operand_right.token.col)
+            argtoken = tkn(◂val_type left.operand_right.token.line left.operand_right.token.col)
             left.operand_right = p.lFunc(Node(token:argtoken, kind:●arg, arg_name:left.operand_right))
             ⮐  left
             
@@ -1300,10 +1293,10 @@ lFunc = ◇Parser p ◇Node left ➜Node ->
         sig_args = left
         for i,a in sig_args.list_values
             if a.kind == ●operation and a.token.tok == ◂assign
-                argtoken = Token(tok:◂val_type, line:a.operand_left.token.line,col:a.operand_left.token.col)
+                argtoken = tkn(◂val_type a.operand_left.token.line a.operand_left.token.col)
                 sig_args.list_values[i] = Node(token:argtoken, kind:●arg, arg_name:a.operand_left, arg_value:a.operand_right)
             elif a.kind == ●literal and a.token.tok == ◂name
-                argtoken = Token(tok:◂val_type, line:a.token.line,col:a.token.col)
+                argtoken = tkn(◂val_type a.token.line a.token.col)
                 sig_args.list_values[i] = Node(token:argtoken, kind:●arg, arg_name:a)
         func_signature = Node(token:left.token, kind:●signature, sig_args:sig_args)
         
@@ -1399,7 +1392,7 @@ funcOrExpression = ◇Parser p ◇Token token ➜Node ->
         if p.tok == ◂func
             ftoken = p.consume()
             func_mod = if p.tok == ◂mod ➜ p.rLiteral() ➜ nil
-            func_body = p.expressionOrIndentedBlock(Token(tok:◂null), col)
+            func_body = p.expressionOrIndentedBlock(tkn(◂null), col)
             ⮐  Node(token:ftoken, kind:●func, func_signature:func_signature, func_mod:func_mod, func_body:func_body)
         else
             p.pos = startPos

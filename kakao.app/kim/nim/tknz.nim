@@ -128,6 +128,8 @@ type Tknzr* = ref object
         bol: int # segi at start of current line
         eol: int # segi at end of current line
         line: int # current line index
+proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
+proc tkn*(tok = ◂name, line = -1, col = -1) : Token = Token(tok: tok, str: "", line: line, col: col)
 proc `$`*(t : Tknzr) : string = 
     &"◂▸ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
 proc char(t : Tknzr) : char = t.segs[t.segi][0]
@@ -182,7 +184,7 @@ proc advanceMulti(t : Tknzr, stop : string) =
 proc pushToken(t : Tknzr, str = "", tk = ◂name, incr = 0) = 
     if t.token.str.len: 
         t.tokens.add(t.token)
-    t.token = Token(str: str, tok: tk, line: t.line, col: t.col)
+    t.token = tkn(tk, str, t.line, t.col)
     t.incr(incr)
 proc push(t : Tknzr, tk : tok) = 
     t.token.tok = tk
@@ -329,7 +331,7 @@ proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] =
             t.nextLine()
             if (t.segi >= t.segs.len): 
                 break
-            t.token = Token(tok: ◂indent, line: t.line, col: t.col)
+            t.token = tkn(◂indent, "", t.line, t.col)
             while (t.peekSafe(0) == " "): 
                 t.advance(1)
             if (t.segi >= t.segs.len): 
@@ -338,7 +340,7 @@ proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] =
                 t.tokens.pops()
             t.tokens.add(t.token)
             continue
-        t.token = Token(line: t.line, col: t.col)
+        t.token = tkn(◂name, "", t.line, t.col)
         while (t.segi < t.eol): 
             var char = t.peek(0)
             if (char == " "): 

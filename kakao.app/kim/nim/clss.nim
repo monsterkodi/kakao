@@ -5,7 +5,6 @@
 #  ███████  ███████  ███████   ███████ 
 import pars
 type NodeIt = proc(node:Node):Node
-proc tkn(tok = ◂name, str = "", line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
 proc nod(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
     var n = Node(kind: kind, token: token)
     case kind:
