@@ -102,3 +102,48 @@ proc loop(this : A) =
             this.n
         else: 
             this.o""")
+        t("""
+class A*
+    m : int
+    n : int
+    o : int
+    loop: ->
+        while @m < @n.len
+            ⮐  @o[@m]
+        fun = ->
+            switch @m
+                @m ➜ @m
+                @n ➜ @n
+                   ➜ @o
+        moreFun = -> if @m ➜ @n ➜ @o
+        fun(@m)
+        moreFun @o
+""", """
+type A* = ref object
+    m: int
+    n: int
+    o: int
+proc loop(this : A) = 
+        while (this.m < this.n.len): 
+            return this.o[this.m]
+        proc fun = 
+            case this.m:
+                of this.m: this.m
+                of this.n: this.n
+                else: this.o
+        proc moreFun = if this.m: this.n else: this.o
+        fun(this.m)
+        moreFun(this.o)""")
+        t("""
+class A*
+    m : int
+    loop: ->
+        log "m: #""" & """
+{@m}"
+        @m
+""", """
+type A* = ref object
+    m: int
+proc loop(this : A) = 
+        echo(&"m: {this.m}")
+        this.m""")

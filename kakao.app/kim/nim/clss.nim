@@ -14,6 +14,10 @@ proc traverse(n : Node, iter : NodeIt) : Node =
                 n.expressions.splice(i, 1, @[traverse(e, iter)])
         of ●literal: 
             n = iter(n)
+        of ●string: 
+            for s in n.string_stripols: 
+                for i, e in s.stripol_xprssns: 
+                    s.stripol_xprssns.splice(i, 1, @[traverse(e, iter)])
         of ●operation: 
             n.operand_left = traverse(n.operand_left, iter)
             n.operand_right = traverse(n.operand_right, iter)
@@ -66,7 +70,7 @@ proc methodify(clss : Node) : seq[Node] =
         if ((n.token.tok == ◂name) and (n.token.str[0] == '@')): 
             var owner = nod(●literal, tkn(◂name, "this"))
             var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
-            return nod(●propertyAccess, tkn(◂dot, "."), owner, property)
+            return nod(●propertyAccess, tkn(◂dot, ".", n.token.line, n.token.col), owner, property)
         n
     proc convert(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)

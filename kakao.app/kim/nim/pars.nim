@@ -157,7 +157,7 @@ type Node* = ref object
             test_expected*: Node
         else: discard
 proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
-    echo(&"{kind} {token}")
+    # log "#{kind} #{token}"
     var n = Node(kind: kind, token: token)
     case kind:
         of ●arg: 

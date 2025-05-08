@@ -147,8 +147,21 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                             of this.m: this.m
                             of this.n: this.n
                             else: this.o
-                    proc moreFun = if this.m: this.n else:this.o
+                    proc moreFun = if this.m: this.n else: this.o
                     fun(this.m)
                     moreFun(this.o)"""
                                 
-        
+        t   """
+            class A*
+                m : int
+                loop: ->
+                    log "m: #""" & """
+            {@m}"
+                    @m
+            """ """
+            type A* = ref object
+                m: int
+            proc loop(this : A) = 
+                    echo(&"m: {this.m}")
+                    this.m"""
+                    

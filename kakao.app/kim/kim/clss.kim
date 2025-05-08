@@ -19,6 +19,10 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
                 n.expressions.splice i 1 @[traverse(e iter)]
         ●literal
             n = iter n
+        ●string
+            for s in n.string_stripols
+                for i e in s.stripol_xprssns
+                    s.stripol_xprssns.splice i 1 @[traverse(e iter)]
         ●operation
             n.operand_left  = traverse n.operand_left  iter
             n.operand_right = traverse n.operand_right iter
@@ -77,7 +81,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
         if n.token.tok == ◂name and n.token.str[0] == '@'
             owner    = nod ●literal tkn(◂name "this")
             property = nod ●literal tkn(◂name n.token.str[1..^1])
-            ⮐  nod ●propertyAccess  tkn(◂dot  ".") owner property
+            ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
         n
     
     convert = ◇Node it ➜ Node -> 
