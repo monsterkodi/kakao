@@ -85,10 +85,13 @@ methodify = ◇Node clss ➜ seq[Node] ->
         className = className[0..^2]
     
     thisify = ◇Node n ➜ Node -> 
-        if n.token.tok == ◂name and n.token.str[0] == '@'
-            owner    = nod ●literal tkn(◂name "this")
-            property = nod ●literal tkn(◂name n.token.str[1..^1])
-            ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
+        if n.token.tok == ◂name and n.token.str[0] == '@' 
+            if n.token.str.len > 1
+                owner    = nod ●literal tkn(◂name "this")
+                property = nod ●literal tkn(◂name n.token.str[1..^1])
+                ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
+            else
+                n.token.str = "this"
         n
     
     convert = ◇Node it ➜ Node -> 
@@ -114,14 +117,10 @@ classify* = ◇Node body ➜Node ->
 
     if body == nil or body.kind != ●block or body.expressions.len == 0
         ⮐  body 
-
-    for i e in body.expressions
-    
-        if e.kind == ●class
         
+    for i in countdown(body.expressions.high, 0)
+        e = body.expressions[i]
+        if e.kind == ●class
             methods = methodify e
             body.expressions.insert methods i+1
-            
-    log body.expressions
-
     body

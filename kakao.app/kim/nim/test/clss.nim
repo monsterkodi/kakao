@@ -147,3 +147,49 @@ type A* = ref object
 proc loop(this : A) = 
         echo(&"m: {this.m}")
         this.m""")
+        t("""
+class Token*
+    tok*: tok
+    
+    logp: -> 
+        log @tok
+    
+class Node*
+
+    token* : Token
+    
+    switch kind* : NodeKind
+    
+        ●block
+        
+            expressions*: seq[Node]
+            
+        ●if
+            # also handles when
+            cond_thens*     : seq[Node]
+            else_branch*    : Node
+            
+        ➜ discard
+    
+    loop: ->
+        log @m
+        
+nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
+""", """
+type Token* = ref object
+    tok*: tok
+proc logp(this : Token) = 
+        echo(this.tok)
+type Node* = ref object
+    token*: Token
+    case kind*: NodeKind:
+        of ●block: 
+            expressions*: seq[Node]
+        of ●if: 
+            # also handles when
+            cond_thens*: seq[Node]
+            else_branch*: Node
+        else: discard
+proc loop(this : Node) = 
+        echo(this.m)
+proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node""")

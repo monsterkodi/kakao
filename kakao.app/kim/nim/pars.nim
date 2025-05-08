@@ -156,123 +156,132 @@ type Node* = ref object
             test_value*: Node
             test_expected*: Node
         else: discard
-    # $*: ➜string ->
-    # 
-    #     if this == nil
-    #         ⮐  "NIL"
-    #         
-    #     s = $this.token.tok
-    #     
-    #     switch @kind
-    #         ●string
-    #             var ips = ""
-    #             for i s in @string_stripols
-    #                 if i == 0
-    #                     ips &= "<"
-    #                 ips &= $s.stripol_xprssns
-    #                 if 0 < i and i < @string_stripols.len-1
-    #                     ips &= " "
-    #                 if i == @string_stripols.len-1
-    #                     ips &= ">"
-    #             p = choose(@string_prefix, $this.string_prefix.token.str, "")
-    #             s = &"◂{p}string{ips}"
-    #         ●block
-    #             s = "▪["
-    #             for e in @expressions
-    #                 if e != nil
-    #                     s &= &"{e}"
-    #                 else
-    #                     s &= "NIL"
-    #             s &= "]"
-    #         ●operation
-    #             s = "(#{@operand_left} #{s} #{@operand_right})"
-    #         ●range
-    #             s = "(#{@range_start} #{s} #{@range_end})"
-    #         ●preOp
-    #             s = "(#{s} #{@operand})"
-    #         ●postOp
-    #             s = "(#{@operand} #{s})"
-    #         ●return
-    #             e = choose(@return_value, " " & $this.return_value, "")
-    #             s = &"({s}{e})"
-    #         ●call
-    #             s = "(#{@callee} ◂call #{@callargs})"
-    #         ●propertyAccess
-    #             s = "(#{@owner} #{s} #{@property})"
-    #         ●if
-    #             e = choose(@else_branch, " #{@else_branch}", "")
-    #             s = "(#{s} #{@cond_thens}#{e})"
-    #         ●condThen
-    #             s = "(#{@condition} #{@then_branch})"
-    #         ●switch
-    #             e = choose(@switch_default, " #{@switch_default}", "")
-    #             s = "(#{s} #{@switch_value} #{@switch_cases}#{e})"
-    #         ●switchCase
-    #             s = "(#{@case_when} #{@case_then})"
-    #         ●for
-    #             b = choose(@for_body, " #{@for_body}", "")
-    #             s = "(#{s} #{@for_value} in #{@for_range}#{b})"
-    #         ●list
-    #             s = "#{@list_values}"
-    #             s = "◂" & s[1..^1]
-    #         ●curly
-    #             s = "#{@list_values}"
-    #             s = "{" & s[2..^2] & "}"
-    #         ●squarely
-    #             s = "#{@list_values}"
-    #             s = "[" & s[1..^1] & "]]"
-    #         ●while
-    #             b = choose(@while_body, " #{@while_body}", "")
-    #             s = "(#{s} #{@while_cond}#{b})"
-    #         ●func
-    #             sig = choose(@func_signature, $this.func_signature, "")
-    #             mdf = choose(@func_mod, " #{@func_mod.token.str} ", "")
-    #             bdy = choose(@func_body, " #{@func_body}", "")
-    #             s = "(#{sig}#{s}#{mdf}#{bdy})"
-    #         ●signature
-    #             a = if @sig_args and @sig_args.list_values.len ➜ $this.sig_args ➜ ""
-    #             t = choose(@sig_type, " ➜ #{@sig_type}", "")
-    #             s = "#{a}#{t}"
-    #         ●arrayAccess
-    #             i = choose(@array_index, "#{@array_index}", "")
-    #             s = "(#{@array_owner}[#{i}])"
-    #         ●arg
-    #             t = choose(@arg_type, "#{s}#{@arg_type} ", "")
-    #             v = choose(@arg_value, " (= #{@arg_value})", "")
-    #             s = "(#{t}#{@arg_name}#{v})"
-    #         ●var
-    #             t = choose(@var_type, " #{s}#{@var_type}", "")
-    #             v = choose(@var_value, " (= #{@var_value})", "")
-    #             s = "(#{@var_name}#{t}#{v})"
-    #         ●let
-    #             s = "(#{s} #{@let_expr})"
-    #         ●type
-    #             s = "type(#{@token.str})"
-    #         ●use
-    #             k = choose(@use_kind, " #{@use_kind.token.str}", "")
-    #             i = choose(@use_items.len>0, " #{@use_items}", "")
-    #             s = "(#{s} #{@use_module}#{k}#{i})"
-    #         ●enum    
-    #             b = choose(@enum_body, " #{@enum_body}", "")
-    #             s = "(#{s} #{@enum_name}#{b})"
-    #         ●class    
-    #             b = choose(@class_body, " #{@class_body}", "")
-    #             s = "(#{s} #{@class_name}#{b})"
-    #         ●member
-    #             s = "(#{@member_key} #{s} #{@member_value})"
-    #         ●quote
-    #             s = "(#{s} #{@quote_body})"
-    #         ●testSuite
-    #             b = choose(@test_block, " #{@test_block}", "")
-    #             s = "(#{s} suite#{b})"
-    #         ●testSection
-    #             b = choose(@test_block, " #{@test_block}", "")
-    #             s = "(#{s} section#{b})"
-    #         ●testCase
-    #             s = "(#{@test_value} #{s} #{@test_expected})"
-    #         else
-    #             discard
-    #     s
+proc `$`*(this : Node) : string = 
+        if (this == nil): 
+            return "NIL"
+        var s = $this.token.tok
+        case this.kind:
+            of ●string: 
+                var ips = ""
+                for i, s in this.string_stripols: 
+                    if (i == 0): 
+                        (ips &= "<")
+                    (ips &= $s.stripol_xprssns)
+                    if ((0 < i) and (i < (this.string_stripols.len - 1))): 
+                        (ips &= " ")
+                    if (i == (this.string_stripols.len - 1)): 
+                        (ips &= ">")
+                var p = choose(this.string_prefix, $this.string_prefix.token.str, "")
+                s = &"◂{p}string{ips}"
+            of ●block: 
+                s = "▪["
+                for e in this.expressions: 
+                    if (e != nil): 
+                        (s &= &"{e}")
+                    else: 
+                        (s &= "NIL")
+                (s &= "]")
+            of ●operation: 
+                s = &"({this.operand_left} {s} {this.operand_right})"
+            of ●range: 
+                s = &"({this.range_start} {s} {this.range_end})"
+            of ●preOp: 
+                s = &"({s} {this.operand})"
+            of ●postOp: 
+                s = &"({this.operand} {s})"
+            of ●return: 
+                var e = choose(this.return_value, " " & $this.return_value, "")
+                s = &"({s}{e})"
+            of ●call: 
+                s = &"({this.callee} ◂call {this.callargs})"
+            of ●propertyAccess: 
+                s = &"({this.owner} {s} {this.property})"
+            of ●if: 
+                var e = choose(this.else_branch, &" {this.else_branch}", "")
+                s = &"({s} {this.cond_thens}{e})"
+            of ●condThen: 
+                s = &"({this.condition} {this.then_branch})"
+            of ●switch: 
+                var e = choose(this.switch_default, &" {this.switch_default}", "")
+                s = &"({s} {this.switch_value} {this.switch_cases}{e})"
+            of ●switchCase: 
+                s = &"({this.case_when} {this.case_then})"
+            of ●for: 
+                var b = choose(this.for_body, &" {this.for_body}", "")
+                s = &"({s} {this.for_value} in {this.for_range}{b})"
+            of ●list: 
+                s = &"{this.list_values}"
+                s = "◂" & s[1..^1]
+            of ●curly: 
+                s = &"{this.list_values}"
+                s = "{" & s[2..^2] & "}"
+            of ●squarely: 
+                s = &"{this.list_values}"
+                s = "[" & s[1..^1] & "]]"
+            of ●while: 
+                var b = choose(this.while_body, &" {this.while_body}", "")
+                s = &"({s} {this.while_cond}{b})"
+            of ●func: 
+                var sig = choose(this.func_signature, $this.func_signature, "")
+                var mdf = choose(this.func_mod, &" {this.func_mod.token.str} ", "")
+                var bdy = choose(this.func_body, &" {this.func_body}", "")
+                s = &"({sig}{s}{mdf}{bdy})"
+            of ●signature: 
+                var a = if (this.sig_args and this.sig_args.list_values.len): $this.sig_args else: ""
+                var t = choose(this.sig_type, &" ➜ {this.sig_type}", "")
+                s = &"{a}{t}"
+            of ●arrayAccess: 
+                var i = choose(this.array_index, &"{this.array_index}", "")
+                s = &"({this.array_owner}[{i}])"
+            of ●arg: 
+                var t = choose(this.arg_type, &"{s}{this.arg_type} ", "")
+                var v = choose(this.arg_value, &" (= {this.arg_value})", "")
+                s = &"({t}{this.arg_name}{v})"
+            of ●var: 
+                var t = choose(this.var_type, &" {s}{this.var_type}", "")
+                var v = choose(this.var_value, &" (= {this.var_value})", "")
+                s = &"({this.var_name}{t}{v})"
+            of ●let: 
+                s = &"({s} {this.let_expr})"
+            of ●type: 
+                s = &"type({this.token.str})"
+            of ●use: 
+                var k = choose(this.use_kind, &" {this.use_kind.token.str}", "")
+                var i = choose((this.use_items.len > 0), &" {this.use_items}", "")
+                s = &"({s} {this.use_module}{k}{i})"
+            of ●enum: 
+                var b = choose(this.enum_body, &" {this.enum_body}", "")
+                s = &"({s} {this.enum_name}{b})"
+            of ●class: 
+                var b = choose(this.class_body, &" {this.class_body}", "")
+                s = &"({s} {this.class_name}{b})"
+            of ●member: 
+                s = &"({this.member_key} {s} {this.member_value})"
+            of ●quote: 
+                s = &"({s} {this.quote_body})"
+            of ●testSuite: 
+                var b = choose(this.test_block, &" {this.test_block}", "")
+                s = &"({s} suite{b})"
+            of ●testSection: 
+                var b = choose(this.test_block, &" {this.test_block}", "")
+                s = &"({s} section{b})"
+            of ●testCase: 
+                s = &"({this.test_value} {s} {this.test_expected})"
+            else: 
+                discard
+        s
+# s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
+# s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
+# s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
+# s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
+# s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
+# s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
+# s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
+# s = &"(«s» «n.for_value» in «n.for_range»«b»)"
+# s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
+# s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
+# s = &"(s n.for_value in n.for_rangeb)"
+# s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
 proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
     # log "#{kind} #{token}"
     var n = Node(kind: kind, token: token)
@@ -401,132 +410,6 @@ proc `$`(this : Parser) : string =
         else: 
             s = this.text
         s
-proc `$`*(n : Node) : string = 
-    if (n == nil): 
-        return "NIL"
-    var s = $n.token.tok
-    case n.kind:
-        of ●string: 
-            var ips = ""
-            for i, s in n.string_stripols: 
-                if (i == 0): 
-                    (ips &= "<")
-                (ips &= $s.stripol_xprssns)
-                if ((0 < i) and (i < (n.string_stripols.len - 1))): 
-                    (ips &= " ")
-                if (i == (n.string_stripols.len - 1)): 
-                    (ips &= ">")
-            var p = choose(n.string_prefix, $n.string_prefix.token.str, "")
-            s = &"◂{p}string{ips}"
-        of ●block: 
-            s = "▪["
-            for e in n.expressions: 
-                if (e != nil): 
-                    (s &= &"{e}")
-                else: 
-                    (s &= "NIL")
-            (s &= "]")
-        of ●operation: 
-            s = &"({n.operand_left} {s} {n.operand_right})"
-        of ●range: 
-            s = &"({n.range_start} {s} {n.range_end})"
-        of ●preOp: 
-            s = &"({s} {n.operand})"
-        of ●postOp: 
-            s = &"({n.operand} {s})"
-        of ●return: 
-            var e = choose(n.return_value, " " & $n.return_value, "")
-            s = &"({s}{e})"
-        of ●call: 
-            s = &"({n.callee} ◂call {n.callargs})"
-        of ●propertyAccess: 
-            s = &"({n.owner} {s} {n.property})"
-        of ●if: 
-            var e = choose(n.else_branch, &" {n.else_branch}", "")
-            s = &"({s} {n.cond_thens}{e})"
-        of ●condThen: 
-            s = &"({n.condition} {n.then_branch})"
-        of ●switch: 
-            var e = choose(n.switch_default, &" {n.switch_default}", "")
-            s = &"({s} {n.switch_value} {n.switch_cases}{e})"
-        of ●switchCase: 
-            s = &"({n.case_when} {n.case_then})"
-        of ●for: 
-            var b = choose(n.for_body, &" {n.for_body}", "")
-            s = &"({s} {n.for_value} in {n.for_range}{b})"
-            # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
-            # s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
-            # s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
-            # s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
-            # s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
-            # s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
-            # s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
-            # s = &"(«s» «n.for_value» in «n.for_range»«b»)"
-            # s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
-            # s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
-            # s = &"(s n.for_value in n.for_rangeb)"
-            # s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
-        of ●list: 
-            s = &"{n.list_values}"
-            s = "◂" & s[1..^1]
-        of ●curly: 
-            s = &"{n.list_values}"
-            s = "{" & s[2..^2] & "}"
-        of ●squarely: 
-            s = &"{n.list_values}"
-            s = "[" & s[1..^1] & "]]"
-        of ●while: 
-            var b = choose(n.while_body, &" {n.while_body}", "")
-            s = &"({s} {n.while_cond}{b})"
-        of ●func: 
-            var sig = choose(n.func_signature, $n.func_signature, "")
-            var mdf = choose(n.func_mod, &" {n.func_mod.token.str} ", "")
-            var bdy = choose(n.func_body, &" {n.func_body}", "")
-            s = &"({sig}{s}{mdf}{bdy})"
-        of ●signature: 
-            var a = if (n.sig_args and n.sig_args.list_values.len): $n.sig_args else: ""
-            var t = choose(n.sig_type, &" ➜ {n.sig_type}", "")
-            s = &"{a}{t}"
-        of ●arrayAccess: 
-            var i = choose(n.array_index, &"{n.array_index}", "")
-            s = &"({n.array_owner}[{i}])"
-        of ●arg: 
-            var t = choose(n.arg_type, &"{s}{n.arg_type} ", "")
-            var v = choose(n.arg_value, &" (= {n.arg_value})", "")
-            s = &"({t}{n.arg_name}{v})"
-        of ●var: 
-            var t = choose(n.var_type, &" {s}{n.var_type}", "")
-            var v = choose(n.var_value, &" (= {n.var_value})", "")
-            s = &"({n.var_name}{t}{v})"
-        of ●let: 
-            s = &"({s} {n.let_expr})"
-        of ●type: 
-            s = &"type({n.token.str})"
-        of ●use: 
-            var k = choose(n.use_kind, &" {n.use_kind.token.str}", "")
-            var i = choose((n.use_items.len > 0), &" {n.use_items}", "")
-            s = &"({s} {n.use_module}{k}{i})"
-        of ●enum: 
-            var b = choose(n.enum_body, &" {n.enum_body}", "")
-            s = &"({s} {n.enum_name}{b})"
-        of ●class: 
-            var b = choose(n.class_body, &" {n.class_body}", "")
-            s = &"({s} {n.class_name}{b})"
-        of ●member: 
-            s = &"({n.member_key} {s} {n.member_value})"
-        of ●quote: 
-            s = &"({s} {n.quote_body})"
-        of ●testSuite: 
-            var b = choose(n.test_block, &" {n.test_block}", "")
-            s = &"({s} suite{b})"
-        of ●testSection: 
-            var b = choose(n.test_block, &" {n.test_block}", "")
-            s = &"({s} section{b})"
-        of ●testCase: 
-            s = &"({n.test_value} {s} {n.test_expected})"
-        else: 
-            discard
-    s
 proc error(p : Parser, msg : string, token = tkn(◂eof)) : Node = 
     styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
     if (token.tok != ◂eof): 

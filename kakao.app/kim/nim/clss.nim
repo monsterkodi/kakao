@@ -75,9 +75,12 @@ proc methodify(clss : Node) : seq[Node] =
         className = className[0..^2]
     proc thisify(n : Node) : Node = 
         if ((n.token.tok == ◂name) and (n.token.str[0] == '@')): 
-            var owner = nod(●literal, tkn(◂name, "this"))
-            var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
-            return nod(●propertyAccess, tkn(◂dot, ".", n.token.line, n.token.col), owner, property)
+            if (n.token.str.len > 1): 
+                var owner = nod(●literal, tkn(◂name, "this"))
+                var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
+                return nod(●propertyAccess, tkn(◂dot, ".", n.token.line, n.token.col), owner, property)
+            else: 
+                n.token.str = "this"
         n
     proc convert(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)
@@ -97,9 +100,9 @@ proc methodify(clss : Node) : seq[Node] =
 proc classify*(body : Node) : Node = 
     if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 
         return body
-    for i, e in body.expressions: 
+    for i in countdown(body.expressions.high, 0): 
+        var e = body.expressions[i]
         if (e.kind == ●class): 
             var methods = methodify(e)
             body.expressions.insert(methods, (i + 1))
-    echo(body.expressions)
     body
