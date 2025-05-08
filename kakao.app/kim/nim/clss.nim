@@ -5,24 +5,6 @@
 #  ███████  ███████  ███████   ███████ 
 import pars
 type NodeIt = proc(node:Node):Node
-proc nod(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
-    var n = Node(kind: kind, token: token)
-    case kind:
-        of ●arg: 
-            n.arg_type = args[0]
-            n.arg_name = args[1]
-        of ●propertyAccess: 
-            n.owner = args[0]
-            n.property = args[1]
-        of ●operation: 
-            n.operand_left = args[0]
-            n.operand_right = args[1]
-        of ●list: 
-            n.list_values = @(args)
-        of ●signature: 
-            n.sig_args = args[0]
-        else: discard
-    n
 proc traverse(n : Node, iter : NodeIt) : Node = 
     if (n == nil): return
     var n = n
@@ -82,7 +64,7 @@ proc methodify(clss : Node) : seq[Node] =
             return nod(●propertyAccess, tkn(◂dot, "."), owner, property)
         n
     proc convert(it : Node) : Node = 
-        var token = Token(tok: ◂assign, line: it.token.line, col: it.token.col)
+        var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
         var arg_type = nod(●type, tkn(◂val_type, className))
         var arg_name = nod(●literal, tkn(◂name, "this"))
@@ -90,8 +72,8 @@ proc methodify(clss : Node) : seq[Node] =
         if funcn.func_signature: 
             funcn.func_signature.sig_args.list_values.unshift(this_arg)
         else: 
-            var sig_args = nod(●list, tkn(◂square_open), this_arg)
-            funcn.func_signature = nod(●signature, tkn(), sig_args)
+            var sig_args = nod(●list, tkn(◂square_open), @[this_arg])
+            funcn.func_signature = nod(●signature, tkn(), sig_args, nil)
         funcn.func_body = traverse(funcn.func_body, thisify)
         nod(●operation, token, it.member_key, funcn)
     var methods = funcs.map(convert)

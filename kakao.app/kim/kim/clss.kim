@@ -8,25 +8,6 @@ use pars
 
 type NodeIt = proc(node:Node):Node
 
-nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
-    n = Node kind:kind token:token
-    switch kind
-        ●arg
-            n.arg_type = args[0]
-            n.arg_name = args[1]
-        ●propertyAccess 
-            n.owner    = args[0]
-            n.property = args[1]
-        ●operation
-            n.operand_left  = args[0]
-            n.operand_right = args[1]
-        ●list
-            n.list_values   = @(args)
-        ●signature 
-            n.sig_args      = args[0]
-        ➜ discard
-    n
-
 traverse = ◇Node n ◇NodeIt iter ➜ Node -> 
 
     ⮐  if n == nil
@@ -95,7 +76,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
         n
     
     convert = ◇Node it ➜ Node -> 
-        token = Token(tok:◂assign, line:it.token.line, col:it.token.col)
+        token = tkn(◂assign it.token.line it.token.col)
         funcn = it.member_value
         arg_type = nod ●type    tkn(◂val_type className)
         arg_name = nod ●literal tkn(◂name "this")
@@ -103,8 +84,8 @@ methodify = ◇Node clss ➜ seq[Node] ->
         if funcn.func_signature
             funcn.func_signature.sig_args.list_values.unshift this_arg
         else
-            sig_args = nod ●list tkn(◂square_open) this_arg
-            funcn.func_signature = nod ●signature tkn() sig_args
+            sig_args = nod ●list tkn(◂square_open) @[this_arg]
+            funcn.func_signature = nod ●signature tkn() sig_args nil
             
         funcn.func_body = traverse funcn.func_body thisify
         nod ●operation token it.member_key funcn
