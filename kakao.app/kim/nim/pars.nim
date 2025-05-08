@@ -8,6 +8,7 @@ export node
 {.experimental: "codeReordering".}
 type RHS = proc(p: Parser): Node
 type LHS = proc(p: Parser, left: Node): Node
+var EOF = tkn(◂eof)
 type Pratt = object
 
     rhs: RHS
@@ -29,6 +30,11 @@ type Parser* = ref object
     # ████████   ███████    ███  ███ █ ███     ███     
     # ███        ███   ███  ███  ███  ████     ███     
     # ███        ███   ███  ███  ███   ███     ███     
+    #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
+    # ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
+    # ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
+    # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -38,7 +44,7 @@ proc peek(this : Parser, ahead = 1) : Token =
         if ((this.pos + ahead) < this.tokens.len): 
             this.tokens[(this.pos + ahead)]
         else: 
-            tkn(◂eof)
+            EOF
 proc `$`(this : Parser) : string = 
         var s = ""
         if (this.tok != ◂eof): 
@@ -48,72 +54,67 @@ proc `$`(this : Parser) : string =
         else: 
             s = this.text
         s
-proc error(p : Parser, msg : string, token = tkn(◂eof)) : Node = 
-    styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
-    if (token.tok != ◂eof): 
-        var line = p.text.split("\n")[token.line]
-        styledEcho(fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, &"{line}")
-    elif (p.tok != ◂eof): 
-        var line = p.text.split("\n")[p.current.line]
-        styledEcho(fgWhite, styleDim, &"{p.current.line}", resetStyle, fgGreen, &"{line}")
-    p.failed = true
-    nil
-#  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
-# ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
-# ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
-# ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
-#  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
-proc consume(p : Parser) : Token = 
-    var t = p.current
-    if (p.pos < p.tokens.len): 
-        (p.pos += 1)
-    t
-proc swallow(p : Parser) = 
-    discard p.consume()
-proc swallow(p : Parser, tok : tok) = 
-    if (p.tok == tok): 
-        p.swallow()
-proc swallowError(p : Parser, tok : tok, err : string) = 
-    if (p.tok != tok): 
-        discard p.error(&"Expected {tok} to swallow, but found {p.tok} instead")
-        discard p.error(err)
-        return
-    p.swallow()
-proc swallowSameIndent(p : Parser, indent : int) : bool = 
-    if ((p.tok == ◂indent) and (p.current.str.len == indent)): 
-        p.swallow()
-        return true
-    false
-proc atIndent(p : Parser) : bool = 
-    ((p.current.col == 0) or (p.peek(-1).tok == ◂indent))
-proc atEnd(p : Parser) : bool = 
-    (p.pos >= p.tokens.len)
-proc isDedent(p : Parser, indent : int) : bool = 
-    if (p.tok == ◂indent): 
-        (p.current.str.len < indent)
-    else: 
-        (p.current.col < indent)
-proc isNextLineIndented(p : Parser, token : Token) : bool = 
-    var n = 0
-    while (p.peek(n).tok != ◂indent): 
-        (n += 1)
-        if (p.peek(n).tok == ◂eof): 
-            return false
-    var idt = if (token.tok == ◂indent): token.str.len else: token.col
-    return (p.peek(n).str.len > idt)
-proc isTokAhead(p : Parser, tokAhead : tok) : bool = 
-    var n = 0
-    var c = p.current
-    var line = c.line
-    # log "isTokAhead #{tokAhead} #{line}"
-    while (c.tok != ◂eof): 
-        if (c.line > line): 
-            return false
-        if (c.tok == tokAhead): 
+proc error(this : Parser, msg : string, token = EOF) : Node = 
+        styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
+        if (token.tok != ◂eof): 
+            var line = this.text.split("\n")[token.line]
+            styledEcho(fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, $line)
+        elif (this.tok != ◂eof): 
+            var line = this.text.split("\n")[this.current.line]
+            styledEcho(fgWhite, styleDim, &"{this.current.line}", resetStyle, fgGreen, $line)
+        this.failed = true
+        nil
+proc consume(this : Parser) : Token = 
+        var t = this.current
+        if (this.pos < this.tokens.len): 
+            (this.pos += 1)
+        t
+proc swallow(this : Parser) = 
+        discard this.consume()
+proc swallow(this : Parser, tok : tok) = 
+        if (this.tok == tok): 
+            this.swallow()
+proc swallowError(this : Parser, tok : tok, err : string) = 
+        if (this.tok != tok): 
+            discard this.error(&"Expected {tok} to swallow, but found {this.tok} instead")
+            discard this.error(err)
+            return
+        this.swallow()
+proc swallowSameIndent(this : Parser, indent : int) : bool = 
+        if ((this.tok == ◂indent) and (this.current.str.len == indent)): 
+            this.swallow()
             return true
-        (n += 1)
-        c = p.peek(n)
-    false
+        false
+proc atIndent(this : Parser) : bool = 
+        ((this.current.col == 0) or (this.peek(-1).tok == ◂indent))
+proc atEnd(this : Parser) : bool = 
+        (this.pos >= this.tokens.len)
+proc isDedent(this : Parser, indent : int) : bool = 
+        if (this.tok == ◂indent): 
+            (this.current.str.len < indent)
+        else: 
+            (this.current.col < indent)
+proc isNextLineIndented(this : Parser, token : Token) : bool = 
+        var n = 0
+        while (this.peek(n).tok != ◂indent): 
+            (n += 1)
+            if (this.peek(n).tok == ◂eof): 
+                return false
+        var idt = if (token.tok == ◂indent): token.str.len else: token.col
+        return (this.peek(n).str.len > idt)
+proc isTokAhead(this : Parser, tokAhead : tok) : bool = 
+        var n = 0
+        var c = this.current
+        var line = c.line
+        # log "isTokAhead #{tokAhead} #{line}"
+        while (c.tok != ◂eof): 
+            if (c.line > line): 
+                return false
+            if (c.tok == tokAhead): 
+                return true
+            (n += 1)
+            c = this.peek(n)
+        false
 proc firstLineToken(p : Parser) : Token = 
     var line = p.current.line
     var tpos = p.tokens.len
@@ -739,7 +740,11 @@ proc parseSignature(p : Parser) : Node =
         var arg_value : Node
         if (p.tok == ◂assign): 
             p.swallow() # =
-            arg_value = p.value()
+            (p.listless += 1)
+            (p.explicit += 1)
+            arg_value = p.expression()
+            (p.explicit -= 1)
+            (p.listless -= 1)
         p.swallow(◂comma)
         sig_args.list_values.add(nod(●arg, token, arg_type, arg_name, arg_value))
     if parens: 

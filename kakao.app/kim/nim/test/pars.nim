@@ -99,6 +99,8 @@ suite "pars":
         t("f = ◇Rndr r -> a += 1", "▪[(◂name = (◂[(◇type(Rndr) ◂name)]-> (◂name += ◂number)))]")
         t("f = ◇Rndr r tok=◂assign ->", "▪[(◂name = (◂[(◇type(Rndr) ◂name), (◂name (= ◂name))]->))]")
         t("f = ◇Typ t str=\"\" tk=◂name incr=0 ->", "▪[(◂name = (◂[(◇type(Typ) ◂name), (◂name (= ◂string)), (◂name (= ◂name)), (◂name (= ◂number))]->))]")
+        t("error: ◇string msg token=tkn ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]")
+        t("error: ◇string msg token=tkn(◂eof) ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]")
     test "func modfifier": 
         t("{.noconv.}", "▪[{.]")
         t("() -> {.noconv.}", "▪[(-> {.noconv.} )]")

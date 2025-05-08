@@ -12,6 +12,8 @@ export node
 
 type RHS = proc(p: Parser): Node
 type LHS = proc(p: Parser, left: Node): Node
+
+EOF = tkn(◂eof)
     
 type Pratt = object
     rhs         : RHS
@@ -45,7 +47,7 @@ class Parser*
         if @pos + ahead < @tokens.len
             @tokens[@pos + ahead]
         else
-            tkn(◂eof)
+            EOF
 
     # ████████   ████████   ███  ███   ███  █████████  
     # ███   ███  ███   ███  ███  ████  ███     ███     
@@ -64,97 +66,97 @@ class Parser*
             s = @text
         s
 
-error = ◇Parser p ◇string msg token=tkn(◂eof) ➜Node ->
-
-    styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
-    if token.tok != ◂eof
-        line = p.text.split("\n")[token.line]
-        styledEcho fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, &"{line}"
-    elif p.tok != ◂eof
-        line = p.text.split("\n")[p.current.line]
-        styledEcho fgWhite, styleDim, &"{p.current.line}", resetStyle, fgGreen, &"{line}"
-    p.failed = true    
-    nil
+    error: ◇string msg token=EOF ➜Node ->
     
-#  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
-# ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
-# ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
-# ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
-#  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
-
-consume = ◇Parser p ➜Token ->
-
-    t = p.current
-    if p.pos < p.tokens.len
-        p.pos += 1
-    t
-
-swallow = ◇Parser p ->
-
-    discard p.consume()
-
-swallow = ◇Parser p ◇tok tok ->
-
-    if p.tok == tok
-        p.swallow()
-        
-swallowError = ◇Parser p ◇tok tok ◇string err ->
-
-    if p.tok != tok
-        discard p.error(&"Expected {tok} to swallow, but found {p.tok} instead")
-        discard p.error(err)
-        ⮐  
-    p.swallow()
+        styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
+        if token.tok != ◂eof
+            line = @text.split("\n")[token.line]
+            styledEcho fgWhite, styleDim, "#{token.line}", resetStyle, fgGreen, $line
+        elif @tok != ◂eof
+            line = @text.split("\n")[@current.line]
+            styledEcho fgWhite, styleDim, "#{@current.line}", resetStyle, fgGreen, $line
+        @failed = true    
+        nil
+    
+    #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
+    # ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
+    # ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
+    # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
+    
+    consume: ➜Token ->
+    
+        t = @current
+        if @pos < @tokens.len
+            @pos += 1
+        t
+    
+    swallow: ->
+    
+        discard @consume()
+    
+    swallow: ◇tok tok ->
+    
+        if @tok == tok
+            @swallow()
             
-swallowSameIndent = ◇Parser p ◇int indent ➜bool ->
-
-    if p.tok == ◂indent and p.current.str.len == indent
-        p.swallow()
-        ⮐  true
-    false
+    swallowError: ◇tok tok ◇string err ->
     
-atIndent = ◇Parser p ➜bool ->  
-
-    p.current.col == 0 or p.peek(-1).tok == ◂indent
-        
-atEnd = ◇Parser p ➜bool ->  
-
-    p.pos >= p.tokens.len
-
-isDedent = ◇Parser p ◇int indent ➜bool ->  
-
-    if p.tok == ◂indent
-        p.current.str.len < indent
-    else
-        p.current.col < indent
-        
-isNextLineIndented = ◇Parser p ◇Token token ➜bool -> 
-
-    n = 0
-    while p.peek(n).tok != ◂indent
-        n += 1
-        if p.peek(n).tok == ◂eof
-            ⮐  false
-        
-    idt = if token.tok == ◂indent ➜ token.str.len ➜ token.col
-    ⮐  p.peek(n).str.len > idt
+        if @tok != tok
+            discard @error("Expected #{tok} to swallow, but found #{@tok} instead")
+            discard @error(err)
+            ⮐  
+        @swallow()
+                
+    swallowSameIndent: ◇int indent ➜bool ->
     
-isTokAhead = ◇Parser p ◇tok tokAhead ➜bool ->
-
-    n = 0
-    c = p.current
-    line = c.line
-    
-    # log "isTokAhead #{tokAhead} #{line}"
-    
-    while c.tok != ◂eof
-        if c.line > line
-            ⮐  false
-        if c.tok == tokAhead
+        if @tok == ◂indent and @current.str.len == indent
+            @swallow()
             ⮐  true
-        n += 1
-        c = p.peek n
-    false    
+        false
+    
+    atIndent: ➜bool ->  
+    
+        @current.col == 0 or @peek(-1).tok == ◂indent
+            
+    atEnd: ➜bool ->  
+    
+        @pos >= @tokens.len
+    
+    isDedent: ◇int indent ➜bool ->  
+    
+        if @tok == ◂indent
+            @current.str.len < indent
+        else
+            @current.col < indent
+            
+    isNextLineIndented: ◇Token token ➜bool -> 
+    
+        n = 0
+        while @peek(n).tok != ◂indent
+            n += 1
+            if @peek(n).tok == ◂eof
+                ⮐  false
+            
+        idt = if token.tok == ◂indent ➜ token.str.len ➜ token.col
+        ⮐  @peek(n).str.len > idt
+    
+    isTokAhead: ◇tok tokAhead ➜bool ->
+    
+        n = 0
+        c = @current
+        line = c.line
+        
+        # log "isTokAhead #{tokAhead} #{line}"
+        
+        while c.tok != ◂eof
+            if c.line > line
+                ⮐  false
+            if c.tok == tokAhead
+                ⮐  true
+            n += 1
+            c = @peek n
+        false    
 
 firstLineToken = ◇Parser p ➜Token ->
 
@@ -997,7 +999,11 @@ parseSignature = ◇Parser p ➜Node ->
 
         if p.tok == ◂assign
             p.swallow() # =
-            arg_value = p.value()
+            p.listless += 1
+            p.explicit += 1
+            arg_value = p.expression()
+            p.explicit -= 1
+            p.listless -= 1
             
         p.swallow ◂comma
         

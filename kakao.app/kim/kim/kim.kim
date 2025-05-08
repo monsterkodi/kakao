@@ -127,7 +127,8 @@ compile = ◇string file outDir="bin" ➜bool ->
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
 
     profileScope 'comp'
-    cmd = "nim c --outDir=#{outdir} --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
+    cmd = "nim c -d:danger --outDir=#{outdir} --mm:arc --colors:on --warning:User:off #{file}"
+    # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     (output exitCode) = execCmdEx(cmd)
         
     if exitCode != 0

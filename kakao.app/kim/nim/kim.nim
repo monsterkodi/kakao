@@ -82,7 +82,8 @@ proc logFile(f : string, prefix = "") =
 proc compile(file : string, outDir = "bin") : bool = 
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
     profileScope("comp")
-    var cmd = &"nim c --outDir={outdir} --colors:on --stackTrace:on --lineTrace:on --warning:User:off {file}"
+    var cmd = &"nim c -d:danger --outDir={outdir} --mm:arc --colors:on --warning:User:off {file}"
+    # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     var (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
         styledEcho(fgRed, "✘ ", $cmd)
