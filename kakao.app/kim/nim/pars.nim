@@ -806,6 +806,16 @@ proc rPreOp(p : Parser) : Node =
     var token = p.consume()
     var right = p.expression(token)
     nod(●preOp, token, right)
+proc rDollar(p : Parser) : Node = 
+    if (p.current.str.len > 1): 
+        var token = p.consume()
+        token.tok = ◂name
+        return nod(●literal, token)
+    if (p.peek(1).tok in {◂assign, ◂colon}): 
+        var token = p.consume()
+        token.tok = ◂name
+        return nod(●literal, token)
+    p.rPreOp()
 proc lAssign(p : Parser, left : Node) : Node = 
     var token = p.consume()
     var right = p.funcOrExpression(token)
@@ -960,7 +970,8 @@ proc setup(p : Parser) =
     p.pratt(◂match, lOperation, nil, 40)
     p.pratt(◂doubledot, lRange, nil, 40)
     p.pratt(◂tripledot, lRange, nil, 40)
-    p.pratt(◂ampersand, lOperation, nil, 40)
+    p.pratt(◂dollar, nil, rDollar, 41)
+    p.pratt(◂ampersand, lOperation, nil, 42)
     p.pratt(◂plus, lOperation, nil, 50)
     p.pratt(◂minus, lOperation, rPreOp, 50)
     p.pratt(◂multiply, lOperation, nil, 60)

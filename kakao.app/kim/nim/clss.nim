@@ -21,6 +21,8 @@ proc traverse(n : Node, iter : NodeIt) : Node =
         of ●operation: 
             n.operand_left = traverse(n.operand_left, iter)
             n.operand_right = traverse(n.operand_right, iter)
+        of ●preOp, ●postOp: 
+            n.operand = traverse(n.operand, iter)
         of ●call: 
             n.callee = traverse(n.callee, iter)
             for i, e in n.call_args: 
@@ -74,13 +76,14 @@ proc methodify(clss : Node) : seq[Node] =
     if (className[^1] == '*'): 
         className = className[0..^2]
     proc thisify(n : Node) : Node = 
-        if ((n.token.tok == ◂name) and (n.token.str[0] == '@')): 
-            if (n.token.str.len > 1): 
-                var owner = nod(●literal, tkn(◂name, "this"))
-                var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
-                return nod(●propertyAccess, tkn(◂dot, ".", n.token.line, n.token.col), owner, property)
-            else: 
-                n.token.str = "this"
+        if (n.token.tok == ◂name): 
+            if (n.token.str[0] == '@'): 
+                if (n.token.str.len > 1): 
+                    var owner = nod(●literal, tkn(◂name, "this"))
+                    var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
+                    return nod(●propertyAccess, tkn(◂dot, ".", n.token.line, n.token.col), owner, property)
+                else: 
+                    n.token.str = "this"
         n
     proc convert(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)

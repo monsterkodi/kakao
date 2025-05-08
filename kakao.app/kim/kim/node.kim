@@ -235,7 +235,7 @@ class Node*
         if @ == nil
             ⮐  "NIL"
             
-        s = $this.token.tok
+        s = $ @token.tok
         
         switch @kind
             ●string

@@ -46,11 +46,13 @@ proc inc(this : A, a1 : int) : int =
 class A
     m : int
     fun: -> 
+        log $@m
         @m = 1
 """, """
 type A = ref object
     m: int
 proc fun(this : A) = 
+        echo($this.m)
         this.m = 1""")
         t("""
 class A

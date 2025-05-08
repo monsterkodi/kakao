@@ -72,6 +72,7 @@ type tok* = enum
     ◂increment = "++"
     ◂decrement = "--"
     ◂ampersand = "&"
+    ◂dollar = "$"
     ◂divide = "/"
     ◂multiply = "*"
     ◂assign = "="

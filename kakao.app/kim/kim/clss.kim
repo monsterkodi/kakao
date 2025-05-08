@@ -26,6 +26,9 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
         ●operation
             n.operand_left  = traverse n.operand_left  iter
             n.operand_right = traverse n.operand_right iter
+        ●preOp
+        ●postOp
+            n.operand = traverse n.operand iter
         ●call
             n.callee = traverse n.callee    iter
             for i e in n.call_args
@@ -84,14 +87,15 @@ methodify = ◇Node clss ➜ seq[Node] ->
     if className[^1] == '*'
         className = className[0..^2]
     
-    thisify = ◇Node n ➜ Node -> 
-        if n.token.tok == ◂name and n.token.str[0] == '@' 
-            if n.token.str.len > 1
-                owner    = nod ●literal tkn(◂name "this")
-                property = nod ●literal tkn(◂name n.token.str[1..^1])
-                ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
-            else
-                n.token.str = "this"
+    thisify = ◇Node n ➜ Node ->
+        if n.token.tok == ◂name
+            if n.token.str[0] == '@' 
+                if n.token.str.len > 1
+                    owner    = nod ●literal tkn(◂name "this")
+                    property = nod ●literal tkn(◂name n.token.str[1..^1])
+                    ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
+                else
+                    n.token.str = "this"
         n
     
     convert = ◇Node it ➜ Node -> 

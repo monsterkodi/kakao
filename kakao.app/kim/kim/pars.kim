@@ -57,13 +57,13 @@ class Parser*
     
         s = ""
         if @tok != ◂eof
-            s = &"▪▪▪ {this.current} {this.pos}"
+            s = "▪▪▪ #{@current} #{@pos}"
             l = @text.split("\n")[@current.line]
-            s &= &"\n{this.current.line}: {l}"
+            s &= "\n#{@current.line}: #{l}"
         else
             s = @text
         s
-                    
+
 error = ◇Parser p ◇string msg token=tkn(◂eof) ➜Node ->
 
     styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
@@ -1066,7 +1066,6 @@ rDiscard = ◇Parser p ➜Node ->
 #  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
 
 lOperation = ◇Parser p ◇Node left ➜Node ->
-
     token = p.consume()
     right = p.expression(token)
     nod ●operation token left right
@@ -1087,9 +1086,21 @@ lPostOp = ◇Parser p ◇Node left ➜Node ->
 
 rPreOp = ◇Parser p ➜Node ->
 
-    token = p.consume()    
+    token = p.consume()
     right = p.expression(token)
     nod ●preOp token right
+    
+rDollar = ◇Parser p ➜Node ->
+
+    if p.current.str.len > 1
+        token = p.consume()
+        token.tok = ◂name
+        ⮐  nod ●literal token
+    if p.peek(1).tok in {◂assign, ◂colon}
+        token = p.consume()
+        token.tok = ◂name
+        ⮐  nod ●literal token
+    p.rPreOp()
 
 lAssign = ◇Parser p ◇Node left ➜Node ->
 
@@ -1285,6 +1296,7 @@ setup = ◇Parser p ->
     p.pratt ◂is                lOperation        nil            32
     p.pratt ◂in                lOperation        nil            33
     p.pratt ◂notin             lOperation        nil            34
+    
 
     p.pratt ◂equal             lOperation        nil            40
     p.pratt ◂not_equal         lOperation        nil            40
@@ -1296,8 +1308,10 @@ setup = ◇Parser p ->
     
     p.pratt ◂doubledot         lRange            nil            40
     p.pratt ◂tripledot         lRange            nil            40
-    p.pratt ◂ampersand         lOperation        nil            40
-                                                   
+    
+    p.pratt ◂dollar            nil               rDollar        41
+    p.pratt ◂ampersand         lOperation        nil            42
+    
     p.pratt ◂plus              lOperation        nil            50
     p.pratt ◂minus             lOperation        rPreOp         50
                                                    
