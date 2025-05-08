@@ -204,6 +204,16 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.quote_body = args[0]
         of ●comment: 
             n.comment_content = args[0]
+        of ●for: 
+            n.for_value = args[0]
+            n.for_range = args[1]
+            n.for_body = args[2]
+        of ●while: 
+            n.while_cond = args[0]
+            n.while_body = args[1]
+        of ●condThen: 
+            n.condition = args[0]
+            n.then_branch = args[1]
         of ●return: 
             n.return_value = args[0]
         of ●discard: 
@@ -769,7 +779,7 @@ proc rIf(p : Parser) : Node =
         p.swallow(◂indent) # block indentation
     var condition = p.expression() # initial condition
     var then_branch = p.thenBlock()
-    condThens.add(Node(token: condition.token, kind: ●condThen, condition: condition, then_branch: then_branch))
+    condThens.add(nod(●condThen, condition.token, condition, then_branch))
     var outdent = false
     while (p.tok in {◂elif, ◂indent}): 
         if (p.tok == ◂indent): 
@@ -793,7 +803,7 @@ proc rIf(p : Parser) : Node =
         condition = p.expression()
         p.swallow(◂comment)
         then_branch = p.thenBlock()
-        condThens.add(Node(token: condition.token, kind: ●condThen, condition: condition, then_branch: then_branch))
+        condThens.add(nod(●condThen, condition.token, condition, then_branch))
     var else_branch : Node
     if not outdent: 
         p.swallow(◂indent)
@@ -811,7 +821,7 @@ proc lTailIf(p : Parser, left : Node) : Node =
     if (left.token.line != p.current.line): return
     var token = p.consume()
     var condition = p.expression()
-    var condThen = Node(token: condition.token, kind: ●condThen, condition: condition, then_branch: left)
+    var condThen = nod(●condThen, condition.token, condition, left)
     Node(token: token, kind: ●if, cond_thens: @[condThen])
 # ████████   ███████   ████████ 
 # ███       ███   ███  ███   ███
@@ -824,9 +834,9 @@ proc rFor(p : Parser) : Node =
     p.swallowError(◂in, "Expected 'in' after for value")
     var for_range = p.expression()
     var for_body = p.thenBlock()
-    Node(token: token, kind: ●for, for_value: for_value, for_range: for_range, for_body: for_body)
+    nod(●for, token, for_value, for_range, for_body)
 proc rWhile(p : Parser) : Node = 
-    Node(token: p.consume(), kind: ●while, while_cond: p.expression(), while_body: p.thenBlock())
+    nod(●while, p.consume(), p.expression(), p.thenBlock())
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
 # ███████   █████████  ███     ███     ███       █████████
@@ -1041,7 +1051,7 @@ proc lFunc(p : Parser, left : Node) : Node =
         if (left.operand_left.token.col == 0): 
             var left = left
             var argtoken = tkn(◂val_type, left.operand_right.token.line, left.operand_right.token.col)
-            left.operand_right = p.lFunc(Node(token: argtoken, kind: ●arg, arg_name: left.operand_right))
+            left.operand_right = p.lFunc(nod(●arg, argtoken, nil, left.operand_right, nil))
             return left
         var vartoken = tkn(◂val_type, left.operand_left.token.line, left.operand_left.token.col)
         var varNode = nod(●arg, vartoken, nil, left.operand_left, left.operand_right)
@@ -1053,10 +1063,10 @@ proc lFunc(p : Parser, left : Node) : Node =
         for i, a in sig_args.list_values: 
             if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
                 var argtoken = tkn(◂val_type, a.operand_left.token.line, a.operand_left.token.col)
-                sig_args.list_values[i] = Node(token: argtoken, kind: ●arg, arg_name: a.operand_left, arg_value: a.operand_right)
+                sig_args.list_values[i] = nod(●arg, argtoken, nil, a.operand_left, a.operand_right)
             elif ((a.kind == ●literal) and (a.token.tok == ◂name)): 
                 var argtoken = tkn(◂val_type, a.token.line, a.token.col)
-                sig_args.list_values[i] = Node(token: argtoken, kind: ●arg, arg_name: a)
+                sig_args.list_values[i] = nod(●arg, argtoken, nil, a, nil)
         func_signature = nod(●signature, left.token, sig_args, nil)
     elif (left.kind == ●arg): 
         # log "lfunc arg"
