@@ -41,6 +41,7 @@ proc fun(this : A) =
 proc inc(this : A, a1 : int) : int = 
         (a1 + 1)""")
     test "this vars": 
+        t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)")
         t("""
 class A
     m : int

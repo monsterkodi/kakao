@@ -124,8 +124,10 @@ logFile = ◇string f prefix="" ->
 
 compile = ◇string file outDir="bin" ➜bool ->
 
+    # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
+
     profileScope 'comp'
-    cmd = "nim c --colors:on --outDir=#{outdir} --stackTrace:on --lineTrace:on --warning:User:off #{file}"
+    cmd = "nim c --outDir=#{outdir} --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     (output exitCode) = execCmdEx(cmd)
         
     if exitCode != 0

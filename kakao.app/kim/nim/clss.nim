@@ -47,6 +47,11 @@ proc traverse(n : Node, iter : NodeIt) : Node =
             n.array_index = traverse(n.array_index, iter)
         of ●return: 
             n.return_value = traverse(n.return_value, iter)
+        of ●while: 
+            n.while_cond = traverse(n.while_cond, iter)
+            n.while_body = traverse(n.while_body, iter)
+        of ●func: 
+            n.func_body = traverse(n.func_body, iter)
         else: 
             echo(&"clss.traverse -- unhandled {n.kind}")
     n

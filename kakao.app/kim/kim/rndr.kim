@@ -12,479 +12,478 @@ class Rndr
     s               : string
     annotateVarArg  : bool
 
-$* = ◇Rndr r ➜string ->
-    s = ""
-    s &= "▸"
-    s &= r.code
-    s &= "◂"
-    s
-
-add = ◇Rndr r ◇string text -> r.s &= text
-spc = ◇Rndr r              -> r.s &= " "
-tok = ◇Rndr r ◇Node n      -> r.s &= n.token.str
-rnd = ◇Rndr r ◇Node n      ->
-rnd = ◇Rndr r ◇seq[Node] nodes ->
-
-    for i,n in nodes
-        r.rnd n
-        if i<nodes.len-1
-            r.add ", "
-
-▸block = ◇Rndr r ◇Node n -> 
-
-    idt ◇ string
-    if n.token.tok == ◂indent
-        idt = n.token.str
-        r.add "\n" & idt
-        
-    for i,exp in n.expressions
-        r.rnd exp
-        if i < n.expressions.len-1
-            if n.expressions[i+1].token.line > exp.token.line
-                r.add "\n" & idt
-            else
-                r.add " "
-
-sigBody = ◇Rndr r ◇Node n ->
-
-    r.annotateVarArg = true
-    r.rnd n.func_signature
-    r.annotateVarArg = false
+    $*: ➜string ->
+        s = ""
+        s &= "▸"
+        s &= @code
+        s &= "◂"
+        s
     
-    if n.func_mod
-        r.add " "
-        r.tok n.func_mod
-        
-    if n.func_body
-        r.add " ="
-        r.add " "
-        r.rnd n.func_body
-
-▸func = ◇Rndr r ◇Node n -> 
+    add: ◇string text -> @s &= text
+    spc:              -> @s &= " "
+    tok: ◇Node n      -> @s &= n.token.str
+    rnd: ◇Node n      ->
+    rnd: ◇seq[Node] nodes ->
+        for i,n in nodes
+            @rnd n
+            if i<nodes.len-1
+                @add ", "
+                                
+    ▸block: ◇Node n -> 
     
-    r.add "proc "
-    r.sigBody n
-
-▸proc = ◇Rndr r ◇Node n -> 
-
-    f = n.operand_right
-    
-    r.add "proc "
-    
-    if n.operand_left.token.str[0] == '$'
-        r.add "`$`" & n.operand_left.token.str[1..^1]
-    else
-        r.rnd n.operand_left
-    
-    r.sigBody n.operand_right    
-        
-▸operation = ◇Rndr r ◇Node n -> 
-
-    if n == nil or n.operand_left == nil or n.operand_right == nil
-        log &"DAFUK? {n} {n.token}"
-        ⮐  
-
-    if n.token.tok == ◂assign 
-        if n.operand_right.token.tok == ◂func
-            r.▸proc n
-            ⮐  
-
-    if n.token.tok notin {◂assign, ◂ampersand}
-        r.add "("
-    if n.token.tok == ◂assign and n.operand_left.kind == ●list
-        r.add "("
-    r.rnd n.operand_left
-    if n.token.tok == ◂assign and n.operand_left.kind == ●list
-        r.add ")"
-    r.spc()
-    switch n.token.tok
-        ◂and ➜ r.add 'and'
-        ◂or  ➜ r.add 'or'
-             ➜ r.tok n
-    r.spc()
-    if n.token.tok == ◂assign and n.operand_right.kind == ●list
-        r.add "("
-    r.rnd n.operand_right
-    if n.token.tok == ◂assign and n.operand_right.kind == ●list
-        r.add ")"
-    if n.token.tok notin {◂assign, ◂ampersand}
-        r.add ")"
-        
-▸let = ◇Rndr r ◇Node n -> 
-
-    r.tok n
-    r.add " "
-    r.rnd n.let_expr
-
-▸preOp = ◇Rndr r ◇Node n -> 
-
-    if n.token.tok == ◂not
-        r.add "not "
-    else
-        r.tok n
-        
-    r.rnd n.operand
-    
-▸postOp = ◇Rndr r ◇Node n -> 
-
-    r.rnd n.operand
-    r.tok n
-    
-▸propertyAccess = ◇Rndr r ◇Node n -> 
-
-    r.rnd n.owner
-    r.tok n
-    r.rnd n.property
-
-▸arrayAccess = ◇Rndr r ◇Node n -> 
-
-    r.rnd n.array_owner
-    r.add "["
-    r.rnd n.array_index
-    r.add "]"
-    
-▸signature = ◇Rndr r ◇Node n ->
-
-    r.add "("
-    r.annotateVarArg = true
-    r.rnd n.sig_args
-    r.annotateVarArg = false
-    r.add ")"
-    if n.sig_type
-        r.add " : "
-        r.rnd n.sig_type
+        idt ◇ string
+        if n.token.tok == ◂indent
+            idt = n.token.str
+            @add "\n" & idt
             
-▸var = ◇Rndr r ◇Node n ->
+        for i,exp in n.expressions
+            @rnd exp
+            if i < n.expressions.len-1
+                if n.expressions[i+1].token.line > exp.token.line
+                    @add "\n" & idt
+                else
+                    @add " "
 
-    if n.var_name.kind == ●list
-        r.add "("
-    r.rnd n.var_name
-    if n.var_name.kind == ●list
-        r.add ")"
-    if n.var_type
-        r.add " : "
-        r.rnd n.var_type
-    if n.var_value
-        r.add " = "
-        r.rnd n.var_value
-
-▸arg = ◇Rndr r ◇Node n ->
-
-    r.rnd n.arg_name
-    if n.arg_type
-        r.add " : "
-        if n.token.tok == ◂var_type and r.annotateVarArg
-            r.add "var "
-        r.rnd n.arg_type
-    if n.arg_value
-        r.add " = "
-        r.rnd n.arg_value
-
-▸string = ◇Rndr r ◇Node n -> 
-
-    delimiter = n.token.str
+    sigBody: ◇Node n ->
     
-    if delimiter == "'" and n.string_content.token.str.len > 1
-        delimiter = "\""
-    
-    if n.string_stripols.len > 0
-        r.add "&"
-    elif n.string_prefix
-        r.tok n.string_prefix
+        @annotateVarArg = true
+        @rnd n.func_signature
+        @annotateVarArg = false
         
-    r.add delimiter
-    
-    sct = n.string_content.token.str
+        if n.func_mod
+            @add " "
+            @tok n.func_mod
+            
+        if n.func_body
+            @add " ="
+            @add " "
+            @rnd n.func_body
 
-    mill = high(int)
-    if delimiter == "\"\"\""
-        lines = n.string_content.token.str.split "\n"
-        if lines.len > 1
-            ill = indentLen(lines[1..^1])
-            mill = min(mill, ill)
+    ▸func: ◇Node n -> 
+        
+        @add "proc "
+        @sigBody n
+    
+    ▸proc: ◇Node n -> 
+    
+        f = n.operand_right
+        
+        @add "proc "
+        
+        if n.operand_left.token.str[0] == '$'
+            @add "`$`" & n.operand_left.token.str[1..^1]
+        else
+            @rnd n.operand_left
+        
+        @sigBody n.operand_right    
+        
+    ▸operation: ◇Node n -> 
+    
+        if n == nil or n.operand_left == nil or n.operand_right == nil
+            log &"DAFUK? {n} {n.token}"
+            ⮐  
+    
+        if n.token.tok == ◂assign 
+            if n.operand_right.token.tok == ◂func
+                @▸proc n
+                ⮐  
+    
+        if n.token.tok notin {◂assign, ◂ampersand}
+            @add "("
+        if n.token.tok == ◂assign and n.operand_left.kind == ●list
+            @add "("
+        @rnd n.operand_left
+        if n.token.tok == ◂assign and n.operand_left.kind == ●list
+            @add ")"
+        @spc()
+        switch n.token.tok
+            ◂and ➜ @add 'and'
+            ◂or  ➜ @add 'or'
+                 ➜ @tok n
+        @spc()
+        if n.token.tok == ◂assign and n.operand_right.kind == ●list
+            @add "("
+        @rnd n.operand_right
+        if n.token.tok == ◂assign and n.operand_right.kind == ●list
+            @add ")"
+        if n.token.tok notin {◂assign, ◂ampersand}
+            @add ")"
+        
+    ▸let: ◇Node n -> 
+    
+        @tok n
+        @add " "
+        @rnd n.let_expr
+    
+    ▸preOp: ◇Node n -> 
+    
+        if n.token.tok == ◂not
+            @add "not "
+        else
+            @tok n
+            
+        @rnd n.operand
+        
+    ▸postOp: ◇Node n -> 
+    
+        @rnd n.operand
+        @tok n
+        
+    ▸propertyAccess: ◇Node n -> 
+    
+        @rnd n.owner
+        @tok n
+        @rnd n.property
+    
+    ▸arrayAccess: ◇Node n -> 
+    
+        @rnd n.array_owner
+        @add "["
+        @rnd n.array_index
+        @add "]"
+        
+    ▸signature: ◇Node n ->
+    
+        @add "("
+        @annotateVarArg = true
+        @rnd n.sig_args
+        @annotateVarArg = false
+        @add ")"
+        if n.sig_type
+            @add " : "
+            @rnd n.sig_type
                 
-        for stripol in n.string_stripols
-            if stripol.stripol_content
-                lines = stripol.stripol_content.token.str.split "\n"
-                if lines.len > 1
-                    ill = indentLen(lines[1..^1])
-                    mill = min(mill, ill)
+    ▸var: ◇Node n ->
+    
+        if n.var_name.kind == ●list
+            @add "("
+        @rnd n.var_name
+        if n.var_name.kind == ●list
+            @add ")"
+        if n.var_type
+            @add " : "
+            @rnd n.var_type
+        if n.var_value
+            @add " = "
+            @rnd n.var_value
+    
+    ▸arg: ◇Node n ->
+    
+        @rnd n.arg_name
+        if n.arg_type
+            @add " : "
+            if n.token.tok == ◂var_type and @annotateVarArg
+                @add "var "
+            @rnd n.arg_type
+        if n.arg_value
+            @add " = "
+            @rnd n.arg_value
+    
+    ▸string: ◇Node n -> 
+    
+        delimiter = n.token.str
         
-    demill = ◇Node n -> 
-        if mill == 0
-            r.tok n
-        else
-            lines = n.token.str.split "\n"
-            for i in 1...lines.len
-                lines[i] = lines[i][mill..^1]
-            r.add lines.join("\n")
+        if delimiter == "'" and n.string_content.token.str.len > 1
+            delimiter = "\""
         
-    demill n.string_content
-    for stripol in n.string_stripols
-        r.add "{"
-        r.rnd stripol.stripol_xprssns
-        r.add "}"
-        if stripol.stripol_content != nil
-            demill stripol.stripol_content
-    
-    r.add delimiter
-    
-▸use = ◇Rndr r ◇Node n -> 
-
-    split = n.use_module.token.str.split " "
-    while split.len > 1
-        r.add &"import {split[0]}\n" 
-        split = split.shift
-    
-    r.add "import "
-    r.add split[0]
-    if n.use_kind != nil and n.use_kind.token.str == '▪'
-        r.add "/["
-        r.rnd n.use_items
-        r.add "]"
-    
-▸comment = ◇Rndr r ◇Node n -> 
-
-    if n.token.str == "###"
-        r.add "#["
-    else
-        r.tok n
+        if n.string_stripols.len > 0
+            @add "&"
+        elif n.string_prefix
+            @tok n.string_prefix
+            
+        @add delimiter
         
-    r.tok n.comment_content
+        sct = n.string_content.token.str
     
-    if n.token.str == "###"
-        r.add "]#"
-    
-▸call = ◇Rndr r ◇Node n ->
-
-    if n.callee.token.str == "log"
-        r.add "echo"
-    else
-        r.rnd n.callee
-        
-    if n.callee.token.str != "export"
-        r.add "("
-    else
-        r.add " "
-        
-    r.rnd n.call_args
-    
-    if n.callee.token.str != "export"
-        r.add ")"
-        
-▸if = ◇Rndr r ◇Node n ->
-
-    idt = ' '.repeat n.token.col
-    line = n.token.line
-    
-    r.tok n
-    r.add " "
-    
-    for i condThen in n.cond_thens
-        if i > 0
-            if condThen.token.line > line
-                r.add "\n" & idt & "elif "
+        mill = high(int)
+        if delimiter == "\"\"\""
+            lines = n.string_content.token.str.split "\n"
+            if lines.len > 1
+                ill = indentLen(lines[1..^1])
+                mill = min(mill, ill)
+                    
+            for stripol in n.string_stripols
+                if stripol.stripol_content
+                    lines = stripol.stripol_content.token.str.split "\n"
+                    if lines.len > 1
+                        ill = indentLen(lines[1..^1])
+                        mill = min(mill, ill)
+            
+        demill = ◇Node n -> 
+            if mill == 0
+                @tok n
             else
-                r.add " elif "
-        r.rnd condThen.condition
-        r.add ": "
-        r.rnd condThen.then_branch
+                lines = n.token.str.split "\n"
+                for i in 1...lines.len
+                    lines[i] = lines[i][mill..^1]
+                @add lines.join("\n")
+            
+        demill n.string_content
+        for stripol in n.string_stripols
+            @add "{"
+            @rnd stripol.stripol_xprssns
+            @add "}"
+            if stripol.stripol_content != nil
+                demill stripol.stripol_content
         
-    if n.else_branch   
-        if n.else_branch.token.line > line
-            r.add "\n" & idt & "else: "
+        @add delimiter
+        
+    ▸use: ◇Node n -> 
+    
+        split = n.use_module.token.str.split " "
+        while split.len > 1
+            @add &"import {split[0]}\n" 
+            split = split.shift
+        
+        @add "import "
+        @add split[0]
+        if n.use_kind != nil and n.use_kind.token.str == '▪'
+            @add "/["
+            @rnd n.use_items
+            @add "]"
+        
+    ▸comment: ◇Node n -> 
+    
+        if n.token.str == "###"
+            @add "#["
         else
-            r.add " else: "
-        r.rnd n.else_branch
+            @tok n
+            
+        @tok n.comment_content
         
-▸for = ◇Rndr r ◇Node n ->
-
-    r.add "for "
-    if n.for_value.kind == ●list
-        for i,v in n.for_value.list_values
-            r.rnd v
-            if i < n.for_value.list_values.len-1
-                r.add ", "
-    else
-        r.rnd n.for_value
-    r.add " in "
-    r.rnd n.for_range
-    r.add ": "
-    r.rnd n.for_body
-    
-▸while = ◇Rndr r ◇Node n ->
-
-   r.add "while "
-   r.rnd n.while_cond
-   r.add ": "
-   r.rnd n.while_body
-    
-▸list = ◇Rndr r ◇Node n ->
-
-    for i,item in n.list_values
-        r.rnd item
-        if i < n.list_values.len-1
-            r.add ", "
-
-▸curly = ◇Rndr r ◇Node n ->
-
-    r.add "{"
-    for i,item in n.list_values
-        r.rnd item
-        if i < n.list_values.len-1
-            r.add ", "
-    r.add "}"
-
-▸squarely = ◇Rndr r ◇Node n ->
-
-    r.add "@["
-    for i,item in n.list_values
-        r.rnd item
-        if i < n.list_values.len-1
-            r.add ", "
-    r.add "]"
-    
-▸range = ◇Rndr r ◇Node n -> 
-
-    r.rnd n.range_start
-    if n.token.str == "..."
-        r.add "..<"
-    else
-        r.tok n
-    r.rnd n.range_end
+        if n.token.str == "###"
+            @add "]#"
         
-▸return = ◇Rndr r ◇Node n ->
-
-    r.add "return"
-    if n.return_value
-        r.spc()
-        r.rnd n.return_value
-
-▸discard = ◇Rndr r ◇Node n ->
-
-    r.add "discard"
-    if n.discard_value
-        r.spc()
-        r.rnd n.discard_value
-
-▸quote = ◇Rndr r ◇Node n ->
-
-    r.add "quote do: "
-    r.rnd n.quote_body
-     
-▸switch = ◇Rndr r ◇Node n ->
-
-    idt = ' '.repeat n.token.col
+    ▸call: ◇Node n ->
     
-    r.add "case "
-    r.rnd(n.switch_value)
-    r.add ":"
-    
-    cdt = ' '.repeat n.switch_cases[0].token.col
-    
-    for i,caseNode in n.switch_cases
-        r.add "\n" & cdt
-        r.add "of "
-        for j,whenNode in caseNode.case_when
-            if j > 0
-                r.add ", "
-            r.rnd(whenNode)
-        r.add ": "
-        r.rnd(caseNode.case_then)
-    
-    if n.switch_default
-        r.add "\n" & cdt
-        r.add "else: "
-        r.rnd(n.switch_default)
+        if n.callee.token.str == "log"
+            @add "echo"
+        else
+            @rnd n.callee
+            
+        if n.callee.token.str != "export"
+            @add "("
+        else
+            @add " "
+            
+        @rnd n.call_args
         
-▸enum = ◇Rndr r ◇Node n ->
-
-    r.add "type "
-    r.rnd n.enum_name
-    r.add " = enum"
-    r.rnd n.enum_body
+        if n.callee.token.str != "export"
+            @add ")"
+            
+    ▸if: ◇Node n ->
     
-▸class = ◇Rndr r ◇Node n ->
-
-    r.add "type "
-    r.rnd n.class_name
-    r.add " = ref object"
-    r.rnd n.class_body
-
-▸member = ◇Rndr r ◇Node n ->
-
-    r.rnd n.member_key
-    r.add ": "
-    r.rnd n.member_value
-
-▸testCase = ◇Rndr r ◇Node n ->
-
-    r.add "check "
-    r.rnd n.test_value
-    r.add " == "
-    r.rnd n.test_expected
-
-▸testSuite = ◇Rndr r ◇Node n ->
-
-    if n.kind == ●testSuite
-        r.add "suite"
-    else
-        r.add "test"
-    r.add " \"" 
-    r.add n.token.str[4..^1] 
-    r.add "\": "
-    r.rnd n.test_block
-
-rnd = ◇Rndr r ◇Node n ->
-
-    ⮐  if n == nil
+        idt = ' '.repeat n.token.col
+        line = n.token.line
+        
+        @tok n
+        @add " "
+        
+        for i condThen in n.cond_thens
+            if i > 0
+                if condThen.token.line > line
+                    @add "\n" & idt & "elif "
+                else
+                    @add " elif "
+            @rnd condThen.condition
+            @add ": "
+            @rnd condThen.then_branch
+            
+        if n.else_branch   
+            if n.else_branch.token.line > line
+                @add "\n" & idt & "else: "
+            else
+                @add " else: "
+            @rnd n.else_branch
+            
+    ▸for: ◇Node n ->
     
-    switch n.kind
+        @add "for "
+        if n.for_value.kind == ●list
+            for i,v in n.for_value.list_values
+                @rnd v
+                if i < n.for_value.list_values.len-1
+                    @add ", "
+        else
+            @rnd n.for_value
+        @add " in "
+        @rnd n.for_range
+        @add ": "
+        @rnd n.for_body
+        
+    ▸while: ◇Node n ->
     
-        ●block          ➜ r.▸block          n
-        ●if             ➜ r.▸if             n
-        ●switch         ➜ r.▸switch         n
-        ●func           ➜ r.▸func           n
-        ●signature      ➜ r.▸signature      n
-        ●call           ➜ r.▸call           n
-        ●operation      ➜ r.▸operation      n
-        ●postOp         ➜ r.▸postOp         n
-        ●preOp          ➜ r.▸preOp          n
-        ●for            ➜ r.▸for            n
-        ●while          ➜ r.▸while          n
-        ●list           ➜ r.▸list           n
-        ●curly          ➜ r.▸curly          n
-        ●squarely       ➜ r.▸squarely       n
-        ●range          ➜ r.▸range          n
-        ●string         ➜ r.▸string         n
-        ●comment        ➜ r.▸comment        n
-        ●use            ➜ r.▸use            n
-        ●propertyAccess ➜ r.▸propertyAccess n
-        ●arrayAccess    ➜ r.▸arrayAccess    n
-        ●var            ➜ r.▸var            n
-        ●arg            ➜ r.▸arg            n
-        ●let            ➜ r.▸let            n
-        ●return         ➜ r.▸return         n
-        ●discard        ➜ r.▸discard        n
-        ●enum           ➜ r.▸enum           n
-        ●class          ➜ r.▸class          n
-        ●quote          ➜ r.▸quote          n
-        ●member         ➜ r.▸member         n
-        ●testCase       ➜ r.▸testCase       n
-        ●testSuite 
-        ●testSection    ➜ r.▸testSuite      n
-        ●literal 
-        ●keyword 
-        ●type           
-        ●typeDef 
-        ●import 
-        ●proc 
-        ●macro 
-        ●template 
-        ●converter      ➜ r.tok             n
-                        ➜ 
-                          log "unhandled #{n} #{n.kind}"
-                          r.tok n
+       @add "while "
+       @rnd n.while_cond
+       @add ": "
+       @rnd n.while_body
+        
+    ▸list: ◇Node n ->
+    
+        for i,item in n.list_values
+            @rnd item
+            if i < n.list_values.len-1
+                @add ", "
+    
+    ▸curly: ◇Node n ->
+    
+        @add "{"
+        for i,item in n.list_values
+            @rnd item
+            if i < n.list_values.len-1
+                @add ", "
+        @add "}"
+    
+    ▸squarely: ◇Node n ->
+    
+        @add "@["
+        for i,item in n.list_values
+            @rnd item
+            if i < n.list_values.len-1
+                @add ", "
+        @add "]"
+        
+    ▸range: ◇Node n -> 
+    
+        @rnd n.range_start
+        if n.token.str == "..."
+            @add "..<"
+        else
+            @tok n
+        @rnd n.range_end
+            
+    ▸return: ◇Node n ->
+    
+        @add "return"
+        if n.return_value
+            @spc()
+            @rnd n.return_value
+    
+    ▸discard: ◇Node n ->
+    
+        @add "discard"
+        if n.discard_value
+            @spc()
+            @rnd n.discard_value
+    
+    ▸quote: ◇Node n ->
+    
+        @add "quote do: "
+        @rnd n.quote_body
+         
+    ▸switch: ◇Node n ->
+    
+        idt = ' '.repeat n.token.col
+        
+        @add "case "
+        @rnd(n.switch_value)
+        @add ":"
+        
+        cdt = ' '.repeat n.switch_cases[0].token.col
+        
+        for i,caseNode in n.switch_cases
+            @add "\n" & cdt
+            @add "of "
+            for j,whenNode in caseNode.case_when
+                if j > 0
+                    @add ", "
+                @rnd(whenNode)
+            @add ": "
+            @rnd(caseNode.case_then)
+        
+        if n.switch_default
+            @add "\n" & cdt
+            @add "else: "
+            @rnd(n.switch_default)
+            
+    ▸enum: ◇Node n ->
+    
+        @add "type "
+        @rnd n.enum_name
+        @add " = enum"
+        @rnd n.enum_body
+        
+    ▸class: ◇Node n ->
+    
+        @add "type "
+        @rnd n.class_name
+        @add " = ref object"
+        @rnd n.class_body
+    
+    ▸member: ◇Node n ->
+    
+        @rnd n.member_key
+        @add ": "
+        @rnd n.member_value
+    
+    ▸testCase: ◇Node n ->
+    
+        @add "check "
+        @rnd n.test_value
+        @add " == "
+        @rnd n.test_expected
+    
+    ▸testSuite: ◇Node n ->
+    
+        if n.kind == ●testSuite
+            @add "suite"
+        else
+            @add "test"
+        @add " \"" 
+        @add n.token.str[4..^1] 
+        @add "\": "
+        @rnd n.test_block
+    
+    rnd: ◇Node n ->
+    
+        ⮐  if n == nil
+        
+        switch n.kind
+        
+            ●block          ➜ @▸block          n
+            ●if             ➜ @▸if             n
+            ●switch         ➜ @▸switch         n
+            ●func           ➜ @▸func           n
+            ●signature      ➜ @▸signature      n
+            ●call           ➜ @▸call           n
+            ●operation      ➜ @▸operation      n
+            ●postOp         ➜ @▸postOp         n
+            ●preOp          ➜ @▸preOp          n
+            ●for            ➜ @▸for            n
+            ●while          ➜ @▸while          n
+            ●list           ➜ @▸list           n
+            ●curly          ➜ @▸curly          n
+            ●squarely       ➜ @▸squarely       n
+            ●range          ➜ @▸range          n
+            ●string         ➜ @▸string         n
+            ●comment        ➜ @▸comment        n
+            ●use            ➜ @▸use            n
+            ●propertyAccess ➜ @▸propertyAccess n
+            ●arrayAccess    ➜ @▸arrayAccess    n
+            ●var            ➜ @▸var            n
+            ●arg            ➜ @▸arg            n
+            ●let            ➜ @▸let            n
+            ●return         ➜ @▸return         n
+            ●discard        ➜ @▸discard        n
+            ●enum           ➜ @▸enum           n
+            ●class          ➜ @▸class          n
+            ●quote          ➜ @▸quote          n
+            ●member         ➜ @▸member         n
+            ●testCase       ➜ @▸testCase       n
+            ●testSuite 
+            ●testSection    ➜ @▸testSuite      n
+            ●literal 
+            ●keyword 
+            ●type           
+            ●typeDef 
+            ●import 
+            ●proc 
+            ●macro 
+            ●template 
+            ●converter      ➜ @tok             n
+                            ➜ 
+                              log "unhandled #{n} #{n.kind}"
+                              @tok n
 
 render* = ◇string code autovar=true ➜string ->
 
