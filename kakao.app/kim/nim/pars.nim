@@ -171,6 +171,9 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
         of ●propertyAccess: 
             n.owner = args[0]
             n.property = args[1]
+        of ●arrayAccess: 
+            n.array_owner = args[0]
+            n.array_index = args[1]
         of ●operation: 
             n.operand_left = args[0]
             n.operand_right = args[1]
@@ -743,12 +746,12 @@ proc rSymbol(p : Parser) : Node =
     var token = p.consume()
     if (((token.str in @["peg", "re", "r"]) and (p.tok == ◂string_start)) and ((token.col + token.str.len) == p.current.col)): 
         var n = p.rString()
-        n.string_prefix = Node(token: token, kind: ●literal)
+        n.string_prefix = nod(●literal, token)
         return n
     if p.isImplicitCallPossible(): 
         let args = p.parseCallArgs(token.col)
-        return Node(token: token, kind: ●call, callee: Node(token: token, kind: ●literal), callargs: args)
-    Node(token: token, kind: ●literal)
+        return Node(token: token, kind: ●call, callee: nod(●literal, token), callargs: args)
+    nod(●literal, token)
 # ███  ████████                             ███  ████████                               ███  ████████  
 # ███  ███                                  ███  ███                                    ███  ███       
 # ███  ██████                               ███  ██████                                 ███  ██████    
@@ -879,12 +882,12 @@ proc lArrayAccess(p : Parser, array_owner : Node) : Node =
         case array_indices.len:
             of 0: nil
             of 1: array_indices[0]
-            else: Node(token: token, kind: ●list, list_values: array_indices)
-    Node(token: token, kind: ●arrayAccess, array_owner: array_owner, array_index: array_index)
+            else: nod(●list, token, array_indices)
+    nod(●arrayAccess, token, array_owner, array_index)
 proc lPropertyAccess(p : Parser, owner : Node) : Node = 
     var token = p.consume()
     var property = p.rLiteral()
-    var n = Node(token: token, kind: ●propertyAccess, owner: owner, property: property)
+    var n = nod(●propertyAccess, token, owner, property)
     if p.isImplicitCallPossible(): 
         return Node(token: token, kind: ●call, callee: n, callargs: p.parseCallArgs(token.col))
     n
@@ -908,13 +911,13 @@ proc rString(p : Parser) : Node =
     var token = p.consume() # string start
     if (p.tok == ◂string_end): 
         p.swallow()
-        Node(token: token, kind: ●string, string_content: Node(token: tkn(◂string), kind: ●literal))
+        Node(token: token, kind: ●string, string_content: nod(●literal, tkn(◂string)))
     else: 
         var string_content : Node
         if (p.tok != ◂stripol_start): 
-            string_content = Node(token: p.consume(), kind: ●literal)
+            string_content = nod(●literal, p.consume())
         else: 
-            string_content = Node(token: tkn(◂string, "", p.current.line, p.current.col), kind: ●literal)
+            string_content = nod(●literal, tkn(◂string, "", p.current.line, p.current.col))
         var string_stripols : seq[Node]
         while (p.tok notin {◂string_end, ◂eof}): 
             p.swallowError(◂stripol_start, "Expected string interpolation start")
@@ -926,9 +929,9 @@ proc rString(p : Parser) : Node =
             stripol.stripol_xprssns = stripol_xprssns
             p.swallowError(◂stripol_end, "Expected string interpolation end")
             if (p.tok notin {◂stripol_start, ◂string_end, ◂eof}): 
-                stripol.stripol_content = Node(token: p.consume(), kind: ●literal)
+                stripol.stripol_content = nod(●literal, p.consume())
             elif (p.tok == ◂stripol_start): 
-                stripol.stripol_content = Node(token: tkn(◂string, p.current.line, p.current.col), kind: ●literal)
+                stripol.stripol_content = nod(●literal, tkn(◂string, p.current.line, p.current.col))
             string_stripols.add(stripol)
         p.swallowError(◂string_end, "Expected closing string delimiter")
         Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
@@ -1057,7 +1060,7 @@ proc lFunc(p : Parser, left : Node) : Node =
         func_signature = nod(●signature, left.token, sig_args, nil)
     elif (left.kind == ●arg): 
         # log "lfunc arg"
-        var sig_args = Node(token: left.token, kind: ●list, list_values: @[left])
+        var sig_args = nod(●list, left.token, @[left])
         func_signature = nod(●signature, left.token, sig_args, nil)
     elif (left.kind == ●signature): 
         func_signature = left
