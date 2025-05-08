@@ -1307,6 +1307,9 @@ handlers =
     kode:
             punct:[ blockComment hashComment tripleRegexp kodePunct tripleString simpleString interpolation funcArgs dashArrow regexp dict ]
             word: [ keyword kodeWord number property ]
+    kim:    punct:[ blockComment hashComment kodePunct tripleString interpolation simpleString funcArgs dashArrow ]
+            word: [ keyword kodeWord number property]
+    nim:    punct:[ nimComment   hashComment simpleString funcArgs dashArrow                ] word:[ keyword number property        ]
     noon:   punct:[ noonComment  noonPunct urlPunct                                         ] word:[ noonWord urlWord number        ]
     js:     punct:[ starComment  slashComment jsPunct simpleString dashArrow regexp dict    ] word:[ keyword jsWord number property ]
     ts:     punct:[ starComment  slashComment jsPunct simpleString dashArrow regexp dict    ] word:[ keyword jsWord number property ]
@@ -1339,8 +1342,6 @@ handlers =
     md:     punct:[                   mdPunct urlPunct xmlPunct                             ] word:[ urlWord number                 ]
     fish:   punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
     py:     punct:[              hashComment simpleString                                   ] word:[ keyword number                 ]
-    nim:    punct:[ nimComment   hashComment simpleString funcArgs dashArrow                ] word:[ keyword number property        ]
-    kim:    punct:[ blockComment hashComment kodePunct tripleString simpleString funcArgs dashArrow ] word:[ keyword number property        ]
 
 for ext in exts
     if not handlers[ext]?

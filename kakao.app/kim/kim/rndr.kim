@@ -8,6 +8,7 @@ use pars vars clss
 export pars
 
 class Rndr
+    
     code            : string
     s               : string
     annotateVarArg  : bool

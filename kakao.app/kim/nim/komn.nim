@@ -129,6 +129,13 @@ proc ksegWidth*(s : string) : int =
     while (i < s.len): 
         inc(result)
         (i += graphemeLen(s, i))
+template choose*(cond, a, b: untyped): untyped =
+
+    when (typeof(cond) is bool): 
+            if cond: a else: b
+    elif (typeof(cond) is ref): 
+            if (cond != nil): a else: b
+    else: {.error: "Condition must be bool or ref type".}
 # ████████   ███████   ███   ███   ███████   ███    
 # ███       ███   ███  ███   ███  ███   ███  ███    
 # ███████   ███ ██ ██  ███   ███  █████████  ███    

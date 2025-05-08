@@ -229,7 +229,7 @@ class Node*
 
 nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     
-    log "#{kind} #{token}"
+    # log "#{kind} #{token}"
     var n = Node kind:kind token:token
     
     switch kind
@@ -314,15 +314,6 @@ nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
         ➜ discard
     n
                 
-template choose*(cond, a, b: untyped): untyped =
-
-    when 
-        typeof(cond) is bool 
-            if cond ➜ a ➜ b
-        typeof(cond) is ref
-            if cond != nil ➜ a ➜ b
-        ➜ {.error: "Condition must be bool or ref type".}
-
 # ████████    ███████   ████████    ███████  ████████  ████████ 
 # ███   ███  ███   ███  ███   ███  ███       ███       ███   ███
 # ████████   █████████  ███████    ███████   ███████   ███████  
@@ -340,6 +331,7 @@ type Pratt = object
     precedence  : int
          
 class Parser*
+
     tokens*     : seq[Token]
     pratts*     : seq[Pratt]
     blocks*     : seq[Node]
@@ -367,22 +359,22 @@ class Parser*
         else
             tkn(◂eof)
 
-# ████████   ████████   ███  ███   ███  █████████  
-# ███   ███  ███   ███  ███  ████  ███     ███     
-# ████████   ███████    ███  ███ █ ███     ███     
-# ███        ███   ███  ███  ███  ████     ███     
-# ███        ███   ███  ███  ███   ███     ███     
+    # ████████   ████████   ███  ███   ███  █████████  
+    # ███   ███  ███   ███  ███  ████  ███     ███     
+    # ████████   ███████    ███  ███ █ ███     ███     
+    # ███        ███   ███  ███  ███  ████     ███     
+    # ███        ███   ███  ███  ███   ███     ███     
 
-$ = ◇Parser p ➜string ->
-
-    s = ""
-    if p.tok != ◂eof
-        s = &"▪▪▪ {p.current} {p.pos}"
-        l = p.text.split("\n")[p.current.line]
-        s &= &"\n{p.current.line}: {l}"
-    else
-        s = p.text
-    s
+    $: ➜string ->
+    
+        s = ""
+        if @tok != ◂eof
+            s = &"▪▪▪ {this.current} {this.pos}"
+            l = @text.split("\n")[@current.line]
+            s &= &"\n{this.current.line}: {l}"
+        else
+            s = @text
+        s
 
 $* = ◇Node n ➜string ->
 

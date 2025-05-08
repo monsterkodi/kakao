@@ -236,13 +236,6 @@ proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node =
             n.list_values = args
         else: discard
     n
-template choose*(cond, a, b: untyped): untyped =
-
-    when (typeof(cond) is bool): 
-            if cond: a else: b
-    elif (typeof(cond) is ref): 
-            if (cond != nil): a else: b
-    else: {.error: "Condition must be bool or ref type".}
 # ████████    ███████   ████████    ███████  ████████  ████████ 
 # ███   ███  ███   ███  ███   ███  ███       ███       ███   ███
 # ████████   █████████  ███████    ███████   ███████   ███████  
@@ -267,6 +260,11 @@ type Parser* = ref object
     typeless: bool
     failed: bool
     text: string # used in `$` for debugging. should be removed eventually 
+    # ████████   ████████   ███  ███   ███  █████████  
+    # ███   ███  ███   ███  ███  ████  ███     ███     
+    # ████████   ███████    ███  ███ █ ███     ███     
+    # ███        ███   ███  ███  ███  ████     ███     
+    # ███        ███   ███  ███  ███   ███     ███     
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -277,20 +275,15 @@ proc peek(this : Parser, ahead = 1) : Token =
             this.tokens[(this.pos + ahead)]
         else: 
             tkn(◂eof)
-# ████████   ████████   ███  ███   ███  █████████  
-# ███   ███  ███   ███  ███  ████  ███     ███     
-# ████████   ███████    ███  ███ █ ███     ███     
-# ███        ███   ███  ███  ███  ████     ███     
-# ███        ███   ███  ███  ███   ███     ███     
-proc `$`(p : Parser) : string = 
-    var s = ""
-    if (p.tok != ◂eof): 
-        s = &"▪▪▪ {p.current} {p.pos}"
-        var l = p.text.split("\n")[p.current.line]
-        (s &= &"\n{p.current.line}: {l}")
-    else: 
-        s = p.text
-    s
+proc `$`(this : Parser) : string = 
+        var s = ""
+        if (this.tok != ◂eof): 
+            s = &"▪▪▪ {this.current} {this.pos}"
+            var l = this.text.split("\n")[this.current.line]
+            (s &= &"\n{this.current.line}: {l}")
+        else: 
+            s = this.text
+        s
 proc `$`*(n : Node) : string = 
     if (n == nil): 
         return "NIL"
