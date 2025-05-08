@@ -1,0 +1,450 @@
+# ███   ███   ███████   ███████    ████████
+# ████  ███  ███   ███  ███   ███  ███     
+# ███ █ ███  ███   ███  ███   ███  ███████ 
+# ███  ████  ███   ███  ███   ███  ███     
+# ███   ███   ███████   ███████    ████████
+
+use tknz
+
+export tknz
+
+enum NodeKind*
+    
+    ●error
+    ●block
+    ●comment
+    ●literal
+    ●string
+    ●stripol
+    ●keyword  
+    ●preOp 
+    ●operation 
+    ●postOp
+    ●call
+    ●if
+    ●condThen
+    ●for 
+    ●list
+    ●curly
+    ●squarely
+    ●range 
+    ●while
+    ●switch
+    ●switchCase
+    ●arg
+    ●var        
+    ●let        
+    ●propertyAccess        
+    ●arrayAccess
+    ●arrayLike
+    ●func
+    ●type
+    ●signature
+    ●return 
+    ●discard 
+    ●break 
+    ●continue          
+    ●use 
+    ●import
+    ●template
+    ●converter
+    ●macro
+    ●quote
+    ●proc
+    ●typeDef
+    ●enum
+    ●class
+    ●member
+    ●testSuite
+    ●testSection
+    ●testCase
+    ●eof
+    
+# ███   ███   ███████   ███████    ████████
+# ████  ███  ███   ███  ███   ███  ███     
+# ███ █ ███  ███   ███  ███   ███  ███████ 
+# ███  ████  ███   ███  ███   ███  ███     
+# ███   ███   ███████   ███████    ████████
+
+class Node*
+
+    token* : Token
+        
+    switch kind* : NodeKind
+    
+        ●block
+            
+            expressions*    : seq[Node]
+            
+        ●operation
+        
+            operand_left*   : Node
+            operand_right*  : Node
+            
+        ●string
+        
+            string_prefix*  : Node
+            string_content* : Node
+            string_stripols*: seq[Node]
+            
+        ●comment
+        
+            comment_content*: Node
+            
+        ●stripol
+        
+            stripol_xprssns*: seq[Node]
+            stripol_content*: Node
+    
+        ●range
+        
+            range_start*    : Node
+            range_end*      : Node
+            
+        ●postOp ●preOp
+        
+            operand*        : Node 
+            
+        ●return
+        
+            return_value*   : Node  
+    
+        ●discard
+        
+            discard_value*  : Node  
+    
+        ●call
+        
+            callee*         : Node
+            call_args*      : seq[Node]
+    
+        ●propertyAccess
+        
+            owner*          : Node
+            property*       : Node
+            
+        ●arrayAccess
+        
+            array_owner*    : Node
+            array_index*    : Node
+            
+        ●if
+            # also handles when
+            cond_thens*     : seq[Node]
+            else_branch*    : Node
+            
+        ●condThen
+        
+            condition*      : Node
+            then_branch*    : Node
+            
+        ●switch
+            
+            switch_value*   : Node
+            switch_cases*   : seq[Node]
+            switch_default* : Node
+            
+        ●switchCase
+        
+            case_when*      : seq[Node]
+            case_then*      : Node
+            
+        ●while
+        
+            while_cond*     : Node
+            while_body*     : Node
+            
+        ●for
+        
+            for_value*      : Node
+            for_range*      : Node
+            for_body*       : Node
+            
+        ●list 
+        ●curly 
+        ●squarely
+        
+            list_values*    : seq[Node] 
+
+        ●arg
+        
+            arg_type*       : Node
+            arg_name*       : Node
+            arg_value*      : Node
+            
+        ●var
+        
+            var_name*       : Node
+            var_type*       : Node
+            var_value*      : Node
+            
+        ●let
+            
+            let_expr*       : Node
+            
+        ●signature
+        
+            sig_args*       : Node
+            sig_type*       : Node
+            
+        ●func
+        
+            func_signature* : Node
+            func_mod*       : Node
+            func_body*      : Node
+            
+        ●use
+        
+            use_module*     : Node
+            use_kind*       : Node
+            use_items*      : seq[Node]
+            
+        ●class
+            
+            class_name*     : Node
+            class_body*     : Node
+            
+        ●member
+        
+            member_key*     : Node
+            member_value*   : Node
+            
+        ●enum
+            
+            enum_name*      : Node
+            enum_body*      : Node
+            
+        ●quote
+            
+            quote_body*     : Node
+            
+        ●testSuite 
+        ●testSection
+        
+            test_block*     : Node
+                        
+        ●testCase
+            
+            test_value*     : Node
+            test_expected*  : Node
+            
+        ➜ discard
+    
+    $*: ➜string ->
+    
+        if @ == nil
+            ⮐  "NIL"
+            
+        s = $this.token.tok
+        
+        switch @kind
+            ●string
+                ips = ""
+                for i s in @string_stripols
+                    if i == 0
+                        ips &= "<"
+                    ips &= $s.stripol_xprssns
+                    if 0 < i and i < @string_stripols.len-1
+                        ips &= " "
+                    if i == @string_stripols.len-1
+                        ips &= ">"
+                p = choose(@string_prefix, $this.string_prefix.token.str, "")
+                s = &"◂{p}string{ips}"
+            ●block
+                s = "▪["
+                for e in @expressions
+                    if e != nil
+                        s &= &"{e}"
+                    else
+                        s &= "NIL"
+                s &= "]"
+            ●operation
+                s = "(#{@operand_left} #{s} #{@operand_right})"
+            ●range
+                s = "(#{@range_start} #{s} #{@range_end})"
+            ●preOp
+                s = "(#{s} #{@operand})"
+            ●postOp
+                s = "(#{@operand} #{s})"
+            ●return
+                e = choose(@return_value, " " & $this.return_value, "")
+                s = &"({s}{e})"
+            ●call
+                s = "(#{@callee} ◂call #{@callargs})"
+            ●propertyAccess
+                s = "(#{@owner} #{s} #{@property})"
+            ●if
+                e = choose(@else_branch, " #{@else_branch}", "")
+                s = "(#{s} #{@cond_thens}#{e})"
+            ●condThen
+                s = "(#{@condition} #{@then_branch})"
+            ●switch
+                e = choose(@switch_default, " #{@switch_default}", "")
+                s = "(#{s} #{@switch_value} #{@switch_cases}#{e})"
+            ●switchCase
+                s = "(#{@case_when} #{@case_then})"
+            ●for
+                b = choose(@for_body, " #{@for_body}", "")
+                s = "(#{s} #{@for_value} in #{@for_range}#{b})"
+            ●list
+                s = "#{@list_values}"
+                s = "◂" & s[1..^1]
+            ●curly
+                s = "#{@list_values}"
+                s = "{" & s[2..^2] & "}"
+            ●squarely
+                s = "#{@list_values}"
+                s = "[" & s[1..^1] & "]]"
+            ●while
+                b = choose(@while_body, " #{@while_body}", "")
+                s = "(#{s} #{@while_cond}#{b})"
+            ●func
+                sig = choose(@func_signature, $this.func_signature, "")
+                mdf = choose(@func_mod, " #{@func_mod.token.str} ", "")
+                bdy = choose(@func_body, " #{@func_body}", "")
+                s = "(#{sig}#{s}#{mdf}#{bdy})"
+            ●signature
+                a = if @sig_args and @sig_args.list_values.len ➜ $this.sig_args ➜ ""
+                t = choose(@sig_type, " ➜ #{@sig_type}", "")
+                s = "#{a}#{t}"
+            ●arrayAccess
+                i = choose(@array_index, "#{@array_index}", "")
+                s = "(#{@array_owner}[#{i}])"
+            ●arg
+                t = choose(@arg_type, "#{s}#{@arg_type} ", "")
+                v = choose(@arg_value, " (= #{@arg_value})", "")
+                s = "(#{t}#{@arg_name}#{v})"
+            ●var
+                t = choose(@var_type, " #{s}#{@var_type}", "")
+                v = choose(@var_value, " (= #{@var_value})", "")
+                s = "(#{@var_name}#{t}#{v})"
+            ●let
+                s = "(#{s} #{@let_expr})"
+            ●type
+                s = "type(#{@token.str})"
+            ●use
+                k = choose(@use_kind, " #{@use_kind.token.str}", "")
+                i = choose(@use_items.len>0, " #{@use_items}", "")
+                s = "(#{s} #{@use_module}#{k}#{i})"
+            ●enum    
+                b = choose(@enum_body, " #{@enum_body}", "")
+                s = "(#{s} #{@enum_name}#{b})"
+            ●class    
+                b = choose(@class_body, " #{@class_body}", "")
+                s = "(#{s} #{@class_name}#{b})"
+            ●member
+                s = "(#{@member_key} #{s} #{@member_value})"
+            ●quote
+                s = "(#{s} #{@quote_body})"
+            ●testSuite
+                b = choose(@test_block, " #{@test_block}", "")
+                s = "(#{s} suite#{b})"
+            ●testSection
+                b = choose(@test_block, " #{@test_block}", "")
+                s = "(#{s} section#{b})"
+            ●testCase
+                s = "(#{@test_value} #{s} #{@test_expected})"
+            else
+                discard
+        s
+
+# s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
+# s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
+# s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
+# s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
+# s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
+# s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
+# s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
+# s = &"(«s» «n.for_value» in «n.for_range»«b»)"
+# s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
+# s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
+# s = &"(s n.for_value in n.for_rangeb)"
+# s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
+
+nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
+    
+    # log "#{kind} #{token}"
+    var n = Node kind:kind token:token
+    
+    switch kind
+        ●arg
+            n.arg_type          = args[0]
+            n.arg_name          = args[1]
+            n.arg_value         = args[2]
+        ●var                    
+            n.var_name          = args[0]
+            n.var_type          = args[1]
+            n.var_value         = args[2]
+        ●propertyAccess         
+            n.owner             = args[0]
+            n.property          = args[1]
+        ●arrayAccess
+            n.array_owner       = args[0]
+            n.array_index       = args[1]
+        ●operation              
+            n.operand_left      = args[0]
+            n.operand_right     = args[1]
+        ●postOp ●preOp          
+            n.operand           = args[0]
+        ●range
+            n.range_start       = args[0] 
+            n.range_end         = args[1]
+        ●func
+            n.func_signature    = args[0] 
+            n.func_mod          = args[1]
+            n.func_body         = args[2]
+        ●signature
+            n.sig_args          = args[0]
+            n.sig_type          = args[1]
+        ●let                    
+            n.let_expr          = args[0] 
+        ●class
+            n.class_name        = args[0]
+            n.class_body        = args[1]
+        ●member
+            n.member_key        = args[0]
+            n.member_value      = args[1]
+        ●enum
+            n.enum_name         = args[0]
+            n.enum_body         = args[1]
+        ●quote                  
+            n.quote_body        = args[0] 
+        ●comment
+            n.comment_content   = args[0] 
+        ●for
+            n.for_value         = args[0]
+            n.for_range         = args[1]
+            n.for_body          = args[2]
+        ●while
+            n.while_cond        = args[0]
+            n.while_body        = args[1]
+        ●condThen
+            n.condition         = args[0] 
+            n.then_branch       = args[1] 
+        ●return
+            n.return_value      = args[0]
+        ●discard                
+            n.discard_value     = args[0]
+        ●testCase
+            n.test_value        = args[0]
+            n.test_expected     = args[1]
+        ●testSection
+        ●testSuite
+            n.test_block        = args[0]
+        ➜ discard
+    n
+
+nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
+
+    n = Node kind:kind token:token
+    
+    switch kind
+        ●block
+            n.expressions = args
+        ●list
+            n.list_values = args
+        ●curly ●squarely
+            n.list_values = args
+        ➜ discard
+    n
+    
