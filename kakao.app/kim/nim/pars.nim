@@ -174,6 +174,11 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
         of ●operation: 
             n.operand_left = args[0]
             n.operand_right = args[1]
+        of ●postOp, ●preOp: 
+            n.operand = args[0]
+        of ●range: 
+            n.range_start = args[0]
+            n.range_end = args[1]
         of ●func: 
             n.func_signature = args[0]
             n.func_mod = args[1]
@@ -183,6 +188,15 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.sig_type = args[1]
         of ●let: 
             n.let_expr = args[0]
+        of ●class: 
+            n.class_name = args[0]
+            n.class_body = args[1]
+        of ●member: 
+            n.member_key = args[0]
+            n.member_value = args[1]
+        of ●enum: 
+            n.enum_name = args[0]
+            n.enum_body = args[1]
         of ●quote: 
             n.quote_body = args[0]
         of ●comment: 
@@ -191,6 +205,11 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.return_value = args[0]
         of ●discard: 
             n.discard_value = args[0]
+        of ●testCase: 
+            n.test_value = args[0]
+            n.test_expected = args[1]
+        of ●testSection, ●testSuite: 
+            n.test_block = args[0]
         else: discard
     n
 proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node = 
@@ -199,6 +218,8 @@ proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node =
         of ●block: 
             n.expressions = args
         of ●list: 
+            n.list_values = args
+        of ●curly, ●squarely: 
             n.list_values = args
         else: discard
     n
@@ -1119,8 +1140,7 @@ proc rDiscard(p : Parser) : Node =
     if p.isDedent(token.col): 
         nod(●discard, token, nil)
     else: 
-        let right = p.value()
-        nod(●discard, token, right)
+        nod(●discard, token, p.value())
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
 # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
@@ -1129,7 +1149,7 @@ proc rDiscard(p : Parser) : Node =
 proc lOperation(p : Parser, left : Node) : Node = 
     var token = p.consume()
     var right = p.expression(token)
-    Node(token: token, kind: ●operation, operand_left: left, operand_right: right)
+    nod(●operation, token, left, right)
 proc lNotIn(p : Parser, left : Node) : Node = 
     if (p.peek(1).tok == ◂in): 
         var token = p.consume()
@@ -1137,27 +1157,27 @@ proc lNotIn(p : Parser, left : Node) : Node =
         token.tok = ◂notin
         p.swallow()
         var right = p.expression(token)
-        return Node(token: token, kind: ●operation, operand_left: left, operand_right: right)
+        return nod(●operation, token, left, right)
 proc lPostOp(p : Parser, left : Node) : Node = 
-    Node(token: p.consume(), kind: ●postOp, operand: left)
+    nod(●postOp, p.consume(), left)
 proc rPreOp(p : Parser) : Node = 
     var token = p.consume()
     var right = p.expression(token)
-    Node(token: token, kind: ●preOp, operand: right)
+    nod(●preOp, token, right)
 proc lAssign(p : Parser, left : Node) : Node = 
     var token = p.consume()
     var right = p.funcOrExpression(token)
-    Node(token: token, kind: ●operation, operand_left: left, operand_right: right)
+    nod(●operation, token, left, right)
 proc lRange(p : Parser, left : Node) : Node = 
     var token = p.consume()
     var right = p.expression(token)
-    Node(token: token, kind: ●range, range_start: left, range_end: right)
+    nod(●range, token, left, right)
 proc rParenExpr(p : Parser) : Node = 
-    Node(token: p.current, kind: ●list, list_values: p.parseParenList())
+    nod(●list, p.current, p.parseParenList())
 proc rCurly(p : Parser) : Node = 
-    Node(token: p.current, kind: ●curly, list_values: p.parseDelimitedList(◂bracket_open, ◂bracket_close))
+    nod(●curly, p.current, p.parseDelimitedList(◂bracket_open, ◂bracket_close))
 proc rSquarely(p : Parser) : Node = 
-    Node(token: p.current, kind: ●squarely, list_values: p.parseDelimitedList(◂square_open, ◂square_close))
+    nod(●squarely, p.current, p.parseDelimitedList(◂square_open, ◂square_close))
 proc rEnum(p : Parser) : Node = 
     var token = p.consume()
     var enum_name = p.value()
@@ -1166,28 +1186,28 @@ proc rEnum(p : Parser) : Node =
         p.typeless = true
         enum_body = p.parseBlock()
         p.typeless = false
-    Node(token: token, kind: ●enum, enum_name: enum_name, enum_body: enum_body)
+    nod(●enum, token, enum_name, enum_body)
 proc rClass(p : Parser) : Node = 
     var token = p.consume()
     var class_name = p.value()
     var class_body = p.parseBlock()
-    Node(token: token, kind: ●class, class_name: class_name, class_body: class_body)
+    nod(●class, token, class_name, class_body)
 proc lMember(p : Parser, left : Node) : Node = 
     var token = p.consume()
     var right = p.funcOrExpression(token)
-    Node(token: token, kind: ●member, member_key: left, member_value: right)
+    nod(●member, token, left, right)
 proc lTestCase(p : Parser, left : Node) : Node = 
     var token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
     var right = p.expression()
-    Node(token: token, kind: ●testCase, test_value: left, test_expected: right)
+    nod(●testCase, token, left, right)
 proc rTestSuite(p : Parser) : Node = 
     var token = p.consume() # ▸
     var test_block = p.thenBlock()
     if (token.col == 0): 
-        Node(token: token, kind: ●testSuite, test_block: test_block)
+        nod(●testSuite, token, test_block)
     else: 
-        Node(token: token, kind: ●testSection, test_block: test_block)
+        nod(●testSection, token, test_block)
 # ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
 # ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
 # ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███

@@ -234,36 +234,56 @@ nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     
     switch kind
         ●arg
-            n.arg_type      = args[0]
-            n.arg_name      = args[1]
-            n.arg_value     = args[2]
-        ●var
-            n.var_name      = args[0]
-            n.var_type      = args[1]
-            n.var_value     = args[2]
-        ●propertyAccess
-            n.owner         = args[0]
-            n.property      = args[1]
-        ●operation
-            n.operand_left  = args[0]
-            n.operand_right = args[1]
+            n.arg_type          = args[0]
+            n.arg_name          = args[1]
+            n.arg_value         = args[2]
+        ●var                    
+            n.var_name          = args[0]
+            n.var_type          = args[1]
+            n.var_value         = args[2]
+        ●propertyAccess         
+            n.owner             = args[0]
+            n.property          = args[1]
+        ●operation              
+            n.operand_left      = args[0]
+            n.operand_right     = args[1]
+        ●postOp ●preOp          
+            n.operand           = args[0]
+        ●range
+            n.range_start       = args[0] 
+            n.range_end         = args[1]
         ●func
-            n.func_signature = args[0] 
-            n.func_mod       = args[1]
-            n.func_body      = args[2]
+            n.func_signature    = args[0] 
+            n.func_mod          = args[1]
+            n.func_body         = args[2]
         ●signature
-            n.sig_args      = args[0]
-            n.sig_type      = args[1]
-        ●let
-            n.let_expr      = args[0] 
-        ●quote
-            n.quote_body    = args[0] 
+            n.sig_args          = args[0]
+            n.sig_type          = args[1]
+        ●let                    
+            n.let_expr          = args[0] 
+        ●class
+            n.class_name        = args[0]
+            n.class_body        = args[1]
+        ●member
+            n.member_key        = args[0]
+            n.member_value      = args[1]
+        ●enum
+            n.enum_name         = args[0]
+            n.enum_body         = args[1]
+        ●quote                  
+            n.quote_body        = args[0] 
         ●comment
-            n.comment_content = args[0] 
+            n.comment_content   = args[0] 
         ●return
-            n.return_value  = args[0]
-        ●discard
-            n.discard_value = args[0]
+            n.return_value      = args[0]
+        ●discard                
+            n.discard_value     = args[0]
+        ●testCase
+            n.test_value        = args[0]
+            n.test_expected     = args[1]
+        ●testSection
+        ●testSuite
+            n.test_block        = args[0]
         ➜ discard
     n
 
@@ -275,6 +295,8 @@ nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
         ●block
             n.expressions = args
         ●list
+            n.list_values = args
+        ●curly ●squarely
             n.list_values = args
         ➜ discard
     n
@@ -1488,7 +1510,7 @@ lOperation = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume()
     right = p.expression(token)
-    Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
+    nod ●operation token left right
     
 lNotIn = ◇Parser p ◇Node left ➜Node ->
 
@@ -1498,42 +1520,41 @@ lNotIn = ◇Parser p ◇Node left ➜Node ->
         token.tok = ◂notin
         p.swallow()
         right = p.expression(token)
-        ⮐  Node(token:token, kind: ●operation, operand_left: left, operand_right:right)
+        ⮐  nod ●operation token left right
 
 lPostOp = ◇Parser p ◇Node left ➜Node ->
 
-    Node(token:p.consume(), kind: ●postOp, operand:left)
+    nod ●postOp p.consume() left
 
 rPreOp = ◇Parser p ➜Node ->
 
     token = p.consume()    
     right = p.expression(token)
-    Node(token:token, kind:●preOp, operand:right)
+    nod ●preOp token right
 
 lAssign = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume()
     right = p.funcOrExpression(token)
-
-    Node(token:token, kind: ●operation, operand_left: left, operand_right: right)
+    nod ●operation token left right
 
 lRange = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume()
     right = p.expression(token)
-    Node(token:token, kind: ●range, range_start: left, range_end: right)
+    nod ●range token left right
         
 rParenExpr = ◇Parser p ➜Node ->
 
-    Node(token:p.current, kind:●list, list_values:p.parseParenList())
+    nod ●list p.current p.parseParenList()
 
 rCurly = ◇Parser p ➜Node ->
 
-    Node(token:p.current, kind:●curly, list_values:p.parseDelimitedList(◂bracket_open, ◂bracket_close))
+    nod ●curly p.current p.parseDelimitedList(◂bracket_open, ◂bracket_close)
 
 rSquarely = ◇Parser p ➜Node ->
 
-    Node(token:p.current, kind:●squarely, list_values:p.parseDelimitedList(◂square_open, ◂square_close))
+    nod ●squarely p.current p.parseDelimitedList(◂square_open, ◂square_close)
 
 rEnum = ◇Parser p ➜Node ->
 
@@ -1544,36 +1565,36 @@ rEnum = ◇Parser p ➜Node ->
         p.typeless = true
         enum_body = p.parseBlock()
         p.typeless = false
-    Node(token:token, kind:●enum, enum_name:enum_name, enum_body:enum_body)
+    nod ●enum token enum_name enum_body
     
 rClass = ◇Parser p ➜Node ->
 
     token = p.consume()
     class_name = p.value()
     class_body = p.parseBlock()
-    Node(token:token, kind:●class, class_name:class_name, class_body:class_body)
+    nod ●class token class_name class_body
     
 lMember = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume()
     right = p.funcOrExpression(token)
-    Node(token:token, kind:●member, member_key:left, member_value:right)
+    nod ●member token left right
     
 lTestCase = ◇Parser p ◇Node left ➜Node ->
 
     token = p.consume() # ▸
     p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
     right = p.expression()
-    Node(token:token, kind: ●testCase, test_value:left, test_expected:right)
+    nod ●testCase token left right
 
 rTestSuite = ◇Parser p ➜Node ->
 
     token = p.consume() # ▸
     test_block = p.thenBlock()
     if token.col == 0
-        Node(token:token, kind:●testSuite, test_block:test_block)
+        nod ●testSuite token test_block
     else
-        Node(token:token, kind:●testSection, test_block:test_block)
+        nod ●testSection token test_block
 
 # ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
 # ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
