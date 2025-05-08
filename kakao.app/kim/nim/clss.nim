@@ -51,9 +51,16 @@ proc traverse(n : Node, iter : NodeIt) : Node =
             n.array_index = traverse(n.array_index, iter)
         of ●return: 
             n.return_value = traverse(n.return_value, iter)
+        of ●discard: 
+            n.discard_value = traverse(n.discard_value, iter)
         of ●while: 
             n.while_cond = traverse(n.while_cond, iter)
             n.while_body = traverse(n.while_body, iter)
+        of ●range: 
+            n.range_start = traverse(n.range_start, iter)
+            n.range_end = traverse(n.range_end, iter)
+        of ●let: 
+            n.let_expr = traverse(n.let_expr, iter)
         of ●func: 
             n.func_body = traverse(n.func_body, iter)
         else: 
@@ -82,7 +89,7 @@ proc methodify(clss : Node) : seq[Node] =
             funcn.func_signature.sig_args.list_values.unshift(this_arg)
         else: 
             var sig_args = nod(●list, tkn(◂square_open), @[this_arg])
-            funcn.func_signature = nod(●signature, tkn(), sig_args, nil)
+            funcn.func_signature = nod(●signature, token, sig_args, nil)
         funcn.func_body = traverse(funcn.func_body, thisify)
         nod(●operation, token, it.member_key, funcn)
     var methods = funcs.map(convert)
@@ -94,4 +101,5 @@ proc classify*(body : Node) : Node =
         if (e.kind == ●class): 
             var methods = methodify(e)
             body.expressions.insert(methods, (i + 1))
+    echo(body.expressions)
     body

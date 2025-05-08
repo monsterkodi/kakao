@@ -56,9 +56,16 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
             n.array_index = traverse n.array_index iter
         ●return
             n.return_value = traverse n.return_value iter
+        ●discard
+            n.discard_value = traverse n.discard_value iter
         ●while
             n.while_cond = traverse n.while_cond iter
             n.while_body = traverse n.while_body iter
+        ●range
+            n.range_start = traverse n.range_start iter
+            n.range_end   = traverse n.range_end   iter
+        ●let
+            n.let_expr = traverse n.let_expr iter
         ●func
             n.func_body = traverse n.func_body iter
         ➜ 
@@ -94,7 +101,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
             funcn.func_signature.sig_args.list_values.unshift this_arg
         else
             sig_args = nod ●list tkn(◂square_open) @[this_arg]
-            funcn.func_signature = nod ●signature tkn() sig_args nil
+            funcn.func_signature = nod ●signature token sig_args nil
             
         funcn.func_body = traverse funcn.func_body thisify
         nod ●operation token it.member_key funcn
@@ -114,5 +121,7 @@ classify* = ◇Node body ➜Node ->
         
             methods = methodify e
             body.expressions.insert methods i+1
+            
+    log body.expressions
 
     body

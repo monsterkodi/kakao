@@ -134,7 +134,7 @@ proc runTests() : bool =
         for line in process.errorStream.lines: 
             echo(line)
         if (exitCode != 0): 
-            # echo output
+            echo(output)
             styledEcho(fgRed, "✘ ", $f)
             fail = true
     # log ""

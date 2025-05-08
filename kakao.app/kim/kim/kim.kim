@@ -193,7 +193,7 @@ runTests = ➜bool ->
             log line
         
         if exitCode != 0
-            # echo output
+            echo output
             styledEcho fgRed "✘ " $f
             fail = true
     # log ""

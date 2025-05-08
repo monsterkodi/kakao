@@ -226,6 +226,124 @@ class Node*
             test_expected*  : Node
             
         ➜ discard
+        
+    # $*: ➜string ->
+    # 
+    #     if this == nil
+    #         ⮐  "NIL"
+    #         
+    #     s = $this.token.tok
+    #     
+    #     switch @kind
+    #         ●string
+    #             var ips = ""
+    #             for i s in @string_stripols
+    #                 if i == 0
+    #                     ips &= "<"
+    #                 ips &= $s.stripol_xprssns
+    #                 if 0 < i and i < @string_stripols.len-1
+    #                     ips &= " "
+    #                 if i == @string_stripols.len-1
+    #                     ips &= ">"
+    #             p = choose(@string_prefix, $this.string_prefix.token.str, "")
+    #             s = &"◂{p}string{ips}"
+    #         ●block
+    #             s = "▪["
+    #             for e in @expressions
+    #                 if e != nil
+    #                     s &= &"{e}"
+    #                 else
+    #                     s &= "NIL"
+    #             s &= "]"
+    #         ●operation
+    #             s = "(#{@operand_left} #{s} #{@operand_right})"
+    #         ●range
+    #             s = "(#{@range_start} #{s} #{@range_end})"
+    #         ●preOp
+    #             s = "(#{s} #{@operand})"
+    #         ●postOp
+    #             s = "(#{@operand} #{s})"
+    #         ●return
+    #             e = choose(@return_value, " " & $this.return_value, "")
+    #             s = &"({s}{e})"
+    #         ●call
+    #             s = "(#{@callee} ◂call #{@callargs})"
+    #         ●propertyAccess
+    #             s = "(#{@owner} #{s} #{@property})"
+    #         ●if
+    #             e = choose(@else_branch, " #{@else_branch}", "")
+    #             s = "(#{s} #{@cond_thens}#{e})"
+    #         ●condThen
+    #             s = "(#{@condition} #{@then_branch})"
+    #         ●switch
+    #             e = choose(@switch_default, " #{@switch_default}", "")
+    #             s = "(#{s} #{@switch_value} #{@switch_cases}#{e})"
+    #         ●switchCase
+    #             s = "(#{@case_when} #{@case_then})"
+    #         ●for
+    #             b = choose(@for_body, " #{@for_body}", "")
+    #             s = "(#{s} #{@for_value} in #{@for_range}#{b})"
+    #         ●list
+    #             s = "#{@list_values}"
+    #             s = "◂" & s[1..^1]
+    #         ●curly
+    #             s = "#{@list_values}"
+    #             s = "{" & s[2..^2] & "}"
+    #         ●squarely
+    #             s = "#{@list_values}"
+    #             s = "[" & s[1..^1] & "]]"
+    #         ●while
+    #             b = choose(@while_body, " #{@while_body}", "")
+    #             s = "(#{s} #{@while_cond}#{b})"
+    #         ●func
+    #             sig = choose(@func_signature, $this.func_signature, "")
+    #             mdf = choose(@func_mod, " #{@func_mod.token.str} ", "")
+    #             bdy = choose(@func_body, " #{@func_body}", "")
+    #             s = "(#{sig}#{s}#{mdf}#{bdy})"
+    #         ●signature
+    #             a = if @sig_args and @sig_args.list_values.len ➜ $this.sig_args ➜ ""
+    #             t = choose(@sig_type, " ➜ #{@sig_type}", "")
+    #             s = "#{a}#{t}"
+    #         ●arrayAccess
+    #             i = choose(@array_index, "#{@array_index}", "")
+    #             s = "(#{@array_owner}[#{i}])"
+    #         ●arg
+    #             t = choose(@arg_type, "#{s}#{@arg_type} ", "")
+    #             v = choose(@arg_value, " (= #{@arg_value})", "")
+    #             s = "(#{t}#{@arg_name}#{v})"
+    #         ●var
+    #             t = choose(@var_type, " #{s}#{@var_type}", "")
+    #             v = choose(@var_value, " (= #{@var_value})", "")
+    #             s = "(#{@var_name}#{t}#{v})"
+    #         ●let
+    #             s = "(#{s} #{@let_expr})"
+    #         ●type
+    #             s = "type(#{@token.str})"
+    #         ●use
+    #             k = choose(@use_kind, " #{@use_kind.token.str}", "")
+    #             i = choose(@use_items.len>0, " #{@use_items}", "")
+    #             s = "(#{s} #{@use_module}#{k}#{i})"
+    #         ●enum    
+    #             b = choose(@enum_body, " #{@enum_body}", "")
+    #             s = "(#{s} #{@enum_name}#{b})"
+    #         ●class    
+    #             b = choose(@class_body, " #{@class_body}", "")
+    #             s = "(#{s} #{@class_name}#{b})"
+    #         ●member
+    #             s = "(#{@member_key} #{s} #{@member_value})"
+    #         ●quote
+    #             s = "(#{s} #{@quote_body})"
+    #         ●testSuite
+    #             b = choose(@test_block, " #{@test_block}", "")
+    #             s = "(#{s} suite#{b})"
+    #         ●testSection
+    #             b = choose(@test_block, " #{@test_block}", "")
+    #             s = "(#{s} section#{b})"
+    #         ●testCase
+    #             s = "(#{@test_value} #{s} #{@test_expected})"
+    #         else
+    #             discard
+    #     s
 
 nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     
@@ -375,7 +493,7 @@ class Parser*
         else
             s = @text
         s
-
+        
 $* = ◇Node n ➜string ->
 
     if n == nil
@@ -1469,8 +1587,6 @@ funcOrExpression = ◇Parser p ◇Token token ➜Node ->
         func_signature ◇ Node
         if p.tok != ◂func
             func_signature = p.parseSignature()
-            if not func_signature
-                log "FAIL #{p}"
         if p.tok == ◂func
             ftoken = p.consume()
             func_mod = if p.tok == ◂mod ➜ p.rLiteral() ➜ nil
