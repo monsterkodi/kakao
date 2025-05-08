@@ -28,6 +28,7 @@ class Parser*
     pos*        : int
     explicit    : int
     listless    : int
+    inlinecall  : int
     returning   : bool
     typeless    : bool
     failed      : bool
@@ -158,61 +159,61 @@ class Parser*
             c = @peek n
         false    
 
-firstLineToken = ◇Parser p ➜Token ->
-
-    line = p.current.line
-    tpos = p.tokens.len
-    while tpos > 0
-        if p.tokens[tpos-1].line < line
-            break
-        tpos -= 1
-    p.tokens[tpos]
+    firstLineToken: ➜Token ->
     
-lineIndent = ◇Parser p ◇int line ➜int ->
-
-    tpos = p.tokens.len
-    while tpos > 0
-        if p.tokens[tpos-1].line < line
-            break
-        tpos -= 1
-
-    if p.tokens[tpos].tok == ◂indent
-        p.tokens[tpos].str.len
-    else
-        p.tokens[tpos].col
-
-isThenlessIf = ◇Parser p ◇Token token ➜bool ->
-
-    if p.isNextLineIndented token
-        ⮐  false
-
-    not p.isTokAhead ◂then
+        line = @current.line
+        tpos = @tokens.len
+        while tpos > 0
+            if @tokens[tpos-1].line < line
+                break
+            tpos -= 1
+        @tokens[tpos]
+        
+    lineIndent: ◇int line ➜int ->
     
-getPrecedence = ◇Parser p ◇Token token ➜int ->
-
-    if token.tok.ord < p.pratts.len
-        ⮐  p.pratts[token.tok.ord].precedence
-    0
+        tpos = @tokens.len
+        while tpos > 0
+            if @tokens[tpos-1].line < line
+                break
+            tpos -= 1
     
-rightHandSide = ◇Parser p ◇Token token ➜RHS ->
-
-    if token.tok.ord < p.pratts.len
-        ⮐  p.pratts[token.tok.ord].rhs
-
-leftHandSide = ◇Parser p ◇Token token ➜LHS ->
-
-    if token.tok.ord < p.pratts.len
-        ⮐  p.pratts[token.tok.ord].lhs
-
-expression = ◇Parser p precedenceRight=0 ➜Node ->
-
-expression = ◇Parser p ◇Token tokenRight ➜Node ->
-
-    expression(p, p.getPrecedence(tokenRight))
-
-value = ◇Parser p ➜Node ->
-
-    p.expression(-2)
+        if @tokens[tpos].tok == ◂indent
+            @tokens[tpos].str.len
+        else
+            @tokens[tpos].col
+    
+    isThenlessIf: ◇Token token ➜bool ->
+    
+        if @isNextLineIndented(token)
+            ⮐  false
+    
+        not @isTokAhead ◂then
+        
+    getPrecedence: ◇Token token ➜int ->
+    
+        if token.tok.ord < @pratts.len
+            ⮐  @pratts[token.tok.ord].precedence
+        0
+        
+    rightHandSide: ◇Token token ➜RHS ->
+    
+        if token.tok.ord < @pratts.len
+            ⮐  @pratts[token.tok.ord].rhs
+    
+    leftHandSide: ◇Token token ➜LHS ->
+    
+        if token.tok.ord < @pratts.len
+            ⮐  @pratts[token.tok.ord].lhs
+    
+    expression: precedenceRight=0 ➜Node ->
+    
+    expression: ◇Token tokenRight ➜Node ->
+    
+        @expression(@getPrecedence(tokenRight))
+    
+    value: ➜Node ->
+    
+        @expression(-2)
 
 # ███████    ███       ███████    ███████  ███   ███
 # ███   ███  ███      ███   ███  ███       ███  ███ 
@@ -303,6 +304,8 @@ parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
     expr = p.expression()
     while expr != nil
         list.add expr
+        if p.inlinecall and p.tok == ◂indent
+            break
         if p.swallowIndent(col)
             break
         if p.tok in {◂comment_start, ◂then}
@@ -532,6 +535,13 @@ rSymbol = ◇Parser p ➜Node ->
 # ███  ███                                  ███  ███                                    ███  ███       
 # ███  ███                                  ███  ███                                    ███  ███       
 
+inline = ◇Parser p ➜Node ->
+
+    p.inlinecall += 1
+    e = p.expression()
+    p.inlinecall -= 1
+    e
+
 rIf = ◇Parser p ➜Node ->
 
     token     = p.consume() # if or when
@@ -545,7 +555,7 @@ rIf = ◇Parser p ➜Node ->
             ⮐  p.error "Expected indentation after 'if' without condition"
         p.swallow ◂indent # block indentation
     
-    condition = p.expression() # initial condition
+    condition = p.inline() # initial condition
     then_branch = p.thenBlock()
     
     condThens.add nod(●condThen condition.token condition then_branch)
@@ -574,7 +584,7 @@ rIf = ◇Parser p ➜Node ->
         if p.tok in {◂then, ◂else}
             break # then without condition -> else
         
-        condition = p.expression()
+        condition = p.inline()
         p.swallow ◂comment
         then_branch = p.thenBlock()
         
@@ -1188,31 +1198,31 @@ rTestSuite = ◇Parser p ➜Node ->
                       ▾                       ▾
 ###
 
-expression = ◇Parser p precedenceRight=0 ➜Node ->
+expression = ◇Parser this precedenceRight=0 ➜Node ->
 
-    token = p.current
+    token = this.current
     if token.tok in {◂eof, ◂stripol_end, ◂paren_close}
         ⮐  nil
 
-    rhs = p.rightHandSide(token)
+    rhs = this.rightHandSide(token)
     
     if rhs == nil
-        ⮐  p.error(&"Expected expression but found {token.str} {token}", token)
+        ⮐  this.error(&"Expected expression but found {token.str} {token}", token)
         
-    node = rhs(p)
+    node = this.rhs()
     
     if precedenceRight < -1
         ⮐  node
 
-    while not p.atEnd()
+    while not this.atEnd()
         
-        token = p.current
-        precedence = p.getPrecedence(token)
+        token = this.current
+        precedence = this.getPrecedence(token)
         
         if token.tok in {◂assign, ◂test}
             precedence += 1
         
-        lhs = p.leftHandSide(token)
+        lhs = this.leftHandSide(token)
         
         if precedenceRight >= precedence
             break
@@ -1220,16 +1230,16 @@ expression = ◇Parser p precedenceRight=0 ➜Node ->
         if lhs == nil
             break
             
-        lhn = p.lhs(node)
+        lhn = this.lhs(node)
         
         if lhn != nil
             node = lhn
         else
             break 
             
-        if p.tok == ◂indent and p.peek(1).tok in {◂dot}
-             p.swallow()
-             node = p.lPropertyAccess node
+        if this.tok == ◂indent and this.peek(1).tok in {◂dot}
+             this.swallow()
+             node = this.lPropertyAccess node
     node
             
 # ████████   ████████    ███████   █████████  █████████

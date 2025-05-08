@@ -21,6 +21,7 @@ type Parser* = ref object
     pos*: int
     explicit: int
     listless: int
+    inlinecall: int
     returning: bool
     typeless: bool
     failed: bool
@@ -115,43 +116,43 @@ proc isTokAhead(this : Parser, tokAhead : tok) : bool =
             (n += 1)
             c = this.peek(n)
         false
-proc firstLineToken(p : Parser) : Token = 
-    var line = p.current.line
-    var tpos = p.tokens.len
-    while (tpos > 0): 
-        if (p.tokens[(tpos - 1)].line < line): 
-            break
-        (tpos -= 1)
-    p.tokens[tpos]
-proc lineIndent(p : Parser, line : int) : int = 
-    var tpos = p.tokens.len
-    while (tpos > 0): 
-        if (p.tokens[(tpos - 1)].line < line): 
-            break
-        (tpos -= 1)
-    if (p.tokens[tpos].tok == ◂indent): 
-        p.tokens[tpos].str.len
-    else: 
-        p.tokens[tpos].col
-proc isThenlessIf(p : Parser, token : Token) : bool = 
-    if p.isNextLineIndented(token): 
-        return false
-    not p.isTokAhead(◂then)
-proc getPrecedence(p : Parser, token : Token) : int = 
-    if (token.tok.ord < p.pratts.len): 
-        return p.pratts[token.tok.ord].precedence
-    0
-proc rightHandSide(p : Parser, token : Token) : RHS = 
-    if (token.tok.ord < p.pratts.len): 
-        return p.pratts[token.tok.ord].rhs
-proc leftHandSide(p : Parser, token : Token) : LHS = 
-    if (token.tok.ord < p.pratts.len): 
-        return p.pratts[token.tok.ord].lhs
-proc expression(p : Parser, precedenceRight = 0) : Node
-proc expression(p : Parser, tokenRight : Token) : Node = 
-    expression(p, p.getPrecedence(tokenRight))
-proc value(p : Parser) : Node = 
-    p.expression(-2)
+proc firstLineToken(this : Parser) : Token = 
+        var line = this.current.line
+        var tpos = this.tokens.len
+        while (tpos > 0): 
+            if (this.tokens[(tpos - 1)].line < line): 
+                break
+            (tpos -= 1)
+        this.tokens[tpos]
+proc lineIndent(this : Parser, line : int) : int = 
+        var tpos = this.tokens.len
+        while (tpos > 0): 
+            if (this.tokens[(tpos - 1)].line < line): 
+                break
+            (tpos -= 1)
+        if (this.tokens[tpos].tok == ◂indent): 
+            this.tokens[tpos].str.len
+        else: 
+            this.tokens[tpos].col
+proc isThenlessIf(this : Parser, token : Token) : bool = 
+        if this.isNextLineIndented(token): 
+            return false
+        not this.isTokAhead(◂then)
+proc getPrecedence(this : Parser, token : Token) : int = 
+        if (token.tok.ord < this.pratts.len): 
+            return this.pratts[token.tok.ord].precedence
+        0
+proc rightHandSide(this : Parser, token : Token) : RHS = 
+        if (token.tok.ord < this.pratts.len): 
+            return this.pratts[token.tok.ord].rhs
+proc leftHandSide(this : Parser, token : Token) : LHS = 
+        if (token.tok.ord < this.pratts.len): 
+            return this.pratts[token.tok.ord].lhs
+proc expression(this : Parser, precedenceRight = 0) : Node
+proc expression(this : Parser, tokenRight : Token) : Node = 
+        this.expression(this.getPrecedence(tokenRight))
+proc value(this : Parser) : Node = 
+        this.expression(-2)
 # ███████    ███       ███████    ███████  ███   ███
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███      ███   ███  ███       ███████  
@@ -224,6 +225,8 @@ proc parseCallArgs(p : Parser, col : int) : seq[Node] =
     var expr = p.expression()
     while (expr != nil): 
         list.add(expr)
+        if (p.inlinecall and (p.tok == ◂indent)): 
+            break
         if p.swallowIndent(col): 
             break
         if (p.tok in {◂comment_start, ◂then}): 
@@ -399,6 +402,11 @@ proc rSymbol(p : Parser) : Node =
 # ███  ██████                               ███  ██████                                 ███  ██████    
 # ███  ███                                  ███  ███                                    ███  ███       
 # ███  ███                                  ███  ███                                    ███  ███       
+proc inline(p : Parser) : Node = 
+    (p.inlinecall += 1)
+    var e = p.expression()
+    (p.inlinecall -= 1)
+    e
 proc rIf(p : Parser) : Node = 
     var token = p.consume() # if or when
     var condThens : seq[Node]
@@ -409,7 +417,7 @@ proc rIf(p : Parser) : Node =
         if (condIndt <= ifIndent): 
             return p.error("Expected indentation after 'if' without condition")
         p.swallow(◂indent) # block indentation
-    var condition = p.expression() # initial condition
+    var condition = p.inline() # initial condition
     var then_branch = p.thenBlock()
     condThens.add(nod(●condThen, condition.token, condition, then_branch))
     var outdent = false
@@ -432,7 +440,7 @@ proc rIf(p : Parser) : Node =
         p.swallow(◂elif)
         if (p.tok in {◂then, ◂else}): 
             break # then without condition -> else
-        condition = p.expression()
+        condition = p.inline()
         p.swallow(◂comment)
         then_branch = p.thenBlock()
         condThens.add(nod(●condThen, condition.token, condition, then_branch))
@@ -879,34 +887,34 @@ proc rTestSuite(p : Parser) : Node =
                       │                       │
                       ▾                       ▾
 ]#
-proc expression(p : Parser, precedenceRight = 0) : Node = 
-    var token = p.current
+proc expression(this : Parser, precedenceRight = 0) : Node = 
+    var token = this.current
     if (token.tok in {◂eof, ◂stripol_end, ◂paren_close}): 
         return nil
-    var rhs = p.rightHandSide(token)
+    var rhs = this.rightHandSide(token)
     if (rhs == nil): 
-        return p.error(&"Expected expression but found {token.str} {token}", token)
-    var node = rhs(p)
+        return this.error(&"Expected expression but found {token.str} {token}", token)
+    var node = this.rhs()
     if (precedenceRight < -1): 
         return node
-    while not p.atEnd(): 
-        token = p.current
-        var precedence = p.getPrecedence(token)
+    while not this.atEnd(): 
+        token = this.current
+        var precedence = this.getPrecedence(token)
         if (token.tok in {◂assign, ◂test}): 
             (precedence += 1)
-        var lhs = p.leftHandSide(token)
+        var lhs = this.leftHandSide(token)
         if (precedenceRight >= precedence): 
             break
         if (lhs == nil): 
             break
-        var lhn = p.lhs(node)
+        var lhn = this.lhs(node)
         if (lhn != nil): 
             node = lhn
         else: 
             break
-        if ((p.tok == ◂indent) and (p.peek(1).tok in {◂dot})): 
-             p.swallow()
-             node = p.lPropertyAccess(node)
+        if ((this.tok == ◂indent) and (this.peek(1).tok in {◂dot})): 
+             this.swallow()
+             node = this.lPropertyAccess(node)
     node
 # ████████   ████████    ███████   █████████  █████████
 # ███   ███  ███   ███  ███   ███     ███        ███   
