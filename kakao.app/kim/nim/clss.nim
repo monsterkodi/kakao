@@ -78,9 +78,11 @@ proc methodify(clss : Node) : seq[Node] =
     proc isMethod(it : Node) : bool = ((it.kind == ●member) and (it.member_value.kind == ●func))
     var (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
     clss.class_body.expressions = members
+    var exporting = false
     var className = clss.class_name.token.str
     if (className[^1] == '*'): 
         className = className[0..^2]
+        exporting = true
     proc thisify(n : Node) : Node = 
         if (n.token.tok == ◂name): 
             if (n.token.str[0] == '@'): 
@@ -111,6 +113,9 @@ proc methodify(clss : Node) : seq[Node] =
         funcn.func_body = traverse(funcn.func_body, thisify)
         var fn = nod(●operation, token, it.member_key, funcn)
         if (it.member_key.token.str == "@"): fn = constructor(fn)
+        # elif exporting
+        #     if it.member_key.token.str[^1] != '*'
+        #         it.member_key.token.str &= "*"
         fn
     var methods = funcs.map(convert)
     methods

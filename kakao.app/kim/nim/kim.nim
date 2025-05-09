@@ -224,13 +224,13 @@ proc watch(paths : seq[string]) =
             for f in toTranspile: 
                 logFile(f, "▸ ")
             if stage(kimFiles, ".", "k1m"): 
-                # if stage(kimFiles "k1m" "k2m")
-                echo("-> deploy")
-                for f in kimFiles: 
-                    var srcNim = f.replace("/kim/kim/", "/kim/k1m/nim/").replace(".kim", ".nim")
-                    var tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
-                    copyFileWithPermissions(srcNim, tgtNim)
-                if compile("k1m/nim/kim.nim", "bin"): 
-                    restart()
+                if stage(kimFiles, "k1m", "k2m"): 
+                    echo("-> deploy")
+                    for f in kimFiles: 
+                        var srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
+                        var tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
+                        copyFileWithPermissions(srcNim, tgtNim)
+                    if compile("k2m/nim/kim.nim", "bin"): 
+                        restart()
         sleep(200)
 watch(@[getCurrentDir() & "/kim"])

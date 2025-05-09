@@ -91,8 +91,10 @@ proc fun(this : A) =
         var m = 1
 proc inc(this : A, a1 : int) : int = 
         (a1 + 1)""")
-    test "export": 
-        t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
+    # ▸ export
+    # 
+    #     t   "class A*\n    add: ◇string text -> @s &= text" "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)"
+    
         # t   """
         #     class A*
         #         m : int
