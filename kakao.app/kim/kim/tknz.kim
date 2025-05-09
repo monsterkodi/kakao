@@ -113,11 +113,11 @@ punct["\""]     = ◂string_start
 punct["\"\"\""] = ◂string_start
 
 const 
-    openToks  = { ◂paren_open,  ◂bracket_open,  ◂square_open  }
-    closeToks = { ◂paren_close, ◂bracket_close, ◂square_close }
+    openToks  = { ◂paren_open  ◂bracket_open  ◂square_open  }
+    closeToks = { ◂paren_close ◂bracket_close ◂square_close }
     closeOpen = { 
-        ◂paren_close:   ◂paren_open, 
-        ◂bracket_close: ◂bracket_open,
+        ◂paren_close:   ◂paren_open
+        ◂bracket_close: ◂bracket_open
         ◂square_close:  ◂square_open }.toTable()
         
 # █████████  ███   ███  ███   ███  ███████  ████████ 
@@ -157,7 +157,7 @@ class Tknzr
     char: ◇int n ➜char   -> @segs[@segi+n][0]
     peek: ◇int n ➜string -> @segs[@segi+n]
     incr: ◇int n         -> @segi += n
-    col :        ➜int    -> @segi - @bol
+    col:         ➜int    -> @segi - @bol
     
     peekSafe: ◇int n ➜string ->
     
@@ -246,7 +246,7 @@ class Tknzr
     
         topTok = @tokens[^1]
         
-        assert topTok.tok in {◂string_start, ◂stripol_end}
+        assert topTok.tok in {◂string_start ◂stripol_end}
         
         ampersand = false
         stripolStart = "#" & "{"
@@ -256,7 +256,7 @@ class Tknzr
                 @delimiter = topTok.str
                 if @tokens.len > 1 and @tokens[^2].tok == ◂ampersand
                     if @tokens[^2].col == @tokens[^1].col-1
-                        @tokens.delete(@tokens.len-2..@tokens.len-2)
+                        @tokens.delete @tokens.len-2..@tokens.len-2
                         stripolStart = "{"
                         ampersand = true
             ◂stripol_end
@@ -269,7 +269,7 @@ class Tknzr
                 ⮐  true
             if @segi >= @segs.len
                 ⮐  true
-            @scmp(@delimiter)
+            @scmp @delimiter
                         
         while not isAtStringEnd()
         
@@ -281,8 +281,8 @@ class Tknzr
                 continue
             
             if @delimiter in ["\"" "\"\"\""]
-                if @scmp(stripolStart)
-                    @commit(stripolStart, ◂stripol_start, stripolStart.len)
+                if @scmp stripolStart
+                    @commit stripolStart ◂stripol_start stripolStart.len
                     @inStripol = true  
                     return
     
@@ -290,7 +290,7 @@ class Tknzr
             @lineIncr c
                     
         if @segi <= @eol-1 
-            @commit(@delimiter, ◂string_end, @delimiter.len)
+            @commit @delimiter ◂string_end @delimiter.len
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
@@ -300,19 +300,19 @@ class Tknzr
     
     number: ->
     
-        @pushToken("", ◂number)
+        @pushToken "" ◂number
     
         l = @segs.len
         
         if @segi < l-1 and @segs[@segi] == "0" 
             if @segs[@segi+1] == "x"
                 @advance 2
-                @advance {'0'..'9', 'a'..'f', 'A'..'F'}
+                @advance {'0'..'9' 'a'..'f' 'A'..'F'}
                 @pushToken()
                 ⮐   
             if @segs[@segi+1] == "b"
                 @advance 2
-                @advance {'0', '1'}
+                @advance {'0' '1'}
                 @pushToken()
                 ⮐   
             if @segs[@segi+1] == "o"
@@ -327,7 +327,7 @@ class Tknzr
             @advance 1
             @advance {'0'..'9'}
     
-        if @segi < l-1 and @char == 'e' and @char(1) in {'0'..'9', '+', '-'}
+        if @segi < l-1 and @char == 'e' and @char(1) in {'0'..'9' '+' '-'}
             @advance 2
             @advance {'0'..'9'}
         
@@ -341,16 +341,16 @@ class Tknzr
     
     comment: ->
     
-        if @scmp("##")
+        if @scmp "##"
             @tokens[^1].str &= "##"
             @incr 2
             @token.col += 2
             @token.tok = ◂comment
             @advanceMulti "###"
-            if @scmp("###")
-                @commit("###", ◂comment_end, 3)
+            if @scmp "###"
+                @commit "###" ◂comment_end 3
             else
-                @pushToken("", ◂comment)
+                @pushToken "" ◂comment
             ⮐  
     
         @advanceUntil "\n"
@@ -378,7 +378,7 @@ class Tknzr
     
     commit: str="" tk=◂name incr=0 ->
     
-        @pushToken(str, tk, incr)
+        @pushToken str tk incr
         @pushToken()
         
         switch tk
@@ -421,7 +421,7 @@ class Tknzr
                 @nextLine()
                 if @segi >= @segs.len
                     break
-                @token = tkn(◂indent "" @line @col) 
+                @token = tkn ◂indent "" @line @col
                 while @peekSafe(0) == " "
                     @advance 1
                 if @segi >= @segs.len
@@ -431,11 +431,11 @@ class Tknzr
                 @tokens.add @token
                 continue
                     
-            @token = tkn(◂name "" @line @col)
+            @token = tkn ◂name "" @line @col
             
             while @segi < @eol
                                         
-                char = @peek(0)
+                char = @peek 0
                 
                 if char == " "
                     if @segi > 0 and @peek(-1) != " "
@@ -448,11 +448,11 @@ class Tknzr
                     triple = @srng 3
                     
                     if triple == "..<"
-                        @commit("...", ◂tripledot, 3)
+                        @commit "..." ◂tripledot 3
                         continue
                     
                     if punct.hasKey triple
-                        @commit(triple, punct[triple], 3)
+                        @commit triple punct[triple] 3
                         if @tokens[^1].tok == ◂string_start
                             @token.tok = ◂string
                         continue
@@ -462,23 +462,23 @@ class Tknzr
                         if punct[double] == ◂mod
                             @modbracket()
                         else
-                            @commit(double, punct[double], 2)
+                            @commit double punct[double] 2
                         continue
                             
                     if punct.hasKey char
                     
                         if punct[char] in openToks
-                            @openStack.push(punct[char])
+                            @openStack.push punct[char]
                         elif punct[char] in closeToks
                             if @openStack.len and @openStack[^1] == closeOpen[punct[char]]
                                 @openStack.pops()
                             elif punct[char] == ◂bracket_close and @inStripol
                                 @inStripol = false
-                                @commit(char, ◂stripol_end, 1)
+                                @commit char ◂stripol_end 1
                                 continue
                                 
                         if punct[char] == ◂test
-                            if @peek(1) notin [" ", "\n"]
+                            if @peek(1) notin [" " "\n"]
                                 @token.tok = ◂name
                                 @advance 1
                                 continue
@@ -488,12 +488,12 @@ class Tknzr
                                 @push ◂test
                                 continue
                                 
-                        if @tokens.len > 0 and @tokens[^1].tok == ◂multiply and punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type}
-                            if punct[char] != ◂paren_open or @tokens[^2].tok in {◂proc, ◂template, ◂macro}
+                        if @tokens.len > 0 and @tokens[^1].tok == ◂multiply and punct[char] in {◂assign ◂colon ◂paren_open ◂var_type ◂val_type}
+                            if punct[char] != ◂paren_open or @tokens[^2].tok in {◂proc ◂template ◂macro}
                                 @tokens.pops()
                                 @tokens[^1].str &= "*"
                     
-                        @commit(char, punct[char], 1)
+                        @commit char punct[char] 1
                         continue
                     else
                         if @token.str.len == 0 and @char in {'0'..'9'}
@@ -512,7 +512,7 @@ class Tknzr
                                     @token.str = ""
                                     continue
                                 "quote"
-                                    if @scmp(" do:")
+                                    if @scmp " do:"
                                         @incr 4
                                         @push ◂quote
                                         continue
@@ -521,13 +521,13 @@ class Tknzr
                         if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)))
                             switch keywords[@token.str]
                                 ◂proc ◂type ◂import ◂macro ◂template ◂converter
-                                    @verbatim(keywords[@token.str])
+                                    @verbatim keywords[@token.str]
                                 ➜   @push keywords[@token.str]
                         continue
                 @incr 1
             
             if @token.str.len
-                if keywords.hasKey(@token.str)
+                if keywords.hasKey @token.str
                     @token.tok = keywords[@token.str]
                 @tokens.add @token
                     

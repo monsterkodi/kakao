@@ -25,7 +25,7 @@ class Rndr
     tok: ◇Node n      -> @s &= n.token.str
     rnd: ◇Node n      ->
     rnd: ◇seq[Node] nodes ->
-        for i,n in nodes
+        for i n in nodes
             @rnd n
             if i<nodes.len-1
                 @add ", "
@@ -37,7 +37,7 @@ class Rndr
             idt = n.token.str
             @add "\n" & idt
             
-        for i,exp in n.expressions
+        for i exp in n.expressions
             @rnd exp
             if i < n.expressions.len-1
                 if n.expressions[i+1].token.line > exp.token.line
@@ -89,26 +89,21 @@ class Rndr
                 @▸proc n
                 ⮐  
     
-        if n.token.tok notin {◂assign, ◂ampersand}
-            @add "("
-        if n.token.tok == ◂assign and n.operand_left.kind == ●list
-            @add "("
+        outerbr = n.token.tok notin {◂assign, ◂ampersand}
+        bracket = n.token.tok == ◂assign and n.operand_left.kind == ●list
+        @add("(") if bracket or outerbr
         @rnd n.operand_left
-        if n.token.tok == ◂assign and n.operand_left.kind == ●list
-            @add ")"
+        @add(")") if bracket
         @spc()
         switch n.token.tok
             ◂and ➜ @add 'and'
             ◂or  ➜ @add 'or'
                  ➜ @tok n
         @spc()
-        if n.token.tok == ◂assign and n.operand_right.kind == ●list
-            @add "("
+        bracket = n.token.tok == ◂assign and n.operand_right.kind == ●list
+        @add("(") if bracket
         @rnd n.operand_right
-        if n.token.tok == ◂assign and n.operand_right.kind == ●list
-            @add ")"
-        if n.token.tok notin {◂assign, ◂ampersand}
-            @add ")"
+        @add(")") if bracket or outerbr
         
     ▸let: ◇Node n -> 
     
@@ -200,15 +195,15 @@ class Rndr
         if delimiter == "\"\"\""
             lines = n.string_content.token.str.split "\n"
             if lines.len > 1
-                ill = indentLen(lines[1..^1])
-                mill = min(mill, ill)
+                ill = indentLen lines[1..^1]
+                mill = min mill ill
                     
             for stripol in n.string_stripols
                 if stripol.stripol_content
                     lines = stripol.stripol_content.token.str.split "\n"
                     if lines.len > 1
-                        ill = indentLen(lines[1..^1])
-                        mill = min(mill, ill)
+                        ill = indentLen lines[1..^1]
+                        mill = min mill ill
             
         demill = ◇Node n -> 
             if mill == 0
@@ -341,7 +336,7 @@ class Rndr
     ▸squarely: ◇Node n ->
     
         @add "@["
-        for i,item in n.list_values
+        for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
                 @add ", "
@@ -385,7 +380,7 @@ class Rndr
         
         cdt = ' '.repeat n.switch_cases[0].token.col
         
-        for i,caseNode in n.switch_cases
+        for i caseNode in n.switch_cases
             @add "\n" & cdt
             @add "of "
             for j,whenNode in caseNode.case_when
@@ -500,18 +495,18 @@ class Rndr
 render* = ◇string code autovar=true ➜string ->
 
     # profileStart "ast"
-    root = ast(code)
+    root = ast code
     
     ⮐  "" if not root
     
-    root = classify(root)
+    root = classify root
     
     # profileStop "ast"
     if autovar
         # profileStart "vars"
-        root = variables(root)
+        root = variables root
         # profileStop "vars"
-    r = Rndr(code:code)
+    r = Rndr code:code
     # profileStart "rnd"
     r.rnd root
     # profileStop "rnd"
@@ -521,7 +516,7 @@ file* = ◇string file ➜string ->
 
     profileScope file
 
-    fileOut = file.swapLastPathComponentAndExt("kim", "nim")
+    fileOut = file.swapLastPathComponentAndExt "kim" "nim"
     kimCode = file.readFile()
     nimCode = render kimCode 
     if nimCode
@@ -534,7 +529,7 @@ files* = ◇seq[string] files ➜seq[string] ->
 
     transpiled ◇ seq[string]
     for f in files
-        nimFile = file(f)
+        nimFile = file f
         if nimFile
             transpiled.add nimFile
     transpiled

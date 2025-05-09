@@ -68,26 +68,21 @@ proc ▸operation(this : Rndr, n : Node) =
             if (n.operand_right.token.tok == ◂func): 
                 this.▸proc(n)
                 return
-        if (n.token.tok notin {◂assign, ◂ampersand}): 
-            this.add("(")
-        if ((n.token.tok == ◂assign) and (n.operand_left.kind == ●list)): 
-            this.add("(")
+        var outerbr = (n.token.tok notin {◂assign, ◂ampersand})
+        var bracket = ((n.token.tok == ◂assign) and (n.operand_left.kind == ●list))
+        if (bracket or outerbr): this.add("(")
         this.rnd(n.operand_left)
-        if ((n.token.tok == ◂assign) and (n.operand_left.kind == ●list)): 
-            this.add(")")
+        if bracket: this.add(")")
         this.spc()
         case n.token.tok:
             of ◂and: this.add("and")
             of ◂or: this.add("or")
             else: this.tok(n)
         this.spc()
-        if ((n.token.tok == ◂assign) and (n.operand_right.kind == ●list)): 
-            this.add("(")
+        bracket = ((n.token.tok == ◂assign) and (n.operand_right.kind == ●list))
+        if bracket: this.add("(")
         this.rnd(n.operand_right)
-        if ((n.token.tok == ◂assign) and (n.operand_right.kind == ●list)): 
-            this.add(")")
-        if (n.token.tok notin {◂assign, ◂ampersand}): 
-            this.add(")")
+        if (bracket or outerbr): this.add(")")
 proc ▸let(this : Rndr, n : Node) = 
         this.tok(n)
         this.add(" ")
