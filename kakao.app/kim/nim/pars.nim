@@ -66,6 +66,31 @@ type Parser* = ref object
     # ███       █████████  ███      ███    
     # ███       ███   ███  ███      ███    
     #  ███████  ███   ███  ███████  ███████
+    # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
+    # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
+    # ███  █████████  ████████   ███      ███  ███       ███     ███   
+    # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
+    # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
+    # ███  ████████                             ███  ████████                               ███  ████████  
+    # ███  ███                                  ███  ███                                    ███  ███       
+    # ███  ██████                               ███  ██████                                 ███  ██████    
+    # ███  ███                                  ███  ███                                    ███  ███       
+    # ███  ███                                  ███  ███                                    ███  ███       
+    # █████████   ███████   ███  ███         ███  ████████
+    #    ███     ███   ███  ███  ███         ███  ███     
+    #    ███     █████████  ███  ███         ███  ██████  
+    #    ███     ███   ███  ███  ███         ███  ███     
+    #    ███     ███   ███  ███  ███████     ███  ███     
+    # ████████   ███████   ████████ 
+    # ███       ███   ███  ███   ███
+    # ██████    ███   ███  ███████  
+    # ███       ███   ███  ███   ███
+    # ███        ███████   ███   ███
+    #  ███████  ███   ███  ███  █████████   ███████  ███   ███
+    # ███       ███ █ ███  ███     ███     ███       ███   ███
+    # ███████   █████████  ███     ███     ███       █████████
+    #      ███  ███   ███  ███     ███     ███       ███   ███
+    # ███████   ██     ██  ███     ███      ███████  ███   ███
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -374,185 +399,160 @@ proc lCall(this : Parser, callee : Node) : Node =
         var args = this.parseCallArgs(callee.token.col)
         this.swallowError(◂paren_close, "Missing closing paren for call arguments")
         Node(token: token, kind: ●call, callee: callee, callargs: args)
-# ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
-# ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
-# ███  █████████  ████████   ███      ███  ███       ███     ███   
-# ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
-# ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
-proc isImplicitCallPossible(p : Parser) : bool = 
-    if p.explicit: return false
-    var currt = p.peek(0)
-    var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
-    if (currt.tok in optoks): return false
-    var prevt = p.peek(-1)
-    if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
-    if p.isTokAhead(◂func): return false
-    true
-proc rSymbol(p : Parser) : Node = 
-    var token = p.consume()
-    if (((token.str in @["peg", "re", "r"]) and (p.tok == ◂string_start)) and ((token.col + token.str.len) == p.current.col)): 
-        var n = p.rString()
-        n.string_prefix = nod(●literal, token)
-        return n
-    if p.isImplicitCallPossible(): 
-        let args = p.parseCallArgs(token.col)
-        return Node(token: token, kind: ●call, callee: nod(●literal, token), callargs: args)
-    nod(●literal, token)
-# ███  ████████                             ███  ████████                               ███  ████████  
-# ███  ███                                  ███  ███                                    ███  ███       
-# ███  ██████                               ███  ██████                                 ███  ██████    
-# ███  ███                                  ███  ███                                    ███  ███       
-# ███  ███                                  ███  ███                                    ███  ███       
-proc inline(p : Parser) : Node = 
-    (p.inlinecall += 1)
-    var e = p.expression()
-    (p.inlinecall -= 1)
-    e
-proc rIf(p : Parser) : Node = 
-    var token = p.consume() # if or when
-    var condThens : seq[Node]
-    var ifIndent = token.col
-    var condIndt = ifIndent
-    if (p.tok == ◂indent): 
-        condIndt = p.current.str.len
-        if (condIndt <= ifIndent): 
-            return p.error("Expected indentation after 'if' without condition")
-        p.swallow(◂indent) # block indentation
-    var condition = p.inline() # initial condition
-    var then_branch = p.thenBlock()
-    condThens.add(nod(●condThen, condition.token, condition, then_branch))
-    var outdent = false
-    while (p.tok in {◂elif, ◂indent}): 
-        if (p.tok == ◂indent): 
-            if (p.current.str.len < ifIndent): 
-                outdent = true
-                break
-            if (ifIndent < condIndt): 
-                if (p.current.str.len < condIndt): 
-                    break
-            if ((p.peek(1).tok != ◂elif) and (p.current.str.len == ifIndent)): 
-                break
-            p.swallow(◂indent)
-            if (p.tok == ◂comment_start): 
-                p.swallow()
-                p.swallow(◂comment)
-            if (p.tok == ◂indent): 
-                continue
-        p.swallow(◂elif)
-        if (p.tok in {◂then, ◂else}): 
-            break # then without condition -> else
-        condition = p.inline()
-        p.swallow(◂comment)
-        then_branch = p.thenBlock()
+proc isImplicitCallPossible(this : Parser) : bool = 
+        if this.explicit: return false
+        var currt = this.peek(0)
+        var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
+        if (currt.tok in optoks): return false
+        var prevt = this.peek(-1)
+        if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
+        if this.isTokAhead(◂func): return false
+        true
+proc rSymbol(this : Parser) : Node = 
+        var token = this.consume()
+        if (((token.str in @["peg", "re", "r"]) and (this.tok == ◂string_start)) and ((token.col + token.str.len) == this.current.col)): 
+            var n = this.rString()
+            n.string_prefix = nod(●literal, token)
+            return n
+        if this.isImplicitCallPossible(): 
+            let args = this.parseCallArgs(token.col)
+            return Node(token: token, kind: ●call, callee: nod(●literal, token), callargs: args)
+        nod(●literal, token)
+proc inline(this : Parser) : Node = 
+        (this.inlinecall += 1)
+        var e = this.expression()
+        (this.inlinecall -= 1)
+        e
+proc rIf(this : Parser) : Node = 
+        var token = this.consume() # if or when
+        var condThens : seq[Node]
+        var ifIndent = token.col
+        var condIndt = ifIndent
+        if (this.tok == ◂indent): 
+            condIndt = this.current.str.len
+            if (condIndt <= ifIndent): 
+                return this.error("Expected indentation after 'if' without condition")
+            this.swallow(◂indent) # block indentation
+        var condition = this.inline() # initial condition
+        var then_branch = this.thenBlock()
         condThens.add(nod(●condThen, condition.token, condition, then_branch))
-    var else_branch : Node
-    if not outdent: 
-        p.swallow(◂indent)
-        if (p.tok in {◂else, ◂then}): 
-            p.swallow() # else or then without condition
-            else_branch = p.thenBlock()
-    Node(token: token, kind: ●if, cond_thens: condThens, else_branch: else_branch)
-# █████████   ███████   ███  ███         ███  ████████
-#    ███     ███   ███  ███  ███         ███  ███     
-#    ███     █████████  ███  ███         ███  ██████  
-#    ███     ███   ███  ███  ███         ███  ███     
-#    ███     ███   ███  ███  ███████     ███  ███     
-proc lTailIf(p : Parser, left : Node) : Node = 
-    if p.returning: return
-    if (left.token.line != p.current.line): return
-    var token = p.consume()
-    var condition = p.expression()
-    var condThen = nod(●condThen, condition.token, condition, left)
-    Node(token: token, kind: ●if, cond_thens: @[condThen])
-# ████████   ███████   ████████ 
-# ███       ███   ███  ███   ███
-# ██████    ███   ███  ███████  
-# ███       ███   ███  ███   ███
-# ███        ███████   ███   ███
-proc rFor(p : Parser) : Node = 
-    var token = p.consume()
-    var for_value = p.parseNamesUntil(◂in)
-    p.swallowError(◂in, "Expected 'in' after for value")
-    var for_range = p.expression()
-    var for_body = p.thenBlock()
-    nod(●for, token, for_value, for_range, for_body)
-proc rWhile(p : Parser) : Node = 
-    nod(●while, p.consume(), p.expression(), p.thenBlock())
-#  ███████  ███   ███  ███  █████████   ███████  ███   ███
-# ███       ███ █ ███  ███     ███     ███       ███   ███
-# ███████   █████████  ███     ███     ███       █████████
-#      ███  ███   ███  ███     ███     ███       ███   ███
-# ███████   ██     ██  ███     ███      ███████  ███   ███
-proc switchCase(p : Parser, baseIndent : int) : Node = 
-    var case_when : seq[Node]
-    var token = p.current
-    var first = p.firstLineToken()
-    while true: 
-        if (p.tok == ◂indent): 
-            if ((case_when.len == 0) and (p.peek(1).tok == ◂then)): 
-                p.swallow()
-                return # indent followed by a ➜ is else
-            if not p.swallowSameIndent(baseIndent): 
+        var outdent = false
+        while (this.tok in {◂elif, ◂indent}): 
+            if (this.tok == ◂indent): 
+                if (this.current.str.len < ifIndent): 
+                    outdent = true
+                    break
+                if (ifIndent < condIndt): 
+                    if (this.current.str.len < condIndt): 
+                        break
+                if ((this.peek(1).tok != ◂elif) and (this.current.str.len == ifIndent)): 
+                    break
+                this.swallow(◂indent)
+                if (this.tok == ◂comment_start): 
+                    this.swallow()
+                    this.swallow(◂comment)
+                if (this.tok == ◂indent): 
+                    continue
+            this.swallow(◂elif)
+            if (this.tok in {◂then, ◂else}): 
+                break # then without condition -> else
+            condition = this.inline()
+            this.swallow(◂comment)
+            then_branch = this.thenBlock()
+            condThens.add(nod(●condThen, condition.token, condition, then_branch))
+        var else_branch : Node
+        if not outdent: 
+            this.swallow(◂indent)
+            if (this.tok in {◂else, ◂then}): 
+                this.swallow() # else or then without condition
+                else_branch = this.thenBlock()
+        Node(token: token, kind: ●if, cond_thens: condThens, else_branch: else_branch)
+proc lTailIf(this : Parser, left : Node) : Node = 
+        if this.returning: return
+        if (left.token.line != this.current.line): return
+        var token = this.consume()
+        var condition = this.expression()
+        var condThen = nod(●condThen, condition.token, condition, left)
+        Node(token: token, kind: ●if, cond_thens: @[condThen])
+proc rFor(this : Parser) : Node = 
+        var token = this.consume()
+        var for_value = this.parseNamesUntil(◂in)
+        this.swallowError(◂in, "Expected 'in' after for value")
+        var for_range = this.expression()
+        var for_body = this.thenBlock()
+        nod(●for, token, for_value, for_range, for_body)
+proc rWhile(this : Parser) : Node = 
+        nod(●while, this.consume(), this.expression(), this.thenBlock())
+proc switchCase(this : Parser, baseIndent : int) : Node = 
+        var case_when : seq[Node]
+        var token = this.current
+        var first = this.firstLineToken()
+        while true: 
+            if (this.tok == ◂indent): 
+                if ((case_when.len == 0) and (this.peek(1).tok == ◂then)): 
+                    this.swallow()
+                    return # indent followed by a ➜ is else
+                if not this.swallowSameIndent(baseIndent): 
+                    break
+            if ((this.tok in {◂else, ◂eof}) or this.isDedent(baseIndent)): return
+            if (this.tok == ◂then): break
+            (this.explicit += 1)
+            case_when.add(this.value())
+            (this.explicit -= 1)
+            this.swallow(◂comma)
+        if this.isDedent(baseIndent): return
+        var case_then = this.thenIndented(first)
+        if (case_then == nil): 
+            return this.error("Expected case body after match(es)", token)
+        Node(token: token, kind: ●switchCase, case_when: case_when, case_then: case_then)
+proc rSwitch(this : Parser) : Node = 
+        var token = this.consume()
+        var switch_value = this.expression()
+        if (switch_value == nil): 
+            return this.error("Expected value after switch keyword", token)
+        var baseIndent = this.current.str.len
+        this.swallowError(◂indent, "Expected indentation after switch statement")
+        var switch_cases : seq[Node]
+        while true: 
+            var switch_case = this.switchCase(baseIndent)
+            if switch_case: 
+                switch_cases.add(switch_case)
+            else: 
                 break
-        if ((p.tok in {◂else, ◂eof}) or p.isDedent(baseIndent)): return
-        if (p.tok == ◂then): break
-        (p.explicit += 1)
-        case_when.add(p.value())
-        (p.explicit -= 1)
-        p.swallow(◂comma)
-    if p.isDedent(baseIndent): return
-    var case_then = p.thenIndented(first)
-    if (case_then == nil): 
-        return p.error("Expected case body after match(es)", token)
-    Node(token: token, kind: ●switchCase, case_when: case_when, case_then: case_then)
-proc rSwitch(p : Parser) : Node = 
-    var token = p.consume()
-    var switch_value = p.expression()
-    if (switch_value == nil): 
-        return p.error("Expected value after switch keyword", token)
-    var baseIndent = p.current.str.len
-    p.swallowError(◂indent, "Expected indentation after switch statement")
-    var switch_cases : seq[Node]
-    while true: 
-        var switch_case = p.switchCase(baseIndent)
-        if switch_case: 
-            switch_cases.add(switch_case)
-        else: 
-            break
-    var switch_default : Node
-    if (p.tok in {◂else, ◂then}): 
-        p.swallow()
-        switch_default = p.thenBlock()
-        if (switch_default == nil): 
-            return p.error("Expected default value", token)
-    Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
-proc lArrayAccess(p : Parser, array_owner : Node) : Node = 
-    var token = p.current()
-    var array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
-    var array_index = 
-        case array_indices.len:
-            of 0: nil
-            of 1: array_indices[0]
-            else: nod(●list, token, array_indices)
-    nod(●arrayAccess, token, array_owner, array_index)
-proc lPropertyAccess(p : Parser, owner : Node) : Node = 
-    var token = p.consume()
-    var property = p.rLiteral()
-    var n = nod(●propertyAccess, token, owner, property)
-    if p.isImplicitCallPossible(): 
-        return Node(token: token, kind: ●call, callee: n, callargs: p.parseCallArgs(token.col))
-    n
-proc rLiteral(p : Parser) : Node = nod(●literal, p.consume())
-proc rKeyword(p : Parser) : Node = nod(●keyword, p.consume())
-proc rImport(p : Parser) : Node = nod(●import, p.consume())
-proc rProc(p : Parser) : Node = nod(●proc, p.consume())
-proc rTypeDef(p : Parser) : Node = nod(●typeDef, p.consume())
-proc rMacro(p : Parser) : Node = nod(●macro, p.consume())
-proc rTemplate(p : Parser) : Node = nod(●template, p.consume())
-proc rConverter(p : Parser) : Node = nod(●converter, p.consume())
-proc rLet(p : Parser) : Node = nod(●let, p.consume(), p.parseVar())
-proc rReturnType(p : Parser) : Node = nod(●signature, p.consume(), nil, p.parseType())
-proc rQuote(p : Parser) : Node = nod(●quote, p.consume(), p.thenBlock())
+        var switch_default : Node
+        if (this.tok in {◂else, ◂then}): 
+            this.swallow()
+            switch_default = this.thenBlock()
+            if (switch_default == nil): 
+                return this.error("Expected default value", token)
+        Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
+proc lArrayAccess(this : Parser, array_owner : Node) : Node = 
+        var token = this.current()
+        var array_indices = this.parseDelimitedList(◂square_open, ◂square_close)
+        var array_index = 
+            case array_indices.len:
+                of 0: nil
+                of 1: array_indices[0]
+                else: nod(●list, token, array_indices)
+        nod(●arrayAccess, token, array_owner, array_index)
+proc lPropertyAccess(this : Parser, owner : Node) : Node = 
+        var token = this.consume()
+        var property = this.rLiteral()
+        var n = nod(●propertyAccess, token, owner, property)
+        if this.isImplicitCallPossible(): 
+            return Node(token: token, kind: ●call, callee: n, callargs: this.parseCallArgs(token.col))
+        n
+proc rLiteral(this : Parser) : Node = nod(●literal, this.consume())
+proc rKeyword(this : Parser) : Node = nod(●keyword, this.consume())
+proc rImport(this : Parser) : Node = nod(●import, this.consume())
+proc rProc(this : Parser) : Node = nod(●proc, this.consume())
+proc rTypeDef(this : Parser) : Node = nod(●typeDef, this.consume())
+proc rMacro(this : Parser) : Node = nod(●macro, this.consume())
+proc rTemplate(this : Parser) : Node = nod(●template, this.consume())
+proc rConverter(this : Parser) : Node = nod(●converter, this.consume())
+proc rLet(this : Parser) : Node = nod(●let, this.consume(), this.parseVar())
+proc rReturnType(this : Parser) : Node = nod(●signature, this.consume(), nil, this.parseType())
+proc rQuote(this : Parser) : Node = nod(●quote, this.consume(), this.thenBlock())
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
 # ███████      ███     ███████    ███  ███ █ ███  ███  ████

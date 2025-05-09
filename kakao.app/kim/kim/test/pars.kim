@@ -137,6 +137,8 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "error: ◇string msg token=tkn ->"         "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]"
         t "error: ◇string msg token=tkn(◂eof) ->"   "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]"
         
+        t "⮐  Node(callee:nod(literal token), callargs:args)" "▪[(⮐ (◂name ◂call @[(◂name : (◂name ◂call @[◂name, ◂name])), (◂name : ◂name)]))]"
+        
     ▸ func modfifier
     
         t "{.noconv.}"                              "▪[{.]"

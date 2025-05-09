@@ -7,64 +7,69 @@ import pars
 type NodeIt = proc(node:Node):Node
 proc traverse(n : Node, iter : NodeIt) : Node = 
     if (n == nil): return
+    template trav(arg:Node) = 
+    
+        arg = traverse(arg, iter)
+    template trvl(arg:seq[Node]) = 
+    
+        for i, e in arg: 
+            arg.splice(i, 1, @[traverse(e, iter)])
     var n = n
     case n.kind:
-        of ●block: 
-            for i, e in n.expressions: 
-                n.expressions.splice(i, 1, @[traverse(e, iter)])
         of ●literal: 
             n = iter(n)
+        of ●block: 
+            trvl(n.expressions)
         of ●string: 
             for s in n.string_stripols: 
-                for i, e in s.stripol_xprssns: 
-                    s.stripol_xprssns.splice(i, 1, @[traverse(e, iter)])
+                trvl(s.stripol_xprssns)
         of ●operation: 
-            n.operand_left = traverse(n.operand_left, iter)
-            n.operand_right = traverse(n.operand_right, iter)
+            trav(n.operand_left)
+            trav(n.operand_right)
         of ●preOp, ●postOp: 
-            n.operand = traverse(n.operand, iter)
+            trav(n.operand)
         of ●call: 
-            n.callee = traverse(n.callee, iter)
-            for i, e in n.call_args: 
-                n.call_args.splice(i, 1, @[traverse(e, iter)])
+            trav(n.callee)
+            trvl(n.call_args)
         of ●for: 
-            n.for_body = traverse(n.for_body, iter)
-            n.for_range = traverse(n.for_range, iter)
+            trav(n.for_body)
+            trav(n.for_range)
         of ●if: 
-            for i, e in n.cond_thens: 
-                n.cond_thens.splice(i, 1, @[traverse(e, iter)])
-            n.else_branch = traverse(n.else_branch, iter)
+            trvl(n.cond_thens)
+            trav(n.else_branch)
         of ●condThen: 
-            n.condition = traverse(n.condition, iter)
-            n.then_branch = traverse(n.then_branch, iter)
+            trav(n.condition)
+            trav(n.then_branch)
         of ●switch: 
-            n.switch_value = traverse(n.switch_value, iter)
-            for i, e in n.switch_cases: 
-                n.switch_cases.splice(i, 1, @[traverse(e, iter)])
-            n.switch_default = traverse(n.switch_default, iter)
+            trav(n.switch_value)
+            trvl(n.switch_cases)
+            trav(n.switch_default)
         of ●switchCase: 
-            for i, e in n.case_when: 
-                n.case_when.splice(i, 1, @[traverse(e, iter)])
-            n.case_then = traverse(n.case_then, iter)
+            trvl(n.case_when)
+            trav(n.case_then)
         of ●propertyAccess: 
-            n.owner = traverse(n.owner, iter)
+            trav(n.owner)
         of ●arrayAccess: 
-            n.array_owner = traverse(n.array_owner, iter)
-            n.array_index = traverse(n.array_index, iter)
+            trav(n.array_owner)
+            trav(n.array_index)
         of ●return: 
-            n.return_value = traverse(n.return_value, iter)
+            trav(n.return_value)
         of ●discard: 
-            n.discard_value = traverse(n.discard_value, iter)
+            trav(n.discard_value)
         of ●while: 
-            n.while_cond = traverse(n.while_cond, iter)
-            n.while_body = traverse(n.while_body, iter)
+            trav(n.while_cond)
+            trav(n.while_body)
         of ●range: 
-            n.range_start = traverse(n.range_start, iter)
-            n.range_end = traverse(n.range_end, iter)
+            trav(n.range_start)
+            trav(n.range_end)
+        of ●member: 
+            trav(n.member_value)
         of ●let: 
-            n.let_expr = traverse(n.let_expr, iter)
+            trav(n.let_expr)
+        of ●list: 
+            trvl(n.list_values)
         of ●func: 
-            n.func_body = traverse(n.func_body, iter)
+            trav(n.func_body)
         else: 
             echo(&"clss.traverse -- unhandled {n.kind}")
     n

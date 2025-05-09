@@ -489,262 +489,262 @@ class Parser*
         @swallowError(◂paren_close, "Missing closing paren for call arguments")    
         Node(token:token, kind:●call, callee:callee, callargs:args)
     
-# ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
-# ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
-# ███  █████████  ████████   ███      ███  ███       ███     ███   
-# ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
-# ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
-
-isImplicitCallPossible = ◇Parser p ➜bool ->
-
-    ⮐  false if p.explicit
-
-    currt = p.peek(0)
+    # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
+    # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
+    # ███  █████████  ████████   ███      ███  ███       ███     ███   
+    # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
+    # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
     
-    optoks = { 
-        ◂indent, ◂eof,
-        ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
-        ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
-        ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
-        ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
+    isImplicitCallPossible: ➜bool ->
+    
+        ⮐  false if @explicit
+    
+        currt = @peek(0)
         
-    ⮐  false if currt.tok in optoks  
-    
-    prevt = p.peek(-1)
-    
-    ⮐  false if currt.col <= prevt.col+ksegWidth(prevt.str)
-    ⮐  false if p.isTokAhead(◂func)
-    true
-    
-rSymbol = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    
-    if token.str in ["peg", "re", "r"] and p.tok == ◂string_start and token.col + token.str.len == p.current.col
-        n = p.rString()
-        n.string_prefix = nod ●literal token
-        ⮐  n
-
-    if p.isImplicitCallPossible()
-        let args = p.parseCallArgs(token.col)
-        ⮐  Node(token:token, kind:●call, callee:nod(●literal token), callargs:args)
-
-    nod ●literal token
+        optoks = { 
+            ◂indent, ◂eof,
+            ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
+            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
+            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
+            ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
+            
+        ⮐  false if currt.tok in optoks  
         
-# ███  ████████                             ███  ████████                               ███  ████████  
-# ███  ███                                  ███  ███                                    ███  ███       
-# ███  ██████                               ███  ██████                                 ███  ██████    
-# ███  ███                                  ███  ███                                    ███  ███       
-# ███  ███                                  ███  ███                                    ███  ███       
-
-inline = ◇Parser p ➜Node ->
-
-    p.inlinecall += 1
-    e = p.expression()
-    p.inlinecall -= 1
-    e
-
-rIf = ◇Parser p ➜Node ->
-
-    token     = p.consume() # if or when
-    condThens ◇ seq[Node]
-    ifIndent  = token.col
-    condIndt  = ifIndent
-    
-    if p.tok == ◂indent
-        condIndt = p.current.str.len
-        if condIndt <= ifIndent
-            ⮐  p.error "Expected indentation after 'if' without condition"
-        p.swallow ◂indent # block indentation
-    
-    condition = p.inline() # initial condition
-    then_branch = p.thenBlock()
-    
-    condThens.add nod(●condThen condition.token condition then_branch)
-    
-    outdent = false
-    
-    while p.tok in {◂elif, ◂indent}
-    
-        if p.tok == ◂indent            
-            if p.current.str.len < ifIndent
-                outdent = true
-                break
-            if ifIndent < condIndt 
-                if p.current.str.len < condIndt
-                    break
-            if p.peek(1).tok != ◂elif and p.current.str.len == ifIndent
-                break
-            p.swallow ◂indent
-            if p.tok == ◂comment_start
-                p.swallow()
-                p.swallow ◂comment
-            if p.tok == ◂indent
-                continue
-                
-        p.swallow(◂elif)
-        if p.tok in {◂then, ◂else}
-            break # then without condition -> else
+        prevt = @peek(-1)
         
-        condition = p.inline()
-        p.swallow ◂comment
-        then_branch = p.thenBlock()
+        ⮐  false if currt.col <= prevt.col+ksegWidth(prevt.str)
+        ⮐  false if @isTokAhead(◂func)
+        true
+        
+    rSymbol: ➜Node ->
+    
+        token = @consume()
+        
+        if token.str in ["peg" "re" "r"] and @tok == ◂string_start and token.col + token.str.len == @current.col
+            n = @rString()
+            n.string_prefix = nod ●literal token
+            ⮐  n
+    
+        if @isImplicitCallPossible()
+            let args = this.parseCallArgs(token.col)
+            ⮐  Node(token:token, kind:●call, callee:nod(●literal token), callargs:args)
+    
+        nod ●literal token
+            
+    # ███  ████████                             ███  ████████                               ███  ████████  
+    # ███  ███                                  ███  ███                                    ███  ███       
+    # ███  ██████                               ███  ██████                                 ███  ██████    
+    # ███  ███                                  ███  ███                                    ███  ███       
+    # ███  ███                                  ███  ███                                    ███  ███       
+    
+    inline: ➜Node ->
+    
+        @inlinecall += 1
+        e = @expression()
+        @inlinecall -= 1
+        e
+    
+    rIf: ➜Node ->
+    
+        token     = @consume() # if or when
+        condThens ◇ seq[Node]
+        ifIndent  = token.col
+        condIndt  = ifIndent
+        
+        if @tok == ◂indent
+            condIndt = @current.str.len
+            if condIndt <= ifIndent
+                ⮐  @error "Expected indentation after 'if' without condition"
+            @swallow ◂indent # block indentation
+        
+        condition = @inline() # initial condition
+        then_branch = @thenBlock()
         
         condThens.add nod(●condThen condition.token condition then_branch)
         
-    else_branch ◇ Node
-
-    if not outdent    
-        p.swallow(◂indent)
+        outdent = false
         
-        if p.tok in {◂else, ◂then}
-            p.swallow() # else or then without condition
-            else_branch = p.thenBlock()
-    
-    Node(token:token, kind:●if, cond_thens:condThens, else_branch:else_branch)
-
-# █████████   ███████   ███  ███         ███  ████████
-#    ███     ███   ███  ███  ███         ███  ███     
-#    ███     █████████  ███  ███         ███  ██████  
-#    ███     ███   ███  ███  ███         ███  ███     
-#    ███     ███   ███  ███  ███████     ███  ███     
-
-lTailIf = ◇Parser p ◇Node left ➜Node ->
-
-    ⮐  if p.returning
-    ⮐  if left.token.line != p.current.line
+        while @tok in {◂elif, ◂indent}
         
-    token = p.consume()
-    condition = p.expression()
-    condThen = nod ●condThen condition.token condition left
-
-    Node(token:token, kind:●if, cond_thens: @[condThen])
+            if @tok == ◂indent            
+                if @current.str.len < ifIndent
+                    outdent = true
+                    break
+                if ifIndent < condIndt 
+                    if @current.str.len < condIndt
+                        break
+                if @peek(1).tok != ◂elif and @current.str.len == ifIndent
+                    break
+                @swallow ◂indent
+                if @tok == ◂comment_start
+                    @swallow()
+                    @swallow ◂comment
+                if @tok == ◂indent
+                    continue
+                    
+            @swallow(◂elif)
+            if @tok in {◂then, ◂else}
+                break # then without condition -> else
+            
+            condition = @inline()
+            @swallow ◂comment
+            then_branch = @thenBlock()
+            
+            condThens.add nod(●condThen condition.token condition then_branch)
+            
+        else_branch ◇ Node
+    
+        if not outdent    
+            @swallow(◂indent)
+            
+            if @tok in {◂else, ◂then}
+                @swallow() # else or then without condition
+                else_branch = @thenBlock()
         
-# ████████   ███████   ████████ 
-# ███       ███   ███  ███   ███
-# ██████    ███   ███  ███████  
-# ███       ███   ███  ███   ███
-# ███        ███████   ███   ███
-
-rFor = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    for_value = p.parseNamesUntil ◂in
-    p.swallowError(◂in, "Expected 'in' after for value")
-    for_range = p.expression()
-    for_body  = p.thenBlock()
-
-    nod ●for token for_value for_range for_body
-
-rWhile = ◇Parser p ➜Node ->
-
-    nod ●while p.consume() p.expression() p.thenBlock()
-
-#  ███████  ███   ███  ███  █████████   ███████  ███   ███
-# ███       ███ █ ███  ███     ███     ███       ███   ███
-# ███████   █████████  ███     ███     ███       █████████
-#      ███  ███   ███  ███     ███     ███       ███   ███
-# ███████   ██     ██  ███     ███      ███████  ███   ███
-
-switchCase = ◇Parser p ◇int baseIndent ➜Node ->
-
-    case_when ◇ seq[Node]
-    token     = p.current
-    first     = p.firstLineToken()
+        Node(token:token, kind:●if, cond_thens:condThens, else_branch:else_branch)
     
-    while true
+    # █████████   ███████   ███  ███         ███  ████████
+    #    ███     ███   ███  ███  ███         ███  ███     
+    #    ███     █████████  ███  ███         ███  ██████  
+    #    ███     ███   ███  ███  ███         ███  ███     
+    #    ███     ███   ███  ███  ███████     ███  ███     
     
-        if p.tok == ◂indent
-            if case_when.len == 0 and p.peek(1).tok == ◂then
-                p.swallow()
-                ⮐  # indent followed by a ➜ is else
-            if not p.swallowSameIndent baseIndent
+    lTailIf: ◇Node left ➜Node ->
+    
+        ⮐  if @returning
+        ⮐  if left.token.line != @current.line
+            
+        token = @consume()
+        condition = @expression()
+        condThen = nod ●condThen condition.token condition left
+    
+        Node(token:token, kind:●if, cond_thens: [condThen])
+            
+    # ████████   ███████   ████████ 
+    # ███       ███   ███  ███   ███
+    # ██████    ███   ███  ███████  
+    # ███       ███   ███  ███   ███
+    # ███        ███████   ███   ███
+    
+    rFor: ➜Node ->
+    
+        token = @consume()
+        for_value = @parseNamesUntil ◂in
+        @swallowError(◂in, "Expected 'in' after for value")
+        for_range = @expression()
+        for_body  = @thenBlock()
+    
+        nod ●for token for_value for_range for_body
+    
+    rWhile: ➜Node ->
+    
+        nod ●while @consume() @expression() @thenBlock()
+    
+    #  ███████  ███   ███  ███  █████████   ███████  ███   ███
+    # ███       ███ █ ███  ███     ███     ███       ███   ███
+    # ███████   █████████  ███     ███     ███       █████████
+    #      ███  ███   ███  ███     ███     ███       ███   ███
+    # ███████   ██     ██  ███     ███      ███████  ███   ███
+    
+    switchCase: ◇int baseIndent ➜Node ->
+    
+        case_when ◇ seq[Node]
+        token     = @current
+        first     = @firstLineToken()
+        
+        while true
+        
+            if @tok == ◂indent
+                if case_when.len == 0 and @peek(1).tok == ◂then
+                    @swallow()
+                    ⮐  # indent followed by a ➜ is else
+                if not @swallowSameIndent baseIndent
+                    break
+    
+            ⮐  if @tok in {◂else, ◂eof} or @isDedent(baseIndent)
+    
+            break if @tok == ◂then
+        
+            @explicit += 1
+            case_when.add @value()
+            @explicit -= 1
+            @swallow ◂comma
+        
+        ⮐  if @isDedent baseIndent
+    
+        case_then = @thenIndented first
+                    
+        if case_then == nil
+            ⮐  @error("Expected case body after match(es)", token)
+        
+        Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
+    
+    rSwitch: ➜Node ->
+    
+        token = @consume()
+        switch_value = @expression()
+        
+        if switch_value == nil
+            ⮐  @error("Expected value after switch keyword", token)
+        
+        baseIndent = @current.str.len 
+        
+        @swallowError(◂indent, "Expected indentation after switch statement")
+        
+        switch_cases ◇ seq[Node]
+        
+        while true 
+    
+            switch_case = @switchCase(baseIndent)
+            if switch_case
+                switch_cases.add switch_case
+            else
                 break
-
-        ⮐  if p.tok in {◂else, ◂eof} or p.isDedent(baseIndent)
-
-        break if p.tok == ◂then
-    
-        p.explicit += 1
-        case_when.add p.value()
-        p.explicit -= 1
-        p.swallow ◂comma
-    
-    ⮐  if p.isDedent baseIndent
-
-    case_then = p.thenIndented first
-                
-    if case_then == nil
-        ⮐  p.error("Expected case body after match(es)", token)
-    
-    Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
-
-rSwitch = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    switch_value = p.expression()
-    
-    if switch_value == nil
-        ⮐  p.error("Expected value after switch keyword", token)
-    
-    baseIndent = p.current.str.len 
-    
-    p.swallowError(◂indent, "Expected indentation after switch statement")
-    
-    switch_cases ◇ seq[Node]
-    
-    while true 
-
-        switch_case = p.switchCase(baseIndent)
-        if switch_case
-            switch_cases.add switch_case
-        else
-            break
-    
-    switch_default ◇ Node
-    
-    if p.tok in {◂else, ◂then}
-        p.swallow()
-        switch_default = p.thenBlock()
-        if switch_default == nil
-            ⮐  p.error("Expected default value", token)
-    
-    Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
-                
-lArrayAccess = ◇Parser p ◇Node array_owner ➜Node ->
-
-    token = p.current()
-    array_indices = p.parseDelimitedList(◂square_open, ◂square_close)
-    array_index = 
-        switch array_indices.len
-            0 ➜ nil
-            1 ➜ array_indices[0]
-              ➜ nod ●list token array_indices
         
-    nod ●arrayAccess token array_owner array_index
-
-lPropertyAccess = ◇Parser p ◇Node owner ➜Node ->
-
-    token = p.consume()
-    property = p.rLiteral()
+        switch_default ◇ Node
+        
+        if @tok in {◂else, ◂then}
+            @swallow()
+            switch_default = @thenBlock()
+            if switch_default == nil
+                ⮐  @error("Expected default value", token)
+        
+        Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
+                    
+    lArrayAccess: ◇Node array_owner ➜Node ->
     
-    n = nod ●propertyAccess token owner property
+        token = @current()
+        array_indices = @parseDelimitedList(◂square_open, ◂square_close)
+        array_index = 
+            switch array_indices.len
+                0 ➜ nil
+                1 ➜ array_indices[0]
+                  ➜ nod ●list token array_indices
+            
+        nod ●arrayAccess token array_owner array_index
     
-    if p.isImplicitCallPossible()
-        ⮐  Node(token:token, kind:●call, callee:n, callargs:p.parseCallArgs(token.col))
-    n
-
-rLiteral    = ◇Parser p ➜Node -> nod(●literal   p.consume())
-rKeyword    = ◇Parser p ➜Node -> nod(●keyword   p.consume())
-rImport     = ◇Parser p ➜Node -> nod(●import    p.consume())
-rProc       = ◇Parser p ➜Node -> nod(●proc      p.consume())
-rTypeDef    = ◇Parser p ➜Node -> nod(●typeDef   p.consume())
-rMacro      = ◇Parser p ➜Node -> nod(●macro     p.consume())
-rTemplate   = ◇Parser p ➜Node -> nod(●template  p.consume())
-rConverter  = ◇Parser p ➜Node -> nod(●converter p.consume())
-rLet        = ◇Parser p ➜Node -> nod(●let       p.consume() p.parseVar())
-rReturnType = ◇Parser p ➜Node -> nod(●signature p.consume() nil p.parseType())
-rQuote      = ◇Parser p ➜Node -> nod(●quote     p.consume() p.thenBlock())
+    lPropertyAccess: ◇Node owner ➜Node ->
+    
+        token = @consume()
+        property = @rLiteral()
+        
+        n = nod ●propertyAccess token owner property
+        
+        if @isImplicitCallPossible()
+            ⮐  Node(token:token, kind:●call, callee:n, callargs:@parseCallArgs(token.col))
+        n
+    
+    rLiteral   : ➜Node -> nod(●literal   @consume())
+    rKeyword   : ➜Node -> nod(●keyword   @consume())
+    rImport    : ➜Node -> nod(●import    @consume())
+    rProc      : ➜Node -> nod(●proc      @consume())
+    rTypeDef   : ➜Node -> nod(●typeDef   @consume())
+    rMacro     : ➜Node -> nod(●macro     @consume())
+    rTemplate  : ➜Node -> nod(●template  @consume())
+    rConverter : ➜Node -> nod(●converter @consume())
+    rLet       : ➜Node -> nod(●let       @consume() @parseVar())
+    rReturnType: ➜Node -> nod(●signature @consume() nil @parseType())
+    rQuote     : ➜Node -> nod(●quote     @consume() @thenBlock())
     
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
