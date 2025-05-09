@@ -101,6 +101,35 @@ type Parser* = ref object
     # ██████    ███   ███  ███ █ ███  ███     
     # ███       ███   ███  ███  ████  ███     
     # ███        ███████   ███   ███   ███████
+    #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
+    # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
+    # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
+    # ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
+    #  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
+    # ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
+    # ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
+    # ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
+    # ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
+    # ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
+    #[
+       ◂R      ◂LR     ◂L      ◂R      ◂L      ◂LR     ◂R 
+       │       │       │       │       │       │ 
+       ◂R➜●    │       │       ◂R➜●    │       │ 
+          │    │       │          │    │       │
+          ╰───●◂L➜●───●◂L➜●       ╰───●◂L➜●───●◂L➜●
+                          │                       │
+                          ▾                       ▾
+    ]#
+    # ████████   ████████    ███████   █████████  █████████
+    # ███   ███  ███   ███  ███   ███     ███        ███   
+    # ████████   ███████    █████████     ███        ███   
+    # ███        ███   ███  ███   ███     ███        ███   
+    # ███        ███   ███  ███   ███     ███        ███   
+    #  ███████  ████████  █████████  ███   ███  ████████ 
+    # ███       ███          ███     ███   ███  ███   ███
+    # ███████   ███████      ███     ███   ███  ████████ 
+    #      ███  ███          ███     ███   ███  ███      
+    # ███████   ████████     ███      ███████   ███      
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -798,209 +827,180 @@ proc rDiscard(this : Parser) : Node =
             nod(●discard, token, nil)
         else: 
             nod(●discard, token, this.value())
-#  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
-# ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
-# ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
-# ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
-#  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
-proc lOperation(p : Parser, left : Node) : Node = 
-    var token = p.consume()
-    var right = p.expression(token)
-    nod(●operation, token, left, right)
-proc lNotIn(p : Parser, left : Node) : Node = 
-    if (p.peek(1).tok == ◂in): 
-        var token = p.consume()
-        token.str = "notin"
-        token.tok = ◂notin
-        p.swallow()
-        var right = p.expression(token)
-        return nod(●operation, token, left, right)
-proc lPostOp(p : Parser, left : Node) : Node = 
-    nod(●postOp, p.consume(), left)
-proc rPreOp(p : Parser) : Node = 
-    var token = p.consume()
-    var right = p.expression(token)
-    nod(●preOp, token, right)
-proc rDollar(p : Parser) : Node = 
-    if (p.current.str.len > 1): 
-        var token = p.consume()
-        token.tok = ◂name
-        return nod(●literal, token)
-    if (p.peek(1).tok in {◂assign, ◂colon}): 
-        var token = p.consume()
-        token.tok = ◂name
-        return nod(●literal, token)
-    p.rPreOp()
-proc lAssign(p : Parser, left : Node) : Node = 
-    var token = p.consume()
-    var right = p.funcOrExpression(token)
-    nod(●operation, token, left, right)
-proc lRange(p : Parser, left : Node) : Node = 
-    var token = p.consume()
-    var right = p.expression(token)
-    nod(●range, token, left, right)
-proc rParenExpr(p : Parser) : Node = 
-    nod(●list, p.current, p.parseParenList())
-proc rCurly(p : Parser) : Node = 
-    nod(●curly, p.current, p.parseDelimitedList(◂bracket_open, ◂bracket_close))
-proc rSquarely(p : Parser) : Node = 
-    nod(●squarely, p.current, p.parseDelimitedList(◂square_open, ◂square_close))
-proc rEnum(p : Parser) : Node = 
-    var token = p.consume()
-    var enum_name = p.value()
-    var enum_body : Node
-    if p.isNextLineIndented(token): 
-        p.typeless = true
-        enum_body = p.parseBlock()
-        p.typeless = false
-    nod(●enum, token, enum_name, enum_body)
-proc rClass(p : Parser) : Node = 
-    var token = p.consume()
-    var class_name = p.value()
-    var class_body = p.parseBlock()
-    nod(●class, token, class_name, class_body)
-proc lMember(p : Parser, left : Node) : Node = 
-    var token = p.consume()
-    var right = p.funcOrExpression(token)
-    nod(●member, token, left, right)
-proc lTestCase(p : Parser, left : Node) : Node = 
-    var token = p.consume() # ▸
-    p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
-    var right = p.expression()
-    nod(●testCase, token, left, right)
-proc rTestSuite(p : Parser) : Node = 
-    var token = p.consume() # ▸
-    var test_block = p.thenBlock()
-    if (token.col == 0): 
-        nod(●testSuite, token, test_block)
-    else: 
-        nod(●testSection, token, test_block)
-# ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
-# ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
-# ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
-# ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
-# ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
-#[
-   ◂R      ◂LR     ◂L      ◂R      ◂L      ◂LR     ◂R 
-   │       │       │       │       │       │ 
-   ◂R➜●    │       │       ◂R➜●    │       │ 
-      │    │       │          │    │       │
-      ╰───●◂L➜●───●◂L➜●       ╰───●◂L➜●───●◂L➜●
-                      │                       │
-                      ▾                       ▾
-]#
-proc expression(this : Parser, precedenceRight = 0) : Node = 
-    var token = this.current
-    if (token.tok in {◂eof, ◂stripol_end, ◂paren_close}): 
-        return nil
-    var rhs = this.rightHandSide(token)
-    if (rhs == nil): 
-        return this.error(&"Expected expression but found {token.str} {token}", token)
-    var node = this.rhs()
-    if (precedenceRight < -1): 
-        return node
-    while not this.atEnd(): 
-        token = this.current
-        var precedence = this.getPrecedence(token)
-        if (token.tok in {◂assign, ◂test}): 
-            (precedence += 1)
-        var lhs = this.leftHandSide(token)
-        if (precedenceRight >= precedence): 
-            break
-        if (lhs == nil): 
-            break
-        var lhn = this.lhs(node)
-        if (lhn != nil): 
-            node = lhn
+proc lOperation(this : Parser, left : Node) : Node = 
+        var token = this.consume()
+        var right = this.expression(token)
+        nod(●operation, token, left, right)
+proc lNotIn(this : Parser, left : Node) : Node = 
+        if (this.peek(1).tok == ◂in): 
+            var token = this.consume()
+            token.str = "notin"
+            token.tok = ◂notin
+            this.swallow()
+            var right = this.expression(token)
+            return nod(●operation, token, left, right)
+proc lPostOp(this : Parser, left : Node) : Node = 
+        nod(●postOp, this.consume(), left)
+proc rPreOp(this : Parser) : Node = 
+        var token = this.consume()
+        var right = this.expression(token)
+        nod(●preOp, token, right)
+proc rDollar(this : Parser) : Node = 
+        if (this.current.str.len > 1): 
+            var token = this.consume()
+            token.tok = ◂name
+            return nod(●literal, token)
+        if (this.peek(1).tok in {◂assign, ◂colon}): 
+            var token = this.consume()
+            token.tok = ◂name
+            return nod(●literal, token)
+        this.rPreOp()
+proc lAssign(this : Parser, left : Node) : Node = 
+        var token = this.consume()
+        var right = this.funcOrExpression(token)
+        nod(●operation, token, left, right)
+proc lRange(this : Parser, left : Node) : Node = 
+        var token = this.consume()
+        var right = this.expression(token)
+        nod(●range, token, left, right)
+proc rParenExpr(this : Parser) : Node = 
+        nod(●list, this.current, this.parseParenList())
+proc rCurly(this : Parser) : Node = 
+        nod(●curly, this.current, this.parseDelimitedList(◂bracket_open, ◂bracket_close))
+proc rSquarely(this : Parser) : Node = 
+        nod(●squarely, this.current, this.parseDelimitedList(◂square_open, ◂square_close))
+proc rEnum(this : Parser) : Node = 
+        var token = this.consume()
+        var enum_name = this.value()
+        var enum_body : Node
+        if this.isNextLineIndented(token): 
+            this.typeless = true
+            enum_body = this.parseBlock()
+            this.typeless = false
+        nod(●enum, token, enum_name, enum_body)
+proc rClass(this : Parser) : Node = 
+        var token = this.consume()
+        var class_name = this.value()
+        var class_body = this.parseBlock()
+        nod(●class, token, class_name, class_body)
+proc lMember(this : Parser, left : Node) : Node = 
+        var token = this.consume()
+        var right = this.funcOrExpression(token)
+        nod(●member, token, left, right)
+proc lTestCase(this : Parser, left : Node) : Node = 
+        var token = this.consume() # ▸
+        this.swallow(◂indent) # todo: check if indent is larger than that of the test expression
+        var right = this.expression()
+        nod(●testCase, token, left, right)
+proc rTestSuite(this : Parser) : Node = 
+        var token = this.consume() # ▸
+        var test_block = this.thenBlock()
+        if (token.col == 0): 
+            nod(●testSuite, token, test_block)
         else: 
-            break
-        if ((this.tok == ◂indent) and (this.peek(1).tok in {◂dot})): 
-             this.swallow()
-             node = this.lPropertyAccess(node)
-    node
-# ████████   ████████    ███████   █████████  █████████
-# ███   ███  ███   ███  ███   ███     ███        ███   
-# ████████   ███████    █████████     ███        ███   
-# ███        ███   ███  ███   ███     ███        ███   
-# ███        ███   ███  ███   ███     ███        ███   
-proc pratt(p : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) = 
-    if (p.pratts.len <= t.ord): 
-        p.pratts.setLen((t.ord + 1))
-    p.pratts[t.ord] = Pratt(lhs: lhs, rhs: rhs, precedence: precedence)
-#  ███████  ████████  █████████  ███   ███  ████████ 
-# ███       ███          ███     ███   ███  ███   ███
-# ███████   ███████      ███     ███   ███  ████████ 
-#      ███  ███          ███     ███   ███  ███      
-# ███████   ████████     ███      ███████   ███      
-proc setup(p : Parser) = 
-    p.pratt(◂true, nil, rLiteral, 0)
-    p.pratt(◂false, nil, rLiteral, 0)
-    p.pratt(◂mod, nil, rLiteral, 0)
-    p.pratt(◂null, nil, rLiteral, 0)
-    p.pratt(◂number, nil, rLiteral, 0)
-    p.pratt(◂string_start, nil, rString, 0)
-    p.pratt(◂comment_start, nil, rComment, 0)
-    p.pratt(◂name, lSymbolList, rSymbol, 13) # higher than assign
-    p.pratt(◂import, nil, rImport, 0)
-    p.pratt(◂macro, nil, rMacro, 0)
-    p.pratt(◂template, nil, rTemplate, 0)
-    p.pratt(◂converter, nil, rConverter, 0)
-    p.pratt(◂proc, nil, rProc, 0)
-    p.pratt(◂type, nil, rTypeDef, 0)
-    p.pratt(◂use, nil, rUse, 0)
-    p.pratt(◂let, nil, rLet, 0)
-    p.pratt(◂var, nil, rLet, 0)
-    p.pratt(◂return, nil, rReturn, 0)
-    p.pratt(◂discard, nil, rDiscard, 0)
-    p.pratt(◂quote, nil, rQuote, 0)
-    p.pratt(◂test, lTestCase, rTestSuite, 0)
-    p.pratt(◂class, nil, rClass, 0)
-    p.pratt(◂enum, nil, rEnum, 0)
-    p.pratt(◂colon, lMember, nil, 10)
-    p.pratt(◂continue, nil, rKeyword, 0)
-    p.pratt(◂break, nil, rKeyword, 0)
-    p.pratt(◂assign, lAssign, nil, 10)
-    p.pratt(◂plus_assign, lAssign, nil, 10)
-    p.pratt(◂minus_assign, lAssign, nil, 10)
-    p.pratt(◂divide_assign, lAssign, nil, 10)
-    p.pratt(◂multiply_assign, lAssign, nil, 10)
-    p.pratt(◂ampersand_assign, lAssign, nil, 10)
-    p.pratt(◂if, lTailIf, rIf, 20)
-    p.pratt(◂when, nil, rIf, 20)
-    p.pratt(◂for, nil, rFor, 20)
-    p.pratt(◂switch, nil, rSwitch, 20)
-    p.pratt(◂while, nil, rWhile, 20)
-    p.pratt(◂func, lFunc, rFunc, 20)
-    p.pratt(◂or, lOperation, nil, 30)
-    p.pratt(◂and, lOperation, nil, 31)
-    p.pratt(◂is, lOperation, nil, 32)
-    p.pratt(◂in, lOperation, nil, 33)
-    p.pratt(◂notin, lOperation, nil, 34)
-    p.pratt(◂equal, lOperation, nil, 40)
-    p.pratt(◂not_equal, lOperation, nil, 40)
-    p.pratt(◂greater_equal, lOperation, nil, 40)
-    p.pratt(◂less_equal, lOperation, nil, 40)
-    p.pratt(◂less, lOperation, nil, 40)
-    p.pratt(◂greater, lOperation, nil, 40)
-    p.pratt(◂match, lOperation, nil, 40)
-    p.pratt(◂doubledot, lRange, nil, 40)
-    p.pratt(◂tripledot, lRange, nil, 40)
-    p.pratt(◂dollar, nil, rDollar, 41)
-    p.pratt(◂ampersand, lOperation, nil, 42)
-    p.pratt(◂plus, lOperation, nil, 50)
-    p.pratt(◂minus, lOperation, rPreOp, 50)
-    p.pratt(◂multiply, lOperation, nil, 60)
-    p.pratt(◂divide, lOperation, nil, 60)
-    p.pratt(◂not, lNotIn, rPreOp, 70)
-    p.pratt(◂increment, lPostOp, nil, 80)
-    p.pratt(◂decrement, lPostOp, nil, 80)
-    p.pratt(◂square_open, lArrayAccess, rSquarely, 90)
-    p.pratt(◂paren_open, lCall, rParenExpr, 90)
-    p.pratt(◂bracket_open, nil, rCurly, 90)
-    p.pratt(◂then, lReturnType, rReturnType, 99)
-    p.pratt(◂val_type, lArgList, rArg, 100)
-    p.pratt(◂var_type, lArgList, rArg, 100)
-    p.pratt(◂dot, lPropertyAccess, nil, 102)
+            nod(●testSection, token, test_block)
+proc expression(this : Parser, precedenceRight = 0) : Node = 
+        var token = this.current
+        if (token.tok in {◂eof, ◂stripol_end, ◂paren_close}): 
+            return nil
+        var rhs = this.rightHandSide(token)
+        if (rhs == nil): 
+            return this.error(&"Expected expression but found {token.str} {token}", token)
+        var node = this.rhs()
+        if (precedenceRight < -1): 
+            return node
+        while not this.atEnd(): 
+            token = this.current
+            var precedence = this.getPrecedence(token)
+            if (token.tok in {◂assign, ◂test}): 
+                (precedence += 1)
+            var lhs = this.leftHandSide(token)
+            if (precedenceRight >= precedence): 
+                break
+            if (lhs == nil): 
+                break
+            var lhn = this.lhs(node)
+            if (lhn != nil): 
+                node = lhn
+            else: 
+                break
+            if ((this.tok == ◂indent) and (this.peek(1).tok in {◂dot})): 
+                 this.swallow()
+                 node = this.lPropertyAccess(node)
+        node
+proc pratt(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) = 
+        if (this.pratts.len <= t.ord): 
+            this.pratts.setLen((t.ord + 1))
+        this.pratts[t.ord] = Pratt(lhs: lhs, rhs: rhs, precedence: precedence)
+proc setup(this : Parser) = 
+        this.pratt(◂true, nil, rLiteral, 0)
+        this.pratt(◂false, nil, rLiteral, 0)
+        this.pratt(◂mod, nil, rLiteral, 0)
+        this.pratt(◂null, nil, rLiteral, 0)
+        this.pratt(◂number, nil, rLiteral, 0)
+        this.pratt(◂string_start, nil, rString, 0)
+        this.pratt(◂comment_start, nil, rComment, 0)
+        this.pratt(◂name, lSymbolList, rSymbol, 13) # higher than assign
+        this.pratt(◂import, nil, rImport, 0)
+        this.pratt(◂macro, nil, rMacro, 0)
+        this.pratt(◂template, nil, rTemplate, 0)
+        this.pratt(◂converter, nil, rConverter, 0)
+        this.pratt(◂proc, nil, rProc, 0)
+        this.pratt(◂type, nil, rTypeDef, 0)
+        this.pratt(◂use, nil, rUse, 0)
+        this.pratt(◂let, nil, rLet, 0)
+        this.pratt(◂var, nil, rLet, 0)
+        this.pratt(◂return, nil, rReturn, 0)
+        this.pratt(◂discard, nil, rDiscard, 0)
+        this.pratt(◂quote, nil, rQuote, 0)
+        this.pratt(◂test, lTestCase, rTestSuite, 0)
+        this.pratt(◂class, nil, rClass, 0)
+        this.pratt(◂enum, nil, rEnum, 0)
+        this.pratt(◂colon, lMember, nil, 10)
+        this.pratt(◂continue, nil, rKeyword, 0)
+        this.pratt(◂break, nil, rKeyword, 0)
+        this.pratt(◂assign, lAssign, nil, 10)
+        this.pratt(◂plus_assign, lAssign, nil, 10)
+        this.pratt(◂minus_assign, lAssign, nil, 10)
+        this.pratt(◂divide_assign, lAssign, nil, 10)
+        this.pratt(◂multiply_assign, lAssign, nil, 10)
+        this.pratt(◂ampersand_assign, lAssign, nil, 10)
+        this.pratt(◂if, lTailIf, rIf, 20)
+        this.pratt(◂when, nil, rIf, 20)
+        this.pratt(◂for, nil, rFor, 20)
+        this.pratt(◂switch, nil, rSwitch, 20)
+        this.pratt(◂while, nil, rWhile, 20)
+        this.pratt(◂func, lFunc, rFunc, 20)
+        this.pratt(◂or, lOperation, nil, 30)
+        this.pratt(◂and, lOperation, nil, 31)
+        this.pratt(◂is, lOperation, nil, 32)
+        this.pratt(◂in, lOperation, nil, 33)
+        this.pratt(◂notin, lOperation, nil, 34)
+        this.pratt(◂equal, lOperation, nil, 40)
+        this.pratt(◂not_equal, lOperation, nil, 40)
+        this.pratt(◂greater_equal, lOperation, nil, 40)
+        this.pratt(◂less_equal, lOperation, nil, 40)
+        this.pratt(◂less, lOperation, nil, 40)
+        this.pratt(◂greater, lOperation, nil, 40)
+        this.pratt(◂match, lOperation, nil, 40)
+        this.pratt(◂doubledot, lRange, nil, 40)
+        this.pratt(◂tripledot, lRange, nil, 40)
+        this.pratt(◂dollar, nil, rDollar, 41)
+        this.pratt(◂ampersand, lOperation, nil, 42)
+        this.pratt(◂plus, lOperation, nil, 50)
+        this.pratt(◂minus, lOperation, rPreOp, 50)
+        this.pratt(◂multiply, lOperation, nil, 60)
+        this.pratt(◂divide, lOperation, nil, 60)
+        this.pratt(◂not, lNotIn, rPreOp, 70)
+        this.pratt(◂increment, lPostOp, nil, 80)
+        this.pratt(◂decrement, lPostOp, nil, 80)
+        this.pratt(◂square_open, lArrayAccess, rSquarely, 90)
+        this.pratt(◂paren_open, lCall, rParenExpr, 90)
+        this.pratt(◂bracket_open, nil, rCurly, 90)
+        this.pratt(◂then, lReturnType, rReturnType, 99)
+        this.pratt(◂val_type, lArgList, rArg, 100)
+        this.pratt(◂var_type, lArgList, rArg, 100)
+        this.pratt(◂dot, lPropertyAccess, nil, 102)
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   
 # █████████  ███████      ███   

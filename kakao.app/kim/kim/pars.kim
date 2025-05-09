@@ -1079,277 +1079,278 @@ class Parser*
         else
             nod ●discard token @value()
         
-#  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
-# ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
-# ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
-# ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
-#  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
-
-lOperation = ◇Parser p ◇Node left ➜Node ->
-    token = p.consume()
-    right = p.expression(token)
-    nod ●operation token left right
+    #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
+    # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
+    # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
+    # ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
+    #  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
     
-lNotIn = ◇Parser p ◇Node left ➜Node ->
-
-    if p.peek(1).tok == ◂in
-        token = p.consume()
-        token.str = "notin"
-        token.tok = ◂notin
-        p.swallow()
-        right = p.expression(token)
-        ⮐  nod ●operation token left right
-
-lPostOp = ◇Parser p ◇Node left ➜Node ->
-
-    nod ●postOp p.consume() left
-
-rPreOp = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    right = p.expression(token)
-    nod ●preOp token right
+    lOperation: ◇Node left ➜Node ->
     
-rDollar = ◇Parser p ➜Node ->
-
-    if p.current.str.len > 1
-        token = p.consume()
-        token.tok = ◂name
-        ⮐  nod ●literal token
-    if p.peek(1).tok in {◂assign, ◂colon}
-        token = p.consume()
-        token.tok = ◂name
-        ⮐  nod ●literal token
-    p.rPreOp()
-
-lAssign = ◇Parser p ◇Node left ➜Node ->
-
-    token = p.consume()
-    right = p.funcOrExpression(token)
-    nod ●operation token left right
-
-lRange = ◇Parser p ◇Node left ➜Node ->
-
-    token = p.consume()
-    right = p.expression(token)
-    nod ●range token left right
+        token = @consume()
+        right = @expression(token)
+        nod ●operation token left right
         
-rParenExpr = ◇Parser p ➜Node ->
-
-    nod ●list p.current p.parseParenList()
-
-rCurly = ◇Parser p ➜Node ->
-
-    nod ●curly p.current p.parseDelimitedList(◂bracket_open, ◂bracket_close)
-
-rSquarely = ◇Parser p ➜Node ->
-
-    nod ●squarely p.current p.parseDelimitedList(◂square_open, ◂square_close)
-
-rEnum = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    enum_name = p.value()
-    enum_body ◇ Node
-    if p.isNextLineIndented token
-        p.typeless = true
-        enum_body = p.parseBlock()
-        p.typeless = false
-    nod ●enum token enum_name enum_body
+    lNotIn: ◇Node left ➜Node ->
     
-rClass = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    class_name = p.value()
-    class_body = p.parseBlock()
-    nod ●class token class_name class_body
+        if @peek(1).tok == ◂in
+            token = @consume()
+            token.str = "notin"
+            token.tok = ◂notin
+            @swallow()
+            right = @expression(token)
+            ⮐  nod ●operation token left right
     
-lMember = ◇Parser p ◇Node left ➜Node ->
-
-    token = p.consume()
-    right = p.funcOrExpression(token)
-    nod ●member token left right
+    lPostOp: ◇Node left ➜Node ->
     
-lTestCase = ◇Parser p ◇Node left ➜Node ->
-
-    token = p.consume() # ▸
-    p.swallow(◂indent) # todo: check if indent is larger than that of the test expression
-    right = p.expression()
-    nod ●testCase token left right
-
-rTestSuite = ◇Parser p ➜Node ->
-
-    token = p.consume() # ▸
-    test_block = p.thenBlock()
-    if token.col == 0
-        nod ●testSuite token test_block
-    else
-        nod ●testSection token test_block
-
-# ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
-# ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
-# ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
-# ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
-# ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
-
-###
-   ◂R      ◂LR     ◂L      ◂R      ◂L      ◂LR     ◂R 
-   │       │       │       │       │       │ 
-   ◂R➜●    │       │       ◂R➜●    │       │ 
-      │    │       │          │    │       │
-      ╰───●◂L➜●───●◂L➜●       ╰───●◂L➜●───●◂L➜●
-                      │                       │
-                      ▾                       ▾
-###
-
-expression = ◇Parser this precedenceRight=0 ➜Node ->
-
-    token = this.current
-    if token.tok in {◂eof, ◂stripol_end, ◂paren_close}
-        ⮐  nil
-
-    rhs = this.rightHandSide(token)
+        nod ●postOp @consume() left
     
-    if rhs == nil
-        ⮐  this.error(&"Expected expression but found {token.str} {token}", token)
+    rPreOp: ➜Node ->
+    
+        token = @consume()
+        right = @expression(token)
+        nod ●preOp token right
         
-    node = this.rhs()
+    rDollar: ➜Node ->
     
-    if precedenceRight < -1
-        ⮐  node
-
-    while not this.atEnd()
-        
-        token = this.current
-        precedence = this.getPrecedence(token)
-        
-        if token.tok in {◂assign, ◂test}
-            precedence += 1
-        
-        lhs = this.leftHandSide(token)
-        
-        if precedenceRight >= precedence
-            break
+        if @current.str.len > 1
+            token = @consume()
+            token.tok = ◂name
+            ⮐  nod ●literal token
+        if @peek(1).tok in {◂assign, ◂colon}
+            token = @consume()
+            token.tok = ◂name
+            ⮐  nod ●literal token
+        @rPreOp()
     
-        if lhs == nil
-            break
+    lAssign: ◇Node left ➜Node ->
+    
+        token = @consume()
+        right = @funcOrExpression(token)
+        nod ●operation token left right
+    
+    lRange: ◇Node left ➜Node ->
+    
+        token = @consume()
+        right = @expression(token)
+        nod ●range token left right
             
-        lhn = this.lhs(node)
+    rParenExpr: ➜Node ->
+    
+        nod ●list @current @parseParenList()
+    
+    rCurly: ➜Node ->
+    
+        nod ●curly @current @parseDelimitedList(◂bracket_open, ◂bracket_close)
+    
+    rSquarely: ➜Node ->
+    
+        nod ●squarely @current @parseDelimitedList(◂square_open, ◂square_close)
+    
+    rEnum: ➜Node ->
+    
+        token = @consume()
+        enum_name = @value()
+        enum_body ◇ Node
+        if @isNextLineIndented token
+            @typeless = true
+            enum_body = @parseBlock()
+            @typeless = false
+        nod ●enum token enum_name enum_body
         
-        if lhn != nil
-            node = lhn
+    rClass: ➜Node ->
+    
+        token = @consume()
+        class_name = @value()
+        class_body = @parseBlock()
+        nod ●class token class_name class_body
+        
+    lMember: ◇Node left ➜Node ->
+    
+        token = @consume()
+        right = @funcOrExpression(token)
+        nod ●member token left right
+        
+    lTestCase: ◇Node left ➜Node ->
+    
+        token = @consume() # ▸
+        @swallow(◂indent) # todo: check if indent is larger than that of the test expression
+        right = @expression()
+        nod ●testCase token left right
+    
+    rTestSuite: ➜Node ->
+    
+        token = @consume() # ▸
+        test_block = @thenBlock()
+        if token.col == 0
+            nod ●testSuite token test_block
         else
-            break 
+            nod ●testSection token test_block
+
+    # ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
+    # ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
+    # ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
+    # ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
+    # ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
+    
+    ###
+       ◂R      ◂LR     ◂L      ◂R      ◂L      ◂LR     ◂R 
+       │       │       │       │       │       │ 
+       ◂R➜●    │       │       ◂R➜●    │       │ 
+          │    │       │          │    │       │
+          ╰───●◂L➜●───●◂L➜●       ╰───●◂L➜●───●◂L➜●
+                          │                       │
+                          ▾                       ▾
+    ###
+    
+    expression: precedenceRight=0 ➜Node ->
+    
+        token = @current
+        if token.tok in {◂eof, ◂stripol_end, ◂paren_close}
+            ⮐  nil
+    
+        rhs = @rightHandSide(token)
+        
+        if rhs == nil
+            ⮐  @error(&"Expected expression but found {token.str} {token}", token)
             
-        if this.tok == ◂indent and this.peek(1).tok in {◂dot}
-             this.swallow()
-             node = this.lPropertyAccess node
-    node
+        node = @rhs()
+        
+        if precedenceRight < -1
+            ⮐  node
+    
+        while not @atEnd()
             
-# ████████   ████████    ███████   █████████  █████████
-# ███   ███  ███   ███  ███   ███     ███        ███   
-# ████████   ███████    █████████     ███        ███   
-# ███        ███   ███  ███   ███     ███        ███   
-# ███        ███   ███  ███   ███     ███        ███   
-
-pratt = ◇Parser p ◇tok t ◇LHS lhs ◇RHS rhs ◇int precedence ->
-
-    if p.pratts.len <= t.ord
-        p.pratts.setLen(t.ord + 1)
+            token = @current
+            precedence = @getPrecedence(token)
+            
+            if token.tok in {◂assign, ◂test}
+                precedence += 1
+            
+            lhs = @leftHandSide(token)
+            
+            if precedenceRight >= precedence
+                break
+        
+            if lhs == nil
+                break
+                
+            lhn = @lhs(node)
+            
+            if lhn != nil
+                node = lhn
+            else
+                break 
+                
+            if @tok == ◂indent and @peek(1).tok in {◂dot}
+                 @swallow()
+                 node = @lPropertyAccess node
+        node
+                
+    # ████████   ████████    ███████   █████████  █████████
+    # ███   ███  ███   ███  ███   ███     ███        ███   
+    # ████████   ███████    █████████     ███        ███   
+    # ███        ███   ███  ███   ███     ███        ███   
+    # ███        ███   ███  ███   ███     ███        ███   
     
-    p.pratts[t.ord] = Pratt(lhs:lhs, rhs:rhs, precedence:precedence)
-
-#  ███████  ████████  █████████  ███   ███  ████████ 
-# ███       ███          ███     ███   ███  ███   ███
-# ███████   ███████      ███     ███   ███  ████████ 
-#      ███  ███          ███     ███   ███  ███      
-# ███████   ████████     ███      ███████   ███      
-
-setup = ◇Parser p ->
-
-    p.pratt ◂true              nil               rLiteral        0
-    p.pratt ◂false             nil               rLiteral        0
-    p.pratt ◂mod               nil               rLiteral        0
-    p.pratt ◂null              nil               rLiteral        0
-    p.pratt ◂number            nil               rLiteral        0
-    p.pratt ◂string_start      nil               rString         0
-    p.pratt ◂comment_start     nil               rComment        0
-    p.pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
-    p.pratt ◂import            nil               rImport         0
-    p.pratt ◂macro             nil               rMacro          0
-    p.pratt ◂template          nil               rTemplate       0
-    p.pratt ◂converter         nil               rConverter      0
-    p.pratt ◂proc              nil               rProc           0
-    p.pratt ◂type              nil               rTypeDef        0
-    p.pratt ◂use               nil               rUse            0
-    p.pratt ◂let               nil               rLet            0
-    p.pratt ◂var               nil               rLet            0
-    p.pratt ◂return            nil               rReturn         0
-    p.pratt ◂discard           nil               rDiscard        0
-    p.pratt ◂quote             nil               rQuote          0
-    p.pratt ◂test              lTestCase         rTestSuite      0
+    pratt: ◇tok t ◇LHS lhs ◇RHS rhs ◇int precedence ->
     
-    p.pratt ◂class             nil               rClass          0
-    p.pratt ◂enum              nil               rEnum           0
-    p.pratt ◂colon             lMember           nil            10
+        if @pratts.len <= t.ord
+            @pratts.setLen(t.ord + 1)
+        
+        @pratts[t.ord] = Pratt(lhs:lhs, rhs:rhs, precedence:precedence)
     
-    p.pratt ◂continue          nil               rKeyword        0
-    p.pratt ◂break             nil               rKeyword        0
-                                                                    
-    p.pratt ◂assign            lAssign           nil            10
-    p.pratt ◂plus_assign       lAssign           nil            10
-    p.pratt ◂minus_assign      lAssign           nil            10
-    p.pratt ◂divide_assign     lAssign           nil            10
-    p.pratt ◂multiply_assign   lAssign           nil            10
-    p.pratt ◂ampersand_assign  lAssign           nil            10
-
-    p.pratt ◂if                lTailIf           rIf            20
-    p.pratt ◂when              nil               rIf            20
-    p.pratt ◂for               nil               rFor           20
-    p.pratt ◂switch            nil               rSwitch        20
-    p.pratt ◂while             nil               rWhile         20
-    p.pratt ◂func              lFunc             rFunc          20
+    #  ███████  ████████  █████████  ███   ███  ████████ 
+    # ███       ███          ███     ███   ███  ███   ███
+    # ███████   ███████      ███     ███   ███  ████████ 
+    #      ███  ███          ███     ███   ███  ███      
+    # ███████   ████████     ███      ███████   ███      
     
-    p.pratt ◂or                lOperation        nil            30
-    p.pratt ◂and               lOperation        nil            31
+    setup: ->
     
-    p.pratt ◂is                lOperation        nil            32
-    p.pratt ◂in                lOperation        nil            33
-    p.pratt ◂notin             lOperation        nil            34
+        @pratt ◂true              nil               rLiteral        0
+        @pratt ◂false             nil               rLiteral        0
+        @pratt ◂mod               nil               rLiteral        0
+        @pratt ◂null              nil               rLiteral        0
+        @pratt ◂number            nil               rLiteral        0
+        @pratt ◂string_start      nil               rString         0
+        @pratt ◂comment_start     nil               rComment        0
+        @pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
+        @pratt ◂import            nil               rImport         0
+        @pratt ◂macro             nil               rMacro          0
+        @pratt ◂template          nil               rTemplate       0
+        @pratt ◂converter         nil               rConverter      0
+        @pratt ◂proc              nil               rProc           0
+        @pratt ◂type              nil               rTypeDef        0
+        @pratt ◂use               nil               rUse            0
+        @pratt ◂let               nil               rLet            0
+        @pratt ◂var               nil               rLet            0
+        @pratt ◂return            nil               rReturn         0
+        @pratt ◂discard           nil               rDiscard        0
+        @pratt ◂quote             nil               rQuote          0
+        @pratt ◂test              lTestCase         rTestSuite      0
+        
+        @pratt ◂class             nil               rClass          0
+        @pratt ◂enum              nil               rEnum           0
+        @pratt ◂colon             lMember           nil            10
+        
+        @pratt ◂continue          nil               rKeyword        0
+        @pratt ◂break             nil               rKeyword        0
+                                                                        
+        @pratt ◂assign            lAssign           nil            10
+        @pratt ◂plus_assign       lAssign           nil            10
+        @pratt ◂minus_assign      lAssign           nil            10
+        @pratt ◂divide_assign     lAssign           nil            10
+        @pratt ◂multiply_assign   lAssign           nil            10
+        @pratt ◂ampersand_assign  lAssign           nil            10
     
-
-    p.pratt ◂equal             lOperation        nil            40
-    p.pratt ◂not_equal         lOperation        nil            40
-    p.pratt ◂greater_equal     lOperation        nil            40
-    p.pratt ◂less_equal        lOperation        nil            40
-    p.pratt ◂less              lOperation        nil            40
-    p.pratt ◂greater           lOperation        nil            40
-    p.pratt ◂match             lOperation        nil            40
+        @pratt ◂if                lTailIf           rIf            20
+        @pratt ◂when              nil               rIf            20
+        @pratt ◂for               nil               rFor           20
+        @pratt ◂switch            nil               rSwitch        20
+        @pratt ◂while             nil               rWhile         20
+        @pratt ◂func              lFunc             rFunc          20
+        
+        @pratt ◂or                lOperation        nil            30
+        @pratt ◂and               lOperation        nil            31
+        
+        @pratt ◂is                lOperation        nil            32
+        @pratt ◂in                lOperation        nil            33
+        @pratt ◂notin             lOperation        nil            34
+        
     
-    p.pratt ◂doubledot         lRange            nil            40
-    p.pratt ◂tripledot         lRange            nil            40
+        @pratt ◂equal             lOperation        nil            40
+        @pratt ◂not_equal         lOperation        nil            40
+        @pratt ◂greater_equal     lOperation        nil            40
+        @pratt ◂less_equal        lOperation        nil            40
+        @pratt ◂less              lOperation        nil            40
+        @pratt ◂greater           lOperation        nil            40
+        @pratt ◂match             lOperation        nil            40
+        
+        @pratt ◂doubledot         lRange            nil            40
+        @pratt ◂tripledot         lRange            nil            40
+        
+        @pratt ◂dollar            nil               rDollar        41
+        @pratt ◂ampersand         lOperation        nil            42
+        
+        @pratt ◂plus              lOperation        nil            50
+        @pratt ◂minus             lOperation        rPreOp         50
+                                                       
+        @pratt ◂multiply          lOperation        nil            60
+        @pratt ◂divide            lOperation        nil            60
     
-    p.pratt ◂dollar            nil               rDollar        41
-    p.pratt ◂ampersand         lOperation        nil            42
+        @pratt ◂not               lNotIn            rPreOp         70
     
-    p.pratt ◂plus              lOperation        nil            50
-    p.pratt ◂minus             lOperation        rPreOp         50
-                                                   
-    p.pratt ◂multiply          lOperation        nil            60
-    p.pratt ◂divide            lOperation        nil            60
-
-    p.pratt ◂not               lNotIn            rPreOp         70
-
-    p.pratt ◂increment         lPostOp           nil            80
-    p.pratt ◂decrement         lPostOp           nil            80
-
-    p.pratt ◂square_open       lArrayAccess      rSquarely      90
-    p.pratt ◂paren_open        lCall             rParenExpr     90
-    p.pratt ◂bracket_open      nil               rCurly         90
-    p.pratt ◂then              lReturnType       rReturnType    99
-    p.pratt ◂val_type          lArgList          rArg          100
-    p.pratt ◂var_type          lArgList          rArg          100
-    p.pratt ◂dot               lPropertyAccess   nil           102
+        @pratt ◂increment         lPostOp           nil            80
+        @pratt ◂decrement         lPostOp           nil            80
+    
+        @pratt ◂square_open       lArrayAccess      rSquarely      90
+        @pratt ◂paren_open        lCall             rParenExpr     90
+        @pratt ◂bracket_open      nil               rCurly         90
+        @pratt ◂then              lReturnType       rReturnType    99
+        @pratt ◂val_type          lArgList          rArg          100
+        @pratt ◂var_type          lArgList          rArg          100
+        @pratt ◂dot               lPropertyAccess   nil           102
     
 #  ███████    ███████  █████████
 # ███   ███  ███          ███   
