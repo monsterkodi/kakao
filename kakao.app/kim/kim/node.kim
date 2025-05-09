@@ -294,7 +294,7 @@ class Node*
                 s = "{" & s[2..^2] & "}"
             ●squarely
                 s = "#{@list_values}"
-                s = "[" & s[1..^1] & "]]"
+                s = "[" & s[1..^1] & "]"
             ●while
                 b = choose(@while_body, " #{@while_body}", "")
                 s = "(#{s} #{@while_cond}#{b})"

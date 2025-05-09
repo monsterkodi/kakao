@@ -44,7 +44,9 @@ suite "pars":
         t("3 * (1 + 2)", "▪[(◂number * ◂[(◂number + ◂number)])]")
     test "brackets": 
         t("options = {poStdErrToStdOut, poUsePath}", "▪[(◂name = {◂name, ◂name})]")
-        t("args = [\"r\", f]", "▪[(◂name = [[◂string, ◂name]]])]")
+        t("args = [\"r\", f]", "▪[(◂name = [[◂string, ◂name]])]")
+        t("a = []", "▪[(◂name = [[]])]")
+        t("a(b, c, [])", "▪[(◂name ◂call @[◂name, ◂name, [[]]])]")
     test "types": 
         t("◇int i", "▪[(◇type(int) ◂name)]")
         t("◆int i", "▪[(◆type(int) ◂name)]")
@@ -151,8 +153,8 @@ hook = -> {.noconv.}
         t("a = f arg token typ name", "▪[(◂name = (◂name ◂call @[◂name, ◂name, ◂name, ◂name]))]")
         t("a = f arg Token(tok:◂type) typ, name", "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]")
         t("a = f arg Token(tok:◂type) typ name", "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]")
-        # t "a = f(●arg, Token(tok:◂type), type, name)"  ""
-        # t "a = f(●arg Token(tok:◂type) type name)"  ""
+        t("a = f(arg, Token(tok:◂type), typ, name)", "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]")
+        t("a = f(arg Token(tok:◂type) typ name)", "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]")
     test "arglist": 
         t("f(a, b, c)", "▪[(◂name ◂call @[◂name, ◂name, ◂name])]")
         t("f a, b, c", "▪[(◂name ◂call @[◂name, ◂name, ◂name])]")
@@ -178,8 +180,8 @@ hook = -> {.noconv.}
         t("let (dir name ext) = triple", "▪[(◂let (◂[◂name, ◂name, ◂name] (= ◂name)))]")
         t("s &= v", "▪[(◂name &= ◂name)]")
     test "arrays": 
-        t("a = [ 1  2 ]", "▪[(◂name = [[◂number, ◂number]]])]")
-        t("a = [\n    1\n    2\n    ]", "▪[(◂name = [[◂number, ◂number]]])]")
+        t("a = [ 1  2 ]", "▪[(◂name = [[◂number, ◂number]])]")
+        t("a = [\n    1\n    2\n    ]", "▪[(◂name = [[◂number, ◂number]])]")
     test "tables": 
         t("a = initTable[string,bool]()", "▪[(◂name = ((◂name[◂[◂name, ◂name]]) ◂call @[]))]")
     test "property access        ": 

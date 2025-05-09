@@ -217,7 +217,7 @@ proc `$`*(this : Node) : string =
                 s = "{" & s[2..^2] & "}"
             of ●squarely: 
                 s = &"{this.list_values}"
-                s = "[" & s[1..^1] & "]]"
+                s = "[" & s[1..^1] & "]"
             of ●while: 
                 var b = choose(this.while_body, &" {this.while_body}", "")
                 s = &"({s} {this.while_cond}{b})"

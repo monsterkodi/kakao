@@ -58,7 +58,9 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
     ▸ brackets
     
         t "options = {poStdErrToStdOut, poUsePath}" "▪[(◂name = {◂name, ◂name})]"
-        t "args = [\"r\", f]"                       "▪[(◂name = [[◂string, ◂name]]])]"
+        t "args = [\"r\", f]"                       "▪[(◂name = [[◂string, ◂name]])]"
+        t "a = []"                                  "▪[(◂name = [[]])]"
+        t "a(b, c, [])"                             "▪[(◂name ◂call @[◂name, ◂name, [[]]])]"
         
     ▸ types
     
@@ -204,8 +206,8 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "a = f arg token typ name"                "▪[(◂name = (◂name ◂call @[◂name, ◂name, ◂name, ◂name]))]"
         t "a = f arg Token(tok:◂type) typ, name"    "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]"
         t "a = f arg Token(tok:◂type) typ name"     "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]"
-        # t "a = f(●arg, Token(tok:◂type), type, name)"  ""
-        # t "a = f(●arg Token(tok:◂type) type name)"  ""
+        t "a = f(arg, Token(tok:◂type), typ, name)" "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]"
+        t "a = f(arg Token(tok:◂type) typ name)"    "▪[(◂name = (◂name ◂call @[◂name, (◂name ◂call @[(◂name : ◂name)]), ◂name, ◂name]))]"
         
     ▸ arglist
     
@@ -242,8 +244,8 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
 
     ▸ arrays
     
-        t "a = [ 1  2 ]"                            "▪[(◂name = [[◂number, ◂number]]])]"
-        t "a = [\n    1\n    2\n    ]"              "▪[(◂name = [[◂number, ◂number]]])]"
+        t "a = [ 1  2 ]"                            "▪[(◂name = [[◂number, ◂number]])]"
+        t "a = [\n    1\n    2\n    ]"              "▪[(◂name = [[◂number, ◂number]])]"
         
     ▸ tables
         

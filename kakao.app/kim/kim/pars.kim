@@ -209,75 +209,75 @@ class Parser*
     
     expression: ◇Token tokenRight ➜Node ->
     
-        @expression(@getPrecedence(tokenRight))
+        @expression @getPrecedence(tokenRight)
     
     value: ➜Node ->
     
         @expression(-2)
 
-# ███████    ███       ███████    ███████  ███   ███
-# ███   ███  ███      ███   ███  ███       ███  ███ 
-# ███████    ███      ███   ███  ███       ███████  
-# ███   ███  ███      ███   ███  ███       ███  ███ 
-# ███████    ███████   ███████    ███████  ███   ███
-
-parseBlock = ◇Parser p ◇Node bn=nil ➜Node ->
-
-    token        ◇ Token
-    block_indent ◇ int
+    # ███████    ███       ███████    ███████  ███   ███
+    # ███   ███  ███      ███   ███  ███       ███  ███ 
+    # ███████    ███      ███   ███  ███       ███████  
+    # ███   ███  ███      ███   ███  ███       ███  ███ 
+    # ███████    ███████   ███████    ███████  ███   ███
     
-    while p.tok == ◂indent
-        token = p.consume() 
-        block_indent = p.current.col
+    parseBlock: ◇Node bn=nil ➜Node ->
     
-    bn = bn
-    if bn == nil
-        bn = nod(●block token @[])
+        token        ◇ Token
+        block_indent ◇ int
         
-    expr = p.expression()
-    
-    while expr != nil
-    
-        if expr.kind == ●func and bn.expressions.len
-            prevExpr = bn.expressions[^1]
-            if prevExpr.token.line == expr.token.line and prevExpr.token.tok == ◂assign
-                prevExpr = bn.expressions.pop()
-                if prevExpr.operand_right.kind == ●operation
-                    argtoken = prevExpr.operand_right.operand_left.token
-                    argtoken.tok = ◂val_type
-                    argnode = nod(●arg argtoken nil prevExpr.operand_right.operand_left prevExpr.operand_right.operand_right)
-                    expr.func_signature.sig_args.list_values.unshift(argnode)
-                else
-                    expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
-                prevExpr.operand_right = expr
-                expr = prevExpr
-                
-        bn.expressions.add expr
-        if p.tok == ◂indent
-            ind = p.current.str.len
-            if ind < block_indent
-                break
-            elif ind > block_indent
-                p.blocks.add bn
-                expr = p.parseBlock()
-                bn = p.blocks.pop()
-                continue
-            else
-                p.swallow()
-                
-        if p.atEnd() or p.current.col < block_indent
-            break
+        while @tok == ◂indent
+            token = @consume() 
+            block_indent = @current.col
+        
+        bn = bn
+        if bn == nil
+            bn = nod(●block, token, [])
             
-        expr = p.expression()
-    bn
-
-expressionOrIndentedBlock = ◇Parser p ◇Token token ◇int col ➜Node ->
-
-    if p.tok == ◂indent
-        if p.current.str.len > col
-            ⮐  p.parseBlock()
-    else
-        ⮐  p.expression(token)
+        expr = @expression()
+        
+        while expr != nil
+        
+            if expr.kind == ●func and bn.expressions.len
+                prevExpr = bn.expressions[^1]
+                if prevExpr.token.line == expr.token.line and prevExpr.token.tok == ◂assign
+                    prevExpr = bn.expressions.pop()
+                    if prevExpr.operand_right.kind == ●operation
+                        argtoken = prevExpr.operand_right.operand_left.token
+                        argtoken.tok = ◂val_type
+                        argnode = nod(●arg argtoken nil prevExpr.operand_right.operand_left prevExpr.operand_right.operand_right)
+                        expr.func_signature.sig_args.list_values.unshift(argnode)
+                    else
+                        expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
+                    prevExpr.operand_right = expr
+                    expr = prevExpr
+                    
+            bn.expressions.add expr
+            if @tok == ◂indent
+                ind = @current.str.len
+                if ind < block_indent
+                    break
+                elif ind > block_indent
+                    @blocks.add bn
+                    expr = @parseBlock()
+                    bn = @blocks.pop()
+                    continue
+                else
+                    @swallow()
+                    
+            if @atEnd() or @current.col < block_indent
+                break
+                
+            expr = @expression()
+        bn
+    
+    expressionOrIndentedBlock: ◇Token token ◇int col ➜Node ->
+    
+        if @tok == ◂indent
+            if @current.str.len > col
+                ⮐  @parseBlock()
+        else
+            ⮐  @expression(token)
             
 #  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
 # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
@@ -308,6 +308,7 @@ parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
             break
         if p.swallowIndent(col)
             break
+        # if p.tok in {◂comment_start, ◂then, ◂paren_close}
         if p.tok in {◂comment_start, ◂then}
             break
         expr = p.expression()

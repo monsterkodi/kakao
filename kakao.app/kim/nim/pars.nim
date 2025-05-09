@@ -36,6 +36,11 @@ type Parser* = ref object
     # ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
     # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
     #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
+    # ███████    ███       ███████    ███████  ███   ███
+    # ███   ███  ███      ███   ███  ███       ███  ███ 
+    # ███████    ███      ███   ███  ███       ███████  
+    # ███   ███  ███      ███   ███  ███       ███  ███ 
+    # ███████    ███████   ███████    ███████  ███   ███
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -153,57 +158,52 @@ proc expression(this : Parser, tokenRight : Token) : Node =
         this.expression(this.getPrecedence(tokenRight))
 proc value(this : Parser) : Node = 
         this.expression(-2)
-# ███████    ███       ███████    ███████  ███   ███
-# ███   ███  ███      ███   ███  ███       ███  ███ 
-# ███████    ███      ███   ███  ███       ███████  
-# ███   ███  ███      ███   ███  ███       ███  ███ 
-# ███████    ███████   ███████    ███████  ███   ███
-proc parseBlock(p : Parser, bn : Node = nil) : Node = 
-    var token : Token
-    var block_indent : int
-    while (p.tok == ◂indent): 
-        token = p.consume()
-        block_indent = p.current.col
-    var bn = bn
-    if (bn == nil): 
-        bn = nod(●block, token, @[])
-    var expr = p.expression()
-    while (expr != nil): 
-        if ((expr.kind == ●func) and bn.expressions.len): 
-            var prevExpr = bn.expressions[^1]
-            if ((prevExpr.token.line == expr.token.line) and (prevExpr.token.tok == ◂assign)): 
-                prevExpr = bn.expressions.pop()
-                if (prevExpr.operand_right.kind == ●operation): 
-                    var argtoken = prevExpr.operand_right.operand_left.token
-                    argtoken.tok = ◂val_type
-                    var argnode = nod(●arg, argtoken, nil, prevExpr.operand_right.operand_left, prevExpr.operand_right.operand_right)
-                    expr.func_signature.sig_args.list_values.unshift(argnode)
+proc parseBlock(this : Parser, bn : Node = nil) : Node = 
+        var token : Token
+        var block_indent : int
+        while (this.tok == ◂indent): 
+            token = this.consume()
+            block_indent = this.current.col
+        var bn = bn
+        if (bn == nil): 
+            bn = nod(●block, token, @[])
+        var expr = this.expression()
+        while (expr != nil): 
+            if ((expr.kind == ●func) and bn.expressions.len): 
+                var prevExpr = bn.expressions[^1]
+                if ((prevExpr.token.line == expr.token.line) and (prevExpr.token.tok == ◂assign)): 
+                    prevExpr = bn.expressions.pop()
+                    if (prevExpr.operand_right.kind == ●operation): 
+                        var argtoken = prevExpr.operand_right.operand_left.token
+                        argtoken.tok = ◂val_type
+                        var argnode = nod(●arg, argtoken, nil, prevExpr.operand_right.operand_left, prevExpr.operand_right.operand_right)
+                        expr.func_signature.sig_args.list_values.unshift(argnode)
+                    else: 
+                        expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
+                    prevExpr.operand_right = expr
+                    expr = prevExpr
+            bn.expressions.add(expr)
+            if (this.tok == ◂indent): 
+                var ind = this.current.str.len
+                if (ind < block_indent): 
+                    break
+                elif (ind > block_indent): 
+                    this.blocks.add(bn)
+                    expr = this.parseBlock()
+                    bn = this.blocks.pop()
+                    continue
                 else: 
-                    expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
-                prevExpr.operand_right = expr
-                expr = prevExpr
-        bn.expressions.add(expr)
-        if (p.tok == ◂indent): 
-            var ind = p.current.str.len
-            if (ind < block_indent): 
+                    this.swallow()
+            if (this.atEnd() or (this.current.col < block_indent)): 
                 break
-            elif (ind > block_indent): 
-                p.blocks.add(bn)
-                expr = p.parseBlock()
-                bn = p.blocks.pop()
-                continue
-            else: 
-                p.swallow()
-        if (p.atEnd() or (p.current.col < block_indent)): 
-            break
-        expr = p.expression()
-    bn
-proc expressionOrIndentedBlock(p : Parser, token : Token, col : int) : Node = 
-    if (p.tok == ◂indent): 
-        if (p.current.str.len > col): 
-            return p.parseBlock()
-    else: 
-        return p.expression(token)
+            expr = this.expression()
+        bn
+proc expressionOrIndentedBlock(this : Parser, token : Token, col : int) : Node = 
+        if (this.tok == ◂indent): 
+            if (this.current.str.len > col): 
+                return this.parseBlock()
+        else: 
+            return this.expression(token)
 #  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
 # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
 # ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
@@ -229,6 +229,7 @@ proc parseCallArgs(p : Parser, col : int) : seq[Node] =
             break
         if p.swallowIndent(col): 
             break
+        # if p.tok in {◂comment_start, ◂then, ◂paren_close}
         if (p.tok in {◂comment_start, ◂then}): 
             break
         expr = p.expression()
