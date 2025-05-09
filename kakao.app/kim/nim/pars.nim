@@ -41,6 +41,31 @@ type Parser* = ref object
     # ███████    ███      ███   ███  ███       ███████  
     # ███   ███  ███      ███   ███  ███       ███  ███ 
     # ███████    ███████   ███████    ███████  ███   ███
+    #  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
+    # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
+    # ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
+    # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
+    #  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
+    # █████████  ███   ███  ████████   ████████
+    #    ███      ███ ███   ███   ███  ███     
+    #    ███       █████    ████████   ███████ 
+    #    ███        ███     ███        ███     
+    #    ███        ███     ███        ████████
+    # ███      ███   ███████  █████████
+    # ███      ███  ███          ███   
+    # ███      ███  ███████      ███   
+    # ███      ███       ███     ███   
+    # ███████  ███  ███████      ███   
+    # █████████  ███   ███  ████████  ███   ███
+    #    ███     ███   ███  ███       ████  ███
+    #    ███     █████████  ███████   ███ █ ███
+    #    ███     ███   ███  ███       ███  ████
+    #    ███     ███   ███  ████████  ███   ███
+    #  ███████   ███████   ███      ███    
+    # ███       ███   ███  ███      ███    
+    # ███       █████████  ███      ███    
+    # ███       ███   ███  ███      ███    
+    #  ███████  ███   ███  ███████  ███████
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -204,185 +229,160 @@ proc expressionOrIndentedBlock(this : Parser, token : Token, col : int) : Node =
                 return this.parseBlock()
         else: 
             return this.expression(token)
-#  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
-# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
-# ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
-# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
-#  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
-proc swallowIndent(p : Parser, col : int) : bool = 
-    p.swallow(◂comma)
-    if (p.tok == ◂indent): 
-        if (p.current.str.len > col): 
-            p.swallow()
+proc swallowIndent(this : Parser, col : int) : bool = 
+        this.swallow(◂comma)
+        if (this.tok == ◂indent): 
+            if (this.current.str.len > col): 
+                this.swallow()
+            else: 
+                return true
+        false
+proc parseCallArgs(this : Parser, col : int) : seq[Node] = 
+        (this.explicit += 1)
+        (this.listless += 1)
+        var list : seq[Node]
+        var line = this.current.line
+        var expr = this.expression()
+        while (expr != nil): 
+            list.add(expr)
+            if (this.inlinecall and (this.tok == ◂indent)): 
+                break
+            if this.swallowIndent(col): 
+                break
+            # if @tok in {◂comment_start, ◂then, ◂paren_close}
+            if (this.tok in {◂comment_start, ◂then}): 
+                break
+            expr = this.expression()
+        (this.listless -= 1)
+        (this.explicit -= 1)
+        list
+proc parseType(this : Parser) : Node = 
+        var token = this.consume()
+        token.tok = ◂type
+        if (this.tok == ◂square_open): 
+            var opened = 0
+            while (this.tok notin {◂eof}): 
+                var t = this.consume()
+                (token.str &= t.str)
+                if (t.tok == ◂square_open): 
+                    (opened += 1)
+                elif (t.tok == ◂square_close): 
+                    (opened -= 1)
+                    if (opened == 0): 
+                        break
+        nod(●type, token)
+proc parseVar(this : Parser) : Node = 
+        var token = this.current()
+        var var_name = this.value()
+        var var_value : Node
+        var var_type : Node
+        if (this.tok == ◂assign): 
+            this.swallow()
+            var_value = this.thenBlock()
+        elif (this.tok in {◂val_type, ◂var_type}): 
+            token = this.consume()
+            var_type = this.parseType()
+            if (this.tok == ◂assign): 
+                this.swallow()
+                var_value = this.expression()
+        nod(●var, token, var_name, var_type, var_value)
+proc parseModule(this : Parser) : Node = 
+        var line = this.current.line
+        var s = ""
+        while (this.current.str notin @["▪", "◆"]): 
+            var e = (this.current.col + this.current.str.len)
+            (s &= this.consume().str)
+            if (this.atEnd() or (this.current.line != line)): 
+                break
+            if ((this.current.col > e) and (this.current.str notin @["▪", "◆"])): 
+                (s &= " ")
+        Node(token: Token(str: s))
+proc parseParenList(this : Parser) : seq[Node] = 
+        var token = this.consume() # (
+        var args : seq[Node]
+        (this.explicit += 1)
+        while ((this.tok != ◂paren_close) and (this.tok != ◂eof)): 
+            args.add(this.expression())
+            this.swallow(◂comma)
+        this.swallowError(◂paren_close, "Missing closing parenthesis")
+        (this.explicit -= 1)
+        if ((args.len == 1) and (args[0].kind == ●list)): 
+            return args[0].list_values
+        args
+proc parseDelimitedList(this : Parser, open : tok, close : tok) : seq[Node] = 
+        var token = this.consume()
+        var args : seq[Node]
+        (this.explicit += 1)
+        while true: 
+            discard this.swallowIndent(-1)
+            if ((this.tok != close) and (this.tok != ◂eof)): 
+                args.add(this.expression())
+            else: 
+                break
+        this.swallowError(close, "Missing closing bracket")
+        (this.explicit -= 1)
+        if ((args.len == 1) and (args[0].kind == ●list)): 
+            return args[0].list_values
+        args
+proc parseNames(this : Parser) : seq[Node] = 
+        var list : seq[Node]
+        var line = this.current.line
+        (this.explicit += 1)
+        var expr = this.rSymbol()
+        while (expr != nil): 
+            list.add(expr)
+            if (this.current.line != line): 
+                break
+            this.swallow(◂comma)
+            expr = this.rSymbol()
+        (this.explicit -= 1)
+        list
+proc parseNamesUntil(this : Parser, stop : tok) : Node = 
+        var token = this.current
+        var list_values : seq[Node]
+        (this.explicit += 1)
+        while (this.tok != stop): 
+            if (this.tok == ◂eof): 
+                return this.error("Missing 'in' for 'for' loop (eof detected)!", token)
+            if (this.current.line != token.line): 
+                return this.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
+            list_values.add(this.rSymbol())
+            this.swallow(◂comma)
+        (this.explicit -= 1)
+        if (list_values.len == 1): 
+            list_values[0]
         else: 
-            return true
-    false
-proc parseCallArgs(p : Parser, col : int) : seq[Node] = 
-    (p.explicit += 1)
-    (p.listless += 1)
-    var list : seq[Node]
-    var line = p.current.line
-    var expr = p.expression()
-    while (expr != nil): 
-        list.add(expr)
-        if (p.inlinecall and (p.tok == ◂indent)): 
-            break
-        if p.swallowIndent(col): 
-            break
-        # if p.tok in {◂comment_start, ◂then, ◂paren_close}
-        if (p.tok in {◂comment_start, ◂then}): 
-            break
-        expr = p.expression()
-    (p.listless -= 1)
-    (p.explicit -= 1)
-    list
-# █████████  ███   ███  ████████   ████████
-#    ███      ███ ███   ███   ███  ███     
-#    ███       █████    ████████   ███████ 
-#    ███        ███     ███        ███     
-#    ███        ███     ███        ████████
-proc parseType(p : Parser) : Node = 
-    var token = p.consume()
-    token.tok = ◂type
-    if (p.tok == ◂square_open): 
-        var opened = 0
-        while (p.tok notin {◂eof}): 
-            var t = p.consume()
-            (token.str &= t.str)
-            if (t.tok == ◂square_open): 
-                (opened += 1)
-            elif (t.tok == ◂square_close): 
-                (opened -= 1)
-                if (opened == 0): 
-                    break
-    nod(●type, token)
-proc parseVar(p : Parser) : Node = 
-    var token = p.current()
-    var var_name = p.value()
-    var var_value : Node
-    var var_type : Node
-    if (p.tok == ◂assign): 
-        p.swallow()
-        var_value = p.thenBlock()
-    elif (p.tok in {◂val_type, ◂var_type}): 
-        token = p.consume()
-        var_type = p.parseType()
-        if (p.tok == ◂assign): 
-            p.swallow()
-            var_value = p.expression()
-    nod(●var, token, var_name, var_type, var_value)
-proc parseModule(p : Parser) : Node = 
-    var line = p.current.line
-    var s = ""
-    while (p.current.str notin @["▪", "◆"]): 
-        var e = (p.current.col + p.current.str.len)
-        (s &= p.consume().str)
-        if (p.atEnd() or (p.current.line != line)): 
-            break
-        if ((p.current.col > e) and (p.current.str notin @["▪", "◆"])): 
-            (s &= " ")
-    Node(token: Token(str: s))
-# ███      ███   ███████  █████████
-# ███      ███  ███          ███   
-# ███      ███  ███████      ███   
-# ███      ███       ███     ███   
-# ███████  ███  ███████      ███   
-proc parseParenList(p : Parser) : seq[Node] = 
-    var token = p.consume() # (
-    var args : seq[Node]
-    (p.explicit += 1)
-    while ((p.tok != ◂paren_close) and (p.tok != ◂eof)): 
-        args.add(p.expression())
-        p.swallow(◂comma)
-    p.swallowError(◂paren_close, "Missing closing parenthesis")
-    (p.explicit -= 1)
-    if ((args.len == 1) and (args[0].kind == ●list)): 
-        return args[0].list_values
-    args
-proc parseDelimitedList(p : Parser, open : tok, close : tok) : seq[Node] = 
-    var token = p.consume()
-    var args : seq[Node]
-    (p.explicit += 1)
-    while true: 
-        discard p.swallowIndent(-1)
-        if ((p.tok != close) and (p.tok != ◂eof)): 
-            args.add(p.expression())
+            nod(●list, token, list_values)
+proc thenBlock(this : Parser) : Node = 
+        if (this.tok == ◂then): 
+            this.swallow(◂then)
+        if (this.tok == ◂indent): 
+            this.parseBlock()
         else: 
-            break
-    p.swallowError(close, "Missing closing bracket")
-    (p.explicit -= 1)
-    if ((args.len == 1) and (args[0].kind == ●list)): 
-        return args[0].list_values
-    args
-proc parseNames(p : Parser) : seq[Node] = 
-    var list : seq[Node]
-    var line = p.current.line
-    (p.explicit += 1)
-    var expr = p.rSymbol()
-    while (expr != nil): 
-        list.add(expr)
-        if (p.current.line != line): 
-            break
-        p.swallow(◂comma)
-        expr = p.rSymbol()
-    (p.explicit -= 1)
-    list
-proc parseNamesUntil(p : Parser, stop : tok) : Node = 
-    var token = p.current
-    var list_values : seq[Node]
-    (p.explicit += 1)
-    while (p.tok != stop): 
-        if (p.tok == ◂eof): 
-            return p.error("Missing 'in' for 'for' loop (eof detected)!", token)
-        if (p.current.line != token.line): 
-            return p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
-        list_values.add(p.rSymbol())
-        p.swallow(◂comma)
-    (p.explicit -= 1)
-    if (list_values.len == 1): 
-        list_values[0]
-    else: 
-        nod(●list, token, list_values)
-# █████████  ███   ███  ████████  ███   ███
-#    ███     ███   ███  ███       ████  ███
-#    ███     █████████  ███████   ███ █ ███
-#    ███     ███   ███  ███       ███  ████
-#    ███     ███   ███  ████████  ███   ███
-proc thenBlock(p : Parser) : Node = 
-    if (p.tok == ◂then): 
-        p.swallow(◂then)
-    if (p.tok == ◂indent): 
-        p.parseBlock()
-    else: 
-        p.expression()
-proc thenIndented(p : Parser, token : Token) : Node = 
-    if (p.tok == ◂then): 
-        p.swallow(◂then)
-    if (p.tok == ◂indent): 
-        if p.isNextLineIndented(token): 
-            return p.parseBlock()
-        return nil
-    else: 
-        return p.expression()
-#  ███████   ███████   ███      ███    
-# ███       ███   ███  ███      ███    
-# ███       █████████  ███      ███    
-# ███       ███   ███  ███      ███    
-#  ███████  ███   ███  ███████  ███████
-proc lCall(p : Parser, callee : Node) : Node = 
-    var token = p.consume() # (
-    var args = p.parseCallArgs(callee.token.col)
-    p.swallowError(◂paren_close, "Missing closing paren for call arguments")
-    Node(token: token, kind: ●call, callee: callee, callargs: args)
+            this.expression()
+proc thenIndented(this : Parser, token : Token) : Node = 
+        if (this.tok == ◂then): 
+            this.swallow(◂then)
+        if (this.tok == ◂indent): 
+            if this.isNextLineIndented(token): 
+                return this.parseBlock()
+            return nil
+        else: 
+            return this.expression()
+proc lCall(this : Parser, callee : Node) : Node = 
+        var token = this.consume() # (
+        var args = this.parseCallArgs(callee.token.col)
+        this.swallowError(◂paren_close, "Missing closing paren for call arguments")
+        Node(token: token, kind: ●call, callee: callee, callargs: args)
 # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
 # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
 # ███  █████████  ████████   ███      ███  ███       ███     ███   
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
-var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
 proc isImplicitCallPossible(p : Parser) : bool = 
     if p.explicit: return false
     var currt = p.peek(0)
+    var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
     if (currt.tok in optoks): return false
     var prevt = p.peek(-1)
     if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false

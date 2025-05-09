@@ -279,215 +279,215 @@ class Parser*
         else
             ⮐  @expression(token)
             
-#  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
-# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
-# ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
-# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
-#  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
+    #  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
+    # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
+    # ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
+    # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
+    #  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
+    
+    swallowIndent: ◇int col ➜bool ->
+    
+        @swallow ◂comma
+        if @tok == ◂indent
+            if @current.str.len > col
+                @swallow()
+            else
+                ⮐  true
+        false
+        
+    parseCallArgs: ◇int col ➜seq[Node] ->
+    
+        @explicit += 1
+        @listless += 1
+        list ◇ seq[Node]
+        line = @current.line
+        expr = @expression()
+        while expr != nil
+            list.add expr
+            if @inlinecall and @tok == ◂indent
+                break
+            if @swallowIndent(col)
+                break
+            # if @tok in {◂comment_start, ◂then, ◂paren_close}
+            if @tok in {◂comment_start, ◂then}
+                break
+            expr = @expression()
+        @listless -= 1
+        @explicit -= 1
+        list
+        
+    # █████████  ███   ███  ████████   ████████
+    #    ███      ███ ███   ███   ███  ███     
+    #    ███       █████    ████████   ███████ 
+    #    ███        ███     ███        ███     
+    #    ███        ███     ███        ████████
+    
+    parseType: ➜Node ->
+        
+        token = @consume()
+        token.tok = ◂type
+        
+        if @tok == ◂square_open
+            opened = 0
+            while @tok notin {◂eof}
+                t = @consume()
+                token.str &= t.str
+                if t.tok == ◂square_open
+                    opened += 1
+                elif t.tok == ◂square_close
+                    opened -= 1
+                    if opened == 0
+                        break
+        
+        nod(●type token)
+        
+    parseVar: ➜Node ->
+    
+        token     = @current()
+        var_name  = @value()
+        var_value ◇ Node
+        var_type  ◇ Node
+        
+        if @tok == ◂assign
+            @swallow()
+            var_value = @thenBlock()
+        elif @tok in {◂val_type, ◂var_type}
+            token = @consume()
+            var_type = @parseType()
+            if @tok == ◂assign
+                @swallow()
+                var_value = @expression()
+        
+        nod(●var token var_name var_type var_value)
+        
+    parseModule: ➜Node ->
+    
+        line = @current.line
+        s = ""
+        while @current.str notin ["▪" "◆"]
+            e = @current.col + @current.str.len
+            s &= @consume().str
+            if @atEnd() or @current.line != line
+                break 
+            if @current.col > e and @current.str notin ["▪" "◆"] 
+                s &= " "
+            
+        Node(token:Token(str:s))    
 
-swallowIndent = ◇Parser p ◇int col ➜bool ->
-
-    p.swallow ◂comma
-    if p.tok == ◂indent
-        if p.current.str.len > col
-            p.swallow()
+    # ███      ███   ███████  █████████
+    # ███      ███  ███          ███   
+    # ███      ███  ███████      ███   
+    # ███      ███       ███     ███   
+    # ███████  ███  ███████      ███   
+    
+    parseParenList: ➜seq[Node] ->
+    
+        token = @consume() # (
+        args  ◇ seq[Node]
+        
+        @explicit += 1
+        while @tok != ◂paren_close and @tok != ◂eof
+            args.add @expression()
+            @swallow ◂comma
+        @swallowError(◂paren_close, "Missing closing parenthesis")
+        @explicit -= 1
+        if args.len == 1 and args[0].kind == ●list
+            ⮐  args[0].list_values
+        args
+        
+    parseDelimitedList: ◇tok open ◇tok close ➜seq[Node] ->
+    
+        token = @consume()
+        args  ◇ seq[Node]
+        
+        @explicit += 1
+        while true
+            discard @swallowIndent(-1)
+            if @tok != close and @tok != ◂eof
+                args.add @expression()
+            else
+                break
+        @swallowError(close, "Missing closing bracket")
+        @explicit -= 1
+        
+        if args.len == 1 and args[0].kind == ●list
+            ⮐  args[0].list_values
+        args
+        
+    parseNames: ➜seq[Node] -> 
+    
+        list ◇ seq[Node]
+        line = @current.line
+        @explicit += 1
+        expr = @rSymbol()
+        while expr != nil
+            list.add expr        
+            if @current.line != line
+                break
+            @swallow ◂comma
+            expr = @rSymbol()
+        @explicit -= 1
+        list
+    
+    parseNamesUntil: ◇tok stop ➜Node -> 
+    
+        token = @current
+                                    
+        list_values ◇ seq[Node]
+        @explicit += 1
+        while @tok != stop
+            if @tok == ◂eof
+                ⮐  @error("Missing 'in' for 'for' loop (eof detected)!", token)
+            if @current.line != token.line
+                ⮐  @error("Missing 'in' for 'for' loop (linebreak detected)!", token)
+            list_values.add @rSymbol()
+            @swallow ◂comma
+        @explicit -= 1
+        if list_values.len == 1
+            list_values[0]
         else
-            ⮐  true
-    false
+            nod(●list token list_values)
     
-parseCallArgs = ◇Parser p ◇int col ➜seq[Node] ->
-
-    p.explicit += 1
-    p.listless += 1
-    list ◇ seq[Node]
-    line = p.current.line
-    expr = p.expression()
-    while expr != nil
-        list.add expr
-        if p.inlinecall and p.tok == ◂indent
-            break
-        if p.swallowIndent(col)
-            break
-        # if p.tok in {◂comment_start, ◂then, ◂paren_close}
-        if p.tok in {◂comment_start, ◂then}
-            break
-        expr = p.expression()
-    p.listless -= 1
-    p.explicit -= 1
-    list
+    # █████████  ███   ███  ████████  ███   ███
+    #    ███     ███   ███  ███       ████  ███
+    #    ███     █████████  ███████   ███ █ ███
+    #    ███     ███   ███  ███       ███  ████
+    #    ███     ███   ███  ████████  ███   ███
     
-# █████████  ███   ███  ████████   ████████
-#    ███      ███ ███   ███   ███  ███     
-#    ███       █████    ████████   ███████ 
-#    ███        ███     ███        ███     
-#    ███        ███     ███        ████████
-
-parseType = ◇Parser p ➜Node ->
+    thenBlock: ➜Node ->
     
-    token = p.consume()
-    token.tok = ◂type
-    
-    if p.tok == ◂square_open
-        opened = 0
-        while p.tok notin {◂eof}
-            t = p.consume()
-            token.str &= t.str
-            if t.tok == ◂square_open
-                opened += 1
-            elif t.tok == ◂square_close
-                opened -= 1
-                if opened == 0
-                    break
-    
-    nod(●type token)
-    
-parseVar = ◇Parser p ➜Node ->
-
-    token     = p.current()
-    var_name  = p.value()
-    var_value ◇ Node
-    var_type  ◇ Node
-    
-    if p.tok == ◂assign
-        p.swallow()
-        var_value = p.thenBlock()
-    elif p.tok in {◂val_type, ◂var_type}
-        token = p.consume()
-        var_type = p.parseType()
-        if p.tok == ◂assign
-            p.swallow()
-            var_value = p.expression()
-    
-    nod(●var token var_name var_type var_value)
-    
-parseModule = ◇Parser p ➜Node ->
-
-    line = p.current.line
-    s = ""
-    while p.current.str notin @["▪", "◆"]
-        e = p.current.col + p.current.str.len
-        s &= p.consume().str
-        if p.atEnd() or p.current.line != line
-            break 
-        if p.current.col > e and p.current.str notin @["▪", "◆"] 
-            s &= " "
-        
-    Node(token:Token(str:s))    
-
-# ███      ███   ███████  █████████
-# ███      ███  ███          ███   
-# ███      ███  ███████      ███   
-# ███      ███       ███     ███   
-# ███████  ███  ███████      ███   
-
-parseParenList = ◇Parser p ➜seq[Node] ->
-
-    token = p.consume() # (
-    args  ◇ seq[Node]
-    
-    p.explicit += 1
-    while p.tok != ◂paren_close and p.tok != ◂eof
-        args.add p.expression()
-        p.swallow ◂comma
-    p.swallowError(◂paren_close, "Missing closing parenthesis")
-    p.explicit -= 1
-    if args.len == 1 and args[0].kind == ●list
-        ⮐  args[0].list_values
-    args
-    
-parseDelimitedList = ◇Parser p ◇tok open ◇tok close ➜seq[Node] ->
-
-    token = p.consume()
-    args  ◇ seq[Node]
-    
-    p.explicit += 1
-    while true
-        discard p.swallowIndent(-1)
-        if p.tok != close and p.tok != ◂eof
-            args.add p.expression()
+        if @tok == ◂then
+            @swallow ◂then
+            
+        if @tok == ◂indent
+            @parseBlock()
         else
-            break
-    p.swallowError(close, "Missing closing bracket")
-    p.explicit -= 1
+            @expression()
+            
+    thenIndented: ◇Token token ➜Node ->
     
-    if args.len == 1 and args[0].kind == ●list
-        ⮐  args[0].list_values
-    args
+        if @tok == ◂then
+            @swallow ◂then
+            
+        if @tok == ◂indent
+            if @isNextLineIndented(token)
+                ⮐  @parseBlock()
+            ⮐  nil
+        else
+            ⮐  @expression()
+            
+    #  ███████   ███████   ███      ███    
+    # ███       ███   ███  ███      ███    
+    # ███       █████████  ███      ███    
+    # ███       ███   ███  ███      ███    
+    #  ███████  ███   ███  ███████  ███████
     
-parseNames = ◇Parser p ➜seq[Node] -> 
-
-    list ◇ seq[Node]
-    line = p.current.line
-    p.explicit += 1
-    expr = p.rSymbol()
-    while expr != nil
-        list.add expr        
-        if p.current.line != line
-            break
-        p.swallow ◂comma
-        expr = p.rSymbol()
-    p.explicit -= 1
-    list
-
-parseNamesUntil = ◇Parser p ◇tok stop ➜Node -> 
-
-    token = p.current
-                                
-    list_values ◇ seq[Node]
-    p.explicit += 1
-    while p.tok != stop
-        if p.tok == ◂eof
-            ⮐  p.error("Missing 'in' for 'for' loop (eof detected)!", token)
-        if p.current.line != token.line
-            ⮐  p.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
-        list_values.add p.rSymbol()
-        p.swallow ◂comma
-    p.explicit -= 1
-    if list_values.len == 1
-        list_values[0]
-    else
-        nod(●list token list_values)
+    lCall: ◇Node callee ➜Node ->
     
-# █████████  ███   ███  ████████  ███   ███
-#    ███     ███   ███  ███       ████  ███
-#    ███     █████████  ███████   ███ █ ███
-#    ███     ███   ███  ███       ███  ████
-#    ███     ███   ███  ████████  ███   ███
-
-thenBlock = ◇Parser p ➜Node ->
-
-    if p.tok == ◂then
-        p.swallow ◂then
-        
-    if p.tok == ◂indent
-        p.parseBlock()
-    else
-        p.expression()
-        
-thenIndented = ◇Parser p ◇Token token ➜Node ->
-
-    if p.tok == ◂then
-        p.swallow ◂then
-        
-    if p.tok == ◂indent
-        if p.isNextLineIndented(token)
-            ⮐  p.parseBlock()
-        ⮐  nil
-    else
-        ⮐  p.expression()
-        
-#  ███████   ███████   ███      ███    
-# ███       ███   ███  ███      ███    
-# ███       █████████  ███      ███    
-# ███       ███   ███  ███      ███    
-#  ███████  ███   ███  ███████  ███████
-
-lCall = ◇Parser p ◇Node callee ➜Node ->
-
-    token = p.consume() # (
-    args = p.parseCallArgs(callee.token.col)
-    p.swallowError(◂paren_close, "Missing closing paren for call arguments")    
-    Node(token:token, kind:●call, callee:callee, callargs:args)
+        token = @consume() # (
+        args = @parseCallArgs(callee.token.col)
+        @swallowError(◂paren_close, "Missing closing paren for call arguments")    
+        Node(token:token, kind:●call, callee:callee, callargs:args)
     
 # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
 # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
@@ -495,19 +495,20 @@ lCall = ◇Parser p ◇Node callee ➜Node ->
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 
-optoks = {  ◂indent, ◂eof,
-            ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
-            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
-            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
-            ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
-
 isImplicitCallPossible = ◇Parser p ➜bool ->
 
     ⮐  false if p.explicit
 
     currt = p.peek(0)
     
-    ⮐  false if currt.tok in optoks
+    optoks = { 
+        ◂indent, ◂eof,
+        ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
+        ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
+        ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
+        ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
+        
+    ⮐  false if currt.tok in optoks  
     
     prevt = p.peek(-1)
     
