@@ -90,10 +90,11 @@ methodify = ◇Node clss ➜ seq[Node] ->
     (funcs members) = pullIf(clss.class_body.expressions isMethod)
 
     clss.class_body.expressions = members
-    
+    exporting = false
     className = clss.class_name.token.str
     if className[^1] == '*'
         className = className[0..^2]
+        exporting = true
     
     thisify = ◇Node n ➜ Node ->
     
@@ -133,6 +134,9 @@ methodify = ◇Node clss ➜ seq[Node] ->
         
         fn = nod ●operation token it.member_key funcn
         if it.member_key.token.str == "@" ➜ fn = constructor fn
+        # elif exporting
+        #     if it.member_key.token.str[^1] != '*'
+        #         it.member_key.token.str &= "*"
         fn
 
     methods = funcs.map convert
