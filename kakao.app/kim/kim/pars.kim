@@ -906,178 +906,178 @@ class Parser*
             ➜ 
                 discard
 
-# ████████  ███   ███  ███   ███   ███████
-# ███       ███   ███  ████  ███  ███     
-# ██████    ███   ███  ███ █ ███  ███     
-# ███       ███   ███  ███  ████  ███     
-# ███        ███████   ███   ███   ███████
-
-lFunc = ◇Parser p ◇Node left ➜Node ->
-
-    ⮐  if left.kind notin {●signature, ●list, ●arg, ●operation}
-        
-    func_signature ◇ Node
+    # ████████  ███   ███  ███   ███   ███████
+    # ███       ███   ███  ████  ███  ███     
+    # ██████    ███   ███  ███ █ ███  ███     
+    # ███       ███   ███  ███  ████  ███     
+    # ███        ███████   ███   ███   ███████
     
-    if left.kind == ●operation
+    lFunc: ◇Node left ➜Node ->
     
-        # log "lfunc op #{left}"
-        
-        ⮐  if left.token.tok != ◂assign
+        ⮐  if left.kind notin {●signature, ●list, ●arg, ●operation}
             
-        ⮐  if left.operand_left.token.tok != ◂name
-            
-        if left.operand_left.token.col == 0 
-            left = left
-            argtoken = tkn(◂val_type left.operand_right.token.line left.operand_right.token.col)
-            left.operand_right = p.lFunc(nod(●arg argtoken nil left.operand_right nil))
-            ⮐  left
-            
-        vartoken = tkn(◂val_type left.operand_left.token.line left.operand_left.token.col)
-        varNode  = nod ●arg vartoken nil left.operand_left left.operand_right
-        sig_args = nod ●list vartoken @[varNode]
-        func_signature = nod ●signature left.token sig_args nil
-        
-    elif left.kind == ●list
-    
-        # log "lfunc list"
-        
-        sig_args = left
-        for i,a in sig_args.list_values
-            if a.kind == ●operation and a.token.tok == ◂assign
-                argtoken = tkn(◂val_type a.operand_left.token.line a.operand_left.token.col)
-                sig_args.list_values[i] = nod ●arg argtoken nil a.operand_left a.operand_right
-            elif a.kind == ●literal and a.token.tok == ◂name
-                argtoken = tkn(◂val_type a.token.line a.token.col)
-                sig_args.list_values[i] = nod ●arg argtoken nil a nil
-        func_signature = nod ●signature left.token sig_args nil
-        
-    elif left.kind == ●arg
-    
-        # log "lfunc arg"
-        
-        sig_args = nod ●list left.token @[left]
-        func_signature = nod ●signature left.token sig_args nil
-        
-    elif left.kind == ●signature
-        func_signature = left
-    
-    firstToken = p.firstLineToken()
-    token = p.consume()
-    
-    func_mod ◇Node
-    if p.tok == ◂mod
-        func_mod = p.rLiteral()
-    
-    func_body = p.thenIndented firstToken
-    
-    nod ●func token func_signature func_mod func_body
-
-rFunc = ◇Parser p ➜Node ->
-
-    firstToken = p.firstLineToken()
-    token = p.consume()
-    
-    func_mod ◇ Node
-    if p.tok == ◂mod
-        func_mod = p.rLiteral()
-    
-    func_body = p.thenIndented firstToken
-    
-    nod ●func token nil nil func_body
-
-parseSignature = ◇Parser p ➜Node ->
-
-    sig_args = nod ●list p.current() @[]
-    sig_type ◇ Node
-    
-    parens = false
-    if p.tok == ◂paren_open
-        p.swallow()
-        parens = true
-    
-    while true
-        
-        token    = p.current()
-        arg_type ◇ Node = nil
-        
-        if p.tok in {◂var_type, ◂val_type}
-        
-            p.swallow() # ◆ or ◇
-            arg_type  = p.parseType()
-                        
-        if p.tok != ◂name
-            break
-                
-        arg_name  = p.value()
-        arg_value ◇ Node
-
-        if p.tok == ◂assign
-            p.swallow() # =
-            p.listless += 1
-            p.explicit += 1
-            arg_value = p.expression()
-            p.explicit -= 1
-            p.listless -= 1
-            
-        p.swallow ◂comma
-        
-        sig_args.list_values.add nod(●arg token arg_type arg_name arg_value)
-    
-    if parens 
-        ⮐  if p.tok != ◂paren_close
-        p.swallow()
-
-    if p.tok == ◂then
-        p.swallow()
-        sig_type = p.parseType()
-
-    if p.tok != ◂func
-        ⮐  
-        
-    nod ●signature sig_args.token sig_args sig_type
-
-funcOrExpression = ◇Parser p ◇Token token ➜Node ->
-
-    col = p.lineIndent token.line
-
-    if p.isTokAhead ◂func
-        startPos = p.pos
         func_signature ◇ Node
-        if p.tok != ◂func
-            func_signature = p.parseSignature()
-        if p.tok == ◂func
-            ftoken = p.consume()
-            func_mod = if p.tok == ◂mod ➜ p.rLiteral() ➜ nil
-            func_body = p.expressionOrIndentedBlock(tkn(◂null), col)
-            ⮐  nod ●func ftoken func_signature func_mod func_body
-        else
-            p.pos = startPos
-    
-    p.expressionOrIndentedBlock(token, col)
-
-rReturn = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    
-    if p.tok == ◂if and p.isThenlessIf(token)
-        nod ●return token nil
-    else
-        p.returning = true
-
-        right ◇ Node 
-        if p.tok != ◂indent or p.isNextLineIndented(token)
-            right = p.expression(token)
         
-        p.returning = false
-        nod ●return token right
-
-rDiscard = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    if p.isDedent token.col
-        nod ●discard token nil
-    else
-        nod ●discard token p.value()
+        if left.kind == ●operation
+        
+            # log "lfunc op #{left}"
+            
+            ⮐  if left.token.tok != ◂assign
+                
+            ⮐  if left.operand_left.token.tok != ◂name
+                
+            if left.operand_left.token.col == 0 
+                left = left
+                argtoken = tkn(◂val_type left.operand_right.token.line left.operand_right.token.col)
+                left.operand_right = @lFunc(nod(●arg argtoken nil left.operand_right nil))
+                ⮐  left
+                
+            vartoken = tkn(◂val_type left.operand_left.token.line left.operand_left.token.col)
+            varNode  = nod ●arg vartoken nil left.operand_left left.operand_right
+            sig_args = nod ●list vartoken [varNode]
+            func_signature = nod ●signature left.token sig_args nil
+            
+        elif left.kind == ●list
+        
+            # log "lfunc list"
+            
+            sig_args = left
+            for i,a in sig_args.list_values
+                if a.kind == ●operation and a.token.tok == ◂assign
+                    argtoken = tkn(◂val_type a.operand_left.token.line a.operand_left.token.col)
+                    sig_args.list_values[i] = nod ●arg argtoken nil a.operand_left a.operand_right
+                elif a.kind == ●literal and a.token.tok == ◂name
+                    argtoken = tkn(◂val_type a.token.line a.token.col)
+                    sig_args.list_values[i] = nod ●arg argtoken nil a nil
+            func_signature = nod ●signature left.token sig_args nil
+            
+        elif left.kind == ●arg
+        
+            # log "lfunc arg"
+            
+            sig_args = nod ●list left.token [left]
+            func_signature = nod ●signature left.token sig_args nil
+            
+        elif left.kind == ●signature
+            func_signature = left
+        
+        firstToken = @firstLineToken()
+        token = @consume()
+        
+        func_mod ◇Node
+        if @tok == ◂mod
+            func_mod = @rLiteral()
+        
+        func_body = @thenIndented firstToken
+        
+        nod ●func token func_signature func_mod func_body
+    
+    rFunc: ➜Node ->
+    
+        firstToken = @firstLineToken()
+        token = @consume()
+        
+        func_mod ◇ Node
+        if @tok == ◂mod
+            func_mod = @rLiteral()
+        
+        func_body = @thenIndented firstToken
+        
+        nod ●func token nil nil func_body
+    
+    parseSignature: ➜Node ->
+    
+        sig_args = nod ●list @current() []
+        sig_type ◇ Node
+        
+        parens = false
+        if @tok == ◂paren_open
+            @swallow()
+            parens = true
+        
+        while true
+            
+            token    = @current()
+            arg_type ◇ Node = nil
+            
+            if @tok in {◂var_type, ◂val_type}
+            
+                @swallow() # ◆ or ◇
+                arg_type  = @parseType()
+                            
+            if @tok != ◂name
+                break
+                    
+            arg_name  = @value()
+            arg_value ◇ Node
+    
+            if @tok == ◂assign
+                @swallow() # =
+                @listless += 1
+                @explicit += 1
+                arg_value = @expression()
+                @explicit -= 1
+                @listless -= 1
+                
+            @swallow ◂comma
+            
+            sig_args.list_values.add nod(●arg token arg_type arg_name arg_value)
+        
+        if parens 
+            ⮐  if @tok != ◂paren_close
+            @swallow()
+    
+        if @tok == ◂then
+            @swallow()
+            sig_type = @parseType()
+    
+        if @tok != ◂func
+            ⮐  
+            
+        nod ●signature sig_args.token sig_args sig_type
+    
+    funcOrExpression: ◇Token token ➜Node ->
+    
+        col = @lineIndent token.line
+    
+        if @isTokAhead ◂func
+            startPos = @pos
+            func_signature ◇ Node
+            if @tok != ◂func
+                func_signature = @parseSignature()
+            if @tok == ◂func
+                ftoken = @consume()
+                func_mod = if @tok == ◂mod ➜ @rLiteral() ➜ nil
+                func_body = @expressionOrIndentedBlock tkn(◂null) col
+                ⮐  nod ●func ftoken func_signature func_mod func_body
+            else
+                @pos = startPos
+        
+        @expressionOrIndentedBlock(token, col)
+    
+    rReturn: ➜Node ->
+    
+        token = @consume()
+        
+        if @tok == ◂if and @isThenlessIf(token)
+            nod ●return token nil
+        else
+            @returning = true
+    
+            right ◇ Node 
+            if @tok != ◂indent or @isNextLineIndented(token)
+                right = @expression(token)
+            
+            @returning = false
+            nod ●return token right
+    
+    rDiscard: ➜Node ->
+    
+        token = @consume()
+        if @isDedent token.col
+            nod ●discard token nil
+        else
+            nod ●discard token @value()
         
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███

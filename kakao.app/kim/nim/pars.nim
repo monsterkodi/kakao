@@ -96,6 +96,11 @@ type Parser* = ref object
     # ███████      ███     ███████    ███  ███ █ ███  ███  ████
     #      ███     ███     ███   ███  ███  ███  ████  ███   ███
     # ███████      ███     ███   ███  ███  ███   ███   ███████ 
+    # ████████  ███   ███  ███   ███   ███████
+    # ███       ███   ███  ████  ███  ███     
+    # ██████    ███   ███  ███ █ ███  ███     
+    # ███       ███   ███  ███  ████  ███     
+    # ███        ███████   ███   ███   ███████
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -678,126 +683,121 @@ proc lArgList(this : Parser, left : Node) : Node =
                     return this.lVar(left)
             else: 
                 discard
-# ████████  ███   ███  ███   ███   ███████
-# ███       ███   ███  ████  ███  ███     
-# ██████    ███   ███  ███ █ ███  ███     
-# ███       ███   ███  ███  ████  ███     
-# ███        ███████   ███   ███   ███████
-proc lFunc(p : Parser, left : Node) : Node = 
-    if (left.kind notin {●signature, ●list, ●arg, ●operation}): return
-    var func_signature : Node
-    if (left.kind == ●operation): 
-        # log "lfunc op #{left}"
-        if (left.token.tok != ◂assign): return
-        if (left.operand_left.token.tok != ◂name): return
-        if (left.operand_left.token.col == 0): 
-            var left = left
-            var argtoken = tkn(◂val_type, left.operand_right.token.line, left.operand_right.token.col)
-            left.operand_right = p.lFunc(nod(●arg, argtoken, nil, left.operand_right, nil))
-            return left
-        var vartoken = tkn(◂val_type, left.operand_left.token.line, left.operand_left.token.col)
-        var varNode = nod(●arg, vartoken, nil, left.operand_left, left.operand_right)
-        var sig_args = nod(●list, vartoken, @[varNode])
-        func_signature = nod(●signature, left.token, sig_args, nil)
-    elif (left.kind == ●list): 
-        # log "lfunc list"
-        var sig_args = left
-        for i, a in sig_args.list_values: 
-            if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
-                var argtoken = tkn(◂val_type, a.operand_left.token.line, a.operand_left.token.col)
-                sig_args.list_values[i] = nod(●arg, argtoken, nil, a.operand_left, a.operand_right)
-            elif ((a.kind == ●literal) and (a.token.tok == ◂name)): 
-                var argtoken = tkn(◂val_type, a.token.line, a.token.col)
-                sig_args.list_values[i] = nod(●arg, argtoken, nil, a, nil)
-        func_signature = nod(●signature, left.token, sig_args, nil)
-    elif (left.kind == ●arg): 
-        # log "lfunc arg"
-        var sig_args = nod(●list, left.token, @[left])
-        func_signature = nod(●signature, left.token, sig_args, nil)
-    elif (left.kind == ●signature): 
-        func_signature = left
-    var firstToken = p.firstLineToken()
-    var token = p.consume()
-    var func_mod : Node
-    if (p.tok == ◂mod): 
-        func_mod = p.rLiteral()
-    var func_body = p.thenIndented(firstToken)
-    nod(●func, token, func_signature, func_mod, func_body)
-proc rFunc(p : Parser) : Node = 
-    var firstToken = p.firstLineToken()
-    var token = p.consume()
-    var func_mod : Node
-    if (p.tok == ◂mod): 
-        func_mod = p.rLiteral()
-    var func_body = p.thenIndented(firstToken)
-    nod(●func, token, nil, nil, func_body)
-proc parseSignature(p : Parser) : Node = 
-    var sig_args = nod(●list, p.current(), @[])
-    var sig_type : Node
-    var parens = false
-    if (p.tok == ◂paren_open): 
-        p.swallow()
-        parens = true
-    while true: 
-        var token = p.current()
-        var arg_type : Node = nil
-        if (p.tok in {◂var_type, ◂val_type}): 
-            p.swallow() # ◆ or ◇
-            arg_type = p.parseType()
-        if (p.tok != ◂name): 
-            break
-        var arg_name = p.value()
-        var arg_value : Node
-        if (p.tok == ◂assign): 
-            p.swallow() # =
-            (p.listless += 1)
-            (p.explicit += 1)
-            arg_value = p.expression()
-            (p.explicit -= 1)
-            (p.listless -= 1)
-        p.swallow(◂comma)
-        sig_args.list_values.add(nod(●arg, token, arg_type, arg_name, arg_value))
-    if parens: 
-        if (p.tok != ◂paren_close): return
-        p.swallow()
-    if (p.tok == ◂then): 
-        p.swallow()
-        sig_type = p.parseType()
-    if (p.tok != ◂func): 
-        return
-    nod(●signature, sig_args.token, sig_args, sig_type)
-proc funcOrExpression(p : Parser, token : Token) : Node = 
-    var col = p.lineIndent(token.line)
-    if p.isTokAhead(◂func): 
-        var startPos = p.pos
+proc lFunc(this : Parser, left : Node) : Node = 
+        if (left.kind notin {●signature, ●list, ●arg, ●operation}): return
         var func_signature : Node
-        if (p.tok != ◂func): 
-            func_signature = p.parseSignature()
-        if (p.tok == ◂func): 
-            var ftoken = p.consume()
-            var func_mod = if (p.tok == ◂mod): p.rLiteral() else: nil
-            var func_body = p.expressionOrIndentedBlock(tkn(◂null), col)
-            return nod(●func, ftoken, func_signature, func_mod, func_body)
+        if (left.kind == ●operation): 
+            # log "lfunc op #{left}"
+            if (left.token.tok != ◂assign): return
+            if (left.operand_left.token.tok != ◂name): return
+            if (left.operand_left.token.col == 0): 
+                var left = left
+                var argtoken = tkn(◂val_type, left.operand_right.token.line, left.operand_right.token.col)
+                left.operand_right = this.lFunc(nod(●arg, argtoken, nil, left.operand_right, nil))
+                return left
+            var vartoken = tkn(◂val_type, left.operand_left.token.line, left.operand_left.token.col)
+            var varNode = nod(●arg, vartoken, nil, left.operand_left, left.operand_right)
+            var sig_args = nod(●list, vartoken, @[varNode])
+            func_signature = nod(●signature, left.token, sig_args, nil)
+        elif (left.kind == ●list): 
+            # log "lfunc list"
+            var sig_args = left
+            for i, a in sig_args.list_values: 
+                if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
+                    var argtoken = tkn(◂val_type, a.operand_left.token.line, a.operand_left.token.col)
+                    sig_args.list_values[i] = nod(●arg, argtoken, nil, a.operand_left, a.operand_right)
+                elif ((a.kind == ●literal) and (a.token.tok == ◂name)): 
+                    var argtoken = tkn(◂val_type, a.token.line, a.token.col)
+                    sig_args.list_values[i] = nod(●arg, argtoken, nil, a, nil)
+            func_signature = nod(●signature, left.token, sig_args, nil)
+        elif (left.kind == ●arg): 
+            # log "lfunc arg"
+            var sig_args = nod(●list, left.token, @[left])
+            func_signature = nod(●signature, left.token, sig_args, nil)
+        elif (left.kind == ●signature): 
+            func_signature = left
+        var firstToken = this.firstLineToken()
+        var token = this.consume()
+        var func_mod : Node
+        if (this.tok == ◂mod): 
+            func_mod = this.rLiteral()
+        var func_body = this.thenIndented(firstToken)
+        nod(●func, token, func_signature, func_mod, func_body)
+proc rFunc(this : Parser) : Node = 
+        var firstToken = this.firstLineToken()
+        var token = this.consume()
+        var func_mod : Node
+        if (this.tok == ◂mod): 
+            func_mod = this.rLiteral()
+        var func_body = this.thenIndented(firstToken)
+        nod(●func, token, nil, nil, func_body)
+proc parseSignature(this : Parser) : Node = 
+        var sig_args = nod(●list, this.current(), @[])
+        var sig_type : Node
+        var parens = false
+        if (this.tok == ◂paren_open): 
+            this.swallow()
+            parens = true
+        while true: 
+            var token = this.current()
+            var arg_type : Node = nil
+            if (this.tok in {◂var_type, ◂val_type}): 
+                this.swallow() # ◆ or ◇
+                arg_type = this.parseType()
+            if (this.tok != ◂name): 
+                break
+            var arg_name = this.value()
+            var arg_value : Node
+            if (this.tok == ◂assign): 
+                this.swallow() # =
+                (this.listless += 1)
+                (this.explicit += 1)
+                arg_value = this.expression()
+                (this.explicit -= 1)
+                (this.listless -= 1)
+            this.swallow(◂comma)
+            sig_args.list_values.add(nod(●arg, token, arg_type, arg_name, arg_value))
+        if parens: 
+            if (this.tok != ◂paren_close): return
+            this.swallow()
+        if (this.tok == ◂then): 
+            this.swallow()
+            sig_type = this.parseType()
+        if (this.tok != ◂func): 
+            return
+        nod(●signature, sig_args.token, sig_args, sig_type)
+proc funcOrExpression(this : Parser, token : Token) : Node = 
+        var col = this.lineIndent(token.line)
+        if this.isTokAhead(◂func): 
+            var startPos = this.pos
+            var func_signature : Node
+            if (this.tok != ◂func): 
+                func_signature = this.parseSignature()
+            if (this.tok == ◂func): 
+                var ftoken = this.consume()
+                var func_mod = if (this.tok == ◂mod): this.rLiteral() else: nil
+                var func_body = this.expressionOrIndentedBlock(tkn(◂null), col)
+                return nod(●func, ftoken, func_signature, func_mod, func_body)
+            else: 
+                this.pos = startPos
+        this.expressionOrIndentedBlock(token, col)
+proc rReturn(this : Parser) : Node = 
+        var token = this.consume()
+        if ((this.tok == ◂if) and this.isThenlessIf(token)): 
+            nod(●return, token, nil)
         else: 
-            p.pos = startPos
-    p.expressionOrIndentedBlock(token, col)
-proc rReturn(p : Parser) : Node = 
-    var token = p.consume()
-    if ((p.tok == ◂if) and p.isThenlessIf(token)): 
-        nod(●return, token, nil)
-    else: 
-        p.returning = true
-        var right : Node
-        if ((p.tok != ◂indent) or p.isNextLineIndented(token)): 
-            right = p.expression(token)
-        p.returning = false
-        nod(●return, token, right)
-proc rDiscard(p : Parser) : Node = 
-    var token = p.consume()
-    if p.isDedent(token.col): 
-        nod(●discard, token, nil)
-    else: 
-        nod(●discard, token, p.value())
+            this.returning = true
+            var right : Node
+            if ((this.tok != ◂indent) or this.isNextLineIndented(token)): 
+                right = this.expression(token)
+            this.returning = false
+            nod(●return, token, right)
+proc rDiscard(this : Parser) : Node = 
+        var token = this.consume()
+        if this.isDedent(token.col): 
+            nod(●discard, token, nil)
+        else: 
+            nod(●discard, token, this.value())
 #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
 # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
 # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
