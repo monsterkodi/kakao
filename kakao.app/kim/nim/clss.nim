@@ -150,7 +150,7 @@ proc classify*(body : Node) : Node =
         return body
     for i in countdown(body.expressions.high, 0): 
         var e = body.expressions[i]
-        if (e.kind == ●class): 
+        if (e.kind in {●class, ●struct}): 
             var methods = methodify(e)
             body.expressions.insert(methods, (i + 1))
     body

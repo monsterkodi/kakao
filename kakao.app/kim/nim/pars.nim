@@ -879,10 +879,9 @@ proc rEnum*(this : Parser) : Node =
             this.typeless = false
         nod(●enum, token, enum_name, enum_body)
 proc rClass*(this : Parser) : Node = 
-        var token = this.consume()
-        var class_name = this.value()
-        var class_body = this.parseBlock()
-        nod(●class, token, class_name, class_body)
+        nod(●class, this.consume(), this.value(), this.parseBlock())
+proc rStruct*(this : Parser) : Node = 
+        nod(●struct, this.consume(), this.value(), this.parseBlock())
 proc lMember*(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.funcOrExpression(token)
@@ -955,6 +954,7 @@ proc setup*(this : Parser) =
         this.pratt(◂quote, nil, rQuote, 0)
         this.pratt(◂test, lTestCase, rTestSuite, 0)
         this.pratt(◂class, nil, rClass, 0)
+        this.pratt(◂struct, nil, rStruct, 0)
         this.pratt(◂enum, nil, rEnum, 0)
         this.pratt(◂colon, lMember, nil, 10)
         this.pratt(◂continue, nil, rKeyword, 0)

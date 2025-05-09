@@ -50,6 +50,7 @@ type NodeKind* = enum
     ●typeDef
     ●enum
     ●class
+    ●struct
     ●member
     ●testSuite
     ●testSection
@@ -139,7 +140,7 @@ type Node* = ref object
             use_module*: Node
             use_kind*: Node
             use_items*: seq[Node]
-        of ●class: 
+        of ●class, ●struct: 
             class_name*: Node
             class_body*: Node
         of ●member: 
@@ -321,7 +322,7 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.sig_type = args[1]
         of ●let: 
             n.let_expr = args[0]
-        of ●class: 
+        of ●class, ●struct: 
             n.class_name = args[0]
             n.class_body = args[1]
         of ●member: 

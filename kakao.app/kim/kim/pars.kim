@@ -1160,10 +1160,11 @@ class Parser*
         
     rClass: ➜Node ->
     
-        token = @consume()
-        class_name = @value()
-        class_body = @parseBlock()
-        nod ●class token class_name class_body
+        nod ●class @consume() @value() @parseBlock()
+
+    rStruct: ➜Node ->
+    
+        nod ●struct @consume() @value() @parseBlock()
         
     lMember: ◇Node left ➜Node ->
     
@@ -1291,6 +1292,7 @@ class Parser*
         @pratt ◂test              lTestCase         rTestSuite      0
         
         @pratt ◂class             nil               rClass          0
+        @pratt ◂struct            nil               rStruct         0
         @pratt ◂enum              nil               rEnum           0
         @pratt ◂colon             lMember           nil            10
         

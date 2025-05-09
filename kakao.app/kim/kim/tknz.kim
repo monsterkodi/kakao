@@ -26,6 +26,7 @@ enum tok*
     ◂discard
     ◂enum
     ◂class
+    ◂struct
     ◂import
     ◂template
     ◂macro
@@ -125,16 +126,18 @@ const
 #    ███     ███  ███   ███  ████   ███     ███   ███
 #    ███     ███   ███  ███   ███  ███████  ███   ███
 
-type Token* = object
-    str*  : string
-    tok*  : tok
-    line* : int
-    col*  : int
+struct Token*
+
+    str  : string
+    tok  : tok
+    line : int
+    col  : int
         
 tkn* = ◇tok tok ◇string str line=-1 col=-1 ➜ Token -> Token(tok:tok str:str line:line col:col)
 tkn* =  tok=◂name           line=-1 col=-1 ➜ Token -> Token(tok:tok str:""  line:line col:col)
 
 class Tknzr
+
     tokens      : seq[Token]
     openStack   : seq[tok]
     token       : Token

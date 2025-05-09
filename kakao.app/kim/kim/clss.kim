@@ -177,7 +177,7 @@ classify* = ◇Node body ➜Node ->
         
     for i in countdown(body.expressions.high, 0)
         e = body.expressions[i]
-        if e.kind == ●class
+        if e.kind in {●class ●struct}
             methods = methodify e
             body.expressions.insert methods i+1
     body

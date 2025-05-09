@@ -319,6 +319,11 @@ proc ▸class(this : Rndr, n : Node) =
         this.rnd(n.class_name)
         this.add(" = ref object")
         this.rnd(n.class_body)
+proc ▸struct(this : Rndr, n : Node) = 
+        this.add("type ")
+        this.rnd(n.class_name)
+        this.add(" = object")
+        this.rnd(n.class_body)
 proc ▸member(this : Rndr, n : Node) = 
         this.rnd(n.member_key)
         this.add(": ")
@@ -367,6 +372,7 @@ proc rnd(this : Rndr, n : Node) =
             of ●discard: this.▸discard(n)
             of ●enum: this.▸enum(n)
             of ●class: this.▸class(n)
+            of ●struct: this.▸struct(n)
             of ●quote: this.▸quote(n)
             of ●member: this.▸member(n)
             of ●testCase: this.▸testCase(n)

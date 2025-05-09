@@ -413,6 +413,13 @@ class Rndr
         @rnd n.class_name
         @add " = ref object"
         @rnd n.class_body
+
+    ▸struct: ◇Node n ->
+    
+        @add "type "
+        @rnd n.class_name
+        @add " = object"
+        @rnd n.class_body
     
     ▸member: ◇Node n ->
     
@@ -471,6 +478,7 @@ class Rndr
             ●discard        ➜ @▸discard        n
             ●enum           ➜ @▸enum           n
             ●class          ➜ @▸class          n
+            ●struct         ➜ @▸struct         n
             ●quote          ➜ @▸quote          n
             ●member         ➜ @▸member         n
             ●testCase       ➜ @▸testCase       n

@@ -54,6 +54,7 @@ enum NodeKind*
     ●typeDef
     ●enum
     ●class
+    ●struct
     ●member
     ●testSuite
     ●testSection
@@ -200,6 +201,7 @@ class Node*
             use_items      : seq[Node]
             
         ●class
+        ●struct
             
             class_name     : Node
             class_body     : Node
@@ -403,6 +405,7 @@ nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
         ●let                    
             n.let_expr          = args[0] 
         ●class
+        ●struct
             n.class_name        = args[0]
             n.class_body        = args[1]
         ●member

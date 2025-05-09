@@ -3,6 +3,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
 suite "class": 
     test "simple": 
         t("class A", "type A = ref object")
+        t("struct A", "type A = object")
     test "members": 
         t("class ABC\n a:int\n b:int\n c:int", "type ABC = ref object\n a: int\n b: int\n c: int")
         t("""
@@ -93,6 +94,7 @@ proc inc(this : A, a1 : int) : int =
         (a1 + 1)""")
     test "export": 
         t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
+        t("struct A*\n    add: ◇string text -> @s &= text", "type A* = object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
         t("""
 class A*
     m : int

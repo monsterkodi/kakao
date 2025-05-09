@@ -23,6 +23,7 @@ type tok* = enum
     ◂discard
     ◂enum
     ◂class
+    ◂struct
     ◂import
     ◂template
     ◂macro
@@ -113,7 +114,6 @@ const
 #    ███     ███  ███   ███  ████   ███     ███   ███
 #    ███     ███   ███  ███   ███  ███████  ███   ███
 type Token* = object
-
     str*: string
     tok*: tok
     line*: int
