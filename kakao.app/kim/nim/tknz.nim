@@ -114,315 +114,315 @@ const
 #    ███     ███   ███  ███   ███  ███████  ███   ███
 type Token* = object
 
-        str*: string
-        tok*: tok
-        line*: int
-        col*: int
-type Tknzr* = ref object
-        tokens: seq[Token]
-        openStack: seq[tok]
-        token: Token
-        inStripol: bool
-        delimiter: string
-        segi: int
-        segs: seq[string]
-        bol: int # segi at start of current line
-        eol: int # segi at end of current line
-        line: int # current line index
+    str*: string
+    tok*: tok
+    line*: int
+    col*: int
 proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
 proc tkn*(tok = ◂name, line = -1, col = -1) : Token = Token(tok: tok, str: "", line: line, col: col)
-proc `$`*(t : Tknzr) : string = 
-    &"◂▸ {t.line} {t.token} {t.bol} {t.segi} {t.eol}"
-proc char(t : Tknzr) : char = t.segs[t.segi][0]
-proc char(t : Tknzr, n : int) : char = t.segs[(t.segi + n)][0]
-proc peek(t : Tknzr, n : int) : string = t.segs[(t.segi + n)]
-proc incr(t : Tknzr, n : int) = (t.segi += n)
-proc col(t : Tknzr) : int = (t.segi - t.bol)
-proc peekSafe(t : Tknzr, n : int) : string = 
-    if ((t.segi + n) < t.segs.len): 
-        t.segs[(t.segi + n)]
-    else: 
-        ""
-proc nextLine(t : Tknzr) = 
-    assert((t.segs[t.segi] == "\n"))
-    t.incr(1)
-    (t.line += 1)
-    t.bol = t.segi
-    t.eol = t.bol
-    while ((t.eol < t.segs.len) and (t.segs[t.eol] != "\n")): 
-        (t.eol += 1)
-proc lineIncr(t : Tknzr, c : string) = 
-    if (c == "\n"): 
-        t.nextLine()
-    else: 
-        t.incr(1)
-proc srng(t : Tknzr, n : int) : string = 
-    var e = if (n >= 0): (t.segi + n) else: t.eol
-    if (e > t.segs.len): return ""
-    t.segs[t.segi..<e].join("")
-proc scmp(t : Tknzr, s : string) : bool = 
-    var ss = kseg(s)
-    for n in 0..<ss.len: 
-        if ((t.segi + n) >= t.segs.len): return false
-        if (t.segs[(t.segi + n)] != ss[n]): return false
-    true
-proc advance(t : Tknzr, n : int) = 
-    for s in 0..<n: 
-        (t.token.str &= t.peek(0))
-        t.incr(1)
-proc advance(t : Tknzr, charset : set[char]) = 
-    while ((t.segi < t.segs.len) and (t.peek(0)[0] in charset)): 
-        t.advance(1)
-proc advanceUntil(t : Tknzr, stop : string) = 
-    while ((t.segi < t.segs.len) and not t.scmp(stop)): 
-        (t.token.str &= t.peek(0))
-        t.incr(1)
-proc advanceMulti(t : Tknzr, stop : string) = 
-    while ((t.segi < t.segs.len) and not t.scmp(stop)): 
-        let c = t.peek(0)
-        (t.token.str &= c)
-        t.lineIncr(c)
-proc pushToken(t : Tknzr, str = "", tk = ◂name, incr = 0) = 
-    if t.token.str.len: 
-        t.tokens.add(t.token)
-    t.token = tkn(tk, str, t.line, t.col)
-    t.incr(incr)
-proc push(t : Tknzr, tk : tok) = 
-    t.token.tok = tk
-    t.pushToken()
-proc commit(t : Tknzr, str = "", tk = ◂name, incr = 0)
-#  ███████  █████████  ████████   ███  ███   ███   ███████ 
-# ███          ███     ███   ███  ███  ████  ███  ███      
-# ███████      ███     ███████    ███  ███ █ ███  ███  ████
-#      ███     ███     ███   ███  ███  ███  ████  ███   ███
-# ███████      ███     ███   ███  ███  ███   ███   ███████ 
-proc string(t : Tknzr) = 
-    var topTok = t.tokens[^1]
-    assert((topTok.tok in {◂string_start, ◂stripol_end}))
-    var ampersand = false
-    var stripolStart = "#" & "{"
-    case topTok.tok:
-        of ◂string_start: 
-            t.delimiter = topTok.str
-            if ((t.tokens.len > 1) and (t.tokens[^2].tok == ◂ampersand)): 
-                if (t.tokens[^2].col == (t.tokens[^1].col - 1)): 
-                    t.tokens.delete((t.tokens.len - 2)..(t.tokens.len - 2))
-                    stripolStart = "{"
-                    ampersand = true
-        of ◂stripol_end: 
-            t.token.tok = ◂string
+type Tknzr* = ref object
+    tokens: seq[Token]
+    openStack: seq[tok]
+    token: Token
+    inStripol: bool
+    delimiter: string
+    segi: int
+    segs: seq[string]
+    bol: int # segi at start of current line
+    eol: int # segi at end of current line
+    line: int # current line index
+    #  ███████  █████████  ████████   ███  ███   ███   ███████ 
+    # ███          ███     ███   ███  ███  ████  ███  ███      
+    # ███████      ███     ███████    ███  ███ █ ███  ███  ████
+    #      ███     ███     ███   ███  ███  ███  ████  ███   ███
+    # ███████      ███     ███   ███  ███  ███   ███   ███████ 
+    # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
+    # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
+    # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
+    # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
+    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
+    # █████████  ███   ███  ███   ███  ███████
+    #    ███     ███  ███   ████  ███     ███ 
+    #    ███     ███████    ███ █ ███    ███  
+    #    ███     ███  ███   ███  ████   ███   
+    #    ███     ███   ███  ███   ███  ███████
+proc `$`*(this : Tknzr) : string = 
+        &"◂▸ {this.line} {this.token} {this.bol} {this.segi} {this.eol}"
+proc char(this : Tknzr) : char = this.segs[this.segi][0]
+proc char(this : Tknzr, n : int) : char = this.segs[(this.segi + n)][0]
+proc peek(this : Tknzr, n : int) : string = this.segs[(this.segi + n)]
+proc incr(this : Tknzr, n : int) = (this.segi += n)
+proc col(this : Tknzr) : int = (this.segi - this.bol)
+proc peekSafe(this : Tknzr, n : int) : string = 
+        if ((this.segi + n) < this.segs.len): 
+            this.segs[(this.segi + n)]
         else: 
-            discard
-    proc isAtStringEnd() : bool = 
-        if ((t.delimiter.len == 1) and (t.segi >= t.eol)): 
-            return true
-        if (t.segi >= t.segs.len): 
-            return true
-        t.scmp(t.delimiter)
-    while not isAtStringEnd(): 
-        t.token.tok = ◂string
-        var c = t.peek(0)
-        if (c == "\\"): 
-            t.advance(2)
-            continue
-        if (t.delimiter in @["\"", "\"\"\""]): 
-            if t.scmp(stripolStart): 
-                t.commit(stripolStart, ◂stripol_start, stripolStart.len)
-                t.inStripol = true
-                return
-        (t.token.str &= c)
-        t.lineIncr(c)
-    if (t.segi <= (t.eol - 1)): 
-        t.commit(t.delimiter, ◂string_end, t.delimiter.len)
-# ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
-# ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
-# ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
-# ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
-# ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
-proc number(t : Tknzr) = 
-    t.pushToken("", ◂number)
-    var l = t.segs.len
-    if ((t.segi < (l - 1)) and (t.segs[t.segi] == "0")): 
-        if (t.segs[(t.segi + 1)] == "x"): 
-            t.advance(2)
-            t.advance({'0'..'9', 'a'..'f', 'A'..'F'})
-            t.pushToken()
-            return
-        if (t.segs[(t.segi + 1)] == "b"): 
-            t.advance(2)
-            t.advance({'0', '1'})
-            t.pushToken()
-            return
-        if (t.segs[(t.segi + 1)] == "o"): 
-            t.advance(2)
-            t.advance({'0'..'7'})
-            t.pushToken()
-            return
-    t.advance({'0'..'9'})
-    if (((t.segi < (l - 1)) and (t.char == '.')) and (t.char(1) in {'0'..'9'})): 
-        t.advance(1)
-        t.advance({'0'..'9'})
-    if (((t.segi < (l - 1)) and (t.char == 'e')) and (t.char(1) in {'0'..'9', '+', '-'})): 
-        t.advance(2)
-        t.advance({'0'..'9'})
-    t.pushToken()
-#  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
-# ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
-# ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
-# ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
-#  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
-proc comment(t : Tknzr) = 
-    if t.scmp("##"): 
-        (t.tokens[^1].str &= "##")
-        t.incr(2)
-        (t.token.col += 2)
-        t.token.tok = ◂comment
-        t.advanceMulti("###")
-        if t.scmp("###"): 
-            t.commit("###", ◂comment_end, 3)
+            ""
+proc nextLine(this : Tknzr) = 
+        assert((this.segs[this.segi] == "\n"))
+        this.incr(1)
+        (this.line += 1)
+        this.bol = this.segi
+        this.eol = this.bol
+        while ((this.eol < this.segs.len) and (this.segs[this.eol] != "\n")): 
+            (this.eol += 1)
+proc lineIncr(this : Tknzr, c : string) = 
+        if (c == "\n"): 
+            this.nextLine()
         else: 
-            t.pushToken("", ◂comment)
-        return
-    t.advanceUntil("\n")
-    t.push(◂comment)
-proc modbracket(t : Tknzr) = 
-    t.pushToken()
-    t.token.tok = ◂mod
-    t.advance(1)
-    t.advanceUntil(".}")
-    t.advance(2)
-    t.pushToken()
-proc verbatim(t : Tknzr, tk : tok) = 
-    t.advanceUntil("\n")
-    t.push(tk)
-#  ███████   ███████   ██     ██  ██     ██  ███  █████████
-# ███       ███   ███  ███   ███  ███   ███  ███     ███   
-# ███       ███   ███  █████████  █████████  ███     ███   
-# ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
-#  ███████   ███████   ███   ███  ███   ███  ███     ███   
-proc commit(t : Tknzr, str = "", tk = ◂name, incr = 0) = 
-    t.pushToken(str, tk, incr)
-    t.pushToken()
-    case tk:
-        of ◂comment_start: 
-            t.comment()
-        of ◂string_start, ◂stripol_end: 
-            t.string()
-        of ◂mod: 
-            t.modbracket()
-        else: 
-            discard
-# █████████  ███   ███  ███   ███  ███████
-#    ███     ███  ███   ████  ███     ███ 
-#    ███     ███████    ███ █ ███    ███  
-#    ███     ███  ███   ███  ████   ███   
-#    ███     ███   ███  ███   ███  ███████
-proc tknz(t : Tknzr, segs : seq[string]) : seq[Token] = 
-    # profileScope "tknz"
-    t.segs = segs
-    while ((t.segi < t.segs.len) and (t.segs[t.segi] in @["\n", " "])): 
-        t.lineIncr(t.segs[t.segi])
-    while ((t.eol < t.segs.len) and (t.segs[t.eol] != "\n")): 
-        (t.eol += 1)
-    while (t.segi < t.segs.len): 
-        if (t.segs[t.segi] == "\n"): 
-            if (((t.tokens.len > 1) and (t.tokens[^1].tok == ◂multiply)) and (t.tokens[^2].tok == ◂name)): 
-                t.tokens.pops()
-                (t.tokens[^1].str &= "*")
-            t.nextLine()
-            if (t.segi >= t.segs.len): 
-                break
-            t.token = tkn(◂indent, "", t.line, t.col)
-            while (t.peekSafe(0) == " "): 
-                t.advance(1)
-            if (t.segi >= t.segs.len): 
-                break
-            if (t.tokens[^1].tok == ◂indent): 
-                t.tokens.pops()
-            t.tokens.add(t.token)
-            continue
-        t.token = tkn(◂name, "", t.line, t.col)
-        while (t.segi < t.eol): 
-            var char = t.peek(0)
-            if (char == " "): 
-                if ((t.segi > 0) and (t.peek(-1) != " ")): 
-                    t.pushToken()
+            this.incr(1)
+proc srng(this : Tknzr, n : int) : string = 
+        var e = if (n >= 0): (this.segi + n) else: this.eol
+        if (e > this.segs.len): return ""
+        this.segs[this.segi..<e].join("")
+proc scmp(this : Tknzr, s : string) : bool = 
+        var ss = kseg(s)
+        for n in 0..<ss.len: 
+            if ((this.segi + n) >= this.segs.len): return false
+            if (this.segs[(this.segi + n)] != ss[n]): return false
+        true
+proc advance(this : Tknzr, n : int) = 
+        for s in 0..<n: 
+            (this.token.str &= this.peek(0))
+            this.incr(1)
+proc advance(this : Tknzr, charset : set[char]) = 
+        while ((this.segi < this.segs.len) and (this.peek(0)[0] in charset)): 
+            this.advance(1)
+proc advanceUntil(this : Tknzr, stop : string) = 
+        while ((this.segi < this.segs.len) and not this.scmp(stop)): 
+            (this.token.str &= this.peek(0))
+            this.incr(1)
+proc advanceMulti(this : Tknzr, stop : string) = 
+        while ((this.segi < this.segs.len) and not this.scmp(stop)): 
+            let c = this.peek(0)
+            (this.token.str &= c)
+            this.lineIncr(c)
+proc pushToken(this : Tknzr, str = "", tk = ◂name, incr = 0) = 
+        if this.token.str.len: 
+            this.tokens.add(this.token)
+        this.token = tkn(tk, str, this.line, this.col)
+        this.incr(incr)
+proc push(this : Tknzr, tk : tok) = 
+        this.token.tok = tk
+        this.pushToken()
+proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0)
+proc string(this : Tknzr) = 
+        var topTok = this.tokens[^1]
+        assert((topTok.tok in {◂string_start, ◂stripol_end}))
+        var ampersand = false
+        var stripolStart = "#" & "{"
+        case topTok.tok:
+            of ◂string_start: 
+                this.delimiter = topTok.str
+                if ((this.tokens.len > 1) and (this.tokens[^2].tok == ◂ampersand)): 
+                    if (this.tokens[^2].col == (this.tokens[^1].col - 1)): 
+                        this.tokens.delete((this.tokens.len - 2)..(this.tokens.len - 2))
+                        stripolStart = "{"
+                        ampersand = true
+            of ◂stripol_end: 
+                this.token.tok = ◂string
             else: 
-                if ((t.col > 0) and (t.peek(-1) == " ")): 
-                    t.token.col = t.col
-                var triple = t.srng(3)
-                if (triple == "..<"): 
-                    t.commit("...", ◂tripledot, 3)
-                    continue
-                if punct.hasKey(triple): 
-                    t.commit(triple, punct[triple], 3)
-                    if (t.tokens[^1].tok == ◂string_start): 
-                        t.token.tok = ◂string
-                    continue
-                var double = t.srng(2)
-                if punct.hasKey(double): 
-                    if (punct[double] == ◂mod): 
-                        t.modbracket()
-                    else: 
-                        t.commit(double, punct[double], 2)
-                    continue
-                if punct.hasKey(char): 
-                    if (punct[char] in openToks): 
-                        t.openStack.push(punct[char])
-                    elif (punct[char] in closeToks): 
-                        if (t.openStack.len and (t.openStack[^1] == closeOpen[punct[char]])): 
-                            t.openStack.pops()
-                        elif ((punct[char] == ◂bracket_close) and t.inStripol): 
-                            t.inStripol = false
-                            t.commit(char, ◂stripol_end, 1)
-                            continue
-                    if (punct[char] == ◂test): 
-                        if (t.peek(1) notin @[" ", "\n"]): 
-                            t.token.tok = ◂name
-                            t.advance(1)
-                            continue
-                        if ((t.tokens.len == 0) or ((t.tokens[^1].tok == ◂indent) and (t.peek(1) == " "))): 
-                            while (t.segi <= (t.eol - 1)): 
-                                t.advance(1)
-                            t.push(◂test)
-                            continue
-                    if (((t.tokens.len > 0) and (t.tokens[^1].tok == ◂multiply)) and (punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type})): 
-                        if ((punct[char] != ◂paren_open) or (t.tokens[^2].tok in {◂proc, ◂template, ◂macro})): 
-                            t.tokens.pops()
-                            (t.tokens[^1].str &= "*")
-                    t.commit(char, punct[char], 1)
-                    continue
+                discard
+        proc isAtStringEnd() : bool = 
+            if ((this.delimiter.len == 1) and (this.segi >= this.eol)): 
+                return true
+            if (this.segi >= this.segs.len): 
+                return true
+            this.scmp(this.delimiter)
+        while not isAtStringEnd(): 
+            this.token.tok = ◂string
+            var c = this.peek(0)
+            if (c == "\\"): 
+                this.advance(2)
+                continue
+            if (this.delimiter in @["\"", "\"\"\""]): 
+                if this.scmp(stripolStart): 
+                    this.commit(stripolStart, ◂stripol_start, stripolStart.len)
+                    this.inStripol = true
+                    return
+            (this.token.str &= c)
+            this.lineIncr(c)
+        if (this.segi <= (this.eol - 1)): 
+            this.commit(this.delimiter, ◂string_end, this.delimiter.len)
+proc number(this : Tknzr) = 
+        this.pushToken("", ◂number)
+        var l = this.segs.len
+        if ((this.segi < (l - 1)) and (this.segs[this.segi] == "0")): 
+            if (this.segs[(this.segi + 1)] == "x"): 
+                this.advance(2)
+                this.advance({'0'..'9', 'a'..'f', 'A'..'F'})
+                this.pushToken()
+                return
+            if (this.segs[(this.segi + 1)] == "b"): 
+                this.advance(2)
+                this.advance({'0', '1'})
+                this.pushToken()
+                return
+            if (this.segs[(this.segi + 1)] == "o"): 
+                this.advance(2)
+                this.advance({'0'..'7'})
+                this.pushToken()
+                return
+        this.advance({'0'..'9'})
+        if (((this.segi < (l - 1)) and (this.char == '.')) and (this.char(1) in {'0'..'9'})): 
+            this.advance(1)
+            this.advance({'0'..'9'})
+        if (((this.segi < (l - 1)) and (this.char == 'e')) and (this.char(1) in {'0'..'9', '+', '-'})): 
+            this.advance(2)
+            this.advance({'0'..'9'})
+        this.pushToken()
+proc comment(this : Tknzr) = 
+        if this.scmp("##"): 
+            (this.tokens[^1].str &= "##")
+            this.incr(2)
+            (this.token.col += 2)
+            this.token.tok = ◂comment
+            this.advanceMulti("###")
+            if this.scmp("###"): 
+                this.commit("###", ◂comment_end, 3)
+            else: 
+                this.pushToken("", ◂comment)
+            return
+        this.advanceUntil("\n")
+        this.push(◂comment)
+proc modbracket(this : Tknzr) = 
+        this.pushToken()
+        this.token.tok = ◂mod
+        this.advance(1)
+        this.advanceUntil(".}")
+        this.advance(2)
+        this.pushToken()
+proc verbatim(this : Tknzr, tk : tok) = 
+        this.advanceUntil("\n")
+        this.push(tk)
+proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0) = 
+        this.pushToken(str, tk, incr)
+        this.pushToken()
+        case tk:
+            of ◂comment_start: 
+                this.comment()
+            of ◂string_start, ◂stripol_end: 
+                this.string()
+            of ◂mod: 
+                this.modbracket()
+            else: 
+                discard
+proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] = 
+        # profileScope "tknz"
+        this.segs = segs
+        while ((this.segi < this.segs.len) and (this.segs[this.segi] in @["\n", " "])): 
+            this.lineIncr(this.segs[this.segi])
+        while ((this.eol < this.segs.len) and (this.segs[this.eol] != "\n")): 
+            (this.eol += 1)
+        while (this.segi < this.segs.len): 
+            if (this.segs[this.segi] == "\n"): 
+                if (((this.tokens.len > 1) and (this.tokens[^1].tok == ◂multiply)) and (this.tokens[^2].tok == ◂name)): 
+                    this.tokens.pops()
+                    (this.tokens[^1].str &= "*")
+                this.nextLine()
+                if (this.segi >= this.segs.len): 
+                    break
+                this.token = tkn(◂indent, "", this.line, this.col)
+                while (this.peekSafe(0) == " "): 
+                    this.advance(1)
+                if (this.segi >= this.segs.len): 
+                    break
+                if (this.tokens[^1].tok == ◂indent): 
+                    this.tokens.pops()
+                this.tokens.add(this.token)
+                continue
+            this.token = tkn(◂name, "", this.line, this.col)
+            while (this.segi < this.eol): 
+                var char = this.peek(0)
+                if (char == " "): 
+                    if ((this.segi > 0) and (this.peek(-1) != " ")): 
+                        this.pushToken()
                 else: 
-                    if ((t.token.str.len == 0) and (t.char in {'0'..'9'})): 
-                        t.number()
+                    if ((this.col > 0) and (this.peek(-1) == " ")): 
+                        this.token.col = this.col
+                    var triple = this.srng(3)
+                    if (triple == "..<"): 
+                        this.commit("...", ◂tripledot, 3)
                         continue
-                    t.advance(1)
-                    if (t.peekSafe(0) == " "): 
-                        case t.token.str:
-                            of "case": 
-                                t.token.str = "switch"
-                                t.push(◂switch)
+                    if punct.hasKey(triple): 
+                        this.commit(triple, punct[triple], 3)
+                        if (this.tokens[^1].tok == ◂string_start): 
+                            this.token.tok = ◂string
+                        continue
+                    var double = this.srng(2)
+                    if punct.hasKey(double): 
+                        if (punct[double] == ◂mod): 
+                            this.modbracket()
+                        else: 
+                            this.commit(double, punct[double], 2)
+                        continue
+                    if punct.hasKey(char): 
+                        if (punct[char] in openToks): 
+                            this.openStack.push(punct[char])
+                        elif (punct[char] in closeToks): 
+                            if (this.openStack.len and (this.openStack[^1] == closeOpen[punct[char]])): 
+                                this.openStack.pops()
+                            elif ((punct[char] == ◂bracket_close) and this.inStripol): 
+                                this.inStripol = false
+                                this.commit(char, ◂stripol_end, 1)
                                 continue
-                            of "of": 
-                                t.token.str = ""
+                        if (punct[char] == ◂test): 
+                            if (this.peek(1) notin @[" ", "\n"]): 
+                                this.token.tok = ◂name
+                                this.advance(1)
                                 continue
-                            of "quote": 
-                                if t.scmp(" do:"): 
-                                    t.incr(4)
-                                    t.push(◂quote)
+                            if ((this.tokens.len == 0) or ((this.tokens[^1].tok == ◂indent) and (this.peek(1) == " "))): 
+                                while (this.segi <= (this.eol - 1)): 
+                                    this.advance(1)
+                                this.push(◂test)
+                                continue
+                        if (((this.tokens.len > 0) and (this.tokens[^1].tok == ◂multiply)) and (punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type})): 
+                            if ((punct[char] != ◂paren_open) or (this.tokens[^2].tok in {◂proc, ◂template, ◂macro})): 
+                                this.tokens.pops()
+                                (this.tokens[^1].str &= "*")
+                        this.commit(char, punct[char], 1)
+                        continue
+                    else: 
+                        if ((this.token.str.len == 0) and (this.char in {'0'..'9'})): 
+                            this.number()
+                            continue
+                        this.advance(1)
+                        if (this.peekSafe(0) == " "): 
+                            case this.token.str:
+                                of "case": 
+                                    this.token.str = "switch"
+                                    this.push(◂switch)
                                     continue
-                            else: discard
-                    if (keywords.hasKey(t.token.str) and (((t.segi >= t.eol) or (t.peek(0) == " ")) or punct.hasKey(t.peek(0)))): 
-                        case keywords[t.token.str]:
-                            of ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter: 
-                                t.verbatim(keywords[t.token.str])
-                            else: t.push(keywords[t.token.str])
-                    continue
-            t.incr(1)
-        if t.token.str.len: 
-            if keywords.hasKey(t.token.str): 
-                t.token.tok = keywords[t.token.str]
-            t.tokens.add(t.token)
-    return t.tokens
+                                of "of": 
+                                    this.token.str = ""
+                                    continue
+                                of "quote": 
+                                    if this.scmp(" do:"): 
+                                        this.incr(4)
+                                        this.push(◂quote)
+                                        continue
+                                else: discard
+                        if (keywords.hasKey(this.token.str) and (((this.segi >= this.eol) or (this.peek(0) == " ")) or punct.hasKey(this.peek(0)))): 
+                            case keywords[this.token.str]:
+                                of ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter: 
+                                    this.verbatim(keywords[this.token.str])
+                                else: this.push(keywords[this.token.str])
+                        continue
+                this.incr(1)
+            if this.token.str.len: 
+                if keywords.hasKey(this.token.str): 
+                    this.token.tok = keywords[this.token.str]
+                this.tokens.add(this.token)
+        return this.tokens
 proc tokenize*(text : string) : seq[Token] = 
     Tknzr.new.tknz(kseg(text))

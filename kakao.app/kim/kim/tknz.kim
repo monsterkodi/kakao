@@ -99,12 +99,12 @@ enum tok*
     ◂indent
     ◂eof
         
-var keywords = initTable[string, tok]()
+keywords = initTable[string, tok]()
 for kt in { ◂if..◂return }
     keywords[symbolName(kt)[3..^1]] = kt
 keywords["nil"] = ◂null
 
-var punct = initTable[string, tok]()
+punct = initTable[string, tok]()
 for kt in { ◂if..◂test }
     if symbolName(kt) != $kt
         punct[$kt] = kt
@@ -126,408 +126,408 @@ const
 #    ███     ███   ███  ███   ███  ███████  ███   ███
 
 type Token* = object
-        str*  : string
-        tok*  : tok
-        line* : int
-        col*  : int
+    str*  : string
+    tok*  : tok
+    line* : int
+    col*  : int
         
-class Tknzr*
-        tokens      : seq[Token]
-        openStack   : seq[tok]
-        token       : Token
-        inStripol   : bool
-        delimiter   : string
-        segi        : int
-        segs        : seq[string]
-        bol         : int # segi at start of current line
-        eol         : int # segi at end of current line
-        line        : int # current line index
-
 tkn* = ◇tok tok ◇string str line=-1 col=-1 ➜ Token -> Token(tok:tok str:str line:line col:col)
 tkn* =  tok=◂name           line=-1 col=-1 ➜ Token -> Token(tok:tok str:""  line:line col:col)
+
+class Tknzr*
+    tokens      : seq[Token]
+    openStack   : seq[tok]
+    token       : Token
+    inStripol   : bool
+    delimiter   : string
+    segi        : int
+    segs        : seq[string]
+    bol         : int # segi at start of current line
+    eol         : int # segi at end of current line
+    line        : int # current line index
+
+    $*: ➜string ->
     
-$* = ◇Tknzr t ➜string ->
-
-    "◂▸ #{t.line} #{t.token} #{t.bol} #{t.segi} #{t.eol}"
+        "◂▸ #{@line} #{@token} #{@bol} #{@segi} #{@eol}"
     
-char = ◇Tknzr t        ➜char   -> t.segs[t.segi][0]
-char = ◇Tknzr t ◇int n ➜char   -> t.segs[t.segi+n][0]
-peek = ◇Tknzr t ◇int n ➜string -> t.segs[t.segi+n]
-incr = ◇Tknzr t ◇int n         -> t.segi += n
-col  = ◇Tknzr t        ➜int    -> t.segi - t.bol
-
-peekSafe = ◇Tknzr t ◇int n ➜string ->
-
-    if t.segi+n < t.segs.len 
-        t.segs[t.segi+n]
-    else
-        ""
+    char:        ➜char   -> @segs[@segi][0]
+    char: ◇int n ➜char   -> @segs[@segi+n][0]
+    peek: ◇int n ➜string -> @segs[@segi+n]
+    incr: ◇int n         -> @segi += n
+    col :        ➜int    -> @segi - @bol
     
-nextLine = ◇Tknzr t ->
-
-    assert t.segs[t.segi] == "\n"
-    t.incr 1
-    t.line += 1
-    t.bol = t.segi
-    t.eol = t.bol
+    peekSafe: ◇int n ➜string ->
     
-    while t.eol < t.segs.len and t.segs[t.eol] != "\n"
-        t.eol += 1
-        
-lineIncr = ◇Tknzr t ◇string c ->
-
-    if c == "\n"
-        t.nextLine()
-    else
-        t.incr 1
-
-srng = ◇Tknzr t ◇int n ➜string ->
-
-    e = if n >= 0 ➜ t.segi + n ➜ t.eol
-    ⮐  "" if e > t.segs.len
-    t.segs[t.segi...e].join("")
-    
-scmp = ◇Tknzr t ◇string s ➜bool ->
-
-    ss = kseg s
-    for n in 0...ss.len
-        ⮐  false if t.segi+n >= t.segs.len
-        ⮐  false if t.segs[t.segi+n] != ss[n]
-    true
-    
-advance = ◇Tknzr t ◇int n ->
-
-    for s in 0..<n 
-        t.token.str &= t.peek(0)
-        t.incr 1
-
-advance = ◇Tknzr t ◇set[char] charset ->
-    
-    while t.segi < t.segs.len and t.peek(0)[0] in charset
-        t.advance(1)
-        
-advanceUntil = ◇Tknzr t ◇string stop ->
-
-    while t.segi < t.segs.len and not t.scmp(stop)
-        t.token.str &= t.peek(0)
-        t.incr 1
-
-advanceMulti = ◇Tknzr t ◇string stop ->
-
-    while t.segi < t.segs.len and not t.scmp(stop)
-        let c = t.peek(0)
-        t.token.str &= c
-        t.lineIncr c
-    
-pushToken = ◇Tknzr t str="" tk=◂name incr=0 ->
-
-    if t.token.str.len
-        t.tokens.add t.token
-    t.token = tkn(tk str t.line t.col)
-    t.incr incr
-    
-push = ◇Tknzr t ◇tok tk ->
-
-    t.token.tok = tk
-    t.pushToken()
-    
-commit = ◇Tknzr t str="" tk=◂name incr=0 ->
-    
-#  ███████  █████████  ████████   ███  ███   ███   ███████ 
-# ███          ███     ███   ███  ███  ████  ███  ███      
-# ███████      ███     ███████    ███  ███ █ ███  ███  ████
-#      ███     ███     ███   ███  ███  ███  ████  ███   ███
-# ███████      ███     ███   ███  ███  ███   ███   ███████ 
-
-string = ◇Tknzr t ->
-
-    topTok = t.tokens[^1]
-    
-    assert topTok.tok in {◂string_start, ◂stripol_end}
-    
-    ampersand = false
-    stripolStart = "#" & "{"
-    
-    switch topTok.tok
-        ◂string_start
-            t.delimiter = topTok.str
-            if t.tokens.len > 1 and t.tokens[^2].tok == ◂ampersand
-                if t.tokens[^2].col == t.tokens[^1].col-1
-                    t.tokens.delete(t.tokens.len-2..t.tokens.len-2)
-                    stripolStart = "{"
-                    ampersand = true
-        ◂stripol_end
-            t.token.tok = ◂string
-        ➜ 
-            discard
-
-    isAtStringEnd = ➜bool ->
-        if t.delimiter.len == 1 and t.segi >= t.eol
-            ⮐  true
-        if t.segi >= t.segs.len
-            ⮐  true
-        t.scmp(t.delimiter)
-                    
-    while not isAtStringEnd()
-    
-        t.token.tok = ◂string
-        
-        c = t.peek(0)
-        if c == "\\"
-            t.advance 2
-            continue
-        
-        if t.delimiter in @["\"", "\"\"\""]
-            if t.scmp(stripolStart)
-                t.commit(stripolStart, ◂stripol_start, stripolStart.len)
-                t.inStripol = true  
-                return
-
-        t.token.str &= c
-        t.lineIncr c
-                
-    if t.segi <= t.eol-1 
-        t.commit(t.delimiter, ◂string_end, t.delimiter.len)
-    
-# ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
-# ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
-# ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
-# ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
-# ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
-
-number = ◇Tknzr t ->
-
-    t.pushToken("", ◂number)
-
-    l = t.segs.len
-    
-    if t.segi < l-1 and t.segs[t.segi] == "0" 
-        if t.segs[t.segi+1] == "x"
-            t.advance 2
-            t.advance {'0'..'9', 'a'..'f', 'A'..'F'}
-            t.pushToken()
-            ⮐   
-        if t.segs[t.segi+1] == "b"
-            t.advance 2
-            t.advance {'0', '1'}
-            t.pushToken()
-            ⮐   
-        if t.segs[t.segi+1] == "o"
-            t.advance 2
-            t.advance {'0'..'7' }
-            t.pushToken()
-            ⮐   
-            
-    t.advance {'0'..'9'}
-        
-    if t.segi < l-1 and t.char == '.' and t.char(1) in {'0'..'9'}
-        t.advance 1
-        t.advance {'0'..'9'}
-
-    if t.segi < l-1 and t.char == 'e' and t.char(1) in {'0'..'9', '+', '-'}
-        t.advance 2
-        t.advance {'0'..'9'}
-    
-    t.pushToken()
-    
-#  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
-# ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
-# ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
-# ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
-#  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
-
-comment = ◇Tknzr t ->
-
-    if t.scmp("##")
-        t.tokens[^1].str &= "##"
-        t.incr 2
-        t.token.col += 2
-        t.token.tok = ◂comment
-        t.advanceMulti "###"
-        if t.scmp("###")
-            t.commit("###", ◂comment_end, 3)
+        if @segi+n < @segs.len 
+            @segs[@segi+n]
         else
-            t.pushToken("", ◂comment)
-        ⮐  
-
-    t.advanceUntil "\n"
-    t.push ◂comment
+            ""
+        
+    nextLine: ->
     
-modbracket = ◇Tknzr t ->
-
-    t.pushToken()
-    t.token.tok = ◂mod
-    t.advance 1
-    t.advanceUntil ".}"
-    t.advance 2
-    t.pushToken()
-    
-verbatim = ◇Tknzr t ◇tok tk ->
-
-    t.advanceUntil "\n"
-    t.push tk
-
-#  ███████   ███████   ██     ██  ██     ██  ███  █████████
-# ███       ███   ███  ███   ███  ███   ███  ███     ███   
-# ███       ███   ███  █████████  █████████  ███     ███   
-# ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
-#  ███████   ███████   ███   ███  ███   ███  ███     ███   
-
-commit = ◇Tknzr t str="" tk=◂name incr=0 ->
-
-    t.pushToken(str, tk, incr)
-    t.pushToken()
-    
-    switch tk
-        ◂comment_start
-            t.comment()
-        ◂string_start, ◂stripol_end
-            t.string()
-        ◂mod
-            t.modbracket()
-        ➜ 
-            discard
-
-# █████████  ███   ███  ███   ███  ███████
-#    ███     ███  ███   ████  ███     ███ 
-#    ███     ███████    ███ █ ███    ███  
-#    ███     ███  ███   ███  ████   ███   
-#    ███     ███   ███  ███   ███  ███████
-
-tknz = ◇Tknzr t ◇seq[string] segs ➜seq[Token] ->
-
-    # profileScope "tknz"
-
-    t.segs = segs
-    
-    while t.segi < t.segs.len and t.segs[t.segi] in @["\n", " "]
-        t.lineIncr t.segs[t.segi]
-
-    while t.eol < t.segs.len and t.segs[t.eol] != "\n"
-        t.eol += 1
+        assert @segs[@segi] == "\n"
+        @incr 1
+        @line += 1
+        @bol = @segi
+        @eol = @bol
         
-    while t.segi < t.segs.len
-        
-        if t.segs[t.segi] == "\n"
-        
-            if t.tokens.len > 1 and t.tokens[^1].tok == ◂multiply and t.tokens[^2].tok == ◂name
-                t.tokens.pops()
-                t.tokens[^1].str &= "*"
-        
-            t.nextLine()
-            if t.segi >= t.segs.len
-                break
-            t.token = tkn(◂indent "" t.line t.col) 
-            while t.peekSafe(0) == " "
-                t.advance 1
-            if t.segi >= t.segs.len
-                break
-            if t.tokens[^1].tok == ◂indent
-                t.tokens.pops()
-            t.tokens.add t.token
-            continue
-                
-        t.token = tkn(◂name "" t.line t.col)
-        
-        while t.segi < t.eol
-                                    
-            char = t.peek(0)
+        while @eol < @segs.len and @segs[@eol] != "\n"
+            @eol += 1
             
-            if char == " "
-                if t.segi > 0 and t.peek(-1) != " "
-                    t.pushToken()
-            else
-                
-                if t.col > 0 and t.peek(-1) == " "
-                    t.token.col = t.col
-                
-                triple = t.srng 3
-                
-                if triple == "..<"
-                    t.commit("...", ◂tripledot, 3)
-                    continue
-                
-                if punct.hasKey triple
-                    t.commit(triple, punct[triple], 3)
-                    if t.tokens[^1].tok == ◂string_start
-                        t.token.tok = ◂string
-                    continue
-                
-                double = t.srng 2
-                if punct.hasKey double
-                    if punct[double] == ◂mod
-                        t.modbracket()
-                    else
-                        t.commit(double, punct[double], 2)
-                    continue
+    lineIncr: ◇string c ->
+    
+        if c == "\n"
+            @nextLine()
+        else
+            @incr 1
+    
+    srng: ◇int n ➜string ->
+    
+        e = if n >= 0 ➜ @segi + n ➜ @eol
+        ⮐  "" if e > @segs.len
+        @segs[@segi...e].join("")
+        
+    scmp: ◇string s ➜bool ->
+    
+        ss = kseg s
+        for n in 0...ss.len
+            ⮐  false if @segi+n >= @segs.len
+            ⮐  false if @segs[@segi+n] != ss[n]
+        true
+        
+    advance: ◇int n ->
+    
+        for s in 0..<n 
+            @token.str &= @peek(0)
+            @incr 1
+    
+    advance: ◇set[char] charset ->
+        
+        while @segi < @segs.len and @peek(0)[0] in charset
+            @advance(1)
+            
+    advanceUntil: ◇string stop ->
+    
+        while @segi < @segs.len and not @scmp(stop)
+            @token.str &= @peek(0)
+            @incr 1
+    
+    advanceMulti: ◇string stop ->
+    
+        while @segi < @segs.len and not @scmp(stop)
+            let c = this.peek(0)
+            @token.str &= c
+            @lineIncr c
+        
+    pushToken: str="" tk=◂name incr=0 ->
+    
+        if @token.str.len
+            @tokens.add @token
+        @token = tkn(tk str @line @col)
+        @incr incr
+        
+    push: ◇tok tk ->
+    
+        @token.tok = tk
+        @pushToken()
+        
+    commit: str="" tk=◂name incr=0 ->
+        
+    #  ███████  █████████  ████████   ███  ███   ███   ███████ 
+    # ███          ███     ███   ███  ███  ████  ███  ███      
+    # ███████      ███     ███████    ███  ███ █ ███  ███  ████
+    #      ███     ███     ███   ███  ███  ███  ████  ███   ███
+    # ███████      ███     ███   ███  ███  ███   ███   ███████ 
+    
+    string: ->
+    
+        topTok = @tokens[^1]
+        
+        assert topTok.tok in {◂string_start, ◂stripol_end}
+        
+        ampersand = false
+        stripolStart = "#" & "{"
+        
+        switch topTok.tok
+            ◂string_start
+                @delimiter = topTok.str
+                if @tokens.len > 1 and @tokens[^2].tok == ◂ampersand
+                    if @tokens[^2].col == @tokens[^1].col-1
+                        @tokens.delete(@tokens.len-2..@tokens.len-2)
+                        stripolStart = "{"
+                        ampersand = true
+            ◂stripol_end
+                @token.tok = ◂string
+            ➜ 
+                discard
+    
+        isAtStringEnd = ➜bool ->
+            if @delimiter.len == 1 and @segi >= @eol
+                ⮐  true
+            if @segi >= @segs.len
+                ⮐  true
+            @scmp(@delimiter)
                         
-                if punct.hasKey char
+        while not isAtStringEnd()
+        
+            @token.tok = ◂string
+            
+            c = @peek(0)
+            if c == "\\"
+                @advance 2
+                continue
+            
+            if @delimiter in ["\"" "\"\"\""]
+                if @scmp(stripolStart)
+                    @commit(stripolStart, ◂stripol_start, stripolStart.len)
+                    @inStripol = true  
+                    return
+    
+            @token.str &= c
+            @lineIncr c
+                    
+        if @segi <= @eol-1 
+            @commit(@delimiter, ◂string_end, @delimiter.len)
+        
+    # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
+    # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
+    # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
+    # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
+    
+    number: ->
+    
+        @pushToken("", ◂number)
+    
+        l = @segs.len
+        
+        if @segi < l-1 and @segs[@segi] == "0" 
+            if @segs[@segi+1] == "x"
+                @advance 2
+                @advance {'0'..'9', 'a'..'f', 'A'..'F'}
+                @pushToken()
+                ⮐   
+            if @segs[@segi+1] == "b"
+                @advance 2
+                @advance {'0', '1'}
+                @pushToken()
+                ⮐   
+            if @segs[@segi+1] == "o"
+                @advance 2
+                @advance {'0'..'7' }
+                @pushToken()
+                ⮐   
                 
-                    if punct[char] in openToks
-                        t.openStack.push(punct[char])
-                    elif punct[char] in closeToks
-                        if t.openStack.len and t.openStack[^1] == closeOpen[punct[char]]
-                            t.openStack.pops()
-                        elif punct[char] == ◂bracket_close and t.inStripol
-                            t.inStripol = false
-                            t.commit(char, ◂stripol_end, 1)
-                            continue
-                            
-                    if punct[char] == ◂test
-                        if t.peek(1) notin [" ", "\n"]
-                            t.token.tok = ◂name
-                            t.advance 1
-                            continue
-                        if t.tokens.len == 0 or t.tokens[^1].tok == ◂indent and t.peek(1) == " " 
-                            while t.segi <= t.eol-1
-                                t.advance 1
-                            t.push ◂test
-                            continue
-                            
-                    if t.tokens.len > 0 and t.tokens[^1].tok == ◂multiply and punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type}
-                        if punct[char] != ◂paren_open or t.tokens[^2].tok in {◂proc, ◂template, ◂macro}
-                            t.tokens.pops()
-                            t.tokens[^1].str &= "*"
+        @advance {'0'..'9'}
+            
+        if @segi < l-1 and @char == '.' and @char(1) in {'0'..'9'}
+            @advance 1
+            @advance {'0'..'9'}
+    
+        if @segi < l-1 and @char == 'e' and @char(1) in {'0'..'9', '+', '-'}
+            @advance 2
+            @advance {'0'..'9'}
+        
+        @pushToken()
+        
+    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+    
+    comment: ->
+    
+        if @scmp("##")
+            @tokens[^1].str &= "##"
+            @incr 2
+            @token.col += 2
+            @token.tok = ◂comment
+            @advanceMulti "###"
+            if @scmp("###")
+                @commit("###", ◂comment_end, 3)
+            else
+                @pushToken("", ◂comment)
+            ⮐  
+    
+        @advanceUntil "\n"
+        @push ◂comment
+        
+    modbracket: ->
+    
+        @pushToken()
+        @token.tok = ◂mod
+        @advance 1
+        @advanceUntil ".}"
+        @advance 2
+        @pushToken()
+        
+    verbatim: ◇tok tk ->
+    
+        @advanceUntil "\n"
+        @push tk
+    
+    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
+    
+    commit: str="" tk=◂name incr=0 ->
+    
+        @pushToken(str, tk, incr)
+        @pushToken()
+        
+        switch tk
+            ◂comment_start
+                @comment()
+            ◂string_start, ◂stripol_end
+                @string()
+            ◂mod
+                @modbracket()
+            ➜ 
+                discard
+    
+    # █████████  ███   ███  ███   ███  ███████
+    #    ███     ███  ███   ████  ███     ███ 
+    #    ███     ███████    ███ █ ███    ███  
+    #    ███     ███  ███   ███  ████   ███   
+    #    ███     ███   ███  ███   ███  ███████
+    
+    tknz: ◇seq[string] segs ➜seq[Token] ->
+    
+        # profileScope "tknz"
+    
+        @segs = segs
+        
+        while @segi < @segs.len and @segs[@segi] in ["\n" " "]
+            @lineIncr @segs[@segi]
+    
+        while @eol < @segs.len and @segs[@eol] != "\n"
+            @eol += 1
+            
+        while @segi < @segs.len
+            
+            if @segs[@segi] == "\n"
+            
+                if @tokens.len > 1 and @tokens[^1].tok == ◂multiply and @tokens[^2].tok == ◂name
+                    @tokens.pops()
+                    @tokens[^1].str &= "*"
+            
+                @nextLine()
+                if @segi >= @segs.len
+                    break
+                @token = tkn(◂indent "" @line @col) 
+                while @peekSafe(0) == " "
+                    @advance 1
+                if @segi >= @segs.len
+                    break
+                if @tokens[^1].tok == ◂indent
+                    @tokens.pops()
+                @tokens.add @token
+                continue
+                    
+            @token = tkn(◂name "" @line @col)
+            
+            while @segi < @eol
+                                        
+                char = @peek(0)
                 
-                    t.commit(char, punct[char], 1)
-                    continue
+                if char == " "
+                    if @segi > 0 and @peek(-1) != " "
+                        @pushToken()
                 else
-                    if t.token.str.len == 0 and t.char in {'0'..'9'}
-                        t.number()
+                    
+                    if @col > 0 and @peek(-1) == " "
+                        @token.col = @col
+                    
+                    triple = @srng 3
+                    
+                    if triple == "..<"
+                        @commit("...", ◂tripledot, 3)
                         continue
                     
-                    t.advance 1
+                    if punct.hasKey triple
+                        @commit(triple, punct[triple], 3)
+                        if @tokens[^1].tok == ◂string_start
+                            @token.tok = ◂string
+                        continue
                     
-                    if t.peekSafe(0) == " "
-                        switch t.token.str 
-                            "case"
-                                t.token.str = "switch"
-                                t.push ◂switch
+                    double = @srng 2
+                    if punct.hasKey double
+                        if punct[double] == ◂mod
+                            @modbracket()
+                        else
+                            @commit(double, punct[double], 2)
+                        continue
+                            
+                    if punct.hasKey char
+                    
+                        if punct[char] in openToks
+                            @openStack.push(punct[char])
+                        elif punct[char] in closeToks
+                            if @openStack.len and @openStack[^1] == closeOpen[punct[char]]
+                                @openStack.pops()
+                            elif punct[char] == ◂bracket_close and @inStripol
+                                @inStripol = false
+                                @commit(char, ◂stripol_end, 1)
                                 continue
-                            "of"
-                                t.token.str = ""
+                                
+                        if punct[char] == ◂test
+                            if @peek(1) notin [" ", "\n"]
+                                @token.tok = ◂name
+                                @advance 1
                                 continue
-                            "quote"
-                                if t.scmp(" do:")
-                                    t.incr 4
-                                    t.push ◂quote
+                            if @tokens.len == 0 or @tokens[^1].tok == ◂indent and @peek(1) == " " 
+                                while @segi <= @eol-1
+                                    @advance 1
+                                @push ◂test
+                                continue
+                                
+                        if @tokens.len > 0 and @tokens[^1].tok == ◂multiply and punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type}
+                            if punct[char] != ◂paren_open or @tokens[^2].tok in {◂proc, ◂template, ◂macro}
+                                @tokens.pops()
+                                @tokens[^1].str &= "*"
+                    
+                        @commit(char, punct[char], 1)
+                        continue
+                    else
+                        if @token.str.len == 0 and @char in {'0'..'9'}
+                            @number()
+                            continue
+                        
+                        @advance 1
+                        
+                        if @peekSafe(0) == " "
+                            switch @token.str 
+                                "case"
+                                    @token.str = "switch"
+                                    @push ◂switch
                                     continue
-                            ➜ discard
-                     
-                    if keywords.hasKey(t.token.str) and (t.segi >= t.eol or t.peek(0) == " " or punct.hasKey(t.peek(0)))
-                        switch keywords[t.token.str]
-                            ◂proc ◂type ◂import ◂macro ◂template ◂converter
-                                t.verbatim(keywords[t.token.str])
-                            ➜   t.push keywords[t.token.str]
-                    continue
-            t.incr 1
-        
-        if t.token.str.len
-            if keywords.hasKey(t.token.str)
-                t.token.tok = keywords[t.token.str]
-            t.tokens.add t.token
-                
-    ⮐  t.tokens
+                                "of"
+                                    @token.str = ""
+                                    continue
+                                "quote"
+                                    if @scmp(" do:")
+                                        @incr 4
+                                        @push ◂quote
+                                        continue
+                                ➜ discard
+                         
+                        if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)))
+                            switch keywords[@token.str]
+                                ◂proc ◂type ◂import ◂macro ◂template ◂converter
+                                    @verbatim(keywords[@token.str])
+                                ➜   @push keywords[@token.str]
+                        continue
+                @incr 1
+            
+            if @token.str.len
+                if keywords.hasKey(@token.str)
+                    @token.tok = keywords[@token.str]
+                @tokens.add @token
+                    
+        ⮐  @tokens
     
 tokenize* = ◇string text ➜seq[Token] ->
 
