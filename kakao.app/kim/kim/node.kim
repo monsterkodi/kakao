@@ -229,6 +229,11 @@ class Node*
             test_expected*  : Node
             
         ➜ discard
+        
+    constructor: ->
+        
+        # super() -> procCall constructor(Base(@))
+        log "NODE"
     
     $*: ➜string ->
     
@@ -436,7 +441,10 @@ nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
 
 nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
 
-    n = Node kind:kind token:token
+    n = Node() #kind:kind token:token
+    
+    n.kind  = kind
+    n.token = token
     
     switch kind
         ●block

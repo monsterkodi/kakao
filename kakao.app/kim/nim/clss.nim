@@ -91,6 +91,12 @@ proc methodify(clss : Node) : seq[Node] =
                 else: 
                     n.token.str = "this"
         n
+    proc constructor(fn : Node) : Node = 
+        fn.operand_left.token.str = "init"
+        fn.operand_right.func_signature.sig_type = nod(●type, tkn(◂name, className))
+        var line = fn.operand_right.func_body.expressions[^1].token.line
+        fn.operand_right.func_body.expressions.add(nod(●literal, tkn(◂name, "this", (line + 1))))
+        fn
     proc convert(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
@@ -103,7 +109,9 @@ proc methodify(clss : Node) : seq[Node] =
             var sig_args = nod(●list, tkn(◂square_open), @[this_arg])
             funcn.func_signature = nod(●signature, token, sig_args, nil)
         funcn.func_body = traverse(funcn.func_body, thisify)
-        nod(●operation, token, it.member_key, funcn)
+        var fn = nod(●operation, token, it.member_key, funcn)
+        if (it.member_key.token.str == "@"): fn = constructor(fn)
+        fn
     var methods = funcs.map(convert)
     methods
 proc classify*(body : Node) : Node = 

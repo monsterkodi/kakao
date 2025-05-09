@@ -25,6 +25,57 @@ type Tknzr = ref object
     segi: int
     segs: seq[string]
     line: int""")
+    test "constructor": 
+        t("""
+class A
+    a : int
+    b : int
+    @: ◇int a ◇int b ->
+        @a = a
+        @b = b
+
+a = @A 1 2
+""", """
+type A = ref object
+    a: int
+    b: int
+proc init(this : A, a : int, b : int) : A = 
+        this.a = a
+        this.b = b
+        this
+var a = A().init(1, 2)""")
+    # ▸ inheritance
+    # 
+    #     t   """
+    #         class A
+    #             a : int
+    #             @: ◇int a ->
+    #                 @a = a
+    #             p: -> log @a
+    #         class B extends A
+    #             b : int
+    #             @: ◇int a ->
+    #                 super a*2
+    #         a = @A 1
+    #         a.p()
+    #         a = @B 2
+    #         a.p()
+    #         """ """
+    #         type A = ref object of RootObj
+    #             a: int
+    #         proc init(this : A, a : int) : A = 
+    #                 this.a = a
+    #                 this
+    #         proc p(this : A) = echo(this.a)
+    #         type B = ref object of A
+    #                 b: int
+    #         proc init(this : B, a : int) : B = 
+    #                 discard procCall init(A(this), (a * 2))
+    #                 this
+    #         var a = A().init(1)
+    #         a.p()
+    #         a = B().init(2)
+    #         a.p()"""
     test "methods": 
         t("""
 class A
@@ -40,8 +91,10 @@ proc fun(this : A) =
         var m = 1
 proc inc(this : A, a1 : int) : int = 
         (a1 + 1)""")
+    # ▸ export
+    #     t   "class A*\n    add: ◇string text -> @s &= text" "type A* = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)"
     test "this vars": 
-        t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)")
+        t("class A\n    add: ◇string text -> @s &= text", "type A = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)")
         t("""
 class A
     m : int
@@ -69,7 +122,7 @@ proc sqr(this : A) =
 proc inc(this : A, a1 : int) : int = 
         (this.sqr() + this.inc(this.m))""")
         t("""
-class A*
+class A
     m : int
     n : int
     o : int
@@ -87,7 +140,7 @@ class A*
         else
             @o
 """, """
-type A* = ref object
+type A = ref object
     m: int
     n: int
     o: int
@@ -105,7 +158,7 @@ proc loop(this : A) =
         else: 
             this.o""")
         t("""
-class A*
+class A
     m : int
     n : int
     o : int
@@ -121,7 +174,7 @@ class A*
         fun(@m)
         moreFun @o
 """, """
-type A* = ref object
+type A = ref object
     m: int
     n: int
     o: int
@@ -137,61 +190,61 @@ proc loop(this : A) =
         fun(this.m)
         moreFun(this.o)""")
         t("""
-class A*
+class A
     m : int
     loop: ->
         log "m: #""" & """
 {@m}"
         @m
 """, """
-type A* = ref object
+type A = ref object
     m: int
 proc loop(this : A) = 
         echo(&"m: {this.m}")
         this.m""")
         t("""
-class Token*
-    tok*: tok
+class Token
+    tok: tok
     
     logp: -> 
         log @tok
     
-class Node*
+class Node
 
-    token* : Token
+    token : Token
     
-    switch kind* : NodeKind
+    switch kind : NodeKind
     
         ●block
         
-            expressions*: seq[Node]
+            expressions: seq[Node]
             
         ●if
             # also handles when
-            cond_thens*     : seq[Node]
-            else_branch*    : Node
+            cond_thens     : seq[Node]
+            else_branch    : Node
             
         ➜ discard
     
     loop: ->
         log @m
         
-nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
+nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
 """, """
-type Token* = ref object
-    tok*: tok
+type Token = ref object
+    tok: tok
 proc logp(this : Token) = 
         echo(this.tok)
-type Node* = ref object
-    token*: Token
-    case kind*: NodeKind:
+type Node = ref object
+    token: Token
+    case kind: NodeKind:
         of ●block: 
-            expressions*: seq[Node]
+            expressions: seq[Node]
         of ●if: 
             # also handles when
-            cond_thens*: seq[Node]
-            else_branch*: Node
+            cond_thens: seq[Node]
+            else_branch: Node
         else: discard
 proc loop(this : Node) = 
         echo(this.m)
-proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node""")
+proc nod(kind : NodeKind, token : Token, args : varargs[Node]) : Node""")

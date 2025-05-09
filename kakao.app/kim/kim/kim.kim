@@ -149,7 +149,7 @@ compile = ◇string file outDir="bin" ➜bool ->
 runTests = ➜bool ->
 
     profileScope 'test'
-    fail = false
+    anyFail = false
     
     for f in testFiles
         args = @["r" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
@@ -161,10 +161,13 @@ runTests = ➜bool ->
         flags = fcntl(outhnd F_GETFL 0)
         discard fcntl(outhnd F_SETFL flags or O_NONBLOCK)
         
+        thisFail = false
+        
         while true
             elapsed = (getMonoTime() - startTime).inMilliseconds
             if elapsed >= 5000
-                fail = true
+                anyFail = true
+                thisFail = true
                 output.add("test killed after #{elapsed} ms!!")
                 process.terminate()
                 sleep(50)
@@ -181,7 +184,7 @@ runTests = ➜bool ->
                                 ➜ break
                 
         exitCode = process.waitForExit()
-        if exitCode != 0 or verbose or fail
+        if exitCode != 0 or verbose or thisFail
             styledEcho output.replace("[Suite]"  fg(fgYellow) & "▸\x1b[0m")
                              .replace("[OK]"     fg(fgGreen) & "✔\x1b[0m")
                              .replace("[FAILED]" fg(fgRed) & "✘\x1b[0m")                             
@@ -194,11 +197,11 @@ runTests = ➜bool ->
             log line
         
         if exitCode != 0
-            echo output
+            # echo output
             styledEcho fgRed "✘ " $f
-            fail = true
+            anyFail = true
     # log ""
-    not fail
+    not anyFail
 
 if files.len
 

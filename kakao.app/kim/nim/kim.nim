@@ -100,7 +100,7 @@ proc compile(file : string, outDir = "bin") : bool =
 #    ███     ████████  ███████      ███     ███████ 
 proc runTests() : bool = 
     profileScope("test")
-    var fail = false
+    var anyFail = false
     for f in testFiles: 
         var args = @["r", "--colors:on", "--stackTrace:on", "--lineTrace:on", "--warning:User:off", f]
         var process = startProcess(command = "nim", args = args, options = {poInteractive, poUsePath})
@@ -110,10 +110,12 @@ proc runTests() : bool =
         var outhnd = process.outputHandle
         var flags = fcntl(outhnd, F_GETFL, 0)
         discard fcntl(outhnd, F_SETFL, (flags or O_NONBLOCK))
+        var thisFail = false
         while true: 
             var elapsed = (getMonoTime() - startTime).inMilliseconds
             if (elapsed >= 5000): 
-                fail = true
+                anyFail = true
+                thisFail = true
                 output.add(&"test killed after {elapsed} ms!!")
                 process.terminate()
                 sleep(50)
@@ -127,7 +129,7 @@ proc runTests() : bool =
             elif (errno == EAGAIN): discard poll(nil, 0, 50)
             else: break
         var exitCode = process.waitForExit()
-        if (((exitCode != 0) or verbose) or fail): 
+        if (((exitCode != 0) or verbose) or thisFail): 
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace("[OK]", fg(fgGreen) & "✔\x1b[0m").replace("[FAILED]", fg(fgRed) & "✘\x1b[0m"))
         else: 
             var okCount = output.count("[OK]")
@@ -135,11 +137,11 @@ proc runTests() : bool =
         for line in process.errorStream.lines: 
             echo(line)
         if (exitCode != 0): 
-            echo(output)
+            # echo output
             styledEcho(fgRed, "✘ ", $f)
-            fail = true
+            anyFail = true
     # log ""
-    not fail
+    not anyFail
 if files.len: 
     # profileStart 'translate'
     var transpiled = rndr.files(files)

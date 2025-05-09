@@ -156,6 +156,9 @@ type Node* = ref object
             test_value*: Node
             test_expected*: Node
         else: discard
+proc constructor(this : Node) = 
+        # super() -> procCall constructor(Base(@))
+        echo("NODE")
 proc `$`*(this : Node) : string = 
         if (this == nil): 
             return "NIL"
@@ -352,7 +355,9 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
         else: discard
     n
 proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node = 
-    var n = Node(kind: kind, token: token)
+    var n = Node() #kind:kind token:token
+    n.kind = kind
+    n.token = token
     case kind:
         of ●block: 
             n.expressions = args

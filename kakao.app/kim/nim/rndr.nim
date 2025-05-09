@@ -201,6 +201,9 @@ proc ▸comment(this : Rndr, n : Node) =
 proc ▸call(this : Rndr, n : Node) = 
         if (n.callee.token.str == "log"): 
             this.add("echo")
+        elif (n.callee.token.str[0] == '@'): 
+            this.add(n.callee.token.str[1..^1])
+            this.add("().init")
         else: 
             this.rnd(n.callee)
         if (n.callee.token.str != "export"): 
