@@ -61,6 +61,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "args = [\"r\", f]"                       "▪[(◂name = [[◂string, ◂name]])]"
         t "a = []"                                  "▪[(◂name = [[]])]"
         t "a(b, c, [])"                             "▪[(◂name ◂call @[◂name, ◂name, [[]]])]"
+        t "a(b c [])"                               "▪[(◂name ◂call @[◂name, ◂name, [[]]])]"
         
     ▸ types
     

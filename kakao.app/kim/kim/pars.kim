@@ -713,8 +713,10 @@ class Parser*
                     
     lArrayAccess: ◇Node array_owner ➜Node ->
     
+        ⮐  if @peek(-1).col + @peek(-1).str.len < @current.col
+        
         token = @current()
-        array_indices = @parseDelimitedList(◂square_open, ◂square_close)
+        array_indices = @parseDelimitedList ◂square_open ◂square_close
         array_index = 
             switch array_indices.len
                 0 ➜ nil
@@ -746,163 +748,163 @@ class Parser*
     rReturnType: ➜Node -> nod(●signature @consume() nil @parseType())
     rQuote     : ➜Node -> nod(●quote     @consume() @thenBlock())
     
-#  ███████  █████████  ████████   ███  ███   ███   ███████ 
-# ███          ███     ███   ███  ███  ████  ███  ███      
-# ███████      ███     ███████    ███  ███ █ ███  ███  ████
-#      ███     ███     ███   ███  ███  ███  ████  ███   ███
-# ███████      ███     ███   ███  ███  ███   ███   ███████ 
-
-rString = ◇Parser p ➜Node ->
-
-    token = p.consume() # string start
-
-    if p.tok == ◂string_end
-        p.swallow()
-        Node(token:token, kind:●string, string_content:nod(●literal tkn(◂string)))
-    else
-        string_content ◇ Node 
-        if p.tok != ◂stripol_start
-            string_content = nod ●literal p.consume()
+    #  ███████  █████████  ████████   ███  ███   ███   ███████ 
+    # ███          ███     ███   ███  ███  ████  ███  ███      
+    # ███████      ███     ███████    ███  ███ █ ███  ███  ████
+    #      ███     ███     ███   ███  ███  ███  ████  ███   ███
+    # ███████      ███     ███   ███  ███  ███   ███   ███████ 
+    
+    rString: ➜Node ->
+    
+        token = @consume() # string start
+    
+        if @tok == ◂string_end
+            @swallow()
+            Node(token:token, kind:●string, string_content:nod(●literal tkn(◂string)))
         else
-            string_content = nod ●literal tkn(◂string "" p.current.line p.current.col)
-            
-        string_stripols ◇ seq[Node]
-        while p.tok notin {◂string_end, ◂eof}
-        
-            p.swallowError(◂stripol_start, "Expected string interpolation start")
-            
-            stripol = Node(token:p.current, kind:●stripol)
-            
-            stripol_xprssns ◇ seq[Node]
-            while p.tok notin {◂stripol_end, ◂eof}
-                xpr = p.expression()
-                stripol_xprssns.add xpr
+            string_content ◇ Node 
+            if @tok != ◂stripol_start
+                string_content = nod ●literal @consume()
+            else
+                string_content = nod ●literal tkn(◂string "" @current.line @current.col)
                 
-            stripol.stripol_xprssns = stripol_xprssns
+            string_stripols ◇ seq[Node]
+            while @tok notin {◂string_end, ◂eof}
             
-            p.swallowError(◂stripol_end, "Expected string interpolation end")
-            if p.tok notin {◂stripol_start, ◂string_end, ◂eof}
-                stripol.stripol_content = nod ●literal p.consume()
-            elif p.tok == ◂stripol_start
-                stripol.stripol_content = nod ●literal tkn(◂string p.current.line p.current.col)
-            
-            string_stripols.add stripol
-            
-        p.swallowError(◂string_end, "Expected closing string delimiter")
-        Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
-
-rUse = ◇Parser p ➜Node ->
-
-    token = p.consume()
-    p.explicit += 1
-    use_module = p.parseModule()
-    if not p.atEnd() and p.current.line == token.line
-        use_kind = p.rSymbol()
-        use_items  = p.parseNames()
-        p.explicit -= 1
-        Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
-    else
-        p.explicit -= 1
-        Node(token:token, kind:●use, use_module:use_module) 
-        
-rComment = ◇Parser p ➜Node ->
-
-    n = nod ●comment p.consume() Node(token:p.consume())
-    p.swallow ◂comment_end
-    n
-    
-lReturnType = ◇Parser p ◇Node left ➜Node ->
-
-    ⮐  if not p.isTokAhead(◂func)
-
-    if left.kind in {●list, ●arg, ●operation}
-        if left.kind == ●operation 
-            if left.token.tok == ◂assign
-                sig = p.rReturnType()
-                argtoken = tkn(◂val_type "" left.token.line left.token.col)
-                argNode  = nod ●arg argtoken nil left.operand_left left.operand_right
-                sig.sig_args = nod ●list left.token @[argNode]
-                ⮐  sig
-        elif left.kind == ●list
-            sig = p.rReturnType()
-            sig.sig_args = left
-            ⮐  sig
-        elif left.kind == ●arg
-            sig = p.rReturnType()
-            sig.sig_args = nod ●list left.token @[left]
-            ⮐  sig
+                @swallowError(◂stripol_start, "Expected string interpolation start")
+                
+                stripol = Node(token:@current, kind:●stripol)
+                
+                stripol_xprssns ◇ seq[Node]
+                while @tok notin {◂stripol_end, ◂eof}
+                    xpr = @expression()
+                    stripol_xprssns.add xpr
                     
-rArg = ◇Parser p ➜Node ->
-
-    token = p.consume() # ◆ or ◇
+                stripol.stripol_xprssns = stripol_xprssns
+                
+                @swallowError(◂stripol_end, "Expected string interpolation end")
+                if @tok notin {◂stripol_start, ◂string_end, ◂eof}
+                    stripol.stripol_content = nod ●literal @consume()
+                elif @tok == ◂stripol_start
+                    stripol.stripol_content = nod ●literal tkn(◂string @current.line @current.col)
+                
+                string_stripols.add stripol
+                
+            @swallowError(◂string_end, "Expected closing string delimiter")
+            Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
     
-    if p.typeless
-        nameToken = p.consume()
-        nameToken.tok = ◂name
-        nameToken.str = token.str & nameToken.str
-        nameToken.col = token.col
-        ⮐  nod ●literal nameToken
-
-    arg_type  = p.parseType()
-    arg_name  = p.value()
-    arg_value ◇ Node
+    rUse: ➜Node ->
     
-    if p.tok == ◂assign
-        t = p.consume() # =
-        arg_value = p.expression() 
+        token = @consume()
+        @explicit += 1
+        use_module = @parseModule()
+        if not @atEnd() and @current.line == token.line
+            use_kind = @rSymbol()
+            use_items  = @parseNames()
+            @explicit -= 1
+            Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
+        else
+            @explicit -= 1
+            Node(token:token, kind:●use, use_module:use_module) 
+            
+    rComment: ➜Node ->
     
-    nod ●arg token arg_type arg_name arg_value
-
-lVar = ◇Parser p ◇Node left ➜Node ->
-
-    ⮐  if left.token.tok != ◂name
+        n = nod ●comment @consume() Node(token:@consume())
+        @swallow ◂comment_end
+        n
         
-    token     = p.consume() # ◆ or ◇
-    var_type  = p.parseType()
-    var_value ◇ Node
+    lReturnType: ◇Node left ➜Node ->
     
-    if p.tok == ◂assign
-        t = p.consume() # =
-        var_value = p.expression() 
-    nod ●var token left var_type var_value
-
-lSymbolList = ◇Parser p ◇Node left ➜Node ->
-
-    ⮐  if p.listless
-
-    switch left.kind 
-        ●list
-            list_values = left.list_values
-            # todo: check if all list items are symbols?
-            list_values.add p.rSymbol()
-            ⮐  nod ●list left.token list_values
-        ●literal
-            if left.token.tok != ◂name
-                ⮐  
-            list_values ◇ seq[Node]
-            list_values.add left
-            list_values.add p.rSymbol()
-            ⮐  nod ●list left.token list_values
-        ➜ 
-            discard
-
-lArgList = ◇Parser p ◇Node left ➜Node ->
+        ⮐  if not @isTokAhead(◂func)
     
-    switch left.kind 
-        ●list
-            var list_values = left.list_values
-            list_values.add p.rArg()
-            ⮐  nod ●list left.token list_values
-        ●arg
-            list_values ◇ seq[Node]
-            list_values.add left
-            list_values.add p.rArg()
-            ⮐  nod ●list left.token list_values
-        ●literal
-            if left.token.tok == ◂name
-                ⮐  p.lVar left
-        ➜ 
-            discard
+        if left.kind in {●list, ●arg, ●operation}
+            if left.kind == ●operation 
+                if left.token.tok == ◂assign
+                    sig = @rReturnType()
+                    argtoken = tkn(◂val_type "" left.token.line left.token.col)
+                    argNode  = nod ●arg argtoken nil left.operand_left left.operand_right
+                    sig.sig_args = nod ●list left.token [argNode]
+                    ⮐  sig
+            elif left.kind == ●list
+                sig = @rReturnType()
+                sig.sig_args = left
+                ⮐  sig
+            elif left.kind == ●arg
+                sig = @rReturnType()
+                sig.sig_args = nod ●list left.token [left]
+                ⮐  sig
+                        
+    rArg: ➜Node ->
+    
+        token = @consume() # ◆ or ◇
+        
+        if @typeless
+            nameToken = @consume()
+            nameToken.tok = ◂name
+            nameToken.str = token.str & nameToken.str
+            nameToken.col = token.col
+            ⮐  nod ●literal nameToken
+    
+        arg_type  = @parseType()
+        arg_name  = @value()
+        arg_value ◇ Node
+        
+        if @tok == ◂assign
+            t = @consume() # =
+            arg_value = @expression() 
+        
+        nod ●arg token arg_type arg_name arg_value
+    
+    lVar: ◇Node left ➜Node ->
+    
+        ⮐  if left.token.tok != ◂name
+            
+        token     = @consume() # ◆ or ◇
+        var_type  = @parseType()
+        var_value ◇ Node
+        
+        if @tok == ◂assign
+            t = @consume() # =
+            var_value = @expression() 
+        nod ●var token left var_type var_value
+    
+    lSymbolList: ◇Node left ➜Node ->
+    
+        ⮐  if @listless
+    
+        switch left.kind 
+            ●list
+                list_values = left.list_values
+                # todo: check if all list items are symbols?
+                list_values.add @rSymbol()
+                ⮐  nod ●list left.token list_values
+            ●literal
+                if left.token.tok != ◂name
+                    ⮐  
+                list_values ◇ seq[Node]
+                list_values.add left
+                list_values.add @rSymbol()
+                ⮐  nod ●list left.token list_values
+            ➜ 
+                discard
+    
+    lArgList: ◇Node left ➜Node ->
+        
+        switch left.kind 
+            ●list
+                var list_values = left.list_values
+                list_values.add @rArg()
+                ⮐  nod ●list left.token list_values
+            ●arg
+                list_values ◇ seq[Node]
+                list_values.add left
+                list_values.add @rArg()
+                ⮐  nod ●list left.token list_values
+            ●literal
+                if left.token.tok == ◂name
+                    ⮐  @lVar left
+            ➜ 
+                discard
 
 # ████████  ███   ███  ███   ███   ███████
 # ███       ███   ███  ████  ███  ███     

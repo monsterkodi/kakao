@@ -91,6 +91,11 @@ type Parser* = ref object
     # ███████   █████████  ███     ███     ███       █████████
     #      ███  ███   ███  ███     ███     ███       ███   ███
     # ███████   ██     ██  ███     ███      ███████  ███   ███
+    #  ███████  █████████  ████████   ███  ███   ███   ███████ 
+    # ███          ███     ███   ███  ███  ████  ███  ███      
+    # ███████      ███     ███████    ███  ███ █ ███  ███  ████
+    #      ███     ███     ███   ███  ███  ███  ████  ███   ███
+    # ███████      ███     ███   ███  ███  ███   ███   ███████ 
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -527,6 +532,7 @@ proc rSwitch(this : Parser) : Node =
                 return this.error("Expected default value", token)
         Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
 proc lArrayAccess(this : Parser, array_owner : Node) : Node = 
+        if ((this.peek(-1).col + this.peek(-1).str.len) < this.current.col): return
         var token = this.current()
         var array_indices = this.parseDelimitedList(◂square_open, ◂square_close)
         var array_index = 
@@ -553,130 +559,125 @@ proc rConverter(this : Parser) : Node = nod(●converter, this.consume())
 proc rLet(this : Parser) : Node = nod(●let, this.consume(), this.parseVar())
 proc rReturnType(this : Parser) : Node = nod(●signature, this.consume(), nil, this.parseType())
 proc rQuote(this : Parser) : Node = nod(●quote, this.consume(), this.thenBlock())
-#  ███████  █████████  ████████   ███  ███   ███   ███████ 
-# ███          ███     ███   ███  ███  ████  ███  ███      
-# ███████      ███     ███████    ███  ███ █ ███  ███  ████
-#      ███     ███     ███   ███  ███  ███  ████  ███   ███
-# ███████      ███     ███   ███  ███  ███   ███   ███████ 
-proc rString(p : Parser) : Node = 
-    var token = p.consume() # string start
-    if (p.tok == ◂string_end): 
-        p.swallow()
-        Node(token: token, kind: ●string, string_content: nod(●literal, tkn(◂string)))
-    else: 
-        var string_content : Node
-        if (p.tok != ◂stripol_start): 
-            string_content = nod(●literal, p.consume())
+proc rString(this : Parser) : Node = 
+        var token = this.consume() # string start
+        if (this.tok == ◂string_end): 
+            this.swallow()
+            Node(token: token, kind: ●string, string_content: nod(●literal, tkn(◂string)))
         else: 
-            string_content = nod(●literal, tkn(◂string, "", p.current.line, p.current.col))
-        var string_stripols : seq[Node]
-        while (p.tok notin {◂string_end, ◂eof}): 
-            p.swallowError(◂stripol_start, "Expected string interpolation start")
-            var stripol = Node(token: p.current, kind: ●stripol)
-            var stripol_xprssns : seq[Node]
-            while (p.tok notin {◂stripol_end, ◂eof}): 
-                var xpr = p.expression()
-                stripol_xprssns.add(xpr)
-            stripol.stripol_xprssns = stripol_xprssns
-            p.swallowError(◂stripol_end, "Expected string interpolation end")
-            if (p.tok notin {◂stripol_start, ◂string_end, ◂eof}): 
-                stripol.stripol_content = nod(●literal, p.consume())
-            elif (p.tok == ◂stripol_start): 
-                stripol.stripol_content = nod(●literal, tkn(◂string, p.current.line, p.current.col))
-            string_stripols.add(stripol)
-        p.swallowError(◂string_end, "Expected closing string delimiter")
-        Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
-proc rUse(p : Parser) : Node = 
-    var token = p.consume()
-    (p.explicit += 1)
-    var use_module = p.parseModule()
-    if (not p.atEnd() and (p.current.line == token.line)): 
-        var use_kind = p.rSymbol()
-        var use_items = p.parseNames()
-        (p.explicit -= 1)
-        Node(token: token, kind: ●use, use_module: use_module, use_kind: use_kind, use_items: use_items)
-    else: 
-        (p.explicit -= 1)
-        Node(token: token, kind: ●use, use_module: use_module)
-proc rComment(p : Parser) : Node = 
-    var n = nod(●comment, p.consume(), Node(token: p.consume()))
-    p.swallow(◂comment_end)
-    n
-proc lReturnType(p : Parser, left : Node) : Node = 
-    if not p.isTokAhead(◂func): return
-    if (left.kind in {●list, ●arg, ●operation}): 
-        if (left.kind == ●operation): 
-            if (left.token.tok == ◂assign): 
-                var sig = p.rReturnType()
-                var argtoken = tkn(◂val_type, "", left.token.line, left.token.col)
-                var argNode = nod(●arg, argtoken, nil, left.operand_left, left.operand_right)
-                sig.sig_args = nod(●list, left.token, @[argNode])
+            var string_content : Node
+            if (this.tok != ◂stripol_start): 
+                string_content = nod(●literal, this.consume())
+            else: 
+                string_content = nod(●literal, tkn(◂string, "", this.current.line, this.current.col))
+            var string_stripols : seq[Node]
+            while (this.tok notin {◂string_end, ◂eof}): 
+                this.swallowError(◂stripol_start, "Expected string interpolation start")
+                var stripol = Node(token: this.current, kind: ●stripol)
+                var stripol_xprssns : seq[Node]
+                while (this.tok notin {◂stripol_end, ◂eof}): 
+                    var xpr = this.expression()
+                    stripol_xprssns.add(xpr)
+                stripol.stripol_xprssns = stripol_xprssns
+                this.swallowError(◂stripol_end, "Expected string interpolation end")
+                if (this.tok notin {◂stripol_start, ◂string_end, ◂eof}): 
+                    stripol.stripol_content = nod(●literal, this.consume())
+                elif (this.tok == ◂stripol_start): 
+                    stripol.stripol_content = nod(●literal, tkn(◂string, this.current.line, this.current.col))
+                string_stripols.add(stripol)
+            this.swallowError(◂string_end, "Expected closing string delimiter")
+            Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
+proc rUse(this : Parser) : Node = 
+        var token = this.consume()
+        (this.explicit += 1)
+        var use_module = this.parseModule()
+        if (not this.atEnd() and (this.current.line == token.line)): 
+            var use_kind = this.rSymbol()
+            var use_items = this.parseNames()
+            (this.explicit -= 1)
+            Node(token: token, kind: ●use, use_module: use_module, use_kind: use_kind, use_items: use_items)
+        else: 
+            (this.explicit -= 1)
+            Node(token: token, kind: ●use, use_module: use_module)
+proc rComment(this : Parser) : Node = 
+        var n = nod(●comment, this.consume(), Node(token: this.consume()))
+        this.swallow(◂comment_end)
+        n
+proc lReturnType(this : Parser, left : Node) : Node = 
+        if not this.isTokAhead(◂func): return
+        if (left.kind in {●list, ●arg, ●operation}): 
+            if (left.kind == ●operation): 
+                if (left.token.tok == ◂assign): 
+                    var sig = this.rReturnType()
+                    var argtoken = tkn(◂val_type, "", left.token.line, left.token.col)
+                    var argNode = nod(●arg, argtoken, nil, left.operand_left, left.operand_right)
+                    sig.sig_args = nod(●list, left.token, @[argNode])
+                    return sig
+            elif (left.kind == ●list): 
+                var sig = this.rReturnType()
+                sig.sig_args = left
                 return sig
-        elif (left.kind == ●list): 
-            var sig = p.rReturnType()
-            sig.sig_args = left
-            return sig
-        elif (left.kind == ●arg): 
-            var sig = p.rReturnType()
-            sig.sig_args = nod(●list, left.token, @[left])
-            return sig
-proc rArg(p : Parser) : Node = 
-    var token = p.consume() # ◆ or ◇
-    if p.typeless: 
-        var nameToken = p.consume()
-        nameToken.tok = ◂name
-        nameToken.str = token.str & nameToken.str
-        nameToken.col = token.col
-        return nod(●literal, nameToken)
-    var arg_type = p.parseType()
-    var arg_name = p.value()
-    var arg_value : Node
-    if (p.tok == ◂assign): 
-        var t = p.consume() # =
-        arg_value = p.expression()
-    nod(●arg, token, arg_type, arg_name, arg_value)
-proc lVar(p : Parser, left : Node) : Node = 
-    if (left.token.tok != ◂name): return
-    var token = p.consume() # ◆ or ◇
-    var var_type = p.parseType()
-    var var_value : Node
-    if (p.tok == ◂assign): 
-        var t = p.consume() # =
-        var_value = p.expression()
-    nod(●var, token, left, var_type, var_value)
-proc lSymbolList(p : Parser, left : Node) : Node = 
-    if p.listless: return
-    case left.kind:
-        of ●list: 
-            var list_values = left.list_values
-            # todo: check if all list items are symbols?
-            list_values.add(p.rSymbol())
-            return nod(●list, left.token, list_values)
-        of ●literal: 
-            if (left.token.tok != ◂name): 
-                return
-            var list_values : seq[Node]
-            list_values.add(left)
-            list_values.add(p.rSymbol())
-            return nod(●list, left.token, list_values)
-        else: 
-            discard
-proc lArgList(p : Parser, left : Node) : Node = 
-    case left.kind:
-        of ●list: 
-            var list_values = left.list_values
-            list_values.add(p.rArg())
-            return nod(●list, left.token, list_values)
-        of ●arg: 
-            var list_values : seq[Node]
-            list_values.add(left)
-            list_values.add(p.rArg())
-            return nod(●list, left.token, list_values)
-        of ●literal: 
-            if (left.token.tok == ◂name): 
-                return p.lVar(left)
-        else: 
-            discard
+            elif (left.kind == ●arg): 
+                var sig = this.rReturnType()
+                sig.sig_args = nod(●list, left.token, @[left])
+                return sig
+proc rArg(this : Parser) : Node = 
+        var token = this.consume() # ◆ or ◇
+        if this.typeless: 
+            var nameToken = this.consume()
+            nameToken.tok = ◂name
+            nameToken.str = token.str & nameToken.str
+            nameToken.col = token.col
+            return nod(●literal, nameToken)
+        var arg_type = this.parseType()
+        var arg_name = this.value()
+        var arg_value : Node
+        if (this.tok == ◂assign): 
+            var t = this.consume() # =
+            arg_value = this.expression()
+        nod(●arg, token, arg_type, arg_name, arg_value)
+proc lVar(this : Parser, left : Node) : Node = 
+        if (left.token.tok != ◂name): return
+        var token = this.consume() # ◆ or ◇
+        var var_type = this.parseType()
+        var var_value : Node
+        if (this.tok == ◂assign): 
+            var t = this.consume() # =
+            var_value = this.expression()
+        nod(●var, token, left, var_type, var_value)
+proc lSymbolList(this : Parser, left : Node) : Node = 
+        if this.listless: return
+        case left.kind:
+            of ●list: 
+                var list_values = left.list_values
+                # todo: check if all list items are symbols?
+                list_values.add(this.rSymbol())
+                return nod(●list, left.token, list_values)
+            of ●literal: 
+                if (left.token.tok != ◂name): 
+                    return
+                var list_values : seq[Node]
+                list_values.add(left)
+                list_values.add(this.rSymbol())
+                return nod(●list, left.token, list_values)
+            else: 
+                discard
+proc lArgList(this : Parser, left : Node) : Node = 
+        case left.kind:
+            of ●list: 
+                var list_values = left.list_values
+                list_values.add(this.rArg())
+                return nod(●list, left.token, list_values)
+            of ●arg: 
+                var list_values : seq[Node]
+                list_values.add(left)
+                list_values.add(this.rArg())
+                return nod(●list, left.token, list_values)
+            of ●literal: 
+                if (left.token.tok == ◂name): 
+                    return this.lVar(left)
+            else: 
+                discard
 # ████████  ███   ███  ███   ███   ███████
 # ███       ███   ███  ████  ███  ███     
 # ██████    ███   ███  ███ █ ███  ███     

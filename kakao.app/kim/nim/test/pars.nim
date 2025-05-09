@@ -47,6 +47,7 @@ suite "pars":
         t("args = [\"r\", f]", "▪[(◂name = [[◂string, ◂name]])]")
         t("a = []", "▪[(◂name = [[]])]")
         t("a(b, c, [])", "▪[(◂name ◂call @[◂name, ◂name, [[]]])]")
+        t("a(b c [])", "▪[(◂name ◂call @[◂name, ◂name, [[]]])]")
     test "types": 
         t("◇int i", "▪[(◇type(int) ◂name)]")
         t("◆int i", "▪[(◆type(int) ◂name)]")
