@@ -72,7 +72,8 @@ proc traverse(n : Node, iter : NodeIt) : Node =
         of ●func: 
             trav(n.func_body)
         else: 
-            echo(&"clss.traverse -- unhandled {n.kind}")
+            # log "clss.traverse -- unhandled #{n.kind}"
+            discard
     n
 proc methodify(clss : Node) : seq[Node] = 
     proc isMethod(it : Node) : bool = ((it.kind == ●member) and (it.member_value.kind == ●func))
@@ -113,9 +114,10 @@ proc methodify(clss : Node) : seq[Node] =
         funcn.func_body = traverse(funcn.func_body, thisify)
         var fn = nod(●operation, token, it.member_key, funcn)
         if (it.member_key.token.str == "@"): fn = constructor(fn)
-        # elif exporting
-        #     if it.member_key.token.str[^1] != '*'
-        #         it.member_key.token.str &= "*"
+        elif exporting: 
+            if (it.member_key.token.str[^1] != '*'): 
+                echo(&"add star {it.member_key.token.str}")
+                # it.member_key.token.str &= "*"
         fn
     var methods = funcs.map(convert)
     methods

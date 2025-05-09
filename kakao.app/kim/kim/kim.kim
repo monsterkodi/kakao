@@ -229,8 +229,8 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
     
     for f in kimFiles 
         (output exitCode) = execCmdEx("#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
+        log output
         if exitCode != 0
-            log output
             logFile f "✘ "
             ⮐  false
         # else

@@ -15,90 +15,90 @@ class Scoper*
     
     vars* : seq[Table[string,bool]]
 
-$* = ◇Scoper v ➜string -> $v.vars
+    $*: ➜string -> $@vars
 
-exp    = ◇Scoper s ◇Node body ◇int i ◇Node e ->
-scope  = ◇Scoper s ◇Node body ➜Node ->
-branch = ◇Scoper s ◇Node body -> discard s.scope(body)
-
-# 00000000  000   000  00000000   
-# 000        000 000   000   000  
-# 0000000     00000    00000000   
-# 000        000 000   000        
-# 00000000  000   000  000        
+    exp    : ◇Node body ◇int i ◇Node e ->
+    scope  : ◇Node body ➜Node ->
+    branch : ◇Node body -> discard @scope(body)
     
-exp = ◇Scoper s ◇Node body ◇int i ◇Node e ->
-    
-    ⮐  if e == nil
-    
-    add = ◇string name -> s.vars[^1][name] = true
+    # 00000000  000   000  00000000   
+    # 000        000 000   000   000  
+    # 0000000     00000    00000000   
+    # 000        000 000   000        
+    # 00000000  000   000  000        
         
-    insert = ◇string name ◇Node expr ->
+    exp: ◇Node body ◇int i ◇Node e ->
         
-        for map in s.vars
-            ⮐  if map.hasKey name
+        ⮐  if e == nil
+        
+        add = ◇string name -> @vars[^1][name] = true
             
-        body.expressions[i] = Node(token:Token(tok:◂let str:"var" line:expr.token.line) kind:●let, let_expr:expr)
-        add name
-    
-    switch e.kind 
-        ●operation
-            if e.operand_right.kind == ●func
-                s.branch e.operand_right.func_body
-            elif e.token.tok == ◂assign
-                lhs = e.operand_left
-                switch lhs.kind
-                    ●literal
-                        insert lhs.token.str e
-                    ●list
-                        insert lhs.token.str e
-                        for item in lhs.list_values
-                            add item.token.str
-                    ➜ discard
-                # else
-                #     log "vars lhs #{lhs}"
-        ●var
-            insert e.var_name.token.str e
-        ●let
-            if e.let_expr.kind == ●operation and e.let_expr.token.tok == ◂assign
-                add e.let_expr.operand_left.token.str
-            elif e.let_expr.kind == ●var
-                add e.let_expr.var_name.token.str
-            else
-                log "unhandled let type #{e} #{e.let_expr}"
-        ●if
-            for condThen in e.condThens
-                s.branch condThen.then_branch
-            s.branch e.else_branch
-        ●for
-            s.branch e.for_body
-        ●while
-            s.branch e.while_body
-        ●switch
-            for switchCase in e.switch_cases
-                s.branch switchCase.case_then
-            s.branch e.switch_default
+        insert = ◇string name ◇Node expr ->
             
-        ➜ discard
-                    
-#  0000000   0000000   0000000   00000000   00000000  
-# 000       000       000   000  000   000  000       
-# 0000000   000       000   000  00000000   0000000   
-#      000  000       000   000  000        000       
-# 0000000    0000000   0000000   000        00000000  
+            for map in @vars
+                ⮐  if map.hasKey name
+                
+            body.expressions[i] = Node(token:Token(tok:◂let str:"var" line:expr.token.line) kind:●let, let_expr:expr)
+            add name
+        
+        switch e.kind 
+            ●operation
+                if e.operand_right.kind == ●func
+                    @branch e.operand_right.func_body
+                elif e.token.tok == ◂assign
+                    lhs = e.operand_left
+                    switch lhs.kind
+                        ●literal
+                            insert lhs.token.str e
+                        ●list
+                            insert lhs.token.str e
+                            for item in lhs.list_values
+                                add item.token.str
+                        ➜ discard
+                    # else
+                    #     log "vars lhs #{lhs}"
+            ●var
+                insert e.var_name.token.str e
+            ●let
+                if e.let_expr.kind == ●operation and e.let_expr.token.tok == ◂assign
+                    add e.let_expr.operand_left.token.str
+                elif e.let_expr.kind == ●var
+                    add e.let_expr.var_name.token.str
+                else
+                    log "unhandled let type #{e} #{e.let_expr}"
+            ●if
+                for condThen in e.condThens
+                    @branch condThen.then_branch
+                @branch e.else_branch
+            ●for
+                @branch e.for_body
+            ●while
+                @branch e.while_body
+            ●switch
+                for switchCase in e.switch_cases
+                    @branch switchCase.case_then
+                @branch e.switch_default
+                
+            ➜ discard
+                        
+    #  0000000   0000000   0000000   00000000   00000000  
+    # 000       000       000   000  000   000  000       
+    # 0000000   000       000   000  00000000   0000000   
+    #      000  000       000   000  000        000       
+    # 0000000    0000000   0000000   000        00000000  
+        
+    scope: ◇Node body ➜Node ->
+        
+        if body == nil or body.kind != ●block or body.expressions.len == 0
+            ⮐  body
     
-scope = ◇Scoper s ◇Node body ➜Node ->
+        @vars.push initTable[string,bool]()
     
-    if body == nil or body.kind != ●block or body.expressions.len == 0
-        ⮐  body
-
-    s.vars.push initTable[string,bool]()
-
-    for i e in body.expressions
-        s.exp body i e 
-
-    s.vars.pops()
-    body
+        for i e in body.expressions
+            @exp body i e 
+    
+        @vars.pops()
+        body
     
 variables* = ◇Node body ➜Node ->
 

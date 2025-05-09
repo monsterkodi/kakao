@@ -80,7 +80,8 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
         ●func
             trav n.func_body
         ➜ 
-            log "clss.traverse -- unhandled #{n.kind}"
+            # log "clss.traverse -- unhandled #{n.kind}"
+            discard
     n
     
 methodify = ◇Node clss ➜ seq[Node] ->
@@ -134,9 +135,10 @@ methodify = ◇Node clss ➜ seq[Node] ->
         
         fn = nod ●operation token it.member_key funcn
         if it.member_key.token.str == "@" ➜ fn = constructor fn
-        # elif exporting
-        #     if it.member_key.token.str[^1] != '*'
-        #         it.member_key.token.str &= "*"
+        elif exporting
+            if it.member_key.token.str[^1] != '*'
+                log "add star #{it.member_key.token.str}"
+                # it.member_key.token.str &= "*"
         fn
 
     methods = funcs.map convert

@@ -230,8 +230,7 @@ class Node*
             
         ➜ discard
         
-    constructor: ->
-        
+    @: ->    
         # super() -> procCall constructor(Base(@))
         log "NODE"
     
