@@ -381,7 +381,8 @@ class Tknzr*
         switch tk
             ◂comment_start
                 @comment()
-            ◂string_start, ◂stripol_end
+            ◂string_start 
+            ◂stripol_end
                 @string()
             ◂mod
                 @modbracket()

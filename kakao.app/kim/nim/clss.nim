@@ -21,8 +21,9 @@ proc traverse(n : Node, iter : NodeIt) : Node =
         of ●block: 
             trvl(n.expressions)
         of ●string: 
-            for s in n.string_stripols: 
-                trvl(s.stripol_xprssns)
+            trvl(n.string_stripols)
+        of ●stripol: 
+            trvl(n.stripol_xprssns)
         of ●operation: 
             trav(n.operand_left)
             trav(n.operand_right)
@@ -66,7 +67,7 @@ proc traverse(n : Node, iter : NodeIt) : Node =
             trav(n.member_value)
         of ●let: 
             trav(n.let_expr)
-        of ●list: 
+        of ●list, ●curly, ●squarely: 
             trvl(n.list_values)
         of ●func: 
             trav(n.func_body)

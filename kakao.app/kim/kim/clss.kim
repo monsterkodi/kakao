@@ -26,8 +26,9 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
         ●block
             trvl n.expressions
         ●string
-            for s in n.string_stripols
-                trvl s.stripol_xprssns
+            trvl n.string_stripols
+        ●stripol
+            trvl n.stripol_xprssns
         ●operation
             trav n.operand_left
             trav n.operand_right
@@ -73,6 +74,8 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
         ●let
             trav n.let_expr
         ●list
+        ●curly
+        ●squarely
             trvl n.list_values
         ●func
             trav n.func_body
