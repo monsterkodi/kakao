@@ -156,7 +156,7 @@ type Node* = ref object
             test_value*: Node
             test_expected*: Node
         else: discard
-proc init(this : Node) : Node = 
+proc init*(this : Node) : Node = 
         # super() -> procCall constructor(Base(@))
         echo("NODE")
         this

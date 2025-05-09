@@ -11,11 +11,11 @@
 
 use pars
 
-class Scoper*
+class Scoper
     
-    vars* : seq[Table[string,bool]]
+    vars   : seq[Table[string,bool]]
 
-    $*: ➜string -> $@vars
+    $: ➜string -> $@vars
 
     exp    : ◇Node body ◇int i ◇Node e ->
     scope  : ◇Node body ➜Node ->

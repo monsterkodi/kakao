@@ -90,7 +90,6 @@ methodify = ◇Node clss ➜ seq[Node] ->
     
     (funcs members) = pullIf(clss.class_body.expressions isMethod)
 
-    clss.class_body.expressions = members
     exporting = false
     className = clss.class_name.token.str
     if className[^1] == '*'
@@ -113,8 +112,11 @@ methodify = ◇Node clss ➜ seq[Node] ->
     
         fn.operand_left.token.str = "init"
         fn.operand_right.func_signature.sig_type = nod(●type    tkn(◂name className))
-        line = fn.operand_right.func_body.expressions[^1].token.line
-        fn.operand_right.func_body.expressions.add nod(●literal tkn(◂name "this" line+1))
+        if fn.operand_right.func_body
+            line = fn.operand_right.func_body.expressions[^1].token.line
+            fn.operand_right.func_body.expressions.add nod(●literal tkn(◂name "this" line+1))
+        else
+            fn.operand_right.func_body = nod(●literal tkn(◂name "this"))
         fn
     
     convert = ◇Node it ➜ Node -> 
@@ -135,12 +137,35 @@ methodify = ◇Node clss ➜ seq[Node] ->
         
         fn = nod ●operation token it.member_key funcn
         if it.member_key.token.str == "@" ➜ fn = constructor fn
-        elif exporting
+        if exporting
             if it.member_key.token.str[^1] != '*'
-                log "add star #{it.member_key.token.str}"
-                # it.member_key.token.str &= "*"
+                it.member_key.token.str &= "*"
         fn
+        
+    memberize = ◇Node it ➜ Node ->
+        if exporting
+            switch it.kind 
+                ●member
+                    if it.member_key.token.str[^1] != '*' 
+                        it.member_key.token.str &= "*"
+                ●switch
+                    if it.switch_value.kind == ●member
+                        if it.switch_value.member_key.token.str[^1] != '*'
+                            it.switch_value.member_key.token.str &= "*"
+                    for switchCase in it.switch_cases
+                        if switchCase.case_then.kind == ●block
+                            for thenExpr in switchCase.case_then.expressions
+                                if thenExpr.kind == ●member
+                                    if thenExpr.member_key.token.str[^1] != '*'
+                                        thenExpr.member_key.token.str &= "*"
+                        elif switchCase.case_then.kind == ●member
+                            thenExpr = switchCase.case_then
+                            if thenExpr.member_key.token.str[^1] != '*'
+                                thenExpr.member_key.token.str &= "*"
+                ➜ discard
+        it
 
+    clss.class_body.expressions = members.map memberize 
     methods = funcs.map convert
     
     methods

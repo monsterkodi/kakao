@@ -78,7 +78,6 @@ proc traverse(n : Node, iter : NodeIt) : Node =
 proc methodify(clss : Node) : seq[Node] = 
     proc isMethod(it : Node) : bool = ((it.kind == ●member) and (it.member_value.kind == ●func))
     var (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
-    clss.class_body.expressions = members
     var exporting = false
     var className = clss.class_name.token.str
     if (className[^1] == '*'): 
@@ -97,8 +96,11 @@ proc methodify(clss : Node) : seq[Node] =
     proc constructor(fn : Node) : Node = 
         fn.operand_left.token.str = "init"
         fn.operand_right.func_signature.sig_type = nod(●type, tkn(◂name, className))
-        var line = fn.operand_right.func_body.expressions[^1].token.line
-        fn.operand_right.func_body.expressions.add(nod(●literal, tkn(◂name, "this", (line + 1))))
+        if fn.operand_right.func_body: 
+            var line = fn.operand_right.func_body.expressions[^1].token.line
+            fn.operand_right.func_body.expressions.add(nod(●literal, tkn(◂name, "this", (line + 1))))
+        else: 
+            fn.operand_right.func_body = nod(●literal, tkn(◂name, "this"))
         fn
     proc convert(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)
@@ -114,11 +116,33 @@ proc methodify(clss : Node) : seq[Node] =
         funcn.func_body = traverse(funcn.func_body, thisify)
         var fn = nod(●operation, token, it.member_key, funcn)
         if (it.member_key.token.str == "@"): fn = constructor(fn)
-        elif exporting: 
+        if exporting: 
             if (it.member_key.token.str[^1] != '*'): 
-                echo(&"add star {it.member_key.token.str}")
-                # it.member_key.token.str &= "*"
+                (it.member_key.token.str &= "*")
         fn
+    proc memberize(it : Node) : Node = 
+        if exporting: 
+            case it.kind:
+                of ●member: 
+                    if (it.member_key.token.str[^1] != '*'): 
+                        (it.member_key.token.str &= "*")
+                of ●switch: 
+                    if (it.switch_value.kind == ●member): 
+                        if (it.switch_value.member_key.token.str[^1] != '*'): 
+                            (it.switch_value.member_key.token.str &= "*")
+                    for switchCase in it.switch_cases: 
+                        if (switchCase.case_then.kind == ●block): 
+                            for thenExpr in switchCase.case_then.expressions: 
+                                if (thenExpr.kind == ●member): 
+                                    if (thenExpr.member_key.token.str[^1] != '*'): 
+                                        (thenExpr.member_key.token.str &= "*")
+                        elif (switchCase.case_then.kind == ●member): 
+                            var thenExpr = switchCase.case_then
+                            if (thenExpr.member_key.token.str[^1] != '*'): 
+                                (thenExpr.member_key.token.str &= "*")
+                else: discard
+        it
+    clss.class_body.expressions = members.map(memberize)
     var methods = funcs.map(convert)
     methods
 proc classify*(body : Node) : Node = 

@@ -91,22 +91,28 @@ proc fun(this : A) =
         var m = 1
 proc inc(this : A, a1 : int) : int = 
         (a1 + 1)""")
-    # ▸ export
-    # 
-    #     t   "class A*\n    add: ◇string text -> @s &= text" "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)"
-    
-        # t   """
-        #     class A*
-        #         m : int
-        #         switch m 
-        #             0 
-        #                 x : int
-        #             1
-        #                 y : bool
-        #         @: -> 
-        #         inc: ◇int a1 ➜int ->
-        #     """ """
-        #     """
+    test "export": 
+        t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
+        t("""
+class A*
+    m : int
+    switch kind : int
+        0 
+            x : int
+        1
+            y : bool
+    @: -> 
+    inc: ◇int a1 ➜int ->
+""", """
+type A* = ref object
+    m*: int
+    case kind*: int:
+        of 0: 
+            x*: int
+        of 1: 
+            y*: bool
+proc init*(this : A) : A = this
+proc inc*(this : A, a1 : int) : int""")
     test "this vars": 
         t("class A\n    add: ◇string text -> @s &= text", "type A = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)")
         t("""

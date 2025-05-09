@@ -134,7 +134,7 @@ type Token* = object
 tkn* = ◇tok tok ◇string str line=-1 col=-1 ➜ Token -> Token(tok:tok str:str line:line col:col)
 tkn* =  tok=◂name           line=-1 col=-1 ➜ Token -> Token(tok:tok str:""  line:line col:col)
 
-class Tknzr*
+class Tknzr
     tokens      : seq[Token]
     openStack   : seq[tok]
     token       : Token
@@ -146,7 +146,7 @@ class Tknzr*
     eol         : int # segi at end of current line
     line        : int # current line index
 
-    $*: ➜string ->
+    $: ➜string ->
     
         "◂▸ #{@line} #{@token} #{@bol} #{@segi} #{@eol}"
     
@@ -239,7 +239,7 @@ class Tknzr*
     #      ███     ███     ███   ███  ███  ███  ████  ███   ███
     # ███████      ███     ███   ███  ███  ███   ███   ███████ 
     
-    string: ->
+    `string`: ->
     
         topTok = @tokens[^1]
         

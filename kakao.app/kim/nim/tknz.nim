@@ -120,7 +120,7 @@ type Token* = object
     col*: int
 proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
 proc tkn*(tok = ◂name, line = -1, col = -1) : Token = Token(tok: tok, str: "", line: line, col: col)
-type Tknzr* = ref object
+type Tknzr = ref object
     tokens: seq[Token]
     openStack: seq[tok]
     token: Token
@@ -156,7 +156,7 @@ type Tknzr* = ref object
     #    ███     ███████    ███ █ ███    ███  
     #    ███     ███  ███   ███  ████   ███   
     #    ███     ███   ███  ███   ███  ███████
-proc `$`*(this : Tknzr) : string = 
+proc `$`(this : Tknzr) : string = 
         &"◂▸ {this.line} {this.token} {this.bol} {this.segi} {this.eol}"
 proc char(this : Tknzr) : char = this.segs[this.segi][0]
 proc char(this : Tknzr, n : int) : char = this.segs[(this.segi + n)][0]
@@ -216,7 +216,7 @@ proc push(this : Tknzr, tk : tok) =
         this.token.tok = tk
         this.pushToken()
 proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0)
-proc string(this : Tknzr) = 
+proc `string`(this : Tknzr) = 
         var topTok = this.tokens[^1]
         assert((topTok.tok in {◂string_start, ◂stripol_end}))
         var ampersand = false
