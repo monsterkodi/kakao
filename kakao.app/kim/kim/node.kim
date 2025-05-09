@@ -68,165 +68,165 @@ enum NodeKind*
 
 class Node*
 
-    token* : Token
+    token : Token
         
-    switch kind* : NodeKind
+    switch kind : NodeKind
     
         ●block
             
-            expressions*    : seq[Node]
+            expressions    : seq[Node]
             
         ●operation
         
-            operand_left*   : Node
-            operand_right*  : Node
+            operand_left   : Node
+            operand_right  : Node
             
         ●string
         
-            string_prefix*  : Node
-            string_content* : Node
-            string_stripols*: seq[Node]
+            string_prefix  : Node
+            string_content : Node
+            string_stripols: seq[Node]
             
         ●comment
         
-            comment_content*: Node
+            comment_content: Node
             
         ●stripol
         
-            stripol_xprssns*: seq[Node]
-            stripol_content*: Node
+            stripol_xprssns: seq[Node]
+            stripol_content: Node
     
         ●range
         
-            range_start*    : Node
-            range_end*      : Node
+            range_start    : Node
+            range_end      : Node
             
         ●postOp ●preOp
         
-            operand*        : Node 
+            operand        : Node 
             
         ●return
         
-            return_value*   : Node  
+            return_value   : Node  
     
         ●discard
         
-            discard_value*  : Node  
+            discard_value  : Node  
     
         ●call
         
-            callee*         : Node
-            call_args*      : seq[Node]
+            callee         : Node
+            call_args      : seq[Node]
     
         ●propertyAccess
         
-            owner*          : Node
-            property*       : Node
+            owner          : Node
+            property       : Node
             
         ●arrayAccess
         
-            array_owner*    : Node
-            array_index*    : Node
+            array_owner    : Node
+            array_index    : Node
             
         ●if
             # also handles when
-            cond_thens*     : seq[Node]
-            else_branch*    : Node
+            cond_thens     : seq[Node]
+            else_branch    : Node
             
         ●condThen
         
-            condition*      : Node
-            then_branch*    : Node
+            condition      : Node
+            then_branch    : Node
             
         ●switch
             
-            switch_value*   : Node
-            switch_cases*   : seq[Node]
-            switch_default* : Node
+            switch_value   : Node
+            switch_cases   : seq[Node]
+            switch_default : Node
             
         ●switchCase
         
-            case_when*      : seq[Node]
-            case_then*      : Node
+            case_when      : seq[Node]
+            case_then      : Node
             
         ●while
         
-            while_cond*     : Node
-            while_body*     : Node
+            while_cond     : Node
+            while_body     : Node
             
         ●for
         
-            for_value*      : Node
-            for_range*      : Node
-            for_body*       : Node
+            for_value      : Node
+            for_range      : Node
+            for_body       : Node
             
         ●list 
         ●curly 
         ●squarely
         
-            list_values*    : seq[Node] 
+            list_values    : seq[Node] 
 
         ●arg
         
-            arg_type*       : Node
-            arg_name*       : Node
-            arg_value*      : Node
+            arg_type       : Node
+            arg_name       : Node
+            arg_value      : Node
             
         ●var
         
-            var_name*       : Node
-            var_type*       : Node
-            var_value*      : Node
+            var_name       : Node
+            var_type       : Node
+            var_value      : Node
             
         ●let
             
-            let_expr*       : Node
+            let_expr       : Node
             
         ●signature
         
-            sig_args*       : Node
-            sig_type*       : Node
+            sig_args       : Node
+            sig_type       : Node
             
         ●func
         
-            func_signature* : Node
-            func_mod*       : Node
-            func_body*      : Node
+            func_signature : Node
+            func_mod       : Node
+            func_body      : Node
             
         ●use
         
-            use_module*     : Node
-            use_kind*       : Node
-            use_items*      : seq[Node]
+            use_module     : Node
+            use_kind       : Node
+            use_items      : seq[Node]
             
         ●class
             
-            class_name*     : Node
-            class_body*     : Node
+            class_name     : Node
+            class_body     : Node
             
         ●member
         
-            member_key*     : Node
-            member_value*   : Node
+            member_key     : Node
+            member_value   : Node
             
         ●enum
             
-            enum_name*      : Node
-            enum_body*      : Node
+            enum_name      : Node
+            enum_body      : Node
             
         ●quote
             
-            quote_body*     : Node
+            quote_body     : Node
             
         ●testSuite 
         ●testSection
         
-            test_block*     : Node
+            test_block     : Node
                         
         ●testCase
             
-            test_value*     : Node
-            test_expected*  : Node
+            test_value     : Node
+            test_expected  : Node
             
         ➜ discard
         
@@ -234,7 +234,7 @@ class Node*
         # super() -> procCall constructor(Base(@))
         log "NODE"
     
-    $*: ➜string ->
+    $: ➜string ->
     
         if @ == nil
             ⮐  "NIL"
