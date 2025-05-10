@@ -78,6 +78,7 @@ proc traverse(n : Node, iter : NodeIt) : Node =
 proc methodify(clss : Node) : seq[Node] = 
     proc isMethod(it : Node) : bool = ((it.kind == ●member) and (it.member_value.kind == ●func))
     var (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
+    var strugt = (clss.kind == ●struct)
     var exporting = false
     var className = clss.class_name.token.str
     if (className[^1] == '*'): 
@@ -102,12 +103,13 @@ proc methodify(clss : Node) : seq[Node] =
         else: 
             fn.operand_right.func_body = nod(●literal, tkn(◂name, "this"))
         fn
-    proc convert(it : Node) : Node = 
+    proc funkify(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
-        var arg_type = nod(●type, tkn(◂val_type, className))
+        var valType = if strugt: ◂var_type else: ◂val_type
+        var arg_type = nod(●type, tkn(valType, className))
         var arg_name = nod(●literal, tkn(◂name, "this"))
-        var this_arg = nod(●arg, tkn(◂type), arg_type, arg_name)
+        var this_arg = nod(●arg, tkn(valType), arg_type, arg_name)
         if funcn.func_signature: 
             funcn.func_signature.sig_args.list_values.unshift(this_arg)
         else: 
@@ -120,7 +122,7 @@ proc methodify(clss : Node) : seq[Node] =
             if (it.member_key.token.str[^1] != '*'): 
                 (it.member_key.token.str &= "*")
         fn
-    proc memberize(it : Node) : Node = 
+    proc publicify(it : Node) : Node = 
         if exporting: 
             case it.kind:
                 of ●member: 
@@ -142,8 +144,8 @@ proc methodify(clss : Node) : seq[Node] =
                                 (thenExpr.member_key.token.str &= "*")
                 else: discard
         it
-    clss.class_body.expressions = members.map(memberize)
-    var methods = funcs.map(convert)
+    clss.class_body.expressions = members.map(publicify)
+    var methods = funcs.map(funkify)
     methods
 proc classify*(body : Node) : Node = 
     if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 

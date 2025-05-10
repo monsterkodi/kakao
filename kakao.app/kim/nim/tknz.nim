@@ -118,6 +118,12 @@ type Token* = object
     tok*: tok
     line*: int
     col*: int
+    # @: ◇tok tok ◇string str line=-1 col=-1 ->
+    #     
+    #     @tok  = tok
+    #     @str  = str 
+    #     @line = line
+    #     @col  = col
 proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
 proc tkn*(tok = ◂name, line = -1, col = -1) : Token = Token(tok: tok, str: "", line: line, col: col)
 type Tknzr = ref object

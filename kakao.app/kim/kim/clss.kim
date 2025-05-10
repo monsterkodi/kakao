@@ -90,6 +90,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
     
     (funcs members) = pullIf(clss.class_body.expressions isMethod)
 
+    strugt    = clss.kind == ●struct
     exporting = false
     className = clss.class_name.token.str
     if className[^1] == '*'
@@ -119,14 +120,15 @@ methodify = ◇Node clss ➜ seq[Node] ->
             fn.operand_right.func_body = nod(●literal tkn(◂name "this"))
         fn
     
-    convert = ◇Node it ➜ Node -> 
+    funkify = ◇Node it ➜ Node -> 
     
         token = tkn(◂assign it.token.line it.token.col)
         funcn = it.member_value
-                            
-        arg_type = nod ●type    tkn(◂val_type className)
+        
+        valType  = if strugt ➜ ◂var_type ➜ ◂val_type
+        arg_type = nod ●type    tkn(valType className)
         arg_name = nod ●literal tkn(◂name "this")
-        this_arg = nod ●arg     tkn(◂type) arg_type arg_name
+        this_arg = nod ●arg     tkn(valType) arg_type arg_name
         if funcn.func_signature
             funcn.func_signature.sig_args.list_values.unshift this_arg
         else
@@ -142,7 +144,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
                 it.member_key.token.str &= "*"
         fn
         
-    memberize = ◇Node it ➜ Node ->
+    publicify = ◇Node it ➜ Node ->
         if exporting
             switch it.kind 
                 ●member
@@ -165,8 +167,8 @@ methodify = ◇Node clss ➜ seq[Node] ->
                 ➜ discard
         it
 
-    clss.class_body.expressions = members.map memberize 
-    methods = funcs.map convert
+    clss.class_body.expressions = members.map publicify 
+    methods = funcs.map funkify
     
     methods
 

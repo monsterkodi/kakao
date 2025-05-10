@@ -15,3 +15,14 @@ var a = A().init(1)
 a.p()
 a = B().init(2)
 a.p()
+
+type S = object
+    m: int
+proc hello(this : var S) = 
+        this.m += 1
+        echo "hello", this.m
+        
+var s = S()
+s.hello()
+s.hello()
+s.hello()

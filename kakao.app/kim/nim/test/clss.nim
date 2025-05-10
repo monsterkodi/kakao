@@ -94,7 +94,7 @@ proc inc(this : A, a1 : int) : int =
         (a1 + 1)""")
     test "export": 
         t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
-        t("struct A*\n    add: ◇string text -> @s &= text", "type A* = object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
+        t("struct A*\n    add: ◇string text -> @s &= text", "type A* = object\n    \nproc add*(this : var A, text : string) = (this.s &= text)")
         t("""
 class A*
     m : int
@@ -115,6 +115,17 @@ type A* = ref object
             y*: bool
 proc init*(this : A) : A = this
 proc inc*(this : A, a1 : int) : int""")
+    test "struct methods": 
+        t("""
+struct S
+    m : int
+    hello: ->
+        @m += 1
+""", """
+type S = object
+    m: int
+proc hello(this : var S) = 
+        (this.m += 1)""")
     test "this vars": 
         t("class A\n    add: ◇string text -> @s &= text", "type A = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)")
         t("""
