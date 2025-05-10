@@ -161,12 +161,10 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
         copyFileWithPermissions(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
     for f in kimFiles: 
         var (output, exitCode) = execCmdEx(&"{src}/bin/kim " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
-        echo(output)
         if (exitCode != 0): 
+            echo(output)
             logFile(f, "✘ ")
             return false
-        # else
-        #     log output[0..^2].replace(getCurrentDir(), ".")
     profileStop(dst & " ")
     if compile(&"{dst}/nim/kim.nim", &"{dst}/bin"): 
         profileStart("test")

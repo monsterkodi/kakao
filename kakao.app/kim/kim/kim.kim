@@ -78,10 +78,10 @@ for kind key val in optParser.getopt()
                     log "  -o --outdir:DIR  output directory"
                     log "     --test        run tests"
                     log "  -v --verbose     verbose output"
-                    quit(1)
+                    quit 1
                 ➜ 
                     log "unknown option!: " key
-                    quit(1)
+                    quit 1
         cmdEnd
             discard
                         
@@ -96,9 +96,9 @@ when defined(posix)
     use posix
     
     restart = ->
-        args = allocCStringArray(@[getAppFilename()] & params)
-        discard execv(getAppFilename().cstring() args)
-        quit(1) # only reaches here if execve fails
+        args = allocCStringArray @[getAppFilename()] & params
+        discard execv getAppFilename().cstring() args
+        quit 1 # only reaches here if execve fails
     
 # ███       ███████    ███████   ████████  ███  ███      ████████
 # ███      ███   ███  ███        ███       ███  ███      ███     
@@ -110,7 +110,7 @@ logFile = ◇string f prefix="" ->
 
     (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
     d = if dir.len ➜ dir & "/" ➜ ""
-    icon = if ext == ".kim" ➜ "  " ➜ "  "
+    icon  = if ext == ".kim" ➜ "  " ➜ "  "
     color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
 
     styledEcho color prefix styleDim icon resetStyle
@@ -152,14 +152,14 @@ runTests = ➜bool ->
     anyFail = false
     
     for f in testFiles
-        args = @["r" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
-        process = startProcess(command = "nim" args = args options = {poInteractive poUsePath})
+        args = ["r" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
+        process = startProcess command="nim" args=args options={poInteractive poUsePath}
         defer: process.close()
         startTime = getMonoTime()
         output = ""
         outhnd = process.outputHandle
-        flags = fcntl(outhnd F_GETFL 0)
-        discard fcntl(outhnd F_SETFL flags or O_NONBLOCK)
+        flags = fcntl outhnd F_GETFL 0
+        discard fcntl outhnd F_SETFL flags or O_NONBLOCK
         
         thisFail = false
         
@@ -168,19 +168,19 @@ runTests = ➜bool ->
             if elapsed >= 5000
                 anyFail = true
                 thisFail = true
-                output.add("test killed after #{elapsed} ms!!")
+                output.add "test killed after #{elapsed} ms!!"
                 process.terminate()
-                sleep(50)
+                sleep 50
                 if process.running
                     process.kill()
                 break
                             
-            line = newString(1024*10)
-            bytesRead = read(outhnd addr(line[0]) line.len)
+            line = newString 1024*10
+            bytesRead = read outhnd addr(line[0]) line.len
             if 
-                bytesRead > 0   ➜ output.add(line & "\n")
+                bytesRead > 0   ➜ output.add line & "\n"
                 bytesRead == 0  ➜ break
-                errno == EAGAIN ➜ discard poll(nil 0 50)
+                errno == EAGAIN ➜ discard poll nil 0 50
                                 ➜ break
                 
         exitCode = process.waitForExit()
@@ -206,7 +206,7 @@ runTests = ➜bool ->
 if files.len
 
     # profileStart 'translate'
-    transpiled = rndr.files(files)
+    transpiled = rndr.files files
     # profileStop 'translate'
     quit transpiled.len - files.len
 
@@ -225,21 +225,19 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
 
     profileStart dst & " "
     for f in kimFiles 
-        copyFileWithPermissions(f, f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
+        copyFileWithPermissions f f.replace("/kim/kim/" "/kim/#{dst}/kim/")
     
     for f in kimFiles 
-        (output exitCode) = execCmdEx("#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/"))
-        log output
+        (output exitCode) = execCmdEx "#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/")
         if exitCode != 0
+            log output
             logFile f "✘ "
             ⮐  false
-        # else
-        #     log output[0..^2].replace(getCurrentDir(), ".")
     profileStop dst & " "
         
-    if compile("#{dst}/nim/kim.nim" "#{dst}/bin")
+    if compile "#{dst}/nim/kim.nim" "#{dst}/bin"
         profileStart "test"
-        (output exitCode) = execCmdEx("#{dst}/bin/kim --test")
+        (output exitCode) = execCmdEx "#{dst}/bin/kim --test"
         profileStop "test"
         if exitCode == 0
             ⮐  true
@@ -317,16 +315,16 @@ watch = ◇seq[string] paths ->
             for f in toTranspile
                 logFile f "▸ "
                 
-            if stage(kimFiles "." "k1m")
-                if stage(kimFiles "k1m" "k2m")
+            if stage kimFiles "." "k1m"
+                if stage kimFiles "k1m" "k2m"
                     log "-> deploy"
                     for f in kimFiles 
                         srcNim = f.replace("/kim/kim/" "/kim/k2m/nim/").replace(".kim" ".nim")
                         tgtNim = f.replace("/kim/kim/" "/kim/nim/").replace(".kim" ".nim")
-                        copyFileWithPermissions(srcNim, tgtNim)
-                    if compile("k2m/nim/kim.nim" "bin")
+                        copyFileWithPermissions srcNim tgtNim
+                    if compile "k2m/nim/kim.nim" "bin"
                         restart()
         sleep 200
         
-watch @[getCurrentDir() & "/kim"]
+watch [getCurrentDir() & "/kim"]
                  
