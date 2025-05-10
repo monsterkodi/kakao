@@ -13,7 +13,7 @@ class Rndr
     s               : string
     annotateVarArg  : bool
 
-    $*: ➜string ->
+    $: ➜string ->
         s = ""
         s &= "▸"
         s &= @code
@@ -406,7 +406,11 @@ class Rndr
     
         @add "type "
         @rnd n.class_name
-        @add " = ref object"
+        @add " = ref object of "
+        if n.class_parent
+            @tok n.class_parent
+        else
+            @add "RootObj"
         @rnd n.class_body
 
     ▸struct: ◇Node n ->
@@ -414,6 +418,9 @@ class Rndr
         @add "type "
         @rnd n.class_name
         @add " = object"
+        if n.class_parent
+            @add " of "
+            @tok n.class_parent
         @rnd n.class_body
     
     ▸member: ◇Node n ->

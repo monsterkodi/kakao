@@ -403,6 +403,7 @@ enum tok
         t("class Node\n member:string", "▪[(◂class ◂name ▪[(◂name : ◂name)])]")
         t("class Node\n member:string\n i:int", "▪[(◂class ◂name ▪[(◂name : ◂name)(◂name : ◂name)])]")
         t("class Node\n member:string\ni:int", "▪[(◂class ◂name ▪[(◂name : ◂name)])(◂name : ◂name)]")
+        t("class B extends A", "▪[(◂class ◂name ◂name ▪[])]")
     test "this": 
         t("@ : ->", "▪[(◂name : (->))]")
         t("@name : ->", "▪[(◂name : (->))]")

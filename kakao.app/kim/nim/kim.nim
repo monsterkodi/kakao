@@ -196,6 +196,8 @@ proc watch(paths : seq[string]) =
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
     var firstLoop = true
     while true: 
+        # GC_fullCollect()
+        # log GC_getStatistics()
         var toTranspile : seq[string]
         var kimFiles : seq[string]
         for path in paths: 

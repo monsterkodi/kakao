@@ -103,6 +103,14 @@ proc methodify(clss : Node) : seq[Node] =
         else: 
             fn.operand_right.func_body = nod(●literal, tkn(◂name, "this"))
         fn
+    proc superize(fn : Node) = 
+        if (fn.func_body and (fn.func_body.kind == ●block)): 
+            for i, e in fn.func_body.expressions: 
+                if ((e.kind == ●call) and (e.token.str == "super")): 
+                    e.call_args.unshift(Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, clss.class_parent.token.str)), call_args: @[nod(●literal, tkn(◂name, "this"))]))
+                    var initcall = Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, "init")), call_args: e.call_args)
+                    fn.func_body.expressions[i] = nod(●discard, tkn(◂discard), nod(●preOp, tkn(◂name, "procCall "), initcall))
+                    echo(fn.func_body.expressions[i])
     proc funkify(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
@@ -116,6 +124,7 @@ proc methodify(clss : Node) : seq[Node] =
             var sig_args = nod(●list, tkn(◂square_open), @[this_arg])
             funcn.func_signature = nod(●signature, token, sig_args, nil)
         funcn.func_body = traverse(funcn.func_body, thisify)
+        superize(funcn)
         var fn = nod(●operation, token, it.member_key, funcn)
         if (it.member_key.token.str == "@"): fn = constructor(fn)
         if exporting: 

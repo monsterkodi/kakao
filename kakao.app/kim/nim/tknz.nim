@@ -126,7 +126,7 @@ type Token* = object
     #     @col  = col
 proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
 proc tkn*(tok = ◂name, line = -1, col = -1) : Token = Token(tok: tok, str: "", line: line, col: col)
-type Tknzr = ref object
+type Tknzr = ref object of RootObj
     tokens: seq[Token]
     openStack: seq[tok]
     token: Token

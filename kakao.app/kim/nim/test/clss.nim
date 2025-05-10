@@ -2,10 +2,10 @@ import ../rndr
 template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
 suite "class": 
     test "simple": 
-        t("class A", "type A = ref object")
+        t("class A", "type A = ref object of RootObj")
         t("struct A", "type A = object")
     test "members": 
-        t("class ABC\n a:int\n b:int\n c:int", "type ABC = ref object\n a: int\n b: int\n c: int")
+        t("class ABC\n a:int\n b:int\n c:int", "type ABC = ref object of RootObj\n a: int\n b: int\n c: int")
         t("""
 class Tknzr
     tokens      : seq[Token]
@@ -17,7 +17,7 @@ class Tknzr
     segs        : seq[string]
     line        : int
 """, """
-type Tknzr = ref object
+type Tknzr = ref object of RootObj
     tokens: seq[Token]
     openStack: seq[tok]
     token: Token
@@ -37,7 +37,7 @@ class A
 
 a = @A 1 2
 """, """
-type A = ref object
+type A = ref object of RootObj
     a: int
     b: int
 proc init(this : A, a : int, b : int) : A = 
@@ -45,38 +45,37 @@ proc init(this : A, a : int, b : int) : A =
         this.b = b
         this
 var a = A().init(1, 2)""")
-    # ▸ inheritance
-    # 
-    #     t   """
-    #         class A
-    #             a : int
-    #             @: ◇int a ->
-    #                 @a = a
-    #             p: -> log @a
-    #         class B extends A
-    #             b : int
-    #             @: ◇int a ->
-    #                 super a*2
-    #         a = @A 1
-    #         a.p()
-    #         a = @B 2
-    #         a.p()
-    #         """ """
-    #         type A = ref object of RootObj
-    #             a: int
-    #         proc init(this : A, a : int) : A = 
-    #                 this.a = a
-    #                 this
-    #         proc p(this : A) = echo(this.a)
-    #         type B = ref object of A
-    #                 b: int
-    #         proc init(this : B, a : int) : B = 
-    #                 discard procCall init(A(this), (a * 2))
-    #                 this
-    #         var a = A().init(1)
-    #         a.p()
-    #         a = B().init(2)
-    #         a.p()"""
+    test "inheritance": 
+        t("""
+class A
+    a : int
+    @: ◇int a ->
+        @a = a
+    p: -> log @a
+class B extends A
+    b : int
+    @: ◇int a ->
+        super a*2
+a = @A 1
+a.p()
+a = @B 2
+a.p()
+""", """
+type A = ref object of RootObj
+    a: int
+proc init(this : A, a : int) : A = 
+        this.a = a
+        this
+proc p(this : A) = echo(this.a)
+type B = ref object of A
+    b: int
+proc init(this : B, a : int) : B = 
+        discard procCall init(A(this), (a * 2))
+        this
+var a = A().init(1)
+a.p()
+a = B().init(2)
+a.p()""")
     test "methods": 
         t("""
 class A
@@ -86,14 +85,14 @@ class A
     inc: ◇int a1 ➜int ->
         a1 + 1
 """, """
-type A = ref object
+type A = ref object of RootObj
     m: int
 proc fun(this : A) = 
         var m = 1
 proc inc(this : A, a1 : int) : int = 
         (a1 + 1)""")
     test "export": 
-        t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)")
+        t("class A*\n    add: ◇string text -> @s &= text", "type A* = ref object of RootObj\n    \nproc add*(this : A, text : string) = (this.s &= text)")
         t("struct A*\n    add: ◇string text -> @s &= text", "type A* = object\n    \nproc add*(this : var A, text : string) = (this.s &= text)")
         t("""
 class A*
@@ -106,7 +105,7 @@ class A*
     @: -> 
     inc: ◇int a1 ➜int ->
 """, """
-type A* = ref object
+type A* = ref object of RootObj
     m*: int
     case kind*: int:
         of 0: 
@@ -127,7 +126,7 @@ type S = object
 proc hello(this : var S) = 
         (this.m += 1)""")
     test "this vars": 
-        t("class A\n    add: ◇string text -> @s &= text", "type A = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)")
+        t("class A\n    add: ◇string text -> @s &= text", "type A = ref object of RootObj\n    \nproc add(this : A, text : string) = (this.s &= text)")
         t("""
 class A
     m : int
@@ -135,7 +134,7 @@ class A
         log $@m
         @m = 1
 """, """
-type A = ref object
+type A = ref object of RootObj
     m: int
 proc fun(this : A) = 
         echo($this.m)
@@ -148,7 +147,7 @@ class A
     inc: ◇int a1 ➜int ->
         @sqr() + @inc(@m)
 """, """
-type A = ref object
+type A = ref object of RootObj
     m: int
 proc sqr(this : A) = 
         this.m = (this.m * this.m)
@@ -173,7 +172,7 @@ class A
         else
             @o
 """, """
-type A = ref object
+type A = ref object of RootObj
     m: int
     n: int
     o: int
@@ -207,7 +206,7 @@ class A
         fun(@m)
         moreFun @o
 """, """
-type A = ref object
+type A = ref object of RootObj
     m: int
     n: int
     o: int
@@ -230,7 +229,7 @@ class A
 {@m}"
         @m
 """, """
-type A = ref object
+type A = ref object of RootObj
     m: int
 proc loop(this : A) = 
         echo(&"m: {this.m}")
@@ -264,11 +263,11 @@ class Node
         
 nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
 """, """
-type Token = ref object
+type Token = ref object of RootObj
     tok: tok
 proc logp(this : Token) = 
         echo(this.tok)
-type Node = ref object
+type Node = ref object of RootObj
     token: Token
     case kind: NodeKind:
         of ●block: 

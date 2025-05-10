@@ -7,11 +7,11 @@ import pars
 import vars
 import clss
 export pars
-type Rndr = ref object
+type Rndr = ref object of RootObj
     code: string
     s: string
     annotateVarArg: bool
-proc `$`*(this : Rndr) : string = 
+proc `$`(this : Rndr) : string = 
         var s = ""
         (s &= "▸")
         (s &= this.code)
@@ -312,12 +312,19 @@ proc ▸enum(this : Rndr, n : Node) =
 proc ▸class(this : Rndr, n : Node) = 
         this.add("type ")
         this.rnd(n.class_name)
-        this.add(" = ref object")
+        this.add(" = ref object of ")
+        if n.class_parent: 
+            this.tok(n.class_parent)
+        else: 
+            this.add("RootObj")
         this.rnd(n.class_body)
 proc ▸struct(this : Rndr, n : Node) = 
         this.add("type ")
         this.rnd(n.class_name)
         this.add(" = object")
+        if n.class_parent: 
+            this.add(" of ")
+            this.tok(n.class_parent)
         this.rnd(n.class_body)
 proc ▸member(this : Rndr, n : Node) = 
         this.rnd(n.member_key)

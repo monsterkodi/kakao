@@ -28,9 +28,9 @@ underscore* = ◇uint64 n ➜string ->
     count = 0
     for i in countdown(s.high, 0)
         if count != 0 and count.mod(3) == 0
-          result.add('_')
+            result.add('_')
         r.add(s[i])
-        inc(count)
+        count += 1
     reversed(r)
 
 indent* = ◇string s i=4 ➜string ->

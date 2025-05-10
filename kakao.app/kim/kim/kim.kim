@@ -277,6 +277,9 @@ watch = ◇seq[string] paths ->
     
     while true
     
+        # GC_fullCollect()
+        # log GC_getStatistics()
+        
         toTranspile ◇ seq[string]
         kimFiles    ◇ seq[string]
         

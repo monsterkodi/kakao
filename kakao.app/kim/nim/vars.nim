@@ -9,7 +9,7 @@
     operations in scope
 ]#
 import pars
-type Scoper = ref object
+type Scoper = ref object of RootObj
     vars: seq[Table[string, bool]]
     # 00000000  000   000  00000000   
     # 000        000 000   000   000  

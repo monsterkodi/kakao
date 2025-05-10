@@ -14,7 +14,7 @@ type Pratt = object
     rhs: RHS
     lhs: LHS
     precedence: int
-type Parser* = ref object
+type Parser* = ref object of RootObj
     tokens*: seq[Token]
     pratts*: seq[Pratt]
     blocks*: seq[Node]
@@ -879,9 +879,23 @@ proc rEnum*(this : Parser) : Node =
             this.typeless = false
         nod(●enum, token, enum_name, enum_body)
 proc rClass*(this : Parser) : Node = 
-        nod(●class, this.consume(), this.value(), this.parseBlock())
+        (this.explicit += 1)
+        var token = this.consume()
+        var name = this.value()
+        var parent : Node
+        if (this.current.str == "extends"): 
+            this.swallow()
+            parent = this.value()
+        (this.explicit -= 1)
+        nod(●class, token, name, parent, this.parseBlock())
 proc rStruct*(this : Parser) : Node = 
-        nod(●struct, this.consume(), this.value(), this.parseBlock())
+        var token = this.consume()
+        var name = this.value()
+        var parent : Node
+        if (this.current.str == "extends"): 
+            this.swallow()
+            parent = this.value()
+        nod(●struct, token, name, parent, this.parseBlock())
 proc lMember*(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.funcOrExpression(token)

@@ -61,7 +61,7 @@ type NodeKind* = enum
 # ███ █ ███  ███   ███  ███   ███  ███████ 
 # ███  ████  ███   ███  ███   ███  ███     
 # ███   ███   ███████   ███████    ████████
-type Node* = ref object
+type Node* = ref object of RootObj
     token*: Token
     case kind*: NodeKind:
         of ●block: 
@@ -142,6 +142,7 @@ type Node* = ref object
             use_items*: seq[Node]
         of ●class, ●struct: 
             class_name*: Node
+            class_parent*: Node
             class_body*: Node
         of ●member: 
             member_key*: Node
@@ -258,8 +259,9 @@ proc `$`*(this : Node) : string =
                 var b = choose(this.enum_body, &" {this.enum_body}", "")
                 s = &"({s} {this.enum_name}{b})"
             of ●class: 
+                var p = choose(this.class_parent, &" {this.class_parent}", "")
                 var b = choose(this.class_body, &" {this.class_body}", "")
-                s = &"({s} {this.class_name}{b})"
+                s = &"({s} {this.class_name}{p}{b})"
             of ●member: 
                 s = &"({this.member_key} {s} {this.member_value})"
             of ●quote: 
@@ -324,7 +326,8 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.let_expr = args[0]
         of ●class, ●struct: 
             n.class_name = args[0]
-            n.class_body = args[1]
+            n.class_parent = args[1]
+            n.class_body = args[2]
         of ●member: 
             n.member_key = args[0]
             n.member_value = args[1]

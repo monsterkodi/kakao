@@ -7,12 +7,12 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
 
     ▸ simple
     
-        t "class A"  "type A = ref object"
+        t "class A"  "type A = ref object of RootObj"
         t "struct A" "type A = object"
         
     ▸ members
     
-        t "class ABC\n a:int\n b:int\n c:int" "type ABC = ref object\n a: int\n b: int\n c: int"
+        t "class ABC\n a:int\n b:int\n c:int" "type ABC = ref object of RootObj\n a: int\n b: int\n c: int"
         
         t   """
             class Tknzr
@@ -25,7 +25,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                 segs        : seq[string]
                 line        : int
             """ """
-            type Tknzr = ref object
+            type Tknzr = ref object of RootObj
                 tokens: seq[Token]
                 openStack: seq[tok]
                 token: Token
@@ -47,7 +47,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
             
             a = @A 1 2
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 a: int
                 b: int
             proc init(this : A, a : int, b : int) : A = 
@@ -56,38 +56,38 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                     this
             var a = A().init(1, 2)"""
             
-    # ▸ inheritance
-    # 
-    #     t   """
-    #         class A
-    #             a : int
-    #             @: ◇int a ->
-    #                 @a = a
-    #             p: -> log @a
-    #         class B extends A
-    #             b : int
-    #             @: ◇int a ->
-    #                 super a*2
-    #         a = @A 1
-    #         a.p()
-    #         a = @B 2
-    #         a.p()
-    #         """ """
-    #         type A = ref object of RootObj
-    #             a: int
-    #         proc init(this : A, a : int) : A = 
-    #                 this.a = a
-    #                 this
-    #         proc p(this : A) = echo(this.a)
-    #         type B = ref object of A
-    #                 b: int
-    #         proc init(this : B, a : int) : B = 
-    #                 discard procCall init(A(this), (a * 2))
-    #                 this
-    #         var a = A().init(1)
-    #         a.p()
-    #         a = B().init(2)
-    #         a.p()"""
+    ▸ inheritance
+    
+        t   """
+            class A
+                a : int
+                @: ◇int a ->
+                    @a = a
+                p: -> log @a
+            class B extends A
+                b : int
+                @: ◇int a ->
+                    super a*2
+            a = @A 1
+            a.p()
+            a = @B 2
+            a.p()
+            """ """
+            type A = ref object of RootObj
+                a: int
+            proc init(this : A, a : int) : A = 
+                    this.a = a
+                    this
+            proc p(this : A) = echo(this.a)
+            type B = ref object of A
+                b: int
+            proc init(this : B, a : int) : B = 
+                    discard procCall init(A(this), (a * 2))
+                    this
+            var a = A().init(1)
+            a.p()
+            a = B().init(2)
+            a.p()"""
                 
     ▸ methods
     
@@ -99,7 +99,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                 inc: ◇int a1 ➜int ->
                     a1 + 1
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 m: int
             proc fun(this : A) = 
                     var m = 1
@@ -108,7 +108,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                     
     ▸ export
     
-        t   "class A*\n    add: ◇string text -> @s &= text" "type A* = ref object\n    \nproc add*(this : A, text : string) = (this.s &= text)"
+        t   "class A*\n    add: ◇string text -> @s &= text" "type A* = ref object of RootObj\n    \nproc add*(this : A, text : string) = (this.s &= text)"
         t   "struct A*\n    add: ◇string text -> @s &= text" "type A* = object\n    \nproc add*(this : var A, text : string) = (this.s &= text)"
 
         t   """
@@ -122,7 +122,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                 @: -> 
                 inc: ◇int a1 ➜int ->
             """ """
-            type A* = ref object
+            type A* = ref object of RootObj
                 m*: int
                 case kind*: int:
                     of 0: 
@@ -147,7 +147,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
 
     ▸ this vars
     
-        t   "class A\n    add: ◇string text -> @s &= text" "type A = ref object\n    \nproc add(this : A, text : string) = (this.s &= text)"
+        t   "class A\n    add: ◇string text -> @s &= text" "type A = ref object of RootObj\n    \nproc add(this : A, text : string) = (this.s &= text)"
     
         t   """
             class A
@@ -156,7 +156,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                     log $@m
                     @m = 1
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 m: int
             proc fun(this : A) = 
                     echo($this.m)
@@ -170,7 +170,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                 inc: ◇int a1 ➜int ->
                     @sqr() + @inc(@m)
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 m: int
             proc sqr(this : A) = 
                     this.m = (this.m * this.m)
@@ -196,7 +196,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                     else
                         @o
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 m: int
                 n: int
                 o: int
@@ -231,7 +231,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                     fun(@m)
                     moreFun @o
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 m: int
                 n: int
                 o: int
@@ -255,7 +255,7 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
             {@m}"
                     @m
             """ """
-            type A = ref object
+            type A = ref object of RootObj
                 m: int
             proc loop(this : A) = 
                     echo(&"m: {this.m}")
@@ -290,11 +290,11 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
                     
             nod = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
             """ """
-            type Token = ref object
+            type Token = ref object of RootObj
                 tok: tok
             proc logp(this : Token) = 
                     echo(this.tok)
-            type Node = ref object
+            type Node = ref object of RootObj
                 token: Token
                 case kind: NodeKind:
                     of ●block: 

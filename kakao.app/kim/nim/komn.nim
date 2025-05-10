@@ -22,9 +22,9 @@ proc underscore*(n : uint64) : string =
     var count = 0
     for i in countdown(s.high, 0): 
         if ((count != 0) and (count.mod(3) == 0)): 
-          result.add('_')
+            result.add('_')
         r.add(s[i])
-        inc(count)
+        (count += 1)
     reversed(r)
 proc indent*(s : string, i = 4) : string = 
     var idt = ' '.repeat(i)

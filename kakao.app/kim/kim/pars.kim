@@ -1160,11 +1160,26 @@ class Parser*
         
     rClass: ➜Node ->
     
-        nod ●class @consume() @value() @parseBlock()
+        @explicit += 1
+        token = @consume()
+        name  = @value()
+        parent ◇ Node
+        if @current.str == "extends"
+            @swallow()
+            parent = @value()
+        @explicit -= 1
+        nod ●class token name parent @parseBlock()
 
     rStruct: ➜Node ->
+
+        token = @consume()
+        name  = @value()
+        parent ◇ Node
+        if @current.str == "extends"
+            @swallow()
+            parent = @value()
     
-        nod ●struct @consume() @value() @parseBlock()
+        nod ●struct token name parent @parseBlock()
         
     lMember: ◇Node left ➜Node ->
     
