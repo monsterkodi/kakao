@@ -25,111 +25,8 @@ type Parser* = ref object of RootObj
     returning*: bool
     typeless*: bool
     failed*: bool
-    text*: string # used in `$` for debugging. should be removed eventually 
-    # ████████   ████████   ███  ███   ███  █████████  
-    # ███   ███  ███   ███  ███  ████  ███     ███     
-    # ████████   ███████    ███  ███ █ ███     ███     
-    # ███        ███   ███  ███  ███  ████     ███     
-    # ███        ███   ███  ███  ███   ███     ███     
-    #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
-    # ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
-    # ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
-    # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
-    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
-    # ███████    ███       ███████    ███████  ███   ███
-    # ███   ███  ███      ███   ███  ███       ███  ███ 
-    # ███████    ███      ███   ███  ███       ███████  
-    # ███   ███  ███      ███   ███  ███       ███  ███ 
-    # ███████    ███████   ███████    ███████  ███   ███
-    #  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
-    # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
-    # ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
-    # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
-    #  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
-    # █████████  ███   ███  ████████   ████████
-    #    ███      ███ ███   ███   ███  ███     
-    #    ███       █████    ████████   ███████ 
-    #    ███        ███     ███        ███     
-    #    ███        ███     ███        ████████
-    # ███      ███   ███████  █████████
-    # ███      ███  ███          ███   
-    # ███      ███  ███████      ███   
-    # ███      ███       ███     ███   
-    # ███████  ███  ███████      ███   
-    # █████████  ███   ███  ████████  ███   ███
-    #    ███     ███   ███  ███       ████  ███
-    #    ███     █████████  ███████   ███ █ ███
-    #    ███     ███   ███  ███       ███  ████
-    #    ███     ███   ███  ████████  ███   ███
-    #  ███████   ███████   ███      ███    
-    # ███       ███   ███  ███      ███    
-    # ███       █████████  ███      ███    
-    # ███       ███   ███  ███      ███    
-    #  ███████  ███   ███  ███████  ███████
-    # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
-    # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
-    # ███  █████████  ████████   ███      ███  ███       ███     ███   
-    # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
-    # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
-    # ███  ████████                             ███  ████████                               ███  ████████  
-    # ███  ███                                  ███  ███                                    ███  ███       
-    # ███  ██████                               ███  ██████                                 ███  ██████    
-    # ███  ███                                  ███  ███                                    ███  ███       
-    # ███  ███                                  ███  ███                                    ███  ███       
-    # █████████   ███████   ███  ███         ███  ████████
-    #    ███     ███   ███  ███  ███         ███  ███     
-    #    ███     █████████  ███  ███         ███  ██████  
-    #    ███     ███   ███  ███  ███         ███  ███     
-    #    ███     ███   ███  ███  ███████     ███  ███     
-    # ████████   ███████   ████████ 
-    # ███       ███   ███  ███   ███
-    # ██████    ███   ███  ███████  
-    # ███       ███   ███  ███   ███
-    # ███        ███████   ███   ███
-    #  ███████  ███   ███  ███  █████████   ███████  ███   ███
-    # ███       ███ █ ███  ███     ███     ███       ███   ███
-    # ███████   █████████  ███     ███     ███       █████████
-    #      ███  ███   ███  ███     ███     ███       ███   ███
-    # ███████   ██     ██  ███     ███      ███████  ███   ███
-    #  ███████  █████████  ████████   ███  ███   ███   ███████ 
-    # ███          ███     ███   ███  ███  ████  ███  ███      
-    # ███████      ███     ███████    ███  ███ █ ███  ███  ████
-    #      ███     ███     ███   ███  ███  ███  ████  ███   ███
-    # ███████      ███     ███   ███  ███  ███   ███   ███████ 
-    # ████████  ███   ███  ███   ███   ███████
-    # ███       ███   ███  ████  ███  ███     
-    # ██████    ███   ███  ███ █ ███  ███     
-    # ███       ███   ███  ███  ████  ███     
-    # ███        ███████   ███   ███   ███████
-    #  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
-    # ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
-    # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
-    # ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
-    #  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
-    # ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
-    # ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
-    # ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
-    # ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
-    # ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
-    #[
-       ◂R      ◂LR     ◂L      ◂R      ◂L      ◂LR     ◂R 
-       │       │       │       │       │       │ 
-       ◂R➜●    │       │       ◂R➜●    │       │ 
-          │    │       │          │    │       │
-          ╰───●◂L➜●───●◂L➜●       ╰───●◂L➜●───●◂L➜●
-                          │                       │
-                          ▾                       ▾
-    ]#
-    # ████████   ████████    ███████   █████████  █████████
-    # ███   ███  ███   ███  ███   ███     ███        ███   
-    # ████████   ███████    █████████     ███        ███   
-    # ███        ███   ███  ███   ███     ███        ███   
-    # ███        ███   ███  ███   ███     ███        ███   
-    #  ███████  ████████  █████████  ███   ███  ████████ 
-    # ███       ███          ███     ███   ███  ███   ███
-    # ███████   ███████      ███     ███   ███  ████████ 
-    #      ███  ███          ███     ███   ███  ███      
-    # ███████   ████████     ███      ███████   ███      
+    text*: string
+# used in `$` for debugging. should be removed eventually 
 proc current*(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
@@ -140,6 +37,11 @@ proc peek*(this : Parser, ahead = 1) : Token =
             this.tokens[(this.pos + ahead)]
         else: 
             EOF
+# ████████   ████████   ███  ███   ███  █████████  
+# ███   ███  ███   ███  ███  ████  ███     ███     
+# ████████   ███████    ███  ███ █ ███     ███     
+# ███        ███   ███  ███  ███  ████     ███     
+# ███        ███   ███  ███  ███   ███     ███     
 proc `$`*(this : Parser) : string = 
         var s = ""
         if (this.tok != ◂eof): 
@@ -159,6 +61,11 @@ proc error*(this : Parser, msg : string, token = EOF) : Node =
             styledEcho(fgWhite, styleDim, &"{this.current.line}", resetStyle, fgGreen, $line)
         this.failed = true
         nil
+#  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
+# ███       ███   ███  ████  ███  ███       ███   ███  ███   ███  ███     
+# ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
+# ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
+#  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
 proc consume*(this : Parser) : Token = 
         var t = this.current
         if (this.pos < this.tokens.len): 
@@ -247,6 +154,11 @@ proc expression*(this : Parser, tokenRight : Token) : Node =
         this.expression(this.getPrecedence(tokenRight))
 proc value*(this : Parser) : Node = 
         this.expression(-2)
+# ███████    ███       ███████    ███████  ███   ███
+# ███   ███  ███      ███   ███  ███       ███  ███ 
+# ███████    ███      ███   ███  ███       ███████  
+# ███   ███  ███      ███   ███  ███       ███  ███ 
+# ███████    ███████   ███████    ███████  ███   ███
 proc parseBlock*(this : Parser, bn : Node = nil) : Node = 
         var token : Token
         var block_indent : int
@@ -293,6 +205,11 @@ proc expressionOrIndentedBlock*(this : Parser, token : Token, col : int) : Node 
                 return this.parseBlock()
         else: 
             return this.expression(token)
+#  ███████   ███████   ███      ███       ███████   ████████    ███████    ███████
+# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███        ███     
+# ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
+# ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
+#  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
 proc swallowIndent*(this : Parser, col : int) : bool = 
         this.swallow(◂comma)
         if (this.tok == ◂indent): 
@@ -320,6 +237,11 @@ proc parseCallArgs*(this : Parser, col : int) : seq[Node] =
         (this.listless -= 1)
         (this.explicit -= 1)
         list
+# █████████  ███   ███  ████████   ████████
+#    ███      ███ ███   ███   ███  ███     
+#    ███       █████    ████████   ███████ 
+#    ███        ███     ███        ███     
+#    ███        ███     ███        ████████
 proc parseType*(this : Parser) : Node = 
         var token = this.consume()
         token.tok = ◂type
@@ -361,6 +283,11 @@ proc parseModule*(this : Parser) : Node =
             if ((this.current.col > e) and (this.current.str notin @["▪", "◆"])): 
                 (s &= " ")
         Node(token: Token(str: s))
+# ███      ███   ███████  █████████
+# ███      ███  ███          ███   
+# ███      ███  ███████      ███   
+# ███      ███       ███     ███   
+# ███████  ███  ███████      ███   
 proc parseParenList*(this : Parser) : seq[Node] = 
         var token = this.consume() # (
         var args : seq[Node]
@@ -417,6 +344,11 @@ proc parseNamesUntil*(this : Parser, stop : tok) : Node =
             list_values[0]
         else: 
             nod(●list, token, list_values)
+# █████████  ███   ███  ████████  ███   ███
+#    ███     ███   ███  ███       ████  ███
+#    ███     █████████  ███████   ███ █ ███
+#    ███     ███   ███  ███       ███  ████
+#    ███     ███   ███  ████████  ███   ███
 proc thenBlock*(this : Parser) : Node = 
         if (this.tok == ◂then): 
             this.swallow(◂then)
@@ -433,11 +365,21 @@ proc thenIndented*(this : Parser, token : Token) : Node =
             return nil
         else: 
             return this.expression()
+#  ███████   ███████   ███      ███    
+# ███       ███   ███  ███      ███    
+# ███       █████████  ███      ███    
+# ███       ███   ███  ███      ███    
+#  ███████  ███   ███  ███████  ███████
 proc lCall*(this : Parser, callee : Node) : Node = 
         var token = this.consume() # (
         var args = this.parseCallArgs(callee.token.col)
         this.swallowError(◂paren_close, "Missing closing paren for call arguments")
         Node(token: token, kind: ●call, callee: callee, callargs: args)
+# ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
+# ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
+# ███  █████████  ████████   ███      ███  ███       ███     ███   
+# ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
+# ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
 proc isImplicitCallPossible*(this : Parser) : bool = 
         if this.explicit: return false
         var currt = this.peek(0)
@@ -445,6 +387,7 @@ proc isImplicitCallPossible*(this : Parser) : bool =
         if (currt.tok in optoks): return false
         var prevt = this.peek(-1)
         if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
+        if (this.returning and this.isTokAhead(◂if)): return false
         if this.isTokAhead(◂func): return false
         true
 proc rSymbol*(this : Parser) : Node = 
@@ -457,6 +400,11 @@ proc rSymbol*(this : Parser) : Node =
             let args = this.parseCallArgs(token.col)
             return Node(token: token, kind: ●call, callee: nod(●literal, token), callargs: args)
         nod(●literal, token)
+# ███  ████████                             ███  ████████                               ███  ████████  
+# ███  ███                                  ███  ███                                    ███  ███       
+# ███  ██████                               ███  ██████                                 ███  ██████    
+# ███  ███                                  ███  ███                                    ███  ███       
+# ███  ███                                  ███  ███                                    ███  ███       
 proc inline*(this : Parser) : Node = 
         (this.inlinecall += 1)
         var e = this.expression()
@@ -506,6 +454,11 @@ proc rIf*(this : Parser) : Node =
                 this.swallow() # else or then without condition
                 else_branch = this.thenBlock()
         Node(token: token, kind: ●if, cond_thens: condThens, else_branch: else_branch)
+# █████████   ███████   ███  ███         ███  ████████
+#    ███     ███   ███  ███  ███         ███  ███     
+#    ███     █████████  ███  ███         ███  ██████  
+#    ███     ███   ███  ███  ███         ███  ███     
+#    ███     ███   ███  ███  ███████     ███  ███     
 proc lTailIf*(this : Parser, left : Node) : Node = 
         if this.returning: return
         if (left.token.line != this.current.line): return
@@ -513,6 +466,11 @@ proc lTailIf*(this : Parser, left : Node) : Node =
         var condition = this.expression()
         var condThen = nod(●condThen, condition.token, condition, left)
         Node(token: token, kind: ●if, cond_thens: @[condThen])
+# ████████   ███████   ████████ 
+# ███       ███   ███  ███   ███
+# ██████    ███   ███  ███████  
+# ███       ███   ███  ███   ███
+# ███        ███████   ███   ███
 proc rFor*(this : Parser) : Node = 
         var token = this.consume()
         var for_value = this.parseNamesUntil(◂in)
@@ -522,6 +480,11 @@ proc rFor*(this : Parser) : Node =
         nod(●for, token, for_value, for_range, for_body)
 proc rWhile*(this : Parser) : Node = 
         nod(●while, this.consume(), this.expression(), this.thenBlock())
+#  ███████  ███   ███  ███  █████████   ███████  ███   ███
+# ███       ███ █ ███  ███     ███     ███       ███   ███
+# ███████   █████████  ███     ███     ███       █████████
+#      ███  ███   ███  ███     ███     ███       ███   ███
+# ███████   ██     ██  ███     ███      ███████  ███   ███
 proc switchCase*(this : Parser, baseIndent : int) : Node = 
         var case_when : seq[Node]
         var token = this.current
@@ -601,6 +564,11 @@ proc lSemiColon*(this : Parser, left : Node) : Node =
                 right.expressions.unshift(left)
                 return right
             return nod(●semicolon, token, @[left, right])
+#  ███████  █████████  ████████   ███  ███   ███   ███████ 
+# ███          ███     ███   ███  ███  ████  ███  ███      
+# ███████      ███     ███████    ███  ███ █ ███  ███  ████
+#      ███     ███     ███   ███  ███  ███  ████  ███   ███
+# ███████      ███     ███   ███  ███  ███   ███   ███████ 
 proc rString*(this : Parser) : Node = 
         var token = this.consume() # string start
         if (this.tok == ◂string_end): 
@@ -720,6 +688,11 @@ proc lArgList*(this : Parser, left : Node) : Node =
                     return this.lVar(left)
             else: 
                 discard
+# ████████  ███   ███  ███   ███   ███████
+# ███       ███   ███  ████  ███  ███     
+# ██████    ███   ███  ███ █ ███  ███     
+# ███       ███   ███  ███  ████  ███     
+# ███        ███████   ███   ███   ███████
 proc lFunc*(this : Parser, left : Node) : Node = 
         if (left.kind notin {●signature, ●list, ●arg, ●operation}): return
         var func_signature : Node
@@ -835,6 +808,11 @@ proc rDiscard*(this : Parser) : Node =
             nod(●discard, token, nil)
         else: 
             nod(●discard, token, this.value())
+#  ███████   ████████   ████████  ████████    ███████   █████████  ███   ███████   ███   ███
+# ███   ███  ███   ███  ███       ███   ███  ███   ███     ███     ███  ███   ███  ████  ███
+# ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
+# ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
+#  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
 proc lOperation*(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.expression(token)
@@ -920,6 +898,20 @@ proc rTestSuite*(this : Parser) : Node =
             nod(●testSuite, token, test_block)
         else: 
             nod(●testSection, token, test_block)
+# ████████  ███   ███  ████████   ████████   ████████   ███████   ███████  ███   ███████   ███   ███
+# ███        ███ ███   ███   ███  ███   ███  ███       ███       ███       ███  ███   ███  ████  ███
+# ███████     █████    ████████   ███████    ███████   ███████   ███████   ███  ███   ███  ███ █ ███
+# ███        ███ ███   ███        ███   ███  ███            ███       ███  ███  ███   ███  ███  ████
+# ████████  ███   ███  ███        ███   ███  ████████  ███████   ███████   ███   ███████   ███   ███
+#[
+       ◂R      ◂LR     ◂L      ◂R      ◂L      ◂LR     ◂R 
+       │       │       │       │       │       │ 
+       ◂R➜●    │       │       ◂R➜●    │       │ 
+          │    │       │          │    │       │
+          ╰───●◂L➜●───●◂L➜●       ╰───●◂L➜●───●◂L➜●
+                          │                       │
+                          ▾                       ▾
+    ]#
 proc expression*(this : Parser, precedenceRight = 0) : Node = 
         var token = this.current
         if (token.tok in {◂eof, ◂stripol_end, ◂paren_close}): 
@@ -949,10 +941,20 @@ proc expression*(this : Parser, precedenceRight = 0) : Node =
                  this.swallow()
                  node = this.lPropertyAccess(node)
         node
+# ████████   ████████    ███████   █████████  █████████
+# ███   ███  ███   ███  ███   ███     ███        ███   
+# ████████   ███████    █████████     ███        ███   
+# ███        ███   ███  ███   ███     ███        ███   
+# ███        ███   ███  ███   ███     ███        ███   
 proc pratt*(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) = 
         if (this.pratts.len <= t.ord): 
             this.pratts.setLen((t.ord + 1))
         this.pratts[t.ord] = Pratt(lhs: lhs, rhs: rhs, precedence: precedence)
+#  ███████  ████████  █████████  ███   ███  ████████ 
+# ███       ███          ███     ███   ███  ███   ███
+# ███████   ███████      ███     ███   ███  ████████ 
+#      ███  ███          ███     ███   ███  ███      
+# ███████   ████████     ███      ███████   ███      
 proc setup*(this : Parser) = 
         this.pratt(◂semicolon, lSemiColon, nil, 0)
         this.pratt(◂true, nil, rLiteral, 0)

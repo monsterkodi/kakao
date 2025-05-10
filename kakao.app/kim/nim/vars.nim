@@ -11,20 +11,15 @@
 import pars
 type Scoper = ref object of RootObj
     vars: seq[Table[string, bool]]
-    # 00000000  000   000  00000000   
-    # 000        000 000   000   000  
-    # 0000000     00000    00000000   
-    # 000        000 000   000        
-    # 00000000  000   000  000        
-    #  0000000   0000000   0000000   00000000   00000000  
-    # 000       000       000   000  000   000  000       
-    # 0000000   000       000   000  00000000   0000000   
-    #      000  000       000   000  000        000       
-    # 0000000    0000000   0000000   000        00000000  
 proc `$`(this : Scoper) : string = $this.vars
 proc exp(this : Scoper, body : Node, i : int, e : Node)
 proc scope(this : Scoper, body : Node) : Node
 proc branch(this : Scoper, body : Node) = discard this.scope(body)
+# 00000000  000   000  00000000   
+# 000        000 000   000   000  
+# 0000000     00000    00000000   
+# 000        000 000   000        
+# 00000000  000   000  000        
 proc exp(this : Scoper, body : Node, i : int, e : Node) = 
         if (e == nil): return
         proc add(name : string) = this.vars[^1][name] = true
@@ -71,6 +66,11 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                     this.branch(switchCase.case_then)
                 this.branch(e.switch_default)
             else: discard
+#  0000000   0000000   0000000   00000000   00000000  
+# 000       000       000   000  000   000  000       
+# 0000000   000       000   000  00000000   0000000   
+#      000  000       000   000  000        000       
+# 0000000    0000000   0000000   000        00000000  
 proc scope(this : Scoper, body : Node) : Node = 
         if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 
             return body

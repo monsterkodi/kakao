@@ -139,34 +139,12 @@ type Tknzr = ref object of RootObj
     delimiter: string
     segi: int
     segs: seq[string]
-    bol: int # segi at start of current line
-    eol: int # segi at end of current line
-    line: int # current line index
-    #  ███████  █████████  ████████   ███  ███   ███   ███████ 
-    # ███          ███     ███   ███  ███  ████  ███  ███      
-    # ███████      ███     ███████    ███  ███ █ ███  ███  ████
-    #      ███     ███     ███   ███  ███  ███  ████  ███   ███
-    # ███████      ███     ███   ███  ███  ███   ███   ███████ 
-    # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
-    # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
-    # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
-    # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
-    # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
-    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
-    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
-    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
-    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
-    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
-    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
-    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
-    # ███       ███   ███  █████████  █████████  ███     ███   
-    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
-    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
-    # █████████  ███   ███  ███   ███  ███████
-    #    ███     ███  ███   ████  ███     ███ 
-    #    ███     ███████    ███ █ ███    ███  
-    #    ███     ███  ███   ███  ████   ███   
-    #    ███     ███   ███  ███   ███  ███████
+    bol: int
+    eol: int
+    line: int
+# segi at start of current line
+# segi at end of current line
+# current line index
 proc `$`(this : Tknzr) : string = 
         &"◂▸ {this.line} {this.token} {this.bol} {this.segi} {this.eol}"
 proc char(this : Tknzr) : char = this.segs[this.segi][0]
@@ -227,6 +205,11 @@ proc push(this : Tknzr, tk : tok) =
         this.token.tok = tk
         this.pushToken()
 proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0)
+#  ███████  █████████  ████████   ███  ███   ███   ███████ 
+# ███          ███     ███   ███  ███  ████  ███  ███      
+# ███████      ███     ███████    ███  ███ █ ███  ███  ████
+#      ███     ███     ███   ███  ███  ███  ████  ███   ███
+# ███████      ███     ███   ███  ███  ███   ███   ███████ 
 proc `string`(this : Tknzr) = 
         var topTok = this.tokens[^1]
         assert((topTok.tok in {◂string_start, ◂stripol_end}))
@@ -265,6 +248,11 @@ proc `string`(this : Tknzr) =
             this.lineIncr(c)
         if (this.segi <= (this.eol - 1)): 
             this.commit(this.delimiter, ◂string_end, this.delimiter.len)
+# ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
+# ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+# ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
+# ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
+# ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
 proc number(this : Tknzr) = 
         this.pushToken("", ◂number)
         var l = this.segs.len
@@ -292,6 +280,11 @@ proc number(this : Tknzr) =
             this.advance(2)
             this.advance({'0'..'9'})
         this.pushToken()
+#  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+# ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+# ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+# ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+#  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
 proc comment(this : Tknzr) = 
         if this.scmp("##"): 
             (this.tokens[^1].str &= "##")
@@ -316,6 +309,11 @@ proc modbracket(this : Tknzr) =
 proc verbatim(this : Tknzr, tk : tok) = 
         this.advanceUntil("\n")
         this.push(tk)
+#  ███████   ███████   ██     ██  ██     ██  ███  █████████
+# ███       ███   ███  ███   ███  ███   ███  ███     ███   
+# ███       ███   ███  █████████  █████████  ███     ███   
+# ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+#  ███████   ███████   ███   ███  ███   ███  ███     ███   
 proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0) = 
         this.pushToken(str, tk, incr)
         this.pushToken()
@@ -328,6 +326,11 @@ proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0) =
                 this.modbracket()
             else: 
                 discard
+# █████████  ███   ███  ███   ███  ███████
+#    ███     ███  ███   ████  ███     ███ 
+#    ███     ███████    ███ █ ███    ███  
+#    ███     ███  ███   ███  ████   ███   
+#    ███     ███   ███  ███   ███  ███████
 proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] = 
         # profileScope "tknz"
         this.segs = segs

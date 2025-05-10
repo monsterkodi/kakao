@@ -76,7 +76,8 @@ proc traverse(n : Node, iter : NodeIt) : Node =
             discard
     n
 proc methodify(clss : Node) : seq[Node] = 
-    proc isMethod(it : Node) : bool = ((it.kind == ●member) and (it.member_value.kind == ●func))
+    # isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
+    proc isMethod(it : Node) : bool = (((it.kind == ●member) and (it.member_value.kind == ●func)) or (it.kind == ●comment))
     var (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
     var strugt = (clss.kind == ●struct)
     var exporting = false
@@ -111,6 +112,7 @@ proc methodify(clss : Node) : seq[Node] =
                     var initcall = Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, "init")), call_args: e.call_args)
                     fn.func_body.expressions[i] = nod(●discard, tkn(◂discard), nod(●preOp, tkn(◂name, "procCall "), initcall))
     proc funkify(it : Node) : Node = 
+        if (it.kind == ●comment): return it
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
         var valType = if strugt: ◂var_type else: ◂val_type

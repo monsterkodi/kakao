@@ -86,7 +86,8 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
     
 methodify = ◇Node clss ➜ seq[Node] ->
     
-    isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
+    # isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
+    isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func or it.kind == ●comment
     
     (funcs members) = pullIf(clss.class_body.expressions isMethod)
 
@@ -130,6 +131,8 @@ methodify = ◇Node clss ➜ seq[Node] ->
                     fn.func_body.expressions[i] = nod(●discard tkn(◂discard) nod(●preOp tkn(◂name "procCall ") initcall))
     
     funkify = ◇Node it ➜ Node -> 
+    
+        ⮐  it if it.kind == ●comment
     
         token = tkn(◂assign it.token.line it.token.col)
         funcn = it.member_value

@@ -513,6 +513,7 @@ class Parser*
         prevt = @peek(-1)
         
         ⮐  false if currt.col <= prevt.col+ksegWidth(prevt.str)
+        ⮐  false if @returning and @isTokAhead(◂if)
         ⮐  false if @isTokAhead(◂func)
         true
         
