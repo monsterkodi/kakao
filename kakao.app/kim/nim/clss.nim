@@ -110,7 +110,6 @@ proc methodify(clss : Node) : seq[Node] =
                     e.call_args.unshift(Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, clss.class_parent.token.str)), call_args: @[nod(●literal, tkn(◂name, "this"))]))
                     var initcall = Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, "init")), call_args: e.call_args)
                     fn.func_body.expressions[i] = nod(●discard, tkn(◂discard), nod(●preOp, tkn(◂name, "procCall "), initcall))
-                    echo(fn.func_body.expressions[i])
     proc funkify(it : Node) : Node = 
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
@@ -123,6 +122,9 @@ proc methodify(clss : Node) : seq[Node] =
         else: 
             var sig_args = nod(●list, tkn(◂square_open), @[this_arg])
             funcn.func_signature = nod(●signature, token, sig_args, nil)
+        if (funcn.token.tok == ◂method): 
+            if not clss.class_parent: 
+                funcn.func_mod = nod(●literal, tkn(◂mod, "{.base.}"))
         funcn.func_body = traverse(funcn.func_body, thisify)
         superize(funcn)
         var fn = nod(●operation, token, it.member_key, funcn)

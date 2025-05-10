@@ -45,7 +45,8 @@ enum tok*
     ◂false              = "✘"  
     ◂null               = "nil"
     ◂func               = "->"
-    ◂proc               = "=>"
+    ◂method             = "=>"
+    ◂proc               
     ◂return             = "⮐"
     
     ◂number

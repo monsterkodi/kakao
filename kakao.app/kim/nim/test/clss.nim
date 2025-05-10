@@ -29,8 +29,8 @@ type Tknzr = ref object of RootObj
     test "constructor": 
         t("""
 class A
-    a : int
-    b : int
+    a: int
+    b: int
     @: ◇int a ◇int b ->
         @a = a
         @b = b
@@ -45,41 +45,10 @@ proc init(this : A, a : int, b : int) : A =
         this.b = b
         this
 var a = A().init(1, 2)""")
-    test "inheritance": 
-        t("""
-class A
-    a : int
-    @: ◇int a ->
-        @a = a
-    p: -> log @a
-class B extends A
-    b : int
-    @: ◇int a ->
-        super a*2
-a = @A 1
-a.p()
-a = @B 2
-a.p()
-""", """
-type A = ref object of RootObj
-    a: int
-proc init(this : A, a : int) : A = 
-        this.a = a
-        this
-proc p(this : A) = echo(this.a)
-type B = ref object of A
-    b: int
-proc init(this : B, a : int) : B = 
-        discard procCall init(A(this), (a * 2))
-        this
-var a = A().init(1)
-a.p()
-a = B().init(2)
-a.p()""")
     test "methods": 
         t("""
 class A
-    m : int
+    m: int
     fun: -> 
         m = 1
     inc: ◇int a1 ➜int ->
@@ -96,7 +65,7 @@ proc inc(this : A, a1 : int) : int =
         t("struct A*\n    add: ◇string text -> @s &= text", "type A* = object\n    \nproc add*(this : var A, text : string) = (this.s &= text)")
         t("""
 class A*
-    m : int
+    m: int
     switch kind : int
         0 
             x : int
@@ -117,7 +86,7 @@ proc inc*(this : A, a1 : int) : int""")
     test "struct methods": 
         t("""
 struct S
-    m : int
+    m: int
     hello: ->
         @m += 1
 """, """
@@ -129,7 +98,7 @@ proc hello(this : var S) =
         t("class A\n    add: ◇string text -> @s &= text", "type A = ref object of RootObj\n    \nproc add(this : A, text : string) = (this.s &= text)")
         t("""
 class A
-    m : int
+    m: int
     fun: -> 
         log $@m
         @m = 1
@@ -141,7 +110,7 @@ proc fun(this : A) =
         this.m = 1""")
         t("""
 class A
-    m : int
+    m: int
     sqr: -> 
         @m = @m * @m
     inc: ◇int a1 ➜int ->
@@ -155,9 +124,9 @@ proc inc(this : A, a1 : int) : int =
         (this.sqr() + this.inc(this.m))""")
         t("""
 class A
-    m : int
-    n : int
-    o : int
+    m: int
+    n: int
+    o: int
     loop: ->
         if @m < @n.len
             ⮐  @o[@m]
@@ -191,9 +160,9 @@ proc loop(this : A) =
             this.o""")
         t("""
 class A
-    m : int
-    n : int
-    o : int
+    m: int
+    n: int
+    o: int
     loop: ->
         while @m < @n.len
             ⮐  @o[@m]
@@ -223,7 +192,7 @@ proc loop(this : A) =
         moreFun(this.o)""")
         t("""
 class A
-    m : int
+    m: int
     loop: ->
         log "m: #""" & """
 {@m}"
@@ -280,3 +249,67 @@ type Node = ref object of RootObj
 proc loop(this : Node) = 
         echo(this.m)
 proc nod(kind : NodeKind, token : Token, args : varargs[Node]) : Node""")
+    test "inheritance": 
+        t("""
+class A
+    a: int
+    @: ◇int a ->
+        @a = a
+    p: -> log @a
+class B extends A
+    b: int
+    @: ◇int a ->
+        super a*2
+a = @A 1
+a.p()
+a = @B 2
+a.p()
+""", """
+type A = ref object of RootObj
+    a: int
+proc init(this : A, a : int) : A = 
+        this.a = a
+        this
+proc p(this : A) = echo(this.a)
+type B = ref object of A
+    b: int
+proc init(this : B, a : int) : B = 
+        discard procCall init(A(this), (a * 2))
+        this
+var a = A().init(1)
+a.p()
+a = B().init(2)
+a.p()""")
+    test "virtual": 
+        t("""
+class A
+    a: int
+    @: ◇int a ->
+        @a = a
+    p: => log "A:" @a
+class B extends A
+    b: int
+    @: ◇int a ->
+        super a*2
+    p: => log "B:" @a @b
+a = @A 1
+a.p()
+a = @B 2
+a.p()
+""", """
+type A = ref object of RootObj
+    a: int
+proc init(this : A, a : int) : A = 
+        this.a = a
+        this
+method p(this : A) {.base.} = echo("A:", this.a)
+type B = ref object of A
+    b: int
+proc init(this : B, a : int) : B = 
+        discard procCall init(A(this), (a * 2))
+        this
+method p(this : B) = echo("B:", this.a, this.b)
+var a = A().init(1)
+a.p()
+a = B().init(2)
+a.p()""")

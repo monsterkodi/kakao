@@ -815,7 +815,7 @@ class Parser*
         
     lReturnType: ◇Node left ➜Node ->
     
-        ⮐  if not @isTokAhead(◂func)
+        ⮐  if not @isTokAhead(◂func) and not @isTokAhead(◂method)
     
         if left.kind in {●list, ●arg, ●operation}
             if left.kind == ●operation 
@@ -914,7 +914,7 @@ class Parser*
     
     lFunc: ◇Node left ➜Node ->
     
-        ⮐  if left.kind notin {●signature, ●list, ●arg, ●operation}
+        ⮐  if left.kind notin {●signature ●list ●arg ●operation}
             
         func_signature ◇ Node
         
@@ -942,7 +942,7 @@ class Parser*
             # log "lfunc list"
             
             sig_args = left
-            for i,a in sig_args.list_values
+            for i a in sig_args.list_values
                 if a.kind == ●operation and a.token.tok == ◂assign
                     argtoken = tkn(◂val_type a.operand_left.token.line a.operand_left.token.col)
                     sig_args.list_values[i] = nod ●arg argtoken nil a.operand_left a.operand_right
@@ -1031,7 +1031,7 @@ class Parser*
             @swallow()
             sig_type = @parseType()
     
-        if @tok != ◂func
+        if @tok notin {◂func ◂method}
             ⮐  
             
         nod ●signature sig_args.token sig_args sig_type
@@ -1040,12 +1040,12 @@ class Parser*
     
         col = @lineIndent token.line
     
-        if @isTokAhead ◂func
+        if @isTokAhead(◂func) or @isTokAhead(◂method) 
             startPos = @pos
             func_signature ◇ Node
-            if @tok != ◂func
+            if @tok notin {◂func ◂method}
                 func_signature = @parseSignature()
-            if @tok == ◂func
+            if @tok in {◂func ◂method}
                 ftoken = @consume()
                 func_mod = if @tok == ◂mod ➜ @rLiteral() ➜ nil
                 func_body = @expressionOrIndentedBlock tkn(◂null) col
@@ -1327,6 +1327,7 @@ class Parser*
         @pratt ◂switch            nil               rSwitch        20
         @pratt ◂while             nil               rWhile         20
         @pratt ◂func              lFunc             rFunc          20
+        @pratt ◂method            lFunc             rFunc          20
         
         @pratt ◂or                lOperation        nil            30
         @pratt ◂and               lOperation        nil            31

@@ -500,9 +500,9 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
             test = false
             """                                     "▪[##(◂name = ✘)]"
         
-    ▸ verbatim
+    ▸ proc
     
-        t "proc ast*(text:string) : Node ="         "▪[=>]"
+        t "proc ast*(text:string) : Node ="         "▪[◂proc]"
         
     ▸ use
     

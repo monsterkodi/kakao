@@ -50,22 +50,28 @@ proc sigBody(this : Rndr, n : Node) =
             this.add(" ")
             this.rnd(n.func_body)
 proc ▸func(this : Rndr, n : Node) = 
-        this.add("proc ")
+        if (n.token.tok == ◂method): 
+            this.add("method ")
+        else: 
+            this.add("proc ")
         this.sigBody(n)
 proc ▸proc(this : Rndr, n : Node) = 
         var f = n.operand_right
-        this.add("proc ")
+        if (f.token.tok == ◂method): 
+            this.add("method ")
+        else: 
+            this.add("proc ")
         if (n.operand_left.token.str[0] == '$'): 
             this.add("`$`" & n.operand_left.token.str[1..^1])
         else: 
             this.rnd(n.operand_left)
-        this.sigBody(n.operand_right)
+        this.sigBody(f)
 proc ▸operation(this : Rndr, n : Node) = 
         if (((n == nil) or (n.operand_left == nil)) or (n.operand_right == nil)): 
             echo(&"DAFUK? {n} {n.token}")
             return
         if (n.token.tok == ◂assign): 
-            if (n.operand_right.token.tok == ◂func): 
+            if (n.operand_right.token.tok in {◂func, ◂method}): 
                 this.▸proc(n)
                 return
         var outerbr = (n.token.tok notin {◂assign, ◂ampersand})

@@ -102,7 +102,8 @@ class Node*
             range_start    : Node
             range_end      : Node
             
-        ●postOp ●preOp
+        ●postOp 
+        ●preOp
         
             operand        : Node 
             

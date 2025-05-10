@@ -378,8 +378,8 @@ test = false
 # ███  
 test = false
 """, "▪[##(◂name = ✘)]")
-    test "verbatim": 
-        t("proc ast*(text:string) : Node =", "▪[=>]")
+    test "proc": 
+        t("proc ast*(text:string) : Node =", "▪[◂proc]")
     test "use": 
         t("use rndr", "▪[(◂use ◂name)]")
         t("use std ▪ unittest", "▪[(◂use ◂name ▪ @[◂name])]")

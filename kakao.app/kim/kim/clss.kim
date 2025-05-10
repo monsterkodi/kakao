@@ -128,13 +128,12 @@ methodify = ◇Node clss ➜ seq[Node] ->
                     e.call_args.unshift Node(kind:●call token:tkn(◂name) callee:nod(●literal tkn(◂name clss.class_parent.token.str)) call_args:[nod(●literal tkn(◂name "this"))])
                     initcall = Node(kind:●call token:tkn(◂name) callee:nod(●literal tkn(◂name "init")) call_args:e.call_args)
                     fn.func_body.expressions[i] = nod(●discard tkn(◂discard) nod(●preOp tkn(◂name "procCall ") initcall))
-                    log fn.func_body.expressions[i]
     
     funkify = ◇Node it ➜ Node -> 
     
         token = tkn(◂assign it.token.line it.token.col)
         funcn = it.member_value
-        
+                
         valType  = if strugt ➜ ◂var_type ➜ ◂val_type
         arg_type = nod ●type    tkn(valType className)
         arg_name = nod ●literal tkn(◂name "this")
@@ -144,6 +143,10 @@ methodify = ◇Node clss ➜ seq[Node] ->
         else
             sig_args = nod ●list tkn(◂square_open) @[this_arg]
             funcn.func_signature = nod ●signature token sig_args nil
+        
+        if funcn.token.tok == ◂method
+            if not clss.class_parent
+                funcn.func_mod = nod ●literal tkn(◂mod "{.base.}")
             
         funcn.func_body = traverse funcn.func_body thisify
         

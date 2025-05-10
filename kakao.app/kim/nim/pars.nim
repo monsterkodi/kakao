@@ -638,7 +638,7 @@ proc rComment*(this : Parser) : Node =
         this.swallow(◂comment_end)
         n
 proc lReturnType*(this : Parser, left : Node) : Node = 
-        if not this.isTokAhead(◂func): return
+        if (not this.isTokAhead(◂func) and not this.isTokAhead(◂method)): return
         if (left.kind in {●list, ●arg, ●operation}): 
             if (left.kind == ●operation): 
                 if (left.token.tok == ◂assign): 
@@ -792,17 +792,17 @@ proc parseSignature*(this : Parser) : Node =
         if (this.tok == ◂then): 
             this.swallow()
             sig_type = this.parseType()
-        if (this.tok != ◂func): 
+        if (this.tok notin {◂func, ◂method}): 
             return
         nod(●signature, sig_args.token, sig_args, sig_type)
 proc funcOrExpression*(this : Parser, token : Token) : Node = 
         var col = this.lineIndent(token.line)
-        if this.isTokAhead(◂func): 
+        if (this.isTokAhead(◂func) or this.isTokAhead(◂method)): 
             var startPos = this.pos
             var func_signature : Node
-            if (this.tok != ◂func): 
+            if (this.tok notin {◂func, ◂method}): 
                 func_signature = this.parseSignature()
-            if (this.tok == ◂func): 
+            if (this.tok in {◂func, ◂method}): 
                 var ftoken = this.consume()
                 var func_mod = if (this.tok == ◂mod): this.rLiteral() else: nil
                 var func_body = this.expressionOrIndentedBlock(tkn(◂null), col)
@@ -985,6 +985,7 @@ proc setup*(this : Parser) =
         this.pratt(◂switch, nil, rSwitch, 20)
         this.pratt(◂while, nil, rWhile, 20)
         this.pratt(◂func, lFunc, rFunc, 20)
+        this.pratt(◂method, lFunc, rFunc, 20)
         this.pratt(◂or, lOperation, nil, 30)
         this.pratt(◂and, lOperation, nil, 31)
         this.pratt(◂is, lOperation, nil, 32)
