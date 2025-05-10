@@ -291,7 +291,7 @@ watch = ◇seq[string] paths ->
                 
             for f in walkDirRec(path)
             
-                (_ _ ext) = f.splitFile()
+                (dir _ ext) = f.splitFile()
                 
                 if ext == ".kim" ➜ kimFiles.add(f) ➜ continue
                 
@@ -305,7 +305,9 @@ watch = ◇seq[string] paths ->
                     continue
         
                 modTimes[f] = modTime
-                if ext == ".kim"
+                
+                if ext == ".kim" and dir.find("kxk") < 0
+                    log dir.find("kxk")
                     toTranspile.add f
                 
         if firstLoop                                    

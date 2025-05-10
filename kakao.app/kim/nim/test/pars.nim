@@ -274,6 +274,12 @@ if e.kind == ●operation
             insert lhs.token.str, e
 elif e.kind == ●var
     insert e.var_name.token.str, e""", "▪[(◂if @[(((◂name . ◂name) == ◂name) ▪[(◂if @[((((◂name . ◂name) . ◂name) == ◂name) ▪[((◂discard . ◂name) ◂call @[((◂name . ◂name) . ◂name)])]), ((((◂name . ◂name) . ◂name) == ◂name) ▪[(◂let (◂name (= (◂name . ◂name))))(◂if @[(((◂name . ◂name) == ◂name) ▪[(◂name ◂call @[((◂name . ◂name) . ◂name), ◂name])])])])])]), (((◂name . ◂name) == ◂name) ▪[(◂name ◂call @[(((◂name . ◂name) . ◂name) . ◂name), ◂name])])])]")
+        t("""
+if a
+    1
+elif b
+    2
+else 3""", "▪[(◂if @[(◂name ▪[◂number]), (◂name ▪[◂number])] ◂number)]")
     test "for": 
         t("0..2", "▪[(◂number .. ◂number)]")
         t("for a in 0..2 ➜ true", "▪[(◂for ◂name in (◂number .. ◂number) ✔)]")

@@ -212,7 +212,7 @@ proc watch(paths : seq[string]) =
             if not dirExists(path): 
                 continue
             for f in walkDirRec(path): 
-                var (_, _, ext) = f.splitFile()
+                var (dir, _, ext) = f.splitFile()
                 if (ext == ".kim"): kimFiles.add(f) else: continue
                 var modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 
@@ -221,7 +221,8 @@ proc watch(paths : seq[string]) =
                 if (modTimes[f] == modTime): 
                     continue
                 modTimes[f] = modTime
-                if (ext == ".kim"): 
+                if ((ext == ".kim") and (dir.find("kxk") < 0)): 
+                    echo(dir.find("kxk"))
                     toTranspile.add(f)
         if firstLoop: 
             firstLoop = false
