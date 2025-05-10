@@ -441,7 +441,7 @@ proc lCall*(this : Parser, callee : Node) : Node =
 proc isImplicitCallPossible*(this : Parser) : bool = 
         if this.explicit: return false
         var currt = this.peek(0)
-        var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
+        var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
         if (currt.tok in optoks): return false
         var prevt = this.peek(-1)
         if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
@@ -593,6 +593,14 @@ proc rConverter*(this : Parser) : Node = nod(●converter, this.consume())
 proc rLet*(this : Parser) : Node = nod(●let, this.consume(), this.parseVar())
 proc rReturnType*(this : Parser) : Node = nod(●signature, this.consume(), nil, this.parseType())
 proc rQuote*(this : Parser) : Node = nod(●quote, this.consume(), this.thenBlock())
+proc lSemiColon*(this : Parser, left : Node) : Node = 
+        if (this.peek(1).tok notin {◂indent, ◂eof}): 
+            var token = this.consume()
+            var right = this.expression(token)
+            if (right.kind == ●semicolon): 
+                right.expressions.unshift(left)
+                return right
+            return nod(●semicolon, token, @[left, right])
 proc rString*(this : Parser) : Node = 
         var token = this.consume() # string start
         if (this.tok == ◂string_end): 
@@ -607,7 +615,7 @@ proc rString*(this : Parser) : Node =
             var string_stripols : seq[Node]
             while (this.tok notin {◂string_end, ◂eof}): 
                 this.swallowError(◂stripol_start, "Expected string interpolation start")
-                var stripol = Node(token: this.current, kind: ●stripol)
+                var stripol = nod(●stripol, this.current)
                 var stripol_xprssns : seq[Node]
                 while (this.tok notin {◂stripol_end, ◂eof}): 
                     var xpr = this.expression()
@@ -925,7 +933,7 @@ proc expression*(this : Parser, precedenceRight = 0) : Node =
         while not this.atEnd(): 
             token = this.current
             var precedence = this.getPrecedence(token)
-            if (token.tok in {◂assign, ◂test}): 
+            if (token.tok in {◂assign, ◂test, ◂semicolon}): 
                 (precedence += 1)
             var lhs = this.leftHandSide(token)
             if (precedenceRight >= precedence): 
@@ -946,6 +954,7 @@ proc pratt*(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) =
             this.pratts.setLen((t.ord + 1))
         this.pratts[t.ord] = Pratt(lhs: lhs, rhs: rhs, precedence: precedence)
 proc setup*(this : Parser) = 
+        this.pratt(◂semicolon, lSemiColon, nil, 0)
         this.pratt(◂true, nil, rLiteral, 0)
         this.pratt(◂false, nil, rLiteral, 0)
         this.pratt(◂mod, nil, rLiteral, 0)
@@ -953,7 +962,6 @@ proc setup*(this : Parser) =
         this.pratt(◂number, nil, rLiteral, 0)
         this.pratt(◂string_start, nil, rString, 0)
         this.pratt(◂comment_start, nil, rComment, 0)
-        this.pratt(◂name, lSymbolList, rSymbol, 13) # higher than assign
         this.pratt(◂import, nil, rImport, 0)
         this.pratt(◂macro, nil, rMacro, 0)
         this.pratt(◂template, nil, rTemplate, 0)
@@ -970,15 +978,16 @@ proc setup*(this : Parser) =
         this.pratt(◂class, nil, rClass, 0)
         this.pratt(◂struct, nil, rStruct, 0)
         this.pratt(◂enum, nil, rEnum, 0)
-        this.pratt(◂colon, lMember, nil, 10)
         this.pratt(◂continue, nil, rKeyword, 0)
         this.pratt(◂break, nil, rKeyword, 0)
+        this.pratt(◂colon, lMember, nil, 10)
         this.pratt(◂assign, lAssign, nil, 10)
         this.pratt(◂plus_assign, lAssign, nil, 10)
         this.pratt(◂minus_assign, lAssign, nil, 10)
         this.pratt(◂divide_assign, lAssign, nil, 10)
         this.pratt(◂multiply_assign, lAssign, nil, 10)
         this.pratt(◂ampersand_assign, lAssign, nil, 10)
+        this.pratt(◂name, lSymbolList, rSymbol, 13) # higher than assign
         this.pratt(◂if, lTailIf, rIf, 20)
         this.pratt(◂when, nil, rIf, 20)
         this.pratt(◂for, nil, rFor, 20)

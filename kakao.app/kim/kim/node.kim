@@ -12,6 +12,7 @@ enum NodeKind*
     
     ●error
     ●block
+    ●semicolon
     ●comment
     ●literal
     ●string
@@ -73,7 +74,8 @@ class Node*
         
     switch kind : NodeKind
     
-        ●block
+        ●block 
+        ●semicolon
             
             expressions    : seq[Node]
             
@@ -260,6 +262,14 @@ class Node*
                 s = &"◂{p}string{ips}"
             ●block
                 s = "▪["
+                for e in @expressions
+                    if e != nil
+                        s &= &"{e}"
+                    else
+                        s &= "NIL"
+                s &= "]"
+            ●semicolon
+                s = ";["
                 for e in @expressions
                     if e != nil
                         s &= &"{e}"
@@ -454,6 +464,7 @@ nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
     
     switch kind
         ●block
+        ●semicolon
             n.expressions = args
         ●list
             n.list_values = args

@@ -503,7 +503,7 @@ class Parser*
         
         optoks = { 
             ◂indent, ◂eof,
-            ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon,
+            ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon,
             ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
             ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
             ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
@@ -748,6 +748,15 @@ class Parser*
     rReturnType: ➜Node -> nod(●signature @consume() nil @parseType())
     rQuote     : ➜Node -> nod(●quote     @consume() @thenBlock())
     
+    lSemiColon: ◇Node left ➜Node ->
+        if @peek(1).tok notin {◂indent ◂eof}
+            token = @consume()
+            right = @expression(token)
+            if right.kind == ●semicolon
+                right.expressions.unshift left
+                ⮐  right
+            ⮐  nod ●semicolon token [left, right]
+    
     #  ███████  █████████  ████████   ███  ███   ███   ███████ 
     # ███          ███     ███   ███  ███  ████  ███  ███      
     # ███████      ███     ███████    ███  ███ █ ███  ███  ████
@@ -773,7 +782,7 @@ class Parser*
             
                 @swallowError(◂stripol_start, "Expected string interpolation start")
                 
-                stripol = Node(token:@current, kind:●stripol)
+                stripol = nod ●stripol @current
                 
                 stripol_xprssns ◇ seq[Node]
                 while @tok notin {◂stripol_end, ◂eof}
@@ -1222,13 +1231,13 @@ class Parser*
     expression: precedenceRight=0 ➜Node ->
     
         token = @current
-        if token.tok in {◂eof, ◂stripol_end, ◂paren_close}
+        if token.tok in {◂eof ◂stripol_end ◂paren_close}
             ⮐  nil
     
-        rhs = @rightHandSide(token)
+        rhs = @rightHandSide token
         
         if rhs == nil
-            ⮐  @error(&"Expected expression but found {token.str} {token}", token)
+            ⮐  @error "Expected expression but found #{token.str} #{token}" token
             
         node = @rhs()
         
@@ -1238,12 +1247,12 @@ class Parser*
         while not @atEnd()
             
             token = @current
-            precedence = @getPrecedence(token)
+            precedence = @getPrecedence token
             
-            if token.tok in {◂assign, ◂test}
+            if token.tok in {◂assign ◂test ◂semicolon}
                 precedence += 1
-            
-            lhs = @leftHandSide(token)
+                
+            lhs = @leftHandSide token
             
             if precedenceRight >= precedence
                 break
@@ -1261,6 +1270,7 @@ class Parser*
             if @tok == ◂indent and @peek(1).tok in {◂dot}
                  @swallow()
                  node = @lPropertyAccess node
+                                 
         node
                 
     # ████████   ████████    ███████   █████████  █████████
@@ -1284,6 +1294,8 @@ class Parser*
     
     setup: ->
     
+        @pratt ◂semicolon         lSemiColon        nil             0
+    
         @pratt ◂true              nil               rLiteral        0
         @pratt ◂false             nil               rLiteral        0
         @pratt ◂mod               nil               rLiteral        0
@@ -1291,7 +1303,6 @@ class Parser*
         @pratt ◂number            nil               rLiteral        0
         @pratt ◂string_start      nil               rString         0
         @pratt ◂comment_start     nil               rComment        0
-        @pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
         @pratt ◂import            nil               rImport         0
         @pratt ◂macro             nil               rMacro          0
         @pratt ◂template          nil               rTemplate       0
@@ -1305,15 +1316,13 @@ class Parser*
         @pratt ◂discard           nil               rDiscard        0
         @pratt ◂quote             nil               rQuote          0
         @pratt ◂test              lTestCase         rTestSuite      0
-        
         @pratt ◂class             nil               rClass          0
         @pratt ◂struct            nil               rStruct         0
         @pratt ◂enum              nil               rEnum           0
-        @pratt ◂colon             lMember           nil            10
-        
         @pratt ◂continue          nil               rKeyword        0
         @pratt ◂break             nil               rKeyword        0
                                                                         
+        @pratt ◂colon             lMember           nil            10
         @pratt ◂assign            lAssign           nil            10
         @pratt ◂plus_assign       lAssign           nil            10
         @pratt ◂minus_assign      lAssign           nil            10
@@ -1321,6 +1330,8 @@ class Parser*
         @pratt ◂multiply_assign   lAssign           nil            10
         @pratt ◂ampersand_assign  lAssign           nil            10
     
+        @pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
+        
         @pratt ◂if                lTailIf           rIf            20
         @pratt ◂when              nil               rIf            20
         @pratt ◂for               nil               rFor           20

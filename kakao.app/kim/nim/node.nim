@@ -8,6 +8,7 @@ export tknz
 type NodeKind* = enum
     ●error
     ●block
+    ●semicolon
     ●comment
     ●literal
     ●string
@@ -64,7 +65,7 @@ type NodeKind* = enum
 type Node* = ref object of RootObj
     token*: Token
     case kind*: NodeKind:
-        of ●block: 
+        of ●block, ●semicolon: 
             expressions*: seq[Node]
         of ●operation: 
             operand_left*: Node
@@ -181,6 +182,14 @@ proc `$`*(this : Node) : string =
                 s = &"◂{p}string{ips}"
             of ●block: 
                 s = "▪["
+                for e in this.expressions: 
+                    if (e != nil): 
+                        (s &= &"{e}")
+                    else: 
+                        (s &= "NIL")
+                (s &= "]")
+            of ●semicolon: 
+                s = ";["
                 for e in this.expressions: 
                     if (e != nil): 
                         (s &= &"{e}")
@@ -364,7 +373,7 @@ proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node =
     n.kind = kind
     n.token = token
     case kind:
-        of ●block: 
+        of ●block, ●semicolon: 
             n.expressions = args
         of ●list: 
             n.list_values = args

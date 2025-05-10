@@ -45,6 +45,13 @@ class Rndr
                 else
                     @add " "
 
+    ▸semicolon: ◇Node n -> 
+    
+        for i exp in n.expressions
+            @rnd exp
+            if i < n.expressions.len-1
+                @add " ; "
+
     sigBody: ◇Node n ->
     
         @annotateVarArg = true
@@ -461,6 +468,7 @@ class Rndr
         switch n.kind
         
             ●block          ➜ @▸block          n
+            ●semicolon      ➜ @▸semicolon      n
             ●if             ➜ @▸if             n
             ●switch         ➜ @▸switch         n
             ●func           ➜ @▸func           n

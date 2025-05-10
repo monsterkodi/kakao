@@ -16,3 +16,5 @@ a.p()
 a = B().init(2)
 a.p()
                               
+                              
+if (discard true;false): echo("a") ; echo("b") ; echo("c") else: echo("d") ; echo("e") ; echo("f")

@@ -230,12 +230,12 @@ elif (e.kind == ●var):
     insert(e.var_name.token.str, e)""")
     test "when": 
         t("when T is (seq or array)", "when (T is (seq or array)): ")
-    test "for                                           ": 
+    test "for                                            ": 
         t("for a in 0..2 ➜ true", "for a in 0..2: true")
         t("for a in 0..2\n  true", "for a in 0..2: \n  true")
         t("for a in 0..2 ➜\n  true", "for a in 0..2: \n  true")
         t("for kind, key, val in opt.get()", "for kind, key, val in opt.get(): ")
-    test "switch                                        ": 
+    test "switch                                         ": 
         t("switch x\n  a ➜ 1\n  b c ➜ 2", "case x:\n  of a: 1\n  of b, c: 2")
         t("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4", "case x:\n  of a: 1\n  of b, c: 2\n  else: 4")
         t("switch x\n  1 2 ➜ a", "case x:\n  of 1, 2: a")
@@ -247,7 +247,7 @@ elif (e.kind == ●var):
         t("switch x\n  1 2 ➜ a\n  else\n    c", "case x:\n  of 1, 2: a\n  else: \n    c")
         t("switch x\n  1 2 ➜ a\n  ➜\n    c", "case x:\n  of 1, 2: a\n  else: \n    c")
         t("switch x\n a ➜ if b then c", "case x:\n of a: if b: c")
-    test "strings                                       ": 
+    test "strings                                        ": 
         t("s = ''", "s = ''")
         t("s = \"\"", "s = \"\"")
         t("s = \"\"\"\"\"\"", "s = \"\"\"\"\"\"")
@@ -286,6 +286,10 @@ elif (e.kind == ●var):
         t("t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"", "t(\"\"\"\na = 1\"\"\", \"\"\"\nb = 2\"\"\")")
         t("t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")")
         t("t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t(\"\"\"\n    a = 1\n    b = 2\n\"\"\")")
+    test "semicolon": 
+        t("if a ➜ b ; c", "if a: b ; c")
+        t("if a ➜ b ; c ➜ d; e", "if a: b ; c else: d ; e")
+        t("switch a\n  b ➜ c ; d\n  ➜ e; f", "case a:\n  of b: c ; d\n  else: e ; f")
     test "blocks": 
         t("""
 f = ->

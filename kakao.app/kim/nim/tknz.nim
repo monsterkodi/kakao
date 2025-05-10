@@ -115,18 +115,22 @@ const
 #    ███     ███  ███   ███  ████   ███     ███   ███
 #    ███     ███   ███  ███   ███  ███████  ███   ███
 type Token* = object
-    str*: string
     tok*: tok
+    str*: string
     line*: int
     col*: int
-    # @: ◇tok tok ◇string str line=-1 col=-1 ->
-    #     
-    #     @tok  = tok
-    #     @str  = str 
-    #     @line = line
-    #     @col  = col
-proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = Token(tok: tok, str: str, line: line, col: col)
-proc tkn*(tok = ◂name, line = -1, col = -1) : Token = Token(tok: tok, str: "", line: line, col: col)
+proc init*(this : var Token, tok : tok, str : string, line = -1, col = -1) : Token = 
+        this.tok = tok
+        this.str = str
+        this.line = line
+        this.col = col
+        this
+proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = 
+    var t = Token()
+    t.init(tok, str, line, col)
+proc tkn*(tok = ◂name, line = -1, col = -1) : Token = 
+    var t = Token()
+    t.init(tok, "", line, col)
 type Tknzr = ref object of RootObj
     tokens: seq[Token]
     openStack: seq[tok]

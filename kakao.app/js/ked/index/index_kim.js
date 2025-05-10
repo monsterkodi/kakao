@@ -19,9 +19,16 @@ index_kim = (function ()
     {
         var addFunc, addMeth, className, classType, funcMatch, match, validFuncMatch, validFuncName
 
-        if (match = kermit.lineMatch(line,'●type ●name = ●ref object'))
+        if (match = kermit.lineMatch(line,'type ●name = ref object'))
         {
             match.type = 'object'
+            match.line = index
+            this.result.classes.push(match)
+            return
+        }
+        if (match = kermit.lineMatch(line,'class ●name'))
+        {
+            match.type = 'class'
             match.line = index
             this.result.classes.push(match)
             return
@@ -51,16 +58,33 @@ index_kim = (function ()
                 var fnc
 
                 fnc = {method:name,line:index,class:className}
+                if (opt.bound)
+                {
+                    fnc.bound = true
+                }
                 this.result.funcs.push(fnc)
                 return null
             }).bind(this)
-            if (classType === 'object')
+            switch (classType)
             {
-                if (match = kermit.lineMatch(line,'proc ●name(self:#{className}○args)',['(',')']))
-                {
-                    addMeth(match.name)
-                }
+                case 'object':
+                    if (match = kermit.lineMatch(line,`proc ●name(●this:${className}○args)`,['(',')']))
+                    {
+                        addMeth(match.name)
+                    }
+                    break
+                case 'class':
+                    if (match = kermit.lineMatch(line,"●name: ○args ->",[':']))
+                    {
+                        addMeth(match.name)
+                    }
+                    if (match = kermit.lineMatch(line,"●name: ○args =>",[':']))
+                    {
+                        addMeth(match.name,{bound:true})
+                    }
+                    break
             }
+
         }
         addFunc = (function (name, opt = {})
         {

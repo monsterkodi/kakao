@@ -567,6 +567,13 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
                    rndr("")   ▸ ""
                    rndr("42") ▸ "42" """        "▪[(▸ suite ▪[(▸ section ▪[((◂name ◂call @[◂string]) ▸ ◂string)((◂name ◂call @[◂string]) ▸ ◂string)])])]"
 
+    ▸ semicolon
+    
+        t "if true\n  a\n  b\n  c"              "▪[(◂if @[(✔ ▪[◂name◂name◂name])])]"
+        t "a ; b"                               "▪[;[◂name◂name]]"
+        t "if true ➜ a ; b"                     "▪[(◂if @[(✔ ;[◂name◂name])])]"
+        t "if true ➜ a ; b;c"                   "▪[(◂if @[(✔ ;[◂name◂name◂name])])]"
+
     ▸ blocks
     
         t "t \"a\",\n  \"b\""                   "▪[(◂name ◂call @[◂string, ◂string])]"

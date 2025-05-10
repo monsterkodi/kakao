@@ -423,6 +423,11 @@ enum tok
    ▸ toplevel
        rndr("")   ▸ ""
        rndr("42") ▸ "42" """, "▪[(▸ suite ▪[(▸ section ▪[((◂name ◂call @[◂string]) ▸ ◂string)((◂name ◂call @[◂string]) ▸ ◂string)])])]")
+    test "semicolon": 
+        t("if true\n  a\n  b\n  c", "▪[(◂if @[(✔ ▪[◂name◂name◂name])])]")
+        t("a ; b", "▪[;[◂name◂name]]")
+        t("if true ➜ a ; b", "▪[(◂if @[(✔ ;[◂name◂name])])]")
+        t("if true ➜ a ; b;c", "▪[(◂if @[(✔ ;[◂name◂name◂name])])]")
     test "blocks": 
         t("t \"a\",\n  \"b\"", "▪[(◂name ◂call @[◂string, ◂string])]")
         t("""

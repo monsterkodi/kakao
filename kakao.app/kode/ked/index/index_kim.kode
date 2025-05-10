@@ -21,8 +21,14 @@ function index_kim
 
     parseLine: index line ->
         
-        if match = kermit.lineMatch line '●type ●name = ●ref object'
+        if match = kermit.lineMatch line 'type ●name = ref object'
             match.type = 'object'
+            match.line = index
+            @result.classes.push match
+            ⮐ 
+        
+        if match = kermit.lineMatch line 'class ●name'
+            match.type = 'class'
             match.line = index
             @result.classes.push match
             ⮐ 
@@ -44,12 +50,16 @@ function index_kim
             addMeth = name opt={} =>
                 
                 fnc = method:name line:index class:className
+                fnc.bound = true if opt.bound
                 @result.funcs.push fnc
                 null
                                 
-            if classType == 'object'
-                
-                if match = kermit.lineMatch(line 'proc ●name(self:#{className}○args)' ['(' ')']) ➜ addMeth match.name
+            switch classType
+                'object'
+                    if match = kermit.lineMatch(line "proc ●name(●this:#{className}○args)" ['(' ')']) ➜ addMeth match.name
+                'class'
+                    if match = kermit.lineMatch(line "●name: ○args ->" [':']) ➜ addMeth match.name
+                    if match = kermit.lineMatch(line "●name: ○args =>" [':']) ➜ addMeth match.name bound:true
                     
         addFunc = name opt={} =>
             

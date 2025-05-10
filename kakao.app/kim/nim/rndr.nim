@@ -38,6 +38,11 @@ proc ▸block(this : Rndr, n : Node) =
                     this.add("\n" & idt)
                 else: 
                     this.add(" ")
+proc ▸semicolon(this : Rndr, n : Node) = 
+        for i, exp in n.expressions: 
+            this.rnd(exp)
+            if (i < (n.expressions.len - 1)): 
+                this.add(" ; ")
 proc sigBody(this : Rndr, n : Node) = 
         this.annotateVarArg = true
         this.rnd(n.func_signature)
@@ -354,6 +359,7 @@ proc rnd(this : Rndr, n : Node) =
         if (n == nil): return
         case n.kind:
             of ●block: this.▸block(n)
+            of ●semicolon: this.▸semicolon(n)
             of ●if: this.▸if(n)
             of ●switch: this.▸switch(n)
             of ●func: this.▸func(n)
