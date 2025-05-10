@@ -38,7 +38,13 @@ class Rndr
             @add "\n" & idt
             
         for i exp in n.expressions
+        
+            # if i < n.expressions.len-1 and n.expressions[i+1].token.line > exp.token.line
+            if exp.kind in {●class ●struct ●proc ●template ●converter ●macro} or exp.token.tok == ◂assign and exp.operand_right.kind in {●func}
+                @add "\n" & idt
+        
             @rnd exp
+            
             if i < n.expressions.len-1
                 if n.expressions[i+1].token.line > exp.token.line
                     @add "\n" & idt

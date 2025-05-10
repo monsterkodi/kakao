@@ -5,11 +5,14 @@
 #  ███████  ███████  ███████   ███████ 
 import pars
 type NodeIt = proc(node:Node):Node
+
 proc traverse(n : Node, iter : NodeIt) : Node = 
     if (n == nil): return
+    
     template trav(arg:Node) = 
     
         arg = traverse(arg, iter)
+    
     template trvl(arg:seq[Node]) = 
     
         for i, e in arg: 
@@ -75,8 +78,10 @@ proc traverse(n : Node, iter : NodeIt) : Node =
             # log "clss.traverse -- unhandled #{n.kind}"
             discard
     n
+
 proc methodify(clss : Node) : seq[Node] = 
     # isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
+    
     proc isMethod(it : Node) : bool = (((it.kind == ●member) and (it.member_value.kind == ●func)) or (it.kind == ●comment))
     var (funcs, members) = pullIf(clss.class_body.expressions, isMethod)
     var strugt = (clss.kind == ●struct)
@@ -85,6 +90,7 @@ proc methodify(clss : Node) : seq[Node] =
     if (className[^1] == '*'): 
         className = className[0..^2]
         exporting = true
+    
     proc thisify(n : Node) : Node = 
         if (n.token.tok == ◂name): 
             if (n.token.str[0] == '@'): 
@@ -95,6 +101,7 @@ proc methodify(clss : Node) : seq[Node] =
                 else: 
                     n.token.str = "this"
         n
+    
     proc constructor(fn : Node) : Node = 
         fn.operand_left.token.str = "init"
         fn.operand_right.func_signature.sig_type = nod(●type, tkn(◂name, className))
@@ -104,6 +111,7 @@ proc methodify(clss : Node) : seq[Node] =
         else: 
             fn.operand_right.func_body = nod(●literal, tkn(◂name, "this"))
         fn
+    
     proc superize(fn : Node) = 
         if (fn.func_body and (fn.func_body.kind == ●block)): 
             for i, e in fn.func_body.expressions: 
@@ -111,6 +119,7 @@ proc methodify(clss : Node) : seq[Node] =
                     e.call_args.unshift(Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, clss.class_parent.token.str)), call_args: @[nod(●literal, tkn(◂name, "this"))]))
                     var initcall = Node(kind: ●call, token: tkn(◂name), callee: nod(●literal, tkn(◂name, "init")), call_args: e.call_args)
                     fn.func_body.expressions[i] = nod(●discard, tkn(◂discard), nod(●preOp, tkn(◂name, "procCall "), initcall))
+    
     proc funkify(it : Node) : Node = 
         if (it.kind == ●comment): return it
         var token = tkn(◂assign, it.token.line, it.token.col)
@@ -135,6 +144,7 @@ proc methodify(clss : Node) : seq[Node] =
             if (it.member_key.token.str[^1] != '*'): 
                 (it.member_key.token.str &= "*")
         fn
+    
     proc publicify(it : Node) : Node = 
         if exporting: 
             case it.kind:
@@ -160,6 +170,7 @@ proc methodify(clss : Node) : seq[Node] =
     clss.class_body.expressions = members.map(publicify)
     var methods = funcs.map(funkify)
     methods
+
 proc classify*(body : Node) : Node = 
     if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 
         return body

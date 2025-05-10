@@ -20,12 +20,12 @@ type Pratt = object
     lhs         : LHS
     precedence  : int
          
-class Parser*
+class Parser
 
-    tokens*     : seq[Token]
-    pratts*     : seq[Pratt]
-    blocks*     : seq[Node]
-    pos*        : int
+    tokens      : seq[Token]
+    pratts      : seq[Pratt]
+    blocks      : seq[Node]
+    pos         : int
     explicit    : int
     listless    : int
     inlinecall  : int
@@ -245,10 +245,10 @@ class Parser*
                     if prevExpr.operand_right.kind == ●operation
                         argtoken = prevExpr.operand_right.operand_left.token
                         argtoken.tok = ◂val_type
-                        argnode = nod(●arg argtoken nil prevExpr.operand_right.operand_left prevExpr.operand_right.operand_right)
-                        expr.func_signature.sig_args.list_values.unshift(argnode)
+                        argnode = nod ●arg argtoken nil prevExpr.operand_right.operand_left prevExpr.operand_right.operand_right
+                        expr.func_signature.sig_args.list_values.unshift argnode
                     else
-                        expr.func_signature.sig_args.list_values.unshift(prevExpr.operand_right)
+                        expr.func_signature.sig_args.list_values.unshift prevExpr.operand_right
                     prevExpr.operand_right = expr
                     expr = prevExpr
                     
@@ -306,10 +306,10 @@ class Parser*
             list.add expr
             if @inlinecall and @tok == ◂indent
                 break
-            if @swallowIndent(col)
+            if @swallowIndent col
                 break
             # if @tok in {◂comment_start, ◂then, ◂paren_close}
-            if @tok in {◂comment_start, ◂then}
+            if @tok in {◂comment_start ◂then}
                 break
             expr = @expression()
         @listless -= 1
@@ -351,7 +351,7 @@ class Parser*
         if @tok == ◂assign
             @swallow()
             var_value = @thenBlock()
-        elif @tok in {◂val_type, ◂var_type}
+        elif @tok in {◂val_type ◂var_type}
             token = @consume()
             var_type = @parseType()
             if @tok == ◂assign
@@ -389,7 +389,7 @@ class Parser*
         while @tok != ◂paren_close and @tok != ◂eof
             args.add @expression()
             @swallow ◂comma
-        @swallowError(◂paren_close, "Missing closing parenthesis")
+        @swallowError ◂paren_close "Missing closing parenthesis"
         @explicit -= 1
         if args.len == 1 and args[0].kind == ●list
             ⮐  args[0].list_values
@@ -407,7 +407,7 @@ class Parser*
                 args.add @expression()
             else
                 break
-        @swallowError(close, "Missing closing bracket")
+        @swallowError close "Missing closing bracket"
         @explicit -= 1
         
         if args.len == 1 and args[0].kind == ●list
@@ -437,16 +437,16 @@ class Parser*
         @explicit += 1
         while @tok != stop
             if @tok == ◂eof
-                ⮐  @error("Missing 'in' for 'for' loop (eof detected)!", token)
+                ⮐  @error "Missing 'in' for 'for' loop (eof detected)!" token
             if @current.line != token.line
-                ⮐  @error("Missing 'in' for 'for' loop (linebreak detected)!", token)
+                ⮐  @error "Missing 'in' for 'for' loop (linebreak detected)!" token
             list_values.add @rSymbol()
             @swallow ◂comma
         @explicit -= 1
         if list_values.len == 1
             list_values[0]
         else
-            nod(●list token list_values)
+            nod ●list token list_values
     
     # █████████  ███   ███  ████████  ███   ███
     #    ███     ███   ███  ███       ████  ███
@@ -470,7 +470,7 @@ class Parser*
             @swallow ◂then
             
         if @tok == ◂indent
-            if @isNextLineIndented(token)
+            if @isNextLineIndented token
                 ⮐  @parseBlock()
             ⮐  nil
         else
@@ -485,9 +485,9 @@ class Parser*
     lCall: ◇Node callee ➜Node ->
     
         token = @consume() # (
-        args = @parseCallArgs(callee.token.col)
-        @swallowError(◂paren_close, "Missing closing paren for call arguments")    
-        Node(token:token, kind:●call, callee:callee, callargs:args)
+        args = @parseCallArgs callee.token.col
+        @swallowError ◂paren_close "Missing closing paren for call arguments"
+        Node token:token kind:●call callee:callee callargs:args
     
     # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
     # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
@@ -502,19 +502,19 @@ class Parser*
         currt = @peek(0)
         
         optoks = { 
-            ◂indent, ◂eof,
-            ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon,
-            ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not,
-            ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start,
-            ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign }
+            ◂indent ◂eof
+            ◂then ◂else ◂elif ◂test ◂val_type ◂var_type ◂colon ◂semicolon
+            ◂plus ◂minus ◂divide ◂multiply ◂and ◂or ◂ampersand ◂is ◂in ◂notin ◂not
+            ◂equal ◂not_equal ◂greater_equal ◂less_equal ◂greater ◂less ◂match ◂comment_start
+            ◂assign ◂divide_assign ◂multiply_assign ◂plus_assign ◂minus_assign ◂ampersand_assign }
             
         ⮐  false if currt.tok in optoks  
         
         prevt = @peek(-1)
         
         ⮐  false if currt.col <= prevt.col+ksegWidth(prevt.str)
-        ⮐  false if @returning and @isTokAhead(◂if)
-        ⮐  false if @isTokAhead(◂func)
+        ⮐  false if @returning and @isTokAhead ◂if
+        ⮐  false if @isTokAhead ◂func
         true
         
     rSymbol: ➜Node ->
@@ -527,8 +527,8 @@ class Parser*
             ⮐  n
     
         if @isImplicitCallPossible()
-            let args = this.parseCallArgs(token.col)
-            ⮐  Node(token:token, kind:●call, callee:nod(●literal token), callargs:args)
+            let args = this.parseCallArgs token.col
+            ⮐  Node token:token kind:●call callee:nod(●literal token) callargs:args
     
         nod ●literal token
             
@@ -565,7 +565,7 @@ class Parser*
         
         outdent = false
         
-        while @tok in {◂elif, ◂indent}
+        while @tok in {◂elif ◂indent}
         
             if @tok == ◂indent            
                 if @current.str.len < ifIndent
@@ -583,8 +583,8 @@ class Parser*
                 if @tok == ◂indent
                     continue
                     
-            @swallow(◂elif)
-            if @tok in {◂then, ◂else}
+            @swallow ◂elif
+            if @tok in {◂then ◂else}
                 break # then without condition -> else
             
             condition = @inline()
@@ -598,11 +598,11 @@ class Parser*
         if not outdent    
             @swallow(◂indent)
             
-            if @tok in {◂else, ◂then}
+            if @tok in {◂else ◂then}
                 @swallow() # else or then without condition
                 else_branch = @thenBlock()
         
-        Node(token:token, kind:●if, cond_thens:condThens, else_branch:else_branch)
+        Node token:token kind:●if cond_thens:condThens else_branch:else_branch
     
     # █████████   ███████   ███  ███         ███  ████████
     #    ███     ███   ███  ███  ███         ███  ███     
@@ -619,7 +619,7 @@ class Parser*
         condition = @expression()
         condThen = nod ●condThen condition.token condition left
     
-        Node(token:token, kind:●if, cond_thens: [condThen])
+        Node token:token kind:●if cond_thens:[condThen]
             
     # ████████   ███████   ████████ 
     # ███       ███   ███  ███   ███
@@ -631,7 +631,7 @@ class Parser*
     
         token = @consume()
         for_value = @parseNamesUntil ◂in
-        @swallowError(◂in, "Expected 'in' after for value")
+        @swallowError ◂in "Expected 'in' after for value"
         for_range = @expression()
         for_body  = @thenBlock()
     
@@ -676,9 +676,9 @@ class Parser*
         case_then = @thenIndented first
                     
         if case_then == nil
-            ⮐  @error("Expected case body after match(es)", token)
+            ⮐  @error "Expected case body after match(es)" token
         
-        Node(token:token, kind:●switchCase, case_when:case_when, case_then:case_then)
+        Node token:token kind:●switchCase case_when:case_when case_then:case_then
     
     rSwitch: ➜Node ->
     
@@ -690,13 +690,13 @@ class Parser*
         
         baseIndent = @current.str.len 
         
-        @swallowError(◂indent, "Expected indentation after switch statement")
+        @swallowError ◂indent "Expected indentation after switch statement"
         
         switch_cases ◇ seq[Node]
         
         while true 
     
-            switch_case = @switchCase(baseIndent)
+            switch_case = @switchCase baseIndent
             if switch_case
                 switch_cases.add switch_case
             else
@@ -704,13 +704,13 @@ class Parser*
         
         switch_default ◇ Node
         
-        if @tok in {◂else, ◂then}
+        if @tok in {◂else ◂then}
             @swallow()
             switch_default = @thenBlock()
             if switch_default == nil
-                ⮐  @error("Expected default value", token)
+                ⮐  @error "Expected default value" token
         
-        Node(token:token, kind:●switch, switch_value:switch_value, switch_cases:switch_cases, switch_default:switch_default)
+        Node token:token kind:●switch switch_value:switch_value switch_cases:switch_cases switch_default:switch_default
                     
     lArrayAccess: ◇Node array_owner ➜Node ->
     
@@ -734,7 +734,7 @@ class Parser*
         n = nod ●propertyAccess token owner property
         
         if @isImplicitCallPossible()
-            ⮐  Node(token:token, kind:●call, callee:n, callargs:@parseCallArgs(token.col))
+            ⮐  Node token:token kind:●call callee:n callargs:@parseCallArgs(token.col)
         n
     
     rLiteral   : ➜Node -> nod(●literal   @consume())
@@ -756,7 +756,7 @@ class Parser*
             if right.kind == ●semicolon
                 right.expressions.unshift left
                 ⮐  right
-            ⮐  nod ●semicolon token [left, right]
+            ⮐  nod ●semicolon token [left right]
     
     #  ███████  █████████  ████████   ███  ███   ███   ███████ 
     # ███          ███     ███   ███  ███  ████  ███  ███      
@@ -770,7 +770,7 @@ class Parser*
     
         if @tok == ◂string_end
             @swallow()
-            Node(token:token, kind:●string, string_content:nod(●literal tkn(◂string)))
+            Node token:token kind:●string string_content:nod(●literal tkn(◂string))
         else
             string_content ◇ Node 
             if @tok != ◂stripol_start
@@ -779,29 +779,29 @@ class Parser*
                 string_content = nod ●literal tkn(◂string "" @current.line @current.col)
                 
             string_stripols ◇ seq[Node]
-            while @tok notin {◂string_end, ◂eof}
+            while @tok notin {◂string_end ◂eof}
             
-                @swallowError(◂stripol_start, "Expected string interpolation start")
+                @swallowError ◂stripol_start "Expected string interpolation start"
                 
                 stripol = nod ●stripol @current
                 
                 stripol_xprssns ◇ seq[Node]
-                while @tok notin {◂stripol_end, ◂eof}
+                while @tok notin {◂stripol_end ◂eof}
                     xpr = @expression()
                     stripol_xprssns.add xpr
                     
                 stripol.stripol_xprssns = stripol_xprssns
                 
-                @swallowError(◂stripol_end, "Expected string interpolation end")
-                if @tok notin {◂stripol_start, ◂string_end, ◂eof}
+                @swallowError ◂stripol_end "Expected string interpolation end"
+                if @tok notin {◂stripol_start ◂string_end ◂eof}
                     stripol.stripol_content = nod ●literal @consume()
                 elif @tok == ◂stripol_start
                     stripol.stripol_content = nod ●literal tkn(◂string @current.line @current.col)
                 
                 string_stripols.add stripol
                 
-            @swallowError(◂string_end, "Expected closing string delimiter")
-            Node(token:token, kind:●string, string_content:string_content, string_stripols:string_stripols)
+            @swallowError ◂string_end "Expected closing string delimiter"
+            Node token:token kind:●string string_content:string_content string_stripols:string_stripols
     
     rUse: ➜Node ->
     
@@ -812,10 +812,10 @@ class Parser*
             use_kind = @rSymbol()
             use_items  = @parseNames()
             @explicit -= 1
-            Node(token:token, kind:●use, use_module:use_module, use_kind:use_kind, use_items:use_items) 
+            Node token:token kind:●use use_module:use_module use_kind:use_kind use_items:use_items
         else
             @explicit -= 1
-            Node(token:token, kind:●use, use_module:use_module) 
+            Node token:token kind:●use use_module:use_module
             
     rComment: ➜Node ->
     
@@ -902,7 +902,7 @@ class Parser*
         
         switch left.kind 
             ●list
-                var list_values = left.list_values
+                list_values = left.list_values
                 list_values.add @rArg()
                 ⮐  nod ●list left.token list_values
             ●arg
@@ -938,11 +938,11 @@ class Parser*
                 
             if left.operand_left.token.col == 0 
                 left = left
-                argtoken = tkn(◂val_type left.operand_right.token.line left.operand_right.token.col)
-                left.operand_right = @lFunc(nod(●arg argtoken nil left.operand_right nil))
+                argtoken = tkn ◂val_type left.operand_right.token.line left.operand_right.token.col
+                left.operand_right = @lFunc nod(●arg argtoken nil left.operand_right nil)
                 ⮐  left
                 
-            vartoken = tkn(◂val_type left.operand_left.token.line left.operand_left.token.col)
+            vartoken = tkn ◂val_type left.operand_left.token.line left.operand_left.token.col
             varNode  = nod ●arg vartoken nil left.operand_left left.operand_right
             sig_args = nod ●list vartoken [varNode]
             func_signature = nod ●signature left.token sig_args nil
@@ -954,10 +954,10 @@ class Parser*
             sig_args = left
             for i a in sig_args.list_values
                 if a.kind == ●operation and a.token.tok == ◂assign
-                    argtoken = tkn(◂val_type a.operand_left.token.line a.operand_left.token.col)
+                    argtoken = tkn ◂val_type a.operand_left.token.line a.operand_left.token.col
                     sig_args.list_values[i] = nod ●arg argtoken nil a.operand_left a.operand_right
                 elif a.kind == ●literal and a.token.tok == ◂name
-                    argtoken = tkn(◂val_type a.token.line a.token.col)
+                    argtoken = tkn ◂val_type a.token.line a.token.col
                     sig_args.list_values[i] = nod ●arg argtoken nil a nil
             func_signature = nod ●signature left.token sig_args nil
             
@@ -1010,7 +1010,7 @@ class Parser*
             token    = @current()
             arg_type ◇ Node = nil
             
-            if @tok in {◂var_type, ◂val_type}
+            if @tok in {◂var_type ◂val_type}
             
                 @swallow() # ◆ or ◇
                 arg_type  = @parseType()
@@ -1063,20 +1063,20 @@ class Parser*
             else
                 @pos = startPos
         
-        @expressionOrIndentedBlock(token, col)
+        @expressionOrIndentedBlock token col
     
     rReturn: ➜Node ->
     
         token = @consume()
         
-        if @tok == ◂if and @isThenlessIf(token)
+        if @tok == ◂if and @isThenlessIf token
             nod ●return token nil
         else
             @returning = true
     
             right ◇ Node 
-            if @tok != ◂indent or @isNextLineIndented(token)
-                right = @expression(token)
+            if @tok != ◂indent or @isNextLineIndented token
+                right = @expression token
             
             @returning = false
             nod ●return token right
@@ -1098,7 +1098,7 @@ class Parser*
     lOperation: ◇Node left ➜Node ->
     
         token = @consume()
-        right = @expression(token)
+        right = @expression token
         nod ●operation token left right
         
     lNotIn: ◇Node left ➜Node ->
@@ -1108,7 +1108,7 @@ class Parser*
             token.str = "notin"
             token.tok = ◂notin
             @swallow()
-            right = @expression(token)
+            right = @expression token
             ⮐  nod ●operation token left right
     
     lPostOp: ◇Node left ➜Node ->
@@ -1118,7 +1118,7 @@ class Parser*
     rPreOp: ➜Node ->
     
         token = @consume()
-        right = @expression(token)
+        right = @expression token
         nod ●preOp token right
         
     rDollar: ➜Node ->
@@ -1136,13 +1136,13 @@ class Parser*
     lAssign: ◇Node left ➜Node ->
     
         token = @consume()
-        right = @funcOrExpression(token)
+        right = @funcOrExpression token
         nod ●operation token left right
     
     lRange: ◇Node left ➜Node ->
     
         token = @consume()
-        right = @expression(token)
+        right = @expression token
         nod ●range token left right
             
     rParenExpr: ➜Node ->
@@ -1194,13 +1194,13 @@ class Parser*
     lMember: ◇Node left ➜Node ->
     
         token = @consume()
-        right = @funcOrExpression(token)
+        right = @funcOrExpression token
         nod ●member token left right
         
     lTestCase: ◇Node left ➜Node ->
     
         token = @consume() # ▸
-        @swallow(◂indent) # todo: check if indent is larger than that of the test expression
+        @swallow ◂indent # todo: check if indent is larger than that of the test expression
         right = @expression()
         nod ●testCase token left right
     
@@ -1283,9 +1283,9 @@ class Parser*
     pratt: ◇tok t ◇LHS lhs ◇RHS rhs ◇int precedence ->
     
         if @pratts.len <= t.ord
-            @pratts.setLen(t.ord + 1)
+            @pratts.setLen t.ord + 1
         
-        @pratts[t.ord] = Pratt(lhs:lhs, rhs:rhs, precedence:precedence)
+        @pratts[t.ord] = Pratt lhs:lhs rhs:rhs precedence:precedence
     
     #  ███████  ████████  █████████  ███   ███  ████████ 
     # ███       ███          ███     ███   ███  ███   ███
@@ -1395,7 +1395,7 @@ ast* = ◇string text ➜Node ->
     # profileStop 'tknz'
     # log &"ast* {tokens}"
     # profileStart 'pars'
-    p = Parser(tokens:tokens, pos:0, text:text)
+    p = Parser tokens:tokens pos:0 text:text
     p.setup()
     b = p.parseBlock()
     # profileStop 'pars'

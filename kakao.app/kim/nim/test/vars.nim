@@ -4,6 +4,7 @@
 #    ███     ███   ███  ███   ███       ███
 #     █      ███   ███  ███   ███  ███████ 
 import ../rndr
+
 template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
 suite "vars": 
     test "toplevel": 
@@ -32,19 +33,21 @@ var params : seq[string]""")
         v("let (output exitCode) = execCmdEx(cmd)", "let (output, exitCode) = execCmdEx(cmd)")
         v("(output exitCode) = execCmdEx(cmd)", "var (output, exitCode) = execCmdEx(cmd)")
     test "func": 
-        v("rImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)", "proc rImport(p : Parser) : Node = \n    var n = Node(token: p.consume(), kind: ●import)")
-        v("rImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\n    n = nil", "proc rImport(p : Parser) : Node = \n    var n = Node(token: p.consume(), kind: ●import)\n    n = nil")
-        v("y=1\nf1 = ◇typ p ->\n    y = p.a()\nf2 = ◇typ p ->\n    z = p.b()", "var y = 1\nproc f1(p : typ) = \n    y = p.a()\nproc f2(p : typ) = \n    var z = p.b()")
-        v("f1 = ◇typ p ➜Node ->\n    y = p.a()\nf2 = ◇typ p ->\n    y=p.b()", "proc f1(p : typ) : Node = \n    var y = p.a()\nproc f2(p : typ) = \n    var y = p.b()")
-        v("f1 = ◇typ p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\nf2 = ◇typ p -> p.b()", "proc f1(p : typ) : Node = \n    var n = Node(token: p.consume(), kind: ●import)\nproc f2(p : typ) = p.b()")
-        v("n = nil\nrImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\nrProc = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●proc)", "var n = nil\nproc rImport(p : Parser) : Node = \n    n = Node(token: p.consume(), kind: ●import)\nproc rProc(p : Parser) : Node = \n    n = Node(token: p.consume(), kind: ●proc)")
+        v("rImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)", "\nproc rImport(p : Parser) : Node = \n    var n = Node(token: p.consume(), kind: ●import)")
+        v("rImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\n    n = nil", "\nproc rImport(p : Parser) : Node = \n    var n = Node(token: p.consume(), kind: ●import)\n    n = nil")
+        v("y=1\nf1 = ◇typ p ->\n    y = p.a()\nf2 = ◇typ p ->\n    z = p.b()", "var y = 1\n\nproc f1(p : typ) = \n    y = p.a()\n\nproc f2(p : typ) = \n    var z = p.b()")
+        v("f1 = ◇typ p ➜Node ->\n    y = p.a()\nf2 = ◇typ p ->\n    y=p.b()", "\nproc f1(p : typ) : Node = \n    var y = p.a()\n\nproc f2(p : typ) = \n    var y = p.b()")
+        v("f1 = ◇typ p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\nf2 = ◇typ p -> p.b()", "\nproc f1(p : typ) : Node = \n    var n = Node(token: p.consume(), kind: ●import)\n\nproc f2(p : typ) = p.b()")
+        v("n = nil\nrImport = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●import)\nrProc = ◇Parser p ➜Node ->\n    n = Node(token:p.consume(), kind: ●proc)", "var n = nil\n\nproc rImport(p : Parser) : Node = \n    n = Node(token: p.consume(), kind: ●import)\n\nproc rProc(p : Parser) : Node = \n    n = Node(token: p.consume(), kind: ●proc)")
         v("""
 f = ->
     g = ->
         a = 2
     b = 3
 """, """
+
 proc f = 
+    
     proc g = 
         var a = 2
     var b = 3""")
@@ -57,8 +60,10 @@ f = ->
         c = 0
     c = 3
 """, """
+
 proc f = 
     var a = 1
+    
     proc g = 
         var b = 2
         a = 1

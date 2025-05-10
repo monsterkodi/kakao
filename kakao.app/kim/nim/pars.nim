@@ -14,25 +14,29 @@ type Pratt = object
     rhs: RHS
     lhs: LHS
     precedence: int
-type Parser* = ref object of RootObj
-    tokens*: seq[Token]
-    pratts*: seq[Pratt]
-    blocks*: seq[Node]
-    pos*: int
-    explicit*: int
-    listless*: int
-    inlinecall*: int
-    returning*: bool
-    typeless*: bool
-    failed*: bool
-    text*: string
+
+type Parser = ref object of RootObj
+    tokens: seq[Token]
+    pratts: seq[Pratt]
+    blocks: seq[Node]
+    pos: int
+    explicit: int
+    listless: int
+    inlinecall: int
+    returning: bool
+    typeless: bool
+    failed: bool
+    text: string
 # used in `$` for debugging. should be removed eventually 
-proc current*(this : Parser) : Token = 
+
+proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
         tkn(◂eof)
-proc tok*(this : Parser) : tok = this.current.tok
-proc peek*(this : Parser, ahead = 1) : Token = 
+
+proc tok(this : Parser) : tok = this.current.tok
+
+proc peek(this : Parser, ahead = 1) : Token = 
         if ((this.pos + ahead) < this.tokens.len): 
             this.tokens[(this.pos + ahead)]
         else: 
@@ -42,7 +46,8 @@ proc peek*(this : Parser, ahead = 1) : Token =
 # ████████   ███████    ███  ███ █ ███     ███     
 # ███        ███   ███  ███  ███  ████     ███     
 # ███        ███   ███  ███  ███   ███     ███     
-proc `$`*(this : Parser) : string = 
+
+proc `$`(this : Parser) : string = 
         var s = ""
         if (this.tok != ◂eof): 
             s = &"▪▪▪ {this.current} {this.pos}"
@@ -51,7 +56,8 @@ proc `$`*(this : Parser) : string =
         else: 
             s = this.text
         s
-proc error*(this : Parser, msg : string, token = EOF) : Node = 
+
+proc error(this : Parser, msg : string, token = EOF) : Node = 
         styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
         if (token.tok != ◂eof): 
             var line = this.text.split("\n")[token.line]
@@ -66,37 +72,46 @@ proc error*(this : Parser, msg : string, token = EOF) : Node =
 # ███       ███   ███  ███ █ ███  ███████   ███   ███  █████████  ███████ 
 # ███       ███   ███  ███  ████       ███  ███   ███  ███ █ ███  ███     
 #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ████████
-proc consume*(this : Parser) : Token = 
+
+proc consume(this : Parser) : Token = 
         var t = this.current
         if (this.pos < this.tokens.len): 
             (this.pos += 1)
         t
-proc swallow*(this : Parser) = 
+
+proc swallow(this : Parser) = 
         discard this.consume()
-proc swallow*(this : Parser, tok : tok) = 
+
+proc swallow(this : Parser, tok : tok) = 
         if (this.tok == tok): 
             this.swallow()
-proc swallowError*(this : Parser, tok : tok, err : string) = 
+
+proc swallowError(this : Parser, tok : tok, err : string) = 
         if (this.tok != tok): 
             discard this.error(&"Expected {tok} to swallow, but found {this.tok} instead")
             discard this.error(err)
             return
         this.swallow()
-proc swallowSameIndent*(this : Parser, indent : int) : bool = 
+
+proc swallowSameIndent(this : Parser, indent : int) : bool = 
         if ((this.tok == ◂indent) and (this.current.str.len == indent)): 
             this.swallow()
             return true
         false
-proc atIndent*(this : Parser) : bool = 
+
+proc atIndent(this : Parser) : bool = 
         ((this.current.col == 0) or (this.peek(-1).tok == ◂indent))
-proc atEnd*(this : Parser) : bool = 
+
+proc atEnd(this : Parser) : bool = 
         (this.pos >= this.tokens.len)
-proc isDedent*(this : Parser, indent : int) : bool = 
+
+proc isDedent(this : Parser, indent : int) : bool = 
         if (this.tok == ◂indent): 
             (this.current.str.len < indent)
         else: 
             (this.current.col < indent)
-proc isNextLineIndented*(this : Parser, token : Token) : bool = 
+
+proc isNextLineIndented(this : Parser, token : Token) : bool = 
         var n = 0
         while (this.peek(n).tok != ◂indent): 
             (n += 1)
@@ -104,7 +119,8 @@ proc isNextLineIndented*(this : Parser, token : Token) : bool =
                 return false
         var idt = if (token.tok == ◂indent): token.str.len else: token.col
         return (this.peek(n).str.len > idt)
-proc isTokAhead*(this : Parser, tokAhead : tok) : bool = 
+
+proc isTokAhead(this : Parser, tokAhead : tok) : bool = 
         var n = 0
         var c = this.current
         var line = c.line
@@ -117,7 +133,8 @@ proc isTokAhead*(this : Parser, tokAhead : tok) : bool =
             (n += 1)
             c = this.peek(n)
         false
-proc firstLineToken*(this : Parser) : Token = 
+
+proc firstLineToken(this : Parser) : Token = 
         var line = this.current.line
         var tpos = this.tokens.len
         while (tpos > 0): 
@@ -125,7 +142,8 @@ proc firstLineToken*(this : Parser) : Token =
                 break
             (tpos -= 1)
         this.tokens[tpos]
-proc lineIndent*(this : Parser, line : int) : int = 
+
+proc lineIndent(this : Parser, line : int) : int = 
         var tpos = this.tokens.len
         while (tpos > 0): 
             if (this.tokens[(tpos - 1)].line < line): 
@@ -135,31 +153,39 @@ proc lineIndent*(this : Parser, line : int) : int =
             this.tokens[tpos].str.len
         else: 
             this.tokens[tpos].col
-proc isThenlessIf*(this : Parser, token : Token) : bool = 
+
+proc isThenlessIf(this : Parser, token : Token) : bool = 
         if this.isNextLineIndented(token): 
             return false
         not this.isTokAhead(◂then)
-proc getPrecedence*(this : Parser, token : Token) : int = 
+
+proc getPrecedence(this : Parser, token : Token) : int = 
         if (token.tok.ord < this.pratts.len): 
             return this.pratts[token.tok.ord].precedence
         0
-proc rightHandSide*(this : Parser, token : Token) : RHS = 
+
+proc rightHandSide(this : Parser, token : Token) : RHS = 
         if (token.tok.ord < this.pratts.len): 
             return this.pratts[token.tok.ord].rhs
-proc leftHandSide*(this : Parser, token : Token) : LHS = 
+
+proc leftHandSide(this : Parser, token : Token) : LHS = 
         if (token.tok.ord < this.pratts.len): 
             return this.pratts[token.tok.ord].lhs
-proc expression*(this : Parser, precedenceRight = 0) : Node
-proc expression*(this : Parser, tokenRight : Token) : Node = 
+
+proc expression(this : Parser, precedenceRight = 0) : Node
+
+proc expression(this : Parser, tokenRight : Token) : Node = 
         this.expression(this.getPrecedence(tokenRight))
-proc value*(this : Parser) : Node = 
+
+proc value(this : Parser) : Node = 
         this.expression(-2)
 # ███████    ███       ███████    ███████  ███   ███
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███      ███   ███  ███       ███████  
 # ███   ███  ███      ███   ███  ███       ███  ███ 
 # ███████    ███████   ███████    ███████  ███   ███
-proc parseBlock*(this : Parser, bn : Node = nil) : Node = 
+
+proc parseBlock(this : Parser, bn : Node = nil) : Node = 
         var token : Token
         var block_indent : int
         while (this.tok == ◂indent): 
@@ -199,7 +225,8 @@ proc parseBlock*(this : Parser, bn : Node = nil) : Node =
                 break
             expr = this.expression()
         bn
-proc expressionOrIndentedBlock*(this : Parser, token : Token, col : int) : Node = 
+
+proc expressionOrIndentedBlock(this : Parser, token : Token, col : int) : Node = 
         if (this.tok == ◂indent): 
             if (this.current.str.len > col): 
                 return this.parseBlock()
@@ -210,7 +237,8 @@ proc expressionOrIndentedBlock*(this : Parser, token : Token, col : int) : Node 
 # ███       █████████  ███      ███      █████████  ███████    ███  ████  ███████ 
 # ███       ███   ███  ███      ███      ███   ███  ███   ███  ███   ███       ███
 #  ███████  ███   ███  ███████  ███████  ███   ███  ███   ███   ███████   ███████ 
-proc swallowIndent*(this : Parser, col : int) : bool = 
+
+proc swallowIndent(this : Parser, col : int) : bool = 
         this.swallow(◂comma)
         if (this.tok == ◂indent): 
             if (this.current.str.len > col): 
@@ -218,7 +246,8 @@ proc swallowIndent*(this : Parser, col : int) : bool =
             else: 
                 return true
         false
-proc parseCallArgs*(this : Parser, col : int) : seq[Node] = 
+
+proc parseCallArgs(this : Parser, col : int) : seq[Node] = 
         (this.explicit += 1)
         (this.listless += 1)
         var list : seq[Node]
@@ -242,7 +271,8 @@ proc parseCallArgs*(this : Parser, col : int) : seq[Node] =
 #    ███       █████    ████████   ███████ 
 #    ███        ███     ███        ███     
 #    ███        ███     ███        ████████
-proc parseType*(this : Parser) : Node = 
+
+proc parseType(this : Parser) : Node = 
         var token = this.consume()
         token.tok = ◂type
         if (this.tok == ◂square_open): 
@@ -257,7 +287,8 @@ proc parseType*(this : Parser) : Node =
                     if (opened == 0): 
                         break
         nod(●type, token)
-proc parseVar*(this : Parser) : Node = 
+
+proc parseVar(this : Parser) : Node = 
         var token = this.current()
         var var_name = this.value()
         var var_value : Node
@@ -272,7 +303,8 @@ proc parseVar*(this : Parser) : Node =
                 this.swallow()
                 var_value = this.expression()
         nod(●var, token, var_name, var_type, var_value)
-proc parseModule*(this : Parser) : Node = 
+
+proc parseModule(this : Parser) : Node = 
         var line = this.current.line
         var s = ""
         while (this.current.str notin @["▪", "◆"]): 
@@ -288,7 +320,8 @@ proc parseModule*(this : Parser) : Node =
 # ███      ███  ███████      ███   
 # ███      ███       ███     ███   
 # ███████  ███  ███████      ███   
-proc parseParenList*(this : Parser) : seq[Node] = 
+
+proc parseParenList(this : Parser) : seq[Node] = 
         var token = this.consume() # (
         var args : seq[Node]
         (this.explicit += 1)
@@ -300,7 +333,8 @@ proc parseParenList*(this : Parser) : seq[Node] =
         if ((args.len == 1) and (args[0].kind == ●list)): 
             return args[0].list_values
         args
-proc parseDelimitedList*(this : Parser, open : tok, close : tok) : seq[Node] = 
+
+proc parseDelimitedList(this : Parser, open : tok, close : tok) : seq[Node] = 
         var token = this.consume()
         var args : seq[Node]
         (this.explicit += 1)
@@ -315,7 +349,8 @@ proc parseDelimitedList*(this : Parser, open : tok, close : tok) : seq[Node] =
         if ((args.len == 1) and (args[0].kind == ●list)): 
             return args[0].list_values
         args
-proc parseNames*(this : Parser) : seq[Node] = 
+
+proc parseNames(this : Parser) : seq[Node] = 
         var list : seq[Node]
         var line = this.current.line
         (this.explicit += 1)
@@ -328,7 +363,8 @@ proc parseNames*(this : Parser) : seq[Node] =
             expr = this.rSymbol()
         (this.explicit -= 1)
         list
-proc parseNamesUntil*(this : Parser, stop : tok) : Node = 
+
+proc parseNamesUntil(this : Parser, stop : tok) : Node = 
         var token = this.current
         var list_values : seq[Node]
         (this.explicit += 1)
@@ -349,14 +385,16 @@ proc parseNamesUntil*(this : Parser, stop : tok) : Node =
 #    ███     █████████  ███████   ███ █ ███
 #    ███     ███   ███  ███       ███  ████
 #    ███     ███   ███  ████████  ███   ███
-proc thenBlock*(this : Parser) : Node = 
+
+proc thenBlock(this : Parser) : Node = 
         if (this.tok == ◂then): 
             this.swallow(◂then)
         if (this.tok == ◂indent): 
             this.parseBlock()
         else: 
             this.expression()
-proc thenIndented*(this : Parser, token : Token) : Node = 
+
+proc thenIndented(this : Parser, token : Token) : Node = 
         if (this.tok == ◂then): 
             this.swallow(◂then)
         if (this.tok == ◂indent): 
@@ -370,7 +408,8 @@ proc thenIndented*(this : Parser, token : Token) : Node =
 # ███       █████████  ███      ███    
 # ███       ███   ███  ███      ███    
 #  ███████  ███   ███  ███████  ███████
-proc lCall*(this : Parser, callee : Node) : Node = 
+
+proc lCall(this : Parser, callee : Node) : Node = 
         var token = this.consume() # (
         var args = this.parseCallArgs(callee.token.col)
         this.swallowError(◂paren_close, "Missing closing paren for call arguments")
@@ -380,7 +419,8 @@ proc lCall*(this : Parser, callee : Node) : Node =
 # ███  █████████  ████████   ███      ███  ███       ███     ███   
 # ███  ███ █ ███  ███        ███      ███  ███       ███     ███   
 # ███  ███   ███  ███        ███████  ███   ███████  ███     ███   
-proc isImplicitCallPossible*(this : Parser) : bool = 
+
+proc isImplicitCallPossible(this : Parser) : bool = 
         if this.explicit: return false
         var currt = this.peek(0)
         var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign}
@@ -390,7 +430,8 @@ proc isImplicitCallPossible*(this : Parser) : bool =
         if (this.returning and this.isTokAhead(◂if)): return false
         if this.isTokAhead(◂func): return false
         true
-proc rSymbol*(this : Parser) : Node = 
+
+proc rSymbol(this : Parser) : Node = 
         var token = this.consume()
         if (((token.str in @["peg", "re", "r"]) and (this.tok == ◂string_start)) and ((token.col + token.str.len) == this.current.col)): 
             var n = this.rString()
@@ -405,12 +446,14 @@ proc rSymbol*(this : Parser) : Node =
 # ███  ██████                               ███  ██████                                 ███  ██████    
 # ███  ███                                  ███  ███                                    ███  ███       
 # ███  ███                                  ███  ███                                    ███  ███       
-proc inline*(this : Parser) : Node = 
+
+proc inline(this : Parser) : Node = 
         (this.inlinecall += 1)
         var e = this.expression()
         (this.inlinecall -= 1)
         e
-proc rIf*(this : Parser) : Node = 
+
+proc rIf(this : Parser) : Node = 
         var token = this.consume() # if or when
         var condThens : seq[Node]
         var ifIndent = token.col
@@ -459,7 +502,8 @@ proc rIf*(this : Parser) : Node =
 #    ███     █████████  ███  ███         ███  ██████  
 #    ███     ███   ███  ███  ███         ███  ███     
 #    ███     ███   ███  ███  ███████     ███  ███     
-proc lTailIf*(this : Parser, left : Node) : Node = 
+
+proc lTailIf(this : Parser, left : Node) : Node = 
         if this.returning: return
         if (left.token.line != this.current.line): return
         var token = this.consume()
@@ -471,21 +515,24 @@ proc lTailIf*(this : Parser, left : Node) : Node =
 # ██████    ███   ███  ███████  
 # ███       ███   ███  ███   ███
 # ███        ███████   ███   ███
-proc rFor*(this : Parser) : Node = 
+
+proc rFor(this : Parser) : Node = 
         var token = this.consume()
         var for_value = this.parseNamesUntil(◂in)
         this.swallowError(◂in, "Expected 'in' after for value")
         var for_range = this.expression()
         var for_body = this.thenBlock()
         nod(●for, token, for_value, for_range, for_body)
-proc rWhile*(this : Parser) : Node = 
+
+proc rWhile(this : Parser) : Node = 
         nod(●while, this.consume(), this.expression(), this.thenBlock())
 #  ███████  ███   ███  ███  █████████   ███████  ███   ███
 # ███       ███ █ ███  ███     ███     ███       ███   ███
 # ███████   █████████  ███     ███     ███       █████████
 #      ███  ███   ███  ███     ███     ███       ███   ███
 # ███████   ██     ██  ███     ███      ███████  ███   ███
-proc switchCase*(this : Parser, baseIndent : int) : Node = 
+
+proc switchCase(this : Parser, baseIndent : int) : Node = 
         var case_when : seq[Node]
         var token = this.current
         var first = this.firstLineToken()
@@ -507,7 +554,8 @@ proc switchCase*(this : Parser, baseIndent : int) : Node =
         if (case_then == nil): 
             return this.error("Expected case body after match(es)", token)
         Node(token: token, kind: ●switchCase, case_when: case_when, case_then: case_then)
-proc rSwitch*(this : Parser) : Node = 
+
+proc rSwitch(this : Parser) : Node = 
         var token = this.consume()
         var switch_value = this.expression()
         if (switch_value == nil): 
@@ -528,7 +576,8 @@ proc rSwitch*(this : Parser) : Node =
             if (switch_default == nil): 
                 return this.error("Expected default value", token)
         Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
-proc lArrayAccess*(this : Parser, array_owner : Node) : Node = 
+
+proc lArrayAccess(this : Parser, array_owner : Node) : Node = 
         if ((this.peek(-1).col + this.peek(-1).str.len) < this.current.col): return
         var token = this.current()
         var array_indices = this.parseDelimitedList(◂square_open, ◂square_close)
@@ -538,25 +587,38 @@ proc lArrayAccess*(this : Parser, array_owner : Node) : Node =
                 of 1: array_indices[0]
                 else: nod(●list, token, array_indices)
         nod(●arrayAccess, token, array_owner, array_index)
-proc lPropertyAccess*(this : Parser, owner : Node) : Node = 
+
+proc lPropertyAccess(this : Parser, owner : Node) : Node = 
         var token = this.consume()
         var property = this.rLiteral()
         var n = nod(●propertyAccess, token, owner, property)
         if this.isImplicitCallPossible(): 
             return Node(token: token, kind: ●call, callee: n, callargs: this.parseCallArgs(token.col))
         n
-proc rLiteral*(this : Parser) : Node = nod(●literal, this.consume())
-proc rKeyword*(this : Parser) : Node = nod(●keyword, this.consume())
-proc rImport*(this : Parser) : Node = nod(●import, this.consume())
-proc rProc*(this : Parser) : Node = nod(●proc, this.consume())
-proc rTypeDef*(this : Parser) : Node = nod(●typeDef, this.consume())
-proc rMacro*(this : Parser) : Node = nod(●macro, this.consume())
-proc rTemplate*(this : Parser) : Node = nod(●template, this.consume())
-proc rConverter*(this : Parser) : Node = nod(●converter, this.consume())
-proc rLet*(this : Parser) : Node = nod(●let, this.consume(), this.parseVar())
-proc rReturnType*(this : Parser) : Node = nod(●signature, this.consume(), nil, this.parseType())
-proc rQuote*(this : Parser) : Node = nod(●quote, this.consume(), this.thenBlock())
-proc lSemiColon*(this : Parser, left : Node) : Node = 
+
+proc rLiteral(this : Parser) : Node = nod(●literal, this.consume())
+
+proc rKeyword(this : Parser) : Node = nod(●keyword, this.consume())
+
+proc rImport(this : Parser) : Node = nod(●import, this.consume())
+
+proc rProc(this : Parser) : Node = nod(●proc, this.consume())
+
+proc rTypeDef(this : Parser) : Node = nod(●typeDef, this.consume())
+
+proc rMacro(this : Parser) : Node = nod(●macro, this.consume())
+
+proc rTemplate(this : Parser) : Node = nod(●template, this.consume())
+
+proc rConverter(this : Parser) : Node = nod(●converter, this.consume())
+
+proc rLet(this : Parser) : Node = nod(●let, this.consume(), this.parseVar())
+
+proc rReturnType(this : Parser) : Node = nod(●signature, this.consume(), nil, this.parseType())
+
+proc rQuote(this : Parser) : Node = nod(●quote, this.consume(), this.thenBlock())
+
+proc lSemiColon(this : Parser, left : Node) : Node = 
         if (this.peek(1).tok notin {◂indent, ◂eof}): 
             var token = this.consume()
             var right = this.expression(token)
@@ -569,7 +631,8 @@ proc lSemiColon*(this : Parser, left : Node) : Node =
 # ███████      ███     ███████    ███  ███ █ ███  ███  ████
 #      ███     ███     ███   ███  ███  ███  ████  ███   ███
 # ███████      ███     ███   ███  ███  ███   ███   ███████ 
-proc rString*(this : Parser) : Node = 
+
+proc rString(this : Parser) : Node = 
         var token = this.consume() # string start
         if (this.tok == ◂string_end): 
             this.swallow()
@@ -597,7 +660,8 @@ proc rString*(this : Parser) : Node =
                 string_stripols.add(stripol)
             this.swallowError(◂string_end, "Expected closing string delimiter")
             Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
-proc rUse*(this : Parser) : Node = 
+
+proc rUse(this : Parser) : Node = 
         var token = this.consume()
         (this.explicit += 1)
         var use_module = this.parseModule()
@@ -609,11 +673,13 @@ proc rUse*(this : Parser) : Node =
         else: 
             (this.explicit -= 1)
             Node(token: token, kind: ●use, use_module: use_module)
-proc rComment*(this : Parser) : Node = 
+
+proc rComment(this : Parser) : Node = 
         var n = nod(●comment, this.consume(), Node(token: this.consume()))
         this.swallow(◂comment_end)
         n
-proc lReturnType*(this : Parser, left : Node) : Node = 
+
+proc lReturnType(this : Parser, left : Node) : Node = 
         if (not this.isTokAhead(◂func) and not this.isTokAhead(◂method)): return
         if (left.kind in {●list, ●arg, ●operation}): 
             if (left.kind == ●operation): 
@@ -631,7 +697,8 @@ proc lReturnType*(this : Parser, left : Node) : Node =
                 var sig = this.rReturnType()
                 sig.sig_args = nod(●list, left.token, @[left])
                 return sig
-proc rArg*(this : Parser) : Node = 
+
+proc rArg(this : Parser) : Node = 
         var token = this.consume() # ◆ or ◇
         if this.typeless: 
             var nameToken = this.consume()
@@ -646,7 +713,8 @@ proc rArg*(this : Parser) : Node =
             var t = this.consume() # =
             arg_value = this.expression()
         nod(●arg, token, arg_type, arg_name, arg_value)
-proc lVar*(this : Parser, left : Node) : Node = 
+
+proc lVar(this : Parser, left : Node) : Node = 
         if (left.token.tok != ◂name): return
         var token = this.consume() # ◆ or ◇
         var var_type = this.parseType()
@@ -655,7 +723,8 @@ proc lVar*(this : Parser, left : Node) : Node =
             var t = this.consume() # =
             var_value = this.expression()
         nod(●var, token, left, var_type, var_value)
-proc lSymbolList*(this : Parser, left : Node) : Node = 
+
+proc lSymbolList(this : Parser, left : Node) : Node = 
         if this.listless: return
         case left.kind:
             of ●list: 
@@ -672,7 +741,8 @@ proc lSymbolList*(this : Parser, left : Node) : Node =
                 return nod(●list, left.token, list_values)
             else: 
                 discard
-proc lArgList*(this : Parser, left : Node) : Node = 
+
+proc lArgList(this : Parser, left : Node) : Node = 
         case left.kind:
             of ●list: 
                 var list_values = left.list_values
@@ -693,7 +763,8 @@ proc lArgList*(this : Parser, left : Node) : Node =
 # ██████    ███   ███  ███ █ ███  ███     
 # ███       ███   ███  ███  ████  ███     
 # ███        ███████   ███   ███   ███████
-proc lFunc*(this : Parser, left : Node) : Node = 
+
+proc lFunc(this : Parser, left : Node) : Node = 
         if (left.kind notin {●signature, ●list, ●arg, ●operation}): return
         var func_signature : Node
         if (left.kind == ●operation): 
@@ -733,7 +804,8 @@ proc lFunc*(this : Parser, left : Node) : Node =
             func_mod = this.rLiteral()
         var func_body = this.thenIndented(firstToken)
         nod(●func, token, func_signature, func_mod, func_body)
-proc rFunc*(this : Parser) : Node = 
+
+proc rFunc(this : Parser) : Node = 
         var firstToken = this.firstLineToken()
         var token = this.consume()
         var func_mod : Node
@@ -741,7 +813,8 @@ proc rFunc*(this : Parser) : Node =
             func_mod = this.rLiteral()
         var func_body = this.thenIndented(firstToken)
         nod(●func, token, nil, nil, func_body)
-proc parseSignature*(this : Parser) : Node = 
+
+proc parseSignature(this : Parser) : Node = 
         var sig_args = nod(●list, this.current(), @[])
         var sig_type : Node
         var parens = false
@@ -776,7 +849,8 @@ proc parseSignature*(this : Parser) : Node =
         if (this.tok notin {◂func, ◂method}): 
             return
         nod(●signature, sig_args.token, sig_args, sig_type)
-proc funcOrExpression*(this : Parser, token : Token) : Node = 
+
+proc funcOrExpression(this : Parser, token : Token) : Node = 
         var col = this.lineIndent(token.line)
         if (this.isTokAhead(◂func) or this.isTokAhead(◂method)): 
             var startPos = this.pos
@@ -791,7 +865,8 @@ proc funcOrExpression*(this : Parser, token : Token) : Node =
             else: 
                 this.pos = startPos
         this.expressionOrIndentedBlock(token, col)
-proc rReturn*(this : Parser) : Node = 
+
+proc rReturn(this : Parser) : Node = 
         var token = this.consume()
         if ((this.tok == ◂if) and this.isThenlessIf(token)): 
             nod(●return, token, nil)
@@ -802,7 +877,8 @@ proc rReturn*(this : Parser) : Node =
                 right = this.expression(token)
             this.returning = false
             nod(●return, token, right)
-proc rDiscard*(this : Parser) : Node = 
+
+proc rDiscard(this : Parser) : Node = 
         var token = this.consume()
         if this.isDedent(token.col): 
             nod(●discard, token, nil)
@@ -813,11 +889,13 @@ proc rDiscard*(this : Parser) : Node =
 # ███   ███  ████████   ███████   ███████    █████████     ███     ███  ███   ███  ███ █ ███
 # ███   ███  ███        ███       ███   ███  ███   ███     ███     ███  ███   ███  ███  ████
 #  ███████   ███        ████████  ███   ███  ███   ███     ███     ███   ███████   ███   ███
-proc lOperation*(this : Parser, left : Node) : Node = 
+
+proc lOperation(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.expression(token)
         nod(●operation, token, left, right)
-proc lNotIn*(this : Parser, left : Node) : Node = 
+
+proc lNotIn(this : Parser, left : Node) : Node = 
         if (this.peek(1).tok == ◂in): 
             var token = this.consume()
             token.str = "notin"
@@ -825,13 +903,16 @@ proc lNotIn*(this : Parser, left : Node) : Node =
             this.swallow()
             var right = this.expression(token)
             return nod(●operation, token, left, right)
-proc lPostOp*(this : Parser, left : Node) : Node = 
+
+proc lPostOp(this : Parser, left : Node) : Node = 
         nod(●postOp, this.consume(), left)
-proc rPreOp*(this : Parser) : Node = 
+
+proc rPreOp(this : Parser) : Node = 
         var token = this.consume()
         var right = this.expression(token)
         nod(●preOp, token, right)
-proc rDollar*(this : Parser) : Node = 
+
+proc rDollar(this : Parser) : Node = 
         if (this.current.str.len > 1): 
             var token = this.consume()
             token.tok = ◂name
@@ -841,21 +922,27 @@ proc rDollar*(this : Parser) : Node =
             token.tok = ◂name
             return nod(●literal, token)
         this.rPreOp()
-proc lAssign*(this : Parser, left : Node) : Node = 
+
+proc lAssign(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.funcOrExpression(token)
         nod(●operation, token, left, right)
-proc lRange*(this : Parser, left : Node) : Node = 
+
+proc lRange(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.expression(token)
         nod(●range, token, left, right)
-proc rParenExpr*(this : Parser) : Node = 
+
+proc rParenExpr(this : Parser) : Node = 
         nod(●list, this.current, this.parseParenList())
-proc rCurly*(this : Parser) : Node = 
+
+proc rCurly(this : Parser) : Node = 
         nod(●curly, this.current, this.parseDelimitedList(◂bracket_open, ◂bracket_close))
-proc rSquarely*(this : Parser) : Node = 
+
+proc rSquarely(this : Parser) : Node = 
         nod(●squarely, this.current, this.parseDelimitedList(◂square_open, ◂square_close))
-proc rEnum*(this : Parser) : Node = 
+
+proc rEnum(this : Parser) : Node = 
         var token = this.consume()
         var enum_name = this.value()
         var enum_body : Node
@@ -864,7 +951,8 @@ proc rEnum*(this : Parser) : Node =
             enum_body = this.parseBlock()
             this.typeless = false
         nod(●enum, token, enum_name, enum_body)
-proc rClass*(this : Parser) : Node = 
+
+proc rClass(this : Parser) : Node = 
         (this.explicit += 1)
         var token = this.consume()
         var name = this.value()
@@ -874,7 +962,8 @@ proc rClass*(this : Parser) : Node =
             parent = this.value()
         (this.explicit -= 1)
         nod(●class, token, name, parent, this.parseBlock())
-proc rStruct*(this : Parser) : Node = 
+
+proc rStruct(this : Parser) : Node = 
         var token = this.consume()
         var name = this.value()
         var parent : Node
@@ -882,16 +971,19 @@ proc rStruct*(this : Parser) : Node =
             this.swallow()
             parent = this.value()
         nod(●struct, token, name, parent, this.parseBlock())
-proc lMember*(this : Parser, left : Node) : Node = 
+
+proc lMember(this : Parser, left : Node) : Node = 
         var token = this.consume()
         var right = this.funcOrExpression(token)
         nod(●member, token, left, right)
-proc lTestCase*(this : Parser, left : Node) : Node = 
+
+proc lTestCase(this : Parser, left : Node) : Node = 
         var token = this.consume() # ▸
         this.swallow(◂indent) # todo: check if indent is larger than that of the test expression
         var right = this.expression()
         nod(●testCase, token, left, right)
-proc rTestSuite*(this : Parser) : Node = 
+
+proc rTestSuite(this : Parser) : Node = 
         var token = this.consume() # ▸
         var test_block = this.thenBlock()
         if (token.col == 0): 
@@ -912,7 +1004,8 @@ proc rTestSuite*(this : Parser) : Node =
                           │                       │
                           ▾                       ▾
     ]#
-proc expression*(this : Parser, precedenceRight = 0) : Node = 
+
+proc expression(this : Parser, precedenceRight = 0) : Node = 
         var token = this.current
         if (token.tok in {◂eof, ◂stripol_end, ◂paren_close}): 
             return nil
@@ -946,7 +1039,8 @@ proc expression*(this : Parser, precedenceRight = 0) : Node =
 # ████████   ███████    █████████     ███        ███   
 # ███        ███   ███  ███   ███     ███        ███   
 # ███        ███   ███  ███   ███     ███        ███   
-proc pratt*(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) = 
+
+proc pratt(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) = 
         if (this.pratts.len <= t.ord): 
             this.pratts.setLen((t.ord + 1))
         this.pratts[t.ord] = Pratt(lhs: lhs, rhs: rhs, precedence: precedence)
@@ -955,7 +1049,8 @@ proc pratt*(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) =
 # ███████   ███████      ███     ███   ███  ████████ 
 #      ███  ███          ███     ███   ███  ███      
 # ███████   ████████     ███      ███████   ███      
-proc setup*(this : Parser) = 
+
+proc setup(this : Parser) = 
         this.pratt(◂semicolon, lSemiColon, nil, 0)
         this.pratt(◂true, nil, rLiteral, 0)
         this.pratt(◂false, nil, rLiteral, 0)
@@ -1032,6 +1127,7 @@ proc setup*(this : Parser) =
 # █████████  ███████      ███   
 # ███   ███       ███     ███   
 # ███   ███  ███████      ███   
+
 proc ast*(text : string) : Node = 
     # profileStart 'tknz'
     var tokens = tokenize(text)

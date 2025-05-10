@@ -12,10 +12,13 @@ export sequtils, enumutils, sets, tables, typetraits
 export strutils, strformat, unicode, pegs
 export terminal
 type lineInfo* = tuple[filename: string, line: int, column: int]
+
 proc fg*(c : auto) : string = 
     ansiForegroundColorCode(c)
+
 proc sc*(c : auto) : string = 
     ansiStyleCode(c)
+
 proc underscore*(n : uint64) : string = 
     var s = $n
     var r = newStringOfCap((s.len + (s.len - 1).div(3)))
@@ -26,20 +29,24 @@ proc underscore*(n : uint64) : string =
         r.add(s[i])
         (count += 1)
     reversed(r)
+
 proc indent*(s : string, i = 4) : string = 
     var idt = ' '.repeat(i)
     var lines = s.split("\n")
     idt & lines.join("\n" & idt)
+
 proc indentLen*(s : string) : int = 
     var i = 0
     while ((i < s.len) and (s[i] == ' ')): 
         (i += 1)
     i
+
 proc indentLen*(lines : seq[string]) : int = 
     var m = high(int)
     for l in lines: 
         m = min(m, indentLen(l))
     m
+
 proc testCmp*(a : string, r : auto, b : auto, l : lineInfo) = 
     if (r != b): 
         echo("")
@@ -51,10 +58,15 @@ proc testCmp*(a : string, r : auto, b : auto, l : lineInfo) =
         styledEcho(fgYellow, indent($r))
         styledEcho(fgRed, styleDim, "<|")
         fail()
+
 converter toBool*(x: int): bool = x != 0
+
 converter toBool*(x: string): bool = x.len > 0
+
 converter toBool*[T](x: seq[T]): bool = x.len > 0
+
 converter toBool*[T: ref object](x: T): bool = x != nil
+
 proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : string = 
     let (dir, _, _) = splitFile(file.Path)
     var dirParts = dir.string.split(DirSep)
@@ -72,13 +84,16 @@ proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : s
 # ███        ███   ███  ███   ███  ███       ███  ███      ███     
 # ███        ███   ███   ███████   ███       ███  ███████  ████████
 var timers : Table[string,tuple[m:MonoTime,t:uint64]]
+
 proc mach_absolute_time() : uint64 {.importc, header: "<mach/mach_time.h>".}
+
 proc profileStart*(msg : string) = 
     # GC_disableOrc()
     if not timers.contains(msg): 
         timers[msg] = (getMonoTime(), mach_absolute_time())
     else: 
         stderr.writeLine(&"[WARNING] Duplicate profileStart for '{msg}'")
+
 proc profileStop*(msg : string) = 
     if not timers.contains(msg): 
         stderr.writeLine(&"[ERROR] profileStop for unknown label '{msg}'")
@@ -93,6 +108,7 @@ proc profileStop*(msg : string) =
     styledEcho(fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle)
     # GC_enableOrc()    
     timers.del(msg)
+
 macro profileScope*(msg: string): untyped =
 
     quote do: 
@@ -103,6 +119,7 @@ macro profileScope*(msg: string): untyped =
 # ███   ███  ███████    ███  ████
 # ███   ███  ███   ███  ███   ███
 # ███████    ███████     ███████ 
+
 macro dbg*(args: varargs[untyped]): untyped =
 
     result = newStmtList()
@@ -118,17 +135,20 @@ macro dbg*(args: varargs[untyped]): untyped =
 # ███  ███        ███  ███       ███   ███
 # ███   ███  ███████   ████████   ███████ 
 # Splits a string into grapheme clusters (user-perceived characters)
+
 proc kseg*(s : string) : seq[string] = 
     var i = 0
     while (i < s.len): 
         var clusterSize = graphemeLen(s, i)
         result.add(s.substr(i, ((i + clusterSize) - 1)))
         (i += clusterSize)
+
 proc ksegWidth*(s : string) : int = 
     var i = 0
     while (i < s.len): 
         inc(result)
         (i += graphemeLen(s, i))
+
 template choose*(cond, a, b: untyped): untyped =
 
     when (typeof(cond) is bool): 
@@ -141,6 +161,7 @@ template choose*(cond, a, b: untyped): untyped =
 # ███████   ███ ██ ██  ███   ███  █████████  ███    
 # ███       ███ ████   ███   ███  ███   ███  ███    
 # ████████   █████ ██   ███████   ███   ███  ███████
+
 proc deepEqual*[T](a, b: T): bool =
 
     when (T is (seq or array)): 
@@ -180,22 +201,27 @@ proc deepEqual*[T](a, b: T): bool =
 # ███████   ███████   ███ ██ ██  ███   ███  ███████   ███ █ ███  ███       ███████   ███████ 
 #      ███  ███       ███ ████   ███   ███  ███       ███  ████  ███       ███            ███
 # ███████   ████████   █████ ██   ███████   ████████  ███   ███   ███████  ████████  ███████ 
+
 proc pops*[T](s: var seq[T]): seq[T] {. discardable .} =
 
     if (s.len > 0): s.setLen((s.len - 1))
     s
+
 proc push*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
 
     s.add(item)
     s
+
 proc shift*[T](s: var seq[T]): seq[T] {. discardable .} =
 
     if (s.len > 0): s.delete(0)
     s
+
 proc unshift*[T](s: var seq[T], item: T): seq[T] {. discardable .} =
 
     s.insert(@[item])
     s
+
 proc pullIf*[T](s: seq[T], pred: proc(x: T): bool): (seq[T], seq[T]) =
 
     for item in s: 
@@ -203,6 +229,7 @@ proc pullIf*[T](s: seq[T], pred: proc(x: T): bool): (seq[T], seq[T]) =
             result[0].add(item)
         else: 
             result[1].add(item)
+
 proc splice*[T](s: var seq[T], start: int, delcnt: int = high(int), items: varargs[T]): seq[T]  {. discardable .} =
 
     let start = if (start < 0): max((s.len + start), 0) else: min(start, s.len)

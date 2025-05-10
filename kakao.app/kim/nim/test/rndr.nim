@@ -4,6 +4,7 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 import ../rndr
+
 template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationInfo())
 suite "rndr": 
     test "toplevel": 
@@ -58,40 +59,41 @@ suite "rndr":
         t("◇seq[string] files = @[]", "files : seq[string] = @[]")
         t("◇ seq[string] files      = @[]", "files : seq[string] = @[]")
     test "func": 
-        t("f = ->", "proc f")
-        t("f = a=1 ->", "proc f(a = 1)")
-        t("f = ◇string a ->", "proc f(a : string)")
-        t("f = ◇string a ◇int b ->", "proc f(a : string, b : int)")
-        t("f = ◆Parser p ->", "proc f(p : var Parser)")
-        t("f = ◆Parser p ◇string a ◇int b ->", "proc f(p : var Parser, a : string, b : int)")
-        t("f = ➜ Node ->", "proc f() : Node")
-        t("f = ◆Parser p ➜ Node ->", "proc f(p : var Parser) : Node")
-        t("f = ◇seq[Node] s ➜ seq[Node] ->", "proc f(s : seq[Node]) : seq[Node]")
-        t("f = ◇Parser p ◇int ahead=1 ➜ Token ->", "proc f(p : Parser, ahead : int = 1) : Token")
-        t("f = ◇Parser p ahead=1 ➜ Token ->", "proc f(p : Parser, ahead = 1) : Token")
+        t("f = ->", "\nproc f")
+        t("f = a=1 ->", "\nproc f(a = 1)")
+        t("f = ◇string a ->", "\nproc f(a : string)")
+        t("f = ◇string a ◇int b ->", "\nproc f(a : string, b : int)")
+        t("f = ◆Parser p ->", "\nproc f(p : var Parser)")
+        t("f = ◆Parser p ◇string a ◇int b ->", "\nproc f(p : var Parser, a : string, b : int)")
+        t("f = ➜ Node ->", "\nproc f() : Node")
+        t("f = ◆Parser p ➜ Node ->", "\nproc f(p : var Parser) : Node")
+        t("f = ◇seq[Node] s ➜ seq[Node] ->", "\nproc f(s : seq[Node]) : seq[Node]")
+        t("f = ◇Parser p ◇int ahead=1 ➜ Token ->", "\nproc f(p : Parser, ahead : int = 1) : Token")
+        t("f = ◇Parser p ahead=1 ➜ Token ->", "\nproc f(p : Parser, ahead = 1) : Token")
         t("l.map(◇tuple r ➜string -> r.path)", "l.map(proc (r : tuple) : string = r.path)")
         t("l.map(◇ tuple r  ➜ string -> r.path)", "l.map(proc (r : tuple) : string = r.path)")
-        t("f = ◇int i ->", "proc f(i : int)")
-        t("f = ◇int a ◇int b ->", "proc f(a : int, b : int)")
-        t("f = ◇int a = 1 ->", "proc f(a : int = 1)")
+        t("f = ◇int i ->", "\nproc f(i : int)")
+        t("f = ◇int a ◇int b ->", "\nproc f(a : int, b : int)")
+        t("f = ◇int a = 1 ->", "\nproc f(a : int = 1)")
         t("setHook(() -> {.noconv.} quit(0))", "setHook(proc () {.noconv.} = quit(0))")
-        t("$* = ◇Tknzr t ➜string ->", "proc `$`*(t : Tknzr) : string")
-        t("$ = ◇Tknzr t ➜string ->", "proc `$`(t : Tknzr) : string")
-        t("commit = ◇Tknzr t i=0 ->", "proc commit(t : Tknzr, i = 0)")
-        t("commit = ◇Tknzr t i=◂assign ->", "proc commit(t : Tknzr, i = ◂assign)")
-        t("commit = ◇Tknzr t i=\"\" ->", "proc commit(t : Tknzr, i = \"\")")
-        t("commit = ◇Tknzr t a=1 b=2 ->", "proc commit(t : Tknzr, a = 1, b = 2)")
-        t("expression = ◇Parser p precedenceRight=0 ➜Node ->\nx", "proc expression(p : Parser, precedenceRight = 0) : Node\nx")
-        t("spc = ◇Rndr r -> r.s &= \" \"", "proc spc(r : Rndr) = (r.s &= \" \")")
+        t("$* = ◇Tknzr t ➜string ->", "\nproc `$`*(t : Tknzr) : string")
+        t("$ = ◇Tknzr t ➜string ->", "\nproc `$`(t : Tknzr) : string")
+        t("commit = ◇Tknzr t i=0 ->", "\nproc commit(t : Tknzr, i = 0)")
+        t("commit = ◇Tknzr t i=◂assign ->", "\nproc commit(t : Tknzr, i = ◂assign)")
+        t("commit = ◇Tknzr t i=\"\" ->", "\nproc commit(t : Tknzr, i = \"\")")
+        t("commit = ◇Tknzr t a=1 b=2 ->", "\nproc commit(t : Tknzr, a = 1, b = 2)")
+        t("expression = ◇Parser p precedenceRight=0 ➜Node ->\nx", "\nproc expression(p : Parser, precedenceRight = 0) : Node\nx")
+        t("spc = ◇Rndr r -> r.s &= \" \"", "\nproc spc(r : Rndr) = (r.s &= \" \")")
         t("""
 hook = -> {.noconv.}
     1 + 2
 """, """
+
 proc hook {.noconv.} = 
     (1 + 2)""")
-        t("pushToken = ◇Tknzr t str=2 tk=3 incr=0 ->", "proc pushToken(t : Tknzr, str = 2, tk = 3, incr = 0)")
-        t("pushToken = ◇Tknzr t str=\"\" incr=0 ->", "proc pushToken(t : Tknzr, str = \"\", incr = 0)")
-        t("pushToken = ◇Tknzr t str=\"\" tk=◂name incr=0 ->", "proc pushToken(t : Tknzr, str = \"\", tk = ◂name, incr = 0)")
+        t("pushToken = ◇Tknzr t str=2 tk=3 incr=0 ->", "\nproc pushToken(t : Tknzr, str = 2, tk = 3, incr = 0)")
+        t("pushToken = ◇Tknzr t str=\"\" incr=0 ->", "\nproc pushToken(t : Tknzr, str = \"\", incr = 0)")
+        t("pushToken = ◇Tknzr t str=\"\" tk=◂name incr=0 ->", "\nproc pushToken(t : Tknzr, str = \"\", tk = ◂name, incr = 0)")
     test "call": 
         t("f()", "f()")
         t("f(g())", "f(g())")
@@ -298,7 +300,9 @@ f = ->
         2
     1
 """, """
+
 proc f = 
+    
     proc g = 
         2
         2
@@ -309,6 +313,7 @@ f = ->
         2
     1
 """, """
+
 proc f = 
     if x: 
         2
@@ -319,6 +324,7 @@ f = ->
         2
 # dedent
 """, """
+
 proc f = 
     if 1: 
         2
@@ -331,7 +337,9 @@ f = ->
     1
 0
 """, """
+
 proc f = 
+    
     proc g = 
         2
         2
@@ -434,13 +442,13 @@ icon =
         " "
     1""")
     test "proc": 
-        t("proc ast*(text:string) : Node =", "proc ast*(text:string) : Node =")
+        t("proc ast*(text:string) : Node =", "\nproc ast*(text:string) : Node =")
     test "converter": 
-        t("converter toBool*(x: int): bool = x != 0", "converter toBool*(x: int): bool = x != 0")
+        t("converter toBool*(x: int): bool = x != 0", "\nconverter toBool*(x: int): bool = x != 0")
     test "template": 
-        t("template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())")
+        t("template t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())", "\ntemplate t(a:string, b:string) = testCmp(a, render(a), b, instantiationInfo())")
     test "macro": 
-        t("macro dbg*(args: varargs[untyped]): untyped =", "macro dbg*(args: varargs[untyped]): untyped =")
+        t("macro dbg*(args: varargs[untyped]): untyped =", "\nmacro dbg*(args: varargs[untyped]): untyped =")
         t("quote do:\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)")
         t("quote\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)")
     test "type": 

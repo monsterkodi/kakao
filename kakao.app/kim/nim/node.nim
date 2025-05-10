@@ -62,6 +62,7 @@ type NodeKind* = enum
 # ███ █ ███  ███   ███  ███   ███  ███████ 
 # ███  ████  ███   ███  ███   ███  ███     
 # ███   ███   ███████   ███████    ████████
+
 type Node* = ref object of RootObj
     token*: Token
     case kind*: NodeKind:
@@ -159,10 +160,12 @@ type Node* = ref object of RootObj
             test_value*: Node
             test_expected*: Node
         else: discard
+
 proc init*(this : Node) : Node = 
         # super() -> procCall constructor(Base(@))
         echo("NODE")
         this
+
 proc `$`*(this : Node) : string = 
         if (this == nil): 
             return "NIL"
@@ -298,6 +301,7 @@ proc `$`*(this : Node) : string =
 # s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
 # s = &"(s n.for_value in n.for_rangeb)"
 # s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
+
 proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
     # log "#{kind} #{token}"
     var n = Node(kind: kind, token: token)
@@ -368,6 +372,7 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.test_block = args[0]
         else: discard
     n
+
 proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node = 
     var n = Node() #kind:kind token:token
     n.kind = kind

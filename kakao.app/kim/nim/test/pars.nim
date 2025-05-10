@@ -4,7 +4,9 @@
 # ███        ███   ███  ███   ███       ███
 # ███        ███   ███  ███   ███  ███████ 
 import ../pars
+
 template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
+
 template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
 suite "pars": 
     test "math ops": 

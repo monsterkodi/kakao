@@ -4,7 +4,9 @@
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 import ../tknz
+
 template t(a:string, b:seq[Token]) = testCmp(a, tokenize(a), b, instantiationInfo())
+
 proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok, line:line, col:col)
 suite "tknz": 
     test "empty": 

@@ -9,20 +9,28 @@
     operations in scope
 ]#
 import pars
+
 type Scoper = ref object of RootObj
     vars: seq[Table[string, bool]]
+
 proc `$`(this : Scoper) : string = $this.vars
+
 proc exp(this : Scoper, body : Node, i : int, e : Node)
+
 proc scope(this : Scoper, body : Node) : Node
+
 proc branch(this : Scoper, body : Node) = discard this.scope(body)
 # 00000000  000   000  00000000   
 # 000        000 000   000   000  
 # 0000000     00000    00000000   
 # 000        000 000   000        
 # 00000000  000   000  000        
+
 proc exp(this : Scoper, body : Node, i : int, e : Node) = 
         if (e == nil): return
+        
         proc add(name : string) = this.vars[^1][name] = true
+        
         proc insert(name : string, expr : Node) = 
             for map in this.vars: 
                 if map.hasKey(name): return
@@ -71,6 +79,7 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
 # 0000000   000       000   000  00000000   0000000   
 #      000  000       000   000  000        000       
 # 0000000    0000000   0000000   000        00000000  
+
 proc scope(this : Scoper, body : Node) : Node = 
         if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 
             return body
@@ -79,5 +88,6 @@ proc scope(this : Scoper, body : Node) : Node =
             this.exp(body, i, e)
         this.vars.pops()
         body
+
 proc variables*(body : Node) : Node = 
     Scoper().scope(body)

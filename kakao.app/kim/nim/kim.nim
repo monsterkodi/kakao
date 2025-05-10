@@ -15,6 +15,7 @@ var greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin mor
 var farewells = @["👋 Good bye! May your code always compile.", "👋 Good bye! May your brackets always align.", "👋 Farewell! May your brackets nest flawlessly.", "👋 Farewell! May your brackets always balance."]
 var testFiles = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
 randomize()
+
 proc verb(msg : string) = 
     if verbose: echo(msg)
 #  ███████   ████████  █████████         ███████   ████████   █████████
@@ -59,6 +60,7 @@ for kind, key, val in optParser.getopt():
 # ███   ███  ████████  ███████      ███     ███   ███  ███   ███     ███   
 when defined(posix): 
     import posix
+    
     proc restart = 
         var args = allocCStringArray(@[getAppFilename()] & params)
         discard execv(getAppFilename().cstring(), args)
@@ -68,6 +70,7 @@ when defined(posix):
 # ███      ███   ███  ███  ████  ██████    ███  ███      ███████ 
 # ███      ███   ███  ███   ███  ███       ███  ███      ███     
 # ███████   ███████    ███████   ███       ███  ███████  ████████
+
 proc logFile(f : string, prefix = "") = 
     var (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
     var d = if dir.len: dir & "/" else: ""
@@ -79,6 +82,7 @@ proc logFile(f : string, prefix = "") =
 # ███       ███   ███  █████████  ████████   ███  ███      ███████ 
 # ███       ███   ███  ███ █ ███  ███        ███  ███      ███     
 #  ███████   ███████   ███   ███  ███        ███  ███████  ████████
+
 proc compile(file : string, outDir = "bin") : bool = 
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
     profileScope("comp")
@@ -98,6 +102,7 @@ proc compile(file : string, outDir = "bin") : bool =
 #    ███     ███████   ███████      ███     ███████ 
 #    ███     ███            ███     ███          ███
 #    ███     ████████  ███████      ███     ███████ 
+
 proc runTests() : bool = 
     profileScope("test")
     var anyFail = false
@@ -155,6 +160,7 @@ if tests:
 # ███████      ███     █████████  ███  ████  ███████ 
 #      ███     ███     ███   ███  ███   ███  ███     
 # ███████      ███     ███   ███   ███████   ████████
+
 proc stage(kimFiles : seq[string], src : string, dst : string) : bool = 
     profileStart(dst & " ")
     for f in kimFiles: 
@@ -181,7 +187,9 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
 # █████████  █████████     ███     ███       █████████
 # ███   ███  ███   ███     ███     ███       ███   ███
 # ██     ██  ███   ███     ███      ███████  ███   ███
+
 proc watch(paths : seq[string]) = 
+    
     proc hook {.noconv.} = 
         styledEcho("")
         styledEcho(fgGreen, farewells[rand(farewells.high)])

@@ -114,23 +114,28 @@ const
 #    ███     ███████    ███ █ ███    ███    ███████  
 #    ███     ███  ███   ███  ████   ███     ███   ███
 #    ███     ███   ███  ███   ███  ███████  ███   ███
+
 type Token* = object
     tok*: tok
     str*: string
     line*: int
     col*: int
+
 proc init*(this : var Token, tok : tok, str : string, line = -1, col = -1) : Token = 
         this.tok = tok
         this.str = str
         this.line = line
         this.col = col
         this
+
 proc tkn*(tok : tok, str : string, line = -1, col = -1) : Token = 
     var t = Token()
     t.init(tok, str, line, col)
+
 proc tkn*(tok = ◂name, line = -1, col = -1) : Token = 
     var t = Token()
     t.init(tok, "", line, col)
+
 type Tknzr = ref object of RootObj
     tokens: seq[Token]
     openStack: seq[tok]
@@ -145,18 +150,26 @@ type Tknzr = ref object of RootObj
 # segi at start of current line
 # segi at end of current line
 # current line index
+
 proc `$`(this : Tknzr) : string = 
         &"◂▸ {this.line} {this.token} {this.bol} {this.segi} {this.eol}"
+
 proc char(this : Tknzr) : char = this.segs[this.segi][0]
+
 proc char(this : Tknzr, n : int) : char = this.segs[(this.segi + n)][0]
+
 proc peek(this : Tknzr, n : int) : string = this.segs[(this.segi + n)]
+
 proc incr(this : Tknzr, n : int) = (this.segi += n)
+
 proc col(this : Tknzr) : int = (this.segi - this.bol)
+
 proc peekSafe(this : Tknzr, n : int) : string = 
         if ((this.segi + n) < this.segs.len): 
             this.segs[(this.segi + n)]
         else: 
             ""
+
 proc nextLine(this : Tknzr) = 
         assert((this.segs[this.segi] == "\n"))
         this.incr(1)
@@ -165,51 +178,62 @@ proc nextLine(this : Tknzr) =
         this.eol = this.bol
         while ((this.eol < this.segs.len) and (this.segs[this.eol] != "\n")): 
             (this.eol += 1)
+
 proc lineIncr(this : Tknzr, c : string) = 
         if (c == "\n"): 
             this.nextLine()
         else: 
             this.incr(1)
+
 proc srng(this : Tknzr, n : int) : string = 
         var e = if (n >= 0): (this.segi + n) else: this.eol
         if (e > this.segs.len): return ""
         this.segs[this.segi..<e].join("")
+
 proc scmp(this : Tknzr, s : string) : bool = 
         var ss = kseg(s)
         for n in 0..<ss.len: 
             if ((this.segi + n) >= this.segs.len): return false
             if (this.segs[(this.segi + n)] != ss[n]): return false
         true
+
 proc advance(this : Tknzr, n : int) = 
         for s in 0..<n: 
             (this.token.str &= this.peek(0))
             this.incr(1)
+
 proc advance(this : Tknzr, charset : set[char]) = 
         while ((this.segi < this.segs.len) and (this.peek(0)[0] in charset)): 
             this.advance(1)
+
 proc advanceUntil(this : Tknzr, stop : string) = 
         while ((this.segi < this.segs.len) and not this.scmp(stop)): 
             (this.token.str &= this.peek(0))
             this.incr(1)
+
 proc advanceMulti(this : Tknzr, stop : string) = 
         while ((this.segi < this.segs.len) and not this.scmp(stop)): 
             let c = this.peek(0)
             (this.token.str &= c)
             this.lineIncr(c)
+
 proc pushToken(this : Tknzr, str = "", tk = ◂name, incr = 0) = 
         if this.token.str.len: 
             this.tokens.add(this.token)
         this.token = tkn(tk, str, this.line, this.col)
         this.incr(incr)
+
 proc push(this : Tknzr, tk : tok) = 
         this.token.tok = tk
         this.pushToken()
+
 proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0)
 #  ███████  █████████  ████████   ███  ███   ███   ███████ 
 # ███          ███     ███   ███  ███  ████  ███  ███      
 # ███████      ███     ███████    ███  ███ █ ███  ███  ████
 #      ███     ███     ███   ███  ███  ███  ████  ███   ███
 # ███████      ███     ███   ███  ███  ███   ███   ███████ 
+
 proc `string`(this : Tknzr) = 
         var topTok = this.tokens[^1]
         assert((topTok.tok in {◂string_start, ◂stripol_end}))
@@ -227,6 +251,7 @@ proc `string`(this : Tknzr) =
                 this.token.tok = ◂string
             else: 
                 discard
+        
         proc isAtStringEnd() : bool = 
             if ((this.delimiter.len == 1) and (this.segi >= this.eol)): 
                 return true
@@ -253,6 +278,7 @@ proc `string`(this : Tknzr) =
 # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
 # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
 # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
+
 proc number(this : Tknzr) = 
         this.pushToken("", ◂number)
         var l = this.segs.len
@@ -285,6 +311,7 @@ proc number(this : Tknzr) =
 # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
 #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
 proc comment(this : Tknzr) = 
         if this.scmp("##"): 
             (this.tokens[^1].str &= "##")
@@ -299,6 +326,7 @@ proc comment(this : Tknzr) =
             return
         this.advanceUntil("\n")
         this.push(◂comment)
+
 proc modbracket(this : Tknzr) = 
         this.pushToken()
         this.token.tok = ◂mod
@@ -306,6 +334,7 @@ proc modbracket(this : Tknzr) =
         this.advanceUntil(".}")
         this.advance(2)
         this.pushToken()
+
 proc verbatim(this : Tknzr, tk : tok) = 
         this.advanceUntil("\n")
         this.push(tk)
@@ -314,6 +343,7 @@ proc verbatim(this : Tknzr, tk : tok) =
 # ███       ███   ███  █████████  █████████  ███     ███   
 # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
 #  ███████   ███████   ███   ███  ███   ███  ███     ███   
+
 proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0) = 
         this.pushToken(str, tk, incr)
         this.pushToken()
@@ -331,6 +361,7 @@ proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0) =
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
+
 proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] = 
         # profileScope "tknz"
         this.segs = segs
@@ -438,5 +469,6 @@ proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] =
                     this.token.tok = keywords[this.token.str]
                 this.tokens.add(this.token)
         return this.tokens
+
 proc tokenize*(text : string) : seq[Token] = 
     Tknzr.new.tknz(kseg(text))
