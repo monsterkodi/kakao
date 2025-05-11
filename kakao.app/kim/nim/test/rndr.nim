@@ -158,7 +158,7 @@ let greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin mor
         t("use ../rndr", "import ../rndr")
         t("use ../../rel", "import ../../rel")
         t("use ../../rel ▪ s1 s2", "import ../../rel/[s1, s2]")
-        t("import ../../rel/[s1, s2]", "import ../../rel/[s1, s2]")
+        t("import ../../rel/[s1, s2]", "\nimport ../../rel/[s1, s2]")
         t("use std ▪ os logging\nuse kommon", "import std/[os, logging]\nimport kommon")
         t("use std ▪ a b c\nuse d\nuse e\nuse f", "import std/[a, b, c]\nimport d\nimport e\nimport f")
         t("use a b c", "import a\nimport b\nimport c")
@@ -452,4 +452,4 @@ icon =
         t("quote do:\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)")
         t("quote\n  profileStart(`msg`)\n  defer: profileStop(`msg`)", "quote do: \n  profileStart(`msg`)\n  defer: profileStop(`msg`)")
     test "type": 
-        t("type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]")
+        t("type lineInfo* = tuple[filename: string, line: int, column: int]", "\ntype lineInfo* = tuple[filename: string, line: int, column: int]")

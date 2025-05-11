@@ -103,10 +103,10 @@ proc compile(file : string, outDir = "bin") : bool =
 #    ███     ███            ███     ███          ███
 #    ███     ████████  ███████      ███     ███████ 
 
-proc runTests() : bool = 
+proc runTests(files : seq[string]) : bool = 
     profileScope("test")
     var anyFail = false
-    for f in testFiles: 
+    for f in files: 
         var args = @["r", "--colors:on", "--stackTrace:on", "--lineTrace:on", "--warning:User:off", f]
         var process = startProcess(command = "nim", args = args, options = {poInteractive, poUsePath})
         defer: process.close()
@@ -153,7 +153,7 @@ if files.len:
     # profileStop 'translate'
     quit((transpiled.len - files.len))
 if tests: 
-    var exit = if runTests(): 0 else: 1
+    var exit = if runTests(testFiles): 0 else: 1
     quit(exit)
 #  ███████  █████████   ███████    ███████   ████████
 # ███          ███     ███   ███  ███        ███     
@@ -164,7 +164,7 @@ if tests:
 proc stage(kimFiles : seq[string], src : string, dst : string) : bool = 
     profileStart(dst & " ")
     for f in kimFiles: 
-        copyFileWithPermissions(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
+        slash.copy(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
     for f in kimFiles: 
         var (output, exitCode) = execCmdEx(&"{src}/bin/kim " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
         if (exitCode != 0): 
@@ -221,9 +221,7 @@ proc watch(paths : seq[string]) =
                 if (modTimes[f] == modTime): 
                     continue
                 modTimes[f] = modTime
-                if ((ext == ".kim") and (dir.find("kxk") < 0)): 
-                    echo(dir.find("kxk"))
-                    toTranspile.add(f)
+                toTranspile.add(f)
         if firstLoop: 
             firstLoop = false
             if verbose: 
@@ -234,12 +232,12 @@ proc watch(paths : seq[string]) =
                 logFile(f, "▸ ")
             if stage(kimFiles, ".", "k1m"): 
                 if stage(kimFiles, "k1m", "k2m"): 
-                    echo("-> deploy")
                     for f in kimFiles: 
                         var srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
                         var tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
-                        copyFileWithPermissions(srcNim, tgtNim)
+                        slash.copy(srcNim, tgtNim)
                     if compile("k2m/nim/kim.nim", "bin"): 
+                        echo("-> enjoy")
                         restart()
         sleep(200)
 watch(@[getCurrentDir() & "/kim"])

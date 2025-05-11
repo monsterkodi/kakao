@@ -163,7 +163,6 @@ suite "tknz":
         t("exp* =", @[tk("exp*", ◂name, 0, 0), tk("=", ◂assign, 0, 5)])
         t("exp* :", @[tk("exp*", ◂name, 0, 0), tk(":", ◂colon, 0, 5)])
         t("class exp*\n    ", @[tk("class", ◂class, 0, 0), tk("exp*", ◂name, 0, 6)])
-        t("proc exp* (", @[tk("proc exp* (", ◂proc, 0, 0)])
     # ███   ███   ███████  ████████
     # ███   ███  ███       ███     
     # ███   ███  ███████   ███████ 
@@ -173,4 +172,6 @@ suite "tknz":
         t("use std ▪ unittest", @[tk("use", ◂use, 0, 0), tk("std", ◂name, 0, 4), tk("▪", ◂name, 0, 8), tk("unittest", ◂name, 0, 10)])
         t("use ../rndr", @[tk("use", ◂use, 0, 0), tk("..", ◂doubledot, 0, 4), tk("/", ◂divide, 0, 6), tk("rndr", ◂name, 0, 7)])
         t("use std ▪ os logging\nuse kommon", @[tk("use", ◂use, 0, 0), tk("std", ◂name, 0, 4), tk("▪", ◂name, 0, 8), tk("os", ◂name, 0, 10), tk("logging", ◂name, 0, 13), tk("", ◂indent, 1, 0), tk("use", ◂use, 1, 0), tk("kommon", ◂name, 1, 4)])
-        t("import ../../rel/[s1, s2]", @[tk("import ../../rel/[s1, s2]", ◂import, 0, 0)])
+    test "verbatim": 
+        t("proc exp* (", @[tk("proc exp* (", ◂verbatim, 0, 0)])
+        t("import ../../rel/[s1, s2]", @[tk("import ../../rel/[s1, s2]", ◂verbatim, 0, 0)])

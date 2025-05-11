@@ -42,13 +42,8 @@ type NodeKind* = enum
     ●break
     ●continue
     ●use
-    ●import
-    ●template
-    ●converter
-    ●macro
     ●quote
     ●proc
-    ●typeDef
     ●enum
     ●class
     ●struct

@@ -6,9 +6,12 @@
 import node
 export node
 {.experimental: "codeReordering".}
+
 type RHS = proc(p: Parser): Node
+
 type LHS = proc(p: Parser, left: Node): Node
 var EOF = tkn(◂eof)
+
 type Pratt = object
 
     rhs: RHS
@@ -600,18 +603,6 @@ proc rLiteral(this : Parser) : Node = nod(●literal, this.consume())
 
 proc rKeyword(this : Parser) : Node = nod(●keyword, this.consume())
 
-proc rImport(this : Parser) : Node = nod(●import, this.consume())
-
-proc rProc(this : Parser) : Node = nod(●proc, this.consume())
-
-proc rTypeDef(this : Parser) : Node = nod(●typeDef, this.consume())
-
-proc rMacro(this : Parser) : Node = nod(●macro, this.consume())
-
-proc rTemplate(this : Parser) : Node = nod(●template, this.consume())
-
-proc rConverter(this : Parser) : Node = nod(●converter, this.consume())
-
 proc rLet(this : Parser) : Node = nod(●let, this.consume(), this.parseVar())
 
 proc rReturnType(this : Parser) : Node = nod(●signature, this.consume(), nil, this.parseType())
@@ -1059,12 +1050,7 @@ proc setup(this : Parser) =
         this.pratt(◂number, nil, rLiteral, 0)
         this.pratt(◂string_start, nil, rString, 0)
         this.pratt(◂comment_start, nil, rComment, 0)
-        this.pratt(◂import, nil, rImport, 0)
-        this.pratt(◂macro, nil, rMacro, 0)
-        this.pratt(◂template, nil, rTemplate, 0)
-        this.pratt(◂converter, nil, rConverter, 0)
-        this.pratt(◂proc, nil, rProc, 0)
-        this.pratt(◂type, nil, rTypeDef, 0)
+        this.pratt(◂verbatim, nil, rLiteral, 0)
         this.pratt(◂use, nil, rUse, 0)
         this.pratt(◂let, nil, rLet, 0)
         this.pratt(◂var, nil, rLet, 0)

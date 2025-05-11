@@ -3,8 +3,9 @@
 #    ███     ███████    ███ █ ███    ███  
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
-import komn
-export komn
+
+import kxk/kxk
+export kxk
 type tok* = enum
     ◂name
     ◂if
@@ -24,6 +25,7 @@ type tok* = enum
     ◂enum
     ◂class
     ◂struct
+    ◂from
     ◂import
     ◂template
     ◂macro
@@ -92,6 +94,7 @@ type tok* = enum
     ◂less = "<"
     ◂test = "▸"
     ◂ # block
+    ◂verbatim
     ◂indent
     ◂eof
 var keywords = initTable[string, tok]()
@@ -335,9 +338,9 @@ proc modbracket(this : Tknzr) =
         this.advance(2)
         this.pushToken()
 
-proc verbatim(this : Tknzr, tk : tok) = 
+proc verbatim(this : Tknzr) = 
         this.advanceUntil("\n")
-        this.push(tk)
+        this.push(◂verbatim)
 #  ███████   ███████   ██     ██  ██     ██  ███  █████████
 # ███       ███   ███  ███   ███  ███   ███  ███     ███   
 # ███       ███   ███  █████████  █████████  ███     ███   
@@ -459,8 +462,8 @@ proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] =
                                 else: discard
                         if (keywords.hasKey(this.token.str) and (((this.segi >= this.eol) or (this.peek(0) == " ")) or punct.hasKey(this.peek(0)))): 
                             case keywords[this.token.str]:
-                                of ◂proc, ◂type, ◂import, ◂macro, ◂template, ◂converter: 
-                                    this.verbatim(keywords[this.token.str])
+                                of ◂proc, ◂type, ◂from, ◂import, ◂macro, ◂template, ◂converter: 
+                                    this.verbatim()
                                 else: this.push(keywords[this.token.str])
                         continue
                 this.incr(1)

@@ -5,7 +5,6 @@
 # ███        ███   ███  ███   ███  ███████ 
 
 use node
-
 export node
 
 {.experimental: "codeReordering".}
@@ -739,12 +738,6 @@ class Parser
     
     rLiteral   : ➜Node -> nod(●literal   @consume())
     rKeyword   : ➜Node -> nod(●keyword   @consume())
-    rImport    : ➜Node -> nod(●import    @consume())
-    rProc      : ➜Node -> nod(●proc      @consume())
-    rTypeDef   : ➜Node -> nod(●typeDef   @consume())
-    rMacro     : ➜Node -> nod(●macro     @consume())
-    rTemplate  : ➜Node -> nod(●template  @consume())
-    rConverter : ➜Node -> nod(●converter @consume())
     rLet       : ➜Node -> nod(●let       @consume() @parseVar())
     rReturnType: ➜Node -> nod(●signature @consume() nil @parseType())
     rQuote     : ➜Node -> nod(●quote     @consume() @thenBlock())
@@ -1304,12 +1297,7 @@ class Parser
         @pratt ◂number            nil               rLiteral        0
         @pratt ◂string_start      nil               rString         0
         @pratt ◂comment_start     nil               rComment        0
-        @pratt ◂import            nil               rImport         0
-        @pratt ◂macro             nil               rMacro          0
-        @pratt ◂template          nil               rTemplate       0
-        @pratt ◂converter         nil               rConverter      0
-        @pratt ◂proc              nil               rProc           0
-        @pratt ◂type              nil               rTypeDef        0
+        @pratt ◂verbatim          nil               rLiteral        0
         @pratt ◂use               nil               rUse            0
         @pratt ◂let               nil               rLet            0
         @pratt ◂var               nil               rLet            0

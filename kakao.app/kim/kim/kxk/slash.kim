@@ -1,0 +1,37 @@
+
+use std ▪ os paths strutils sequtils 
+
+mkdir* = ◇string dir ->
+
+    if not dirExists dir
+        createDir dir
+
+copy* = ◇string src ◇string dest ->
+
+    mkdir dest.parentDir()
+    
+    copyFileWithPermissions src dest
+
+write* = ◇string path ◇string text ->
+
+    mkdir path.parentDir()
+    
+    path.writeFile text
+    
+swapLastPathComponentAndExt* = ◇string file ◇string src ◇string tgt ➜string ->
+
+    (dir _ _) = splitFile(file.Path)
+    dirParts  = dir.string.split(DirSep)
+    
+    if dirParts[0] == "" and dirParts.len == 1
+        dirParts.delete(0..0)
+    
+    for i in countdown(dirParts.high, 0)
+        if dirParts[i] == src
+            dirParts[i] = tgt
+            break
+            
+    dirParts.add file.Path.changeFileExt("." & tgt).splitPath[1].string
+    dirParts.join "/"
+    
+    

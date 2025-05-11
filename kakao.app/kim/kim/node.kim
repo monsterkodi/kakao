@@ -5,7 +5,6 @@
 # ███   ███   ███████   ███████    ████████
 
 use tknz
-
 export tknz
 
 enum NodeKind*
@@ -46,13 +45,8 @@ enum NodeKind*
     ●break 
     ●continue          
     ●use 
-    ●import
-    ●template
-    ●converter
-    ●macro
     ●quote
     ●proc
-    ●typeDef
     ●enum
     ●class
     ●struct

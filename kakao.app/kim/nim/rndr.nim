@@ -4,8 +4,8 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 import pars
+import klss
 import vars
-import clss
 export pars
 
 type Rndr = ref object of RootObj
@@ -40,8 +40,7 @@ proc ▸block(this : Rndr, n : Node) =
             idt = n.token.str
             this.add("\n" & idt)
         for i, exp in n.expressions: 
-            # if i < n.expressions.len-1 and n.expressions[i+1].token.line > exp.token.line
-            if ((exp.kind in {●class, ●struct, ●proc, ●template, ●converter, ●macro}) or ((exp.token.tok == ◂assign) and (exp.operand_right.kind in {●func}))): 
+            if (((exp.kind in {●class, ●struct}) or ((exp.token.tok == ◂assign) and (exp.operand_right.kind in {●func}))) or (exp.token.tok == ◂verbatim)): 
                 this.add("\n" & idt)
             this.rnd(exp)
             if (i < (n.expressions.len - 1)): 
@@ -438,9 +437,9 @@ proc rnd(this : Rndr, n : Node) =
             of ●member: this.▸member(n)
             of ●testCase: this.▸testCase(n)
             of ●testSuite, ●testSection: this.▸testSuite(n)
-            of ●literal, ●keyword, ●type, ●typeDef, ●import, ●proc, ●macro, ●template, ●converter: this.tok(n)
+            of ●literal, ●type, ●keyword: this.tok(n)
             else: 
-                              echo(&"unhandled {n} {n.kind}")
+                              echo(&"rndr? {n} {n.kind}")
                               this.tok(n)
 
 proc render*(code : string, autovar = true) : string = 
@@ -466,6 +465,7 @@ proc file*(file : string) : string =
     var nimCode = render(kimCode)
     if nimCode: 
         fileOut.writeFile(nimCode)
+        # slash.write fileOut nimCode
         fileOut
     else: 
         ""

@@ -386,8 +386,9 @@ test = false
 # ███  
 test = false
 """, "▪[##(◂name = ✘)]")
-    test "proc": 
-        t("proc ast*(text:string) : Node =", "▪[◂proc]")
+    test "verbatim": 
+        t("proc ast*(text:string) : Node =", "▪[◂verbatim]")
+        t("import ../../rel/[s1, s2]", "▪[◂verbatim]")
     test "use": 
         t("use rndr", "▪[(◂use ◂name)]")
         t("use std ▪ unittest", "▪[(◂use ◂name ▪ @[◂name])]")
@@ -395,7 +396,6 @@ test = false
         t("use std ▪ os logging\nuse kommon", "▪[(◂use ◂name ▪ @[◂name, ◂name])(◂use ◂name)]")
         t("use std ▪ a b c\nuse d\nuse e\nuse f", "▪[(◂use ◂name ▪ @[◂name, ◂name, ◂name])(◂use ◂name)(◂use ◂name)(◂use ◂name)]")
         s("use a b c", ast("use a b c").expressions[0].use_module.token.str, "a b c")
-        t("import ../../rel/[s1, s2]", "▪[◂import]")
     test "enum": 
         t("enum Kind", "▪[(◂enum ◂name)]")
         t("enum Kind\na", "▪[(◂enum ◂name)◂name]")

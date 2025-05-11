@@ -1,16 +1,13 @@
-#[
-    ███   ███   ███████   ██     ██  ██     ██   ███████   ███   ███
-    ███  ███   ███   ███  ███   ███  ███   ███  ███   ███  ████  ███
-    ███████    ███   ███  █████████  █████████  ███   ███  ███ █ ███
-    ███  ███   ███   ███  ███ █ ███  ███ █ ███  ███   ███  ███  ████
-    ███   ███   ███████   ███   ███  ███   ███   ███████   ███   ███
-]#
 import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
 import system/ansi_c
+
+from   slash import nil
+export slash
 export monotimes, times, unittest, macros
 export sequtils, enumutils, sets, tables, typetraits
 export strutils, strformat, unicode, pegs
 export terminal
+
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
 proc fg*(c : auto) : string = 
@@ -66,18 +63,6 @@ converter toBool*(x: string): bool = x.len > 0
 converter toBool*[T](x: seq[T]): bool = x.len > 0
 
 converter toBool*[T: ref object](x: T): bool = x != nil
-
-proc swapLastPathComponentAndExt*(file : string, src : string, tgt : string) : string = 
-    let (dir, _, _) = splitFile(file.Path)
-    var dirParts = dir.string.split(DirSep)
-    if ((dirParts[0] == "") and (dirParts.len == 1)): 
-        dirParts.delete(0..0)
-    for i in countdown(dirParts.high, 0): 
-        if (dirParts[i] == src): 
-            dirParts[i] = tgt
-            break
-    dirParts.add(file.Path.changeFileExt("." & tgt).splitPath[1].string)
-    dirParts.join("/")
 # ████████   ████████    ███████   ████████  ███  ███      ████████
 # ███   ███  ███   ███  ███   ███  ███       ███  ███      ███     
 # ████████   ███████    ███   ███  ██████    ███  ███      ███████ 
@@ -105,7 +90,8 @@ proc profileStop*(msg : string) =
         mons = &" {mono.inMicroseconds} {sc(styleDim)}µs "
     else: 
         mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
-    styledEcho(fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle)
+    # styledEcho fgBlue msg fgGreen mons fgMagenta underscore(tick) resetStyle
+    styledEcho(fgBlue, msg, fgGreen, mons, resetStyle)
     # GC_enableOrc()    
     timers.del(msg)
 
@@ -234,7 +220,6 @@ proc splice*[T](s: var seq[T], start: int, delcnt: int = high(int), items: varar
 
     let start = if (start < 0): max((s.len + start), 0) else: min(start, s.len)
     let delcnt = min(delcnt, (s.len - start))
-    # result = s[start ... start + delcnt]
     s.delete(start..<(start + delcnt))
     for i, item in items: 
         s.insert(item, (start + i))

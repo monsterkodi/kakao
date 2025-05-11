@@ -146,12 +146,12 @@ compile = ◇string file outDir="bin" ➜bool ->
 #    ███     ███            ███     ███          ███
 #    ███     ████████  ███████      ███     ███████ 
 
-runTests = ➜bool ->
+runTests = ◇seq[string] files ➜bool ->
 
     profileScope 'test'
     anyFail = false
     
-    for f in testFiles
+    for f in files
         args = ["r" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
         process = startProcess command="nim" args=args options={poInteractive poUsePath}
         defer: process.close()
@@ -212,7 +212,7 @@ if files.len
 
 if tests
 
-    exit = if runTests() ➜ 0 ➜ 1
+    exit = if runTests(testFiles) ➜ 0 ➜ 1
     quit exit
     
 #  ███████  █████████   ███████    ███████   ████████
@@ -225,7 +225,7 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
 
     profileStart dst & " "
     for f in kimFiles 
-        copyFileWithPermissions f f.replace("/kim/kim/" "/kim/#{dst}/kim/")
+        slash.copy f f.replace("/kim/kim/" "/kim/#{dst}/kim/")
     
     for f in kimFiles 
         (output exitCode) = execCmdEx "#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/")
@@ -306,9 +306,7 @@ watch = ◇seq[string] paths ->
         
                 modTimes[f] = modTime
                 
-                if ext == ".kim" and dir.find("kxk") < 0
-                    log dir.find("kxk")
-                    toTranspile.add f
+                toTranspile.add f
                 
         if firstLoop                                    
             firstLoop = false
@@ -322,12 +320,12 @@ watch = ◇seq[string] paths ->
                 
             if stage kimFiles "." "k1m"
                 if stage kimFiles "k1m" "k2m"
-                    log "-> deploy"
                     for f in kimFiles 
                         srcNim = f.replace("/kim/kim/" "/kim/k2m/nim/").replace(".kim" ".nim")
                         tgtNim = f.replace("/kim/kim/" "/kim/nim/").replace(".kim" ".nim")
-                        copyFileWithPermissions srcNim tgtNim
+                        slash.copy srcNim tgtNim
                     if compile "k2m/nim/kim.nim" "bin"
+                        log "-> enjoy"
                         restart()
         sleep 200
         

@@ -4,7 +4,7 @@
 # ███   ███  ███  ████  ███   ███  ███   ███
 # ███   ███  ███   ███  ███████    ███   ███
 
-use pars vars clss
+use pars klss vars
 export pars
 
 class Rndr
@@ -39,8 +39,7 @@ class Rndr
             
         for i exp in n.expressions
         
-            # if i < n.expressions.len-1 and n.expressions[i+1].token.line > exp.token.line
-            if exp.kind in {●class ●struct ●proc ●template ●converter ●macro} or exp.token.tok == ◂assign and exp.operand_right.kind in {●func}
+            if exp.kind in {●class ●struct} or exp.token.tok == ◂assign and exp.operand_right.kind in {●func} or exp.token.tok == ◂verbatim
                 @add "\n" & idt
         
             @rnd exp
@@ -508,16 +507,10 @@ class Rndr
             ●testSuite 
             ●testSection    ➜ @▸testSuite      n
             ●literal 
-            ●keyword 
-            ●type           
-            ●typeDef 
-            ●import 
-            ●proc 
-            ●macro 
-            ●template 
-            ●converter      ➜ @tok             n
+            ●type 
+            ●keyword        ➜ @tok             n
                             ➜ 
-                              log "unhandled #{n} #{n.kind}"
+                              log "rndr? #{n} #{n.kind}"
                               @tok n
 
 render* = ◇string code autovar=true ➜string ->
@@ -549,6 +542,7 @@ file* = ◇string file ➜string ->
     nimCode = render kimCode 
     if nimCode
         fileOut.writeFile nimCode
+        # slash.write fileOut nimCode
         fileOut
     else
         ""

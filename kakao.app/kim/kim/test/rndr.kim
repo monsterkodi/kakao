@@ -207,7 +207,7 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         t "use ../../rel"                           , "import ../../rel"
         t "use ../../rel ▪ s1 s2"                   , "import ../../rel/[s1, s2]"
                                                     
-        t "import ../../rel/[s1, s2]"               , "import ../../rel/[s1, s2]"
+        t "import ../../rel/[s1, s2]"               , "\nimport ../../rel/[s1, s2]"
         t "use std ▪ os logging\nuse kommon"        , "import std/[os, logging]\nimport kommon"
         t "use std ▪ a b c\nuse d\nuse e\nuse f"    , "import std/[a, b, c]\nimport d\nimport e\nimport f"
                                                     
@@ -560,5 +560,5 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         
     ▸ type
     
-        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "type lineInfo* = tuple[filename: string, line: int, column: int]"
+        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "\ntype lineInfo* = tuple[filename: string, line: int, column: int]"
         

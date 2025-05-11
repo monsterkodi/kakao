@@ -4,8 +4,8 @@
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-import komn
-export komn
+import kxk/kxk
+export kxk
 
 enum tok*
         
@@ -27,6 +27,7 @@ enum tok*
     ◂enum
     ◂class
     ◂struct
+    ◂from
     ◂import
     ◂template
     ◂macro
@@ -98,6 +99,7 @@ enum tok*
     ◂less               = "<"
     ◂test               = "▸"
     ◂  # block
+    ◂verbatim
     ◂indent
     ◂eof
         
@@ -378,10 +380,10 @@ class Tknzr
         @advance 2
         @pushToken()
         
-    verbatim: ◇tok tk ->
+    verbatim: ->
     
         @advanceUntil "\n"
-        @push tk
+        @push ◂verbatim
     
     #  ███████   ███████   ██     ██  ██     ██  ███  █████████
     # ███       ███   ███  ███   ███  ███   ███  ███     ███   
@@ -533,8 +535,8 @@ class Tknzr
                          
                         if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)))
                             switch keywords[@token.str]
-                                ◂proc ◂type ◂import ◂macro ◂template ◂converter
-                                    @verbatim keywords[@token.str]
+                                ◂proc ◂type ◂from ◂import ◂macro ◂template ◂converter
+                                    @verbatim()
                                 ➜   @push keywords[@token.str]
                         continue
                 @incr 1

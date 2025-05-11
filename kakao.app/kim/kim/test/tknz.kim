@@ -548,9 +548,6 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("class"         ◂class          0  0)
             tk("exp*"          ◂name           0  6)]
             
-        t "proc exp* ("         @[
-            tk("proc exp* ("   ◂proc,          0  0)]
-
     # ███   ███   ███████  ████████
     # ███   ███  ███       ███     
     # ███   ███  ███████   ███████ 
@@ -568,7 +565,7 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
         t "use ../rndr"   @[ 
             tk("use"            ◂use            0  0) 
             tk(".."             ◂doubledot      0  4)
-            tk("/"              ◂divide,        0  6)
+            tk("/"              ◂divide         0  6)
             tk("rndr"           ◂name           0  7)]
             
         t "use std ▪ os logging\nuse kommon"   @[ 
@@ -581,6 +578,11 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("use"            ◂use            1  0)
             tk("kommon"         ◂name           1  4)]
     
+    ▸ verbatim
+
+        t "proc exp* ("         @[
+            tk("proc exp* ("   ◂verbatim       0  0)]
+    
         t "import ../../rel/[s1, s2]"   @[ 
-            tk("import ../../rel/[s1, s2]"   ◂import 0  0)]
+            tk("import ../../rel/[s1, s2]"   ◂verbatim 0  0)]
             
