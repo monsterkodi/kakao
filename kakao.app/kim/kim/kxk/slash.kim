@@ -162,15 +162,34 @@ swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜str
 tilde* = ◇string path ➜ string ->
 
     path.replace slash.home() "~"
-    
+        
 isRelative* = ◇string path ➜ bool ->
 
-    path.len == 0 or path.len > 0 and path[0] != '/'
+    path.len == 0 or path.len > 0 and path[0] notin ['/' '~']
     
 isAbsolute* = ◇string path ➜ bool ->
 
-    path.len > 0 and path[0] == '/'
+    path.len > 0 and path[0] in ['/' '~']
     
 isRoot* = ◇string path ➜ bool ->
 
     path.normalize() == "/"
+    
+cwd* = ➜ string ->
+
+    paths.getCurrentDir().string
+
+absolute* = ◇string path ◇string parent ➜ string ->
+
+    if slash.isRelative path
+        slash.path parent path
+    else
+        slash.untilde path
+    
+absolute* = ◇string path ➜ string ->
+
+    slash.absolute path slash.cwd()
+    
+relative* = ◇string path ◇string base ➜ string ->
+
+    paths.relativePath(slash.normalize(path).Path slash.normalize(base).Path).string

@@ -64,7 +64,7 @@ suite "slash":
         check slash.path("C://") == "C:"
         check slash.path("C:") == "C:"
         check slash.path("C:\\Back\\Slash\\Crap") == "C:/Back/Slash/Crap"
-        check slash.path("C:/Back/Slash/Crap/../../To/The/../Future") == "C:/Back/To/Future"
+        check slash.path("C:/Back/Slash/Crap/../../../The/../The/./Future") == "C:/The/Future"
         check slash.path("C:\\Back\\Slash\\Crap\\..\\..\\To\\The\\..\\Future") == "C:/Back/To/Future"
     # 000   0000000  00000000    0000000    0000000   000000000  
     # 000  000       000   000  000   000  000   000     000     
@@ -84,8 +84,6 @@ suite "slash":
         p(slash.parse, "/a/b/c", (path: "/a/b/c", dir: "/a/b", file: "c", name: "c", ext: ""))
         p(slash.parse, "/a/b/c/", (path: "/a/b/c", dir: "/a/b", file: "c", name: "c", ext: ""))
         p(slash.parse, "/a", (path: "/a", dir: "/", file: "a", name: "a", ext: ""))
-    #     # user = slash.user()
-    #     # slash.parse("~") ▸ path:"~" dir:"/Users" file:user, name:user, ext: ""
     # 0000000    000  00000000   
     # 000   000  000  000   000  
     # 000   000  000  0000000    
@@ -190,41 +188,23 @@ suite "slash":
         check slash.tilde(home) == "~"
         check slash.tilde(home & "/sub") == "~/sub"
         check slash.untilde("~/sub") == home & "/sub"
-    # 000   000  000   000  00000000  000   000  000   000  
-    # 000   000  0000  000  000       0000  000  000   000  
-    # 000   000  000 0 000  0000000   000 0 000   000 000   
-    # 000   000  000  0000  000       000  0000     000     
-    #  0000000   000   000  00000000  000   000      0      
-    # ▸ unenv
-    #     
-    #     slash.unenv "C:/$Recycle.bin"           ▸ "C:/$Recycle.bin"
-    #     slash.unenv "$HOME/test"                ▸ slash.path(process.env["HOME"]) + "/test"
     # 00000000   00000000  000       0000000   000000000  000  000   000  00000000  
     # 000   000  000       000      000   000     000     000  000   000  000       
     # 0000000    0000000   000      000000000     000     000   000 000   0000000   
     # 000   000  000       000      000   000     000     000     000     000       
     # 000   000  00000000  0000000  000   000     000     000      0      00000000  
-    # ▸ relative
-    # 
-    #     slash.relative "\\test\\some\\path.txt" "\\test\\some\\other\\path" ▸ "../../path.txt"
-    #     slash.relative "/Users/kodi/s/konrad/app/js/coffee.js" "/Users/kodi/s/konrad" ▸ "app/js/coffee.js"
-    #     slash.relative "/some/path/on.c" "/path/on.d" ▸ "../../some/path/on.c"
-    #     slash.relative "\\some\\path\\on.c" "\\path\\on.d" ▸ "../../some/path/on.c"
-    #     slash.relative "\\some\\path" "/some/path" ▸ "."
-    #     slash.relative "/Users/kodi/s/kakao/kakao.app/js/bin/kode/returner.js" "/Users/kodi/s/kakao/kakao.app/js/bin/kode/test" ▸ "../returner.js"
-    
-        # if slash.win()
-        #     slash.relative "C:\\test\\some\\path.txt" "C:\\test\\some\\other\\path" ▸ "../../path.txt"
-        #     slash.relative "C:/Users/kodi/s/konrad/app/js/coffee.js" "C:/Users/kodi/s/konrad" ▸ "app/js/coffee.js"
-        #     slash.relative "C:\\some\\path" "C:/some/path" ▸ "."
-        #     slash.relative "C:/some/path/on.c" "D:/path/on.d" ▸ "C:/some/path/on.c"
-        #     slash.relative "C:\\some\\path\\on.c" "D:\\path\\on.d" ▸ "C:/some/path/on.c"
-    # ▸ absolute
-    # 
-    #     slash.absolute "/some/path"         ▸ "/some/path"
-    #     slash.absolute "./child" "/parent"  ▸ "/parent/child"
-    #     slash.untilde  "~/child"            ▸ "/Users/kodi/child"
-    #     slash.absolute "~/child"            ▸ "/Users/kodi/child"
+    test "relative": 
+        check slash.relative("\\test\\some\\path.txt", "\\test\\some\\other\\path") == "../../path.txt"
+        check slash.relative("/Users/kodi/s/konrad/app/js/coffee.js", "/Users/kodi/s/konrad") == "app/js/coffee.js"
+        check slash.relative("/some/path/on.c", "/path/on.d") == "../../some/path/on.c"
+        check slash.relative("\\some\\path\\on.c", "\\path\\on.d") == "../../some/path/on.c"
+        check slash.relative("\\some\\path", "/some/path") == "."
+        check slash.relative("/Users/kodi/s/kakao/kakao.app/js/bin/kode/returner.js", "/Users/kodi/s/kakao/kakao.app/js/bin/kode/test") == "../returner.js"
+    test "absolute": 
+        check slash.absolute("/some/path") == "/some/path"
+        check slash.absolute("./child", "/parent") == "/parent/child"
+        check slash.untilde("~/child") == &"{slash.home()}/child"
+        check slash.absolute("~/child") == &"{slash.home()}/child"
     #  0000000  00000000   000      000  000000000  
     # 000       000   000  000      000     000     
     # 0000000   00000000   000      000     000     
@@ -235,37 +215,60 @@ suite "slash":
         check slash.split("d/users/home") == @["d", "users", "home"]
         check slash.split("c:/some/path") == @["c:", "some", "path"]
         check slash.split("~/home/path") == @["~", "home", "path"]
-    #  0000000  00000000   000      000  000000000  00000000  000  000      00000000  000      000  000   000  00000000  
-    # 000       000   000  000      000     000     000       000  000      000       000      000  0000  000  000       
-    # 0000000   00000000   000      000     000     000000    000  000      0000000   000      000  000 0 000  0000000   
-    #      000  000        000      000     000     000       000  000      000       000      000  000  0000  000       
-    # 0000000   000        0000000  000     000     000       000  0000000  00000000  0000000  000  000   000  00000000  
-#     ▸ splitFileLine
-# 
-#         slash.splitFileLine "/some/path"            ▸ ["/some/path" 1 0]
-#         slash.splitFileLine "/some/path:123"        ▸ ["/some/path" 123 0]
-#         slash.splitFileLine "/some/path:123:15"     ▸ ["/some/path" 123 15]
-#         slash.splitFileLine "c:/some/path:123"      ▸ ["c:/some/path" 123 0]
-#         slash.splitFileLine "c:/some/path:123:15"   ▸ ["c:/some/path" 123 15]
-
-    #  0000000  00000000   000      000  000000000  00000000  000  000      00000000  00000000    0000000    0000000  
-    # 000       000   000  000      000     000     000       000  000      000       000   000  000   000  000       
-    # 0000000   00000000   000      000     000     000000    000  000      0000000   00000000   000   000  0000000   
-    #      000  000        000      000     000     000       000  000      000       000        000   000       000  
-    # 0000000   000        0000000  000     000     000       000  0000000  00000000  000         0000000   0000000   
-#     ▸ splitFilePos
-# 
-#         slash.splitFilePos "/some/path"             ▸ ["/some/path" [0  0]]
-#         slash.splitFilePos "/some/path:123"         ▸ ["/some/path" [0  122]]
-#         slash.splitFilePos "/some/path:123:15"      ▸ ["/some/path" [15 122]]
-#         slash.splitFilePos "c:/some/path:123"       ▸ ["c:/some/path" [0  122]]
-#         slash.splitFilePos "c:/some/path:123:15"    ▸ ["c:/some/path" [15 122]]
-
-    #       000   0000000   000  000   000  00000000  000  000      00000000  00000000    0000000    0000000  
-    #       000  000   000  000  0000  000  000       000  000      000       000   000  000   000  000       
-    #       000  000   000  000  000 0 000  000000    000  000      0000000   00000000   000   000  0000000   
-    # 000   000  000   000  000  000  0000  000       000  000      000       000        000   000       000  
-    #  0000000    0000000   000  000   000  000       000  0000000  00000000  000         0000000   0000000   
+    # 000   0000000  00000000   00000000  000       0000000   000000000  000  000   000  00000000  
+    # 000  000       000   000  000       000      000   000     000     000  000   000  000       
+    # 000  0000000   0000000    0000000   000      000000000     000     000   000 000   0000000   
+    # 000       000  000   000  000       000      000   000     000     000     000     000       
+    # 000  0000000   000   000  00000000  0000000  000   000     000     000      0      00000000  
+    test "isRelative": 
+        # slash.isRelative ◆dir                 ▸ false
+        check slash.isRelative(".") == true
+        check slash.isRelative("..") == true
+        check slash.isRelative(".././bla../../fark") == true
+        check slash.isRelative("..\\blafark") == true
+        check slash.isRelative("a/b") == true
+        check slash.isRelative("/a/b") == false
+        check slash.isRelative("~") == false
+        check slash.isAbsolute(".") == false
+        check slash.isAbsolute("..") == false
+        check slash.isAbsolute(".././bla../../fark") == false
+        check slash.isAbsolute("..\\blafark") == false
+        check slash.isAbsolute("a/b") == false
+        check slash.isAbsolute("/a/b") == true
+        check slash.isAbsolute("~") == true
+    #  0000000   0000000   000   000  000000000   0000000   000  000   000   0000000  
+    # 000       000   000  0000  000     000     000   000  000  0000  000  000       
+    # 000       000   000  000 0 000     000     000000000  000  000 0 000  0000000   
+    # 000       000   000  000  0000     000     000   000  000  000  0000       000  
+    #  0000000   0000000   000   000     000     000   000  000  000   000  0000000   
+    test "contains": 
+        c(slash.contains, "/c/users/home/", "users", true)
+        c(slash.contains, "/home", "hom", false)
+        c(slash.contains, "/abc.def/ghi.jkl", "abc", false)
+        c(slash.contains, "/abc.def/ghi.jkl", "def", false)
+        c(slash.contains, "/abc.def/ghi.jkl", "ghi", false)
+        c(slash.contains, "/abc.def/ghi.jkl", "jkl", false)
+        c(slash.contains, "/abc.def/ghi.jkl", "abc.def", true)
+        c(slash.contains, "/abc.def/ghi.jkl", "ghi.jkl", true)
+    # ████████  ███  ███      ████████  ████████    ███████    ███████
+    # ███       ███  ███      ███       ███   ███  ███   ███  ███     
+    # ██████    ███  ███      ███████   ████████   ███   ███  ███████ 
+    # ███       ███  ███      ███       ███        ███   ███       ███
+    # ███       ███  ███████  ████████  ███         ███████   ███████ 
+    #▸ splitFileLine
+    #    
+    #    slash.splitFileLine "/some/path"            ▸ ["/some/path" 1 0]
+    #    slash.splitFileLine "/some/path:123"        ▸ ["/some/path" 123 0]
+    #    slash.splitFileLine "/some/path:123:15"     ▸ ["/some/path" 123 15]
+    #    slash.splitFileLine "c:/some/path:123"      ▸ ["c:/some/path" 123 0]
+    #    slash.splitFileLine "c:/some/path:123:15"   ▸ ["c:/some/path" 123 15]
+    #▸ splitFilePos
+    #    
+    #    slash.splitFilePos "/some/path"             ▸ ["/some/path" [0  0]]
+    #    slash.splitFilePos "/some/path:123"         ▸ ["/some/path" [0  122]]
+    #    slash.splitFilePos "/some/path:123:15"      ▸ ["/some/path" [15 122]]
+    #    slash.splitFilePos "c:/some/path:123"       ▸ ["c:/some/path" [0  122]]
+    #    slash.splitFilePos "c:/some/path:123:15"    ▸ ["c:/some/path" [15 122]]
     #▸ joinFilePos
     #    
     #    slash.joinFilePos "/some/path" [0 0]         ▸ "/some/path"
@@ -278,11 +281,6 @@ suite "slash":
     #    slash.joinFilePos "/some/path:23" [1 5]      ▸ "/some/path:6:1"
     #    slash.joinFilePos "/some/path"               ▸ "/some/path"
     #    slash.joinFilePos "/some/path" []            ▸ "/some/path"
-    #       000   0000000   000  000   000  00000000  000  000      00000000  000      000  000   000  00000000  
-    #       000  000   000  000  0000  000  000       000  000      000       000      000  0000  000  000       
-    #       000  000   000  000  000 0 000  000000    000  000      0000000   000      000  000 0 000  0000000   
-    # 000   000  000   000  000  000  0000  000       000  000      000       000      000  000  0000  000       
-    #  0000000    0000000   000  000   000  000       000  0000000  00000000  0000000  000  000   000  00000000  
     #▸ joinFileLine
     #    
     #    slash.joinFileLine "/some/path" 1         ▸ "/some/path:1"
@@ -292,11 +290,6 @@ suite "slash":
     #    slash.joinFileLine "/some/path:23" 5 1    ▸ "/some/path:5:1"
     #    slash.joinFileLine "/some/path"           ▸ "/some/path"
     #    slash.joinFileLine "/some/path" 0         ▸ "/some/path"
-    #  0000000   0000000   00     00  00000000  00000000  000  000      00000000  00000000    0000000    0000000  
-    # 000       000   000  000   000  000       000       000  000      000       000   000  000   000  000       
-    # 0000000   000000000  000000000  0000000   000000    000  000      0000000   00000000   000   000  0000000   
-    #      000  000   000  000 0 000  000       000       000  000      000       000        000   000       000  
-    # 0000000   000   000  000   000  00000000  000       000  0000000  00000000  000         0000000   0000000   
     #▸ sameFilePos
     #    
     #    slash.sameFilePos "/some/other/path:1" "/some/path:1"   ▸ false
@@ -331,36 +324,11 @@ suite "slash":
     #    slash.hasFilePos "some/path:2"    ▸ true
     #    slash.hasFilePos "some/path:2:0"  ▸ true
     #    slash.hasFilePos "some/path:2:2"  ▸ true
-    # 000   0000000  00000000   00000000  000       0000000   000000000  000  000   000  00000000  
-    # 000  000       000   000  000       000      000   000     000     000  000   000  000       
-    # 000  0000000   0000000    0000000   000      000000000     000     000   000 000   0000000   
-    # 000       000  000   000  000       000      000   000     000     000     000     000       
-    # 000  0000000   000   000  00000000  0000000  000   000     000     000      0      00000000  
-    test "isRelative": 
-        # slash.isRelative ◆dir                 ▸ false
-        check slash.isRelative(".") == true
-        check slash.isRelative("..") == true
-        check slash.isRelative(".././bla../../fark") == true
-        check slash.isRelative("..\\blafark") == true
-        check slash.isRelative("a/b") == true
-        check slash.isRelative("/a/b") == false
-        check slash.isAbsolute(".") == false
-        check slash.isAbsolute("..") == false
-        check slash.isAbsolute(".././bla../../fark") == false
-        check slash.isAbsolute("..\\blafark") == false
-        check slash.isAbsolute("a/b") == false
-        check slash.isAbsolute("/a/b") == true
-    #  0000000   0000000   000   000  000000000   0000000   000  000   000   0000000  
-    # 000       000   000  0000  000     000     000   000  000  0000  000  000       
-    # 000       000   000  000 0 000     000     000000000  000  000 0 000  0000000   
-    # 000       000   000  000  0000     000     000   000  000  000  0000       000  
-    #  0000000   0000000   000   000     000     000   000  000  000   000  0000000   
-    test "contains": 
-        c(slash.contains, "/c/users/home/", "users", true)
-        c(slash.contains, "/home", "hom", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "abc", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "def", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "ghi", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "jkl", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "abc.def", true)
-        c(slash.contains, "/abc.def/ghi.jkl", "ghi.jkl", true)
+    # ▸ unenv
+    #     
+    #     slash.unenv "C:/$Recycle.bin"           ▸ "C:/$Recycle.bin"
+    #     slash.unenv "$HOME/test"                ▸ slash.path(process.env["HOME"]) + "/test"
+    #     # user = slash.user()
+    #     # slash.parse("~") ▸ path:"~" dir:"/Users" file:user, name:user, ext: ""
+    
+                    

@@ -134,10 +134,25 @@ proc tilde*(path : string) : string =
     path.replace(slash.home(), "~")
 
 proc isRelative*(path : string) : bool = 
-    ((path.len == 0) or ((path.len > 0) and (path[0] != '/')))
+    ((path.len == 0) or ((path.len > 0) and (path[0] notin @['/', '~'])))
 
 proc isAbsolute*(path : string) : bool = 
-    ((path.len > 0) and (path[0] == '/'))
+    ((path.len > 0) and (path[0] in @['/', '~']))
 
 proc isRoot*(path : string) : bool = 
     (path.normalize() == "/")
+
+proc cwd*() : string = 
+    paths.getCurrentDir().string
+
+proc absolute*(path : string, parent : string) : string = 
+    if slash.isRelative(path): 
+        slash.path(parent, path)
+    else: 
+        slash.untilde(path)
+
+proc absolute*(path : string) : string = 
+    slash.absolute(path, slash.cwd())
+
+proc relative*(path : string, base : string) : string = 
+    paths.relativePath(slash.normalize(path).Path, slash.normalize(base).Path).string
