@@ -13,7 +13,6 @@ type LHS = proc(p: Parser, left: Node): Node
 var EOF = tkn(◂eof)
 
 type Pratt = object
-
     rhs: RHS
     lhs: LHS
     precedence: int
@@ -35,7 +34,7 @@ type Parser = ref object of RootObj
 proc current(this : Parser) : Token = 
         if (this.pos < this.tokens.len): 
             return this.tokens[this.pos]
-        tkn(◂eof)
+        EOF
 
 proc tok(this : Parser) : tok = this.current.tok
 
@@ -263,7 +262,7 @@ proc parseCallArgs(this : Parser, col : int) : seq[Node] =
             if this.swallowIndent(col): 
                 break
             # if @tok in {◂comment_start, ◂then, ◂paren_close}
-            if (this.tok in {◂comment_start, ◂then}): 
+            if (this.tok in {◂comment_start, ◂then, ◂test}): 
                 break
             expr = this.expression()
         (this.listless -= 1)
@@ -280,7 +279,7 @@ proc parseType(this : Parser) : Node =
         token.tok = ◂type
         if (this.tok == ◂square_open): 
             var opened = 0
-            while (this.tok notin {◂eof}): 
+            while (this.tok != ◂eof): 
                 var t = this.consume()
                 (token.str &= t.str)
                 if (t.tok == ◂square_open): 
@@ -413,6 +412,7 @@ proc thenIndented(this : Parser, token : Token) : Node =
 #  ███████  ███   ███  ███████  ███████
 
 proc lCall(this : Parser, callee : Node) : Node = 
+        if (callee.token.line != this.current.line): return
         var token = this.consume() # (
         var args = this.parseCallArgs(callee.token.col)
         this.swallowError(◂paren_close, "Missing closing paren for call arguments")
@@ -969,6 +969,7 @@ proc lMember(this : Parser, left : Node) : Node =
         nod(●member, token, left, right)
 
 proc lTestCase(this : Parser, left : Node) : Node = 
+        if this.listless: return
         var token = this.consume() # ▸
         this.swallow(◂indent) # todo: check if indent is larger than that of the test expression
         var right = this.expression()

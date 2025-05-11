@@ -4,7 +4,8 @@
 #    ███     ███   ███  ███  ███        ███
 #    ███      ███████   ███   ███  ███████ 
 
-import kxk
+use kxk
+export kxk
 
 enum tt*
         
@@ -22,13 +23,19 @@ struct Tkn*
     l : int
     c : int
     
-    @: ◇tt typ start=-1 end=-1 line=-1 col=-1 ->
+    @: ◇tt typ ss=-1 se=-1 line=-1 col=-1 ->
         
         @t = typ
-        @s = start 
-        @e = end
+        @s = ss
+        @e = se
         @l = line
         @c = col
+        
+    len: ➜ int -> @e - @s
+
+tkn = ◇tt typ ss=-1 se=-1 line=-1 col=-1 ➜ Tkn -> 
+    t = default Tkn
+    t.init typ ss se line col
         
 class Tknz
 
@@ -92,7 +99,7 @@ class Tknz
     advance: ◇int n ->
     
         for s in 0..<n 
-            @token.str &= @peek(0)
+            @token.e += 1
             @incr 1
     
     advance: ◇set[char] charset ->
@@ -100,19 +107,17 @@ class Tknz
         while @segi < @segs.len and @peek(0)[0] in charset
             @advance(1)
             
-    pushTkn: str="" tk=◂name incr=0 ->
+    pushTkn: t=◂text incr=0 ->
     
-        if @token.str.len
+        if @token.e > @token.s
             @tokens.add @token
-        @token = tkn tk str @line @col
+        @token = tkn t @line @col
         @incr incr
         
-    push: ◇tok tk ->
+    push: ◇tt t ->
     
-        @token.tok = tk
+        @token.t = t
         @pushTkn()
-        
-    commit: str="" tk=◂name incr=0 ->
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
@@ -122,7 +127,7 @@ class Tknz
     
     number: ->
     
-        @pushTkn "" ◂number
+        @pushTkn ◂number
     
         l = @segs.len
         
@@ -164,28 +169,11 @@ class Tknz
     comment: ->
     
         while @segi < @segs.len and not @scmp("\n")
-            @token.str &= @peek(0)
+            @token.e += 1
             @incr 1
         
         @push ◂comment
         
-    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
-    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
-    # ███       ███   ███  █████████  █████████  ███     ███   
-    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
-    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
-    
-    commit: str="" tk=◂name incr=0 ->
-    
-        @pushTkn str tk incr
-        @pushTkn()
-        
-        switch tk
-            ◂comment_start
-                @comment()
-            ➜ 
-                discard
-    
     # █████████  ███   ███  ███   ███  ███████
     #    ███     ███  ███   ████  ███     ███ 
     #    ███     ███████    ███ █ ███    ███  
@@ -209,17 +197,17 @@ class Tknz
                 @nextLine()
                 if @segi >= @segs.len
                     break
-                @token = tkn ◂indent @line @col
+                @token = tkn ◂newline @line @col
                 while @peekSafe(0) == " "
                     @advance 1
                 if @segi >= @segs.len
                     break
-                if @tokens[^1].tok == ◂indent
+                if @tokens[^1].t == ◂newline
                     @tokens.pops()
                 @tokens.add @token
                 continue
                     
-            @token = tkn ◂name @line @col
+            @token = tkn ◂text @line @col
             
             while @segi < @eol
                                         
@@ -231,9 +219,9 @@ class Tknz
                 else
                     
                     if @col > 0 and @peek(-1) == " "
-                        @token.col = @col
+                        @token.c = @col
                     
-                    if @token.str.len == 0 and @char in {'0'..'9'}
+                    if @token.len == 0 and @char in {'0'..'9'}
                         @number()
                         continue
                     
@@ -242,7 +230,7 @@ class Tknz
                     continue
                 @incr 1
             
-            if @token.str.len
+            if @token.len
                 @tokens.add @token
                     
         ⮐  @tokens

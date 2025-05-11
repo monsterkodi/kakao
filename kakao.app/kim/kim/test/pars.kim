@@ -366,6 +366,12 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
             elif b
                 2
             else 3"""                               "▪[(◂if @[(◂name ▪[◂number]), (◂name ▪[◂number])] ◂number)]"
+            
+        t   """
+            if a
+                1
+            (a:1 b:2)
+            """                                     "▪[(◂if @[(◂name ▪[◂number])])◂[(◂name : ◂number), (◂name : ◂number)]]"
         
     ▸ for
     
@@ -572,6 +578,20 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
                ▸ toplevel
                    rndr("")   ▸ ""
                    rndr("42") ▸ "42" """        "▪[(▸ suite ▪[(▸ section ▪[((◂name ◂call @[◂string]) ▸ ◂string)((◂name ◂call @[◂string]) ▸ ◂string)])])]"
+
+        t   """
+            ▸ test
+                ▸ section
+                    slash.normalize("xyz")  ▸ "xyz"
+                    slash.normalize("xyz")  ▸ "xyz"
+            """                                 "▪[(▸ suite ▪[(▸ section ▪[(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)])])]"
+
+        t   """
+            ▸ test
+                ▸ section
+                    slash.normalize "xyz"   ▸ "xyz"
+                    slash.normalize "xyz"   ▸ "xyz"
+            """                                 "▪[(▸ suite ▪[(▸ section ▪[(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)])])]"
 
     ▸ semicolon
     

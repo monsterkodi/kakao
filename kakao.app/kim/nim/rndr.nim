@@ -174,7 +174,8 @@ proc ▸arg(this : Rndr, n : Node) =
 proc ▸string(this : Rndr, n : Node) = 
         var delimiter = n.token.str
         if ((delimiter == "'") and (n.string_content.token.str.len > 1)): 
-            delimiter = "\""
+            if ((n.string_content.token.str.len > 2) or (n.string_content.token.str[0] != '\\')): 
+                delimiter = "\""
         if (n.string_stripols.len > 0): 
             this.add("&")
         elif n.string_prefix: 
@@ -290,10 +291,13 @@ proc ▸while(this : Rndr, n : Node) =
        this.rnd(n.while_body)
 
 proc ▸list(this : Rndr, n : Node) = 
+        var parens = (n.list_values and (n.list_values[0].kind == ●member))
+        if parens: this.add("(")
         for i, item in n.list_values: 
             this.rnd(item)
             if (i < (n.list_values.len - 1)): 
                 this.add(", ")
+        if parens: this.add(")")
 
 proc ▸curly(this : Rndr, n : Node) = 
         this.add("{")
@@ -461,11 +465,10 @@ proc render*(code : string, autovar = true) : string =
 proc file*(file : string) : string = 
     profileScope(file)
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    var kimCode = file.readFile()
+    var kimCode = file.read()
     var nimCode = render(kimCode)
     if nimCode: 
-        fileOut.writeFile(nimCode)
-        # slash.write fileOut nimCode
+        fileOut.write(nimCode)
         fileOut
     else: 
         ""
@@ -476,6 +479,7 @@ proc files*(files : seq[string]) : seq[string] =
         var nimFile = file(f)
         if nimFile: 
             transpiled.add(nimFile)
+    # log "transpiled #{transpiled}"
     transpiled
     
         

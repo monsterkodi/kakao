@@ -1,7 +1,6 @@
 import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
 import system/ansi_c
-
-from   slash import nil
+import slash
 export slash
 export monotimes, times, unittest, macros
 export sequtils, enumutils, sets, tables, typetraits

@@ -166,7 +166,7 @@ class Tknzr
 
     $: ➜string ->
     
-        "◂▸ #{@line} #{@token} #{@bol} #{@segi} #{@eol}"
+        "◂▸ #{@line} #{@token} #{@bol} #{@segi} #{@eol} #{@segs}"
     
     char:        ➜char   -> @segs[@segi][0]
     char: ◇int n ➜char   -> @segs[@segi+n][0]
@@ -285,6 +285,12 @@ class Tknzr
             if @segi >= @segs.len
                 ⮐  true
             @scmp @delimiter
+
+        log "string #{@segs}"
+                                
+        @token.tok = ◂string
+        if @peek(0) == "\\"
+            @advance 2
                         
         while not isAtStringEnd()
         
@@ -292,7 +298,9 @@ class Tknzr
             
             c = @peek(0)
             if c == "\\"
+                log "backslash #{@segi} #{@peek(0)}"
                 @advance 2
+                log "backslash #{@segi} #{@peekSafe(0)}"
                 continue
             
             if @delimiter in ["\"" "\"\"\""]
@@ -303,9 +311,11 @@ class Tknzr
     
             @token.str &= c
             @lineIncr c
-                    
-        if @segi <= @eol-1 
+            
+        if @segi <= @eol-1
+            log "commit ◂string_end"
             @commit @delimiter ◂string_end @delimiter.len
+            log "#{@}"
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███

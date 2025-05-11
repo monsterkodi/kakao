@@ -14,7 +14,7 @@ type LHS = proc(p: Parser, left: Node): Node
 
 EOF = tkn(◂eof)
     
-type Pratt = object
+struct Pratt
     rhs         : RHS
     lhs         : LHS
     precedence  : int
@@ -37,8 +37,7 @@ class Parser
     
         if @pos < @tokens.len
             ⮐  @tokens[@pos]
-            
-        tkn(◂eof)
+        EOF
     
     tok: ➜tok -> @current.tok
 
@@ -308,7 +307,7 @@ class Parser
             if @swallowIndent col
                 break
             # if @tok in {◂comment_start, ◂then, ◂paren_close}
-            if @tok in {◂comment_start ◂then}
+            if @tok in {◂comment_start ◂then ◂test}
                 break
             expr = @expression()
         @listless -= 1
@@ -328,7 +327,7 @@ class Parser
         
         if @tok == ◂square_open
             opened = 0
-            while @tok notin {◂eof}
+            while @tok != ◂eof
                 t = @consume()
                 token.str &= t.str
                 if t.tok == ◂square_open
@@ -483,6 +482,7 @@ class Parser
     
     lCall: ◇Node callee ➜Node ->
     
+        ⮐  if callee.token.line != @current.line
         token = @consume() # (
         args = @parseCallArgs callee.token.col
         @swallowError ◂paren_close "Missing closing paren for call arguments"
@@ -661,7 +661,7 @@ class Parser
                 if not @swallowSameIndent baseIndent
                     break
     
-            ⮐  if @tok in {◂else, ◂eof} or @isDedent(baseIndent)
+            ⮐  if @tok in {◂else ◂eof} or @isDedent(baseIndent)
     
             break if @tok == ◂then
         
@@ -1191,7 +1191,8 @@ class Parser
         nod ●member token left right
         
     lTestCase: ◇Node left ➜Node ->
-    
+        
+        ⮐  if @listless
         token = @consume() # ▸
         @swallow ◂indent # todo: check if indent is larger than that of the test expression
         right = @expression()

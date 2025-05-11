@@ -280,6 +280,11 @@ if a
 elif b
     2
 else 3""", "▪[(◂if @[(◂name ▪[◂number]), (◂name ▪[◂number])] ◂number)]")
+        t("""
+if a
+    1
+(a:1 b:2)
+""", "▪[(◂if @[(◂name ▪[◂number])])◂[(◂name : ◂number), (◂name : ◂number)]]")
     test "for": 
         t("0..2", "▪[(◂number .. ◂number)]")
         t("for a in 0..2 ➜ true", "▪[(◂for ◂name in (◂number .. ◂number) ✔)]")
@@ -431,6 +436,18 @@ enum tok
    ▸ toplevel
        rndr("")   ▸ ""
        rndr("42") ▸ "42" """, "▪[(▸ suite ▪[(▸ section ▪[((◂name ◂call @[◂string]) ▸ ◂string)((◂name ◂call @[◂string]) ▸ ◂string)])])]")
+        t("""
+▸ test
+    ▸ section
+        slash.normalize("xyz")  ▸ "xyz"
+        slash.normalize("xyz")  ▸ "xyz"
+""", "▪[(▸ suite ▪[(▸ section ▪[(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)])])]")
+        t("""
+▸ test
+    ▸ section
+        slash.normalize "xyz"   ▸ "xyz"
+        slash.normalize "xyz"   ▸ "xyz"
+""", "▪[(▸ suite ▪[(▸ section ▪[(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)(((◂name . ◂name) ◂call @[◂string]) ▸ ◂string)])])]")
     test "semicolon": 
         t("if true\n  a\n  b\n  c", "▪[(◂if @[(✔ ▪[◂name◂name◂name])])]")
         t("a ; b", "▪[;[◂name◂name]]")

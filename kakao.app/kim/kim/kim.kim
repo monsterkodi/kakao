@@ -42,6 +42,7 @@ farewells = [
     "👋 Farewell! May your brackets always balance."]
 
 testFiles = walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "test").toSeq().map(◇tuple r ➜string -> r.path)
+testFiles = testFiles.concat walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "kxk" / "test").toSeq().map(◇tuple r ➜string -> r.path)
     
 randomize()
 
@@ -127,7 +128,7 @@ compile = ◇string file outDir="bin" ➜bool ->
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
 
     profileScope 'comp'
-    cmd = "nim c -d:danger --outDir=#{outdir} --mm:arc --colors:on --warning:User:off #{file}"
+    cmd = "nim c -d:danger --outDir=#{outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off #{file}"
     # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     (output exitCode) = execCmdEx(cmd)
         
@@ -228,7 +229,8 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
         slash.copy f f.replace("/kim/kim/" "/kim/#{dst}/kim/")
     
     for f in kimFiles 
-        (output exitCode) = execCmdEx "#{src}/bin/kim " & f.replace("/kim/kim/" "/kim/#{dst}/kim/")
+        # logFile f "➜ "
+        (output exitCode) = execCmdEx "#{src}/bin/kim -v " & f.replace("/kim/kim/" "/kim/#{dst}/kim/")
         if exitCode != 0
             log output
             logFile f "✘ "
@@ -323,6 +325,8 @@ watch = ◇seq[string] paths ->
                     for f in kimFiles 
                         srcNim = f.replace("/kim/kim/" "/kim/k2m/nim/").replace(".kim" ".nim")
                         tgtNim = f.replace("/kim/kim/" "/kim/nim/").replace(".kim" ".nim")
+                        # log "src " srcNim
+                        # log "tgt " tgtNim
                         slash.copy srcNim tgtNim
                     if compile "k2m/nim/kim.nim" "bin"
                         log "-> enjoy"

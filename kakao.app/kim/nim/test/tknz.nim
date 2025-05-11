@@ -42,6 +42,9 @@ suite "tknz":
     #      ███     ███     ███   ███  ███  ███  ████  ███   ███       ███
     # ███████      ███     ███   ███  ███  ███   ███   ███████   ███████ 
     test "strings": 
+        t("''", @[tk("\'", ◂string_start, 0, 0), tk("\'", ◂string_end, 0, 1)])
+        t("'\\\\'", @[tk("\'", ◂string_start, 0, 0), tk("\\\\", ◂string, 0, 1), tk("\'", ◂string_end, 0, 3)])
+        t("'\\''", @[tk("\'", ◂string_start, 0, 0), tk("\\'", ◂string, 0, 1), tk("\'", ◂string_end, 0, 3)])
         t("a = 'if'", @[tk("a", ◂name, 0, 0), tk("=", ◂assign, 0, 2), tk("'", ◂string_start, 0, 4), tk("if", ◂string, 0, 5), tk("'", ◂string_end, 0, 7)])
         t("'if then it\\'s = 2'", @[tk("'", ◂string_start, 0, 0), tk("if then it\\'s = 2", ◂string, 0, 1), tk("'", ◂string_end, 0, 18)])
         t("\"\"", @[tk("\"", ◂string_start, 0, 0), tk("\"", ◂string_end, 0, 1)])

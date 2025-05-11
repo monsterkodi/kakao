@@ -3,8 +3,8 @@
 #    ███     ███   ███  ███████    ███████ 
 #    ███     ███   ███  ███  ███        ███
 #    ███      ███████   ███   ███  ███████ 
-
 import kxk
+export kxk
 type tt* = enum
     ◂text
     ◂number
@@ -19,13 +19,19 @@ type Tkn* = object
     l*: int
     c*: int
 
-proc init*(this : var Tkn, typ : tt, start = -1, end = -1, line = -1, col = -1) : Tkn = 
+proc init*(this : var Tkn, typ : tt, ss = -1, se = -1, line = -1, col = -1) : Tkn = 
         this.t = typ
-        this.s = start
-        this.e = end
+        this.s = ss
+        this.e = se
         this.l = line
         this.c = col
         this
+
+proc len*(this : var Tkn) : int = (this.e - this.s)
+
+proc tkn(typ : tt, ss = -1, se = -1, line = -1, col = -1) : Tkn = 
+    var t = default(Tkn)
+    t.init(typ, ss, se, line, col)
 
 type Tknz = ref object of RootObj
     tokens: seq[Tkn]
@@ -87,24 +93,22 @@ proc scmp(this : Tknz, s : string) : bool =
 
 proc advance(this : Tknz, n : int) = 
         for s in 0..<n: 
-            (this.token.str &= this.peek(0))
+            (this.token.e += 1)
             this.incr(1)
 
 proc advance(this : Tknz, charset : set[char]) = 
         while ((this.segi < this.segs.len) and (this.peek(0)[0] in charset)): 
             this.advance(1)
 
-proc pushTkn(this : Tknz, str = "", tk = ◂name, incr = 0) = 
-        if this.token.str.len: 
+proc pushTkn(this : Tknz, t = ◂text, incr = 0) = 
+        if (this.token.e > this.token.s): 
             this.tokens.add(this.token)
-        this.token = tkn(tk, str, this.line, this.col)
+        this.token = tkn(t, this.line, this.col)
         this.incr(incr)
 
-proc push(this : Tknz, tk : tok) = 
-        this.token.tok = tk
+proc push(this : Tknz, t : tt) = 
+        this.token.t = t
         this.pushTkn()
-
-proc commit(this : Tknz, str = "", tk = ◂name, incr = 0)
 # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
 # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
 # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
@@ -112,7 +116,7 @@ proc commit(this : Tknz, str = "", tk = ◂name, incr = 0)
 # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
 
 proc number(this : Tknz) = 
-        this.pushTkn("", ◂number)
+        this.pushTkn(◂number)
         var l = this.segs.len
         if ((this.segi < (l - 1)) and (this.segs[this.segi] == "0")): 
             if (this.segs[(this.segi + 1)] == "x"): 
@@ -146,23 +150,9 @@ proc number(this : Tknz) =
 
 proc comment(this : Tknz) = 
         while ((this.segi < this.segs.len) and not this.scmp("\n")): 
-            (this.token.str &= this.peek(0))
+            (this.token.e += 1)
             this.incr(1)
         this.push(◂comment)
-#  ███████   ███████   ██     ██  ██     ██  ███  █████████
-# ███       ███   ███  ███   ███  ███   ███  ███     ███   
-# ███       ███   ███  █████████  █████████  ███     ███   
-# ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
-#  ███████   ███████   ███   ███  ███   ███  ███     ███   
-
-proc commit(this : Tknz, str = "", tk = ◂name, incr = 0) = 
-        this.pushTkn(str, tk, incr)
-        this.pushTkn()
-        case tk:
-            of ◂comment_start: 
-                this.comment()
-            else: 
-                discard
 # █████████  ███   ███  ███   ███  ███████
 #    ███     ███  ███   ████  ███     ███ 
 #    ███     ███████    ███ █ ███    ███  
@@ -180,16 +170,16 @@ proc tknz(this : Tknz, segs : seq[string]) : seq[Tkn] =
                 this.nextLine()
                 if (this.segi >= this.segs.len): 
                     break
-                this.token = tkn(◂indent, this.line, this.col)
+                this.token = tkn(◂newline, this.line, this.col)
                 while (this.peekSafe(0) == " "): 
                     this.advance(1)
                 if (this.segi >= this.segs.len): 
                     break
-                if (this.tokens[^1].tok == ◂indent): 
+                if (this.tokens[^1].t == ◂newline): 
                     this.tokens.pops()
                 this.tokens.add(this.token)
                 continue
-            this.token = tkn(◂name, this.line, this.col)
+            this.token = tkn(◂text, this.line, this.col)
             while (this.segi < this.eol): 
                 var char = this.peek(0)
                 if (char == " "): 
@@ -197,14 +187,14 @@ proc tknz(this : Tknz, segs : seq[string]) : seq[Tkn] =
                         this.pushTkn()
                 else: 
                     if ((this.col > 0) and (this.peek(-1) == " ")): 
-                        this.token.col = this.col
-                    if ((this.token.str.len == 0) and (this.char in {'0'..'9'})): 
+                        this.token.c = this.col
+                    if ((this.token.len == 0) and (this.char in {'0'..'9'})): 
                         this.number()
                         continue
                     this.advance(1)
                     continue
                 this.incr(1)
-            if this.token.str.len: 
+            if this.token.len: 
                 this.tokens.add(this.token)
         return this.tokens
 

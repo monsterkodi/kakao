@@ -1,6 +1,69 @@
 
 use std ▪ os paths strutils sequtils 
 
+normalize* = ◇string path ➜ string ->
+
+    p = path
+    for i c in p
+        if c == "\\"[0]
+            p[i] = '/'
+    
+    if p.len > 1 and p[^1] == '/'
+        p[0..^2]
+    else
+        p
+
+split* = ◇string path ➜ seq[string] ->
+
+    path.split("/").filter(◇string s ➜ bool -> s.len > 0)
+
+parse* = ◇string path ➜ tuple[path:string, dir:string, file:string, name:string, ext:string] ->
+
+    path  = path.normalize()
+    split = path.split()
+    dir   = split[0..^2].join "/"
+    file  = split[^1]
+    name  = file
+    ext   = ""
+    
+    if dir.len == 0 and path not in ["." ".."]
+        dir = if path[0] == '/' ➜ "/" ➜ "."
+    elif dir.len > 0 and path[0] == '/' and dir[0] != '/'
+        dir = "/" & dir
+    
+    nmspl = file.split "."
+    if nmspl.len > 1
+        name = nmspl[0..^2].join "."
+        ext  = nmspl[^1]
+        
+    (path:path dir:dir file:file name:name ext:ext)
+
+dir* = ◇string path ➜ string ->
+
+    path.parse.dir
+    # splitFile(path.Path)[0].string
+    
+dirs* = ◇string path ➜ seq[string] ->
+
+    dirs = path.dir.split '/'
+    
+    if dirs[0] == "" and dirs.len == 1
+        dirs.delete 0..0
+        
+    dirs
+
+file* = ◇string path ➜ string ->
+
+    path.splitPath[1]
+
+name* = ◇string path ➜ string ->
+
+    splitFile(path.Path)[1].string
+
+ext* = ◇string path ➜ string ->
+
+    splitFile(path.Path)[2].string[1..^1]
+
 mkdir* = ◇string dir ->
 
     if not dirExists dir
@@ -18,20 +81,23 @@ write* = ◇string path ◇string text ->
     
     path.writeFile text
     
-swapLastPathComponentAndExt* = ◇string file ◇string src ◇string tgt ➜string ->
+read* = ◇string path ➜ string ->
 
-    (dir _ _) = splitFile(file.Path)
-    dirParts  = dir.string.split(DirSep)
+    path.readFile()
     
-    if dirParts[0] == "" and dirParts.len == 1
-        dirParts.delete(0..0)
+swapExt* = ◇string path ◇string ext ➜ string ->
+
+    $path.Path.changeFileExt "." & ext
     
-    for i in countdown(dirParts.high, 0)
-        if dirParts[i] == src
-            dirParts[i] = tgt
+swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜string ->
+
+    dirs = path.dirs()    
+    for i in countdown dirs.high 0
+        if dirs[i] == src
+            dirs[i] = tgt
             break
             
-    dirParts.add file.Path.changeFileExt("." & tgt).splitPath[1].string
-    dirParts.join "/"
+    dirs.add path.file.swapExt(tgt)
+    dirs.join "/"
     
     

@@ -198,8 +198,9 @@ class Rndr
     
         delimiter = n.token.str
         
-        if delimiter == "'" and n.string_content.token.str.len > 1
-            delimiter = "\""
+        if delimiter == "'" and n.string_content.token.str.len > 1 
+            if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
+                delimiter = "\""
         
         if n.string_stripols.len > 0
             @add "&"
@@ -338,15 +339,18 @@ class Rndr
         
     ▸list: ◇Node n ->
     
-        for i,item in n.list_values
+        parens = n.list_values and n.list_values[0].kind == ●member
+        @add("(") if parens
+        for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
                 @add ", "
+        @add(")") if parens
     
     ▸curly: ◇Node n ->
     
         @add "{"
-        for i,item in n.list_values
+        for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
                 @add ", "
@@ -538,11 +542,10 @@ file* = ◇string file ➜string ->
     profileScope file
 
     fileOut = file.swapLastPathComponentAndExt "kim" "nim"
-    kimCode = file.readFile()
+    kimCode = file.read()
     nimCode = render kimCode 
     if nimCode
-        fileOut.writeFile nimCode
-        # slash.write fileOut nimCode
+        fileOut.write nimCode
         fileOut
     else
         ""
@@ -554,6 +557,7 @@ files* = ◇seq[string] files ➜seq[string] ->
         nimFile = file f
         if nimFile
             transpiled.add nimFile
+    # log "transpiled #{transpiled}"
     transpiled
         
                             

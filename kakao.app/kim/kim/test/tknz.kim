@@ -142,6 +142,20 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
 
     ▸ strings
     
+        t "''"   [
+            tk("\'"        ◂string_start   0  0) 
+            tk("\'"        ◂string_end     0  1)]
+
+        t "'\\\\'"   [
+            tk("\'"        ◂string_start   0  0) 
+            tk("\\\\"      ◂string         0  1) 
+            tk("\'"        ◂string_end     0  3)]
+
+        t "'\\''"   [
+            tk("\'"        ◂string_start   0  0) 
+            tk("\\'"       ◂string         0  1) 
+            tk("\'"        ◂string_end     0  3)]
+    
         t "a = 'if'"   @[
             tk("a"         ◂name           0  0)
             tk("="         ◂assign         0  2)

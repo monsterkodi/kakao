@@ -155,7 +155,7 @@ type Tknzr = ref object of RootObj
 # current line index
 
 proc `$`(this : Tknzr) : string = 
-        &"◂▸ {this.line} {this.token} {this.bol} {this.segi} {this.eol}"
+        &"◂▸ {this.line} {this.token} {this.bol} {this.segi} {this.eol} {this.segs}"
 
 proc char(this : Tknzr) : char = this.segs[this.segi][0]
 
@@ -261,11 +261,17 @@ proc `string`(this : Tknzr) =
             if (this.segi >= this.segs.len): 
                 return true
             this.scmp(this.delimiter)
+        echo(&"string {this.segs}")
+        this.token.tok = ◂string
+        if (this.peek(0) == "\\"): 
+            this.advance(2)
         while not isAtStringEnd(): 
             this.token.tok = ◂string
             var c = this.peek(0)
             if (c == "\\"): 
+                echo(&"backslash {this.segi} {this.peek(0)}")
                 this.advance(2)
+                echo(&"backslash {this.segi} {this.peekSafe(0)}")
                 continue
             if (this.delimiter in @["\"", "\"\"\""]): 
                 if this.scmp(stripolStart): 
@@ -275,7 +281,9 @@ proc `string`(this : Tknzr) =
             (this.token.str &= c)
             this.lineIncr(c)
         if (this.segi <= (this.eol - 1)): 
+            echo("commit ◂string_end")
             this.commit(this.delimiter, ◂string_end, this.delimiter.len)
+            echo(&"{this}")
 # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
 # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
 # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  

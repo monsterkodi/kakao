@@ -1,9 +1,8 @@
 
 use std ▪ monotimes times sequtils paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
-
 use system/ansi_c
+use slash 
 
-from   slash import nil
 export slash
 export monotimes times unittest  macros
 export sequtils  enumutils sets  tables typetraits

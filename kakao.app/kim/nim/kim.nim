@@ -14,6 +14,7 @@ var verbose = false
 var greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!", "💋 Less clutter, more wonder!", "💋 The best code is no code.", "💋 Less is always beautifuller!", "💋 Simplicity: the shortcut to ‘heck yes!’", "💋 If it’s hard to explain, it’s probably wrong.", "💋 Uncomplicate your code and your mind will dance.", "🌞 A child’s laugh, a sunbeam’s path — why bend what is straight?", "🌈 Go with the flow, catch joy like dandelion fluff.", "🌈 Aim for maximum joy, anticipate future regrets.", "🌞 Rise and shine! What shall we craft today?", "👋 Salutations! Let's crunch some code cookies.", "🚀 Systems nominal! Your code awaits transformation.", "🍳 Howdy, chef! What are we cooking today?", "🤖 Greetings, fleshbag! May your code ripple smoothly through the machine.", "🔮 Embrace uncertainty — code with glitter!", "🎩 Magician at the keyboard! Let's conjure some magic.", "🎩 Flexible beats flawless — everytime.", "🎩 Stay open, stay awesome."]
 var farewells = @["👋 Good bye! May your code always compile.", "👋 Good bye! May your brackets always align.", "👋 Farewell! May your brackets nest flawlessly.", "👋 Farewell! May your brackets always balance."]
 var testFiles = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
+testFiles = testFiles.concat walkDir(((((getAppFilename().splitFile()[0] / "..") / "nim") / "kxk") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
 randomize()
 
 proc verb(msg : string) = 
@@ -86,7 +87,7 @@ proc logFile(f : string, prefix = "") =
 proc compile(file : string, outDir = "bin") : bool = 
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
     profileScope("comp")
-    var cmd = &"nim c -d:danger --outDir={outdir} --mm:arc --colors:on --warning:User:off {file}"
+    var cmd = &"nim c -d:danger --outDir={outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off {file}"
     # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     var (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
@@ -166,7 +167,8 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     for f in kimFiles: 
         slash.copy(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
     for f in kimFiles: 
-        var (output, exitCode) = execCmdEx(&"{src}/bin/kim " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
+        # logFile f "➜ "
+        var (output, exitCode) = execCmdEx(&"{src}/bin/kim -v " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
         if (exitCode != 0): 
             echo(output)
             logFile(f, "✘ ")
@@ -235,6 +237,8 @@ proc watch(paths : seq[string]) =
                     for f in kimFiles: 
                         var srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
                         var tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
+                        # log "src " srcNim
+                        # log "tgt " tgtNim
                         slash.copy(srcNim, tgtNim)
                     if compile("k2m/nim/kim.nim", "bin"): 
                         echo("-> enjoy")

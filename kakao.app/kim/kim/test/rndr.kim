@@ -12,95 +12,95 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
 
     ▸ toplevel
 
-        t ""                                        , ""
-        t "43"                                      , "43"
-        t "true"                                    , "true"
-        t "false"                                   , "false"
-        t "\"hello\""                               , "\"hello\""
-        t "# comment"                               , "# comment"
-        t "\n\n# comment\n\n"                       , "# comment"
+        t ""                                          ""
+        t "43"                                        "43"
+        t "true"                                      "true"
+        t "false"                                     "false"
+        t "\"hello\""                                 "\"hello\""
+        t "# comment"                                 "# comment"
+        t "\n\n# comment\n\n"                         "# comment"
                                                     
     ▸ math ops                                      
                                                     
-        t "1 + 5 * 3"                               , "(1 + (5 * 3))"
-        t "1 / 5 - 3"                               , "((1 / 5) - 3)"
-        t "-5 - -3"                                 , "(-5 - -3)"
-        t "a++ + b--"                               , "(a++ + b--)"
-        t "1 + 2 + 3"                               , "((1 + 2) + 3)"
-        t "1 * 2 + 3 * 4"                           , "((1 * 2) + (3 * 4))"
+        t "1 + 5 * 3"                                 "(1 + (5 * 3))"
+        t "1 / 5 - 3"                                 "((1 / 5) - 3)"
+        t "-5 - -3"                                   "(-5 - -3)"
+        t "a++ + b--"                                 "(a++ + b--)"
+        t "1 + 2 + 3"                                 "((1 + 2) + 3)"
+        t "1 * 2 + 3 * 4"                             "((1 * 2) + (3 * 4))"
                                                     
     ▸ boolean ops                                   
                                                     
-        t "a && b || c"                             , "((a and b) or c)"
-        t "a and b or c"                            , "((a and b) or c)"
-        t "!a && b"                                 , "(not a and b)"
-        t "not a && b"                              , "(not a and b)"
-        t "a || b && c"                             , "(a or (b and c))"
-        t "a or b and c"                            , "(a or (b and c))"
-        t "a && b == c"                             , "(a and (b == c))"
-        t "a and b == c"                            , "(a and (b == c))"
-        t "x = a || b"                              , "x = (a or b)"
-        t "x = a or b"                              , "x = (a or b)"
-        t "!a || !b"                                , "(not a or not b)"
-        t "not a or not b"                          , "(not a or not b)"
+        t "a && b || c"                               "((a and b) or c)"
+        t "a and b or c"                              "((a and b) or c)"
+        t "!a && b"                                   "(not a and b)"
+        t "not a && b"                                "(not a and b)"
+        t "a || b && c"                               "(a or (b and c))"
+        t "a or b and c"                              "(a or (b and c))"
+        t "a && b == c"                               "(a and (b == c))"
+        t "a and b == c"                              "(a and (b == c))"
+        t "x = a || b"                                "x = (a or b)"
+        t "x = a or b"                                "x = (a or b)"
+        t "!a || !b"                                  "(not a or not b)"
+        t "not a or not b"                            "(not a or not b)"
                                                     
     ▸ ampersand                                     
                                                     
-        t "a & b"                                   , "a & b"
+        t "a & b"                                     "a & b"
                                                     
     ▸ parens                                        
                                                     
-        t "(1 + 2) * 3"                             , "((1 + 2) * 3)"
-        t "(1)"                                     , "1"
-        t "(a + b) * c"                             , "((a + b) * c)"
-        t "a * (b + c)"                             , "(a * (b + c))"
-        t "((1))"                                   , "1"
-        t "(a.b).c"                                 , "a.b.c"
-        t "a * (b + c) / d"                         , "((a * (b + c)) / d)"
-        t "3 * (1 + 2)"                             , "(3 * (1 + 2))"
+        t "(1 + 2) * 3"                               "((1 + 2) * 3)"
+        t "(1)"                                       "1"
+        t "(a + b) * c"                               "((a + b) * c)"
+        t "a * (b + c)"                               "(a * (b + c))"
+        t "((1))"                                     "1"
+        t "(a.b).c"                                   "a.b.c"
+        t "a * (b + c) / d"                           "((a * (b + c)) / d)"
+        t "3 * (1 + 2)"                               "(3 * (1 + 2))"
         
     ▸ vars
     
-        t "optParser = initOptParser()"             , "optParser = initOptParser()"
-        t "str = \"\"\nbool = false\nnum = 1"       , "str = \"\"\nbool = false\nnum = 1"
-        t "s ◇string"                               , "s : string"
-        t "i ◇int = 1"                              , "i : int = 1"
-        t "l ◇seq[int]"                             , "l : seq[int]"
+        t "optParser = initOptParser()"               "optParser = initOptParser()"
+        t "str = \"\"\nbool = false\nnum = 1"         "str = \"\"\nbool = false\nnum = 1"
+        t "s ◇string"                                 "s : string"
+        t "i ◇int = 1"                                "i : int = 1"
+        t "l ◇seq[int]"                               "l : seq[int]"
                                                     
-        t "var i"                                   , "var i"
-        t "let i"                                   , "let i"
-        t "let (output exitCode) = execCmdEx(cmd)"  , "let (output, exitCode) = execCmdEx(cmd)"
+        t "var i"                                     "var i"
+        t "let i"                                     "let i"
+        t "let (output exitCode) = execCmdEx(cmd)"    "let (output, exitCode) = execCmdEx(cmd)"
         
     ▸ arg types
     
-        t "◇seq[string] files = @[]"                , "files : seq[string] = @[]" 
-        t "◇ seq[string] files      = @[]"          , "files : seq[string] = @[]" 
+        t "◇seq[string] files = @[]"                  "files : seq[string] = @[]" 
+        t "◇ seq[string] files      = @[]"            "files : seq[string] = @[]" 
     
     ▸ func
     
-        t "f = ->"                                  , "\nproc f"
-        t "f = a=1 ->"                              , "\nproc f(a = 1)"
-        t "f = ◇string a ->"                        , "\nproc f(a : string)"
-        t "f = ◇string a ◇int b ->"                 , "\nproc f(a : string, b : int)"
-        t "f = ◆Parser p ->"                        , "\nproc f(p : var Parser)"
-        t "f = ◆Parser p ◇string a ◇int b ->"       , "\nproc f(p : var Parser, a : string, b : int)"
-        t "f = ➜ Node ->"                           , "\nproc f() : Node"
-        t "f = ◆Parser p ➜ Node ->"                 , "\nproc f(p : var Parser) : Node"
-        t "f = ◇seq[Node] s ➜ seq[Node] ->"         , "\nproc f(s : seq[Node]) : seq[Node]"
-        t "f = ◇Parser p ◇int ahead=1 ➜ Token ->"   , "\nproc f(p : Parser, ahead : int = 1) : Token"
-        t "f = ◇Parser p ahead=1 ➜ Token ->"        , "\nproc f(p : Parser, ahead = 1) : Token"
+        t "f = ->"                                    "\nproc f"
+        t "f = a=1 ->"                                "\nproc f(a = 1)"
+        t "f = ◇string a ->"                          "\nproc f(a : string)"
+        t "f = ◇string a ◇int b ->"                   "\nproc f(a : string, b : int)"
+        t "f = ◆Parser p ->"                          "\nproc f(p : var Parser)"
+        t "f = ◆Parser p ◇string a ◇int b ->"         "\nproc f(p : var Parser, a : string, b : int)"
+        t "f = ➜ Node ->"                             "\nproc f() : Node"
+        t "f = ◆Parser p ➜ Node ->"                   "\nproc f(p : var Parser) : Node"
+        t "f = ◇seq[Node] s ➜ seq[Node] ->"           "\nproc f(s : seq[Node]) : seq[Node]"
+        t "f = ◇Parser p ◇int ahead=1 ➜ Token ->"     "\nproc f(p : Parser, ahead : int = 1) : Token"
+        t "f = ◇Parser p ahead=1 ➜ Token ->"          "\nproc f(p : Parser, ahead = 1) : Token"
                                                     
-        t "l.map(◇tuple r ➜string -> r.path)"       , "l.map(proc (r : tuple) : string = r.path)"
-        t "l.map(◇ tuple r  ➜ string -> r.path)"    , "l.map(proc (r : tuple) : string = r.path)"
+        t "l.map(◇tuple r ➜string -> r.path)"         "l.map(proc (r : tuple) : string = r.path)"
+        t "l.map(◇ tuple r  ➜ string -> r.path)"      "l.map(proc (r : tuple) : string = r.path)"
                                                     
-        t "f = ◇int i ->"                           , "\nproc f(i : int)"
-        t "f = ◇int a ◇int b ->"                    , "\nproc f(a : int, b : int)"
-        t "f = ◇int a = 1 ->"                       , "\nproc f(a : int = 1)"
+        t "f = ◇int i ->"                             "\nproc f(i : int)"
+        t "f = ◇int a ◇int b ->"                      "\nproc f(a : int, b : int)"
+        t "f = ◇int a = 1 ->"                         "\nproc f(a : int = 1)"
                                                     
-        t "setHook(() -> {.noconv.} quit(0))"       , "setHook(proc () {.noconv.} = quit(0))"
+        t "setHook(() -> {.noconv.} quit(0))"         "setHook(proc () {.noconv.} = quit(0))"
         
-        t "$* = ◇Tknzr t ➜string ->"                , "\nproc `$`*(t : Tknzr) : string"
-        t "$ = ◇Tknzr t ➜string ->"                 , "\nproc `$`(t : Tknzr) : string"
+        t "$* = ◇Tknzr t ➜string ->"                  "\nproc `$`*(t : Tknzr) : string"
+        t "$ = ◇Tknzr t ➜string ->"                   "\nproc `$`(t : Tknzr) : string"
         
         t "commit = ◇Tknzr t i=0 ->"                "\nproc commit(t : Tknzr, i = 0)"
         t "commit = ◇Tknzr t i=◂assign ->"          "\nproc commit(t : Tknzr, i = ◂assign)"
@@ -125,45 +125,53 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         
     ▸ call
     
-        t "f()"                                     , "f()"             
-        t "f(g())"                                  , "f(g())"          
-        t "f(g() / h())"                            , "f((g() / h()))"    
-        t "f(1)"                                    , "f(1)"            
-        t "f(1 + 2)"                                , "f((1 + 2))"        
-        t "f(1 + 2 4 + 5)"                          , "f((1 + 2), (4 + 5))"  
-        t "f(1 2 3)"                                , "f(1, 2, 3)"        
-        t "f(1 g(h(2)))"                            , "f(1, g(h(2)))"    
-        t "f = dir(a().b() / \"x\").toSeq()"        , "f = dir((a().b() / \"x\")).toSeq()"
-        t "f = dir(a().b()[0] / \"x\").toSeq()"     , "f = dir((a().b()[0] / \"x\")).toSeq()"
+        t "f()"                                       "f()"             
+        t "f(g())"                                    "f(g())"          
+        t "f(g() / h())"                              "f((g() / h()))"    
+        t "f(1)"                                      "f(1)"            
+        t "f(1 + 2)"                                  "f((1 + 2))"        
+        t "f(1 + 2 4 + 5)"                            "f((1 + 2), (4 + 5))"  
+        t "f(1 2 3)"                                  "f(1, 2, 3)"        
+        t "f(1 g(h(2)))"                              "f(1, g(h(2)))"    
+        t "f = dir(a().b() / \"x\").toSeq()"          "f = dir((a().b() / \"x\")).toSeq()"
+        t "f = dir(a().b()[0] / \"x\").toSeq()"       "f = dir((a().b()[0] / \"x\")).toSeq()"
                                                     
-        t "log a"                                   , "echo(a)"
+        t "log a"                                     "echo(a)"
         
         t "let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", 
           "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})"
         
     ▸ arglist
     
-        t "f(a, b, c)"                              , "f(a, b, c)"
-        t "g a, b, c"                               , "g(a, b, c)"
-        t "h a b c"                                 , "h(a, b, c)"
-        t "i 1 '2' false"                           , "i(1, '2', false)"
-        t "t \"a\" , \"b\""                         , "t(\"a\", \"b\")"
-        t "t \"a\",\n  \"b\""                       , "t(\"a\", \"b\")"
-        t "t \"a\"\n  \"b\""                        , "t(\"a\", \"b\")"
+        t "f(a, b, c)"                                "f(a, b, c)"
+        t "g a, b, c"                                 "g(a, b, c)"
+        t "h a b c"                                   "h(a, b, c)"
+        t "i 1 '2' false"                             "i(1, '2', false)"
+        t "t \"a\" , \"b\""                           "t(\"a\", \"b\")"
+        t "t \"a\",\n  \"b\""                         "t(\"a\", \"b\")"
+        t "t \"a\"\n  \"b\""                          "t(\"a\", \"b\")"
         
-    ▸ tuple assign
+    ▸ list assign
     
-        t "(a, b) = c"                              , "(a, b) = c"
-        t "(a b) = c"                               , "(a, b) = c"
-        t "(a, b, c) = f()"                         , "(a, b, c) = f()"
-        t "(a b c) = f()"                           , "(a, b, c) = f()"
-        t "(a b c) = (c b a)"                       , "(a, b, c) = (c, b, a)"
+        t "(a, b) = c"                                "(a, b) = c"
+        t "(a b) = c"                                 "(a, b) = c"
+        t "(a, b, c) = f()"                           "(a, b, c) = f()"
+        t "(a b c) = f()"                             "(a, b, c) = f()"
+        t "(a b c) = (c b a)"                         "(a, b, c) = (c, b, a)"
+        
+    ▸ tuple
+    
+        t "(a:1, b:2)"                                "(a: 1, b: 2)"
+        t "⮐  (a:1, b:2, t:\"hello\")"                "return (a: 1, b: 2, t: \"hello\")"
+
+        t "(a:1 b:2)"                                 "(a: 1, b: 2)"
+        t "⮐  (a:1 b:2 t:\"hello\")"                  "return (a: 1, b: 2, t: \"hello\")"
         
     ▸ assign
     
-        t "a = 1"                                   , "a = 1"
-        t "a = b = 1"                               , "a = b = 1"
-        t "a = b = c = 2"                           , "a = b = c = 2"
+        t "a = 1"                                     "a = 1"
+        t "a = b = 1"                                 "a = b = 1"
+        t "a = b = c = 2"                             "a = b = c = 2"
         
         t   """
             a = 1
@@ -176,63 +184,63 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
 
     ▸ arrays
     
-        t "a = [ 1  2 ]"                            , "a = @[1, 2]"
-        t "a = [\n    1\n    2\n    ]"              , "a = @[1, 2]"
+        t "a = [ 1  2 ]"                              "a = @[1, 2]"
+        t "a = [\n    1\n    2\n    ]"                "a = @[1, 2]"
         
-        t "s.vars.push initTable[string,bool]()"    , "s.vars.push(initTable[string, bool]())" 
-        t "let mono = getMonoTime() - timers[msg][0]", "let mono = (getMonoTime() - timers[msg][0])"
+        t "s.vars.push initTable[string,bool]()"      "s.vars.push(initTable[string, bool]())" 
+        t "let mono = getMonoTime() - timers[msg][0]"  "let mono = (getMonoTime() - timers[msg][0])"
     
         t   """
             let greetings = [
                 "💋 Keep It Simple, Stupid!",
                 "💋 Overthink less, grin more!"
                 ]
-            ""","""
+            """ """
             let greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!"]"""
         
     ▸ properties        
         
-        t "a.b"                                     , "a.b"     
-        t "a.b.c"                                   , "a.b.c"   
-        t "a.b()"                                   , "a.b()"   
-        t "a.b().c"                                 , "a.b().c" 
+        t "a.b"                                       "a.b"     
+        t "a.b.c"                                     "a.b.c"   
+        t "a.b()"                                     "a.b()"   
+        t "a.b().c"                                   "a.b().c" 
                                                     
     ▸ use                                           
                                                     
-        t "use std ▪ unittest"                      , "import std/[unittest]"
-        t "use std ▪ pegs strutils strformat"       , "import std/[pegs, strutils, strformat]"
-        t "use rndr"                                , "import rndr"
-        t "use ./rndr"                              , "import ./rndr"
-        t "use ../rndr"                             , "import ../rndr"
-        t "use ../../rel"                           , "import ../../rel"
-        t "use ../../rel ▪ s1 s2"                   , "import ../../rel/[s1, s2]"
+        t "use std ▪ unittest"                        "import std/[unittest]"
+        t "use std ▪ pegs strutils strformat"         "import std/[pegs, strutils, strformat]"
+        t "use rndr"                                  "import rndr"
+        t "use ./rndr"                                "import ./rndr"
+        t "use ../rndr"                               "import ../rndr"
+        t "use ../../rel"                             "import ../../rel"
+        t "use ../../rel ▪ s1 s2"                     "import ../../rel/[s1, s2]"
                                                     
-        t "import ../../rel/[s1, s2]"               , "\nimport ../../rel/[s1, s2]"
-        t "use std ▪ os logging\nuse kommon"        , "import std/[os, logging]\nimport kommon"
-        t "use std ▪ a b c\nuse d\nuse e\nuse f"    , "import std/[a, b, c]\nimport d\nimport e\nimport f"
+        t "import ../../rel/[s1, s2]"                 "\nimport ../../rel/[s1, s2]"
+        t "use std ▪ os logging\nuse kommon"          "import std/[os, logging]\nimport kommon"
+        t "use std ▪ a b c\nuse d\nuse e\nuse f"      "import std/[a, b, c]\nimport d\nimport e\nimport f"
                                                     
-        t "use a b c"                               , "import a\nimport b\nimport c"
+        t "use a b c"                                 "import a\nimport b\nimport c"
                                                     
     ▸ if                                            
                                                     
-        t "if true then ⮐  false"                   , "if true: return false"                 
-        t "if true then ⮐  1 else ⮐  2"             , "if true: return 1 else: return 2"           
-        t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3"          , "if a: 1 elif b: 2 elif c: 3"        
-        t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4"   , "if a: 1 elif b: 2 elif c: 3 else: 4" 
-        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3"           , "if a: 1\nelif b: 2\nelif c: 3"        
-        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4"    , "if a: 1\nelif b: 2\nelif c: 3\nelse: 4" 
+        t "if true then ⮐  false"                     "if true: return false"                 
+        t "if true then ⮐  1 else ⮐  2"               "if true: return 1 else: return 2"           
+        t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3"            "if a: 1 elif b: 2 elif c: 3"        
+        t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4"     "if a: 1 elif b: 2 elif c: 3 else: 4" 
+        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3"             "if a: 1\nelif b: 2\nelif c: 3"        
+        t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4"      "if a: 1\nelif b: 2\nelif c: 3\nelse: 4" 
                                                     
-        t "if a then if b then 1 else 2 else 3"     , "if a: if b: 1 else: 2 else: 3" 
-        t "x = if a then b else c"                  , "x = if a: b else: c"              
-        t "x = if a then b else c+d"                , "x = if a: b else: (c + d)"            
+        t "if a then if b then 1 else 2 else 3"       "if a: if b: 1 else: 2 else: 3" 
+        t "x = if a then b else c"                    "x = if a: b else: c"              
+        t "x = if a then b else c+d"                  "x = if a: b else: (c + d)"            
                                                     
-        t "if a then ⮐"                             , "if a: return"
-        t "a + if b then c else d"                  , "(a + if b: c else: d)"
+        t "if a then ⮐"                               "if a: return"
+        t "a + if b then c else d"                    "(a + if b: c else: d)"
                                                     
-        t "if true ➜ log msg"                       , "if true: echo(msg)"
-        t "if true ➜\n  log msg"                    , "if true: \n  echo(msg)"
-        t "if true\n  log msg"                      , "if true: \n  echo(msg)"
-        t "if true\n  log msg\n  log msg"           , "if true: \n  echo(msg)\n  echo(msg)"
+        t "if true ➜ log msg"                         "if true: echo(msg)"
+        t "if true ➜\n  log msg"                      "if true: \n  echo(msg)"
+        t "if true\n  log msg"                        "if true: \n  echo(msg)"
+        t "if true\n  log msg\n  log msg"             "if true: \n  echo(msg)\n  echo(msg)"
         
         t   """
             if a
@@ -288,6 +296,15 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
                         insert(lhs.token.str, e)
             elif (e.kind == ●var): 
                 insert(e.var_name.token.str, e)"""
+                
+        t   """
+            if a
+                1
+            (a:1 b:2)
+            """ """
+            if a: 
+                1
+            (a: 1, b: 2)"""
 
     ▸ when
     
@@ -319,7 +336,8 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         t "s = ''"                                   "s = ''"
         t "s = \"\""                                 "s = \"\""
         t "s = \"\"\"\"\"\""                         "s = \"\"\"\"\"\""
-                                                     
+        
+        t "s = '\\\\'"                               "s = '\\\\'"
         t "s = 't'"                                  "s = 't'"
         t "s = 't2'"                                 "s = \"t2\""
         t "s = 'test'"                               "s = \"test\""
@@ -339,8 +357,8 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         t "let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")",
           "let e = choose(n.return_value, &\" {n.return_value}\", \"\")"
           
-        t "p = peg\"abc\""                          , "p = peg\"abc\"" 
-        t "if line =~ peg\"abc\""                   , "if (line =~ peg\"abc\"): " 
+        t "p = peg\"abc\""                            "p = peg\"abc\"" 
+        t "if line =~ peg\"abc\""                     "if (line =~ peg\"abc\"): " 
           
     ▸ triple strings
     
@@ -364,7 +382,7 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""             "t(\"\"\"a\"\"\", \"\"\"b\"\"\")"
         t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""         "t(\"\"\"\na\"\"\", \"\"\"\nb\"\"\")"
         t "t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"" "t(\"\"\"\na = 1\"\"\", \"\"\"\nb = 2\"\"\")"
-        t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")"
+        t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\""  "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")"
         t "t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"" "t(\"\"\"\n    a = 1\n    b = 2\n\"\"\")"
         
     ▸ semicolon
@@ -444,12 +462,12 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
 
     ▸ enum
     
-        t "enum ABC\n a\n b\n c"                         , "type ABC = enum\n a\n b\n c"
-        t "enum tok\n  ◆when\n  ◆then = \"➜\"\n  ◆if"    , "type tok = enum\n  ◆when\n  ◆then = \"➜\"\n  ◆if"
+        t "enum ABC\n a\n b\n c"                           "type ABC = enum\n a\n b\n c"
+        t "enum tok\n  ◆when\n  ◆then = \"➜\"\n  ◆if"      "type tok = enum\n  ◆when\n  ◆then = \"➜\"\n  ◆if"
     
     ▸ comments
     
-        t "two = 1 + 1 # addition"                       , "two = (1 + 1) # addition"
+        t "two = 1 + 1 # addition"                         "two = (1 + 1) # addition"
         
         t   """
             # ███   ███  ███  ██     ██
@@ -483,7 +501,7 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         
     ▸ tests
 
-        t "▸ a test suite" , "suite \"a test suite\": "
+        t "▸ a test suite"   "suite \"a test suite\": "
         
         t   """
             ▸ suite
@@ -499,6 +517,19 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
                 test "test2": 
                     check xy == "42"
                 1"""
+        
+        t   """
+            ▸ test
+                # comment
+                ▸ section
+                    slash.normalize "xyz"   ▸ "xyz"
+                    slash.normalize "xyz"   ▸ 2
+            """ """
+            suite "test": 
+                # comment
+                test "section": 
+                    check slash.normalize("xyz") == "xyz"
+                    check slash.normalize("xyz") == 2"""
         
     ▸ misc
     
@@ -560,5 +591,5 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         
     ▸ type
     
-        t "type lineInfo* = tuple[filename: string, line: int, column: int]", "\ntype lineInfo* = tuple[filename: string, line: int, column: int]"
+        t "type lineInfo* = tuple[filename: string, line: int, column: int]"  "\ntype lineInfo* = tuple[filename: string, line: int, column: int]"
         

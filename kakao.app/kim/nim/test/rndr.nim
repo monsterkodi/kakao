@@ -115,12 +115,17 @@ proc hook {.noconv.} =
         t("t \"a\" , \"b\"", "t(\"a\", \"b\")")
         t("t \"a\",\n  \"b\"", "t(\"a\", \"b\")")
         t("t \"a\"\n  \"b\"", "t(\"a\", \"b\")")
-    test "tuple assign": 
+    test "list assign": 
         t("(a, b) = c", "(a, b) = c")
         t("(a b) = c", "(a, b) = c")
         t("(a, b, c) = f()", "(a, b, c) = f()")
         t("(a b c) = f()", "(a, b, c) = f()")
         t("(a b c) = (c b a)", "(a, b, c) = (c, b, a)")
+    test "tuple": 
+        t("(a:1, b:2)", "(a: 1, b: 2)")
+        t("⮐  (a:1, b:2, t:\"hello\")", "return (a: 1, b: 2, t: \"hello\")")
+        t("(a:1 b:2)", "(a: 1, b: 2)")
+        t("⮐  (a:1 b:2 t:\"hello\")", "return (a: 1, b: 2, t: \"hello\")")
     test "assign": 
         t("a = 1", "a = 1")
         t("a = b = 1", "a = b = 1")
@@ -230,6 +235,14 @@ if (e.kind == ●operation):
             insert(lhs.token.str, e)
 elif (e.kind == ●var): 
     insert(e.var_name.token.str, e)""")
+        t("""
+if a
+    1
+(a:1 b:2)
+""", """
+if a: 
+    1
+(a: 1, b: 2)""")
     test "when": 
         t("when T is (seq or array)", "when (T is (seq or array)): ")
     test "for                                            ": 
@@ -253,6 +266,7 @@ elif (e.kind == ●var):
         t("s = ''", "s = ''")
         t("s = \"\"", "s = \"\"")
         t("s = \"\"\"\"\"\"", "s = \"\"\"\"\"\"")
+        t("s = '\\\\'", "s = '\\\\'")
         t("s = 't'", "s = 't'")
         t("s = 't2'", "s = \"t2\"")
         t("s = 'test'", "s = \"test\"")
@@ -404,6 +418,18 @@ suite "suite":
     test "test2": 
         check xy == "42"
     1""")
+        t("""
+▸ test
+    # comment
+    ▸ section
+        slash.normalize "xyz"   ▸ "xyz"
+        slash.normalize "xyz"   ▸ 2
+""", """
+suite "test": 
+    # comment
+    test "section": 
+        check slash.normalize("xyz") == "xyz"
+        check slash.normalize("xyz") == 2""")
     test "misc": 
         t("""    
 if bytesRead > 0
