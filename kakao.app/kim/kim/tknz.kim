@@ -286,8 +286,6 @@ class Tknzr
                 ⮐  true
             @scmp @delimiter
 
-        log "string #{@segs}"
-                                
         @token.tok = ◂string
         if @peek(0) == "\\"
             @advance 2
@@ -298,9 +296,7 @@ class Tknzr
             
             c = @peek(0)
             if c == "\\"
-                log "backslash #{@segi} #{@peek(0)}"
                 @advance 2
-                log "backslash #{@segi} #{@peekSafe(0)}"
                 continue
             
             if @delimiter in ["\"" "\"\"\""]
@@ -313,9 +309,7 @@ class Tknzr
             @lineIncr c
             
         if @segi <= @eol-1
-            log "commit ◂string_end"
             @commit @delimiter ◂string_end @delimiter.len
-            log "#{@}"
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███

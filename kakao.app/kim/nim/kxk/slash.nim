@@ -1,29 +1,60 @@
-import std/[os, paths, strutils, sequtils]
+import std/[os, paths, strutils, sequtils, strformat, appdirs]
 
 proc normalize*(path : string) : string = 
     var p = path
-    for i, c in p: 
-        if (c == "\\"[0]): 
+    var swallow : int = (p.high + 1)
+    for i in countdown(p.high, 0): 
+        if (i >= swallow): 
+            p.delete(i..i)
+            continue
+        if (p[i] == '\\'): 
             p[i] = '/'
+        if ((i < p.high) and (p[i] == '/')): 
+            if (i < (p.high - 1)): 
+                if ((p[(i + 1)] == '.') and (p[(i + 2)] == '/')): 
+                    p.delete((i + 1)..(i + 2))
+                if ((((p[(i + 1)] == '.') and (p[(i + 2)] == '.')) and (i > 0)) and (p[(i - 1)] != '.')): 
+                    p.delete(i..(i + 2))
+                    swallow = (i - 1)
+                    while ((swallow > 0) and (p[swallow] != '/')): 
+                        (swallow -= 1)
+            if (p[(i + 1)] == '/'): 
+                p.delete((i + 1)..(i + 1))
     if ((p.len > 1) and (p[^1] == '/')): 
         p[0..^2]
+    elif (((p.len > 1) and (p[0] == '/')) and (path[0] notin {'/', '\\'})): 
+        p[1..^1]
     else: 
         p
 
 proc split*(path : string) : seq[string] = 
-    path.split("/").filter(proc (s : string) : bool = (s.len > 0))
+    var s = path.split("/")
+    if (s[^1].len == 0): s.setLen((s.len - 1))
+    s
 
-proc parse*(path : string) : tuple[path:string,dir:string,file:string,name:string,ext:string] = 
-    var path = path.normalize()
+proc contains*(path : string, subpath : string) : bool = (subpath in slash.split(path))
+
+proc home*() : string = 
+    slash.normalize(appDirs.getHomeDir().string)
+
+proc untilde*(path : string) : string = 
+    path.expandTilde()
+
+type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
+
+proc parse*(path : string) : parseInfo = 
+    var path = path.normalize().untilde()
     var split = path.split()
-    var dir = split[0..^2].join("/")
+    var dir = ""
+    if (split.len > 2): 
+        dir = split[0..^2].join("/")
+    elif (split.len == 2): 
+        dir = split[0]
     var file = split[^1]
     var name = file
     var ext = ""
     if ((dir.len == 0) and (path notin @[".", ".."])): 
         dir = if (path[0] == '/'): "/" else: "."
-    elif (((dir.len > 0) and (path[0] == '/')) and (dir[0] != '/')): 
-        dir = "/" & dir
     var nmspl = file.split(".")
     if (nmspl.len > 1): 
         name = nmspl[0..^2].join(".")
@@ -32,7 +63,6 @@ proc parse*(path : string) : tuple[path:string,dir:string,file:string,name:strin
 
 proc dir*(path : string) : string = 
     path.parse.dir
-    # splitFile(path.Path)[0].string
 
 proc dirs*(path : string) : seq[string] = 
     var dirs = path.dir.split('/')
@@ -67,6 +97,19 @@ proc read*(path : string) : string =
 proc swapExt*(path : string, ext : string) : string = 
     $path.Path.changeFileExt("." & ext)
 
+proc splitExt*(path : string) : seq[string] = 
+    var split = path.split()
+    var dotidx = split[^1].rfind(".")
+    var ext = ""
+    if (dotidx > 0): 
+        ext = split[^1][(dotidx + 1)..^1]
+        split[^1] = split[^1][0..<dotidx]
+    var pth = split.join("/")
+    @[pth, ext]
+
+proc removeExt*(path : string) : string = 
+    path.splitExt[0]
+
 proc swapLastPathComponentAndExt*(path : string, src : string, tgt : string) : string = 
     var dirs = path.dirs()
     for i in countdown(dirs.high, 0): 
@@ -75,3 +118,15 @@ proc swapLastPathComponentAndExt*(path : string, src : string, tgt : string) : s
             break
     dirs.add(path.file.swapExt(tgt))
     dirs.join("/")
+
+proc tilde*(path : string) : string = 
+    path.replace(slash.home(), "~")
+
+proc isRelative*(path : string) : bool = 
+    ((path.len == 0) or ((path.len > 0) and (path[0] != '/')))
+
+proc isAbsolute*(path : string) : bool = 
+    ((path.len > 0) and (path[0] == '/'))
+
+proc isRoot*(path : string) : bool = 
+    (path.normalize() == "/")

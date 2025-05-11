@@ -140,6 +140,10 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         
         t "let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", 
           "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})"
+          
+        t "f(x.y, \"txt\", (a:1 b:3))"                "f(x.y, \"txt\", (a: 1, b: 3))"
+        t "f(x.y \"txt\" (a:1 b:3))"                  "f(x.y, \"txt\", (a: 1, b: 3))"
+        t "f x.y \"txt\" (a:1 b:3)"                   "f(x.y, \"txt\", (a: 1, b: 3))"
         
     ▸ arglist
     

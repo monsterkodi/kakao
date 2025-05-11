@@ -413,6 +413,8 @@ proc thenIndented(this : Parser, token : Token) : Node =
 
 proc lCall(this : Parser, callee : Node) : Node = 
         if (callee.token.line != this.current.line): return
+        if (callee.kind in {●string, ●operation, ●preOp, ●postOp}): return
+        # ⮐  if callee.token.tok in {◂string ◂number ◂assign ◂colon ◂comma ◂paren_open ◂bracket_open}
         var token = this.consume() # (
         var args = this.parseCallArgs(callee.token.col)
         this.swallowError(◂paren_close, "Missing closing paren for call arguments")

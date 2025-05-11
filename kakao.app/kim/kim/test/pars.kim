@@ -167,6 +167,10 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "f(1 2 3)"                                "▪[(◂name ◂call @[◂number, ◂number, ◂number])]"
         t "f(1 g(h(2)))"                            "▪[(◂name ◂call @[◂number, (◂name ◂call @[(◂name ◂call @[◂number])])])]"
     
+        t "f(1, \"txt\", (a:1 b:3))"                "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]"
+        t "f(1 \"txt\" (a:1 b:3))"                  "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]"
+        t "f 1 \"txt\" (a:1 b:3)"                   "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]"
+        
     ▸ constructor call
     
         t "Token(tok:◂let)"                         "▪[(◂name ◂call @[(◂name : ◂name)])]"

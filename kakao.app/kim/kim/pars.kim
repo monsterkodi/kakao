@@ -483,6 +483,8 @@ class Parser
     lCall: ◇Node callee ➜Node ->
     
         ⮐  if callee.token.line != @current.line
+        ⮐  if callee.kind in {●string ●operation ●preOp ●postOp}
+        # ⮐  if callee.token.tok in {◂string ◂number ◂assign ◂colon ◂comma ◂paren_open ◂bracket_open}
         token = @consume() # (
         args = @parseCallArgs callee.token.col
         @swallowError ◂paren_close "Missing closing paren for call arguments"

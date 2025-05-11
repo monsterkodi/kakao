@@ -107,6 +107,9 @@ proc hook {.noconv.} =
         t("f = dir(a().b()[0] / \"x\").toSeq()", "f = dir((a().b()[0] / \"x\")).toSeq()")
         t("log a", "echo(a)")
         t("let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})")
+        t("f(x.y, \"txt\", (a:1 b:3))", "f(x.y, \"txt\", (a: 1, b: 3))")
+        t("f(x.y \"txt\" (a:1 b:3))", "f(x.y, \"txt\", (a: 1, b: 3))")
+        t("f x.y \"txt\" (a:1 b:3)", "f(x.y, \"txt\", (a: 1, b: 3))")
     test "arglist": 
         t("f(a, b, c)", "f(a, b, c)")
         t("g a, b, c", "g(a, b, c)")

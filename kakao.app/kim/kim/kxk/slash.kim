@@ -1,35 +1,67 @@
 
-use std ▪ os paths strutils sequtils 
+use std ▪ os paths strutils sequtils strformat appdirs
 
 normalize* = ◇string path ➜ string ->
 
     p = path
-    for i c in p
-        if c == "\\"[0]
+    swallow ◇int = p.high+1
+    for i in countdown p.high 0
+        if i >= swallow
+            p.delete i..i
+            continue
+        if p[i] == '\\'
             p[i] = '/'
-    
+        if i < p.high and p[i] == '/'
+            if i < p.high - 1
+                if p[i+1] == '.' and p[i+2] == '/' 
+                    p.delete i+1..i+2
+                if p[i+1] == '.' and p[i+2] == '.' and i > 0 and p[i-1] != '.' 
+                    p.delete i..i+2
+                    swallow = i-1
+                    while swallow > 0 and p[swallow] != '/'
+                        swallow -= 1                    
+            if p[i+1] == '/'
+                p.delete i+1..i+1
     if p.len > 1 and p[^1] == '/'
         p[0..^2]
+    elif p.len > 1 and p[0] == '/' and path[0] notin {'/' '\\'}
+        p[1..^1]
     else
         p
 
 split* = ◇string path ➜ seq[string] ->
 
-    path.split("/").filter(◇string s ➜ bool -> s.len > 0)
+    s = path.split "/"
+    s.setLen(s.len - 1) if s[^1].len == 0
+    s
+    
+contains* = ◇string path ◇string subpath ➜ bool -> subpath in slash.split path
 
-parse* = ◇string path ➜ tuple[path:string, dir:string, file:string, name:string, ext:string] ->
+home* = ➜ string ->
 
-    path  = path.normalize()
+    slash.normalize appDirs.getHomeDir().string
+
+untilde* = ◇string path ➜ string ->
+
+    path.expandTilde()
+    
+type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
+
+parse* = ◇string path ➜ parseInfo ->
+
+    path  = path.normalize().untilde()
     split = path.split()
-    dir   = split[0..^2].join "/"
+    dir   = ""
+    if split.len > 2 
+        dir = split[0..^2].join "/" 
+    elif split.len == 2 
+        dir = split[0]
     file  = split[^1]
     name  = file
     ext   = ""
     
     if dir.len == 0 and path not in ["." ".."]
         dir = if path[0] == '/' ➜ "/" ➜ "."
-    elif dir.len > 0 and path[0] == '/' and dir[0] != '/'
-        dir = "/" & dir
     
     nmspl = file.split "."
     if nmspl.len > 1
@@ -41,7 +73,6 @@ parse* = ◇string path ➜ tuple[path:string, dir:string, file:string, name:str
 dir* = ◇string path ➜ string ->
 
     path.parse.dir
-    # splitFile(path.Path)[0].string
     
 dirs* = ◇string path ➜ seq[string] ->
 
@@ -87,7 +118,22 @@ read* = ◇string path ➜ string ->
     
 swapExt* = ◇string path ◇string ext ➜ string ->
 
-    $path.Path.changeFileExt "." & ext
+    $path.Path.changeFileExt("." & ext)
+    
+splitExt* = ◇string path ➜ seq[string] ->
+    
+    split = path.split()
+    dotidx = split[^1].rfind "."
+    ext = ""
+    if dotidx > 0
+        ext = split[^1][dotidx+1..^1]
+        split[^1] = split[^1][0...dotidx]
+    pth = split.join "/"
+    [pth ext]
+    
+removeExt* = ◇string path ➜ string ->
+
+    path.splitExt[0]
     
 swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜string ->
 
@@ -99,5 +145,19 @@ swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜str
             
     dirs.add path.file.swapExt(tgt)
     dirs.join "/"
+        
+tilde* = ◇string path ➜ string ->
+
+    path.replace slash.home() "~"
     
+isRelative* = ◇string path ➜ bool ->
+
+    path.len == 0 or path.len > 0 and path[0] != '/'
     
+isAbsolute* = ◇string path ➜ bool ->
+
+    path.len > 0 and path[0] == '/'
+    
+isRoot* = ◇string path ➜ bool ->
+
+    path.normalize() == "/"

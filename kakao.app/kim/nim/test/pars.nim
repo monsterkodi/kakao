@@ -127,6 +127,9 @@ hook = -> {.noconv.}
         t("f(1 + 2 4 + 5)", "▪[(◂name ◂call @[(◂number + ◂number), (◂number + ◂number)])]")
         t("f(1 2 3)", "▪[(◂name ◂call @[◂number, ◂number, ◂number])]")
         t("f(1 g(h(2)))", "▪[(◂name ◂call @[◂number, (◂name ◂call @[(◂name ◂call @[◂number])])])]")
+        t("f(1, \"txt\", (a:1 b:3))", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
+        t("f(1 \"txt\" (a:1 b:3))", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
+        t("f 1 \"txt\" (a:1 b:3)", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
     test "constructor call": 
         t("Token(tok:◂let)", "▪[(◂name ◂call @[(◂name : ◂name)])]")
         t("Node(token:Token(tok:◂let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", "▪[(◂name ◂call @[(◂name : (◂name ◂call @[(◂name : ◂name), (◂name : ◂string), (◂name : ((◂name . ◂name) . ◂name))])), (◂name : ◂name), (◂name : ◂name)])]")
