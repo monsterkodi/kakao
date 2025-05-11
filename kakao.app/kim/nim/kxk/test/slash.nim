@@ -28,50 +28,44 @@ suite "slash":
           t(slash.normalize, "./x\\y/z", "./x/y/z")
           t(slash.normalize, "x/./z", "x/z")
           t(slash.normalize, "x/../z", "z")
-          # t slash.normalize "./x/y/z/../../a"   "./x/a"
+          t(slash.normalize, "./x/y/z/../../a", "./x/a")
           t(slash.normalize, "../up", "../up")
           t(slash.normalize, "//", "/")
           t(slash.normalize, "//././////././", "/")
-          # t slash.normalize "./x/../../z"       "../z"
-          # t slash.normalize "./x/../../../y"    "../../y"
+          t(slash.normalize, "./x/../../z", "../z")
+          t(slash.normalize, "./x/../../../y", "../../y")
     # 00000000    0000000   000000000  000   000  
     # 000   000  000   000     000     000   000  
     # 00000000   000000000     000     000000000  
     # 000        000   000     000     000   000  
     # 000        000   000     000     000   000  
-    # ▸ path
-    # 
-    #     slash.path ""                       ▸ ""
-    #     slash.path null                     ▸ ""
-    #     slash.path undefined                ▸ ""
-    #     slash.path "a" "b" "c"              ▸ "a/b/c"
-    #     
-    #     slash.path "" "" "void" "" ""       ▸ "void"
-    #     slash.path "" "" "oops" "" "alla"   ▸ "oops/alla"
-    #     
-    #     slash.path "C:\\FOO" ".\\BAR" "that\\sucks"  ▸ "C:/FOO/BAR/that/sucks"
-    #     
-    #     slash.path "~"                      ▸ "~"
-    #     slash.path "/"                      ▸ "/"
-    #     slash.path "./"                     ▸ "./"
-    #     slash.path "../"                    ▸ "../"
-    #     slash.path ".././"                  ▸ "../"
-    #     slash.path "./relative"             ▸ "./relative"
-    #     slash.path "../parent"              ▸ "../parent"
-    #     slash.path ".././././"              ▸ "../"
-    #     slash.path "//"                     ▸ "/"
-    #     slash.path "C:/"                    ▸ "C:/"
-    #     slash.path "C://"                   ▸ "C:/"
-    #     slash.path "C:"                     ▸ "C:/"
-    #     slash.path "C:\\"                   ▸ "C:/"
-    #     slash.path "C:/some/path/on.c"      ▸ "C:/some/path/on.c"
-    # 
-    #     slash.path "C:\\"                   ▸ "C:/"
-    #     slash.path "C:/"                    ▸ "C:/"
-    #     slash.path "C://"                   ▸ "C:/"
-    #     slash.path "C:"                     ▸ "C:/"
-    #     slash.path "C:\\Back\\Slash\\Crap"  ▸ "C:/Back/Slash/Crap"
-    #     slash.path "C:\\Back\\Slash\\Crap\\..\\..\\To\\The\\..\\Future" ▸ "C:/Back/To/Future"
+    test "path": 
+        check slash.path("") == ""
+        check slash.path("a", "b", "c") == "a/b/c"
+        check slash.path("", "", "void", "", "") == "void"
+        check slash.path("", "", "oops", "", "alla") == "oops/alla"
+        check slash.path("C:\\FOO", ".\\BAR", "that\\sucks") == "C:/FOO/BAR/that/sucks"
+        check slash.path("~") == "~"
+        check slash.path("/") == "/"
+        check slash.path("./") == "."
+        check slash.path("../") == ".."
+        check slash.path(".././") == ".."
+        check slash.path("./relative") == "./relative"
+        check slash.path("../parent") == "../parent"
+        check slash.path(".././././") == ".."
+        check slash.path("//") == "/"
+        check slash.path("C:/") == "C:"
+        check slash.path("C://") == "C:"
+        check slash.path("C:") == "C:"
+        check slash.path("C:\\") == "C:"
+        check slash.path("C:/some/path/on.c") == "C:/some/path/on.c"
+        check slash.path("C:\\") == "C:"
+        check slash.path("C:/") == "C:"
+        check slash.path("C://") == "C:"
+        check slash.path("C:") == "C:"
+        check slash.path("C:\\Back\\Slash\\Crap") == "C:/Back/Slash/Crap"
+        check slash.path("C:/Back/Slash/Crap/../../To/The/../Future") == "C:/Back/To/Future"
+        check slash.path("C:\\Back\\Slash\\Crap\\..\\..\\To\\The\\..\\Future") == "C:/Back/To/Future"
     # 000   0000000  00000000    0000000    0000000   000000000  
     # 000  000       000   000  000   000  000   000     000     
     # 000  0000000   0000000    000   000  000   000     000     

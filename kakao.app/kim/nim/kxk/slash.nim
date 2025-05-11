@@ -6,6 +6,10 @@ proc normalize*(path : string) : string =
     for i in countdown(p.high, 0): 
         if (i >= swallow): 
             p.delete(i..i)
+            if (i == swallow): 
+                if ((p[0] == '/') and (path[0] != '/')): 
+                    p.delete(0..0)
+                return slash.normalize(p)
             continue
         if (p[i] == '\\'): 
             p[i] = '/'
@@ -20,12 +24,19 @@ proc normalize*(path : string) : string =
                         (swallow -= 1)
             if (p[(i + 1)] == '/'): 
                 p.delete((i + 1)..(i + 1))
+    if ((p.len >= 4) and (p[0..3] == "./..")): 
+        p.delete(0..1)
     if ((p.len > 1) and (p[^1] == '/')): 
         p[0..^2]
     elif (((p.len > 1) and (p[0] == '/')) and (path[0] notin {'/', '\\'})): 
         p[1..^1]
     else: 
         p
+
+proc path*(args : varargs[string]) : string = 
+    
+    proc slsh(s : string) : string = s.replace("\\", "/")
+    slash.normalize args.filter(proc (s : string) : bool = (s.len > 0)).map(slsh).join("/")
 
 proc split*(path : string) : seq[string] = 
     var s = path.split("/")

@@ -32,13 +32,13 @@ template c(f:(proc (_:string, _:string) : bool), a:string, b:string, c:bool) = t
             
           t slash.normalize "x/./z"             "x/z"
           t slash.normalize "x/../z"            "z"
-          # t slash.normalize "./x/y/z/../../a"   "./x/a"
+          t slash.normalize "./x/y/z/../../a"   "./x/a"
             
           t slash.normalize "../up"             "../up"
           t slash.normalize "//"                "/"
           t slash.normalize "//././////././"    "/"
-          # t slash.normalize "./x/../../z"       "../z"
-          # t slash.normalize "./x/../../../y"    "../../y"
+          t slash.normalize "./x/../../z"       "../z"
+          t slash.normalize "./x/../../../y"    "../../y"
     
     # 00000000    0000000   000000000  000   000  
     # 000   000  000   000     000     000   000  
@@ -46,39 +46,38 @@ template c(f:(proc (_:string, _:string) : bool), a:string, b:string, c:bool) = t
     # 000        000   000     000     000   000  
     # 000        000   000     000     000   000  
 
-    # ▸ path
-    # 
-    #     slash.path ""                       ▸ ""
-    #     slash.path null                     ▸ ""
-    #     slash.path undefined                ▸ ""
-    #     slash.path "a" "b" "c"              ▸ "a/b/c"
-    #     
-    #     slash.path "" "" "void" "" ""       ▸ "void"
-    #     slash.path "" "" "oops" "" "alla"   ▸ "oops/alla"
-    #     
-    #     slash.path "C:\\FOO" ".\\BAR" "that\\sucks"  ▸ "C:/FOO/BAR/that/sucks"
-    #     
-    #     slash.path "~"                      ▸ "~"
-    #     slash.path "/"                      ▸ "/"
-    #     slash.path "./"                     ▸ "./"
-    #     slash.path "../"                    ▸ "../"
-    #     slash.path ".././"                  ▸ "../"
-    #     slash.path "./relative"             ▸ "./relative"
-    #     slash.path "../parent"              ▸ "../parent"
-    #     slash.path ".././././"              ▸ "../"
-    #     slash.path "//"                     ▸ "/"
-    #     slash.path "C:/"                    ▸ "C:/"
-    #     slash.path "C://"                   ▸ "C:/"
-    #     slash.path "C:"                     ▸ "C:/"
-    #     slash.path "C:\\"                   ▸ "C:/"
-    #     slash.path "C:/some/path/on.c"      ▸ "C:/some/path/on.c"
-    # 
-    #     slash.path "C:\\"                   ▸ "C:/"
-    #     slash.path "C:/"                    ▸ "C:/"
-    #     slash.path "C://"                   ▸ "C:/"
-    #     slash.path "C:"                     ▸ "C:/"
-    #     slash.path "C:\\Back\\Slash\\Crap"  ▸ "C:/Back/Slash/Crap"
-    #     slash.path "C:\\Back\\Slash\\Crap\\..\\..\\To\\The\\..\\Future" ▸ "C:/Back/To/Future"
+    ▸ path
+    
+        slash.path ""                       ▸ ""
+        slash.path "a" "b" "c"              ▸ "a/b/c"
+         
+        slash.path "" "" "void" "" ""       ▸ "void"
+        slash.path "" "" "oops" "" "alla"   ▸ "oops/alla"
+        
+        slash.path "C:\\FOO" ".\\BAR" "that\\sucks"  ▸ "C:/FOO/BAR/that/sucks"
+        
+        slash.path "~"                      ▸ "~"
+        slash.path "/"                      ▸ "/"
+        slash.path "./"                     ▸ "."
+        slash.path "../"                    ▸ ".."
+        slash.path ".././"                  ▸ ".."
+        slash.path "./relative"             ▸ "./relative"
+        slash.path "../parent"              ▸ "../parent"
+        slash.path ".././././"              ▸ ".."
+        slash.path "//"                     ▸ "/"
+        slash.path "C:/"                    ▸ "C:"
+        slash.path "C://"                   ▸ "C:"
+        slash.path "C:"                     ▸ "C:"
+        slash.path "C:\\"                   ▸ "C:"
+        slash.path "C:/some/path/on.c"      ▸ "C:/some/path/on.c"
+    
+        slash.path "C:\\"                   ▸ "C:"
+        slash.path "C:/"                    ▸ "C:"
+        slash.path "C://"                   ▸ "C:"
+        slash.path "C:"                     ▸ "C:"
+        slash.path "C:\\Back\\Slash\\Crap"  ▸ "C:/Back/Slash/Crap"
+        slash.path "C:/Back/Slash/Crap/../../To/The/../Future" ▸ "C:/Back/To/Future"
+        slash.path "C:\\Back\\Slash\\Crap\\..\\..\\To\\The\\..\\Future" ▸ "C:/Back/To/Future"
          
     # 000   0000000  00000000    0000000    0000000   000000000  
     # 000  000       000   000  000   000  000   000     000     
@@ -268,13 +267,6 @@ template c(f:(proc (_:string, _:string) : bool), a:string, b:string, c:bool) = t
     #     slash.relative "\\some\\path" "/some/path" ▸ "."
     #     slash.relative "/Users/kodi/s/kakao/kakao.app/js/bin/kode/returner.js" "/Users/kodi/s/kakao/kakao.app/js/bin/kode/test" ▸ "../returner.js"
         
-        # if slash.win()
-        #     slash.relative "C:\\test\\some\\path.txt" "C:\\test\\some\\other\\path" ▸ "../../path.txt"
-        #     slash.relative "C:/Users/kodi/s/konrad/app/js/coffee.js" "C:/Users/kodi/s/konrad" ▸ "app/js/coffee.js"
-        #     slash.relative "C:\\some\\path" "C:/some/path" ▸ "."
-        #     slash.relative "C:/some/path/on.c" "D:/path/on.d" ▸ "C:/some/path/on.c"
-        #     slash.relative "C:\\some\\path\\on.c" "D:\\path\\on.d" ▸ "C:/some/path/on.c"
-            
     # ▸ absolute
     # 
     #     slash.absolute "/some/path"         ▸ "/some/path"
