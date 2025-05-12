@@ -1,5 +1,5 @@
 
-use std ▪ monotimes times sequtils paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
+use std ▪ monotimes times sequtils random paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
 use system/ansi_c
 use slash 
 
@@ -7,7 +7,7 @@ export slash
 export monotimes times unittest  macros
 export sequtils  enumutils sets  tables typetraits
 export strutils  strformat unicode pegs
-export terminal
+export terminal  random
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 

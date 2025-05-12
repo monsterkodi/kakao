@@ -45,40 +45,6 @@ proc col(this : var Tknz) : int = (this.segi - this.bol)
 
 proc `$`(this : Tknz) : string = 
         &"▸▸▸ {this.lines} {this.token} bol {this.bol} segi {this.segi} {this.segs} ◂◂◂"
-# number: ->
-# 
-#     @push ◂number
-# 
-#     l = @segs.len
-#     
-#     if @segi < l-1 and @segs[@segi] == "0" 
-#         if @segs[@segi+1] == "x"
-#             @advance 2
-#             @advance {'0'..'9' 'a'..'f' 'A'..'F'}
-#             @push()
-#             ⮐   
-#         if @segs[@segi+1] == "b"
-#             @advance 2
-#             @advance {'0' '1'}
-#             @push()
-#             ⮐   
-#         if @segs[@segi+1] == "o"
-#             @advance 2
-#             @advance {'0'..'7' }
-#             @push()
-#             ⮐   
-#             
-#     @advance {'0'..'9'}
-#         
-#     if @segi < l-1 and @char == '.' and @char(1) in {'0'..'9'}
-#         @advance 1
-#         @advance {'0'..'9'}
-# 
-#     if @segi < l-1 and @char == 'e' and @char(1) in {'0'..'9' '+' '-'}
-#         @advance 2
-#         @advance {'0'..'9'}
-#     
-#     @push()
 # █████████  ███   ███  ███   ███  ███████
 #    ███     ███  ███   ████  ███     ███ 
 #    ███     ███████    ███ █ ███    ███  
@@ -122,4 +88,48 @@ proc toks*(segs : seq[string]) : seq[seq[Tkn]] =
 
 proc toks*(text : string) : seq[seq[Tkn]] = toks(kseg(text))
 
-    
+proc nums*(segs : seq[string], tkns : seq[seq[Tkn]]) : seq[seq[Tkn]] = 
+    for i1, tknl in tkns: 
+        for i2, tkn in tknl: 
+            var p = tkn.s
+            
+            proc seg(o = 0) : string = 
+                  if ((p + o) < tkn.e): segs[(p + o)] else: ""
+            
+            proc chr(o = 0) : char = 
+                  var s = seg(o) ; if (s.len > 0): s[0] else: ' '
+            
+            proc adv(n : int) = (p += n)
+            
+            proc adv(s : set[char]) = 
+                  while (chr() in s): (p += 1)
+            
+            proc num = 
+                if (p == tkn.e): 
+                    cast[ref seq[seq[Tkn]]](unsafeAddr(tkns))[i1][i2].t = ◂number
+            if (seg() == "0"): 
+                if (seg(1) == "x"): 
+                    adv(2)
+                    adv({'0'..'9', 'a'..'f', 'A'..'F'})
+                    num()
+                    continue
+                if (seg(1) == "b"): 
+                    adv(2)
+                    adv({'0', '1'})
+                    num()
+                    continue
+                if (seg(1) == "o"): 
+                    adv(2)
+                    adv({'0'..'7'})
+                    num()
+                    continue
+            adv({'0'..'9'})
+            if (p == tkn.s): continue
+            if ((seg() == ".") and (chr(1) in {'0'..'9'})): 
+                adv(1)
+                adv({'0'..'9'})
+            if ((seg() == "e") and (chr(1) in {'0'..'9', '+', '-'})): 
+                adv(2)
+                adv({'0'..'9'})
+            num()
+    tkns

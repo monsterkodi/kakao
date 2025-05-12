@@ -70,7 +70,7 @@ class Rndr
         if n.func_body
             @add " ="
             @add " "
-            if n.func_body.kind == ●semicolon
+            if n.func_body.kind in {●semicolon ●if ●while ●for ●switch}
                 @add "\n"
                 idt = if n.func_signature ➜ n.func_signature.token.col ➜ n.token.col
                 @add ' '.repeat(idt)
@@ -349,7 +349,9 @@ class Rndr
         for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
-                @add ", "
+                if item.token.str != "ref"
+                    @add ","
+                @add " "
         @add(")") if parens
     
     ▸curly: ◇Node n ->

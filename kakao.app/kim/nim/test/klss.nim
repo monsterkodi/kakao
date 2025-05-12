@@ -224,7 +224,8 @@ proc loop(this : VarsD) =
                 of this.n: this.n
                 else: this.o
         
-        proc moreFun = if this.m: this.n else: this.o
+        proc moreFun = 
+                  if this.m: this.n else: this.o
         fun(this.m)
         moreFun(this.o)""")
         t("""

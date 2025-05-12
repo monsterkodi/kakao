@@ -129,6 +129,7 @@ compile = ◇string file outDir="bin" ➜bool ->
 
     profileScope 'comp'
     cmd = "nim c -d:danger --outDir=#{outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off #{file}"
+    # cmd = "nim c -d:danger -d:nimNoLentIterators --outDir=#{outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off #{file}"
     # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     (output exitCode) = execCmdEx(cmd)
         
@@ -154,6 +155,7 @@ runTests = ◇seq[string] files ➜bool ->
     
     for f in files
         args = ["r" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
+        # args = ["r" "-d:nimNoLentIterators" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
         process = startProcess command="nim" args=args options={poInteractive poUsePath}
         defer: process.close()
         startTime = getMonoTime()

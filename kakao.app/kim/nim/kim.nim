@@ -88,6 +88,7 @@ proc compile(file : string, outDir = "bin") : bool =
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
     profileScope("comp")
     var cmd = &"nim c -d:danger --outDir={outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off {file}"
+    # cmd = "nim c -d:danger -d:nimNoLentIterators --outDir=#{outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off #{file}"
     # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"
     var (output, exitCode) = execCmdEx(cmd)
     if (exitCode != 0): 
@@ -109,6 +110,7 @@ proc runTests(files : seq[string]) : bool =
     var anyFail = false
     for f in files: 
         var args = @["r", "--colors:on", "--stackTrace:on", "--lineTrace:on", "--warning:User:off", f]
+        # args = ["r" "-d:nimNoLentIterators" "--colors:on" "--stackTrace:on" "--lineTrace:on" "--warning:User:off" f]  
         var process = startProcess(command = "nim", args = args, options = {poInteractive, poUsePath})
         defer: process.close()
         var startTime = getMonoTime()

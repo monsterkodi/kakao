@@ -65,7 +65,7 @@ proc sigBody(this : Rndr, n : Node) =
         if n.func_body: 
             this.add(" =")
             this.add(" ")
-            if (n.func_body.kind == ●semicolon): 
+            if (n.func_body.kind in {●semicolon, ●if, ●while, ●for, ●switch}): 
                 this.add("\n")
                 var idt = if n.func_signature: n.func_signature.token.col else: n.token.col
                 this.add(' '.repeat(idt))
@@ -300,7 +300,9 @@ proc ▸list(this : Rndr, n : Node) =
         for i, item in n.list_values: 
             this.rnd(item)
             if (i < (n.list_values.len - 1)): 
-                this.add(", ")
+                if (item.token.str != "ref"): 
+                    this.add(",")
+                this.add(" ")
         if parens: this.add(")")
 
 proc ▸curly(this : Rndr, n : Node) = 

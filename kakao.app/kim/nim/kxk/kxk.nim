@@ -1,11 +1,11 @@
-import std/[monotimes, times, sequtils, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
+import std/[monotimes, times, sequtils, random, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
 import system/ansi_c
 import slash
 export slash
 export monotimes, times, unittest, macros
 export sequtils, enumutils, sets, tables, typetraits
 export strutils, strformat, unicode, pegs
-export terminal
+export terminal, random
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
