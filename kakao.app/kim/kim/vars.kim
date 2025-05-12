@@ -78,6 +78,8 @@ class Scoper
                 for switchCase in e.switch_cases
                     @branch switchCase.case_then
                 @branch e.switch_default
+            ●semicolon
+                @branch e
                 
             ➜ discard
                         
@@ -89,7 +91,7 @@ class Scoper
         
     scope: ◇Node body ➜Node ->
         
-        if body == nil or body.kind != ●block or body.expressions.len == 0
+        if body == nil or body.kind notin {●block ●semicolon} or body.expressions.len == 0
             ⮐  body
     
         @vars.push initTable[string,bool]()

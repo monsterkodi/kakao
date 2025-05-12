@@ -9,8 +9,6 @@ type tt* = enum
     ◂text
     ◂number
     ◂comment
-    ◂newline
-    ◂eof
 
 type Tkn* = object
     t*: tt
@@ -19,28 +17,20 @@ type Tkn* = object
     l*: int
     c*: int
 
-proc init*(this : var Tkn, typ : tt, ss = -1, se = -1, line = -1, col = -1) : Tkn = 
-        this.t = typ
-        this.s = ss
-        this.e = se
-        this.l = line
-        this.c = col
-        this
+proc init*(this : var Tkn, t : tt, s = -1, e = -1, l = -1, c = -1) : Tkn = 
+       this.t = t ; this.s = s ; this.e = e ; this.l = l ; this.c = c ; this
 
-proc `$`*(this : Tkn) : string = 
-        &"tkn({this.t} {this.s} {this.e} {this.l} {this.c})"
+proc `$`*(this : Tkn) : string = &"tkn({this.t} {this.s} {this.e} {this.l} {this.c})"
 
 proc len*(this : var Tkn) : int = (this.e - this.s)
 
 proc tkn*(typ : tt, ss : int, line : int, col : int) : Tkn = 
-    var t = default(Tkn)
-    t.init(typ, ss, ss, line, col)
+       var t = Tkn() ; t.init(typ, ss, ss, line, col)
 
 proc tkn*(typ : tt, ss : int, se : int, line : int, col : int) : Tkn = 
-    var t = default(Tkn)
-    t.init(typ, ss, se, line, col)
+       var t = Tkn() ; t.init(typ, ss, se, line, col)
 
-type Tknz = ref object of RootObj
+type Tknz = object
     lines: seq[seq[Tkn]]
     line: seq[Tkn]
     token: Tkn
@@ -51,7 +41,7 @@ type Tknz = ref object of RootObj
 # segi at start of current line
 # current line index
 
-proc col(this : Tknz) : int = (this.segi - this.bol)
+proc col(this : var Tknz) : int = (this.segi - this.bol)
 
 proc `$`(this : Tknz) : string = 
         &"▸▸▸ {this.lines} {this.token} bol {this.bol} segi {this.segi} {this.segs} ◂◂◂"
@@ -95,12 +85,15 @@ proc `$`(this : Tknz) : string =
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-proc next(this : Tknz) : bool = 
+proc push(this : var Tknz) = 
+        if this.token.len: this.line.add(this.token)
+        if this.line.len: this.lines.add(this.line)
+
+proc next(this : var Tknz) : bool = 
         if (this.segi >= this.segs.len): return false
         case this.segs[this.segi]:
             of "\n": 
-                if this.token.len: this.line.add(this.token)
-                if this.line.len: this.lines.add(this.line)
+                this.push()
                 this.line = @[]
                 (this.idx += 1)
                 this.bol = this.segi
@@ -118,14 +111,14 @@ proc next(this : Tknz) : bool =
         (this.segi += 1)
         true
 
-proc tknz(this : Tknz, segs : seq[string]) : seq[seq[Tkn]] = 
+proc tknz(this : var Tknz, segs : seq[string]) : seq[seq[Tkn]] = 
         this.segs = segs
         while this.next(): discard
-        if this.token.len: this.line.add(this.token)
-        if this.line.len: this.lines.add(this.line)
+        this.push()
         return this.lines
 
-proc toks*(segs : seq[string]) : seq[seq[Tkn]] = Tknz.new.tknz(segs)
+proc toks*(segs : seq[string]) : seq[seq[Tkn]] = 
+        var t = Tknz() ; t.tknz(segs)
 
 proc toks*(text : string) : seq[seq[Tkn]] = toks(kseg(text))
 

@@ -12,8 +12,6 @@ enum tt*
     ◂text
     ◂number
     ◂comment
-    ◂newline
-    ◂eof
         
 struct Tkn*
 
@@ -23,29 +21,16 @@ struct Tkn*
     l : int
     c : int
     
-    @: ◇tt typ ss=-1 se=-1 line=-1 col=-1 ->
+    @: ◇tt t s=-1 e=-1 l=-1 c=-1 -> @t=t ; @s=s ; @e=e ; @l=l ; @c=c
         
-        @t = typ
-        @s = ss
-        @e = se
-        @l = line
-        @c = col
-    
-    $: ➜ string ->
+    $: ➜string -> "tkn(#{@t} #{@s} #{@e} #{@l} #{@c})"
         
-        "tkn(#{@t} #{@s} #{@e} #{@l} #{@c})"
-        
-    len: ➜ int -> @e - @s
+    len: ➜int -> @e - @s
 
-tkn* = ◇tt typ ◇int ss ◇int line ◇int col ➜ Tkn -> 
-    t = default Tkn
-    t.init typ ss ss line col
+tkn* = ◇tt typ ◇int ss         ◇int line ◇int col ➜Tkn -> t = Tkn() ; t.init typ ss ss line col
+tkn* = ◇tt typ ◇int ss ◇int se ◇int line ◇int col ➜Tkn -> t = Tkn() ; t.init typ ss se line col
 
-tkn* = ◇tt typ ◇int ss ◇int se ◇int line ◇int col ➜ Tkn ->
-    t = default Tkn
-    t.init typ ss se line col
-
-class Tknz
+struct Tknz
 
     lines : seq[seq[Tkn]]
     line  : seq[Tkn]
@@ -55,7 +40,8 @@ class Tknz
     bol   : int # segi at start of current line
     idx   : int # current line index
     
-    col: ➜ int -> @segi - @bol
+    col: ➜int -> @segi - @bol
+    
     $: ➜string ->
     
         "▸▸▸ #{@lines} #{@token} bol #{@bol} segi #{@segi} #{@segs} ◂◂◂"
@@ -101,6 +87,10 @@ class Tknz
     #    ███     ███  ███   ███  ████   ███   
     #    ███     ███   ███  ███   ███  ███████
     
+    push: ->
+        if @token.len ➜ @line.add @token
+        if @line.len  ➜ @lines.add @line
+    
     next: ➜ bool ->
     
         ⮐  false if @segi >= @segs.len
@@ -108,8 +98,7 @@ class Tknz
         switch @segs[@segi] 
         
             "\n"
-                if @token.len ➜ @line.add @token
-                if @line.len  ➜ @lines.add @line
+                @push()
                 @line  = []
                 @idx  += 1
                 @bol   = @segi
@@ -132,10 +121,9 @@ class Tknz
     
         @segs = segs
         while @next() ➜ discard
-        if @token.len ➜ @line.add @token
-        if @line.len  ➜ @lines.add @line
+        @push()
         ⮐  @lines
 
-toks* = ◇seq[string] segs ➜seq[seq[Tkn]] -> Tknz.new.tknz segs
+toks* = ◇seq[string] segs ➜seq[seq[Tkn]] -> t = Tknz() ; t.tknz segs
 toks* =     ◇string  text ➜seq[seq[Tkn]] -> toks kseg(text)
     

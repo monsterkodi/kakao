@@ -175,3 +175,5 @@ a = 4
 b = 5
 c = 6
 var d = 7""")
+    test "semicolon": 
+        v("f = -> t = Tknz() ; t.tknz segs", "\nproc f = \n    var t = Tknz() ; t.tknz(segs)")

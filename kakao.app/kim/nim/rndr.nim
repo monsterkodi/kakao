@@ -65,6 +65,10 @@ proc sigBody(this : Rndr, n : Node) =
         if n.func_body: 
             this.add(" =")
             this.add(" ")
+            if (n.func_body.kind == ●semicolon): 
+                this.add("\n")
+                var idt = if n.func_signature: n.func_signature.token.col else: n.token.col
+                this.add(' '.repeat(idt))
             this.rnd(n.func_body)
 
 proc ▸func(this : Rndr, n : Node) = 

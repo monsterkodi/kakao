@@ -73,6 +73,8 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                 for switchCase in e.switch_cases: 
                     this.branch(switchCase.case_then)
                 this.branch(e.switch_default)
+            of ●semicolon: 
+                this.branch(e)
             else: discard
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       
@@ -81,7 +83,7 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
 # 0000000    0000000   0000000   000        00000000  
 
 proc scope(this : Scoper, body : Node) : Node = 
-        if (((body == nil) or (body.kind != ●block)) or (body.expressions.len == 0)): 
+        if (((body == nil) or (body.kind notin {●block, ●semicolon})) or (body.expressions.len == 0)): 
             return body
         this.vars.push(initTable[string, bool]())
         for i, e in body.expressions: 

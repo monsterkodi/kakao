@@ -70,6 +70,11 @@ class Rndr
         if n.func_body
             @add " ="
             @add " "
+            if n.func_body.kind == ●semicolon
+                @add "\n"
+                idt = if n.func_signature ➜ n.func_signature.token.col ➜ n.token.col
+                @add ' '.repeat(idt)
+                 
             @rnd n.func_body
 
     ▸func: ◇Node n -> 
@@ -94,7 +99,7 @@ class Rndr
             @add "`$`" & n.operand_left.token.str[1..^1]
         else
             @rnd n.operand_left
-        
+
         @sigBody f
         
     ▸operation: ◇Node n -> 

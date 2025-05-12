@@ -18,3 +18,8 @@ a.p()
                               
                               
 if (discard true;false): echo("a") ; echo("b") ; echo("c") else: echo("d") ; echo("e") ; echo("f")
+
+proc wugga(s:string) : string = 
+    var t = "ugga" ; t &= s ; t
+
+echo wugga("blork")

@@ -22,7 +22,7 @@ proc traverse(n : Node, iter : NodeIt) : Node =
     case n.kind:
         of ●literal: 
             n = iter(n)
-        of ●block: 
+        of ●block, ●semicolon: 
             trvl(n.expressions)
         of ●string: 
             trvl(n.string_stripols)

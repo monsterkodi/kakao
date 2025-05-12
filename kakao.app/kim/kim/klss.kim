@@ -24,6 +24,7 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
         ●literal
             n = iter n
         ●block
+        ●semicolon
             trvl n.expressions
         ●string
             trvl n.string_stripols
