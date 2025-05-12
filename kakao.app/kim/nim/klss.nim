@@ -125,7 +125,7 @@ proc methodify(clss : Node) : seq[Node] =
         if (it.kind == ●comment): return it
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
-        var valType = if strugt: ◂var_type else: ◂val_type
+        var valType = if (strugt and (it.member_key.token.str[0] != '$')): ◂var_type else: ◂val_type
         var arg_type = nod(●type, tkn(valType, className))
         var arg_name = nod(●literal, tkn(◂name, "this"))
         var this_arg = nod(●arg, tkn(valType), arg_type, arg_name)

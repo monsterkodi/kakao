@@ -30,149 +30,70 @@ struct Tkn*
         @e = se
         @l = line
         @c = col
+    
+    $: ➜ string ->
+        
+        "tkn(#{@t} #{@s} #{@e} #{@l} #{@c})"
         
     len: ➜ int -> @e - @s
 
-tkn = ◇tt typ ss=-1 se=-1 line=-1 col=-1 ➜ Tkn -> 
+tkn* = ◇tt typ ◇int ss ◇int line ◇int col ➜ Tkn -> 
+    t = default Tkn
+    t.init typ ss ss line col
+
+tkn* = ◇tt typ ◇int ss ◇int se ◇int line ◇int col ➜ Tkn ->
     t = default Tkn
     t.init typ ss se line col
-        
+
 class Tknz
 
-    tokens : seq[Tkn]
-    token  : Tkn
-    segi   : int
-    segs   : seq[string]
-    bol    : int # segi at start of current line
-    eol    : int # segi at end of current line
-    line   : int # current line index
-
+    lines : seq[seq[Tkn]]
+    line  : seq[Tkn]
+    token : Tkn
+    segi  : int
+    segs  : seq[string]
+    bol   : int # segi at start of current line
+    idx   : int # current line index
+    
+    col: ➜ int -> @segi - @bol
     $: ➜string ->
     
-        "◂▸ #{@line} #{@token} #{@bol} #{@segi} #{@eol}"
-    
-    char:        ➜char   -> @segs[@segi][0]
-    char: ◇int n ➜char   -> @segs[@segi+n][0]
-    peek: ◇int n ➜string -> @segs[@segi+n]
-    incr: ◇int n         -> @segi += n
-    col:         ➜int    -> @segi - @bol
-    
-    peekSafe: ◇int n ➜string ->
-    
-        if @segi+n < @segs.len 
-            @segs[@segi+n]
-        else
-            ""
+        "▸▸▸ #{@lines} #{@token} bol #{@bol} segi #{@segi} #{@segs} ◂◂◂"
         
-    nextLine: ->
-    
-        assert @segs[@segi] == "\n"
-        @incr 1
-        @line += 1
-        @bol = @segi
-        @eol = @bol
-        
-        while @eol < @segs.len and @segs[@eol] != "\n"
-            @eol += 1
-            
-    lineIncr: ◇string c ->
-    
-        if c == "\n"
-            @nextLine()
-        else
-            @incr 1
-    
-    srng: ◇int n ➜string ->
-    
-        e = if n >= 0 ➜ @segi + n ➜ @eol
-        ⮐  "" if e > @segs.len
-        @segs[@segi...e].join("")
-        
-    scmp: ◇string s ➜bool ->
-    
-        ss = kseg s
-        for n in 0...ss.len
-            ⮐  false if @segi+n >= @segs.len
-            ⮐  false if @segs[@segi+n] != ss[n]
-        true
-        
-    advance: ◇int n ->
-    
-        for s in 0..<n 
-            @token.e += 1
-            @incr 1
-    
-    advance: ◇set[char] charset ->
-        
-        while @segi < @segs.len and @peek(0)[0] in charset
-            @advance(1)
-            
-    pushTkn: t=◂text incr=0 ->
-    
-        if @token.e > @token.s
-            @tokens.add @token
-        @token = tkn t @line @col
-        @incr incr
-        
-    push: ◇tt t ->
-    
-        @token.t = t
-        @pushTkn()
-        
-    # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████ 
-    # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
-    # ███ █ ███  ███   ███  █████████  ███████    ███████   ███████  
-    # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███
-    # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███
-    
-    number: ->
-    
-        @pushTkn ◂number
-    
-        l = @segs.len
-        
-        if @segi < l-1 and @segs[@segi] == "0" 
-            if @segs[@segi+1] == "x"
-                @advance 2
-                @advance {'0'..'9' 'a'..'f' 'A'..'F'}
-                @pushTkn()
-                ⮐   
-            if @segs[@segi+1] == "b"
-                @advance 2
-                @advance {'0' '1'}
-                @pushTkn()
-                ⮐   
-            if @segs[@segi+1] == "o"
-                @advance 2
-                @advance {'0'..'7' }
-                @pushTkn()
-                ⮐   
-                
-        @advance {'0'..'9'}
-            
-        if @segi < l-1 and @char == '.' and @char(1) in {'0'..'9'}
-            @advance 1
-            @advance {'0'..'9'}
-    
-        if @segi < l-1 and @char == 'e' and @char(1) in {'0'..'9' '+' '-'}
-            @advance 2
-            @advance {'0'..'9'}
-        
-        @pushTkn()
-        
-    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
-    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
-    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
-    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
-    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
-    
-    comment: ->
-    
-        while @segi < @segs.len and not @scmp("\n")
-            @token.e += 1
-            @incr 1
-        
-        @push ◂comment
+    # number: ->
+    # 
+    #     @push ◂number
+    # 
+    #     l = @segs.len
+    #     
+    #     if @segi < l-1 and @segs[@segi] == "0" 
+    #         if @segs[@segi+1] == "x"
+    #             @advance 2
+    #             @advance {'0'..'9' 'a'..'f' 'A'..'F'}
+    #             @push()
+    #             ⮐   
+    #         if @segs[@segi+1] == "b"
+    #             @advance 2
+    #             @advance {'0' '1'}
+    #             @push()
+    #             ⮐   
+    #         if @segs[@segi+1] == "o"
+    #             @advance 2
+    #             @advance {'0'..'7' }
+    #             @push()
+    #             ⮐   
+    #             
+    #     @advance {'0'..'9'}
+    #         
+    #     if @segi < l-1 and @char == '.' and @char(1) in {'0'..'9'}
+    #         @advance 1
+    #         @advance {'0'..'9'}
+    # 
+    #     if @segi < l-1 and @char == 'e' and @char(1) in {'0'..'9' '+' '-'}
+    #         @advance 2
+    #         @advance {'0'..'9'}
+    #     
+    #     @push()
         
     # █████████  ███   ███  ███   ███  ███████
     #    ███     ███  ███   ████  ███     ███ 
@@ -180,61 +101,41 @@ class Tknz
     #    ███     ███  ███   ███  ████   ███   
     #    ███     ███   ███  ███   ███  ███████
     
-    tknz: ◇seq[string] segs ➜seq[Tkn] ->
+    next: ➜ bool ->
+    
+        ⮐  false if @segi >= @segs.len
+        
+        switch @segs[@segi] 
+        
+            "\n"
+                if @token.len ➜ @line.add @token
+                if @line.len  ➜ @lines.add @line
+                @line  = []
+                @idx  += 1
+                @bol   = @segi
+                @token = tkn ◂text @segi+1 @idx 0
+            " "
+                if @token.len
+                    @line.add @token
+                    @token = tkn ◂text @segi+1 @idx @col+1
+                else
+                    @token.s += 1
+                    @token.e += 1
+                    @token.c += 1
+            ➜ 
+                @token.e += 1
+                    
+        @segi += 1
+        true
+    
+    tknz: ◇seq[string] segs ➜seq[seq[Tkn]] ->
     
         @segs = segs
-        
-        while @segi < @segs.len and @segs[@segi] in ["\n" " "]
-            @lineIncr @segs[@segi]
-    
-        while @eol < @segs.len and @segs[@eol] != "\n"
-            @eol += 1
-            
-        while @segi < @segs.len
-            
-            if @segs[@segi] == "\n"
-            
-                @nextLine()
-                if @segi >= @segs.len
-                    break
-                @token = tkn ◂newline @line @col
-                while @peekSafe(0) == " "
-                    @advance 1
-                if @segi >= @segs.len
-                    break
-                if @tokens[^1].t == ◂newline
-                    @tokens.pops()
-                @tokens.add @token
-                continue
-                    
-            @token = tkn ◂text @line @col
-            
-            while @segi < @eol
-                                        
-                char = @peek 0
-                
-                if char == " "
-                    if @segi > 0 and @peek(-1) != " "
-                        @pushTkn()
-                else
-                    
-                    if @col > 0 and @peek(-1) == " "
-                        @token.c = @col
-                    
-                    if @token.len == 0 and @char in {'0'..'9'}
-                        @number()
-                        continue
-                    
-                    @advance 1
-                    
-                    continue
-                @incr 1
-            
-            if @token.len
-                @tokens.add @token
-                    
-        ⮐  @tokens
+        while @next() ➜ discard
+        if @token.len ➜ @line.add @token
+        if @line.len  ➜ @lines.add @line
+        ⮐  @lines
 
-toks* = ◇seq[string] segs ➜seq[Tkn] -> Tknz.new.tknz segs
-toks* =     ◇string  text ➜seq[Tkn] -> toks kseg(text)
+toks* = ◇seq[string] segs ➜seq[seq[Tkn]] -> Tknz.new.tknz segs
+toks* =     ◇string  text ➜seq[seq[Tkn]] -> toks kseg(text)
     

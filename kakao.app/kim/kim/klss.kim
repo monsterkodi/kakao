@@ -137,7 +137,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
         token = tkn(◂assign it.token.line it.token.col)
         funcn = it.member_value
                 
-        valType  = if strugt ➜ ◂var_type ➜ ◂val_type
+        valType  = if strugt and it.member_key.token.str[0] != '$' ➜ ◂var_type ➜ ◂val_type
         arg_type = nod ●type    tkn(valType className)
         arg_name = nod ●literal tkn(◂name "this")
         this_arg = nod ●arg     tkn(valType) arg_type arg_name

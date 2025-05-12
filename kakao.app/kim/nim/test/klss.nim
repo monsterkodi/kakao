@@ -106,6 +106,20 @@ type Struct = object
 
 proc hello(this : var Struct) = 
         (this.m += 1)""")
+        t("""
+struct Struct
+    $: ->
+        "hello"
+    o: ->
+""", """
+
+type Struct = object
+    
+
+proc `$`(this : Struct) = 
+        "hello"
+
+proc o(this : var Struct)""")
     test "this vars": 
         t("class A\n    add: ◇string text -> @s &= text", "\ntype A = ref object of RootObj\n    \n\nproc add(this : A, text : string) = (this.s &= text)")
         t("""

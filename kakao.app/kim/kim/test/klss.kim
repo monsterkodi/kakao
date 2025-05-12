@@ -122,6 +122,21 @@ template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInf
             
             proc hello(this : var Struct) = 
                     (this.m += 1)"""
+                    
+        t   """
+            struct Struct
+                $: ->
+                    "hello"
+                o: ->
+            """ """
+            
+            type Struct = object
+                
+            
+            proc `$`(this : Struct) = 
+                    "hello"
+            
+            proc o(this : var Struct)"""
 
     ▸ this vars
     
