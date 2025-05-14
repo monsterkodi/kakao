@@ -1,5 +1,5 @@
 
-use ../toks parseutils
+use ../toks parseutils ../../tknz
 
 template t(a:string, b:seq[seq[Tkn]]) = testCmp(a, toks(a), b, instantiationInfo())
 template n(a:string, b:seq[seq[Tkn]]) = testCmp(a, nums(kseg(a), toks(kseg(a))), b, instantiationInfo())
@@ -24,26 +24,31 @@ template n(a:string, b:seq[seq[Tkn]]) = testCmp(a, nums(kseg(a), toks(kseg(a))),
     
         n "abc 123 4.5 def"         [[tkn(◂text 0 3 0 0) tkn(◂number 4 7 0 4) tkn(◂number 8 11 0 8) tkn(◂text 12 15 0 12)]]
         # n currentSourcePath().readFile() [[tkn(◂text 0 3 0 0)]]
-        
-        let s = "012334567 012334567 a b c d e f g h i j k l m n o p q r s t u v w x y z"
-        var t = ""
+        profileStart "text"
+        s = "012334567 012334567 a b c d e f g h i j k l m n o p q r s t u v w x y z"
+        t = ""
         for l in 0..1000
             for i in 0..80
                 t &= s[rand(s.len-1)]
             t &= "\n"
-        # log t
+        profileStop "text"
         
-        let segs = kseg(t)
+        profileStart "segs"
+        segs = kseg t
+        profileStop "segs"
         profileStart "toks"
-        var tkns = toks(segs)
+        tkns = toks segs
         profileStop "toks"
         profileStart "nums"
-        tkns = nums(segs, tkns)
+        tkns = nums segs tkns
         profileStop "nums"
-        var number ◇ float
+        # profileStart "tknz"
+        # discard tokenize segs
+        # profileStop "tknz"
+        number ◇ float
         for tknl in tkns
             for tkn in tknl
-                let w = segs[tkn.s...tkn.e].join ""
+                w = segs[tkn.s...tkn.e].join ""
                 fail() if w != t[tkn.s...tkn.e]
                 if tkn.t == ◂number
                     fail() if w.parseFloat(number) == 0

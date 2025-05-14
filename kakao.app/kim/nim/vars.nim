@@ -73,6 +73,8 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                 for switchCase in e.switch_cases: 
                     this.branch(switchCase.case_then)
                 this.branch(e.switch_default)
+            of ●testSuite, ●testSection: 
+                this.branch(e.test_block)
             of ●semicolon: 
                 this.branch(e)
             else: discard

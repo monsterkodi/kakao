@@ -180,6 +180,8 @@ class Rndr
         @rnd n.var_name
         if n.var_name.kind == ●list
             @add ")"
+        if n.token.tok == ◂var_type
+            @add " {.guard: lock.}"
         if n.var_type
             @add " : "
             @rnd n.var_type
@@ -343,13 +345,13 @@ class Rndr
        @rnd n.while_body
         
     ▸list: ◇Node n ->
-    
+        
         parens = n.list_values and n.list_values[0].kind == ●member
         @add("(") if parens
         for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
-                if item.token.str != "ref"
+                if item.token.str notin ["ref" "const"]
                     @add ","
                 @add " "
         @add(")") if parens

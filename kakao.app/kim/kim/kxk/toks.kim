@@ -4,7 +4,7 @@
 #    ███     ███   ███  ███  ███        ███
 #    ███      ███████   ███   ███  ███████ 
 
-use kxk
+use kxk os
 export kxk
 
 enum tt*
@@ -30,7 +30,7 @@ struct Tkn*
 tkn* = ◇tt typ ◇int ss         ◇int line ◇int col ➜Tkn -> t = Tkn() ; t.init typ ss ss line col
 tkn* = ◇tt typ ◇int ss ◇int se ◇int line ◇int col ➜Tkn -> t = Tkn() ; t.init typ ss se line col
 
-struct Tknz
+class Tknz
 
     lines : seq[seq[Tkn]]
     line  : seq[Tkn]
@@ -97,44 +97,43 @@ nums* = ◇seq[string] segs ◇seq[seq[Tkn]] tkns ➜seq[seq[Tkn]] ->
     for i1 tknl in tkns
         for i2 tkn in tknl
             p = tkn.s
-            
             seg = o=0 ➜string  -> if p+o < tkn.e ➜ segs[p+o] ➜ ""
             chr = o=0 ➜char    -> s = seg(o) ; if s.len > 0 ➜ s[0] ➜ ' '
-            adv = ◇int n       -> p += n
             adv = ◇set[char] s -> while chr() in s ➜ p += 1
-            num =              ->  
+            dig = -> while chr() in "0123456789" ➜ p += 1
+            num = ->  
                 if p == tkn.e
                     (cast[ref seq[seq[Tkn]]](unsafeAddr(tkns)))[i1][i2].t = ◂number
                 
-            if seg() == "0" 
-                if seg(1) == "x"
-                    adv 2
-                    adv {'0'..'9' 'a'..'f' 'A'..'F'}
-                    num()
-                    continue
-                if seg(1) == "b"
-                    adv 2
-                    adv {'0' '1'}
-                    num()
-                    continue
-                if seg(1) == "o"
-                    adv 2
-                    adv {'0'..'7' }
-                    num()
-                    continue
-                    
-            adv {'0'..'9'}
+            if segs[p] == "0" 
+                switch seg 1 
+                    "x"
+                        p += 2
+                        adv {'0'..'9' 'a'..'f' 'A'..'F'}
+                        num()
+                        continue
+                    "b"
+                        p += 2
+                        adv {'0' '1'}
+                        num()
+                        continue
+                    "o"
+                        p += 2
+                        adv {'0'..'7' }
+                        num()
+                        continue
+            dig()
             
             continue if p == tkn.s
                 
             if seg() == "." and chr(1) in {'0'..'9'}
-                adv 1
-                adv {'0'..'9'}
+                p += 1
+                dig()
                 
             if seg() == "e" and chr(1) in {'0'..'9' '+' '-'}
-                adv 2
-                adv {'0'..'9'}
-            
+                p += 2
+                dig()
+                
             num()
     tkns
         

@@ -4,6 +4,7 @@
 #    ███     ███   ███  ███  ███        ███
 #    ███      ███████   ███   ███  ███████ 
 import kxk
+import os
 export kxk
 type tt* = enum
     ◂text
@@ -30,7 +31,7 @@ proc tkn*(typ : tt, ss : int, line : int, col : int) : Tkn =
 proc tkn*(typ : tt, ss : int, se : int, line : int, col : int) : Tkn = 
        var t = Tkn() ; t.init(typ, ss, se, line, col)
 
-type Tknz = object
+type Tknz = ref object of RootObj
     lines: seq[seq[Tkn]]
     line: seq[Tkn]
     token: Tkn
@@ -41,7 +42,7 @@ type Tknz = object
 # segi at start of current line
 # current line index
 
-proc col(this : var Tknz) : int = (this.segi - this.bol)
+proc col(this : Tknz) : int = (this.segi - this.bol)
 
 proc `$`(this : Tknz) : string = 
         &"▸▸▸ {this.lines} {this.token} bol {this.bol} segi {this.segi} {this.segs} ◂◂◂"
@@ -51,11 +52,11 @@ proc `$`(this : Tknz) : string =
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-proc push(this : var Tknz) = 
+proc push(this : Tknz) = 
         if this.token.len: this.line.add(this.token)
         if this.line.len: this.lines.add(this.line)
 
-proc next(this : var Tknz) : bool = 
+proc next(this : Tknz) : bool = 
         if (this.segi >= this.segs.len): return false
         case this.segs[this.segi]:
             of "\n": 
@@ -77,7 +78,7 @@ proc next(this : var Tknz) : bool =
         (this.segi += 1)
         true
 
-proc tknz(this : var Tknz, segs : seq[string]) : seq[seq[Tkn]] = 
+proc tknz(this : Tknz, segs : seq[string]) : seq[seq[Tkn]] = 
         this.segs = segs
         while this.next(): discard
         this.push()
@@ -99,37 +100,39 @@ proc nums*(segs : seq[string], tkns : seq[seq[Tkn]]) : seq[seq[Tkn]] =
             proc chr(o = 0) : char = 
                   var s = seg(o) ; if (s.len > 0): s[0] else: ' '
             
-            proc adv(n : int) = (p += n)
-            
             proc adv(s : set[char]) = 
                   while (chr() in s): (p += 1)
+            
+            proc dig = 
+                  while (chr() in "0123456789"): (p += 1)
             
             proc num = 
                 if (p == tkn.e): 
                     cast[ref seq[seq[Tkn]]](unsafeAddr(tkns))[i1][i2].t = ◂number
-            if (seg() == "0"): 
-                if (seg(1) == "x"): 
-                    adv(2)
-                    adv({'0'..'9', 'a'..'f', 'A'..'F'})
-                    num()
-                    continue
-                if (seg(1) == "b"): 
-                    adv(2)
-                    adv({'0', '1'})
-                    num()
-                    continue
-                if (seg(1) == "o"): 
-                    adv(2)
-                    adv({'0'..'7'})
-                    num()
-                    continue
-            adv({'0'..'9'})
+            if (segs[p] == "0"): 
+                case seg(1):
+                    of "x": 
+                        (p += 2)
+                        adv({'0'..'9', 'a'..'f', 'A'..'F'})
+                        num()
+                        continue
+                    of "b": 
+                        (p += 2)
+                        adv({'0', '1'})
+                        num()
+                        continue
+                    of "o": 
+                        (p += 2)
+                        adv({'0'..'7'})
+                        num()
+                        continue
+            dig()
             if (p == tkn.s): continue
             if ((seg() == ".") and (chr(1) in {'0'..'9'})): 
-                adv(1)
-                adv({'0'..'9'})
+                (p += 1)
+                dig()
             if ((seg() == "e") and (chr(1) in {'0'..'9', '+', '-'})): 
-                adv(2)
-                adv({'0'..'9'})
+                (p += 2)
+                dig()
             num()
     tkns

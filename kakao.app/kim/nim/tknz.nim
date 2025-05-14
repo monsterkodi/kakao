@@ -476,5 +476,8 @@ proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] =
                 this.tokens.add(this.token)
         return this.tokens
 
-proc tokenize*(text : string) : seq[Token] = 
-    Tknzr.new.tknz(kseg(text))
+proc tokenize*(segs : seq[string]) : seq[Token] = Tknzr.new.tknz(segs)
+
+proc tokenize*(text : string) : seq[Token] = tokenize(kseg(text))
+
+    

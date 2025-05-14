@@ -325,6 +325,11 @@ class Parser
         token = @consume()
         token.tok = ◂type
         
+        if token.str == "ref"
+            token.str &= " "
+            t = @consume()
+            token.str &= t.str
+        
         if @tok == ◂square_open
             opened = 0
             while @tok != ◂eof

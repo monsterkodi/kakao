@@ -522,6 +522,11 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "proc ast*(text:string) : Node ="         "▪[◂verbatim]"
         t "import ../../rel/[s1, s2]"               "▪[◂verbatim]"
         
+    ▸ src
+        
+        t "●dir"                                    "▪[◂name]"
+        t "●file"                                   "▪[◂name]"
+        
     ▸ use
     
         t "use rndr"                                "▪[(◂use ◂name)]"

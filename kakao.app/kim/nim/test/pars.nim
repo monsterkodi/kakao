@@ -397,6 +397,9 @@ test = false
     test "verbatim": 
         t("proc ast*(text:string) : Node =", "▪[◂verbatim]")
         t("import ../../rel/[s1, s2]", "▪[◂verbatim]")
+    test "src": 
+        t("●dir", "▪[◂name]")
+        t("●file", "▪[◂name]")
     test "use": 
         t("use rndr", "▪[(◂use ◂name)]")
         t("use std ▪ unittest", "▪[(◂use ◂name ▪ @[◂name])]")

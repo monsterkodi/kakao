@@ -1,11 +1,12 @@
 import std/[monotimes, times, sequtils, random, paths, tables, typetraits, strformat, strutils, unicode, pegs, unittest, macros, terminal, enumutils, sets]
 import system/ansi_c
+import asyncfile
 import slash
 export slash
 export monotimes, times, unittest, macros
 export sequtils, enumutils, sets, tables, typetraits
 export strutils, strformat, unicode, pegs
-export terminal, random
+export terminal, random, asyncfile
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
@@ -89,8 +90,8 @@ proc profileStop*(msg : string) =
         mons = &" {mono.inMicroseconds} {sc(styleDim)}µs "
     else: 
         mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
-    # styledEcho fgBlue msg fgGreen mons fgMagenta underscore(tick) resetStyle
-    styledEcho(fgBlue, msg, fgGreen, mons, resetStyle)
+    styledEcho(fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle)
+    # styledEcho fgBlue msg fgGreen mons resetStyle
     # GC_enableOrc()    
     timers.del(msg)
 
@@ -110,7 +111,7 @@ macro dbg*(args: varargs[untyped]): untyped =
     result = newStmtList()
     let lineInfo = args[0].lineInfoObj
     result.add(quote do: 
-        styledEcho bgBlue styleBright `lineInfo`.filename styleDim ":" $`lineInfo`.line resetStyle)
+        styledEcho(bgBlue, styleBright, `lineInfo`.filename, styleDim, ":", $`lineInfo`.line, resetStyle))
     for arg in args: 
         result.add(quote do: 
             styledEcho(fgYellow, styleBright, "  ", `arg`.astToStr(), resetStyle, styleDim, " = ", resetStyle, fgGreen, $`arg`, resetStyle, fgBlue, " ", $typeof(`arg`), resetStyle))

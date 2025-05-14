@@ -1,7 +1,7 @@
 
-use std ▪ os paths strutils sequtils strformat appdirs
+use std ▪ os paths strutils sequtils strformat macros dirs appdirs
 
-normalize* = ◇string path ➜ string ->
+normalize* = ◇string path ➜string ->
 
     p = path
     swallow ◇int = p.high+1
@@ -36,27 +36,28 @@ normalize* = ◇string path ➜ string ->
         p[1..^1]
     else
         p
-
-path* = ◇varargs[string] args ➜ string ->
     
-    slsh = ◇string s ➜ string -> s.replace("\\" "/")
-    slash.normalize args.filter(◇string s ➜ bool -> s.len > 0).map(slsh).join("/")
+files* = ◇string path ➜seq[string] -> walkDirRec(path).toSeq()
+    
+path* = ◇varargs[string] args ➜string ->
+    
+    slsh = ◇string s ➜string -> s.replace("\\" "/")
+    slash.normalize args.filter(◇string s ➜bool -> s.len > 0).map(slsh).join("/")
 
-split* = ◇string path ➜ seq[string] ->
+split* = ◇string path ➜seq[string] ->
 
     s = path.split "/"
     s.setLen(s.len - 1) if s[^1].len == 0
     s
     
-contains* = ◇string path ◇string subpath ➜ bool -> subpath in slash.split path
+contains* = ◇string path ◇string subpath ➜bool -> subpath in slash.split path
 
-home* = ➜ string ->
+home*     = ➜string -> slash.normalize appDirs.getHomeDir().string
+cwd*      = ➜string -> paths.getCurrentDir().string
+appDir*   = ➜string -> getAppDir().string
+appFile*  = ➜string -> getAppFilename().string
 
-    slash.normalize appDirs.getHomeDir().string
-
-untilde* = ◇string path ➜ string ->
-
-    path.expandTilde()
+untilde*  = ◇string path ➜string -> path.expandTilde()
     
 type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
 
@@ -83,57 +84,28 @@ parse* = ◇string path ➜ parseInfo ->
         
     (path:path dir:dir file:file name:name ext:ext)
 
-dir* = ◇string path ➜ string ->
+dir*   = ◇string path ➜string -> path.parse.dir
+file*  = ◇string path ➜string -> path.splitPath[1]
+name*  = ◇string path ➜string -> splitFile(path.Path)[1].string
+ext*   = ◇string path ➜string -> splitFile(path.Path)[2].string[1..^1]
 
-    path.parse.dir
-    
-dirs* = ◇string path ➜ seq[string] ->
+mkdir* = ◇string dir               -> if not dirExists dir ➜ createDir dir
+copy*  = ◇string src  ◇string dest -> mkdir(dest.parentDir()) ; copyFileWithPermissions(src dest)
+write* = ◇string path ◇string text -> mkdir(path.parentDir()) ; path.writeFile(text)
+read*  = ◇string path ➜string      -> path.readFile()
+
+dirs* = ◇string path ➜seq[string] ->
 
     dirs = path.dir.split '/'
-    
     if dirs[0] == "" and dirs.len == 1
         dirs.delete 0..0
-        
     dirs
-
-file* = ◇string path ➜ string ->
-
-    path.splitPath[1]
-
-name* = ◇string path ➜ string ->
-
-    splitFile(path.Path)[1].string
-
-ext* = ◇string path ➜ string ->
-
-    splitFile(path.Path)[2].string[1..^1]
-
-mkdir* = ◇string dir ->
-
-    if not dirExists dir
-        createDir dir
-
-copy* = ◇string src ◇string dest ->
-
-    mkdir dest.parentDir()
     
-    copyFileWithPermissions src dest
-
-write* = ◇string path ◇string text ->
-
-    mkdir path.parentDir()
-    
-    path.writeFile text
-    
-read* = ◇string path ➜ string ->
-
-    path.readFile()
-    
-swapExt* = ◇string path ◇string ext ➜ string ->
+swapExt* = ◇string path ◇string ext ➜string ->
 
     $path.Path.changeFileExt("." & ext)
     
-splitExt* = ◇string path ➜ seq[string] ->
+splitExt* = ◇string path ➜seq[string] ->
     
     split = path.split()
     dotidx = split[^1].rfind "."
@@ -144,9 +116,7 @@ splitExt* = ◇string path ➜ seq[string] ->
     pth = split.join "/"
     [pth ext]
     
-removeExt* = ◇string path ➜ string ->
-
-    path.splitExt[0]
+removeExt* = ◇string path ➜string -> path.splitExt[0]
     
 swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜string ->
 
@@ -159,9 +129,7 @@ swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜str
     dirs.add path.file.swapExt(tgt)
     dirs.join "/"
         
-tilde* = ◇string path ➜ string ->
-
-    path.replace slash.home() "~"
+tilde* = ◇string path ➜string -> path.replace slash.home() "~"
         
 isRelative* = ◇string path ➜ bool ->
 
@@ -171,25 +139,20 @@ isAbsolute* = ◇string path ➜ bool ->
 
     path.len > 0 and path[0] in ['/' '~']
     
-isRoot* = ◇string path ➜ bool ->
-
-    path.normalize() == "/"
+isRoot* = ◇string path ➜ bool -> path.normalize() == "/"
     
-cwd* = ➜ string ->
-
-    paths.getCurrentDir().string
-
-absolute* = ◇string path ◇string parent ➜ string ->
+absolute* = ◇string path ◇string parent ➜string ->
 
     if slash.isRelative path
         slash.path parent path
     else
         slash.untilde path
     
-absolute* = ◇string path ➜ string ->
-
-    slash.absolute path slash.cwd()
-    
-relative* = ◇string path ◇string base ➜ string ->
+absolute* = ◇string path ➜string -> slash.absolute path slash.cwd()
+relative* = ◇string path ◇string base ➜string ->
 
     paths.relativePath(slash.normalize(path).Path slash.normalize(base).Path).string
+
+macro srcDir*(): untyped = 
+    quote
+        currentSourcePath()

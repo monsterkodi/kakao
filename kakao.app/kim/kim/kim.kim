@@ -4,7 +4,7 @@
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███
 
-use std ▪ os osproc parseopt random streams asyncdispatch asyncfile posix
+use std ▪ os osproc parseopt random streams asyncdispatch posix
 use rndr
 
 params    ◇ seq[string]
@@ -41,13 +41,20 @@ farewells = [
     "👋 Farewell! May your brackets nest flawlessly.",
     "👋 Farewell! May your brackets always balance."]
 
-testFiles = walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "test").toSeq().map(◇tuple r ➜string -> r.path)
-testFiles = testFiles.concat walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "kxk" / "test").toSeq().map(◇tuple r ➜string -> r.path)
+kimTests = walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "test").toSeq().map(◇tuple r ➜string -> r.path)
+kimFiles = slash.files slash.path(slash.dir(currentSourcePath()) "../kim")
+kxkFiles = slash.files slash.path(slash.dir(currentSourcePath()) "../kim/kxk")
+kxkTests = slash.files slash.path(slash.dir(currentSourcePath()) "kxk/test")
+
+if verbose
+    dbg kimTests
+    dbg kimFiles
+    dbg kxkFiles
+    dbg kxkTests
     
 randomize()
 
-verb = ◇string msg -> 
-    if verbose ➜ log msg 
+verb = ◇string msg -> if verbose ➜ log msg 
 
 #  ███████   ████████  █████████         ███████   ████████   █████████
 # ███        ███          ███           ███   ███  ███   ███     ███   
@@ -187,7 +194,7 @@ runTests = ◇seq[string] files ➜bool ->
                                 ➜ break
                 
         exitCode = process.waitForExit()
-        if exitCode != 0 or verbose or thisFail
+        if exitCode != 0 or verbose or thisFail or slash.contains(f "tok.nim")
             styledEcho output.replace("[Suite]"  fg(fgYellow) & "▸\x1b[0m")
                              .replace("[OK]"     fg(fgGreen) & "✔\x1b[0m")
                              .replace("[FAILED]" fg(fgRed) & "✘\x1b[0m")                             
@@ -203,6 +210,7 @@ runTests = ◇seq[string] files ➜bool ->
             # echo output
             styledEcho fgRed "✘ " $f
             anyFail = true
+            
     # log ""
     not anyFail
 
@@ -215,7 +223,7 @@ if files.len
 
 if tests
 
-    exit = if runTests(testFiles) ➜ 0 ➜ 1
+    exit = if runTests(kimTests) ➜ 0 ➜ 1
     quit exit
     
 #  ███████  █████████   ███████    ███████   ████████
@@ -284,20 +292,21 @@ watch = ◇seq[string] paths ->
         # GC_fullCollect()
         # log GC_getStatistics()
         
-        toTranspile ◇ seq[string]
-        kimFiles    ◇ seq[string]
+        kimToTranspile ◇ seq[string]
+        kxkToTranspile ◇ seq[string]
+        
+        kxkChanged = false
+        kimChanged = false
         
         for path in paths
         
-            if not dirExists(path)
+            if not dirExists path
             
                 continue
                 
-            for f in walkDirRec(path)
-            
-                (dir _ ext) = f.splitFile()
-                
-                if ext == ".kim" ➜ kimFiles.add(f) ➜ continue
+            for f in walkDirRec path
+
+                continue if slash.ext(f) != "kim"
                 
                 modTime = getFileInfo(f).lastWriteTime
                 
@@ -310,17 +319,27 @@ watch = ◇seq[string] paths ->
         
                 modTimes[f] = modTime
                 
-                toTranspile.add f
-                
-        if firstLoop                                    
-            firstLoop = false
-            if verbose
-                for f in kimFiles ➜ logFile f
-                
-        if toTranspile
+                if   f in kxkFiles ➜ kxkChanged = true ; kxkToTranspile.add f
+                elif f in kimFiles ➜ kimChanged = true ; kimToTranspile.add f
+        
+        if kxkChanged or kimChanged
             log "\x1bc"
-            for f in toTranspile
+            for f in kxkToTranspile.concat(kimToTranspile)
                 logFile f "▸ "
+                    
+        if kxkChanged
+            fail = false
+            for f in kxkToTranspile
+                # logFile f "➜ "
+                (output exitCode) = execCmdEx "bin/kim -v " & f
+                if exitCode != 0
+                    log output
+                    fail = true                
+            if not fail
+                if runTests kxkTests
+                    log "✔"
+                
+        if kimChanged
                 
             if stage kimFiles "." "k1m"
                 if stage kimFiles "k1m" "k2m"

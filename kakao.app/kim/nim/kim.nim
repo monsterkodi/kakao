@@ -3,7 +3,7 @@
 # ███████    ███  █████████
 # ███  ███   ███  ███ █ ███
 # ███   ███  ███  ███   ███
-import std/[os, osproc, parseopt, random, streams, asyncdispatch, asyncfile, posix]
+import std/[os, osproc, parseopt, random, streams, asyncdispatch, posix]
 import rndr
 var params : seq[string]
 var files : seq[string]
@@ -13,12 +13,19 @@ var tests = false
 var verbose = false
 var greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!", "💋 Less clutter, more wonder!", "💋 The best code is no code.", "💋 Less is always beautifuller!", "💋 Simplicity: the shortcut to ‘heck yes!’", "💋 If it’s hard to explain, it’s probably wrong.", "💋 Uncomplicate your code and your mind will dance.", "🌞 A child’s laugh, a sunbeam’s path — why bend what is straight?", "🌈 Go with the flow, catch joy like dandelion fluff.", "🌈 Aim for maximum joy, anticipate future regrets.", "🌞 Rise and shine! What shall we craft today?", "👋 Salutations! Let's crunch some code cookies.", "🚀 Systems nominal! Your code awaits transformation.", "🍳 Howdy, chef! What are we cooking today?", "🤖 Greetings, fleshbag! May your code ripple smoothly through the machine.", "🔮 Embrace uncertainty — code with glitter!", "🎩 Magician at the keyboard! Let's conjure some magic.", "🎩 Flexible beats flawless — everytime.", "🎩 Stay open, stay awesome."]
 var farewells = @["👋 Good bye! May your code always compile.", "👋 Good bye! May your brackets always align.", "👋 Farewell! May your brackets nest flawlessly.", "👋 Farewell! May your brackets always balance."]
-var testFiles = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
-testFiles = testFiles.concat walkDir(((((getAppFilename().splitFile()[0] / "..") / "nim") / "kxk") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
+var kimTests = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
+var kimFiles = slash.files(slash.path(slash.dir(currentSourcePath()), "../kim"))
+var kxkFiles = slash.files(slash.path(slash.dir(currentSourcePath()), "../kim/kxk"))
+var kxkTests = slash.files(slash.path(slash.dir(currentSourcePath()), "kxk/test"))
+if verbose: 
+    dbg(kimTests)
+    dbg(kimFiles)
+    dbg(kxkFiles)
+    dbg(kxkTests)
 randomize()
 
 proc verb(msg : string) = 
-    if verbose: echo(msg)
+       if verbose: echo(msg)
 #  ███████   ████████  █████████         ███████   ████████   █████████
 # ███        ███          ███           ███   ███  ███   ███     ███   
 # ███  ████  ███████      ███           ███   ███  ████████      ███   
@@ -137,7 +144,7 @@ proc runTests(files : seq[string]) : bool =
             elif (errno == EAGAIN): discard poll(nil, 0, 50)
             else: break
         var exitCode = process.waitForExit()
-        if (((exitCode != 0) or verbose) or thisFail): 
+        if ((((exitCode != 0) or verbose) or thisFail) or slash.contains(f, "tok.nim")): 
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace("[OK]", fg(fgGreen) & "✔\x1b[0m").replace("[FAILED]", fg(fgRed) & "✘\x1b[0m"))
         else: 
             var okCount = output.count("[OK]")
@@ -156,7 +163,7 @@ if files.len:
     # profileStop 'translate'
     quit((transpiled.len - files.len))
 if tests: 
-    var exit = if runTests(testFiles): 0 else: 1
+    var exit = if runTests(kimTests): 0 else: 1
     quit(exit)
 #  ███████  █████████   ███████    ███████   ████████
 # ███          ███     ███   ███  ███        ███     
@@ -210,14 +217,15 @@ proc watch(paths : seq[string]) =
     while true: 
         # GC_fullCollect()
         # log GC_getStatistics()
-        var toTranspile : seq[string]
-        var kimFiles : seq[string]
+        var kimToTranspile : seq[string]
+        var kxkToTranspile : seq[string]
+        var kxkChanged = false
+        var kimChanged = false
         for path in paths: 
             if not dirExists(path): 
                 continue
             for f in walkDirRec(path): 
-                var (dir, _, ext) = f.splitFile()
-                if (ext == ".kim"): kimFiles.add(f) else: continue
+                if (slash.ext(f) != "kim"): continue
                 var modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 
                     modTimes[f] = modTime
@@ -225,15 +233,24 @@ proc watch(paths : seq[string]) =
                 if (modTimes[f] == modTime): 
                     continue
                 modTimes[f] = modTime
-                toTranspile.add(f)
-        if firstLoop: 
-            firstLoop = false
-            if verbose: 
-                for f in kimFiles: logFile(f)
-        if toTranspile: 
+                if (f in kxkFiles): kxkChanged = true ; kxkToTranspile.add(f)
+                elif (f in kimFiles): kimChanged = true ; kimToTranspile.add(f)
+        if (kxkChanged or kimChanged): 
             echo("\x1bc")
-            for f in toTranspile: 
+            for f in kxkToTranspile.concat(kimToTranspile): 
                 logFile(f, "▸ ")
+        if kxkChanged: 
+            var fail = false
+            for f in kxkToTranspile: 
+                # logFile f "➜ "
+                var (output, exitCode) = execCmdEx("bin/kim -v " & f)
+                if (exitCode != 0): 
+                    echo(output)
+                    fail = true
+            if not fail: 
+                if runTests(kxkTests): 
+                    echo("✔")
+        if kimChanged: 
             if stage(kimFiles, ".", "k1m"): 
                 if stage(kimFiles, "k1m", "k2m"): 
                     for f in kimFiles: 

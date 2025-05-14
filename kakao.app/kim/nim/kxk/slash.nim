@@ -1,4 +1,4 @@
-import std/[os, paths, strutils, sequtils, strformat, appdirs]
+import std/[os, paths, strutils, sequtils, strformat, macros, dirs, appdirs]
 
 proc normalize*(path : string) : string = 
     var p = path
@@ -33,6 +33,8 @@ proc normalize*(path : string) : string =
     else: 
         p
 
+proc files*(path : string) : seq[string] = walkDirRec(path).toSeq()
+
 proc path*(args : varargs[string]) : string = 
     
     proc slsh(s : string) : string = s.replace("\\", "/")
@@ -45,11 +47,15 @@ proc split*(path : string) : seq[string] =
 
 proc contains*(path : string, subpath : string) : bool = (subpath in slash.split(path))
 
-proc home*() : string = 
-    slash.normalize(appDirs.getHomeDir().string)
+proc home*() : string = slash.normalize(appDirs.getHomeDir().string)
 
-proc untilde*(path : string) : string = 
-    path.expandTilde()
+proc cwd*() : string = paths.getCurrentDir().string
+
+proc appDir*() : string = getAppDir().string
+
+proc appFile*() : string = getAppFilename().string
+
+proc untilde*(path : string) : string = path.expandTilde()
 
 type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
 
@@ -72,38 +78,30 @@ proc parse*(path : string) : parseInfo =
         ext = nmspl[^1]
     (path: path, dir: dir, file: file, name: name, ext: ext)
 
-proc dir*(path : string) : string = 
-    path.parse.dir
+proc dir*(path : string) : string = path.parse.dir
+
+proc file*(path : string) : string = path.splitPath[1]
+
+proc name*(path : string) : string = splitFile(path.Path)[1].string
+
+proc ext*(path : string) : string = splitFile(path.Path)[2].string[1..^1]
+
+proc mkdir*(dir : string) = 
+         if not dirExists(dir): createDir(dir)
+
+proc copy*(src : string, dest : string) = 
+         mkdir(dest.parentDir()) ; copyFileWithPermissions(src, dest)
+
+proc write*(path : string, text : string) = 
+         mkdir(path.parentDir()) ; path.writeFile(text)
+
+proc read*(path : string) : string = path.readFile()
 
 proc dirs*(path : string) : seq[string] = 
     var dirs = path.dir.split('/')
     if ((dirs[0] == "") and (dirs.len == 1)): 
         dirs.delete(0..0)
     dirs
-
-proc file*(path : string) : string = 
-    path.splitPath[1]
-
-proc name*(path : string) : string = 
-    splitFile(path.Path)[1].string
-
-proc ext*(path : string) : string = 
-    splitFile(path.Path)[2].string[1..^1]
-
-proc mkdir*(dir : string) = 
-    if not dirExists(dir): 
-        createDir(dir)
-
-proc copy*(src : string, dest : string) = 
-    mkdir(dest.parentDir())
-    copyFileWithPermissions(src, dest)
-
-proc write*(path : string, text : string) = 
-    mkdir(path.parentDir())
-    path.writeFile(text)
-
-proc read*(path : string) : string = 
-    path.readFile()
 
 proc swapExt*(path : string, ext : string) : string = 
     $path.Path.changeFileExt("." & ext)
@@ -118,8 +116,7 @@ proc splitExt*(path : string) : seq[string] =
     var pth = split.join("/")
     @[pth, ext]
 
-proc removeExt*(path : string) : string = 
-    path.splitExt[0]
+proc removeExt*(path : string) : string = path.splitExt[0]
 
 proc swapLastPathComponentAndExt*(path : string, src : string, tgt : string) : string = 
     var dirs = path.dirs()
@@ -130,8 +127,7 @@ proc swapLastPathComponentAndExt*(path : string, src : string, tgt : string) : s
     dirs.add(path.file.swapExt(tgt))
     dirs.join("/")
 
-proc tilde*(path : string) : string = 
-    path.replace(slash.home(), "~")
+proc tilde*(path : string) : string = path.replace(slash.home(), "~")
 
 proc isRelative*(path : string) : bool = 
     ((path.len == 0) or ((path.len > 0) and (path[0] notin @['/', '~'])))
@@ -139,11 +135,7 @@ proc isRelative*(path : string) : bool =
 proc isAbsolute*(path : string) : bool = 
     ((path.len > 0) and (path[0] in @['/', '~']))
 
-proc isRoot*(path : string) : bool = 
-    (path.normalize() == "/")
-
-proc cwd*() : string = 
-    paths.getCurrentDir().string
+proc isRoot*(path : string) : bool = (path.normalize() == "/")
 
 proc absolute*(path : string, parent : string) : string = 
     if slash.isRelative(path): 
@@ -151,8 +143,12 @@ proc absolute*(path : string, parent : string) : string =
     else: 
         slash.untilde(path)
 
-proc absolute*(path : string) : string = 
-    slash.absolute(path, slash.cwd())
+proc absolute*(path : string) : string = slash.absolute(path, slash.cwd())
 
 proc relative*(path : string, base : string) : string = 
     paths.relativePath(slash.normalize(path).Path, slash.normalize(base).Path).string
+
+macro srcDir*(): untyped = 
+
+    quote do: 
+        currentSourcePath()

@@ -315,6 +315,11 @@ template c(f:(proc (_:string, _:string) : bool), a:string, b:string, c:bool) = t
         c slash.contains "/abc.def/ghi.jkl" "abc.def" true
         c slash.contains "/abc.def/ghi.jkl" "ghi.jkl" true
         
+    ▸ files
+        
+        fls = slash.files(slash.dir(currentSourcePath()))
+        fls.find(currentSourcePath()) >= 0 ▸ true
+        
     # ████████  ███  ███      ████████  ████████    ███████    ███████
     # ███       ███  ███      ███       ███   ███  ███   ███  ███     
     # ██████    ███  ███      ███████   ████████   ███   ███  ███████ 

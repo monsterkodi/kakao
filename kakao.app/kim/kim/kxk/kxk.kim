@@ -1,13 +1,13 @@
 
 use std ▪ monotimes times sequtils random paths tables typetraits strformat strutils unicode pegs unittest macros terminal enumutils sets
-use system/ansi_c
+use system/ansi_c asyncfile
 use slash 
 
 export slash
 export monotimes times unittest  macros
 export sequtils  enumutils sets  tables typetraits
 export strutils  strformat unicode pegs
-export terminal  random
+export terminal  random asyncfile
 
 type lineInfo* = tuple[filename: string, line: int, column: int]
 
@@ -96,8 +96,8 @@ profileStop* = ◇string msg ->
     else
         mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
                 
-    # styledEcho fgBlue msg fgGreen mons fgMagenta underscore(tick) resetStyle
-    styledEcho fgBlue msg fgGreen mons resetStyle
+    styledEcho fgBlue msg fgGreen mons fgMagenta underscore(tick) resetStyle
+    # styledEcho fgBlue msg fgGreen mons resetStyle
     # GC_enableOrc()    
     timers.del(msg)
     
@@ -119,7 +119,7 @@ macro dbg*(args: varargs[untyped]): untyped =
     let lineInfo = args[0].lineInfoObj
     
     result.add quote
-        styledEcho bgBlue styleBright `lineInfo`.filename styleDim ":" $`lineInfo`.line resetStyle
+        styledEcho(bgBlue styleBright `lineInfo`.filename styleDim ":" $`lineInfo`.line resetStyle)
     
     for arg in args
         result.add quote

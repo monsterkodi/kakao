@@ -277,6 +277,10 @@ proc parseCallArgs(this : Parser, col : int) : seq[Node] =
 proc parseType(this : Parser) : Node = 
         var token = this.consume()
         token.tok = ◂type
+        if (token.str == "ref"): 
+            (token.str &= " ")
+            var t = this.consume()
+            (token.str &= t.str)
         if (this.tok == ◂square_open): 
             var opened = 0
             while (this.tok != ◂eof): 

@@ -55,6 +55,7 @@ suite "rndr":
         t("var i", "var i")
         t("let i", "let i")
         t("let (output exitCode) = execCmdEx(cmd)", "let (output, exitCode) = execCmdEx(cmd)")
+        t("r ◆ seq[Tkn]", "r {.guard: lock.} : seq[Tkn]")
     test "arg types": 
         t("◇seq[string] files = @[]", "files : seq[string] = @[]")
         t("◇ seq[string] files      = @[]", "files : seq[string] = @[]")

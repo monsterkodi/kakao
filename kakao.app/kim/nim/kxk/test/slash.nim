@@ -250,6 +250,9 @@ suite "slash":
         c(slash.contains, "/abc.def/ghi.jkl", "jkl", false)
         c(slash.contains, "/abc.def/ghi.jkl", "abc.def", true)
         c(slash.contains, "/abc.def/ghi.jkl", "ghi.jkl", true)
+    test "files": 
+        var fls = slash.files(slash.dir(currentSourcePath()))
+        check (fls.find(currentSourcePath()) >= 0) == true
     # ████████  ███  ███      ████████  ████████    ███████    ███████
     # ███       ███  ███      ███       ███   ███  ███   ███  ███     
     # ██████    ███  ███      ███████   ████████   ███   ███  ███████ 

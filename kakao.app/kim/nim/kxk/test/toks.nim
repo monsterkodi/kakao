@@ -1,5 +1,6 @@
 import ../toks
 import parseutils
+import ../../tknz
 
 template t(a:string, b:seq[seq[Tkn]]) = testCmp(a, toks(a), b, instantiationInfo())
 
@@ -18,24 +19,30 @@ suite "toks":
     test "nums": 
         n("abc 123 4.5 def", @[@[tkn(◂text, 0, 3, 0, 0), tkn(◂number, 4, 7, 0, 4), tkn(◂number, 8, 11, 0, 8), tkn(◂text, 12, 15, 0, 12)]])
         # n currentSourcePath().readFile() [[tkn(◂text 0 3 0 0)]]
-        let s = "012334567 012334567 a b c d e f g h i j k l m n o p q r s t u v w x y z"
+        profileStart("text")
+        var s = "012334567 012334567 a b c d e f g h i j k l m n o p q r s t u v w x y z"
         var t = ""
         for l in 0..1000: 
             for i in 0..80: 
                 (t &= s[rand((s.len - 1))])
             (t &= "\n")
-        # log t
-        let segs = kseg(t)
+        profileStop("text")
+        profileStart("segs")
+        var segs = kseg(t)
+        profileStop("segs")
         profileStart("toks")
         var tkns = toks(segs)
         profileStop("toks")
         profileStart("nums")
         tkns = nums(segs, tkns)
         profileStop("nums")
+        # profileStart "tknz"
+        # discard tokenize segs
+        # profileStop "tknz"
         var number : float
         for tknl in tkns: 
             for tkn in tknl: 
-                let w = segs[tkn.s..<tkn.e].join("")
+                var w = segs[tkn.s..<tkn.e].join("")
                 if (w != t[tkn.s..<tkn.e]): fail()
                 if (tkn.t == ◂number): 
                     if (w.parseFloat(number) == 0): fail()

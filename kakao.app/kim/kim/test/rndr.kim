@@ -71,6 +71,8 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         t "let i"                                     "let i"
         t "let (output exitCode) = execCmdEx(cmd)"    "let (output, exitCode) = execCmdEx(cmd)"
         
+        t "r ◆ seq[Tkn]"                              "r {.guard: lock.} : seq[Tkn]"
+        
     ▸ arg types
     
         t "◇seq[string] files = @[]"                  "files : seq[string] = @[]" 

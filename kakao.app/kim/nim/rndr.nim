@@ -157,6 +157,8 @@ proc ▸var(this : Rndr, n : Node) =
         this.rnd(n.var_name)
         if (n.var_name.kind == ●list): 
             this.add(")")
+        if (n.token.tok == ◂var_type): 
+            this.add(" {.guard: lock.}")
         if n.var_type: 
             this.add(" : ")
             this.rnd(n.var_type)
@@ -300,7 +302,7 @@ proc ▸list(this : Rndr, n : Node) =
         for i, item in n.list_values: 
             this.rnd(item)
             if (i < (n.list_values.len - 1)): 
-                if (item.token.str != "ref"): 
+                if (item.token.str notin @["ref", "const"]): 
                     this.add(",")
                 this.add(" ")
         if parens: this.add(")")

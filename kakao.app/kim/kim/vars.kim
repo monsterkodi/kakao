@@ -78,6 +78,9 @@ class Scoper
                 for switchCase in e.switch_cases
                     @branch switchCase.case_then
                 @branch e.switch_default
+            ●testSuite
+            ●testSection
+                @branch e.test_block
             ●semicolon
                 @branch e
                 
