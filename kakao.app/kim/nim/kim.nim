@@ -17,7 +17,7 @@ var kimTests = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "te
 var kimFiles = slash.files(slash.path(slash.dir(currentSourcePath()), "../kim"))
 var kxkFiles = slash.files(slash.path(slash.dir(currentSourcePath()), "../kim/kxk"))
 var kxkTests = slash.files(slash.path(slash.dir(currentSourcePath()), "kxk/test"))
-if verbose: 
+if (verbose or true): 
     dbg(kimTests)
     dbg(kimFiles)
     dbg(kxkFiles)
@@ -213,7 +213,6 @@ proc watch(paths : seq[string]) =
     for p in paths: 
         var (dir, name, ext) = p.splitFile()
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
-    var firstLoop = true
     while true: 
         # GC_fullCollect()
         # log GC_getStatistics()
@@ -222,8 +221,7 @@ proc watch(paths : seq[string]) =
         var kxkChanged = false
         var kimChanged = false
         for path in paths: 
-            if not dirExists(path): 
-                continue
+            if not dirExists(path): continue
             for f in walkDirRec(path): 
                 if (slash.ext(f) != "kim"): continue
                 var modTime = getFileInfo(f).lastWriteTime
@@ -263,4 +261,4 @@ proc watch(paths : seq[string]) =
                         echo("-> enjoy")
                         restart()
         sleep(200)
-watch(@[getCurrentDir() & "/kim"])
+watch(@[cwd("kim")])

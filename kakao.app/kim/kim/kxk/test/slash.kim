@@ -234,6 +234,7 @@ template c(f:(proc (_:string, _:string) : bool), a:string, b:string, c:bool) = t
         var home = getEnv("HOME")
             
         slash.home()                            ▸ home
+        slash.home("sub" "dir")                 ▸ slash.path home "sub" "dir"
         slash.tilde home                        ▸ "~"
         slash.tilde home & "/sub"               ▸ "~/sub"
         slash.untilde "~/sub"                   ▸ home & "/sub"

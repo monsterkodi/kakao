@@ -35,10 +35,13 @@ proc normalize*(path : string) : string =
 
 proc files*(path : string) : seq[string] = walkDirRec(path).toSeq()
 
-proc path*(args : varargs[string]) : string = 
+proc path*(args : seq[string]) : string = 
     
     proc slsh(s : string) : string = s.replace("\\", "/")
     slash.normalize args.filter(proc (s : string) : bool = (s.len > 0)).map(slsh).join("/")
+
+proc path*(args : varargs[string]) : string = 
+    slash.path(args.toSeq())
 
 proc split*(path : string) : seq[string] = 
     var s = path.split("/")
@@ -47,15 +50,17 @@ proc split*(path : string) : seq[string] =
 
 proc contains*(path : string, subpath : string) : bool = (subpath in slash.split(path))
 
-proc home*() : string = slash.normalize(appDirs.getHomeDir().string)
+proc home*(args : varargs[string]) : string = slash.path(@[slash.normalize(appDirs.getHomeDir().string)].concat(args.toSeq()))
 
-proc cwd*() : string = paths.getCurrentDir().string
+proc cwd*(args : varargs[string]) : string = slash.path(@[paths.getCurrentDir().string].concat(args.toSeq()))
 
-proc appDir*() : string = getAppDir().string
+proc app*(args : varargs[string]) : string = slash.path(@[getAppDir().string].concat(args.toSeq()))
 
-proc appFile*() : string = getAppFilename().string
+proc exe*() : string = getAppFilename().string
 
 proc untilde*(path : string) : string = path.expandTilde()
+
+proc tilde*(path : string) : string = path.replace(slash.home(), "~")
 
 type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
 
@@ -127,13 +132,9 @@ proc swapLastPathComponentAndExt*(path : string, src : string, tgt : string) : s
     dirs.add(path.file.swapExt(tgt))
     dirs.join("/")
 
-proc tilde*(path : string) : string = path.replace(slash.home(), "~")
+proc isRelative*(path : string) : bool = ((path.len == 0) or ((path.len > 0) and (path[0] notin @['/', '~'])))
 
-proc isRelative*(path : string) : bool = 
-    ((path.len == 0) or ((path.len > 0) and (path[0] notin @['/', '~'])))
-
-proc isAbsolute*(path : string) : bool = 
-    ((path.len > 0) and (path[0] in @['/', '~']))
+proc isAbsolute*(path : string) : bool = ((path.len > 0) and (path[0] in @['/', '~']))
 
 proc isRoot*(path : string) : bool = (path.normalize() == "/")
 

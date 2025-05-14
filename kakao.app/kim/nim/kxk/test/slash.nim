@@ -185,6 +185,7 @@ suite "slash":
     test "home": 
         var home = getEnv("HOME")
         check slash.home() == home
+        check slash.home("sub", "dir") == slash.path(home, "sub", "dir")
         check slash.tilde(home) == "~"
         check slash.tilde(home & "/sub") == "~/sub"
         check slash.untilde("~/sub") == home & "/sub"

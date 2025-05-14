@@ -38,11 +38,15 @@ normalize* = ◇string path ➜string ->
         p
     
 files* = ◇string path ➜seq[string] -> walkDirRec(path).toSeq()
+
+path*  = ◇seq[string] args ➜string ->
+
+    slsh = ◇string s ➜string -> s.replace("\\" "/")
+    slash.normalize args.filter(◇string s ➜bool -> s.len > 0).map(slsh).join("/")
     
 path* = ◇varargs[string] args ➜string ->
     
-    slsh = ◇string s ➜string -> s.replace("\\" "/")
-    slash.normalize args.filter(◇string s ➜bool -> s.len > 0).map(slsh).join("/")
+    slash.path args.toSeq()
 
 split* = ◇string path ➜seq[string] ->
 
@@ -52,12 +56,13 @@ split* = ◇string path ➜seq[string] ->
     
 contains* = ◇string path ◇string subpath ➜bool -> subpath in slash.split path
 
-home*     = ➜string -> slash.normalize appDirs.getHomeDir().string
-cwd*      = ➜string -> paths.getCurrentDir().string
-appDir*   = ➜string -> getAppDir().string
-appFile*  = ➜string -> getAppFilename().string
+home*     = ◇varargs[string] args ➜string -> slash.path @[slash.normalize(appDirs.getHomeDir().string)].concat(args.toSeq())
+cwd*      = ◇varargs[string] args ➜string -> slash.path @[paths.getCurrentDir().string].concat(args.toSeq())
+app*      = ◇varargs[string] args ➜string -> slash.path @[getAppDir().string].concat(args.toSeq())
+exe*      = ➜string -> getAppFilename().string
 
 untilde*  = ◇string path ➜string -> path.expandTilde()
+tilde*    = ◇string path ➜string -> path.replace slash.home() "~"
     
 type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
 
@@ -128,18 +133,10 @@ swapLastPathComponentAndExt* = ◇string path ◇string src ◇string tgt ➜str
             
     dirs.add path.file.swapExt(tgt)
     dirs.join "/"
-        
-tilde* = ◇string path ➜string -> path.replace slash.home() "~"
-        
-isRelative* = ◇string path ➜ bool ->
-
-    path.len == 0 or path.len > 0 and path[0] notin ['/' '~']
-    
-isAbsolute* = ◇string path ➜ bool ->
-
-    path.len > 0 and path[0] in ['/' '~']
-    
-isRoot* = ◇string path ➜ bool -> path.normalize() == "/"
+                
+isRelative* = ◇string path ➜ bool -> path.len == 0 or path.len > 0 and path[0] notin ['/' '~']
+isAbsolute* = ◇string path ➜ bool -> path.len > 0 and path[0] in ['/' '~']
+isRoot*     = ◇string path ➜ bool -> path.normalize() == "/"
     
 absolute* = ◇string path ◇string parent ➜string ->
 

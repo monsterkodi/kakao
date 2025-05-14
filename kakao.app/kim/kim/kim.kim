@@ -46,7 +46,7 @@ kimFiles = slash.files slash.path(slash.dir(currentSourcePath()) "../kim")
 kxkFiles = slash.files slash.path(slash.dir(currentSourcePath()) "../kim/kxk")
 kxkTests = slash.files slash.path(slash.dir(currentSourcePath()) "kxk/test")
 
-if verbose
+if verbose or true
     dbg kimTests
     dbg kimFiles
     dbg kxkFiles
@@ -285,8 +285,6 @@ watch = ◇seq[string] paths ->
             styleBright fgBlue dir " " resetStyle 
             styleBright fgYellow name styleDim ext resetStyle
     
-    firstLoop = true
-    
     while true
     
         # GC_fullCollect()
@@ -300,9 +298,7 @@ watch = ◇seq[string] paths ->
         
         for path in paths
         
-            if not dirExists path
-            
-                continue
+            continue if not dirExists path
                 
             for f in walkDirRec path
 
@@ -319,8 +315,8 @@ watch = ◇seq[string] paths ->
         
                 modTimes[f] = modTime
                 
-                if   f in kxkFiles ➜ kxkChanged = true ; kxkToTranspile.add f
-                elif f in kimFiles ➜ kimChanged = true ; kimToTranspile.add f
+                if   f in kxkFiles ➜ kxkChanged = true ; kxkToTranspile.add(f)
+                elif f in kimFiles ➜ kimChanged = true ; kimToTranspile.add(f)
         
         if kxkChanged or kimChanged
             log "\x1bc"
@@ -354,5 +350,5 @@ watch = ◇seq[string] paths ->
                         restart()
         sleep 200
         
-watch [getCurrentDir() & "/kim"]
+watch [cwd("kim")]
                  
