@@ -14,7 +14,9 @@ use pars
 class Scoper
     
     vars   : seq[Table[string,bool]]
+    lang   : string
 
+    @: ◇string lang -> @lang = lang
     $: ➜string -> $@vars
 
     exp    : ◇Node body ◇int i ◇Node e ->
@@ -44,6 +46,13 @@ class Scoper
         switch e.kind 
             ●operation
                 if e.operand_right.kind == ●func
+                    if @lang == "lua" and e.operand_right.func_signature
+                        for a in e.operand_right.func_signature.sig_args.list_values
+                            switch a.kind
+                                ●arg     ➜ add a.arg_name.token.str
+                                ●literal ➜ add a.token.str
+                                         ➜ log "unhandled arg type #{a}"
+                
                     @branch e.operand_right.func_body
                 elif e.token.tok == ◂assign
                     lhs = e.operand_left
@@ -105,6 +114,6 @@ class Scoper
         @vars.pops()
         body
     
-variables* = ◇Node body ➜Node ->
+variables* = ◇Node body ◇string lang ➜Node ->
 
-    Scoper().scope body
+    @Scoper(lang).scope body 

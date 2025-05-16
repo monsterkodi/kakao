@@ -12,6 +12,11 @@ import pars
 
 type Scoper = ref object of RootObj
     vars: seq[Table[string, bool]]
+    lang: string
+
+proc init(this : Scoper, lang : string) : Scoper = 
+    this.lang = lang
+    this
 
 proc `$`(this : Scoper) : string = $this.vars
 
@@ -39,6 +44,12 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
         case e.kind:
             of ●operation: 
                 if (e.operand_right.kind == ●func): 
+                    if ((this.lang == "lua") and e.operand_right.func_signature): 
+                        for a in e.operand_right.func_signature.sig_args.list_values: 
+                            case a.kind:
+                                of ●arg: add(a.arg_name.token.str)
+                                of ●literal: add(a.token.str)
+                                else: echo(&"unhandled arg type {a}")
                     this.branch(e.operand_right.func_body)
                 elif (e.token.tok == ◂assign): 
                     var lhs = e.operand_left
@@ -93,5 +104,5 @@ proc scope(this : Scoper, body : Node) : Node =
         this.vars.pops()
         body
 
-proc variables*(body : Node) : Node = 
-    Scoper().scope(body)
+proc variables*(body : Node, lang : string) : Node = 
+    Scoper().init(lang).scope(body)

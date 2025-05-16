@@ -58,7 +58,6 @@ lineMatch = function (line, pt, splitlist)
         splt = splitWords(splt,sl)
         cpt = splitWords(cpt,sl)
     }
-    console.log("lineMatch",splt,cpt)
     if (_k_.empty(splt))
     {
         return

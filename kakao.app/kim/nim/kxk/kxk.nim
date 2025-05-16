@@ -22,7 +22,7 @@ proc underscore*(n : uint64) : string =
     var count = 0
     for i in countdown(s.high, 0): 
         if ((count != 0) and (count.mod(3) == 0)): 
-            result.add('_')
+            r.add('_')
         r.add(s[i])
         (count += 1)
     reversed(r)
@@ -73,7 +73,6 @@ var timers : Table[string,tuple[m:MonoTime,t:uint64]]
 proc mach_absolute_time() : uint64 {.importc, header: "<mach/mach_time.h>".}
 
 proc profileStart*(msg : string) = 
-    # GC_disableOrc()
     if not timers.contains(msg): 
         timers[msg] = (getMonoTime(), mach_absolute_time())
     else: 
@@ -92,7 +91,6 @@ proc profileStop*(msg : string) =
         mons = &" {mono.inMilliseconds} {sc(styleDim)}ms "
     styledEcho(fgBlue, msg, fgGreen, mons, fgMagenta, underscore(tick), resetStyle)
     # styledEcho fgBlue msg fgGreen mons resetStyle
-    # GC_enableOrc()    
     timers.del(msg)
 
 macro profileScope*(msg: string): untyped =

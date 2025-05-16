@@ -107,6 +107,10 @@ proc methodify(clss : Node) : seq[Node] =
         fn.operand_left.token.str = "init"
         fn.operand_right.func_signature.sig_type = nod(●type, tkn(◂name, className))
         if fn.operand_right.func_body: 
+            if (fn.operand_right.func_body.kind != ●block): 
+                var token = tkn(◂indent, "    ", (fn.operand_right.func_body.token.line + 1), 8)
+                var blck = nod(●block, token, @[fn.operand_right.func_body])
+                fn.operand_right.func_body = blck
             var line = fn.operand_right.func_body.expressions[^1].token.line
             fn.operand_right.func_body.expressions.add(nod(●literal, tkn(◂name, "this", (line + 1))))
         else: 

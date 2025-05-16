@@ -1,0 +1,7 @@
+
+slash = {}
+    
+slash.cwd = ->
+    ⮐  process.cwd()
+    
+⮐  slash

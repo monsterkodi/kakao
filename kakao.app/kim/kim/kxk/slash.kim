@@ -64,9 +64,9 @@ exe*      = ➜string -> getAppFilename().string
 untilde*  = ◇string path ➜string -> path.expandTilde()
 tilde*    = ◇string path ➜string -> path.replace slash.home() "~"
     
-type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
+type parseInfo* = tuple[dir: string, name: string, ext: string, file: string, path: string]
 
-parse* = ◇string path ➜ parseInfo ->
+parse* = ◇string path ➜parseInfo ->
 
     path  = path.normalize().untilde()
     split = path.split()
@@ -87,8 +87,13 @@ parse* = ◇string path ➜ parseInfo ->
         name = nmspl[0..^2].join "."
         ext  = nmspl[^1]
         
-    (path:path dir:dir file:file name:name ext:ext)
+    (dir:dir name:name ext:ext file:file path:path)
+    
+dirNameExt* = ◇string path ➜tuple[dir:string, name:string, ext:string] -> 
 
+    (dir name ext _ _) = slash.parse path
+    (dir:dir name:name ext:ext)
+    
 dir*   = ◇string path ➜string -> path.parse.dir
 file*  = ◇string path ➜string -> path.splitPath[1]
 name*  = ◇string path ➜string -> splitFile(path.Path)[1].string
@@ -150,6 +155,7 @@ relative* = ◇string path ◇string base ➜string ->
 
     paths.relativePath(slash.normalize(path).Path slash.normalize(base).Path).string
 
-macro srcDir*(): untyped = 
-    quote
-        currentSourcePath()
+relative* = ◇string path ➜string ->
+
+    slash.relative path slash.cwd()
+    

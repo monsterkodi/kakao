@@ -1,0 +1,10 @@
+use ../kxk
+
+▸ kxk
+
+    ▸ underscore
+    
+        underscore 100                  ▸ "100"
+        underscore 1234                 ▸ "1_234"
+        underscore 100000               ▸ "100_000"
+        underscore uint64(27318726387)  ▸ "27_318_726_387"

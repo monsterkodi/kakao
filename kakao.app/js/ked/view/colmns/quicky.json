@@ -7,6 +7,22 @@
     "file_kode",
     "file_ext_kode"
   ],
+  "([^\\/\\s]+)(\\.kim)": [
+    "file_kim",
+    "file_ext_kim"
+  ],
+  "([^\\/\\s]+)(\\.nim)": [
+    "file_nim",
+    "file_ext_nim"
+  ],
+  "([^\\/\\s]+)(\\.kua)": [
+    "file_kua",
+    "file_ext_kua"
+  ],
+  "([^\\/\\s]+)(\\.lua)": [
+    "file_lua",
+    "file_ext_lua"
+  ],
   "([^\\/\\s]+)(\\.html)": [
     "file_html",
     "file_ext_html"
@@ -149,6 +165,16 @@
     "file_kim",
     "file_icon_kim"
   ],
+  "()(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
+    "file_icon_lua",
+    "file_lua",
+    "file_icon_lua"
+  ],
+  "(☾)(\\s?[^\\/\\s]*)(\\s?[✔✚]?)": [
+    "file_icon_kua",
+    "file_kua",
+    "file_icon_kua"
+  ],
   "[]": [
     "file_icon_text"
   ],
@@ -229,6 +255,9 @@
   ],
   "[]": [
     "file_icon_lua"
+  ],
+  "[☾]": [
+    "file_icon_kua"
   ],
   "[λ]": [
     "file_icon_ml"

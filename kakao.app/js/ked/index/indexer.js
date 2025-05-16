@@ -23,6 +23,8 @@ import index_hpp from "./index_hpp.js"
 import index_mm from "./index_mm.js"
 import index_nim from "./index_nim.js"
 import index_kim from "./index_kim.js"
+import index_lua from "./index_lua.js"
+import index_kua from "./index_kua.js"
 
 class indexer
 {
@@ -224,9 +226,17 @@ class indexer
             {
                 return this.applyIndexer(file,fileInfo,text,index_nim)
             }
+            else if (fileExt === 'lua')
+            {
+                return this.applyIndexer(file,fileInfo,text,index_lua)
+            }
             else if (fileExt === 'kim')
             {
                 return this.applyIndexer(file,fileInfo,text,index_kim)
+            }
+            else if (fileExt === 'kua')
+            {
+                return this.applyIndexer(file,fileInfo,text,index_kua)
             }
         }).bind(this))
         return this

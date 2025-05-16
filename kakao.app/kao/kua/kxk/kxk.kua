@@ -1,0 +1,20 @@
+_G.buffer  = require "string.buffer"
+_G.childp  = require "childprocess"
+_G.inspect = require "./inspect"
+_G.slash   = require "./slash"
+
+kxk = {}
+        
+kxk.exec = cmd opt cb ->
+    
+    if cb == nil
+        cb = opt
+        opt = {}
+    
+    res = err out ->
+        if err ➜ out = ""
+        cb out
+        
+    childp.exec cmd opt res
+    
+⮐  kxk

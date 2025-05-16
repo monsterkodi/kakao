@@ -435,6 +435,8 @@ suite "test":
         check slash.normalize("xyz") == "xyz"
         check slash.normalize("xyz") == 2""")
     test "misc": 
+        t("●dir", "currentSourcePath().split(\"/\")[0..^2].join(\"/\")")
+        t("●file", "currentSourcePath()")
         t("""    
 if bytesRead > 0
     output.add(line & "\n")

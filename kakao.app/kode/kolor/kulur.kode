@@ -233,6 +233,31 @@ nimComment = ->
         else
             pushStack type:type strong:true
         ⮐  addAndJoinValues 2 type
+
+luaComment = ->
+    
+    ⮐  if stackTop
+    
+    ⮐  if not chunk.turd or chunk.turd.length < 2
+
+    if chunk.turd?.startsWith "--"
+        fillComment 2
+        ⮐  
+
+    ⮐  if chunk.turd.length < 2
+
+    type = 'comment triple'
+
+    # ⮐  if topType and topType not in ['interpolation' type]
+
+    if chunk.turd[0..4] in ["--[[" "--]]"]
+        
+        if topType == type
+            popStack()
+        else
+            pushStack type:type strong:true
+            
+        ⮐  addAndJoinValues 4 type
         
 starComment = ->
 
@@ -389,7 +414,7 @@ kodePunct = ->
 
     if prev = getChunk -1
         
-        if prev.clss.endsWith('require')
+        if prev.clss.endsWith('require') and chunk.match != '"'
             setValue 0 'punct require'
             ⮐  1
 
@@ -403,11 +428,11 @@ kodePunct = ->
 
             prevEnd = prev.start+prev.length
             if chunk.match == '(' and prevEnd == chunk.start
-                ⮐ thisCall()
+                ⮐  thisCall()
             else if prevEnd < chunk.start # spaced
                 if chunkIndex == 1 or getChunk(-2)?.match in ['⮐' '=' 'return']
                     if chunk.match in '@[({"\''
-                        ⮐ thisCall()
+                        ⮐  thisCall()
                     else if chunk.match in '+-/'
                         next = getChunk 1
                         if not next or next.match != '=' and next.start == chunk.start+1
@@ -893,7 +918,7 @@ tripleString = ->
     ⮐  if not chunk.turd or chunk.turd.length < 3
     ⮐  if topType in ['regexp''string single''string double']
 
-    if getChunk(-1)?.escape then ⮐ stacked()
+    if getChunk(-1)?.escape then ⮐  stacked()
 
     type = switch chunk.turd[..2]
         when '"""' then 'string triple'
@@ -908,6 +933,30 @@ tripleString = ->
             pushStack strong:true type:type
 
         ⮐  addValues 3 type
+
+    escape()
+    
+luaString = ->
+
+    ⮐  if not chunk.turd or chunk.turd.length < 2
+    ⮐  if topType in ['regexp''string single''string double']
+
+    if getChunk(-1)?.escape then ⮐  stacked()
+
+    type = switch chunk.turd[..1]
+        when '[[' then 'string triple'
+        when ']]' then 'string triple'
+
+    if type
+
+        ⮐  if type != topType and topType?.startsWith 'string'
+
+        if topType == type
+            popStack()
+        else
+            pushStack strong:true type:type
+
+        ⮐  addValues 2 type
 
     escape()
 
@@ -1314,7 +1363,10 @@ handlers =
             word: [ keyword kodeWord number property ]
     kim:    punct:[ blockComment hashComment kodePunct tripleString interpolation simpleString funcArgs dashArrow dict ]
             word: [ keyword kodeWord number property]
+    kua:    punct:[ blockComment hashComment kodePunct tripleString interpolation simpleString funcArgs dashArrow dict ]
+            word: [ keyword kodeWord number property]
     nim:    punct:[ nimComment   hashComment simpleString funcArgs dashArrow                ] word:[ keyword number property        ]
+    lua:    punct:[ luaComment   simpleString luaString funcArgs dashArrow                  ] word:[ keyword number property        ]
     noon:   punct:[ noonComment  noonPunct urlPunct                                         ] word:[ noonWord urlWord number        ]
     js:     punct:[ starComment  slashComment jsPunct simpleString dashArrow regexp dict    ] word:[ keyword jsWord number property ]
     ts:     punct:[ starComment  slashComment jsPunct simpleString dashArrow regexp dict    ] word:[ keyword jsWord number property ]

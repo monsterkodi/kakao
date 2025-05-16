@@ -1,6 +1,6 @@
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, last: function (o) {return o != null ? o.length ? o[o.length-1] : undefined : o}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}};_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w8=_k_.k.F256(_k_.k.w(8))
 
-var actExt, addAndJoinValues, addValue, addValues, blockComment, blocked, chunk, chunked, chunkIndex, codeTypes, coffeePunct, coffeeWord, commentHeader, cppMacro, cppPointer, cppWord, cssWord, dashArrow, dict, dissect, escape, ext, extStack, extTop, fillComment, float, FLOAT, funcArgs, getChunk, getmatch, getValue, handl, handlers, hashComment, HEADER, HEX, HEXNUM, interpolation, jsonPunct, jsonWord, jsPunct, jsWord, keyword, kodePunct, kodeWord, kolorize, kolorizeChunks, LI, line, mdPunct, mmMacro, mmString, NEWLINE, nimComment, noonComment, noonProp, noonPunct, noonWord, notCode, number, NUMBER, obj, parse, popExt, popStack, property, PUNCT, pushExt, pushStack, ranges, regexp, setValue, shPunct, simpleString, slashComment, SPACE, spaced, stack, stacked, stackTop, starComment, swtch, syntax, thisCall, topType, tripleRegexp, tripleString, urlPunct, urlWord, xmlPunct
+var actExt, addAndJoinValues, addValue, addValues, blockComment, blocked, chunk, chunked, chunkIndex, codeTypes, coffeePunct, coffeeWord, commentHeader, cppMacro, cppPointer, cppWord, cssWord, dashArrow, dict, dissect, escape, ext, extStack, extTop, fillComment, float, FLOAT, funcArgs, getChunk, getmatch, getValue, handl, handlers, hashComment, HEADER, HEX, HEXNUM, interpolation, jsonPunct, jsonWord, jsPunct, jsWord, keyword, kodePunct, kodeWord, kolorize, kolorizeChunks, LI, line, luaComment, luaString, mdPunct, mmMacro, mmString, NEWLINE, nimComment, noonComment, noonProp, noonPunct, noonWord, notCode, number, NUMBER, obj, parse, popExt, popStack, property, PUNCT, pushExt, pushStack, ranges, regexp, setValue, shPunct, simpleString, slashComment, SPACE, spaced, stack, stacked, stackTop, starComment, swtch, syntax, thisCall, topType, tripleRegexp, tripleString, urlPunct, urlWord, xmlPunct
 
 import kseg from "../kxk/kseg.js"
 
@@ -286,6 +286,42 @@ nimComment = function ()
     }
 }
 
+luaComment = function ()
+{
+    var type, _243_17_
+
+    if (stackTop)
+    {
+        return
+    }
+    if (!chunk.turd || chunk.turd.length < 2)
+    {
+        return
+    }
+    if ((chunk.turd != null ? chunk.turd.startsWith("--") : undefined))
+    {
+        fillComment(2)
+        return
+    }
+    if (chunk.turd.length < 2)
+    {
+        return
+    }
+    type = 'comment triple'
+    if (_k_.in(chunk.turd.slice(0, 5),["--[[","--]]"]))
+    {
+        if (topType === type)
+        {
+            popStack()
+        }
+        else
+        {
+            pushStack({type:type,strong:true})
+        }
+        return addAndJoinValues(4,type)
+    }
+}
+
 starComment = function ()
 {
     var type
@@ -313,7 +349,7 @@ starComment = function ()
 
 funcArgs = function ()
 {
-    var ch, turd, _265_31_
+    var ch, turd, _290_31_
 
     if (notCode)
     {
@@ -348,7 +384,7 @@ funcArgs = function ()
 
 dashArrow = function ()
 {
-    var markFunc, _301_77_, _322_77_
+    var markFunc, _326_77_, _347_77_
 
     if (notCode)
     {
@@ -464,7 +500,7 @@ commentHeader = function ()
 
 kodePunct = function ()
 {
-    var next, prev, prevEnd, _396_21_, _408_50_
+    var next, prev, prevEnd, _421_21_, _433_50_
 
     if (notCode)
     {
@@ -506,7 +542,7 @@ kodePunct = function ()
     }
     if (prev = getChunk(-1))
     {
-        if (prev.clss.endsWith('require'))
+        if (prev.clss.endsWith('require') && chunk.match !== '"')
         {
             setValue(0,'punct require')
             return 1
@@ -553,7 +589,7 @@ kodePunct = function ()
 
 kodeWord = function ()
 {
-    var c, prev, _427_22_, _476_46_
+    var c, prev, _452_22_, _501_46_
 
     if (notCode)
     {
@@ -652,7 +688,7 @@ thisCall = function ()
 
 coffeePunct = function ()
 {
-    var next, prev, prevEnd, _504_21_
+    var next, prev, prevEnd, _529_21_
 
     if (notCode)
     {
@@ -774,7 +810,7 @@ property = function ()
 
 cppWord = function ()
 {
-    var p, prevPrev, _572_19_
+    var p, prevPrev, _597_19_
 
     if (notCode)
     {
@@ -1015,7 +1051,7 @@ jsWord = function ()
 
 dict = function ()
 {
-    var prev, _728_44_
+    var prev, _753_44_
 
     if (notCode)
     {
@@ -1107,7 +1143,7 @@ jsonWord = function ()
 
 escape = function ()
 {
-    var _786_46_, _787_26_, _791_61_, _794_61_
+    var _811_46_, _812_26_, _816_61_, _819_61_
 
     if (chunk.match === '\\' && ((topType != null ? topType.startsWith('regexp') : undefined) || (topType != null ? topType.startsWith('string') : undefined)))
     {
@@ -1135,7 +1171,7 @@ escape = function ()
 
 regexp = function ()
 {
-    var next, prev, _804_19_
+    var next, prev, _829_19_
 
     if ((topType != null ? topType.startsWith('string') : undefined))
     {
@@ -1212,7 +1248,7 @@ tripleRegexp = function ()
 
 simpleString = function ()
 {
-    var next, scnd, type, _852_19_
+    var next, scnd, type, _877_19_
 
     if (topType === 'regexp')
     {
@@ -1287,7 +1323,7 @@ simpleString = function ()
 
 tripleString = function ()
 {
-    var type, _896_19_
+    var type, _921_19_
 
     if (!chunk.turd || chunk.turd.length < 3)
     {
@@ -1326,6 +1362,54 @@ tripleString = function ()
             pushStack({strong:true,type:type})
         }
         return addValues(3,type)
+    }
+    return escape()
+}
+
+luaString = function ()
+{
+    var type, _944_19_
+
+    if (!chunk.turd || chunk.turd.length < 2)
+    {
+        return
+    }
+    if (_k_.in(topType,['regexp','string single','string double']))
+    {
+        return
+    }
+    if ((getChunk(-1) != null ? getChunk(-1).escape : undefined))
+    {
+        return stacked()
+    }
+    type = ((function ()
+    {
+        switch (chunk.turd.slice(0, 2))
+        {
+            case '[[':
+                return 'string triple'
+
+            case ']]':
+                return 'string triple'
+
+        }
+
+    }).bind(this))()
+    if (type)
+    {
+        if (type !== topType && (topType != null ? topType.startsWith('string') : undefined))
+        {
+            return
+        }
+        if (topType === type)
+        {
+            popStack()
+        }
+        else
+        {
+            pushStack({strong:true,type:type})
+        }
+        return addValues(2,type)
     }
     return escape()
 }
@@ -1414,7 +1498,7 @@ float = function ()
 
 cssWord = function ()
 {
-    var prev, prevPrev, _999_45_
+    var prev, prevPrev, _1048_45_
 
     if (_k_.in(chunk.match.slice(-2),['px','em','ex']) && NUMBER.test(chunk.match.slice(0, -2)))
     {
@@ -1466,7 +1550,7 @@ cssWord = function ()
 
 mdPunct = function ()
 {
-    var type, _1033_73_, _1058_21_, _1083_21_
+    var type, _1082_73_, _1107_21_, _1132_21_
 
     if (chunkIndex === 0)
     {
@@ -1568,7 +1652,7 @@ mdPunct = function ()
 
 interpolation = function ()
 {
-    var _1115_21_
+    var _1164_21_
 
     if ((topType != null ? topType.startsWith('string double') : undefined))
     {
@@ -1672,7 +1756,7 @@ mmString = function ()
 
 shPunct = function ()
 {
-    var _1215_42_, _1215_64_, _1218_102_, _1218_41_, _1218_82_, _1224_102_, _1224_41_, _1224_82_
+    var _1264_42_, _1264_64_, _1267_102_, _1267_41_, _1267_82_, _1273_102_, _1273_41_, _1273_82_
 
     if (notCode)
     {
@@ -1778,16 +1862,16 @@ setValue = function (d, value)
 
 getValue = function (d)
 {
-    var _1286_27_, _1286_34_
+    var _1335_27_, _1335_34_
 
-    return ((_1286_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1286_34_ : '')
+    return ((_1335_34_=(getChunk(d) != null ? getChunk(d).clss : undefined)) != null ? _1335_34_ : '')
 }
 
 getmatch = function (d)
 {
-    var _1287_27_, _1287_35_
+    var _1336_27_, _1336_35_
 
-    return ((_1287_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1287_35_ : '')
+    return ((_1336_35_=(getChunk(d) != null ? getChunk(d).match : undefined)) != null ? _1336_35_ : '')
 }
 
 addValue = function (d, value)
@@ -1823,7 +1907,7 @@ addAndJoinValues = function (n, value)
     line.chunks.splice(chunkIndex + 1,n - 1)
     return 1
 }
-handlers = {coffee:{punct:[blockComment,hashComment,tripleRegexp,coffeePunct,tripleString,simpleString,interpolation,dashArrow,regexp,dict],word:[keyword,coffeeWord,number,property]},kode:{punct:[blockComment,hashComment,tripleRegexp,kodePunct,tripleString,simpleString,interpolation,funcArgs,dashArrow,regexp,dict],word:[keyword,kodeWord,number,property]},kim:{punct:[blockComment,hashComment,kodePunct,tripleString,interpolation,simpleString,funcArgs,dashArrow,dict],word:[keyword,kodeWord,number,property]},nim:{punct:[nimComment,hashComment,simpleString,funcArgs,dashArrow],word:[keyword,number,property]},noon:{punct:[noonComment,noonPunct,urlPunct],word:[noonWord,urlWord,number]},js:{punct:[starComment,slashComment,jsPunct,simpleString,dashArrow,regexp,dict],word:[keyword,jsWord,number,property]},ts:{punct:[starComment,slashComment,jsPunct,simpleString,dashArrow,regexp,dict],word:[keyword,jsWord,number,property]},iss:{punct:[starComment,slashComment,simpleString],word:[keyword,number]},ini:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[number]},cpp:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},mm:{punct:[starComment,slashComment,simpleString,cppPointer],word:[keyword,number,float,cppWord]},zig:{punct:[starComment,slashComment,simpleString],word:[keyword,number,float,cppWord]},frag:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},vert:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},hpp:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},c:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},h:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},cs:{punct:[starComment,slashComment,simpleString],word:[keyword,number]},pug:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},styl:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},css:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},sass:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},scss:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},swift:{punct:[starComment,slashComment,simpleString,dict],word:[keyword,number,property]},svg:{punct:[simpleString,xmlPunct],word:[keyword,number]},html:{punct:[simpleString,xmlPunct],word:[keyword,number]},htm:{punct:[simpleString,xmlPunct],word:[keyword,number]},xml:{punct:[simpleString,xmlPunct],word:[number]},sh:{punct:[hashComment,simpleString,urlPunct,shPunct],word:[keyword,urlWord,number]},json:{punct:[simpleString,jsonPunct,urlPunct],word:[keyword,jsonWord,urlWord,number]},yml:{punct:[hashComment,simpleString,urlPunct,shPunct,dict],word:[keyword,jsonWord,urlWord,number,property]},yaml:{punct:[hashComment,simpleString,urlPunct,shPunct,dict],word:[keyword,jsonWord,urlWord,number,property]},log:{punct:[simpleString,urlPunct,dict],word:[urlWord,number]},md:{punct:[mdPunct,urlPunct,xmlPunct],word:[urlWord,number]},fish:{punct:[hashComment,simpleString],word:[keyword,number]},py:{punct:[hashComment,simpleString],word:[keyword,number]}}
+handlers = {coffee:{punct:[blockComment,hashComment,tripleRegexp,coffeePunct,tripleString,simpleString,interpolation,dashArrow,regexp,dict],word:[keyword,coffeeWord,number,property]},kode:{punct:[blockComment,hashComment,tripleRegexp,kodePunct,tripleString,simpleString,interpolation,funcArgs,dashArrow,regexp,dict],word:[keyword,kodeWord,number,property]},kim:{punct:[blockComment,hashComment,kodePunct,tripleString,interpolation,simpleString,funcArgs,dashArrow,dict],word:[keyword,kodeWord,number,property]},kua:{punct:[blockComment,hashComment,kodePunct,tripleString,interpolation,simpleString,funcArgs,dashArrow,dict],word:[keyword,kodeWord,number,property]},nim:{punct:[nimComment,hashComment,simpleString,funcArgs,dashArrow],word:[keyword,number,property]},lua:{punct:[luaComment,simpleString,luaString,funcArgs,dashArrow],word:[keyword,number,property]},noon:{punct:[noonComment,noonPunct,urlPunct],word:[noonWord,urlWord,number]},js:{punct:[starComment,slashComment,jsPunct,simpleString,dashArrow,regexp,dict],word:[keyword,jsWord,number,property]},ts:{punct:[starComment,slashComment,jsPunct,simpleString,dashArrow,regexp,dict],word:[keyword,jsWord,number,property]},iss:{punct:[starComment,slashComment,simpleString],word:[keyword,number]},ini:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[number]},cpp:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},mm:{punct:[starComment,slashComment,simpleString,cppPointer],word:[keyword,number,float,cppWord]},zig:{punct:[starComment,slashComment,simpleString],word:[keyword,number,float,cppWord]},frag:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},vert:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},hpp:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},c:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},h:{punct:[starComment,slashComment,simpleString,cppMacro,cppPointer],word:[keyword,number,float,cppWord]},cs:{punct:[starComment,slashComment,simpleString],word:[keyword,number]},pug:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},styl:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},css:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},sass:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},scss:{punct:[starComment,slashComment,simpleString],word:[keyword,cssWord,number]},swift:{punct:[starComment,slashComment,simpleString,dict],word:[keyword,number,property]},svg:{punct:[simpleString,xmlPunct],word:[keyword,number]},html:{punct:[simpleString,xmlPunct],word:[keyword,number]},htm:{punct:[simpleString,xmlPunct],word:[keyword,number]},xml:{punct:[simpleString,xmlPunct],word:[number]},sh:{punct:[hashComment,simpleString,urlPunct,shPunct],word:[keyword,urlWord,number]},json:{punct:[simpleString,jsonPunct,urlPunct],word:[keyword,jsonWord,urlWord,number]},yml:{punct:[hashComment,simpleString,urlPunct,shPunct,dict],word:[keyword,jsonWord,urlWord,number,property]},yaml:{punct:[hashComment,simpleString,urlPunct,shPunct,dict],word:[keyword,jsonWord,urlWord,number,property]},log:{punct:[simpleString,urlPunct,dict],word:[urlWord,number]},md:{punct:[mdPunct,urlPunct,xmlPunct],word:[urlWord,number]},fish:{punct:[hashComment,simpleString],word:[keyword,number]},py:{punct:[hashComment,simpleString],word:[keyword,number]}}
 var list1 = _k_.list(exts)
 for (var _1d_ = 0; _1d_ < list1.length; _1d_++)
 {
@@ -1842,7 +1926,7 @@ for (ext in handlers)
 
 blocked = function (lines)
 {
-    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1442_40_, _1457_61_
+    var advance, beforeIndex, hnd, mightBeHeader, mtch, turdChunk, _1494_40_, _1509_61_
 
     extStack = []
     stack = []
@@ -1950,7 +2034,7 @@ blocked = function (lines)
                         if (mtch.turd)
                         {
                             turdChunk = getChunk(-mtch.turd.length)
-                            if (mtch.turd === (((_1457_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1457_61_ : (turdChunk != null ? turdChunk.match : undefined))))
+                            if (mtch.turd === (((_1509_61_=(turdChunk != null ? turdChunk.turd : undefined)) != null ? _1509_61_ : (turdChunk != null ? turdChunk.match : undefined))))
                             {
                                 pushExt(mtch)
                             }
@@ -2061,11 +2145,11 @@ kolorizeChunks = function (chunks = [])
 
 syntax = function (arg)
 {
-    var clines, index, lines, rngs, text, _1534_19_
+    var clines, index, lines, rngs, text, _1586_19_
 
     arg = (arg != null ? arg : {})
     text = arg.text
-    ext = ((_1534_19_=arg.ext) != null ? _1534_19_ : 'coffee')
+    ext = ((_1586_19_=arg.ext) != null ? _1586_19_ : 'coffee')
     lines = text.split(NEWLINE)
     rngs = parse(lines,ext).map(function (l)
     {

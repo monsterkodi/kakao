@@ -19,7 +19,8 @@ type Tkn* = object
     c*: int
 
 proc init*(this : var Tkn, t : tt, s = -1, e = -1, l = -1, c = -1) : Tkn = 
-       this.t = t ; this.s = s ; this.e = e ; this.l = l ; this.c = c ; this
+    this.t = t ; this.s = s ; this.e = e ; this.l = l ; this.c = c
+    this
 
 proc `$`*(this : Tkn) : string = &"tkn({this.t} {this.s} {this.e} {this.l} {this.c})"
 

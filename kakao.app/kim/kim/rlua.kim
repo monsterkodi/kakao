@@ -1,13 +1,12 @@
-# ████████   ███   ███  ███████    ████████ 
-# ███   ███  ████  ███  ███   ███  ███   ███
-# ███████    ███ █ ███  ███   ███  ███████  
-# ███   ███  ███  ████  ███   ███  ███   ███
-# ███   ███  ███   ███  ███████    ███   ███
+# ████████   ███      ███   ███   ███████ 
+# ███   ███  ███      ███   ███  ███   ███
+# ███████    ███      ███   ███  █████████
+# ███   ███  ███      ███   ███  ███   ███
+# ███   ███  ███████   ███████   ███   ███
 
-use pars klss vars rlua
-export pars
+use pars klss vars
 
-class Rndr
+class Rlua
     
     code            : string
     s               : string
@@ -29,6 +28,13 @@ class Rndr
             @rnd n
             if i<nodes.len-1
                 @add ", "
+
+    nodeIndent: ◇Node n ➜string ->
+    
+        switch n.kind 
+            ●operation      ➜ ⮐  @nodeIndent n.operand_left
+            ●propertyAccess ➜ ⮐  @nodeIndent n.owner
+                            ➜ ' '.repeat(n.token.col)
                                 
     ▸block: ◇Node n -> 
     
@@ -59,16 +65,9 @@ class Rndr
 
     sigBody: ◇Node n ->
     
-        @annotateVarArg = true
         @rnd n.func_signature
-        @annotateVarArg = false
         
-        if n.func_mod
-            @add " "
-            @tok n.func_mod
-            
         if n.func_body
-            @add " ="
             @add " "
             if n.func_body.kind in {●semicolon ●if ●while ●for ●switch}
                 @add "\n"
@@ -76,31 +75,31 @@ class Rndr
                 @add ' '.repeat(idt)
                  
             @rnd n.func_body
-
+            
     ▸func: ◇Node n -> 
         
         if n.token.tok == ◂method
             @add "method "
         else
-            @add "proc "
+            @add "function "
             
         @sigBody n
     
-    ▸proc: ◇Node n -> 
+    ▸function: ◇Node n -> 
     
         f = n.operand_right
         
         if f.token.tok == ◂method
             @add "method "
         else
-            @add "proc "
+            @add "function "
         
-        if n.operand_left.token.str[0] == '$'
-            @add "`$`" & n.operand_left.token.str[1..^1]
-        else
-            @rnd n.operand_left
+        @rnd n.operand_left
 
         @sigBody f
+        
+        idt = @nodeIndent n.operand_left
+        @add "\n" & idt & "end"
         
     ▸operation: ◇Node n -> 
     
@@ -110,7 +109,7 @@ class Rndr
     
         if n.token.tok == ◂assign 
             if n.operand_right.token.tok in {◂func ◂method}
-                @▸proc n
+                @▸function n
                 ⮐  
     
         outerbr = n.token.tok notin {◂assign ◂ampersand}
@@ -140,8 +139,7 @@ class Rndr
         
     ▸let: ◇Node n -> 
     
-        @tok n
-        @add " "
+        @add "local "
         @rnd n.let_expr
     
     ▸preOp: ◇Node n -> 
@@ -189,8 +187,6 @@ class Rndr
         @rnd n.var_name
         if n.var_name.kind == ●list
             @add ")"
-        if n.token.tok == ◂var_type
-            @add " {.guard: lock.}"
         if n.var_type
             @add " : "
             @rnd n.var_type
@@ -203,8 +199,6 @@ class Rndr
         @rnd n.arg_name
         if n.arg_type
             @add " : "
-            if n.token.tok == ◂var_type and @annotateVarArg
-                @add "var "
             @rnd n.arg_type
         if n.arg_value
             @add " = "
@@ -308,28 +302,34 @@ class Rndr
             
     ▸if: ◇Node n ->
     
-        idt = ' '.repeat n.token.col
+        idt  = @nodeIndent n
         line = n.token.line
-        
+        ml   = false
         @tok n
         @add " "
         
         for i condThen in n.cond_thens
             if i > 0
                 if condThen.token.line > line
-                    @add "\n" & idt & "elif "
+                    @add "\n" & idt & "elseif "
+                    ml = true
                 else
-                    @add " elif "
+                    @add " elseif "
             @rnd condThen.condition
-            @add ": "
+            @add " then "
+            if condThen.then_branch.kind == ●block ➜ ml = true
             @rnd condThen.then_branch
             
         if n.else_branch   
             if n.else_branch.token.line > line
-                @add "\n" & idt & "else: "
+                @add "\n" & idt & "else "
+                ml = true
             else
-                @add " else: "
+                @add " else "
             @rnd n.else_branch
+        
+        if ml ➜ @add("\n" & idt) ➜ @add(" ")
+        @add "end"
             
     ▸for: ◇Node n ->
     
@@ -343,15 +343,17 @@ class Rndr
             @rnd n.for_value
         @add " in "
         @rnd n.for_range
-        @add ": "
+        @add " "
         @rnd n.for_body
+        @add "\n" & "end"
         
     ▸while: ◇Node n ->
     
        @add "while "
        @rnd n.while_cond
-       @add ": "
+       @add " "
        @rnd n.while_body
+       @add "\n" & "end"
         
     ▸list: ◇Node n ->
         
@@ -532,10 +534,10 @@ class Rndr
             ●type 
             ●keyword        ➜ @tok             n
                             ➜ 
-                              log "rndr? #{n} #{n.kind}"
+                              log "rlua? #{n} #{n.kind}"
                               @tok n
 
-render* = ◇string code autovar=true ➜string ->
+renderLua* = ◇string code autovar=true ➜string ->
 
     # profileStart "ast"
     root = ast code
@@ -547,42 +549,25 @@ render* = ◇string code autovar=true ➜string ->
     # profileStop "ast"
     if autovar
         # profileStart "vars"
-        root = variables root "nim"
+        root = variables root "lua"
         # profileStop "vars"
-    r = Rndr code:code
+    r = Rlua code:code
     # profileStart "rnd"
     r.rnd root
     # profileStop "rnd"
     r.s
     
-file* = ◇string file ➜string ->
+renderLuaFile* = ◇string file ➜string ->
 
     profileScope file
 
-    fileOut = file.swapLastPathComponentAndExt "kim" "nim"
-    kimCode = file.read()
-    nimCode = render kimCode 
-    if nimCode
-        fileOut.write nimCode
+    fileOut = file.swapLastPathComponentAndExt "kua" "lua"
+    kuaCode = file.read()
+    luaCode = renderLua kuaCode
+    if luaCode
+        log luaCode
+        fileOut.write luaCode
         fileOut
     else
-        ""
-    
-files* = ◇seq[string] files ➜seq[string] ->
-
-    transpiled ◇ seq[string]
-    for f in files
-        ext = slash.ext f
-        if ext == "kua"
-            luaFile = renderLuaFile f
-            if luaFile
-                transpiled.add luaFile
-            continue
-    
-        nimFile = file f
-        if nimFile
-            transpiled.add nimFile
-    # log "transpiled #{transpiled}"
-    transpiled
-        
+        ""        
                             

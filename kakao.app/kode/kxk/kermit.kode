@@ -42,7 +42,7 @@ lineMatch = (line, pt, splitlist) ->
         splt = splitWords splt, sl
         cpt  = splitWords cpt, sl
         
-    log "lineMatch", splt, cpt
+    # log "lineMatch", splt, cpt
         
     ⮐  if empty splt
     

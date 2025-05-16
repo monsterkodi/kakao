@@ -13,11 +13,11 @@ var tests = false
 var verbose = false
 var greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!", "💋 Less clutter, more wonder!", "💋 The best code is no code.", "💋 Less is always beautifuller!", "💋 Simplicity: the shortcut to ‘heck yes!’", "💋 If it’s hard to explain, it’s probably wrong.", "💋 Uncomplicate your code and your mind will dance.", "🌞 A child’s laugh, a sunbeam’s path — why bend what is straight?", "🌈 Go with the flow, catch joy like dandelion fluff.", "🌈 Aim for maximum joy, anticipate future regrets.", "🌞 Rise and shine! What shall we craft today?", "👋 Salutations! Let's crunch some code cookies.", "🚀 Systems nominal! Your code awaits transformation.", "🍳 Howdy, chef! What are we cooking today?", "🤖 Greetings, fleshbag! May your code ripple smoothly through the machine.", "🔮 Embrace uncertainty — code with glitter!", "🎩 Magician at the keyboard! Let's conjure some magic.", "🎩 Flexible beats flawless — everytime.", "🎩 Stay open, stay awesome."]
 var farewells = @["👋 Good bye! May your code always compile.", "👋 Good bye! May your brackets always align.", "👋 Farewell! May your brackets nest flawlessly.", "👋 Farewell! May your brackets always balance."]
-var kimTests = walkDir((((getAppFilename().splitFile()[0] / "..") / "nim") / "test")).toSeq().map(proc (r : tuple) : string = r.path)
-var kimFiles = slash.files(slash.path(slash.dir(currentSourcePath()), "../kim"))
-var kxkFiles = slash.files(slash.path(slash.dir(currentSourcePath()), "../kim/kxk"))
-var kxkTests = slash.files(slash.path(slash.dir(currentSourcePath()), "kxk/test"))
-if (verbose or true): 
+var kimTests = slash.files(slash.path(app(), "../nim/test"))
+var kimFiles = slash.files(slash.path(currentSourcePath().split("/")[0..^2].join("/"), "../kim"))
+var kxkFiles = slash.files(slash.path(currentSourcePath().split("/")[0..^2].join("/"), "../kim/kxk"))
+var kxkTests = slash.files(slash.path(currentSourcePath().split("/")[0..^2].join("/"), "kxk/test"))
+if verbose: 
     dbg(kimTests)
     dbg(kimFiles)
     dbg(kxkFiles)
@@ -80,10 +80,19 @@ when defined(posix):
 # ███████   ███████    ███████   ███       ███  ███████  ████████
 
 proc logFile(f : string, prefix = "") = 
-    var (dir, name, ext) = f.relativePath(getCurrentDir()).splitFile()
+    var (dir, name, ext) = f.relative.dirNameExt()
     var d = if dir.len: dir & "/" else: ""
-    var icon = if (ext == ".kim"): "  " else: "  "
-    var color = if (ext == ".kim"): fgGreen else: fgMagenta
+    var icon = ""
+    case ext:
+        of ".kim": icon = "  "
+        of ".nim": icon = "  "
+        of ".kua": icon = "  "
+        of ".lua": icon = "  "
+    var color = fgMagenta
+    case ext:
+        of ".kim": color = fgGreen
+        of ".kua": color = fgGreen
+        else: color = fgMagenta
     styledEcho(color, prefix, styleDim, icon, resetStyle, color, styleBright, d, styleBright, name, resetStyle)
 #  ███████   ███████   ██     ██  ████████   ███  ███      ████████
 # ███       ███   ███  ███   ███  ███   ███  ███  ███      ███     
@@ -152,10 +161,8 @@ proc runTests(files : seq[string]) : bool =
         for line in process.errorStream.lines: 
             echo(line)
         if (exitCode != 0): 
-            # echo output
             styledEcho(fgRed, "✘ ", $f)
             anyFail = true
-    # log ""
     not anyFail
 if files.len: 
     # profileStart 'translate'
@@ -176,7 +183,6 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     for f in kimFiles: 
         slash.copy(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
     for f in kimFiles: 
-        # logFile f "➜ "
         var (output, exitCode) = execCmdEx(&"{src}/bin/kim -v " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
         if (exitCode != 0): 
             echo(output)
@@ -211,19 +217,20 @@ proc watch(paths : seq[string]) =
     styledEcho(fgGreen, greetings[rand(greetings.high)])
     styledEcho("")
     for p in paths: 
-        var (dir, name, ext) = p.splitFile()
+        var (dir, name, ext) = p.dirNameExt()
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
     while true: 
-        # GC_fullCollect()
-        # log GC_getStatistics()
         var kimToTranspile : seq[string]
         var kxkToTranspile : seq[string]
+        var kuaToTranspile : seq[string]
         var kxkChanged = false
         var kimChanged = false
+        var kuaChanged = false
         for path in paths: 
             if not dirExists(path): continue
             for f in walkDirRec(path): 
-                if (slash.ext(f) != "kim"): continue
+                var ext = slash.ext(f)
+                if (ext notin @["kim", "kua"]): continue
                 var modTime = getFileInfo(f).lastWriteTime
                 if not modTimes.hasKey(f): 
                     modTimes[f] = modTime
@@ -233,32 +240,38 @@ proc watch(paths : seq[string]) =
                 modTimes[f] = modTime
                 if (f in kxkFiles): kxkChanged = true ; kxkToTranspile.add(f)
                 elif (f in kimFiles): kimChanged = true ; kimToTranspile.add(f)
-        if (kxkChanged or kimChanged): 
+                elif (ext == "kua"): kuaChanged = true ; kuaToTranspile.add(f)
+        if ((kxkChanged or kimChanged) or kuaChanged): 
             echo("\x1bc")
-            for f in kxkToTranspile.concat(kimToTranspile): 
+            for f in kxkToTranspile.concat(kimToTranspile).concat(kuaToTranspile): 
                 logFile(f, "▸ ")
         if kxkChanged: 
             var fail = false
             for f in kxkToTranspile: 
-                # logFile f "➜ "
                 var (output, exitCode) = execCmdEx("bin/kim -v " & f)
                 if (exitCode != 0): 
                     echo(output)
                     fail = true
             if not fail: 
-                if runTests(kxkTests): 
-                    echo("✔")
+                discard runTests(kxkTests)
+        if kuaChanged: 
+            var fail = false
+            for f in kuaToTranspile: 
+                var (output, exitCode) = execCmdEx("bin/kim -v " & f)
+                echo(output)
+                if (exitCode != 0): 
+                    fail = true
+            # if not fail
+            #     discard runTests kxkTests
         if kimChanged: 
             if stage(kimFiles, ".", "k1m"): 
                 if stage(kimFiles, "k1m", "k2m"): 
                     for f in kimFiles: 
                         var srcNim = f.replace("/kim/kim/", "/kim/k2m/nim/").replace(".kim", ".nim")
                         var tgtNim = f.replace("/kim/kim/", "/kim/nim/").replace(".kim", ".nim")
-                        # log "src " srcNim
-                        # log "tgt " tgtNim
                         slash.copy(srcNim, tgtNim)
-                    if compile("k2m/nim/kim.nim", "bin"): 
+                    if compile("nim/kim.nim", "bin"): 
                         echo("-> enjoy")
                         restart()
         sleep(200)
-watch(@[cwd("kim")])
+watch(@[cwd("kim"), cwd("../kao")])

@@ -1,6 +1,10 @@
 
 ([^\/\s]+)(\.noon)          . file_noon   . file_ext_noon
 ([^\/\s]+)(\.kode)          . file_kode   . file_ext_kode
+([^\/\s]+)(\.kim)           . file_kim    . file_ext_kim
+([^\/\s]+)(\.nim)           . file_nim    . file_ext_nim
+([^\/\s]+)(\.kua)           . file_kua    . file_ext_kua
+([^\/\s]+)(\.lua)           . file_lua    . file_ext_lua
 ([^\/\s]+)(\.html)          . file_html   . file_ext_html
 ([^\/\s]+)(\.md)            . file_md     . file_ext_md
 ([^\/\s]+)(\.json)          . file_json   . file_ext_json
@@ -40,6 +44,8 @@
 ()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_pug   . file_pug  . file_icon_pug  
 ()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_nim   . file_nim  . file_icon_nim  
 ()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_kim   . file_kim  . file_icon_kim  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_lua   . file_lua  . file_icon_lua  
+(☾)(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_kua   . file_kua  . file_icon_kua  
 
 []     . file_icon_text
 []     . file_icon_png
@@ -69,6 +75,7 @@
 []     . file_icon_jsx
 []     . file_icon_less
 []     . file_icon_lua
+[☾]     . file_icon_kua
 [λ]     . file_icon_ml
 []     . file_icon_mm
 []     . file_icon_nix

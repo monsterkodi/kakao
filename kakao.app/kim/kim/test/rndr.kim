@@ -539,6 +539,9 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
         
     ▸ misc
     
+        t "●dir"  "currentSourcePath().split(\"/\")[0..^2].join(\"/\")"
+        t "●file" "currentSourcePath()"
+    
         t   """    
             if bytesRead > 0
                 output.add(line & "\n")
@@ -576,7 +579,7 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
                 else: 
                     " "
                 1"""
-        
+                
     ▸ proc
     
         t "proc ast*(text:string) : Node ="     "\nproc ast*(text:string) : Node ="

@@ -18,15 +18,15 @@ sc* = ◇auto c ➜string ->
 
 underscore* = ◇uint64 n ➜string ->
     s = $n
-    r = newStringOfCap(s.len + (s.len - 1).div(3))
+    r = newStringOfCap s.len + (s.len - 1).div(3)
     count = 0
-    for i in countdown(s.high, 0)
+    for i in countdown s.high 0
         if count != 0 and count.mod(3) == 0
-            result.add('_')
-        r.add(s[i])
+            r.add '_'
+        r.add s[i]
         count += 1
-    reversed(r)
-
+    reversed r
+    
 indent* = ◇string s i=4 ➜string ->
 
     idt = ' '.repeat i
@@ -75,7 +75,6 @@ timers ◇ Table[string, tuple[m:MonoTime, t:uint64]]
 mach_absolute_time = ➜uint64 -> {.importc, header: "<mach/mach_time.h>".}
     
 profileStart* = ◇string msg ->
-    # GC_disableOrc()
     if not timers.contains(msg)
         timers[msg] = (getMonoTime(), mach_absolute_time())
     else
@@ -98,7 +97,6 @@ profileStop* = ◇string msg ->
                 
     styledEcho fgBlue msg fgGreen mons fgMagenta underscore(tick) resetStyle
     # styledEcho fgBlue msg fgGreen mons resetStyle
-    # GC_enableOrc()    
     timers.del(msg)
     
 macro profileScope*(msg: string): untyped =

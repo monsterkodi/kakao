@@ -62,7 +62,7 @@ proc untilde*(path : string) : string = path.expandTilde()
 
 proc tilde*(path : string) : string = path.replace(slash.home(), "~")
 
-type parseInfo* = tuple[path: string, dir: string,  file: string, name: string, ext: string]
+type parseInfo* = tuple[dir: string, name: string, ext: string, file: string, path: string]
 
 proc parse*(path : string) : parseInfo = 
     var path = path.normalize().untilde()
@@ -81,7 +81,11 @@ proc parse*(path : string) : parseInfo =
     if (nmspl.len > 1): 
         name = nmspl[0..^2].join(".")
         ext = nmspl[^1]
-    (path: path, dir: dir, file: file, name: name, ext: ext)
+    (dir: dir, name: name, ext: ext, file: file, path: path)
+
+proc dirNameExt*(path : string) : tuple[dir:string,name:string,ext:string] = 
+    var (dir, name, ext, _, _) = slash.parse(path)
+    (dir: dir, name: name, ext: ext)
 
 proc dir*(path : string) : string = path.parse.dir
 
@@ -149,7 +153,5 @@ proc absolute*(path : string) : string = slash.absolute(path, slash.cwd())
 proc relative*(path : string, base : string) : string = 
     paths.relativePath(slash.normalize(path).Path, slash.normalize(base).Path).string
 
-macro srcDir*(): untyped = 
-
-    quote do: 
-        currentSourcePath()
+proc relative*(path : string) : string = 
+    slash.relative(path, slash.cwd())

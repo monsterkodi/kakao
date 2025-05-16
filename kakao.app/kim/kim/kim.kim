@@ -41,12 +41,12 @@ farewells = [
     "👋 Farewell! May your brackets nest flawlessly.",
     "👋 Farewell! May your brackets always balance."]
 
-kimTests = walkDir(getAppFilename().splitFile()[0] / ".." / "nim" / "test").toSeq().map(◇tuple r ➜string -> r.path)
-kimFiles = slash.files slash.path(slash.dir(currentSourcePath()) "../kim")
-kxkFiles = slash.files slash.path(slash.dir(currentSourcePath()) "../kim/kxk")
-kxkTests = slash.files slash.path(slash.dir(currentSourcePath()) "kxk/test")
+kimTests = slash.files slash.path(app() "../nim/test")
+kimFiles = slash.files slash.path(●dir  "../kim")
+kxkFiles = slash.files slash.path(●dir  "../kim/kxk")
+kxkTests = slash.files slash.path(●dir  "kxk/test")
 
-if verbose or true
+if verbose
     dbg kimTests
     dbg kimFiles
     dbg kxkFiles
@@ -116,10 +116,19 @@ when defined(posix)
 
 logFile = ◇string f prefix="" ->
 
-    (dir name ext) = f.relativePath(getCurrentDir()).splitFile()
+    (dir name ext) = f.relative.dirNameExt()
     d = if dir.len ➜ dir & "/" ➜ ""
-    icon  = if ext == ".kim" ➜ "  " ➜ "  "
-    color = if ext == ".kim" ➜ fgGreen ➜ fgMagenta
+    icon = ""
+    switch ext 
+        ".kim" ➜ icon = "  " 
+        ".nim" ➜ icon = "  "
+        ".kua" ➜ icon = "  "
+        ".lua" ➜ icon = "  "
+    color = fgMagenta
+    switch ext 
+        ".kim" ➜ color = fgGreen 
+        ".kua" ➜ color = fgGreen 
+               ➜ color = fgMagenta
 
     styledEcho color prefix styleDim icon resetStyle
                color styleBright d styleBright name resetStyle
@@ -207,11 +216,9 @@ runTests = ◇seq[string] files ➜bool ->
             log line
         
         if exitCode != 0
-            # echo output
             styledEcho fgRed "✘ " $f
             anyFail = true
             
-    # log ""
     not anyFail
 
 if files.len
@@ -239,7 +246,6 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
         slash.copy f f.replace("/kim/kim/" "/kim/#{dst}/kim/")
     
     for f in kimFiles 
-        # logFile f "➜ "
         (output exitCode) = execCmdEx "#{src}/bin/kim -v " & f.replace("/kim/kim/" "/kim/#{dst}/kim/")
         if exitCode != 0
             log output
@@ -280,21 +286,20 @@ watch = ◇seq[string] paths ->
     styledEcho ""
     
     for p in paths
-        (dir name ext) = p.splitFile()
+        (dir name ext) = p.dirNameExt()
         styledEcho fgBlue styleDim "● " resetStyle
             styleBright fgBlue dir " " resetStyle 
             styleBright fgYellow name styleDim ext resetStyle
     
     while true
     
-        # GC_fullCollect()
-        # log GC_getStatistics()
-        
         kimToTranspile ◇ seq[string]
         kxkToTranspile ◇ seq[string]
+        kuaToTranspile ◇ seq[string]
         
         kxkChanged = false
         kimChanged = false
+        kuaChanged = false
         
         for path in paths
         
@@ -302,7 +307,8 @@ watch = ◇seq[string] paths ->
                 
             for f in walkDirRec path
 
-                continue if slash.ext(f) != "kim"
+                ext = slash.ext f
+                continue if ext notin ["kim" "kua"]
                 
                 modTime = getFileInfo(f).lastWriteTime
                 
@@ -317,23 +323,32 @@ watch = ◇seq[string] paths ->
                 
                 if   f in kxkFiles ➜ kxkChanged = true ; kxkToTranspile.add(f)
                 elif f in kimFiles ➜ kimChanged = true ; kimToTranspile.add(f)
+                elif ext == "kua"  ➜ kuaChanged = true ; kuaToTranspile.add(f)
         
-        if kxkChanged or kimChanged
+        if kxkChanged or kimChanged or kuaChanged
             log "\x1bc"
-            for f in kxkToTranspile.concat(kimToTranspile)
+            for f in kxkToTranspile.concat(kimToTranspile).concat(kuaToTranspile)
                 logFile f "▸ "
                     
         if kxkChanged
             fail = false
             for f in kxkToTranspile
-                # logFile f "➜ "
                 (output exitCode) = execCmdEx "bin/kim -v " & f
                 if exitCode != 0
                     log output
                     fail = true                
             if not fail
-                if runTests kxkTests
-                    log "✔"
+                discard runTests kxkTests
+                
+        if kuaChanged
+            fail = false
+            for f in kuaToTranspile
+                (output exitCode) = execCmdEx "bin/kim -v " & f
+                log output
+                if exitCode != 0
+                    fail = true                
+            # if not fail
+            #     discard runTests kxkTests
                 
         if kimChanged
                 
@@ -342,13 +357,11 @@ watch = ◇seq[string] paths ->
                     for f in kimFiles 
                         srcNim = f.replace("/kim/kim/" "/kim/k2m/nim/").replace(".kim" ".nim")
                         tgtNim = f.replace("/kim/kim/" "/kim/nim/").replace(".kim" ".nim")
-                        # log "src " srcNim
-                        # log "tgt " tgtNim
                         slash.copy srcNim tgtNim
-                    if compile "k2m/nim/kim.nim" "bin"
+                    if compile "nim/kim.nim" "bin"
                         log "-> enjoy"
                         restart()
         sleep 200
         
-watch [cwd("kim")]
+watch [cwd("kim") cwd("../kao")]
                  

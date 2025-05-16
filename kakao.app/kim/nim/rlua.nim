@@ -1,41 +1,45 @@
-# ████████   ███   ███  ███████    ████████ 
-# ███   ███  ████  ███  ███   ███  ███   ███
-# ███████    ███ █ ███  ███   ███  ███████  
-# ███   ███  ███  ████  ███   ███  ███   ███
-# ███   ███  ███   ███  ███████    ███   ███
+# ████████   ███      ███   ███   ███████ 
+# ███   ███  ███      ███   ███  ███   ███
+# ███████    ███      ███   ███  █████████
+# ███   ███  ███      ███   ███  ███   ███
+# ███   ███  ███████   ███████   ███   ███
 import pars
 import klss
 import vars
-import rlua
-export pars
 
-type Rndr = ref object of RootObj
+type Rlua = ref object of RootObj
     code: string
     s: string
     annotateVarArg: bool
 
-proc `$`(this : Rndr) : string = 
+proc `$`(this : Rlua) : string = 
         var s = ""
         (s &= "▸")
         (s &= this.code)
         (s &= "◂")
         s
 
-proc add(this : Rndr, text : string) = (this.s &= text)
+proc add(this : Rlua, text : string) = (this.s &= text)
 
-proc spc(this : Rndr) = (this.s &= " ")
+proc spc(this : Rlua) = (this.s &= " ")
 
-proc tok(this : Rndr, n : Node) = (this.s &= n.token.str)
+proc tok(this : Rlua, n : Node) = (this.s &= n.token.str)
 
-proc rnd(this : Rndr, n : Node)
+proc rnd(this : Rlua, n : Node)
 
-proc rnd(this : Rndr, nodes : seq[Node]) = 
+proc rnd(this : Rlua, nodes : seq[Node]) = 
         for i, n in nodes: 
             this.rnd(n)
             if (i < (nodes.len - 1)): 
                 this.add(", ")
 
-proc ▸block(this : Rndr, n : Node) = 
+proc nodeIndent(this : Rlua, n : Node) : string = 
+        case n.kind:
+            of ●operation: return this.nodeIndent(n.operand_left)
+            of ●propertyAccess: return this.nodeIndent(n.owner)
+            else: ' '.repeat(n.token.col)
+
+proc ▸block(this : Rlua, n : Node) = 
         var idt : string
         if (n.token.tok == ◂indent): 
             idt = n.token.str
@@ -50,21 +54,15 @@ proc ▸block(this : Rndr, n : Node) =
                 else: 
                     this.add(" ")
 
-proc ▸semicolon(this : Rndr, n : Node) = 
+proc ▸semicolon(this : Rlua, n : Node) = 
         for i, exp in n.expressions: 
             this.rnd(exp)
             if (i < (n.expressions.len - 1)): 
                 this.add(" ; ")
 
-proc sigBody(this : Rndr, n : Node) = 
-        this.annotateVarArg = true
+proc sigBody(this : Rlua, n : Node) = 
         this.rnd(n.func_signature)
-        this.annotateVarArg = false
-        if n.func_mod: 
-            this.add(" ")
-            this.tok(n.func_mod)
         if n.func_body: 
-            this.add(" =")
             this.add(" ")
             if (n.func_body.kind in {●semicolon, ●if, ●while, ●for, ●switch}): 
                 this.add("\n")
@@ -72,32 +70,31 @@ proc sigBody(this : Rndr, n : Node) =
                 this.add(' '.repeat(idt))
             this.rnd(n.func_body)
 
-proc ▸func(this : Rndr, n : Node) = 
+proc ▸func(this : Rlua, n : Node) = 
         if (n.token.tok == ◂method): 
             this.add("method ")
         else: 
-            this.add("proc ")
+            this.add("function ")
         this.sigBody(n)
 
-proc ▸proc(this : Rndr, n : Node) = 
+proc ▸function(this : Rlua, n : Node) = 
         var f = n.operand_right
         if (f.token.tok == ◂method): 
             this.add("method ")
         else: 
-            this.add("proc ")
-        if (n.operand_left.token.str[0] == '$'): 
-            this.add("`$`" & n.operand_left.token.str[1..^1])
-        else: 
-            this.rnd(n.operand_left)
+            this.add("function ")
+        this.rnd(n.operand_left)
         this.sigBody(f)
+        var idt = this.nodeIndent(n.operand_left)
+        this.add("\n" & idt & "end")
 
-proc ▸operation(this : Rndr, n : Node) = 
+proc ▸operation(this : Rlua, n : Node) = 
         if (((n == nil) or (n.operand_left == nil)) or (n.operand_right == nil)): 
             echo(&"DAFUK? {n} {n.token}")
             return
         if (n.token.tok == ◂assign): 
             if (n.operand_right.token.tok in {◂func, ◂method}): 
-                this.▸proc(n)
+                this.▸function(n)
                 return
         var outerbr = (n.token.tok notin {◂assign, ◂ampersand})
         var bracket = ((n.token.tok == ◂assign) and (n.operand_left.kind == ●list))
@@ -115,7 +112,7 @@ proc ▸operation(this : Rndr, n : Node) =
         this.rnd(n.operand_right)
         if (bracket or outerbr): this.add(")")
 
-proc ▸literal(this : Rndr, n : Node) = 
+proc ▸literal(this : Rlua, n : Node) = 
         case n.token.str:
             of "●dir": 
                 this.add("currentSourcePath().split(\"/\")[0..^2].join(\"/\")")
@@ -123,34 +120,33 @@ proc ▸literal(this : Rndr, n : Node) =
                 this.add("currentSourcePath()")
             else: this.tok(n)
 
-proc ▸let(this : Rndr, n : Node) = 
-        this.tok(n)
-        this.add(" ")
+proc ▸let(this : Rlua, n : Node) = 
+        this.add("local ")
         this.rnd(n.let_expr)
 
-proc ▸preOp(this : Rndr, n : Node) = 
+proc ▸preOp(this : Rlua, n : Node) = 
         if (n.token.tok == ◂not): 
             this.add("not ")
         else: 
             this.tok(n)
         this.rnd(n.operand)
 
-proc ▸postOp(this : Rndr, n : Node) = 
+proc ▸postOp(this : Rlua, n : Node) = 
         this.rnd(n.operand)
         this.tok(n)
 
-proc ▸propertyAccess(this : Rndr, n : Node) = 
+proc ▸propertyAccess(this : Rlua, n : Node) = 
         this.rnd(n.owner)
         this.tok(n)
         this.rnd(n.property)
 
-proc ▸arrayAccess(this : Rndr, n : Node) = 
+proc ▸arrayAccess(this : Rlua, n : Node) = 
         this.rnd(n.array_owner)
         this.add("[")
         this.rnd(n.array_index)
         this.add("]")
 
-proc ▸signature(this : Rndr, n : Node) = 
+proc ▸signature(this : Rlua, n : Node) = 
         this.add("(")
         this.annotateVarArg = true
         this.rnd(n.sig_args)
@@ -160,14 +156,12 @@ proc ▸signature(this : Rndr, n : Node) =
             this.add(" : ")
             this.rnd(n.sig_type)
 
-proc ▸var(this : Rndr, n : Node) = 
+proc ▸var(this : Rlua, n : Node) = 
         if (n.var_name.kind == ●list): 
             this.add("(")
         this.rnd(n.var_name)
         if (n.var_name.kind == ●list): 
             this.add(")")
-        if (n.token.tok == ◂var_type): 
-            this.add(" {.guard: lock.}")
         if n.var_type: 
             this.add(" : ")
             this.rnd(n.var_type)
@@ -175,18 +169,16 @@ proc ▸var(this : Rndr, n : Node) =
             this.add(" = ")
             this.rnd(n.var_value)
 
-proc ▸arg(this : Rndr, n : Node) = 
+proc ▸arg(this : Rlua, n : Node) = 
         this.rnd(n.arg_name)
         if n.arg_type: 
             this.add(" : ")
-            if ((n.token.tok == ◂var_type) and this.annotateVarArg): 
-                this.add("var ")
             this.rnd(n.arg_type)
         if n.arg_value: 
             this.add(" = ")
             this.rnd(n.arg_value)
 
-proc ▸string(this : Rndr, n : Node) = 
+proc ▸string(this : Rlua, n : Node) = 
         var delimiter = n.token.str
         if ((delimiter == "'") and (n.string_content.token.str.len > 1)): 
             if ((n.string_content.token.str.len > 2) or (n.string_content.token.str[0] != '\\')): 
@@ -227,7 +219,7 @@ proc ▸string(this : Rndr, n : Node) =
                 demill(stripol.stripol_content)
         this.add(delimiter)
 
-proc ▸use(this : Rndr, n : Node) = 
+proc ▸use(this : Rlua, n : Node) = 
         var split = n.use_module.token.str.split(" ")
         while (split.len > 1): 
             this.add(&"import {split[0]}\n")
@@ -239,7 +231,7 @@ proc ▸use(this : Rndr, n : Node) =
             this.rnd(n.use_items)
             this.add("]")
 
-proc ▸comment(this : Rndr, n : Node) = 
+proc ▸comment(this : Rlua, n : Node) = 
         if (n.token.str == "###"): 
             this.add("#[")
         else: 
@@ -248,7 +240,7 @@ proc ▸comment(this : Rndr, n : Node) =
         if (n.token.str == "###"): 
             this.add("]#")
 
-proc ▸call(this : Rndr, n : Node) = 
+proc ▸call(this : Rlua, n : Node) = 
         if (n.callee.token.str == "log"): 
             this.add("echo")
         elif (n.callee.token.str[0] == '@'): 
@@ -264,28 +256,34 @@ proc ▸call(this : Rndr, n : Node) =
         if (n.callee.token.str != "export"): 
             this.add(")")
 
-proc ▸if(this : Rndr, n : Node) = 
-        var idt = ' '.repeat(n.token.col)
+proc ▸if(this : Rlua, n : Node) = 
+        var idt = this.nodeIndent(n)
         var line = n.token.line
+        var ml = false
         this.tok(n)
         this.add(" ")
         for i, condThen in n.cond_thens: 
             if (i > 0): 
                 if (condThen.token.line > line): 
-                    this.add("\n" & idt & "elif ")
+                    this.add("\n" & idt & "elseif ")
+                    ml = true
                 else: 
-                    this.add(" elif ")
+                    this.add(" elseif ")
             this.rnd(condThen.condition)
-            this.add(": ")
+            this.add(" then ")
+            if (condThen.then_branch.kind == ●block): ml = true
             this.rnd(condThen.then_branch)
         if n.else_branch: 
             if (n.else_branch.token.line > line): 
-                this.add("\n" & idt & "else: ")
+                this.add("\n" & idt & "else ")
+                ml = true
             else: 
-                this.add(" else: ")
+                this.add(" else ")
             this.rnd(n.else_branch)
+        if ml: this.add("\n" & idt) else: this.add(" ")
+        this.add("end")
 
-proc ▸for(this : Rndr, n : Node) = 
+proc ▸for(this : Rlua, n : Node) = 
         this.add("for ")
         if (n.for_value.kind == ●list): 
             for i, v in n.for_value.list_values: 
@@ -296,16 +294,18 @@ proc ▸for(this : Rndr, n : Node) =
             this.rnd(n.for_value)
         this.add(" in ")
         this.rnd(n.for_range)
-        this.add(": ")
+        this.add(" ")
         this.rnd(n.for_body)
+        this.add("\n" & "end")
 
-proc ▸while(this : Rndr, n : Node) = 
+proc ▸while(this : Rlua, n : Node) = 
        this.add("while ")
        this.rnd(n.while_cond)
-       this.add(": ")
+       this.add(" ")
        this.rnd(n.while_body)
+       this.add("\n" & "end")
 
-proc ▸list(this : Rndr, n : Node) = 
+proc ▸list(this : Rlua, n : Node) = 
         var parens = (n.list_values and (n.list_values[0].kind == ●member))
         if parens: this.add("(")
         for i, item in n.list_values: 
@@ -316,7 +316,7 @@ proc ▸list(this : Rndr, n : Node) =
                 this.add(" ")
         if parens: this.add(")")
 
-proc ▸curly(this : Rndr, n : Node) = 
+proc ▸curly(this : Rlua, n : Node) = 
         this.add("{")
         for i, item in n.list_values: 
             this.rnd(item)
@@ -324,7 +324,7 @@ proc ▸curly(this : Rndr, n : Node) =
                 this.add(", ")
         this.add("}")
 
-proc ▸squarely(this : Rndr, n : Node) = 
+proc ▸squarely(this : Rlua, n : Node) = 
         this.add("@[")
         for i, item in n.list_values: 
             this.rnd(item)
@@ -332,7 +332,7 @@ proc ▸squarely(this : Rndr, n : Node) =
                 this.add(", ")
         this.add("]")
 
-proc ▸range(this : Rndr, n : Node) = 
+proc ▸range(this : Rlua, n : Node) = 
         this.rnd(n.range_start)
         if (n.token.str == "..."): 
             this.add("..<")
@@ -340,23 +340,23 @@ proc ▸range(this : Rndr, n : Node) =
             this.tok(n)
         this.rnd(n.range_end)
 
-proc ▸return(this : Rndr, n : Node) = 
+proc ▸return(this : Rlua, n : Node) = 
         this.add("return")
         if n.return_value: 
             this.spc()
             this.rnd(n.return_value)
 
-proc ▸discard(this : Rndr, n : Node) = 
+proc ▸discard(this : Rlua, n : Node) = 
         this.add("discard")
         if n.discard_value: 
             this.spc()
             this.rnd(n.discard_value)
 
-proc ▸quote(this : Rndr, n : Node) = 
+proc ▸quote(this : Rlua, n : Node) = 
         this.add("quote do: ")
         this.rnd(n.quote_body)
 
-proc ▸switch(this : Rndr, n : Node) = 
+proc ▸switch(this : Rlua, n : Node) = 
         var idt = ' '.repeat(n.token.col)
         this.add("case ")
         this.rnd(n.switch_value)
@@ -376,13 +376,13 @@ proc ▸switch(this : Rndr, n : Node) =
             this.add("else: ")
             this.rnd(n.switch_default)
 
-proc ▸enum(this : Rndr, n : Node) = 
+proc ▸enum(this : Rlua, n : Node) = 
         this.add("type ")
         this.rnd(n.enum_name)
         this.add(" = enum")
         this.rnd(n.enum_body)
 
-proc ▸class(this : Rndr, n : Node) = 
+proc ▸class(this : Rlua, n : Node) = 
         this.add("type ")
         this.rnd(n.class_name)
         this.add(" = ref object of ")
@@ -392,7 +392,7 @@ proc ▸class(this : Rndr, n : Node) =
             this.add("RootObj")
         this.rnd(n.class_body)
 
-proc ▸struct(this : Rndr, n : Node) = 
+proc ▸struct(this : Rlua, n : Node) = 
         this.add("type ")
         this.rnd(n.class_name)
         this.add(" = object")
@@ -401,18 +401,18 @@ proc ▸struct(this : Rndr, n : Node) =
             this.tok(n.class_parent)
         this.rnd(n.class_body)
 
-proc ▸member(this : Rndr, n : Node) = 
+proc ▸member(this : Rlua, n : Node) = 
         this.rnd(n.member_key)
         this.add(": ")
         this.rnd(n.member_value)
 
-proc ▸testCase(this : Rndr, n : Node) = 
+proc ▸testCase(this : Rlua, n : Node) = 
         this.add("check ")
         this.rnd(n.test_value)
         this.add(" == ")
         this.rnd(n.test_expected)
 
-proc ▸testSuite(this : Rndr, n : Node) = 
+proc ▸testSuite(this : Rlua, n : Node) = 
         if (n.kind == ●testSuite): 
             this.add("suite")
         else: 
@@ -422,7 +422,7 @@ proc ▸testSuite(this : Rndr, n : Node) =
         this.add("\": ")
         this.rnd(n.test_block)
 
-proc rnd(this : Rndr, n : Node) = 
+proc rnd(this : Rlua, n : Node) = 
         if (n == nil): return
         case n.kind:
             of ●block: this.▸block(n)
@@ -461,10 +461,10 @@ proc rnd(this : Rndr, n : Node) =
             of ●literal: this.▸literal(n)
             of ●type, ●keyword: this.tok(n)
             else: 
-                              echo(&"rndr? {n} {n.kind}")
+                              echo(&"rlua? {n} {n.kind}")
                               this.tok(n)
 
-proc render*(code : string, autovar = true) : string = 
+proc renderLua*(code : string, autovar = true) : string = 
     # profileStart "ast"
     var root = ast(code)
     if not root: return ""
@@ -472,38 +472,22 @@ proc render*(code : string, autovar = true) : string =
     # profileStop "ast"
     if autovar: 
         # profileStart "vars"
-        root = variables(root, "nim")
+        root = variables(root, "lua")
         # profileStop "vars"
-    var r = Rndr(code: code)
+    var r = Rlua(code: code)
     # profileStart "rnd"
     r.rnd(root)
     # profileStop "rnd"
     r.s
 
-proc file*(file : string) : string = 
+proc renderLuaFile*(file : string) : string = 
     profileScope(file)
-    var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
-    var kimCode = file.read()
-    var nimCode = render(kimCode)
-    if nimCode: 
-        fileOut.write(nimCode)
+    var fileOut = file.swapLastPathComponentAndExt("kua", "lua")
+    var kuaCode = file.read()
+    var luaCode = renderLua(kuaCode)
+    if luaCode: 
+        echo(luaCode)
+        fileOut.write(luaCode)
         fileOut
     else: 
         ""
-
-proc files*(files : seq[string]) : seq[string] = 
-    var transpiled : seq[string]
-    for f in files: 
-        var ext = slash.ext(f)
-        if (ext == "kua"): 
-            var luaFile = renderLuaFile(f)
-            if luaFile: 
-                transpiled.add(luaFile)
-            continue
-        var nimFile = file(f)
-        if nimFile: 
-            transpiled.add(nimFile)
-    # log "transpiled #{transpiled}"
-    transpiled
-    
-        

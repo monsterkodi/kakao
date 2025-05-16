@@ -80,10 +80,10 @@ suite "slash":
     # 000        000   000  000   000       000  000       
     # 000        000   000  000   000  0000000   00000000  
     test "parse": 
-        p(slash.parse, "/a/b/c.txt", (path: "/a/b/c.txt", dir: "/a/b", file: "c.txt", name: "c", ext: "txt"))
-        p(slash.parse, "/a/b/c", (path: "/a/b/c", dir: "/a/b", file: "c", name: "c", ext: ""))
-        p(slash.parse, "/a/b/c/", (path: "/a/b/c", dir: "/a/b", file: "c", name: "c", ext: ""))
-        p(slash.parse, "/a", (path: "/a", dir: "/", file: "a", name: "a", ext: ""))
+        p(slash.parse, "/a/b/c.txt", (dir: "/a/b", name: "c", ext: "txt", file: "c.txt", path: "/a/b/c.txt"))
+        p(slash.parse, "/a/b/c", (dir: "/a/b", name: "c", ext: "", file: "c", path: "/a/b/c"))
+        p(slash.parse, "/a/b/c/", (dir: "/a/b", name: "c", ext: "", file: "c", path: "/a/b/c"))
+        p(slash.parse, "/a", (dir: "/", name: "a", ext: "", file: "a", path: "/a"))
     # 0000000    000  00000000   
     # 000   000  000  000   000  
     # 000   000  000  0000000    

@@ -1239,3 +1239,72 @@ kim
     require
         use
         
+# ███      ███   ███   ███████ 
+# ███      ███   ███  ███   ███
+# ███      ███   ███  █████████
+# ███      ███   ███  ███   ███
+# ███████   ███████   ███   ███
+
+lua kua
+
+    keyword
+        function
+        print
+        do
+        end
+        in
+        not
+        or
+        and
+        true
+        return
+        break
+        continue
+        _G
+        if
+        then
+        elseif
+        else
+        for
+        while
+        puts
+        self
+        type
+        
+    keyword type
+        int
+        bool
+        string
+        table
+        
+    punct
+        local
+    
+    nil
+        nil
+        false    
+        
+    require
+        require
+    
+    module
+        os 
+        
+# ███   ███  ███   ███   ███████ 
+# ███  ███   ███   ███  ███   ███
+# ███████    ███   ███  █████████
+# ███  ███   ███   ███  ███   ███
+# ███   ███   ███████   ███   ███
+
+kua
+    keyword
+        switch
+        class
+        extends
+        use
+        elif
+        
+    require
+        use
+    
+        
