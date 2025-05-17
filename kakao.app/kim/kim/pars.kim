@@ -105,6 +105,12 @@ class Parser
     
         if @tok == tok
             @swallow()
+
+    swallowComment: ->
+    
+        if @tok == ◂comment_start
+            @swallow()
+            @swallow ◂comment
             
     swallowError: ◇tok tok ◇string err ◇Token token ->
     
@@ -583,6 +589,7 @@ class Parser
         @inlinecall += 1
         e = @expression()
         @inlinecall -= 1
+        @swallowComment()
         e
     
     rIf: ➜Node ->
@@ -598,7 +605,7 @@ class Parser
                 ⮐  @error "Expected indentation after 'if' without condition"
             @swallow ◂indent # block indentation
         
-        condition = @inline() # initial condition
+        condition = @inline() # initial condition        
         then_branch = @thenBlock()
         
         condThens.add nod(●condThen condition.token condition then_branch)
@@ -607,7 +614,7 @@ class Parser
         
         while @tok in {◂elif ◂indent}
         
-            if @tok == ◂indent            
+            if @tok == ◂indent
                 if @current.str.len < ifIndent
                     outdent = true
                     break
@@ -617,18 +624,16 @@ class Parser
                 if @peek(1).tok != ◂elif and @current.str.len == ifIndent
                     break
                 @swallow ◂indent
-                if @tok == ◂comment_start
-                    @swallow()
-                    @swallow ◂comment
+                @swallowComment()
                 if @tok == ◂indent
                     continue
-                    
+
             @swallow ◂elif
+            @swallowComment()
             if @tok in {◂then ◂else}
                 break # then without condition -> else
             
             condition = @inline()
-            @swallow ◂comment
             then_branch = @thenBlock()
             
             condThens.add nod(●condThen condition.token condition then_branch)
@@ -640,8 +645,9 @@ class Parser
             
             if @tok in {◂else ◂then}
                 @swallow() # else or then without condition
+                @swallowComment()
                 else_branch = @thenBlock()
-        
+                
         Node token:token kind:●if cond_thens:condThens else_branch:else_branch
     
     # █████████   ███████   ███  ███         ███  ████████
@@ -1225,8 +1231,12 @@ class Parser
         
     rClass: ➜Node ->
     
-        @explicit += 1
         token = @consume()
+        
+        if @tok != ◂name
+            ⮐  nod ●literal token
+        
+        @explicit += 1
         name  = @value()
         parent ◇ Node
         if @current.str == "extends"

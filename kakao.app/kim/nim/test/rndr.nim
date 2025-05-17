@@ -247,6 +247,20 @@ if a
 if a: 
     1
 (a: 1, b: 2)""")
+        t("""
+if a    # 1
+    1   # 2
+elif b  # 3
+    2   # 4
+else    # 5
+    3   # 6
+""", """
+if a: 
+    1 # 2
+elif b: 
+    2 # 4
+else: 
+    3 # 6""")
     test "when": 
         t("when T is (seq or array)", "when (T is (seq or array)): ")
     test "for                                            ": 

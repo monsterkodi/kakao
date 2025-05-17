@@ -459,11 +459,7 @@ proc tknz(this : Tknzr, segs : seq[string], lang : string) : seq[Token] =
                                 this.push(◂test)
                                 continue
                         if (char == ":"): 
-                            var dig = (this.charSafe(1) in {'a'..'z', 'A'..'Z'})
-                            echo(&"colon! {this.token} {this.charSafe(1)} {dig}")
-                            if (((this.lang == "lua") and this.isConnectedLeftAndRight()) and dig): 
-                                # if @peek(2).tok == ◂paren_open or @peek(2).tok == ◂assign and @isTokAhead(◂func)
-                                echo(&"lMember left {this.token}")
+                            if (((this.lang == "lua") and this.isConnectedLeftAndRight()) and (this.charSafe(1) in {'a'..'z', 'A'..'Z'})): 
                                 this.advance(1)
                                 continue
                         if (((this.tokens.len > 0) and (this.tokens[^1].tok == ◂multiply)) and (punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type})): 

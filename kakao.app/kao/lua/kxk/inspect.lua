@@ -162,7 +162,7 @@ function Inspector:getId(v)
     if not id then 
         local tv = type(v)
         id = ((ids[tv] or 0) + 1)
-        local ids[v], ids[tv] = id, id
+        ids[v], ids[tv] = id, id
     end
     return tostring(id)
 end
@@ -229,9 +229,9 @@ function inspect.inspect(root, options)
     local depth = (options.depth or math.huge)
     local newline = (options.newline or '\n')
     local indent = (options.indent or '  ')
-    process = options.process
-    if process then 
-        root = processRecursive(process, root, {}, {})
+    local procss = options.process
+    if procss then 
+        root = processRecursive(procss, root, {}, {})
     end
     cycles = {}
     countCycles(root, cycles)

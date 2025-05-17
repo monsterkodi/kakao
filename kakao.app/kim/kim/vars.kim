@@ -5,7 +5,7 @@
        ███     ███   ███  ███   ███       ███
         █      ███   ███  ███   ███  ███████ 
 
-    inserts var keywords for firs assignment 
+    inserts var keywords for first assignment 
     operations in scope
 ###
 
@@ -95,6 +95,10 @@ class Scoper
                 @branch e.test_block
             ●semicolon
                 @branch e
+            ●func
+                @branch e.func_body
+            ●return
+                @exp body i e.return_value
                 
             ➜ discard
                         

@@ -87,7 +87,7 @@ proc ▸func(this : Rlua, n : Node) =
             this.add("function ")
         this.sigBody(n)
         if (n.func_body and (n.func_body.kind == ●block)): 
-            var idt = this.nodeIndent(n)
+            var idt = ' '.repeat((n.func_body.token.str.len - 4))
             this.add("\n" & idt)
         else: 
             this.add(" ")
@@ -128,10 +128,8 @@ proc ▸operation(this : Rlua, n : Node) =
 
 proc ▸literal(this : Rlua, n : Node) = 
         case n.token.str:
-            of "●dir": 
-                this.add("currentSourcePath().split(\"/\")[0..^2].join(\"/\")")
-            of "●file": 
-                this.add("currentSourcePath()")
+            of "●dir": this.add("currentSourcePath().split(\"/\")[0..^2].join(\"/\")")
+            of "●file": this.add("currentSourcePath()")
             else: this.tok(n)
 
 proc ▸let(this : Rlua, n : Node) = 
@@ -189,9 +187,6 @@ proc ▸arg(this : Rlua, n : Node) =
 proc ▸string(this : Rlua, n : Node) = 
         var delimiter = n.token.str
         var triple = (delimiter == "\"\"\"")
-        # if delimiter == "'" and n.string_content.token.str.len > 1 
-        #     if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
-        #         delimiter = "\""
         if (n.string_stripols.len > 0): 
             this.add("&")
         elif n.string_prefix: 
@@ -342,9 +337,10 @@ proc ▸curly(this : Rlua, n : Node) =
         this.add("{")
         var ml = false
         var line = n.token.line
-        var idt = this.nodeIndent(n)
+        var idt : string
         for i, item in n.list_values: 
             if (item.token.line > line): 
+                idt = this.nodeIndent(item)
                 this.add("\n" & idt)
                 ml = true
             this.rnd(item)
@@ -501,19 +497,12 @@ proc rnd(this : Rlua, n : Node) =
                               this.tok(n)
 
 proc renderLua*(code : string, autovar = true) : string = 
-    # profileStart "ast"
     var root = ast(code, "lua")
     if not root: return ""
     root = classify(root)
-    # profileStop "ast"
-    if autovar: 
-        # profileStart "vars"
-        root = variables(root, "lua")
-        # profileStop "vars"
+    if autovar: root = variables(root, "lua")
     var r = Rlua(code: code)
-    # profileStart "rnd"
     r.rnd(root)
-    # profileStop "rnd"
     r.s
 
 proc renderLuaFile*(file : string) : string = 

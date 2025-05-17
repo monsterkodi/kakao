@@ -1,6 +1,6 @@
 local slash = {}
 
-function slash.cwd 
+function slash.cwd() 
     return process.cwd()
 end
 return slash

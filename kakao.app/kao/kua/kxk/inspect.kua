@@ -225,10 +225,10 @@ inspect.inspect = root options ->
     depth   = options.depth or (math.huge)
     newline = options.newline or '\n'
     indent  = options.indent or '  '
-    process = options.process
+    procss  = options.process
     
-    if process
-        root = processRecursive(process, root, {}, {})
+    if procss
+        root = processRecursive(procss, root, {}, {})
     
     cycles = {}
     countCycles(root, cycles)

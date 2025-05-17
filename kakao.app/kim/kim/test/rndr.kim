@@ -311,6 +311,21 @@ template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationIn
             if a: 
                 1
             (a: 1, b: 2)"""
+            
+        t   """
+            if a    # 1
+                1   # 2
+            elif b  # 3
+                2   # 4
+            else    # 5
+                3   # 6
+            """ """
+            if a: 
+                1 # 2
+            elif b: 
+                2 # 4
+            else: 
+                3 # 6"""
 
     ▸ when
     

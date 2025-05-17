@@ -5,7 +5,7 @@
        ███     ███   ███  ███   ███       ███
         █      ███   ███  ███   ███  ███████ 
 
-    inserts var keywords for firs assignment 
+    inserts var keywords for first assignment 
     operations in scope
 ]#
 import pars
@@ -91,6 +91,10 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                 this.branch(e.test_block)
             of ●semicolon: 
                 this.branch(e)
+            of ●func: 
+                this.branch(e.func_body)
+            of ●return: 
+                this.exp(body, i, e.return_value)
             else: discard
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       

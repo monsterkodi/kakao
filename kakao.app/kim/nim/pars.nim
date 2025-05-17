@@ -95,6 +95,11 @@ proc swallow(this : Parser, tok : tok) =
         if (this.tok == tok): 
             this.swallow()
 
+proc swallowComment(this : Parser) = 
+        if (this.tok == ◂comment_start): 
+            this.swallow()
+            this.swallow(◂comment)
+
 proc swallowError(this : Parser, tok : tok, err : string, token : Token) = 
         if (this.tok != tok): 
             discard this.error(&"Expected {tok} but found {this.tok}", token)
@@ -488,6 +493,7 @@ proc inline(this : Parser) : Node =
         (this.inlinecall += 1)
         var e = this.expression()
         (this.inlinecall -= 1)
+        this.swallowComment()
         e
 
 proc rIf(this : Parser) : Node = 
@@ -500,7 +506,7 @@ proc rIf(this : Parser) : Node =
             if (condIndt <= ifIndent): 
                 return this.error("Expected indentation after 'if' without condition")
             this.swallow(◂indent) # block indentation
-        var condition = this.inline() # initial condition
+        var condition = this.inline() # initial condition        
         var then_branch = this.thenBlock()
         condThens.add(nod(●condThen, condition.token, condition, then_branch))
         var outdent = false
@@ -515,16 +521,14 @@ proc rIf(this : Parser) : Node =
                 if ((this.peek(1).tok != ◂elif) and (this.current.str.len == ifIndent)): 
                     break
                 this.swallow(◂indent)
-                if (this.tok == ◂comment_start): 
-                    this.swallow()
-                    this.swallow(◂comment)
+                this.swallowComment()
                 if (this.tok == ◂indent): 
                     continue
             this.swallow(◂elif)
+            this.swallowComment()
             if (this.tok in {◂then, ◂else}): 
                 break # then without condition -> else
             condition = this.inline()
-            this.swallow(◂comment)
             then_branch = this.thenBlock()
             condThens.add(nod(●condThen, condition.token, condition, then_branch))
         var else_branch : Node
@@ -532,6 +536,7 @@ proc rIf(this : Parser) : Node =
             this.swallow(◂indent)
             if (this.tok in {◂else, ◂then}): 
                 this.swallow() # else or then without condition
+                this.swallowComment()
                 else_branch = this.thenBlock()
         Node(token: token, kind: ●if, cond_thens: condThens, else_branch: else_branch)
 # █████████   ███████   ███  ███         ███  ████████
@@ -992,8 +997,10 @@ proc rEnum(this : Parser) : Node =
         nod(●enum, token, enum_name, enum_body)
 
 proc rClass(this : Parser) : Node = 
-        (this.explicit += 1)
         var token = this.consume()
+        if (this.tok != ◂name): 
+            return nod(●literal, token)
+        (this.explicit += 1)
         var name = this.value()
         var parent : Node
         if (this.current.str == "extends"): 

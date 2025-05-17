@@ -97,7 +97,7 @@ class Rlua
         @sigBody n
         
         if n.func_body and n.func_body.kind == ●block
-            idt = @nodeIndent n
+            idt = ' '.repeat n.func_body.token.str.len-4
             @add "\n" & idt
         else
             @add " "
@@ -148,11 +148,9 @@ class Rlua
     ▸literal: ◇Node n -> 
     
         switch n.token.str
-            "●dir"
-                @add "currentSourcePath().split(\"/\")[0..^2].join(\"/\")"
-            "●file"
-                @add "currentSourcePath()"
-            ➜ @tok n
+            "●dir"  ➜ @add "currentSourcePath().split(\"/\")[0..^2].join(\"/\")"
+            "●file" ➜ @add "currentSourcePath()"
+                    ➜ @tok n
         
     ▸let: ◇Node n -> 
     
@@ -218,10 +216,6 @@ class Rlua
     
         delimiter = n.token.str
         triple = delimiter == "\"\"\""
-        
-        # if delimiter == "'" and n.string_content.token.str.len > 1 
-        #     if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
-        #         delimiter = "\""
         
         if n.string_stripols.len > 0
             @add "&"
@@ -399,9 +393,10 @@ class Rlua
         @add "{"
         ml   = false
         line = n.token.line
-        idt  = @nodeIndent n
+        idt  ◇ string
         for i item in n.list_values
             if item.token.line > line
+                idt = @nodeIndent item
                 @add "\n" & idt
                 ml = true
             @rnd item
@@ -580,22 +575,16 @@ class Rlua
 
 renderLua* = ◇string code autovar=true ➜string ->
 
-    # profileStart "ast"
     root = ast code "lua"
     
     ⮐  "" if not root
     
     root = classify root
     
-    # profileStop "ast"
-    if autovar
-        # profileStart "vars"
-        root = variables root "lua"
-        # profileStop "vars"
+    if autovar ➜ root = variables root "lua"
+    
     r = Rlua code:code
-    # profileStart "rnd"
     r.rnd root
-    # profileStop "rnd"
     r.s
     
 renderLuaFile* = ◇string file ➜string ->

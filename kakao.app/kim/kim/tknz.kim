@@ -533,11 +533,7 @@ class Tknzr
                                 continue
                          
                         if char == ":"
-                            dig = @charSafe(1) in {'a'..'z' 'A'..'Z'}
-                            log "colon! #{@token} #{@charSafe(1)} #{dig}"
-                            if @lang == "lua" and @isConnectedLeftAndRight() and dig
-                                # if @peek(2).tok == ◂paren_open or @peek(2).tok == ◂assign and @isTokAhead(◂func)
-                                log "lMember left #{@token}"
+                            if @lang == "lua" and @isConnectedLeftAndRight() and @charSafe(1) in {'a'..'z' 'A'..'Z'}
                                 @advance 1
                                 continue
                                 

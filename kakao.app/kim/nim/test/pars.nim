@@ -302,6 +302,14 @@ if a
     1
 (a:1 b:2)
 """, "▪[(◂if @[(◂name ▪[◂number])])◂[(◂name : ◂number), (◂name : ◂number)]]")
+        t("""
+if a    # 1
+    1   # 2
+elif b  # 3
+    2   # 4
+else    # 5
+    3   # 6
+""", "▪[(◂if @[(◂name ▪[◂number#]), (◂name ▪[◂number#])] ▪[◂number#])]")
     test "for": 
         t("0..2", "▪[(◂number .. ◂number)]")
         t("for a in 0..2 ➜ true", "▪[(◂for ◂name in (◂number .. ◂number) ✔)]")

@@ -395,6 +395,15 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
                 1
             (a:1 b:2)
             """                                     "▪[(◂if @[(◂name ▪[◂number])])◂[(◂name : ◂number), (◂name : ◂number)]]"
+
+        t   """
+            if a    # 1
+                1   # 2
+            elif b  # 3
+                2   # 4
+            else    # 5
+                3   # 6
+            """                                     "▪[(◂if @[(◂name ▪[◂number#]), (◂name ▪[◂number#])] ▪[◂number#])]"
         
     ▸ for
     
