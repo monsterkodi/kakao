@@ -1012,12 +1012,6 @@ proc rStruct(this : Parser) : Node =
         nod(●struct, token, name, parent, this.parseBlock())
 
 proc lMember(this : Parser, left : Node) : Node = 
-        if (((this.lang == "lua") and this.isConnectedLeftAndRight()) and (this.peek(1).tok == ◂name)): 
-            if ((this.peek(2).tok == ◂paren_open) or ((this.peek(2).tok == ◂assign) and this.isTokAhead(◂func))): 
-                this.swallow()
-                var token = left.token
-                (token.str &= ":" & this.consume().str)
-                return nod(●literal, token)
         var token = this.consume()
         var right = this.funcOrExpression(token)
         nod(●member, token, left, right)
@@ -1173,7 +1167,7 @@ proc setup(this : Parser) =
 
 proc ast*(text : string, lang : string) : Node = 
     # profileStart 'tknz'
-    var tokens = tokenize(text)
+    var tokens = tokenize(text, lang)
     # profileStop 'tknz'
     # log &"ast* {tokens}"
     # profileStart 'pars'

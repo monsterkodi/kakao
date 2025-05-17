@@ -110,8 +110,10 @@ suite "pars":
         t("error: ◇string msg token=tkn ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]")
         t("error: ◇string msg token=tkn(◂eof) ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]")
         t("⮐  Node(callee:nod(literal token), callargs:args)", "▪[(⮐ (◂name ◂call @[(◂name : (◂name ◂call @[◂name, ◂name])), (◂name : ◂name)]))]")
+    test "lua": 
         t("Inspector:getId = v ->", "▪[(◂name : (◂[(◂name (= ◂name))]->))]")
         l("Inspector:getId = v ->", "▪[(◂name = (◂[(◂name)]->))]")
+        l("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "▪[(⮐ ((((◂name ◂call @[◂name]) == ◂string) && (! (! (◂name ◂call @[◂string])))) && (! (◂name[◂name]))))]")
     test "varargs": 
         t("f = (...) ->", "▪[(◂name = (◂[(NIL ... NIL)]->))]")
         t("f = (a ...) ->", "▪[(◂name = (◂[(◂name), (NIL ... NIL)]->))]")

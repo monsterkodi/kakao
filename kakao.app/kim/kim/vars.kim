@@ -60,6 +60,9 @@ class Scoper
                         ●literal
                             insert lhs.token.str e
                         ●list
+                            for lv in lhs.list_values
+                                if lv.kind != ●literal
+                                    ⮐  
                             insert lhs.token.str e
                             for item in lhs.list_values
                                 add item.token.str

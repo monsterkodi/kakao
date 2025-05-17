@@ -1247,14 +1247,7 @@ class Parser
         nod ●struct token name parent @parseBlock()
         
     lMember: ◇Node left ➜Node ->
-    
-        if @lang == "lua" and @isConnectedLeftAndRight() and @peek(1).tok == ◂name
-            if @peek(2).tok == ◂paren_open or @peek(2).tok == ◂assign and @isTokAhead(◂func)
-                @swallow()
-                token = left.token
-                token.str &= ":" & @consume().str
-                ⮐  nod ●literal token
-                
+                    
         token = @consume()
         right = @funcOrExpression token
         nod ●member token left right
@@ -1452,7 +1445,7 @@ class Parser
 ast* = ◇string text ◇string lang ➜Node ->
 
     # profileStart 'tknz'
-    tokens = tokenize text
+    tokens = tokenize text lang
     # profileStop 'tknz'
     # log &"ast* {tokens}"
     # profileStart 'pars'

@@ -57,6 +57,9 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                         of ●literal: 
                             insert(lhs.token.str, e)
                         of ●list: 
+                            for lv in lhs.list_values: 
+                                if (lv.kind != ●literal): 
+                                    return
                             insert(lhs.token.str, e)
                             for item in lhs.list_values: 
                                 add(item.token.str)

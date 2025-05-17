@@ -5,7 +5,9 @@
 #    ███     ███   ███  ███   ███  ███████
 import ../tknz
 
-template t(a:string, b:seq[Token]) = testCmp(a, tokenize(a), b, instantiationInfo())
+template t(a:string, b:seq[Token]) = testCmp(a, tokenize(a, "nim"), b, instantiationInfo())
+
+template l(a:string, b:seq[Token]) = testCmp(a, tokenize(a, "lua"), b, instantiationInfo())
 
 proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok, line:line, col:col)
 suite "tknz": 
@@ -178,3 +180,5 @@ suite "tknz":
     test "verbatim": 
         t("proc exp* (", @[tk("proc exp* (", ◂verbatim, 0, 0)])
         t("import ../../rel/[s1, s2]", @[tk("import ../../rel/[s1, s2]", ◂verbatim, 0, 0)])
+    test "lua": 
+        l("str:match()", @[tk("str:match", ◂name, 0, 0), tk("(", ◂paren_open, 0, 9), tk(")", ◂paren_close, 0, 10)])

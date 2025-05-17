@@ -7,6 +7,7 @@
 use ../rlua ../kxk/kxk
     
 template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiationInfo())
+template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiationInfo())
 
 ▸ rlua
 
@@ -116,6 +117,9 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
             b = false"""
             
         t "(a b) = (c d)"                             "a, b = c, d"
+        
+        v "(ida idb) = (id id)"                       "local ida, idb = id, id"
+        v "(ids[v] ids[tv]) = (id id)"                "ids[v], ids[tv] = id, id"
     
     ▸ arrays
     
@@ -389,6 +393,11 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
                 1
             end
             0"""
+            
+    ▸ misc
+    
+        t   "⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]"
+            "return (((type(str) == \"string\") and not not str:match(\"^[_%a][_%a%d]*$\")) and not luaKeywords[str])"
  
     ▸ comments
     

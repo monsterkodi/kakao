@@ -145,6 +145,7 @@ type Tknzr = ref object of RootObj
     token: Token
     inStripol: bool
     delimiter: string
+    lang: string
     segi: int
     segs: seq[string]
     bol: int
@@ -168,10 +169,29 @@ proc incr(this : Tknzr, n : int) = (this.segi += n)
 proc col(this : Tknzr) : int = (this.segi - this.bol)
 
 proc peekSafe(this : Tknzr, n : int) : string = 
-        if ((this.segi + n) < this.segs.len): 
+        if ((this.segi >= 0) and ((this.segi + n) < this.segs.len)): 
             this.segs[(this.segi + n)]
         else: 
             ""
+
+proc charSafe(this : Tknzr, n : int) : char = 
+        if ((this.segi >= 0) and ((this.segi + n) < this.segs.len)): 
+            this.segs[(this.segi + n)][0]
+        else: 
+            "\x0"[0]
+
+proc isConnectedLeft(this : Tknzr, n = 0) : bool = 
+        var lt = this.peekSafe((n - 1))
+        var ct = this.peekSafe(n)
+        (((lt != "") and (ct != "")) and (lt notin @[" ", "\n"]))
+
+proc isConnectedRight(this : Tknzr, n = 0) : bool = 
+        var ct = this.peekSafe(n)
+        var rt = this.peekSafe((n + 1))
+        (((rt != "") and (ct != "")) and (rt notin @[" ", "\n"]))
+
+proc isConnectedLeftAndRight(this : Tknzr, n = 0) : bool = 
+        (this.isConnectedLeft(n) and this.isConnectedRight(n))
 
 proc nextLine(this : Tknzr) = 
         assert((this.segs[this.segi] == "\n"))
@@ -368,9 +388,10 @@ proc commit(this : Tknzr, str = "", tk = ◂name, incr = 0) =
 #    ███     ███  ███   ███  ████   ███   
 #    ███     ███   ███  ███   ███  ███████
 
-proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] = 
+proc tknz(this : Tknzr, segs : seq[string], lang : string) : seq[Token] = 
         # profileScope "tknz"
         this.segs = segs
+        this.lang = lang
         while ((this.segi < this.segs.len) and (this.segs[this.segi] in @["\n", " "])): 
             this.lineIncr(this.segs[this.segi])
         while ((this.eol < this.segs.len) and (this.segs[this.eol] != "\n")): 
@@ -437,6 +458,14 @@ proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] =
                                     this.advance(1)
                                 this.push(◂test)
                                 continue
+                        if (char == ":"): 
+                            var dig = (this.charSafe(1) in {'a'..'z', 'A'..'Z'})
+                            echo(&"colon! {this.token} {this.charSafe(1)} {dig}")
+                            if (((this.lang == "lua") and this.isConnectedLeftAndRight()) and dig): 
+                                # if @peek(2).tok == ◂paren_open or @peek(2).tok == ◂assign and @isTokAhead(◂func)
+                                echo(&"lMember left {this.token}")
+                                this.advance(1)
+                                continue
                         if (((this.tokens.len > 0) and (this.tokens[^1].tok == ◂multiply)) and (punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type})): 
                             if ((punct[char] != ◂paren_open) or (this.tokens[^2].tok in {◂proc, ◂template, ◂macro})): 
                                 this.tokens.pops()
@@ -481,8 +510,8 @@ proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] =
                 this.tokens.add(this.token)
         return this.tokens
 
-proc tokenize*(segs : seq[string]) : seq[Token] = Tknzr.new.tknz(segs)
+proc tokenize*(segs : seq[string], lang : string) : seq[Token] = Tknzr.new.tknz(segs, lang)
 
-proc tokenize*(text : string) : seq[Token] = tokenize(kseg(text))
+proc tokenize*(text : string, lang : string) : seq[Token] = tokenize(kseg(text), lang)
 
     

@@ -7,6 +7,8 @@ import ../rlua
 import ../kxk/kxk
 
 template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiationInfo())
+
+template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiationInfo())
 suite "rlua": 
     test "toplevel": 
         t("", "")
@@ -90,6 +92,8 @@ a = 1
 -- comment
 b = false""")
         t("(a b) = (c d)", "a, b = c, d")
+        v("(ida idb) = (id id)", "local ida, idb = id, id")
+        v("(ids[v] ids[tv]) = (id id)", "ids[v], ids[tv] = id, id")
     test "arrays": 
         t("a = [ 1  2 ]", "a = {1, 2}")
         t("a = [\n    1\n    2\n    ]", "a = {1, 2}")
@@ -314,6 +318,8 @@ function f()
     1
 end
 0""")
+    test "misc": 
+        t("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "return (((type(str) == \"string\") and not not str:match(\"^[_%a][_%a%d]*$\")) and not luaKeywords[str])")
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) -- addition")
         t("""

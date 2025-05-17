@@ -158,6 +158,7 @@ class Tknzr
     token       : Token
     inStripol   : bool
     delimiter   : string
+    lang        : string
     segi        : int
     segs        : seq[string]
     bol         : int # segi at start of current line
@@ -176,10 +177,33 @@ class Tknzr
     
     peekSafe: ◇int n ➜string ->
     
-        if @segi+n < @segs.len 
+        if @segi >= 0 and @segi+n < @segs.len 
             @segs[@segi+n]
         else
             ""
+            
+    charSafe: ◇int n ➜char -> 
+    
+        if @segi >= 0 and @segi+n < @segs.len 
+            @segs[@segi+n][0]
+        else
+            "\x0"[0]
+            
+    isConnectedLeft: n=0 ➜bool ->
+    
+        lt = @peekSafe(n-1)
+        ct = @peekSafe(n)
+        lt != "" and ct != "" and lt notin [" " "\n"]
+
+    isConnectedRight: n=0 ➜bool ->
+    
+        ct = @peekSafe(n)
+        rt = @peekSafe(n+1)
+        rt != "" and ct != "" and rt notin [" " "\n"]
+        
+    isConnectedLeftAndRight: n=0 ➜bool ->
+    
+        @isConnectedLeft(n) and @isConnectedRight(n)
         
     nextLine: ->
     
@@ -417,11 +441,12 @@ class Tknzr
     #    ███     ███  ███   ███  ████   ███   
     #    ███     ███   ███  ███   ███  ███████
     
-    tknz: ◇seq[string] segs ➜seq[Token] ->
+    tknz: ◇seq[string] segs ◇string lang ➜seq[Token] ->
     
         # profileScope "tknz"
     
         @segs = segs
+        @lang = lang
         
         while @segi < @segs.len and @segs[@segi] in ["\n" " "]
             @lineIncr @segs[@segi]
@@ -506,6 +531,15 @@ class Tknzr
                                     @advance 1
                                 @push ◂test
                                 continue
+                         
+                        if char == ":"
+                            dig = @charSafe(1) in {'a'..'z' 'A'..'Z'}
+                            log "colon! #{@token} #{@charSafe(1)} #{dig}"
+                            if @lang == "lua" and @isConnectedLeftAndRight() and dig
+                                # if @peek(2).tok == ◂paren_open or @peek(2).tok == ◂assign and @isTokAhead(◂func)
+                                log "lMember left #{@token}"
+                                @advance 1
+                                continue
                                 
                         if @tokens.len > 0 and @tokens[^1].tok == ◂multiply and punct[char] in {◂assign ◂colon ◂paren_open ◂var_type ◂val_type}
                             if punct[char] != ◂paren_open or @tokens[^2].tok in {◂proc ◂template ◂macro}
@@ -557,8 +591,8 @@ class Tknzr
                     
         ⮐  @tokens
     
-tokenize* = ◇seq[string] segs ➜seq[Token] -> Tknzr.new.tknz segs
-tokenize* = ◇string text      ➜seq[Token] -> tokenize kseg(text)
+tokenize* = ◇seq[string] segs ◇string lang ➜seq[Token] -> Tknzr.new.tknz segs lang
+tokenize* = ◇string text ◇string lang ➜seq[Token] -> tokenize kseg(text) lang
 
     
     

@@ -60,7 +60,7 @@ local luaKeywords = {
               }
 
 function isIdentifier(str) 
-    return ((type(str) == "string") and not not str):(match("^[_%a][_%a%d]*$") and not luaKeywords[str])
+    return (((type(str) == "string") and not not str:match("^[_%a][_%a%d]*$")) and not luaKeywords[str])
 end
 
 function isSequenceKey(k, sequenceLength) 
