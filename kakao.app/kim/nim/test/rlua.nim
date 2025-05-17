@@ -7,7 +7,7 @@ import ../rlua
 import ../kxk/kxk
 
 template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiationInfo())
-suite "rndr": 
+suite "rlua": 
     test "toplevel": 
         t("", "")
         t("43", "43")
@@ -39,124 +39,42 @@ suite "rndr":
     #▸ ampersand                                     
     #                                                
     #    t "a & b"                                     "a & b"
-    #                                                
-    #▸ parens                                        
-    #                                                
-    #    t "(1 + 2) * 3"                               "((1 + 2) * 3)"
-    #    t "(1)"                                       "1"
-    #    t "(a + b) * c"                               "((a + b) * c)"
-    #    t "a * (b + c)"                               "(a * (b + c))"
-    #    t "((1))"                                     "1"
-    #    t "(a.b).c"                                   "a.b.c"
-    #    t "a * (b + c) / d"                           "((a * (b + c)) / d)"
-    #    t "3 * (1 + 2)"                               "(3 * (1 + 2))"
-    #    
-    #▸ vars
-    #    
-    #    t "optParser = initOptParser()"               "optParser = initOptParser()"
-    #    t "str = \"\"\nbool = false\nnum = 1"         "str = \"\"\nbool = false\nnum = 1"
-    #    t "s ◇string"                                 "s : string"
-    #    t "i ◇int = 1"                                "i : int = 1"
-    #    t "l ◇seq[int]"                               "l : seq[int]"
-    #                                                
-    #    t "var i"                                     "var i"
-    #    t "let i"                                     "let i"
-    #    t "let (output exitCode) = execCmdEx(cmd)"    "let (output, exitCode) = execCmdEx(cmd)"
-    #    
-    #    t "r ◆ seq[Tkn]"                              "r {.guard: lock.} : seq[Tkn]"
-    #    
-    #▸ arg types
-    #    
-    #    t "◇seq[string] files = @[]"                  "files : seq[string] = @[]" 
-    #    t "◇ seq[string] files      = @[]"            "files : seq[string] = @[]" 
-    #    
-    #▸ func
-    #    
-    #    t "f = ->"                                    "\nproc f"
-    #    t "f = a=1 ->"                                "\nproc f(a = 1)"
-    #    t "f = ◇string a ->"                          "\nproc f(a : string)"
-    #    t "f = ◇string a ◇int b ->"                   "\nproc f(a : string, b : int)"
-    #    t "f = ◆Parser p ->"                          "\nproc f(p : var Parser)"
-    #    t "f = ◆Parser p ◇string a ◇int b ->"         "\nproc f(p : var Parser, a : string, b : int)"
-    #    t "f = ➜ Node ->"                             "\nproc f() : Node"
-    #    t "f = ◆Parser p ➜ Node ->"                   "\nproc f(p : var Parser) : Node"
-    #    t "f = ◇seq[Node] s ➜ seq[Node] ->"           "\nproc f(s : seq[Node]) : seq[Node]"
-    #    t "f = ◇Parser p ◇int ahead=1 ➜ Token ->"     "\nproc f(p : Parser, ahead : int = 1) : Token"
-    #    t "f = ◇Parser p ahead=1 ➜ Token ->"          "\nproc f(p : Parser, ahead = 1) : Token"
-    #                                                
-    #    t "l.map(◇tuple r ➜string -> r.path)"         "l.map(proc (r : tuple) : string = r.path)"
-    #    t "l.map(◇ tuple r  ➜ string -> r.path)"      "l.map(proc (r : tuple) : string = r.path)"
-    #                                                
-    #    t "f = ◇int i ->"                             "\nproc f(i : int)"
-    #    t "f = ◇int a ◇int b ->"                      "\nproc f(a : int, b : int)"
-    #    t "f = ◇int a = 1 ->"                         "\nproc f(a : int = 1)"
-    #                                                
-    #    t "setHook(() -> {.noconv.} quit(0))"         "setHook(proc () {.noconv.} = quit(0))"
-    #    
-    #    t "$* = ◇Tknzr t ➜string ->"                  "\nproc `$`*(t : Tknzr) : string"
-    #    t "$ = ◇Tknzr t ➜string ->"                   "\nproc `$`(t : Tknzr) : string"
-    #    
-    #    t "commit = ◇Tknzr t i=0 ->"                "\nproc commit(t : Tknzr, i = 0)"
-    #    t "commit = ◇Tknzr t i=◂assign ->"          "\nproc commit(t : Tknzr, i = ◂assign)"
-    #    t "commit = ◇Tknzr t i=\"\" ->"             "\nproc commit(t : Tknzr, i = \"\")"
-    #    t "commit = ◇Tknzr t a=1 b=2 ->"            "\nproc commit(t : Tknzr, a = 1, b = 2)"
-    #    
-    #    t "expression = ◇Parser p precedenceRight=0 ➜Node ->\nx" "\nproc expression(p : Parser, precedenceRight = 0) : Node\nx"
-    #    
-    #    t "spc = ◇Rndr r -> r.s &= \" \""           "\nproc spc(r : Rndr) = (r.s &= \" \")"
-    #    
-    #    t   """
-    #        hook = -> {.noconv.}
-    #            1 + 2
-    #        """ """
-    #        
-    #        proc hook {.noconv.} = 
-    #            (1 + 2)"""
-    #            
-    #    t "pushToken = ◇Tknzr t str=2 tk=3 incr=0 ->"        "\nproc pushToken(t : Tknzr, str = 2, tk = 3, incr = 0)"
-    #    t "pushToken = ◇Tknzr t str=\"\" incr=0 ->"          "\nproc pushToken(t : Tknzr, str = \"\", incr = 0)"
-    #    t "pushToken = ◇Tknzr t str=\"\" tk=◂name incr=0 ->" "\nproc pushToken(t : Tknzr, str = \"\", tk = ◂name, incr = 0)"
-    #    
-    #▸ call
-    #    
-    #    t "f()"                                       "f()"             
-    #    t "f(g())"                                    "f(g())"          
-    #    t "f(g() / h())"                              "f((g() / h()))"    
-    #    t "f(1)"                                      "f(1)"            
-    #    t "f(1 + 2)"                                  "f((1 + 2))"        
-    #    t "f(1 + 2 4 + 5)"                            "f((1 + 2), (4 + 5))"  
-    #    t "f(1 2 3)"                                  "f(1, 2, 3)"        
-    #    t "f(1 g(h(2)))"                              "f(1, g(h(2)))"    
-    #    t "f = dir(a().b() / \"x\").toSeq()"          "f = dir((a().b() / \"x\")).toSeq()"
-    #    t "f = dir(a().b()[0] / \"x\").toSeq()"       "f = dir((a().b()[0] / \"x\")).toSeq()"
-    #                                                
-    #    t "log a"                                     "echo(a)"
-    #    
-    #    t "let p = startProcess command = \"nim\" args = [\"r\" f] options = {poStdErrToStdOut poUsePath}", 
-    #      "let p = startProcess(command = \"nim\", args = @[\"r\", f], options = {poStdErrToStdOut, poUsePath})"
-    #      
-    #    t "f(x.y, \"txt\", (a:1 b:3))"                "f(x.y, \"txt\", (a: 1, b: 3))"
-    #    t "f(x.y \"txt\" (a:1 b:3))"                  "f(x.y, \"txt\", (a: 1, b: 3))"
-    #    t "f x.y \"txt\" (a:1 b:3)"                   "f(x.y, \"txt\", (a: 1, b: 3))"
-    #    
-    #▸ arglist
-    #    
-    #    t "f(a, b, c)"                                "f(a, b, c)"
-    #    t "g a, b, c"                                 "g(a, b, c)"
-    #    t "h a b c"                                   "h(a, b, c)"
-    #    t "i 1 '2' false"                             "i(1, '2', false)"
-    #    t "t \"a\" , \"b\""                           "t(\"a\", \"b\")"
-    #    t "t \"a\",\n  \"b\""                         "t(\"a\", \"b\")"
-    #    t "t \"a\"\n  \"b\""                          "t(\"a\", \"b\")"
-    #    
-    #▸ list assign
-    #    
-    #    t "(a, b) = c"                                "(a, b) = c"
-    #    t "(a b) = c"                                 "(a, b) = c"
-    #    t "(a, b, c) = f()"                           "(a, b, c) = f()"
-    #    t "(a b c) = f()"                             "(a, b, c) = f()"
-    #    t "(a b c) = (c b a)"                         "(a, b, c) = (c, b, a)"
-    #    
+    test "parens                                        ": 
+        t("(1 + 2) * 3", "((1 + 2) * 3)")
+        t("(1)", "1")
+        t("(a + b) * c", "((a + b) * c)")
+        t("a * (b + c)", "(a * (b + c))")
+        t("((1))", "1")
+        t("(a.b).c", "a.b.c")
+        t("a * (b + c) / d", "((a * (b + c)) / d)")
+        t("3 * (1 + 2)", "(3 * (1 + 2))")
+    test "func": 
+        t("f = ->", "\nfunction f()\nend")
+        t("f = a=1 ->", "\nfunction f(a = 1)\nend")
+    test "call": 
+        t("f()", "f()")
+        t("f(g())", "f(g())")
+        t("f(g() / h())", "f((g() / h()))")
+        t("f(1)", "f(1)")
+        t("f(1 + 2)", "f((1 + 2))")
+        t("f(1 + 2 4 + 5)", "f((1 + 2), (4 + 5))")
+        t("f(1 2 3)", "f(1, 2, 3)")
+        t("f(1 g(h(2)))", "f(1, g(h(2)))")
+    #    t "log a"                                     "print(a)"
+    test "arglist": 
+        t("f(a, b, c)", "f(a, b, c)")
+        t("g a, b, c", "g(a, b, c)")
+        t("h a b c", "h(a, b, c)")
+        t("i 1 '2' false", "i(1, '2', false)")
+        t("t \"a\" , \"b\"", "t(\"a\", \"b\")")
+        t("t \"a\",\n  \"b\"", "t(\"a\", \"b\")")
+        t("t \"a\"\n  \"b\"", "t(\"a\", \"b\")")
+    test "list assign": 
+        t("(a, b) = c", "(a, b) = c")
+        t("(a b) = c", "(a, b) = c")
+        t("(a, b, c) = f()", "(a, b, c) = f()")
+        t("(a b c) = f()", "(a, b, c) = f()")
+        t("(a b c) = (c b a)", "(a, b, c) = (c, b, a)")
     #▸ tuple
     #    
     #    t "(a:1, b:2)"                                "(a: 1, b: 2)"
@@ -165,44 +83,27 @@ suite "rndr":
     #    t "(a:1 b:2)"                                 "(a: 1, b: 2)"
     #    t "⮐  (a:1 b:2 t:\"hello\")"                  "return (a: 1, b: 2, t: \"hello\")"
     #    
-    #▸ assign
-    #    
-    #    t "a = 1"                                     "a = 1"
-    #    t "a = b = 1"                                 "a = b = 1"
-    #    t "a = b = c = 2"                             "a = b = c = 2"
-    #    
-    #    t   """
-    #        a = 1
-    #        # comment
-    #        b = false
-    #        """ """
-    #        a = 1
-    #        # comment
-    #        b = false"""
-    #    
+    test "assign": 
+        t("a = 1", "a = 1")
+        t("a = b = 1", "a = b = 1")
+        t("a = b = c = 2", "a = b = c = 2")
+        t("""
+a = 1
+# comment
+b = false
+""", """
+a = 1
+-- comment
+b = false""")
     #▸ arrays
     #    
     #    t "a = [ 1  2 ]"                              "a = @[1, 2]"
     #    t "a = [\n    1\n    2\n    ]"                "a = @[1, 2]"
-    #    
-    #    t "s.vars.push initTable[string,bool]()"      "s.vars.push(initTable[string, bool]())" 
-    #    t "let mono = getMonoTime() - timers[msg][0]"  "let mono = (getMonoTime() - timers[msg][0])"
-    #    
-    #    t   """
-    #        let greetings = [
-    #            "💋 Keep It Simple, Stupid!",
-    #            "💋 Overthink less, grin more!"
-    #            ]
-    #        """ """
-    #        let greetings = @["💋 Keep It Simple, Stupid!", "💋 Overthink less, grin more!"]"""
-    #    
-    #▸ properties        
-    #    
-    #    t "a.b"                                       "a.b"     
-    #    t "a.b.c"                                     "a.b.c"   
-    #    t "a.b()"                                     "a.b()"   
-    #    t "a.b().c"                                   "a.b().c" 
-    #                                                
+    test "properties        ": 
+        t("a.b", "a.b")
+        t("a.b.c", "a.b.c")
+        t("a.b()", "a.b()")
+        t("a.b().c", "a.b().c")
     #▸ use                                           
     #                                                
     #    t "use std ▪ unittest"                        "import std/[unittest]"
@@ -218,91 +119,69 @@ suite "rndr":
     #    t "use std ▪ a b c\nuse d\nuse e\nuse f"      "import std/[a, b, c]\nimport d\nimport e\nimport f"
     #                                                
     #    t "use a b c"                                 "import a\nimport b\nimport c"
-    #                                                
-    #▸ if                                            
-    #                                                
-    #    t "if true then ⮐  false"                     "if true: return false"                 
-    #    t "if true then ⮐  1 else ⮐  2"               "if true: return 1 else: return 2"           
-    #    t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3"            "if a: 1 elif b: 2 elif c: 3"        
-    #    t "if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4"     "if a: 1 elif b: 2 elif c: 3 else: 4" 
-    #    t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3"             "if a: 1\nelif b: 2\nelif c: 3"        
-    #    t "if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4"      "if a: 1\nelif b: 2\nelif c: 3\nelse: 4" 
-    #                                                
-    #    t "if a then if b then 1 else 2 else 3"       "if a: if b: 1 else: 2 else: 3" 
-    #    t "x = if a then b else c"                    "x = if a: b else: c"              
-    #    t "x = if a then b else c+d"                  "x = if a: b else: (c + d)"            
-    #                                                
-    #    t "if a then ⮐"                               "if a: return"
-    #    t "a + if b then c else d"                    "(a + if b: c else: d)"
-    #                                                
-    #    t "if true ➜ log msg"                         "if true: echo(msg)"
-    #    t "if true ➜\n  log msg"                      "if true: \n  echo(msg)"
-    #    t "if true\n  log msg"                        "if true: \n  echo(msg)"
-    #    t "if true\n  log msg\n  log msg"             "if true: \n  echo(msg)\n  echo(msg)"
-    #    
-    #    t   """
-    #        if a
-    #            if b
-    #                if c
-    #                    1
-    #        elif e
-    #            2
-    #        """ """
-    #        if a: 
-    #            if b: 
-    #                if c: 
-    #                    1
-    #        elif e: 
-    #            2"""
-    #    
-    #    t   """
-    #        if a
-    #            if b
-    #                1
-    #            elif c
-    #                if d
-    #                    2
-    #        elif e
-    #            4
-    #        """ """
-    #        if a: 
-    #            if b: 
-    #                1
-    #            elif c: 
-    #                if d: 
-    #                    2
-    #        elif e: 
-    #            4"""
-    #    
-    #    t   """
-    #        if e.kind == ●operation
-    #            if e.operand_right.kind == ●func
-    #                discard s.scope e.operand_right.func_body
-    #            elif e.token.tok == ◂assign
-    #                let lhs = e.operand_left
-    #                if lhs.kind == ●literal
-    #                    insert lhs.token.str, e
-    #        elif e.kind == ●var
-    #            insert e.var_name.token.str, e
-    #        ""","""
-    #        if (e.kind == ●operation): 
-    #            if (e.operand_right.kind == ●func): 
-    #                discard s.scope(e.operand_right.func_body)
-    #            elif (e.token.tok == ◂assign): 
-    #                let lhs = e.operand_left
-    #                if (lhs.kind == ●literal): 
-    #                    insert(lhs.token.str, e)
-    #        elif (e.kind == ●var): 
-    #            insert(e.var_name.token.str, e)"""
-    #            
-    #    t   """
-    #        if a
-    #            1
-    #        (a:1 b:2)
-    #        """ """
-    #        if a: 
-    #            1
-    #        (a: 1, b: 2)"""
+    test "if                                            ": 
+        t("if true then ⮐  false", "if true then return false end")
+        t("if true then ⮐  1 else ⮐  2", "if true then return 1 else return 2 end")
+        t("if a ➜ 1 elif b ➜ 2 elif c ➜ 3", "if a then 1 elseif b then 2 elseif c then 3 end")
+        t("if a ➜ 1 elif b ➜ 2 elif c ➜ 3 else 4", "if a then 1 elseif b then 2 elseif c then 3 else 4 end")
+        t("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3", "if a then 1\nelseif b then 2\nelseif c then 3\nend")
+        t("if\n  a ➜ 1\n  b ➜ 2\n  c ➜ 3\n  ➜ 4", "if a then 1\nelseif b then 2\nelseif c then 3\nelse 4\nend")
+        t("if a then if b then 1 else 2 else 3", "if a then if b then 1 else 2 end else 3 end")
+        t("x = if a then b else c", "x = if a then b else c end")
+        t("x = if a then b else c+d", "x = if a then b else (c + d) end")
+        t("if a then ⮐", "if a then return end")
+        # t "a + if b then c else d"                    "(a + if b: c else: d)"
+        t("if true ➜ log msg", "if true then print(msg) end")
+        t("if true ➜\n  log msg", "if true then \n  print(msg)\nend")
+        t("if true\n  log msg", "if true then \n  print(msg)\nend")
+        t("if true\n  log msg\n  log msg", "if true then \n  print(msg)\n  print(msg)\nend")
+        t("""
+if a
+    if b
+        if c
+            1
+elif e
+    2
+""", """
+if a then 
+    if b then 
+        if c then 
+            1
+        end
+    end
+elseif e then 
+    2
+end""")
+        t("""
+if a
+    if b
+        1
+    elif c
+        if d
+            2
+elif e
+    4
+""", """
+if a then 
+    if b then 
+        1
+    elseif c then 
+        if d then 
+            2
+        end
+    end
+elseif e then 
+    4
+end""")
+        t("""
+if a
+    1
+{a:1 b:2}
+""", """
+if a then 
+    1
+end
+{a = 1, b = 2}""")
     # ▸ when
     # 
     #     t "when T is (seq or array)"                 "when (T is (seq or array)): "
@@ -327,54 +206,43 @@ suite "rndr":
     #     t "switch x\n a ➜ if b then c"               "case x:\n of a: if b: c"
     test "strings                                        ": 
         t("s = ''", "s = ''")
-        # t "s = \"\""                                 "s = \"\""
-        # t "s = \"\"\"\"\"\""                         "s = \"\"\"\"\"\""
-        # 
-        # t "s = '\\\\'"                               "s = '\\\\'"
-        # t "s = 't'"                                  "s = 't'"
-        # t "s = 't2'"                                 "s = \"t2\""
-        # t "s = 'test'"                               "s = \"test\""
-        #                                              
-        # t "s = \"\"\"\n\n\"\"\""                     "s = \"\"\"\n\n\"\"\""
-        # t "s = \"hello\""                            "s = \"hello\""
-        # t "s = \"\"\"hello\"\"\""                    "s = \"\"\"hello\"\"\""
-        # t "s = \"num #" & "{1+2} end\""              "s = &\"num {(1 + 2)} end\""
-        # t "s = \"\"\"num #" & "{1+2} end\"\"\""      "s = &\"\"\"num {(1 + 2)} end\"\"\""
-        # t "s = \"\"\"\nl1 #" & "{1+2}\nl2 #" & "{2-3}\"\"\"" "s = &\"\"\"\nl1 {(1 + 2)}\nl2 {(2 - 3)}\"\"\""
-        # t "s = \"#" & "{o}\""                        "s = &\"{o}\""
-        # t "s = \"(#" & "{s}#" & "{e})\""             "s = &\"({s}{e})\""
-        # 
-        # t "cmd = \"nim c --outDir:#" & "{outdir} --stackTrace:on --lineTrace:on #" & "{file}\"", 
-        #   "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
-        #   
-        # t "let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")",
-        #   "let e = choose(n.return_value, &\" {n.return_value}\", \"\")"
-        #   
-        # t "p = peg\"abc\""                            "p = peg\"abc\"" 
-        # t "if line =~ peg\"abc\""                     "if (line =~ peg\"abc\"): " 
+        t("s = \"\"", "s = \"\"")
+        t("s = '\\\\'", "s = '\\\\'")
+        t("s = 't'", "s = 't'")
+        t("s = 't2'", "s = \"t2\"")
+        t("s = 'test'", "s = \"test\"")
+        t("s = \"hello\"", "s = \"hello\"")
+        t("s = \"num #" & "{1+2} end\"", "s = &\"num {(1 + 2)} end\"")
+        t("s = \"#" & "{o}\"", "s = &\"{o}\"")
+        t("s = \"(#" & "{s}#" & "{e})\"", "s = &\"({s}{e})\"")
+        t("cmd = \"nim c --outDir:#" & "{outdir} --stackTrace:on --lineTrace:on #" & "{file}\"", "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\"")
+        t("let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")", "local e = choose(n.return_value, &\" {n.return_value}\", \"\")")
+        t("var e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")", "local e = choose(n.return_value, &\" {n.return_value}\", \"\")")
     test "triple strings": 
+        t("s = \"\"\"\"\"\"", "s = [[]]")
+        t("s = \"\"\"\n\n\"\"\"", "s = [[\n\n]]")
+        t("s = \"\"\"hello\"\"\"", "s = [[hello]]")
         t("s = \"\"\"hello world\"\"\"", "s = [[hello world]]")
-        # t "s = \"\"\"hello\nworld\"\"\""                "s = \"\"\"hello\nworld\"\"\""  
-        # t "s = \"\"\"hello\n    world\"\"\""            "s = \"\"\"hello\nworld\"\"\""  
-        # t "s = \"\"\"hello\n    world\n    \"\"\""      "s = \"\"\"hello\nworld\n\"\"\""  
-        # t "s = \"\"\"hello\n        world\n    \"\"\""  "s = \"\"\"hello\n    world\n\"\"\""  
-        # t "s = \"\"\"hello\nworld\n    \"\"\""          "s = \"\"\"hello\nworld\n    \"\"\""
-        # 
-        # t "s = \"\"\"\n    #" & "{1+1}\n\"\"\""              "s = &\"\"\"\n    {(1 + 1)}\n\"\"\""
-        # t "s = \"\"\"\n    #" & "{1+1}\n    #" & "{2+2}\n\"\"\""  "s = &\"\"\"\n    {(1 + 1)}\n    {(2 + 2)}\n\"\"\""
-        # 
-        # t "\"\"\"\n\"\"\""                              "\"\"\"\n\"\"\""
-        # t "\"\"\"\n    \"\"\""                          "\"\"\"\n\"\"\""
-        # t "\"\"\"\n    a = 1\"\"\""                     "\"\"\"\na = 1\"\"\""
-        # t "\"\"\"\n    a = 1\n    b = 2\"\"\""          "\"\"\"\na = 1\nb = 2\"\"\""
-        # t "\"\"\"\n    a = 1\n    b = 2\n\"\"\""        "\"\"\"\n    a = 1\n    b = 2\n\"\"\""
-        # t "\"\"\"\n        a = 1\n        b = 2\n    \"\"\"" "\"\"\"\n    a = 1\n    b = 2\n\"\"\""
-        #         
-        # t "t \"\"\"a\"\"\" , \"\"\"b\"\"\""             "t(\"\"\"a\"\"\", \"\"\"b\"\"\")"
-        # t "t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\""         "t(\"\"\"\na\"\"\", \"\"\"\nb\"\"\")"
-        # t "t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"" "t(\"\"\"\na = 1\"\"\", \"\"\"\nb = 2\"\"\")"
-        # t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\""  "t(\"\"\"\na = 1\nb = 2\"\"\", \"\"\"\na = 1\nb = 2\"\"\")"
-        # t "t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"" "t(\"\"\"\n    a = 1\n    b = 2\n\"\"\")"
+        t("s = \"\"\"num #" & "{1+2} end\"\"\"", "s = &[[num {(1 + 2)} end]]")
+        t("s = \"\"\"\nl1 #" & "{1+2}\nl2 #" & "{2-3}\"\"\"", "s = &[[\nl1 {(1 + 2)}\nl2 {(2 - 3)}]]")
+        t("s = \"\"\"hello\nworld\"\"\"", "s = [[hello\nworld]]")
+        t("s = \"\"\"hello\n    world\"\"\"", "s = [[hello\nworld]]")
+        t("s = \"\"\"hello\n    world\n    \"\"\"", "s = [[hello\nworld\n]]")
+        t("s = \"\"\"hello\n        world\n    \"\"\"", "s = [[hello\n    world\n]]")
+        t("s = \"\"\"hello\nworld\n    \"\"\"", "s = [[hello\nworld\n    ]]")
+        t("s = \"\"\"\n    #" & "{1+1}\n\"\"\"", "s = &[[\n    {(1 + 1)}\n]]")
+        t("s = \"\"\"\n    #" & "{1+1}\n    #" & "{2+2}\n\"\"\"", "s = &[[\n    {(1 + 1)}\n    {(2 + 2)}\n]]")
+        t("\"\"\"\n\"\"\"", "[[\n]]")
+        t("\"\"\"\n    \"\"\"", "[[\n]]")
+        t("\"\"\"\n    a = 1\"\"\"", "[[\na = 1]]")
+        t("\"\"\"\n    a = 1\n    b = 2\"\"\"", "[[\na = 1\nb = 2]]")
+        t("\"\"\"\n    a = 1\n    b = 2\n\"\"\"", "[[\n    a = 1\n    b = 2\n]]")
+        t("\"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "[[\n    a = 1\n    b = 2\n]]")
+        t("t \"\"\"a\"\"\" , \"\"\"b\"\"\"", "t([[a]], [[b]])")
+        t("t \"\"\"\na\"\"\" , \"\"\"\nb\"\"\"", "t([[\na]], [[\nb]])")
+        t("t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"", "t([[\na = 1]], [[\nb = 2]])")
+        t("t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t([[\na = 1\nb = 2]], [[\na = 1\nb = 2]])")
+        t("t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t([[\n    a = 1\n    b = 2\n]])")
     test "semicolon": 
         t("if a ➜ b ; c", "if a then b ; c end")
         # t "if a ➜ b ; c ➜ d; e"                         "if a: b ; c else: d ; e"

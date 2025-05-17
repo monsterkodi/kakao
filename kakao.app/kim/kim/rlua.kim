@@ -290,7 +290,7 @@ class Rlua
     ▸call: ◇Node n ->
     
         if n.callee.token.str == "log"
-            @add "echo"
+            @add "print"
         elif n.callee.token.str[0] == '@'
             @add n.callee.token.str[1..^1]
             @add "().init"
