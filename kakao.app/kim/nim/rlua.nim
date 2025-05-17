@@ -60,8 +60,18 @@ proc ▸semicolon(this : Rlua, n : Node) =
             if (i < (n.expressions.len - 1)): 
                 this.add(" ; ")
 
+proc ▸signature(this : Rlua, n : Node) = 
+        this.add("(")
+        this.annotateVarArg = true
+        this.rnd(n.sig_args)
+        this.annotateVarArg = false
+        this.add(")")
+
 proc sigBody(this : Rlua, n : Node) = 
-        this.rnd(n.func_signature)
+        if n.func_signature: 
+            this.rnd(n.func_signature)
+        else: 
+            this.add("()")
         if n.func_body: 
             this.add(" ")
             if (n.func_body.kind in {●semicolon, ●if, ●while, ●for, ●switch}): 
@@ -146,16 +156,6 @@ proc ▸arrayAccess(this : Rlua, n : Node) =
         this.rnd(n.array_index)
         this.add("]")
 
-proc ▸signature(this : Rlua, n : Node) = 
-        this.add("(")
-        this.annotateVarArg = true
-        this.rnd(n.sig_args)
-        this.annotateVarArg = false
-        this.add(")")
-        if n.sig_type: 
-            this.add(" : ")
-            this.rnd(n.sig_type)
-
 proc ▸var(this : Rlua, n : Node) = 
         if (n.var_name.kind == ●list): 
             this.add("(")
@@ -180,6 +180,7 @@ proc ▸arg(this : Rlua, n : Node) =
 
 proc ▸string(this : Rlua, n : Node) = 
         var delimiter = n.token.str
+        var triple = (delimiter == "\"\"\"")
         if ((delimiter == "'") and (n.string_content.token.str.len > 1)): 
             if ((n.string_content.token.str.len > 2) or (n.string_content.token.str[0] != '\\')): 
                 delimiter = "\""
@@ -187,7 +188,10 @@ proc ▸string(this : Rlua, n : Node) =
             this.add("&")
         elif n.string_prefix: 
             this.tok(n.string_prefix)
-        this.add(delimiter)
+        if triple: 
+            this.add("[[")
+        else: 
+            this.add(delimiter)
         var sct = n.string_content.token.str
         var mill = high(int)
         if (delimiter == "\"\"\""): 
@@ -217,7 +221,10 @@ proc ▸string(this : Rlua, n : Node) =
             this.add("}")
             if (stripol.stripol_content != nil): 
                 demill(stripol.stripol_content)
-        this.add(delimiter)
+        if triple: 
+            this.add("]]")
+        else: 
+            this.add(delimiter)
 
 proc ▸use(this : Rlua, n : Node) = 
         var split = n.use_module.token.str.split(" ")
@@ -233,12 +240,12 @@ proc ▸use(this : Rlua, n : Node) =
 
 proc ▸comment(this : Rlua, n : Node) = 
         if (n.token.str == "###"): 
-            this.add("#[")
+            this.add("--[[")
         else: 
-            this.tok(n)
+            this.add("--")
         this.tok(n.comment_content)
         if (n.token.str == "###"): 
-            this.add("]#")
+            this.add("--]]")
 
 proc ▸call(this : Rlua, n : Node) = 
         if (n.callee.token.str == "log"): 
@@ -318,10 +325,18 @@ proc ▸list(this : Rlua, n : Node) =
 
 proc ▸curly(this : Rlua, n : Node) = 
         this.add("{")
+        var ml = false
+        var line = n.token.line
+        var idt = this.nodeIndent(n)
         for i, item in n.list_values: 
+            if (item.token.line > line): 
+                this.add("\n" & idt)
+                ml = true
             this.rnd(item)
             if (i < (n.list_values.len - 1)): 
                 this.add(", ")
+            line = item.token.line
+        if ml: this.add("\n" & idt)
         this.add("}")
 
 proc ▸squarely(this : Rlua, n : Node) = 
@@ -403,7 +418,7 @@ proc ▸struct(this : Rlua, n : Node) =
 
 proc ▸member(this : Rlua, n : Node) = 
         this.rnd(n.member_key)
-        this.add(": ")
+        this.add(" = ")
         this.rnd(n.member_value)
 
 proc ▸testCase(this : Rlua, n : Node) = 

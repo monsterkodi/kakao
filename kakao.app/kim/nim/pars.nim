@@ -25,6 +25,7 @@ type Parser = ref object of RootObj
     explicit: int
     listless: int
     inlinecall: int
+    rangeless: bool
     returning: bool
     typeless: bool
     failed: bool
@@ -762,10 +763,10 @@ proc lArgList(this : Parser, left : Node) : Node =
 # ███        ███████   ███   ███   ███████
 
 proc lFunc(this : Parser, left : Node) : Node = 
-        if (left.kind notin {●signature, ●list, ●arg, ●operation}): return
+        if (left.kind notin {●signature, ●list, ●arg, ●operation, ●range}): return
         var func_signature : Node
         if (left.kind == ●operation): 
-            # log "lfunc op #{left}"
+            echo(&"lfunc op {left}")
             if (left.token.tok != ◂assign): return
             if (left.operand_left.token.tok != ◂name): return
             if (left.operand_left.token.col == 0): 
@@ -778,7 +779,7 @@ proc lFunc(this : Parser, left : Node) : Node =
             var sig_args = nod(●list, vartoken, @[varNode])
             func_signature = nod(●signature, left.token, sig_args, nil)
         elif (left.kind == ●list): 
-            # log "lfunc list"
+            echo("lfunc list")
             var sig_args = left
             for i, a in sig_args.list_values: 
                 if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
@@ -792,8 +793,14 @@ proc lFunc(this : Parser, left : Node) : Node =
             # log "lfunc arg"
             var sig_args = nod(●list, left.token, @[left])
             func_signature = nod(●signature, left.token, sig_args, nil)
+        elif (left.kind == ●range): 
+            echo(&"left range {left}")
+            var sig_args = nod(●list, left.token, @[left])
+            func_signature = nod(●signature, left.token, sig_args, nil)
         elif (left.kind == ●signature): 
             func_signature = left
+        else: 
+            echo(&"unhandled left {left.kind}")
         var firstToken = this.firstLineToken()
         var token = this.consume()
         var func_mod : Node
@@ -926,9 +933,17 @@ proc lAssign(this : Parser, left : Node) : Node =
         nod(●operation, token, left, right)
 
 proc lRange(this : Parser, left : Node) : Node = 
+        if this.isTokAhead(◂func): return
         var token = this.consume()
         var right = this.expression(token)
         nod(●range, token, left, right)
+
+proc rRange(this : Parser) : Node = 
+        var token = this.consume()
+        var right : Node
+        if ((this.tok notin {◂paren_close}) and not this.isTokAhead(◂func)): 
+            right = this.expression(token)
+        nod(●range, token, nil, right)
 
 proc rParenExpr(this : Parser) : Node = 
         nod(●list, this.current, this.parseParenList())
@@ -1098,7 +1113,7 @@ proc setup(this : Parser) =
         this.pratt(◂greater, lOperation, nil, 40)
         this.pratt(◂match, lOperation, nil, 40)
         this.pratt(◂doubledot, lRange, nil, 40)
-        this.pratt(◂tripledot, lRange, nil, 40)
+        this.pratt(◂tripledot, lRange, rRange, 40)
         this.pratt(◂dollar, nil, rDollar, 41)
         this.pratt(◂ampersand, lOperation, nil, 42)
         this.pratt(◂plus, lOperation, nil, 50)

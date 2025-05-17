@@ -107,6 +107,13 @@ suite "pars":
         t("error: ◇string msg token=tkn ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]")
         t("error: ◇string msg token=tkn(◂eof) ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]")
         t("⮐  Node(callee:nod(literal token), callargs:args)", "▪[(⮐ (◂name ◂call @[(◂name : (◂name ◂call @[◂name, ◂name])), (◂name : ◂name)]))]")
+    test "varargs": 
+        t("f = (...) ->", "▪[(◂name = (◂[(NIL ... NIL)]->))]")
+        t("f = (a ...) ->", "▪[(◂name = (◂[(◂name), (NIL ... NIL)]->))]")
+        t("f = a ... ->", "▪[(◂name = (◂[◂name, (NIL ... NIL)]->))]")
+        t("f = ... ->", "▪[(◂name = (◂[(NIL ... NIL)]->))]")
+        t("a((...) -> 1+2)", "▪[(◂name ◂call @[(◂[(NIL ... NIL)]-> (◂number + ◂number))])]")
+        t("a((...) ->\n   1+2)", "▪[(◂name ◂call @[(◂[(NIL ... NIL)]-> ▪[(◂number + ◂number)])])]")
     test "func modfifier": 
         t("{.noconv.}", "▪[{.]")
         t("() -> {.noconv.}", "▪[(-> {.noconv.} )]")

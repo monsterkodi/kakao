@@ -1,6 +1,5 @@
 
 local uv = require('uv')
-local unpack = unpack or table.unpack 
 
 return function (main, ...)
     

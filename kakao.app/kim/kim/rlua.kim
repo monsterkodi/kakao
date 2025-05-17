@@ -63,9 +63,20 @@ class Rlua
             if i < n.expressions.len-1
                 @add " ; "
 
+    ▸signature: ◇Node n ->
+    
+        @add "("
+        @annotateVarArg = true
+        @rnd n.sig_args
+        @annotateVarArg = false
+        @add ")"
+
     sigBody: ◇Node n ->
     
-        @rnd n.func_signature
+        if n.func_signature
+            @rnd n.func_signature
+        else
+            @add "()"
         
         if n.func_body
             @add " "
@@ -168,18 +179,7 @@ class Rlua
         @add "["
         @rnd n.array_index
         @add "]"
-        
-    ▸signature: ◇Node n ->
-    
-        @add "("
-        @annotateVarArg = true
-        @rnd n.sig_args
-        @annotateVarArg = false
-        @add ")"
-        if n.sig_type
-            @add " : "
-            @rnd n.sig_type
-                
+                        
     ▸var: ◇Node n ->
     
         if n.var_name.kind == ●list
@@ -207,6 +207,7 @@ class Rlua
     ▸string: ◇Node n -> 
     
         delimiter = n.token.str
+        triple = delimiter == "\"\"\""
         
         if delimiter == "'" and n.string_content.token.str.len > 1 
             if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
@@ -216,8 +217,11 @@ class Rlua
             @add "&"
         elif n.string_prefix
             @tok n.string_prefix
-            
-        @add delimiter
+        
+        if triple
+            @add "[["
+        else    
+            @add delimiter
         
         sct = n.string_content.token.str
     
@@ -252,7 +256,10 @@ class Rlua
             if stripol.stripol_content != nil
                 demill stripol.stripol_content
         
-        @add delimiter
+        if triple
+            @add "]]"
+        else    
+            @add delimiter
         
     ▸use: ◇Node n -> 
     
@@ -271,14 +278,14 @@ class Rlua
     ▸comment: ◇Node n -> 
     
         if n.token.str == "###"
-            @add "#["
+            @add "--[["
         else
-            @tok n
+            @add "--"
             
         @tok n.comment_content
         
         if n.token.str == "###"
-            @add "]#"
+            @add "--]]"
         
     ▸call: ◇Node n ->
     
@@ -370,10 +377,18 @@ class Rlua
     ▸curly: ◇Node n ->
     
         @add "{"
+        ml   = false
+        line = n.token.line
+        idt  = @nodeIndent n
         for i item in n.list_values
+            if item.token.line > line
+                @add "\n" & idt
+                ml = true
             @rnd item
             if i < n.list_values.len-1
                 @add ", "
+            line = item.token.line
+        if ml ➜ @add "\n" & idt
         @add "}"
     
     ▸squarely: ◇Node n ->
@@ -469,7 +484,7 @@ class Rlua
     ▸member: ◇Node n ->
     
         @rnd n.member_key
-        @add ": "
+        @add " = "
         @rnd n.member_value
     
     ▸testCase: ◇Node n ->

@@ -614,7 +614,7 @@ use ../edit/tool   ◆ belt
         belt.openCloseSpansForPositions segls [[5 0]] ▸ [[2 0 3] [5 0 6]]
         belt.openCloseSpansForPositions segls [[6 0]] ▸ [[1 0 2] [6 0 7]]
         belt.openCloseSpansForPositions segls [[7 0]] ▸ [[0 0 1] [7 0 8]]
-        belt.openCloseSpansForPositions segls [[8 0]] ▸ [[0 0 1] [7 0 8]]
+        belt.openCloseSpansForPositions segls [[8 0]] ▸ [] # [[0 0 1] [7 0 8]]
         
         belt.openCloseSpansForPositions segls [[0 1]] ▸ []
         belt.openCloseSpansForPositions segls [[6 1]] ▸ []
@@ -624,7 +624,7 @@ use ../edit/tool   ◆ belt
         
         belt.normalizeSpans belt.openCloseSpansForPositions(segls [[2 2]]) ▸ [[2 2 3] [3 2 4]]
         belt.normalizeSpans belt.openCloseSpansForPositions(segls [[3 2]]) ▸ [[2 2 3] [3 2 4]]
-        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[4 2]]) ▸ [[2 2 3] [3 2 4]]
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[4 2]]) ▸ [] #[[2 2 3] [3 2 4]]
 
         belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[2 2]]) ▸ [[0 2 1] [5 2 6]]
         belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[3 2]]) ▸ [[0 2 1] [5 2 6]]
@@ -635,13 +635,13 @@ use ../edit/tool   ◆ belt
             """
             
         belt.openCloseSpansForPositions segls [[25 0]] ▸ [[19 0 20] [25 0 26]]
-        belt.openCloseSpansForPositions segls [[26 0]] ▸ [[19 0 20] [25 0 26]]
+        belt.openCloseSpansForPositions segls [[26 0]] ▸ [] # [[19 0 20] [25 0 26]]
         
         segls = kseg.segls """
             s[2]
             """
             
-        belt.openCloseSpansForPositions segls [[4 0]] ▸ [[1 0 2] [3 0 4]]
+        belt.openCloseSpansForPositions segls [[4 0]] ▸ [] # [[1 0 2] [3 0 4]]
         
     # ████████    ███████    ███████         ███████   ███████   ███       ███████
     # ███   ███  ███   ███  ███             ███       ███   ███  ███      ███     

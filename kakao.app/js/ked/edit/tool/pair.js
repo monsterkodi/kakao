@@ -354,6 +354,34 @@ pair = (function ()
         }
         if (!(lastOpen != null) || !(firstClose != null))
         {
+            if (pos[1] >= lines.length)
+            {
+                console.log("pos[1] too large")
+                return
+            }
+            if (_k_.empty(lines[pos[1]]))
+            {
+                return
+            }
+            if (pos[0] - 1 >= lines[pos[1]].length)
+            {
+                console.log("pos[0]-1 too large")
+                return
+            }
+            if (lines[pos[1]] >= revs.length)
+            {
+                console.log("lines[pos[1]] too large for revs")
+                return
+            }
+            if (_k_.empty(revs[lines[pos[1]]]))
+            {
+                return
+            }
+            if (pos[0] - 1 >= revs[lines[pos[1]]].length)
+            {
+                console.log("pos[0]-1 too large for revs")
+                return
+            }
             if (_k_.in(lines[pos[1]][pos[0] - 1],clos) && _k_.in(revs[lines[pos[1]][pos[0] - 1]],openEncounters))
             {
                 return this.openCloseSpansForPosition(lines,[pos[0] - 1,pos[1]])

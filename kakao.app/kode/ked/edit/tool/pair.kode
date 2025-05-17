@@ -245,6 +245,12 @@ function pair
             break if cnt++ > maxLookups # maximum lookups exceeded   
 
         if not lastOpen? or not firstClose?
+            if pos[1] >= lines.length ➜ log "pos[1] too large" ; ⮐  
+            ⮐  if empty lines[pos[1]] # ➜ "no lines[pos[1]]"
+            if pos[0]-1 >= lines[pos[1]].length ➜ log "pos[0]-1 too large" ; ⮐  
+            if lines[pos[1]] >= revs.length ➜ log "lines[pos[1]] too large for revs" ; ⮐  
+            ⮐  if empty revs[lines[pos[1]]] #➜ log "no revs[lines[pos[1]]]" ; ⮐  
+            if pos[0]-1 >= revs[lines[pos[1]]].length ➜ log "pos[0]-1 too large for revs" ; ⮐  
             if lines[pos[1]][pos[0]-1] in clos and revs[lines[pos[1]][pos[0]-1]] in openEncounters
                 ⮐  @openCloseSpansForPosition lines [pos[0]-1 pos[1]]
             ⮐

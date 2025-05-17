@@ -28,6 +28,7 @@ class Parser
     explicit    : int
     listless    : int
     inlinecall  : int
+    rangeless   : bool
     returning   : bool
     typeless    : bool
     failed      : bool
@@ -924,13 +925,13 @@ class Parser
     
     lFunc: ◇Node left ➜Node ->
     
-        ⮐  if left.kind notin {●signature ●list ●arg ●operation}
+        ⮐  if left.kind notin {●signature ●list ●arg ●operation ●range}
             
         func_signature ◇ Node
         
         if left.kind == ●operation
         
-            # log "lfunc op #{left}"
+            log "lfunc op #{left}"
             
             ⮐  if left.token.tok != ◂assign
                 
@@ -949,7 +950,7 @@ class Parser
             
         elif left.kind == ●list
         
-            # log "lfunc list"
+            log "lfunc list"
             
             sig_args = left
             for i a in sig_args.list_values
@@ -968,8 +969,19 @@ class Parser
             sig_args = nod ●list left.token [left]
             func_signature = nod ●signature left.token sig_args nil
             
+        elif left.kind == ●range
+        
+            log "left range #{left}"
+            sig_args = nod ●list left.token [left]
+            func_signature = nod ●signature left.token sig_args nil
+            
         elif left.kind == ●signature
+        
             func_signature = left
+            
+        else
+        
+            log "unhandled left #{left.kind}"
         
         firstToken = @firstLineToken()
         token = @consume()
@@ -1141,9 +1153,19 @@ class Parser
     
     lRange: ◇Node left ➜Node ->
     
+        ⮐  if @isTokAhead ◂func
+        
         token = @consume()
         right = @expression token
         nod ●range token left right
+        
+    rRange: ◇Node ➜Node ->
+                
+        token = @consume()
+        right ◇ Node
+        if @tok notin {◂paren_close} and not @isTokAhead ◂func
+            right = @expression token
+        nod ●range token nil right
             
     rParenExpr: ➜Node ->
     
@@ -1354,7 +1376,7 @@ class Parser
         @pratt ◂match             lOperation        nil            40
         
         @pratt ◂doubledot         lRange            nil            40
-        @pratt ◂tripledot         lRange            nil            40
+        @pratt ◂tripledot         lRange            rRange         40
         
         @pratt ◂dollar            nil               rDollar        41
         @pratt ◂ampersand         lOperation        nil            42
