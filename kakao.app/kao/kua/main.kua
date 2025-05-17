@@ -1,5 +1,5 @@
 
-⮐  require('./init')((...) ->
+main = (...) ->
 
     use std
     use ./kxk/kxk
@@ -21,51 +21,43 @@
       -h, --help         display this help, then exit
     """
     
-    function slice(tbl, first, last)
-        local sliced = {}
-        for i = first, last do
-            sliced[#sliced + 1] = tbl[i]
-        end
-        return sliced
-    end
+    slice = tbl first last ->
+        sliced = {}
+        for i in first..last
+            sliced[sliced.len + 1] = tbl[i]
+        ⮐  sliced
     
-    local argv = slice(process.argv, 2, #process.argv)
+    argv = slice(process.argv 2 process.argv.len)
     
-    arg, opts = optparser:parse(argv)
+    (arg opts) = optparser:parse(argv)
     
     files = opts.unrecognised
-    if opts.verbose then
+    if opts.verbose
         print('opts',       inspect(opts))
         print('meta',       inspect(getmetatable(opts)))
         print("debug",      opts.debug)
         print("verbose",    opts.verbose)
         print('dryrun',     opts.dryrun)
         print('outdir',     opts.outdir)
-        print('files',      #files)
+        print('files',      files.len)
         print('files',      inspect(files))
-    end
     
-    --print(slash.cwd())
+    # print(slash.cwd())
     print("▸", kxk.exec("ls ~", print))
     
-    function load(file)
+    load = file ->
         cmd = "cat " .. file
         kxk.exec(cmd, print)
-    end
     
-    if #files > 0 then
+    if files.len > 0
         print("files", inspect(files))
-        if opts.test then
-            for index,file in pairs(files) do
+        if opts.test
+            for index file in pairs(files)
                 print('▸', file)
                 load(file)
-            end
-        end
-    end
      
-    function verb(msg) 
-        if opts.verbose then print(msg) end
-    end
+    verb = msg ->
+        if opts.verbose ➜ print(msg)
 
-end, ...)
+⮐  require('./init')(main, ...)
     
