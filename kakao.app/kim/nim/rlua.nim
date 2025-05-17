@@ -229,10 +229,9 @@ proc ▸string(this : Rlua, n : Node) =
 proc ▸use(this : Rlua, n : Node) = 
         var split = n.use_module.token.str.split(" ")
         while (split.len > 1): 
-            this.add(&"import {split[0]}\n")
+            this.add(&"{split[0]} = require \"{split[0]}\"\n")
             split = split.shift
-        this.add("import ")
-        this.add(split[0])
+        this.add(&"{split[0]} = require \"{split[0]}\"")
         if ((n.use_kind != nil) and (n.use_kind.token.str == "▪")): 
             this.add("/[")
             this.rnd(n.use_items)
@@ -340,17 +339,17 @@ proc ▸curly(this : Rlua, n : Node) =
         this.add("}")
 
 proc ▸squarely(this : Rlua, n : Node) = 
-        this.add("@[")
+        this.add("{")
         for i, item in n.list_values: 
             this.rnd(item)
             if (i < (n.list_values.len - 1)): 
                 this.add(", ")
-        this.add("]")
+        this.add("}")
 
 proc ▸range(this : Rlua, n : Node) = 
         this.rnd(n.range_start)
         if (n.token.str == "..."): 
-            this.add("..<")
+            this.add("...")
         else: 
             this.tok(n)
         this.rnd(n.range_end)

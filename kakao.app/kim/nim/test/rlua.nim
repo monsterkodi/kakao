@@ -60,7 +60,7 @@ suite "rlua":
         t("f(1 + 2 4 + 5)", "f((1 + 2), (4 + 5))")
         t("f(1 2 3)", "f(1, 2, 3)")
         t("f(1 g(h(2)))", "f(1, g(h(2)))")
-    #    t "log a"                                     "print(a)"
+        t("log a", "print(a)")
     test "arglist": 
         t("f(a, b, c)", "f(a, b, c)")
         t("g a, b, c", "g(a, b, c)")
@@ -75,14 +75,6 @@ suite "rlua":
         t("(a, b, c) = f()", "(a, b, c) = f()")
         t("(a b c) = f()", "(a, b, c) = f()")
         t("(a b c) = (c b a)", "(a, b, c) = (c, b, a)")
-    #▸ tuple
-    #    
-    #    t "(a:1, b:2)"                                "(a: 1, b: 2)"
-    #    t "⮐  (a:1, b:2, t:\"hello\")"                "return (a: 1, b: 2, t: \"hello\")"
-    #    
-    #    t "(a:1 b:2)"                                 "(a: 1, b: 2)"
-    #    t "⮐  (a:1 b:2 t:\"hello\")"                  "return (a: 1, b: 2, t: \"hello\")"
-    #    
     test "assign": 
         t("a = 1", "a = 1")
         t("a = b = 1", "a = b = 1")
@@ -95,18 +87,16 @@ b = false
 a = 1
 -- comment
 b = false""")
-    #▸ arrays
-    #    
-    #    t "a = [ 1  2 ]"                              "a = @[1, 2]"
-    #    t "a = [\n    1\n    2\n    ]"                "a = @[1, 2]"
+    test "arrays": 
+        t("a = [ 1  2 ]", "a = {1, 2}")
+        t("a = [\n    1\n    2\n    ]", "a = {1, 2}")
     test "properties        ": 
         t("a.b", "a.b")
         t("a.b.c", "a.b.c")
         t("a.b()", "a.b()")
         t("a.b().c", "a.b().c")
-    #▸ use                                           
-    #                                                
-    #    t "use std ▪ unittest"                        "import std/[unittest]"
+    test "use                                           ": 
+        t("use std", "std = require \"std\"")
     #    t "use std ▪ pegs strutils strformat"         "import std/[pegs, strutils, strformat]"
     #    t "use rndr"                                  "import rndr"
     #    t "use ./rndr"                                "import ./rndr"
@@ -130,7 +120,6 @@ b = false""")
         t("x = if a then b else c", "x = if a then b else c end")
         t("x = if a then b else c+d", "x = if a then b else (c + d) end")
         t("if a then ⮐", "if a then return end")
-        # t "a + if b then c else d"                    "(a + if b: c else: d)"
         t("if true ➜ log msg", "if true then print(msg) end")
         t("if true ➜\n  log msg", "if true then \n  print(msg)\nend")
         t("if true\n  log msg", "if true then \n  print(msg)\nend")
@@ -182,9 +171,6 @@ if a then
     1
 end
 {a = 1, b = 2}""")
-    # ▸ when
-    # 
-    #     t "when T is (seq or array)"                 "when (T is (seq or array)): "
     # ▸ for                                            
     #                                                  
     #     t "for a in 0..2 ➜ true"                     "for a in 0..2: true"     
@@ -204,6 +190,16 @@ end
     #     t "switch x\n  1 2 ➜ a\n  else\n    c"       "case x:\n  of 1, 2: a\n  else: \n    c"
     #     t "switch x\n  1 2 ➜ a\n  ➜\n    c"          "case x:\n  of 1, 2: a\n  else: \n    c"
     #     t "switch x\n a ➜ if b then c"               "case x:\n of a: if b: c"
+    #     t   """
+    #         switch kind
+    #             cmdEnd
+    #                 discard
+    #         # comment
+    #         """ """
+    #         case kind:
+    #             of cmdEnd: 
+    #                 discard
+    #         # comment"""
     test "strings                                        ": 
         t("s = ''", "s = ''")
         t("s = \"\"", "s = \"\"")
@@ -245,7 +241,7 @@ end
         t("t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t([[\n    a = 1\n    b = 2\n]])")
     test "semicolon": 
         t("if a ➜ b ; c", "if a then b ; c end")
-        # t "if a ➜ b ; c ➜ d; e"                         "if a: b ; c else: d ; e"
+        t("if a ➜ b ; c ➜ d; e", "if a then b ; c else d ; e end")
         # t "switch a\n  b ➜ c ; d\n  ➜ e; f"             "case a:\n  of b: c ; d\n  else: e ; f"
     test "blocks": 
         t("""
@@ -264,58 +260,50 @@ function f()
     end
     1
 end""")
-#         t   """
-#             f = -> 
-#                 if x
-#                     2
-#                 1
-#             """ """
-#             
-#             proc f = 
-#                 if x: 
-#                     2
-#                 1"""
-# 
-#         t   """
-#             f = -> 
-#                 if 1
-#                     2
-#             # dedent
-#             """ """
-#             
-#             proc f = 
-#                 if 1: 
-#                     2
-#             # dedent"""
-# 
-#         t   """
-#             f = -> 
-#                 g = -> 
-#                     2
-#                     2
-#                 1
-#             0
-#             """ """
-#             
-#             proc f = 
-#                 
-#                 proc g = 
-#                     2
-#                     2
-#                 1
-#             0"""
-# 
-#         t   """
-#             switch kind
-#                 cmdEnd
-#                     discard
-#             # comment
-#             """ """
-#             case kind:
-#                 of cmdEnd: 
-#                     discard
-#             # comment"""
+        t("""
+f = -> 
+    if x
+        2
+    1
+""", """
 
+function f() 
+    if x then 
+        2
+    end
+    1
+end""")
+        t("""
+f = -> 
+    if 1
+        2
+# dedent
+""", """
+
+function f() 
+    if 1 then 
+        2
+    end
+end
+-- dedent""")
+        t("""
+f = -> 
+    g = -> 
+        2
+        2
+    1
+0
+""", """
+
+function f() 
+    
+    function g() 
+        2
+        2
+    end
+    1
+end
+0""")
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) -- addition")
         t("""

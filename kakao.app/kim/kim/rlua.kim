@@ -265,11 +265,10 @@ class Rlua
     
         split = n.use_module.token.str.split " "
         while split.len > 1
-            @add &"import {split[0]}\n" 
+            @add "#{split[0]} = require \"#{split[0]}\"\n" 
             split = split.shift
         
-        @add "import "
-        @add split[0]
+        @add "#{split[0]} = require \"#{split[0]}\""
         if n.use_kind != nil and n.use_kind.token.str == '▪'
             @add "/["
             @rnd n.use_items
@@ -393,18 +392,18 @@ class Rlua
     
     ▸squarely: ◇Node n ->
     
-        @add "@["
+        @add "{"
         for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
                 @add ", "
-        @add "]"
+        @add "}"
         
     ▸range: ◇Node n -> 
     
         @rnd n.range_start
         if n.token.str == "..."
-            @add "..<"
+            @add "..."
         else
             @tok n
         @rnd n.range_end
