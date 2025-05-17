@@ -51,7 +51,7 @@ class Scoper
                             switch a.kind
                                 ●arg     ➜ add a.arg_name.token.str
                                 ●literal ➜ add a.token.str
-                                         ➜ log "unhandled arg type #{a}"
+                                         ➜ discard #log "unhandled arg type #{a}"
                 
                     @branch e.operand_right.func_body
                 elif e.token.tok == ◂assign

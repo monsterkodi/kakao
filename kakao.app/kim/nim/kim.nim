@@ -183,11 +183,14 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     for f in kimFiles: 
         slash.copy(f, f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
     for f in kimFiles: 
+        # log "transpile #{f}"
         var (output, exitCode) = execCmdEx(&"{src}/bin/kim -v " & f.replace("/kim/kim/", &"/kim/{dst}/kim/"))
         if (exitCode != 0): 
             echo(output)
             logFile(f, "✘ ")
             return false
+        else: 
+            verb(output[0..^2])
     profileStop(dst & " ")
     if compile(&"{dst}/nim/kim.nim", &"{dst}/bin"): 
         profileStart("test")

@@ -242,17 +242,22 @@ if tests
 stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
 
     profileStart dst & " "
+    
     for f in kimFiles 
         slash.copy f f.replace("/kim/kim/" "/kim/#{dst}/kim/")
     
     for f in kimFiles 
+        # log "transpile #{f}"
         (output exitCode) = execCmdEx "#{src}/bin/kim -v " & f.replace("/kim/kim/" "/kim/#{dst}/kim/")
         if exitCode != 0
             log output
             logFile f "✘ "
             ⮐  false
+        else
+            verb output[0..^2]
+            
     profileStop dst & " "
-        
+
     if compile "#{dst}/nim/kim.nim" "#{dst}/bin"
         profileStart "test"
         (output exitCode) = execCmdEx "#{dst}/bin/kim --test"
@@ -351,7 +356,6 @@ watch = ◇seq[string] paths ->
             #     discard runTests kxkTests
                 
         if kimChanged
-                
             if stage kimFiles "." "k1m"
                 if stage kimFiles "k1m" "k2m"
                     for f in kimFiles 

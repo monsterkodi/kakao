@@ -1,26 +1,23 @@
 
-main = (...) ->
+main = ... ->
 
     use std
     use ./kxk/kxk
     
-    # inspect = kxk.inspect
-    # slash   = kxk.slash
-    
     local optparser = std.optparse """
-    0.1.0
-    Usage: kao [Options ...] [Files ...]
-    
-    Options:
-      -t, --test         run tests
-      -d, --debug        run with debugging output
-      -n, --dryrun,      run without execution
-      -o, --outdir=dir   output directory
-      -v, --verbose      a combined short and long option
-      -V, --version      display version information, then exit
-      -h, --help         display this help, then exit
-    """
-    
+        0.1.0
+        Usage: kao [Options ...] [Files ...]
+        
+        Options:
+          -t, --test         run tests
+          -d, --debug        run with debugging output
+          -n, --dryrun,      run without execution
+          -o, --outdir=dir   output directory
+          -v, --verbose      a combined short and long option
+          -V, --version      display version information, then exit
+          -h, --help         display this help, then exit
+        """
+        
     slice = tbl first last ->
         sliced = {}
         for i in first..last
@@ -33,31 +30,31 @@ main = (...) ->
     
     files = opts.unrecognised
     if opts.verbose
-        print('opts',       inspect(opts))
-        print('meta',       inspect(getmetatable(opts)))
-        print("debug",      opts.debug)
-        print("verbose",    opts.verbose)
-        print('dryrun',     opts.dryrun)
-        print('outdir',     opts.outdir)
-        print('files',      files.len)
-        print('files',      inspect(files))
+        log 'opts'       inspect(opts)
+        log 'meta'       inspect(getmetatable(opts))
+        log "debug"      opts.debug
+        log "verbose"    opts.verbose
+        log 'dryrun'     opts.dryrun
+        log 'outdir'     opts.outdir
+        log 'files'      files.len
+        log 'files'      inspect(files)
     
-    # print(slash.cwd())
-    print("▸", kxk.exec("ls ~", print))
+    # log(slash.cwd())
+    log "▸" kxk.exec("ls ~" print)
     
     load = file ->
         cmd = "cat " .. file
-        kxk.exec(cmd, print)
+        kxk.exec cmd print
     
     if files.len > 0
-        print("files", inspect(files))
+        log "files" inspect(files)
         if opts.test
             for index file in pairs(files)
-                print('▸', file)
-                load(file)
+                log '▸' file
+                load file
      
     verb = msg ->
-        if opts.verbose ➜ print(msg)
+        if opts.verbose ➜ log(msg)
 
 ⮐  require('./init')(main, ...)
     

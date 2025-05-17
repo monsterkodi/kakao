@@ -101,6 +101,7 @@ class Rlua
             @add "\n" & idt
         else
             @add " "
+            
         @add "end"
     
     ▸function: ◇Node n -> 
@@ -354,19 +355,30 @@ class Rlua
                     @add ", "
         else
             @rnd n.for_value
-        @add " in "
-        @rnd n.for_range
-        @add " "
+            
+        if n.for_range.kind == ●range
+            @add " = "
+            @rnd n.for_range.range_start
+            @add ", "
+            @rnd n.for_range.range_end
+        else
+            @add " in "
+            @rnd n.for_range
+        @add " do "
         @rnd n.for_body
-        @add "\n" & "end"
+        
+        if n.for_body.kind == ●block ➜ @add("\n" & @nodeIndent(n)) ➜ @add(" ")
+        @add "end"
         
     ▸while: ◇Node n ->
-    
-       @add "while "
-       @rnd n.while_cond
-       @add " "
-       @rnd n.while_body
-       @add "\n" & "end"
+
+        @add "while "
+        @rnd n.while_cond
+        @add " do "
+        @rnd n.while_body
+        
+        if n.while_body.kind == ●block ➜ @add("\n" & @nodeIndent(n)) ➜ @add(" ")
+        @add "end"
         
     ▸list: ◇Node n ->
         
@@ -489,9 +501,15 @@ class Rlua
     
     ▸member: ◇Node n ->
     
-        @rnd n.member_key
-        @add " = "
-        @rnd n.member_value
+        if n.member_key.kind == ●string
+            @add "["
+            @rnd n.member_key
+            @add "] = "
+            @rnd n.member_value
+        else
+            @rnd n.member_key
+            @add ":"
+            @rnd n.member_value
     
     ▸testCase: ◇Node n ->
     

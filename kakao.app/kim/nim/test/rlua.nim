@@ -163,18 +163,20 @@ end""")
         t("""
 if a
     1
-{a:1 b:2}
+{a=1 b=2}
 """, """
 if a then 
     1
 end
 {a = 1, b = 2}""")
-    # ▸ for                                            
-    #                                                  
-    #     t "for a in 0..2 ➜ true"                     "for a in 0..2: true"     
+    test "for                                            ": 
+        t("for k in rawpairs(t) ➜ log k", "for k in rawpairs(t) do print(k) end")
+        t("for a in 0..2 ➜ true", "for a = 0, 2 do true end")
     #     t "for a in 0..2\n  true"                    "for a in 0..2: \n  true"   
     #     t "for a in 0..2 ➜\n  true"                  "for a in 0..2: \n  true"  
     #     t "for kind, key, val in opt.get()"          "for kind, key, val in opt.get(): "  
+    test "while": 
+        t("while true ➜ log a", "while true do print(a) end")
     # ▸ switch                                         
     #                                                  
     #     t "switch x\n  a ➜ 1\n  b c ➜ 2"             "case x:\n  of a: 1\n  of b, c: 2"
@@ -238,6 +240,8 @@ end
         t("t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"", "t([[\na = 1]], [[\nb = 2]])")
         t("t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t([[\na = 1\nb = 2]], [[\na = 1\nb = 2]])")
         t("t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t([[\n    a = 1\n    b = 2\n]])")
+    test "tables": 
+        t("t = {'a': 1}", "t = {['a'] = 1}")
     test "semicolon": 
         t("if a ➜ b ; c", "if a then b ; c end")
         t("if a ➜ b ; c ➜ d; e", "if a then b ; c else d ; e end")

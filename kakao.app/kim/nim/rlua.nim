@@ -304,18 +304,26 @@ proc ▸for(this : Rlua, n : Node) =
                     this.add(", ")
         else: 
             this.rnd(n.for_value)
-        this.add(" in ")
-        this.rnd(n.for_range)
-        this.add(" ")
+        if (n.for_range.kind == ●range): 
+            this.add(" = ")
+            this.rnd(n.for_range.range_start)
+            this.add(", ")
+            this.rnd(n.for_range.range_end)
+        else: 
+            this.add(" in ")
+            this.rnd(n.for_range)
+        this.add(" do ")
         this.rnd(n.for_body)
-        this.add("\n" & "end")
+        if (n.for_body.kind == ●block): this.add("\n" & this.nodeIndent(n)) else: this.add(" ")
+        this.add("end")
 
 proc ▸while(this : Rlua, n : Node) = 
-       this.add("while ")
-       this.rnd(n.while_cond)
-       this.add(" ")
-       this.rnd(n.while_body)
-       this.add("\n" & "end")
+        this.add("while ")
+        this.rnd(n.while_cond)
+        this.add(" do ")
+        this.rnd(n.while_body)
+        if (n.while_body.kind == ●block): this.add("\n" & this.nodeIndent(n)) else: this.add(" ")
+        this.add("end")
 
 proc ▸list(this : Rlua, n : Node) = 
         var parens = (n.list_values and (n.list_values[0].kind == ●member))
@@ -422,9 +430,15 @@ proc ▸struct(this : Rlua, n : Node) =
         this.rnd(n.class_body)
 
 proc ▸member(this : Rlua, n : Node) = 
-        this.rnd(n.member_key)
-        this.add(" = ")
-        this.rnd(n.member_value)
+        if (n.member_key.kind == ●string): 
+            this.add("[")
+            this.rnd(n.member_key)
+            this.add("] = ")
+            this.rnd(n.member_value)
+        else: 
+            this.rnd(n.member_key)
+            this.add(":")
+            this.rnd(n.member_value)
 
 proc ▸testCase(this : Rlua, n : Node) = 
         this.add("check ")

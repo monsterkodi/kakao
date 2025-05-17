@@ -2,8 +2,6 @@
 function main(...) 
     std = require "std"
     kxk = require "./kxk/kxk"
-    -- inspect = kxk.inspect
-    -- slash   = kxk.slash
     local(optparser = std.optparse, [[
 0.1.0
 Usage: kao [Options ...] [Files ...]
@@ -26,7 +24,7 @@ end
         return sliced
     end
     local argv = slice(process.argv, 2, process.argv.len)
-    (arg, opts) = optparser = parse(argv)
+    (arg, opts) = optparser:parse(argv)
     local files = opts.unrecognised
     if opts.verbose then 
         print("opts", inspect(opts))
@@ -38,7 +36,7 @@ end
         print("files", files.len)
         print("files", inspect(files))
     end
-    -- print(slash.cwd())
+    -- log(slash.cwd())
     print("▸", kxk.exec("ls ~", print))
     
     function load(file) 

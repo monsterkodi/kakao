@@ -1,0 +1,255 @@
+
+# Copyright (c) 2022 Enrique García Cota
+
+inspect = {Options = {}, }
+
+inspect.KEY       = setmetatable({}, { __tostring = function() return 'inspect.KEY' end })
+inspect.METATABLE = setmetatable({}, { __tostring = function() return 'inspect.METATABLE' end })
+
+# tostring = tostring
+rep = string.rep
+match = string.match
+char = string.char
+gsub = string.gsub
+fmt = string.format
+
+rawpairs = t -> ⮐  (next t nil)
+
+smartQuote = str ->
+    if match(str, '"') and not match(str, "'")
+       ⮐  "'" & str & "'"
+    ⮐  '"' & gsub(str, '"', '\\"') & '"'
+    
+shortControlCharEscapes = {
+   "\a": "\\a", "\b": "\\b",  "\f": "\\f", "\n": "\\n",
+   "\r": "\\r", "\t": "\\t",  "\v": "\\v", "\127": "\\127"}
+   
+longControlCharEscapes = { ["\127"] = "\127" }
+
+for i in 0..31
+   ch = char(i)
+   if not shortControlCharEscapes[ch]
+      shortControlCharEscapes[ch] = "\\" .. i
+      longControlCharEscapes[ch] = fmt("\\%03d", i)
+
+escape = str ->
+   ⮐  (gsub(gsub(gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longControlCharEscapes), "%c", shortControlCharEscapes))
+
+luaKeywords = {
+   'and': true,
+   'break': true,
+   'do': true,
+   'else': true,
+   'elseif': true,
+   'end': true,
+   'false': true,
+   'for': true,
+   'function': true,
+   'goto': true,
+   'if': true,
+   'in': true,
+   'local': true,
+   'nil': true,
+   'not': true,
+   'or': true,
+   'repeat': true,
+   'return': true,
+   'then': true,
+   'true': true,
+   'until': true,
+   'while': true,
+}
+
+isIdentifier = str ->
+    ⮐  type(str) == "string" and not not str:match("^[_%a][_%a%d]*$") and not luaKeywords[str]
+
+isSequenceKey = k sequenceLength ->
+    ⮐  type(k) == "number" and math.floor(k) == k and 1 <= (k) and k <= sequenceLength
+
+defaultTypeOrders = {
+    'number': 1,   'boolean': 2,  'string': 3, 'table': 4,
+    'function': 5, 'userdata': 6, 'thread': 7
+}
+
+sortKeys = a b ->
+
+    ta = type a
+    tb = type b
+    
+    if ta == tb and (ta == 'string' or ta == 'number')
+       ⮐  (a) < (b)
+    
+    dta = defaultTypeOrders[ta] or 100
+    dtb = defaultTypeOrders[tb] or 100
+    
+    ⮐  dta == dtb and ta < tb or dta < dtb
+
+getKeys = t ->
+
+    seqLen = 1
+    while t[seqLen] != nil
+        seqLen = seqLen + 1
+    seqLen = seqLen - 1
+    
+    (keys, keysLen) = ({}, 0)
+    for k in rawpairs(t)
+        if not isSequenceKey(k, seqLen)
+            keysLen = keysLen + 1
+            keys[keysLen] = k
+    table.sort(keys, sortKeys)
+    ⮐  (keys, keysLen, seqLen)
+
+countCycles = x cycles ->
+    if type(x) == "table"
+        if cycles[x]
+            cycles[x] = cycles[x] + 1
+        else
+            cycles[x] = 1
+            for k, v in rawpairs(x)
+               countCycles(k, cycles)
+               countCycles(v, cycles)
+            countCycles(getmetatable(x), cycles)
+
+makePath = path a b ->
+    newPath = {}
+    for i in 1..path.len 
+        newPath[i] = path[i]
+    
+    newPath[len + 1] = a
+    newPath[len + 2] = b
+    
+    ⮐  newPath
+
+processRecursive = process item path visited ->
+
+    if item == nil ➜ ⮐  nil
+    if visited[item] ➜ ⮐  visited[item]
+    
+    processed = process(item, path)
+    if type(processed) == "table"
+        processedCopy = {}
+        visited[item] = processedCopy
+        processedKey
+        
+        for k v in rawpairs(processed)
+            processedKey = processRecursive(process, k, makePath(path, k, inspect.KEY), visited)
+            if processedKey != nil
+                processedCopy[processedKey] = processRecursive(process, v, makePath(path, processedKey), visited)
+        
+        mt = processRecursive(process, getmetatable(processed), makePath(path, inspect.METATABLE), visited)
+        if type(mt) != 'table' ➜ mt = nil
+        setmetatable(processedCopy, mt)
+        processed = processedCopy
+    ⮐  processed
+
+puts = buf str ->
+    buf.n = buf.n + 1
+    buf[buf.n] = str
+
+Inspector = {}
+
+Inspector_mt = { __index = Inspector }
+
+tabify = inspector ->
+    puts(inspector.buf, inspector.newline .. rep(inspector.indent, inspector.level))
+
+Inspector:getId = v ->
+    id = self.ids[v]
+    ids = self.ids
+    if not id then
+        tv = type(v)
+        id = (ids[tv] or 0) + 1
+        (ids[v], ids[tv]) = (id, id)
+    ⮐  tostring(id)
+
+Inspector:putValue = v ->
+    buf = self.buf
+    tv = type(v)
+    if tv == 'string'
+        puts(buf, smartQuote(escape(v)))
+    elif tv == 'number' or tv == 'boolean' or tv == 'nil' or tv == 'cdata' or tv == 'ctype' 
+        puts(buf, tostring(v))
+    elif tv == 'table' and not self.ids[v]
+        t = v
+        
+        if t == inspect.KEY or t == inspect.METATABLE
+            puts(buf, tostring(t))
+        elif self.level >= self.depth
+            puts(buf, '{...}')
+        else
+            if self.cycles[t] > 1 ➜  puts(buf, fmt('<%d>', self:getId(t)))
+            
+            (keys, keysLen, seqLen) = getKeys(t)
+            
+            puts(buf, '{')
+            self.level = self.level + 1
+            
+            for i in 1..seqLen + keysLen 
+                if i > 1 ➜ puts(buf, ',')
+                if i <= seqLen
+                    puts(buf, ' ')
+                    self:putValue(t[i])
+                else
+                    k = keys[i - seqLen]
+                    tabify(self)
+                    if isIdentifier(k)
+                        puts(buf, k)
+                    else
+                        puts(buf, "[")
+                        self:putValue(k)
+                        puts(buf, "]")
+                    puts(buf, ' = ')
+                    self:putValue(t[k])
+            
+            mt = getmetatable(t)
+            if type(mt) == 'table'
+                if seqLen + keysLen > 0 ➜ puts(buf, ',')
+                tabify(self)
+                puts(buf, '<metatable> = ')
+                self:putValue(mt)
+            
+            self.level = self.level - 1
+            
+            if keysLen > 0 or type(mt) == 'table'
+                tabify(self)
+            elif seqLen > 0
+                puts(buf, ' ')
+            
+            puts(buf, '}')
+    else
+        puts(buf, fmt('<%s %d>', tv, self:getId(v)))
+
+inspect.inspect = root options ->
+    
+    options = options or {}
+    
+    depth = options.depth or (math.huge)
+    newline = options.newline or '\n'
+    indent = options.indent or '  '
+    process = options.process
+    
+    if process
+        root = processRecursive(process, root, {}, {})
+    
+    cycles = {}
+    countCycles(root, cycles)
+    
+    inspector = setmetatable({
+        buf = { n = 0 },
+        ids = {},
+        cycles = cycles,
+        depth = depth,
+        level = 0,
+        newline = newline,
+        indent = indent,
+    }, Inspector_mt)
+    
+    inspector:putValue(root)
+    
+    ⮐  table.concat(inspector.buf)
+
+setmetatable(inspect, {
+    __call = ((_, root, options) -> ⮐  inspect.inspect(root, options))
+})
+
+⮐  inspect

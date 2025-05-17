@@ -49,7 +49,7 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                             case a.kind:
                                 of ●arg: add(a.arg_name.token.str)
                                 of ●literal: add(a.token.str)
-                                else: echo(&"unhandled arg type {a}")
+                                else: discard #log "unhandled arg type #{a}"
                     this.branch(e.operand_right.func_body)
                 elif (e.token.tok == ◂assign): 
                     var lhs = e.operand_left

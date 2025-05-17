@@ -62,7 +62,7 @@ proc `$`(this : Parser) : string =
 
 proc error(this : Parser, msg : string, token = EOF) : Node = 
         if (token.tok != ◂eof): 
-            styledEcho(styleDim, fgRed, "△ ", fgWhite, $token.line, ": ", resetStyle, fgYellow, msg)
+            styledEcho(styleDim, fgRed, "△ ", fgWhite, $(token.line + 1), ": ", resetStyle, fgYellow, msg)
             var line = this.text.split("\n")[token.line]
             styledEcho(fgRed, styleDim, "╰" & "─".repeat((token.col - 1)) & "╮")
             styledEcho(fgGreen, $line)
@@ -338,9 +338,13 @@ proc parseParenList(this : Parser) : seq[Node] =
         var args : seq[Node]
         (this.explicit += 1)
         while ((this.tok != ◂paren_close) and (this.tok != ◂eof)): 
-            args.add(this.expression())
+            var exp = this.expression()
+            if exp: 
+                args.add(exp)
+            else: 
+                break
             this.swallow(◂comma)
-        this.swallowError(◂paren_close, "Missing closing parenthesis", token)
+        this.swallowError(◂paren_close, "Missing closing )", token)
         (this.explicit -= 1)
         if ((args.len == 1) and (args[0].kind == ●list)): 
             return args[0].list_values
@@ -803,7 +807,7 @@ proc lFunc(this : Parser, left : Node) : Node =
             var sig_args = nod(●list, left.token, @[left])
             func_signature = nod(●signature, left.token, sig_args, nil)
         elif (left.kind == ●range): 
-            echo(&"left range {left}")
+            # log "left range #{left}"
             var sig_args = nod(●list, left.token, @[left])
             func_signature = nod(●signature, left.token, sig_args, nil)
         elif (left.kind == ●signature): 

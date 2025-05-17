@@ -69,7 +69,7 @@ class Parser
     error: ◇string msg token=EOF ➜Node ->
     
         if token.tok != ◂eof
-            styledEcho styleDim fgRed "△ " fgWhite $token.line ": " resetStyle fgYellow msg
+            styledEcho styleDim fgRed "△ " fgWhite $(token.line+1) ": " resetStyle fgYellow msg
             line = @text.split("\n")[token.line]
             styledEcho fgRed, styleDim, "╰" & ('─'.repeat(token.col-1)) & "╮"
             styledEcho fgGreen, $line
@@ -396,10 +396,16 @@ class Parser
         
         @explicit += 1
         while @tok != ◂paren_close and @tok != ◂eof
-            args.add @expression()
+            exp = @expression()
+            if exp
+                args.add exp
+            else
+                break
             @swallow ◂comma
-        @swallowError ◂paren_close "Missing closing parenthesis" token
+            
+        @swallowError ◂paren_close "Missing closing )" token
         @explicit -= 1
+        
         if args.len == 1 and args[0].kind == ●list
             ⮐  args[0].list_values
         args
@@ -420,6 +426,7 @@ class Parser
                     break
             else
                 break
+                
         @swallowError close "Missing closing #{close}" token
         @explicit -= 1
         
@@ -980,7 +987,7 @@ class Parser
             
         elif left.kind == ●range
         
-            log "left range #{left}"
+            # log "left range #{left}"
             sig_args = nod ●list left.token [left]
             func_signature = nod ●signature left.token sig_args nil
             
