@@ -97,18 +97,16 @@ b = false""")
         t("a.b().c", "a.b().c")
     test "use                                           ": 
         t("use std", "std = require \"std\"")
-    #    t "use std ▪ pegs strutils strformat"         "import std/[pegs, strutils, strformat]"
-    #    t "use rndr"                                  "import rndr"
-    #    t "use ./rndr"                                "import ./rndr"
-    #    t "use ../rndr"                               "import ../rndr"
-    #    t "use ../../rel"                             "import ../../rel"
+        t("use ./rndr", "rndr = require \"./rndr\"")
+        t("use ../rndr", "rndr = require \"../rndr\"")
+        t("use ../../rel", "rel = require \"../../rel\"")
     #    t "use ../../rel ▪ s1 s2"                     "import ../../rel/[s1, s2]"
-    #                                                
-    #    t "import ../../rel/[s1, s2]"                 "\nimport ../../rel/[s1, s2]"
+    #    t "use std ▪ pegs strutils strformat"         "import std/[pegs, strutils, strformat]"
     #    t "use std ▪ os logging\nuse kommon"          "import std/[os, logging]\nimport kommon"
     #    t "use std ▪ a b c\nuse d\nuse e\nuse f"      "import std/[a, b, c]\nimport d\nimport e\nimport f"
-    #                                                
-    #    t "use a b c"                                 "import a\nimport b\nimport c"
+    
+        t("use a b c", "a = require \"a\"\nb = require \"b\"\nc = require \"c\"")
+        t("⮐  require('./init')( (...) -> )", "return require(\"./init\")(function (...) end)")
     test "if                                            ": 
         t("if true then ⮐  false", "if true then return false end")
         t("if true then ⮐  1 else ⮐  2", "if true then return 1 else return 2 end")
@@ -190,6 +188,7 @@ end
     #     t "switch x\n  1 2 ➜ a\n  else\n    c"       "case x:\n  of 1, 2: a\n  else: \n    c"
     #     t "switch x\n  1 2 ➜ a\n  ➜\n    c"          "case x:\n  of 1, 2: a\n  else: \n    c"
     #     t "switch x\n a ➜ if b then c"               "case x:\n of a: if b: c"
+    #     t "switch a\n  b ➜ c ; d\n  ➜ e; f"          "case a:\n  of b: c ; d\n  else: e ; f"
     #     t   """
     #         switch kind
     #             cmdEnd
@@ -242,7 +241,6 @@ end
     test "semicolon": 
         t("if a ➜ b ; c", "if a then b ; c end")
         t("if a ➜ b ; c ➜ d; e", "if a then b ; c else d ; e end")
-        # t "switch a\n  b ➜ c ; d\n  ➜ e; f"             "case a:\n  of b: c ; d\n  else: e ; f"
     test "blocks": 
         t("""
 f = ->

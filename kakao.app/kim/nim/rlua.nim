@@ -86,6 +86,12 @@ proc ▸func(this : Rlua, n : Node) =
         else: 
             this.add("function ")
         this.sigBody(n)
+        if (n.func_body and (n.func_body.kind == ●block)): 
+            var idt = this.nodeIndent(n)
+            this.add("\n" & idt)
+        else: 
+            this.add(" ")
+        this.add("end")
 
 proc ▸function(this : Rlua, n : Node) = 
         var f = n.operand_right
@@ -229,9 +235,9 @@ proc ▸string(this : Rlua, n : Node) =
 proc ▸use(this : Rlua, n : Node) = 
         var split = n.use_module.token.str.split(" ")
         while (split.len > 1): 
-            this.add(&"{split[0]} = require \"{split[0]}\"\n")
+            this.add(&"{slash.name(split[0])} = require \"{split[0]}\"\n")
             split = split.shift
-        this.add(&"{split[0]} = require \"{split[0]}\"")
+        this.add(&"{slash.name(split[0])} = require \"{split[0]}\"")
         if ((n.use_kind != nil) and (n.use_kind.token.str == "▪")): 
             this.add("/[")
             this.rnd(n.use_items)

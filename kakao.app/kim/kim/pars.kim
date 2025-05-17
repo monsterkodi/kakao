@@ -68,13 +68,18 @@ class Parser
 
     error: ◇string msg token=EOF ➜Node ->
     
-        styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
         if token.tok != ◂eof
+            styledEcho styleDim fgRed "△ " fgWhite $token.line ": " resetStyle fgYellow msg
             line = @text.split("\n")[token.line]
-            styledEcho fgWhite, styleDim, "#{token.line}", resetStyle, fgGreen, $line
+            styledEcho fgRed, styleDim, "╰" & ('─'.repeat(token.col-1)) & "╮"
+            styledEcho fgGreen, $line
+            echo ""
         elif @tok != ◂eof
+            styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
             line = @text.split("\n")[@current.line]
             styledEcho fgWhite, styleDim, "#{@current.line}", resetStyle, fgGreen, $line
+        else
+            styledEcho fgRed, styleDim, "△ ", resetStyle, fgYellow, msg
         @failed = true    
         nil
     
@@ -100,11 +105,11 @@ class Parser
         if @tok == tok
             @swallow()
             
-    swallowError: ◇tok tok ◇string err ->
+    swallowError: ◇tok tok ◇string err ◇Token token ->
     
         if @tok != tok
-            discard @error("Expected #{tok} to swallow, but found #{@tok} instead")
-            discard @error(err)
+            discard @error("Expected #{tok} but found #{@tok}" token)
+            discard @error(err token)
             ⮐  
         @swallow()
                 
@@ -393,7 +398,7 @@ class Parser
         while @tok != ◂paren_close and @tok != ◂eof
             args.add @expression()
             @swallow ◂comma
-        @swallowError ◂paren_close "Missing closing parenthesis"
+        @swallowError ◂paren_close "Missing closing parenthesis" token
         @explicit -= 1
         if args.len == 1 and args[0].kind == ●list
             ⮐  args[0].list_values
@@ -408,10 +413,14 @@ class Parser
         while true
             discard @swallowIndent(-1)
             if @tok != close and @tok != ◂eof
-                args.add @expression()
+                exp = @expression()
+                if exp
+                    args.add exp
+                else
+                    break
             else
                 break
-        @swallowError close "Missing closing bracket"
+        @swallowError close "Missing closing #{close}" token
         @explicit -= 1
         
         if args.len == 1 and args[0].kind == ●list
@@ -493,7 +502,7 @@ class Parser
         # ⮐  if callee.token.tok in {◂string ◂number ◂assign ◂colon ◂comma ◂paren_open ◂bracket_open}
         token = @consume() # (
         args = @parseCallArgs callee.token.col
-        @swallowError ◂paren_close "Missing closing paren for call arguments"
+        @swallowError ◂paren_close "Missing closing paren for call arguments" token
         Node token:token kind:●call callee:callee callargs:args
     
     # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
@@ -638,7 +647,7 @@ class Parser
     
         token = @consume()
         for_value = @parseNamesUntil ◂in
-        @swallowError ◂in "Expected 'in' after for value"
+        @swallowError ◂in "Expected 'in' after for value" token
         for_range = @expression()
         for_body  = @thenBlock()
     
@@ -697,7 +706,7 @@ class Parser
         
         baseIndent = @current.str.len 
         
-        @swallowError ◂indent "Expected indentation after switch statement"
+        @swallowError ◂indent "Expected indentation after switch statement" token
         
         switch_cases ◇ seq[Node]
         
@@ -782,7 +791,7 @@ class Parser
             string_stripols ◇ seq[Node]
             while @tok notin {◂string_end ◂eof}
             
-                @swallowError ◂stripol_start "Expected string interpolation start"
+                @swallowError ◂stripol_start "Expected string interpolation start" token
                 
                 stripol = nod ●stripol @current
                 
@@ -793,7 +802,7 @@ class Parser
                     
                 stripol.stripol_xprssns = stripol_xprssns
                 
-                @swallowError ◂stripol_end "Expected string interpolation end"
+                @swallowError ◂stripol_end "Expected string interpolation end" token
                 if @tok notin {◂stripol_start ◂string_end ◂eof}
                     stripol.stripol_content = nod ●literal @consume()
                 elif @tok == ◂stripol_start
@@ -801,7 +810,7 @@ class Parser
                 
                 string_stripols.add stripol
                 
-            @swallowError ◂string_end "Expected closing string delimiter"
+            @swallowError ◂string_end "Expected closing string delimiter" token
             Node token:token kind:●string string_content:string_content string_stripols:string_stripols
     
     rUse: ➜Node ->
@@ -931,7 +940,7 @@ class Parser
         
         if left.kind == ●operation
         
-            log "lfunc op #{left}"
+            # log "lfunc op #{left}"
             
             ⮐  if left.token.tok != ◂assign
                 
@@ -950,7 +959,7 @@ class Parser
             
         elif left.kind == ●list
         
-            log "lfunc list"
+            # log "lfunc list"
             
             sig_args = left
             for i a in sig_args.list_values
@@ -1254,6 +1263,8 @@ class Parser
     
     expression: precedenceRight=0 ➜Node ->
     
+        ⮐  nil if @failed
+    
         token = @current
         if token.tok in {◂eof ◂stripol_end ◂paren_close}
             ⮐  nil
@@ -1261,7 +1272,8 @@ class Parser
         rhs = @rightHandSide token
         
         if rhs == nil
-            ⮐  @error "Expected expression but found #{token.str} #{token}" token
+            # ⮐  @error "Expected expression but found #{token.str} #{token}" token
+            ⮐  @error "Expected expression but found #{token.str}" token
             
         node = @rhs()
         

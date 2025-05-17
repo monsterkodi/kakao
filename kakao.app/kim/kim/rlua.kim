@@ -95,6 +95,13 @@ class Rlua
             @add "function "
             
         @sigBody n
+        
+        if n.func_body and n.func_body.kind == ●block
+            idt = @nodeIndent n
+            @add "\n" & idt
+        else
+            @add " "
+        @add "end"
     
     ▸function: ◇Node n -> 
     
@@ -265,10 +272,10 @@ class Rlua
     
         split = n.use_module.token.str.split " "
         while split.len > 1
-            @add "#{split[0]} = require \"#{split[0]}\"\n" 
+            @add "#{slash.name(split[0])} = require \"#{split[0]}\"\n" 
             split = split.shift
         
-        @add "#{split[0]} = require \"#{split[0]}\""
+        @add "#{slash.name(split[0])} = require \"#{split[0]}\""
         if n.use_kind != nil and n.use_kind.token.str == '▪'
             @add "/["
             @rnd n.use_items

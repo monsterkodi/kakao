@@ -61,13 +61,18 @@ proc `$`(this : Parser) : string =
         s
 
 proc error(this : Parser, msg : string, token = EOF) : Node = 
-        styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
         if (token.tok != ◂eof): 
+            styledEcho(styleDim, fgRed, "△ ", fgWhite, $token.line, ": ", resetStyle, fgYellow, msg)
             var line = this.text.split("\n")[token.line]
-            styledEcho(fgWhite, styleDim, &"{token.line}", resetStyle, fgGreen, $line)
+            styledEcho(fgRed, styleDim, "╰" & "─".repeat((token.col - 1)) & "╮")
+            styledEcho(fgGreen, $line)
+            echo("")
         elif (this.tok != ◂eof): 
+            styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
             var line = this.text.split("\n")[this.current.line]
             styledEcho(fgWhite, styleDim, &"{this.current.line}", resetStyle, fgGreen, $line)
+        else: 
+            styledEcho(fgRed, styleDim, "△ ", resetStyle, fgYellow, msg)
         this.failed = true
         nil
 #  ███████   ███████   ███   ███   ███████  ███   ███  ██     ██  ████████
@@ -89,10 +94,10 @@ proc swallow(this : Parser, tok : tok) =
         if (this.tok == tok): 
             this.swallow()
 
-proc swallowError(this : Parser, tok : tok, err : string) = 
+proc swallowError(this : Parser, tok : tok, err : string, token : Token) = 
         if (this.tok != tok): 
-            discard this.error(&"Expected {tok} to swallow, but found {this.tok} instead")
-            discard this.error(err)
+            discard this.error(&"Expected {tok} but found {this.tok}", token)
+            discard this.error(err, token)
             return
         this.swallow()
 
@@ -335,7 +340,7 @@ proc parseParenList(this : Parser) : seq[Node] =
         while ((this.tok != ◂paren_close) and (this.tok != ◂eof)): 
             args.add(this.expression())
             this.swallow(◂comma)
-        this.swallowError(◂paren_close, "Missing closing parenthesis")
+        this.swallowError(◂paren_close, "Missing closing parenthesis", token)
         (this.explicit -= 1)
         if ((args.len == 1) and (args[0].kind == ●list)): 
             return args[0].list_values
@@ -348,10 +353,14 @@ proc parseDelimitedList(this : Parser, open : tok, close : tok) : seq[Node] =
         while true: 
             discard this.swallowIndent(-1)
             if ((this.tok != close) and (this.tok != ◂eof)): 
-                args.add(this.expression())
+                var exp = this.expression()
+                if exp: 
+                    args.add(exp)
+                else: 
+                    break
             else: 
                 break
-        this.swallowError(close, "Missing closing bracket")
+        this.swallowError(close, &"Missing closing {close}", token)
         (this.explicit -= 1)
         if ((args.len == 1) and (args[0].kind == ●list)): 
             return args[0].list_values
@@ -422,7 +431,7 @@ proc lCall(this : Parser, callee : Node) : Node =
         # ⮐  if callee.token.tok in {◂string ◂number ◂assign ◂colon ◂comma ◂paren_open ◂bracket_open}
         var token = this.consume() # (
         var args = this.parseCallArgs(callee.token.col)
-        this.swallowError(◂paren_close, "Missing closing paren for call arguments")
+        this.swallowError(◂paren_close, "Missing closing paren for call arguments", token)
         Node(token: token, kind: ●call, callee: callee, callargs: args)
 # ███  ██     ██  ████████   ███      ███   ███████  ███  █████████
 # ███  ███   ███  ███   ███  ███      ███  ███       ███     ███   
@@ -529,7 +538,7 @@ proc lTailIf(this : Parser, left : Node) : Node =
 proc rFor(this : Parser) : Node = 
         var token = this.consume()
         var for_value = this.parseNamesUntil(◂in)
-        this.swallowError(◂in, "Expected 'in' after for value")
+        this.swallowError(◂in, "Expected 'in' after for value", token)
         var for_range = this.expression()
         var for_body = this.thenBlock()
         nod(●for, token, for_value, for_range, for_body)
@@ -571,7 +580,7 @@ proc rSwitch(this : Parser) : Node =
         if (switch_value == nil): 
             return this.error("Expected value after switch keyword", token)
         var baseIndent = this.current.str.len
-        this.swallowError(◂indent, "Expected indentation after switch statement")
+        this.swallowError(◂indent, "Expected indentation after switch statement", token)
         var switch_cases : seq[Node]
         while true: 
             var switch_case = this.switchCase(baseIndent)
@@ -643,20 +652,20 @@ proc rString(this : Parser) : Node =
                 string_content = nod(●literal, tkn(◂string, "", this.current.line, this.current.col))
             var string_stripols : seq[Node]
             while (this.tok notin {◂string_end, ◂eof}): 
-                this.swallowError(◂stripol_start, "Expected string interpolation start")
+                this.swallowError(◂stripol_start, "Expected string interpolation start", token)
                 var stripol = nod(●stripol, this.current)
                 var stripol_xprssns : seq[Node]
                 while (this.tok notin {◂stripol_end, ◂eof}): 
                     var xpr = this.expression()
                     stripol_xprssns.add(xpr)
                 stripol.stripol_xprssns = stripol_xprssns
-                this.swallowError(◂stripol_end, "Expected string interpolation end")
+                this.swallowError(◂stripol_end, "Expected string interpolation end", token)
                 if (this.tok notin {◂stripol_start, ◂string_end, ◂eof}): 
                     stripol.stripol_content = nod(●literal, this.consume())
                 elif (this.tok == ◂stripol_start): 
                     stripol.stripol_content = nod(●literal, tkn(◂string, this.current.line, this.current.col))
                 string_stripols.add(stripol)
-            this.swallowError(◂string_end, "Expected closing string delimiter")
+            this.swallowError(◂string_end, "Expected closing string delimiter", token)
             Node(token: token, kind: ●string, string_content: string_content, string_stripols: string_stripols)
 
 proc rUse(this : Parser) : Node = 
@@ -766,7 +775,7 @@ proc lFunc(this : Parser, left : Node) : Node =
         if (left.kind notin {●signature, ●list, ●arg, ●operation, ●range}): return
         var func_signature : Node
         if (left.kind == ●operation): 
-            echo(&"lfunc op {left}")
+            # log "lfunc op #{left}"
             if (left.token.tok != ◂assign): return
             if (left.operand_left.token.tok != ◂name): return
             if (left.operand_left.token.col == 0): 
@@ -779,7 +788,7 @@ proc lFunc(this : Parser, left : Node) : Node =
             var sig_args = nod(●list, vartoken, @[varNode])
             func_signature = nod(●signature, left.token, sig_args, nil)
         elif (left.kind == ●list): 
-            echo("lfunc list")
+            # log "lfunc list"
             var sig_args = left
             for i, a in sig_args.list_values: 
                 if ((a.kind == ●operation) and (a.token.tok == ◂assign)): 
@@ -1019,12 +1028,14 @@ proc rTestSuite(this : Parser) : Node =
     ]#
 
 proc expression(this : Parser, precedenceRight = 0) : Node = 
+        if this.failed: return nil
         var token = this.current
         if (token.tok in {◂eof, ◂stripol_end, ◂paren_close}): 
             return nil
         var rhs = this.rightHandSide(token)
         if (rhs == nil): 
-            return this.error(&"Expected expression but found {token.str} {token}", token)
+            # ⮐  @error "Expected expression but found #{token.str} #{token}" token
+            return this.error(&"Expected expression but found {token.str}", token)
         var node = this.rhs()
         if (precedenceRight < -1): 
             return node
