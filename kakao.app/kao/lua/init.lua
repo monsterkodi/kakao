@@ -2,7 +2,6 @@ uv = require "uv"
 utils = require "utils"
 process = require "process"
 hooks = require "hooks"
-pretty-print = require "pretty-print"
 math = require "math"
 os = require "os"
 
@@ -19,24 +18,24 @@ function initFunc(main, ...)
     end
     
     function errMain(err) 
-        pcall(function () hooks:emit("process.uncaughtException", err) end)
+        pcall(function () hooks:emit('process.uncaughtException', err) end)
         return debug.traceback(err)
     end
-    local (success, err) = xpcall(runMain, errMain)
+    local success, err = xpcall(runMain, errMain)
     if success then 
-        hooks:emit("process.exit")
+        hooks:emit('process.exit')
         uv.run()
     else 
         _G.process.exitCode = -1
-        pretty.stderr:write("Uncaught exception:\n" & err & "\n")
+        pretty.stderr:write("Uncaught exception:\n" .. err .. "\n")
     end
     
     function isFileHandle(handle, name, fd) 
-        return ((_G.process[name].handle == handle) and (uv.guess_handle(fd) == "file"))
+        return ((_G.process[name].handle == handle) and (uv.guess_handle(fd) == 'file'))
     end
     
     function isStdioFileHandle(handle) 
-        return ((isFileHandle(handle, "stdin", 0) or isFileHandle(handle, "stdout", 1)) or isFileHandle(handle, "stderr", 2))
+        return ((isFileHandle(handle, 'stdin', 0) or isFileHandle(handle, 'stdout', 1)) or isFileHandle(handle, 'stderr', 2))
     end
     
     function closeHandle(handle) 

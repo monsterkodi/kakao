@@ -32,6 +32,7 @@ class Parser
     returning   : bool
     typeless    : bool
     failed      : bool
+    lang        : string
     text        : string # used in `$` for debugging. should be removed eventually 
 
     current: ➜Token ->
@@ -161,7 +162,23 @@ class Parser
                 ⮐  true
             n += 1
             c = @peek n
-        false    
+        false
+        
+    isConnectedLeft: n=0 ➜bool ->
+    
+        lt = @peek(n-1)
+        ct = @peek(n)
+        lt != EOF and ct != EOF and lt.line == ct.line and lt.col+lt.str.len == ct.col
+
+    isConnectedRight: n=0 ➜bool ->
+    
+        ct = @peek(n)
+        rt = @peek(n+1)
+        rt != EOF and ct != EOF and rt.line == ct.line and ct.col+ct.str.len == rt.col
+        
+    isConnectedLeftAndRight: n=0 ➜bool ->
+    
+        @isConnectedLeft(n) and @isConnectedRight(n)
 
     firstLineToken: ➜Token ->
     
@@ -1231,6 +1248,13 @@ class Parser
         
     lMember: ◇Node left ➜Node ->
     
+        if @lang == "lua" and @isConnectedLeftAndRight() and @peek(1).tok == ◂name
+            if @peek(2).tok == ◂paren_open or @peek(2).tok == ◂assign and @isTokAhead(◂func)
+                @swallow()
+                token = left.token
+                token.str &= ":" & @consume().str
+                ⮐  nod ●literal token
+                
         token = @consume()
         right = @funcOrExpression token
         nod ●member token left right
@@ -1425,14 +1449,14 @@ class Parser
 # ███   ███       ███     ███   
 # ███   ███  ███████      ███   
 
-ast* = ◇string text ➜Node ->
+ast* = ◇string text ◇string lang ➜Node ->
 
     # profileStart 'tknz'
     tokens = tokenize text
     # profileStop 'tknz'
     # log &"ast* {tokens}"
     # profileStart 'pars'
-    p = Parser tokens:tokens pos:0 text:text
+    p = Parser tokens:tokens pos:0 text:text lang:lang
     p.setup()
     b = p.parseBlock()
     # profileStop 'pars'

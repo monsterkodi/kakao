@@ -4,7 +4,7 @@ main = ... ->
     use std
     use ./kxk/kxk
     
-    local optparser = std.optparse """
+    optparser = std.optparse """
         0.1.0
         Usage: kao [Options ...] [Files ...]
         

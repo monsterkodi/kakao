@@ -466,7 +466,7 @@ proc rnd(this : Rndr, n : Node) =
 
 proc render*(code : string, autovar = true) : string = 
     # profileStart "ast"
-    var root = ast(code)
+    var root = ast(code, "nim")
     if not root: return ""
     root = classify(root)
     # profileStop "ast"

@@ -29,6 +29,7 @@ type Parser = ref object of RootObj
     returning: bool
     typeless: bool
     failed: bool
+    lang: string
     text: string
 # used in `$` for debugging. should be removed eventually 
 
@@ -141,6 +142,19 @@ proc isTokAhead(this : Parser, tokAhead : tok) : bool =
             (n += 1)
             c = this.peek(n)
         false
+
+proc isConnectedLeft(this : Parser, n = 0) : bool = 
+        var lt = this.peek((n - 1))
+        var ct = this.peek(n)
+        ((((lt != EOF) and (ct != EOF)) and (lt.line == ct.line)) and ((lt.col + lt.str.len) == ct.col))
+
+proc isConnectedRight(this : Parser, n = 0) : bool = 
+        var ct = this.peek(n)
+        var rt = this.peek((n + 1))
+        ((((rt != EOF) and (ct != EOF)) and (rt.line == ct.line)) and ((ct.col + ct.str.len) == rt.col))
+
+proc isConnectedLeftAndRight(this : Parser, n = 0) : bool = 
+        (this.isConnectedLeft(n) and this.isConnectedRight(n))
 
 proc firstLineToken(this : Parser) : Token = 
         var line = this.current.line
@@ -998,6 +1012,12 @@ proc rStruct(this : Parser) : Node =
         nod(●struct, token, name, parent, this.parseBlock())
 
 proc lMember(this : Parser, left : Node) : Node = 
+        if (((this.lang == "lua") and this.isConnectedLeftAndRight()) and (this.peek(1).tok == ◂name)): 
+            if ((this.peek(2).tok == ◂paren_open) or ((this.peek(2).tok == ◂assign) and this.isTokAhead(◂func))): 
+                this.swallow()
+                var token = left.token
+                (token.str &= ":" & this.consume().str)
+                return nod(●literal, token)
         var token = this.consume()
         var right = this.funcOrExpression(token)
         nod(●member, token, left, right)
@@ -1151,13 +1171,13 @@ proc setup(this : Parser) =
 # ███   ███       ███     ███   
 # ███   ███  ███████      ███   
 
-proc ast*(text : string) : Node = 
+proc ast*(text : string, lang : string) : Node = 
     # profileStart 'tknz'
     var tokens = tokenize(text)
     # profileStop 'tknz'
     # log &"ast* {tokens}"
     # profileStart 'pars'
-    var p = Parser(tokens: tokens, pos: 0, text: text)
+    var p = Parser(tokens: tokens, pos: 0, text: text, lang: lang)
     p.setup()
     var b = p.parseBlock()
     # profileStop 'pars'

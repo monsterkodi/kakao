@@ -132,20 +132,18 @@ class Rlua
                 ⮐  
     
         outerbr = n.token.tok notin {◂assign ◂ampersand}
-        bracket = n.token.tok == ◂assign and n.operand_left.kind == ●list
-        @add("(") if bracket or outerbr
+        @add("(") if outerbr
         @rnd n.operand_left
-        @add(")") if bracket
         @spc()
         switch n.token.tok
-            ◂and ➜ @add 'and'
-            ◂or  ➜ @add 'or'
-                 ➜ @tok n
+            ◂ampersand  ➜ @add ".."
+            ◂not_equal  ➜ @add "~="
+            ◂and        ➜ @add 'and'
+            ◂or         ➜ @add 'or'
+                        ➜ @tok n
         @spc()
-        bracket = n.token.tok == ◂assign and n.operand_right.kind == ●list
-        @add("(") if bracket
         @rnd n.operand_right
-        @add(")") if bracket or outerbr
+        @add(")") if outerbr
 
     ▸literal: ◇Node n -> 
     
@@ -177,9 +175,13 @@ class Rlua
         
     ▸propertyAccess: ◇Node n -> 
     
-        @rnd n.owner
-        @tok n
-        @rnd n.property
+        if n.property.token.str in ["len" "length"]
+            @add "#"
+            @rnd n.owner
+        else
+            @rnd n.owner
+            @tok n
+            @rnd n.property
     
     ▸arrayAccess: ◇Node n -> 
     
@@ -217,9 +219,9 @@ class Rlua
         delimiter = n.token.str
         triple = delimiter == "\"\"\""
         
-        if delimiter == "'" and n.string_content.token.str.len > 1 
-            if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
-                delimiter = "\""
+        # if delimiter == "'" and n.string_content.token.str.len > 1 
+        #     if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
+        #         delimiter = "\""
         
         if n.string_stripols.len > 0
             @add "&"
@@ -579,7 +581,7 @@ class Rlua
 renderLua* = ◇string code autovar=true ➜string ->
 
     # profileStart "ast"
-    root = ast code
+    root = ast code "lua"
     
     ⮐  "" if not root
     

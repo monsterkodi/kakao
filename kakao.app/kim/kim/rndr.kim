@@ -538,7 +538,7 @@ class Rndr
 render* = ◇string code autovar=true ➜string ->
 
     # profileStart "ast"
-    root = ast code
+    root = ast code "nim"
     
     ⮐  "" if not root
     

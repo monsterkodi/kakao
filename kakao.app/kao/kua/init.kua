@@ -1,7 +1,6 @@
 
 use uv utils
 use process hooks
-use pretty-print
 use math os
 
 initFunc = (main ...) ->

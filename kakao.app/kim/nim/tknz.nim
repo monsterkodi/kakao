@@ -465,7 +465,12 @@ proc tknz(this : Tknzr, segs : seq[string]) : seq[Token] =
                                 else: discard
                         if (keywords.hasKey(this.token.str) and (((this.segi >= this.eol) or (this.peek(0) == " ")) or punct.hasKey(this.peek(0)))): 
                             case keywords[this.token.str]:
-                                of ◂proc, ◂type, ◂from, ◂import, ◂macro, ◂template, ◂converter: 
+                                of ◂type: 
+                                    if (this.peek(0) != "("): 
+                                        this.verbatim()
+                                    else: 
+                                        this.push(◂name)
+                                of ◂proc, ◂from, ◂import, ◂macro, ◂template, ◂converter: 
                                     this.verbatim()
                                 else: this.push(keywords[this.token.str])
                         continue

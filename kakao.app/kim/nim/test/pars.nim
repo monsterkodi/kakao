@@ -5,7 +5,9 @@
 # ███        ███   ███  ███   ███  ███████ 
 import ../pars
 
-template t(a:string, b:string) = testCmp(a, $ast(a), b, instantiationInfo())
+template t(a:string, b:string) = testCmp(a, $ast(a, "nim"), b, instantiationInfo())
+
+template l(a:string, b:string) = testCmp(a, $ast(a, "lua"), b, instantiationInfo())
 
 template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
 suite "pars": 
@@ -65,6 +67,7 @@ suite "pars":
         t("◆string s = \"a\" & \"b\"", "▪[(◆type(string) ◂name (= (◂string & ◂string)))]")
         t("◇seq[string] s = @[]", "▪[(◇type(seq[string]) ◂name (= (◂name[])))]")
         t("◇seq[Table[string,bool]] s", "▪[(◇type(seq[Table[string,bool]]) ◂name)]")
+        t("if type(mt) != 'table' ➜ mt = nil", "▪[(◂if @[(((◂name ◂call @[◂name]) != ◂string) (◂name = nil))])]")
     test "func": 
         t("->", "▪[(->)]")
         t("f = ->", "▪[(◂name = (->))]")
@@ -107,6 +110,8 @@ suite "pars":
         t("error: ◇string msg token=tkn ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]")
         t("error: ◇string msg token=tkn(◂eof) ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]")
         t("⮐  Node(callee:nod(literal token), callargs:args)", "▪[(⮐ (◂name ◂call @[(◂name : (◂name ◂call @[◂name, ◂name])), (◂name : ◂name)]))]")
+        t("Inspector:getId = v ->", "▪[(◂name : (◂[(◂name (= ◂name))]->))]")
+        l("Inspector:getId = v ->", "▪[(◂name = (◂[(◂name)]->))]")
     test "varargs": 
         t("f = (...) ->", "▪[(◂name = (◂[(NIL ... NIL)]->))]")
         t("f = (a ...) ->", "▪[(◂name = (◂[(◂name), (NIL ... NIL)]->))]")
@@ -385,6 +390,7 @@ if x
         t("peg = peg\"abc\"", "▪[(◂name = ◂pegstring)]")
         t("raw = r\"abc\"", "▪[(◂name = ◂rstring)]")
         t("reg = re\"abc\"", "▪[(◂name = ◂restring)]")
+        t("s = '' & ''", "▪[(◂name = (◂string & ◂string))]")
     test "toplevel": 
         t("", "▪[]")
         t("42", "▪[◂number]")
@@ -413,7 +419,7 @@ test = false
         t("use ../rndr", "▪[(◂use ◂name)]")
         t("use std ▪ os logging\nuse kommon", "▪[(◂use ◂name ▪ @[◂name, ◂name])(◂use ◂name)]")
         t("use std ▪ a b c\nuse d\nuse e\nuse f", "▪[(◂use ◂name ▪ @[◂name, ◂name, ◂name])(◂use ◂name)(◂use ◂name)(◂use ◂name)]")
-        s("use a b c", ast("use a b c").expressions[0].use_module.token.str, "a b c")
+        s("use a b c", ast("use a b c", "nim").expressions[0].use_module.token.str, "a b c")
     test "enum": 
         t("enum Kind", "▪[(◂enum ◂name)]")
         t("enum Kind\na", "▪[(◂enum ◂name)◂name]")
@@ -438,9 +444,9 @@ enum tok
         t("###\n\nhello from\na comment###\na = 1", "▪[#(◂name = ◂number)]")
     test "tests": 
         t("▸ a test suite", "▪[(▸ suite)]")
-        check((ast("▸ a test suite").expressions[0].kind == ●testSuite))
+        check((ast("▸ a test suite", "nim").expressions[0].kind == ●testSuite))
         t("    ▸ test section", "▪[(▸ section)]")
-        check((ast("    ▸ test section").expressions[0].kind == ●testSection))
+        check((ast("    ▸ test section", "nim").expressions[0].kind == ●testSection))
         t("    f(a) ▸ 42", "▪[((◂name ◂call @[◂name]) ▸ ◂number)]")
         t("    f(a) ▸\n        42", "▪[((◂name ◂call @[◂name]) ▸ ◂number)]")
         t("▸ suite\n  ▸ test", "▪[(▸ suite ▪[(▸ section)])]")

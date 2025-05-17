@@ -539,7 +539,12 @@ class Tknzr
                          
                         if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)))
                             switch keywords[@token.str]
-                                ◂proc ◂type ◂from ◂import ◂macro ◂template ◂converter
+                                ◂type
+                                    if @peek(0) != "("
+                                        @verbatim()
+                                    else
+                                        @push ◂name
+                                ◂proc ◂from ◂import ◂macro ◂template ◂converter
                                     @verbatim()
                                 ➜   @push keywords[@token.str]
                         continue

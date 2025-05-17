@@ -36,9 +36,10 @@ suite "rlua":
         t("x = a or b", "x = (a or b)")
         t("!a || !b", "(not a or not b)")
         t("not a or not b", "(not a or not b)")
-    #▸ ampersand                                     
-    #                                                
-    #    t "a & b"                                     "a & b"
+    test "comparison ops": 
+        t("a != b", "(a ~= b)")
+    test "ampersand                                     ": 
+       t("a & b", "a .. b")
     test "parens                                        ": 
         t("(1 + 2) * 3", "((1 + 2) * 3)")
         t("(1)", "1")
@@ -51,6 +52,7 @@ suite "rlua":
     test "func": 
         t("f = ->", "\nfunction f()\nend")
         t("f = a=1 ->", "\nfunction f(a = 1)\nend")
+        t("Inspector:getId = v ->", "\nfunction Inspector:getId(v)\nend")
     test "call": 
         t("f()", "f()")
         t("f(g())", "f(g())")
@@ -70,11 +72,11 @@ suite "rlua":
         t("t \"a\",\n  \"b\"", "t(\"a\", \"b\")")
         t("t \"a\"\n  \"b\"", "t(\"a\", \"b\")")
     test "list assign": 
-        t("(a, b) = c", "(a, b) = c")
-        t("(a b) = c", "(a, b) = c")
-        t("(a, b, c) = f()", "(a, b, c) = f()")
-        t("(a b c) = f()", "(a, b, c) = f()")
-        t("(a b c) = (c b a)", "(a, b, c) = (c, b, a)")
+        t("(a, b) = c", "a, b = c")
+        t("(a b) = c", "a, b = c")
+        t("(a, b, c) = f()", "a, b, c = f()")
+        t("(a b c) = f()", "a, b, c = f()")
+        t("(a b c) = (c b a)", "a, b, c = c, b, a")
     test "assign": 
         t("a = 1", "a = 1")
         t("a = b = 1", "a = b = 1")
@@ -87,6 +89,7 @@ b = false
 a = 1
 -- comment
 b = false""")
+        t("(a b) = (c d)", "a, b = c, d")
     test "arrays": 
         t("a = [ 1  2 ]", "a = {1, 2}")
         t("a = [\n    1\n    2\n    ]", "a = {1, 2}")
@@ -106,7 +109,7 @@ b = false""")
     #    t "use std ▪ a b c\nuse d\nuse e\nuse f"      "import std/[a, b, c]\nimport d\nimport e\nimport f"
     
         t("use a b c", "a = require \"a\"\nb = require \"b\"\nc = require \"c\"")
-        t("⮐  require('./init')( (...) -> )", "return require(\"./init\")(function (...) end)")
+        t("⮐  require('./init')( (...) -> )", "return require('./init')(function (...) end)")
     test "if                                            ": 
         t("if true then ⮐  false", "if true then return false end")
         t("if true then ⮐  1 else ⮐  2", "if true then return 1 else return 2 end")
@@ -172,9 +175,9 @@ end
     test "for                                            ": 
         t("for k in rawpairs(t) ➜ log k", "for k in rawpairs(t) do print(k) end")
         t("for a in 0..2 ➜ true", "for a = 0, 2 do true end")
-    #     t "for a in 0..2\n  true"                    "for a in 0..2: \n  true"   
-    #     t "for a in 0..2 ➜\n  true"                  "for a in 0..2: \n  true"  
-    #     t "for kind, key, val in opt.get()"          "for kind, key, val in opt.get(): "  
+        t("for a in 0..2\n  true", "for a = 0, 2 do \n  true\nend")
+        t("for a in 0..2 ➜\n  true", "for a = 0, 2 do \n  true\nend")
+        # t "for kind, key, val in opt.get()"         "for kind, key, val in opt.get() do end"  
     test "while": 
         t("while true ➜ log a", "while true do print(a) end")
     # ▸ switch                                         
@@ -206,8 +209,8 @@ end
         t("s = \"\"", "s = \"\"")
         t("s = '\\\\'", "s = '\\\\'")
         t("s = 't'", "s = 't'")
-        t("s = 't2'", "s = \"t2\"")
-        t("s = 'test'", "s = \"test\"")
+        t("s = 't2'", "s = 't2'")
+        t("s = 'test'", "s = 'test'")
         t("s = \"hello\"", "s = \"hello\"")
         t("s = \"num #" & "{1+2} end\"", "s = &\"num {(1 + 2)} end\"")
         t("s = \"#" & "{o}\"", "s = &\"{o}\"")
@@ -215,6 +218,8 @@ end
         t("cmd = \"nim c --outDir:#" & "{outdir} --stackTrace:on --lineTrace:on #" & "{file}\"", "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\"")
         t("let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")", "local e = choose(n.return_value, &\" {n.return_value}\", \"\")")
         t("var e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")", "local e = choose(n.return_value, &\" {n.return_value}\", \"\")")
+    test "string concatenation": 
+        t("s = '' & ''", "s = '' .. ''")
     test "triple strings": 
         t("s = \"\"\"\"\"\"", "s = [[]]")
         t("s = \"\"\"\n\n\"\"\"", "s = [[\n\n]]")
@@ -240,6 +245,9 @@ end
         t("t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"", "t([[\na = 1]], [[\nb = 2]])")
         t("t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\"", "t([[\na = 1\nb = 2]], [[\na = 1\nb = 2]])")
         t("t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"", "t([[\n    a = 1\n    b = 2\n]])")
+    test "len": 
+        t("x = a.len", "x = #a")
+        t("x = a.length", "x = #a")
     test "tables": 
         t("t = {'a': 1}", "t = {['a'] = 1}")
     test "semicolon": 

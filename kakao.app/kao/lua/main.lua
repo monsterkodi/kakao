@@ -2,7 +2,7 @@
 function main(...) 
     std = require "std"
     kxk = require "./kxk/kxk"
-    local(optparser = std.optparse, [[
+    local optparser = std.optparse([[
 0.1.0
 Usage: kao [Options ...] [Files ...]
 
@@ -18,13 +18,13 @@ Options:
     
     function slice(tbl, first, last) 
         local sliced = {}
-        for i in first..last 
-            sliced[(sliced.len + 1)] = tbl[i]
-end
+        for i = first, last do 
+            sliced[(#sliced + 1)] = tbl[i]
+        end
         return sliced
     end
-    local argv = slice(process.argv, 2, process.argv.len)
-    (arg, opts) = optparser:parse(argv)
+    local argv = slice(process.argv, 2, #process.argv)
+    arg, opts = optparser:parse(argv)
     local files = opts.unrecognised
     if opts.verbose then 
         print("opts", inspect(opts))
@@ -33,7 +33,7 @@ end
         print("verbose", opts.verbose)
         print("dryrun", opts.dryrun)
         print("outdir", opts.outdir)
-        print("files", files.len)
+        print("files", #files)
         print("files", inspect(files))
     end
     -- log(slash.cwd())
@@ -43,13 +43,13 @@ end
         local cmd = "cat "..file
         kxk.exec(cmd, print)
     end
-    if (files.len > 0) then 
+    if (#files > 0) then 
         print("files", inspect(files))
         if opts.test then 
-            for index, file in pairs(files) 
+            for index, file in pairs(files) do 
                 print("▸", file)
                 load(file)
-end
+            end
         end
     end
     

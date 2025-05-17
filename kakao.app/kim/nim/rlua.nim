@@ -113,20 +113,18 @@ proc ▸operation(this : Rlua, n : Node) =
                 this.▸function(n)
                 return
         var outerbr = (n.token.tok notin {◂assign, ◂ampersand})
-        var bracket = ((n.token.tok == ◂assign) and (n.operand_left.kind == ●list))
-        if (bracket or outerbr): this.add("(")
+        if outerbr: this.add("(")
         this.rnd(n.operand_left)
-        if bracket: this.add(")")
         this.spc()
         case n.token.tok:
+            of ◂ampersand: this.add("..")
+            of ◂not_equal: this.add("~=")
             of ◂and: this.add("and")
             of ◂or: this.add("or")
             else: this.tok(n)
         this.spc()
-        bracket = ((n.token.tok == ◂assign) and (n.operand_right.kind == ●list))
-        if bracket: this.add("(")
         this.rnd(n.operand_right)
-        if (bracket or outerbr): this.add(")")
+        if outerbr: this.add(")")
 
 proc ▸literal(this : Rlua, n : Node) = 
         case n.token.str:
@@ -152,9 +150,13 @@ proc ▸postOp(this : Rlua, n : Node) =
         this.tok(n)
 
 proc ▸propertyAccess(this : Rlua, n : Node) = 
-        this.rnd(n.owner)
-        this.tok(n)
-        this.rnd(n.property)
+        if (n.property.token.str in @["len", "length"]): 
+            this.add("#")
+            this.rnd(n.owner)
+        else: 
+            this.rnd(n.owner)
+            this.tok(n)
+            this.rnd(n.property)
 
 proc ▸arrayAccess(this : Rlua, n : Node) = 
         this.rnd(n.array_owner)
@@ -187,9 +189,9 @@ proc ▸arg(this : Rlua, n : Node) =
 proc ▸string(this : Rlua, n : Node) = 
         var delimiter = n.token.str
         var triple = (delimiter == "\"\"\"")
-        if ((delimiter == "'") and (n.string_content.token.str.len > 1)): 
-            if ((n.string_content.token.str.len > 2) or (n.string_content.token.str[0] != '\\')): 
-                delimiter = "\""
+        # if delimiter == "'" and n.string_content.token.str.len > 1 
+        #     if n.string_content.token.str.len > 2 or n.string_content.token.str[0] != '\\'
+        #         delimiter = "\""
         if (n.string_stripols.len > 0): 
             this.add("&")
         elif n.string_prefix: 
@@ -500,7 +502,7 @@ proc rnd(this : Rlua, n : Node) =
 
 proc renderLua*(code : string, autovar = true) : string = 
     # profileStart "ast"
-    var root = ast(code)
+    var root = ast(code, "lua")
     if not root: return ""
     root = classify(root)
     # profileStop "ast"

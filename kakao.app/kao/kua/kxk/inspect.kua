@@ -3,8 +3,8 @@
 
 inspect = {Options = {}, }
 
-inspect.KEY       = setmetatable({}, { __tostring = function() return 'inspect.KEY' end })
-inspect.METATABLE = setmetatable({}, { __tostring = function() return 'inspect.METATABLE' end })
+inspect.KEY       = setmetatable({}, { __tostring = (() -> ⮐  'inspect.KEY' ) })
+inspect.METATABLE = setmetatable({}, { __tostring = (() -> ⮐  'inspect.METATABLE' ) })
 
 # tostring = tostring
 rep = string.rep
@@ -24,12 +24,12 @@ shortControlCharEscapes = {
    "\a": "\\a", "\b": "\\b",  "\f": "\\f", "\n": "\\n",
    "\r": "\\r", "\t": "\\t",  "\v": "\\v", "\127": "\\127"}
    
-longControlCharEscapes = { ["\127"] = "\127" }
+longControlCharEscapes = { "\127": "\127" }
 
 for i in 0..31
    ch = char(i)
    if not shortControlCharEscapes[ch]
-      shortControlCharEscapes[ch] = "\\" .. i
+      shortControlCharEscapes[ch] = "\\" & i
       longControlCharEscapes[ch] = fmt("\\%03d", i)
 
 escape = str ->
@@ -73,8 +73,8 @@ defaultTypeOrders = {
 
 sortKeys = a b ->
 
-    ta = type a
-    tb = type b
+    ta = type(a)
+    tb = type(b)
     
     if ta == tb and (ta == 'string' or ta == 'number')
        ⮐  (a) < (b)
@@ -129,7 +129,6 @@ processRecursive = process item path visited ->
     if type(processed) == "table"
         processedCopy = {}
         visited[item] = processedCopy
-        processedKey
         
         for k v in rawpairs(processed)
             processedKey = processRecursive(process, k, makePath(path, k, inspect.KEY), visited)
@@ -151,7 +150,7 @@ Inspector = {}
 Inspector_mt = { __index = Inspector }
 
 tabify = inspector ->
-    puts(inspector.buf, inspector.newline .. rep(inspector.indent, inspector.level))
+    puts(inspector.buf, inspector.newline & rep(inspector.indent, inspector.level))
 
 Inspector:getId = v ->
     id = self.ids[v]
@@ -179,53 +178,53 @@ Inspector:putValue = v ->
         else
             if self.cycles[t] > 1 ➜  puts(buf, fmt('<%d>', self:getId(t)))
             
-            (keys, keysLen, seqLen) = getKeys(t)
+            (keys keysLen seqLen) = getKeys(t)
             
-            puts(buf, '{')
+            puts buf '{'
             self.level = self.level + 1
             
             for i in 1..seqLen + keysLen 
                 if i > 1 ➜ puts(buf, ',')
                 if i <= seqLen
-                    puts(buf, ' ')
+                    puts buf ' '
                     self:putValue(t[i])
                 else
                     k = keys[i - seqLen]
                     tabify(self)
                     if isIdentifier(k)
-                        puts(buf, k)
+                        puts buf k
                     else
-                        puts(buf, "[")
+                        puts buf "["
                         self:putValue(k)
-                        puts(buf, "]")
-                    puts(buf, ' = ')
-                    self:putValue(t[k])
+                        puts buf "]"
+                    puts buf ' = '
+                    self:putValue t[k]
             
             mt = getmetatable(t)
             if type(mt) == 'table'
                 if seqLen + keysLen > 0 ➜ puts(buf, ',')
-                tabify(self)
-                puts(buf, '<metatable> = ')
+                tabify self
+                puts buf '<metatable> = '
                 self:putValue(mt)
             
             self.level = self.level - 1
             
             if keysLen > 0 or type(mt) == 'table'
-                tabify(self)
+                tabify self
             elif seqLen > 0
-                puts(buf, ' ')
+                puts buf ' '
             
-            puts(buf, '}')
+            puts buf '}'
     else
-        puts(buf, fmt('<%s %d>', tv, self:getId(v)))
+        puts buf fmt('<%s %d>', tv, self:getId(v))
 
 inspect.inspect = root options ->
     
     options = options or {}
     
-    depth = options.depth or (math.huge)
+    depth   = options.depth or (math.huge)
     newline = options.newline or '\n'
-    indent = options.indent or '  '
+    indent  = options.indent or '  '
     process = options.process
     
     if process
@@ -235,13 +234,13 @@ inspect.inspect = root options ->
     countCycles(root, cycles)
     
     inspector = setmetatable({
-        buf = { n = 0 },
-        ids = {},
-        cycles = cycles,
-        depth = depth,
-        level = 0,
+        buf     = { n = 0 },
+        ids     = {},
+        cycles  = cycles,
+        depth   = depth,
+        level   = 0,
         newline = newline,
-        indent = indent,
+        indent  = indent,
     }, Inspector_mt)
     
     inspector:putValue(root)

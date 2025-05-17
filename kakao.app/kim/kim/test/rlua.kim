@@ -43,10 +43,14 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
         t "x = a or b"                                "x = (a or b)"
         t "!a || !b"                                  "(not a or not b)"
         t "not a or not b"                            "(not a or not b)"
+        
+    ▸ comparison ops
+    
+        t "a != b"                                    "(a ~= b)"
                                                     
-    #▸ ampersand                                     
-    #                                                
-    #    t "a & b"                                     "a & b"
+    ▸ ampersand                                     
+                                                   
+       t "a & b"                                      "a .. b"
                                                     
     ▸ parens                                        
                                                     
@@ -63,6 +67,7 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
     
         t "f = ->"                                    "\nfunction f()\nend"
         t "f = a=1 ->"                                "\nfunction f(a = 1)\nend"
+        t "Inspector:getId = v ->"                    "\nfunction Inspector:getId(v)\nend"
         
     ▸ call
     
@@ -89,11 +94,11 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
         
     ▸ list assign
     
-        t "(a, b) = c"                                "(a, b) = c"
-        t "(a b) = c"                                 "(a, b) = c"
-        t "(a, b, c) = f()"                           "(a, b, c) = f()"
-        t "(a b c) = f()"                             "(a, b, c) = f()"
-        t "(a b c) = (c b a)"                         "(a, b, c) = (c, b, a)"
+        t "(a, b) = c"                                "a, b = c"
+        t "(a b) = c"                                 "a, b = c"
+        t "(a, b, c) = f()"                           "a, b, c = f()"
+        t "(a b c) = f()"                             "a, b, c = f()"
+        t "(a b c) = (c b a)"                         "a, b, c = c, b, a"
         
     ▸ assign
     
@@ -109,6 +114,8 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
             a = 1
             -- comment
             b = false"""
+            
+        t "(a b) = (c d)"                             "a, b = c, d"
     
     ▸ arrays
     
@@ -136,7 +143,7 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
 
         t "use a b c"                                 "a = require \"a\"\nb = require \"b\"\nc = require \"c\""
     
-        t "⮐  require('./init')( (...) -> )"          "return require(\"./init\")(function (...) end)"
+        t "⮐  require('./init')( (...) -> )"          "return require('./init')(function (...) end)"
                                                     
     ▸ if                                            
                                                     
@@ -212,9 +219,9 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
           
         t "for k in rawpairs(t) ➜ log k"            "for k in rawpairs(t) do print(k) end"                                           
         t "for a in 0..2 ➜ true"                    "for a = 0, 2 do true end"     
-    #     t "for a in 0..2\n  true"                    "for a in 0..2: \n  true"   
-    #     t "for a in 0..2 ➜\n  true"                  "for a in 0..2: \n  true"  
-    #     t "for kind, key, val in opt.get()"          "for kind, key, val in opt.get(): "  
+        t "for a in 0..2\n  true"                   "for a = 0, 2 do \n  true\nend"   
+        t "for a in 0..2 ➜\n  true"                 "for a = 0, 2 do \n  true\nend"  
+        # t "for kind, key, val in opt.get()"         "for kind, key, val in opt.get() do end"  
 
     ▸ while
         
@@ -252,8 +259,8 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
         
         t "s = '\\\\'"                               "s = '\\\\'"
         t "s = 't'"                                  "s = 't'"
-        t "s = 't2'"                                 "s = \"t2\""
-        t "s = 'test'"                               "s = \"test\""
+        t "s = 't2'"                                 "s = 't2'"
+        t "s = 'test'"                               "s = 'test'"
                                                      
         t "s = \"hello\""                            "s = \"hello\""
         t "s = \"num #" & "{1+2} end\""              "s = &\"num {(1 + 2)} end\""
@@ -268,6 +275,10 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
 
         t "var e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")",
           "local e = choose(n.return_value, &\" {n.return_value}\", \"\")"
+          
+    ▸ string concatenation
+    
+        t "s = '' & ''"                              "s = '' .. ''"
           
     ▸ triple strings
     
@@ -298,6 +309,11 @@ template t(a:string, b:string) = testCmp(a, renderLua(a, false), b, instantiatio
         t "t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"" "t([[\na = 1]], [[\nb = 2]])"
         t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\""  "t([[\na = 1\nb = 2]], [[\na = 1\nb = 2]])"
         t "t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"" "t([[\n    a = 1\n    b = 2\n]])"
+       
+    ▸ len
+    
+        t "x = a.len"                                   "x = #a"
+        t "x = a.length"                                "x = #a"
         
     ▸ tables
     
