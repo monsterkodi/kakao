@@ -13,11 +13,10 @@ function A:init(a, b)
     end
 
 local a = A(1, 2)
-print(inspect(a))
 
 
 local FunInc = class("FunInc")
-    FunInc.m = 1
+    FunInc.m = 0
 
 
 function FunInc:fun(m) 
@@ -26,9 +25,12 @@ function FunInc:fun(m)
 
 
 function FunInc:inc(a1) 
-        self:fun((self.m + 1))
+        self:fun((self.m + a1))
     end
 
 local f = FunInc()
+
 print(inspect(f))
-print(f.m)
+print("-------------")
+f.inc(2)
+print(inspect(f))

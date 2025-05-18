@@ -227,8 +227,9 @@ proc methodifyLua(clss : Node) : seq[Node] =
                 var token = tkn(◂indent, "    ", (fn.func_body.token.line + 1), 8)
                 var blck = nod(●block, token, @[fn.func_body])
                 fn.func_body = blck
-            var line = fn.func_body.expressions[^1].token.line
-            fn.func_body.expressions.add(nod(●return, tkn(◂return, "return", (line + 1)), nod(●literal, tkn(◂name, "self", (line + 1)))))
+            if (fn.func_body.expressions[^1].kind != ●return): 
+                var line = fn.func_body.expressions[^1].token.line
+                fn.func_body.expressions.add(nod(●return, tkn(◂return, "return", (line + 1)), nod(●literal, tkn(◂name, "self", (line + 1)))))
         else: 
             fn.func_body = nod(●return, tkn(◂return, "return"), nod(●literal, tkn(◂name, "self")))
         fn

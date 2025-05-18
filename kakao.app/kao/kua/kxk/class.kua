@@ -7,7 +7,7 @@
 
 # Copyright (c) 2011 Enrique García Cota
 
-_createIndexWrapper = aClass f ->
+_wrapIndex = aClass f ->
 
     if f == nil
         ⮐   aClass.__members
@@ -21,7 +21,8 @@ _createIndexWrapper = aClass f ->
             else
                 ⮐  f(self name)
                 
-    else # if  type(f) == "table"
+    else
+        assert(type(f) == 'table', "__index not a table")
         ⮐  (self name) ->
             value = aClass.__members[name]
             
@@ -29,30 +30,35 @@ _createIndexWrapper = aClass f ->
                 ⮐  value
             else
                 ⮐  f[name]
+                
+_wrapMethod = aClass f ->
 
-_propagateMember = aClass name f ->
+    ⮐  (self ...) ->
+        assert(type(self) == "table" and (self.class == aClass or self.class:extends(aClass)), 
+               "Invalid self: expected " & aClass.name & " but got " & type(self))
+        ⮐  f(self, ...)
 
-    f = name == "__index" and _createIndexWrapper(aClass, f) or f
+_propMember = aClass name f ->
+
+    f = name == "__index" and _wrapIndex(aClass, f) or f
     
     if type(f) == "function"
-        aClass.__members[name] = f
+        aClass.__members[name] = _wrapMethod(aClass, f)
         for subclass in pairs(aClass.subclasses)
             if rawget(subclass.__members, name) == nil
-                _propagateMember(subclass, name, f)
+                _propMember(subclass, name, f)
     else
         aClass.__proto[name] = f
         for subclass in pairs(aClass.subclasses)
             if rawget(subclass.__proto, name) == nil
-                _propagateMember(subclass, name, f)
+                _propMember(subclass, name, f)
 
 _newMember = aClass name f ->
   
-    if f == nil and aClass.super
-        f = aClass.super.__members[name]
-    if f == nil and aClass.super
-        f = aClass.super.__proto[name]
+    if f == nil and aClass.super ➜ f = aClass.super.__members[name]
+    if f == nil and aClass.super ➜ f = aClass.super.__proto[name]
         
-    _propagateMember(aClass, name, f)
+    _propMember(aClass, name, f)
 
 _tostring = self -> ⮐  "class " .. self.name
 _call = self ... -> ⮐  self:new(...)
@@ -66,8 +72,8 @@ _createClass = name super ->
         name:       name
         super:      super
         static:     {}
-        __members:  dict
         __proto:    {}
+        __members:  dict
         subclasses: setmetatable({}, {__mode='k'}) 
         }
     
@@ -108,8 +114,6 @@ DefaultMixin = {
 
     __tostring: (self) -> ⮐  "instance of " .. tostring(self.class)
     
-    init: (self ...) ->
-    
     isOf: self aClass ->
     
         assert(type(self) == 'table', "Use :isOf instead of .isOf")
@@ -129,7 +133,8 @@ DefaultMixin = {
         
             assert(type(self) == 'table', "Use :new instead of .new")
             instance = self:alloc()
-            instance:init(...)
+            if type(instance.init) == "function"
+                ⮐  instance:init(...)
             ⮐  instance
         
         subclass: self name ->
@@ -141,11 +146,11 @@ DefaultMixin = {
             
             for name, f in pairs(self.__members)
                 if not (name == "__index" and type(f) == "table")
-                    _propagateMember(subclass, name, f)
+                    _propMember(subclass, name, f)
                     
             for name, f in pairs(self.__proto)
                 if not (name == "__index" and type(f) == "table")
-                    _propagateMember(subclass, name, f)
+                    _propMember(subclass, name, f)
                     
             subclass.init = ((instance, ...) -> ⮐  self.init(instance, ...))
             

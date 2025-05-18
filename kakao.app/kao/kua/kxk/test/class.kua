@@ -9,15 +9,17 @@ class A
         @b = b
         
 a = A(1 2)
-log inspect(a)
 
 class FunInc
-    m: 1
+    m: 0
     fun: m -> 
         @m = m
     inc: a1 ->
-        @fun @m + 1
+        @fun @m + a1
         
 f = FunInc()
+
 log inspect(f)
-log f.m
+log "-------------"
+f.inc 2
+log inspect(f)

@@ -7,7 +7,7 @@
 -- Copyright (c) 2011 Enrique García Cota
 
 
-function _createIndexWrapper(aClass, f) 
+function _wrapIndex(aClass, f) 
     if (f == nil) then 
         return aClass.__members
     elseif (type(f) == "function") then 
@@ -21,6 +21,7 @@ function _createIndexWrapper(aClass, f)
             end
         end
     else 
+        assert((type(f) == 'table'), "__index not a table")
         return function (self, name) 
             local value = aClass.__members[name]
             
@@ -34,21 +35,30 @@ function _createIndexWrapper(aClass, f)
 end
 
 
-function _propagateMember(aClass, name, f) 
-    f = (((name == "__index") and _createIndexWrapper(aClass, f)) or f)
+function _wrapMethod(aClass, f) 
+    return function (self, ...) 
+        assert(((type(self) == "table") and ((self.class == aClass) or self.class:extends(aClass))), "Invalid self: expected " .. aClass.name .. " but got " .. type(self))
+        
+        return f(self, ...)
+    end
+end
+
+
+function _propMember(aClass, name, f) 
+    f = (((name == "__index") and _wrapIndex(aClass, f)) or f)
     
     if (type(f) == "function") then 
-        aClass.__members[name] = f
+        aClass.__members[name] = _wrapMethod(aClass, f)
         for subclass in pairs(aClass.subclasses) do 
             if (rawget(subclass.__members, name) == nil) then 
-                _propagateMember(subclass, name, f)
+                _propMember(subclass, name, f)
             end
         end
     else 
         aClass.__proto[name] = f
         for subclass in pairs(aClass.subclasses) do 
             if (rawget(subclass.__proto, name) == nil) then 
-                _propagateMember(subclass, name, f)
+                _propMember(subclass, name, f)
             end
         end
     end
@@ -56,15 +66,10 @@ end
 
 
 function _newMember(aClass, name, f) 
-    if ((f == nil) and aClass.super) then 
-        f = aClass.super.__members[name]
-    end
+    if ((f == nil) and aClass.super) then f = aClass.super.__members[name] end
+    if ((f == nil) and aClass.super) then f = aClass.super.__proto[name] end
     
-    if ((f == nil) and aClass.super) then 
-        f = aClass.super.__proto[name]
-    end
-    
-    _propagateMember(aClass, name, f)
+    _propMember(aClass, name, f)
 end
 
 
@@ -79,12 +84,12 @@ function _createClass(name, super)
     local dict = {}
     dict.__index = dict
     
-    aClass = {
+    local aClass = {
         name = name, 
         super = super, 
         static = {}, 
-        __members = dict, 
         __proto = {}, 
+        __members = dict, 
         subclasses = setmetatable({}, {__mode = 'k'})
         }
     
@@ -133,7 +138,6 @@ end
 
 local DefaultMixin = {
     __tostring = function (self) return "instance of "..tostring(self.class) end, 
-    init = function (self, ...) end, 
     isOf = function (self, aClass) 
         assert((type(self) == 'table'), "Use :isOf instead of .isOf")
         return (((type(aClass) == 'table') and (type(self) == 'table')) and ((self.class == aClass) or (((type(self.class) == 'table') and (type(self.class.extends) == 'function')) and self.class:extends(aClass))))
@@ -151,7 +155,10 @@ local DefaultMixin = {
         new = function (self, ...) 
             assert((type(self) == 'table'), "Use :new instead of .new")
             instance = self:alloc()
-            instance:init(...)
+            if (type(instance.init) == "function") then 
+                return instance:init(...)
+            end
+            
             return instance
         end, 
         subclass = function (self, name) 
@@ -162,13 +169,13 @@ local DefaultMixin = {
             
             for name, f in pairs(self.__members) do 
                 if not ((name == "__index") and (type(f) == "table")) then 
-                    _propagateMember(subclass, name, f)
+                    _propMember(subclass, name, f)
                 end
             end
             
             for name, f in pairs(self.__proto) do 
                 if not ((name == "__index") and (type(f) == "table")) then 
-                    _propagateMember(subclass, name, f)
+                    _propMember(subclass, name, f)
                 end
             end
             

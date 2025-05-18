@@ -6,10 +6,7 @@
 
 -- Copyright (c) 2022 Enrique García Cota
 
-local inspect = {Options = {}}
-
-inspect.KEY = setmetatable({}, {__tostring = function () return 'inspect.KEY' end})
-inspect.METATABLE = setmetatable({}, {__tostring = function () return 'inspect.METATABLE' end})
+class = require "./class"
 
 local rep = string.rep
 local match = string.match
@@ -141,120 +138,113 @@ function puts(buf, str)
     buf[buf.n] = str
 end
 
-local Inspector = {}
+
+local Inspector = class("Inspector")
+    Inspector.buf = {n = 0}
+    Inspector.ids = {}
+    Inspector.cycles = {}
+    Inspector.depth = math.huge
+    Inspector.level = 0
+    Inspector.newline = '\n'
+    Inspector.indent = "    "
+
+
+function Inspector:init(root) 
+        countCycles(root, self.cycles)
+        
+        self:putValue(root)
+        
+        -- log "Inspector" root
+        
+        return table.concat(self.buf)
+    end
 
 
 function Inspector:getId(v) 
-    local id = self.ids[v]
-    local ids = self.ids
-    if not id then 
-        local tv = type(v)
-        id = ((ids[tv] or 0) + 1)
-        ids[v], ids[tv] = id, id
+        local id = self.ids[v]
+        local ids = self.ids
+        if not id then 
+            local tv = type(v)
+            id = ((ids[tv] or 0) + 1)
+            ids[v], ids[tv] = id, id
+        end
+        
+        return tostring(id)
     end
-    
-    return tostring(id)
-end
 
 
 function Inspector:putValue(v) 
-    
-    function tabify() puts(self.buf, self.newline .. rep(self.indent, self.level))
-    end
-    
-    local buf = self.buf
-    local tv = type(v)
-    
-    if (tv == 'string') then 
-        puts(buf, smartQuote(escape(v)))
-    elseif (((((tv == 'number') or (tv == 'boolean')) or (tv == 'nil')) or (tv == 'cdata')) or (tv == 'ctype')) then 
-        puts(buf, tostring(v))
-    elseif ((tv == 'table') and not self.ids[v]) then 
-        local t = v
         
-        if ((t == inspect.KEY) or (t == inspect.METATABLE)) then 
-            puts(buf, tostring(t))
-        elseif (self.level >= self.depth) then 
-            puts(buf, '{...}')
-        else 
-            self.level = (self.level + 1)
+        function tabify() puts(self.buf, self.newline .. rep(self.indent, self.level))
+        end
+        
+        local buf = self.buf
+        local tv = type(v)
+        
+        if (tv == 'string') then 
+            puts(buf, smartQuote(escape(v)))
+        elseif (((((tv == 'number') or (tv == 'boolean')) or (tv == 'nil')) or (tv == 'cdata')) or (tv == 'ctype')) then 
+            puts(buf, tostring(v))
+        elseif ((tv == 'table') and not self.ids[v]) then 
+            local t = v
             
-            if (self.cycles[t] > 1) then 
-                tabify()
-                puts(buf, fmt('<%d>', self:getId(t)))
-            end
-            
-            local keys, keysLen, seqLen = getKeys(t)
-            
-            for i = 1, (seqLen + keysLen) do 
-                if (i <= seqLen) then 
-                    puts(buf, ' ')
-                    self:putValue(t[i])
-                else 
+            if (self.level >= self.depth) then 
+                puts(buf, '{...}')
+            else 
+                self.level = (self.level + 1)
+                
+                if (self.cycles[t] > 1) then 
                     tabify()
-                    local k = keys[(i - seqLen)]
-                    if isIdentifier(k) then 
-                        puts(buf, k)
-                        if (#k < 12) then 
-                            puts(buf, rep(" ", (12 - #k)))
-                        end
+                    puts(buf, fmt('<%d>', self:getId(t)))
+                end
+                
+                local keys, keysLen, seqLen = getKeys(t)
+                
+                for i = 1, (seqLen + keysLen) do 
+                    if (i <= seqLen) then 
+                        puts(buf, ' ')
+                        self:putValue(t[i])
                     else 
-                        puts(buf, "[")
-                        self:putValue(k)
-                        puts(buf, "]")
+                        tabify()
+                        local k = keys[(i - seqLen)]
+                        if isIdentifier(k) then 
+                            puts(buf, k)
+                            if (#k < 12) then 
+                                puts(buf, rep(" ", (12 - #k)))
+                            end
+                        else 
+                            puts(buf, "[")
+                            self:putValue(k)
+                            puts(buf, "]")
+                        end
+                        
+                        puts(buf, '  ')
+                        self:putValue(t[k])
                     end
-                    
-                    puts(buf, '  ')
-                    self:putValue(t[k])
+                end
+                
+                local mt = getmetatable(t)
+                if (type(mt) == 'table') then 
+                    tabify()
+                    puts(buf, '<meta> ')
+                    self:putValue(mt)
+                end
+                
+                self.level = (self.level - 1)
+                
+                if (seqLen > 0) then 
+                    puts(buf, ' ')
                 end
             end
-            
-            local mt = getmetatable(t)
-            if (type(mt) == 'table') then 
-                tabify()
-                puts(buf, '<meta> ')
-                self:putValue(mt)
-            end
-            
-            self.level = (self.level - 1)
-            
-            if (seqLen > 0) then 
-                puts(buf, ' ')
-            end
-        end
-    else 
-        if (tv == "function") then 
-            puts(buf, "->")
-        elseif (tv == "table") then 
-            puts(buf, "<" .. self:getId(v) .. ">")
         else 
-            puts(buf, fmt('<%s %d>', tv, self:getId(v)))
+            if (tv == "function") then 
+                puts(buf, "->")
+            elseif (tv == "table") then 
+                puts(buf, "<" .. self:getId(v) .. ">")
+            else 
+                puts(buf, fmt('<%s %d>', tv, self:getId(v)))
+            end
         end
     end
-end
 
-
-function inspect.inspect(root) 
-    local cycles = {}
-    countCycles(root, cycles)
-    
-    local inspector = setmetatable({
-        buf = {n = 0}, 
-        ids = {}, 
-        cycles = cycles, 
-        depth = math.huge, 
-        level = 0, 
-        newline = '\n', 
-        indent = "    "
-        }, {__index = Inspector})
-    
-    inspector:putValue(root)
-    
-    return table.concat(inspector.buf)
-end
-
-setmetatable(inspect, {
-    __call = function (_, root) return inspect.inspect(root) end
-    })
-
-return inspect
+return function (root) return Inspector(root) end
