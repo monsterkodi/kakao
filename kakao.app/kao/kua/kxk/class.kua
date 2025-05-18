@@ -1,4 +1,10 @@
 
+#  ███████  ███       ███████    ███████   ███████
+# ███       ███      ███   ███  ███       ███     
+# ███       ███      █████████  ███████   ███████ 
+# ███       ███      ███   ███       ███       ███
+#  ███████  ███████  ███   ███  ███████   ███████ 
+
 # Copyright (c) 2011 Enrique García Cota
 
 middleclass = {}
@@ -74,10 +80,10 @@ _createClass = name super ->
         setmetatable(aClass.static, { __index = ((_ k) -> ⮐  rawget(dict,k)) })
     
     setmetatable(aClass, {  
-        __index = aClass.static, 
-        __tostring = _tostring,
-        __call = _call, 
-        __newindex = _declareInstanceMethod })
+        __index     = aClass.static, 
+        __tostring  = _tostring,
+        __call      = _call, 
+        __newindex  = _declareInstanceMethod })
         
     ⮐  aClass
 

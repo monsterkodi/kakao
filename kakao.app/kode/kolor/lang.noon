@@ -1270,6 +1270,15 @@ lua kua
         puts
         self
         type
+        rawget
+        pairs
+        ipairs
+        setmetatable
+        getmetatable
+        assert
+        coroutine
+        debug
+        tostring
         
     keyword type
         int
@@ -1289,6 +1298,34 @@ lua kua
     
     module
         os 
+        uv 
+        utils 
+        process 
+        hooks 
+        math
+        
+    type
+        __metatable
+        __newindex
+        __tostring
+        __concat
+        __ipairs
+        __pairs
+        __index
+        __call
+        __mode
+        __len    
+        __add
+        __sub
+        __mul
+        __div
+        __mod
+        __pow
+        __unm
+        __eq
+        __lt
+        __le
+        __gc
         
 # ███   ███  ███   ███   ███████ 
 # ███  ███   ███   ███  ███   ███

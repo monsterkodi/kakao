@@ -1,3 +1,10 @@
+
+# ███   ███  ███   ███  ███   ███
+# ███  ███    ███ ███   ███  ███ 
+# ███████      █████    ███████  
+# ███  ███    ███ ███   ███  ███ 
+# ███   ███  ███   ███  ███   ███
+
 _G.buffer  = require "string.buffer"
 _G.childp  = require "childprocess"
 _G.inspect = require "./inspect"

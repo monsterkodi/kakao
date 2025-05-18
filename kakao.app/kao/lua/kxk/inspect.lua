@@ -1,3 +1,9 @@
+-- ███  ███   ███   ███████  ████████   ████████   ███████  █████████
+-- ███  ████  ███  ███       ███   ███  ███       ███          ███   
+-- ███  ███ █ ███  ███████   ████████   ███████   ███          ███   
+-- ███  ███  ████       ███  ███        ███       ███          ███   
+-- ███  ███   ███  ███████   ███        ████████   ███████     ███   
+
 -- Copyright (c) 2022 Enrique García Cota
 
 local inspect = {Options = {}}
@@ -5,7 +11,6 @@ local inspect = {Options = {}}
 inspect.KEY = setmetatable({}, {__tostring = function () return 'inspect.KEY' end})
 inspect.METATABLE = setmetatable({}, {__tostring = function () return 'inspect.METATABLE' end})
 
--- tostring = tostring
 local rep = string.rep
 local match = string.match
 local char = string.char
@@ -25,24 +30,19 @@ function smartQuote(str)
     return '"' .. gsub(str, '"', '\\"') .. '"'
 end
 
-local shortControlCharEscapes = {
-   ["\a"] = "\\a", ["\b"] = "\\b", ["\f"] = "\\f", ["\n"] = "\\n", 
-   ["\r"] = "\\r", ["\t"] = "\\t", ["\v"] = "\\v", ["\127"] = "\\127"
-   }
-
-local longControlCharEscapes = {["\127"] = "\127"}
+local shortEscapes = {["\a"] = "\\a", ["\b"] = "\\b", ["\f"] = "\\f", ["\n"] = "\\n", ["\r"] = "\\r", ["\t"] = "\\t", ["\v"] = "\\v", ["\127"] = "\\127"}
+local longEscapes = {["\127"] = "\127"}
 
 for i = 0, 31 do 
-   local ch = char(i)
-   if not shortControlCharEscapes[ch] then 
-      shortControlCharEscapes[ch] = "\\" .. i
-      longControlCharEscapes[ch] = fmt("\\%03d", i)
-   end
+    local ch = char(i)
+    if not shortEscapes[ch] then 
+        shortEscapes[ch] = "\\" .. i
+        longEscapes[ch] = fmt("\\%03d", i)
+    end
 end
 
 
-function escape(str) 
-   return gsub(gsub(gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longControlCharEscapes), "%c", shortControlCharEscapes)
+function escape(str) return gsub(gsub(gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longEscapes), "%c", shortEscapes)
 end
 
 local luaKeywords = {
@@ -72,7 +72,7 @@ local luaKeywords = {
 
 
 function isIdentifier(str) 
-    return (((type(str) == "string") and not not str:match("^[_%a][_%a%d]*$")) and not luaKeywords[str])
+    return (((type(str) == "string") and str:match("^[_%a][_%a%d]*$")) and not luaKeywords[str])
 end
 
 
@@ -80,10 +80,7 @@ function isSequenceKey(k, sequenceLength)
     return ((((type(k) == "number") and (math.floor(k) == k)) and (1 <= k)) and (k <= sequenceLength))
 end
 
-local defaultTypeOrders = {
-    ['number'] = 1, ['boolean'] = 2, ['string'] = 3, ['table'] = 4, 
-    ['function'] = 5, ['userdata'] = 6, ['thread'] = 7
-    }
+local typeOrders = {['number'] = 1, ['boolean'] = 2, ['string'] = 3, ['table'] = 4, ['function'] = 5, ['userdata'] = 6, ['thread'] = 7}
 
 
 function sortKeys(a, b) 
@@ -94,8 +91,8 @@ function sortKeys(a, b)
        return (a < b)
     end
     
-    local dta = (defaultTypeOrders[ta] or 100)
-    local dtb = (defaultTypeOrders[tb] or 100)
+    local dta = (typeOrders[ta] or 100)
+    local dtb = (typeOrders[tb] or 100)
     
     return (((dta == dtb) and (ta < tb)) or (dta < dtb))
 end
@@ -129,8 +126,8 @@ function countCycles(x, cycles)
         else 
             cycles[x] = 1
             for k, v in rawpairs(x) do 
-               countCycles(k, cycles)
-               countCycles(v, cycles)
+                countCycles(k, cycles)
+                countCycles(v, cycles)
             end
             
             countCycles(getmetatable(x), cycles)
@@ -152,29 +149,30 @@ function makePath(path, a, b)
 end
 
 
-function processRecursive(process, item, path, visited) 
+function processRecursive(procss, item, path, visited) 
     if (item == nil) then return nil end
     if visited[item] then return visited[item] end
     
-    local processed = process(item, path)
-    if (type(processed) == "table") then 
-        local processedCopy = {}
-        visited[item] = processedCopy
+    local pitem = procss(item, path)
+    
+    if (type(pitem) == "table") then 
+        local pcopy = {}
+        visited[item] = pcopy
         
-        for k, v in rawpairs(processed) do 
-            local processedKey = processRecursive(process, k, makePath(path, k, inspect.KEY), visited)
-            if (processedKey ~= nil) then 
-                processedCopy[processedKey] = processRecursive(process, v, makePath(path, processedKey), visited)
+        for k, v in rawpairs(pitem) do 
+            local pkey = processRecursive(procss, k, makePath(path, k, inspect.KEY), visited)
+            if (pkey ~= nil) then 
+                pcopy[pkey] = processRecursive(procss, v, makePath(path, pkey), visited)
             end
         end
         
-        local mt = processRecursive(process, getmetatable(processed), makePath(path, inspect.METATABLE), visited)
+        local mt = processRecursive(procss, getmetatable(pitem), makePath(path, inspect.METATABLE), visited)
         if (type(mt) ~= 'table') then mt = nil end
-        setmetatable(processedCopy, mt)
-        processed = processedCopy
+        setmetatable(pcopy, mt)
+        pitem = pcopy
     end
     
-    return processed
+    return pitem
 end
 
 
@@ -209,6 +207,7 @@ end
 function Inspector:putValue(v) 
     buf = self.buf
     local tv = type(v)
+    
     if (tv == 'string') then 
         puts(buf, smartQuote(escape(v)))
     elseif (((((tv == 'number') or (tv == 'boolean')) or (tv == 'nil')) or (tv == 'cdata')) or (tv == 'ctype')) then 
@@ -279,7 +278,7 @@ function inspect.inspect(root, options)
     local depth = (options.depth or math.huge)
     local newline = (options.newline or '\n')
     local indent = (options.indent or '  ')
-    local procss = options.process
+    procss = options.process
     
     if procss then 
         root = processRecursive(procss, root, {}, {})

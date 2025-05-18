@@ -1,4 +1,10 @@
 
+# ███  ███   ███   ███████  ████████   ████████   ███████  █████████
+# ███  ████  ███  ███       ███   ███  ███       ███          ███   
+# ███  ███ █ ███  ███████   ████████   ███████   ███          ███   
+# ███  ███  ████       ███  ███        ███       ███          ███   
+# ███  ███   ███  ███████   ███        ████████   ███████     ███   
+
 # Copyright (c) 2022 Enrique García Cota
 
 inspect = {Options = {}, }
@@ -6,12 +12,11 @@ inspect = {Options = {}, }
 inspect.KEY       = setmetatable({}, { __tostring = (() -> ⮐  'inspect.KEY' ) })
 inspect.METATABLE = setmetatable({}, { __tostring = (() -> ⮐  'inspect.METATABLE' ) })
 
-# tostring = tostring
-rep = string.rep
+rep   = string.rep
 match = string.match
-char = string.char
-gsub = string.gsub
-fmt = string.format
+char  = string.char
+gsub  = string.gsub
+fmt   = string.format
 
 rawpairs = t -> ⮐  (next t nil)
 
@@ -20,56 +25,51 @@ smartQuote = str ->
        ⮐  "'" & str & "'"
     ⮐  '"' & gsub(str, '"', '\\"') & '"'
     
-shortControlCharEscapes = {
-   "\a": "\\a", "\b": "\\b",  "\f": "\\f", "\n": "\\n",
-   "\r": "\\r", "\t": "\\t",  "\v": "\\v", "\127": "\\127"}
-   
-longControlCharEscapes = { "\127": "\127" }
+shortEscapes = {"\a":"\\a" "\b":"\\b" "\f":"\\f" "\n":"\\n" "\r":"\\r" "\t":"\\t" "\v":"\\v" "\127":"\\127"}
+longEscapes  = {"\127":"\127"}
 
 for i in 0..31
-   ch = char(i)
-   if not shortControlCharEscapes[ch]
-      shortControlCharEscapes[ch] = "\\" & i
-      longControlCharEscapes[ch] = fmt("\\%03d", i)
+    ch = char(i)
+    if not shortEscapes[ch]
+        shortEscapes[ch] = "\\" & i
+        longEscapes[ch] = fmt("\\%03d" i)
 
-escape = str ->
-   ⮐  (gsub(gsub(gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longControlCharEscapes), "%c", shortControlCharEscapes))
+escape = str -> ⮐  (gsub(gsub(gsub(str "\\" "\\\\") "(%c)%f[0-9]" longEscapes) "%c" shortEscapes))
 
 luaKeywords = {
-   'and': true,
-   'break': true,
-   'do': true,
-   'else': true,
-   'elseif': true,
-   'end': true,
-   'false': true,
-   'for': true,
-   'function': true,
-   'goto': true,
-   'if': true,
-   'in': true,
-   'local': true,
-   'nil': true,
-   'not': true,
-   'or': true,
-   'repeat': true,
-   'return': true,
-   'then': true,
-   'true': true,
-   'until': true,
-   'while': true,
+   'and':       true
+   'break':     true
+   'do':        true
+   'else':      true
+   'elseif':    true
+   'end':       true
+   'false':     true
+   'for':       true
+   'function':  true
+   'goto':      true
+   'if':        true
+   'in':        true
+   'local':     true
+   'nil':       true
+   'not':       true
+   'or':        true
+   'repeat':    true
+   'return':    true
+   'then':      true
+   'true':      true
+   'until':     true
+   'while':     true
 }
 
 isIdentifier = str ->
-    ⮐  type(str) == "string" and not not str:match("^[_%a][_%a%d]*$") and not luaKeywords[str]
+
+    ⮐  type(str) == "string" and str:match("^[_%a][_%a%d]*$") and not luaKeywords[str]
 
 isSequenceKey = k sequenceLength ->
+
     ⮐  type(k) == "number" and math.floor(k) == k and 1 <= (k) and k <= sequenceLength
 
-defaultTypeOrders = {
-    'number': 1,   'boolean': 2,  'string': 3, 'table': 4,
-    'function': 5, 'userdata': 6, 'thread': 7
-}
+typeOrders = { 'number':1   'boolean':2  'string':3 'table':4 'function':5 'userdata':6 'thread':7 }
 
 sortKeys = a b ->
 
@@ -79,8 +79,8 @@ sortKeys = a b ->
     if ta == tb and (ta == 'string' or ta == 'number')
        ⮐  (a) < (b)
     
-    dta = defaultTypeOrders[ta] or 100
-    dtb = defaultTypeOrders[tb] or 100
+    dta = typeOrders[ta] or 100
+    dtb = typeOrders[tb] or 100
     
     ⮐  dta == dtb and ta < tb or dta < dtb
 
@@ -100,17 +100,20 @@ getKeys = t ->
     ⮐  (keys, keysLen, seqLen)
 
 countCycles = x cycles ->
+
     if type(x) == "table"
+    
         if cycles[x]
             cycles[x] = cycles[x] + 1
         else
             cycles[x] = 1
-            for k, v in rawpairs(x)
-               countCycles(k, cycles)
-               countCycles(v, cycles)
-            countCycles(getmetatable(x), cycles)
+            for k v in rawpairs(x)
+                countCycles k cycles
+                countCycles v cycles
+            countCycles getmetatable(x) cycles
 
 makePath = path a b ->
+
     newPath = {}
     for i in 1..path.len 
         newPath[i] = path[i]
@@ -120,50 +123,57 @@ makePath = path a b ->
     
     ⮐  newPath
 
-processRecursive = process item path visited ->
+processRecursive = procss item path visited ->
 
     if item == nil ➜ ⮐  nil
     if visited[item] ➜ ⮐  visited[item]
     
-    processed = process(item, path)
-    if type(processed) == "table"
-        processedCopy = {}
-        visited[item] = processedCopy
+    pitem = procss item path
+    
+    if type(pitem) == "table"
+        pcopy = {}
+        visited[item] = pcopy
         
-        for k v in rawpairs(processed)
-            processedKey = processRecursive(process, k, makePath(path, k, inspect.KEY), visited)
-            if processedKey != nil
-                processedCopy[processedKey] = processRecursive(process, v, makePath(path, processedKey), visited)
+        for k v in rawpairs(pitem)
+            pkey = processRecursive procss k makePath(path k inspect.KEY) visited
+            if pkey != nil
+                pcopy[pkey] = processRecursive procss v makePath(path pkey) visited
         
-        mt = processRecursive(process, getmetatable(processed), makePath(path, inspect.METATABLE), visited)
+        mt = processRecursive procss getmetatable(pitem) makePath(path inspect.METATABLE) visited
         if type(mt) != 'table' ➜ mt = nil
-        setmetatable(processedCopy, mt)
-        processed = processedCopy
-    ⮐  processed
+        setmetatable(pcopy, mt)
+        pitem = pcopy
+        
+    ⮐  pitem
 
 puts = buf str ->
+
     buf.n = buf.n + 1
     buf[buf.n] = str
 
 Inspector = {}
 
-Inspector_mt = { __index = Inspector }
+Inspector_mt = { __index: Inspector }
 
 tabify = inspector ->
-    puts(inspector.buf, inspector.newline & rep(inspector.indent, inspector.level))
+
+    puts inspector.buf inspector.newline & rep(inspector.indent inspector.level)
 
 Inspector:getId = v ->
+
     id = self.ids[v]
     ids = self.ids
     if not id then
         tv = type(v)
         id = (ids[tv] or 0) + 1
-        (ids[v], ids[tv]) = (id, id)
+        (ids[v] ids[tv]) = (id id)
     ⮐  tostring(id)
 
 Inspector:putValue = v ->
+
     buf = self.buf
     tv = type(v)
+    
     if tv == 'string'
         puts(buf, smartQuote(escape(v)))
     elif tv == 'number' or tv == 'boolean' or tv == 'nil' or tv == 'cdata' or tv == 'ctype' 
@@ -172,11 +182,11 @@ Inspector:putValue = v ->
         t = v
         
         if t == inspect.KEY or t == inspect.METATABLE
-            puts(buf, tostring(t))
+            puts buf tostring(t)
         elif self.level >= self.depth
-            puts(buf, '{...}')
+            puts buf '{...}'
         else
-            if self.cycles[t] > 1 ➜  puts(buf, fmt('<%d>', self:getId(t)))
+            if self.cycles[t] > 1 ➜ puts buf fmt('<%d>' self:getId(t))
             
             (keys keysLen seqLen) = getKeys(t)
             
@@ -191,11 +201,11 @@ Inspector:putValue = v ->
                 else
                     k = keys[i - seqLen]
                     tabify(self)
-                    if isIdentifier(k)
+                    if isIdentifier k
                         puts buf k
                     else
                         puts buf "["
-                        self:putValue(k)
+                        self:putValue k
                         puts buf "]"
                     puts buf ' = '
                     self:putValue t[k]
@@ -228,27 +238,27 @@ inspect.inspect = root options ->
     procss  = options.process
     
     if procss
-        root = processRecursive(procss, root, {}, {})
+        root = processRecursive procss root {} {}
     
     cycles = {}
     countCycles(root, cycles)
     
     inspector = setmetatable({
-        buf     = { n = 0 },
-        ids     = {},
-        cycles  = cycles,
-        depth   = depth,
-        level   = 0,
-        newline = newline,
-        indent  = indent,
-    }, Inspector_mt)
+        buf     : { n = 0 }
+        ids     : {}
+        cycles  : cycles
+        depth   : depth
+        level   : 0
+        newline : newline
+        indent  : indent
+    } Inspector_mt)
     
-    inspector:putValue(root)
+    inspector:putValue root
     
-    ⮐  table.concat(inspector.buf)
+    ⮐  table.concat inspector.buf
 
-setmetatable(inspect, {
+setmetatable inspect {
     __call = ((_, root, options) -> ⮐  inspect.inspect(root, options))
-})
+}
 
 ⮐  inspect
