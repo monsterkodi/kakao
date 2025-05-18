@@ -9,10 +9,10 @@
 
 function _createIndexWrapper(aClass, f) 
     if (f == nil) then 
-        return aClass.__instanceDict
+        return aClass.__methods
     elseif (type(f) == "function") then 
         return function (self, name) 
-            local value = aClass.__instanceDict[name]
+            local value = aClass.__methods[name]
             
             if (value ~= nil) then 
                 return value
@@ -22,7 +22,7 @@ function _createIndexWrapper(aClass, f)
         end
     else 
         return function (self, name) 
-            local value = aClass.__instanceDict[name]
+            local value = aClass.__methods[name]
             
             if (value ~= nil) then 
                 return value
@@ -34,27 +34,27 @@ function _createIndexWrapper(aClass, f)
 end
 
 
-function _propagateInstanceMethod(aClass, name, f) 
+function _propagateMethod(aClass, name, f) 
     f = (((name == "__index") and _createIndexWrapper(aClass, f)) or f)
     
-    aClass.__instanceDict[name] = f
+    aClass.__methods[name] = f
     
     for subclass in pairs(aClass.subclasses) do 
         if (rawget(subclass.__declaredMethods, name) == nil) then 
-            _propagateInstanceMethod(subclass, name, f)
+            _propagateMethod(subclass, name, f)
         end
     end
 end
 
 
-function _declareInstanceMethod(aClass, name, f) 
+function _declareMethod(aClass, name, f) 
     aClass.__declaredMethods[name] = f
     
     if ((f == nil) and aClass.super) then 
-        f = aClass.super.__instanceDict[name]
+        f = aClass.super.__methods[name]
     end
     
-    _propagateInstanceMethod(aClass, name, f)
+    _propagateMethod(aClass, name, f)
 end
 
 
@@ -73,7 +73,7 @@ function _createClass(name, super)
         name = name, 
         super = super, 
         static = {}, 
-        __instanceDict = dict, 
+        __methods = dict, 
         __declaredMethods = {}, 
         subclasses = setmetatable({}, {__mode = 'k'})
         }
@@ -97,7 +97,7 @@ function _createClass(name, super)
         __index = aClass.static, 
         __tostring = _tostring, 
         __call = _call, 
-        __newindex = _declareInstanceMethod
+        __newindex = _declareMethod
         })
     
     return aClass
@@ -131,7 +131,7 @@ local DefaultMixin = {
     static = {
         allocate = function (self) 
             assert((type(self) == 'table'), "Use :allocate instead of .allocate")
-            return setmetatable({class = self}, self.__instanceDict)
+            return setmetatable({class = self}, self.__methods)
         end, 
         new = function (self, ...) 
             assert((type(self) == 'table'), "Use :new instead of .new")
@@ -145,9 +145,9 @@ local DefaultMixin = {
             
             subclass = _createClass(name, self)
             
-            for methodName, f in pairs(self.__instanceDict) do 
+            for methodName, f in pairs(self.__methods) do 
                 if not ((methodName == "__index") and (type(f) == "table")) then 
-                    _propagateInstanceMethod(subclass, methodName, f)
+                    _propagateMethod(subclass, methodName, f)
                 end
             end
             

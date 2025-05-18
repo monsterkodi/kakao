@@ -1,7 +1,10 @@
 import ../rndr
+import ../rlua
 
 template t(a:string, b:string) = testCmp(a, renderNim(a, true), b, instantiationInfo())
-suite "class": 
+
+template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiationInfo())
+suite "nim class": 
     test "simple": 
         t("class A", "\ntype A = ref object of RootObj")
         t("struct A", "\ntype A = object")
@@ -369,3 +372,11 @@ var a = virtualA().init(1)
 a.p()
 a = virtualB().init(2)
 a.p()""")
+# ███      ███   ███   ███████ 
+# ███      ███   ███  ███   ███
+# ███      ███   ███  █████████
+# ███      ███   ███  ███   ███
+# ███████   ███████   ███   ███
+suite "lua class": 
+    test "simple": 
+        l("class A", "\nlocal A = class(\"A\")")

@@ -411,13 +411,15 @@ proc ▸enum(this : Rlua, n : Node) =
         this.rnd(n.enum_body)
 
 proc ▸class(this : Rlua, n : Node) = 
-        this.add("type ")
+        this.add("local ")
         this.rnd(n.class_name)
-        this.add(" = ref object of ")
+        this.add(" = class(\"")
+        this.rnd(n.class_name)
+        this.add("\"")
         if n.class_parent: 
+            this.add(", ")
             this.tok(n.class_parent)
-        else: 
-            this.add("RootObj")
+        this.add(")")
         this.rnd(n.class_body)
 
 proc ▸struct(this : Rlua, n : Node) = 

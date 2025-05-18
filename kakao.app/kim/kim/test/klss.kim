@@ -1,9 +1,10 @@
 
-use ../rndr
+use ../rndr ../rlua
     
 template t(a:string, b:string) = testCmp(a, renderNim(a, true), b, instantiationInfo())
+template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiationInfo())
 
-▸ class
+▸ nim class
 
     ▸ simple
     
@@ -398,4 +399,21 @@ template t(a:string, b:string) = testCmp(a, renderNim(a, true), b, instantiation
             a.p()
             a = virtualB().init(2)
             a.p()"""
+
+# ███      ███   ███   ███████ 
+# ███      ███   ███  ███   ███
+# ███      ███   ███  █████████
+# ███      ███   ███  ███   ███
+# ███████   ███████   ███   ███
+
+▸ lua class
+
+    ▸ simple
+    
+        l "class A"  "\nlocal A = class(\"A\")"
+        
+    ▸ members
+    
+        l "class ABC\n a:1\n b:2\n c:3" "\nlocal ABC = class(\"ABC\")\n a: int\n b: int\n c: int"
+        
                         

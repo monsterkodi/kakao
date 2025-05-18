@@ -481,13 +481,15 @@ class Rlua
         
     ▸class: ◇Node n ->
     
-        @add "type "
+        @add "local "
         @rnd n.class_name
-        @add " = ref object of "
+        @add " = class(\""
+        @rnd n.class_name
+        @add "\""
         if n.class_parent
+            @add ", "
             @tok n.class_parent
-        else
-            @add "RootObj"
+        @add ")"
         @rnd n.class_body
 
     ▸struct: ◇Node n ->
