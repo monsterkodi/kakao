@@ -112,17 +112,6 @@ countCycles = x cycles ->
                 countCycles v cycles
             countCycles getmetatable(x) cycles
 
-makePath = path a b ->
-
-    newPath = {}
-    for i in 1..path.len 
-        newPath[i] = path[i]
-    
-    newPath[len + 1] = a
-    newPath[len + 2] = b
-    
-    ⮐  newPath
-
 puts = buf str ->
 
     buf.n = buf.n + 1
@@ -159,21 +148,25 @@ Inspector:putValue = v ->
         elif self.level >= self.depth
             puts buf '{...}'
         else
-            if self.cycles[t] > 1 ➜ puts buf fmt('<%d>' self:getId(t))
+            self.level = self.level + 1
+            
+            if self.cycles[t] > 1 
+                tabify()
+                puts buf fmt('<%d>' self:getId(t))
             
             (keys keysLen seqLen) = getKeys(t)
-            
-            self.level = self.level + 1
             
             for i in 1..seqLen + keysLen 
                 if i <= seqLen
                     puts buf ' '
                     self:putValue(t[i])
                 else
-                    k = keys[i - seqLen]
                     tabify()
+                    k = keys[i - seqLen]
                     if isIdentifier k
                         puts buf k
+                        if k.len < 12
+                            puts buf rep(" " 12-k.len)
                     else
                         puts buf "["
                         self:putValue k

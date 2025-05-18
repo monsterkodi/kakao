@@ -136,19 +136,6 @@ function countCycles(x, cycles)
 end
 
 
-function makePath(path, a, b) 
-    local newPath = {}
-    for i = 1, #path do 
-        newPath[i] = path[i]
-    end
-    
-    newPath[(len + 1)] = a
-    newPath[(len + 2)] = b
-    
-    return newPath
-end
-
-
 function puts(buf, str) 
     buf.n = (buf.n + 1)
     buf[buf.n] = str
@@ -190,21 +177,27 @@ function Inspector:putValue(v)
         elseif (self.level >= self.depth) then 
             puts(buf, '{...}')
         else 
-            if (self.cycles[t] > 1) then puts(buf, fmt('<%d>', self:getId(t))) end
+            self.level = (self.level + 1)
+            
+            if (self.cycles[t] > 1) then 
+                tabify()
+                puts(buf, fmt('<%d>', self:getId(t)))
+            end
             
             local keys, keysLen, seqLen = getKeys(t)
-            
-            self.level = (self.level + 1)
             
             for i = 1, (seqLen + keysLen) do 
                 if (i <= seqLen) then 
                     puts(buf, ' ')
                     self:putValue(t[i])
                 else 
-                    local k = keys[(i - seqLen)]
                     tabify()
+                    local k = keys[(i - seqLen)]
                     if isIdentifier(k) then 
                         puts(buf, k)
+                        if (#k < 12) then 
+                            puts(buf, rep(" ", (12 - #k)))
+                        end
                     else 
                         puts(buf, "[")
                         self:putValue(k)
