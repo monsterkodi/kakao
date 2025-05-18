@@ -5,10 +5,14 @@
 #  ███████  ███████  ███████   ███████ 
 import pars
 
-type NodeIt = proc(node:Node):Node
+type NodeIt = proc(node:Node, hint:string):Node
 
-proc traverse(n : Node, iter : NodeIt) : Node = 
+proc traverse(n : Node, iter : NodeIt, hint = "") : Node = 
     if (n == nil): return
+    
+    template trav(arg:Node, hint:string) = 
+    
+        arg = traverse(arg, iter, hint)
     
     template trav(arg:Node) = 
     
@@ -21,7 +25,7 @@ proc traverse(n : Node, iter : NodeIt) : Node =
     var n = n
     case n.kind:
         of ●literal: 
-            n = iter(n)
+            n = iter(n, hint)
         of ●block, ●semicolon: 
             trvl(n.expressions)
         of ●string: 
@@ -34,7 +38,7 @@ proc traverse(n : Node, iter : NodeIt) : Node =
         of ●preOp, ●postOp: 
             trav(n.operand)
         of ●call: 
-            trav(n.callee)
+            trav(n.callee, "callee")
             trvl(n.call_args)
         of ●for: 
             trav(n.for_body)
@@ -96,7 +100,7 @@ proc methodifyNim(clss : Node) : seq[Node] =
         className = className[0..^2]
         exporting = true
     
-    proc thisify(n : Node) : Node = 
+    proc thisify(n : Node, hint = "") : Node = 
         if (n.token.tok == ◂name): 
             if (n.token.str[0] == '@'): 
                 if (n.token.str.len > 1): 
@@ -202,13 +206,17 @@ proc methodifyLua(clss : Node) : seq[Node] =
     var strugt = (clss.kind == ●struct)
     var className = clss.class_name.token.str
     
-    proc thisify(n : Node) : Node = 
+    proc thisify(n : Node, hint = "") : Node = 
         if (n.token.tok == ◂name): 
             if (n.token.str[0] == '@'): 
                 if (n.token.str.len > 1): 
                     var owner = nod(●literal, tkn(◂name, "self"))
                     var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
-                    return nod(●propertyAccess, tkn(◂dot, ".", n.token.line, n.token.col), owner, property)
+                    var token = tkn(◂dot, ".", n.token.line, n.token.col)
+                    if (hint == "callee"): 
+                        token.tok = ◂colon
+                        token.str = ":"
+                    return nod(●propertyAccess, token, owner, property)
                 else: 
                     n.token.str = "self"
         n

@@ -6,12 +6,15 @@
 
 use pars
 
-type NodeIt = proc(node:Node):Node
+type NodeIt = proc(node:Node, hint:string):Node
 
-traverse = ◇Node n ◇NodeIt iter ➜ Node -> 
+traverse = ◇Node n ◇NodeIt iter hint="" ➜ Node -> 
 
     ⮐  if n == nil
     
+    template trav(arg:Node, hint:string) = 
+        arg = traverse arg iter hint
+
     template trav(arg:Node) = 
         arg = traverse arg iter
 
@@ -22,7 +25,7 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
     n = n
     switch n.kind
         ●literal
-            n = iter n
+            n = iter n hint
         ●block
         ●semicolon
             trvl n.expressions
@@ -37,7 +40,7 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
         ●postOp
             trav n.operand
         ●call
-            trav n.callee
+            trav n.callee "callee"
             trvl n.call_args
         ●for
             trav n.for_body 
@@ -104,7 +107,7 @@ methodifyNim = ◇Node clss ➜ seq[Node] ->
         className = className[0..^2]
         exporting = true
     
-    thisify = ◇Node n ➜ Node ->
+    thisify = ◇Node n hint="" ➜ Node ->
     
         if n.token.tok == ◂name
             if n.token.str[0] == '@' 
@@ -228,14 +231,18 @@ methodifyLua = ◇Node clss ➜ seq[Node] ->
     strugt     = clss.kind == ●struct
     className  = clss.class_name.token.str
     
-    thisify = ◇Node n ➜ Node ->
+    thisify = ◇Node n hint="" ➜ Node ->
     
         if n.token.tok == ◂name
             if n.token.str[0] == '@' 
                 if n.token.str.len > 1
                     owner    = nod ●literal tkn(◂name "self")
                     property = nod ●literal tkn(◂name n.token.str[1..^1])
-                    ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
+                    token    = tkn(◂dot  "." n.token.line n.token.col)
+                    if hint == "callee"
+                        token.tok = ◂colon
+                        token.str = ":"
+                    ⮐  nod ●propertyAccess token owner property
                 else
                     n.token.str = "self"
         n

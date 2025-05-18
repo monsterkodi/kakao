@@ -440,4 +440,26 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
             
             local a = Constr(1, 2)"""
                             
-                        
+    ▸ methods
+    
+        l   """
+            class FunInc
+                m: 1
+                fun: m -> 
+                    @m = m
+                inc: a1 ->
+                    @fun @m + 1
+            """ """
+            
+            local FunInc = class("FunInc")
+                FunInc.m = 1
+            
+            
+            function FunInc:fun(m) 
+                    self.m = m
+                end
+            
+            
+            function FunInc:inc(a1) 
+                    self:fun((self.m + 1))
+                end"""            
