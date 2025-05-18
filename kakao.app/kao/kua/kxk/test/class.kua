@@ -2,70 +2,11 @@
 use ../class
 use ../kxk
 
-A = class("A")
-A.static.bling = 'plink'
-A.mem = 2
-
-log "A.proto" inspect(A.__proto)
-
-A:init = (a) -> self.a = a
-A:print = -> log "INSTANCE" self.class.name self.a self.b self.c self.mem
-A:deng = -> log 'base'
-
-B = class("B" A)
-B.static.bling = 'blink'
-
-log "B.proto" inspect(B.__proto)
-
-B.mem = 3
-
-log "B.proto" inspect(B.__proto)
-
-B:init = (b) ->
-    A.init(self, 42)
-    self.b = b
-B:deng = ->
-    log 'blurk'
-
-C = class("C" B)
-C:init = (c) ->
-    B.init(self, 77)
-    self.c = c
-C:deng = ->
-    log self.mem
-    self.class.super.deng self
-    self.class.super.super.deng self
-
-a = A(1)
-b = B(2)
-c = C(3)
-d = C(4)
-
-a:print()
-b:print()
-c:print()
-d:print()
-# log c
-# log c.class.super
-# log c.class.super.super
-# log c:isOf(A)
-# log c:isOf(B)
-# log c:isOf(C)
-# log C:extends(A)
-# log C:extends(B)
-# log C:extends(C)
-
-c.mem = 42
-d:print()
-d.mem = 64
-d:print()
-d.mem = nil
-
-a:print()
-b:print()
-c:print()
-d:print()
-
-# log "a.__members" inspect(a.class.__members)
-# log "b.__members" inspect(b.class.__members)
-# log "c.__members" inspect(c.class.__members)
+class A
+    a: 0
+    @: a b ->
+        @a = a
+        @b = b
+        
+a = A(1 2)
+log inspect(a)

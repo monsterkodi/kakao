@@ -214,17 +214,15 @@ proc methodifyLua(clss : Node) : seq[Node] =
         n
     
     proc constructor(fn : Node) : Node = 
-        fn.operand_left.token.str = "init"
-        fn.operand_right.func_signature.sig_type = nod(●type, tkn(◂name, className))
-        if fn.operand_right.func_body: 
-            if (fn.operand_right.func_body.kind != ●block): 
-                var token = tkn(◂indent, "    ", (fn.operand_right.func_body.token.line + 1), 8)
-                var blck = nod(●block, token, @[fn.operand_right.func_body])
-                fn.operand_right.func_body = blck
-            var line = fn.operand_right.func_body.expressions[^1].token.line
-            fn.operand_right.func_body.expressions.add(nod(●literal, tkn(◂name, "self", (line + 1))))
+        if fn.func_body: 
+            if (fn.func_body.kind != ●block): 
+                var token = tkn(◂indent, "    ", (fn.func_body.token.line + 1), 8)
+                var blck = nod(●block, token, @[fn.func_body])
+                fn.func_body = blck
+            var line = fn.func_body.expressions[^1].token.line
+            fn.func_body.expressions.add(nod(●return, tkn(◂return, "return", (line + 1)), nod(●literal, tkn(◂name, "self", (line + 1)))))
         else: 
-            fn.operand_right.func_body = nod(●literal, tkn(◂name, "self"))
+            fn.func_body = nod(●return, tkn(◂return, "return"), nod(●literal, tkn(◂name, "self")))
         fn
     
     proc superize(fn : Node) = 
@@ -239,19 +237,22 @@ proc methodifyLua(clss : Node) : seq[Node] =
         if (it.kind == ●comment): return it
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
-        var arg_name = nod(●literal, tkn(◂name, "self"))
-        var this_arg = nod(●arg, tkn(◂name, ""), nil, arg_name)
-        if funcn.func_signature: 
-            funcn.func_signature.sig_args.list_values.unshift(this_arg)
-        else: 
-            var sig_args = nod(●list, tkn(◂square_open), @[this_arg])
-            funcn.func_signature = nod(●signature, token, sig_args, nil)
         funcn.func_body = traverse(funcn.func_body, thisify)
         superize(funcn)
-        var fn = nod(●operation, token, it.member_key, funcn)
-        if (it.member_key.token.str == "@"): fn = constructor(fn)
-        fn
-    clss.class_body.expressions = members
+        var meth = it.member_key
+        if (meth.token.str == "@"): 
+            meth.token.str = className & ":init"
+            funcn = constructor(funcn)
+        else: 
+            meth.token.str = className & ":" & meth.token.str
+        nod(●operation, token, meth, funcn)
+    
+    proc memberify(it : Node) : Node = 
+        if (it.kind == ●member): 
+            var owner = nod(●literal, tkn(◂name, className))
+            it.member_key = nod(●propertyAccess, tkn(◂dot, "."), owner, it.member_key)
+        it
+    clss.class_body.expressions = members.map(memberify)
     var methods = funcs.map(funkify)
     methods
 

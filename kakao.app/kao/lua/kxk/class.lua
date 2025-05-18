@@ -8,7 +8,6 @@
 
 
 function _createIndexWrapper(aClass, f) 
-    print("indexWrap")
     if (f == nil) then 
         return aClass.__members
     elseif (type(f) == "function") then 
@@ -140,8 +139,8 @@ local DefaultMixin = {
         return (((type(aClass) == 'table') and (type(self) == 'table')) and ((self.class == aClass) or (((type(self.class) == 'table') and (type(self.class.extends) == 'function')) and self.class:extends(aClass))))
     end, 
     static = {
-        allocate = function (self) 
-            assert((type(self) == 'table'), "Use :allocate instead of .allocate")
+        alloc = function (self) 
+            assert((type(self) == 'table'), "Use :alloc instead of .alloc")
             instance = {class = self}
             for k, m in pairs(self.__proto) do 
                 instance[k] = m
@@ -151,7 +150,7 @@ local DefaultMixin = {
         end, 
         new = function (self, ...) 
             assert((type(self) == 'table'), "Use :new instead of .new")
-            instance = self:allocate()
+            instance = self:alloc()
             instance:init(...)
             return instance
         end, 
@@ -176,11 +175,9 @@ local DefaultMixin = {
             subclass.init = function (instance, ...) return self.init(instance, ...) end
             
             self.subclasses[subclass] = true
-            self:subclassed(subclass)
             
             return subclass
         end, 
-        subclassed = function (self, other) end, 
         extends = function (self, other) 
             assert((type(self) == 'table'), "Use :extends instead of .extends")
             return (((type(other) == 'table') and (type(self.super) == 'table')) and ((self.super == other) or self.super:extends(other)))
@@ -193,13 +190,12 @@ local DefaultMixin = {
         }
     }
 
-local middleclass = {}
-
-
-function middleclass.class(name, super) 
-    assert((type(name) == 'string'), "Invalid class name")
-    return ((super and super:subclass(name)) or _includeMixin(_createClass(name), DefaultMixin))
-end
+local middleclass = {
+    class = function (name, super) 
+        assert((type(name) == 'string'), "Invalid class name")
+        return ((super and super:subclass(name)) or _includeMixin(_createClass(name), DefaultMixin))
+    end
+    }
 
 setmetatable(middleclass, {__call = function (_, ...) return middleclass.class(...) end})
 

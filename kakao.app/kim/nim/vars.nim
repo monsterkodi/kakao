@@ -45,12 +45,18 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
             of ●operation: 
                 if (e.operand_right.kind == ●func): 
                     if ((this.lang == "lua") and e.operand_right.func_signature): 
+                        this.vars.push(initTable[string, bool]())
                         for a in e.operand_right.func_signature.sig_args.list_values: 
                             case a.kind:
                                 of ●arg: add(a.arg_name.token.str)
                                 of ●literal: add(a.token.str)
-                                else: discard #log "unhandled arg type #{a}"
-                    this.branch(e.operand_right.func_body)
+                                else: discard
+                        var body = e.operand_right.func_body
+                        for i, e in body.expressions: 
+                            this.exp(body, i, e)
+                        this.vars.pops()
+                    else: 
+                        this.branch(e.operand_right.func_body)
                 elif (e.token.tok == ◂assign): 
                     var lhs = e.operand_left
                     case lhs.kind:

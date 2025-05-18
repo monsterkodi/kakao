@@ -32,11 +32,9 @@ class Scoper
     exp: ◇Node body ◇int i ◇Node e ->
         
         ⮐  if e == nil
-        
         add = ◇string name -> @vars[^1][name] = true
             
         insert = ◇string name ◇Node expr ->
-            
             for map in @vars
                 ⮐  if map.hasKey name
                 
@@ -47,13 +45,18 @@ class Scoper
             ●operation
                 if e.operand_right.kind == ●func
                     if @lang == "lua" and e.operand_right.func_signature
+                        @vars.push initTable[string,bool]()
                         for a in e.operand_right.func_signature.sig_args.list_values
                             switch a.kind
-                                ●arg     ➜ add a.arg_name.token.str
-                                ●literal ➜ add a.token.str
-                                         ➜ discard #log "unhandled arg type #{a}"
-                
-                    @branch e.operand_right.func_body
+                                ●arg     ➜ add(a.arg_name.token.str)
+                                ●literal ➜ add(a.token.str)
+                                         ➜ discard
+                        body = e.operand_right.func_body
+                        for i e in body.expressions
+                            @exp body i e 
+                        @vars.pops()
+                    else
+                        @branch e.operand_right.func_body
                 elif e.token.tok == ◂assign
                     lhs = e.operand_left
                     switch lhs.kind

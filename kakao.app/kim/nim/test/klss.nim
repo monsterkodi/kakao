@@ -380,3 +380,27 @@ a.p()""")
 suite "lua class": 
     test "simple": 
         l("class A", "\nlocal A = class(\"A\")")
+    test "members": 
+        l("class ABC\n a:1\n b:2\n c:3", "\nlocal ABC = class(\"ABC\")\n ABC.a = 1\n ABC.b = 2\n ABC.c = 3")
+    test "constructor": 
+        l("""
+class Constr
+    a: 0
+    @: a b ->
+        @a = a
+        @b = b
+
+a = Constr 1 2
+""", """
+
+local Constr = class("Constr")
+    Constr.a = 0
+
+
+function Constr:init(a, b) 
+        self.a = a
+        self.b = b
+        return self
+    end
+
+local a = Constr(1, 2)""")
