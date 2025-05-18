@@ -15,7 +15,7 @@ function test:__tostring() return "▸" .. self.suite
 
 function test:init(s, t) 
         self.suite = s
-        _G.testStack(? = {})
+        _G.testStack = _G.testStack or {}
         _G.testIndex = 0
         table.insert(testStack, self.suite)
         print("▸ " .. string.rep("    ", (#testStack - 1)) .. testStack[#testStack])
@@ -25,7 +25,7 @@ function test:init(s, t)
     end
 
 
-function test.static.eql(a, b) 
+function test.static.cmp(a, b) 
     _G.testIndex = _G.testIndex + 1
     if (a ~= b) then 
         print("✘ [" .. _G.testIndex .. "] " .. a .. " != " .. b)

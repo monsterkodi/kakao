@@ -362,3 +362,31 @@ end
     ███  ███   ███  ███ █ ███
     ███   ███  ███  ███   ███
 --]]""")
+    test "tests": 
+        t("""
+▸ suite
+    # comment
+    ▸ test1
+        x   ▸ ""  # comment
+        y   ▸ 24  # comment
+        # comment
+    ▸ test2
+        # comment
+        xy  ▸ "42"
+    1
+""", """
+test("suite", function()
+    -- comment
+    test("test1", function()
+        test.cmp(x, "") -- comment
+        test.cmp(y, 24) -- comment
+        -- comment
+    end)
+    
+    test("test2", function()
+        -- comment
+        test.cmp(xy, "42")
+    end)
+    
+    1
+    end)""")

@@ -31,12 +31,11 @@ class Print
 
 p = Print()
 log p
+p.m = "howdy"
+log p
 
-test("class" ->
-
-    test("simple" ->
-    
-        test.eql(1 1)
-        test.eql(1 2)
-        )
-    )        
+▸ class
+    ▸ fail
+        2 ▸ 1
+    ▸ simple
+        1 ▸ 1

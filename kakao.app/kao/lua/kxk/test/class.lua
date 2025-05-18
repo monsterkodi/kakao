@@ -48,10 +48,15 @@ function Print:__tostring() return self.m
 
 local p = Print()
 print(p)
+p.m = "howdy"
+print(p)
 
-test("class", function () 
-    test("simple", function () 
-        test.eql(1, 1)
-        test.eql(1, 2)
+test("class", function()
+    test("fail", function()
+        test.cmp(2, 1)
     end)
-end)
+    
+    test("simple", function()
+        test.cmp(1, 1)
+    end)
+    end)

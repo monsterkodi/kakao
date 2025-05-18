@@ -466,20 +466,19 @@ proc ▸member(this : Rlua, n : Node) =
             this.rnd(n.member_value)
 
 proc ▸testCase(this : Rlua, n : Node) = 
-        this.add("check ")
+        this.add("test.cmp(")
         this.rnd(n.test_value)
-        this.add(" == ")
+        this.add(", ")
         this.rnd(n.test_expected)
+        this.add(")")
 
 proc ▸testSuite(this : Rlua, n : Node) = 
-        if (n.kind == ●testSuite): 
-            this.add("suite")
-        else: 
-            this.add("test")
-        this.add(" \"")
+        this.add("test(")
+        this.add("\"")
         this.add(n.token.str[4..^1])
-        this.add("\": ")
+        this.add("\", function()")
         this.rnd(n.test_block)
+        this.add("\n    end)")
 
 proc rnd(this : Rlua, n : Node) = 
         if (n == nil): return

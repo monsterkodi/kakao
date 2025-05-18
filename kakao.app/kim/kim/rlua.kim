@@ -539,21 +539,20 @@ class Rlua
     
     ▸testCase: ◇Node n ->
     
-        @add "check "
+        @add "test.cmp("
         @rnd n.test_value
-        @add " == "
+        @add ", "
         @rnd n.test_expected
+        @add ")"
     
     ▸testSuite: ◇Node n ->
     
-        if n.kind == ●testSuite
-            @add "suite"
-        else
-            @add "test"
-        @add " \"" 
+        @add "test("
+        @add "\"" 
         @add n.token.str[4..^1] 
-        @add "\": "
+        @add "\", function()"
         @rnd n.test_block
+        @add "\n    end)"
     
     rnd: ◇Node n ->
     
