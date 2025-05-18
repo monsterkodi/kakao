@@ -479,7 +479,7 @@ proc rSymbol(this : Parser) : Node =
             n.string_prefix = nod(●literal, token)
             return n
         if this.isImplicitCallPossible(): 
-            let args = this.parseCallArgs(token.col)
+            var args = this.parseCallArgs(token.col)
             return Node(token: token, kind: ●call, callee: nod(●literal, token), callargs: args)
         nod(●literal, token)
 # ███  ████████                             ███  ████████                               ███  ████████  
@@ -947,6 +947,11 @@ proc rPreOp(this : Parser) : Node =
         var right = this.expression(token)
         nod(●preOp, token, right)
 
+proc rAssert(this : Parser) : Node = 
+        var token = this.consume()
+        var args = this.parseCallArgs(token.col)
+        Node(token: token, kind: ●call, callee: nod(●literal, token), callargs: args)
+
 proc rDollar(this : Parser) : Node = 
         if (this.current.str.len > 1): 
             var token = this.consume()
@@ -1121,6 +1126,7 @@ proc setup(this : Parser) =
         this.pratt(◂enum, nil, rEnum, 0)
         this.pratt(◂continue, nil, rKeyword, 0)
         this.pratt(◂break, nil, rKeyword, 0)
+        this.pratt(◂assert, nil, rAssert, 0)
         this.pratt(◂colon, lMember, nil, 10)
         this.pratt(◂assign, lAssign, nil, 10)
         this.pratt(◂plus_assign, lAssign, nil, 10)

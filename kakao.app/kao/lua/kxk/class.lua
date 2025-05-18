@@ -21,7 +21,7 @@ function _wrapIndex(aClass, f)
             end
         end
     else 
-        assert((type(f) == 'table'), "__index not a table")
+        assert((type(f) == "table"), "__index not a table")
         return function (self, name) 
             local value = aClass.__members[name]
             
@@ -159,7 +159,7 @@ local DefaultMixin = {
             return instance
         end, 
         subclass = function (self, name) 
-            assert((type(self) == 'table'), "Use :subclass instead of .subclass")
+            assert((type(self) == "table"), "Use :subclass instead of .subclass")
             assert((type(name) == "string"), "Invalid subclass name")
             
             subclass = _createClass(name, self)
@@ -183,11 +183,11 @@ local DefaultMixin = {
             return subclass
         end, 
         extends = function (self, other) 
-            assert((type(self) == 'table'), "Use :extends instead of .extends")
+            assert((type(self) == "table"), "Use :extends instead of .extends")
             return (((type(other) == 'table') and (type(self.super) == 'table')) and ((self.super == other) or self.super:extends(other)))
         end, 
         include = function (self, ...) 
-            assert((type(self) == 'table'), "Use :include instead of .include")
+            assert((type(self) == "table"), "Use :include instead of .include")
             for _, mixin in ipairs({...}) do _includeMixin(self, mixin) end
             return self
         end
@@ -196,7 +196,7 @@ local DefaultMixin = {
 
 local middleclass = {
     class = function (name, super) 
-        assert((type(name) == 'string'), "Invalid class name")
+        assert((type(name) == "string"), "Invalid class name")
         return ((super and super:subclass(name)) or _includeMixin(_createClass(name), DefaultMixin))
     end
     }

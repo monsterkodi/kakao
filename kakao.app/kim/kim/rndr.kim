@@ -290,6 +290,8 @@ class Rndr
     
         if n.callee.token.str == "log"
             @add "echo"
+        elif n.callee.token.str == "▴"
+            @add "assert"
         elif n.callee.token.str[0] == '@'
             @add n.callee.token.str[1..^1]
             @add "().init"

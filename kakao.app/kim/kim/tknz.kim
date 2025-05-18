@@ -39,6 +39,7 @@ enum tok*
     ◂catch
     ◂let                
     ◂var                
+    ◂assert             = "▴"
     ◂not                = "!" 
     ◂and                = "&&" 
     ◂or                 = "||" 
@@ -217,7 +218,7 @@ class Tknzr
         
     nextLine: ->
     
-        assert @segs[@segi] == "\n"
+        ▴ @segs[@segi] == "\n"
         @incr 1
         @line += 1
         @bol = @segi
@@ -295,7 +296,7 @@ class Tknzr
     
         topTok = @tokens[^1]
         
-        assert topTok.tok in {◂string_start ◂stripol_end}
+        ▴ topTok.tok in {◂string_start ◂stripol_end}
         
         ampersand = false
         stripolStart = "#" & "{"

@@ -1,4 +1,3 @@
-class = require "../class"
 kxk = require "../kxk"
 
 

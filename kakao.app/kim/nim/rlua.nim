@@ -277,6 +277,8 @@ proc ▸comment(this : Rlua, n : Node) =
 proc ▸call(this : Rlua, n : Node) = 
         if (n.callee.token.str == "log"): 
             this.add("print")
+        elif (n.callee.token.str == "▴"): 
+            this.add("assert")
         elif (n.callee.token.str[0] == '@'): 
             this.add(n.callee.token.str[1..^1])
             this.add("().init")

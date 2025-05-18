@@ -448,6 +448,12 @@ suite "test":
     test "section": 
         check slash.normalize("xyz") == "xyz"
         check slash.normalize("xyz") == 2""")
+    test "assert": 
+        t("▴ false", "assert(false)")
+        t("▴ 1 == 1 'equal'", "assert((1 == 1), \"equal\")")
+        t("assert 1 == 1 'equal'", "assert((1 == 1), \"equal\")")
+        t("assert(1 == 1 'equal')", "assert((1 == 1), \"equal\")")
+        t("assert(1 == 1, 'equal')", "assert((1 == 1), \"equal\")")
     test "misc": 
         t("●dir", "currentSourcePath().split(\"/\")[0..^2].join(\"/\")")
         t("●file", "currentSourcePath()")

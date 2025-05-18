@@ -566,7 +566,7 @@ class Parser
             ⮐  n
     
         if @isImplicitCallPossible()
-            let args = this.parseCallArgs token.col
+            args = this.parseCallArgs token.col
             ⮐  Node token:token kind:●call callee:nod(●literal token) callargs:args
     
         nod ●literal token
@@ -1165,6 +1165,12 @@ class Parser
         right = @expression token
         nod ●preOp token right
         
+    rAssert: ➜Node ->
+    
+        token = @consume()
+        args  = @parseCallArgs token.col
+        Node token:token kind:●call callee:nod(●literal token) callargs:args
+        
     rDollar: ➜Node ->
     
         if @current.str.len > 1
@@ -1380,6 +1386,7 @@ class Parser
         @pratt ◂enum              nil               rEnum           0
         @pratt ◂continue          nil               rKeyword        0
         @pratt ◂break             nil               rKeyword        0
+        @pratt ◂assert            nil               rAssert         0
                                                                         
         @pratt ◂colon             lMember           nil            10
         @pratt ◂assign            lAssign           nil            10

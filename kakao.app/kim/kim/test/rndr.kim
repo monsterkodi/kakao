@@ -551,6 +551,13 @@ template t(a:string, b:string) = testCmp(a, renderNim(a, false), b, instantiatio
                 test "section": 
                     check slash.normalize("xyz") == "xyz"
                     check slash.normalize("xyz") == 2"""
+    ▸ assert
+    
+        t "▴ false"                                     "assert(false)"
+        t "▴ 1 == 1 'equal'"                            "assert((1 == 1), \"equal\")"
+        t "assert 1 == 1 'equal'"                       "assert((1 == 1), \"equal\")"
+        t "assert(1 == 1 'equal')"                      "assert((1 == 1), \"equal\")"
+        t "assert(1 == 1, 'equal')"                     "assert((1 == 1), \"equal\")"
         
     ▸ misc
     

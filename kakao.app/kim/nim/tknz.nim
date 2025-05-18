@@ -37,6 +37,7 @@ type tok* = enum
     ◂catch
     ◂let
     ◂var
+    ◂assert = "▴"
     ◂not = "!"
     ◂and = "&&"
     ◂or = "||"

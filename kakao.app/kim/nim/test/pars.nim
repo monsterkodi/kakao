@@ -418,6 +418,8 @@ test = false
 # ███  
 test = false
 """, "▪[##(◂name = ✘)]")
+    test "assert": 
+        t("assert 1 == 1 'equal'", "▪[(▴ ◂call @[(◂number == ◂number), ◂string])]")
     test "verbatim": 
         t("proc ast*(text:string) : Node =", "▪[◂verbatim]")
         t("import ../../rel/[s1, s2]", "▪[◂verbatim]")

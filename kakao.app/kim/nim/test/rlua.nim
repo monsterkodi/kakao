@@ -264,6 +264,12 @@ end
     test "semicolon": 
         t("if a ➜ b ; c", "if a then b ; c end")
         t("if a ➜ b ; c ➜ d; e", "if a then b ; c else d ; e end")
+    test "assert": 
+        t("▴ false", "assert(false)")
+        t("▴ 1 == 1 'equal'", "assert((1 == 1), 'equal')")
+        t("assert 1 == 1 'equal'", "assert((1 == 1), 'equal')")
+        t("assert(1 == 1 'equal')", "assert((1 == 1), 'equal')")
+        t("assert(1 == 1, 'equal')", "assert((1 == 1), 'equal')")
     test "blocks": 
         t("""
 f = ->

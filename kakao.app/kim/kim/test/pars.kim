@@ -547,6 +547,10 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
             # ███  
             test = false
             """                                     "▪[##(◂name = ✘)]"
+
+    ▸ assert
+    
+        t "assert 1 == 1 'equal'"                   "▪[(▴ ◂call @[(◂number == ◂number), ◂string])]"
         
     ▸ verbatim
     

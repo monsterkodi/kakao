@@ -319,6 +319,8 @@ class Rlua
     
         if n.callee.token.str == "log"
             @add "print"
+        elif n.callee.token.str == "▴"
+            @add "assert"
         elif n.callee.token.str[0] == '@'
             @add n.callee.token.str[1..^1]
             @add "().init"
