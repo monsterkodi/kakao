@@ -8,11 +8,12 @@
 
 
 function _createIndexWrapper(aClass, f) 
+    print("indexWrap")
     if (f == nil) then 
-        return aClass.__methods
+        return aClass.__members
     elseif (type(f) == "function") then 
         return function (self, name) 
-            local value = aClass.__methods[name]
+            local value = aClass.__members[name]
             
             if (value ~= nil) then 
                 return value
@@ -22,7 +23,7 @@ function _createIndexWrapper(aClass, f)
         end
     else 
         return function (self, name) 
-            local value = aClass.__methods[name]
+            local value = aClass.__members[name]
             
             if (value ~= nil) then 
                 return value
@@ -34,27 +35,37 @@ function _createIndexWrapper(aClass, f)
 end
 
 
-function _propagateMethod(aClass, name, f) 
+function _propagateMember(aClass, name, f) 
     f = (((name == "__index") and _createIndexWrapper(aClass, f)) or f)
     
-    aClass.__methods[name] = f
-    
-    for subclass in pairs(aClass.subclasses) do 
-        if (rawget(subclass.__declaredMethods, name) == nil) then 
-            _propagateMethod(subclass, name, f)
+    if (type(f) == "function") then 
+        aClass.__members[name] = f
+        for subclass in pairs(aClass.subclasses) do 
+            if (rawget(subclass.__members, name) == nil) then 
+                _propagateMember(subclass, name, f)
+            end
+        end
+    else 
+        aClass.__proto[name] = f
+        for subclass in pairs(aClass.subclasses) do 
+            if (rawget(subclass.__proto, name) == nil) then 
+                _propagateMember(subclass, name, f)
+            end
         end
     end
 end
 
 
-function _declareMethod(aClass, name, f) 
-    aClass.__declaredMethods[name] = f
-    
+function _newMember(aClass, name, f) 
     if ((f == nil) and aClass.super) then 
-        f = aClass.super.__methods[name]
+        f = aClass.super.__members[name]
     end
     
-    _propagateMethod(aClass, name, f)
+    if ((f == nil) and aClass.super) then 
+        f = aClass.super.__proto[name]
+    end
+    
+    _propagateMember(aClass, name, f)
 end
 
 
@@ -73,8 +84,8 @@ function _createClass(name, super)
         name = name, 
         super = super, 
         static = {}, 
-        __methods = dict, 
-        __declaredMethods = {}, 
+        __members = dict, 
+        __proto = {}, 
         subclasses = setmetatable({}, {__mode = 'k'})
         }
     
@@ -97,7 +108,7 @@ function _createClass(name, super)
         __index = aClass.static, 
         __tostring = _tostring, 
         __call = _call, 
-        __newindex = _declareMethod
+        __newindex = _newMember
         })
     
     return aClass
@@ -131,7 +142,12 @@ local DefaultMixin = {
     static = {
         allocate = function (self) 
             assert((type(self) == 'table'), "Use :allocate instead of .allocate")
-            return setmetatable({class = self}, self.__methods)
+            instance = {class = self}
+            for k, m in pairs(self.__proto) do 
+                instance[k] = m
+            end
+            
+            return setmetatable(instance, self.__members)
         end, 
         new = function (self, ...) 
             assert((type(self) == 'table'), "Use :new instead of .new")
@@ -145,9 +161,15 @@ local DefaultMixin = {
             
             subclass = _createClass(name, self)
             
-            for methodName, f in pairs(self.__methods) do 
-                if not ((methodName == "__index") and (type(f) == "table")) then 
-                    _propagateMethod(subclass, methodName, f)
+            for name, f in pairs(self.__members) do 
+                if not ((name == "__index") and (type(f) == "table")) then 
+                    _propagateMember(subclass, name, f)
+                end
+            end
+            
+            for name, f in pairs(self.__proto) do 
+                if not ((name == "__index") and (type(f) == "table")) then 
+                    _propagateMember(subclass, name, f)
                 end
             end
             

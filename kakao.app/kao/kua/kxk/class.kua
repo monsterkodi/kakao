@@ -8,13 +8,13 @@
 # Copyright (c) 2011 Enrique García Cota
 
 _createIndexWrapper = aClass f ->
-
+    log "indexWrap"
     if f == nil
-        ⮐   aClass.__methods
+        ⮐   aClass.__members
         
     elif type(f) == "function"
         ⮐  (self name) ->
-            value = aClass.__methods[name]
+            value = aClass.__members[name]
             
             if value != nil
                 ⮐  value
@@ -23,31 +23,36 @@ _createIndexWrapper = aClass f ->
                 
     else # if  type(f) == "table"
         ⮐  (self name) ->
-            value = aClass.__methods[name]
+            value = aClass.__members[name]
             
             if value != nil
                 ⮐  value
             else
                 ⮐  f[name]
 
-_propagateMethod = aClass name f ->
+_propagateMember = aClass name f ->
 
     f = name == "__index" and _createIndexWrapper(aClass, f) or f
     
-    aClass.__methods[name] = f
-    
-    for subclass in pairs(aClass.subclasses)
-        if rawget(subclass.__declaredMethods, name) == nil
-            _propagateMethod(subclass, name, f)
+    if type(f) == "function"
+        aClass.__members[name] = f
+        for subclass in pairs(aClass.subclasses)
+            if rawget(subclass.__members, name) == nil
+                _propagateMember(subclass, name, f)
+    else
+        aClass.__proto[name] = f
+        for subclass in pairs(aClass.subclasses)
+            if rawget(subclass.__proto, name) == nil
+                _propagateMember(subclass, name, f)
 
-_declareMethod = aClass name f ->
+_newMember = aClass name f ->
   
-    aClass.__declaredMethods[name] = f
-    
     if f == nil and aClass.super
-        f = aClass.super.__methods[name]
-    
-    _propagateMethod(aClass, name, f)
+        f = aClass.super.__members[name]
+    if f == nil and aClass.super
+        f = aClass.super.__proto[name]
+        
+    _propagateMember(aClass, name, f)
 
 _tostring = self -> ⮐  "class " .. self.name
 _call = self ... -> ⮐  self:new(...)
@@ -61,8 +66,8 @@ _createClass = name super ->
         name:  name
         super: super
         static: {}
-        __methods: dict
-        __declaredMethods: {}
+        __members: dict
+        __proto:   {}
         subclasses: setmetatable({}, {__mode='k'}) 
         }
     
@@ -81,7 +86,7 @@ _createClass = name super ->
         __index     = aClass.static, 
         __tostring  = _tostring,
         __call      = _call, 
-        __newindex  = _declareMethod })
+        __newindex  = _newMember })
         
     ⮐  aClass
 
@@ -115,7 +120,10 @@ DefaultMixin = {
         allocate: (self) ->
         
             assert(type(self) == 'table', "Use :allocate instead of .allocate")
-            ⮐  setmetatable({ class = self }, self.__methods)
+            instance = { class = self }
+            for k m in pairs(self.__proto)
+                instance[k] = m
+            ⮐  setmetatable(instance, self.__members)
         
         new: (self ...) ->
         
@@ -131,9 +139,13 @@ DefaultMixin = {
             
             subclass = _createClass(name, self)
             
-            for methodName, f in pairs(self.__methods)
-                if not (methodName == "__index" and type(f) == "table")
-                    _propagateMethod(subclass, methodName, f)
+            for name, f in pairs(self.__members)
+                if not (name == "__index" and type(f) == "table")
+                    _propagateMember(subclass, name, f)
+                    
+            for name, f in pairs(self.__proto)
+                if not (name == "__index" and type(f) == "table")
+                    _propagateMember(subclass, name, f)
                     
             subclass.init = ((instance, ...) -> ⮐  self.init(instance, ...))
             
