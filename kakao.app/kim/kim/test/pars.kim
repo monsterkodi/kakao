@@ -267,6 +267,7 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
         t "let (dir name ext) = triple"             "▪[(◂let (◂[◂name, ◂name, ◂name] (= ◂name)))]"
         
         t "s &= v"                                  "▪[(◂name &= ◂name)]"
+        t "s ?= v"                                  "▪[(◂name ?= ◂name)]"
 
     ▸ arrays
     

@@ -200,6 +200,7 @@ hook = -> {.noconv.}
         t("(a b) = c", "▪[(◂[◂name, ◂name] = ◂name)]")
         t("let (dir name ext) = triple", "▪[(◂let (◂[◂name, ◂name, ◂name] (= ◂name)))]")
         t("s &= v", "▪[(◂name &= ◂name)]")
+        t("s ?= v", "▪[(◂name ?= ◂name)]")
     test "arrays": 
         t("a = [ 1  2 ]", "▪[(◂name = [[◂number, ◂number]])]")
         t("a = [\n    1\n    2\n    ]", "▪[(◂name = [[◂number, ◂number]])]")

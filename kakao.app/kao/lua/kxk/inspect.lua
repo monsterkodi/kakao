@@ -154,8 +154,6 @@ function Inspector:init(root)
         
         self:putValue(root)
         
-        -- log "Inspector" root
-        
         return table.concat(self.buf)
     end
 

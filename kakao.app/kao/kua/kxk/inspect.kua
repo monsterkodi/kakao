@@ -18,9 +18,9 @@ fmt   = string.format
 rawpairs = t -> ⮐  (next t nil)
 
 smartQuote = str ->
-    if match(str, '"') and not match(str, "'")
+    if match(str '"') and not match(str "'")
        ⮐  "'" & str & "'"
-    ⮐  '"' & gsub(str, '"', '\\"') & '"'
+    ⮐  '"' & gsub(str '"' '\\"') & '"'
     
 shortEscapes = {"\a":"\\a" "\b":"\\b" "\f":"\\f" "\n":"\\n" "\r":"\\r" "\t":"\\t" "\v":"\\v" "\127":"\\127"}
 longEscapes  = {"\127":"\127"}
@@ -66,7 +66,7 @@ isSequenceKey = k sequenceLength ->
 
     ⮐  type(k) == "number" and math.floor(k) == k and 1 <= (k) and k <= sequenceLength
 
-typeOrders = { 'number':1   'boolean':2  'string':3 'table':4 'function':5 'userdata':6 'thread':7 }
+typeOrders = { 'number':1 'boolean':2 'string':3 'table':4 'function':5 'userdata':6 'thread':7 }
 
 sortKeys = a b ->
 
@@ -88,13 +88,13 @@ getKeys = t ->
         seqLen = seqLen + 1
     seqLen = seqLen - 1
     
-    (keys, keysLen) = ({}, 0)
+    (keys keysLen) = ({} 0)
     for k in rawpairs(t)
-        if not isSequenceKey(k, seqLen)
+        if not isSequenceKey(k seqLen)
             keysLen = keysLen + 1
             keys[keysLen] = k
     table.sort(keys, sortKeys)
-    ⮐  (keys, keysLen, seqLen)
+    ⮐  (keys keysLen seqLen)
 
 countCycles = x cycles ->
 
@@ -130,8 +130,6 @@ class Inspector
         
         @putValue root
         
-        # log "Inspector" root
-        
         ⮐  table.concat @buf
 
     getId: v ->
@@ -152,9 +150,9 @@ class Inspector
         tv = type(v)
         
         if tv == 'string'
-            puts(buf, smartQuote(escape(v)))
+            puts buf smartQuote(escape(v))
         elif tv == 'number' or tv == 'boolean' or tv == 'nil' or tv == 'cdata' or tv == 'ctype' 
-            puts(buf, tostring(v))
+            puts buf tostring(v)
         elif tv == 'table' and not @ids[v]
             t = v
             

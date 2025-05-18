@@ -40,6 +40,12 @@ suite "rlua":
         t("not a or not b", "(not a or not b)")
     test "comparison ops": 
         t("a != b", "(a ~= b)")
+    test "assignment": 
+        t("a += 1", "a = a + 1")
+        t("a -= 1", "a = a - 1")
+        t("a /= 1", "a = a / 1")
+        t("a *= 1", "a = a * 1")
+        # t "a ?= 1"                                    "a = a or 1"
     test "ampersand                                     ": 
        t("a & b", "a .. b")
     test "parens                                        ": 

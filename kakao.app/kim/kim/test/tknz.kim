@@ -462,6 +462,11 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("s"   ◂name                 0  0)
             tk("&="  ◂ampersand_assign     0  2)
             tk("v"   ◂name                 0  5)]
+
+        t "s ?= v"   @[
+            tk("s"   ◂name                 0  0)
+            tk("?="  ◂qmark_assign         0  2)
+            tk("v"   ◂name                 0  5)]
         
     # ███   ███  ███   ███  ██     ██  ███████    ████████  ████████    ███████
     # ████  ███  ███   ███  ███   ███  ███   ███  ███       ███   ███  ███     

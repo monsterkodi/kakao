@@ -426,3 +426,16 @@ function FunInc:fun(m)
 function FunInc:inc(a1) 
         self:fun((self.m + 1))
     end""")
+    test "tostring": 
+        l("""
+class Print
+    m: "hello"
+    $: -> ⮐  @m
+""", """
+
+local Print = class("Print")
+    Print.m = "hello"
+
+
+function Print:__tostring() return self.m
+    end""")

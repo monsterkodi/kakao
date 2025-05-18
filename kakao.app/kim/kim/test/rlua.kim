@@ -48,6 +48,14 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
     ▸ comparison ops
     
         t "a != b"                                    "(a ~= b)"
+        
+    ▸ assignment
+    
+        t "a += 1"                                    "a = a + 1"
+        t "a -= 1"                                    "a = a - 1"
+        t "a /= 1"                                    "a = a / 1"
+        t "a *= 1"                                    "a = a * 1"
+        # t "a ?= 1"                                    "a = a or 1"
                                                     
     ▸ ampersand                                     
                                                    

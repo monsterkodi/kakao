@@ -115,7 +115,10 @@ class Rlua
         else
             @add "function "
         
-        @rnd n.operand_left
+        if n.operand_left.token.str[^1] == '$'
+            @add n.operand_left.token.str[0..^2] & "__tostring"
+        else
+            @rnd n.operand_left
 
         @sigBody f
         
@@ -133,13 +136,33 @@ class Rlua
                 @▸function n
                 ⮐  
     
-        outerbr = n.token.tok notin {◂assign ◂ampersand}
+        outerbr = n.token.tok notin {◂assign ◂ampersand ◂plus_assign ◂minus_assign ◂multiply_assign ◂divide_assign }
         @add("(") if outerbr
         @rnd n.operand_left
         @spc()
         switch n.token.tok
             ◂ampersand  ➜ @add ".."
             ◂not_equal  ➜ @add "~="
+            ◂plus_assign 
+                @add "= " 
+                @rnd(n.operand_left)
+                @add(" +")
+            ◂minus_assign 
+                @add "= " 
+                @rnd(n.operand_left)
+                @add(" -")
+            ◂multiply_assign 
+                @add "= " 
+                @rnd(n.operand_left)
+                @add(" *")
+            ◂divide_assign 
+                @add "= " 
+                @rnd(n.operand_left)
+                @add(" /")
+            ◂qmark_assign
+                @add "= " 
+                @rnd(n.operand_left)
+                @add(" or")
             ◂and        ➜ @add 'and'
             ◂or         ➜ @add 'or'
                         ➜ @tok n

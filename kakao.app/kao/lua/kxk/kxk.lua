@@ -6,8 +6,10 @@
 
 _G.buffer = require("string.buffer")
 _G.childp = require("childprocess")
+_G.class = require("./class")
 _G.inspect = require("./inspect")
 _G.slash = require("./slash")
+_G.test = require("./test")
 
 local kxk = {}
 

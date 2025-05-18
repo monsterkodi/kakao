@@ -101,7 +101,10 @@ proc ▸function(this : Rlua, n : Node) =
             this.add("method ")
         else: 
             this.add("function ")
-        this.rnd(n.operand_left)
+        if (n.operand_left.token.str[^1] == '$'): 
+            this.add(n.operand_left.token.str[0..^2] & "__tostring")
+        else: 
+            this.rnd(n.operand_left)
         this.sigBody(f)
         var idt = this.nodeIndent(n.operand_left)
         this.add("\n" & idt & "end")
@@ -114,13 +117,33 @@ proc ▸operation(this : Rlua, n : Node) =
             if (n.operand_right.token.tok in {◂func, ◂method}): 
                 this.▸function(n)
                 return
-        var outerbr = (n.token.tok notin {◂assign, ◂ampersand})
+        var outerbr = (n.token.tok notin {◂assign, ◂ampersand, ◂plus_assign, ◂minus_assign, ◂multiply_assign, ◂divide_assign})
         if outerbr: this.add("(")
         this.rnd(n.operand_left)
         this.spc()
         case n.token.tok:
             of ◂ampersand: this.add("..")
             of ◂not_equal: this.add("~=")
+            of ◂plus_assign: 
+                this.add("= ")
+                this.rnd(n.operand_left)
+                this.add(" +")
+            of ◂minus_assign: 
+                this.add("= ")
+                this.rnd(n.operand_left)
+                this.add(" -")
+            of ◂multiply_assign: 
+                this.add("= ")
+                this.rnd(n.operand_left)
+                this.add(" *")
+            of ◂divide_assign: 
+                this.add("= ")
+                this.rnd(n.operand_left)
+                this.add(" /")
+            of ◂qmark_assign: 
+                this.add("= ")
+                this.rnd(n.operand_left)
+                this.add(" or")
             of ◂and: this.add("and")
             of ◂or: this.add("or")
             else: this.tok(n)

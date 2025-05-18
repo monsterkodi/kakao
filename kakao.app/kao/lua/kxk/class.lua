@@ -73,9 +73,6 @@ function _newMember(aClass, name, f)
 end
 
 
-function _tostring(self) return "class "..self.name
-end
-
 function _call(self, ...) return self:new(...)
 end
 
@@ -110,7 +107,7 @@ function _createClass(name, super)
     
     setmetatable(aClass, {
         __index = aClass.static, 
-        __tostring = _tostring, 
+        __tostring = function (self) return "class " .. self.name end, 
         __call = _call, 
         __newindex = _newMember
         })

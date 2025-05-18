@@ -1,0 +1,26 @@
+
+# █████████  ████████   ███████  █████████
+#    ███     ███       ███          ███   
+#    ███     ███████   ███████      ███   
+#    ███     ███            ███     ███   
+#    ███     ████████  ███████      ███   
+
+class test
+
+    $: -> ⮐  "▸" & @suite
+    
+    @: s t ->
+        @suite = s  
+        _G.testStack ?= {}
+        _G.testIndex = 0
+        table.insert testStack @suite
+        log "▸ " & string.rep("    " testStack.len-1) & testStack[testStack.len]
+        t()
+        table.remove testStack
+    
+test.static.eql = a b ->
+    _G.testIndex += 1
+    if a != b 
+        log "✘ [" & _G.testIndex & "] " & a & " != " & b
+        
+⮐  test

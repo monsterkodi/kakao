@@ -552,7 +552,7 @@ class Parser
             ◂then ◂else ◂elif ◂test ◂val_type ◂var_type ◂colon ◂semicolon
             ◂plus ◂minus ◂divide ◂multiply ◂and ◂or ◂ampersand ◂is ◂in ◂notin ◂not
             ◂equal ◂not_equal ◂greater_equal ◂less_equal ◂greater ◂less ◂match ◂comment_start
-            ◂assign ◂divide_assign ◂multiply_assign ◂plus_assign ◂minus_assign ◂ampersand_assign }
+            ◂assign ◂divide_assign ◂multiply_assign ◂plus_assign ◂minus_assign ◂ampersand_assign ◂qmark_assign }
             
         ⮐  false if currt.tok in optoks  
         
@@ -1395,6 +1395,7 @@ class Parser
         @pratt ◂divide_assign     lAssign           nil            10
         @pratt ◂multiply_assign   lAssign           nil            10
         @pratt ◂ampersand_assign  lAssign           nil            10
+        @pratt ◂qmark_assign      lAssign           nil            10
     
         @pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
         

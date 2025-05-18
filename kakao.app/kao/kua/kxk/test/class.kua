@@ -12,14 +12,31 @@ a = A(1 2)
 
 class FunInc
     m: 0
+    $: -> ⮐  "FunInc " & @m
     fun: m -> 
         @m = m
     inc: a1 ->
         @fun @m + a1
+        log @
         
 f = FunInc()
 
-log inspect(f)
-log "-------------"
-f.inc 2
-log inspect(f)
+log f
+f:inc 2
+f:inc 2
+
+class Print
+    m: "hello"
+    $: -> ⮐  @m
+
+p = Print()
+log p
+
+test("class" ->
+
+    test("simple" ->
+    
+        test.eql(1 1)
+        test.eql(1 2)
+        )
+    )        

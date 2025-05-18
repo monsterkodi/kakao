@@ -463,3 +463,23 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
             function FunInc:inc(a1) 
                     self:fun((self.m + 1))
                 end"""            
+                
+                
+    ▸ tostring
+    
+        l   """
+            class Print
+                m: "hello"
+                $: -> ⮐  @m
+            """ """
+            
+            local Print = class("Print")
+                Print.m = "hello"
+            
+            
+            function Print:__tostring() return self.m
+                end"""
+                
+                
+                
+    
