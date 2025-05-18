@@ -149,46 +149,12 @@ function makePath(path, a, b)
 end
 
 
-function processRecursive(procss, item, path, visited) 
-    if (item == nil) then return nil end
-    if visited[item] then return visited[item] end
-    
-    local pitem = procss(item, path)
-    
-    if (type(pitem) == "table") then 
-        local pcopy = {}
-        visited[item] = pcopy
-        
-        for k, v in rawpairs(pitem) do 
-            local pkey = processRecursive(procss, k, makePath(path, k, inspect.KEY), visited)
-            if (pkey ~= nil) then 
-                pcopy[pkey] = processRecursive(procss, v, makePath(path, pkey), visited)
-            end
-        end
-        
-        local mt = processRecursive(procss, getmetatable(pitem), makePath(path, inspect.METATABLE), visited)
-        if (type(mt) ~= 'table') then mt = nil end
-        setmetatable(pcopy, mt)
-        pitem = pcopy
-    end
-    
-    return pitem
-end
-
-
 function puts(buf, str) 
     buf.n = (buf.n + 1)
     buf[buf.n] = str
 end
 
 local Inspector = {}
-
-local Inspector_mt = {__index = Inspector}
-
-
-function tabify(inspector) 
-    puts(inspector.buf, inspector.newline .. rep(inspector.indent, inspector.level))
-end
 
 
 function Inspector:getId(v) 
@@ -205,7 +171,11 @@ end
 
 
 function Inspector:putValue(v) 
-    buf = self.buf
+    
+    function tabify() puts(self.buf, self.newline .. rep(self.indent, self.level))
+    end
+    
+    local buf = self.buf
     local tv = type(v)
     
     if (tv == 'string') then 
@@ -213,7 +183,7 @@ function Inspector:putValue(v)
     elseif (((((tv == 'number') or (tv == 'boolean')) or (tv == 'nil')) or (tv == 'cdata')) or (tv == 'ctype')) then 
         puts(buf, tostring(v))
     elseif ((tv == 'table') and not self.ids[v]) then 
-        t = v
+        local t = v
         
         if ((t == inspect.KEY) or (t == inspect.METATABLE)) then 
             puts(buf, tostring(t))
@@ -224,17 +194,15 @@ function Inspector:putValue(v)
             
             local keys, keysLen, seqLen = getKeys(t)
             
-            puts(buf, '{')
             self.level = (self.level + 1)
             
             for i = 1, (seqLen + keysLen) do 
-                if (i > 1) then puts(buf, ',') end
                 if (i <= seqLen) then 
                     puts(buf, ' ')
                     self:putValue(t[i])
                 else 
-                    k = keys[(i - seqLen)]
-                    tabify(self)
+                    local k = keys[(i - seqLen)]
+                    tabify()
                     if isIdentifier(k) then 
                         puts(buf, k)
                     else 
@@ -243,59 +211,49 @@ function Inspector:putValue(v)
                         puts(buf, "]")
                     end
                     
-                    puts(buf, ' = ')
+                    puts(buf, '  ')
                     self:putValue(t[k])
                 end
             end
             
             local mt = getmetatable(t)
             if (type(mt) == 'table') then 
-                if ((seqLen + keysLen) > 0) then puts(buf, ',') end
-                tabify(self)
-                puts(buf, '<metatable> = ')
+                tabify()
+                puts(buf, '<meta> ')
                 self:putValue(mt)
             end
             
             self.level = (self.level - 1)
             
-            if ((keysLen > 0) or (type(mt) == 'table')) then 
-                tabify(self)
-            elseif (seqLen > 0) then 
+            if (seqLen > 0) then 
                 puts(buf, ' ')
             end
-            
-            puts(buf, '}')
         end
     else 
-        puts(buf, fmt('<%s %d>', tv, self:getId(v)))
+        if (tv == "function") then 
+            puts(buf, "->")
+        elseif (tv == "table") then 
+            puts(buf, "<" .. self:getId(v) .. ">")
+        else 
+            puts(buf, fmt('<%s %d>', tv, self:getId(v)))
+        end
     end
 end
 
 
-function inspect.inspect(root, options) 
-    options = (options or {})
-    
-    local depth = (options.depth or math.huge)
-    local newline = (options.newline or '\n')
-    local indent = (options.indent or '  ')
-    procss = options.process
-    
-    if procss then 
-        root = processRecursive(procss, root, {}, {})
-    end
-    
-    cycles = {}
+function inspect.inspect(root) 
+    local cycles = {}
     countCycles(root, cycles)
     
-    inspector = setmetatable({
+    local inspector = setmetatable({
         buf = {n = 0}, 
         ids = {}, 
         cycles = cycles, 
-        depth = depth, 
+        depth = math.huge, 
         level = 0, 
-        newline = newline, 
-        indent = indent
-        }, Inspector_mt)
+        newline = '\n', 
+        indent = "    "
+        }, {__index = Inspector})
     
     inspector:putValue(root)
     
@@ -303,7 +261,7 @@ function inspect.inspect(root, options)
 end
 
 setmetatable(inspect, {
-    __call = function (_, root, options) return inspect.inspect(root, options) end
+    __call = function (_, root) return inspect.inspect(root) end
     })
 
 return inspect

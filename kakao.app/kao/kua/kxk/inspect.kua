@@ -123,41 +123,12 @@ makePath = path a b ->
     
     ⮐  newPath
 
-processRecursive = procss item path visited ->
-
-    if item == nil ➜ ⮐  nil
-    if visited[item] ➜ ⮐  visited[item]
-    
-    pitem = procss item path
-    
-    if type(pitem) == "table"
-        pcopy = {}
-        visited[item] = pcopy
-        
-        for k v in rawpairs(pitem)
-            pkey = processRecursive procss k makePath(path k inspect.KEY) visited
-            if pkey != nil
-                pcopy[pkey] = processRecursive procss v makePath(path pkey) visited
-        
-        mt = processRecursive procss getmetatable(pitem) makePath(path inspect.METATABLE) visited
-        if type(mt) != 'table' ➜ mt = nil
-        setmetatable(pcopy, mt)
-        pitem = pcopy
-        
-    ⮐  pitem
-
 puts = buf str ->
 
     buf.n = buf.n + 1
     buf[buf.n] = str
 
 Inspector = {}
-
-Inspector_mt = { __index: Inspector }
-
-tabify = inspector ->
-
-    puts inspector.buf inspector.newline & rep(inspector.indent inspector.level)
 
 Inspector:getId = v ->
 
@@ -170,6 +141,8 @@ Inspector:getId = v ->
     ⮐  tostring(id)
 
 Inspector:putValue = v ->
+
+    tabify = -> puts self.buf self.newline & rep(self.indent self.level)
 
     buf = self.buf
     tv = type(v)
@@ -190,55 +163,43 @@ Inspector:putValue = v ->
             
             (keys keysLen seqLen) = getKeys(t)
             
-            puts buf '{'
             self.level = self.level + 1
             
             for i in 1..seqLen + keysLen 
-                if i > 1 ➜ puts(buf, ',')
                 if i <= seqLen
                     puts buf ' '
                     self:putValue(t[i])
                 else
                     k = keys[i - seqLen]
-                    tabify(self)
+                    tabify()
                     if isIdentifier k
                         puts buf k
                     else
                         puts buf "["
                         self:putValue k
                         puts buf "]"
-                    puts buf ' = '
+                    puts buf '  '
                     self:putValue t[k]
             
             mt = getmetatable(t)
             if type(mt) == 'table'
-                if seqLen + keysLen > 0 ➜ puts(buf, ',')
-                tabify self
-                puts buf '<metatable> = '
+                tabify()
+                puts buf '<meta> '
                 self:putValue(mt)
             
             self.level = self.level - 1
             
-            if keysLen > 0 or type(mt) == 'table'
-                tabify self
-            elif seqLen > 0
+            if seqLen > 0
                 puts buf ' '
-            
-            puts buf '}'
     else
-        puts buf fmt('<%s %d>', tv, self:getId(v))
+        if tv == "function"
+            puts buf "->"
+        elif tv == "table"
+            puts buf "<" & self:getId(v) & ">"
+        else
+            puts buf fmt('<%s %d>' tv self:getId(v))
 
-inspect.inspect = root options ->
-    
-    options = options or {}
-    
-    depth   = options.depth or (math.huge)
-    newline = options.newline or '\n'
-    indent  = options.indent or '  '
-    procss  = options.process
-    
-    if procss
-        root = processRecursive procss root {} {}
+inspect.inspect = root ->
     
     cycles = {}
     countCycles(root, cycles)
@@ -247,18 +208,18 @@ inspect.inspect = root options ->
         buf     : { n = 0 }
         ids     : {}
         cycles  : cycles
-        depth   : depth
+        depth   : math.huge
         level   : 0
-        newline : newline
-        indent  : indent
-    } Inspector_mt)
+        newline : '\n'
+        indent  : "    "
+    } { __index: Inspector })
     
     inspector:putValue root
     
     ⮐  table.concat inspector.buf
 
 setmetatable inspect {
-    __call = ((_, root, options) -> ⮐  inspect.inspect(root, options))
+    __call = ((_, root) -> ⮐  inspect.inspect(root))
 }
 
 ⮐  inspect
