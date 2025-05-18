@@ -55,7 +55,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "a -= 1"                                    "a = a - 1"
         t "a /= 1"                                    "a = a / 1"
         t "a *= 1"                                    "a = a * 1"
-        # t "a ?= 1"                                    "a = a or 1"
+        t "a ?= 1"                                    "a = a or 1"
                                                     
     ▸ ampersand                                     
                                                    

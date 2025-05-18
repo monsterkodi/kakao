@@ -546,15 +546,8 @@ class Parser
         ⮐  false if @explicit
     
         currt = @peek(0)
-        
-        optoks = { 
-            ◂indent ◂eof
-            ◂then ◂else ◂elif ◂test ◂val_type ◂var_type ◂colon ◂semicolon
-            ◂plus ◂minus ◂divide ◂multiply ◂and ◂or ◂ampersand ◂is ◂in ◂notin ◂not
-            ◂equal ◂not_equal ◂greater_equal ◂less_equal ◂greater ◂less ◂match ◂comment_start
-            ◂assign ◂divide_assign ◂multiply_assign ◂plus_assign ◂minus_assign ◂ampersand_assign ◂qmark_assign }
-            
-        ⮐  false if currt.tok in optoks  
+                    
+        ⮐  false if currt.tok in noCallToks  
         
         prevt = @peek(-1)
         
@@ -867,7 +860,7 @@ class Parser
     
         ⮐  if not @isTokAhead(◂func) and not @isTokAhead(◂method)
     
-        if left.kind in {●list, ●arg, ●operation}
+        if left.kind in {●list ●arg ●operation}
             if left.kind == ●operation 
                 if left.token.tok == ◂assign
                     sig = @rReturnType()
@@ -1178,7 +1171,7 @@ class Parser
             token = @consume()
             token.tok = ◂name
             ⮐  nod ●literal token
-        if @peek(1).tok in {◂assign, ◂colon}
+        if @peek(1).tok in {◂assign ◂colon}
             token = @consume()
             token.tok = ◂name
             ⮐  nod ●literal token
@@ -1212,11 +1205,11 @@ class Parser
     
     rCurly: ➜Node ->
     
-        nod ●curly @current @parseDelimitedList(◂bracket_open, ◂bracket_close)
+        nod ●curly @current @parseDelimitedList(◂bracket_open ◂bracket_close)
     
     rSquarely: ➜Node ->
     
-        nod ●squarely @current @parseDelimitedList(◂square_open, ◂square_close)
+        nod ●squarely @current @parseDelimitedList(◂square_open ◂square_close)
     
     rEnum: ➜Node ->
     

@@ -136,7 +136,7 @@ class Rlua
                 @▸function n
                 ⮐  
     
-        outerbr = n.token.tok notin {◂assign ◂ampersand ◂plus_assign ◂minus_assign ◂multiply_assign ◂divide_assign }
+        outerbr = n.token.tok notin { ◂ampersand } + assignToks
         @add("(") if outerbr
         @rnd n.operand_left
         @spc()

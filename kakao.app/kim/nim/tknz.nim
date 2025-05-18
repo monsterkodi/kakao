@@ -111,9 +111,14 @@ punct["\""] = ◂string_start
 punct["\"\"\""] = ◂string_start
 const
 
-    openToks = {◂paren_open, ◂bracket_open, ◂square_open}
-    closeToks = {◂paren_close, ◂bracket_close, ◂square_close}
-    closeOpen = {◂paren_close: ◂paren_open, ◂bracket_close: ◂bracket_open, ◂square_close: ◂square_open}.toTable()
+    assignToks* = {◂assign, ◂plus_assign, ◂minus_assign, ◂divide_assign, ◂multiply_assign, ◂ampersand_assign, ◂qmark_assign}
+    compareToks* = {◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less}
+    mathToks* = {◂plus, ◂minus, ◂divide, ◂multiply, ◂increment, ◂decrement}
+    boolToks* = {◂is, ◂in, ◂notin, ◂not, ◂and, ◂or}
+    noCallToks* = (((({◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon, ◂indent, ◂eof, ◂ampersand, ◂match, ◂comment_start} + assignToks) + compareToks) + mathToks) + boolToks)
+    openToks* = {◂paren_open, ◂bracket_open, ◂square_open}
+    closeToks* = {◂paren_close, ◂bracket_close, ◂square_close}
+    closeOpen* = {◂paren_close: ◂paren_open, ◂bracket_close: ◂bracket_open, ◂square_close: ◂square_open}.toTable()
 # █████████  ███   ███  ███   ███  ███████  ████████ 
 #    ███     ███  ███   ████  ███     ███   ███   ███
 #    ███     ███████    ███ █ ███    ███    ███████  

@@ -465,8 +465,7 @@ proc lCall(this : Parser, callee : Node) : Node =
 proc isImplicitCallPossible(this : Parser) : bool = 
         if this.explicit: return false
         var currt = this.peek(0)
-        var optoks = {◂indent, ◂eof, ◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon, ◂plus, ◂minus, ◂divide, ◂multiply, ◂and, ◂or, ◂ampersand, ◂is, ◂in, ◂notin, ◂not, ◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less, ◂match, ◂comment_start, ◂assign, ◂divide_assign, ◂multiply_assign, ◂plus_assign, ◂minus_assign, ◂ampersand_assign, ◂qmark_assign}
-        if (currt.tok in optoks): return false
+        if (currt.tok in noCallToks): return false
         var prevt = this.peek(-1)
         if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
         if (this.returning and this.isTokAhead(◂if)): return false
