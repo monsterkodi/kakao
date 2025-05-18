@@ -1020,6 +1020,7 @@ proc rStruct(this : Parser) : Node =
 
 proc lMember(this : Parser, left : Node) : Node = 
         var token = this.consume()
+        token.col = left.token.col
         var right = this.funcOrExpression(token)
         nod(●member, token, left, right)
 

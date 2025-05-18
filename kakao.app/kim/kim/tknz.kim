@@ -534,6 +534,7 @@ class Tknzr
                          
                         if char == ":"
                             if @lang == "lua" and @isConnectedLeftAndRight() and @charSafe(1) in {'a'..'z' 'A'..'Z'}
+                                if @token.str.len == 0 ➜ @token = @tokens.pop()
                                 @advance 1
                                 continue
                                 

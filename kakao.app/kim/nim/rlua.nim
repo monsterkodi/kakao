@@ -51,6 +51,8 @@ proc ▸block(this : Rlua, n : Node) =
             if (i < (n.expressions.len - 1)): 
                 if (n.expressions[(i + 1)].token.line > exp.token.line): 
                     this.add("\n" & idt)
+                    if (n.expressions[(i + 1)].token.line > (exp.token.line + 1)): 
+                        this.add("\n" & idt)
                 else: 
                     this.add(" ")
 
@@ -435,7 +437,7 @@ proc ▸member(this : Rlua, n : Node) =
             this.rnd(n.member_value)
         else: 
             this.rnd(n.member_key)
-            this.add(":")
+            this.add(" = ")
             this.rnd(n.member_value)
 
 proc ▸testCase(this : Rlua, n : Node) = 

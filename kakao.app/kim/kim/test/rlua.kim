@@ -217,6 +217,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
             if a then 
                 1
             end
+            
             {a = 1, b = 2}"""
 
     ▸ for                                            
@@ -344,6 +345,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                     2
                     2
                 end
+                
                 1
             end"""
     
@@ -358,6 +360,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                 if x then 
                     2
                 end
+                
                 1
             end"""
  
@@ -373,6 +376,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                     2
                 end
             end
+            
             -- dedent"""
  
         t   """
@@ -390,8 +394,10 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                     2
                     2
                 end
+                
                 1
             end
+            
             0"""
             
     ▸ misc

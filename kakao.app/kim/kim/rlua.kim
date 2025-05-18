@@ -53,6 +53,8 @@ class Rlua
             if i < n.expressions.len-1
                 if n.expressions[i+1].token.line > exp.token.line
                     @add "\n" & idt
+                    if n.expressions[i+1].token.line > exp.token.line+1
+                        @add "\n" & idt
                 else
                     @add " "
 
@@ -399,7 +401,9 @@ class Rlua
                 idt = @nodeIndent item
                 @add "\n" & idt
                 ml = true
+                
             @rnd item
+            
             if i < n.list_values.len-1
                 @add ", "
             line = item.token.line
@@ -505,7 +509,7 @@ class Rlua
             @rnd n.member_value
         else
             @rnd n.member_key
-            @add ":"
+            @add " = "
             @rnd n.member_value
     
     ▸testCase: ◇Node n ->

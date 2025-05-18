@@ -1259,6 +1259,7 @@ class Parser
     lMember: ◇Node left ➜Node ->
                     
         token = @consume()
+        token.col = left.token.col
         right = @funcOrExpression token
         nod ●member token left right
         

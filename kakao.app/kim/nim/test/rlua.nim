@@ -175,6 +175,7 @@ if a
 if a then 
     1
 end
+
 {a = 1, b = 2}""")
     test "for                                            ": 
         t("for k in rawpairs(t) ➜ log k", "for k in rawpairs(t) do print(k) end")
@@ -272,6 +273,7 @@ function f()
         2
         2
     end
+    
     1
 end""")
         t("""
@@ -285,6 +287,7 @@ function f()
     if x then 
         2
     end
+    
     1
 end""")
         t("""
@@ -299,6 +302,7 @@ function f()
         2
     end
 end
+
 -- dedent""")
         t("""
 f = -> 
@@ -315,8 +319,10 @@ function f()
         2
         2
     end
+    
     1
 end
+
 0""")
     test "misc": 
         t("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "return (((type(str) == \"string\") and not not str:match(\"^[_%a][_%a%d]*$\")) and not luaKeywords[str])")
