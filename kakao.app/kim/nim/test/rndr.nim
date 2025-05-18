@@ -5,7 +5,7 @@
 # ███   ███  ███   ███  ███████    ███   ███
 import ../rndr
 
-template t(a:string, b:string) = testCmp(a, render(a, false), b, instantiationInfo())
+template t(a:string, b:string) = testCmp(a, renderNim(a, false), b, instantiationInfo())
 suite "rndr": 
     test "toplevel": 
         t("", "")

@@ -535,14 +535,14 @@ class Rndr
                               log "rndr? #{n} #{n.kind}"
                               @tok n
 
-render* = ◇string code autovar=true ➜string ->
+renderNim* = ◇string code autovar=true ➜string ->
 
     # profileStart "ast"
     root = ast code "nim"
     
     ⮐  "" if not root
     
-    root = classify root
+    root = classifyNim root
     
     # profileStop "ast"
     if autovar
@@ -555,13 +555,13 @@ render* = ◇string code autovar=true ➜string ->
     # profileStop "rnd"
     r.s
     
-file* = ◇string file ➜string ->
+renderNimFile* = ◇string file ➜string ->
 
     profileScope file
 
     fileOut = file.swapLastPathComponentAndExt "kim" "nim"
     kimCode = file.read()
-    nimCode = render kimCode 
+    nimCode = renderNim kimCode 
     if nimCode
         fileOut.write nimCode
         fileOut
@@ -579,7 +579,7 @@ files* = ◇seq[string] files ➜seq[string] ->
                 transpiled.add luaFile
             continue
     
-        nimFile = file f
+        nimFile = renderNimFile f
         if nimFile
             transpiled.add nimFile
     # log "transpiled #{transpiled}"

@@ -5,7 +5,7 @@
 #     █      ███   ███  ███   ███  ███████ 
 import ../rndr
 
-template v(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
+template v(a:string, b:string) = testCmp(a, renderNim(a, true), b, instantiationInfo())
 suite "vars": 
     test "toplevel": 
         v("optParser = initOptParser()", "var optParser = initOptParser()")

@@ -1,0 +1,49 @@
+
+use ../class
+use ../kxk
+
+A = class("A")
+A.static.bling = 'plink'
+
+A:init = (a) -> self.a = a
+A:print = -> log "INSTANCE" self.class.name self.a self.b self.c
+A:deng = -> log 'base'
+
+B = class("B" A)
+B.static.bling = 'blink'
+
+B:init = (b) ->
+    A.init(self, 42)
+    self.b = b
+B:deng = ->
+    log 'blurk'
+
+C = class("C" B)
+C:init = (c) ->
+    B.init(self, 77)
+    self.c = c
+C:deng = ->
+    log self.class.bling
+    self.class.super.deng self
+    self.class.super.super.deng self
+
+a = A:new(1)
+b = B:new(2)
+c = C:new(3)
+
+a:print()
+b:print()
+c:print()
+
+log c
+log c.class.super
+log c.class.super.super
+log c:isOf(A)
+log c:isOf(B)
+log c:isOf(C)
+
+log C:extends(A)
+log C:extends(B)
+log C:extends(C)
+
+c:deng()

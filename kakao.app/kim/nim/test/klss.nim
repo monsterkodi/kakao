@@ -1,6 +1,6 @@
 import ../rndr
 
-template t(a:string, b:string) = testCmp(a, render(a, true), b, instantiationInfo())
+template t(a:string, b:string) = testCmp(a, renderNim(a, true), b, instantiationInfo())
 suite "class": 
     test "simple": 
         t("class A", "\ntype A = ref object of RootObj")

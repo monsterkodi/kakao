@@ -501,7 +501,7 @@ proc rnd(this : Rlua, n : Node) =
 proc renderLua*(code : string, autovar = true) : string = 
     var root = ast(code, "lua")
     if not root: return ""
-    root = classify(root)
+    root = classifyLua(root)
     if autovar: root = variables(root, "lua")
     var r = Rlua(code: code)
     r.rnd(root)

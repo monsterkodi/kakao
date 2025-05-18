@@ -85,9 +85,14 @@ traverse = ◇Node n ◇NodeIt iter ➜ Node ->
             discard
     n
     
-methodify = ◇Node clss ➜ seq[Node] ->
+# ███   ███  ███  ██     ██
+# ████  ███  ███  ███   ███
+# ███ █ ███  ███  █████████
+# ███  ████  ███  ███ █ ███
+# ███   ███  ███  ███   ███
+
+methodifyNim = ◇Node clss ➜ seq[Node] ->
     
-    # isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func
     isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func or it.kind == ●comment
     
     (funcs members) = pullIf(clss.class_body.expressions isMethod)
@@ -196,7 +201,7 @@ methodify = ◇Node clss ➜ seq[Node] ->
     
     methods
 
-classify* = ◇Node body ➜Node ->
+classifyNim* = ◇Node body ➜Node ->
 
     if body == nil or body.kind != ●block or body.expressions.len == 0
         ⮐  body 
@@ -204,7 +209,97 @@ classify* = ◇Node body ➜Node ->
     for i in countdown(body.expressions.high, 0)
         e = body.expressions[i]
         if e.kind in {●class ●struct}
-            methods = methodify e
+            methods = methodifyNim e
+            body.expressions.insert methods i+1
+    body
+
+# ███      ███   ███   ███████ 
+# ███      ███   ███  ███   ███
+# ███      ███   ███  █████████
+# ███      ███   ███  ███   ███
+# ███████   ███████   ███   ███
+
+methodifyLua = ◇Node clss ➜ seq[Node] ->
+    
+    isMethod = ◇Node it ➜bool -> it.kind == ●member and it.member_value.kind == ●func or it.kind == ●comment
+    
+    (funcs members) = pullIf(clss.class_body.expressions isMethod)
+
+    strugt     = clss.kind == ●struct
+    className  = clss.class_name.token.str
+    
+    thisify = ◇Node n ➜ Node ->
+    
+        if n.token.tok == ◂name
+            if n.token.str[0] == '@' 
+                if n.token.str.len > 1
+                    owner    = nod ●literal tkn(◂name "self")
+                    property = nod ●literal tkn(◂name n.token.str[1..^1])
+                    ⮐  nod ●propertyAccess  tkn(◂dot  "." n.token.line n.token.col) owner property
+                else
+                    n.token.str = "self"
+        n
+
+    constructor = ◇Node fn ➜Node ->
+    
+        fn.operand_left.token.str = "init"
+        fn.operand_right.func_signature.sig_type = nod(●type    tkn(◂name className))
+        if fn.operand_right.func_body
+            if fn.operand_right.func_body.kind != ●block
+                token = tkn ◂indent "    " fn.operand_right.func_body.token.line+1 8
+                blck = nod ●block token, [fn.operand_right.func_body]
+                fn.operand_right.func_body = blck
+            line = fn.operand_right.func_body.expressions[^1].token.line
+            fn.operand_right.func_body.expressions.add nod(●literal tkn(◂name "self" line+1))
+        else
+            fn.operand_right.func_body = nod(●literal tkn(◂name "self"))
+        fn
+        
+    superize = ◇Node fn ->
+    
+        if fn.func_body and fn.func_body.kind == ●block
+            for i e in fn.func_body.expressions
+                if e.kind == ●call and e.token.str == "super"
+                    e.call_args.unshift Node(kind:●call token:tkn(◂name) callee:nod(●literal tkn(◂name clss.class_parent.token.str)) call_args:[nod(●literal tkn(◂name "self"))])
+                    initcall = Node(kind:●call token:tkn(◂name) callee:nod(●literal tkn(◂name "init")) call_args:e.call_args)
+                    fn.func_body.expressions[i] = nod(●discard tkn(◂discard) nod(●preOp tkn(◂name "procCall ") initcall))
+    
+    funkify = ◇Node it ➜ Node -> 
+    
+        ⮐  it if it.kind == ●comment
+    
+        token = tkn(◂assign it.token.line it.token.col)
+        funcn = it.member_value
+                
+        arg_name = nod ●literal tkn(◂name "self")
+        this_arg = nod ●arg     tkn(◂name "") nil arg_name
+        if funcn.func_signature
+            funcn.func_signature.sig_args.list_values.unshift this_arg
+        else
+            sig_args = nod ●list tkn(◂square_open) @[this_arg]
+            funcn.func_signature = nod ●signature token sig_args nil
+        
+        funcn.func_body = traverse funcn.func_body thisify
+        
+        superize funcn
+        
+        fn = nod ●operation token it.member_key funcn
+        if it.member_key.token.str == "@" ➜ fn = constructor fn
+        fn
+        
+    clss.class_body.expressions = members
+    methods = funcs.map funkify
+    methods
+
+classifyLua* = ◇Node body ➜Node ->
+
+    if body == nil or body.kind != ●block or body.expressions.len == 0
+        ⮐  body 
+        
+    for i in countdown(body.expressions.high, 0)
+        e = body.expressions[i]
+        if e.kind in {●class ●struct}
+            methods = methodifyLua e
             body.expressions.insert methods i+1
     body
     

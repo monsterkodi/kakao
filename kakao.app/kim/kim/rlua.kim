@@ -583,7 +583,7 @@ renderLua* = ◇string code autovar=true ➜string ->
     
     ⮐  "" if not root
     
-    root = classify root
+    root = classifyLua root
     
     if autovar ➜ root = variables root "lua"
     

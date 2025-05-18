@@ -464,11 +464,11 @@ proc rnd(this : Rndr, n : Node) =
                               echo(&"rndr? {n} {n.kind}")
                               this.tok(n)
 
-proc render*(code : string, autovar = true) : string = 
+proc renderNim*(code : string, autovar = true) : string = 
     # profileStart "ast"
     var root = ast(code, "nim")
     if not root: return ""
-    root = classify(root)
+    root = classifyNim(root)
     # profileStop "ast"
     if autovar: 
         # profileStart "vars"
@@ -480,11 +480,11 @@ proc render*(code : string, autovar = true) : string =
     # profileStop "rnd"
     r.s
 
-proc file*(file : string) : string = 
+proc renderNimFile*(file : string) : string = 
     profileScope(file)
     var fileOut = file.swapLastPathComponentAndExt("kim", "nim")
     var kimCode = file.read()
-    var nimCode = render(kimCode)
+    var nimCode = renderNim(kimCode)
     if nimCode: 
         fileOut.write(nimCode)
         fileOut
@@ -500,7 +500,7 @@ proc files*(files : seq[string]) : seq[string] =
             if luaFile: 
                 transpiled.add(luaFile)
             continue
-        var nimFile = file(f)
+        var nimFile = renderNimFile(f)
         if nimFile: 
             transpiled.add(nimFile)
     # log "transpiled #{transpiled}"
