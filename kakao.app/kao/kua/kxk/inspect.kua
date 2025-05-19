@@ -9,29 +9,23 @@
 
 use ./kxk
 
-rep   = string.rep
-match = string.match
-char  = string.char
-gsub  = string.gsub
-fmt   = string.format
-
 rawpairs = t -> ⮐  (next t nil)
 
 smartQuote = str ->
-    if match(str '"') and not match(str "'")
+    if str:match('"') and not str:match("'")
        ⮐  "'" & str & "'"
-    ⮐  '"' & gsub(str '"' '\\"') & '"'
+    ⮐  '"' & string.gsub(str '"' '\\"') & '"'
     
 shortEscapes = {"\a":"\\a" "\b":"\\b" "\f":"\\f" "\n":"\\n" "\r":"\\r" "\t":"\\t" "\v":"\\v" "\127":"\\127"}
 longEscapes  = {"\127":"\127"}
 
 for i in 0..31
-    ch = char(i)
+    ch = string.char(i)
     if not shortEscapes[ch]
         shortEscapes[ch] = "\\" & i
-        longEscapes[ch] = fmt("\\%03d" i)
+        longEscapes[ch] = string.fmt("\\%03d" i)
 
-escape = str -> ⮐  (gsub(gsub(gsub(str "\\" "\\\\") "(%c)%f[0-9]" longEscapes) "%c" shortEscapes))
+escape = str -> ⮐  (string.gsub(string.gsub(string.gsub(str "\\" "\\\\") "(%c)%f[0-9]" longEscapes) "%c" shortEscapes))
 
 luaKeywords = {
    'and':       true
@@ -139,7 +133,7 @@ class Inspector
 
     putValue: v ->
     
-        tabify = -> buf=@buf ; buf:put(@newline & rep(@indent @level))
+        tabify = -> buf=@buf ; buf:put(@newline & string.rep(@indent @level))
     
         tv = type(v)
         buf = @buf
@@ -157,7 +151,7 @@ class Inspector
                 
                 if @cycles[t] > 1 
                     tabify()
-                    buf:put fmt('<%d>' @getId(t))
+                    buf:put string.fmt('<%d>' @getId(t))
                 
                 (keys keysLen seqLen) = getKeys(t)
                 
@@ -171,7 +165,7 @@ class Inspector
                         if isIdentifier k
                             buf:put k
                             if k.len < 12
-                                buf:put rep(" " 12-k.len)
+                                buf:put string.rep(" " 12-k.len)
                         else
                             buf:put "["
                             @putValue k
@@ -195,6 +189,6 @@ class Inspector
             elif tv == "table"
                 buf:put "<" & @getId(v) & ">"
             else
-                buf:put fmt('<%s %d>' tv @getId(v))
+                buf:put string.fmt('<%s %d>' tv @getId(v))
 
 ⮐  (root) -> ⮐  Inspector(root)

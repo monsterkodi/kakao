@@ -72,11 +72,9 @@ print(table.concat(files3, " "))
 local files4 = slash.list("/Users/kodi/.config")
 print(table.concat(files4, " "))
 
--- files1 = slash.list "."
--- log inspect(files1)
--- 
--- files2 = slash.list ".."
--- log inspect(files2)
--- 
--- files3 = slash.list "../.."
--- log inspect(files3)
+files1 = slash.list(".")
+print(inspect(files1))
+files2 = slash.list("..")
+print(inspect(files2))
+files3 = slash.list("../..")
+print(inspect(files3))

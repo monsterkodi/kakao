@@ -8,38 +8,32 @@
 
 kxk = require "./kxk"
 
-local rep = string.rep
-local match = string.match
-local char = string.char
-local gsub = string.gsub
-local fmt = string.format
-
 
 function rawpairs(t) return next, t, nil
 end
 
 
 function smartQuote(str) 
-    if (match(str, '"') and not match(str, "'")) then 
+    if (str:match('"') and not str:match("'")) then 
        return "'" .. str .. "'"
     end
     
-    return '"' .. gsub(str, '"', '\\"') .. '"'
+    return '"' .. string.gsub(str, '"', '\\"') .. '"'
 end
 
 local shortEscapes = {["\a"] = "\\a", ["\b"] = "\\b", ["\f"] = "\\f", ["\n"] = "\\n", ["\r"] = "\\r", ["\t"] = "\\t", ["\v"] = "\\v", ["\127"] = "\\127"}
 local longEscapes = {["\127"] = "\127"}
 
 for i = 0, 31 do 
-    local ch = char(i)
+    local ch = string.char(i)
     if not shortEscapes[ch] then 
         shortEscapes[ch] = "\\" .. i
-        longEscapes[ch] = fmt("\\%03d", i)
+        longEscapes[ch] = string.fmt("\\%03d", i)
     end
 end
 
 
-function escape(str) return gsub(gsub(gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longEscapes), "%c", shortEscapes)
+function escape(str) return string.gsub(string.gsub(string.gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longEscapes), "%c", shortEscapes)
 end
 
 local luaKeywords = {
@@ -168,7 +162,7 @@ function Inspector:getId(v)
 function Inspector:putValue(v) 
         
         function tabify() 
-                 local buf = self.buf ; buf:put(self.newline .. rep(self.indent, self.level))
+                 local buf = self.buf ; buf:put(self.newline .. string.rep(self.indent, self.level))
         end
         
         local tv = type(v)
@@ -187,7 +181,7 @@ function Inspector:putValue(v)
                 
                 if (self.cycles[t] > 1) then 
                     tabify()
-                    buf:put(fmt('<%d>', self:getId(t)))
+                    buf:put(string.fmt('<%d>', self:getId(t)))
                 end
                 
                 local keys, keysLen, seqLen = getKeys(t)
@@ -202,7 +196,7 @@ function Inspector:putValue(v)
                         if isIdentifier(k) then 
                             buf:put(k)
                             if (#k < 12) then 
-                                buf:put(rep(" ", (12 - #k)))
+                                buf:put(string.rep(" ", (12 - #k)))
                             end
                         else 
                             buf:put("[")
@@ -234,7 +228,7 @@ function Inspector:putValue(v)
             elseif (tv == "table") then 
                 buf:put("<" .. self:getId(v) .. ">")
             else 
-                buf:put(fmt('<%s %d>', tv, self:getId(v)))
+                buf:put(string.fmt('<%s %d>', tv, self:getId(v)))
             end
         end
     end
