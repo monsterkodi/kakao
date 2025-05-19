@@ -322,6 +322,7 @@ proc ▸if(this : Rlua, n : Node) =
 proc ▸for(this : Rlua, n : Node) = 
         this.add("for ")
         if (n.for_value.kind == ●list): 
+            echo(&"for {n.for_value.kind} {n.for_value.list_values}")
             for i, v in n.for_value.list_values: 
                 this.rnd(v)
                 if (i < (n.for_value.list_values.len - 1)): 
@@ -329,16 +330,28 @@ proc ▸for(this : Rlua, n : Node) =
         else: 
             this.rnd(n.for_value)
         if (n.for_range.kind == ●range): 
-            this.add(" = ")
-            this.rnd(n.for_range.range_start)
-            this.add(", ")
-            this.rnd(n.for_range.range_end)
+            if (n.for_range.token.tok == ◂doubledot): 
+                this.add(" in iter(")
+                this.rnd(n.for_range.range_start)
+                this.add(", ")
+                this.rnd(n.for_range.range_end)
+                this.add(")")
+            else: 
+                this.add(" = ")
+                this.rnd(n.for_range.range_start)
+                this.add(", ")
+                if (n.for_range.token.tok == ◂tripledot): 
+                    this.rnd(n.for_range.range_end)
+                    this.add("-1")
+                else: 
+                    this.rnd(n.for_range.range_end)
         else: 
             this.add(" in ")
             this.rnd(n.for_range)
         this.add(" do ")
-        this.rnd(n.for_body)
-        if (n.for_body.kind == ●block): this.add("\n" & this.nodeIndent(n)) else: this.add(" ")
+        if n.for_body: 
+            this.rnd(n.for_body)
+            if (n.for_body.kind == ●block): this.add("\n" & this.nodeIndent(n)) else: this.add(" ")
         this.add("end")
 
 proc ▸while(this : Rlua, n : Node) = 

@@ -335,7 +335,7 @@ class Rndr
             
     ▸for: ◇Node n ->
     
-        @add "for "
+        @add "for "        
         if n.for_value.kind == ●list
             for i,v in n.for_value.list_values
                 @rnd v

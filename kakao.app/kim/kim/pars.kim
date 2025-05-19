@@ -669,7 +669,11 @@ class Parser
     rFor: ➜Node ->
     
         token = @consume()
-        for_value = @parseNamesUntil ◂in
+        for_value ◇ Node
+        if @tok == ◂paren_open
+            for_value = @rParenExpr()
+        else
+            for_value = @parseNamesUntil ◂in
         @swallowError ◂in "Expected 'in' after for value" token
         for_range = @expression()
         for_body  = @thenBlock()

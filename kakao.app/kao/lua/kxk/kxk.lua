@@ -12,8 +12,25 @@ _G.slash = require("./slash")
 _G.kstr = require("./kstr")
 _G.test = require("./test")
 
-local kxk = {}
+function _G.iter(from, to, step) 
+    step = step or 1
+    
+    if (step ~= 0) then 
+        step = math.abs(step)
+        if (from > to) then step = -step end
+        local i = (from - step)
+        return function () 
+            i = (i + step)
+            if (((i >= to) and (step < 0)) or ((i <= to) and (step > 0))) then 
+                return i
+            end
+        end
+    end
+    
+    return function () return nil end
+end
 
+local kxk = {}
 
 function kxk.exec(cmd, opt, cb) 
     if (cb == nil) then 

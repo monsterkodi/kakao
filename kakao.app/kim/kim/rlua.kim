@@ -372,6 +372,7 @@ class Rlua
     
         @add "for "
         if n.for_value.kind == ●list
+            log "for #{n.for_value.kind} #{n.for_value.list_values}"
             for i,v in n.for_value.list_values
                 @rnd v
                 if i < n.for_value.list_values.len-1
@@ -380,17 +381,28 @@ class Rlua
             @rnd n.for_value
             
         if n.for_range.kind == ●range
-            @add " = "
-            @rnd n.for_range.range_start
-            @add ", "
-            @rnd n.for_range.range_end
+            if n.for_range.token.tok == ◂doubledot
+                @add " in iter("
+                @rnd n.for_range.range_start
+                @add ", "
+                @rnd n.for_range.range_end
+                @add ")"
+            else
+                @add " = "
+                @rnd n.for_range.range_start
+                @add ", "
+                if n.for_range.token.tok == ◂tripledot
+                    @rnd n.for_range.range_end
+                    @add "-1"
+                else
+                    @rnd n.for_range.range_end
         else
             @add " in "
             @rnd n.for_range
         @add " do "
-        @rnd n.for_body
-        
-        if n.for_body.kind == ●block ➜ @add("\n" & @nodeIndent(n)) ➜ @add(" ")
+        if n.for_body
+            @rnd n.for_body
+            if n.for_body.kind == ●block ➜ @add("\n" & @nodeIndent(n)) ➜ @add(" ")
         @add "end"
         
     ▸while: ◇Node n ->

@@ -239,10 +239,15 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
     ▸ for                                            
           
         t "for k in rawpairs(t) ➜ log k"            "for k in rawpairs(t) do print(k) end"                                           
-        t "for a in 0..2 ➜ true"                    "for a = 0, 2 do true end"     
-        t "for a in 0..2\n  true"                   "for a = 0, 2 do \n  true\nend"   
-        t "for a in 0..2 ➜\n  true"                 "for a = 0, 2 do \n  true\nend"  
-        # t "for kind, key, val in opt.get()"         "for kind, key, val in opt.get() do end"  
+        t "for a in 0..2 ➜ true"                    "for a in iter(0, 2) do true end"     
+        t "for a in 10..2\n  true"                  "for a in iter(10, 2) do \n  true\nend"   
+        t "for a in -10..-12 ➜\n  true"             "for a in iter(-10, -12) do \n  true\nend"  
+        
+        t "for key in opt"                          "for key in opt do end"  
+        t "for key val in opt"                      "for key, val in opt do end"  
+        t "for key, val in opt"                     "for key, val in opt do end"  
+        t "for (key val) in opt"                    "for key, val in opt do end"  
+        t "for (key, val) in opt"                   "for key, val in opt do end"  
 
     ▸ while
         

@@ -5,8 +5,13 @@
        ███     ███   ███  ███   ███       ███
         █      ███   ███  ███   ███  ███████ 
 
-    inserts var keywords for first assignment 
-    operations in scope
+    nim:
+        adds var to assignments
+    
+    lua:
+        adds local to assignments
+        inserts argument ?= default value statements
+        inserts return for last function expression
 ###
 
 use pars

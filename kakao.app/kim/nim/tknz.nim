@@ -25,7 +25,6 @@ type tok* = enum
     ◂enum
     ◂class
     ◂struct
-    ◂from
     ◂import
     ◂template
     ◂macro
@@ -504,7 +503,7 @@ proc tknz(this : Tknzr, segs : seq[string], lang : string) : seq[Token] =
                                         this.verbatim()
                                     else: 
                                         this.push(◂name)
-                                of ◂proc, ◂from, ◂import, ◂macro, ◂template, ◂converter: 
+                                of ◂proc, ◂import, ◂macro, ◂template, ◂converter: 
                                     this.verbatim()
                                 else: this.push(keywords[this.token.str])
                         continue

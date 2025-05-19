@@ -27,7 +27,6 @@ enum tok*
     ◂enum
     ◂class
     ◂struct
-    ◂from
     ◂import
     ◂template
     ◂macro
@@ -586,7 +585,7 @@ class Tknzr
                                         @verbatim()
                                     else
                                         @push ◂name
-                                ◂proc ◂from ◂import ◂macro ◂template ◂converter
+                                ◂proc ◂import ◂macro ◂template ◂converter
                                     @verbatim()
                                 ➜   @push keywords[@token.str]
                         continue

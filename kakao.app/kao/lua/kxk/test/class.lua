@@ -94,14 +94,48 @@ test("slash", function()
 
 local s = "a/abc/ed.x"
 print(s)
--- log kstr.splice(s 1 1)
--- log kstr.splice(s 2 1)
--- log kstr.splice(s, -1 1)
--- log kstr.splice(s, -2 1)
--- log kstr.splice(s, -3 1)
+print(kstr.splice(s, 1, 1))
+print(kstr.splice(s, 2, 1))
+print(kstr.splice(s, -1, 1))
+print(kstr.splice(s, -2, 1))
+print(kstr.splice(s, -3, 1))
 print(kstr.shift(s, 2))
 print(kstr.pop(s, 2))
 
--- log string.sub(s 0 1)
--- log string.sub(s 1 1)
--- log string.sub(s 2 2)
+print(string.sub(s, 0, 1))
+print(string.sub(s, 1, 1))
+print(string.sub(s, 2, 2))
+
+for i in iter(4, 0) do print(i) end
+for i in iter(0, 4) do print(i) end
+for i in iter(4, -4) do print(i) end
+for i in iter(-4, 4) do print(i) end
+
+for i in iter(4, 0, 2) do print(i) end
+for i in iter(0, 4, 2) do print(i) end
+for i in iter(4, -4, 2) do print(i) end
+for i in iter(-4, 4, 2) do print(i) end
+for i in iter(4, 0, -2) do print(i) end
+for i in iter(0, 4, -2) do print(i) end
+for i in iter(4, -4, -2) do print(i) end
+for i in iter(-4, 4, -2) do print(i) end
+print("---")
+for i in iter(-4, 4, 0) do print(i) end
+for i in iter(2, 2, -100) do print(i) end
+for i in iter(2, 0, -100) do print(i) end
+for i in iter(2, -3, -100) do print(i) end
+for i in iter(1, 2, 100) do print(i) end
+for i in iter(1, 0, 100) do print(i) end
+for i in iter(1, -3, 100) do print(i) end
+
+for i in iter((2 / 3), (1 / 3), 0.1) do print(i) end
+for i in iter((2 / 3), (2 / 3), 1.001) do print(i) end
+for i in iter((0.1 + 0.2), 0.3, 0.1) do print(i) end
+
+for i in iter(0, 3) do print(i) end
+print("")
+for i = 0, 3-1 do print(i) end
+print("")
+for i = 0, 3-1 do print(i) end
+print("")
+for i in iter(3, 0) do print(i) end

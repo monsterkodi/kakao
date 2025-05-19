@@ -559,7 +559,11 @@ proc lTailIf(this : Parser, left : Node) : Node =
 
 proc rFor(this : Parser) : Node = 
         var token = this.consume()
-        var for_value = this.parseNamesUntil(◂in)
+        var for_value : Node
+        if (this.tok == ◂paren_open): 
+            for_value = this.rParenExpr()
+        else: 
+            for_value = this.parseNamesUntil(◂in)
         this.swallowError(◂in, "Expected 'in' after for value", token)
         var for_range = this.expression()
         var for_body = this.thenBlock()
