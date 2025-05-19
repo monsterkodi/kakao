@@ -29,7 +29,10 @@ function test.static.cmp(a, b)
     _G.testIndex = _G.testIndex + 1
     if (a ~= b) then 
         print("✘ [" .. _G.testIndex .. "] " .. a .. " != " .. b)
+        return false
     end
+    
+    return true
 end
 
 return test

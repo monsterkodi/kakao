@@ -22,7 +22,7 @@ main = ... ->
         sliced = {}
         for i in first..last
             sliced[sliced.len + 1] = tbl[i]
-        ⮐  sliced
+        sliced
     
     argv = slice(process.argv 2 process.argv.len)
     
@@ -39,7 +39,6 @@ main = ... ->
         log 'files'      files.len
         log 'files'      inspect(files)
     
-    # log(slash.cwd())
     log "▸" kxk.exec("ls ~" print)
     
     load = file ->

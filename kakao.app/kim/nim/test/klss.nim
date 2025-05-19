@@ -420,17 +420,18 @@ local FunInc = class("FunInc")
 
 function FunInc:fun(m) 
         self.m = m
+        return self.m
     end
 
 
 function FunInc:inc(a1) 
-        self:fun((self.m + 1))
+        return self:fun((self.m + 1))
     end""")
     test "tostring": 
         l("""
 class Print
     m: "hello"
-    $: -> ⮐  @m
+    $: -> @m
 """, """
 
 local Print = class("Print")

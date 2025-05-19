@@ -25,6 +25,44 @@ proc exp(this : Scoper, body : Node, i : int, e : Node)
 proc scope(this : Scoper, body : Node) : Node
 
 proc branch(this : Scoper, body : Node) = discard this.scope(body)
+
+proc returnize(this : Scoper, fn : Node) = 
+        if not fn.func_body: return
+        case fn.func_body.kind:
+            of ●block, ●semicolon: 
+                var lastExp = fn.func_body.expressions[^1]
+                if (lastExp.kind != ●return): 
+                    if (lastExp.kind in {●if, ●switch, ●while, ●for}): 
+                        echo(&"todo: handle implicit return {lastExp.kind}")
+                        discard
+                    else: 
+                        if ((lastExp.kind != ●operation) or (lastExp.token.tok notin assignToks)): 
+                            var retval = lastExp
+                            var line = retval.token.line
+                            fn.func_body.expressions[^1] = nod(●return, tkn(◂return, "return", line), retval)
+                        else: 
+                            var retval = lastExp.operand_left
+                            var line = retval.token.line
+                            fn.func_body.expressions.add(nod(●return, tkn(◂return, "return", (line + 1)), retval))
+            of ●return: discard
+            else: 
+                var line = fn.func_body.token.line
+                var retval = fn.func_body
+                fn.func_body = nod(●return, tkn(◂return, "return", (line + 1)), retval)
+
+proc luanize(this : Scoper, fn : Node) = 
+        this.returnize(fn)
+        if (fn.func_signature and fn.func_signature.sig_args.list_values): 
+            for arg in fn.func_signature.sig_args.list_values: 
+                if arg.arg_value: 
+                    if not fn.func_body: 
+                        fn.func_body = nod(●block, tkn(◂indent, "    "), @[])
+                    if (fn.func_body.kind notin {●block, ●semicolon}): 
+                        fn.func_body = nod(●block, tkn(◂indent, "    "), @[fn.func_body])
+                    if (fn.func_body and (fn.func_body.kind in {●block, ●semicolon})): 
+                        var argdef = nod(●operation, tkn(◂qmark_assign), arg.arg_name, arg.arg_value)
+                        fn.func_body.expressions.insert(argdef, 0)
+                        arg.arg_value = nil
 # 00000000  000   000  00000000   
 # 000        000 000   000   000  
 # 0000000     00000    00000000   
@@ -33,6 +71,7 @@ proc branch(this : Scoper, body : Node) = discard this.scope(body)
 
 proc exp(this : Scoper, body : Node, i : int, e : Node) = 
         if (e == nil): return
+        # log "vars.exp #{body.expressions.len} #{i} #{e.kind}"
         
         proc add(name : string) = this.vars[^1][name] = true
         
@@ -52,11 +91,14 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                                 of ●literal: add(a.token.str)
                                 else: discard
                         var body = e.operand_right.func_body
-                        for i, e in body.expressions: 
-                            this.exp(body, i, e)
+                        if body: 
+                            for i, e in body.expressions: 
+                                this.exp(body, i, e)
                         this.vars.pops()
                     else: 
                         this.branch(e.operand_right.func_body)
+                    if (this.lang == "lua"): 
+                        this.luanize(e.operand_right)
                 elif (e.token.tok == ◂assign): 
                     var lhs = e.operand_left
                     case lhs.kind:
@@ -99,6 +141,8 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                 this.branch(e)
             of ●func: 
                 this.branch(e.func_body)
+                if (this.lang == "lua"): 
+                    this.luanize(e)
             of ●return: 
                 this.exp(body, i, e.return_value)
             else: discard

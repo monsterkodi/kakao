@@ -10,10 +10,11 @@ _G.childp  = require "childprocess"
 _G.class   = require "./class"
 _G.inspect = require "./inspect"
 _G.slash   = require "./slash"
+_G.kstr    = require "./kstr"
 _G.test    = require "./test"
 
 kxk = {}
-        
+
 kxk.exec = cmd opt cb ->
     
     if cb == nil

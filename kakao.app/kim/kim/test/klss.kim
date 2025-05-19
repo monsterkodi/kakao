@@ -457,11 +457,12 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
             
             function FunInc:fun(m) 
                     self.m = m
+                    return self.m
                 end
             
             
             function FunInc:inc(a1) 
-                    self:fun((self.m + 1))
+                    return self:fun((self.m + 1))
                 end"""            
                 
                 
@@ -470,7 +471,7 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
         l   """
             class Print
                 m: "hello"
-                $: -> ⮐  @m
+                $: -> @m
             """ """
             
             local Print = class("Print")

@@ -25,7 +25,7 @@ function initFunc(main, ...)
     function runMain() 
         local thread = coroutine.create(main)
         utils.assertResume(thread, unpack(args))
-        uv.run()
+        return uv.run()
     end
     
     
@@ -56,10 +56,11 @@ function initFunc(main, ...)
     
     
     function closeHandle(handle) 
-        if handle then 
+        return if handle then 
             
             function close() 
-                    if not handle:is_closing() then handle:close() end
+                if not handle:is_closing() then handle:close() end
+                return nil
             end
             
             if (handle.shutdown and not isStdioFileHandle(handle)) then 

@@ -36,14 +36,16 @@ initFunc = (main ...) ->
         pretty.stderr:write("Uncaught exception:\n" & err & "\n")
     
     isFileHandle = handle name fd ->
-        ⮐  _G.process[name].handle == handle and uv.guess_handle(fd) == 'file'
+        _G.process[name].handle == handle and uv.guess_handle(fd) == 'file'
     
     isStdioFileHandle = handle ->
-        ⮐  isFileHandle(handle, 'stdin', 0) or isFileHandle(handle, 'stdout', 1) or isFileHandle(handle, 'stderr', 2)
+        isFileHandle(handle, 'stdin', 0) or isFileHandle(handle, 'stdout', 1) or isFileHandle(handle, 'stderr', 2)
     
     closeHandle = handle ->
         if handle
-            close = -> if not handle:is_closing() ➜ handle:close()
+            close = -> 
+                if not handle:is_closing() ➜ handle:close()  
+                nil
 
             if handle.shutdown and not isStdioFileHandle(handle)
                 handle:shutdown close
@@ -53,6 +55,6 @@ initFunc = (main ...) ->
     uv.walk closeHandle
     uv.run()
     
-    ⮐  _G.process.exitCode
+    _G.process.exitCode
 
 ⮐  initFunc

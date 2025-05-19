@@ -28,7 +28,7 @@ for i = 0, 31 do
     local ch = string.char(i)
     if not shortEscapes[ch] then 
         shortEscapes[ch] = "\\" .. i
-        longEscapes[ch] = string.fmt("\\%03d", i)
+        longEscapes[ch] = string.format("\\%03d", i)
     end
 end
 
@@ -142,7 +142,8 @@ function Inspector:init(root)
         self.buf = strbuff:new()
         self:putValue(root)
         local buf = self.buf
-        return buf:get()
+        buf:get()
+        return self
     end
 
 
@@ -162,7 +163,7 @@ function Inspector:getId(v)
 function Inspector:putValue(v) 
         
         function tabify() 
-                 local buf = self.buf ; buf:put(self.newline .. string.rep(self.indent, self.level))
+                 local buf = self.buf ; return buf:put(self.newline .. string.rep(self.indent, self.level))
         end
         
         local tv = type(v)
@@ -181,7 +182,7 @@ function Inspector:putValue(v)
                 
                 if (self.cycles[t] > 1) then 
                     tabify()
-                    buf:put(string.fmt('<%d>', self:getId(t)))
+                    buf:put(string.format('<%d>', self:getId(t)))
                 end
                 
                 local keys, keysLen, seqLen = getKeys(t)
@@ -228,7 +229,7 @@ function Inspector:putValue(v)
             elseif (tv == "table") then 
                 buf:put("<" .. self:getId(v) .. ">")
             else 
-                buf:put(string.fmt('<%s %d>', tv, self:getId(v)))
+                buf:put(string.format('<%s %d>', tv, self:getId(v)))
             end
         end
     end

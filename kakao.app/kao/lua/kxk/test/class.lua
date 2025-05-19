@@ -23,12 +23,13 @@ function FunInc:__tostring() return "FunInc " .. self.m
 
 function FunInc:fun(m) 
         self.m = m
+        return self.m
     end
 
 
 function FunInc:inc(a1) 
         self:fun((self.m + a1))
-        print(self)
+        return print(self)
     end
 
 local f = FunInc()
@@ -60,21 +61,47 @@ test("class", function()
     end)
     end)
 
-local files1 = slash.list(".")
+local files1 = slash.files(".")
 print(table.concat(files1, " "))
-
-local files2 = slash.list("..")
+local files2 = slash.files("..")
 print(table.concat(files2, " "))
-
-local files3 = slash.list("/Users/kodi")
+local files3 = slash.files("/Users/kodi")
 print(table.concat(files3, " "))
-
-local files4 = slash.list("/Users/kodi/.config")
+local files4 = slash.files("/Users/kodi/.config")
 print(table.concat(files4, " "))
 
-files1 = slash.list(".")
-print(inspect(files1))
-files2 = slash.list("..")
-print(inspect(files2))
-files3 = slash.list("../..")
-print(inspect(files3))
+-- files5 = slash.walk "/Users/kodi"
+-- log inspect(files5)
+test("slash", function()
+    test("normalize", function()
+          test.cmp(slash.normalize("a/"), "a")
+          test.cmp(slash.normalize("xyz"), "xyz")
+          test.cmp(slash.normalize("x/y/z"), "x/y/z")
+          test.cmp(slash.normalize("x\\y/z\\"), "x/y/z")
+          test.cmp(slash.normalize("\\x\\y/z"), "/x/y/z")
+          test.cmp(slash.normalize("..\\x\\y/z"), "../x/y/z")
+          test.cmp(slash.normalize("./x\\y/z"), "./x/y/z")
+          test.cmp(slash.normalize("x/./z"), "x/z")
+          test.cmp(slash.normalize("x/../z"), "z")
+          test.cmp(slash.normalize("./x/y/z/../../a"), "./x/a")
+          test.cmp(slash.normalize("../up"), "../up")
+          test.cmp(slash.normalize("//"), "/")
+          test.cmp(slash.normalize("//././////././"), "/")
+          test.cmp(slash.normalize("./x/../../z"), "../z")
+          test.cmp(slash.normalize("./x/../../../y"), "../../y")
+    end)
+    end)
+
+local s = "a/abc/ed.x"
+print(s)
+-- log kstr.splice(s 1 1)
+-- log kstr.splice(s 2 1)
+-- log kstr.splice(s, -1 1)
+-- log kstr.splice(s, -2 1)
+-- log kstr.splice(s, -3 1)
+print(kstr.shift(s, 2))
+print(kstr.pop(s, 2))
+
+-- log string.sub(s 0 1)
+-- log string.sub(s 1 1)
+-- log string.sub(s 2 2)

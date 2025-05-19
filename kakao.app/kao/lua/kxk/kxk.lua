@@ -9,6 +9,7 @@ _G.childp = require("childprocess")
 _G.class = require("./class")
 _G.inspect = require("./inspect")
 _G.slash = require("./slash")
+_G.kstr = require("./kstr")
 _G.test = require("./test")
 
 local kxk = {}
@@ -23,10 +24,10 @@ function kxk.exec(cmd, opt, cb)
     
     function res(err, out) 
         if err then out = "" end
-        cb(out)
+        return cb(out)
     end
     
-    childp.exec(cmd, opt, res)
+    return childp.exec(cmd, opt, res)
 end
 
 return kxk

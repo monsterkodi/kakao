@@ -9,12 +9,12 @@
 
 use ./kxk
 
-rawpairs = t -> ⮐  (next t nil)
+rawpairs = t -> (next t nil)
 
 smartQuote = str ->
     if str:match('"') and not str:match("'")
        ⮐  "'" & str & "'"
-    ⮐  '"' & string.gsub(str '"' '\\"') & '"'
+    '"' & string.gsub(str '"' '\\"') & '"'
     
 shortEscapes = {"\a":"\\a" "\b":"\\b" "\f":"\\f" "\n":"\\n" "\r":"\\r" "\t":"\\t" "\v":"\\v" "\127":"\\127"}
 longEscapes  = {"\127":"\127"}
@@ -23,9 +23,9 @@ for i in 0..31
     ch = string.char(i)
     if not shortEscapes[ch]
         shortEscapes[ch] = "\\" & i
-        longEscapes[ch] = string.fmt("\\%03d" i)
+        longEscapes[ch] = string.format("\\%03d" i)
 
-escape = str -> ⮐  (string.gsub(string.gsub(string.gsub(str "\\" "\\\\") "(%c)%f[0-9]" longEscapes) "%c" shortEscapes))
+escape = str -> (string.gsub(string.gsub(string.gsub(str "\\" "\\\\") "(%c)%f[0-9]" longEscapes) "%c" shortEscapes))
 
 luaKeywords = {
    'and':       true
@@ -54,11 +54,11 @@ luaKeywords = {
 
 isIdentifier = str ->
 
-    ⮐  type(str) == "string" and str:match("^[_%a][_%a%d]*$") and not luaKeywords[str]
+    type(str) == "string" and str:match("^[_%a][_%a%d]*$") and not luaKeywords[str]
 
 isSequenceKey = k sequenceLength ->
 
-    ⮐  type(k) == "number" and math.floor(k) == k and 1 <= (k) and k <= sequenceLength
+    type(k) == "number" and math.floor(k) == k and 1 <= (k) and k <= sequenceLength
 
 typeOrders = { 'number':1 'boolean':2 'string':3 'table':4 'function':5 'userdata':6 'thread':7 }
 
@@ -73,7 +73,7 @@ sortKeys = a b ->
     dta = typeOrders[ta] or 100
     dtb = typeOrders[tb] or 100
     
-    ⮐  dta == dtb and ta < tb or dta < dtb
+    dta == dtb and ta < tb or dta < dtb
 
 getKeys = t ->
 
@@ -88,7 +88,7 @@ getKeys = t ->
             keysLen = keysLen + 1
             keys[keysLen] = k
     table.sort(keys, sortKeys)
-    ⮐  (keys keysLen seqLen)
+    (keys keysLen seqLen)
 
 countCycles = x cycles ->
 
@@ -119,7 +119,7 @@ class Inspector
         @buf = strbuff:new()
         @putValue root
         buf = @buf
-        ⮐  buf:get()
+        buf:get()
 
     getId: v ->
     
@@ -129,7 +129,7 @@ class Inspector
             tv = type(v)
             id = (ids[tv] or 0) + 1
             (ids[v] ids[tv]) = (id id)
-        ⮐  tostring(id)
+        tostring(id)
 
     putValue: v ->
     
@@ -151,7 +151,7 @@ class Inspector
                 
                 if @cycles[t] > 1 
                     tabify()
-                    buf:put string.fmt('<%d>' @getId(t))
+                    buf:put string.format('<%d>' @getId(t))
                 
                 (keys keysLen seqLen) = getKeys(t)
                 
@@ -189,6 +189,6 @@ class Inspector
             elif tv == "table"
                 buf:put "<" & @getId(v) & ">"
             else
-                buf:put string.fmt('<%s %d>' tv @getId(v))
+                buf:put string.format('<%s %d>' tv @getId(v))
 
-⮐  (root) -> ⮐  Inspector(root)
+⮐  (root) -> Inspector(root)

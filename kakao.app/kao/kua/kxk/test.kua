@@ -22,5 +22,7 @@ test.static.cmp = a b ->
     _G.testIndex += 1
     if a != b 
         log "✘ [" & _G.testIndex & "] " & a & " != " & b
+        ⮐  false
+    true
         
 ⮐  test

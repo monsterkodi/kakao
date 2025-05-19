@@ -11,7 +11,7 @@ a = A(1 2)
 
 class FunInc
     m: 0
-    $: -> ⮐  "FunInc " & @m
+    $: -> "FunInc " & @m
     fun: m -> 
         @m = m
     inc: a1 ->
@@ -26,7 +26,7 @@ f:inc 2
 
 class Print
     m: "hello"
-    $: -> ⮐  @m
+    $: -> @m
 
 p = Print()
 log p
@@ -39,21 +39,47 @@ log p
     ▸ simple
         1 ▸ 1
 
-files1 = slash.list "."
+files1 = slash.files "."
 log table.concat(files1 " ")
-
-files2 = slash.list ".."
+files2 = slash.files ".."
 log table.concat(files2 " ")
-
-files3 = slash.list "/Users/kodi"
+files3 = slash.files "/Users/kodi"
 log table.concat(files3 " ")
-
-files4 = slash.list "/Users/kodi/.config"
+files4 = slash.files "/Users/kodi/.config"
 log table.concat(files4 " ")
 
-files1 = slash.list "."
-log inspect(files1)
-files2 = slash.list ".."
-log inspect(files2)
-files3 = slash.list "../.."
-log inspect(files3)
+# files5 = slash.walk "/Users/kodi"
+# log inspect(files5)
+▸ slash
+
+    ▸ normalize
+    
+          slash.normalize "a/"                ▸ "a"
+          slash.normalize "xyz"               ▸ "xyz"
+          slash.normalize "x/y/z"             ▸ "x/y/z"
+          slash.normalize "x\\y/z\\"          ▸ "x/y/z"
+          slash.normalize "\\x\\y/z"          ▸ "/x/y/z"
+          slash.normalize "..\\x\\y/z"        ▸ "../x/y/z"
+          slash.normalize "./x\\y/z"          ▸ "./x/y/z"
+          slash.normalize "x/./z"             ▸ "x/z"
+          slash.normalize "x/../z"            ▸ "z"
+          slash.normalize "./x/y/z/../../a"   ▸ "./x/a"
+          slash.normalize "../up"             ▸ "../up"
+          slash.normalize "//"                ▸ "/"
+          slash.normalize "//././////././"    ▸ "/"
+          slash.normalize "./x/../../z"       ▸ "../z"
+          slash.normalize "./x/../../../y"    ▸ "../../y"
+
+s = "a/abc/ed.x"
+log s
+# log kstr.splice(s 1 1)
+# log kstr.splice(s 2 1)
+# log kstr.splice(s, -1 1)
+# log kstr.splice(s, -2 1)
+# log kstr.splice(s, -3 1)
+log kstr.shift(s 2)
+log kstr.pop(s 2)
+
+# log string.sub(s 0 1)
+# log string.sub(s 1 1)
+# log string.sub(s 2 2)

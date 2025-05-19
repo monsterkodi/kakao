@@ -23,6 +23,49 @@ class Scoper
     scope  : ◇Node body ➜Node ->
     branch : ◇Node body -> discard @scope(body)
     
+    returnize: ◇Node fn ->
+    
+        ⮐  if not fn.func_body
+
+        switch fn.func_body.kind
+            ●block
+            ●semicolon
+                lastExp = fn.func_body.expressions[^1]
+                if lastExp.kind != ●return
+                    if lastExp.kind in {●if ●switch ●while ●for}
+                        log "todo: handle implicit return #{lastExp.kind}"
+                        discard
+                    else
+                        if lastExp.kind != ●operation or lastExp.token.tok notin assignToks
+                            retval  = lastExp
+                            line    = retval.token.line
+                            fn.func_body.expressions[^1] = nod(●return tkn(◂return "return" line) retval)
+                        else
+                            retval  = lastExp.operand_left
+                            line    = retval.token.line
+                            fn.func_body.expressions.add nod(●return tkn(◂return "return" line+1) retval)
+            ●return ➜ discard
+            ➜ 
+                line   = fn.func_body.token.line
+                retval = fn.func_body
+                fn.func_body = nod(●return tkn(◂return "return" line+1) retval)
+    
+    luanize: ◇Node fn ->
+        
+        @returnize fn
+
+        if fn.func_signature and fn.func_signature.sig_args.list_values
+            for arg in fn.func_signature.sig_args.list_values
+                if arg.arg_value
+                    if not fn.func_body
+                        fn.func_body = nod ●block tkn(◂indent "    ") []
+                    if fn.func_body.kind notin {●block ●semicolon}
+                        fn.func_body = nod ●block tkn(◂indent "    ") [fn.func_body]
+                    if fn.func_body and fn.func_body.kind in {●block ●semicolon}
+                        argdef = nod ●operation tkn(◂qmark_assign) arg.arg_name arg.arg_value
+                        fn.func_body.expressions.insert argdef 0 
+                        arg.arg_value = nil
+                
     # 00000000  000   000  00000000   
     # 000        000 000   000   000  
     # 0000000     00000    00000000   
@@ -32,6 +75,9 @@ class Scoper
     exp: ◇Node body ◇int i ◇Node e ->
         
         ⮐  if e == nil
+        
+        # log "vars.exp #{body.expressions.len} #{i} #{e.kind}"
+        
         add = ◇string name -> @vars[^1][name] = true
             
         insert = ◇string name ◇Node expr ->
@@ -52,11 +98,14 @@ class Scoper
                                 ●literal ➜ add(a.token.str)
                                          ➜ discard
                         body = e.operand_right.func_body
-                        for i e in body.expressions
-                            @exp body i e 
+                        if body
+                            for i e in body.expressions
+                                @exp body i e 
                         @vars.pops()
                     else
                         @branch e.operand_right.func_body
+                    if @lang == "lua"
+                        @luanize e.operand_right
                 elif e.token.tok == ◂assign
                     lhs = e.operand_left
                     switch lhs.kind
@@ -100,6 +149,8 @@ class Scoper
                 @branch e
             ●func
                 @branch e.func_body
+                if @lang == "lua"
+                    @luanize e
             ●return
                 @exp body i e.return_value
                 

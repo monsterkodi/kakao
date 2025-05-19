@@ -6,7 +6,8 @@
 # ███████   ███████  ███   ███  ███████   ███   ███
 
 use ffi
-
+use ./array
+use ./kstr
 
 ffi.cdef """
     typedef struct DIR DIR;
@@ -26,10 +27,56 @@ ffi.cdef """
     
 slash = {}
     
-slash.cwd = ->
-    ⮐  process.cwd()
+slash.cwd = -> process.cwd()
 
-slash.list = path ->
+slash.normalize = path ->
+
+    p = path
+    swallow = 0xffff
+    for i in p.len..1
+        if i >= swallow
+            p = p.remove i
+            if i == swallow
+                if p[1] == '/' and path[1] != '/'
+                    p = kstr.shift() 
+                ⮐  slash.normalize p
+        else
+            if p[i] == '\\'
+                p[i] = '/'
+            if i < p.len and p[i] == '/'
+                if i < p.len - 1
+                    if p[i+1] == '.' and p[i+2] == '/' 
+                        p = p.remove i+1
+                        p = p.remove i+2
+                    if p[i+1] == '.' and p[i+2] == '.' and i > 0 and p[i-1] != '.'
+                        p = p.remove i
+                        p = p.remove i
+                        p = p.remove i
+                        swallow = i-1
+                        while swallow > 0 and p[swallow] != '/'
+                            swallow -= 1                    
+                if p[i+1] == '/'
+                    p = p.remove i+1
+                
+    if p.len >= 4 and string.sub(p 1 4) == "./.."
+        p = p.remove 0
+        p = p.remove 0
+                
+    if p.len > 1 and p[p.len] == '/'
+        string.sub(p, 2)
+        # elif p.len > 1 and p[0] == '/' and path[0] notin {'/' '\\'}
+    elif p.len > 1 and p[0] == '/' and path[0] != '/' and path[0] != '\\'
+        string.sub(p, 3)
+    p
+
+slash.path = (...) ->
+
+    slsh = s -> string.gsub(s "\\" "/")
+    mpty = s -> s.len > 0
+    
+    slash.normalize table.concat(array.map(array.filter({...}, (mpty)), slsh), "/")
+
+slash.walk = path ->
 
     dir = ffi.C.opendir path
     if dir == nil
@@ -41,16 +88,24 @@ slash.list = path ->
         if entry != nil
             name = ffi.string entry.d_name
             if name != "." and name != ".."
-                # log entry.d_type name
-                # entry.d_type
-                # 4  dir
-                # 8  file
-                # 10 symlink
-                table.insert files name
+                typ = "???"
+                if entry.d_type == 4
+                    typ = "dir"
+                elif entry.d_type == 8
+                    typ = "file"
+                elif entry.d_type == 10
+                    typ = "link"
+                    
+                info = { "name": name "type": typ "path": slash.path(path & "/" & name) }
+                table.insert files info
         else
             break
     ffi.C.closedir dir
-    table.sort files
-    ⮐  files
+    table.sort(files, (a b) -> ⮐  a.path < b.path)
+    files
+
+slash.files = path ->
+
+    array.map(slash.walk(path), (info) -> ⮐  info.path)
             
 ⮐  slash
