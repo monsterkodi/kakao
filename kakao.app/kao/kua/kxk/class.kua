@@ -60,8 +60,6 @@ _newMember = aClass name f ->
         
     _propMember(aClass, name, f)
 
-_call = self ... -> ⮐  self:new(...)
-
 _createClass = name super ->
 
     dict = {}
@@ -89,8 +87,8 @@ _createClass = name super ->
     
     setmetatable(aClass, {  
         __index:      aClass.static
-        __tostring:   (self) -> ⮐  "class " & self.name
-        __call:       _call
+        __tostring:   (self)      -> ⮐  "class " & self.name
+        __call:       (self, ...) -> ⮐  self:new(...)
         __newindex:   _newMember })
         
     ⮐  aClass

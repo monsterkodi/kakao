@@ -5,9 +5,52 @@
 #      ███  ███      ███   ███       ███  ███   ███
 # ███████   ███████  ███   ███  ███████   ███   ███
 
+use ffi
+
+
+ffi.cdef """
+    typedef struct DIR DIR;
+    struct dirent {
+        unsigned long  d_ino;           // Inode number
+        unsigned long  d_seekoff;       // Seek offset (optional)
+        unsigned short d_reclen;        // Length of this record
+        unsigned short d_namlen;        // Length of d_name string
+        unsigned char  d_type;          // File type
+        char           d_name[1024];    // Filename (null-terminated)
+    };
+    DIR *opendir(const char *filename);
+    struct dirent *readdir(DIR *dirp);
+    int closedir(DIR *dirp);
+    const char *strerror(int errnum);
+"""
+    
 slash = {}
     
 slash.cwd = ->
     ⮐  process.cwd()
+
+slash.list = path ->
+
+    dir = ffi.C.opendir path
+    if dir == nil
+        error "Failed to open directory: " & ffi.string(ffi.C.strerror(ffi.errno()))
     
+    files = {}
+    while true
+        entry = ffi.C.readdir dir
+        if entry != nil
+            name = ffi.string entry.d_name
+            if name != "." and name != ".."
+                # log entry.d_type name
+                # entry.d_type
+                # 4  dir
+                # 8  file
+                # 10 symlink
+                table.insert files name
+        else
+            break
+    ffi.C.closedir dir
+    table.sort files
+    ⮐  files
+            
 ⮐  slash

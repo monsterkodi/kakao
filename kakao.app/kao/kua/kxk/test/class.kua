@@ -38,3 +38,24 @@ log p
         2 ▸ 1
     ▸ simple
         1 ▸ 1
+
+files1 = slash.list "."
+log table.concat(files1 " ")
+
+files2 = slash.list ".."
+log table.concat(files2 " ")
+
+files3 = slash.list "/Users/kodi"
+log table.concat(files3 " ")
+
+files4 = slash.list "/Users/kodi/.config"
+log table.concat(files4 " ")
+
+# files1 = slash.list "."
+# log inspect(files1)
+# 
+# files2 = slash.list ".."
+# log inspect(files2)
+# 
+# files3 = slash.list "../.."
+# log inspect(files3)

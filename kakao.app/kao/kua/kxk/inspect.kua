@@ -7,7 +7,7 @@
 
 # Copyright (c) 2022 Enrique García Cota
 
-use ./class
+use ./kxk
 
 rep   = string.rep
 match = string.match
@@ -109,28 +109,23 @@ countCycles = x cycles ->
                 countCycles v cycles
             countCycles getmetatable(x) cycles
 
-puts = buf str ->
-
-    buf.n = buf.n + 1
-    buf[buf.n] = str
-
 class Inspector
 
-    buf     : { n = 0 }
-    ids     : {}
-    cycles  : {}
     depth   : math.huge
-    level   : 0
     newline : '\n'
     indent  : "    "
     
     @: root ->
     
+        @ids     = {}
+        @cycles  = {}
+        @level   = 0
         countCycles(root, @cycles)
         
+        @buf = strbuff:new()
         @putValue root
-        
-        ⮐  table.concat @buf
+        buf = @buf
+        ⮐  buf:get()
 
     getId: v ->
     
@@ -144,63 +139,62 @@ class Inspector
 
     putValue: v ->
     
-        tabify = -> puts @buf @newline & rep(@indent @level)
+        tabify = -> buf=@buf ; buf:put(@newline & rep(@indent @level))
     
-        buf = @buf
         tv = type(v)
-        
+        buf = @buf
         if tv == 'string'
-            puts buf smartQuote(escape(v))
+            buf:put smartQuote(escape(v))
         elif tv == 'number' or tv == 'boolean' or tv == 'nil' or tv == 'cdata' or tv == 'ctype' 
-            puts buf tostring(v)
+            buf:put tostring(v)
         elif tv == 'table' and not @ids[v]
             t = v
             
             if @level >= @depth
-                puts buf '{...}'
+                buf:put '{...}'
             else
                 @level = @level + 1
                 
                 if @cycles[t] > 1 
                     tabify()
-                    puts buf fmt('<%d>' @getId(t))
+                    buf:put fmt('<%d>' @getId(t))
                 
                 (keys keysLen seqLen) = getKeys(t)
                 
                 for i in 1..seqLen + keysLen 
                     if i <= seqLen
-                        puts buf ' '
+                        buf:put ' '
                         @putValue(t[i])
                     else
                         tabify()
                         k = keys[i - seqLen]
                         if isIdentifier k
-                            puts buf k
+                            buf:put k
                             if k.len < 12
-                                puts buf rep(" " 12-k.len)
+                                buf:put rep(" " 12-k.len)
                         else
-                            puts buf "["
+                            buf:put "["
                             @putValue k
-                            puts buf "]"
-                        puts buf '  '
+                            buf:put "]"
+                        buf:put '  '
                         @putValue t[k]
                 
                 mt = getmetatable(t)
                 if type(mt) == 'table'
                     tabify()
-                    puts buf '<meta> '
+                    buf:put '<meta> '
                     @putValue(mt)
                 
                 @level = @level - 1
                 
                 if seqLen > 0
-                    puts buf ' '
+                    buf:put ' '
         else
             if tv == "function"
-                puts buf "->"
+                buf:put "->"
             elif tv == "table"
-                puts buf "<" & @getId(v) & ">"
+                buf:put "<" & @getId(v) & ">"
             else
-                puts buf fmt('<%s %d>' tv @getId(v))
+                buf:put fmt('<%s %d>' tv @getId(v))
 
 ⮐  (root) -> ⮐  Inspector(root)

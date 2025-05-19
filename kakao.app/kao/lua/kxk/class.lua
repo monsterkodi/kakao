@@ -73,10 +73,6 @@ function _newMember(aClass, name, f)
 end
 
 
-function _call(self, ...) return self:new(...)
-end
-
-
 function _createClass(name, super) 
     local dict = {}
     dict.__index = dict
@@ -108,7 +104,7 @@ function _createClass(name, super)
     setmetatable(aClass, {
         __index = aClass.static, 
         __tostring = function (self) return "class " .. self.name end, 
-        __call = _call, 
+        __call = function (self, ...) return self:new(...) end, 
         __newindex = _newMember
         })
     

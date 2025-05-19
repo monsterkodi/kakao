@@ -59,3 +59,24 @@ test("class", function()
         test.cmp(1, 1)
     end)
     end)
+
+local files1 = slash.list(".")
+print(table.concat(files1, " "))
+
+local files2 = slash.list("..")
+print(table.concat(files2, " "))
+
+local files3 = slash.list("/Users/kodi")
+print(table.concat(files3, " "))
+
+local files4 = slash.list("/Users/kodi/.config")
+print(table.concat(files4, " "))
+
+-- files1 = slash.list "."
+-- log inspect(files1)
+-- 
+-- files2 = slash.list ".."
+-- log inspect(files2)
+-- 
+-- files3 = slash.list "../.."
+-- log inspect(files3)
