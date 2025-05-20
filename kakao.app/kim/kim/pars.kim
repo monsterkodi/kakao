@@ -335,8 +335,7 @@ class Parser
                 break
             if @swallowIndent col
                 break
-            # if @tok in {◂comment_start, ◂then, ◂paren_close}
-            if @tok in {◂comment_start ◂then ◂test}
+            if @tok in {◂comment_start ◂then ◂test ◂semicolon}
                 break
             expr = @expression()
         @listless -= 1
@@ -490,6 +489,21 @@ class Parser
             list_values[0]
         else
             nod ●list token list_values
+
+    parseList: ◇Token token ➜Node -> 
+    
+        list_values ◇ seq[Node]
+        while @tok not in {◂eof ◂semicolon ◂indent}
+            list_values.add @expression(token)
+            @swallow ◂comma
+        nod ●list token list_values
+        
+    parseExprOrList: ◇Token token ➜Node ->
+    
+        l = @parseList token
+        if l.list_values.len == 1
+            ⮐  l.list_values[0]
+        l
     
     # █████████  ███   ███  ████████  ███   ███
     #    ███     ███   ███  ███       ████  ███
@@ -507,17 +521,42 @@ class Parser
         else
             @expression()
             
+    thenExpressions: ➜Node ->
+
+        token = @current()
+        expressions ◇ seq[Node]
+        while @tok not in {◂eof ◂indent ◂paren_close}
+            expressions.add @expression()
+            @swallow ◂semicolon
+
+        if expressions.len == 0
+            nil
+        elif expressions.len == 1
+            expressions[0]
+        else
+            nod ●semicolon token expressions
+            
     thenIndented: ◇Token token ➜Node ->
-    
+
+        thenToken ◇ Token
         if @tok == ◂then
-            @swallow ◂then
+            thenToken = @consume()
             
         if @tok == ◂indent
             if @isNextLineIndented token
                 ⮐  @parseBlock()
             ⮐  nil
+        elif thenToken.tok == ◂then
+            ⮐  @thenExpressions()
+
+    funcBody: ◇Token token ➜Node ->
+
+        if @tok == ◂indent
+            if @isNextLineIndented token
+                ⮐  @parseBlock()
+            ⮐  nil
         else
-            ⮐  @expression()
+            ⮐  @thenExpressions()
             
     #  ███████   ███████   ███      ███    
     # ███       ███   ███  ███      ███    
@@ -787,6 +826,8 @@ class Parser
     rQuote     : ➜Node -> nod(●quote     @consume() @thenBlock())
     
     lSemiColon: ◇Node left ➜Node ->
+        ⮐  if @explicit and @listless # left is probably an implicit call arg
+        # log "semicolon #{left} #{@explicit} #{@listless}"
         if @peek(1).tok notin {◂indent ◂eof}
             token = @consume()
             right = @expression(token)
@@ -962,7 +1003,7 @@ class Parser
     lFunc: ◇Node left ➜Node ->
     
         ⮐  if left.kind notin {●signature ●list ●arg ●operation ●range}
-            
+
         func_signature ◇ Node
         
         if left.kind == ●operation
@@ -1026,20 +1067,20 @@ class Parser
         if @tok == ◂mod
             func_mod = @rLiteral()
         
-        func_body = @thenIndented firstToken
+        func_body = @funcBody firstToken
         
         nod ●func token func_signature func_mod func_body
     
     rFunc: ➜Node ->
-    
+
         firstToken = @firstLineToken()
         token = @consume()
         
         func_mod ◇ Node
         if @tok == ◂mod
             func_mod = @rLiteral()
-        
-        func_body = @thenIndented firstToken
+
+        func_body = @funcBody firstToken
         
         nod ●func token nil nil func_body
     
@@ -1106,7 +1147,7 @@ class Parser
             if @tok in {◂func ◂method}
                 ftoken = @consume()
                 func_mod = if @tok == ◂mod ➜ @rLiteral() ➜ nil
-                func_body = @expressionOrIndentedBlock tkn(◂null) col
+                func_body = @funcBody tkn(◂null token.line col)
                 ⮐  nod ●func ftoken func_signature func_mod func_body
             else
                 @pos = startPos
@@ -1167,6 +1208,16 @@ class Parser
     
         token = @consume()
         right = @expression token
+        nod ●preOp token right
+
+    rLog: ➜Node ->
+    
+        token = @consume()
+        right ◇ Node
+        if @tok == ◂paren_open
+            right = @rParenExpr()
+        else
+            right = @parseExprOrList token
         nod ●preOp token right
         
     rAssert: ➜Node ->
@@ -1368,29 +1419,29 @@ class Parser
     
     setup: ->
     
-        @pratt ◂semicolon         lSemiColon        nil             0
-    
-        @pratt ◂true              nil               rLiteral        0
-        @pratt ◂false             nil               rLiteral        0
-        @pratt ◂mod               nil               rLiteral        0
-        @pratt ◂null              nil               rLiteral        0
-        @pratt ◂number            nil               rLiteral        0
-        @pratt ◂string_start      nil               rString         0
-        @pratt ◂comment_start     nil               rComment        0
-        @pratt ◂verbatim          nil               rLiteral        0
-        @pratt ◂use               nil               rUse            0
-        @pratt ◂let               nil               rLet            0
-        @pratt ◂var               nil               rLet            0
-        @pratt ◂return            nil               rReturn         0
-        @pratt ◂discard           nil               rDiscard        0
-        @pratt ◂quote             nil               rQuote          0
-        @pratt ◂test              lTestCase         rTestSuite      0
-        @pratt ◂class             nil               rClass          0
-        @pratt ◂struct            nil               rStruct         0
-        @pratt ◂enum              nil               rEnum           0
-        @pratt ◂continue          nil               rKeyword        0
-        @pratt ◂break             nil               rKeyword        0
-        @pratt ◂assert            nil               rAssert         0
+        @pratt ◂semicolon         lSemiColon        nil,            0
+        @pratt ◂log               nil               rLog            1
+        @pratt ◂assert            nil               rAssert         2
+        @pratt ◂true              nil               rLiteral        2
+        @pratt ◂false             nil               rLiteral        2
+        @pratt ◂mod               nil               rLiteral        2
+        @pratt ◂null              nil               rLiteral        2
+        @pratt ◂number            nil               rLiteral        2
+        @pratt ◂string_start      nil               rString         2
+        @pratt ◂comment_start     nil               rComment        2
+        @pratt ◂verbatim          nil               rLiteral        2
+        @pratt ◂use               nil               rUse            2
+        @pratt ◂let               nil               rLet            2
+        @pratt ◂var               nil               rLet            2
+        @pratt ◂return            nil               rReturn         2
+        @pratt ◂discard           nil               rDiscard        2
+        @pratt ◂quote             nil               rQuote          2
+        @pratt ◂test              lTestCase         rTestSuite      2
+        @pratt ◂class             nil               rClass          2
+        @pratt ◂struct            nil               rStruct         2
+        @pratt ◂enum              nil               rEnum           2
+        @pratt ◂continue          nil               rKeyword        2
+        @pratt ◂break             nil               rKeyword        2
                                                                         
         @pratt ◂colon             lMember           nil            10
         @pratt ◂assign            lAssign           nil            10

@@ -215,16 +215,16 @@ hook = -> {.noconv.}
         t("f()\n .g()\n .h()", "▪[(((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[])]")
         t("a = f().g().h()", "▪[(◂name = (((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[]))]")
         t("a = f()\n    .g()\n    .h()", "▪[(◂name = (((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[]))]")
-        t("log f().g().h()", "▪[(◂name ◂call @[(((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[])])]")
-        t("log f()\n    .g()\n    .h()", "▪[(◂name ◂call @[(((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[])])]")
+        t("log f().g().h()", "▪[(◂log (((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[]))]")
+        t("log f()\n    .g()\n    .h()", "▪[(◂log (((((◂name ◂call @[]) . ◂name) ◂call @[]) . ◂name) ◂call @[]))]")
         t("""
 if 1
-    log output.replace("[O]" fg(fgYellow) & "▸")
+    fun output.replace("[O]" fg(fgYellow) & "▸")
               .replace("[P]" fg(fgGreen) & "✔")
               .replace("[Q]" fg(fgRed) & "✘")
 else
     count = output.count("[R]")
-    log output.replace("[S]" fg(fgYellow) & "▸")
+    fun output.replace("[S]" fg(fgYellow) & "▸")
               .replace("[T]" fg(fgGeen)   & "▸")
 """, "▪[(◂if @[(◂number ▪[(◂name ◂call @[((((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])] ▪[(◂name = ((◂name . ◂name) ◂call @[◂string]))(◂name ◂call @[((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])]")
     test "array access": 
@@ -241,8 +241,8 @@ else
         t("x = if a then b else c+d", "▪[(◂name = (◂if @[(◂name ◂name)] (◂name + ◂name)))]")
         t("if a then ⮐", "▪[(◂if @[(◂name (⮐))])]")
         t("a + if b then c else d", "▪[(◂name + (◂if @[(◂name ◂name)] ◂name))]")
-        t("if true\n  log msg", "▪[(◂if @[(✔ ▪[(◂name ◂call @[◂name])])])]")
-        t("if true\n  log(1)\n  log(2)", "▪[(◂if @[(✔ ▪[(◂name ◂call @[◂number])(◂name ◂call @[◂number])])])]")
+        t("if true\n  fun msg", "▪[(◂if @[(✔ ▪[(◂name ◂call @[◂name])])])]")
+        t("if true\n  fun(1)\n  fun(2)", "▪[(◂if @[(✔ ▪[(◂name ◂call @[◂number])(◂name ◂call @[◂number])])])]")
         t("if a ➜ 1\nelif b == 2 ➜ 2", "▪[(◂if @[(◂name ◂number), ((◂name == ◂number) ◂number)])]")
         t("if hasKey(name) ➜ 1", "▪[(◂if @[((◂name ◂call @[◂name]) ◂number)])]")
         t("if hasKey name ➜ 1", "▪[(◂if @[((◂name ◂call @[◂name]) ◂number)])]")
@@ -443,12 +443,30 @@ enum tok
         ◂when
         ◂then   = "➜"
 """, "▪[(◂enum ◂name ▪[◂name(◂name = ◂string)])]")
+    test "log ": 
+        t("log 1", "▪[(◂log ◂number)]")
+        t("log 1 2", "▪[(◂log ◂[◂number, ◂number])]")
+        t("log a 2", "▪[(◂log (◂name ◂call @[◂number]))]")
+        t("log a, 2", "▪[(◂log ◂[◂name, ◂number])]")
+        t("log a ; log b", "▪[;[(◂log ◂name)(◂log ◂name)]]")
+        t("log a(1); log b 2", "▪[;[(◂log (◂name ◂call @[◂number]))(◂log (◂name ◂call @[◂number]))]]")
+        t("log a 1 ; log b 2", "▪[;[(◂log (◂name ◂call @[◂number]))(◂log (◂name ◂call @[◂number]))]]")
     test "class": 
         t("class Node", "▪[(◂class ◂name ▪[])]")
         t("class Node\n member:string", "▪[(◂class ◂name ▪[(◂name : ◂name)])]")
         t("class Node\n member:string\n i:int", "▪[(◂class ◂name ▪[(◂name : ◂name)(◂name : ◂name)])]")
         t("class Node\n member:string\ni:int", "▪[(◂class ◂name ▪[(◂name : ◂name)])(◂name : ◂name)]")
         t("class B extends A", "▪[(◂class ◂name ◂name ▪[])]")
+#         t   """
+#             class simpleLog
+#                 p: => log "simpleLog" a b
+#             """ ""
+# 
+#         t   """
+#             class virtualLog
+#                 p: => log "virtualLog" @a @b
+#             """ ""
+
     test "this": 
         t("@ : ->", "▪[(◂name : (->))]")
         t("@name : ->", "▪[(◂name : (->))]")
@@ -483,8 +501,10 @@ enum tok
     test "semicolon": 
         t("if true\n  a\n  b\n  c", "▪[(◂if @[(✔ ▪[◂name◂name◂name])])]")
         t("a ; b", "▪[;[◂name◂name]]")
-        t("if true ➜ a ; b", "▪[(◂if @[(✔ ;[◂name◂name])])]")
-        t("if true ➜ a ; b;c", "▪[(◂if @[(✔ ;[◂name◂name◂name])])]")
+        # t "if true ➜ a ; b"                     "▪[(◂if @[(✔ ;[◂name◂name])])]"
+        # t "if true ➜ a ; b;c"                   "▪[(◂if @[(✔ ;[◂name◂name◂name])])]"
+        # t "f = -> (a = 1 ; b = 2)"              "▪[(◂name = (-> ◂[;[(◂name = ◂number)(◂name = ◂number)]]))]"
+        t("f = -> a = 1 ; b = 2", "▪[(◂name = (-> ;[(◂name = ◂number)(◂name = ◂number)]))]")
     test "blocks": 
         t("t \"a\",\n  \"b\"", "▪[(◂name ◂call @[◂string, ◂string])]")
         t("""

@@ -259,8 +259,8 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
     profileStop dst & " "
 
     if compile "#{dst}/nim/kim.nim" "#{dst}/bin"
-        profileStart "test"
-        (output exitCode) = execCmdEx "#{dst}/bin/kim --test"
+        profileStart "test" 
+        (output exitCode) = execCmdEx "#{dst}/bin/kim -v --test"
         profileStop "test"
         if exitCode == 0
             ⮐  true

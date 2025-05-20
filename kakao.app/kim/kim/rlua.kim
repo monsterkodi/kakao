@@ -184,12 +184,15 @@ class Rlua
     
     ▸preOp: ◇Node n -> 
     
-        if n.token.tok == ◂not
-            @add "not "
-        else
-            @tok n
+        switch n.token.tok 
+            ◂not ➜ @add "not "
+            ◂log ➜ @add "print("
+                 ➜ @tok n
             
         @rnd n.operand
+        
+        if n.token.tok == ◂log
+            @add ")"
         
     ▸postOp: ◇Node n -> 
     

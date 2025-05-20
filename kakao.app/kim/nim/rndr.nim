@@ -70,6 +70,8 @@ proc sigBody(this : Rndr, n : Node) =
                 this.add("\n")
                 var idt = if n.func_signature: n.func_signature.token.col else: n.token.col
                 this.add(' '.repeat(idt))
+            # else
+            #     log "else #{n.func_body.kind} #{n.func_body}"
             this.rnd(n.func_body)
 
 proc ▸func(this : Rndr, n : Node) = 
@@ -129,11 +131,13 @@ proc ▸let(this : Rndr, n : Node) =
         this.rnd(n.let_expr)
 
 proc ▸preOp(this : Rndr, n : Node) = 
-        if (n.token.tok == ◂not): 
-            this.add("not ")
-        else: 
-            this.tok(n)
+        case n.token.tok:
+            of ◂not: this.add("not ")
+            of ◂log: this.add("echo(")
+            else: this.tok(n)
         this.rnd(n.operand)
+        if (n.token.tok == ◂log): 
+            this.add(")")
 
 proc ▸postOp(this : Rndr, n : Node) = 
         this.rnd(n.operand)

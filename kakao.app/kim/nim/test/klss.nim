@@ -367,7 +367,7 @@ proc init(this : virtualB, a : int) : virtualB =
         discard procCall init(virtualA(this), (a * 2))
         this
 
-method p(this : virtualB) = echo("virtualB:", this.a, this.b)
+method p(this : virtualB) = echo("virtualB:", this.a(this.b))
 var a = virtualA().init(1)
 a.p()
 a = virtualB().init(2)

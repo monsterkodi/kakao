@@ -32,6 +32,7 @@ type tok* = enum
     ◂converter
     ◂type
     ◂use
+    ◂log
     ◂try
     ◂catch
     ◂let

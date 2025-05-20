@@ -162,11 +162,13 @@ proc ▸let(this : Rlua, n : Node) =
         this.rnd(n.let_expr)
 
 proc ▸preOp(this : Rlua, n : Node) = 
-        if (n.token.tok == ◂not): 
-            this.add("not ")
-        else: 
-            this.tok(n)
+        case n.token.tok:
+            of ◂not: this.add("not ")
+            of ◂log: this.add("print(")
+            else: this.tok(n)
         this.rnd(n.operand)
+        if (n.token.tok == ◂log): 
+            this.add(")")
 
 proc ▸postOp(this : Rlua, n : Node) = 
         this.rnd(n.operand)

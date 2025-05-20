@@ -286,8 +286,7 @@ proc parseCallArgs(this : Parser, col : int) : seq[Node] =
                 break
             if this.swallowIndent(col): 
                 break
-            # if @tok in {◂comment_start, ◂then, ◂paren_close}
-            if (this.tok in {◂comment_start, ◂then, ◂test}): 
+            if (this.tok in {◂comment_start, ◂then, ◂test, ◂semicolon}): 
                 break
             expr = this.expression()
         (this.listless -= 1)
@@ -419,6 +418,19 @@ proc parseNamesUntil(this : Parser, stop : tok) : Node =
             list_values[0]
         else: 
             nod(●list, token, list_values)
+
+proc parseList(this : Parser, token : Token) : Node = 
+        var list_values : seq[Node]
+        while (this.tok notin {◂eof, ◂semicolon, ◂indent}): 
+            list_values.add(this.expression(token))
+            this.swallow(◂comma)
+        nod(●list, token, list_values)
+
+proc parseExprOrList(this : Parser, token : Token) : Node = 
+        var l = this.parseList(token)
+        if (l.list_values.len == 1): 
+            return l.list_values[0]
+        l
 # █████████  ███   ███  ████████  ███   ███
 #    ███     ███   ███  ███       ████  ███
 #    ███     █████████  ███████   ███ █ ███
@@ -433,15 +445,37 @@ proc thenBlock(this : Parser) : Node =
         else: 
             this.expression()
 
+proc thenExpressions(this : Parser) : Node = 
+        var token = this.current()
+        var expressions : seq[Node]
+        while (this.tok notin {◂eof, ◂indent, ◂paren_close}): 
+            expressions.add(this.expression())
+            this.swallow(◂semicolon)
+        if (expressions.len == 0): 
+            nil
+        elif (expressions.len == 1): 
+            expressions[0]
+        else: 
+            nod(●semicolon, token, expressions)
+
 proc thenIndented(this : Parser, token : Token) : Node = 
+        var thenToken : Token
         if (this.tok == ◂then): 
-            this.swallow(◂then)
+            thenToken = this.consume()
+        if (this.tok == ◂indent): 
+            if this.isNextLineIndented(token): 
+                return this.parseBlock()
+            return nil
+        elif (thenToken.tok == ◂then): 
+            return this.thenExpressions()
+
+proc funcBody(this : Parser, token : Token) : Node = 
         if (this.tok == ◂indent): 
             if this.isNextLineIndented(token): 
                 return this.parseBlock()
             return nil
         else: 
-            return this.expression()
+            return this.thenExpressions()
 #  ███████   ███████   ███      ███    
 # ███       ███   ███  ███      ███    
 # ███       █████████  ███      ███    
@@ -652,6 +686,8 @@ proc rReturnType(this : Parser) : Node = nod(●signature, this.consume(), nil, 
 proc rQuote(this : Parser) : Node = nod(●quote, this.consume(), this.thenBlock())
 
 proc lSemiColon(this : Parser, left : Node) : Node = 
+        if (this.explicit and this.listless): return # left is probably an implicit call arg
+        # log "semicolon #{left} #{@explicit} #{@listless}"
         if (this.peek(1).tok notin {◂indent, ◂eof}): 
             var token = this.consume()
             var right = this.expression(token)
@@ -841,7 +877,7 @@ proc lFunc(this : Parser, left : Node) : Node =
         var func_mod : Node
         if (this.tok == ◂mod): 
             func_mod = this.rLiteral()
-        var func_body = this.thenIndented(firstToken)
+        var func_body = this.funcBody(firstToken)
         nod(●func, token, func_signature, func_mod, func_body)
 
 proc rFunc(this : Parser) : Node = 
@@ -850,7 +886,7 @@ proc rFunc(this : Parser) : Node =
         var func_mod : Node
         if (this.tok == ◂mod): 
             func_mod = this.rLiteral()
-        var func_body = this.thenIndented(firstToken)
+        var func_body = this.funcBody(firstToken)
         nod(●func, token, nil, nil, func_body)
 
 proc parseSignature(this : Parser) : Node = 
@@ -899,7 +935,7 @@ proc funcOrExpression(this : Parser, token : Token) : Node =
             if (this.tok in {◂func, ◂method}): 
                 var ftoken = this.consume()
                 var func_mod = if (this.tok == ◂mod): this.rLiteral() else: nil
-                var func_body = this.expressionOrIndentedBlock(tkn(◂null), col)
+                var func_body = this.funcBody(tkn(◂null, token.line, col))
                 return nod(●func, ftoken, func_signature, func_mod, func_body)
             else: 
                 this.pos = startPos
@@ -949,6 +985,15 @@ proc lPostOp(this : Parser, left : Node) : Node =
 proc rPreOp(this : Parser) : Node = 
         var token = this.consume()
         var right = this.expression(token)
+        nod(●preOp, token, right)
+
+proc rLog(this : Parser) : Node = 
+        var token = this.consume()
+        var right : Node
+        if (this.tok == ◂paren_open): 
+            right = this.rParenExpr()
+        else: 
+            right = this.parseExprOrList(token)
         nod(●preOp, token, right)
 
 proc rAssert(this : Parser) : Node = 
@@ -1110,27 +1155,28 @@ proc pratt(this : Parser, t : tok, lhs : LHS, rhs : RHS, precedence : int) =
 
 proc setup(this : Parser) = 
         this.pratt(◂semicolon, lSemiColon, nil, 0)
-        this.pratt(◂true, nil, rLiteral, 0)
-        this.pratt(◂false, nil, rLiteral, 0)
-        this.pratt(◂mod, nil, rLiteral, 0)
-        this.pratt(◂null, nil, rLiteral, 0)
-        this.pratt(◂number, nil, rLiteral, 0)
-        this.pratt(◂string_start, nil, rString, 0)
-        this.pratt(◂comment_start, nil, rComment, 0)
-        this.pratt(◂verbatim, nil, rLiteral, 0)
-        this.pratt(◂use, nil, rUse, 0)
-        this.pratt(◂let, nil, rLet, 0)
-        this.pratt(◂var, nil, rLet, 0)
-        this.pratt(◂return, nil, rReturn, 0)
-        this.pratt(◂discard, nil, rDiscard, 0)
-        this.pratt(◂quote, nil, rQuote, 0)
-        this.pratt(◂test, lTestCase, rTestSuite, 0)
-        this.pratt(◂class, nil, rClass, 0)
-        this.pratt(◂struct, nil, rStruct, 0)
-        this.pratt(◂enum, nil, rEnum, 0)
-        this.pratt(◂continue, nil, rKeyword, 0)
-        this.pratt(◂break, nil, rKeyword, 0)
-        this.pratt(◂assert, nil, rAssert, 0)
+        this.pratt(◂log, nil, rLog, 1)
+        this.pratt(◂assert, nil, rAssert, 2)
+        this.pratt(◂true, nil, rLiteral, 2)
+        this.pratt(◂false, nil, rLiteral, 2)
+        this.pratt(◂mod, nil, rLiteral, 2)
+        this.pratt(◂null, nil, rLiteral, 2)
+        this.pratt(◂number, nil, rLiteral, 2)
+        this.pratt(◂string_start, nil, rString, 2)
+        this.pratt(◂comment_start, nil, rComment, 2)
+        this.pratt(◂verbatim, nil, rLiteral, 2)
+        this.pratt(◂use, nil, rUse, 2)
+        this.pratt(◂let, nil, rLet, 2)
+        this.pratt(◂var, nil, rLet, 2)
+        this.pratt(◂return, nil, rReturn, 2)
+        this.pratt(◂discard, nil, rDiscard, 2)
+        this.pratt(◂quote, nil, rQuote, 2)
+        this.pratt(◂test, lTestCase, rTestSuite, 2)
+        this.pratt(◂class, nil, rClass, 2)
+        this.pratt(◂struct, nil, rStruct, 2)
+        this.pratt(◂enum, nil, rEnum, 2)
+        this.pratt(◂continue, nil, rKeyword, 2)
+        this.pratt(◂break, nil, rKeyword, 2)
         this.pratt(◂colon, lMember, nil, 10)
         this.pratt(◂assign, lAssign, nil, 10)
         this.pratt(◂plus_assign, lAssign, nil, 10)

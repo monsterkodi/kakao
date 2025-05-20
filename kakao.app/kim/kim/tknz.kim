@@ -34,6 +34,7 @@ enum tok*
     ◂converter
     ◂type  
     ◂use
+    ◂log
     ◂try
     ◂catch
     ◂let                

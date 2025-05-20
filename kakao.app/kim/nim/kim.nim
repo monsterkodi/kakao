@@ -194,7 +194,7 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     profileStop(dst & " ")
     if compile(&"{dst}/nim/kim.nim", &"{dst}/bin"): 
         profileStart("test")
-        var (output, exitCode) = execCmdEx(&"{dst}/bin/kim --test")
+        var (output, exitCode) = execCmdEx(&"{dst}/bin/kim -v --test")
         profileStop("test")
         if (exitCode == 0): 
             return true
