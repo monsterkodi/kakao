@@ -56,7 +56,7 @@ function initFunc(main, ...)
     
     
     function closeHandle(handle) 
-        return if handle then 
+        if handle then 
             
             function close() 
                 if not handle:is_closing() then handle:close() end

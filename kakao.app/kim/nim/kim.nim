@@ -103,6 +103,7 @@ proc logFile(f : string, prefix = "") =
 proc compile(file : string, outDir = "bin") : bool = 
     # nim c --outDir:bin --colors:on --stackTrace:on --lineTrace:on --warning:User:off nim/kim.nim
     profileScope("comp")
+    # cmd = "nim c --cc:clang --clang.exe=\"zigcc\" --clang.linkerexe=\"zigcc\" -d:danger --outDir=#{outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off #{file}"
     var cmd = &"nim c -d:danger --outDir={outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off {file}"
     # cmd = "nim c -d:danger -d:nimNoLentIterators --outDir=#{outdir} --stackTrace:on --lineTrace:on --colors:on --warning:User:off #{file}"
     # cmd = "nim c --outDir=#{outdir} --mm:arc --colors:on --stackTrace:on --lineTrace:on --warning:User:off #{file}"

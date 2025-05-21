@@ -478,7 +478,8 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
                 Print.m = "hello"
             
             
-            function Print:__tostring() return self.m
+            function Print:__tostring() 
+                return self.m
                 end"""
                 
                 

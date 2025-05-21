@@ -324,7 +324,6 @@ proc ▸if(this : Rlua, n : Node) =
 proc ▸for(this : Rlua, n : Node) = 
         this.add("for ")
         if (n.for_value.kind == ●list): 
-            echo(&"for {n.for_value.kind} {n.for_value.list_values}")
             for i, v in n.for_value.list_values: 
                 this.rnd(v)
                 if (i < (n.for_value.list_values.len - 1)): 

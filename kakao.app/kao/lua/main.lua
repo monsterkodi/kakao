@@ -17,17 +17,14 @@ Options:
   -h, --help         display this help, then exit
 ]])
     
+    print(process.cwd())
     
-    function slice(tbl, first, last) 
-        local sliced = {}
-        for i = first, last do 
-            sliced[(#sliced + 1)] = tbl[i]
-        end
-        
-        return sliced
-    end
-    
-    local argv = slice(process.argv, 2, #process.argv)
+    print("argp", table.concat(process.argv, " "), #process.argv, process.argc)
+    print("parg", process.argv[0])
+    print("parg", process.argv[1])
+    print("parg", process.argv[2])
+    local argv = array.slice(process.argv, 2, #process.argv)
+    print("argv", table.concat(argv, " "))
     
     local arg, opts = optparser:parse(argv)
     
@@ -43,7 +40,10 @@ Options:
         print('files', inspect(files))
     end
     
-    print("▸", kxk.exec("ls ~", print))
+    -- log "▸" kxk.exec("ls ~" print)
+    
+    print(inspect(opts))
+    print(table.concat(files, " "))
     
     
     function load(file) 
@@ -52,7 +52,7 @@ Options:
     end
     
     if (#files > 0) then 
-        print("files", inspect(files))
+        -- log "files" inspect(files)
         if opts.test then 
             for index, file in pairs(files) do 
                 print('▸', file)
@@ -63,9 +63,23 @@ Options:
     
     
     function verb(msg) 
-        return if opts.verbose then print(msg) end
+        if opts.verbose then print(msg) end
     end
-    return verb
+    
+    local dir = process.cwd()
+    local kuaTests = slash.files(slash.path(dir, "../lua/test"))
+    local kuaFiles = slash.files(slash.path(dir, "../kua"))
+    local kxkFiles = slash.files(slash.path(dir, "../kua/kxk"))
+    local kxkTests = slash.files(slash.path(dir, "kxk/test"))
+    
+    if (true or verbose) then 
+        print(table.concat(kuaTests))
+        print(table.concat(kuaFiles))
+        print(table.concat(kxkFiles))
+        print(table.concat(kxkTests))
+    end
+    
+    return print(slash.normalize(slash.path(dir, "../lua/test")))
 end
 
 return require('./init')(main, ...)

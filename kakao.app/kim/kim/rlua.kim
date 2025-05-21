@@ -375,7 +375,6 @@ class Rlua
     
         @add "for "
         if n.for_value.kind == ●list
-            log "for #{n.for_value.kind} #{n.for_value.list_values}"
             for i,v in n.for_value.list_values
                 @rnd v
                 if i < n.for_value.list_values.len-1

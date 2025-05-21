@@ -24,7 +24,7 @@ end
 local shortEscapes = {["\a"] = "\\a", ["\b"] = "\\b", ["\f"] = "\\f", ["\n"] = "\\n", ["\r"] = "\\r", ["\t"] = "\\t", ["\v"] = "\\v", ["\127"] = "\\127"}
 local longEscapes = {["\127"] = "\127"}
 
-for i = 0, 31 do 
+for i in iter(0, 31) do 
     local ch = string.char(i)
     if not shortEscapes[ch] then 
         shortEscapes[ch] = "\\" .. i
@@ -142,8 +142,8 @@ function Inspector:init(root)
         self.buf = strbuff:new()
         self:putValue(root)
         local buf = self.buf
-        buf:get()
-        return self
+        -- don't return self here
+        return buf:get()
     end
 
 
@@ -187,7 +187,7 @@ function Inspector:putValue(v)
                 
                 local keys, keysLen, seqLen = getKeys(t)
                 
-                for i = 1, (seqLen + keysLen) do 
+                for i in iter(1, (seqLen + keysLen)) do 
                     if (i <= seqLen) then 
                         buf:put(' ')
                         self:putValue(t[i])

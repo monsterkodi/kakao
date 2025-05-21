@@ -79,12 +79,12 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         
     ▸ return
     
-        v "f = -> 1"                                  "\nfunction f() return 1\nend"
+        v "f = -> 1"                                  "\nfunction f() \n    return 1\nend"
         
     ▸ default arg
     
         v "f = a=1 ->"                                "\nfunction f(a) \n    a = a or 1\nend"
-        v "f = a=1 -> 2"                              "\nfunction f(a) \n    a = a or 1\n    \n    return 2\nend"
+        v "f = a=1 -> 2"                              "\nfunction f(a) \n    a = a or 1\n    return 2\nend"
         
     ▸ call
     

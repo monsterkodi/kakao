@@ -5,13 +5,6 @@
 # ███  ███    ███ ███   ███  ███ 
 # ███   ███  ███   ███  ███   ███
 
-_G.strbuff  = require "string.buffer"
-_G.childp   = require "childprocess"
-_G.class    = require "./class"
-_G.inspect  = require "./inspect"
-_G.slash    = require "./slash"
-_G.kstr     = require "./kstr"
-_G.test     = require "./test"
 _G.iter     = from to step=1 ->
     if step != 0
         step = math.abs step
@@ -22,6 +15,15 @@ _G.iter     = from to step=1 ->
             if i >= to and step < 0 or i <= to and step > 0
                 ⮐  i
     -> nil
+
+_G.strbuff  = require "string.buffer"
+_G.childp   = require "childprocess"
+_G.class    = require "./class"
+_G.inspect  = require "./inspect"
+_G.slash    = require "./slash"
+_G.array    = require "./array"
+_G.kstr     = require "./kstr"
+_G.test     = require "./test"
 
 kxk = {}
 kxk.exec = cmd opt cb ->

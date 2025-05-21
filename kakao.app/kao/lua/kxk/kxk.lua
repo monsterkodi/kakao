@@ -4,13 +4,6 @@
 -- ███  ███    ███ ███   ███  ███ 
 -- ███   ███  ███   ███  ███   ███
 
-_G.strbuff = require("string.buffer")
-_G.childp = require("childprocess")
-_G.class = require("./class")
-_G.inspect = require("./inspect")
-_G.slash = require("./slash")
-_G.kstr = require("./kstr")
-_G.test = require("./test")
 
 function _G.iter(from, to, step) 
     step = step or 1
@@ -29,6 +22,15 @@ function _G.iter(from, to, step)
     
     return function () return nil end
 end
+
+_G.strbuff = require("string.buffer")
+_G.childp = require("childprocess")
+_G.class = require("./class")
+_G.inspect = require("./inspect")
+_G.slash = require("./slash")
+_G.array = require("./array")
+_G.kstr = require("./kstr")
+_G.test = require("./test")
 
 local kxk = {}
 

@@ -1,0 +1,89 @@
+
+use ./array
+
+kseg = {}
+
+kseg.decode = str startPos=1 ->
+
+    b1 = str:byte( startPos, startPos )
+
+    if b1 < 0x80
+        ⮐  (startPos, startPos)
+
+    if b1 > 0xF4 or b1 < 0xC2
+        ⮐  nil
+
+    bytes = b1 >= 0xF0 and 3 or b1 >= 0xE0 and 2 or b1 >= 0xC0 and 1
+
+    endPos = startPos + bytes
+
+    for _ bX in ipairs { str:byte( startPos + 1, endPos ) }
+        
+        if bit.band( bX, 0xC0 ) != 0x80
+            ⮐  nil
+
+    (startPos endPos)
+
+kseg.codes = str ->
+
+    i = 1
+
+    () ->
+
+        if i > str.len ➜ ⮐  nil
+        
+        (startPos endPos) = kseg.decode(str i)
+
+        if not startPos ➜ error("invalid UTF-8 code" 2)
+        
+        i = endPos + 1
+        
+        (startPos string.sub(str startPos endPos))
+
+kseg.segs = s ->
+
+    segs = {}
+    for i seg in kseg.codes(s)
+        segs[segs.len+1] = seg
+    segs
+    
+kseg.str = s ->
+
+    table.concat s ""
+
+kseg.concat = a b ->
+
+    for i in 1..b.len
+        a[a.len+1] = b[i]
+    a
+    
+kseg.sub = a from to -> array.slice a from to
+
+kseg.splice = s i n ... ->
+    
+    if i < 0 ➜ i = s.len+i+1
+    r = kseg.concat {...} kseg.sub(s i+n)
+    if i > 1
+        r = kseg.concat kseg.sub(s 1 i-1) r
+    r
+        
+kseg.unshift = s c          -> table.insert s 1 c
+kseg.shift   = s            -> table.remove s 1 
+kseg.pop     = s            -> table.remove s
+kseg.push    = s c          -> table.insert s c
+kseg.lpad    = s n=1 c=" "  ->
+kseg.lpad    = l s="" c=' ' ->
+    while s.len < l ➜ s = array.unshift s c
+    s
+kseg.rpad = l s="" c=' ' ->  
+    while s.len < l ➜ s = array.push s c
+    s
+kseg.rtrim = s c=' ' -> 
+    while s.len > 0 and s[s.len] == c ➜ s = kseg.pop s
+    s
+kseg.ltrim = s c=' ' -> 
+    while s.len > 0 and s[1] == c ➜ s = kseg.sub s 2
+    s
+kseg.trim = s c=' ' -> kseg.ltrim kseg.rtrim(s,c) c
+   
+⮐  kseg

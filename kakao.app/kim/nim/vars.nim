@@ -31,10 +31,17 @@ proc scope(this : Scoper, body : Node) : Node
 
 proc branch(this : Scoper, body : Node) = discard this.scope(body)
 
+proc addbody(this : Scoper, fn : Node) = 
+        if not fn.func_body: 
+            fn.func_body = nod(●block, tkn(◂indent, "    "), @[])
+        if (fn.func_body.kind notin {●block, ●semicolon}): 
+            fn.func_body = nod(●block, tkn(◂indent, "    "), @[fn.func_body])
+
 proc returnize(this : Scoper, fn : Node) = 
         if not fn.func_body: return
         case fn.func_body.kind:
             of ●block, ●semicolon: 
+                if (fn.func_body.expressions.len == 0): return
                 var lastExp = fn.func_body.expressions[^1]
                 if (lastExp.kind != ●return): 
                     if (lastExp.kind in {●if, ●switch, ●while, ●for}): 
@@ -56,14 +63,11 @@ proc returnize(this : Scoper, fn : Node) =
                 fn.func_body = nod(●return, tkn(◂return, "return", (line + 1)), retval)
 
 proc luanize(this : Scoper, fn : Node) = 
+        this.addbody(fn)
         this.returnize(fn)
         if (fn.func_signature and fn.func_signature.sig_args.list_values): 
             for arg in fn.func_signature.sig_args.list_values: 
                 if arg.arg_value: 
-                    if not fn.func_body: 
-                        fn.func_body = nod(●block, tkn(◂indent, "    "), @[])
-                    if (fn.func_body.kind notin {●block, ●semicolon}): 
-                        fn.func_body = nod(●block, tkn(◂indent, "    "), @[fn.func_body])
                     if (fn.func_body and (fn.func_body.kind in {●block, ●semicolon})): 
                         var argdef = nod(●operation, tkn(◂qmark_assign), arg.arg_name, arg.arg_value)
                         fn.func_body.expressions.insert(argdef, 0)
@@ -92,11 +96,12 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                         this.vars.push(initTable[string, bool]())
                         for a in e.operand_right.func_signature.sig_args.list_values: 
                             case a.kind:
-                                of ●arg: add(a.arg_name.token.str)
+                                of ●arg: 
+                                    if a.arg_name: add(a.arg_name.token.str)
                                 of ●literal: add(a.token.str)
                                 else: discard
                         var body = e.operand_right.func_body
-                        if body: 
+                        if (body and (body.kind in {●block, ●semicolon})): 
                             for i, e in body.expressions: 
                                 this.exp(body, i, e)
                         this.vars.pops()

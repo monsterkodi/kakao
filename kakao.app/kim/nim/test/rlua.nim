@@ -61,10 +61,10 @@ suite "rlua":
         t("f = ->", "\nfunction f()\nend")
         t("Inspector:getId = v ->", "\nfunction Inspector:getId(v)\nend")
     test "return": 
-        v("f = -> 1", "\nfunction f() return 1\nend")
+        v("f = -> 1", "\nfunction f() \n    return 1\nend")
     test "default arg": 
         v("f = a=1 ->", "\nfunction f(a) \n    a = a or 1\nend")
-        v("f = a=1 -> 2", "\nfunction f(a) \n    a = a or 1\n    \n    return 2\nend")
+        v("f = a=1 -> 2", "\nfunction f(a) \n    a = a or 1\n    return 2\nend")
     test "call": 
         t("f()", "f()")
         t("f(g())", "f(g())")

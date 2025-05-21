@@ -119,7 +119,8 @@ class Inspector
         @buf = strbuff:new()
         @putValue root
         buf = @buf
-        buf:get()
+        # don't return self here
+        ⮐  buf:get()
 
     getId: v ->
     

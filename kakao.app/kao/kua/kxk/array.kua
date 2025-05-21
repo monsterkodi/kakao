@@ -21,5 +21,18 @@ array.filter = tbl f ->
         if f(v k)
             table.insert t v
     t
+    
+array.shift   = a -> a.remove 1
+array.pop     = a -> a.remove a.len
+array.push    = a v -> a[a.len+1] = v
+array.unshift = a v -> table.insert a v 1
+array.slice   = a first last ->
+    if last == nil ➜ last = a.len
+    s = {}
+    for i in first..last
+        array.push s a[i]
+    s
+
+array.str     = a -> "[ " & table.concat(a " ") & " ]"
 
 ⮐  array

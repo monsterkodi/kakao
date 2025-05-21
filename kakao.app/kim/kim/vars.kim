@@ -28,6 +28,13 @@ class Scoper
     scope  : ◇Node body ➜Node ->
     branch : ◇Node body -> discard @scope(body)
     
+    addbody : ◇Node fn ->
+    
+        if not fn.func_body
+            fn.func_body = nod ●block tkn(◂indent "    ") []
+        if fn.func_body.kind notin {●block ●semicolon}
+            fn.func_body = nod ●block tkn(◂indent "    ") [fn.func_body]
+    
     returnize: ◇Node fn ->
     
         ⮐  if not fn.func_body
@@ -35,6 +42,7 @@ class Scoper
         switch fn.func_body.kind
             ●block
             ●semicolon
+                ⮐  if fn.func_body.expressions.len == 0
                 lastExp = fn.func_body.expressions[^1]
                 if lastExp.kind != ●return
                     if lastExp.kind in {●if ●switch ●while ●for}
@@ -57,15 +65,12 @@ class Scoper
     
     luanize: ◇Node fn ->
         
+        @addbody fn
         @returnize fn
 
         if fn.func_signature and fn.func_signature.sig_args.list_values
             for arg in fn.func_signature.sig_args.list_values
                 if arg.arg_value
-                    if not fn.func_body
-                        fn.func_body = nod ●block tkn(◂indent "    ") []
-                    if fn.func_body.kind notin {●block ●semicolon}
-                        fn.func_body = nod ●block tkn(◂indent "    ") [fn.func_body]
                     if fn.func_body and fn.func_body.kind in {●block ●semicolon}
                         argdef = nod ●operation tkn(◂qmark_assign) arg.arg_name arg.arg_value
                         fn.func_body.expressions.insert argdef 0 
@@ -99,11 +104,12 @@ class Scoper
                         @vars.push initTable[string,bool]()
                         for a in e.operand_right.func_signature.sig_args.list_values
                             switch a.kind
-                                ●arg     ➜ add(a.arg_name.token.str)
+                                ●arg     
+                                    if a.arg_name ➜ add(a.arg_name.token.str)
                                 ●literal ➜ add(a.token.str)
                                          ➜ discard
                         body = e.operand_right.func_body
-                        if body
+                        if body and body.kind in { ●block ●semicolon }
                             for i e in body.expressions
                                 @exp body i e 
                         @vars.pops()

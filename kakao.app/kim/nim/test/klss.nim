@@ -438,5 +438,6 @@ local Print = class("Print")
     Print.m = "hello"
 
 
-function Print:__tostring() return self.m
+function Print:__tostring() 
+    return self.m
     end""")

@@ -5,9 +5,10 @@
 #      ███  ███      ███   ███       ███  ███   ███
 # ███████   ███████  ███   ███  ███████   ███   ███
 
-use ffi
+use ffi os
 use ./array
 use ./kstr
+use ./kseg
 
 ffi.cdef """
     typedef struct DIR DIR;
@@ -31,56 +32,72 @@ slash.cwd = -> process.cwd()
 
 slash.normalize = path ->
 
-    p = path
+    p = kseg.segs(path)
+    frst = p[0]
     swallow = 0xffff
     for i in p.len..1
         if i >= swallow
-            p = p.remove i
-            if i == swallow
-                if p[1] == '/' and path[1] != '/'
-                    p = kstr.shift() 
-                ⮐  slash.normalize p
+            table.remove p i
+            if i == swallow or i == 1
+                if p[1] == '/' and frst != '/'
+                    kseg.shift p 
+                ⮐  slash.normalize(kseg.str(p))
         else
-            if p[i] == '\\'
-                p[i] = '/'
+            if p[i] == '\\' ➜ p[i] = '/'
             if i < p.len and p[i] == '/'
                 if i < p.len - 1
                     if p[i+1] == '.' and p[i+2] == '/' 
-                        p = p.remove i+1
-                        p = p.remove i+2
-                    if p[i+1] == '.' and p[i+2] == '.' and i > 0 and p[i-1] != '.'
-                        p = p.remove i
-                        p = p.remove i
-                        p = p.remove i
+                        p = kseg.splice p i+1 2
+                    if p[i+1] == '.' and p[i+2] == '.' and i > 1 and p[i-1] != '.'
+                        p = kseg.splice p i 3
                         swallow = i-1
                         while swallow > 0 and p[swallow] != '/'
                             swallow -= 1                    
                 if p[i+1] == '/'
-                    p = p.remove i+1
-                
-    if p.len >= 4 and string.sub(p 1 4) == "./.."
-        p = p.remove 0
-        p = p.remove 0
-                
+                    p = kseg.splice p i+1 1
+    
+    if p.len >= 4 and kseg.str(kseg.sub(p 1 4)) == "./.."
+        kseg.shift p
+        kseg.shift p
+ 
     if p.len > 1 and p[p.len] == '/'
-        string.sub(p, 2)
-        # elif p.len > 1 and p[0] == '/' and path[0] notin {'/' '\\'}
-    elif p.len > 1 and p[0] == '/' and path[0] != '/' and path[0] != '\\'
-        string.sub(p, 3)
-    p
+        kseg.pop p
+    elif p.len > 1 and p[0] == '/' and frst != '/' and frst != '\\'
+        p = kseg.slice(p, 3)
+        
+    kseg.str p
 
 slash.path = (...) ->
 
     slsh = s -> string.gsub(s "\\" "/")
     mpty = s -> s.len > 0
-    
-    slash.normalize table.concat(array.map(array.filter({...}, (mpty)), slsh), "/")
+    fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
+    log fpth
+    log slash.normalize fpth
+    slash.normalize fpth
 
+slash.isRelative = path -> path.len == 0 or path.len > 0 and path[1] != '/' and path[1] != '~'
+
+slash.home = -> os.getenv "HOME"
+slash.untilde = path -> 
+
+    if path[1] == '~' 
+        ⮐  slash.path slash.home() kstr.shift(path)
+    slash.path path
+
+slash.absolute = path parent ->
+
+    if slash.isRelative path
+        parent ?= slash.cwd()
+        ⮐  slash.path parent path
+    else
+        ⮐  slash.untilde path
+    
 slash.walk = path ->
 
     dir = ffi.C.opendir path
     if dir == nil
-        error "Failed to open directory: " & ffi.string(ffi.C.strerror(ffi.errno()))
+        error "Failed to open directory: " & path & " " & ffi.string(ffi.C.strerror(ffi.errno()))
     
     files = {}
     while true
@@ -96,7 +113,7 @@ slash.walk = path ->
                 elif entry.d_type == 10
                     typ = "link"
                     
-                info = { "name": name "type": typ "path": slash.path(path & "/" & name) }
+                info = { "name": name "type": typ "path": slash.absolute(path & "/" & name) }
                 table.insert files info
         else
             break

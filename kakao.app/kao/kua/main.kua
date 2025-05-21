@@ -17,14 +17,14 @@ main = ... ->
           -V, --version      display version information, then exit
           -h, --help         display this help, then exit
         """
-        
-    slice = tbl first last ->
-        sliced = {}
-        for i in first..last
-            sliced[sliced.len + 1] = tbl[i]
-        sliced
-    
-    argv = slice(process.argv 2 process.argv.len)
+    log process.cwd()
+            
+    log "argp" table.concat(process.argv  " "), process.argv.len, process.argc
+    log "parg" process.argv[0]
+    log "parg" process.argv[1]
+    log "parg" process.argv[2]
+    argv = array.slice(process.argv 2 process.argv.len)
+    log "argv" table.concat argv " "
     
     (arg opts) = optparser:parse(argv)
     
@@ -39,14 +39,17 @@ main = ... ->
         log 'files'      files.len
         log 'files'      inspect(files)
     
-    log "▸" kxk.exec("ls ~" print)
+    # log "▸" kxk.exec("ls ~" print)
+    
+    log inspect opts
+    log table.concat files " "
     
     load = file ->
         cmd = "cat " .. file
         kxk.exec cmd print
     
     if files.len > 0
-        log "files" inspect(files)
+        # log "files" inspect(files)
         if opts.test
             for index file in pairs(files)
                 log '▸' file
@@ -54,6 +57,20 @@ main = ... ->
      
     verb = msg ->
         if opts.verbose ➜ log(msg)
+
+    dir = process.cwd()
+    kuaTests = slash.files slash.path(dir "../lua/test")
+    kuaFiles = slash.files slash.path(dir  "../kua")
+    kxkFiles = slash.files slash.path(dir  "../kua/kxk")
+    kxkTests = slash.files slash.path(dir  "kxk/test")
+
+    if true or verbose
+        log table.concat kuaTests
+        log table.concat kuaFiles
+        log table.concat kxkFiles
+        log table.concat kxkTests
+        
+    log slash.normalize(slash.path(dir "../lua/test"))
 
 ⮐  require('./init')(main, ...)
     

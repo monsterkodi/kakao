@@ -5,7 +5,10 @@
 -- ███████   ███████  ███   ███  ███████   ███   ███
 
 ffi = require "ffi"
+os = require "os"
 array = require "./array"
+kstr = require "./kstr"
+kseg = require "./kseg"
 
 ffi.cdef([[
     typedef struct DIR DIR;
@@ -26,39 +29,35 @@ ffi.cdef([[
 local slash = {}
 
 
-function slash.cwd() return process.cwd()
+function slash.cwd() 
+    return process.cwd()
 end
 
 
 function slash.normalize(path) 
-    local p = path
+    local p = kseg.segs(path)
+    local frst = p[0]
     local swallow = 0xffff
-    for i = #p, 1 do 
+    for i in iter(#p, 1) do 
         if (i >= swallow) then 
-            p = p.remove(i)
-            if (i == swallow) then 
-                if ((p[1] == '/') and (path[1] ~= '/')) then 
-                    p = p.remove(1)
+            table.remove(p, i)
+            if ((i == swallow) or (i == 1)) then 
+                if ((p[1] == '/') and (frst ~= '/')) then 
+                    kseg.shift(p)
                 end
                 
-                return slash.normalize(p)
+                return slash.normalize(kseg.str(p))
             end
         else 
-            if (p[i] == '\\') then 
-                p[i] = '/'
-            end
-            
+            if (p[i] == '\\') then p[i] = '/' end
             if ((i < #p) and (p[i] == '/')) then 
                 if (i < (#p - 1)) then 
                     if ((p[(i + 1)] == '.') and (p[(i + 2)] == '/')) then 
-                        p = p.remove((i + 1))
-                        p = p.remove((i + 2))
+                        p = kseg.splice(p, (i + 1), 2)
                     end
                     
-                    if ((((p[(i + 1)] == '.') and (p[(i + 2)] == '.')) and (i > 0)) and (p[(i - 1)] ~= '.')) then 
-                        p = p.remove(i)
-                        p = p.remove(i)
-                        p = p.remove(i)
+                    if ((((p[(i + 1)] == '.') and (p[(i + 2)] == '.')) and (i > 1)) and (p[(i - 1)] ~= '.')) then 
+                        p = kseg.splice(p, i, 3)
                         swallow = (i - 1)
                         while ((swallow > 0) and (p[swallow] ~= '/')) do 
                             swallow = swallow - 1
@@ -67,44 +66,75 @@ function slash.normalize(path)
                 end
                 
                 if (p[(i + 1)] == '/') then 
-                    p = p.remove((i + 1))
+                    p = kseg.splice(p, (i + 1), 1)
                 end
             end
         end
     end
     
-    if ((#p >= 4) and (string.sub(p, 1, 4) == "./..")) then 
-        p = p.remove(0)
-        p = p.remove(0)
+    if ((#p >= 4) and (kseg.str(kseg.sub(p, 1, 4)) == "./..")) then 
+        kseg.shift(p)
+        kseg.shift(p)
     end
     
     if ((#p > 1) and (p[#p] == '/')) then 
-        string.sub(p, 2)
-        -- elif p.len > 1 and p[0] == '/' and path[0] notin {'/' '\\'}
-    elseif ((((#p > 1) and (p[0] == '/')) and (path[0] ~= '/')) and (path[0] ~= '\\')) then 
-        string.sub(p, 3)
+        kseg.pop(p)
+    elseif ((((#p > 1) and (p[0] == '/')) and (frst ~= '/')) and (frst ~= '\\')) then 
+        p = kseg.slice(p, 3)
     end
     
-    return p
+    return kseg.str(p)
 end
 
 
 function slash.path(...) 
     
-    function slsh(s) return string.gsub(s, "\\", "/")
+    function slsh(s) 
+    return string.gsub(s, "\\", "/")
     end
     
-    function mpty(s) return (#s > 0)
+    function mpty(s) 
+    return (#s > 0)
+    end
+    local fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
+    print(fpth)
+    print(slash.normalize(fpth))
+    return slash.normalize(fpth)
+end
+
+
+function slash.isRelative(path) 
+    return ((#path == 0) or (((#path > 0) and (path[1] ~= '/')) and (path[1] ~= '~')))
+end
+
+
+function slash.home() 
+    return os.getenv("HOME")
+end
+
+function slash.untilde(path) 
+    if (path[1] == '~') then 
+        return slash.path(slash.home(), kstr.shift(path))
     end
     
-    return slash.normalize(table.concat(array.map(array.filter({...}, mpty), slsh), "/"))
+    return slash.path(path)
+end
+
+
+function slash.absolute(path, parent) 
+    if slash.isRelative(path) then 
+        parent = parent or slash.cwd()
+        return slash.path(parent, path)
+    else 
+        return slash.untilde(path)
+    end
 end
 
 
 function slash.walk(path) 
     local dir = ffi.C.opendir(path)
     if (dir == nil) then 
-        error("Failed to open directory: " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        error("Failed to open directory: " .. path .. " " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
     
     local files = {}
@@ -122,7 +152,7 @@ function slash.walk(path)
                     typ = "link"
                 end
                 
-                local info = {["name"] = name, ["type"] = typ, ["path"] = slash.path(path .. "/" .. name)}
+                local info = {["name"] = name, ["type"] = typ, ["path"] = slash.absolute(path .. "/" .. name)}
                 table.insert(files, info)
             end
         else 
