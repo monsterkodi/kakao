@@ -28,4 +28,11 @@ kstr.ltrim  = s c=' ' ->
     s
 kstr.trim   = s c=' ' -> kstr.ltrim kstr.rtrim(s,c) c
    
+kstr.split = s sep ->
+    r = {}
+    pat = string.format "([^%s]+)" sep
+    for part in string.gmatch s pat
+        table.insert r part
+    r
+   
 ⮐  kstr

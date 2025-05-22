@@ -20,7 +20,9 @@ function _G.iter(from, to, step)
         end
     end
     
-    return function () return nil end
+    return function () 
+    return nil
+end
 end
 
 _G.strbuff = require("string.buffer")
@@ -47,6 +49,14 @@ function kxk.exec(cmd, opt, cb)
     end
     
     return childp.exec(cmd, opt, res)
+end
+
+
+function kxk.shell(cmd) 
+    local fileHandle = io.popen(cmd, 'r')
+    local output = fileHandle:read('*a')
+    local ok, failreason, exitcode = fileHandle:close()
+    return output, ok, failreason, exitcode
 end
 
 return kxk

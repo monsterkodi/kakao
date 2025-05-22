@@ -9,7 +9,8 @@
 kxk = require "./kxk"
 
 
-function rawpairs(t) return next, t, nil
+function rawpairs(t) 
+    return next, t, nil
 end
 
 
@@ -33,7 +34,8 @@ for i in iter(0, 31) do
 end
 
 
-function escape(str) return string.gsub(string.gsub(string.gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longEscapes), "%c", shortEscapes)
+function escape(str) 
+    return string.gsub(string.gsub(string.gsub(str, "\\", "\\\\"), "(%c)%f[0-9]", longEscapes), "%c", shortEscapes)
 end
 
 local luaKeywords = {
@@ -234,4 +236,6 @@ function Inspector:putValue(v)
         end
     end
 
-return function (root) return Inspector(root) end
+return function (root) 
+    return Inspector(root)
+end

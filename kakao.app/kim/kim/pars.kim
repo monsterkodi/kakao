@@ -1489,8 +1489,11 @@ class Parser
                                                        
         @pratt ◂multiply          lOperation        nil            60
         @pratt ◂divide            lOperation        nil            60
+        @pratt ◂modulo            lOperation        nil            60
+        @pratt ◂bitor             lOperation        nil            60
     
         @pratt ◂not               lNotIn            rPreOp         70
+        @pratt ◂tilde             nil               rPreOp         70
     
         @pratt ◂increment         lPostOp           nil            80
         @pratt ◂decrement         lPostOp           nil            80

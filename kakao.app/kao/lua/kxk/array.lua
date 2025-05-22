@@ -30,23 +30,35 @@ end
 
 
 function array.shift(a) 
-    return a.remove(1)
+    assert((type(a) == "table"))
+    if (#a > 0) then return table.remove(a, 1) end
+    return nil
 end
+
 
 function array.pop(a) 
-    return a.remove(#a)
+    assert((type(a) == "table"))
+    if (#a > 0) then return table.remove(a, #a) end
+    return nil
 end
+
 
 function array.push(a, v) 
+    assert((type(a) == "table"))
     a[(#a + 1)] = v
-    return a[(#a + 1)]
+    return a
 end
+
 
 function array.unshift(a, v) 
-    return table.insert(a, v, 1)
+    assert((type(a) == "table"))
+    table.insert(a, v, 1)
+    return a
 end
 
+
 function array.slice(a, first, last) 
+    assert((type(a) == "table"))
     if (last == nil) then last = #a end
     local s = {}
     for i in iter(first, last) do 
@@ -57,8 +69,35 @@ function array.slice(a, first, last)
 end
 
 
+function array.keydict(a, key) 
+    assert((type(a) == "table"))
+    local t = {}
+    for i, v in ipairs(a) do 
+        t[v[key]] = v
+    end
+    
+    return t
+end
+
+
+function array.indexdict(a) 
+    assert((type(a) == "table"))
+    local t = {}
+    for i, v in ipairs(a) do 
+        t[v] = i
+    end
+    
+    return t
+end
+
+
 function array.str(a) 
-    return "[ " .. table.concat(a, " ") .. " ]"
+    local s = ".\n"
+    for i, v in pairs(a) do 
+        s = s .. "    " .. i .. "    " .. v .. "\n"
+    end
+    
+    return s
 end
 
 return array

@@ -1,8 +1,17 @@
 
 main = ... ->
 
-    use std
+    use std ffi io
     use ./kxk/kxk
+    
+    ffi.cdef """
+        extern int execv(const char *path, char *const argv[]);
+        extern int dup2(int oldfd, int newfd);
+        typedef void *FILE; 
+        extern int fileno(FILE *stream);
+        
+        extern int fcntl(int fd, int cmd, ...);        
+        """
     
     optparser = std.optparse """
         0.1.0
@@ -19,30 +28,38 @@ main = ... ->
         """
     log process.cwd()
             
-    log "argp" table.concat(process.argv  " "), process.argv.len, process.argc
-    log "parg" process.argv[0]
-    log "parg" process.argv[1]
-    log "parg" process.argv[2]
-    argv = array.slice(process.argv 2 process.argv.len)
-    log "argv" table.concat argv " "
+    # log "argp" array.str(process.argv), process.argv.len
+    # log "parg" process.argv[0]
+    # log "parg" process.argv[1]
+    # log "parg" process.argv[2]
+    argv = process.argv
+    appn = argv[0]
+    scrt = ""
+    if argv.len > 0 and appn == "luvit"
+        scrt = array.shift(argv)
     
     (arg opts) = optparser:parse(argv)
+    log 'exe' appn, scrt, array.str(args)
     
     files = opts.unrecognised
     if opts.verbose
-        log 'opts'       inspect(opts)
-        log 'meta'       inspect(getmetatable(opts))
-        log "debug"      opts.debug
-        log "verbose"    opts.verbose
-        log 'dryrun'     opts.dryrun
-        log 'outdir'     opts.outdir
-        log 'files'      files.len
-        log 'files'      inspect(files)
+        log 'opts'    inspect(opts)
+        log 'meta'    inspect(getmetatable(opts))
+        log "debug"   opts.debug
+        log "verbose" opts.verbose
+        log 'dryrun'  opts.dryrun
+        log 'outdir'  opts.outdir
+        log 'files'   files.len
+        log 'files'   inspect(files)
     
     # log "▸" kxk.exec("ls ~" print)
     
-    log inspect opts
-    log table.concat files " "
+    # log inspect opts
+    # log array.str files
+    
+    sleep = s ->
+        t = os.clock()
+        while os.clock() - t <= s ➜ _ = 1
     
     load = file ->
         cmd = "cat " .. file
@@ -59,18 +76,87 @@ main = ... ->
         if opts.verbose ➜ log(msg)
 
     dir = process.cwd()
-    kuaTests = slash.files slash.path(dir "../lua/test")
-    kuaFiles = slash.files slash.path(dir  "../kua")
-    kxkFiles = slash.files slash.path(dir  "../kua/kxk")
-    kxkTests = slash.files slash.path(dir  "kxk/test")
+    kuaFiles = array.indexdict slash.files(slash.path(dir "../kua") "kua")
+    luaFiles = array.indexdict slash.files(slash.path(dir ".") "lua")
+    kxkFiles = array.indexdict slash.files(slash.path(dir "./kxk") "lua")
+    kxkTests = array.indexdict slash.files(slash.path(dir "kxk/test"))
+    kuaTests = array.indexdict slash.files(slash.path(dir "../lua/test"))
 
     if true or verbose
-        log table.concat kuaTests
-        log table.concat kuaFiles
-        log table.concat kxkFiles
-        log table.concat kxkTests
+        log "\nkua files"
+        log array.str kuaFiles
+        log "\nlua files"
+        log array.str luaFiles
+        log "\nkxk files"
+        log array.str kxkFiles
+        log "\nkua tests"
+        log array.str kuaTests
+        log "\nkxk tests"
+        log array.str kxkTests
         
-    log slash.normalize(slash.path(dir "../lua/test"))
+    modTimes = {}
+    
+    while true
+    
+        kxkChanged = false
+        kuaChanged = false
+        luaChanged = false
+        
+        kxkToTranspile = {}
+        kuaToTranspile = {}
+    
+        for i f in ipairs(slash.walk(dir))
+            p = f.path
+            stat    = slash.stat(p)
+            modTime = stat.mtime
+            
+            if not modTimes[p]
+                modTimes[p] = modTime
+            elif modTimes[p] == modTime
+                a = 1
+            else
+                log "CHANGE" p
+                modTimes[p] = modTime
+                
+                if kxkFiles[p]
+                    log "KXK" p
+                    kxkChanged = true 
+                    array.push(kxkToTranspile p)
+                elif kuaFiles[p]
+                    log "KUA" p
+                    kuaChanged = true 
+                    array.push(kuaToTranspile p)
+                elif luaFiles[p]
+                    luaChanged = true
+                    log "LUA" p                    
+            
+        if kuaChanged or kxkChanged
+            log "changed" array.str(kxkToTranspile), array.str(kuaToTranspile)
+            
+        if luaChanged
+            log "compile & restart"
+            (output ok) = kxk.shell("lit make")
+            if ok
+                # log "restart " appn, argv.len
 
+                ffi.C.fcntl 0 2 0
+                ffi.C.fcntl 1 2 0
+                ffi.C.fcntl 2 2 0
+                
+                args = ffi.new("char*[?]", 2 + argv.len) 
+                args[0] = ffi.cast("char*", ffi.string(appn))
+                for i in 1...argv.len+1
+                    args[i] = ffi.cast("char*", ffi.string(argv[i]))
+                args[argv.len+1] = nil
+                ffi.C.execv(args[0], args)
+                log "ASDSADS?"
+                os.exit(1)
+            else
+                log output
+                
+        # else
+        #     log "."
+        sleep 1
+        
 ⮐  require('./init')(main, ...)
     

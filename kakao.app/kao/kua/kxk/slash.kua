@@ -13,17 +13,45 @@ use ./kseg
 ffi.cdef """
     typedef struct DIR DIR;
     struct dirent {
-        unsigned long  d_ino;           // Inode number
-        unsigned long  d_seekoff;       // Seek offset (optional)
-        unsigned short d_reclen;        // Length of this record
-        unsigned short d_namlen;        // Length of d_name string
-        unsigned char  d_type;          // File type
-        char           d_name[1024];    // Filename (null-terminated)
+        unsigned long  d_ino;       
+        unsigned long  d_seekoff;   
+        unsigned short d_reclen;    
+        unsigned short d_namlen;    
+        unsigned char  d_type;      
+        char           d_name[1024];
     };
     DIR *opendir(const char *filename);
     struct dirent *readdir(DIR *dirp);
     int closedir(DIR *dirp);
     const char *strerror(int errnum);
+    
+    struct stat {
+        uint32_t    st_dev;
+        uint16_t    st_mode;
+        uint16_t    st_nlink;
+        uint64_t    st_ino;
+        uint32_t    st_uid;               
+        uint32_t    st_gid;                
+        uint32_t    st_rdev;                
+        int64_t     st_atime;        
+        int64_t     st_atimensec;    
+        int64_t     st_mtime;        
+        int64_t     st_mtimensec;    
+        int64_t     st_ctime;        
+        int64_t     st_ctimensec;    
+        int64_t     st_btime;    
+        int64_t     st_btimensec;
+        int64_t     st_size;                
+        int64_t     st_blocks;              
+        int32_t     st_blksize;             
+        uint32_t    st_flags;               
+        uint32_t    st_gen;                 
+        int32_t     st_lspare;              
+        int64_t     st_qspare[2];
+    };
+    
+    int stat64(const char *path, struct stat *buf);
+    int lstat64(const char *path, struct stat *buf);
 """
     
 slash = {}
@@ -32,8 +60,9 @@ slash.cwd = -> process.cwd()
 
 slash.normalize = path ->
 
-    p = kseg.segs(path)
-    frst = p[0]
+    p = kseg.segs path
+    frst = p[1]
+    # log "START" p.len, frst
     swallow = 0xffff
     for i in p.len..1
         if i >= swallow
@@ -52,19 +81,17 @@ slash.normalize = path ->
                         p = kseg.splice p i 3
                         swallow = i-1
                         while swallow > 0 and p[swallow] != '/'
-                            swallow -= 1                    
+                            swallow -= 1
                 if p[i+1] == '/'
                     p = kseg.splice p i+1 1
     
     if p.len >= 4 and kseg.str(kseg.sub(p 1 4)) == "./.."
         kseg.shift p
         kseg.shift p
- 
     if p.len > 1 and p[p.len] == '/'
         kseg.pop p
-    elif p.len > 1 and p[0] == '/' and frst != '/' and frst != '\\'
-        p = kseg.slice(p, 3)
-        
+    if p.len > 1 and p[1] == '/' and frst != '/' and frst != '\\'
+        kseg.shift p
     kseg.str p
 
 slash.path = (...) ->
@@ -72,11 +99,9 @@ slash.path = (...) ->
     slsh = s -> string.gsub(s "\\" "/")
     mpty = s -> s.len > 0
     fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
-    log fpth
-    log slash.normalize fpth
     slash.normalize fpth
 
-slash.isRelative = path -> path.len == 0 or path.len > 0 and path[1] != '/' and path[1] != '~'
+slash.isRelative = path -> path.len == 0 or path.len > 0 and string.sub(path 1 1) != '/' and string.sub(path 1 1) != '~'
 
 slash.home = -> os.getenv "HOME"
 slash.untilde = path -> 
@@ -92,6 +117,83 @@ slash.absolute = path parent ->
         ⮐  slash.path parent path
     else
         ⮐  slash.untilde path
+
+slash.split = path -> kstr.split path "/"
+slash.join  = ... -> table.concat {...} "/"
+        
+slash.parse = path ->
+    path  = slash.untilde slash.normalize(path)
+    split = slash.split path
+    dir   = ""
+    file  = array.pop split
+    dir = slash.join unpack(split)
+    name  = file
+    ext   = ""
+    
+    if dir.len == 0 and path != "." and path != ".."
+        if path[0] == '/' ➜ dir = "/" ➜ dir = "."
+    
+    nmspl = kstr.split file "."
+    if nmspl.len > 1
+        ext  = array.pop nmspl
+        name = table.concat nmspl "."
+        
+    {dir: dir name: name ext: ext file: file path: path}
+        
+slash.dir  = path -> slash.parse(path).dir
+slash.file = path -> slash.parse(path).file
+slash.name = path -> slash.parse(path).name
+slash.ext  = path -> slash.parse(path).ext
+    
+prettyTimeSpan = seconds ->
+
+    if seconds == 0 ➜ ⮐  "0"
+    seconds = math.abs seconds
+
+    days = math.floor(seconds / 86400)
+    seconds = seconds % 86400
+
+    hours = math.floor(seconds / 3600)
+    seconds = seconds % 3600
+
+    minutes = math.floor(seconds / 60)
+    seconds = seconds % 60
+
+    parts = {}
+    if days > 0
+        table.insert(parts, string.format("%d day%s", days, days == 1 and "" or "s"))
+
+    if hours > 0
+        table.insert(parts, string.format("%d hour%s", hours, hours == 1 and "" or "s"))
+
+    if minutes > 0
+        table.insert(parts, string.format("%d minute%s", minutes, minutes == 1 and "" or "s"))
+
+    if seconds > 0 or parts.len == 0
+        table.insert(parts, string.format("%.2f second%s", seconds, seconds == 1 and "" or "s"))
+
+    table.concat parts " "
+
+sbuf = ffi.new("struct stat")
+
+slash.stat = path ->
+
+    if ffi.C.stat64(path, sbuf) == 0
+    
+        ⮐   {
+                mode:       tonumber(sbuf.st_mode)
+                nlink:      tonumber(sbuf.st_nlink)
+                ino:        tonumber(sbuf.st_ino)
+                uid:        tonumber(sbuf.st_uid)
+                gid:        tonumber(sbuf.st_gid)
+                atime:      tonumber(sbuf.st_atime)
+                mtime:      tonumber(sbuf.st_mtime)
+                ctime:      tonumber(sbuf.st_ctime)
+                btime:      tonumber(sbuf.st_btime)
+                blksize:    tonumber(sbuf.st_blksize)
+                blocks:     tonumber(sbuf.st_blocks)
+                # modage:     prettyTimeSpan(os.time()-tonumber(sbuf.st_mtime))
+            }
     
 slash.walk = path ->
 
@@ -106,12 +208,9 @@ slash.walk = path ->
             name = ffi.string entry.d_name
             if name != "." and name != ".."
                 typ = "???"
-                if entry.d_type == 4
-                    typ = "dir"
-                elif entry.d_type == 8
-                    typ = "file"
-                elif entry.d_type == 10
-                    typ = "link"
+                if   entry.d_type == 4  ➜ typ = "dir"
+                elif entry.d_type == 8  ➜ typ = "file"
+                elif entry.d_type == 10 ➜ typ = "link"
                     
                 info = { "name": name "type": typ "path": slash.absolute(path & "/" & name) }
                 table.insert files info
@@ -121,8 +220,12 @@ slash.walk = path ->
     table.sort(files, (a b) -> ⮐  a.path < b.path)
     files
 
-slash.files = path ->
+slash.files = path ext ->
 
-    array.map(slash.walk(path), (info) -> ⮐  info.path)
+    files = array.map(slash.walk(path), (info) -> ⮐  info.path)
+    if ext 
+        fext = (f) -> slash.ext(f) == ext
+        files = array.filter files fext
+    files
             
 ⮐  slash

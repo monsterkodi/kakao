@@ -69,7 +69,7 @@ function _newMember(aClass, name, f)
     if ((f == nil) and aClass.super) then f = aClass.super.__members[name] end
     if ((f == nil) and aClass.super) then f = aClass.super.__proto[name] end
     
-    _propMember(aClass, name, f)
+    return _propMember(aClass, name, f)
 end
 
 

@@ -9,7 +9,8 @@ local test = class("test")
     
 
 
-function test:__tostring() return "▸" .. self.suite
+function test:__tostring() 
+    return "▸" .. self.suite
     end
 
 

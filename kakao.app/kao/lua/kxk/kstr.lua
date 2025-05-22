@@ -71,4 +71,15 @@ function kstr.trim(s, c)
     return kstr.ltrim(kstr.rtrim(s, c), c)
 end
 
+
+function kstr.split(s, sep) 
+    local r = {}
+    local pat = string.format("([^%s]+)", sep)
+    for part in string.gmatch(s, pat) do 
+        table.insert(r, part)
+    end
+    
+    return r
+end
+
 return kstr

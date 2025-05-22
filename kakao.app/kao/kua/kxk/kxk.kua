@@ -38,4 +38,10 @@ kxk.exec = cmd opt cb ->
         
     childp.exec cmd opt res
     
+kxk.shell = cmd ->
+    fileHandle = io.popen(cmd, 'r')
+    output = fileHandle:read('*a')
+    (ok failreason exitcode) = fileHandle:close()
+    (output ok failreason exitcode)
+    
 ⮐  kxk

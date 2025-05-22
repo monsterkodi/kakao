@@ -1,7 +1,5 @@
 kxk = require "../kxk"
 
-print("class")
-
 --class A
 --    a: 0
 --    @: a b ->
@@ -42,8 +40,8 @@ print("class")
 
 -- files1 = slash.files "."
 -- log table.concat(files1 " ")
-local files2 = slash.files("..")
-print(array.str(files2))
+-- files2 = slash.files ".."
+-- log array.str files2
 -- files3 = slash.files "/Users/kodi"
 -- log table.concat(files3 " ")
 -- files4 = slash.files "/Users/kodi/.config"
@@ -52,26 +50,27 @@ print(array.str(files2))
 -- files5 = slash.walk "/Users/kodi"
 -- log inspect(files5)
 
---▸ slash
---
---    ▸ normalize
---
---          slash.normalize "a/"                ▸ "a"
---          slash.normalize "xyz"               ▸ "xyz"
---          slash.normalize "x/y/z"             ▸ "x/y/z"
---          slash.normalize "x\\y/z\\"          ▸ "x/y/z"
---          slash.normalize "\\x\\y/z"          ▸ "/x/y/z"
---          slash.normalize "..\\x\\y/z"        ▸ "../x/y/z"
---          slash.normalize "./x\\y/z"          ▸ "./x/y/z"
---          slash.normalize "x/./z"             ▸ "x/z"
---          slash.normalize "../up"             ▸ "../up"
---          slash.normalize "//"                ▸ "/"
---          slash.normalize "//././////././"    ▸ "/"
---          
---          slash.normalize "x/../z"            ▸ "z"
---          slash.normalize "./x/y/z/../../a"   ▸ "./x/a"
---          slash.normalize "./x/../../z"       ▸ "../z"
---          slash.normalize "./x/../../../y"    ▸ "../../y"
+test("slash", function()
+   test("normalize", function()
+         test.cmp(slash.normalize("a/"), "a")
+         test.cmp(slash.normalize("/Users/kodi/kao/lua/../kua/test"), "/Users/kodi/kao/kua/test")
+         test.cmp(slash.normalize("xyz"), "xyz")
+         test.cmp(slash.normalize("x/y/z"), "x/y/z")
+         test.cmp(slash.normalize("x\\y/z\\"), "x/y/z")
+         test.cmp(slash.normalize("\\x\\y/z"), "/x/y/z")
+         test.cmp(slash.normalize("..\\x\\y/z"), "../x/y/z")
+         test.cmp(slash.normalize("./x\\y/z"), "./x/y/z")
+         test.cmp(slash.normalize("x/./z"), "x/z")
+         test.cmp(slash.normalize("../up"), "../up")
+         test.cmp(slash.normalize("//"), "/")
+         test.cmp(slash.normalize("//././////././"), "/")
+         
+         test.cmp(slash.normalize("x/../z"), "z")
+         test.cmp(slash.normalize("./x/y/z/../../a"), "./x/a")
+         test.cmp(slash.normalize("./x/../../z"), "../z")
+         test.cmp(slash.normalize("./x/../../../y"), "../../y")
+    end)
+    end)
 
 --s = "a/abc/ed.x"
 --log s
