@@ -1,0 +1,24 @@
+
+use ../kxk
+
+▸ slash
+
+   ▸ normalize
+
+         slash.normalize "a/"                ▸ "a"
+         slash.normalize "/Users/kodi/kao/lua/../kua/test" ▸ "/Users/kodi/kao/kua/test"
+         slash.normalize "xyz"               ▸ "xyz"
+         slash.normalize "x/y/z"             ▸ "x/y/z"
+         slash.normalize "x\\y/z\\"          ▸ "x/y/z"
+         slash.normalize "\\x\\y/z"          ▸ "/x/y/z"
+         slash.normalize "..\\x\\y/z"        ▸ "../x/y/z"
+         slash.normalize "./x\\y/z"          ▸ "./x/y/z"
+         slash.normalize "x/./z"             ▸ "x/z"
+         slash.normalize "../up"             ▸ "../up"
+         slash.normalize "//"                ▸ "/"
+         slash.normalize "//././////././"    ▸ "/"
+         
+         slash.normalize "x/../z"            ▸ "z"
+         slash.normalize "./x/y/z/../../a"   ▸ "./x/a"
+         slash.normalize "./x/../../z"       ▸ "../z"
+         slash.normalize "./x/../../../y"    ▸ "../../y"

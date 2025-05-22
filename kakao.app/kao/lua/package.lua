@@ -7,8 +7,7 @@ return {
     author = {name = "monsterkodi", email = "monsterkodi@gmx.net"}, 
     homepage = "https://github.com/monsterkodi/kao", 
     dependencies = {
-        "luvit/luvit", 
-        "luvit/childprocess"
+        "luvit/luvit"
         }, 
     files = {
         "**.lua", 

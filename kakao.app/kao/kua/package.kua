@@ -8,7 +8,6 @@
     homepage:       "https://github.com/monsterkodi/kao",
     dependencies:   {
         "luvit/luvit",
-        "luvit/childprocess"
         },
     files: {
         "**.lua",

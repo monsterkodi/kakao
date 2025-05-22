@@ -117,6 +117,13 @@ proc ▸operation(this : Rlua, n : Node) =
             if (n.operand_right.token.tok in {◂func, ◂method}): 
                 this.▸function(n)
                 return
+        if (n.token.tok == ◂bitor): 
+            this.add("bit.bor(")
+            this.rnd(n.operand_left)
+            this.add(", ")
+            this.rnd(n.operand_right)
+            this.add(")")
+            return
         var outerbr = (n.token.tok notin ({◂ampersand} + assignToks))
         if outerbr: this.add("(")
         this.rnd(n.operand_left)

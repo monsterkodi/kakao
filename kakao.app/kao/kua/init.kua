@@ -13,8 +13,6 @@ initFunc = (main ...) ->
     
     math.randomseed(os.time())
     
-    pretty = require "pretty-print"
-    
     args = {...}
     
     runMain = ->
@@ -26,20 +24,20 @@ initFunc = (main ...) ->
         pcall( -> hooks:emit('process.uncaughtException', err))
         return debug.traceback(err)
     
-    (success, err) = xpcall(runMain, errMain)
+    (success err) = xpcall(runMain errMain)
     
     if success
         hooks:emit('process.exit')
         uv.run()
     else
         _G.process.exitCode = -1
-        pretty.stderr:write("Uncaught exception:\n" & err & "\n")
+        log "Uncaught exception:\n" & err & "\n"
     
     isFileHandle = handle name fd ->
         _G.process[name].handle == handle and uv.guess_handle(fd) == 'file'
     
     isStdioFileHandle = handle ->
-        isFileHandle(handle, 'stdin', 0) or isFileHandle(handle, 'stdout', 1) or isFileHandle(handle, 'stderr', 2)
+        isFileHandle(handle 'stdin' 0) or isFileHandle(handle 'stdout' 1) or isFileHandle(handle 'stderr' 2)
     
     closeHandle = handle ->
         if handle

@@ -25,6 +25,12 @@ function _G.iter(from, to, step)
 end
 end
 
+
+function _G.sleep(s) 
+    local t = os.clock()
+    while ((os.clock() - t) <= s) do _ = 1 end
+end
+
 _G.strbuff = require("string.buffer")
 _G.childp = require("childprocess")
 _G.class = require("./class")
@@ -35,28 +41,22 @@ _G.kstr = require("./kstr")
 _G.test = require("./test")
 
 local kxk = {}
+-- kxk.exec = cmd opt cb ->
+--     
+--     if cb == nil
+--         cb = opt
+--         opt = {}
+--     
+--     res = err out ->
+--         if err ➜ out = ""
+--         cb out
+--         
+--     childp.exec cmd opt res
 
-function kxk.exec(cmd, opt, cb) 
-    if (cb == nil) then 
-        cb = opt
-        opt = {}
-    end
-    
-    
-    function res(err, out) 
-        if err then out = "" end
-        return cb(out)
-    end
-    
-    return childp.exec(cmd, opt, res)
-end
-
-
-function kxk.shell(cmd) 
-    local fileHandle = io.popen(cmd, 'r')
-    local output = fileHandle:read('*a')
-    local ok, failreason, exitcode = fileHandle:close()
-    return output, ok, failreason, exitcode
-end
+-- kxk.shell = cmd ->
+--     fileHandle = io.popen(cmd, 'r')
+--     output = fileHandle:read('*a')
+--     (ok failreason exitcode) = fileHandle:close()
+--     (output ok failreason exitcode)
 
 return kxk

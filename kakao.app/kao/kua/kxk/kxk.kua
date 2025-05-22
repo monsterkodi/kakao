@@ -5,7 +5,7 @@
 # ███  ███    ███ ███   ███  ███ 
 # ███   ███  ███   ███  ███   ███
 
-_G.iter     = from to step=1 ->
+_G.iter = from to step=1 ->
     if step != 0
         step = math.abs step
         if from > to ➜ step = -step
@@ -15,6 +15,10 @@ _G.iter     = from to step=1 ->
             if i >= to and step < 0 or i <= to and step > 0
                 ⮐  i
     -> nil
+    
+_G.sleep = s ->
+    t = os.clock()
+    while os.clock() - t <= s ➜ _ = 1
 
 _G.strbuff  = require "string.buffer"
 _G.childp   = require "childprocess"
@@ -26,22 +30,22 @@ _G.kstr     = require "./kstr"
 _G.test     = require "./test"
 
 kxk = {}
-kxk.exec = cmd opt cb ->
+# kxk.exec = cmd opt cb ->
+#     
+#     if cb == nil
+#         cb = opt
+#         opt = {}
+#     
+#     res = err out ->
+#         if err ➜ out = ""
+#         cb out
+#         
+#     childp.exec cmd opt res
     
-    if cb == nil
-        cb = opt
-        opt = {}
-    
-    res = err out ->
-        if err ➜ out = ""
-        cb out
-        
-    childp.exec cmd opt res
-    
-kxk.shell = cmd ->
-    fileHandle = io.popen(cmd, 'r')
-    output = fileHandle:read('*a')
-    (ok failreason exitcode) = fileHandle:close()
-    (output ok failreason exitcode)
+# kxk.shell = cmd ->
+#     fileHandle = io.popen(cmd, 'r')
+#     output = fileHandle:read('*a')
+#     (ok failreason exitcode) = fileHandle:close()
+#     (output ok failreason exitcode)
     
 ⮐  kxk

@@ -1,0 +1,23 @@
+kxk = require "../kxk"
+
+test("slash", function()
+   test("normalize", function()
+         test.cmp(slash.normalize("a/"), "a")
+         test.cmp(slash.normalize("/Users/kodi/kao/lua/../kua/test"), "/Users/kodi/kao/kua/test")
+         test.cmp(slash.normalize("xyz"), "xyz")
+         test.cmp(slash.normalize("x/y/z"), "x/y/z")
+         test.cmp(slash.normalize("x\\y/z\\"), "x/y/z")
+         test.cmp(slash.normalize("\\x\\y/z"), "/x/y/z")
+         test.cmp(slash.normalize("..\\x\\y/z"), "../x/y/z")
+         test.cmp(slash.normalize("./x\\y/z"), "./x/y/z")
+         test.cmp(slash.normalize("x/./z"), "x/z")
+         test.cmp(slash.normalize("../up"), "../up")
+         test.cmp(slash.normalize("//"), "/")
+         test.cmp(slash.normalize("//././////././"), "/")
+         
+         test.cmp(slash.normalize("x/../z"), "z")
+         test.cmp(slash.normalize("./x/y/z/../../a"), "./x/a")
+         test.cmp(slash.normalize("./x/../../z"), "../z")
+         test.cmp(slash.normalize("./x/../../../y"), "../../y")
+    end)
+    end)

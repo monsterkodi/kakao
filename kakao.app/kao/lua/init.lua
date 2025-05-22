@@ -17,8 +17,6 @@ function initFunc(main, ...)
     
     math.randomseed(os.time())
     
-    local pretty = require("pretty-print")
-    
     local args = {...}
     
     
@@ -41,7 +39,7 @@ function initFunc(main, ...)
         uv.run()
     else 
         _G.process.exitCode = -1
-        pretty.stderr:write("Uncaught exception:\n" .. err .. "\n")
+        print("Uncaught exception:\n" .. err .. "\n")
     end
     
     

@@ -135,13 +135,21 @@ class Rlua
             if n.operand_right.token.tok in {◂func ◂method}
                 @▸function n
                 ⮐  
+                
+        if n.token.tok == ◂bitor
+            @add "bit.bor("
+            @rnd n.operand_left
+            @add ", "
+            @rnd n.operand_right
+            @add ")"
+            ⮐  
     
         outerbr = n.token.tok notin { ◂ampersand } + assignToks
         @add("(") if outerbr
         @rnd n.operand_left
         @spc()
         switch n.token.tok
-            ◂ampersand  ➜ @add ".."
+            ◂ampersand  ➜ @add ".."                
             ◂not_equal  ➜ @add "~="
             ◂plus_assign 
                 @add "= " 

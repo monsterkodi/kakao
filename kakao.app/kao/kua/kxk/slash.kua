@@ -5,13 +5,17 @@
 #      ███  ███      ███   ███       ███  ███   ███
 # ███████   ███████  ███   ███  ███████   ███   ███
 
-use ffi os
+use ffi os io
 use ./array
 use ./kstr
 use ./kseg
 
 ffi.cdef """
+
+    typedef void *FILE; 
     typedef struct DIR DIR;
+    typedef int pid_t;
+    
     struct dirent {
         unsigned long  d_ino;       
         unsigned long  d_seekoff;   
@@ -20,10 +24,8 @@ ffi.cdef """
         unsigned char  d_type;      
         char           d_name[1024];
     };
-    DIR *opendir(const char *filename);
+    
     struct dirent *readdir(DIR *dirp);
-    int closedir(DIR *dirp);
-    const char *strerror(int errnum);
     
     struct stat {
         uint32_t    st_dev;
@@ -49,14 +51,118 @@ ffi.cdef """
         int32_t     st_lspare;              
         int64_t     st_qspare[2];
     };
+
+    DIR *opendir(const char *filename);
+    int closedir(DIR *dirp);
+    int close(int fd);
     
     int stat64(const char *path, struct stat *buf);
     int lstat64(const char *path, struct stat *buf);
+
+    int pipe(int pipefd[2]);
+    int dup2(int oldfd, int newfd);
+    int execvp(const char *file, char *const argv[]);
+    int execv(const char *path, char *const argv[]);
+    int fcntl(int fd, int cmd, ...);
+    int fileno(FILE *stream);
+    ssize_t read(int fd, void *buf, size_t count);
+    pid_t fork();
+    pid_t waitpid(pid_t pid, int *wstatus, int options);
 """
     
+libc = ffi.load("c")
+
+cmdargs = cmd args ->
+    ▴ cmd    
+    args ?= {}
+    alen = args.len+2
+    argv = ffi.new "char*[?]" alen
+    argv[0] = ffi.cast "char*" ffi.string(cmd)
+    for i in 1...args.len+1
+        argv[i] = ffi.cast "char*" ffi.string(args[i])
+    argv[alen] = nil
+    argv
+
 slash = {}
     
 slash.cwd = -> process.cwd()
+
+#  ███████  ███   ███  ████████  ███      ███    
+# ███       ███   ███  ███       ███      ███    
+# ███████   █████████  ███████   ███      ███    
+#      ███  ███   ███  ███       ███      ███    
+# ███████   ███   ███  ████████  ███████  ███████
+
+slash.shell = cmd ... ->
+    
+    read_pipe  = ffi.new "int[2]"
+    write_pipe = ffi.new "int[2]"
+    output     = ""
+    exitcode   = nil
+    failreason = nil
+
+    ⮐  (nil false nil) if libc.pipe(read_pipe) != 0 or libc.pipe(write_pipe) != 0 
+
+    pid = libc.fork()
+
+    if pid == 0
+
+        libc.close read_pipe[1]
+        libc.close write_pipe[0]
+        libc.dup2  write_pipe[1] 1
+        libc.dup2  write_pipe[1] 2
+        libc.close read_pipe[0]
+        libc.close write_pipe[1]
+
+        argv = cmdargs cmd {...}
+        libc.execvp(argv[0] argv)
+        libc._exit(127)
+        
+    elif pid > 0
+        
+        libc.close read_pipe[0]
+        libc.close write_pipe[1]
+        #                 F_SETFL▾                   F_GETFL▾      ▾O_NONBLOCK
+        libc.fcntl(write_pipe[0] 4 libc.fcntl(write_pipe[0] 3 0) | 0x0004)
+
+        buf = ffi.new "char[4096]"
+        while true
+            bytes_read = libc.read write_pipe[0] buf 4096
+            if bytes_read > 0
+                output = output & ffi.string(buf, bytes_read)
+                sleep 0.001
+            else 
+                break
+
+        libc.close write_pipe[0]
+
+        wstatus = ffi.new "int[1]"
+        waitpid = libc.waitpid pid wstatus 0
+
+        ⮐  (output, (waitpid == pid and wstatus[0] == 0), wstatus[0])
+    else
+        ⮐  (nil false nil)
+
+# ████████   ████████   ███████  ████████    ███████   ███   ███  ███   ███
+# ███   ███  ███       ███       ███   ███  ███   ███  ███ █ ███  ████  ███
+# ███████    ███████   ███████   ████████   █████████  █████████  ███ █ ███
+# ███   ███  ███            ███  ███        ███   ███  ███   ███  ███  ████
+# ███   ███  ████████  ███████   ███        ███   ███  ██     ██  ███   ███
+
+slash.respawn = cmd argv ->
+
+    libc.fcntl 0 2 0 # clear close on exit flags
+    libc.fcntl 1 2 0
+    libc.fcntl 2 2 0
+    
+    args = cmdargs cmd argv
+    libc.execv args[0] args
+
+# ███   ███   ███████   ████████   ██     ██   ███████   ███      ███  ███████  ████████
+# ████  ███  ███   ███  ███   ███  ███   ███  ███   ███  ███      ███     ███   ███     
+# ███ █ ███  ███   ███  ███████    █████████  █████████  ███      ███    ███    ███████ 
+# ███  ████  ███   ███  ███   ███  ███ █ ███  ███   ███  ███      ███   ███     ███     
+# ███   ███   ███████   ███   ███  ███   ███  ███   ███  ███████  ███  ███████  ████████
 
 slash.normalize = path ->
 
@@ -94,6 +200,12 @@ slash.normalize = path ->
         kseg.shift p
     kseg.str p
 
+# ████████    ███████   █████████  ███   ███
+# ███   ███  ███   ███     ███     ███   ███
+# ████████   █████████     ███     █████████
+# ███        ███   ███     ███     ███   ███
+# ███        ███   ███     ███     ███   ███
+
 slash.path = (...) ->
 
     slsh = s -> string.gsub(s "\\" "/")
@@ -121,6 +233,12 @@ slash.absolute = path parent ->
 slash.split = path -> kstr.split path "/"
 slash.join  = ... -> table.concat {...} "/"
         
+# ████████    ███████   ████████    ███████  ████████
+# ███   ███  ███   ███  ███   ███  ███       ███     
+# ████████   █████████  ███████    ███████   ███████ 
+# ███        ███   ███  ███   ███       ███  ███     
+# ███        ███   ███  ███   ███  ███████   ████████
+
 slash.parse = path ->
     path  = slash.untilde slash.normalize(path)
     split = slash.split path
@@ -176,6 +294,12 @@ prettyTimeSpan = seconds ->
 
 sbuf = ffi.new("struct stat")
 
+#  ███████  █████████   ███████   █████████
+# ███          ███     ███   ███     ███   
+# ███████      ███     █████████     ███   
+#      ███     ███     ███   ███     ███   
+# ███████      ███     ███   ███     ███   
+
 slash.stat = path ->
 
     if ffi.C.stat64(path, sbuf) == 0
@@ -195,13 +319,22 @@ slash.stat = path ->
                 # modage:     prettyTimeSpan(os.time()-tonumber(sbuf.st_mtime))
             }
     
-slash.walk = path ->
+# ███   ███   ███████   ███      ███   ███
+# ███ █ ███  ███   ███  ███      ███  ███ 
+# █████████  █████████  ███      ███████  
+# ███   ███  ███   ███  ███      ███  ███ 
+# ██     ██  ███   ███  ███████  ███   ███
+
+slash.walk = path opt ->
+
+    opt ?= { recursive: true }
+    opt.files ?= {}
 
     dir = ffi.C.opendir path
     if dir == nil
-        error "Failed to open directory: " & path & " " & ffi.string(ffi.C.strerror(ffi.errno()))
+        error "Failed to open directory: " & path
     
-    files = {}
+    # files = {}
     while true
         entry = ffi.C.readdir dir
         if entry != nil
@@ -212,13 +345,24 @@ slash.walk = path ->
                 elif entry.d_type == 8  ➜ typ = "file"
                 elif entry.d_type == 10 ➜ typ = "link"
                     
-                info = { "name": name "type": typ "path": slash.absolute(path & "/" & name) }
-                table.insert files info
+                apth = slash.absolute(path & "/" & name)
+                info = { "name": name "type": typ "path": apth }
+                table.insert opt.files info
+                
+                if opt.recursive and typ == "dir"
+                    slash.walk apth opt
         else
             break
+            
     ffi.C.closedir dir
-    table.sort(files, (a b) -> ⮐  a.path < b.path)
-    files
+    table.sort(opt.files, (a b) -> ⮐  a.path < b.path)
+    opt.files
+
+# ████████  ███  ███      ████████   ███████
+# ███       ███  ███      ███       ███     
+# ██████    ███  ███      ███████   ███████ 
+# ███       ███  ███      ███            ███
+# ███       ███  ███████  ████████  ███████ 
 
 slash.files = path ext ->
 
@@ -227,5 +371,23 @@ slash.files = path ext ->
         fext = (f) -> slash.ext(f) == ext
         files = array.filter files fext
     files
-            
+    
+# ████████  ███   ███  ████████   ███████
+# ███        ███ ███   ███       ███     
+# ███████     █████    ███████   ███     
+# ███        ███ ███   ███       ███     
+# ████████  ███   ███  ████████   ███████
+
+slash.exec = cmd opt cb ->
+    
+    if cb == nil
+        cb = opt
+        opt = {}
+    
+    res = err out ->
+        if err ➜ out = ""
+        cb out
+        
+    childp.exec cmd opt res
+    
 ⮐  slash

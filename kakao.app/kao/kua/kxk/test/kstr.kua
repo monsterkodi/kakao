@@ -1,0 +1,31 @@
+
+use ../kxk
+
+▸ kstr
+
+   ▸ splice
+
+        s = "a/abc/ed.x"
+        s = kstr.splice s 1 1
+        s ▸ "/abc/ed.x"
+        s = kstr.splice s 2 1
+        s ▸ "/bc/ed.x"
+        s = kstr.splice s, -1 1
+        s ▸ "/bc/ed."
+        s = kstr.splice s, -2 1
+        s ▸ "/bc/e."    
+        s = kstr.splice s, -2 2 "1" "2" "3"
+        s ▸ "/bc/123"   
+        s = kstr.splice s, -3 3 "4" "5" "6"
+        s ▸ "/bc/456"
+         
+    ▸ shift
+        
+        s = "1234"
+        kstr.shift(s 2) ▸ "34"
+    
+    ▸ pop
+         
+        s = "1234"
+        kstr.pop(s 2) ▸ "12"
+

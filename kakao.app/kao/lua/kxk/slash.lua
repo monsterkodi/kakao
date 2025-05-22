@@ -6,12 +6,17 @@
 
 ffi = require "ffi"
 os = require "os"
+io = require "io"
 array = require "./array"
 kstr = require "./kstr"
 kseg = require "./kseg"
 
 ffi.cdef([[
+
+    typedef void *FILE; 
     typedef struct DIR DIR;
+    typedef int pid_t;
+    
     struct dirent {
         unsigned long  d_ino;       
         unsigned long  d_seekoff;   
@@ -20,10 +25,8 @@ ffi.cdef([[
         unsigned char  d_type;      
         char           d_name[1024];
     };
-    DIR *opendir(const char *filename);
+    
     struct dirent *readdir(DIR *dirp);
-    int closedir(DIR *dirp);
-    const char *strerror(int errnum);
     
     struct stat {
         uint32_t    st_dev;
@@ -49,10 +52,41 @@ ffi.cdef([[
         int32_t     st_lspare;              
         int64_t     st_qspare[2];
     };
+
+    DIR *opendir(const char *filename);
+    int closedir(DIR *dirp);
+    int close(int fd);
     
     int stat64(const char *path, struct stat *buf);
     int lstat64(const char *path, struct stat *buf);
+
+    int pipe(int pipefd[2]);
+    int dup2(int oldfd, int newfd);
+    int execvp(const char *file, char *const argv[]);
+    int execv(const char *path, char *const argv[]);
+    int fcntl(int fd, int cmd, ...);
+    int fileno(FILE *stream);
+    ssize_t read(int fd, void *buf, size_t count);
+    pid_t fork();
+    pid_t waitpid(pid_t pid, int *wstatus, int options);
 ]])
+
+local libc = ffi.load("c")
+
+
+function cmdargs(cmd, args) 
+    assert(cmd)
+    args = args or {}
+    local alen = (#args + 2)
+    local argv = ffi.new("char*[?]", alen)
+    argv[0] = ffi.cast("char*", ffi.string(cmd))
+    for i = 1, (#args + 1)-1 do 
+        argv[i] = ffi.cast("char*", ffi.string(args[i]))
+    end
+    
+    argv[alen] = nil
+    return argv
+end
 
 local slash = {}
 
@@ -60,6 +94,85 @@ local slash = {}
 function slash.cwd() 
     return process.cwd()
 end
+
+--  ███████  ███   ███  ████████  ███      ███    
+-- ███       ███   ███  ███       ███      ███    
+-- ███████   █████████  ███████   ███      ███    
+--      ███  ███   ███  ███       ███      ███    
+-- ███████   ███   ███  ████████  ███████  ███████
+
+
+function slash.shell(cmd, ...) 
+    local read_pipe = ffi.new("int[2]")
+    local write_pipe = ffi.new("int[2]")
+    local output = ""
+    local exitcode = nil
+    local failreason = nil
+    
+    if ((libc.pipe(read_pipe) ~= 0) or (libc.pipe(write_pipe) ~= 0)) then return nil, false, nil end
+    
+    local pid = libc.fork()
+    
+    if (pid == 0) then 
+        libc.close(read_pipe[1])
+        libc.close(write_pipe[0])
+        libc.dup2(write_pipe[1], 1)
+        libc.dup2(write_pipe[1], 2)
+        libc.close(read_pipe[0])
+        libc.close(write_pipe[1])
+        
+        local argv = cmdargs(cmd, {...})
+        libc.execvp(argv[0], argv)
+        libc._exit(127)
+    elseif (pid > 0) then 
+        libc.close(read_pipe[0])
+        libc.close(write_pipe[1])
+        --                 F_SETFL▾                   F_GETFL▾      ▾O_NONBLOCK
+        libc.fcntl(write_pipe[0], 4, bit.bor(libc.fcntl(write_pipe[0], 3, 0), 0x0004))
+        
+        local buf = ffi.new("char[4096]")
+        while true do 
+            local bytes_read = libc.read(write_pipe[0], buf, 4096)
+            if (bytes_read > 0) then 
+                output = output .. ffi.string(buf, bytes_read)
+                sleep(0.001)
+            else 
+                break
+            end
+        end
+        
+        libc.close(write_pipe[0])
+        
+        local wstatus = ffi.new("int[1]")
+        local waitpid = libc.waitpid(pid, wstatus, 0)
+        
+        return output, ((waitpid == pid) and (wstatus[0] == 0)), wstatus[0]
+    else 
+        return nil, false, nil
+    end
+end
+
+-- ████████   ████████   ███████  ████████    ███████   ███   ███  ███   ███
+-- ███   ███  ███       ███       ███   ███  ███   ███  ███ █ ███  ████  ███
+-- ███████    ███████   ███████   ████████   █████████  █████████  ███ █ ███
+-- ███   ███  ███            ███  ███        ███   ███  ███   ███  ███  ████
+-- ███   ███  ████████  ███████   ███        ███   ███  ██     ██  ███   ███
+
+
+function slash.respawn(cmd, argv) 
+    libc.fcntl(0, 2, 0) -- clear close on exit flags
+    libc.fcntl(1, 2, 0)
+    libc.fcntl(2, 2, 0)
+    
+    local args = cmdargs(cmd, argv)
+    return libc.execv(args[0], args)
+end
+
+-- ███   ███   ███████   ████████   ██     ██   ███████   ███      ███  ███████  ████████
+-- ████  ███  ███   ███  ███   ███  ███   ███  ███   ███  ███      ███     ███   ███     
+-- ███ █ ███  ███   ███  ███████    █████████  █████████  ███      ███    ███    ███████ 
+-- ███  ████  ███   ███  ███   ███  ███ █ ███  ███   ███  ███      ███   ███     ███     
+-- ███   ███   ███████   ███   ███  ███   ███  ███   ███  ███████  ███  ███████  ████████
 
 
 function slash.normalize(path) 
@@ -117,6 +230,12 @@ function slash.normalize(path)
     return kseg.str(p)
 end
 
+-- ████████    ███████   █████████  ███   ███
+-- ███   ███  ███   ███     ███     ███   ███
+-- ████████   █████████     ███     █████████
+-- ███        ███   ███     ███     ███   ███
+-- ███        ███   ███     ███     ███   ███
+
 
 function slash.path(...) 
     
@@ -167,6 +286,12 @@ end
 function slash.join(...) 
     return table.concat({...}, "/")
 end
+
+-- ████████    ███████   ████████    ███████  ████████
+-- ███   ███  ███   ███  ███   ███  ███       ███     
+-- ████████   █████████  ███████    ███████   ███████ 
+-- ███        ███   ███  ███   ███       ███  ███     
+-- ███        ███   ███  ███   ███  ███████   ████████
 
 
 function slash.parse(path) 
@@ -244,6 +369,12 @@ end
 
 local sbuf = ffi.new("struct stat")
 
+--  ███████  █████████   ███████   █████████
+-- ███          ███     ███   ███     ███   
+-- ███████      ███     █████████     ███   
+--      ███     ███     ███   ███     ███   
+-- ███████      ███     ███   ███     ███   
+
 
 function slash.stat(path) 
     if (ffi.C.stat64(path, sbuf) == 0) then 
@@ -264,14 +395,23 @@ function slash.stat(path)
     end
 end
 
+-- ███   ███   ███████   ███      ███   ███
+-- ███ █ ███  ███   ███  ███      ███  ███ 
+-- █████████  █████████  ███      ███████  
+-- ███   ███  ███   ███  ███      ███  ███ 
+-- ██     ██  ███   ███  ███████  ███   ███
 
-function slash.walk(path) 
+
+function slash.walk(path, opt) 
+    opt = opt or {recursive = true}
+    opt.files = opt.files or {}
+    
     local dir = ffi.C.opendir(path)
     if (dir == nil) then 
-        error("Failed to open directory: " .. path .. " " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        error("Failed to open directory: " .. path)
     end
     
-    local files = {}
+    -- files = {}
     while true do 
         local entry = ffi.C.readdir(dir)
         if (entry ~= nil) then 
@@ -283,8 +423,13 @@ function slash.walk(path)
                 elseif (entry.d_type == 10) then typ = "link"
                 end
                 
-                local info = {["name"] = name, ["type"] = typ, ["path"] = slash.absolute(path .. "/" .. name)}
-                table.insert(files, info)
+                local apth = slash.absolute(path .. "/" .. name)
+                local info = {["name"] = name, ["type"] = typ, ["path"] = apth}
+                table.insert(opt.files, info)
+                
+                if (opt.recursive and (typ == "dir")) then 
+                    slash.walk(apth, opt)
+                end
             end
         else 
             break
@@ -292,9 +437,15 @@ function slash.walk(path)
     end
     
     ffi.C.closedir(dir)
-    table.sort(files, function (a, b) return (a.path < b.path) end)
-    return files
+    table.sort(opt.files, function (a, b) return (a.path < b.path) end)
+    return opt.files
 end
+
+-- ████████  ███  ███      ████████   ███████
+-- ███       ███  ███      ███       ███     
+-- ██████    ███  ███      ███████   ███████ 
+-- ███       ███  ███      ███            ███
+-- ███       ███  ███████  ████████  ███████ 
 
 
 function slash.files(path, ext) 
@@ -308,6 +459,28 @@ function slash.files(path, ext)
     end
     
     return files
+end
+
+-- ████████  ███   ███  ████████   ███████
+-- ███        ███ ███   ███       ███     
+-- ███████     █████    ███████   ███     
+-- ███        ███ ███   ███       ███     
+-- ████████  ███   ███  ████████   ███████
+
+
+function slash.exec(cmd, opt, cb) 
+    if (cb == nil) then 
+        cb = opt
+        opt = {}
+    end
+    
+    
+    function res(err, out) 
+        if err then out = "" end
+        return cb(out)
+    end
+    
+    return childp.exec(cmd, opt, res)
 end
 
 return slash

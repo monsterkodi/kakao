@@ -5,6 +5,10 @@
 #    ███     ███            ███     ███   
 #    ███     ████████  ███████      ███   
 
+use os
+
+_G.testFail = 0
+
 class test
 
     $: -> ⮐  "▸" & @suite
@@ -17,12 +21,44 @@ class test
         log "▸ " & string.rep("    " testStack.len-1) & testStack[testStack.len]
         t()
         table.remove testStack
+        if testStack.len == 0
+            # log "exit" _G.testFail
+            os.exit _G.testFail
     
 test.static.cmp = a b ->
+
     _G.testIndex += 1
-    if a != b 
+    
+    if type(a) != type(b)
+        log "✘ [" & _G.testIndex & "] type mismatch: " & type(a) & " != " & type(b)
+        _G.testFail += 1
+        ⮐  false
+    if type(a) == "table"
+        for k v in pairs a
+            if not test.static.cmp v b[k]
+                log "✘ [" & _G.testIndex & "] table mismatch at index: " & k & " " & v & " != " & b[k]
+                ⮐  false
+    elif a != b 
         log "✘ [" & _G.testIndex & "] " & a & " != " & b
+        _G.testFail += 1
         ⮐  false
     true
+    
+test.static.run = files ->
+
+    # log "test.run" array.str files
+    success = true
+    for f _ in pairs files 
+        # log "test" f
+        (output ok exitcode) = slash.shell "luvit" f
+        if ok
+            # log output, ok, exitcode
+            # log "✔ " f
+            a = 1
+        else
+            log output
+            log "✘ " f, exitcode
+            success = false
+    success
         
 ⮐  test
