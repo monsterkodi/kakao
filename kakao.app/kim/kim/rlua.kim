@@ -193,13 +193,14 @@ class Rlua
     ▸preOp: ◇Node n -> 
     
         switch n.token.tok 
-            ◂not ➜ @add "not "
-            ◂log ➜ @add "print("
-                 ➜ @tok n
+            ◂dollar ➜ @add "tostring("
+            ◂not    ➜ @add "not "
+            ◂log    ➜ @add "print("
+                    ➜ @tok n
             
         @rnd n.operand
         
-        if n.token.tok == ◂log
+        if n.token.tok in {◂log ◂dollar}
             @add ")"
         
     ▸postOp: ◇Node n -> 
@@ -305,7 +306,7 @@ class Rlua
     
         split = n.use_module.token.str.split " "
         while split.len > 1
-            @add "#{slash.name(split[0])} = require \"#{split[0]}\"\n" 
+            @add "#{slash.name(split[0])} = require \"#{split[0]}\"\n" & @nodeIndent(n)
             split = split.shift
         
         @add "#{slash.name(split[0])} = require \"#{split[0]}\""

@@ -1340,6 +1340,7 @@ kua
         extends
         use
         elif
+        log
         
     require
         use

@@ -1481,8 +1481,8 @@ class Parser
         @pratt ◂doubledot         lRange            nil            40
         @pratt ◂tripledot         lRange            rRange         40
         
-        @pratt ◂dollar            nil               rDollar        41
         @pratt ◂ampersand         lOperation        nil            42
+        @pratt ◂dollar            nil               rDollar        48
         
         @pratt ◂plus              lOperation        nil            50
         @pratt ◂minus             lOperation        rPreOp         50

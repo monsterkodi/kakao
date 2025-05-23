@@ -34,6 +34,7 @@ toExport["kermit"] = function ()
         compare(lm('logFile = ◇string f prefix="" ->','●name = ○args ->'),{name:'logFile',args:'◇string f prefix=""'})
         compare(lm('myfunc = args ->','●name = ○args ->'),{name:'myfunc',args:"args"})
         compare(lm('nofunc = args','●name = ○args ->'),undefined)
+        compare(lm("function test hello(arg1, arg2)","function test ●name(○args)",['(',')']),{name:"hello",args:"arg1, arg2"})
     })
     section("simple", function ()
     {

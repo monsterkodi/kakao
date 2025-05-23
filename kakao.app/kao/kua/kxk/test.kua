@@ -36,10 +36,10 @@ test.static.cmp = a b ->
     if type(a) == "table"
         for k v in pairs a
             if not test.static.cmp v b[k]
-                log "✘ [" & _G.testIndex & "] table mismatch at index: " & k & " " & v & " != " & b[k]
+                log "✘ [" & _G.testIndex & "] table mismatch at index: " & $k & " " & $v & " != " & $b[k]
                 ⮐  false
     elif a != b 
-        log "✘ [" & _G.testIndex & "] " & a & " != " & b
+        log "✘ [" & _G.testIndex & "] " & $a & " != " & $b
         _G.testFail += 1
         ⮐  false
     true
@@ -52,7 +52,7 @@ test.static.run = files ->
         # log "test" f
         (output ok exitcode) = slash.shell "luajit" f
         if ok
-            log output
+            # log output
             # log output, ok, exitcode
             # log "✔ " f
             a = 1

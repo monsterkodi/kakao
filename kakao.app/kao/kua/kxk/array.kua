@@ -70,5 +70,10 @@ array.str = a ->
     for i v in pairs(a)
         s = s & "    " & i & "    " & v & "\n"
     s
+    
+array.isarr = a ->
+
+    ⮐  false if type(a) != "table"
+    a.len > 0
 
 ⮐  array

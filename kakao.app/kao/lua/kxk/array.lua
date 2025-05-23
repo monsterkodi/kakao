@@ -100,4 +100,10 @@ function array.str(a)
     return s
 end
 
+
+function array.isarr(a) 
+    if (type(a) ~= "table") then return false end
+    return (#a > 0)
+end
+
 return array

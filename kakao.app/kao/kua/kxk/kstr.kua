@@ -18,12 +18,14 @@ kstr.lpad   = l s="" c=' ' ->
 kstr.rpad   = l s="" c=' ' ->  
     while s.len < l ➜ s = s & c
     s
-kstr.rtrim  = s c=' ' -> 
-    while s.len > 0 and s[s.len] == c
+kstr.endsWith   = s o -> o == string.sub s s.len-o.len+1 s.len
+kstr.startsWith = s o -> o == string.sub s 1 o.len
+kstr.rtrim  = s c=' ' ->
+    while s.len > 0 and (kstr.endsWith(s c) or kstr.endsWith(s "\n"))
         s = kstr.pop s
     s
 kstr.ltrim  = s c=' ' -> 
-    while s.len > 0 and s[1] == c 
+    while s.len > 0 and (kstr.startsWith(s c) or kstr.startsWith(s "\n"))
         s = string.sub s 2
     s
 kstr.trim   = s c=' ' -> kstr.ltrim kstr.rtrim(s,c) c

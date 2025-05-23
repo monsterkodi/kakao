@@ -16,6 +16,21 @@ test("array", function()
         test.cmp(a, {})
         test.cmp(x, nil)
     end)
+    
+    test("isarr", function()
+        local a = {1, 2}
+        test.cmp(array.isarr(a), true)
+        
+        local b = {c = 1, d = 2}
+        test.cmp(array.isarr(b), false)
+        
+        local c = {}
+        test.cmp(array.isarr(c), false)
+        
+        test.cmp(array.isarr(false), false)
+        
+        test.cmp(array.isarr(nil), false)
+    end)
     end)
 
 --for i in iter(4 0)   ➜ log i

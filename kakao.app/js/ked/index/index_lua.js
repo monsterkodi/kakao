@@ -1,4 +1,4 @@
-var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
 import kxk from "../../kxk.js"
 let kermit = kxk.kermit
@@ -10,20 +10,13 @@ class index_lua
 
     parseLine (index, line)
     {
-        var addFunc, addMeth, className, classType, doMatch, funcMatch, match, validFuncArgs, validFuncMatch, validFuncName
+        var addFunc, addMeth, className, funcMatch, match, methMatch, validFuncMatch, validFuncName
 
         if (!line.startsWith(' '))
         {
-            if (match = kermit.lineMatch(line,'class ●name'))
+            if (match = kermit.lineMatch(line,'local ●name = class',['(']))
             {
                 match.type = 'class'
-                match.line = index
-                this.result.classes.push(match)
-                return
-            }
-            if (match = kermit.lineMatch(line,'function ●name()'))
-            {
-                match.type = 'function'
                 match.line = index
                 this.result.classes.push(match)
                 return
@@ -31,23 +24,23 @@ class index_lua
         }
         validFuncName = function (name)
         {
-            return !(_k_.in(name,['if','for','while','switch','return','catch']))
-        }
-        validFuncArgs = function (args)
-        {
-            return args[0] === '(' && args.slice(-1)[0] === ')'
+            return !_k_.empty((name)) && !(_k_.in(name,['if','for','while','switch','return','catch']))
         }
         validFuncMatch = function (match)
         {
-            return match && validFuncArgs(match.args) && validFuncName(match.name)
+            return match && validFuncName(match.name)
         }
-        doMatch = function (ptn)
+        methMatch = function (ptn)
         {
-            return kermit.lineMatch(line,ptn,['"','.',',',"'"])
+            match = kermit.lineMatch(line,ptn,["(",")",":","."])
+            if (validFuncMatch(match))
+            {
+                return match
+            }
         }
         funcMatch = function (ptn)
         {
-            match = doMatch(ptn)
+            match = kermit.lineMatch(line,ptn,["(",")"])
             if (validFuncMatch(match))
             {
                 return match
@@ -56,7 +49,6 @@ class index_lua
         if (this.result.classes.length)
         {
             className = this.result.classes.slice(-1)[0].name
-            classType = this.result.classes.slice(-1)[0].type
             addMeth = (function (name, opt = {})
             {
                 var fnc
@@ -77,79 +69,41 @@ class index_lua
                 this.result.funcs.push(fnc)
                 return null
             }).bind(this)
-            if (classType === 'class')
+            if (match = methMatch(`function ${className}:●name(○args)`))
             {
-                if (match = funcMatch('●name ○args'))
-                {
-                    return addMeth(match.name)
-                }
-                if (match = funcMatch('async ●name ○args'))
-                {
-                    return addMeth(match.name,{async:true})
-                }
-                if (match = funcMatch('static ●name ○args'))
-                {
-                    return addMeth(match.name,{static:true})
-                }
-                if (match = funcMatch('static async ●name ○args'))
-                {
-                    return addMeth(match.name,{static:true,async:true})
-                }
-                if (match = doMatch(`this.●name = this.●bound.bind(this)`))
-                {
-                    this.bound[match.name] = true
-                }
+                return addMeth(match.name)
             }
-            if (classType === 'function')
+            if (match = methMatch(`function ${className}.static.●name(○args)`))
             {
-                if (match = funcMatch(`function ${className} ○args`))
-                {
-                    return addMeth(className)
-                }
-                if (match = funcMatch(`${className}["●name"] = function ○args`))
-                {
-                    return addMeth(match.name,{static:true})
-                }
-                if (match = funcMatch(`${className}["●name"] = async function ○args`))
-                {
-                    return addMeth(match.name,{static:true,async:true})
-                }
-                if (match = funcMatch(`${className}.prototype["●name"] = function ○args`))
-                {
-                    return addMeth(match.name)
-                }
-                if (match = funcMatch(`${className}.prototype["●name"] = async function ○args`))
-                {
-                    return addMeth(match.name,{async:true})
-                }
-                if (match = doMatch(`this["●name"] = this["●bound"].bind(this)`))
-                {
-                    this.bound[match.name] = true
-                }
+                return addMeth(match.name,{static:true})
             }
         }
+        addFunc = (function (name, opt = {})
+        {
+            var fnc
+
+            fnc = {name:name,line:index}
+            if (opt.async)
+            {
+                fnc.async = true
+            }
+            if (opt.test)
+            {
+                fnc.test = true
+            }
+            this.result.funcs.push(fnc)
+            return null
+        }).bind(this)
         if (!line.startsWith(' '))
         {
-            addFunc = (function (name, opt = {})
+            if (match = funcMatch('function ●name(○args)'))
             {
-                var fnc
-
-                fnc = {name:name,line:index}
-                if (opt.async)
-                {
-                    fnc.async = true
-                }
-                this.result.funcs.push(fnc)
-                return null
-            }).bind(this)
-            if (match = funcMatch('●name = function ○args'))
-            {
-                addFunc(match.name)
+                return addFunc(match.name)
             }
-            if (match = funcMatch('●name = async function ○args'))
-            {
-                return addFunc(match.name,{async:true})
-            }
+        }
+        if (match = kermit.lineMatch(line,'test("●name", function()',["(",")",',','"']))
+        {
+            return addFunc(`▸ ${match.name}`,{test:true})
         }
     }
 

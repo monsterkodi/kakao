@@ -24,7 +24,25 @@ test("kstr", function()
     end)
     
     test("pop", function()
-        s = "1234"
-        test.cmp(kstr.pop(s, 2), "12")
+        test.cmp(kstr.pop("1234", 2), "12")
+        test.cmp(kstr.pop("ab\n"), "ab")
+    end)
+    
+    test("dollar", function()
+        test.cmp(tostring(1), "1")
+        test.cmp(tostring(true), "true")
+        test.cmp(tostring(nil), "nil")
+        x = 42
+        test.cmp(tostring(x), "42")
+        test.cmp(tostring((1 / 3)), "0.33333333333333")
+    end)
+    
+    test("endsWith", function()
+        test.cmp(kstr.endsWith("uv\n", "\n"), true)
+    end)
+    
+    test("trim", function()
+        test.cmp(kstr.rtrim("xyz\n"), "xyz")
+        test.cmp(kstr.trim("abc\n"), "abc")
     end)
     end)

@@ -170,11 +170,12 @@ proc ▸let(this : Rlua, n : Node) =
 
 proc ▸preOp(this : Rlua, n : Node) = 
         case n.token.tok:
+            of ◂dollar: this.add("tostring(")
             of ◂not: this.add("not ")
             of ◂log: this.add("print(")
             else: this.tok(n)
         this.rnd(n.operand)
-        if (n.token.tok == ◂log): 
+        if (n.token.tok in {◂log, ◂dollar}): 
             this.add(")")
 
 proc ▸postOp(this : Rlua, n : Node) = 
@@ -266,7 +267,7 @@ proc ▸string(this : Rlua, n : Node) =
 proc ▸use(this : Rlua, n : Node) = 
         var split = n.use_module.token.str.split(" ")
         while (split.len > 1): 
-            this.add(&"{slash.name(split[0])} = require \"{split[0]}\"\n")
+            this.add(&"{slash.name(split[0])} = require \"{split[0]}\"\n" & this.nodeIndent(n))
             split = split.shift
         this.add(&"{slash.name(split[0])} = require \"{split[0]}\"")
         if ((n.use_kind != nil) and (n.use_kind.token.str == "▪")): 

@@ -43,10 +43,18 @@ function kstr.rpad(l, s, c)
 end
 
 
+function kstr.endsWith(s, o) 
+    return (o == string.sub(s, ((#s - #o) + 1), #s))
+end
+
+function kstr.startsWith(s, o) 
+    return (o == string.sub(s, 1, #o))
+end
+
 function kstr.rtrim(s, c) 
     c = c or ' '
     
-    while ((#s > 0) and (s[#s] == c)) do 
+    while ((#s > 0) and (kstr.endsWith(s, c) or kstr.endsWith(s, "\n"))) do 
         s = kstr.pop(s)
     end
     
@@ -57,7 +65,7 @@ end
 function kstr.ltrim(s, c) 
     c = c or ' '
     
-    while ((#s > 0) and (s[1] == c)) do 
+    while ((#s > 0) and (kstr.startsWith(s, c) or kstr.startsWith(s, "\n"))) do 
         s = string.sub(s, 2)
     end
     

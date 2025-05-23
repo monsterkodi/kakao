@@ -19,6 +19,21 @@ use kxk/kxk
         a ▸ {}
         x ▸ nil
         
+    ▸ isarr
+    
+        a = { 1 2 }
+        array.isarr a ▸ true
+
+        b = { c:1 d:2 }
+        array.isarr b ▸ false
+        
+        c = {}
+        array.isarr c ▸ false
+        
+        array.isarr false ▸ false
+        
+        array.isarr nil ▸ false
+        
 #for i in iter(4 0)   ➜ log i
 #for i in iter(0 4)   ➜ log i
 #for i in iter(4,-4)  ➜ log i

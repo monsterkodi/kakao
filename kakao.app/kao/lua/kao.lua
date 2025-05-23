@@ -1,11 +1,11 @@
 
 function main(...) 
     std = require "std"
-io = require "io"
+    io = require "io"
     kxk = require "kxk/kxk"
     
     local optparser = std.optparse([[
-0.1.0
+0.1
 Usage: kao [Options ...] [Files ...]
 
 Options:
@@ -17,7 +17,8 @@ Options:
   -h, --help         display this help, then exit
 ]])
     
-    print(slash.cwd())
+    -- log slash.cwd()
+    print("●")
     
     files, _G.opts = optparser:parse(arg)
     
@@ -36,6 +37,12 @@ end
 
 
 function watch(...) 
+    local luajit, _ = slash.shell("brew", "--prefix", "luajit")
+    luajit = kstr.trim(luajit)
+    local libjit = luajit .. "/lib/libluajit.a"
+    local incjit = luajit .. "/include/luajit-2.1"
+    -- log "luajit" luajit
+    
     local dir = slash.cwd()
     local luaFiles = array.indexdict(slash.files(slash.path(dir, "."), "lua"))
     local kxkFiles = array.indexdict(slash.files(slash.path(dir, "./kxk"), "lua"))
@@ -70,11 +77,11 @@ function watch(...)
                     modTimes[p] = modTime
                     
                     if kxkFiles[p] then 
-                        print("KXK", p)
+                        print("◆", slash.file(p))
                         array.push(kxkChanged, p)
                     elseif luaFiles[p] then 
+                        print("◇", slash.file(p))
                         array.push(luaChanged, p)
-                        print("LUA", p)
                     end
                 end
             end
@@ -82,16 +89,16 @@ function watch(...)
         
         local testPass = true
         if (#kxkChanged > 0) then 
-            if not test.run(kxkTests) then 
-                testPass = false
-            end
+            print("testing")
+            if not test.run(kxkTests) then testPass = false end
         end
         
         if ((#luaChanged > 0) or (#kxkChanged > 0)) then 
             if testPass then 
                 print("compile")
-                local output, ok = slash.shell("luastatic", "main.lua", "/opt/homebrew/opt/luajit/lib/libluajit-5.1.a", "-I", "/opt/homebrew/opt/luajit/include/luajit-2.1")
-                if true then 
+                output, ok = slash.shell("luastatic", "kao.lua", libjit, "-I", incjit)
+                -- log output 
+                if ok then 
                     print("restart")
                     slash.respawn()
                     print("DAFUK?")

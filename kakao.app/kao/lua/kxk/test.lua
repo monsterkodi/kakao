@@ -46,12 +46,12 @@ function test.static.cmp(a, b)
     if (type(a) == "table") then 
         for k, v in pairs(a) do 
             if not test.static.cmp(v, b[k]) then 
-                print("✘ [" .. _G.testIndex .. "] table mismatch at index: " .. k .. " " .. v .. " != " .. b[k])
+                print("✘ [" .. _G.testIndex .. "] table mismatch at index: " .. tostring(k) .. " " .. tostring(v) .. " != " .. tostring(b[k]))
                 return false
             end
         end
     elseif (a ~= b) then 
-        print("✘ [" .. _G.testIndex .. "] " .. a .. " != " .. b)
+        print("✘ [" .. _G.testIndex .. "] " .. tostring(a) .. " != " .. tostring(b))
         _G.testFail = _G.testFail + 1
         return false
     end
@@ -67,7 +67,7 @@ function test.static.run(files)
         -- log "test" f
         local output, ok, exitcode = slash.shell("luajit", f)
         if ok then 
-            print(output)
+            -- log output
             -- log output, ok, exitcode
             -- log "✔ " f
             local a = 1

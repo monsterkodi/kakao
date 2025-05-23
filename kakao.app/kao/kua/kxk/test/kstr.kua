@@ -26,6 +26,23 @@ use kxk/kxk
     
     ▸ pop
          
-        s = "1234"
-        kstr.pop(s 2) ▸ "12"
+        kstr.pop("1234" 2) ▸ "12"
+        kstr.pop("ab\n")   ▸ "ab"
 
+    ▸ dollar
+    
+        $1    ▸ "1"
+        $true ▸ "true"
+        $nil  ▸ "nil"
+        x = 42
+        $x    ▸ "42"
+        $1/3  ▸ "0.33333333333333"
+        
+    ▸ endsWith
+    
+        kstr.endsWith "uv\n" "\n" ▸ true
+        
+    ▸ trim
+    
+        kstr.rtrim "xyz\n" ▸ "xyz"
+        kstr.trim "abc\n" ▸ "abc"
