@@ -433,23 +433,25 @@ proc ▸quote(this : Rlua, n : Node) =
 
 proc ▸switch(this : Rlua, n : Node) = 
         var idt = ' '.repeat(n.token.col)
-        this.add("case ")
-        this.rnd(n.switch_value)
-        this.add(":")
+        this.add("if ")
         var cdt = ' '.repeat(n.switch_cases[0].token.col)
         for i, caseNode in n.switch_cases: 
-            this.add("\n" & cdt)
-            this.add("of ")
+            if (i > 0): 
+                this.add("\n" & idt & "elseif ")
             for j, whenNode in caseNode.case_when: 
                 if (j > 0): 
-                    this.add(", ")
+                    this.add(" or ")
+                this.add("(")
+                this.rnd(n.switch_value)
+                this.add(" == ")
                 this.rnd(whenNode)
-            this.add(": ")
+                this.add(")")
+            this.add(" then ")
             this.rnd(caseNode.case_then)
         if n.switch_default: 
-            this.add("\n" & cdt)
-            this.add("else: ")
+            this.add("\n" & idt & "else ")
             this.rnd(n.switch_default)
+        this.add("\n" & idt & "end")
 
 proc ▸enum(this : Rlua, n : Node) = 
         this.add("type ")

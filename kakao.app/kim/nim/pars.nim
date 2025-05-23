@@ -421,7 +421,7 @@ proc parseNamesUntil(this : Parser, stop : tok) : Node =
 
 proc parseList(this : Parser, token : Token) : Node = 
         var list_values : seq[Node]
-        while (this.tok notin {◂eof, ◂semicolon, ◂indent}): 
+        while (this.tok notin {◂eof, ◂semicolon, ◂indent, ◂comment_start}): 
             list_values.add(this.expression(token))
             this.swallow(◂comma)
         nod(●list, token, list_values)
@@ -970,6 +970,14 @@ proc lOperation(this : Parser, left : Node) : Node =
         var right = this.expression(token)
         nod(●operation, token, left, right)
 
+proc lMinus(this : Parser, left : Node) : Node = 
+        if (not this.isConnectedLeft() and this.isConnectedRight()): 
+            return
+        else: 
+            var token = this.consume()
+            var right = this.expression(token)
+            nod(●operation, token, left, right)
+
 proc lNotIn(this : Parser, left : Node) : Node = 
         if (this.peek(1).tok == ◂in): 
             var token = this.consume()
@@ -1210,7 +1218,7 @@ proc setup(this : Parser) =
         this.pratt(◂ampersand, lOperation, nil, 42)
         this.pratt(◂dollar, nil, rDollar, 48)
         this.pratt(◂plus, lOperation, nil, 50)
-        this.pratt(◂minus, lOperation, rPreOp, 50)
+        this.pratt(◂minus, lMinus, rPreOp, 50)
         this.pratt(◂multiply, lOperation, nil, 60)
         this.pratt(◂divide, lOperation, nil, 60)
         this.pratt(◂modulo, lOperation, nil, 60)

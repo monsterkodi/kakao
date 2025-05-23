@@ -25,6 +25,7 @@ suite "rlua":
         t("a++ + b--", "(a++ + b--)")
         t("1 + 2 + 3", "((1 + 2) + 3)")
         t("1 * 2 + 3 * 4", "((1 * 2) + (3 * 4))")
+        t("-1 + -2", "(-1 + -2)")
     test "boolean ops                                   ": 
         t("a && b || c", "((a and b) or c)")
         t("a and b or c", "((a and b) or c)")
@@ -107,6 +108,9 @@ b = false""")
     test "arrays": 
         t("a = [ 1  2 ]", "a = {1, 2}")
         t("a = [\n    1\n    2\n    ]", "a = {1, 2}")
+        t("a = [ 1-2 ]", "a = {(1 - 2)}")
+        t("a = [ 1 - 2 ]", "a = {(1 - 2)}")
+        t("a = [ 1 -2 ]", "a = {1, -2}")
     test "properties        ": 
         t("a.b", "a.b")
         t("a.b.c", "a.b.c")
@@ -199,30 +203,27 @@ end
         t("for (key, val) in opt", "for key, val in opt do end")
     test "while": 
         t("while true ➜ log a", "while true do print(a) end")
-    # ▸ switch                                         
-    #                                                  
-    #     t "switch x\n  a ➜ 1\n  b c ➜ 2"             "case x:\n  of a: 1\n  of b, c: 2"
-    #     t "switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4"      "case x:\n  of a: 1\n  of b, c: 2\n  else: 4"
-    #     t "switch x\n  1 2 ➜ a"                      "case x:\n  of 1, 2: a"
-    #     t "switch x\n  1 2 ➜ a\n  3 ➜ b"             "case x:\n  of 1, 2: a\n  of 3: b"
-    #     t "switch x\n  1 2 ➜ a\n  3 ➜ b\n  else c"   "case x:\n  of 1, 2: a\n  of 3: b\n  else: c"
-    #     t "switch x\n  1 2 ➜ a\n  3 ➜ b\n  ➜ c"      "case x:\n  of 1, 2: a\n  of 3: b\n  else: c"
-    #     t "switch x\n  1 2\n    a\n  ➜ c"            "case x:\n  of 1, 2: \n    a\n  else: c"
-    #     t "switch x\n  1 2➜\n    a\n  ➜ c"           "case x:\n  of 1, 2: \n    a\n  else: c"
-    #     t "switch x\n  1 2 ➜ a\n  else\n    c"       "case x:\n  of 1, 2: a\n  else: \n    c"
-    #     t "switch x\n  1 2 ➜ a\n  ➜\n    c"          "case x:\n  of 1, 2: a\n  else: \n    c"
-    #     t "switch x\n a ➜ if b then c"               "case x:\n of a: if b: c"
-    #     t "switch a\n  b ➜ c ; d\n  ➜ e; f"          "case a:\n  of b: c ; d\n  else: e ; f"
-    #     t   """
-    #         switch kind
-    #             cmdEnd
-    #                 discard
-    #         # comment
-    #         """ """
-    #         case kind:
-    #             of cmdEnd: 
-    #                 discard
-    #         # comment"""
+    test "switch                                         ": 
+        t("switch x\n  a ➜ 1\n  b c ➜ 2", "if (x == a) then 1\nelseif (x == b) or (x == c) then 2\nend")
+        t("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4", "if (x == a) then 1\nelseif (x == b) or (x == c) then 2\nelse 4\nend")
+        t("switch x\n  1 2 ➜ a", "if (x == 1) or (x == 2) then a\nend")
+        t("switch x\n  1 2\n    a\n  ➜ c", "if (x == 1) or (x == 2) then \n    a\nelse c\nend")
+        t("switch x\n  1 2➜\n    a\n  ➜\n    c", "if (x == 1) or (x == 2) then \n    a\nelse \n    c\nend")
+        t("switch x\n  1 2 ➜ a\n  else\n    c", "if (x == 1) or (x == 2) then a\nelse \n    c\nend")
+        t("switch x\n  1 2 ➜ a\n  ➜\n    c", "if (x == 1) or (x == 2) then a\nelse \n    c\nend")
+        t("switch x\n a ➜ if b then c", "if (x == a) then if b then c end\nend")
+        t("switch a\n  b ➜ c ; d\n  ➜ e; f", "if (a == b) then c ; d\nelse e ; f\nend")
+        t("""
+switch kind
+    cmdEnd
+        nil
+# comment
+""", """
+if (kind == cmdEnd) then 
+        nil
+end
+
+-- comment""")
     test "strings                                        ": 
         t("s = ''", "s = ''")
         t("s = \"\"", "s = \"\"")
@@ -348,6 +349,7 @@ end
         t("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "return (((type(str) == \"string\") and not not str:match(\"^[_%a][_%a%d]*$\")) and not luaKeywords[str])")
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) -- addition")
+        t("log 1 # comment", "print(1) -- comment")
         t("""
 # ███   ███  ███  ██     ██
 # ███  ███   ███  ███   ███

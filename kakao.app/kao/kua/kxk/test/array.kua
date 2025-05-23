@@ -34,33 +34,75 @@ use kxk/kxk
         
         array.isarr nil ▸ false
         
-#for i in iter(4 0)   ➜ log i
-#for i in iter(0 4)   ➜ log i
-#for i in iter(4,-4)  ➜ log i
-#for i in iter(-4 4)  ➜ log i
+        d = {}
+        d[2] = "d"
+        array.isarr d ▸ true
+        d[1] ▸ nil
+        
+        e = {}
+        e.hello = "world"
+        array.isarr e ▸ false
+        e[1] = "and now?"
+        array.isarr e ▸ true
+        e.len ▸ 1
+        e[1] = nil
+        array.isarr e ▸ false
+        e[3] = {}
+        array.isarr e ▸ false
+        e[2] = "{}"
+        array.isarr e ▸ true
+        e.len ▸ 3
+        
+    ▸ iter
+    
+        a = {}
+        for i in iter(4 0) ➜ array.push a i
+        a ▸ {4 3 2 1 0 }
+        
+        a = {}
+        for i in iter(-4 4 2) ➜ array.push a i
+        a ▸ {-4, -2, 0 2 4}
+        
+        a = {}
+        for i in iter(4 0, -2) ➜ array.push a i
+        a ▸ {4 2 0, -2, -4}
+        
+        a = {}
+        for i in iter(4 2 2) ➜ array.push a i
+        a ▸ {4 2 0, -2, -4}
+        
+        a = {}
+        for i in iter(2/3, 1/3, 0.1) ➜ array.push a i
+        a ▸ {2/3 2/3-0.1 2/3-0.2 2/3-0.3}
+        
+        a = {}
+        for i in iter(2/3, 2/3, 1.001) ➜ array.push a i
+        a ▸ {2/3}
+        
+        a = {}
+        for i in iter(0.1+0.2, 0.3, 0.1) ➜ array.push a i
+        a ▸ {0.3}
+        
+        a = {}
+        for i in 0..3  ➜ array.push a i
+        a ▸ {0 1 2 3}
+        
+        a = {}
+        for i in 0...3 ➜ array.push a i
+        a ▸ {0 1 2}
+        
+        a = {}
+        for i in 0..<3 ➜ array.push a i
+        a ▸ {0 1 2}
+        
+        a = {}
+        for i in 3..0 ➜ array.push a i
+        a ▸ {3 2 1 0}
 
-#for i in iter(4 0 2)  ➜ log i
-#for i in iter(0 4 2)  ➜ log i
-#for i in iter(4,-4 2) ➜ log i
-#for i in iter(-4 4 2) ➜ log i
-#for i in iter(4 0,  -2) ➜ log i
-#for i in iter(0 4,  -2) ➜ log i
-#for i in iter(4,-4, -2) ➜ log i
-#for i in iter(-4 4, -2) ➜ log i
+        a = {}
+        for i in 3...0 ➜ array.push a i
+        a ▸ {}
 
-#for i in iter(-4 4, 0) ➜ log i
-#for i in iter(2 2, -100)  ➜ log i
-#for i in iter(2 0, -100)  ➜ log i
-#for i in iter(2,-3, -100)  ➜ log i
-#for i in iter(1 2,  100)  ➜ log i
-#for i in iter(1 0,  100)  ➜ log i
-#for i in iter(1, -3,  100)  ➜ log i
-
-#for i in iter(2/3, 1/3, 0.1) ➜ log i
-#for i in iter(2/3, 2/3, 1.001) ➜ log i
-#for i in iter(0.1+0.2, 0.3, 0.1) ➜ log i
-
-#for i in 0..3  ➜ log i
-#for i in 0...3 ➜ log i
-#for i in 0..<3 ➜ log i
-#for i in 3..0 ➜ log i
+        a = {}
+        for i in 3..<0 ➜ array.push a i
+        a ▸ {}

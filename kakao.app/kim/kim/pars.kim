@@ -493,7 +493,7 @@ class Parser
     parseList: ◇Token token ➜Node -> 
     
         list_values ◇ seq[Node]
-        while @tok not in {◂eof ◂semicolon ◂indent}
+        while @tok not in {◂eof ◂semicolon ◂indent ◂comment_start}
             list_values.add @expression(token)
             @swallow ◂comma
         nod ●list token list_values
@@ -1189,6 +1189,15 @@ class Parser
         token = @consume()
         right = @expression token
         nod ●operation token left right
+
+    lMinus: ◇Node left ➜Node ->
+    
+        if not @isConnectedLeft() and @isConnectedRight()
+            ⮐ 
+        else
+            token = @consume()
+            right = @expression token
+            nod ●operation token left right
         
     lNotIn: ◇Node left ➜Node ->
     
@@ -1485,7 +1494,7 @@ class Parser
         @pratt ◂dollar            nil               rDollar        48
         
         @pratt ◂plus              lOperation        nil            50
-        @pratt ◂minus             lOperation        rPreOp         50
+        @pratt ◂minus             lMinus            rPreOp         50
                                                        
         @pratt ◂multiply          lOperation        nil            60
         @pratt ◂divide            lOperation        nil            60

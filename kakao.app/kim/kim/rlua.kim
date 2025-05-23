@@ -499,26 +499,29 @@ class Rlua
     
         idt = ' '.repeat n.token.col
         
-        @add "case "
-        @rnd(n.switch_value)
-        @add ":"
+        @add "if "        
         
         cdt = ' '.repeat n.switch_cases[0].token.col
         
         for i caseNode in n.switch_cases
-            @add "\n" & cdt
-            @add "of "
-            for j,whenNode in caseNode.case_when
+            if i > 0
+                @add "\n" & idt & "elseif "
+            for j whenNode in caseNode.case_when
                 if j > 0
-                    @add ", "
-                @rnd(whenNode)
-            @add ": "
-            @rnd(caseNode.case_then)
+                    @add " or "
+                @add "("
+                @rnd n.switch_value
+                @add " == "
+                @rnd whenNode
+                @add ")"
+            @add " then "
+            @rnd caseNode.case_then
         
         if n.switch_default
-            @add "\n" & cdt
-            @add "else: "
-            @rnd(n.switch_default)
+            @add "\n" & idt & "else "
+            @rnd n.switch_default
+            
+        @add "\n" & idt & "end"
             
     ▸enum: ◇Node n ->
     

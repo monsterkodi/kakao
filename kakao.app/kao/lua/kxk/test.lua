@@ -46,12 +46,17 @@ function test.static.cmp(a, b)
     if (type(a) == "table") then 
         for k, v in pairs(a) do 
             if not test.static.cmp(v, b[k]) then 
-                print("✘ [" .. _G.testIndex .. "] table mismatch at index: " .. tostring(k) .. " " .. tostring(v) .. " != " .. tostring(b[k]))
+                print("✘ [" .. _G.testIndex .. "] table mismatch at index: " .. tostring(k)) -- & " " & $v & " != " & $b[k]
                 return false
             end
         end
+    elseif (type(a) == "number") then 
+        if (math.abs((a - b)) > 1e-10) then 
+            print("✘ [" .. _G.testIndex .. "] number mismatch: " .. tostring(a) .. " != " .. tostring(b))
+            return false
+        end
     elseif (a ~= b) then 
-        print("✘ [" .. _G.testIndex .. "] " .. tostring(a) .. " != " .. tostring(b))
+        print("✘ [" .. _G.testIndex .. "] " .. tostring(a) .. " != " .. tostring(b) .. " " .. type(a))
         _G.testFail = _G.testFail + 1
         return false
     end

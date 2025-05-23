@@ -36,10 +36,14 @@ test.static.cmp = a b ->
     if type(a) == "table"
         for k v in pairs a
             if not test.static.cmp v b[k]
-                log "✘ [" & _G.testIndex & "] table mismatch at index: " & $k & " " & $v & " != " & $b[k]
+                log "✘ [" & _G.testIndex & "] table mismatch at index: " & $k # & " " & $v & " != " & $b[k]
                 ⮐  false
+    elif type(a) == "number"
+        if math.abs(a - b) > 1e-10
+            log "✘ [" & _G.testIndex & "] number mismatch: " & $a & " != " & $b
+            ⮐  false
     elif a != b 
-        log "✘ [" & _G.testIndex & "] " & $a & " != " & $b
+        log "✘ [" & _G.testIndex & "] " & $a & " != " & $b & " " & type(a)
         _G.testFail += 1
         ⮐  false
     true
