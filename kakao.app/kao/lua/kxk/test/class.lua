@@ -1,4 +1,4 @@
-kxk = require "../kxk"
+kxk = require "kxk/kxk"
 
 
 local A = class("A")

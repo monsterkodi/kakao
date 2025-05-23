@@ -6,7 +6,7 @@
 
 -- Copyright (c) 2022 Enrique García Cota
 
-kxk = require "./kxk"
+-- use kxk/kxk
 
 
 function rawpairs(t) 

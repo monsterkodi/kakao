@@ -1,4 +1,4 @@
-kxk = require "../kxk"
+kxk = require "kxk/kxk"
 
 test("slash", function()
    test("normalize", function()

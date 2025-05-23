@@ -1,4 +1,4 @@
-array = require "./array"
+array = require "kxk/array"
 
 local kseg = {}
 

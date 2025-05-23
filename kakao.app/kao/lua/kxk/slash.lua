@@ -7,9 +7,9 @@
 ffi = require "ffi"
 os = require "os"
 io = require "io"
-array = require "./array"
-kstr = require "./kstr"
-kseg = require "./kseg"
+array = require "kxk/array"
+kstr = require "kxk/kstr"
+kseg = require "kxk/kseg"
 
 ffi.cdef([[
 
@@ -60,6 +60,7 @@ ffi.cdef([[
     int stat64(const char *path, struct stat *buf);
     int lstat64(const char *path, struct stat *buf);
 
+    char *getcwd(char *buf, size_t size);
     int pipe(int pipefd[2]);
     int dup2(int oldfd, int newfd);
     int execvp(const char *file, char *const argv[]);
@@ -69,6 +70,7 @@ ffi.cdef([[
     ssize_t read(int fd, void *buf, size_t count);
     pid_t fork();
     pid_t waitpid(pid_t pid, int *wstatus, int options);
+    void _exit(int status);
 ]])
 
 local libc = ffi.load("c")
@@ -79,7 +81,7 @@ function cmdargs(cmd, args)
     args = args or {}
     local alen = (#args + 2)
     local argv = ffi.new("char*[?]", alen)
-    argv[0] = ffi.cast("char*", ffi.string(cmd))
+    argv[0] = ffi.cast("char*", cmd)
     for i = 1, (#args + 1)-1 do 
         argv[i] = ffi.cast("char*", ffi.string(args[i]))
     end
@@ -90,9 +92,28 @@ end
 
 local slash = {}
 
+-- ████████   ████████   ███████  ████████    ███████   ███   ███  ███   ███
+-- ███   ███  ███       ███       ███   ███  ███   ███  ███ █ ███  ████  ███
+-- ███████    ███████   ███████   ████████   █████████  █████████  ███ █ ███
+-- ███   ███  ███            ███  ███        ███   ███  ███   ███  ███  ████
+-- ███   ███  ████████  ███████   ███        ███   ███  ██     ██  ███   ███
 
-function slash.cwd() 
-    return process.cwd()
+
+function slash.respawn() 
+    libc.fcntl(0, 2, 0) -- clear close on exit flags
+    libc.fcntl(1, 2, 0)
+    libc.fcntl(2, 2, 0)
+    
+    local cmd = arg[0]
+    if arg[-1] then 
+        cmd = arg[-1]
+        array.unshift(arg, arg[0])
+        arg[0] = cmd
+        arg[-1] = nil
+    end
+    
+    local args = cmdargs(cmd, arg)
+    return libc.execv(args[0], args)
 end
 
 --  ███████  ███   ███  ████████  ███      ███    
@@ -135,7 +156,7 @@ function slash.shell(cmd, ...)
             local bytes_read = libc.read(write_pipe[0], buf, 4096)
             if (bytes_read > 0) then 
                 output = output .. ffi.string(buf, bytes_read)
-                sleep(0.001)
+                sleep(0.002)
             else 
                 break
             end
@@ -152,20 +173,19 @@ function slash.shell(cmd, ...)
     end
 end
 
--- ████████   ████████   ███████  ████████    ███████   ███   ███  ███   ███
--- ███   ███  ███       ███       ███   ███  ███   ███  ███ █ ███  ████  ███
--- ███████    ███████   ███████   ████████   █████████  █████████  ███ █ ███
--- ███   ███  ███            ███  ███        ███   ███  ███   ███  ███  ████
--- ███   ███  ████████  ███████   ███        ███   ███  ██     ██  ███   ███
+--  ███████  ███   ███  ███████  
+-- ███       ███ █ ███  ███   ███
+-- ███       █████████  ███   ███
+-- ███       ███   ███  ███   ███
+--  ███████  ██     ██  ███████  
 
 
-function slash.respawn(cmd, argv) 
-    libc.fcntl(0, 2, 0) -- clear close on exit flags
-    libc.fcntl(1, 2, 0)
-    libc.fcntl(2, 2, 0)
-    
-    local args = cmdargs(cmd, argv)
-    return libc.execv(args[0], args)
+function slash.cwd() 
+    local buf = ffi.new("char[?]", 4096)
+    local cwd = ffi.C.getcwd(buf, 4096)
+    if cwd then 
+        return ffi.string(cwd)
+    end
 end
 
 -- ███   ███   ███████   ████████   ██     ██   ███████   ███      ███  ███████  ████████
@@ -459,28 +479,6 @@ function slash.files(path, ext)
     end
     
     return files
-end
-
--- ████████  ███   ███  ████████   ███████
--- ███        ███ ███   ███       ███     
--- ███████     █████    ███████   ███     
--- ███        ███ ███   ███       ███     
--- ████████  ███   ███  ████████   ███████
-
-
-function slash.exec(cmd, opt, cb) 
-    if (cb == nil) then 
-        cb = opt
-        opt = {}
-    end
-    
-    
-    function res(err, out) 
-        if err then out = "" end
-        return cb(out)
-    end
-    
-    return childp.exec(cmd, opt, res)
 end
 
 return slash

@@ -52,7 +52,7 @@ end
 
 function array.unshift(a, v) 
     assert((type(a) == "table"))
-    table.insert(a, v, 1)
+    table.insert(a, 1, v)
     return a
 end
 

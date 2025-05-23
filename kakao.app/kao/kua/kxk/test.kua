@@ -48,10 +48,11 @@ test.static.run = files ->
 
     # log "test.run" array.str files
     success = true
-    for f _ in pairs files 
+    for f _ in pairs files
         # log "test" f
-        (output ok exitcode) = slash.shell "luvit" f
+        (output ok exitcode) = slash.shell "luajit" f
         if ok
+            log output
             # log output, ok, exitcode
             # log "✔ " f
             a = 1

@@ -6,9 +6,7 @@
 # ███████   ███████  ███   ███  ███████   ███   ███
 
 use ffi os io
-use ./array
-use ./kstr
-use ./kseg
+use kxk/array kxk/kstr kxk/kseg
 
 ffi.cdef """
 
@@ -59,6 +57,7 @@ ffi.cdef """
     int stat64(const char *path, struct stat *buf);
     int lstat64(const char *path, struct stat *buf);
 
+    char *getcwd(char *buf, size_t size);
     int pipe(int pipefd[2]);
     int dup2(int oldfd, int newfd);
     int execvp(const char *file, char *const argv[]);
@@ -68,25 +67,46 @@ ffi.cdef """
     ssize_t read(int fd, void *buf, size_t count);
     pid_t fork();
     pid_t waitpid(pid_t pid, int *wstatus, int options);
+    void _exit(int status);
 """
     
-libc = ffi.load("c")
+libc = ffi.load "c"
 
 cmdargs = cmd args ->
     ▴ cmd    
     args ?= {}
     alen = args.len+2
     argv = ffi.new "char*[?]" alen
-    argv[0] = ffi.cast "char*" ffi.string(cmd)
+    argv[0] = ffi.cast "char*" cmd
     for i in 1...args.len+1
         argv[i] = ffi.cast "char*" ffi.string(args[i])
     argv[alen] = nil
     argv
 
 slash = {}
-    
-slash.cwd = -> process.cwd()
+            
+# ████████   ████████   ███████  ████████    ███████   ███   ███  ███   ███
+# ███   ███  ███       ███       ███   ███  ███   ███  ███ █ ███  ████  ███
+# ███████    ███████   ███████   ████████   █████████  █████████  ███ █ ███
+# ███   ███  ███            ███  ███        ███   ███  ███   ███  ███  ████
+# ███   ███  ████████  ███████   ███        ███   ███  ██     ██  ███   ███
 
+slash.respawn = ->
+
+    libc.fcntl 0 2 0 # clear close on exit flags
+    libc.fcntl 1 2 0
+    libc.fcntl 2 2 0
+    
+    cmd = arg[0]
+    if arg[-1]
+        cmd = arg[-1]
+        array.unshift arg arg[0]
+        arg[0]  = cmd
+        arg[-1] = nil
+    
+    args = cmdargs cmd arg
+    libc.execv args[0] args
+    
 #  ███████  ███   ███  ████████  ███      ███    
 # ███       ███   ███  ███       ███      ███    
 # ███████   █████████  ███████   ███      ███    
@@ -115,8 +135,8 @@ slash.shell = cmd ... ->
         libc.close write_pipe[1]
 
         argv = cmdargs cmd {...}
-        libc.execvp(argv[0] argv)
-        libc._exit(127)
+        libc.execvp argv[0] argv
+        libc._exit 127
         
     elif pid > 0
         
@@ -130,7 +150,7 @@ slash.shell = cmd ... ->
             bytes_read = libc.read write_pipe[0] buf 4096
             if bytes_read > 0
                 output = output & ffi.string(buf, bytes_read)
-                sleep 0.001
+                sleep 0.002
             else 
                 break
 
@@ -143,20 +163,18 @@ slash.shell = cmd ... ->
     else
         ⮐  (nil false nil)
 
-# ████████   ████████   ███████  ████████    ███████   ███   ███  ███   ███
-# ███   ███  ███       ███       ███   ███  ███   ███  ███ █ ███  ████  ███
-# ███████    ███████   ███████   ████████   █████████  █████████  ███ █ ███
-# ███   ███  ███            ███  ███        ███   ███  ███   ███  ███  ████
-# ███   ███  ████████  ███████   ███        ███   ███  ██     ██  ███   ███
+#  ███████  ███   ███  ███████  
+# ███       ███ █ ███  ███   ███
+# ███       █████████  ███   ███
+# ███       ███   ███  ███   ███
+#  ███████  ██     ██  ███████  
 
-slash.respawn = cmd argv ->
+slash.cwd = -> 
 
-    libc.fcntl 0 2 0 # clear close on exit flags
-    libc.fcntl 1 2 0
-    libc.fcntl 2 2 0
-    
-    args = cmdargs cmd argv
-    libc.execv args[0] args
+    buf = ffi.new "char[?]" 4096
+    cwd = ffi.C.getcwd buf 4096
+    if cwd
+        ⮐  ffi.string cwd
 
 # ███   ███   ███████   ████████   ██     ██   ███████   ███      ███  ███████  ████████
 # ████  ███  ███   ███  ███   ███  ███   ███  ███   ███  ███      ███     ███   ███     
@@ -371,23 +389,5 @@ slash.files = path ext ->
         fext = (f) -> slash.ext(f) == ext
         files = array.filter files fext
     files
-    
-# ████████  ███   ███  ████████   ███████
-# ███        ███ ███   ███       ███     
-# ███████     █████    ███████   ███     
-# ███        ███ ███   ███       ███     
-# ████████  ███   ███  ████████   ███████
-
-slash.exec = cmd opt cb ->
-    
-    if cb == nil
-        cb = opt
-        opt = {}
-    
-    res = err out ->
-        if err ➜ out = ""
-        cb out
-        
-    childp.exec cmd opt res
     
 ⮐  slash

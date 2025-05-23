@@ -7,7 +7,7 @@
 
 # Copyright (c) 2022 Enrique García Cota
 
-use ./kxk
+# use kxk/kxk
 
 rawpairs = t -> (next t nil)
 

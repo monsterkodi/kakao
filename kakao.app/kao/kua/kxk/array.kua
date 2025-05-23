@@ -39,7 +39,7 @@ array.push    = a v ->
     
 array.unshift = a v -> 
     ▴ type(a) == "table"
-    table.insert a v 1
+    table.insert a 1 v
     a
     
 array.slice = a first last ->

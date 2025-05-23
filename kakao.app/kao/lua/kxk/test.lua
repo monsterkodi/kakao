@@ -65,8 +65,9 @@ function test.static.run(files)
     local success = true
     for f, _ in pairs(files) do 
         -- log "test" f
-        local output, ok, exitcode = slash.shell("luvit", f)
+        local output, ok, exitcode = slash.shell("luajit", f)
         if ok then 
+            print(output)
             -- log output, ok, exitcode
             -- log "✔ " f
             local a = 1

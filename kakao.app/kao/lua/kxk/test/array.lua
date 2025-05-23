@@ -1,4 +1,4 @@
-kxk = require "../kxk"
+kxk = require "kxk/kxk"
 
 test("array", function()
     test("shift", function()

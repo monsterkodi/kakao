@@ -1,15 +1,8 @@
 
 main = ... ->
 
-    use std ffi io
-    use ./kxk/kxk
-    
-    ffi.cdef """
-        extern int execv(const char *path, char *const argv[]);
-        typedef void *FILE; 
-        extern int fileno(FILE *stream);
-        extern int fcntl(int fd, int cmd, ...);        
-        """
+    use std io
+    use kxk/kxk
     
     optparser = std.optparse """
         0.1.0
@@ -18,25 +11,16 @@ main = ... ->
         Options:
           -t, --test         run tests
           -d, --debug        run with debugging output
-          -n, --dryrun,      run without execution
           -o, --outdir=dir   output directory
           -v, --verbose      a combined short and long option
           -V, --version      display version information, then exit
           -h, --help         display this help, then exit
         """
-    # log process.cwd()
-            
-    _G.argv = process.argv
-    _G.appn = argv[0]
-    _G.scrt = ""
-    if argv.len > 0 and appn == "luvit"
-        scrt = array.shift(argv)
+
+    log slash.cwd()
     
-    _G.opts = {}
-    (arg _G.opts) = optparser:parse(argv)
-    # log 'exe' appn, scrt, array.str(args)
+    (files _G.opts) = optparser:parse(arg)
     
-    files = opts.unrecognised
     if opts.verbose
         log 'opts'    inspect(opts)
         log 'meta'    inspect(getmetatable(opts))
@@ -46,14 +30,11 @@ main = ... ->
         log 'files'   files.len
         log 'files'   inspect(files)
     
-    # log inspect opts
-    # log array.str files
-                     
     watch slash.path(".")
         
 watch = ... ->
 
-    dir = process.cwd()
+    dir = slash.cwd()
     luaFiles = array.indexdict slash.files(slash.path(dir ".") "lua")
     kxkFiles = array.indexdict slash.files(slash.path(dir "./kxk") "lua")
     kxkTests = array.indexdict slash.files(slash.path(dir "kxk/test"))
@@ -85,7 +66,6 @@ watch = ... ->
                 elif modTimes[p] == modTime
                     a = 1
                 else
-                    # log "CHANGE" p
                     modTimes[p] = modTime
                     
                     if kxkFiles[p]
@@ -103,19 +83,17 @@ watch = ... ->
         if luaChanged.len > 0 or kxkChanged.len > 0
             if testPass
                 log "compile"
-                (output ok) = slash.shell "lit" "make"
-                if ok
-                    log "restart " appn
-                    slash.respawn appn argv                    
+                (output ok) = slash.shell "luastatic" "main.lua" "/opt/homebrew/opt/luajit/lib/libluajit-5.1.a" "-I" "/opt/homebrew/opt/luajit/include/luajit-2.1"
+                if true
+                    log "restart"
+                    slash.respawn()
                     log "DAFUK?"
                     os.exit(1)
                 else
                     log output
             else
                 log "skip compile"
-        # else
-        #     log "."
         sleep 1
         
-⮐  require('./init')(main, ...)
+main()
     

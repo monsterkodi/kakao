@@ -32,13 +32,12 @@ function _G.sleep(s)
 end
 
 _G.strbuff = require("string.buffer")
-_G.childp = require("childprocess")
-_G.class = require("./class")
-_G.inspect = require("./inspect")
-_G.slash = require("./slash")
-_G.array = require("./array")
-_G.kstr = require("./kstr")
-_G.test = require("./test")
+_G.class = require("kxk/class")
+_G.inspect = require("kxk/inspect")
+_G.slash = require("kxk/slash")
+_G.array = require("kxk/array")
+_G.kstr = require("kxk/kstr")
+_G.test = require("kxk/test")
 
 local kxk = {}
 -- kxk.exec = cmd opt cb ->
