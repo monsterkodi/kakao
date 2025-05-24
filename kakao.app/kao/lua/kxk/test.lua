@@ -56,7 +56,12 @@ function test.static.cmp(a, b)
     if (type(a) == "table") then 
             for k, v in pairs(a) do 
                 if not test.static.cmp(v, b[k]) then 
-                    return fail("table mismatch at " .. kstr.index(k)) -- & " " & $v & " != " & $b[k]
+                    local key = k
+                    if (type(k) == "number") then 
+                        key = kstr.index(k)
+                    end
+                    
+                    return fail("table mismatch at " .. key) -- & " " & $v & " != " & $b[k]
                 end
             end
     elseif (type(a) == "number") then 
@@ -78,7 +83,7 @@ function test.static.run(files)
         -- log "test" f
         local output, ok, exitcode = slash.shell("luajit", f)
         if ok then 
-            print(output)
+            -- log output
             -- log output, ok, exitcode
             -- log "✔ " f
             local a = 1

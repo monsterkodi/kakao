@@ -208,6 +208,20 @@ function f()
     
     return -1
 end""")
+        v("""
+f = ->
+    if true
+        nil
+    [1 2]
+""", """
+
+function f() 
+    if true then 
+        nil
+    end
+    
+    return {1, 2}
+end""")
     test "for                                            ": 
         t("for k in rawpairs(t) ➜ log k", "for k in rawpairs(t) do print(k) end")
         t("for a in 0..2 ➜ true", "for a in iter(0, 2) do true end")

@@ -299,8 +299,13 @@ function slash.isRoot(path)
 end
 
 
-function slash.home() 
-    return os.getenv("HOME")
+function slash.home(...) 
+    return slash.path(os.getenv("HOME"), unpack({...}))
+end
+
+
+function slash.tilde(path) 
+    return string.gsub(path, slash.home(), "~")
 end
 
 function slash.untilde(path) 
@@ -321,6 +326,19 @@ function slash.absolute(path, parent)
     else 
         return slash.untilde(path)
     end
+end
+
+
+function slash.splitFile(path) 
+    local slsidx = kstr.rfind(path, "/")
+    
+    local dir = ""
+    if (slsidx > 0) then 
+        dir = slice(path, 1, (slsidx - 1))
+        path = slice(path, (slsidx + 1))
+    end
+    
+    return dir, path
 end
 
 
@@ -345,23 +363,8 @@ end
 
 function slash.parse(path) 
     path = slash.untilde(slash.normalize(path))
-    local split = slash.split(path)
-    local dir = ""
-    local file = array.pop(split)
-    dir = slash.join(unpack(split))
-    local name = file
-    local ext = ""
-    
-    if (((#dir == 0) and (path ~= ".")) and (path ~= "..")) then 
-        if (path[0] == '/') then dir = "/" else dir = "." end
-    end
-    
-    local nmspl = kstr.split(file, ".")
-    if (#nmspl > 1) then 
-        ext = array.pop(nmspl)
-        name = table.concat(nmspl, ".")
-    end
-    
+    local dir, file = slash.splitFile(path)
+    name, ext = slash.splitExt(file)
     return {dir = dir, name = name, ext = ext, file = file, path = path}
 end
 
@@ -386,37 +389,30 @@ end
 function slash.swapExt(path, ext) 
     if ((ext == nil) or (ext == "")) then return path end
     local p = slash.parse(path)
-    return slash.path(p.dir, p.name .. "." .. ext)
+    -- log "swap" path, array.str p
+    local r = ""
+    if (string.sub(path, 1, 1) == "/") then r = "/" end
+    return slash.path(r, p.dir, p.name .. "." .. ext)
 end
-
--- slash.splitExt = path ->
---     
---     split = path.split()
---     dotidx = split[^1].rfind "."
---     ext = ""
---     if dotidx > 0
---         ext = split[^1][dotidx+1..^1]
---         split[^1] = split[^1][0...dotidx]
---     pth = split.join "/"
---     [pth ext]
 
 
 function slash.splitExt(path) 
-    local split = slash.split(path)
-    local dotidx = kstr.rfind(split[#split], ".")
+    local dotidx = kstr.rfind(path, ".")
+    local slsidx = kstr.rfind(path, "/")
+    
     local ext = ""
-    if (dotidx > 0) then 
-        ext = kstr.slice(split[#split], (dotidx + 1))
-        split[#split] = kstr.slice(split[#split], 0, (dotidx - 1))
+    
+    if ((dotidx > 0) and (dotidx > slsidx)) then 
+        ext = slice(path, (dotidx + 1))
+        path = slice(path, 0, (dotidx - 1))
     end
     
-    local pth = slash.path(unpack(split))
-    return {pth, ext}
+    return path, ext
 end
 
 
 function slash.removeExt(path) 
-    return path.splitExt[0]
+    return slash.splitExt(path)
 end
 
 

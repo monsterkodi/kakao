@@ -23,7 +23,19 @@ _G.empty = v ->
         "string" ➜ ⮐  v == ""
         "nil"    ➜ ⮐  true
     false
-    
+
+_G.slice = a first last ->
+
+    switch type(a)
+        "table"
+            if last == nil ➜ last = a.len
+            s = {}
+            for i in first..last
+                s[s.len+1] = a[i]
+            ⮐  s
+        "string"
+            ⮐  string.sub a first last
+        
 _G.sleep = s ->
     t = os.clock()
     while os.clock() - t <= s ➜ _ = 1

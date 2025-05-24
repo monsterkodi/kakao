@@ -151,12 +151,12 @@ proc isTokAhead(this : Parser, tokAhead : tok) : bool =
 proc isConnectedLeft(this : Parser, n = 0) : bool = 
         var lt = this.peek((n - 1))
         var ct = this.peek(n)
-        ((((lt != EOF) and (ct != EOF)) and (lt.line == ct.line)) and ((lt.col + lt.str.len) == ct.col))
+        (((((lt != EOF) and (ct != EOF)) and (lt.tok != ◂indent)) and (lt.line == ct.line)) and ((lt.col + lt.str.len) == ct.col))
 
 proc isConnectedRight(this : Parser, n = 0) : bool = 
         var ct = this.peek(n)
         var rt = this.peek((n + 1))
-        ((((rt != EOF) and (ct != EOF)) and (rt.line == ct.line)) and ((ct.col + ct.str.len) == rt.col))
+        (((((rt != EOF) and (ct != EOF)) and (rt.tok != ◂indent)) and (rt.line == ct.line)) and ((ct.col + ct.str.len) == rt.col))
 
 proc isConnectedLeftAndRight(this : Parser, n = 0) : bool = 
         (this.isConnectedLeft(n) and this.isConnectedRight(n))
@@ -657,7 +657,7 @@ proc rSwitch(this : Parser) : Node =
         Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
 
 proc lArrayAccess(this : Parser, array_owner : Node) : Node = 
-        if ((this.peek(-1).col + this.peek(-1).str.len) < this.current.col): return
+        if not this.isConnectedLeft(): return
         var token = this.current()
         var array_indices = this.parseDelimitedList(◂square_open, ◂square_close)
         var array_index = 

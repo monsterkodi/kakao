@@ -245,7 +245,9 @@ slash.isRelative = path -> path.len == 0 or path.len > 0 and string.sub(path 1 1
 slash.isAbsolute = path -> path.len > 0 and array.contains ['/' '~'] string.sub(path 1 1) 
 slash.isRoot     = path -> slash.normalize(path) == "/"
 
-slash.home = -> os.getenv "HOME"
+slash.home = (...) -> slash.path os.getenv("HOME") unpack({...})
+
+slash.tilde = path -> string.gsub path slash.home() "~"
 slash.untilde = path -> 
 
     ⮐  if empty path
@@ -262,6 +264,17 @@ slash.absolute = path parent ->
     else
         ⮐  slash.untilde path
 
+slash.splitFile = path ->
+    
+    slsidx = kstr.rfind path "/"
+    
+    dir = ""
+    if slsidx > 0
+        dir  = slice path 1 slsidx-1
+        path = slice path slsidx+1
+        
+    (dir path)
+
 slash.split = path -> kstr.split path "/"
 slash.join  = ... -> table.concat {...} "/"
 slash.contains = path subpath -> array.has slash.split(path) subpath
@@ -274,21 +287,8 @@ slash.contains = path subpath -> array.has slash.split(path) subpath
 
 slash.parse = path ->
     path  = slash.untilde slash.normalize(path)
-    split = slash.split path
-    dir   = ""
-    file  = array.pop split
-    dir = slash.join unpack(split)
-    name  = file
-    ext   = ""
-    
-    if dir.len == 0 and path != "." and path != ".."
-        if path[0] == '/' ➜ dir = "/" ➜ dir = "."
-    
-    nmspl = kstr.split file "."
-    if nmspl.len > 1
-        ext  = array.pop nmspl
-        name = table.concat nmspl "."
-        
+    (dir file) = slash.splitFile path
+    (name ext) = slash.splitExt file
     {dir: dir name: name ext: ext file: file path: path}
         
 slash.dir  = path -> slash.parse(path).dir
@@ -300,31 +300,25 @@ slash.swapExt = path ext ->
 
     ⮐  path if ext == nil or ext == ""
     p = slash.parse path
-    slash.path p.dir p.name & "." & ext
+    # log "swap" path, array.str p
+    r = ""
+    if string.sub(path 1 1) == "/" ➜ r = "/"
+    slash.path r p.dir p.name & "." & ext
     
-# slash.splitExt = path ->
-#     
-#     split = path.split()
-#     dotidx = split[^1].rfind "."
-#     ext = ""
-#     if dotidx > 0
-#         ext = split[^1][dotidx+1..^1]
-#         split[^1] = split[^1][0...dotidx]
-#     pth = split.join "/"
-#     [pth ext]
-
 slash.splitExt = path ->
     
-    split  = slash.split path
-    dotidx = kstr.rfind split[^1] "."
-    ext = ""
-    if dotidx > 0
-        ext = kstr.slice split[^1] dotidx+1
-        split[^1] = kstr.slice split[^1] 0 dotidx-1
-    pth = slash.path unpack(split)
-    [pth ext]
+    dotidx = kstr.rfind path "."
+    slsidx = kstr.rfind path "/"
     
-slash.removeExt = path -> path.splitExt[0]
+    ext = ""
+    
+    if dotidx > 0 and dotidx > slsidx
+        ext  = slice path dotidx+1
+        path = slice path 0 dotidx-1
+        
+    (path ext)
+    
+slash.removeExt = path -> slash.splitExt path
     
 slash.swapLastPathComponentAndExt = path src tgt ->
 

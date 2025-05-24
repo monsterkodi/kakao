@@ -44,7 +44,10 @@ test.static.cmp = a b ->
         "table"
             for k v in pairs a
                 if not test.static.cmp v b[k]
-                    ⮐  fail "table mismatch at " & kstr.index(k) # & " " & $v & " != " & $b[k]
+                    key = k
+                    if type(k) == "number"
+                        key = kstr.index k
+                    ⮐  fail "table mismatch at " & key # & " " & $v & " != " & $b[k]
         "number"
             if math.abs(a - b) > 1e-10
                 ⮐  fail "number mismatch: " & $a & " != " & $b
@@ -60,7 +63,7 @@ test.static.run = files ->
         # log "test" f
         (output ok exitcode) = slash.shell "luajit" f
         if ok
-            log output
+            # log output
             # log output, ok, exitcode
             # log "✔ " f
             a = 1

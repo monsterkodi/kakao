@@ -36,6 +36,21 @@ function _G.empty(v)
 end
 
 
+function _G.slice(a, first, last) 
+    if (type(a) == "table") then 
+            if (last == nil) then last = #a end
+            local s = {}
+            for i in iter(first, last) do 
+                s[(#s + 1)] = a[i]
+            end
+            
+            return s
+    elseif (type(a) == "string") then 
+            return string.sub(a, first, last)
+    end
+end
+
+
 function _G.sleep(s) 
     local t = os.clock()
     while ((os.clock() - t) <= s) do _ = 1 end

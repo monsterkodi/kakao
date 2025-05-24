@@ -76,13 +76,12 @@ test("slash", function()
     -- 000        000   000  000   000       000  000       
     -- 000        000   000  000   000  0000000   00000000  
     
-    -- ▸ parse
-    
-    
-        -- slash.parse "/a/b/c.txt"   ▸ {dir: "/a/b" name: "c" ext: "txt" file: "c.txt" path:"/a/b/c.txt"}
+    test("parse", function()
+        test.cmp(slash.parse("/a/b/c.txt"), {dir = "/a/b", name = "c", ext = "txt", file = "c.txt", path = "/a/b/c.txt"})
         -- slash.parse "/a/b/c"       ▸ {dir: "/a/b" name: "c" ext: ""    file: "c"     path:"/a/b/c"    }
         -- slash.parse "/a/b/c/"      ▸ {dir: "/a/b" name: "c" ext: ""    file: "c"     path:"/a/b/c"    }
         -- slash.parse "/a"           ▸ {dir: "/"    name: "a" ext: ""    file: "a"     path:"/a"        }
+    end)
     
     -- 0000000    000  00000000   
     -- 000   000  000  000   000  
@@ -132,6 +131,16 @@ test("slash", function()
         test.cmp(slash.file("file:///files.css"), "files.css")
     end)
     
+    test("splitFile", function()
+        test.cmp(slash.splitFile("a.b"), "")
+        test.cmp(slash.splitFile("/a.b"), "")
+        test.cmp(slash.splitFile("x/a.b"), "x")
+        test.cmp(slash.splitFile("y/x/a.b"), "y/x")
+        test.cmp(slash.splitFile("/y/x/a.b"), "/y/x")
+        test.cmp(slash.splitFile("./y/x/a.b"), "./y/x")
+        test.cmp(slash.splitFile("../y/x/a.b"), "../y/x")
+    end)
+    
     -- 00000000  000   000  000000000  
     -- 000        000 000      000     
     -- 0000000     00000       000     
@@ -150,19 +159,19 @@ test("slash", function()
     -- 000   000  000       000 0 000  000   000     000     000       000        000 000      000     
     -- 000   000  00000000  000   000   0000000       0      00000000  00000000  000   000     000     
     
-    -- ▸ removeExt
-    -- 
-    --     slash.removeExt "./none"                ▸ "./none"
-    --     slash.removeExt "./some.ext"            ▸ "./some"
-    --     slash.removeExt "./some.more.ext"       ▸ "./some.more"
-    --                                             
-    --     slash.removeExt "../none"               ▸ "../none"
-    --     slash.removeExt "../some.ext"           ▸ "../some"
-    --     slash.removeExt "../some.more.ext"      ▸ "../some.more"
-    --                                             
-    --     slash.removeExt "none"                  ▸ "none"
-    --     slash.removeExt "some.ext"              ▸ "some"
-    --     slash.removeExt "some.more.ext"         ▸ "some.more"
+    test("removeExt", function()
+        test.cmp(slash.removeExt("./none"), "./none")
+        test.cmp(slash.removeExt("./some.ext"), "./some")
+        test.cmp(slash.removeExt("./some.more.ext"), "./some.more")
+        
+        test.cmp(slash.removeExt("../none"), "../none")
+        test.cmp(slash.removeExt("../some.ext"), "../some")
+        test.cmp(slash.removeExt("../some.more.ext"), "../some.more")
+        
+        test.cmp(slash.removeExt("none"), "none")
+        test.cmp(slash.removeExt("some.ext"), "some")
+        test.cmp(slash.removeExt("some.more.ext"), "some.more")
+    end)
     
     --  0000000  00000000   000      000  000000000  00000000  000   000  000000000  
     -- 000       000   000  000      000     000     000        000 000      000     
@@ -171,19 +180,18 @@ test("slash", function()
     -- 0000000   000        0000000  000     000     00000000  000   000     000     
     
     test("splitExt", function()
-        test.cmp(slash.splitExt("./none"), {"./none", ""})
-        test.cmp(slash.splitExt("./some.ext"), {"./some", "ext"})
+        test.cmp(slash.splitExt("./none"), "./none")
+        test.cmp(slash.splitExt("./some.ext"), "./some")
+        test.cmp(slash.splitExt("./some.more.ext"), "./some.more")
+        
+        test.cmp(slash.splitExt("/none"), "/none")
+        test.cmp(slash.splitExt("/some.ext"), "/some")
+        test.cmp(slash.splitExt("/some.more.ext"), "/some.more")
+        
+        test.cmp(slash.splitExt("none"), "none")
+        test.cmp(slash.splitExt("some.ext"), "some")
+        test.cmp(slash.splitExt("some.more.ext"), "some.more")
     end)
-    
-    --     slash.splitExt "./some.more.ext"        ▸ ["./some.more" "ext"]
-    --                                             
-    --     slash.splitExt "/none"                  ▸ ["/none" ""]
-    --     slash.splitExt "/some.ext"              ▸ ["/some" "ext"]
-    --     slash.splitExt "/some.more.ext"         ▸ ["/some.more" "ext"]
-    --                                             
-    --     slash.splitExt "none"                   ▸ ["none" ""]
-    --     slash.splitExt "some.ext"               ▸ ["some" "ext"]
-    --     slash.splitExt "some.more.ext"          ▸ ["some.more" "ext"]
     
     --  0000000  000   000   0000000   00000000   00000000  000   000  000000000  
     -- 000       000 0 000  000   000  000   000  000        000 000      000     
@@ -191,20 +199,19 @@ test("slash", function()
     --      000  000   000  000   000  000        000        000 000      000     
     -- 0000000   00     00  000   000  000        00000000  000   000     000     
     
-    -- ▸ swapExt
-    
-    
-        -- slash.swapExt "./some" "new"            ▸ "./some.new"
-        -- slash.swapExt "./some.ext" "new"        ▸ "./some.new"
-        -- slash.swapExt "./some.more.ext" "new"   ▸ "./some.more.new"
+    test("swapExt", function()
+        test.cmp(slash.swapExt("./some", "new"), "./some.new")
+        test.cmp(slash.swapExt("./some.ext", "new"), "./some.new")
+        test.cmp(slash.swapExt("./some.more.ext", "new"), "./some.more.new")
         
-        -- slash.swapExt "/some" "new"             ▸ "/some.new"
-        -- slash.swapExt "/some.ext" "new"         ▸ "/some.new"
-        -- slash.swapExt "/some.more.ext" "new"    ▸ "/some.more.new"
+        test.cmp(slash.swapExt("/some", "new"), "/some.new")
+        test.cmp(slash.swapExt("/some.ext", "new"), "/some.new")
+        test.cmp(slash.swapExt("/some.more.ext", "new"), "/some.more.new")
         
-        -- slash.swapExt "some" "new"              ▸ "some.new"
-        -- slash.swapExt "some.ext" "new"          ▸ "some.new"
-        -- slash.swapExt "some.more.ext" "new"     ▸ "some.more.new"
+        test.cmp(slash.swapExt("some", "new"), "some.new")
+        test.cmp(slash.swapExt("some.ext", "new"), "some.new")
+        test.cmp(slash.swapExt("some.more.ext", "new"), "some.more.new")
+    end)
     
     -- 000   000   0000000   00     00  00000000  
     -- 000   000  000   000  000   000  000       
@@ -216,10 +223,11 @@ test("slash", function()
         local home = os.getenv("HOME")
         
         test.cmp(slash.home(), home)
-        -- slash.home("sub" "dir")                 ▸ slash.path home "sub" "dir"
-        -- slash.tilde home                        ▸ "~"
-        -- slash.tilde home & "/sub"               ▸ "~/sub"
-        -- slash.untilde "~/sub"                   ▸ home & "/sub"
+        test.cmp(slash.home("sub", "dir"), slash.path(home, "sub", "dir"))
+        test.cmp(slash.tilde(home), "~")
+        test.cmp(slash.tilde(home .. "/sub"), "~/sub")
+        test.cmp(slash.untilde("~/sub"), home .. "/sub")
+        test.cmp(slash.untilde("~/child"), slash.home() .. "/child")
     end)
     
     -- 00000000   00000000  000       0000000   000000000  000  000   000  00000000  
@@ -240,8 +248,7 @@ test("slash", function()
     test("absolute", function()
         test.cmp(slash.absolute("/some/path"), "/some/path")
         test.cmp(slash.absolute("./child", "/parent"), "/parent/child")
-        -- slash.untilde  "~/child"                ▸ slash.home() & "/child"
-        -- slash.absolute "~/child"                ▸ slash.home() & "/child"
+        test.cmp(slash.absolute("~/child"), slash.home() .. "/child")
     end)
     
     --  0000000  00000000   000      000  000000000  
@@ -252,7 +259,7 @@ test("slash", function()
     
     test("split", function()
         -- slash.split "/c/users/home/"            ▸ ["" "c" "users" "home"]
-        -- slash.split "d/users/home"              ▸ ["d" "users" "home"]
+        test.cmp(slash.split("d/users/home"), {"d", "users", "home"})
         test.cmp(slash.split("c:/some/path"), {"c:", "some", "path"})
         test.cmp(slash.split("~/home/path"), {"~", "home", "path"})
     end)

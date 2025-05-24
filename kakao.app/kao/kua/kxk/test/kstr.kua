@@ -29,6 +29,18 @@ use kxk/kxk
         kstr.pop("1234" 2) ▸ "12"
         kstr.pop("ab\n")   ▸ "ab"
 
+    ▸ split
+        
+        kstr.split "/"          "/"     ▸ ["" ""]
+        kstr.split "a/b/c"      "/"     ▸ ["a" "b" "c"]
+        kstr.split "/b/c"       "/"     ▸ ["" "b" "c"]
+        kstr.split "/b/"        "/"     ▸ ["" "b" ""]
+        kstr.split "//"         "/"     ▸ ["" "" ""]
+        kstr.split "//"         ""      ▸ ["/" "/"]
+        kstr.split "a.b.c.d"    "." 0   ▸ ["a.b.c.d"]
+        kstr.split "a.b.c.d"    "." 1   ▸ ["a" "b.c.d"]
+        kstr.split "a.b.c.d"    "." 2   ▸ ["a" "b" "c.d"]
+
     ▸ dollar
     
         $1    ▸ "1"

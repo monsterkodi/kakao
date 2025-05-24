@@ -1,5 +1,8 @@
 local kstr = {}
 
+setmetatable({}, {__index = table})
+debug.setmetatable({}, {__index = table})
+
 
 function kstr.splice(s, i, n, ...) 
     if (i < 0) then i = ((#s + i) + 1) end
@@ -87,14 +90,38 @@ function kstr.trim(s, c)
 end
 
 
-function kstr.split(s, sep) 
-    local r = {}
-    local pat = string.format("([^%s]+)", sep)
-    for part in string.gmatch(s, pat) do 
-        table.insert(r, part)
+function kstr.chars(s) 
+    local result = {}
+    for i in iter(1, #s) do 
+        table.insert(result, s:sub(i, i))
     end
     
-    return r
+    return result
+end
+
+
+function kstr.split(s, sep, limit) 
+    if (sep == nil) then return {s} end
+    if (sep == "") then return kstr.chars(s) end
+    
+    local result = {}
+    local start = 1
+    local count = 0
+    
+    while true do 
+        local pos = s:find(sep, start, true)
+        
+        if ((limit and (count >= limit)) or not pos) then 
+            table.insert(result, s:sub(start))
+            break
+        end
+        
+        table.insert(result, s:sub(start, (pos - 1)))
+        start = (pos + #sep)
+        count = (count + 1)
+    end
+    
+    return result
 end
 
 

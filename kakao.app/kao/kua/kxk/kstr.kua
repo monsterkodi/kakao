@@ -1,6 +1,9 @@
 
 kstr = {}
 
+setmetatable({}, {__index = table})
+debug.setmetatable({}, {__index = table})
+
 kstr.splice = s i n ... ->
     
     if i < 0 ➜ i = s.len+i+1
@@ -26,22 +29,44 @@ kstr.rpad   = l s="" c=' ' ->
 kstr.endsWith   = s o -> o == string.sub s s.len-o.len+1 s.len
 kstr.startsWith = s o -> o == string.sub s 1 o.len
 
-kstr.rtrim  = s c=' ' ->
+kstr.rtrim = s c=' ' ->
     while s.len > 0 and (kstr.endsWith(s c) or kstr.endsWith(s "\n"))
         s = kstr.pop s
     s
-kstr.ltrim  = s c=' ' -> 
+kstr.ltrim = s c=' ' -> 
     while s.len > 0 and (kstr.startsWith(s c) or kstr.startsWith(s "\n"))
         s = string.sub s 2
     s
-kstr.trim   = s c=' ' -> kstr.ltrim kstr.rtrim(s,c) c
+kstr.trim = s c=' ' -> kstr.ltrim kstr.rtrim(s,c) c
+
+kstr.chars = s ->
+
+    result = {}
+    for i in 1..s.len
+        table.insert result s:sub(i i)
+    result
    
-kstr.split = s sep ->
-    r = {}
-    pat = string.format "([^%s]+)" sep
-    for part in string.gmatch s pat
-        table.insert r part
-    r
+kstr.split = s sep limit ->
+    
+    if sep == nil ➜ ⮐  { s }
+    if sep == ""  ➜ ⮐  kstr.chars s
+    
+    result = {}
+    start = 1
+    count = 0
+    
+    while true
+        pos = s:find(sep start true)
+
+        if limit and count >= limit or not pos
+            table.insert result s:sub(start)
+            break
+                
+        table.insert result s:sub(start pos - 1)
+        start = pos + sep.len
+        count = count + 1
+    
+    result
     
 kstr.rfind = s c ->
 

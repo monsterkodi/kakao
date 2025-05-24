@@ -174,13 +174,13 @@ class Parser
     
         lt = @peek(n-1)
         ct = @peek(n)
-        lt != EOF and ct != EOF and lt.line == ct.line and lt.col+lt.str.len == ct.col
+        lt != EOF and ct != EOF and lt.tok != ◂indent and lt.line == ct.line and lt.col+lt.str.len == ct.col
 
     isConnectedRight: n=0 ➜bool ->
     
         ct = @peek(n)
         rt = @peek(n+1)
-        rt != EOF and ct != EOF and rt.line == ct.line and ct.col+ct.str.len == rt.col
+        rt != EOF and ct != EOF and rt.tok != ◂indent and rt.line == ct.line and ct.col+ct.str.len == rt.col
         
     isConnectedLeftAndRight: n=0 ➜bool ->
     
@@ -795,9 +795,9 @@ class Parser
         Node token:token kind:●switch switch_value:switch_value switch_cases:switch_cases switch_default:switch_default
                     
     lArrayAccess: ◇Node array_owner ➜Node ->
-    
-        ⮐  if @peek(-1).col + @peek(-1).str.len < @current.col
-        
+
+        ⮐  if not @isConnectedLeft()
+
         token = @current()
         array_indices = @parseDelimitedList ◂square_open ◂square_close
         array_index = 
