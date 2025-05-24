@@ -84,8 +84,10 @@ class Rlua
                 @add "\n"
                 idt = if n.func_signature ➜ n.func_signature.token.col ➜ n.token.col
                 @add ' '.repeat(idt)
-                 
+            crly = @incurly
+            @incurly = 0
             @rnd n.func_body
+            @incurly = crly
             
     ▸func: ◇Node n -> 
         

@@ -125,11 +125,6 @@ b = false""")
         t("use ./rndr", "rndr = require \"./rndr\"")
         t("use ../rndr", "rndr = require \"../rndr\"")
         t("use ../../rel", "rel = require \"../../rel\"")
-    #    t "use ../../rel ▪ s1 s2"                     "import ../../rel/[s1, s2]"
-    #    t "use std ▪ pegs strutils strformat"         "import std/[pegs, strutils, strformat]"
-    #    t "use std ▪ os logging\nuse kommon"          "import std/[os, logging]\nimport kommon"
-    #    t "use std ▪ a b c\nuse d\nuse e\nuse f"      "import std/[a, b, c]\nimport d\nimport e\nimport f"
-    
         t("use a b c", "a = require \"a\"\nb = require \"b\"\nc = require \"c\"")
         t("⮐  require('./init')( (...) -> )", "return require('./init')(function (...) end)")
     test "if                                            ": 
@@ -379,6 +374,18 @@ end
 0""")
     test "misc": 
         t("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "return (((type(str) == \"string\") and not not str:match(\"^[_%a][_%a%d]*$\")) and not luaKeywords[str])")
+        v("""
+setmetatable(aClass, {  
+    __tostring:   (self)      -> ⮐  "class " & self.name
+    __call:       (self, ...) -> ⮐  self:new(...)
+    __newindex:   _newMember })
+""", """
+setmetatable(aClass, {
+    __tostring = function (self) return "class " .. self.name end, 
+    __call = function (self, ...) return self:new(...) end, 
+    __newindex = _newMember
+    })""")
+        v("s = a:slice -20 3", "local s = a:slice(-20, 3)")
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) -- addition")
         t("log 1 # comment", "print(1) -- comment")

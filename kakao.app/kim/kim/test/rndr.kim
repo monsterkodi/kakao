@@ -327,8 +327,8 @@ template t(a:string, b:string) = testCmp(a, renderNim(a, false), b, instantiatio
             else: 
                 3 # 6"""
                 
-        # t "slash.isDir = path -> s = slash.stat path ; if s.type == 1 ➜ ⮐  s"
-        #   "proc slash.isDir(path) = \n                 s = slash.stat(path) ; if s.type == 1: return s"
+        t "slash.isDir = path -> s = slash.stat path ; if s.type == 1 ➜ ⮐  s"
+          "\nproc slash.isDir(path) = \n              s = slash.stat(path) ; if (s.type == 1): return s"
 
     ▸ when
     

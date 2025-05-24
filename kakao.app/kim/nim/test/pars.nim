@@ -146,6 +146,13 @@ hook = -> {.noconv.}
         t("f 1 \"txt\" (a:1 b:3)", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
         t("arr:contains('')", "▪[((◂name : ◂name) ◂call @[◂string])]")
         t("array('/', '~'):contains('')", "▪[(((◂name ◂call @[◂string, ◂string]) : ◂name) ◂call @[◂string])]")
+        l("f = ... ->", "▪[(◂name = (◂[(NIL ... NIL)]->))]")
+        l("""
+class Triple
+    a: ... ->
+    @: ... -> """, "▪[(◂class ◂name ▪[(◂name : (◂[((NIL ... NIL))]->))(◂name : (◂[((NIL ... NIL))]->))])]")
+        l("s = a:slice 20 3", "▪[(◂name = (◂name : (◂name ◂call @[◂number, ◂number])))]")
+        l("s = a:slice -20 3", "▪[(◂name = (◂name : (◂name ◂call @[(- ◂number), ◂number])))]")
     test "constructor call": 
         t("Token(tok:◂let)", "▪[(◂name ◂call @[(◂name : ◂name)])]")
         t("Node(token:Token(tok:◂let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", "▪[(◂name ◂call @[((◂name : ◂name) ◂call @[(◂name : ◂name), (◂name : ◂string), (((◂name : ◂name) . ◂name) . ◂name)]), (◂name : ◂name), (◂name : ◂name)])]")

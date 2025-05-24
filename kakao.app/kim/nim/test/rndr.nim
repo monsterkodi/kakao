@@ -261,8 +261,7 @@ elif b:
     2 # 4
 else: 
     3 # 6""")
-        # t "slash.isDir = path -> s = slash.stat path ; if s.type == 1 ➜ ⮐  s"
-        #   "proc slash.isDir(path) = \n                 s = slash.stat(path) ; if s.type == 1: return s"
+        t("slash.isDir = path -> s = slash.stat path ; if s.type == 1 ➜ ⮐  s", "\nproc slash.isDir(path) = \n              s = slash.stat(path) ; if (s.type == 1): return s")
     test "when": 
         t("when T is (seq or array)", "when (T is (seq or array)): ")
     test "for                                            ": 

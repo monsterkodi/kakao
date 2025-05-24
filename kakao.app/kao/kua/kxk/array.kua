@@ -7,15 +7,16 @@
 
 class array
 
-    @: (...) ->
+    @: ... ->
         
-        for i v in ipairs({...})
+        @__index = table
+        for i v in ipairs {...}
             table.insert @ v
 
     $: -> 
     
         s = ".\n"  
-        for i v in ipairs(@)
+        for i v in ipairs @
             s = s & "    " & i & "    " & v & "\n"
         s
 
@@ -24,15 +25,15 @@ class array
     map: f ->
     
         t = array()
-        for i v in ipairs(@)
-            t[i] = f(v)
+        for i v in ipairs @
+            t[i] = f v
         t
     
     filter: f ->
     
         t = array()
-        for i v in ipairs(@)
-            if f(v i)
+        for i v in ipairs @
+            if f v i
                 t:push v
         t
         
@@ -43,23 +44,28 @@ class array
         
     pop: -> 
 
-        if @.len > 0 ➜ ⮐  table.remove @ @.len
+        if @len > 0 ➜ ⮐  table.remove @ @len
         nil
         
     push: ... -> 
 
         for i v in ipairs {...}
-            @[@.len+1] = v
+            @[@len+1] = v
         @
         
-    unshift: v -> 
-
-        table.insert @ 1 v
+    unshift: ... -> 
+        
+        a = {...}
+        for i in a.len..1
+            @insert 1 a[i]
         @
+        
+    insert: i v -> table.insert @ i v
         
     slice: first last ->
 
-        if last == nil ➜ last = @.len
+        if last == nil ➜ last = @len
+        last = math.min @len last
         s = array()
         for i in first..last
             s:push @[i]
@@ -68,14 +74,14 @@ class array
     keydict: key ->
 
         t = {}
-        for i v in ipairs(@)
+        for i v in ipairs @
             t[v[key]] = v
         t
     
     indexdict: ->
 
         t = {}
-        for i v in ipairs(@)
+        for i v in ipairs @
             t[v] = i
         t
                     

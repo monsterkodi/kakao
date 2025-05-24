@@ -104,7 +104,6 @@ _includeMixin = aClass mixin ->
     for name meth in pairs(mixin.static or {})
         aClass.static[name] = meth
     
-    if type(mixin.included)=="function" ➜ mixin:included(aClass)
     ⮐  aClass
 
 DefaultMixin = {

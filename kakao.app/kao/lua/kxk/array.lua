@@ -10,6 +10,7 @@ local array = class("array")
 
 
 function array:init(...) 
+        self.__index = table
         for i, v in ipairs({...}) do 
             table.insert(self, v)
         end
@@ -75,14 +76,24 @@ function array:push(...)
     end
 
 
-function array:unshift(v) 
-        table.insert(self, 1, v)
+function array:unshift(...) 
+        local a = {...}
+        for i in iter(#a, 1) do 
+            self:insert(1, a[i])
+        end
+        
         return self
+    end
+
+
+function array:insert(i, v) 
+    return table.insert(self, i, v)
     end
 
 
 function array:slice(first, last) 
         if (last == nil) then last = #self end
+        last = math.min(#self, last)
         local s = array()
         for i in iter(first, last) do 
             s:push(self[i])

@@ -499,7 +499,7 @@ proc lCall(this : Parser, callee : Node) : Node =
 proc isImplicitCallPossible(this : Parser) : bool = 
         if this.explicit: return false
         var currt = this.peek(0)
-        if (currt.tok in noCallToks): return false
+        if ((currt.tok in noCallToks) and ((currt.tok != ◂minus) or not this.isConnectedRight())): return false
         var prevt = this.peek(-1)
         if (currt.col <= (prevt.col + ksegWidth(prevt.str))): return false
         if (this.returning and this.isTokAhead(◂if)): return false
@@ -834,7 +834,7 @@ proc lArgList(this : Parser, left : Node) : Node =
 # ███        ███████   ███   ███   ███████
 
 proc lFunc(this : Parser, left : Node) : Node = 
-        if (left.kind notin {●signature, ●list, ●arg, ●operation, ●range}): return
+        if (left.kind notin {●signature, ●list, ●arg, ●operation, ●range, ●member}): return
         var func_signature : Node
         if (left.kind == ●operation): 
             # log "lfunc op #{left}"
@@ -849,6 +849,11 @@ proc lFunc(this : Parser, left : Node) : Node =
             var varNode = nod(●arg, vartoken, nil, left.operand_left, left.operand_right)
             var sig_args = nod(●list, vartoken, @[varNode])
             func_signature = nod(●signature, left.token, sig_args, nil)
+        elif (left.kind == ●member): 
+            var left = left
+            var argtoken = tkn(◂val_type, left.member_value.token.line, left.member_value.token.col)
+            left.member_value = this.lFunc(nod(●arg, argtoken, nil, left.member_value, nil))
+            return left
         elif (left.kind == ●list): 
             # log "lfunc list"
             var sig_args = left

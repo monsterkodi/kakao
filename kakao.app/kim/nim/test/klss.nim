@@ -404,6 +404,22 @@ function Constr:init(a, b)
     end
 
 local a = Constr(1, 2)""")
+        l("""
+class Triple
+    @: ... ->
+    a: ... ->
+""", """
+
+local Triple = class("Triple")
+    
+
+function Triple:init(...) 
+    return self
+    end
+
+function Triple:a(...) 
+    
+    end""")
     test "methods": 
         l("""
 class FunInc

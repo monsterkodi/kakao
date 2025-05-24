@@ -586,7 +586,7 @@ class Parser
     
         currt = @peek(0)
                     
-        ⮐  false if currt.tok in noCallToks  
+        ⮐  false if currt.tok in noCallToks and (currt.tok != ◂minus or not @isConnectedRight())
         
         prevt = @peek(-1)
         
@@ -1002,7 +1002,7 @@ class Parser
     
     lFunc: ◇Node left ➜Node ->
     
-        ⮐  if left.kind notin {●signature ●list ●arg ●operation ●range}
+        ⮐  if left.kind notin {●signature ●list ●arg ●operation ●range ●member}
 
         func_signature ◇ Node
         
@@ -1024,6 +1024,13 @@ class Parser
             varNode  = nod ●arg vartoken nil left.operand_left left.operand_right
             sig_args = nod ●list vartoken [varNode]
             func_signature = nod ●signature left.token sig_args nil
+            
+        elif left.kind == ●member
+        
+            left = left
+            argtoken = tkn ◂val_type left.member_value.token.line left.member_value.token.col
+            left.member_value = @lFunc nod(●arg argtoken nil left.member_value nil)
+            ⮐  left
             
         elif left.kind == ●list
         

@@ -125,7 +125,6 @@ function _includeMixin(aClass, mixin)
         aClass.static[name] = meth
     end
     
-    if (type(mixin.included) == "function") then mixin:included(aClass) end
     return aClass
 end
 

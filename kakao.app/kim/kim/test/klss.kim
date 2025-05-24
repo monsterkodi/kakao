@@ -439,6 +439,23 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
                 end
             
             local a = Constr(1, 2)"""
+            
+        l   """
+            class Triple
+                @: ... ->
+                a: ... ->
+            """ """
+            
+            local Triple = class("Triple")
+                
+            
+            function Triple:init(...) 
+                return self
+                end
+            
+            function Triple:a(...) 
+                
+                end"""
                             
     ▸ methods
     

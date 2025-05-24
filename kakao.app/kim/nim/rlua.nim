@@ -78,7 +78,10 @@ proc sigBody(this : Rlua, n : Node) =
                 this.add("\n")
                 var idt = if n.func_signature: n.func_signature.token.col else: n.token.col
                 this.add(' '.repeat(idt))
+            var crly = this.incurly
+            this.incurly = 0
             this.rnd(n.func_body)
+            this.incurly = crly
 
 proc ▸func(this : Rlua, n : Node) = 
         if (n.token.tok == ◂method): 
