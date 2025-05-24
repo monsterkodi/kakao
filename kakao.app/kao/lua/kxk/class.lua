@@ -114,16 +114,13 @@ end
 
 function _includeMixin(aClass, mixin) 
     assert((type(mixin) == 'table'), "Invalid Mixin table")
-    -- log "includeMixin"
     for name, meth in pairs(mixin) do 
         if ((name ~= "included") and (name ~= "static")) then 
-            -- log "_includeMixin nonstatic" name, meth, aClass, mixin
             aClass[name] = meth
         end
     end
     
     for name, meth in pairs((mixin.static or {})) do 
-        -- log "_includeMixin static" name, meth, aClass, mixin
         aClass.static[name] = meth
     end
     
@@ -190,10 +187,8 @@ local DefaultMixin = {
             return (((type(other) == 'table') and (type(self.super) == 'table')) and ((self.super == other) or self.super:extends(other)))
         end, 
         include = function (self, ...) 
-            print("include...")
             assert((type(self) == "table"), "Use :include instead of .include")
             for _, mixin in ipairs({...}) do _includeMixin(self, mixin) end
-            print("...include")
             return self
         end
         }

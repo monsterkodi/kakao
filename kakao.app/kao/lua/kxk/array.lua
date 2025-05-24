@@ -4,16 +4,12 @@
 -- ███   ███  ███   ███  ███   ███  ███   ███     ███   
 -- ███   ███  ███   ███  ███   ███  ███   ███     ███   
 
--- setmetatable({}, {__index = table})
--- debug.setmetatable({}, {__index = table})
-
 
 local array = class("array")
     
 
 
 function array:init(...) 
-        -- @__index = table
         for i, v in ipairs({...}) do 
             table.insert(self, v)
         end
@@ -86,15 +82,6 @@ function array:unshift(...)
         end
         
         return self
-    end
-
-
-function array:insert(i, v) 
-    return table.insert(self, i, v)
-    end
-
-function array:remove(i) 
-    return table.remove(self, i)
     end
 
 
@@ -171,15 +158,6 @@ function array.static.isarr(a)
     return (#a > 0)
 end
 
--- log "include table" table
--- log "include table" inspect table
--- log "include table" type(table)
--- for k v in pairs table
---     log "kv" k, v
--- array.static:include table
-local a = array(3, 2, 1)
--- a:sort()
--- log "getn" a.getn
--- log "getn" a:sort()
+array:include(table)
 
 return array

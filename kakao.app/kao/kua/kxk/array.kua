@@ -5,14 +5,10 @@
 # ███   ███  ███   ███  ███   ███  ███   ███     ███   
 # ███   ███  ███   ███  ███   ███  ███   ███     ███   
 
-# setmetatable({}, {__index = table})
-# debug.setmetatable({}, {__index = table})
-
 class array
 
     @: ... ->
         
-        # @__index = table
         for i v in ipairs {...}
             table.insert @ v
 
@@ -63,9 +59,6 @@ class array
             @insert 1 a[i]
         @
         
-    insert: i v -> table.insert @ i v
-    remove: i ->   table.remove @ i
-        
     splice: (i n ...) ->
         
         if n > 0
@@ -114,15 +107,6 @@ array.static.isarr = a ->
     ⮐  false if type(a) != "table"
     a.len > 0
 
-# log "include table" table
-# log "include table" inspect table
-# log "include table" type(table)
-# for k v in pairs table
-#     log "kv" k, v
-# array.static:include table
-a = [3 2 1]
-# a:sort()
-# log "getn" a.getn
-# log "getn" a:sort()
+array:include table
 
 ⮐  array
