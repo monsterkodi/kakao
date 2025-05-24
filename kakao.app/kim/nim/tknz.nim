@@ -470,11 +470,11 @@ proc tknz(this : Tknzr, segs : seq[string], lang : string) : seq[Token] =
                                     this.advance(1)
                                 this.push(◂test)
                                 continue
-                        if (char == ":"): 
-                            if (((this.lang == "lua") and this.isConnectedLeftAndRight()) and (this.charSafe(1) in {'a'..'z', 'A'..'Z'})): 
-                                if (this.token.str.len == 0): this.token = this.tokens.pop()
-                                this.advance(1)
-                                continue
+                        # if char == ":"
+                        #     if @lang == "lua" and @isConnectedLeftAndRight() and @charSafe(1) in {'a'..'z' 'A'..'Z' '_'}
+                        #         if @token.str.len == 0 ➜ @token = @tokens.pop()
+                        #         @advance 1
+                        #         continue
                         if (((this.tokens.len > 0) and (this.tokens[^1].tok == ◂multiply)) and (punct[char] in {◂assign, ◂colon, ◂paren_open, ◂var_type, ◂val_type})): 
                             if ((punct[char] != ◂paren_open) or (this.tokens[^2].tok in {◂proc, ◂template, ◂macro})): 
                                 this.tokens.pops()

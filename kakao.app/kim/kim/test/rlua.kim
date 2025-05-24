@@ -100,6 +100,8 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                                                     
         t "log a"                                     "print(a)"
         
+        t "array('/', '~'):contains('')"              "array('/', '~'):contains('')"
+        
     ▸ arglist
     
         t "f(a, b, c)"                                "f(a, b, c)"

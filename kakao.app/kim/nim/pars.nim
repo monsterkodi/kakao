@@ -1080,10 +1080,16 @@ proc rStruct(this : Parser) : Node =
         nod(●struct, token, name, parent, this.parseBlock())
 
 proc lMember(this : Parser, left : Node) : Node = 
-        var token = this.consume()
-        token.col = left.token.col
-        var right = this.funcOrExpression(token)
-        nod(●member, token, left, right)
+        if this.isConnectedLeftAndRight(): 
+            var token = this.consume()
+            token.col = left.token.col
+            var right = this.value()
+            nod(●member, token, left, right)
+        else: 
+            var token = this.consume()
+            token.col = left.token.col
+            var right = this.funcOrExpression(token)
+            nod(●member, token, left, right)
 
 proc lTestCase(this : Parser, left : Node) : Node = 
         if this.listless: return
@@ -1185,7 +1191,6 @@ proc setup(this : Parser) =
         this.pratt(◂enum, nil, rEnum, 2)
         this.pratt(◂continue, nil, rKeyword, 2)
         this.pratt(◂break, nil, rKeyword, 2)
-        this.pratt(◂colon, lMember, nil, 10)
         this.pratt(◂assign, lAssign, nil, 10)
         this.pratt(◂plus_assign, lAssign, nil, 10)
         this.pratt(◂minus_assign, lAssign, nil, 10)
@@ -1193,6 +1198,7 @@ proc setup(this : Parser) =
         this.pratt(◂multiply_assign, lAssign, nil, 10)
         this.pratt(◂ampersand_assign, lAssign, nil, 10)
         this.pratt(◂qmark_assign, lAssign, nil, 10)
+        this.pratt(◂colon, lMember, nil, 71)
         this.pratt(◂name, lSymbolList, rSymbol, 13) # higher than assign
         this.pratt(◂if, lTailIf, rIf, 20)
         this.pratt(◂when, nil, rIf, 20)

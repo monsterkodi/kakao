@@ -115,7 +115,7 @@ function slash.respawn()
     local cmd = arg[0]
     if arg[-1] then 
         cmd = arg[-1]
-        array.unshift(arg, arg[0])
+        table.insert(arg, 1, arg[0])
         arg[0] = cmd
         arg[-1] = nil
     end
@@ -281,17 +281,21 @@ function slash.path(...)
     function mpty(s) 
     return (#s > 0)
     end
-    local fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
+    local fpth = array(...)
+    fpth = fpth:filter(mpty)
+    fpth = fpth:map(slsh)
+    fpth = table.concat(fpth, "/")
+    -- fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
     return slash.normalize(fpth)
 end
 
 
 function slash.isRelative(path) 
-    return ((#path == 0) or (((#path > 0) and (string.sub(path, 1, 1) ~= '/')) and (string.sub(path, 1, 1) ~= '~')))
+    return ((#path == 0) or (((#path > 0) and (path:sub(1, 1) ~= '/')) and (path:sub(1, 1) ~= '~')))
 end
 
 function slash.isAbsolute(path) 
-    return ((#path > 0) and array.contains({'/', '~'}, string.sub(path, 1, 1)))
+    return ((#path > 0) and array('/', '~'):contains(path:sub(1, 1)))
 end
 
 function slash.isRoot(path) 
@@ -351,7 +355,7 @@ function slash.join(...)
 end
 
 function slash.contains(path, subpath) 
-    return array.has(slash.split(path), subpath)
+    return array(unpack(slash.split(path))):contains(subpath)
 end
 
 -- ████████    ███████   ████████    ███████  ████████
@@ -508,14 +512,13 @@ end
 
 function slash.walk(path, opt) 
     opt = opt or {recursive = true}
-    opt.files = opt.files or {}
+    opt.files = opt.files or array()
     
     local dir = ffi.C.opendir(path)
     if (dir == nil) then 
         error("Failed to open directory: " .. path)
     end
     
-    -- files = {}
     while true do 
         local entry = ffi.C.readdir(dir)
         if (entry ~= nil) then 
@@ -529,7 +532,7 @@ function slash.walk(path, opt)
                 
                 local apth = slash.absolute(path .. "/" .. name)
                 local info = {["name"] = name, ["type"] = typ, ["path"] = apth}
-                table.insert(opt.files, info)
+                opt.files:push(info)
                 
                 if (opt.recursive and (typ == "dir")) then 
                     slash.walk(apth, opt)
@@ -553,13 +556,14 @@ end
 
 
 function slash.files(path, ext) 
-    local files = array.map(slash.walk(path), function (info) return info.path end)
+    local files = slash.walk(path)
+    files = files:map(function (info) return info.path end)
     if ext then 
         
         function fext(f) 
     return (slash.ext(f) == ext)
         end
-        files = array.filter(files, fext)
+        files = files:filter(fext)
     end
     
     return files

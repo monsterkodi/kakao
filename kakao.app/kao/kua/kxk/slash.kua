@@ -105,7 +105,7 @@ slash.respawn = ->
     cmd = arg[0]
     if arg[-1]
         cmd = arg[-1]
-        array.unshift arg arg[0]
+        table.insert arg 1 arg[0]
         arg[0]  = cmd
         arg[-1] = nil
     
@@ -238,11 +238,15 @@ slash.path = (...) ->
 
     slsh = s -> string.gsub(s "\\" "/")
     mpty = s -> s.len > 0
-    fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
+    fpth = array(...)
+    fpth = fpth:filter mpty
+    fpth = fpth:map slsh
+    fpth = table.concat fpth "/"
+    # fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
     slash.normalize fpth
     
-slash.isRelative = path -> path.len == 0 or path.len > 0 and string.sub(path 1 1) != '/' and string.sub(path 1 1) != '~'
-slash.isAbsolute = path -> path.len > 0 and array.contains ['/' '~'] string.sub(path 1 1) 
+slash.isRelative = path -> path.len == 0 or path.len > 0 and path:sub(1 1) != '/' and path:sub(1 1) != '~'
+slash.isAbsolute = path -> path.len > 0 and array('/' '~'):contains(path:sub(1 1))
 slash.isRoot     = path -> slash.normalize(path) == "/"
 
 slash.home = (...) -> slash.path os.getenv("HOME") unpack({...})
@@ -277,7 +281,7 @@ slash.splitFile = path ->
 
 slash.split = path -> kstr.split path "/"
 slash.join  = ... -> table.concat {...} "/"
-slash.contains = path subpath -> array.has slash.split(path) subpath
+slash.contains = path subpath -> array(unpack(slash.split(path))):contains subpath
         
 # ████████    ███████   ████████    ███████  ████████
 # ███   ███  ███   ███  ███   ███  ███       ███     
@@ -401,13 +405,12 @@ slash.stat = path ->
 slash.walk = path opt ->
 
     opt ?= { recursive: true }
-    opt.files ?= {}
+    opt.files ?= array()
 
     dir = ffi.C.opendir path
     if dir == nil
         error "Failed to open directory: " & path
     
-    # files = {}
     while true
         entry = ffi.C.readdir dir
         if entry != nil
@@ -420,7 +423,7 @@ slash.walk = path opt ->
                     
                 apth = slash.absolute(path & "/" & name)
                 info = { "name": name "type": typ "path": apth }
-                table.insert opt.files info
+                opt.files:push info
                 
                 if opt.recursive and typ == "dir"
                     slash.walk apth opt
@@ -439,10 +442,11 @@ slash.walk = path opt ->
 
 slash.files = path ext ->
 
-    files = array.map(slash.walk(path), (info) -> ⮐  info.path)
-    if ext 
+    files = slash.walk path
+    files = files:map((info) -> ⮐  info.path)
+    if ext
         fext = (f) -> slash.ext(f) == ext
-        files = array.filter files fext
+        files = files:filter fext
     files
     
 slash.exists     = path -> slash.stat path

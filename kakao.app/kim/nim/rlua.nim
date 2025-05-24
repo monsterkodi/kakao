@@ -10,7 +10,7 @@ import vars
 type Rlua = ref object of RootObj
     code: string
     s: string
-    annotateVarArg: bool
+    incurly: int
 
 proc `$`(this : Rlua) : string = 
         var s = ""
@@ -64,9 +64,7 @@ proc ▸semicolon(this : Rlua, n : Node) =
 
 proc ▸signature(this : Rlua, n : Node) = 
         this.add("(")
-        this.annotateVarArg = true
         this.rnd(n.sig_args)
-        this.annotateVarArg = false
         this.add(")")
 
 proc sigBody(this : Rlua, n : Node) = 
@@ -390,6 +388,7 @@ proc ▸list(this : Rlua, n : Node) =
         if parens: this.add(")")
 
 proc ▸curly(this : Rlua, n : Node) = 
+        (this.incurly += 1)
         this.add("{")
         var ml = false
         var line = n.token.line
@@ -405,6 +404,7 @@ proc ▸curly(this : Rlua, n : Node) =
             line = item.token.line
         if ml: this.add("\n" & idt)
         this.add("}")
+        (this.incurly -= 1)
 
 proc ▸squarely(this : Rlua, n : Node) = 
         this.add("{")
@@ -476,7 +476,9 @@ proc ▸class(this : Rlua, n : Node) =
             this.add(", ")
             this.tok(n.class_parent)
         this.add(")")
+        (this.incurly += 1)
         this.rnd(n.class_body)
+        (this.incurly -= 1)
 
 proc ▸struct(this : Rlua, n : Node) = 
         this.add("type ")
@@ -495,7 +497,10 @@ proc ▸member(this : Rlua, n : Node) =
             this.rnd(n.member_value)
         else: 
             this.rnd(n.member_key)
-            this.add(" = ")
+            if this.incurly: 
+                this.add(" = ")
+            else: 
+                this.add(":")
             this.rnd(n.member_value)
 
 proc ▸testCase(this : Rlua, n : Node) = 

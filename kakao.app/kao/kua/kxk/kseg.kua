@@ -42,7 +42,7 @@ kseg.codes = str ->
 
 kseg.segs = s ->
 
-    segs = {}
+    segs = array()
     for i seg in kseg.codes(s)
         segs[segs.len+1] = seg
     segs
@@ -57,7 +57,7 @@ kseg.concat = a b ->
         a[a.len+1] = b[i]
     a
     
-kseg.sub = a from to -> array.slice a from to
+kseg.sub = a from to -> a:slice from to
 
 kseg.splice = s i n ... ->
     

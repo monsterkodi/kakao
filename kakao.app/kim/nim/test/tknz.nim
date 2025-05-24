@@ -182,4 +182,4 @@ suite "tknz":
         t("proc exp* (", @[tk("proc exp* (", ◂verbatim, 0, 0)])
         t("import ../../rel/[s1, s2]", @[tk("import ../../rel/[s1, s2]", ◂verbatim, 0, 0)])
     test "lua": 
-        l("str:match()", @[tk("str:match", ◂name, 0, 0), tk("(", ◂paren_open, 0, 9), tk(")", ◂paren_close, 0, 10)])
+        l("str:match()", @[tk("str", ◂name, 0, 0), tk(":", ◂colon, 0, 3), tk("match", ◂name, 0, 4), tk("(", ◂paren_open, 0, 9), tk(")", ◂paren_close, 0, 10)])

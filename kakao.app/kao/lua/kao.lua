@@ -78,9 +78,9 @@ function build()
         _G.files = {"kao.lua"}
     end
     
-    local args = {"luastatic"}
-    array.push(args, unpack(files))
-    array.push(args, libjit, "-I", incjit, "-o", out)
+    local args = array("luastatic")
+    args:push(unpack(files))
+    args:push(libjit, "-I", incjit, "-o", out)
     output, ok = slash.shell(unpack(args))
     return output, ok
 end
@@ -104,8 +104,8 @@ function watch(...)
     local modTimes = {}
     
     while true do 
-        local kxkChanged = {}
-        local luaChanged = {}
+        local kxkChanged = array()
+        local luaChanged = array()
         
         for _, dir in ipairs({...}) do 
             for i, f in ipairs(slash.walk(dir)) do 
@@ -123,10 +123,10 @@ function watch(...)
                         
                         if kxkFiles[p] then 
                             print("◆", slash.file(p))
-                            array.push(kxkChanged, p)
+                            kxkChanged:push(p)
                         elseif luaFiles[p] then 
                             print("◇", slash.file(p))
-                            array.push(luaChanged, p)
+                            luaChanged:push(p)
                         end
                     end
                 end

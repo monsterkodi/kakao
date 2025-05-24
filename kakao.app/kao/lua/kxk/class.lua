@@ -37,7 +37,7 @@ end
 
 function _wrapMethod(aClass, f) 
     return function (self, ...) 
-        assert(((type(self) == "table") and ((self.class == aClass) or self.class:extends(aClass))), "Invalid self: expected " .. aClass.name .. " but got " .. type(self))
+        assert((((type(self) == "table") and self.class) and ((self.class == aClass) or self.class:extends(aClass))), "Invalid self: expected " .. aClass.name .. " but got " .. type(self))
         
         return f(self, ...)
     end
@@ -143,7 +143,8 @@ local DefaultMixin = {
                 instance[k] = m
             end
             
-            return setmetatable(instance, self.__members)
+            setmetatable(instance, self.__members)
+            return instance
         end, 
         new = function (self, ...) 
             assert((type(self) == 'table'), "Use :new instead of .new")

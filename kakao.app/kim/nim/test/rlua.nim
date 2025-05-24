@@ -76,6 +76,7 @@ suite "rlua":
         t("f(1 2 3)", "f(1, 2, 3)")
         t("f(1 g(h(2)))", "f(1, g(h(2)))")
         t("log a", "print(a)")
+        t("array('/', '~'):contains('')", "array('/', '~'):contains('')")
     test "arglist": 
         t("f(a, b, c)", "f(a, b, c)")
         t("g a, b, c", "g(a, b, c)")

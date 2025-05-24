@@ -69,9 +69,9 @@ build = ->
     out = slash.path dir "kao"
     if empty _G.files
         _G.files = {"kao.lua"}
-    args = {"luastatic" }
-    array.push args unpack(files) 
-    array.push args libjit "-I" incjit "-o" out
+    args = array "luastatic" 
+    args:push unpack(files) 
+    args:push libjit "-I" incjit "-o" out
     (output ok) = slash.shell unpack(args)
     (output ok)
         
@@ -94,8 +94,8 @@ watch = ... ->
     
     while true
     
-        kxkChanged = {}
-        luaChanged = {}
+        kxkChanged = array()
+        luaChanged = array()
         
         for _ dir in ipairs {...}
 
@@ -114,10 +114,10 @@ watch = ... ->
                         
                         if kxkFiles[p]
                             log "◆" slash.file p
-                            array.push(kxkChanged p)
+                            kxkChanged:push p
                         elif luaFiles[p]
                             log "◇" slash.file p                    
-                            array.push(luaChanged p)
+                            luaChanged:push p
             
         testPass = true    
         if kxkChanged.len > 0

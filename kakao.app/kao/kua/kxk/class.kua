@@ -34,7 +34,7 @@ _wrapIndex = aClass f ->
 _wrapMethod = aClass f ->
 
     ⮐  (self ...) ->
-        ▴ type(self) == "table" and (self.class == aClass or self.class:extends(aClass)) 
+        ▴ type(self) == "table" and self.class and (self.class == aClass or self.class:extends(aClass)) 
             "Invalid self: expected " & aClass.name & " but got " & type(self)
         ⮐  f(self, ...)
 
@@ -124,7 +124,8 @@ DefaultMixin = {
             instance = { class = self }
             for k m in pairs(self.__proto)
                 instance[k] = m
-            ⮐  setmetatable(instance, self.__members)
+            setmetatable(instance, self.__members)
+            ⮐  instance
         
         new: (self ...) ->
         

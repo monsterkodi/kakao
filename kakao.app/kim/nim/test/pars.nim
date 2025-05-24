@@ -109,11 +109,11 @@ suite "pars":
         t("f = ◇Typ t str=\"\" tk=◂name incr=0 ->", "▪[(◂name = (◂[(◇type(Typ) ◂name), (◂name (= ◂string)), (◂name (= ◂name)), (◂name (= ◂number))]->))]")
         t("error: ◇string msg token=tkn ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]")
         t("error: ◇string msg token=tkn(◂eof) ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]")
-        t("⮐  Node(callee:nod(literal token), callargs:args)", "▪[(⮐ (◂name ◂call @[(◂name : (◂name ◂call @[◂name, ◂name])), (◂name : ◂name)]))]")
+        t("⮐  Node(callee:nod(literal token), callargs:args)", "▪[(⮐ (◂name ◂call @[((◂name : ◂name) ◂call @[◂name, ◂name]), (◂name : ◂name)]))]")
     test "lua": 
-        t("Inspector:getId = v ->", "▪[(◂name : (◂[(◂name (= ◂name))]->))]")
-        l("Inspector:getId = v ->", "▪[(◂name = (◂[(◂name)]->))]")
-        l("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "▪[(⮐ ((((◂name ◂call @[◂name]) == ◂string) && (! (! (◂name ◂call @[◂string])))) && (! (◂name[◂name]))))]")
+        t("Inspector:getId = v ->", "▪[((◂name : ◂name) = (◂[(◂name)]->))]")
+        l("Inspector:getId = v ->", "▪[((◂name : ◂name) = (◂[(◂name)]->))]")
+        l("⮐  type(str) == \"string\" and not not str:match(\"^[_%a][_%a%d]*$\") and not luaKeywords[str]", "▪[(⮐ ((((◂name ◂call @[◂name]) == ◂string) && (! (! ((◂name : ◂name) ◂call @[◂string])))) && (! (◂name[◂name]))))]")
     test "varargs": 
         t("f = (...) ->", "▪[(◂name = (◂[(NIL ... NIL)]->))]")
         t("f = (a ...) ->", "▪[(◂name = (◂[(◂name), (NIL ... NIL)]->))]")
@@ -144,9 +144,11 @@ hook = -> {.noconv.}
         t("f(1, \"txt\", (a:1 b:3))", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
         t("f(1 \"txt\" (a:1 b:3))", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
         t("f 1 \"txt\" (a:1 b:3)", "▪[(◂name ◂call @[◂number, ◂string, ◂[(◂name : ◂number), (◂name : ◂number)]])]")
+        t("arr:contains('')", "▪[((◂name : ◂name) ◂call @[◂string])]")
+        t("array('/', '~'):contains('')", "▪[(((◂name ◂call @[◂string, ◂string]) : ◂name) ◂call @[◂string])]")
     test "constructor call": 
         t("Token(tok:◂let)", "▪[(◂name ◂call @[(◂name : ◂name)])]")
-        t("Node(token:Token(tok:◂let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", "▪[(◂name ◂call @[(◂name : (◂name ◂call @[(◂name : ◂name), (◂name : ◂string), (◂name : ((◂name . ◂name) . ◂name))])), (◂name : ◂name), (◂name : ◂name)])]")
+        t("Node(token:Token(tok:◂let, str:\"var\", line:expr.token.line), kind:●let, let_expr:expr)", "▪[(◂name ◂call @[((◂name : ◂name) ◂call @[(◂name : ◂name), (◂name : ◂string), (((◂name : ◂name) . ◂name) . ◂name)]), (◂name : ◂name), (◂name : ◂name)])]")
     test "implicit call    ": 
         t("f a", "▪[(◂name ◂call @[◂name])]")
         t("f a.b", "▪[(◂name ◂call @[(◂name . ◂name)])]")
@@ -465,16 +467,6 @@ enum tok
         t("class Node\n member:string\n i:int", "▪[(◂class ◂name ▪[(◂name : ◂name)(◂name : ◂name)])]")
         t("class Node\n member:string\ni:int", "▪[(◂class ◂name ▪[(◂name : ◂name)])(◂name : ◂name)]")
         t("class B extends A", "▪[(◂class ◂name ◂name ▪[])]")
-#         t   """
-#             class simpleLog
-#                 p: => log "simpleLog" a b
-#             """ ""
-# 
-#         t   """
-#             class virtualLog
-#                 p: => log "virtualLog" @a @b
-#             """ ""
-
     test "this": 
         t("@ : ->", "▪[(◂name : (->))]")
         t("@name : ->", "▪[(◂name : (->))]")
@@ -509,9 +501,9 @@ enum tok
     test "semicolon": 
         t("if true\n  a\n  b\n  c", "▪[(◂if @[(✔ ▪[◂name◂name◂name])])]")
         t("a ; b", "▪[;[◂name◂name]]")
-        # t "if true ➜ a ; b"                     "▪[(◂if @[(✔ ;[◂name◂name])])]"
-        # t "if true ➜ a ; b;c"                   "▪[(◂if @[(✔ ;[◂name◂name◂name])])]"
-        # t "f = -> (a = 1 ; b = 2)"              "▪[(◂name = (-> ◂[;[(◂name = ◂number)(◂name = ◂number)]]))]"
+        t("if true ➜ a ; b", "▪[(◂if @[(✔ ;[◂name◂name])])]")
+        t("if true ➜ a ; b;c", "▪[(◂if @[(✔ ;[◂name◂name◂name])])]")
+        t("f = -> (a = 1 ; b = 2)", "▪[(◂name = (-> ◂[;[(◂name = ◂number)(◂name = ◂number)]]))]")
         t("f = -> a = 1 ; b = 2", "▪[(◂name = (-> ;[(◂name = ◂number)(◂name = ◂number)]))]")
     test "blocks": 
         t("t \"a\",\n  \"b\"", "▪[(◂name ◂call @[◂string, ◂string])]")

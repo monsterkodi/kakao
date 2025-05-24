@@ -609,7 +609,9 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
     ▸ lua
     
         l "str:match()"         [
-            tk("str:match"      ◂name           0   0) 
+            tk("str"            ◂name           0   0) 
+            tk(":"              ◂colon          0   3) 
+            tk("match"          ◂name           0   4) 
             tk("("              ◂paren_open     0   9)
             tk(")"              ◂paren_close    0   10)]
             

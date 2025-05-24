@@ -6,6 +6,11 @@
 
 os = require "os"
 
+
+function rawpairs(t) 
+    return next, t, nil
+end
+
 _G.testFail = 0
 
 
@@ -50,18 +55,21 @@ function test.static.cmp(a, b)
     end
     
     if (type(a) ~= type(b)) then 
-        return fail("type mismatch: " .. type(a) .. " != " .. type(b))
+        return fail("type mismatch: " .. type(a) .. " != " .. type(b) .. " (" .. tostring(a) .. " != " .. tostring(b) .. ")")
     end
     
     if (type(a) == "table") then 
-            for k, v in pairs(a) do 
-                if not test.static.cmp(v, b[k]) then 
-                    local key = k
-                    if (type(k) == "number") then 
-                        key = kstr.index(k)
+            for k, v in rawpairs(a) do 
+                if ((type(v) ~= "function") and ((type(k) ~= "string") or (k:sub(1, 2) ~= "__"))) then 
+                    -- log "cmp" k, type(v)
+                    if not test.static.cmp(v, b[k]) then 
+                        local key = k
+                        if (type(k) == "number") then 
+                            key = kstr.index(k)
+                        end
+                        
+                        return fail("table mismatch at " .. tostring(key)) -- & " " & $v & " != " & $b[k]
                     end
-                    
-                    return fail("table mismatch at " .. key) -- & " " & $v & " != " & $b[k]
                 end
             end
     elseif (type(a) == "number") then 

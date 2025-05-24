@@ -5,86 +5,92 @@
 # ███   ███  ███   ███  ███   ███  ███   ███     ███   
 # ███   ███  ███   ███  ███   ███  ███   ███     ███   
 
-array = {}
+class array
 
-array.map = tbl f ->
+    @: (...) ->
+        
+        for i v in ipairs({...})
+            table.insert @ v
 
-    t = {}
-    for k,v in pairs(tbl)
-        t[k] = f(v)
-    t
-
-array.filter = tbl f ->
-
-    t = {}
-    for k,v in pairs(tbl)
-        if f(v k)
-            table.insert t v
-    t
+    $: -> 
     
-array.shift   = a -> 
-    ▴ type(a) == "table" 
-    if a.len > 0 ➜ ⮐  table.remove a 1
-    nil
-    
-array.pop     = a -> 
-    ▴ type(a) == "table"
-    if a.len > 0 ➜ ⮐  table.remove a a.len
-    nil
-    
-array.push    = a ... -> 
-    ▴ type(a) == "table" "array.push -- not a table: " & $a 
-    for i v in ipairs {...}
-        a[a.len+1] = v
-    a
-    
-array.unshift = a v -> 
-    ▴ type(a) == "table"
-    table.insert a 1 v
-    a
-    
-array.slice = a first last ->
-    ▴ type(a) == "table"
-    if last == nil ➜ last = a.len
-    s = {}
-    for i in first..last
-        array.push s a[i]
-    s
-    
-array.keydict = a key ->
-    ▴ type(a) == "table"
-    t = {}
-    for i v in ipairs(a)
-        t[v[key]] = v
-    t
+        s = ".\n"  
+        for i v in ipairs(@)
+            s = s & "    " & i & "    " & v & "\n"
+        s
 
-array.indexdict = a ->
-    ▴ type(a) == "table"
-    t = {}
-    for i v in ipairs(a)
-        t[v] = i
-    t
-
-array.str = a -> 
-
-    s = ".\n"  
-    for i v in pairs(a)
-        s = s & "    " & i & "    " & v & "\n"
-    s
+    str: -> $@
     
-array.isarr = a ->
+    map: f ->
+    
+        t = array()
+        for i v in ipairs(@)
+            t[i] = f(v)
+        t
+    
+    filter: f ->
+    
+        t = array()
+        for i v in ipairs(@)
+            if f(v i)
+                t:push v
+        t
+        
+    shift: -> 
 
+        if @len > 0 ➜ ⮐  table.remove @ 1
+        nil
+        
+    pop: -> 
+
+        if @.len > 0 ➜ ⮐  table.remove @ @.len
+        nil
+        
+    push: ... -> 
+
+        for i v in ipairs {...}
+            @[@.len+1] = v
+        @
+        
+    unshift: v -> 
+
+        table.insert @ 1 v
+        @
+        
+    slice: first last ->
+
+        if last == nil ➜ last = @.len
+        s = array()
+        for i in first..last
+            s:push @[i]
+        s
+        
+    keydict: key ->
+
+        t = {}
+        for i v in ipairs(@)
+            t[v[key]] = v
+        t
+    
+    indexdict: ->
+
+        t = {}
+        for i v in ipairs(@)
+            t[v] = i
+        t
+                    
+    indexof: e ->
+    
+        for i v in ipairs @
+            if v == e ➜ ⮐  i 
+        -1
+        
+    has:      e -> @indexof(e) >= 0
+    contains: e -> @indexof(e) >= 0
+
+array.static.isarr = a ->
+    
     ⮐  false if type(a) != "table"
     a.len > 0
     
-array.indexof = a e ->
-
-    if array.isarr a
-        for i v in ipairs a
-            if v == e ➜ ⮐  i 
-    -1
-    
-array.has      = a e -> array.indexof(a e) >= 0
-array.contains = a e -> array.indexof(a e) >= 0
-
 ⮐  array

@@ -48,7 +48,7 @@ end
 
 
 function kseg.segs(s) 
-    local segs = {}
+    local segs = array()
     for i, seg in kseg.codes(s) do 
         segs[(#segs + 1)] = seg
     end
@@ -72,7 +72,7 @@ end
 
 
 function kseg.sub(a, from, to) 
-    return array.slice(a, from, to)
+    return a:slice(from, to)
 end
 
 
