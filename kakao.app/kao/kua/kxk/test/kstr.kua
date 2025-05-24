@@ -46,3 +46,8 @@ use kxk/kxk
     
         kstr.rtrim "xyz\n" ▸ "xyz"
         kstr.trim "abc\n" ▸ "abc"
+        
+    ▸ rfind
+    
+        kstr.rfind "123.56" "." ▸ 4
+        kstr.rfind ".23.56" "." ▸ 4

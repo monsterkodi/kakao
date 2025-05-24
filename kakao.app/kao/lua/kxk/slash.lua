@@ -71,9 +71,17 @@ ffi.cdef([[
     pid_t fork();
     pid_t waitpid(pid_t pid, int *wstatus, int options);
     void _exit(int status);
+    int chdir(const char *path);
+    
+    typedef void (*sighandler_t)(int);
+    sighandler_t signal(int signum, sighandler_t handler);
 ]])
 
-local libc = ffi.load("c")
+
+function sigint() 
+    return os.exit(0)
+end
+ffi.C.signal(2, ffi.cast("sighandler_t", sigint))
 
 
 function cmdargs(cmd, args) 
@@ -100,9 +108,9 @@ local slash = {}
 
 
 function slash.respawn() 
-    libc.fcntl(0, 2, 0) -- clear close on exit flags
-    libc.fcntl(1, 2, 0)
-    libc.fcntl(2, 2, 0)
+    ffi.C.fcntl(0, 2, 0) -- clear close on exit flags
+    ffi.C.fcntl(1, 2, 0)
+    ffi.C.fcntl(2, 2, 0)
     
     local cmd = arg[0]
     if arg[-1] then 
@@ -113,7 +121,7 @@ function slash.respawn()
     end
     
     local args = cmdargs(cmd, arg)
-    return libc.execv(args[0], args)
+    return ffi.C.execv(args[0], args)
 end
 
 --  ███████  ███   ███  ████████  ███      ███    
@@ -130,30 +138,30 @@ function slash.shell(cmd, ...)
     local exitcode = nil
     local failreason = nil
     
-    if ((libc.pipe(read_pipe) ~= 0) or (libc.pipe(write_pipe) ~= 0)) then return nil, false, nil end
+    if ((ffi.C.pipe(read_pipe) ~= 0) or (ffi.C.pipe(write_pipe) ~= 0)) then return nil, false, nil end
     
-    local pid = libc.fork()
+    local pid = ffi.C.fork()
     
     if (pid == 0) then 
-        libc.close(read_pipe[1])
-        libc.close(write_pipe[0])
-        libc.dup2(write_pipe[1], 1)
-        libc.dup2(write_pipe[1], 2)
-        libc.close(read_pipe[0])
-        libc.close(write_pipe[1])
+        ffi.C.close(read_pipe[1])
+        ffi.C.close(write_pipe[0])
+        ffi.C.dup2(write_pipe[1], 1)
+        ffi.C.dup2(write_pipe[1], 2)
+        ffi.C.close(read_pipe[0])
+        ffi.C.close(write_pipe[1])
         
         local argv = cmdargs(cmd, {...})
-        libc.execvp(argv[0], argv)
-        libc._exit(127)
+        ffi.C.execvp(argv[0], argv)
+        ffi.C._exit(127)
     elseif (pid > 0) then 
-        libc.close(read_pipe[0])
-        libc.close(write_pipe[1])
-        --                 F_SETFL▾                   F_GETFL▾      ▾O_NONBLOCK
-        libc.fcntl(write_pipe[0], 4, bit.bor(libc.fcntl(write_pipe[0], 3, 0), 0x0004))
+        ffi.C.close(read_pipe[0])
+        ffi.C.close(write_pipe[1])
+        --                  F_SETFL▾                    F_GETFL▾      ▾O_NONBLOCK
+        ffi.C.fcntl(write_pipe[0], 4, bit.bor(ffi.C.fcntl(write_pipe[0], 3, 0), 0x0004))
         
         local buf = ffi.new("char[4096]")
         while true do 
-            local bytes_read = libc.read(write_pipe[0], buf, 4096)
+            local bytes_read = ffi.C.read(write_pipe[0], buf, 4096)
             if (bytes_read > 0) then 
                 output = output .. ffi.string(buf, bytes_read)
                 sleep(0.002)
@@ -162,10 +170,10 @@ function slash.shell(cmd, ...)
             end
         end
         
-        libc.close(write_pipe[0])
+        ffi.C.close(write_pipe[0])
         
         local wstatus = ffi.new("int[1]")
-        local waitpid = libc.waitpid(pid, wstatus, 0)
+        local waitpid = ffi.C.waitpid(pid, wstatus, 0)
         
         return output, ((waitpid == pid) and (wstatus[0] == 0)), wstatus[0]
     else 
@@ -185,6 +193,13 @@ function slash.cwd()
     local cwd = ffi.C.getcwd(buf, 4096)
     if cwd then 
         return ffi.string(cwd)
+    end
+end
+
+
+function slash.chdir(dir) 
+    if (ffi.C.chdir(dir) == 0) then 
+        return slash.cwd()
     end
 end
 
@@ -239,7 +254,7 @@ function slash.normalize(path)
         kseg.shift(p)
     end
     
-    if ((#p > 1) and (p[#p] == '/')) then 
+    while ((#p > 1) and (p[#p] == '/')) do 
         kseg.pop(p)
     end
     
@@ -247,6 +262,7 @@ function slash.normalize(path)
         kseg.shift(p)
     end
     
+    -- log "nrm" path, kseg.str(p)
     return kseg.str(p)
 end
 
@@ -307,6 +323,10 @@ function slash.join(...)
     return table.concat({...}, "/")
 end
 
+function slash.contains(path, subpath) 
+    return array.has(slash.split(path), subpath)
+end
+
 -- ████████    ███████   ████████    ███████  ████████
 -- ███   ███  ███   ███  ███   ███  ███       ███     
 -- ████████   █████████  ███████    ███████   ███████ 
@@ -354,6 +374,58 @@ function slash.ext(path)
 end
 
 
+function slash.swapExt(path, ext) 
+    if ((ext == nil) or (ext == "")) then return path end
+    local p = slash.parse(path)
+    return slash.path(p.dir, p.name .. "." .. ext)
+end
+
+-- slash.splitExt = path ->
+--     
+--     split = path.split()
+--     dotidx = split[^1].rfind "."
+--     ext = ""
+--     if dotidx > 0
+--         ext = split[^1][dotidx+1..^1]
+--         split[^1] = split[^1][0...dotidx]
+--     pth = split.join "/"
+--     [pth ext]
+
+
+function slash.splitExt(path) 
+    local split = slash.split(path)
+    local dotidx = kstr.rfind(split[#split], ".")
+    print("dotidx", dotidx, path)
+    local ext = ""
+    if (dotidx > 0) then 
+        ext = kstr.slice(split[#split], (dotidx + 1))
+        split[#split] = kstr.slice(split[#split], 0, dotidx)
+    end
+    
+    local pth = slash.path(unpack(split))
+    return {pth, ext}
+end
+
+
+function slash.removeExt(path) 
+    return path.splitExt[0]
+end
+
+
+function slash.swapLastPathComponentAndExt(path, src, tgt) 
+    local dirs = path.dirs()
+    for i in iter(#dirs, 0) do 
+        if (dirs[i] == src) then 
+            dirs[i] = tgt
+            break
+        end
+    end
+    
+    array.push(dirs, slash.swapExt(path.file, tgt))
+    return slash.path(unpack(dirs))
+end
+
+
 function prettyTimeSpan(seconds) 
     if (seconds == 0) then return "0" end
     seconds = math.abs(seconds)
@@ -398,8 +470,15 @@ local sbuf = ffi.new("struct stat")
 
 function slash.stat(path) 
     if (ffi.C.stat64(path, sbuf) == 0) then 
+        local mode = tonumber(sbuf.st_mode)
+        local typ = "?"
+        if bit.band(mode, 0x4000) then typ = "dir"
+        elseif bit.band(mode, 0x8000) then typ = "file"
+        elseif bit.band(mode, 0xa000) then typ = "link"
+        end
+        
         return {
-                mode = tonumber(sbuf.st_mode), 
+                mode = mode, 
                 nlink = tonumber(sbuf.st_nlink), 
                 ino = tonumber(sbuf.st_ino), 
                 uid = tonumber(sbuf.st_uid), 
@@ -410,6 +489,7 @@ function slash.stat(path)
                 btime = tonumber(sbuf.st_btime), 
                 blksize = tonumber(sbuf.st_blksize), 
                 blocks = tonumber(sbuf.st_blocks), 
+                ["type"] = typ, 
                 -- modage:     prettyTimeSpan(os.time()-tonumber(sbuf.st_mtime))
                 }
     end
@@ -479,6 +559,31 @@ function slash.files(path, ext)
     end
     
     return files
+end
+
+
+function slash.exists(path) 
+    return slash.stat(path)
+end
+
+function slash.isDir(path) 
+                   local s = slash.stat(path) ; if (s and (s.type == "dir")) then return s end
+end
+
+function slash.isFile(path) 
+                   local s = slash.stat(path) ; if (s and (s.type == "file")) then return s end
+end
+
+function slash.isLink(path) 
+                   local s = slash.stat(path) ; if (s and (s.type == "link")) then return s end
+end
+
+function slash.dirExists(path) 
+    return slash.isDir(path)
+end
+
+function slash.fileExists(path) 
+    return slash.isFile(path)
 end
 
 return slash

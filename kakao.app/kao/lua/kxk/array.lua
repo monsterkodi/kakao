@@ -43,9 +43,12 @@ function array.pop(a)
 end
 
 
-function array.push(a, v) 
-    assert((type(a) == "table"))
-    a[(#a + 1)] = v
+function array.push(a, ...) 
+    assert((type(a) == "table"), "array.push -- not a table: " .. tostring(a))
+    for i, v in ipairs({...}) do 
+        a[(#a + 1)] = v
+    end
+    
     return a
 end
 
@@ -104,6 +107,26 @@ end
 function array.isarr(a) 
     if (type(a) ~= "table") then return false end
     return (#a > 0)
+end
+
+
+function array.indexof(a, e) 
+    if array.isarr(a) then 
+        for i, v in ipairs(a) do 
+            if (v == e) then return i end
+        end
+    end
+    
+    return -1
+end
+
+
+function array.has(a, e) 
+    return (array.indexof(a, e) >= 0)
+end
+
+function array.contains(a, e) 
+    return (array.indexof(a, e) >= 0)
 end
 
 return array

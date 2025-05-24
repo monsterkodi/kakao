@@ -222,7 +222,14 @@ class Rlua
     
         @rnd n.array_owner
         @add "["
-        @rnd n.array_index
+        if n.array_index.kind == ●preOp and n.array_index.token.tok == ◂caret
+            @add "#"
+            @rnd n.array_owner
+            if n.array_index.operand.token.str != "1"
+                @add "+1-"
+                @rnd n.array_index.operand
+        else
+            @rnd n.array_index
         @add "]"
                         
     ▸var: ◇Node n ->

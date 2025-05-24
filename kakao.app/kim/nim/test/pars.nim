@@ -227,6 +227,13 @@ else
     fun output.replace("[S]" fg(fgYellow) & "▸")
               .replace("[T]" fg(fgGeen)   & "▸")
 """, "▪[(◂if @[(◂number ▪[(◂name ◂call @[((((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])] ▪[(◂name = ((◂name . ◂name) ◂call @[◂string]))(◂name ◂call @[((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])]")
+    test "keywords": 
+        t("a.b", "▪[(◂name . ◂name)]")
+        t("a.true", "▪[(◂name . ◂name)]")
+        t("a.type", "▪[(◂name . ◂name)]")
+        t("a.if", "▪[(◂name . ◂name)]")
+        t("a.switch", "▪[(◂name . ◂name)]")
+        t("a.function", "▪[(◂name . ◂name)]")
     test "array access": 
         t("a[0]", "▪[(◂name[◂number])]")
     test "if": 
@@ -311,6 +318,7 @@ elif b  # 3
 else    # 5
     3   # 6
 """, "▪[(◂if @[(◂name ▪[◂number#]), (◂name ▪[◂number#])] ▪[◂number#])]")
+        t("slash.isDir = path -> s = slash.stat path ; if s.type == 1 ➜ ⮐  s", "▪[((◂name . ◂name) = (◂[(◂name)]-> ;[(◂name = ((◂name . ◂name) ◂call @[◂name]))(◂if @[(((◂name . ◂name) == ◂number) (⮐ ◂name))])]))]")
     test "for": 
         t("0..2", "▪[(◂number .. ◂number)]")
         t("for a in 0..2 ➜ true", "▪[(◂for ◂name in (◂number .. ◂number) ✔)]")

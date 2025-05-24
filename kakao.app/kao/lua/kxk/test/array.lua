@@ -17,6 +17,12 @@ test("array", function()
         test.cmp(x, nil)
     end)
     
+    test("push ", function()
+        local a = {}
+        array.push(a, 1, 2, 3)
+        test.cmp(a, {1, 2, 3})
+    end)
+    
     test("isarr", function()
         local a = {1, 2}
         test.cmp(array.isarr(a), true)

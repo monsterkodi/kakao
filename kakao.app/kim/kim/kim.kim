@@ -204,7 +204,7 @@ runTests = ◇seq[string] files ➜bool ->
                                 ➜ break
                 
         exitCode = process.waitForExit()
-        if exitCode != 0 or verbose or thisFail or slash.contains(f "tok.nim")
+        if exitCode != 0 or verbose or thisFail #or slash.contains(f "tok.nim")
             styledEcho output.replace("[Suite]"  fg(fgYellow) & "▸\x1b[0m")
                              .replace("[OK]"     fg(fgGreen) & "✔\x1b[0m")
                              .replace("[FAILED]" fg(fgRed) & "✘\x1b[0m")                             
@@ -261,7 +261,8 @@ stage = ◇seq[string] kimFiles ◇string src ◇string dst ➜bool ->
 
     if compile "#{dst}/nim/kim.nim" "#{dst}/bin"
         profileStart "test" 
-        (output exitCode) = execCmdEx "#{dst}/bin/kim -v --test"
+        # (output exitCode) = execCmdEx "#{dst}/bin/kim -v --test"
+        (output exitCode) = execCmdEx "#{dst}/bin/kim --test"
         profileStop "test"
         if exitCode == 0
             ⮐  true

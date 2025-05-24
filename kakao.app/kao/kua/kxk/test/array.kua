@@ -19,6 +19,12 @@ use kxk/kxk
         a ▸ {}
         x ▸ nil
         
+    ▸ push 
+    
+        a = {}
+        array.push a 1 2 3
+        a ▸ {1 2 3}
+        
     ▸ isarr
     
         a = { 1 2 }

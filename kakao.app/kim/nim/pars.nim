@@ -971,7 +971,7 @@ proc lOperation(this : Parser, left : Node) : Node =
         nod(●operation, token, left, right)
 
 proc lMinus(this : Parser, left : Node) : Node = 
-        if (not this.isConnectedLeft() and this.isConnectedRight()): 
+        if ((not this.isConnectedLeft() and this.isConnectedRight()) or (left.token.line < this.current.line)): 
             return
         else: 
             var token = this.consume()
@@ -1217,6 +1217,7 @@ proc setup(this : Parser) =
         this.pratt(◂tripledot, lRange, rRange, 40)
         this.pratt(◂ampersand, lOperation, nil, 42)
         this.pratt(◂dollar, nil, rDollar, 48)
+        this.pratt(◂caret, nil, rPreOp, 48)
         this.pratt(◂plus, lOperation, nil, 50)
         this.pratt(◂minus, lMinus, rPreOp, 50)
         this.pratt(◂multiply, lOperation, nil, 60)

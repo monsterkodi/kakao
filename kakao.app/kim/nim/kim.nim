@@ -154,7 +154,7 @@ proc runTests(files : seq[string]) : bool =
             elif (errno == EAGAIN): discard poll(nil, 0, 50)
             else: break
         var exitCode = process.waitForExit()
-        if ((((exitCode != 0) or verbose) or thisFail) or slash.contains(f, "tok.nim")): 
+        if (((exitCode != 0) or verbose) or thisFail): 
             styledEcho(output.replace("[Suite]", fg(fgYellow) & "▸\x1b[0m").replace("[OK]", fg(fgGreen) & "✔\x1b[0m").replace("[FAILED]", fg(fgRed) & "✘\x1b[0m"))
         else: 
             var okCount = output.count("[OK]")
@@ -195,7 +195,8 @@ proc stage(kimFiles : seq[string], src : string, dst : string) : bool =
     profileStop(dst & " ")
     if compile(&"{dst}/nim/kim.nim", &"{dst}/bin"): 
         profileStart("test")
-        var (output, exitCode) = execCmdEx(&"{dst}/bin/kim -v --test")
+        # (output exitCode) = execCmdEx "#{dst}/bin/kim -v --test"
+        var (output, exitCode) = execCmdEx(&"{dst}/bin/kim --test")
         profileStop("test")
         if (exitCode == 0): 
             return true

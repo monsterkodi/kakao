@@ -77,6 +77,7 @@ type tok* = enum
     ◂increment = "++"
     ◂decrement = "--"
     ◂ampersand = "&"
+    ◂caret = "^"
     ◂dollar = "$"
     ◂qmark = "?"
     ◂divide = "/"
@@ -501,15 +502,18 @@ proc tknz(this : Tknzr, segs : seq[string], lang : string) : seq[Token] =
                                         continue
                                 else: discard
                         if (keywords.hasKey(this.token.str) and (((this.segi >= this.eol) or (this.peek(0) == " ")) or punct.hasKey(this.peek(0)))): 
-                            case keywords[this.token.str]:
-                                of ◂type: 
-                                    if (this.peek(0) != "("): 
+                            if ((this.tokens.len == 0) or (this.tokens[^1].tok notin {◂dot})): 
+                                case keywords[this.token.str]:
+                                    of ◂type: 
+                                        if (this.peek(0) != "("): 
+                                            this.verbatim()
+                                        else: 
+                                            this.push(◂name)
+                                    of ◂proc, ◂import, ◂macro, ◂template, ◂converter: 
                                         this.verbatim()
-                                    else: 
-                                        this.push(◂name)
-                                of ◂proc, ◂import, ◂macro, ◂template, ◂converter: 
-                                    this.verbatim()
-                                else: this.push(keywords[this.token.str])
+                                    else: this.push(keywords[this.token.str])
+                            else: 
+                                this.push(◂name)
                         continue
                 this.incr(1)
             if this.token.str.len: 

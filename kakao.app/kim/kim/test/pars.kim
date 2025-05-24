@@ -302,6 +302,15 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
                           .replace("[T]" fg(fgGeen)   & "▸")
             """                                     "▪[(◂if @[(◂number ▪[(◂name ◂call @[((((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])] ▪[(◂name = ((◂name . ◂name) ◂call @[◂string]))(◂name ◂call @[((((◂name . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)]) . ◂name) ◂call @[◂string, ((◂name ◂call @[◂name]) & ◂string)])])])]"
         
+    ▸ keywords
+        
+        t "a.b"                                     "▪[(◂name . ◂name)]" 
+        t "a.true"                                  "▪[(◂name . ◂name)]" 
+        t "a.type"                                  "▪[(◂name . ◂name)]" 
+        t "a.if"                                    "▪[(◂name . ◂name)]" 
+        t "a.switch"                                "▪[(◂name . ◂name)]" 
+        t "a.function"                              "▪[(◂name . ◂name)]" 
+        
     ▸ array access
     
         t "a[0]"                                    "▪[(◂name[◂number])]"
@@ -404,6 +413,9 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
             else    # 5
                 3   # 6
             """                                     "▪[(◂if @[(◂name ▪[◂number#]), (◂name ▪[◂number#])] ▪[◂number#])]"
+        
+        t "slash.isDir = path -> s = slash.stat path ; if s.type == 1 ➜ ⮐  s" 
+            "▪[((◂name . ◂name) = (◂[(◂name)]-> ;[(◂name = ((◂name . ◂name) ◂call @[◂name]))(◂if @[(((◂name . ◂name) == ◂number) (⮐ ◂name))])]))]"
         
     ▸ for
     

@@ -32,7 +32,7 @@ enum tok*
     ◂macro
     ◂quote
     ◂converter
-    ◂type  
+    ◂type
     ◂use
     ◂log
     ◂try
@@ -82,6 +82,7 @@ enum tok*
     ◂increment          = "++" 
     ◂decrement          = "--" 
     ◂ampersand          = "&"
+    ◂caret              = "^"
     ◂dollar             = "$"
     ◂qmark              = "?"
     ◂divide             = "/"
@@ -583,15 +584,19 @@ class Tknzr
                                 ➜ discard
                          
                         if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)))
-                            switch keywords[@token.str]
-                                ◂type
-                                    if @peek(0) != "("
+                            if @tokens.len == 0 or @tokens[^1].tok notin {◂dot}
+                                switch keywords[@token.str]
+                                    ◂type
+                                        if @peek(0) != "("
+                                            @verbatim()
+                                        else
+                                            @push ◂name
+                                    ◂proc ◂import ◂macro ◂template ◂converter
                                         @verbatim()
-                                    else
-                                        @push ◂name
-                                ◂proc ◂import ◂macro ◂template ◂converter
-                                    @verbatim()
-                                ➜   @push keywords[@token.str]
+                                    ➜   @push keywords[@token.str]
+                            else # convert afterspaced keyword to name if prefixed with .
+                                @push ◂name
+                                
                         continue
                 @incr 1
             

@@ -1192,7 +1192,7 @@ class Parser
 
     lMinus: ◇Node left ➜Node ->
     
-        if not @isConnectedLeft() and @isConnectedRight()
+        if not @isConnectedLeft() and @isConnectedRight() or left.token.line < @current.line
             ⮐ 
         else
             token = @consume()
@@ -1492,6 +1492,7 @@ class Parser
         
         @pratt ◂ampersand         lOperation        nil            42
         @pratt ◂dollar            nil               rDollar        48
+        @pratt ◂caret             nil               rPreOp         48
         
         @pratt ◂plus              lOperation        nil            50
         @pratt ◂minus             lMinus            rPreOp         50

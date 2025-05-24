@@ -80,11 +80,11 @@ function TTIO extends events
         @write '\x1b[?1049l' # end scrollback screen buffer
         @showCursor()
         @restore()
-    
+        
     clear: =>
         @write '\x1b[2J' # clear screen
         @write '\x1b[H'  # cursor home
-
+    
     cols: => process.stdout.columns
     rows: => process.stdout.rows  
     

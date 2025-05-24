@@ -16,6 +16,14 @@ _G.iter = from to step=1 ->
                 ⮐  i
     -> nil
     
+_G.empty = v ->
+
+    switch type(v)
+        "table"  ➜ ⮐  v.len == 0 or v.len == nil and v == {}
+        "string" ➜ ⮐  v == ""
+        "nil"    ➜ ⮐  true
+    false
+    
 _G.sleep = s ->
     t = os.clock()
     while os.clock() - t <= s ➜ _ = 1

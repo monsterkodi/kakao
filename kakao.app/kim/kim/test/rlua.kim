@@ -146,6 +146,11 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "a = [ 1 - 2 ]"                             "a = {(1 - 2)}"
         t "a = [ 1 -2 ]"                              "a = {1, -2}"
         
+    ▸ array access
+    
+        t "s[^1]"                                     "s[#s]"
+        t "s[^2]"                                     "s[#s+1-2]"
+        
     ▸ properties        
         
         t "a.b"                                       "a.b"     
@@ -239,6 +244,21 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
             end
             
             {a = 1, b = 2}"""
+            
+        v   """
+            f = ->
+                if true
+                    nil
+                -1
+            """ """
+            
+            function f() 
+                if true then 
+                    nil
+                end
+                
+                return -1
+            end"""
 
     ▸ for                                            
           

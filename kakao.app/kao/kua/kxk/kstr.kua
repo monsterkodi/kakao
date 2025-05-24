@@ -11,15 +11,19 @@ kstr.splice = s i n ... ->
         
 kstr.shift  = s n=1        -> kstr.splice s 1 n
 kstr.pop    = s n=1        -> kstr.splice s,-n n
+
 kstr.lpad   = s n=1 c=" "  ->
 kstr.lpad   = l s="" c=' ' ->
     while s.len < l ➜ s = c & s
     s
+    
 kstr.rpad   = l s="" c=' ' ->  
     while s.len < l ➜ s = s & c
     s
+    
 kstr.endsWith   = s o -> o == string.sub s s.len-o.len+1 s.len
 kstr.startsWith = s o -> o == string.sub s 1 o.len
+
 kstr.rtrim  = s c=' ' ->
     while s.len > 0 and (kstr.endsWith(s c) or kstr.endsWith(s "\n"))
         s = kstr.pop s
@@ -36,5 +40,20 @@ kstr.split = s sep ->
     for part in string.gmatch s pat
         table.insert r part
     r
+    
+kstr.rfind = s c ->
+
+    i = s.len+1-c.len
+    while i > 0 and string.sub(s i i+c.len) != c
+        i = i - 1
+    i
+
+kstr.index = i ->
+
+    switch i
+        1 ➜ ⮐  "1st"
+        2 ➜ ⮐  "2nd"
+        3 ➜ ⮐  "3rd"
+          ➜ ⮐  $i & "th"
    
 ⮐  kstr

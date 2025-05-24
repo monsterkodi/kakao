@@ -26,6 +26,16 @@ end
 end
 
 
+function _G.empty(v) 
+    if (type(v) == "table") then return ((#v == 0) or ((#v == nil) and (v == {})))
+    elseif (type(v) == "string") then return (v == "")
+    elseif (type(v) == "nil") then return true
+    end
+    
+    return false
+end
+
+
 function _G.sleep(s) 
     local t = os.clock()
     while ((os.clock() - t) <= s) do _ = 1 end

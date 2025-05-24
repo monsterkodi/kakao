@@ -23,6 +23,7 @@ function kstr.pop(s, n)
     return kstr.splice(s, -n, n)
 end
 
+
 function kstr.lpad(s, n, c) 
     c = c or " " n = n or 1
 end
@@ -50,6 +51,7 @@ end
 function kstr.startsWith(s, o) 
     return (o == string.sub(s, 1, #o))
 end
+
 
 function kstr.rtrim(s, c) 
     c = c or ' '
@@ -88,6 +90,25 @@ function kstr.split(s, sep)
     end
     
     return r
+end
+
+
+function kstr.rfind(s, c) 
+    local i = ((#s + 1) - #c)
+    while ((i > 0) and (string.sub(s, i, (i + #c)) ~= c)) do 
+        i = (i - 1)
+    end
+    
+    return i
+end
+
+
+function kstr.index(i) 
+    if (i == 1) then return "1st"
+    elseif (i == 2) then return "2nd"
+    elseif (i == 3) then return "3rd"
+    else return tostring(i) .. "th"
+    end
 end
 
 return kstr

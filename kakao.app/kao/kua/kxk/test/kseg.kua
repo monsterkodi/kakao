@@ -5,4 +5,6 @@ use kxk/kxk
 
     ▸ simple
     
-        1 ▸ 1
+        s = kseg.segs("../")
+        kseg.pop s
+        kseg.str s ▸ ".."

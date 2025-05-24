@@ -32,9 +32,10 @@ array.pop     = a ->
     if a.len > 0 ➜ ⮐  table.remove a a.len
     nil
     
-array.push    = a v -> 
-    ▴ type(a) == "table"
-    a[a.len+1] = v
+array.push    = a ... -> 
+    ▴ type(a) == "table" "array.push -- not a table: " & $a 
+    for i v in ipairs {...}
+        a[a.len+1] = v
     a
     
 array.unshift = a v -> 
@@ -75,5 +76,15 @@ array.isarr = a ->
 
     ⮐  false if type(a) != "table"
     a.len > 0
+    
+array.indexof = a e ->
+
+    if array.isarr a
+        for i v in ipairs a
+            if v == e ➜ ⮐  i 
+    -1
+    
+array.has      = a e -> array.indexof(a e) >= 0
+array.contains = a e -> array.indexof(a e) >= 0
 
 ⮐  array

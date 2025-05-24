@@ -68,10 +68,14 @@ ffi.cdef """
     pid_t fork();
     pid_t waitpid(pid_t pid, int *wstatus, int options);
     void _exit(int status);
-"""
+    int chdir(const char *path);
     
-libc = ffi.load "c"
-
+    typedef void (*sighandler_t)(int);
+    sighandler_t signal(int signum, sighandler_t handler);
+"""
+sigint = -> os.exit 0
+ffi.C.signal 2 ffi.cast("sighandler_t" sigint)
+    
 cmdargs = cmd args ->
     ▴ cmd    
     args ?= {}
@@ -93,9 +97,9 @@ slash = {}
 
 slash.respawn = ->
 
-    libc.fcntl 0 2 0 # clear close on exit flags
-    libc.fcntl 1 2 0
-    libc.fcntl 2 2 0
+    ffi.C.fcntl 0 2 0 # clear close on exit flags
+    ffi.C.fcntl 1 2 0
+    ffi.C.fcntl 2 2 0
     
     cmd = arg[0]
     if arg[-1]
@@ -105,7 +109,7 @@ slash.respawn = ->
         arg[-1] = nil
     
     args = cmdargs cmd arg
-    libc.execv args[0] args
+    ffi.C.execv args[0] args
     
 #  ███████  ███   ███  ████████  ███      ███    
 # ███       ███   ███  ███       ███      ███    
@@ -121,43 +125,43 @@ slash.shell = cmd ... ->
     exitcode   = nil
     failreason = nil
 
-    ⮐  (nil false nil) if libc.pipe(read_pipe) != 0 or libc.pipe(write_pipe) != 0 
+    ⮐  (nil false nil) if ffi.C.pipe(read_pipe) != 0 or ffi.C.pipe(write_pipe) != 0 
 
-    pid = libc.fork()
+    pid = ffi.C.fork()
 
     if pid == 0
 
-        libc.close read_pipe[1]
-        libc.close write_pipe[0]
-        libc.dup2  write_pipe[1] 1
-        libc.dup2  write_pipe[1] 2
-        libc.close read_pipe[0]
-        libc.close write_pipe[1]
+        ffi.C.close read_pipe[1]
+        ffi.C.close write_pipe[0]
+        ffi.C.dup2  write_pipe[1] 1
+        ffi.C.dup2  write_pipe[1] 2
+        ffi.C.close read_pipe[0]
+        ffi.C.close write_pipe[1]
 
         argv = cmdargs cmd {...}
-        libc.execvp argv[0] argv
-        libc._exit 127
+        ffi.C.execvp argv[0] argv
+        ffi.C._exit 127
         
     elif pid > 0
         
-        libc.close read_pipe[0]
-        libc.close write_pipe[1]
-        #                 F_SETFL▾                   F_GETFL▾      ▾O_NONBLOCK
-        libc.fcntl(write_pipe[0] 4 libc.fcntl(write_pipe[0] 3 0) | 0x0004)
+        ffi.C.close read_pipe[0]
+        ffi.C.close write_pipe[1]
+        #                  F_SETFL▾                    F_GETFL▾      ▾O_NONBLOCK
+        ffi.C.fcntl(write_pipe[0] 4 ffi.C.fcntl(write_pipe[0] 3 0) | 0x0004)
 
         buf = ffi.new "char[4096]"
         while true
-            bytes_read = libc.read write_pipe[0] buf 4096
+            bytes_read = ffi.C.read write_pipe[0] buf 4096
             if bytes_read > 0
                 output = output & ffi.string(buf, bytes_read)
                 sleep 0.002
             else 
                 break
 
-        libc.close write_pipe[0]
+        ffi.C.close write_pipe[0]
 
         wstatus = ffi.new "int[1]"
-        waitpid = libc.waitpid pid wstatus 0
+        waitpid = ffi.C.waitpid pid wstatus 0
 
         ⮐  (output, (waitpid == pid and wstatus[0] == 0), wstatus[0])
     else
@@ -175,6 +179,11 @@ slash.cwd = ->
     cwd = ffi.C.getcwd buf 4096
     if cwd
         ⮐  ffi.string cwd
+        
+slash.chdir = dir ->
+
+    if ffi.C.chdir(dir) == 0
+        ⮐  slash.cwd()
 
 # ███   ███   ███████   ████████   ██     ██   ███████   ███      ███  ███████  ████████
 # ████  ███  ███   ███  ███   ███  ███   ███  ███   ███  ███      ███     ███   ███     
@@ -212,10 +221,11 @@ slash.normalize = path ->
     if p.len >= 4 and kseg.str(kseg.sub(p 1 4)) == "./.."
         kseg.shift p
         kseg.shift p
-    if p.len > 1 and p[p.len] == '/'
+    while p.len > 1 and p[p.len] == '/'
         kseg.pop p
     if p.len > 1 and p[1] == '/' and frst != '/' and frst != '\\'
         kseg.shift p
+    # log "nrm" path, kseg.str(p)
     kseg.str p
 
 # ████████    ███████   █████████  ███   ███
@@ -230,7 +240,7 @@ slash.path = (...) ->
     mpty = s -> s.len > 0
     fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
     slash.normalize fpth
-
+    
 slash.isRelative = path -> path.len == 0 or path.len > 0 and string.sub(path 1 1) != '/' and string.sub(path 1 1) != '~'
 
 slash.home = -> os.getenv "HOME"
@@ -250,6 +260,7 @@ slash.absolute = path parent ->
 
 slash.split = path -> kstr.split path "/"
 slash.join  = ... -> table.concat {...} "/"
+slash.contains = path subpath -> array.has slash.split(path) subpath
         
 # ████████    ███████   ████████    ███████  ████████
 # ███   ███  ███   ███  ███   ███  ███       ███     
@@ -280,6 +291,48 @@ slash.dir  = path -> slash.parse(path).dir
 slash.file = path -> slash.parse(path).file
 slash.name = path -> slash.parse(path).name
 slash.ext  = path -> slash.parse(path).ext
+    
+slash.swapExt = path ext ->
+
+    ⮐  path if ext == nil or ext == ""
+    p = slash.parse path
+    slash.path p.dir p.name & "." & ext
+    
+# slash.splitExt = path ->
+#     
+#     split = path.split()
+#     dotidx = split[^1].rfind "."
+#     ext = ""
+#     if dotidx > 0
+#         ext = split[^1][dotidx+1..^1]
+#         split[^1] = split[^1][0...dotidx]
+#     pth = split.join "/"
+#     [pth ext]
+
+slash.splitExt = path ->
+    
+    split  = slash.split path
+    dotidx = kstr.rfind split[^1] "."
+    log "dotidx" dotidx, path
+    ext = ""
+    if dotidx > 0
+        ext = kstr.slice split[^1] dotidx+1
+        split[^1] = kstr.slice split[^1] 0 dotidx
+    pth = slash.path unpack(split)
+    [pth ext]
+    
+slash.removeExt = path -> path.splitExt[0]
+    
+slash.swapLastPathComponentAndExt = path src tgt ->
+
+    dirs = path.dirs()    
+    for i in dirs.len..0
+        if dirs[i] == src
+            dirs[i] = tgt
+            break
+            
+    array.push dirs slash.swapExt(path.file tgt)
+    slash.path unpack(dirs)
     
 prettyTimeSpan = seconds ->
 
@@ -321,9 +374,13 @@ sbuf = ffi.new("struct stat")
 slash.stat = path ->
 
     if ffi.C.stat64(path, sbuf) == 0
-    
+        mode = tonumber sbuf.st_mode
+        typ  = "?"
+        if   bit.band mode 0x4000 ➜ typ = "dir"
+        elif bit.band mode 0x8000 ➜ typ = "file"
+        elif bit.band mode 0xa000 ➜ typ = "link"
         ⮐   {
-                mode:       tonumber(sbuf.st_mode)
+                mode:       mode
                 nlink:      tonumber(sbuf.st_nlink)
                 ino:        tonumber(sbuf.st_ino)
                 uid:        tonumber(sbuf.st_uid)
@@ -334,6 +391,7 @@ slash.stat = path ->
                 btime:      tonumber(sbuf.st_btime)
                 blksize:    tonumber(sbuf.st_blksize)
                 blocks:     tonumber(sbuf.st_blocks)
+                "type":     typ
                 # modage:     prettyTimeSpan(os.time()-tonumber(sbuf.st_mtime))
             }
     
@@ -389,5 +447,12 @@ slash.files = path ext ->
         fext = (f) -> slash.ext(f) == ext
         files = array.filter files fext
     files
+    
+slash.exists     = path -> slash.stat path
+slash.isDir      = path -> s = slash.stat path ; if s and s.type == "dir"  ➜ ⮐  s
+slash.isFile     = path -> s = slash.stat path ; if s and s.type == "file" ➜ ⮐  s
+slash.isLink     = path -> s = slash.stat path ; if s and s.type == "link" ➜ ⮐  s
+slash.dirExists  = path -> slash.isDir  path
+slash.fileExists = path -> slash.isFile path
     
 ⮐  slash

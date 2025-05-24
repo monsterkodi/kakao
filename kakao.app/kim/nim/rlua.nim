@@ -194,7 +194,14 @@ proc ▸propertyAccess(this : Rlua, n : Node) =
 proc ▸arrayAccess(this : Rlua, n : Node) = 
         this.rnd(n.array_owner)
         this.add("[")
-        this.rnd(n.array_index)
+        if ((n.array_index.kind == ●preOp) and (n.array_index.token.tok == ◂caret)): 
+            this.add("#")
+            this.rnd(n.array_owner)
+            if (n.array_index.operand.token.str != "1"): 
+                this.add("+1-")
+                this.rnd(n.array_index.operand)
+        else: 
+            this.rnd(n.array_index)
         this.add("]")
 
 proc ▸var(this : Rlua, n : Node) = 

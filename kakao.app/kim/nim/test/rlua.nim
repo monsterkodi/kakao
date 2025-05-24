@@ -111,6 +111,9 @@ b = false""")
         t("a = [ 1-2 ]", "a = {(1 - 2)}")
         t("a = [ 1 - 2 ]", "a = {(1 - 2)}")
         t("a = [ 1 -2 ]", "a = {1, -2}")
+    test "array access": 
+        t("s[^1]", "s[#s]")
+        t("s[^2]", "s[#s+1-2]")
     test "properties        ": 
         t("a.b", "a.b")
         t("a.b.c", "a.b.c")
@@ -191,6 +194,20 @@ if a then
 end
 
 {a = 1, b = 2}""")
+        v("""
+f = ->
+    if true
+        nil
+    -1
+""", """
+
+function f() 
+    if true then 
+        nil
+    end
+    
+    return -1
+end""")
     test "for                                            ": 
         t("for k in rawpairs(t) ➜ log k", "for k in rawpairs(t) do print(k) end")
         t("for a in 0..2 ➜ true", "for a in iter(0, 2) do true end")
