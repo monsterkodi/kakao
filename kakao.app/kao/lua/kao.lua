@@ -31,9 +31,10 @@ Options:
     
     _G.files, _G.opts = optparser:parse(arg)
     
-    if slash.isDir(files[1]) then 
-        print("CHWD", files[1])
-        slash.chdir(files[1])
+    local first = slash.absolute(files[1])
+    if slash.isDir(first) then 
+        print("CHWD", first)
+        slash.chdir(first)
         array.shift(files)
         print("files after shift", array.str(_G.files))
     end

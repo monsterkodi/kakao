@@ -9,6 +9,8 @@ kstr.splice = s i n ... ->
     elif i == 1
         ⮐  (table.concat({...} '')) & string.sub(s i+n)
         
+kstr.slice  = s f t -> string.sub s f t
+        
 kstr.shift  = s n=1        -> kstr.splice s 1 n
 kstr.pop    = s n=1        -> kstr.splice s,-n n
 
@@ -44,8 +46,8 @@ kstr.split = s sep ->
 kstr.rfind = s c ->
 
     i = s.len+1-c.len
-    while i > 0 and string.sub(s i i+c.len) != c
-        i = i - 1
+    while i > 0 and string.sub(s i i+c.len-1) != c
+        i -= 1
     i
 
 kstr.index = i ->

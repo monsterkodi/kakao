@@ -33,7 +33,7 @@ use kxk/kxk
 
     ▸ path
     
-        slash.path ""                           ▸ ""
+        slash.path ""                           ▸ nil
         slash.path "a" "b" "c"                  ▸ "a/b/c"
                                                 
         slash.path "" "" "void" "" ""           ▸ "void"
@@ -45,13 +45,13 @@ use kxk/kxk
         slash.path "/"                          ▸ "/"
         slash.path "./"                         ▸ "."
         slash.path "../"                        ▸ ".."
-        # slash.path ".././"                      ▸ ".."
+        slash.path ".././"                      ▸ ".."
         slash.path "./relative"                 ▸ "./relative"
         slash.path "../parent"                  ▸ "../parent"
-        # slash.path ".././././"                  ▸ ".."
+        slash.path ".././././"                  ▸ ".."
         slash.path "//"                         ▸ "/"
         slash.path "C:/"                        ▸ "C:"
-        # slash.path "C://"                       ▸ "C:"
+        slash.path "C://"                       ▸ "C:"
         slash.path "C:"                         ▸ "C:"
         slash.path "C:/"                        ▸ "C:"
         slash.path "C:\\"                       ▸ "C:"
@@ -67,10 +67,10 @@ use kxk/kxk
     # 000       000  000   000  000   000  000   000     000     
     # 000  0000000   000   000   0000000    0000000      000     
     
-    # ▸ isRoot
-    #     
-    #     slash.isRoot "/"                        ▸ true
-    #     slash.isRoot "/a"                       ▸ false
+    ▸ isRoot
+        
+        slash.isRoot "/"                        ▸ true
+        slash.isRoot "/a"                       ▸ false
         
     # 00000000    0000000   00000000    0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -174,7 +174,7 @@ use kxk/kxk
     ▸ splitExt
     
         slash.splitExt "./none"                 ▸ ["./none" ""]
-    #     slash.splitExt "./some.ext"             ▸ ["./some" "ext"]
+        slash.splitExt "./some.ext"             ▸ ["./some" "ext"]
     #     slash.splitExt "./some.more.ext"        ▸ ["./some.more" "ext"]
     #                                             
     #     slash.splitExt "/none"                  ▸ ["/none" ""]
@@ -272,13 +272,13 @@ use kxk/kxk
         slash.isRelative "/a/b"                 ▸ false
         slash.isRelative "~"                    ▸ false
 
-        #slash.isAbsolute "."                    ▸ false
-        #slash.isAbsolute ".."                   ▸ false
-        #slash.isAbsolute ".././bla../../fark"   ▸ false
-        #slash.isAbsolute "..\\blafark"          ▸ false
-        #slash.isAbsolute "a/b"                  ▸ false
-        #slash.isAbsolute "/a/b"                 ▸ true
-        #slash.isAbsolute "~"                    ▸ true
+        slash.isAbsolute "."                    ▸ false
+        slash.isAbsolute ".."                   ▸ false
+        slash.isAbsolute ".././bla../../fark"   ▸ false
+        slash.isAbsolute "..\\blafark"          ▸ false
+        slash.isAbsolute "a/b"                  ▸ false
+        slash.isAbsolute "/a/b"                 ▸ true
+        slash.isAbsolute "~"                    ▸ true
 
     #  0000000   0000000   000   000  000000000   0000000   000  000   000   0000000  
     # 000       000   000  0000  000     000     000   000  000  0000  000  000       
@@ -303,4 +303,5 @@ use kxk/kxk
         slash.isDir(slash.cwd()) != nil             ▸ true
         slash.isFile(slash.cwd())                   ▸ nil
         slash.isLink(slash.cwd())                   ▸ nil
+        slash.isDir("/Users/kodi/s/kakao/kakao.app/kao/lua/kxk/test/kstr.lua") != nil ▸ true
         

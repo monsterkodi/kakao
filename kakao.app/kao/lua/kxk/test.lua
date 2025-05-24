@@ -23,7 +23,12 @@ function test:init(s, t)
         _G.testStack = _G.testStack or {}
         _G.testIndex = 0
         table.insert(testStack, self.suite)
-        print("▸ " .. string.rep("    ", (#testStack - 1)) .. testStack[#testStack])
+        if (#_G.testStack == 1) then 
+            print("▸ " .. self.suite)
+        else 
+            print("  " .. string.rep("    ", (#testStack - 1)) .. self.suite)
+        end
+        
         t()
         table.remove(testStack)
         if (#testStack == 0) then 
@@ -37,28 +42,29 @@ function test:init(s, t)
 function test.static.cmp(a, b) 
     _G.testIndex = _G.testIndex + 1
     
-    if (type(a) ~= type(b)) then 
-        print("✘ [" .. _G.testIndex .. "] type mismatch: " .. type(a) .. " != " .. type(b))
+    
+    function fail(msg) 
+        print("✘ [" .. _G.testIndex .. "] " .. msg)
         _G.testFail = _G.testFail + 1
         return false
     end
     
+    if (type(a) ~= type(b)) then 
+        return fail("type mismatch: " .. type(a) .. " != " .. type(b))
+    end
+    
     if (type(a) == "table") then 
-        for k, v in pairs(a) do 
-            if not test.static.cmp(v, b[k]) then 
-                print("✘ [" .. _G.testIndex .. "] table mismatch at " .. kstr.index(k)) -- & " " & $v & " != " & $b[k]
-                return false
+            for k, v in pairs(a) do 
+                if not test.static.cmp(v, b[k]) then 
+                    return fail("table mismatch at " .. kstr.index(k)) -- & " " & $v & " != " & $b[k]
+                end
             end
-        end
     elseif (type(a) == "number") then 
-        if (math.abs((a - b)) > 1e-10) then 
-            print("✘ [" .. _G.testIndex .. "] number mismatch: " .. tostring(a) .. " != " .. tostring(b))
-            return false
-        end
-    elseif (a ~= b) then 
-        print("✘ [" .. _G.testIndex .. "] " .. tostring(a) .. " != " .. tostring(b)) -- & " ◇" & type(a)
-        _G.testFail = _G.testFail + 1
-        return false
+            if (math.abs((a - b)) > 1e-10) then 
+                return fail("number mismatch: " .. tostring(a) .. " != " .. tostring(b))
+            end
+    else 
+            if (a ~= b) then return fail(tostring(a) .. " != " .. tostring(b)) end -- & " ◇" & type(a)
     end
     
     return true
@@ -72,7 +78,7 @@ function test.static.run(files)
         -- log "test" f
         local output, ok, exitcode = slash.shell("luajit", f)
         if ok then 
-            -- log output
+            print(output)
             -- log output, ok, exitcode
             -- log "✔ " f
             local a = 1

@@ -3,20 +3,20 @@ use kxk/kxk
 
 ▸ kstr
 
-   ▸ splice
+    ▸ splice
 
         s = "a/abc/ed.x"
-        s = kstr.splice s 1 1
-        s ▸ "/abc/ed.x"
-        s = kstr.splice s 2 1
+        s = kstr.splice s  1 1
+        s ▸ "/abc/ed.x"    
+        s = kstr.splice s  2 1
         s ▸ "/bc/ed.x"
-        s = kstr.splice s, -1 1
+        s = kstr.splice s -1 1
         s ▸ "/bc/ed."
-        s = kstr.splice s, -2 1
+        s = kstr.splice s -2 1
         s ▸ "/bc/e."    
-        s = kstr.splice s, -2 2 "1" "2" "3"
+        s = kstr.splice s -2 2 "1" "2" "3"
         s ▸ "/bc/123"   
-        s = kstr.splice s, -3 3 "4" "5" "6"
+        s = kstr.splice s -3 3 "4" "5" "6"
         s ▸ "/bc/456"
          
     ▸ shift
@@ -45,9 +45,12 @@ use kxk/kxk
     ▸ trim
     
         kstr.rtrim "xyz\n" ▸ "xyz"
-        kstr.trim "abc\n" ▸ "abc"
+        kstr.trim  "abc\n" ▸ "abc"
         
     ▸ rfind
     
-        kstr.rfind "123.56" "." ▸ 4
-        kstr.rfind ".23.56" "." ▸ 4
+        kstr.rfind "123.56"     "." ▸ 4
+        kstr.rfind ".23.56"     "." ▸ 4
+        kstr.rfind "some.ext"   "." ▸ 5
+        
+        

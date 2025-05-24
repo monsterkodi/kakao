@@ -30,7 +30,7 @@ test("slash", function()
     -- 000        000   000     000     000   000  
     
     test("path", function()
-        test.cmp(slash.path(""), "")
+        test.cmp(slash.path(""), nil)
         test.cmp(slash.path("a", "b", "c"), "a/b/c")
         
         test.cmp(slash.path("", "", "void", "", ""), "void")
@@ -42,13 +42,13 @@ test("slash", function()
         test.cmp(slash.path("/"), "/")
         test.cmp(slash.path("./"), ".")
         test.cmp(slash.path("../"), "..")
-        -- slash.path ".././"                      ▸ ".."
+        test.cmp(slash.path(".././"), "..")
         test.cmp(slash.path("./relative"), "./relative")
         test.cmp(slash.path("../parent"), "../parent")
-        -- slash.path ".././././"                  ▸ ".."
+        test.cmp(slash.path(".././././"), "..")
         test.cmp(slash.path("//"), "/")
         test.cmp(slash.path("C:/"), "C:")
-        -- slash.path "C://"                       ▸ "C:"
+        test.cmp(slash.path("C://"), "C:")
         test.cmp(slash.path("C:"), "C:")
         test.cmp(slash.path("C:/"), "C:")
         test.cmp(slash.path("C:\\"), "C:")
@@ -65,10 +65,10 @@ test("slash", function()
     -- 000       000  000   000  000   000  000   000     000     
     -- 000  0000000   000   000   0000000    0000000      000     
     
-    -- ▸ isRoot
-    --     
-    --     slash.isRoot "/"                        ▸ true
-    --     slash.isRoot "/a"                       ▸ false
+    test("isRoot", function()
+        test.cmp(slash.isRoot("/"), true)
+        test.cmp(slash.isRoot("/a"), false)
+    end)
     
     -- 00000000    0000000   00000000    0000000  00000000  
     -- 000   000  000   000  000   000  000       000       
@@ -172,9 +172,9 @@ test("slash", function()
     
     test("splitExt", function()
         test.cmp(slash.splitExt("./none"), {"./none", ""})
+        test.cmp(slash.splitExt("./some.ext"), {"./some", "ext"})
     end)
     
-    --     slash.splitExt "./some.ext"             ▸ ["./some" "ext"]
     --     slash.splitExt "./some.more.ext"        ▸ ["./some.more" "ext"]
     --                                             
     --     slash.splitExt "/none"                  ▸ ["/none" ""]
@@ -272,13 +272,13 @@ test("slash", function()
         test.cmp(slash.isRelative("/a/b"), false)
         test.cmp(slash.isRelative("~"), false)
         
-        --slash.isAbsolute "."                    ▸ false
-        --slash.isAbsolute ".."                   ▸ false
-        --slash.isAbsolute ".././bla../../fark"   ▸ false
-        --slash.isAbsolute "..\\blafark"          ▸ false
-        --slash.isAbsolute "a/b"                  ▸ false
-        --slash.isAbsolute "/a/b"                 ▸ true
-        --slash.isAbsolute "~"                    ▸ true
+        test.cmp(slash.isAbsolute("."), false)
+        test.cmp(slash.isAbsolute(".."), false)
+        test.cmp(slash.isAbsolute(".././bla../../fark"), false)
+        test.cmp(slash.isAbsolute("..\\blafark"), false)
+        test.cmp(slash.isAbsolute("a/b"), false)
+        test.cmp(slash.isAbsolute("/a/b"), true)
+        test.cmp(slash.isAbsolute("~"), true)
     end)
     
     --  0000000   0000000   000   000  000000000   0000000   000  000   000   0000000  
@@ -303,5 +303,6 @@ test("slash", function()
         test.cmp((slash.isDir(slash.cwd()) ~= nil), true)
         test.cmp(slash.isFile(slash.cwd()), nil)
         test.cmp(slash.isLink(slash.cwd()), nil)
+        test.cmp((slash.isDir("/Users/kodi/s/kakao/kakao.app/kao/lua/kxk/test/kstr.lua") ~= nil), true)
     end)
     end)

@@ -211,9 +211,9 @@ end
 
 
 function slash.normalize(path) 
+    if empty(path) then return end
     local p = kseg.segs(path)
     local frst = p[1]
-    -- log "START" p.len, frst
     local swallow = 0xffff
     for i in iter(#p, 1) do 
         if (i >= swallow) then 
@@ -262,7 +262,6 @@ function slash.normalize(path)
         kseg.shift(p)
     end
     
-    -- log "nrm" path, kseg.str(p)
     return kseg.str(p)
 end
 
@@ -291,13 +290,22 @@ function slash.isRelative(path)
     return ((#path == 0) or (((#path > 0) and (string.sub(path, 1, 1) ~= '/')) and (string.sub(path, 1, 1) ~= '~')))
 end
 
+function slash.isAbsolute(path) 
+    return ((#path > 0) and array.contains({'/', '~'}, string.sub(path, 1, 1)))
+end
+
+function slash.isRoot(path) 
+    return (slash.normalize(path) == "/")
+end
+
 
 function slash.home() 
     return os.getenv("HOME")
 end
 
 function slash.untilde(path) 
-    if (path[1] == '~') then 
+    if empty(path) then return end
+    if (string.sub(path, 1, 1) == '~') then 
         return slash.path(slash.home(), kstr.shift(path))
     end
     
@@ -306,6 +314,7 @@ end
 
 
 function slash.absolute(path, parent) 
+    if empty(path) then return end
     if slash.isRelative(path) then 
         parent = parent or slash.cwd()
         return slash.path(parent, path)
@@ -395,11 +404,10 @@ end
 function slash.splitExt(path) 
     local split = slash.split(path)
     local dotidx = kstr.rfind(split[#split], ".")
-    print("dotidx", dotidx, path)
     local ext = ""
     if (dotidx > 0) then 
         ext = kstr.slice(split[#split], (dotidx + 1))
-        split[#split] = kstr.slice(split[#split], 0, dotidx)
+        split[#split] = kstr.slice(split[#split], 0, (dotidx - 1))
     end
     
     local pth = slash.path(unpack(split))

@@ -11,6 +11,11 @@ function kstr.splice(s, i, n, ...)
 end
 
 
+function kstr.slice(s, f, t) 
+    return string.sub(s, f, t)
+end
+
+
 function kstr.shift(s, n) 
     n = n or 1
     
@@ -95,8 +100,8 @@ end
 
 function kstr.rfind(s, c) 
     local i = ((#s + 1) - #c)
-    while ((i > 0) and (string.sub(s, i, (i + #c)) ~= c)) do 
-        i = (i - 1)
+    while ((i > 0) and (string.sub(s, i, ((i + #c) - 1)) ~= c)) do 
+        i = i - 1
     end
     
     return i

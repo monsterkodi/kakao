@@ -30,9 +30,10 @@ main = ... ->
     
     (_G.files _G.opts) = optparser:parse(arg)
     
-    if slash.isDir files[1]
-        log "CHWD" files[1]
-        slash.chdir files[1]
+    first = slash.absolute files[1]
+    if slash.isDir first
+        log "CHWD" first
+        slash.chdir first
         array.shift files
         log "files after shift" array.str _G.files
     

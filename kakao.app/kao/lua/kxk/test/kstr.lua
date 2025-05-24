@@ -1,7 +1,7 @@
 kxk = require "kxk/kxk"
 
 test("kstr", function()
-   test("splice", function()
+    test("splice", function()
         local s = "a/abc/ed.x"
         s = kstr.splice(s, 1, 1)
         test.cmp(s, "/abc/ed.x")
@@ -16,10 +16,9 @@ test("kstr", function()
         s = kstr.splice(s, -3, 3, "4", "5", "6")
         test.cmp(s, "/bc/456")
     end)
-   
-   
+    
     test("shift", function()
-        s = "1234"
+        local s = "1234"
         test.cmp(kstr.shift(s, 2), "34")
     end)
     
@@ -32,7 +31,7 @@ test("kstr", function()
         test.cmp(tostring(1), "1")
         test.cmp(tostring(true), "true")
         test.cmp(tostring(nil), "nil")
-        x = 42
+        local x = 42
         test.cmp(tostring(x), "42")
         test.cmp(tostring((1 / 3)), "0.33333333333333")
     end)
@@ -49,5 +48,6 @@ test("kstr", function()
     test("rfind", function()
         test.cmp(kstr.rfind("123.56", "."), 4)
         test.cmp(kstr.rfind(".23.56", "."), 4)
+        test.cmp(kstr.rfind("some.ext", "."), 5)
     end)
     end)
