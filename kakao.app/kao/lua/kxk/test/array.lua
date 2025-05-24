@@ -125,6 +125,15 @@ test("array", function()
         test.cmp(#e, 3)
     end)
     
+    test("is", function()
+        local a = array()
+        test.cmp(a:is(array), true)
+        test.cmp(a:is(table), false)
+        test.cmp(a:is(false), false)
+        test.cmp(a:is(true), false)
+        test.cmp(a:is(nil), false)
+    end)
+    
     test("iter", function()
         local a = array()
         for i in iter(4, 0) do a:push(i) end

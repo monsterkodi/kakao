@@ -1,9 +1,6 @@
 
 kstr = {}
 
-setmetatable({}, {__index = table})
-debug.setmetatable({}, {__index = table})
-
 kstr.splice = s i n ... ->
     
     if i < 0 ➜ i = s.len+i+1

@@ -41,6 +41,7 @@ suite "rlua":
         t("not a or not b", "(not a or not b)")
     test "comparison ops": 
         t("a != b", "(a ~= b)")
+        t("a is 1", "is(a, 1)")
     test "assignment": 
         t("a += 1", "a = a + 1")
         t("a -= 1", "a = a - 1")
@@ -107,11 +108,11 @@ b = false""")
         v("(ida idb) = (id id)", "local ida, idb = id, id")
         v("(ids[v] ids[tv]) = (id id)", "ids[v], ids[tv] = id, id")
     test "arrays": 
-        t("a = [ 1  2 ]", "a = {1, 2}")
-        t("a = [\n    1\n    2\n    ]", "a = {1, 2}")
-        t("a = [ 1-2 ]", "a = {(1 - 2)}")
-        t("a = [ 1 - 2 ]", "a = {(1 - 2)}")
-        t("a = [ 1 -2 ]", "a = {1, -2}")
+        t("a = [ 1  2 ]", "a = array(1, 2)")
+        t("a = [\n    1\n    2\n    ]", "a = array(1, 2)")
+        t("a = [ 1-2 ]", "a = array((1 - 2))")
+        t("a = [ 1 - 2 ]", "a = array((1 - 2))")
+        t("a = [ 1 -2 ]", "a = array(1, -2)")
     test "array access": 
         t("s[^1]", "s[#s]")
         t("s[^2]", "s[#s+1-2]")
@@ -216,7 +217,7 @@ function f()
         nil
     end
     
-    return {1, 2}
+    return array(1, 2)
 end""")
     test "for                                            ": 
         t("for k in rawpairs(t) ➜ log k", "for k in rawpairs(t) do print(k) end")

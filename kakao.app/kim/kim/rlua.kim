@@ -143,6 +143,14 @@ class Rlua
             @rnd n.operand_right
             @add ")"
             ⮐  
+            
+        if n.token.tok == ◂is
+            @add "is("
+            @rnd n.operand_left
+            @add ", "
+            @rnd n.operand_right
+            @add ")"
+            ⮐  
     
         outerbr = n.token.tok notin { ◂ampersand } + assignToks
         @add("(") if outerbr
@@ -469,12 +477,14 @@ class Rlua
     
     ▸squarely: ◇Node n ->
     
-        @add "{"
+        @add "array("
+        # @add "{"
         for i item in n.list_values
             @rnd item
             if i < n.list_values.len-1
                 @add ", "
-        @add "}"
+        # @add "}"
+        @add ")"
         
     ▸range: ◇Node n -> 
     

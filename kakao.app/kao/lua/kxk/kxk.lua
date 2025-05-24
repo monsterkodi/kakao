@@ -37,7 +37,8 @@ end
 
 
 function _G.slice(a, first, last) 
-    if (type(a) == "table") then 
+    if (type(a) == "string") then return string.sub(a, first, last)
+    elseif (type(a) == "table") then 
             if (last == nil) then last = #a end
             local s = {}
             for i in iter(first, last) do 
@@ -45,8 +46,6 @@ function _G.slice(a, first, last)
             end
             
             return s
-    elseif (type(a) == "string") then 
-            return string.sub(a, first, last)
     end
 end
 
@@ -54,6 +53,17 @@ end
 function _G.sleep(s) 
     local t = os.clock()
     while ((os.clock() - t) <= s) do _ = 1 end
+end
+
+
+function _G.is(v, t) 
+    local vt = type(v)
+    local tt = type(t)
+    if (vt ~= tt) then return false end
+    if (vt ~= "table") then return true end
+    if ((vt == t) and (tt == "string")) then return true end
+    if ((type(v.is) == "function") and v:is(t)) then return true end
+    return false
 end
 
 _G.strbuff = require("string.buffer")
@@ -64,23 +74,4 @@ _G.array = require("kxk/array")
 _G.kstr = require("kxk/kstr")
 _G.test = require("kxk/test")
 
-local kxk = {}
--- kxk.exec = cmd opt cb ->
---     
---     if cb == nil
---         cb = opt
---         opt = {}
---     
---     res = err out ->
---         if err ➜ out = ""
---         cb out
---         
---     childp.exec cmd opt res
-
--- kxk.shell = cmd ->
---     fileHandle = io.popen(cmd, 'r')
---     output = fileHandle:read('*a')
---     (ok failreason exitcode) = fileHandle:close()
---     (output ok failreason exitcode)
-
-return kxk
+return {}

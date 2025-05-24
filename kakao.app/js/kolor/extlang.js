@@ -3262,7 +3262,8 @@ export default {
             "extends": "keyword",
             "use": "require",
             "elif": "keyword",
-            "log": "keyword"
+            "log": "keyword",
+            "is": "keyword"
         }
     }
 }

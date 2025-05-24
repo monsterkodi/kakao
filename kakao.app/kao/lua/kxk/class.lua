@@ -114,14 +114,16 @@ end
 
 function _includeMixin(aClass, mixin) 
     assert((type(mixin) == 'table'), "Invalid Mixin table")
-    
+    -- log "includeMixin"
     for name, meth in pairs(mixin) do 
         if ((name ~= "included") and (name ~= "static")) then 
+            -- log "_includeMixin nonstatic" name, meth, aClass, mixin
             aClass[name] = meth
         end
     end
     
     for name, meth in pairs((mixin.static or {})) do 
+        -- log "_includeMixin static" name, meth, aClass, mixin
         aClass.static[name] = meth
     end
     
@@ -130,9 +132,14 @@ end
 
 local DefaultMixin = {
     __tostring = function (self) return "instance of "..tostring(self.class) end, 
-    isOf = function (self, aClass) 
-        assert((type(self) == 'table'), "Use :isOf instead of .isOf")
-        return (((type(aClass) == 'table') and (type(self) == 'table')) and ((self.class == aClass) or (((type(self.class) == 'table') and (type(self.class.extends) == 'function')) and self.class:extends(aClass))))
+    is = function (self, aClass) 
+        assert((type(self) == 'table'), "Use :is instead of .is")
+        print("IS?", type(aClass))
+        if ((type(aClass) ~= 'table') or (type(self) ~= 'table')) then return false end
+        if (self.class == aClass) then return true end
+        if ((self.class and self.class.extends) and self.class:extends(aClass)) then return true end
+        print("IS NOT", self, aClass)
+        return false
     end, 
     static = {
         alloc = function (self) 
@@ -183,8 +190,10 @@ local DefaultMixin = {
             return (((type(other) == 'table') and (type(self.super) == 'table')) and ((self.super == other) or self.super:extends(other)))
         end, 
         include = function (self, ...) 
+            print("include...")
             assert((type(self) == "table"), "Use :include instead of .include")
             for _, mixin in ipairs({...}) do _includeMixin(self, mixin) end
+            print("...include")
             return self
         end
         }

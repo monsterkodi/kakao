@@ -125,6 +125,13 @@ proc ▸operation(this : Rlua, n : Node) =
             this.rnd(n.operand_right)
             this.add(")")
             return
+        if (n.token.tok == ◂is): 
+            this.add("is(")
+            this.rnd(n.operand_left)
+            this.add(", ")
+            this.rnd(n.operand_right)
+            this.add(")")
+            return
         var outerbr = (n.token.tok notin ({◂ampersand} + assignToks))
         if outerbr: this.add("(")
         this.rnd(n.operand_left)
@@ -410,12 +417,14 @@ proc ▸curly(this : Rlua, n : Node) =
         (this.incurly -= 1)
 
 proc ▸squarely(this : Rlua, n : Node) = 
-        this.add("{")
+        this.add("array(")
+        # @add "{"
         for i, item in n.list_values: 
             this.rnd(item)
             if (i < (n.list_values.len - 1)): 
                 this.add(", ")
-        this.add("}")
+        # @add "}"
+        this.add(")")
 
 proc ▸range(this : Rlua, n : Node) = 
         this.rnd(n.range_start)

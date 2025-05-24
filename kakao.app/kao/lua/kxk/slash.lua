@@ -212,7 +212,7 @@ end
 
 function slash.normalize(path) 
     if empty(path) then return end
-    local p = kseg.segs(path)
+    local p = kseg(path)
     local frst = p[1]
     local swallow = 0xffff
     for i in iter(#p, 1) do 
@@ -220,21 +220,21 @@ function slash.normalize(path)
             table.remove(p, i)
             if ((i == swallow) or (i == 1)) then 
                 if ((p[1] == '/') and (frst ~= '/')) then 
-                    kseg.shift(p)
+                    p:shift()
                 end
                 
-                return slash.normalize(kseg.str(p))
+                return slash.normalize(p:str())
             end
         else 
             if (p[i] == '\\') then p[i] = '/' end
             if ((i < #p) and (p[i] == '/')) then 
                 if (i < (#p - 1)) then 
                     if ((p[(i + 1)] == '.') and (p[(i + 2)] == '/')) then 
-                        p = kseg.splice(p, (i + 1), 2)
+                        p = p:splice((i + 1), 2)
                     end
                     
                     if ((((p[(i + 1)] == '.') and (p[(i + 2)] == '.')) and (i > 1)) and (p[(i - 1)] ~= '.')) then 
-                        p = kseg.splice(p, i, 3)
+                        p = p:splice(i, 3)
                         swallow = (i - 1)
                         while ((swallow > 0) and (p[swallow] ~= '/')) do 
                             swallow = swallow - 1
@@ -243,26 +243,26 @@ function slash.normalize(path)
                 end
                 
                 if (p[(i + 1)] == '/') then 
-                    p = kseg.splice(p, (i + 1), 1)
+                    p = p:splice((i + 1), 1)
                 end
             end
         end
     end
     
-    if ((#p >= 4) and (kseg.str(kseg.sub(p, 1, 4)) == "./..")) then 
-        kseg.shift(p)
-        kseg.shift(p)
+    if ((#p >= 4) and (p:slice(1, 4):str() == "./..")) then 
+        p:shift()
+        p:shift()
     end
     
     while ((#p > 1) and (p[#p] == '/')) do 
-        kseg.pop(p)
+        p:pop()
     end
     
     if ((((#p > 1) and (p[1] == '/')) and (frst ~= '/')) and (frst ~= '\\')) then 
-        kseg.shift(p)
+        p:shift()
     end
     
-    return kseg.str(p)
+    return p:str()
 end
 
 -- ████████    ███████   █████████  ███   ███
@@ -285,7 +285,6 @@ function slash.path(...)
     fpth = fpth:filter(mpty)
     fpth = fpth:map(slsh)
     fpth = table.concat(fpth, "/")
-    -- fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
     return slash.normalize(fpth)
 end
 
@@ -393,7 +392,6 @@ end
 function slash.swapExt(path, ext) 
     if ((ext == nil) or (ext == "")) then return path end
     local p = slash.parse(path)
-    -- log "swap" path, array.str p
     local r = ""
     if (string.sub(path, 1, 1) == "/") then r = "/" end
     return slash.path(r, p.dir, p.name .. "." .. ext)

@@ -5,6 +5,17 @@ use kxk/kxk
 
     ▸ simple
     
-        s = kseg.segs("../")
-        kseg.pop s
-        kseg.str s ▸ ".."
+        s = kseg("../")
+        s:pop()
+        s:str() ▸ ".."
+        
+    ▸ is
+    
+        a = kseg("")
+        a:is kseg  ▸ true
+        a:is array ▸ true
+        a:is table ▸ false
+        a:is false ▸ false
+        a:is true  ▸ false
+        a:is nil   ▸ false
+        

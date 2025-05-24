@@ -4,13 +4,16 @@
 -- ███   ███  ███   ███  ███   ███  ███   ███     ███   
 -- ███   ███  ███   ███  ███   ███  ███   ███     ███   
 
+-- setmetatable({}, {__index = table})
+-- debug.setmetatable({}, {__index = table})
+
 
 local array = class("array")
     
 
 
 function array:init(...) 
-        self.__index = table
+        -- @__index = table
         for i, v in ipairs({...}) do 
             table.insert(self, v)
         end
@@ -34,7 +37,7 @@ function array:str()
 
 
 function array:map(f) 
-        local t = array()
+        local t = self.class()
         for i, v in ipairs(self) do 
             t[i] = f(v)
         end
@@ -44,7 +47,7 @@ function array:map(f)
 
 
 function array:filter(f) 
-        local t = array()
+        local t = self.class()
         for i, v in ipairs(self) do 
             if f(v, i) then 
                 t:push(v)
@@ -90,11 +93,33 @@ function array:insert(i, v)
     return table.insert(self, i, v)
     end
 
+function array:remove(i) 
+    return table.remove(self, i)
+    end
+
+
+function array:splice(i, n, ...) 
+        if (n > 0) then 
+            for d in iter(1, n) do 
+                self:remove(i)
+            end
+        end
+        
+        local a = self.class(...)
+        if (#a > 0) then 
+            while #a do 
+                self:insert(i, a:pop())
+            end
+        end
+        
+        return self
+    end
+
 
 function array:slice(first, last) 
         if (last == nil) then last = #self end
         last = math.min(#self, last)
-        local s = array()
+        local s = self.class()
         for i in iter(first, last) do 
             s:push(self[i])
         end
@@ -145,5 +170,16 @@ function array.static.isarr(a)
     if (type(a) ~= "table") then return false end
     return (#a > 0)
 end
+
+-- log "include table" table
+-- log "include table" inspect table
+-- log "include table" type(table)
+-- for k v in pairs table
+--     log "kv" k, v
+-- array.static:include table
+local a = array(3, 2, 1)
+-- a:sort()
+-- log "getn" a.getn
+-- log "getn" a:sort()
 
 return array

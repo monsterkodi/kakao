@@ -1,8 +1,5 @@
 local kstr = {}
 
-setmetatable({}, {__index = table})
-debug.setmetatable({}, {__index = table})
-
 
 function kstr.splice(s, i, n, ...) 
     if (i < 0) then i = ((#s + i) + 1) end

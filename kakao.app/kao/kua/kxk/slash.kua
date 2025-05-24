@@ -195,7 +195,7 @@ slash.chdir = dir ->
 slash.normalize = path ->
 
     ⮐  if empty path
-    p = kseg.segs path
+    p = kseg path
     frst = p[1]
     swallow = 0xffff
     for i in p.len..1
@@ -203,30 +203,30 @@ slash.normalize = path ->
             table.remove p i
             if i == swallow or i == 1
                 if p[1] == '/' and frst != '/'
-                    kseg.shift p 
-                ⮐  slash.normalize(kseg.str(p))
+                    p:shift() 
+                ⮐  slash.normalize p:str()
         else
             if p[i] == '\\' ➜ p[i] = '/'
             if i < p.len and p[i] == '/'
                 if i < p.len - 1
                     if p[i+1] == '.' and p[i+2] == '/' 
-                        p = kseg.splice p i+1 2
+                        p = p:splice i+1 2
                     if p[i+1] == '.' and p[i+2] == '.' and i > 1 and p[i-1] != '.'
-                        p = kseg.splice p i 3
+                        p = p:splice i 3
                         swallow = i-1
                         while swallow > 0 and p[swallow] != '/'
                             swallow -= 1
                 if p[i+1] == '/'
-                    p = kseg.splice p i+1 1
+                    p = p:splice i+1 1
     
-    if p.len >= 4 and kseg.str(kseg.sub(p 1 4)) == "./.."
-        kseg.shift p
-        kseg.shift p
+    if p.len >= 4 and p:slice(1 4):str() == "./.."
+        p:shift()
+        p:shift()
     while p.len > 1 and p[p.len] == '/'
-        kseg.pop p
+        p:pop()
     if p.len > 1 and p[1] == '/' and frst != '/' and frst != '\\'
-        kseg.shift p
-    kseg.str p
+        p:shift()
+    p:str()
 
 # ████████    ███████   █████████  ███   ███
 # ███   ███  ███   ███     ███     ███   ███
@@ -242,14 +242,13 @@ slash.path = (...) ->
     fpth = fpth:filter mpty
     fpth = fpth:map slsh
     fpth = table.concat fpth "/"
-    # fpth = table.concat(array.map(array.filter({...}, mpty), slsh), "/")
     slash.normalize fpth
     
 slash.isRelative = path -> path.len == 0 or path.len > 0 and path:sub(1 1) != '/' and path:sub(1 1) != '~'
 slash.isAbsolute = path -> path.len > 0 and array('/' '~'):contains(path:sub(1 1))
 slash.isRoot     = path -> slash.normalize(path) == "/"
 
-slash.home = (...) -> slash.path os.getenv("HOME") unpack({...})
+slash.home = ... -> slash.path os.getenv("HOME") unpack({...})
 
 slash.tilde = path -> string.gsub path slash.home() "~"
 slash.untilde = path -> 
@@ -304,7 +303,6 @@ slash.swapExt = path ext ->
 
     ⮐  path if ext == nil or ext == ""
     p = slash.parse path
-    # log "swap" path, array.str p
     r = ""
     if string.sub(path 1 1) == "/" ➜ r = "/"
     slash.path r p.dir p.name & "." & ext

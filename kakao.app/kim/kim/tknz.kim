@@ -583,8 +583,8 @@ class Tknzr
                                         continue
                                 ➜ discard
                          
-                        if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)))
-                            if @tokens.len == 0 or @tokens[^1].tok notin {◂dot}
+                        if keywords.hasKey(@token.str) and (@segi >= @eol or @peek(0) == " " or punct.hasKey(@peek(0)) and not @peek(0) == ":")
+                            if @tokens.len == 0 or @tokens[^1].tok notin {◂dot ◂colon}
                                 switch keywords[@token.str]
                                     ◂type
                                         if @peek(0) != "("
@@ -594,7 +594,7 @@ class Tknzr
                                     ◂proc ◂import ◂macro ◂template ◂converter
                                         @verbatim()
                                     ➜   @push keywords[@token.str]
-                            else # convert afterspaced keyword to name if prefixed with .
+                            else # convert afterspaced keyword to name if prefixed with . or :
                                 @push ◂name
                                 
                         continue

@@ -6,6 +6,7 @@
 # ███   ███  ███   ███  ███   ███
 
 _G.iter = from to step=1 ->
+
     if step != 0
         step = math.abs step
         if from > to ➜ step = -step
@@ -19,26 +20,39 @@ _G.iter = from to step=1 ->
 _G.empty = v ->
 
     switch type(v)
+    
         "table"  ➜ ⮐  v.len == 0 or v.len == nil and v == {}
         "string" ➜ ⮐  v == ""
         "nil"    ➜ ⮐  true
+        
     false
 
 _G.slice = a first last ->
 
     switch type(a)
+    
+        "string" ➜ ⮐  string.sub a first last
         "table"
             if last == nil ➜ last = a.len
             s = {}
             for i in first..last
                 s[s.len+1] = a[i]
             ⮐  s
-        "string"
-            ⮐  string.sub a first last
         
 _G.sleep = s ->
+
     t = os.clock()
     while os.clock() - t <= s ➜ _ = 1
+    
+_G.is = v t ->
+
+    vt = type(v)
+    tt = type(t)
+    ⮐  false if vt != tt
+    ⮐  true  if vt != "table"
+    ⮐  true  if vt == t and tt == "string"
+    ⮐  true  if type(v.is) == "function" and v:is(t)
+    false
 
 _G.strbuff  = require "string.buffer"
 _G.class    = require "kxk/class"
@@ -48,23 +62,4 @@ _G.array    = require "kxk/array"
 _G.kstr     = require "kxk/kstr"
 _G.test     = require "kxk/test"
 
-kxk = {}
-# kxk.exec = cmd opt cb ->
-#     
-#     if cb == nil
-#         cb = opt
-#         opt = {}
-#     
-#     res = err out ->
-#         if err ➜ out = ""
-#         cb out
-#         
-#     childp.exec cmd opt res
-    
-# kxk.shell = cmd ->
-#     fileHandle = io.popen(cmd, 'r')
-#     output = fileHandle:read('*a')
-#     (ok failreason exitcode) = fileHandle:close()
-#     (output ok failreason exitcode)
-    
-⮐  kxk
+⮐  {}

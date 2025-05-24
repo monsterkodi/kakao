@@ -127,6 +127,15 @@ use kxk/kxk
         array.isarr e ▸ true
         e.len ▸ 3
         
+    ▸ is
+    
+        a = []
+        a:is array ▸ true
+        a:is table ▸ false
+        a:is false ▸ false
+        a:is true  ▸ false
+        a:is nil   ▸ false
+        
     ▸ iter
     
         a = array()

@@ -1341,6 +1341,7 @@ kua
         use
         elif
         log
+        is
         
     require
         use

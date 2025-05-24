@@ -49,6 +49,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
     ▸ comparison ops
     
         t "a != b"                                    "(a ~= b)"
+        t "a is 1"                                    "is(a, 1)"
         
     ▸ assignment
     
@@ -142,11 +143,11 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
     
     ▸ arrays
     
-        t "a = [ 1  2 ]"                              "a = {1, 2}"
-        t "a = [\n    1\n    2\n    ]"                "a = {1, 2}"
-        t "a = [ 1-2 ]"                               "a = {(1 - 2)}"
-        t "a = [ 1 - 2 ]"                             "a = {(1 - 2)}"
-        t "a = [ 1 -2 ]"                              "a = {1, -2}"
+        t "a = [ 1  2 ]"                              "a = array(1, 2)"
+        t "a = [\n    1\n    2\n    ]"                "a = array(1, 2)"
+        t "a = [ 1-2 ]"                               "a = array((1 - 2))"
+        t "a = [ 1 - 2 ]"                             "a = array((1 - 2))"
+        t "a = [ 1 -2 ]"                              "a = array(1, -2)"
         
     ▸ array access
     
@@ -268,7 +269,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                     nil
                 end
                 
-                return {1, 2}
+                return array(1, 2)
             end"""
 
     ▸ for                                            
