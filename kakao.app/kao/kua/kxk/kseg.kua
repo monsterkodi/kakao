@@ -1,5 +1,6 @@
 
-use kxk/array
+# use kxk.array
+array = require "kxk.array"
 
 class kseg extends array 
 
@@ -23,7 +24,8 @@ class kseg extends array
     
         endPos = startPos + bytes
     
-        for _ bX in ipairs { str:byte( startPos + 1, endPos ) }
+        b2 = str:byte( startPos + 1, endPos )
+        for _ bX in ipairs { b2 }
             
             if bit.band( bX, 0xC0 ) != 0x80
                 ⮐  nil
@@ -46,7 +48,7 @@ class kseg extends array
             
             (startPos string.sub(str startPos endPos))
     
-    str: -> table.concat @ ""
+    $: -> table.concat @ ""
         
     rpad: l c=' ' ->  
         while @len < l ➜ @push c

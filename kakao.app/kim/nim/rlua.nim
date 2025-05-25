@@ -295,7 +295,7 @@ proc ▸use(this : Rlua, n : Node) =
             this.add("]")
 
 proc ▸color(this : Rlua, n : Node) = 
-        var ansi = {"r": "\\x1b[31m", "g": "\\x1b[32m", "b": "\\x1b[34m", "c": "\\x1b[36m", "m": "\\x1b[35m", "y": "\\x1b[33m", "w": "\\x1b[37m", "d": "\\x1b[90m", "s": "\\x1b[30m", "R": "\\x1b[41m", "G": "\\x1b[42m", "B": "\\x1b[44m", "C": "\\x1b[46m", "M": "\\x1b[45m", "Y": "\\x1b[43m", "W": "\\x1b[47m", "D": "\\x1b[100m", "S": "\\x1b[40m", "+": "\\x1b[1m", "-": "\\x1b[2m", "i": "\\x1b[3m", "_": "\\x1b[4m", "n": "\\x1b[7m", "x": "\\x1b[9m", "0": "\\x1b[0m"}.toTable()
+        var ansi = {"r": "\\x1b[31m", "g": "\\x1b[32m", "b": "\\x1b[34m", "c": "\\x1b[36m", "m": "\\x1b[35m", "y": "\\x1b[33m", "w": "\\x1b[37m", "d": "\\x1b[90m", "s": "\\x1b[30m", "R": "\\x1b[41m", "G": "\\x1b[42m", "B": "\\x1b[44m", "C": "\\x1b[46m", "M": "\\x1b[45m", "Y": "\\x1b[43m", "W": "\\x1b[47m", "D": "\\x1b[100m", "S": "\\x1b[40m", "+": "\\x1b[1m", "-": "\\x1b[2m", "i": "\\x1b[3m", "x": "\\x1b[9m", "n": "\\x1b[7m", "_": "\\x1b[4m", ".": "\\x1b[4:4m", "~": "\\x1b[4:3m"}.toTable()
         
         proc fg(r : int, g : int, b : int) : string = &"\\x1b[38;2;{r};{g};{b}m"
         
@@ -313,8 +313,6 @@ proc ▸color(this : Rlua, n : Node) =
             for chr in code: 
                 if ansi[$chr]: 
                     this.add(ansi[$chr])
-        # else
-        #     @add "\\x1b[0m"
         this.add("\"")
 
 proc ▸comment(this : Rlua, n : Node) = 

@@ -7,7 +7,7 @@
 main = ... ->
 
     use std io
-    use kxk/kxk
+    use kxk.kxk
     
     optparser = std.optparse """
         0.1
@@ -17,10 +17,10 @@ main = ... ->
         
           -t, --test         run tests
           -b, --build        create binary
-              --out dir      output directory
+          -o, --out=dir      output directory
+          -c, --cwd=dir      working directory
           
           -v, --verbose      log more information
-          -d, --debug        log debugging information
           
           -V, --version      display version information
           -h, --help         display this help
@@ -29,33 +29,36 @@ main = ... ->
     # log slash.cwd()
     
     (_G.files _G.opts) = optparser:parse(arg)
-    
-    first = slash.absolute files[1]
-    if slash.isDir first
-        log "CHWD" first
-        slash.chdir(first)
-        array.shift(files)
-        log "files after shift" array.str _G.files
+    _G.files = [unpack(_G.files)]
+
+    if opts.cwd 
+        write ◌y+ "CWD " opts.cwd
+        slash.chdir opts.cwd
     
     if opts.verbose
-        log 'opts'    inspect(opts)
-        log 'meta'    inspect(getmetatable(opts))
+        log "cwd"     opts.cwd
         log "build"   opts.build
-        log "debug"   opts.debug
+        log 'out'     opts.out
         log "verbose" opts.verbose
-        log 'outdir'  opts.outdir
         log 'files'   files.len
-        log 'files'   inspect(files)
+        log 'files'   files
     
     if opts.build
         (output ok) = build()
         if ok 
-            log "✔"
+            write ◌g "✔"
             os.exit 0
-        log "✘ " & output
+        write ◌r "✘ " output
         os.exit 1
         
-    write ◌r "●" ◌y "●" ◌b "●"
+    math.randomseed(os.clock())
+        
+    cl = ["■■■" "◀■▶" "▶■◀" "▶●◀" "▶◆◀" "▶▶▶" "◀◀◀" "▲▼▲" "▼▲▼" "▪▪▪" "◆◆◆" "■◆■" "●◆●" "◆■◆" "●●●" "●▲●"]
+    cs = kseg cl:rnd()
+    co = [ ◌r ◌fd0 ◌88f ]
+    co:shuffle()
+    write co[1] cs[1] co[2] cs[2] co[3] cs[3]
+    
     watch slash.path(".")
 
 build = ->
@@ -65,10 +68,18 @@ build = ->
     libjit = luajit & "/lib/libluajit.a"
     incjit = luajit & "/include/luajit-2.1"
     # log "luajit" luajit
-    dir = opts.outdir or ""
+    dir = opts.out or ""
     out = slash.path dir "kao"
     if empty _G.files
-        _G.files = {"kao.lua"}
+        _G.files = ["kao.lua"]
+    _G.files:push "./kxk/array.lua"
+    _G.files:push "./kxk/class.lua"
+    _G.files:push "./kxk/inspect.lua"
+    _G.files:push "./kxk/kseg.lua"
+    _G.files:push "./kxk/kstr.lua"
+    _G.files:push "./kxk/kxk.lua"
+    _G.files:push "./kxk/slash.lua"
+    _G.files:push "./kxk/test.lua"
     args = array "luastatic" 
     args:push unpack(files) 
     args:push libjit "-I" incjit "-o" out
@@ -113,24 +124,27 @@ watch = ... ->
                         modTimes[p] = modTime
                         
                         if kxkFiles[p]
-                            write ◌d- "◇ " ◌i slash.file(p)
+                            write ◌d- "◇ " ◌i+ slash.file(p)
                             kxkChanged:push p
                         elif luaFiles[p]
-                            write ◌d- "◆ " ◌i slash.file(p)                    
+                            write ◌d- "◆ " ◌i+ slash.file(p)                    
                             luaChanged:push p
             
         testPass = true    
         if kxkChanged.len > 0
-            write ◌gx "testing"
-            if not test.run kxkTests ➜ testPass = false
+            write ◌g_ "testing"
+            
+            if not test.run kxkTests 
+                testPass = false
+                write "\x1b[1F\x1b[2K" ◌rx "testing"
             
         if luaChanged.len > 0 or kxkChanged.len > 0
             if testPass
-                write ◌s "compile"
+                write ◌s~ "compile"
                 (output ok) = build()
                 # log output 
                 if ok
-                    write ◌-r_ "restart"
+                    write ◌-r. "restart"
                     slash.respawn()
                     log "DAFUK?"
                     os.exit(1)
@@ -138,7 +152,7 @@ watch = ... ->
                     write ◌r "✘"
                     log output
             else
-                log "skip compile"
+                write ◌rx "compile"
         sleep 1
         
 main()

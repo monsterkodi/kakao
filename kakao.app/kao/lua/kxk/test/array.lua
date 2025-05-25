@@ -91,6 +91,37 @@ test("array", function()
         test.cmp(x, a)
     end)
     
+    test("rnd", function()
+        local e = array(1, 2, 3)
+        test.cmp(e:has(e:rnd()), true)
+    end)
+    
+    test("swap", function()
+        local e = array(1, 2, 3)
+        e:swap(1, 3)
+        test.cmp(e, array(3, 2, 1))
+        e:swap(1, 6)
+        test.cmp(e, array(3, 2, 1))
+    end)
+    
+    test("each", function()
+        local e = array(1, 2, 3)
+        local c = 1
+        for i in e:each() do 
+            test.cmp(e[c], i)
+            c = c + 1
+        end
+        
+        for i, idx in e:each() do 
+            test.cmp(e[i], idx)
+        end
+        
+        e = array()
+        for i in e:each() do 
+            test.cmp(false, true)
+        end
+    end)
+    
     test("isarr", function()
         local a = array(1, 2)
         test.cmp(array.isarr(a), true)

@@ -10,8 +10,12 @@ local array = class("array")
 
 
 function array:init(...) 
-        for i, v in ipairs({...}) do 
-            table.insert(self, v)
+        local l = select("#", ...)
+        if (l > 0) then 
+            for i in iter(1, l) do 
+                local v = select(i, ...)
+                table.insert(self, v)
+            end
         end
         return self
     end
@@ -29,6 +33,12 @@ function array:__tostring()
 
 function array:str() 
     return tostring(self)
+    end
+
+
+function array:each() 
+          local i = 0 ; return function () 
+                  i = i + 1 ; return self[i], i end
     end
 
 
@@ -67,8 +77,11 @@ function array:pop()
 
 
 function array:push(...) 
-        for i, v in ipairs({...}) do 
-            self[(#self + 1)] = v
+        local l = select("#", ...)
+        if (l > 0) then 
+            for i in iter(1, l) do 
+                self[(#self + 1)] = select(i, ...)
+            end
         end
         
         return self
@@ -76,9 +89,12 @@ function array:push(...)
 
 
 function array:unshift(...) 
-        local a = {...}
-        for i in iter(#a, 1) do 
-            self:insert(1, a[i])
+        local l = select("#", ...)
+        if (l > 0) then 
+            for i in iter(l, 1) do 
+                local v = select(i, ...)
+                self:insert(1, v)
+            end
         end
         
         return self
@@ -141,6 +157,27 @@ function array:indexof(e)
         end
         
         return -1
+    end
+
+
+function array:rnd() 
+    return self[math.random(#self)]
+    end
+
+
+function array:swap(i, j) 
+        if ((i < 1) or (i > #self)) then return end
+        if ((j < 1) or (j > #self)) then return end
+        if (i == j) then return end
+        self[i], self[j] = self[j], self[i]
+        return self[i], self[j]
+    end
+
+
+function array:shuffle() 
+        for i in iter(1, #self) do 
+            self:swap(i, math.random(#self))
+        end
     end
 
 

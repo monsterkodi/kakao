@@ -131,11 +131,9 @@ local DefaultMixin = {
     __tostring = function (self) return "instance of "..tostring(self.class) end, 
     is = function (self, aClass) 
         assert((type(self) == 'table'), "Use :is instead of .is")
-        print("IS?", type(aClass))
         if ((type(aClass) ~= 'table') or (type(self) ~= 'table')) then return false end
         if (self.class == aClass) then return true end
         if ((self.class and self.class.extends) and self.class:extends(aClass)) then return true end
-        print("IS NOT", self, aClass)
         return false
     end, 
     static = {

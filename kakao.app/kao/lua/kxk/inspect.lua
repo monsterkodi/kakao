@@ -6,8 +6,6 @@
 
 -- Copyright (c) 2022 Enrique García Cota
 
--- use kxk/kxk
-
 
 function rawpairs(t) 
     return next, t, nil

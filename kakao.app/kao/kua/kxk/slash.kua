@@ -6,7 +6,7 @@
 # ███████   ███████  ███   ███  ███████   ███   ███
 
 use ffi os io
-use kxk/array kxk/kstr kxk/kseg
+use kxk.array kxk.kstr kxk.kseg
 
 ffi.cdef """
 

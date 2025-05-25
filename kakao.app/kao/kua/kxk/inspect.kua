@@ -7,8 +7,6 @@
 
 # Copyright (c) 2022 Enrique García Cota
 
-# use kxk/kxk
-
 rawpairs = t -> (next t nil)
 
 smartQuote = str ->

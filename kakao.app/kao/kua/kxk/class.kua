@@ -112,11 +112,9 @@ DefaultMixin = {
     is: self aClass ->
     
         ▴ type(self) == 'table' "Use :is instead of .is"
-        log "IS?" type(aClass)
         ⮐  false if type(aClass) != 'table' or type(self) != 'table'
         ⮐  true if self.class == aClass
         ⮐  true if self.class and self.class.extends and self.class:extends(aClass)
-        log "IS NOT" self, aClass
         ⮐  false
     
     static: {

@@ -8,9 +8,12 @@
 class array
 
     @: ... ->
-        
-        for i v in ipairs {...}
-            table.insert @ v
+    
+        l = select("#", ...)
+        if l > 0
+            for i in 1..l
+                v = select(i, ...)
+                table.insert @ v
 
     $: -> 
     
@@ -20,6 +23,8 @@ class array
         s
 
     str: -> $@
+    
+    each: -> i=0; -> i+=1; (@[i] i)
     
     map: f ->
     
@@ -48,15 +53,19 @@ class array
         
     push: ... -> 
 
-        for i v in ipairs {...}
-            @[@len+1] = v
+        l = select("#", ...)
+        if l > 0
+            for i in 1..l
+                @[@len+1] = select(i, ...)
         @
         
     unshift: ... -> 
         
-        a = {...}
-        for i in a.len..1
-            @insert 1 a[i]
+        l = select("#", ...)
+        if l > 0
+            for i in l..1
+                v = select(i, ...)
+                @insert 1 v
         @
         
     splice: (i n ...) ->
@@ -98,6 +107,20 @@ class array
         for i v in ipairs @
             if v == e ➜ ⮐  i 
         -1
+        
+    rnd: -> @[math.random(@len)]
+    
+    swap: i j -> 
+    
+        ⮐  if i < 1 or i > @len
+        ⮐  if j < 1 or j > @len
+        ⮐  if i == j 
+        (@[i] @[j]) = (@[j] @[i])
+        
+    shuffle: ->
+    
+        for i in 1..@len
+            @swap i math.random(@len)
         
     has:      e -> @indexof(e) >= 0
     contains: e -> @indexof(e) >= 0

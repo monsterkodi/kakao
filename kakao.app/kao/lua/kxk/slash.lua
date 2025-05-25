@@ -7,9 +7,9 @@
 ffi = require "ffi"
 os = require "os"
 io = require "io"
-array = require "kxk/array"
-kstr = require "kxk/kstr"
-kseg = require "kxk/kseg"
+kxk = require "kxk.array"
+kxk = require "kxk.kstr"
+kxk = require "kxk.kseg"
 
 ffi.cdef([[
 

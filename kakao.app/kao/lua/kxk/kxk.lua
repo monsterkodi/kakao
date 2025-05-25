@@ -74,11 +74,12 @@ function _G.write(...)
 end
 
 _G.strbuff = require("string.buffer")
-_G.class = require("kxk/class")
-_G.inspect = require("kxk/inspect")
-_G.slash = require("kxk/slash")
-_G.array = require("kxk/array")
-_G.kstr = require("kxk/kstr")
-_G.test = require("kxk/test")
+_G.class = require("kxk.class")
+_G.inspect = require("kxk.inspect")
+_G.slash = require("kxk.slash")
+_G.array = require("kxk.array")
+_G.kstr = require("kxk.kstr")
+_G.kseg = require("kxk.kseg")
+_G.test = require("kxk.test")
 
 return {}

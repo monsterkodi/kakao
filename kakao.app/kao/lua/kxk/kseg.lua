@@ -1,4 +1,5 @@
-array = require "kxk/array"
+-- use kxk.array
+local array = require("kxk.array")
 
 
 local kseg = class("kseg", array)
@@ -32,7 +33,8 @@ function kseg:decode(str, startPos)
         
         local endPos = (startPos + bytes)
         
-        for _, bX in ipairs({str = byte((startPos + 1), endPos)}) do 
+        local b2 = str:byte((startPos + 1), endPos)
+        for _, bX in ipairs({b2}) do 
             if (bit.band(bX, 0xC0) ~= 0x80) then 
                 return nil
             end
@@ -59,7 +61,7 @@ function kseg:codes(str)
     end
 
 
-function kseg:str() 
+function kseg:__tostring() 
     return table.concat(self, "")
     end
 

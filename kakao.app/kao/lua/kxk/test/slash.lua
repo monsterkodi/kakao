@@ -259,9 +259,9 @@ test("slash", function()
     
     test("split", function()
         -- slash.split "/c/users/home/"            ▸ ["" "c" "users" "home"]
-        test.cmp(slash.split("d/users/home"), {"d", "users", "home"})
-        test.cmp(slash.split("c:/some/path"), {"c:", "some", "path"})
-        test.cmp(slash.split("~/home/path"), {"~", "home", "path"})
+        test.cmp(slash.split("d/users/home"), array("d", "users", "home"))
+        test.cmp(slash.split("c:/some/path"), array("c:", "some", "path"))
+        test.cmp(slash.split("~/home/path"), array("~", "home", "path"))
     end)
     
     -- 000   0000000  00000000   00000000  000       0000000   000000000  000  000   000  00000000  

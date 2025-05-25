@@ -1,0 +1,54 @@
+# ████████  ███   ███  ████████  ███   ███  █████████   ███████  
+# ███       ███   ███  ███       ████  ███     ███     ███       
+# ███████    ███ ███   ███████   ███ █ ███     ███     ███████   
+# ███          ███     ███       ███  ████     ███          ███  
+# ████████      █      ████████  ███   ███     ███     ███████   
+
+class events
+
+    @: -> @handlers = []
+    
+    on: event handler ->
+    
+        list = @handlers[event] or []
+        ⮐  @ if list:has handler
+        
+        list:push handler
+        @handlers[event] = list
+        @
+        
+    emit: event ... ->
+    
+        ret  = false
+        list = @handlers[event]
+        if list
+            for i in list.len..1
+                if list[i]
+                    list[i](...)
+        
+    removeListener: event handler ->
+    
+        list = @handlers[event]
+        ⮐  @ if not list
+        
+        if handler
+            for i in 1..list.len
+                if list[i] == handler
+                    table.remove(list, i)
+                    break
+            
+            if list.len == 0 
+                @handlers[event] = nil 
+        else
+            @handlers[event] = nil 
+        @
+            
+    removeAllListeners: eventName ->
+    
+        if not eventName
+            @handlers = []
+        else
+            self:removeListener eventName
+        @
+        
+⮐  events

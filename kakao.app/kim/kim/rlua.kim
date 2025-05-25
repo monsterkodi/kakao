@@ -346,10 +346,11 @@ class Rlua
             "+": "\\x1b[1m" 
             "-": "\\x1b[2m" 
             "i": "\\x1b[3m" 
-            "_": "\\x1b[4m" 
-            "n": "\\x1b[7m" 
             "x": "\\x1b[9m" 
-            "0": "\\x1b[0m"
+            "n": "\\x1b[7m"
+            "_": "\\x1b[4m" 
+            ".": "\\x1b[4:4m"
+            "~": "\\x1b[4:3m"
             }.toTable()
             
         fg = ◇int r ◇int g ◇int b ➜string -> "\\x1b[38;2;#{r};#{g};#{b}m"
@@ -368,8 +369,6 @@ class Rlua
             for chr in code
                 if ansi[$chr]
                     @add ansi[$chr]
-        # else
-        #     @add "\\x1b[0m"
         @add "\""
         
     ▸comment: ◇Node n -> 
