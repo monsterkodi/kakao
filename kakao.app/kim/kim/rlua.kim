@@ -179,6 +179,10 @@ class Rlua
                 @add "= " 
                 @rnd(n.operand_left)
                 @add(" or")
+            ◂ampersand_assign
+                @add "= " 
+                @rnd(n.operand_left)
+                @add(" ..")
             ◂and        ➜ @add 'and'
             ◂or         ➜ @add 'or'
                         ➜ @tok n
@@ -347,12 +351,25 @@ class Rlua
             "x": "\\x1b[9m" 
             "0": "\\x1b[0m"
             }.toTable()
+            
+        fg = ◇int r ◇int g ◇int b ➜string -> "\\x1b[38;2;#{r};#{g};#{b}m"
+        bg = ◇int r ◇int g ◇int b ➜string -> "\\x1b[48;2;#{r};#{g};#{b}m"
         
         @add "\""
-        if ansi[n.color_value.token.str]
-            @add ansi[n.color_value.token.str]
-        else
-            @rnd n.color_value
+        code = n.color_value.token.str
+        hex = {'0'..'9' 'a'..'f'}
+        @add "\\x1b[0m"
+        if code.len == 3 and code[0] in hex and code[1] in hex and code[2] in hex
+            r = parseHexInt($code[0])*16
+            g = parseHexInt($code[1])*16
+            b = parseHexInt($code[2])*16
+            @add fg(r g b)
+        elif code.len
+            for chr in code
+                if ansi[$chr]
+                    @add ansi[$chr]
+        # else
+        #     @add "\\x1b[0m"
         @add "\""
         
     ▸comment: ◇Node n -> 

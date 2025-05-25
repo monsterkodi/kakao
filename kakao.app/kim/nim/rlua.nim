@@ -159,6 +159,10 @@ proc ▸operation(this : Rlua, n : Node) =
                 this.add("= ")
                 this.rnd(n.operand_left)
                 this.add(" or")
+            of ◂ampersand_assign: 
+                this.add("= ")
+                this.rnd(n.operand_left)
+                this.add(" ..")
             of ◂and: this.add("and")
             of ◂or: this.add("or")
             else: this.tok(n)
@@ -292,11 +296,25 @@ proc ▸use(this : Rlua, n : Node) =
 
 proc ▸color(this : Rlua, n : Node) = 
         var ansi = {"r": "\\x1b[31m", "g": "\\x1b[32m", "b": "\\x1b[34m", "c": "\\x1b[36m", "m": "\\x1b[35m", "y": "\\x1b[33m", "w": "\\x1b[37m", "d": "\\x1b[90m", "s": "\\x1b[30m", "R": "\\x1b[41m", "G": "\\x1b[42m", "B": "\\x1b[44m", "C": "\\x1b[46m", "M": "\\x1b[45m", "Y": "\\x1b[43m", "W": "\\x1b[47m", "D": "\\x1b[100m", "S": "\\x1b[40m", "+": "\\x1b[1m", "-": "\\x1b[2m", "i": "\\x1b[3m", "_": "\\x1b[4m", "n": "\\x1b[7m", "x": "\\x1b[9m", "0": "\\x1b[0m"}.toTable()
+        
+        proc fg(r : int, g : int, b : int) : string = &"\\x1b[38;2;{r};{g};{b}m"
+        
+        proc bg(r : int, g : int, b : int) : string = &"\\x1b[48;2;{r};{g};{b}m"
         this.add("\"")
-        if ansi[n.color_value.token.str]: 
-            this.add(ansi[n.color_value.token.str])
-        else: 
-            this.rnd(n.color_value)
+        var code = n.color_value.token.str
+        var hex = {'0'..'9', 'a'..'f'}
+        this.add("\\x1b[0m")
+        if ((((code.len == 3) and (code[0] in hex)) and (code[1] in hex)) and (code[2] in hex)): 
+            var r = (parseHexInt($code[0]) * 16)
+            var g = (parseHexInt($code[1]) * 16)
+            var b = (parseHexInt($code[2]) * 16)
+            this.add(fg(r, g, b))
+        elif code.len: 
+            for chr in code: 
+                if ansi[$chr]: 
+                    this.add(ansi[$chr])
+        # else
+        #     @add "\\x1b[0m"
         this.add("\"")
 
 proc ▸comment(this : Rlua, n : Node) = 

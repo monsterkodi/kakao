@@ -61,7 +61,7 @@ Options:
         os.exit(1)
     end
     
-    write("\x1b[34m", "●")
+    write("\x1b[0m\x1b[31m", "●", "\x1b[0m\x1b[33m", "●", "\x1b[0m\x1b[34m", "●")
     return watch(slash.path("."))
 end
 
@@ -122,10 +122,10 @@ function watch(...)
                         modTimes[p] = modTime
                         
                         if kxkFiles[p] then 
-                            write("\x1b[2m", "\x1b[90m", "◇ ", "\x1b[0m", "\x1b[3m", slash.file(p))
+                            write("\x1b[0m\x1b[90m\x1b[2m", "◇ ", "\x1b[0m\x1b[3m", slash.file(p))
                             kxkChanged:push(p)
                         elseif luaFiles[p] then 
-                            write("\x1b[2m", "\x1b[90m", "◆ ", "\x1b[0m", "\x1b[3m", slash.file(p))
+                            write("\x1b[0m\x1b[90m\x1b[2m", "◆ ", "\x1b[0m\x1b[3m", slash.file(p))
                             luaChanged:push(p)
                         end
                     end
@@ -135,22 +135,22 @@ function watch(...)
         
         local testPass = true
         if (#kxkChanged > 0) then 
-            write("\x1b[32m", "\x1b[9m", "testing")
+            write("\x1b[0m\x1b[32m\x1b[9m", "testing")
             if not test.run(kxkTests) then testPass = false end
         end
         
         if ((#luaChanged > 0) or (#kxkChanged > 0)) then 
             if testPass then 
-                write("\x1b[30m", "compile")
+                write("\x1b[0m\x1b[30m", "compile")
                 local output, ok = build()
                 -- log output 
                 if ok then 
-                    write("\x1b[31m", "\x1b[2m", "\x1b[4m", "restart")
+                    write("\x1b[0m\x1b[2m\x1b[31m\x1b[4m", "restart")
                     slash.respawn()
                     print("DAFUK?")
                     os.exit(1)
                 else 
-                    print("✘")
+                    write("\x1b[0m\x1b[31m", "✘")
                     print(output)
                 end
             else 
