@@ -290,6 +290,15 @@ proc ▸use(this : Rlua, n : Node) =
             this.rnd(n.use_items)
             this.add("]")
 
+proc ▸color(this : Rlua, n : Node) = 
+        var ansi = {"r": "\\x1b[31m", "g": "\\x1b[32m", "b": "\\x1b[34m", "c": "\\x1b[36m", "m": "\\x1b[35m", "y": "\\x1b[33m", "w": "\\x1b[37m", "d": "\\x1b[90m", "R": "\\x1b[41m", "G": "\\x1b[42m", "B": "\\x1b[44m", "C": "\\x1b[46m", "M": "\\x1b[45m", "Y": "\\x1b[43m", "W": "\\x1b[47m", "D": "\\x1b[100m", "+": "\\x1b[1m", "-": "\\x1b[2m", "_": "\\x1b[4m", "0": "\\x1b[0m"}.toTable()
+        this.add("\"")
+        if ansi[n.color_value.token.str]: 
+            this.add(ansi[n.color_value.token.str])
+        else: 
+            this.rnd(n.color_value)
+        this.add("\"")
+
 proc ▸comment(this : Rlua, n : Node) = 
         if (n.token.str == "###"): 
             this.add("--[[")
@@ -567,6 +576,7 @@ proc rnd(this : Rlua, n : Node) =
             of ●testCase: this.▸testCase(n)
             of ●testSuite, ●testSection: this.▸testSuite(n)
             of ●literal: this.▸literal(n)
+            of ●color: this.▸color(n)
             of ●type, ●keyword: this.tok(n)
             else: 
                               echo(&"rlua? {n} {n.kind}")

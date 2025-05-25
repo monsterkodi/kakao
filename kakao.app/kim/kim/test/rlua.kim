@@ -481,11 +481,13 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
                 })"""
                 
         v   "s = a:slice -20 3"                             "local s = a:slice(-20, 3)"
+        
+        # t   "log ◌r"                                        "print(r)"
  
     ▸ comments
     
-        t "two = 1 + 1 # addition"                         "two = (1 + 1) -- addition"
-        t "log 1 # comment"                                "print(1) -- comment"
+        t "two = 1 + 1 # addition"                          "two = (1 + 1) -- addition"
+        t "log 1 # comment"                                 "print(1) -- comment"
         
         t   """
             # ███   ███  ███  ██     ██

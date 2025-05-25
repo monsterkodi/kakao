@@ -75,6 +75,8 @@ ffi.cdef([[
     
     typedef void (*sighandler_t)(int);
     sighandler_t signal(int signum, sighandler_t handler);
+    
+    int write(int fd, const char *buf, size_t count);
 ]])
 
 

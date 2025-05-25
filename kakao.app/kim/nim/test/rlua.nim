@@ -387,6 +387,7 @@ setmetatable(aClass, {
     __newindex = _newMember
     })""")
         v("s = a:slice -20 3", "local s = a:slice(-20, 3)")
+        # t   "log ◌r"                                        "print(r)"
     test "comments": 
         t("two = 1 + 1 # addition", "two = (1 + 1) -- addition")
         t("log 1 # comment", "print(1) -- comment")

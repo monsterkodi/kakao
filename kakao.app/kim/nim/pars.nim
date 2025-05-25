@@ -767,6 +767,15 @@ proc lReturnType(this : Parser, left : Node) : Node =
                 sig.sig_args = nod(●list, left.token, @[left])
                 return sig
 
+proc rColor(this : Parser) : Node = 
+        var token = this.consume() # ◌
+        var color_value : Node
+        if (this.tok in {◂plus, ◂minus}): 
+            color_value = nod(●literal, this.consume())
+        else: 
+            color_value = this.value()
+        nod(●color, token, color_value)
+
 proc rArg(this : Parser) : Node = 
         var token = this.consume() # ◆ or ◇
         if this.typeless: 
@@ -1203,7 +1212,6 @@ proc setup(this : Parser) =
         this.pratt(◂multiply_assign, lAssign, nil, 10)
         this.pratt(◂ampersand_assign, lAssign, nil, 10)
         this.pratt(◂qmark_assign, lAssign, nil, 10)
-        this.pratt(◂colon, lMember, nil, 71)
         this.pratt(◂name, lSymbolList, rSymbol, 13) # higher than assign
         this.pratt(◂if, lTailIf, rIf, 20)
         this.pratt(◂when, nil, rIf, 20)
@@ -1237,12 +1245,14 @@ proc setup(this : Parser) =
         this.pratt(◂bitor, lOperation, nil, 60)
         this.pratt(◂not, lNotIn, rPreOp, 70)
         this.pratt(◂tilde, nil, rPreOp, 70)
+        this.pratt(◂colon, lMember, nil, 71)
         this.pratt(◂increment, lPostOp, nil, 80)
         this.pratt(◂decrement, lPostOp, nil, 80)
         this.pratt(◂square_open, lArrayAccess, rSquarely, 90)
         this.pratt(◂paren_open, lCall, rParenExpr, 90)
         this.pratt(◂bracket_open, nil, rCurly, 90)
         this.pratt(◂then, lReturnType, rReturnType, 99)
+        this.pratt(◂color, nil, rColor, 100)
         this.pratt(◂val_type, lArgList, rArg, 100)
         this.pratt(◂var_type, lArgList, rArg, 100)
         this.pratt(◂dot, lPropertyAccess, nil, 102)

@@ -3263,6 +3263,7 @@ export default {
             "use": "require",
             "elif": "keyword",
             "log": "keyword",
+            "write": "keyword",
             "is": "keyword"
         }
     }

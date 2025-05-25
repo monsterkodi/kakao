@@ -51,6 +51,7 @@ type NodeKind* = enum
     ●testSuite
     ●testSection
     ●testCase
+    ●color
     ●eof
 # ███   ███   ███████   ███████    ████████
 # ████  ███  ███   ███  ███   ███  ███     
@@ -154,6 +155,8 @@ type Node* = ref object of RootObj
         of ●testCase: 
             test_value*: Node
             test_expected*: Node
+        of ●color: 
+            color_value*: Node
         else: discard
 
 proc init*(this : Node) : Node = 
@@ -281,21 +284,12 @@ proc `$`*(this : Node) : string =
                 s = &"({s} section{b})"
             of ●testCase: 
                 s = &"({this.test_value} {s} {this.test_expected})"
+            of ●color: 
+                s = &"{s}{this.color_value}"
             else: 
                 discard
         s
 # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
-# s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
-# s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
-# s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
-# s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
-# s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
-# s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
-# s = &"(«s» «n.for_value» in «n.for_range»«b»)"
-# s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
-# s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
-# s = &"(s n.for_value in n.for_rangeb)"
-# s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
 
 proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
     # log "#{kind} #{token}"
@@ -365,6 +359,8 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
             n.test_expected = args[1]
         of ●testSection, ●testSuite: 
             n.test_block = args[0]
+        of ●color: 
+            n.color_value = args[0]
         else: discard
     n
 

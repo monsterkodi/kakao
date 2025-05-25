@@ -54,6 +54,7 @@ enum NodeKind*
     ●testSuite
     ●testSection
     ●testCase
+    ●color
     ●eof
     
 # ███   ███   ███████   ███████    ████████
@@ -228,6 +229,10 @@ class Node*
             test_value     : Node
             test_expected  : Node
             
+        ●color
+        
+            color_value    : Node
+            
         ➜ discard
         
     @: ->    
@@ -357,22 +362,13 @@ class Node*
                 s = "(#{s} section#{b})"
             ●testCase
                 s = "(#{@test_value} #{s} #{@test_expected})"
+            ●color
+                s = "#{s}#{@color_value}"
             else
                 discard
         s
 
 # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
-# s = &"(⟨s⟩ ⟨n.for_value⟩ in ⟨n.for_range⟩⟨b⟩)"
-# s = &"(⁅s⁆ ⁅n.for_value⁆ in ⁅n.for_range⁆⁅b⁆)"
-# s = &"(❬s❭ ❬n.for_value❭ in ❬n.for_range❭❬b❭)"
-# s = &"(❮s❯ ❮n.for_value❯ in ❮n.for_range❯❮b❯)"
-# s = &"(❰s❱ ❰n.for_value❱ in ❰n.for_range❱❰b❱)"
-# s = &"(⟪s⟫ ⟪n.for_value⟫ in ⟪n.for_range⟫⟪b⟫)"
-# s = &"(«s» «n.for_value» in «n.for_range»«b»)"
-# s = &"(‹s› ‹n.for_value› in ‹n.for_range›‹b›)"
-# s = &"(⸨s⸩ ⸨n.for_value⸩ in ⸨n.for_range⸩⸨b⸩)"
-# s = &"(s n.for_value in n.for_rangeb)"
-# s = &"(┤s├ ┤n.for_value├ in ┤n.for_range├┤b├)"
 
 nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     
@@ -446,6 +442,8 @@ nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
         ●testSection
         ●testSuite
             n.test_block        = args[0]
+        ●color
+            n.color_value       = args[0]
         ➜ discard
     n
 

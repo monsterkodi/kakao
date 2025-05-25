@@ -55,7 +55,7 @@ main = ... ->
         log "✘ " & output
         os.exit 1
         
-    log "●"
+    write ◌b "●"
     watch slash.path(".")
 
 build = ->
@@ -113,24 +113,24 @@ watch = ... ->
                         modTimes[p] = modTime
                         
                         if kxkFiles[p]
-                            log "◆" slash.file p
+                            write ◌-◌d "◇ " ◌0 slash.file(p)
                             kxkChanged:push p
                         elif luaFiles[p]
-                            log "◇" slash.file p                    
+                            write ◌-◌d "◆ " ◌0 slash.file(p)                    
                             luaChanged:push p
             
         testPass = true    
         if kxkChanged.len > 0
-            log "testing"
+            write ◌g "testing"
             if not test.run kxkTests ➜ testPass = false
             
         if luaChanged.len > 0 or kxkChanged.len > 0
             if testPass
-                log "compile"
+                write ◌y "compile"
                 (output ok) = build()
                 # log output 
                 if ok
-                    log "restart"
+                    write ◌r "restart"
                     slash.respawn()
                     log "DAFUK?"
                     os.exit(1)

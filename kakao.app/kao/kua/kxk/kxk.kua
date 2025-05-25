@@ -53,6 +53,12 @@ _G.is = v t ->
     ⮐  true  if vt == t and tt == "string"
     ⮐  true  if type(v.is) == "function" and v:is(t)
     false
+    
+_G.write = ... ->
+
+    s = table.concat {...} ""
+    s = s & "\27[0m\n"
+    ffi.C.write 1 s s.len
 
 _G.strbuff  = require "string.buffer"
 _G.class    = require "kxk/class"

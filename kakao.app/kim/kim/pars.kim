@@ -922,6 +922,16 @@ class Parser
                 sig.sig_args = nod ●list left.token [left]
                 ⮐  sig
                         
+    rColor: ➜Node ->
+    
+        token = @consume() # ◌
+        color_value ◇ Node
+        if @tok in {◂plus ◂minus}
+            color_value = nod ●literal @consume()
+        else
+            color_value = @value()
+        nod ●color token color_value
+                        
     rArg: ➜Node ->
     
         token = @consume() # ◆ or ◇
@@ -1472,7 +1482,6 @@ class Parser
         @pratt ◂ampersand_assign  lAssign           nil            10
         @pratt ◂qmark_assign      lAssign           nil            10
     
-        @pratt ◂colon             lMember           nil            71
         @pratt ◂name              lSymbolList       rSymbol        13 # higher than assign
         
         @pratt ◂if                lTailIf           rIf            20
@@ -1489,8 +1498,7 @@ class Parser
         @pratt ◂is                lOperation        nil            32
         @pratt ◂in                lOperation        nil            33
         @pratt ◂notin             lOperation        nil            34
-        
-    
+            
         @pratt ◂equal             lOperation        nil            40
         @pratt ◂not_equal         lOperation        nil            40
         @pratt ◂greater_equal     lOperation        nil            40
@@ -1516,6 +1524,7 @@ class Parser
     
         @pratt ◂not               lNotIn            rPreOp         70
         @pratt ◂tilde             nil               rPreOp         70
+        @pratt ◂colon             lMember           nil            71
     
         @pratt ◂increment         lPostOp           nil            80
         @pratt ◂decrement         lPostOp           nil            80
@@ -1524,6 +1533,7 @@ class Parser
         @pratt ◂paren_open        lCall             rParenExpr     90
         @pratt ◂bracket_open      nil               rCurly         90
         @pratt ◂then              lReturnType       rReturnType    99
+        @pratt ◂color             nil               rColor        100
         @pratt ◂val_type          lArgList          rArg          100
         @pratt ◂var_type          lArgList          rArg          100
         @pratt ◂dot               lPropertyAccess   nil           102

@@ -59,6 +59,7 @@ type tok* = enum
     ◂comment_end
     ◂val_type = "◇"
     ◂var_type = "◆"
+    ◂color = "◌"
     ◂paren_open = "("
     ◂paren_close = ")"
     ◂bracket_open = "{"

@@ -66,6 +66,13 @@ function _G.is(v, t)
     return false
 end
 
+
+function _G.write(...) 
+    local s = table.concat({...}, "")
+    s = s .. "\27[0m\n"
+    return ffi.C.write(1, s, #s)
+end
+
 _G.strbuff = require("string.buffer")
 _G.class = require("kxk/class")
 _G.inspect = require("kxk/inspect")
