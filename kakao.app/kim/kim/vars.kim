@@ -28,45 +28,54 @@ class Scoper
     scope  : ◇Node body ➜Node ->
     branch : ◇Node body -> discard @scope(body)
     
-    addbody : ◇Node fn ->
+    bodify : ◇Node body ➜Node ->
     
-        if not fn.func_body
-            fn.func_body = nod ●block tkn(◂indent "    ") []
-        if fn.func_body.kind notin {●block ●semicolon}
-            fn.func_body = nod ●block tkn(◂indent "    ") [fn.func_body]
+        if not body
+            ⮐  nod ●block tkn(◂indent "    ") []
+        if body.kind notin {●block ●semicolon}
+            ⮐  nod ●block tkn(◂indent "    ") [body]
+        body
+        
+    returnize: ◇Node body ->
     
-    returnize: ◇Node fn ->
-    
-        ⮐  if not fn.func_body
+        ⮐  if not body
 
-        switch fn.func_body.kind
+        switch body.kind
             ●block
             ●semicolon
-                ⮐  if fn.func_body.expressions.len == 0
-                lastExp = fn.func_body.expressions[^1]
-                if lastExp.kind != ●return
-                    if lastExp.kind in {●if ●switch ●while ●for}
-                        log "todo: handle implicit return #{lastExp.kind}"
-                        discard
+                ⮐  if body.expressions.len == 0
+                lastExp = body.expressions[^1]
+                if lastExp.kind in {●while ●for ●return}
+                    discard
+                else
+                    if lastExp.kind == ●if
+                        for cndthn in lastExp.condThens
+                            cndthn.then_branch = @bodify cndthn.then_branch
+                            @returnize cndthn.then_branch
+                        if lastExp.else_branch
+                            lastExp.else_branch = @bodify lastExp.else_branch
+                            @returnize lastExp.else_branch
+                    elif lastExp.kind == ●switch                    
+                        for cases in lastExp.switch_cases
+                            cases.case_then = @bodify cases.case_then
+                            @returnize cases.case_then
+                        if lastExp.switch_default
+                            lastExp.switch_default = @bodify lastExp.switch_default
+                            @returnize lastExp.switch_default
+                    elif lastExp.kind != ●operation or lastExp.token.tok notin assignToks
+                        retval  = lastExp
+                        line    = retval.token.line
+                        body.expressions[^1] = nod(●return tkn(◂return "return" line) retval)
                     else
-                        if lastExp.kind != ●operation or lastExp.token.tok notin assignToks
-                            retval  = lastExp
-                            line    = retval.token.line
-                            fn.func_body.expressions[^1] = nod(●return tkn(◂return "return" line) retval)
-                        else
-                            retval  = lastExp.operand_left
-                            line    = retval.token.line
-                            fn.func_body.expressions.add nod(●return tkn(◂return "return" line+1) retval)
-            ●return ➜ discard
-            ➜ 
-                line   = fn.func_body.token.line
-                retval = fn.func_body
-                fn.func_body = nod(●return tkn(◂return "return" line+1) retval)
+                        retval  = lastExp.operand_left
+                        line    = retval.token.line
+                        body.expressions.add nod(●return tkn(◂return "return" line+1) retval)
+            ➜ discard
     
     luanize: ◇Node fn ->
         
-        @addbody fn
-        @returnize fn
+        fn.func_body = @bodify fn.func_body
+        @returnize fn.func_body
 
         if fn.func_signature and fn.func_signature.sig_args.list_values
             for arg in fn.func_signature.sig_args.list_values

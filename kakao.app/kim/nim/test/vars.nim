@@ -4,8 +4,11 @@
 #    ███     ███   ███  ███   ███       ███
 #     █      ███   ███  ███   ███  ███████ 
 import ../rndr
+import ../rlua
 
 template v(a:string, b:string) = testCmp(a, renderNim(a, true), b, instantiationInfo())
+
+template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiationInfo())
 suite "vars": 
     test "toplevel": 
         v("optParser = initOptParser()", "var optParser = initOptParser()")
@@ -177,3 +180,38 @@ c = 6
 var d = 7""")
     test "semicolon": 
         v("f = -> t = Tknz() ; t.tknz segs", "\nproc f = \n    var t = Tknz() ; t.tknz(segs)")
+    # ███      ███   ███   ███████ 
+    # ███      ███   ███  ███   ███
+    # ███      ███   ███  █████████
+    # ███      ███   ███  ███   ███
+    # ███████   ███████   ███   ███
+    test "implicit return": 
+        l("""
+f = ->
+    if true
+        "a"
+    else
+        "b"
+""", """
+
+function f() 
+    if true then 
+        return "a"
+    else 
+        return "b"
+    end
+end""")
+        l("""
+f = ->
+    switch x
+        1   ➜ "a"
+            ➜ "b"
+""", """
+
+function f() 
+    if (x == 1) then 
+    return "a"
+    else 
+    return "b"
+    end
+end""")

@@ -500,5 +500,4 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
                 end"""
                 
                 
-                
     
