@@ -174,13 +174,14 @@ class Parser
     
         lt = @peek(n-1)
         ct = @peek(n)
-        lt != EOF and ct != EOF and lt.tok != ◂indent and lt.line == ct.line and lt.col+lt.str.len == ct.col
+        
+        lt != EOF and ct != EOF and lt.tok != ◂indent and lt.line == ct.line and lt.col+ksegWidth(lt.str) == ct.col
 
     isConnectedRight: n=0 ➜bool ->
     
         ct = @peek(n)
         rt = @peek(n+1)
-        rt != EOF and ct != EOF and rt.tok != ◂indent and rt.line == ct.line and ct.col+ct.str.len == rt.col
+        rt != EOF and ct != EOF and rt.tok != ◂indent and rt.line == ct.line and ct.col+ksegWidth(ct.str) == rt.col
         
     isConnectedLeftAndRight: n=0 ➜bool ->
     
@@ -925,11 +926,14 @@ class Parser
     rColor: ➜Node ->
     
         token = @consume() # ◌
-        color_value ◇ Node
-        if @tok in {◂plus ◂minus}
-            color_value = nod ●literal @consume()
-        else
-            color_value = @value()
+        token.str = ""
+        color_value = nod ●literal token
+        lt = @peek(-1)
+        log "darfugginuggi" @tok, @isConnectedLeft(), @isConnectedRight(), @current.str, lt.col, lt.str, lt.str.len, @peek(0).col
+        while @tok notin {◂comma ◂eof ◂indent} and @isConnectedLeft()
+            t = @consume()
+            log "rColor" t, t.str
+            color_value.token.str &= t.str
         nod ●color token color_value
                         
     rArg: ➜Node ->

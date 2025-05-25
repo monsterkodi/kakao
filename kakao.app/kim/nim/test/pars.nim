@@ -480,6 +480,14 @@ enum tok
         t("name : @a=1 ->", "▪[(◂name : (◂[(◂name (= ◂number))]->))]")
     test "comments": 
         t("###\n\nhello from\na comment###\na = 1", "▪[#(◂name = ◂number)]")
+    test "color": 
+        t("◌r", "▪[◌r]")
+        t("◌rR", "▪[◌rR]")
+        t("◌c_M", "▪[◌c_M]")
+        t("◌xn", "▪[◌xn]")
+        t("◌ff0", "▪[◌ff0]")
+        t("◌w-", "▪[◌w-]")
+        t("◌b+", "▪[◌b+]")
     test "tests": 
         t("▸ a test suite", "▪[(▸ suite)]")
         check((ast("▸ a test suite", "nim").expressions[0].kind == ●testSuite))

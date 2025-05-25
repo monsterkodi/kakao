@@ -151,12 +151,12 @@ proc isTokAhead(this : Parser, tokAhead : tok) : bool =
 proc isConnectedLeft(this : Parser, n = 0) : bool = 
         var lt = this.peek((n - 1))
         var ct = this.peek(n)
-        (((((lt != EOF) and (ct != EOF)) and (lt.tok != ◂indent)) and (lt.line == ct.line)) and ((lt.col + lt.str.len) == ct.col))
+        (((((lt != EOF) and (ct != EOF)) and (lt.tok != ◂indent)) and (lt.line == ct.line)) and ((lt.col + ksegWidth(lt.str)) == ct.col))
 
 proc isConnectedRight(this : Parser, n = 0) : bool = 
         var ct = this.peek(n)
         var rt = this.peek((n + 1))
-        (((((rt != EOF) and (ct != EOF)) and (rt.tok != ◂indent)) and (rt.line == ct.line)) and ((ct.col + ct.str.len) == rt.col))
+        (((((rt != EOF) and (ct != EOF)) and (rt.tok != ◂indent)) and (rt.line == ct.line)) and ((ct.col + ksegWidth(ct.str)) == rt.col))
 
 proc isConnectedLeftAndRight(this : Parser, n = 0) : bool = 
         (this.isConnectedLeft(n) and this.isConnectedRight(n))
@@ -769,11 +769,14 @@ proc lReturnType(this : Parser, left : Node) : Node =
 
 proc rColor(this : Parser) : Node = 
         var token = this.consume() # ◌
-        var color_value : Node
-        if (this.tok in {◂plus, ◂minus}): 
-            color_value = nod(●literal, this.consume())
-        else: 
-            color_value = this.value()
+        token.str = ""
+        var color_value = nod(●literal, token)
+        var lt = this.peek(-1)
+        echo("darfugginuggi", this.tok, this.isConnectedLeft(), this.isConnectedRight(), this.current.str, lt.col, lt.str, lt.str.len, this.peek(0).col)
+        while ((this.tok notin {◂comma, ◂eof, ◂indent}) and this.isConnectedLeft()): 
+            var t = this.consume()
+            echo("rColor", t, t.str)
+            (color_value.token.str &= t.str)
         nod(●color, token, color_value)
 
 proc rArg(this : Parser) : Node = 

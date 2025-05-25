@@ -363,7 +363,8 @@ class Node*
             ●testCase
                 s = "(#{@test_value} #{s} #{@test_expected})"
             ●color
-                s = "#{s}#{@color_value}"
+                v = choose(@color_value, "#{@color_value.token.str}", "")
+                s = "#{s}#{v}"
             else
                 discard
         s

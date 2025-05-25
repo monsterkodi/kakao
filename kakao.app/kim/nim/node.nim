@@ -285,7 +285,8 @@ proc `$`*(this : Node) : string =
             of ●testCase: 
                 s = &"({this.test_value} {s} {this.test_expected})"
             of ●color: 
-                s = &"{s}{this.color_value}"
+                var v = choose(this.color_value, &"{this.color_value.token.str}", "")
+                s = &"{s}{v}"
             else: 
                 discard
         s

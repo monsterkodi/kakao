@@ -637,6 +637,16 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
     
         t "###\n\nhello from\na comment###\na = 1"  "▪[#(◂name = ◂number)]"
         
+    ▸ color
+        
+        t "◌r"                                      "▪[◌r]"
+        t "◌rR"                                     "▪[◌rR]"
+        t "◌c_M"                                    "▪[◌c_M]"
+        t "◌xn"                                     "▪[◌xn]"
+        t "◌ff0"                                    "▪[◌ff0]"
+        t "◌w-"                                     "▪[◌w-]"
+        t "◌b+"                                     "▪[◌b+]"
+        
     ▸ tests
     
         t "▸ a test suite"                          "▪[(▸ suite)]"
