@@ -6,16 +6,16 @@ use kxk/kxk
     ▸ simple
     
         s = kseg("../")
-        s:pop()
-        s:str() ▸ ".."
+        s∙pop()
+        s∙str() ▸ ".."
         
     ▸ is
     
         a = kseg("")
-        a:is kseg  ▸ true
-        a:is array ▸ true
-        a:is table ▸ false
-        a:is false ▸ false
-        a:is true  ▸ false
-        a:is nil   ▸ false
+        a∙is kseg  ▸ true
+        a∙is array ▸ true
+        a∙is table ▸ false
+        a∙is false ▸ false
+        a∙is true  ▸ false
+        a∙is nil   ▸ false
         

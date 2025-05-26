@@ -12,7 +12,7 @@ class kseg extends array
 
     decode: str startPos=1 ->
     
-        b1 = str:byte( startPos, startPos )
+        b1 = str∙byte( startPos, startPos )
     
         if b1 < 0x80
             ⮐  (startPos, startPos)
@@ -24,7 +24,7 @@ class kseg extends array
     
         endPos = startPos + bytes
     
-        b2 = str:byte( startPos + 1, endPos )
+        b2 = str∙byte( startPos + 1, endPos )
         for _ bX in ipairs { b2 }
             
             if bit.band( bX, 0xC0 ) != 0x80
@@ -59,6 +59,6 @@ class kseg extends array
     ltrim: c=' ' -> 
         while @len > 0 and @[1] == c ➜ @shift()
         @
-    trim: c=' ' -> @rtrim(c):ltrim(c)
+    trim: c=' ' -> @rtrim(c)∙ltrim(c)
    
 ⮐  kseg

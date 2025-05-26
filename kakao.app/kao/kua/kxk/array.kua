@@ -38,7 +38,7 @@ class array
         t = @.class()
         for i v in ipairs @
             if f v i
-                t:push v
+                t∙push v
         t
         
     shift: -> 
@@ -76,7 +76,7 @@ class array
         a = @.class(...)
         if a.len > 0
             while a.len
-                @insert i a:pop()
+                @insert i a∙pop()
         @
         
     slice: first last ->
@@ -85,7 +85,7 @@ class array
         last = math.min @len last
         s = @.class()
         for i in first..last
-            s:push @[i]
+            s∙push @[i]
         s
         
     keydict: key ->
@@ -130,6 +130,6 @@ array.static.isarr = a ->
     ⮐  false if type(a) != "table"
     a.len > 0
 
-array:include table
+array∙include table
 
 ⮐  array

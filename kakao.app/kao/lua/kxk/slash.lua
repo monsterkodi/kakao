@@ -154,7 +154,7 @@ function slash.shell(cmd, ...)
         
         local argv = cmdargs(cmd, {...})
         ffi.C.execvp(argv[0], argv)
-        ffi.C._exit(127)
+        return ffi.C._exit(127)
     elseif (pid > 0) then 
         ffi.C.close(read_pipe[0])
         ffi.C.close(write_pipe[1])
@@ -575,15 +575,21 @@ function slash.exists(path)
 end
 
 function slash.isDir(path) 
-                   local s = slash.stat(path) ; if (s and (s.type == "dir")) then return s end
+                   local s = slash.stat(path) ; if (s and (s.type == "dir")) then 
+    return s
+                                                 end
 end
 
 function slash.isFile(path) 
-                   local s = slash.stat(path) ; if (s and (s.type == "file")) then return s end
+                   local s = slash.stat(path) ; if (s and (s.type == "file")) then 
+    return s
+                                                 end
 end
 
 function slash.isLink(path) 
-                   local s = slash.stat(path) ; if (s and (s.type == "link")) then return s end
+                   local s = slash.stat(path) ; if (s and (s.type == "link")) then 
+    return s
+                                                 end
 end
 
 function slash.dirExists(path) 

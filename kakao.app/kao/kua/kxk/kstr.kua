@@ -40,7 +40,7 @@ kstr.chars = s ->
 
     result = {}
     for i in 1..s.len
-        table.insert result s:sub(i i)
+        table.insert result s∙sub(i i)
     result
    
 kstr.split = s sep limit ->
@@ -53,13 +53,13 @@ kstr.split = s sep limit ->
     count = 0
     
     while true
-        pos = s:find(sep start true)
+        pos = s∙find(sep start true)
 
         if limit and count >= limit or not pos
-            table.insert result s:sub(start)
+            table.insert result s∙sub(start)
             break
                 
-        table.insert result s:sub(start pos - 1)
+        table.insert result s∙sub(start pos - 1)
         start = pos + sep.len
         count = count + 1
     

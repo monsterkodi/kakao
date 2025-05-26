@@ -28,7 +28,7 @@ main = ... ->
 
     # log slash.cwd()
     
-    (_G.files _G.opts) = optparser:parse(arg)
+    (_G.files _G.opts) = optparser∙parse(arg)
     _G.files = [unpack(_G.files)]
 
     if opts.cwd 
@@ -54,9 +54,9 @@ main = ... ->
     math.randomseed(os.clock())
         
     cl = ["■■■" "◀■▶" "▶■◀" "▶●◀" "▶◆◀" "▶▶▶" "◀◀◀" "▲▼▲" "▼▲▼" "▪▪▪" "◆◆◆" "■◆■" "●◆●" "◆■◆" "●●●" "●▲●"]
-    cs = kseg cl:rnd()
+    cs = kseg cl∙rnd()
     co = [ ◌r ◌fd0 ◌88f ]
-    co:shuffle()
+    co∙shuffle()
     write co[1] cs[1] co[2] cs[2] co[3] cs[3]
     
     watch slash.path(".")
@@ -72,17 +72,17 @@ build = ->
     out = slash.path dir "kao"
     if empty _G.files
         _G.files = ["kao.lua"]
-    _G.files:push "./kxk/array.lua"
-    _G.files:push "./kxk/class.lua"
-    _G.files:push "./kxk/inspect.lua"
-    _G.files:push "./kxk/kseg.lua"
-    _G.files:push "./kxk/kstr.lua"
-    _G.files:push "./kxk/kxk.lua"
-    _G.files:push "./kxk/slash.lua"
-    _G.files:push "./kxk/test.lua"
+    _G.files∙push "./kxk/array.lua"
+    _G.files∙push "./kxk/class.lua"
+    _G.files∙push "./kxk/inspect.lua"
+    _G.files∙push "./kxk/kseg.lua"
+    _G.files∙push "./kxk/kstr.lua"
+    _G.files∙push "./kxk/kxk.lua"
+    _G.files∙push "./kxk/slash.lua"
+    _G.files∙push "./kxk/test.lua"
     args = array "luastatic" 
-    args:push unpack(files) 
-    args:push libjit "-I" incjit "-o" out
+    args∙push unpack(files) 
+    args∙push libjit "-I" incjit "-o" out
     (output ok) = slash.shell unpack(args)
     (output ok)
         
@@ -125,10 +125,10 @@ watch = ... ->
                         
                         if kxkFiles[p]
                             write ◌d- "◇ " ◌i+ slash.file(p)
-                            kxkChanged:push p
+                            kxkChanged∙push p
                         elif luaFiles[p]
                             write ◌d- "◆ " ◌i+ slash.file(p)                    
-                            luaChanged:push p
+                            luaChanged∙push p
             
         testPass = true    
         if kxkChanged.len > 0

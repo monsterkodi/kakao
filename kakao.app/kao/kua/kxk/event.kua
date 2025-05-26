@@ -11,9 +11,9 @@ class events
     on: event handler ->
     
         list = @handlers[event] or []
-        ⮐  @ if list:has handler
+        ⮐  @ if list∙has handler
         
-        list:push handler
+        list∙push handler
         @handlers[event] = list
         @
         
@@ -48,7 +48,7 @@ class events
         if not eventName
             @handlers = []
         else
-            self:removeListener eventName
+            @removeListener eventName
         @
         
 _G.post = events()

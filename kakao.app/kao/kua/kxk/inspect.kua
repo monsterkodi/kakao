@@ -10,7 +10,7 @@
 rawpairs = t -> (next t nil)
 
 smartQuote = str ->
-    if str:match('"') and not str:match("'")
+    if str∙match('"') and not str∙match("'")
        ⮐  "'" & str & "'"
     '"' & string.gsub(str '"' '\\"') & '"'
     
@@ -52,7 +52,7 @@ luaKeywords = {
 
 isIdentifier = str ->
 
-    type(str) == "string" and str:match("^[_%a][_%a%d]*$") and not luaKeywords[str]
+    type(str) == "string" and str∙match("^[_%a][_%a%d]*$") and not luaKeywords[str]
 
 isSequenceKey = k sequenceLength ->
 
@@ -114,11 +114,11 @@ class Inspector
         @level   = 0
         countCycles(root, @cycles)
         
-        @buf = strbuff:new()
+        @buf = strbuff∙new()
         @putValue root
         buf = @buf
         # don't return self here
-        ⮐  buf:get()
+        ⮐  buf∙get()
 
     getId: v ->
     
@@ -132,62 +132,62 @@ class Inspector
 
     putValue: v ->
     
-        tabify = -> buf=@buf ; buf:put(@newline & string.rep(@indent @level))
+        tabify = -> buf=@buf ; buf∙put(@newline & string.rep(@indent @level))
     
         tv = type(v)
         buf = @buf
         if tv == 'string'
-            buf:put smartQuote(escape(v))
+            buf∙put smartQuote(escape(v))
         elif tv == 'number' or tv == 'boolean' or tv == 'nil' or tv == 'cdata' or tv == 'ctype' 
-            buf:put tostring(v)
+            buf∙put tostring(v)
         elif tv == 'table' and not @ids[v]
             t = v
             
             if @level >= @depth
-                buf:put '{...}'
+                buf∙put '{...}'
             else
                 @level = @level + 1
                 
                 if @cycles[t] > 1 
                     tabify()
-                    buf:put string.format('<%d>' @getId(t))
+                    buf∙put string.format('<%d>' @getId(t))
                 
                 (keys keysLen seqLen) = getKeys(t)
                 
                 for i in 1..seqLen + keysLen 
                     if i <= seqLen
-                        buf:put ' '
+                        buf∙put ' '
                         @putValue(t[i])
                     else
                         tabify()
                         k = keys[i - seqLen]
                         if isIdentifier k
-                            buf:put k
+                            buf∙put k
                             if k.len < 12
-                                buf:put string.rep(" " 12-k.len)
+                                buf∙put string.rep(" " 12-k.len)
                         else
-                            buf:put "["
+                            buf∙put "["
                             @putValue k
-                            buf:put "]"
-                        buf:put '  '
+                            buf∙put "]"
+                        buf∙put '  '
                         @putValue t[k]
                 
                 mt = getmetatable(t)
                 if type(mt) == 'table'
                     tabify()
-                    buf:put '<meta> '
+                    buf∙put '<meta> '
                     @putValue(mt)
                 
                 @level = @level - 1
                 
                 if seqLen > 0
-                    buf:put ' '
+                    buf∙put ' '
         else
             if tv == "function"
-                buf:put "->"
+                buf∙put "->"
             elif tv == "table"
-                buf:put "<" & @getId(v) & ">"
+                buf∙put "<" & @getId(v) & ">"
             else
-                buf:put string.format('<%s %d>' tv @getId(v))
+                buf∙put string.format('<%s %d>' tv @getId(v))
 
 ⮐  (root) -> Inspector(root)

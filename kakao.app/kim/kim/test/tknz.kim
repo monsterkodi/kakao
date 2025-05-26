@@ -614,4 +614,27 @@ proc tk(str:string, tok:tok, line:int, col:int) : Token = Token(str:str, tok:tok
             tk("match"          ◂name           0   4) 
             tk("("              ◂paren_open     0   9)
             tk(")"              ◂paren_close    0   10)]
+
+        l "str∙match()"         [
+            tk("str:match"      ◂name           0   0) 
+            tk("("              ◂paren_open     0   9)
+            tk(")"              ◂paren_close    0   10)]
+            
+        l "rtrim():ltrim()"     [
+            tk("rtrim"          ◂name           0   0) 
+            tk("("              ◂paren_open     0   5) 
+            tk(")"              ◂paren_close    0   6) 
+            tk(":"              ◂colon          0   7)
+            tk("ltrim"          ◂name           0   8) 
+            tk("("              ◂paren_open     0  13) 
+            tk(")"              ◂paren_close    0  14)]
+
+        l "rtrim()∙ltrim()"     [
+            tk("rtrim"          ◂name           0   0) 
+            tk("("              ◂paren_open     0   5) 
+            tk(")"              ◂paren_close    0   6) 
+            tk(":"              ◂colon          0   7)
+            tk("ltrim"          ◂name           0   8) 
+            tk("("              ◂paren_open     0  13) 
+            tk(")"              ◂paren_close    0  14)]
             

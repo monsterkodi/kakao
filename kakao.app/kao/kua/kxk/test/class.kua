@@ -29,8 +29,8 @@ class Print
     ▸ inc    
     
         f = FunInc()
-        f:inc 2
-        f:inc 2
+        f∙inc 2
+        f∙inc 2
         
         f.m ▸ 4
         
@@ -48,8 +48,8 @@ class Print
         $f           ▸ "instance of class FunInc"
         f.class.name ▸ "FunInc"
         type(f.is)   ▸ "function"
-        f:is FunInc  ▸ true
-        f:is Print   ▸ false
+        f∙is FunInc  ▸ true
+        f∙is Print   ▸ false
 
         _G.is nil nil   ▸ true
         _G.is 1     2   ▸ true

@@ -205,30 +205,30 @@ slash.normalize = path ->
             table.remove p i
             if i == swallow or i == 1
                 if p[1] == '/' and frst != '/'
-                    p:shift() 
-                ⮐  slash.normalize p:str()
+                    p∙shift() 
+                ⮐  slash.normalize p∙str()
         else
             if p[i] == '\\' ➜ p[i] = '/'
             if i < p.len and p[i] == '/'
                 if i < p.len - 1
                     if p[i+1] == '.' and p[i+2] == '/' 
-                        p = p:splice i+1 2
+                        p = p∙splice i+1 2
                     if p[i+1] == '.' and p[i+2] == '.' and i > 1 and p[i-1] != '.'
-                        p = p:splice i 3
+                        p = p∙splice i 3
                         swallow = i-1
                         while swallow > 0 and p[swallow] != '/'
                             swallow -= 1
                 if p[i+1] == '/'
-                    p = p:splice i+1 1
+                    p = p∙splice i+1 1
     
-    if p.len >= 4 and p:slice(1 4):str() == "./.."
-        p:shift()
-        p:shift()
+    if p.len >= 4 and p∙slice(1 4)∙str() == "./.."
+        p∙shift()
+        p∙shift()
     while p.len > 1 and p[p.len] == '/'
-        p:pop()
+        p∙pop()
     if p.len > 1 and p[1] == '/' and frst != '/' and frst != '\\'
-        p:shift()
-    p:str()
+        p∙shift()
+    p∙str()
 
 # ████████    ███████   █████████  ███   ███
 # ███   ███  ███   ███     ███     ███   ███
@@ -241,13 +241,13 @@ slash.path = (...) ->
     slsh = s -> string.gsub(s "\\" "/")
     mpty = s -> s.len > 0
     fpth = array(...)
-    fpth = fpth:filter mpty
-    fpth = fpth:map slsh
+    fpth = fpth∙filter mpty
+    fpth = fpth∙map slsh
     fpth = table.concat fpth "/"
     slash.normalize fpth
     
-slash.isRelative = path -> path.len == 0 or path.len > 0 and path:sub(1 1) != '/' and path:sub(1 1) != '~'
-slash.isAbsolute = path -> path.len > 0 and array('/' '~'):contains(path:sub(1 1))
+slash.isRelative = path -> path.len == 0 or path.len > 0 and path∙sub(1 1) != '/' and path∙sub(1 1) != '~'
+slash.isAbsolute = path -> path.len > 0 and array('/' '~')∙contains(path∙sub(1 1))
 slash.isRoot     = path -> slash.normalize(path) == "/"
 
 slash.home = ... -> slash.path os.getenv("HOME") unpack({...})
@@ -282,7 +282,7 @@ slash.splitFile = path ->
 
 slash.split = path -> kstr.split path "/"
 slash.join  = ... -> table.concat {...} "/"
-slash.contains = path subpath -> array(unpack(slash.split(path))):contains subpath
+slash.contains = path subpath -> array(unpack(slash.split(path)))∙contains subpath
         
 # ████████    ███████   ████████    ███████  ████████
 # ███   ███  ███   ███  ███   ███  ███       ███     
@@ -294,7 +294,7 @@ slash.parse = path ->
     path  = slash.untilde slash.normalize(path)
     (dir file) = slash.splitFile path
     (name ext) = slash.splitExt file
-    {dir: dir name: name ext: ext file: file path: path}
+    {dir:dir name:name ext:ext file:file path:path}
         
 slash.dir  = path -> slash.parse(path).dir
 slash.file = path -> slash.parse(path).file
@@ -423,7 +423,7 @@ slash.walk = path opt ->
                     
                 apth = slash.absolute(path & "/" & name)
                 info = { "name": name "type": typ "path": apth }
-                opt.files:push info
+                opt.files∙push info
                 
                 if opt.recursive and typ == "dir"
                     slash.walk apth opt
@@ -443,10 +443,10 @@ slash.walk = path opt ->
 slash.files = path ext ->
 
     files = slash.walk path
-    files = files:map((info) -> ⮐  info.path)
+    files = files∙map((info) -> ⮐  info.path)
     if ext
         fext = (f) -> slash.ext(f) == ext
-        files = files:filter fext
+        files = files∙filter fext
     files
     
 slash.exists     = path -> slash.stat path

@@ -51,7 +51,7 @@ _G.is = v t ->
     ⮐  false if vt != tt
     ⮐  true  if vt != "table"
     ⮐  true  if vt == t and tt == "string"
-    ⮐  true  if type(v.is) == "function" and v:is(t)
+    ⮐  true  if type(v.is) == "function" and v∙is(t)
     false
     
 _G.write = ... ->

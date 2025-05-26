@@ -183,3 +183,6 @@ suite "tknz":
         t("import ../../rel/[s1, s2]", @[tk("import ../../rel/[s1, s2]", ◂verbatim, 0, 0)])
     test "lua": 
         l("str:match()", @[tk("str", ◂name, 0, 0), tk(":", ◂colon, 0, 3), tk("match", ◂name, 0, 4), tk("(", ◂paren_open, 0, 9), tk(")", ◂paren_close, 0, 10)])
+        l("str∙match()", @[tk("str:match", ◂name, 0, 0), tk("(", ◂paren_open, 0, 9), tk(")", ◂paren_close, 0, 10)])
+        l("rtrim():ltrim()", @[tk("rtrim", ◂name, 0, 0), tk("(", ◂paren_open, 0, 5), tk(")", ◂paren_close, 0, 6), tk(":", ◂colon, 0, 7), tk("ltrim", ◂name, 0, 8), tk("(", ◂paren_open, 0, 13), tk(")", ◂paren_close, 0, 14)])
+        l("rtrim()∙ltrim()", @[tk("rtrim", ◂name, 0, 0), tk("(", ◂paren_open, 0, 5), tk(")", ◂paren_close, 0, 6), tk(":", ◂colon, 0, 7), tk("ltrim", ◂name, 0, 8), tk("(", ◂paren_open, 0, 13), tk(")", ◂paren_close, 0, 14)])

@@ -133,10 +133,14 @@ end
 
 
 function kstr.index(i) 
-    if (i == 1) then return "1st"
-    elseif (i == 2) then return "2nd"
-    elseif (i == 3) then return "3rd"
-    else return tostring(i) .. "th"
+    if (i == 1) then 
+    return "1st"
+    elseif (i == 2) then 
+    return "2nd"
+    elseif (i == 3) then 
+    return "3rd"
+    else 
+    return tostring(i) .. "th"
     end
 end
 

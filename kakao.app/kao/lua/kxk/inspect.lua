@@ -114,6 +114,7 @@ function countCycles(x, cycles)
     if (type(x) == "table") then 
         if cycles[x] then 
             cycles[x] = (cycles[x] + 1)
+            return cycles[x]
         else 
             cycles[x] = 1
             for k, v in rawpairs(x) do 
@@ -121,7 +122,7 @@ function countCycles(x, cycles)
                 countCycles(v, cycles)
             end
             
-            countCycles(getmetatable(x), cycles)
+            return countCycles(getmetatable(x), cycles)
         end
     end
 end
@@ -169,14 +170,14 @@ function Inspector:putValue(v)
         local tv = type(v)
         local buf = self.buf
         if (tv == 'string') then 
-            buf:put(smartQuote(escape(v)))
+            return buf:put(smartQuote(escape(v)))
         elseif (((((tv == 'number') or (tv == 'boolean')) or (tv == 'nil')) or (tv == 'cdata')) or (tv == 'ctype')) then 
-            buf:put(tostring(v))
+            return buf:put(tostring(v))
         elseif ((tv == 'table') and not self.ids[v]) then 
             local t = v
             
             if (self.level >= self.depth) then 
-                buf:put('{...}')
+                return buf:put('{...}')
             else 
                 self.level = (self.level + 1)
                 
@@ -220,16 +221,16 @@ function Inspector:putValue(v)
                 self.level = (self.level - 1)
                 
                 if (seqLen > 0) then 
-                    buf:put(' ')
+                    return buf:put(' ')
                 end
             end
         else 
             if (tv == "function") then 
-                buf:put("->")
+                return buf:put("->")
             elseif (tv == "table") then 
-                buf:put("<" .. self:getId(v) .. ">")
+                return buf:put("<" .. self:getId(v) .. ">")
             else 
-                buf:put(string.format('<%s %d>', tv, self:getId(v)))
+                return buf:put(string.format('<%s %d>', tv, self:getId(v)))
             end
         end
     end

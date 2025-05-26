@@ -45,7 +45,7 @@ test.static.cmp = a b ->
     switch type(a) 
         "table"
             for k v in rawpairs a
-                if type(v) != "function" and (type(k) != "string" or k:sub(1 2) != "__")
+                if type(v) != "function" and (type(k) != "string" or k∙sub(1 2) != "__")
                     # log "cmp" k, type(v)
                     if not test.static.cmp v b[k]
                         key = k

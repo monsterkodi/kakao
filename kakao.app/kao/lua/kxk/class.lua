@@ -98,7 +98,7 @@ function _createClass(name, super)
             end
             })
     else 
-        setmetatable(aClass.static, {__index = function (_, k) return rawget(dict, k) end})
+        setmetatable(aClass.static, {__index = (function (_, k) return rawget(dict, k) end)})
     end
     
     setmetatable(aClass, {
@@ -130,7 +130,7 @@ end
 local DefaultMixin = {
     __tostring = function (self) return "instance of "..tostring(self.class) end, 
     is = function (self, aClass) 
-        assert((type(self) == 'table'), "Use :is instead of .is")
+        assert((type(self) == 'table'), "Use ∙is instead of .is")
         if ((type(aClass) ~= 'table') or (type(self) ~= 'table')) then return false end
         if (self.class == aClass) then return true end
         if ((self.class and self.class.extends) and self.class:extends(aClass)) then return true end
@@ -138,7 +138,7 @@ local DefaultMixin = {
     end, 
     static = {
         alloc = function (self) 
-            assert((type(self) == 'table'), "Use :alloc instead of .alloc")
+            assert((type(self) == 'table'), "Use ∙alloc instead of .alloc")
             instance = {class = self}
             for k, m in pairs(self.__proto) do 
                 instance[k] = m
@@ -148,7 +148,7 @@ local DefaultMixin = {
             return instance
         end, 
         new = function (self, ...) 
-            assert((type(self) == 'table'), "Use :new instead of .new")
+            assert((type(self) == 'table'), "Use ∙new instead of .new")
             instance = self:alloc()
             if (type(instance.init) == "function") then 
                 return instance:init(...)
@@ -157,7 +157,7 @@ local DefaultMixin = {
             return instance
         end, 
         subclass = function (self, name) 
-            assert((type(self) == "table"), "Use :subclass instead of .subclass")
+            assert((type(self) == "table"), "Use ∙subclass instead of .subclass")
             assert((type(name) == "string"), "Invalid subclass name")
             
             subclass = _createClass(name, self)
@@ -174,18 +174,18 @@ local DefaultMixin = {
                 end
             end
             
-            subclass.init = function (instance, ...) return self.init(instance, ...) end
+            subclass.init = (function (instance, ...) return self.init(instance, ...) end)
             
             self.subclasses[subclass] = true
             
             return subclass
         end, 
         extends = function (self, other) 
-            assert((type(self) == "table"), "Use :extends instead of .extends")
+            assert((type(self) == "table"), "Use ∙extends instead of .extends")
             return (((type(other) == 'table') and (type(self.super) == 'table')) and ((self.super == other) or self.super:extends(other)))
         end, 
         include = function (self, ...) 
-            assert((type(self) == "table"), "Use :include instead of .include")
+            assert((type(self) == "table"), "Use ∙include instead of .include")
             for _, mixin in ipairs({...}) do _includeMixin(self, mixin) end
             return self
         end
@@ -199,6 +199,6 @@ local middleclass = {
     end
     }
 
-setmetatable(middleclass, {__call = function (_, ...) return middleclass.class(...) end})
+setmetatable(middleclass, {__call = (function (_, ...) return middleclass.class(...) end)})
 
 return middleclass

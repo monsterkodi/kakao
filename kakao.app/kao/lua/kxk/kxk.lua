@@ -37,7 +37,8 @@ end
 
 
 function _G.slice(a, first, last) 
-    if (type(a) == "string") then return string.sub(a, first, last)
+    if (type(a) == "string") then 
+    return string.sub(a, first, last)
     elseif (type(a) == "table") then 
             if (last == nil) then last = #a end
             local s = {}
