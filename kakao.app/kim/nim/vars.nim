@@ -44,28 +44,26 @@ proc returnize(this : Scoper, body : Node) =
             of ●block, ●semicolon: 
                 if (body.expressions.len == 0): return
                 var lastExp = body.expressions[^1]
-                if (lastExp.kind in {●while, ●for, ●return}): 
-                    discard
-                else: 
-                    if (lastExp.kind == ●if): 
+                if (lastExp.kind in {●while, ●for, ●return}): return
+                if (lastExp.kind == ●if): 
                         for cndthn in lastExp.condThens: 
                             cndthn.then_branch = this.bodify(cndthn.then_branch)
                             this.returnize(cndthn.then_branch)
                         if lastExp.else_branch: 
                             lastExp.else_branch = this.bodify(lastExp.else_branch)
                             this.returnize(lastExp.else_branch)
-                    elif (lastExp.kind == ●switch): 
+                elif (lastExp.kind == ●switch): 
                         for cases in lastExp.switch_cases: 
                             cases.case_then = this.bodify(cases.case_then)
                             this.returnize(cases.case_then)
                         if lastExp.switch_default: 
                             lastExp.switch_default = this.bodify(lastExp.switch_default)
                             this.returnize(lastExp.switch_default)
-                    elif ((lastExp.kind != ●operation) or (lastExp.token.tok notin assignToks)): 
+                elif ((lastExp.kind != ●operation) or (lastExp.token.tok notin assignToks)): 
                         var retval = lastExp
                         var line = retval.token.line
                         body.expressions[^1] = nod(●return, tkn(◂return, "return", line), retval)
-                    else: 
+                else: 
                         var retval = lastExp.operand_left
                         var line = retval.token.line
                         body.expressions.add(nod(●return, tkn(◂return, "return", (line + 1)), retval))
@@ -131,8 +129,13 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                             for item in lhs.list_values: 
                                 add(item.token.str)
                         else: discard
-                    # else
-                    #     log "vars lhs #{lhs}"
+                    if ((this.lang == "lua") and (e.operand_right.kind in {●if, ●switch})): 
+                        echo("rhs if or switch")
+                        var funky = nod(●func, tkn(◂func, "->"), nil, nil, e.operand_right)
+                        this.luanize(funky)
+                        var callee = nod(●list, tkn(◂paren_open, "("), @[funky])
+                        var call = Node(kind: ●call, token: e.operand_right.token, callee: callee, callargs: @[])
+                        e.operand_right = call
             of ●var: 
                 insert(e.var_name.token.str, e)
             of ●let: 

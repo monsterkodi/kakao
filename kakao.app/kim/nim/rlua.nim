@@ -412,7 +412,7 @@ proc ▸while(this : Rlua, n : Node) =
         this.add("end")
 
 proc ▸list(this : Rlua, n : Node) = 
-        var parens = (n.list_values and (n.list_values[0].kind == ●member))
+        var parens = (n.list_values and (n.list_values[0].kind in {●member, ●func}))
         if parens: this.add("(")
         for i, item in n.list_values: 
             this.rnd(item)

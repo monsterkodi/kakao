@@ -625,7 +625,10 @@ proc switchCase(this : Parser, baseIndent : int) : Node =
             if ((this.tok in {◂else, ◂eof}) or this.isDedent(baseIndent)): return
             if (this.tok == ◂then): break
             (this.explicit += 1)
-            case_when.add(this.value())
+            var val = this.value()
+            if (val == nil): 
+                return this.error("Expected value to switch on", token)
+            case_when.add(val)
             (this.explicit -= 1)
             this.swallow(◂comma)
         if this.isDedent(baseIndent): return

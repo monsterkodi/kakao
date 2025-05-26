@@ -45,30 +45,34 @@ class Scoper
             ●semicolon
                 ⮐  if body.expressions.len == 0
                 lastExp = body.expressions[^1]
-                if lastExp.kind in {●while ●for ●return}
-                    discard
-                else
-                    if lastExp.kind == ●if
+                ⮐  if lastExp.kind in {●while ●for ●return}
+                if 
+                    lastExp.kind == ●if
+                    
                         for cndthn in lastExp.condThens
                             cndthn.then_branch = @bodify cndthn.then_branch
                             @returnize cndthn.then_branch
                         if lastExp.else_branch
                             lastExp.else_branch = @bodify lastExp.else_branch
                             @returnize lastExp.else_branch
-                    elif lastExp.kind == ●switch                    
+                            
+                    lastExp.kind == ●switch
+                    
                         for cases in lastExp.switch_cases
                             cases.case_then = @bodify cases.case_then
                             @returnize cases.case_then
                         if lastExp.switch_default
                             lastExp.switch_default = @bodify lastExp.switch_default
                             @returnize lastExp.switch_default
-                    elif lastExp.kind != ●operation or lastExp.token.tok notin assignToks
-                        retval  = lastExp
-                        line    = retval.token.line
+                            
+                    lastExp.kind != ●operation or lastExp.token.tok notin assignToks
+                    
+                        retval = lastExp
+                        line   = retval.token.line
                         body.expressions[^1] = nod(●return tkn(◂return "return" line) retval)
-                    else
-                        retval  = lastExp.operand_left
-                        line    = retval.token.line
+                    ➜ 
+                        retval = lastExp.operand_left
+                        line   = retval.token.line
                         body.expressions.add nod(●return tkn(◂return "return" line+1) retval)
             ➜ discard
     
@@ -139,8 +143,14 @@ class Scoper
                             for item in lhs.list_values
                                 add item.token.str
                         ➜ discard
-                    # else
-                    #     log "vars lhs #{lhs}"
+                        
+                    if @lang == "lua" and e.operand_right.kind in {●if ●switch}
+                        log "rhs if or switch"
+                        funky  = nod ●func tkn(◂func "->") nil nil e.operand_right
+                        @luanize funky
+                        callee = nod ●list tkn(◂paren_open "(") [funky]
+                        call = Node kind:●call token:e.operand_right.token callee:callee callargs:[]
+                        e.operand_right = call
             ●var
                 insert e.var_name.token.str e
             ●let

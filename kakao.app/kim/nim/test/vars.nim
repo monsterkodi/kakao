@@ -215,3 +215,24 @@ function f()
     return "b"
     end
 end""")
+    test "assign if": 
+        l("a = if 1 ➜ 2 ➜ 3", """
+local a = (function () 
+    if 1 then 
+    return 2 else 
+    return 3
+    end
+end)()""")
+    test "assign switch": 
+        l("""
+a = switch b
+    1 ➜ 2
+      ➜ 3
+""", """
+local a = (function () 
+    if (b == 1) then 
+    return 2
+    else 
+    return 3
+    end
+end)()""")

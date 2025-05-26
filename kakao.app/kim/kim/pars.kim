@@ -666,7 +666,7 @@ class Parser
             if @tok in {◂then ◂else}
                 break # then without condition -> else
             
-            condition = @inline()
+            condition   = @inline()
             then_branch = @thenBlock()
             
             condThens.add nod(●condThen condition.token condition then_branch)
@@ -748,9 +748,12 @@ class Parser
             ⮐  if @tok in {◂else ◂eof} or @isDedent(baseIndent)
     
             break if @tok == ◂then
-        
+
             @explicit += 1
-            case_when.add @value()
+            val = @value()
+            if val == nil
+                ⮐  @error "Expected value to switch on" token
+            case_when.add val
             @explicit -= 1
             @swallow ◂comma
         

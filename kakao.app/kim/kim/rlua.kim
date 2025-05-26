@@ -484,7 +484,7 @@ class Rlua
         
     ▸list: ◇Node n ->
         
-        parens = n.list_values and n.list_values[0].kind == ●member
+        parens = n.list_values and n.list_values[0].kind in {●member ●func}
         @add("(") if parens
         for i item in n.list_values
             @rnd item
