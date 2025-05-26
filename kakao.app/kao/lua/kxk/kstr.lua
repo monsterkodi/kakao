@@ -88,9 +88,9 @@ end
 
 
 function kstr.chars(s) 
-    local result = {}
+    local result = array()
     for i in iter(1, #s) do 
-        table.insert(result, s:sub(i, i))
+        result:push(s:sub(i, i))
     end
     
     return result
@@ -122,26 +122,44 @@ function kstr.split(s, sep, limit)
 end
 
 
+function kstr.find(s, c) 
+    return (string.find(s, c, 1, true) or -1)
+end
+
+
 function kstr.rfind(s, c) 
     local i = ((#s + 1) - #c)
     while ((i > 0) and (string.sub(s, i, ((i + #c) - 1)) ~= c)) do 
         i = i - 1
     end
     
-    return i
+    return (((i >= 1) and i) or -1)
 end
 
 
 function kstr.index(i) 
-    if (i == 1) then 
-    return "1st"
-    elseif (i == 2) then 
-    return "2nd"
-    elseif (i == 3) then 
-    return "3rd"
-    else 
-    return tostring(i) .. "th"
+    if is(i, "number") then 
+        if (i == 1) then return "1st"
+        elseif (i == 2) then return "2nd"
+        elseif (i == 3) then return "3rd"
+        else return tostring(i) .. "th"
+        end
     end
+    
+    return i
+end
+
+
+function kstr.count(s, c) 
+    if empty(s) then return 0 end
+    local cnt = 0
+    for i in iter(1, #s) do 
+        if (kstr.find(c, s:sub(i, i)) >= 0) then 
+            cnt = cnt + 1
+        end
+    end
+    
+    return cnt
 end
 
 return kstr

@@ -150,7 +150,8 @@ function watch(...)
             
             if not test.run(kxkTests) then 
                 testPass = false
-                write("\x1b[1F\x1b[2K", "\x1b[0m\x1b[31m\x1b[9m", "testing")
+                -- write "\x1b[1F\x1b[2K" ◌rx "testing"
+                write("\x1b[0m\x1b[31m\x1b[9m", "testing")
             end
         end
         

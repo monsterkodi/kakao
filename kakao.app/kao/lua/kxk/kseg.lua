@@ -1,5 +1,4 @@
--- use kxk.array
-local array = require("kxk.array")
+array = require "kxk.array"
 
 
 local kseg = class("kseg", array)
@@ -75,25 +74,27 @@ function kseg:rpad(l, c)
 
 
 function kseg:rtrim(c) 
-        c = c or ' '
+        c = c or " \n"
         
-        while ((#self > 0) and (self[#self] == c)) do self:pop() end
+        local s = kseg(c)
+        while ((#self > 0) and s:has(self[#self])) do self:pop() end
         return self
     end
 
 
 function kseg:ltrim(c) 
-        c = c or ' '
+        c = c or " \n"
         
-        while ((#self > 0) and (self[1] == c)) do self:shift() end
+        local s = kseg(c)
+        while ((#self > 0) and s:has(self[1])) do self:shift() end
         return self
     end
 
 
 function kseg:trim(c) 
-    c = c or ' '
+    c = c or " \n"
     
-    return rtrim().init(c):ltrim(c)
+    return self:rtrim(c):ltrim(c)
     end
 
 return kseg

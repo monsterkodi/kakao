@@ -59,6 +59,25 @@ _G.write = ... ->
     s = table.concat {...} ""
     s = s & "\27[0m\n"
     ffi.C.write 1 s s.len
+    
+timers = {}
+    
+_G.profileStart = msg ->
+    if not timers[msg]
+        timers[msg] = os.clock()
+    else
+        log "[WARNING] Duplicate profileStart for '#{msg}'"
+
+_G.profileStop = msg ->
+    
+    if not timers[msg]
+        log "[ERROR] profileStop for unknown label '#{msg}'"
+        ⮐  
+
+    tick = os.clock()
+                
+    write ◌b msg " " ◌m tick-timers[msg]
+    timers[msg] = nil
 
 _G.strbuff  = require "string.buffer"
 _G.class    = require "kxk.class"

@@ -457,3 +457,15 @@ local Print = class("Print")
 function Print:__tostring() 
     return self.m
     end""")
+    test "self": 
+        l("""
+class trim
+    f: -> @rtrim(c)∙ltrim(c)
+""", """
+
+local trim = class("trim")
+    
+
+function trim:f() 
+    return self:rtrim(c):ltrim(c)
+    end""")

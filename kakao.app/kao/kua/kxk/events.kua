@@ -48,7 +48,9 @@ class events
         if not eventName
             @handlers = []
         else
-            self:removeListener eventName
+            @removeListener eventName
         @
+
+_G.post = events()
         
 ⮐  events

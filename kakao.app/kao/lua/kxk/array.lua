@@ -14,7 +14,7 @@ function array:init(...)
         if (l > 0) then 
             for i in iter(1, l) do 
                 local v = select(i, ...)
-                table.insert(self, v)
+                self:insert(v)
             end
         end
         return self
@@ -24,7 +24,7 @@ function array:init(...)
 function array:__tostring() 
         local s = ".\n"
         for i, v in ipairs(self) do 
-            s = s .. "    " .. i .. "    " .. v .. "\n"
+            s = s .. "    " .. tostring(i) .. "    " .. tostring(v) .. "\n"
         end
         
         return s
@@ -65,14 +65,16 @@ function array:filter(f)
 
 
 function array:shift() 
-        if (#self > 0) then return table.remove(self, 1) end
-        return nil
+        if (#self > 0) then 
+    return self:remove(1)
+        end
     end
 
 
 function array:pop() 
-        if (#self > 0) then return table.remove(self, #self) end
-        return nil
+        if (#self > 0) then 
+    return self:remove(#self)
+        end
     end
 
 

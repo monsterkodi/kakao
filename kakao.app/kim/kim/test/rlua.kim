@@ -170,6 +170,8 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "use a b c"                                 "a = require \"a\"\nb = require \"b\"\nc = require \"c\""
     
         t "⮐  require('./init')( (...) -> )"          "return require('./init')(function (...) end)"
+        
+        t "use kxk.array"                             "array = require \"kxk.array\""
                                                     
     ▸ if                                            
                                                     
@@ -321,21 +323,8 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "s = 't'"                                  "s = 't'"
         t "s = 't2'"                                 "s = 't2'"
         t "s = 'test'"                               "s = 'test'"
-                                                     
         t "s = \"hello\""                            "s = \"hello\""
-        t "s = \"num #" & "{1+2} end\""              "s = &\"num {(1 + 2)} end\""
-        t "s = \"#" & "{o}\""                        "s = &\"{o}\""
-        t "s = \"(#" & "{s}#" & "{e})\""             "s = &\"({s}{e})\""
-        
-        t "cmd = \"nim c --outDir:#" & "{outdir} --stackTrace:on --lineTrace:on #" & "{file}\"", 
-          "cmd = &\"nim c --outDir:{outdir} --stackTrace:on --lineTrace:on {file}\""
-          
-        t "let e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")",
-          "local e = choose(n.return_value, &\" {n.return_value}\", \"\")"
-
-        t "var e = choose(n.return_value, \" #" & "{n.return_value}\", \"\")",
-          "local e = choose(n.return_value, &\" {n.return_value}\", \"\")"
-          
+                
     ▸ string concatenation
     
         t "s = '' & ''"                              "s = '' .. ''"
@@ -346,17 +335,12 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "s = \"\"\"\n\n\"\"\""                     "s = [[\n\n]]"
         t "s = \"\"\"hello\"\"\""                    "s = [[hello]]"
         t "s = \"\"\"hello world\"\"\""                 "s = [[hello world]]"  
-        t "s = \"\"\"num #" & "{1+2} end\"\"\""      "s = &[[num {(1 + 2)} end]]"
-        t "s = \"\"\"\nl1 #" & "{1+2}\nl2 #" & "{2-3}\"\"\"" "s = &[[\nl1 {(1 + 2)}\nl2 {(2 - 3)}]]"
         t "s = \"\"\"hello\nworld\"\"\""                "s = [[hello\nworld]]"
         t "s = \"\"\"hello\n    world\"\"\""            "s = [[hello\nworld]]"
         t "s = \"\"\"hello\n    world\n    \"\"\""      "s = [[hello\nworld\n]]"
         t "s = \"\"\"hello\n        world\n    \"\"\""  "s = [[hello\n    world\n]]"
         t "s = \"\"\"hello\nworld\n    \"\"\""          "s = [[hello\nworld\n    ]]"
         
-        t "s = \"\"\"\n    #" & "{1+1}\n\"\"\""              "s = &[[\n    {(1 + 1)}\n]]"
-        t "s = \"\"\"\n    #" & "{1+1}\n    #" & "{2+2}\n\"\"\""  "s = &[[\n    {(1 + 1)}\n    {(2 + 2)}\n]]"
-
         t "\"\"\"\n\"\"\""                              "[[\n]]"
         t "\"\"\"\n    \"\"\""                          "[[\n]]"
         t "\"\"\"\n    a = 1\"\"\""                     "[[\na = 1]]"
@@ -369,6 +353,17 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "t \"\"\"\na = 1\"\"\" , \"\"\"\nb = 2\"\"\"" "t([[\na = 1]], [[\nb = 2]])"
         t "t \"\"\"\na = 1\nb = 2\"\"\" , \"\"\"\na = 1\nb = 2\"\"\""  "t([[\na = 1\nb = 2]], [[\na = 1\nb = 2]])"
         t "t \"\"\"\n        a = 1\n        b = 2\n    \"\"\"" "t([[\n    a = 1\n    b = 2\n]])"
+
+    ▸ stripol
+                                                     
+        t "s = \"num #" & "{1+2} end\""              "s = \"num \" .. (1 + 2) .. \" end\""
+        t "s = \"#" & "{o}\""                        "s = \"\" .. o .. \"\""
+        t "s = \"(#" & "{s}#" & "{e})\""             "s = \"(\" .. s .. \"\" .. e .. \")\""
+
+        t "s = \"\"\"\n    #" & "{1+1}\n\"\"\""              "s = [[\n    ]] .. (1 + 1) .. [[\n]]"
+        t "s = \"\"\"\n    #" & "{1+1}\n    #" & "{2+2}\n\"\"\""  "s = [[\n    ]] .. (1 + 1) .. [[\n    ]] .. (2 + 2) .. [[\n]]"
+        t "s = \"\"\"num #" & "{1+2} end\"\"\""      "s = [[num ]] .. (1 + 2) .. [[ end]]"
+        t "s = \"\"\"\nl1 #" & "{1+2}\nl2 #" & "{2-3}\"\"\"" "s = [[\nl1 ]] .. (1 + 2) .. [[\nl2 ]] .. (2 - 3) .. [[]]"
        
     ▸ len
     

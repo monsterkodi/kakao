@@ -1,6 +1,5 @@
 
-# use kxk.array
-array = require "kxk.array"
+use kxk.array
 
 class kseg extends array 
 
@@ -36,8 +35,7 @@ class kseg extends array
     
         i = 1
     
-        () ->
-    
+        ->
             if i > str.len ➜ ⮐  nil
             
             (startPos endPos) = @decode(str i)
@@ -53,12 +51,17 @@ class kseg extends array
     rpad: l c=' ' ->  
         while @len < l ➜ @push c
         @
-    rtrim: c=' ' -> 
-        while @len > 0 and @[^1] == c ➜ @pop()
+        
+    rtrim: c=" \n" ->
+        s = kseg(c) 
+        while @len > 0 and s∙has(@[^1]) ➜ @pop()
         @
-    ltrim: c=' ' -> 
-        while @len > 0 and @[1] == c ➜ @shift()
+        
+    ltrim: c=" \n" -> 
+        s = kseg(c) 
+        while @len > 0 and s∙has(@[1]) ➜ @shift()
         @
-    trim: c=' ' -> @rtrim(c)∙ltrim(c)
+        
+    trim: c=" \n" -> @rtrim(c)∙ltrim(c)
    
 ⮐  kseg

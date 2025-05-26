@@ -241,10 +241,6 @@ proc ▸arg(this : Rlua, n : Node) =
 proc ▸string(this : Rlua, n : Node) = 
         var delimiter = n.token.str
         var triple = (delimiter == "\"\"\"")
-        if (n.string_stripols.len > 0): 
-            this.add("&")
-        elif n.string_prefix: 
-            this.tok(n.string_prefix)
         if triple: 
             this.add("[[")
         else: 
@@ -273,9 +269,15 @@ proc ▸string(this : Rlua, n : Node) =
                 this.add(lines.join("\n"))
         demill(n.string_content)
         for stripol in n.string_stripols: 
-            this.add("{")
+            if triple: 
+                this.add("]] .. ")
+            else: 
+                this.add("\" .. ")
             this.rnd(stripol.stripol_xprssns)
-            this.add("}")
+            if triple: 
+                this.add(" .. [[")
+            else: 
+                this.add(" .. \"")
             if (stripol.stripol_content != nil): 
                 demill(stripol.stripol_content)
         if triple: 
@@ -285,14 +287,22 @@ proc ▸string(this : Rlua, n : Node) =
 
 proc ▸use(this : Rlua, n : Node) = 
         var split = n.use_module.token.str.split(" ")
+        
+        proc modName(s : string) : string = 
+            if (count(split[0], "/") > 0): 
+                slash.name(split[0])
+            elif (count(split[0], ".") > 0): 
+                slash.ext(split[0])
+            else: 
+                split[0]
         while (split.len > 1): 
-            this.add(&"{slash.name(split[0])} = require \"{split[0]}\"\n" & this.nodeIndent(n))
-            split = split.shift
-        this.add(&"{slash.name(split[0])} = require \"{split[0]}\"")
-        if ((n.use_kind != nil) and (n.use_kind.token.str == "▪")): 
-            this.add("/[")
-            this.rnd(n.use_items)
-            this.add("]")
+            this.add(&"{modName(split[0])} = require \"{split[0]}\"\n" & this.nodeIndent(n))
+            split = split.shift()
+        this.add(&"{modName(split[0])} = require \"{split[0]}\"")
+        # if n.use_kind != nil and n.use_kind.token.str == '▪'
+        #     @add "/["
+        #     @rnd n.use_items
+        #     @add "]"
 
 proc ▸color(this : Rlua, n : Node) = 
         var ansi = {"r": "\\x1b[31m", "g": "\\x1b[32m", "b": "\\x1b[34m", "c": "\\x1b[36m", "m": "\\x1b[35m", "y": "\\x1b[33m", "w": "\\x1b[37m", "d": "\\x1b[90m", "s": "\\x1b[30m", "R": "\\x1b[41m", "G": "\\x1b[42m", "B": "\\x1b[44m", "C": "\\x1b[46m", "M": "\\x1b[45m", "Y": "\\x1b[43m", "W": "\\x1b[47m", "D": "\\x1b[100m", "S": "\\x1b[40m", "+": "\\x1b[1m", "-": "\\x1b[2m", "i": "\\x1b[3m", "x": "\\x1b[9m", "n": "\\x1b[7m", "_": "\\x1b[4m", ".": "\\x1b[4:4m", "~": "\\x1b[4:3m"}.toTable()

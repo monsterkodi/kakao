@@ -38,9 +38,9 @@ kstr.trim = s c=' ' -> kstr.ltrim kstr.rtrim(s,c) c
 
 kstr.chars = s ->
 
-    result = {}
+    result = []
     for i in 1..s.len
-        table.insert result s∙sub(i i)
+        result∙push s∙sub(i i)
     result
    
 kstr.split = s sep limit ->
@@ -64,20 +64,33 @@ kstr.split = s sep limit ->
         count = count + 1
     
     result
+
+kstr.find = s c -> string.find(s c 1 true) or -1
     
 kstr.rfind = s c ->
 
     i = s.len+1-c.len
     while i > 0 and string.sub(s i i+c.len-1) != c
         i -= 1
-    i
+    i >= 1 and i or -1
 
 kstr.index = i ->
 
-    switch i
-        1 ➜ ⮐  "1st"
-        2 ➜ ⮐  "2nd"
-        3 ➜ ⮐  "3rd"
-          ➜ ⮐  $i & "th"
-   
+    if i is "number"
+        switch i
+            1 ➜ ⮐  "1st"
+            2 ➜ ⮐  "2nd"
+            3 ➜ ⮐  "3rd"
+              ➜ ⮐  $i & "th"
+    i
+    
+kstr.count = s c ->
+
+    ⮐  0 if empty s
+    cnt = 0
+    for i in 1..s.len
+        if kstr.find(c s∙sub(i i)) >= 0
+            cnt += 1
+    cnt
+    
 ⮐  kstr

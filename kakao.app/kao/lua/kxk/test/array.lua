@@ -122,6 +122,19 @@ test("array", function()
         end
     end)
     
+    test("indexdict", function()
+        local a = array(3, 2, 1)
+        test.cmp(a:indexdict(), {3, 2, 1})
+        
+        a = array("3", "2", "1")
+        test.cmp(a:indexdict(), {["1"] = 3, ["2"] = 2, ["3"] = 1})
+    end)
+    
+    test("keydict", function()
+        local a = array({k = "1"}, {k = "2"}, {k = "3"})
+        test.cmp(a:keydict("k"), {["1"] = {k = "1"}, ["2"] = {k = "2"}, ["3"] = {k = "3"}})
+    end)
+    
     test("isarr", function()
         local a = array(1, 2)
         test.cmp(array.isarr(a), true)

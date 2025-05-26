@@ -273,11 +273,6 @@ class Rlua
         delimiter = n.token.str
         triple = delimiter == "\"\"\""
         
-        if n.string_stripols.len > 0
-            @add "&"
-        elif n.string_prefix
-            @tok n.string_prefix
-        
         if triple
             @add "[["
         else    
@@ -310,9 +305,15 @@ class Rlua
             
         demill n.string_content
         for stripol in n.string_stripols
-            @add "{"
+            if triple
+                @add "]] .. "
+            else
+                @add "\" .. "
             @rnd stripol.stripol_xprssns
-            @add "}"
+            if triple
+                @add " .. [["
+            else
+                @add " .. \""
             if stripol.stripol_content != nil
                 demill stripol.stripol_content
         
@@ -324,15 +325,25 @@ class Rlua
     ▸use: ◇Node n -> 
     
         split = n.use_module.token.str.split " "
-        while split.len > 1
-            @add "#{slash.name(split[0])} = require \"#{split[0]}\"\n" & @nodeIndent(n)
-            split = split.shift
         
-        @add "#{slash.name(split[0])} = require \"#{split[0]}\""
-        if n.use_kind != nil and n.use_kind.token.str == '▪'
-            @add "/["
-            @rnd n.use_items
-            @add "]"
+        modName = ◇string s ➜string ->
+            if count(split[0] "/") > 0
+                slash.name(split[0])
+            elif count(split[0] ".") > 0
+                slash.ext(split[0])
+            else
+                split[0]
+        
+        while split.len > 1
+            @add "#{modName(split[0])} = require \"#{split[0]}\"\n" & @nodeIndent(n)
+            split = split.shift()
+        
+        @add "#{modName(split[0])} = require \"#{split[0]}\""
+        
+        # if n.use_kind != nil and n.use_kind.token.str == '▪'
+        #     @add "/["
+        #     @rnd n.use_items
+        #     @add "]"
             
     ▸color: ◇Node n -> 
     

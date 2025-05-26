@@ -13,13 +13,13 @@ class array
         if l > 0
             for i in 1..l
                 v = select(i, ...)
-                table.insert @ v
+                @insert v
 
     $: -> 
     
         s = ".\n"  
         for i v in ipairs @
-            s = s & "    " & i & "    " & v & "\n"
+            s = s & "    " & $i & "    " & $v & "\n"
         s
 
     str: -> $@
@@ -43,13 +43,11 @@ class array
         
     shift: -> 
 
-        if @len > 0 ➜ ⮐  table.remove @ 1
-        nil
+        if @len > 0 ➜ @remove 1
         
     pop: -> 
 
-        if @len > 0 ➜ ⮐  table.remove @ @len
-        nil
+        if @len > 0 ➜ @remove @len
         
     push: ... -> 
 

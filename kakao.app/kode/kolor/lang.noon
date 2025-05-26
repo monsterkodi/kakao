@@ -1260,6 +1260,7 @@ lua kua
         return
         break
         continue
+        select
         _G
         if
         then
@@ -1343,6 +1344,10 @@ kua
         log
         write
         is
+        empty
+        valid
+        sleep
+        write
         
     require
         use

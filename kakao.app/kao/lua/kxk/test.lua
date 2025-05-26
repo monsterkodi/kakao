@@ -29,9 +29,9 @@ function test:init(s, t)
         _G.testIndex = 0
         table.insert(testStack, self.suite)
         if (#_G.testStack == 1) then 
-            print("▸ " .. self.suite)
+            write("\x1b[0m\x1b[32m\x1b[2m", "▸ ", "\x1b[0m\x1b[32m", self.suite)
         else 
-            print("  " .. string.rep("    ", (#testStack - 1)) .. self.suite)
+            write("  ", string.rep("    ", (#testStack - 1)), "\x1b[0m\x1b[32m\x1b[2m", self.suite)
         end
         
         t()
@@ -49,13 +49,13 @@ function test.static.cmp(a, b)
     
     
     function fail(msg) 
-        print("✘ [" .. _G.testIndex .. "] " .. msg)
+        write("\x1b[0m\x1b[31m", "✘ ", "\x1b[0m\x1b[31m\x1b[2m", "[", _G.testIndex, "] ", "\x1b[0m\x1b[33m", msg)
         _G.testFail = _G.testFail + 1
         return false
     end
     
     if (type(a) ~= type(b)) then 
-        return fail("type mismatch: " .. type(a) .. " != " .. type(b) .. " (" .. tostring(a) .. " != " .. tostring(b) .. ")")
+        return fail("\x1b[0m\x1b[90m\x1b[2m" .. "type mismatch " .. "\x1b[0m\x1b[34m\x1b[2m" .. "◇" .. "\x1b[0m\x1b[34m" .. type(a) .. "\x1b[0m\x1b[31m" .. " != " .. "\x1b[0m\x1b[34m\x1b[2m" .. "◇" .. "\x1b[0m\x1b[34m" .. type(b) .. "\x1b[0m\x1b[90m" .. " (" .. tostring(a) .. " != " .. tostring(b) .. ")")
     end
     
     if (type(a) == "table") then 
@@ -68,13 +68,13 @@ function test.static.cmp(a, b)
                             key = kstr.index(k)
                         end
                         
-                        return fail("table mismatch at " .. tostring(key)) -- & " " & $v & " != " & $b[k]
+                        return fail("\x1b[0m\x1b[90m\x1b[2m" .. "table mismatch at " .. "\x1b[0m\x1b[34m" .. tostring(key) .. "\n" .. "\x1b[0m\x1b[32m" .. tostring(array(unpack(a))) .. "\x1b[0m\x1b[31m" .. "!=\n" .. "\x1b[0m\x1b[33m" .. tostring(array(unpack(b))))
                     end
                 end
             end
     elseif (type(a) == "number") then 
             if (math.abs((a - b)) > 1e-10) then 
-                return fail("number mismatch: " .. tostring(a) .. " != " .. tostring(b))
+                return fail("\x1b[0m\x1b[90m\x1b[2m" .. "number mismatch " .. "\x1b[0m\x1b[32m" .. tostring(a) .. "\x1b[0m\x1b[31m" .. " != " .. "\x1b[0m\x1b[33m" .. tostring(b))
             end
     else 
             if (a ~= b) then return fail(tostring(a) .. " != " .. tostring(b)) end -- & " ◇" & type(a)
@@ -97,7 +97,7 @@ function test.static.run(files)
             local a = 1
         else 
             print(output)
-            print("✘ ", f, exitcode)
+            write("\x1b[0m\x1b[31m", "✘ ", "\x1b[0m\x1b[34m", slash.tilde(slash.dir(f)), "/", "\x1b[0m\x1b[38;2;160;160;240m", slash.name(f), "\x1b[0m\x1b[38;2;96;96;240m", ".", slash.ext(f))
             success = false
         end
     end

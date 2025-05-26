@@ -3135,6 +3135,7 @@ export default {
             "return": "keyword",
             "break": "keyword",
             "continue": "keyword",
+            "select": "keyword",
             "_G": "keyword",
             "if": "keyword",
             "then": "keyword",
@@ -3203,6 +3204,7 @@ export default {
             "return": "keyword",
             "break": "keyword",
             "continue": "keyword",
+            "select": "keyword",
             "_G": "keyword",
             "if": "keyword",
             "then": "keyword",
@@ -3264,7 +3266,10 @@ export default {
             "elif": "keyword",
             "log": "keyword",
             "write": "keyword",
-            "is": "keyword"
+            "is": "keyword",
+            "empty": "keyword",
+            "valid": "keyword",
+            "sleep": "keyword"
         }
     }
 }

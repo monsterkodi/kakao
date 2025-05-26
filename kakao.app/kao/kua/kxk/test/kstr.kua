@@ -58,11 +58,40 @@ use kxk/kxk
     
         kstr.rtrim "xyz\n" ▸ "xyz"
         kstr.trim  "abc\n" ▸ "abc"
+
+    ▸ find
+    
+        kstr.find "123.56"     "." ▸ 4
+        kstr.find ".23.56"     "." ▸ 1
+        kstr.find "some.ext"   "e" ▸ 4
+        kstr.find "abc"        "d" ▸ -1
         
     ▸ rfind
     
         kstr.rfind "123.56"     "." ▸ 4
         kstr.rfind ".23.56"     "." ▸ 4
-        kstr.rfind "some.ext"   "." ▸ 5
+        kstr.rfind "some.ext"   "e" ▸ 6
+        kstr.find "abc"         "d" ▸ -1
         
+    ▸ count
+    
+        kstr.count  ""                  ""      ▸ 0
+        kstr.count  " "                 ""      ▸ 0
+        kstr.count  " "                 " "     ▸ 1
+        kstr.count  "  "                " "     ▸ 2
+        kstr.count  "121"               "1"     ▸ 2
+        kstr.count  "123...321"         "1"     ▸ 2
+        kstr.count "123.321.123.312"    "1"     ▸ 4
+        kstr.count "123.321.123.312"    "12"    ▸ 8
         
+    ▸ stripol
+    
+        "#{1+2} x #{3*4}" ▸ "3 x 12"
+        
+        """
+        #{2/2}, ...
+        #{5*4}
+        """ ▸ """
+        1, ...
+        20"""
+    

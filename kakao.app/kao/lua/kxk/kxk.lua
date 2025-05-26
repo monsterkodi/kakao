@@ -74,6 +74,32 @@ function _G.write(...)
     return ffi.C.write(1, s, #s)
 end
 
+local timers = {}
+
+
+function _G.profileStart(msg) 
+    if not timers[msg] then 
+        timers[msg] = os.clock()
+        return timers[msg]
+    else 
+        return print("[WARNING] Duplicate profileStart for '" .. msg .. "'")
+    end
+end
+
+
+function _G.profileStop(msg) 
+    if not timers[msg] then 
+        print("[ERROR] profileStop for unknown label '" .. msg .. "'")
+        return
+    end
+    
+    local tick = os.clock()
+    
+    write("\x1b[0m\x1b[34m", msg, " ", "\x1b[0m\x1b[35m", (tick - timers[msg]))
+    timers[msg] = nil
+    return timers[msg]
+end
+
 _G.strbuff = require("string.buffer")
 _G.class = require("kxk.class")
 _G.inspect = require("kxk.inspect")

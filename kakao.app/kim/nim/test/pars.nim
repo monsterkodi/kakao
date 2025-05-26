@@ -450,6 +450,7 @@ test = false
         t("use std ▪ os logging\nuse kommon", "▪[(◂use ◂name ▪ @[◂name, ◂name])(◂use ◂name)]")
         t("use std ▪ a b c\nuse d\nuse e\nuse f", "▪[(◂use ◂name ▪ @[◂name, ◂name, ◂name])(◂use ◂name)(◂use ◂name)(◂use ◂name)]")
         s("use a b c", ast("use a b c", "nim").expressions[0].use_module.token.str, "a b c")
+        t("use kxk.array", "▪[(◂use ◂name)]")
     test "enum": 
         t("enum Kind", "▪[(◂enum ◂name)]")
         t("enum Kind\na", "▪[(◂enum ◂name)◂name]")

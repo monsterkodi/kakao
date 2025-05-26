@@ -21,9 +21,9 @@ class test
         _G.testIndex = 0
         table.insert testStack @suite
         if _G.testStack.len == 1
-            log "▸ " & @suite
+            write ◌g- "▸ " ◌g @suite
         else
-            log "  " & string.rep("    " testStack.len-1) & @suite
+            write "  " string.rep("    " testStack.len-1) ◌g- @suite
         t()
         table.remove testStack
         if testStack.len == 0
@@ -35,12 +35,12 @@ test.static.cmp = a b ->
     _G.testIndex += 1
     
     fail = msg ->
-        log "✘ [" & _G.testIndex & "] " & msg
+        write ◌r "✘ " ◌r- "[" _G.testIndex "] " ◌y msg
         _G.testFail += 1
         ⮐  false
     
     if type(a) != type(b)
-        ⮐  fail "type mismatch: " & type(a) & " != " & type(b) & " (" & $a & " != " & $b & ")"
+        ⮐  fail ◌d- & "type mismatch " & ◌b- & "◇" & ◌b & type(a) & ◌r & " != " & ◌b- & "◇" & ◌b & type(b) & ◌d & " (" & $a & " != " & $b & ")"
         
     switch type(a) 
         "table"
@@ -51,10 +51,10 @@ test.static.cmp = a b ->
                         key = k
                         if type(k) == "number"
                             key = kstr.index k
-                        ⮐  fail "table mismatch at " & $key # & " " & $v & " != " & $b[k]
+                        ⮐  fail ◌d- & "table mismatch at " & ◌b & $key & "\n" & ◌g & $[unpack(a)] & ◌r & "!=\n" & ◌y &  $[unpack(b)]
         "number"
             if math.abs(a - b) > 1e-10
-                ⮐  fail "number mismatch: " & $a & " != " & $b
+                ⮐  fail ◌d- & "number mismatch " & ◌g & $a & ◌r & " != " & ◌y & $b
         ➜  
             if a != b ➜ ⮐  fail $a & " != " & $b # & " ◇" & type(a)
     true
@@ -73,7 +73,7 @@ test.static.run = files ->
             a = 1
         else
             log output
-            log "✘ " f, exitcode
+            write ◌r "✘ " ◌b slash.tilde(slash.dir(f)) "/" ◌aaf slash.name(f) ◌66f "." slash.ext(f)
             success = false
     success
         

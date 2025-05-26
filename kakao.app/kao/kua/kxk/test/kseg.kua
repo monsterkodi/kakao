@@ -3,15 +3,76 @@ use kxk/kxk
 
 ▸ kseg
 
-    ▸ simple
+    ▸ pop
     
-        s = kseg("../")
+        s = kseg "../"
         s∙pop()
         s∙str() ▸ ".."
         
+        s = kseg "◂▸○●"
+        s∙pop()
+        s∙str() ▸ "◂▸○"
+        s∙pop()
+        s∙str() ▸ "◂▸"
+        
+    ▸ push
+    
+        s = kseg()
+        s.len ▸ 0
+        s∙push "●"
+        s∙str() ▸ "●"
+        s.len ▸ 1
+        s∙push "▪"
+        s∙str() ▸ "●▪"
+        s.len ▸ 2
+        s∙push " "
+        s∙str() ▸ "●▪ "
+        s.len ▸ 3
+    
+    ▸ rpad
+        
+        s = kseg "▴"
+        s∙rpad 2
+        s∙str() ▸ "▴ "
+        s∙rpad 4
+        s∙str() ▸ "▴   "
+        s∙rpad 2
+        s∙str() ▸ "▴   "
+        
+    ▸ trim
+    
+        s = kseg " ▴  "
+        s∙trim()
+        s∙str() ▸ "▴"
+        
+        s = kseg " ▴  "
+        s∙rtrim()
+        s∙str() ▸ " ▴"
+
+        s = kseg " ▴  "
+        s∙ltrim()
+        s∙str() ▸ "▴  "
+
+        s = kseg "\n\n ▴  \n  \n"
+        s∙trim()
+        s∙str() ▸ "▴"
+        
+    ▸ emojii
+    
+        s = kseg "🧑"
+        s.len ▸ 1
+        
+        s = kseg "🧑‍🌾"
+        s.len ▸ 3
+        s[^1] ▸ "🌾"
+        s∙pop()
+        s∙pop()
+        s.len ▸ 1
+        s∙str() ▸ "🧑"
+        
     ▸ is
     
-        a = kseg("")
+        a = kseg ""
         a∙is kseg  ▸ true
         a∙is array ▸ true
         a∙is table ▸ false

@@ -58,6 +58,7 @@ proc traverse(n : Node, iter : NodeIt, hint = "") : Node =
             trav(n.case_then)
         of ●propertyAccess: 
             trav(n.owner)
+            trav(n.property)
         of ●arrayAccess: 
             trav(n.array_owner)
             trav(n.array_index)
@@ -72,6 +73,7 @@ proc traverse(n : Node, iter : NodeIt, hint = "") : Node =
             trav(n.range_start)
             trav(n.range_end)
         of ●member: 
+            trav(n.member_key)
             trav(n.member_value)
         of ●let: 
             trav(n.let_expr)

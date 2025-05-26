@@ -383,6 +383,13 @@ commentHeader = ->
 # 000  000   000   000  000   000  000       
 # 000   000   0000000   0000000    00000000  
 
+kolorPunct = ->
+
+    ⮐  if notCode
+    
+    if chunk.match in '◌'
+        ⮐  addValue 0 'range'
+        
 kodePunct = ->
 
     ⮐  if notCode
@@ -436,7 +443,7 @@ kodePunct = ->
                     else if chunk.match in '+-/'
                         next = getChunk 1
                         if not next or next.match != '=' and next.start == chunk.start+1
-                            ⮐ thisCall()
+                            ⮐  thisCall()
 
 # 000   000   0000000   0000000    00000000  000   000   0000000   00000000   0000000    
 # 000  000   000   000  000   000  000       000 0 000  000   000  000   000  000   000  
@@ -454,7 +461,7 @@ kodeWord = ->
             ⮐  1
         else
             setValue 0 'text'
-            ⮐ 0
+            ⮐  0
 
     if prev = getChunk -1
         
@@ -499,7 +506,7 @@ kodeWord = ->
                                     
         if (prev.clss.startsWith('text') or prev.clss == 'property') and prev.start+prev.length < chunk.start # spaced
             if chunkIndex == 1 or getChunk(-2)?.match in ['return' '=' '⮐']
-                ⮐ thisCall()
+                ⮐  thisCall()
             
 #  0000000   0000000   00000000  00000000  00000000  00000000
 # 000       000   000  000       000       000       000
@@ -536,14 +543,14 @@ coffeePunct = ->
 
             prevEnd = prev.start+prev.length
             if chunk.match == '(' and prevEnd == chunk.start
-                ⮐ thisCall()
+                ⮐  thisCall()
             else if prevEnd < chunk.start # spaced
                 if chunk.match in '@[({"\''
-                    ⮐ thisCall()
+                    ⮐  thisCall()
                 else if chunk.match in '+-/'
                     next = getChunk 1
                     if not next or next.match != '=' and next.start == chunk.start+1
-                        ⮐ thisCall()
+                        ⮐  thisCall()
 
 coffeeWord = ->
 
@@ -576,12 +583,12 @@ property = -> # word
 
     ⮐  if notCode
 
-    if getmatch(-1) == '.'
+    if getmatch(-1) in ".∙"
 
         prevPrev = getChunk -2
 
-        if prevPrev?.match != '.'
-            addValue -1 'property'
+        if prevPrev?.match not in ".∙" 
+            setValue -1 'punct property'
             setValue 0 'property'
             if prevPrev
                 if prevPrev.clss not in ['property' 'number'] and not prevPrev.clss.startsWith 'punct'
@@ -1363,7 +1370,7 @@ handlers =
             word: [ keyword kodeWord number property ]
     kim:    punct:[ blockComment hashComment kodePunct tripleString interpolation simpleString funcArgs dashArrow dict ]
             word: [ keyword kodeWord number property]
-    kua:    punct:[ blockComment hashComment kodePunct tripleString interpolation simpleString funcArgs dashArrow dict ]
+    kua:    punct:[ blockComment hashComment kodePunct kolorPunct tripleString interpolation simpleString funcArgs dashArrow dict ]
             word: [ keyword kodeWord number property]
     nim:    punct:[ nimComment   hashComment simpleString funcArgs dashArrow                ] word:[ keyword number property        ]
     lua:    punct:[ luaComment   simpleString luaString funcArgs dashArrow                  ] word:[ keyword number property        ]

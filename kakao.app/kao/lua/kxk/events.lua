@@ -68,4 +68,6 @@ function events:removeAllListeners(eventName)
         return self
     end
 
+_G.post = events()
+
 return events

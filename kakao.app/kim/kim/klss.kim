@@ -60,6 +60,7 @@ traverse = ◇Node n ◇NodeIt iter hint="" ➜ Node ->
             trav n.case_then
         ●propertyAccess
             trav n.owner
+            trav n.property
         ●arrayAccess
             trav n.array_owner
             trav n.array_index
@@ -74,6 +75,7 @@ traverse = ◇Node n ◇NodeIt iter hint="" ➜ Node ->
             trav n.range_start
             trav n.range_end  
         ●member
+            trav n.member_key
             trav n.member_value
         ●let
             trav n.let_expr

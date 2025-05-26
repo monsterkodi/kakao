@@ -595,6 +595,8 @@ template s(a:string, r:string, b:string) = testCmp(a, r, b, instantiationInfo())
 
         s "use a b c", ast("use a b c" "nim").expressions[0].use_module.token.str, "a b c"
         
+        t "use kxk.array"                           "▪[(◂use ◂name)]"
+        
     ▸ enum
     
         t "enum Kind"                               "▪[(◂enum ◂name)]"
