@@ -23,9 +23,7 @@ toString = o buf ind="" arry=false visited=[] ->
             es∙push '...'
             ⮐  es∙join('\n')
             
-        if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len))
-            ⮐  '|' & k & '|'
-        elif arry and kstr.find(k "  ") >= 1
+        if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len)) or arry and kstr.find(k "  ") >= 1
             ⮐  '|' & k & '|'
         k
     
@@ -41,10 +39,10 @@ toString = o buf ind="" arry=false visited=[] ->
                     buf∙put ind != '' and arry and '.' or ''
                     if o.len and ind != ''
                         buf∙put '\n' 
-                    for _ v in ipairs o
+                    for i v in ipairs o
                         buf∙put ind
                         toString v buf ind & indstr true visited
-                        buf∙put "\n"
+                        buf∙put("\n") if i < o.len
                 else
                     buf∙put (arry and '.\n') or ((ind != '') and '\n' or '')
                     
@@ -62,8 +60,11 @@ toString = o buf ind="" arry=false visited=[] ->
 
                     for k i in keys∙each()
                         buf∙put ind
-                        buf∙put kstr.pad(maxKey k[1])
-                        buf∙put "  "
+                        if type(k[2]) != "table"
+                            buf∙put kstr.pad(maxKey k[1])
+                            buf∙put("  ") 
+                        else
+                            buf∙put k[1]
                         toString k[2] buf ind & indstr false visited
                         buf∙put("\n") if i < keys.len
         ➜ 

@@ -27,9 +27,7 @@ end)
             return es:join('\n')
         end
         
-        if ((((k == '') or (k == '...')) or scl:has(k:sub(1, 1))) or scl:has(k:sub(#k, #k))) then 
-            return '|' .. k .. '|'
-        elseif (arry and (kstr.find(k, "  ") >= 1)) then 
+        if (((((k == '') or (k == '...')) or scl:has(k:sub(1, 1))) or scl:has(k:sub(#k, #k))) or (arry and (kstr.find(k, "  ") >= 1))) then 
             return '|' .. k .. '|'
         end
         
@@ -48,10 +46,10 @@ end)
                         buf:put('\n')
                     end
                     
-                    for _, v in ipairs(o) do 
+                    for i, v in ipairs(o) do 
                         buf:put(ind)
                         toString(v, buf, ind .. indstr, true, visited)
-                        buf:put("\n")
+                        if (i < #o) then buf:put("\n") end
                     end
                 else 
                     buf:put(((arry and '.\n') or (((ind ~= '') and '\n') or '')))
@@ -76,8 +74,13 @@ end)
                     
                     for k, i in keys:each() do 
                         buf:put(ind)
-                        buf:put(kstr.pad(maxKey, k[1]))
-                        buf:put("  ")
+                        if (type(k[2]) ~= "table") then 
+                            buf:put(kstr.pad(maxKey, k[1]))
+                            buf:put("  ")
+                        else 
+                            buf:put(k[1])
+                        end
+                        
                         toString(k[2], buf, ind .. indstr, false, visited)
                         if (i < #keys) then buf:put("\n") end
                     end

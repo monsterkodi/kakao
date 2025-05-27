@@ -95,7 +95,7 @@ c   3]])
 a   1
 b   2]])
         
-        test.cmp(noon.stringify({key = "value   with    some    spaces  ."}), "key   value   with    some    spaces  .")
+        test.cmp(noon.stringify({key = "value   with    some    spaces  ."}), "key  value   with    some    spaces  .")
     end)
     
     -- 00000000   0000000   0000000   0000000   00000000   00000000  
@@ -141,22 +141,22 @@ b   2]])
             ['#'] = '#', 
             ['# a'] = '# b'
             }), [[
-|  |    |  |
-| . |   | . |
-| .. |  | .. |
-| ... | | .|. |
-| ...|  | .|.|
-| ..|   | ..|
-| .|    | .|
-| |     | |
-|# a|   |# b|
-|#|     |#|
-|.   .| ||||
-|.  .|  |||
-|. |    |. |
-|.. |   |.. |
-|... |  |.|. |
-||      ||]])
+|  |     |  |
+| . |    | . |
+| .. |   | .. |
+| ... |  | .|. |
+| ...|   | .|.|
+| ..|    | ..|
+| .|     | .|
+| |      | |
+|# a|    |# b|
+|#|      |#|
+|.   .|  ||||
+|.  .|   |||
+|. |     |. |
+|.. |    |.. |
+|... |   |.|. |
+||       ||]])
         
         test.cmp(noon.stringify(" 1 \n2 \n  3"), '...\n| 1 |\n|2 |\n|  3|\n...')
         
@@ -189,8 +189,8 @@ c   2]])
         local o = {o = 1, ooOOoo = 2}
         
         test.cmp(noon.stringify(o), [[
-o        1
-ooOOoo   2]])
+o       1
+ooOOoo  2]])
         
         local t = {foofoo = {
                barbarbar = 1, 
@@ -199,8 +199,8 @@ ooOOoo   2]])
         
         test.cmp(noon.stringify(t), [[
 foofoo
-         barbarbar   1
-         foo         2]])
+    barbarbar  1
+    foo        2]])
         
         t = {
             foobar = {
@@ -209,14 +209,18 @@ foofoo
                 }, 
             foo = {
                 bar = 1
-                }
+                }, 
+            ugag = 3
             }
         
         test.cmp(noon.stringify(t), [[
 foo
-         bar  1
-foobar   
-         barfoo  1
-         bar     2]])
+    bar  1
+foobar
+    bar     2
+    barfoo  1
+ugag    3]])
+        
+        local a = 1
     end)
     end)
