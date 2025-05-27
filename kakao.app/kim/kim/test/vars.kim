@@ -244,6 +244,8 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
                 return "b"
                 end
             end"""
+            
+        l "m = s∙map((s) -> 1)" "local m = s:map(function (s) \n    return 1\nend)"
         
     ▸ assign if
     

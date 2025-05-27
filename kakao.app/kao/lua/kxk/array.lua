@@ -42,6 +42,13 @@ function array:each()
     end
 
 
+function array:join(c) 
+    c = c or ""
+    
+    return self:concat(c)
+    end
+
+
 function array:map(f) 
         local t = self.class()
         for i, v in ipairs(self) do 

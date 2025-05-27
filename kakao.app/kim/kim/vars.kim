@@ -82,11 +82,13 @@ class Scoper
         @returnize fn.func_body
 
         if fn.func_signature and fn.func_signature.sig_args.list_values
+            line = 0
             for arg in fn.func_signature.sig_args.list_values
                 if arg.arg_value
                     if fn.func_body and fn.func_body.kind in {●block ●semicolon}
-                        argdef = nod ●operation tkn(◂qmark_assign) arg.arg_name arg.arg_value
-                        fn.func_body.expressions.insert argdef 0 
+                        argdef = nod ●operation tkn(◂qmark_assign line-666) arg.arg_name arg.arg_value
+                        fn.func_body.expressions.insert argdef line
+                        line += 1
                         arg.arg_value = nil
                 
     # 00000000  000   000  00000000   
@@ -145,12 +147,12 @@ class Scoper
                         ➜ discard
                         
                     if @lang == "lua" and e.operand_right.kind in {●if ●switch}
-                        log "rhs if or switch"
                         funky  = nod ●func tkn(◂func "->") nil nil e.operand_right
                         @luanize funky
                         callee = nod ●list tkn(◂paren_open "(") [funky]
                         call = Node kind:●call token:e.operand_right.token callee:callee callargs:[]
                         e.operand_right = call
+                    @exp body i e.operand_right
             ●var
                 insert e.var_name.token.str e
             ●let
@@ -183,6 +185,11 @@ class Scoper
                     @luanize e
             ●return
                 @exp body i e.return_value
+            ●call
+                if @lang == "lua"
+                    for a in e.call_args
+                        if a.kind == ●func
+                            @luanize a 
                 
             ➜ discard
                         

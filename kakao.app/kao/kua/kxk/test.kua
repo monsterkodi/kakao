@@ -42,7 +42,8 @@ test.static.cmp = a b ->
     if type(a) != type(b)
         ⮐  fail ◌d- & "type mismatch " & ◌b- & "◇" & ◌b & type(a) & ◌r & " != " & ◌b- & "◇" & ◌b & type(b) & ◌d & " (" & $a & " != " & $b & ")"
         
-    switch type(a) 
+    switch type(a)
+    
         "table"
             for k v in rawpairs a
                 if type(v) != "function" and (type(k) != "string" or k∙sub(1 2) != "__")
@@ -51,12 +52,12 @@ test.static.cmp = a b ->
                         key = k
                         if type(k) == "number"
                             key = kstr.index k
-                        ⮐  fail ◌d- & "table mismatch at " & ◌b & $key & "\n" & ◌g & $[unpack(a)] & ◌r & "!=\n" & ◌y &  $[unpack(b)]
+                        ⮐  fail ◌d- & "table mismatch at " & ◌b & $key & "\n" & ◌y & $[unpack(a)] & ◌r & "!=\n" & ◌g &  $[unpack(b)]
         "number"
             if math.abs(a - b) > 1e-10
                 ⮐  fail ◌d- & "number mismatch " & ◌g & $a & ◌r & " != " & ◌y & $b
         ➜  
-            if a != b ➜ ⮐  fail $a & " != " & $b # & " ◇" & type(a)
+            if a != b ➜ ⮐  fail ◌b- & "◇" & ◌b & type(a) & ◌d- & " mismatch\n" & ◌y & $a & ◌r & "\n!=\n" & ◌g & $b 
     true
     
 test.static.run = files ->

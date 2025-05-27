@@ -65,8 +65,17 @@ suite "rlua":
     test "return": 
         v("f = -> 1", "\nfunction f() \n    return 1\nend")
     test "default arg": 
-        v("f = a=1 ->", "\nfunction f(a) \n    a = a or 1\nend")
-        v("f = a=1 -> 2", "\nfunction f(a) \n    a = a or 1\n    return 2\nend")
+        # v "f = a=1 ->"                                "\nfunction f(a) \n    a = a or 1\n    \n    return a\nend"
+        v("f = a=1 -> 2", "\nfunction f(a) \n    a = a or 1\n    \n    return 2\nend")
+        v("f = (a b=1 c='' d=nil) -> urgs", """
+
+function f(a, b, c, d) 
+    b = b or 1
+    c = c or ''
+    d = d or nil
+    
+    return urgs
+end""")
     test "call": 
         t("f()", "f()")
         t("f(g())", "f(g())")

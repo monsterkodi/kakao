@@ -73,11 +73,13 @@ proc luanize(this : Scoper, fn : Node) =
         fn.func_body = this.bodify(fn.func_body)
         this.returnize(fn.func_body)
         if (fn.func_signature and fn.func_signature.sig_args.list_values): 
+            var line = 0
             for arg in fn.func_signature.sig_args.list_values: 
                 if arg.arg_value: 
                     if (fn.func_body and (fn.func_body.kind in {●block, ●semicolon})): 
-                        var argdef = nod(●operation, tkn(◂qmark_assign), arg.arg_name, arg.arg_value)
-                        fn.func_body.expressions.insert(argdef, 0)
+                        var argdef = nod(●operation, tkn(◂qmark_assign, (line - 666)), arg.arg_name, arg.arg_value)
+                        fn.func_body.expressions.insert(argdef, line)
+                        (line += 1)
                         arg.arg_value = nil
 # 00000000  000   000  00000000   
 # 000        000 000   000   000  
@@ -130,12 +132,12 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                                 add(item.token.str)
                         else: discard
                     if ((this.lang == "lua") and (e.operand_right.kind in {●if, ●switch})): 
-                        echo("rhs if or switch")
                         var funky = nod(●func, tkn(◂func, "->"), nil, nil, e.operand_right)
                         this.luanize(funky)
                         var callee = nod(●list, tkn(◂paren_open, "("), @[funky])
                         var call = Node(kind: ●call, token: e.operand_right.token, callee: callee, callargs: @[])
                         e.operand_right = call
+                    this.exp(body, i, e.operand_right)
             of ●var: 
                 insert(e.var_name.token.str, e)
             of ●let: 
@@ -167,6 +169,11 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                     this.luanize(e)
             of ●return: 
                 this.exp(body, i, e.return_value)
+            of ●call: 
+                if (this.lang == "lua"): 
+                    for a in e.call_args: 
+                        if (a.kind == ●func): 
+                            this.luanize(a)
             else: discard
 #  0000000   0000000   0000000   00000000   00000000  
 # 000       000       000   000  000   000  000       

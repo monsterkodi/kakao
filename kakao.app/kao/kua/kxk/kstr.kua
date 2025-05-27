@@ -9,19 +9,21 @@ kstr.splice = s i n ... ->
     elif i == 1
         ⮐  (table.concat({...} '')) & string.sub(s i+n)
         
-kstr.slice  = s f t -> string.sub s f t
+kstr.slice = s f t -> string.sub s f t
         
-kstr.shift  = s n=1        -> kstr.splice s 1 n
-kstr.pop    = s n=1        -> kstr.splice s,-n n
+kstr.shift = s n=1 -> kstr.splice s 1 n
+kstr.pop   = s n=1 -> kstr.splice s,-n n
 
-kstr.lpad   = s n=1 c=" "  ->
-kstr.lpad   = l s="" c=' ' ->
+kstr.lpad = s n=1 c=" "  ->
+kstr.lpad = l s="" c=' ' ->
     while s.len < l ➜ s = c & s
     s
     
-kstr.rpad   = l s="" c=' ' ->  
-    while s.len < l ➜ s = s & c
+kstr.rpad = l s="" c=' ' ->
+    while s.len < l ➜ s &= c
     s
+
+kstr.pad = l s="" c=' ' -> kstr.rpad l s c
     
 kstr.endsWith   = s o -> o == string.sub s s.len-o.len+1 s.len
 kstr.startsWith = s o -> o == string.sub s 1 o.len

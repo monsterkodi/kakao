@@ -110,6 +110,7 @@ suite "pars":
         t("error: ◇string msg token=tkn ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= ◂name))]->))]")
         t("error: ◇string msg token=tkn(◂eof) ->", "▪[(◂name : (◂[(◇type(string) ◂name), (◂name (= (◂name ◂call @[◂name])))]->))]")
         t("⮐  Node(callee:nod(literal token), callargs:args)", "▪[(⮐ (◂name ◂call @[((◂name : ◂name) ◂call @[◂name, ◂name]), (◂name : ◂name)]))]")
+        t("m = s∙map((s) -> 1)", "▪[(◂name = (◂name ◂call @[(◂[(◂name)]-> ◂number)]))]")
     test "lua": 
         t("Inspector:getId = v ->", "▪[((◂name : ◂name) = (◂[(◂name)]->))]")
         l("Inspector:getId = v ->", "▪[((◂name : ◂name) = (◂[(◂name)]->))]")

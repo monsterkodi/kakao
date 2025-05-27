@@ -26,6 +26,8 @@ class array
     
     each: -> i=0; -> i+=1; (@[i] i)
     
+    join: c="" -> @concat c
+    
     map: f ->
     
         t = @.class()

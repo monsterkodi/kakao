@@ -85,8 +85,18 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         
     ▸ default arg
     
-        v "f = a=1 ->"                                "\nfunction f(a) \n    a = a or 1\nend"
-        v "f = a=1 -> 2"                              "\nfunction f(a) \n    a = a or 1\n    return 2\nend"
+        # v "f = a=1 ->"                                "\nfunction f(a) \n    a = a or 1\n    \n    return a\nend"
+        v "f = a=1 -> 2"                              "\nfunction f(a) \n    a = a or 1\n    \n    return 2\nend"
+        v "f = (a b=1 c='' d=nil) -> urgs"                 
+            """
+            
+            function f(a, b, c, d) 
+                b = b or 1
+                c = c or ''
+                d = d or nil
+                
+                return urgs
+            end"""
         
     ▸ call
     
@@ -112,7 +122,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
         t "t \"a\" , \"b\""                           "t(\"a\", \"b\")"
         t "t \"a\",\n  \"b\""                         "t(\"a\", \"b\")"
         t "t \"a\"\n  \"b\""                          "t(\"a\", \"b\")"
-        
+                
     ▸ list assign
     
         t "(a, b) = c"                                "a, b = c"

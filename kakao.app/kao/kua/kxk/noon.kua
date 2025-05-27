@@ -1,0 +1,116 @@
+
+            
+# 00000000   0000000   0000000   0000000   00000000   00000000
+# 000       000       000       000   000  000   000  000     
+# 0000000   0000000   000       000000000  00000000   0000000 
+# 000            000  000       000   000  000        000     
+# 00000000  0000000    0000000  000   000  000        00000000
+
+indstr = "    "
+
+escape = k arry ->
+
+    scl = [' ' '#' '|']
+    
+    if kstr.find(k '\n') >= 1
+    
+        sp = kstr.split k '\n'
+        sp = [unpack(sp)]
+        es = sp∙map((s) -> escape(s arry))
+        es∙unshift '...'
+        es∙push '...'
+        ⮐  es∙join '\n'
+        
+    if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len))
+        k = '|' & k & '|'
+    elif arry and kstr.find(k "  ") >= 1
+        k = '|' & k & '|'
+    k
+    
+# 00000000   00000000   00000000  000000000  000000000  000   000
+# 000   000  000   000  000          000        000      000 000 
+# 00000000   0000000    0000000      000        000       00000  
+# 000        000   000  000          000        000        000   
+# 000        000   000  00000000     000        000        000   
+
+pretty = o ind visited ->
+    
+    maxAlign = 32
+    maxKey   = 4
+    
+    for k v in pairs o
+        maxKey = math.max maxKey k.len+3
+        if maxKey > maxAlign
+            maxKey = maxAlign
+            break
+    
+    l = []
+    
+    keyValue = k v ->
+    
+        s = ind
+        k = escape k true
+        if kstr.find(k "  ") > 0 and k∙sub(1 1) != '|'
+            k = "|#{k}|"
+        elif k∙sub(1 1) != '|' and k∙sub(k.len k.len) == '|'
+            k &= '|' & k
+        elif k∙sub(1 1) == '|' and k∙sub(k.len k.len) != '|'
+            k &= '|'
+        
+        ks = kstr.pad maxKey k 
+        i  = kstr.pad maxKey ind & indstr
+
+        s &= ks
+        vs = stringify v i false visited
+        if vs∙sub(1 1) == '\n'
+            while s∙sub(s.len s.len) == ' '
+                s = kstr.pop s
+        s &= vs
+        while s∙sub(s.len s.len) == ' '
+            s = kstr.pop s
+        s
+
+    for k v in pairs o
+        l∙push keyValue(k v)
+        
+    l∙sort()
+    l∙join '\n'
+
+# 000000000   0000000    0000000  000000000  00000000 
+#    000     000   000  000          000     000   000
+#    000     000   000  0000000      000     0000000  
+#    000     000   000       000     000     000   000
+#    000      0000000   0000000      000     000   000
+
+stringify = o ind="" arry=false visited=[] ->
+    
+    switch type(o)
+        
+        "string"
+        
+            ⮐  escape o arry
+            
+        "table"
+
+            ⮐  "<v>" if visited∙has o
+            
+            visited∙push o
+            s = ""    
+            if o.len > 0 or o.class == array
+                s = ind != '' and arry and '.' or ''
+                if o.len and ind != ''
+                    s &= '\n' 
+                va = []
+                for _ v in ipairs o
+                    va∙push ind & stringify(v ind & indstr true visited)
+                s &= va∙join "\n"
+            else
+                s = (arry and '.\n') or ((ind != '') and '\n' or '')
+                s &= pretty o ind visited
+            ⮐  s
+        ➜ 
+            ⮐  tostring o
+            
+    "<???>"
+
+⮐  { stringify:stringify }

@@ -68,7 +68,7 @@ function test.static.cmp(a, b)
                             key = kstr.index(k)
                         end
                         
-                        return fail("\x1b[0m\x1b[90m\x1b[2m" .. "table mismatch at " .. "\x1b[0m\x1b[34m" .. tostring(key) .. "\n" .. "\x1b[0m\x1b[32m" .. tostring(array(unpack(a))) .. "\x1b[0m\x1b[31m" .. "!=\n" .. "\x1b[0m\x1b[33m" .. tostring(array(unpack(b))))
+                        return fail("\x1b[0m\x1b[90m\x1b[2m" .. "table mismatch at " .. "\x1b[0m\x1b[34m" .. tostring(key) .. "\n" .. "\x1b[0m\x1b[33m" .. tostring(array(unpack(a))) .. "\x1b[0m\x1b[31m" .. "!=\n" .. "\x1b[0m\x1b[32m" .. tostring(array(unpack(b))))
                     end
                 end
             end
@@ -77,7 +77,7 @@ function test.static.cmp(a, b)
                 return fail("\x1b[0m\x1b[90m\x1b[2m" .. "number mismatch " .. "\x1b[0m\x1b[32m" .. tostring(a) .. "\x1b[0m\x1b[31m" .. " != " .. "\x1b[0m\x1b[33m" .. tostring(b))
             end
     else 
-            if (a ~= b) then return fail(tostring(a) .. " != " .. tostring(b)) end -- & " ◇" & type(a)
+            if (a ~= b) then return fail("\x1b[0m\x1b[34m\x1b[2m" .. "◇" .. "\x1b[0m\x1b[34m" .. type(a) .. "\x1b[0m\x1b[90m\x1b[2m" .. " mismatch\n" .. "\x1b[0m\x1b[33m" .. tostring(a) .. "\x1b[0m\x1b[31m" .. "\n!=\n" .. "\x1b[0m\x1b[32m" .. tostring(b)) end
     end
     
     return true

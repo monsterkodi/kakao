@@ -30,11 +30,13 @@ end
 
 
 function kstr.lpad(s, n, c) 
-    c = c or " " n = n or 1
+    n = n or 1
+    c = c or " "
 end
 
 function kstr.lpad(l, s, c) 
-    c = c or ' ' s = s or ""
+    s = s or ""
+    c = c or ' '
     
     while (#s < l) do s = c .. s end
     return s
@@ -42,10 +44,19 @@ end
 
 
 function kstr.rpad(l, s, c) 
-    c = c or ' ' s = s or ""
+    s = s or ""
+    c = c or ' '
     
     while (#s < l) do s = s .. c end
     return s
+end
+
+
+function kstr.pad(l, s, c) 
+    s = s or ""
+    c = c or ' '
+    
+    return kstr.rpad(l, s, c)
 end
 
 

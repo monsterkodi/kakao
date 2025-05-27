@@ -215,6 +215,7 @@ function f()
     return "b"
     end
 end""")
+        l("m = s∙map((s) -> 1)", "local m = s:map(function (s) \n    return 1\nend)")
     test "assign if": 
         l("a = if 1 ➜ 2 ➜ 3", """
 local a = (function () 

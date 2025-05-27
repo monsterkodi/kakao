@@ -1,6 +1,27 @@
 kxk = require "kxk/kxk"
 
 test("array", function()
+    test("map", function()
+        local s = {"huga", "dork", "farz"}
+        s = array(unpack(s))
+        local m = s:map(function (s) 
+    return "▸" .. s
+end)
+        test.cmp(m, array("▸huga", "▸dork", "▸farz"))
+        m = s:map(function (s) 
+    return 1
+end)
+        test.cmp(m, array(1, 1, 1))
+    end)
+    
+    test("filter", function()
+        local s = array("huga", "dork", "farz")
+        local f = s:filter(function (s) 
+    return (kstr.find(s, "a") > 0)
+end)
+        test.cmp(f, array("huga", "farz"))
+    end)
+    
     test("slice", function()
         local a = array(1, 2, 3, 4, 5)
         local s = a:slice(1, 2)
@@ -120,6 +141,13 @@ test("array", function()
         for i in e:each() do 
             test.cmp(false, true)
         end
+    end)
+    
+    test("join", function()
+        local e = array("a", 1, "cd")
+        test.cmp(e:join(), "a1cd")
+        test.cmp(e:join(" "), "a 1 cd")
+        test.cmp(e:join("●∙"), "a●∙1●∙cd")
     end)
     
     test("indexdict", function()

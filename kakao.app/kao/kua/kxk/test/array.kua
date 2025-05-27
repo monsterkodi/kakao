@@ -3,6 +3,21 @@ use kxk/kxk
 
 ▸ array
 
+    ▸ map
+    
+        s = { "huga" "dork" "farz" }
+        s = [unpack(s)]
+        m = s∙map((s) -> "▸" & s)
+        m ▸ [ "▸huga" "▸dork" "▸farz" ]
+        m = s∙map((s) -> 1)
+        m ▸ [ 1 1 1 ]
+        
+    ▸ filter
+    
+        s = [ "huga" "dork" "farz" ]
+        f = s∙filter((s) -> kstr.find(s "a") > 0)
+        f ▸ [ "huga" "farz" ]
+
     ▸ slice
     
         a = [1 2 3 4 5]
@@ -120,6 +135,13 @@ use kxk/kxk
         e = []
         for i in e∙each()
             false ▸ true
+            
+    ▸ join
+        
+        e = ["a" 1 "cd"]
+        e∙join() ▸ "a1cd"
+        e∙join(" ") ▸ "a 1 cd"
+        e∙join("●∙") ▸ "a●∙1●∙cd"
             
     ▸ indexdict
     
