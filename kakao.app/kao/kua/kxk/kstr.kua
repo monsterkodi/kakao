@@ -50,22 +50,23 @@ kstr.split = s sep limit ->
     if sep == nil ➜ ⮐  { s }
     if sep == ""  ➜ ⮐  kstr.chars s
     
-    result = {}
+    reslt = []
     start = 1
     count = 0
     
     while true
-        pos = s∙find(sep start true)
+    
+        pos = s∙find sep start true
 
         if limit and count >= limit or not pos
-            table.insert result s∙sub(start)
+            reslt∙push s∙sub(start)
             break
                 
-        table.insert result s∙sub(start pos - 1)
+        reslt∙push s∙sub(start pos-1)
         start = pos + sep.len
         count = count + 1
     
-    result
+    reslt
 
 kstr.find = s c -> string.find(s c 1 true) or -1
     

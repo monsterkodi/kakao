@@ -42,6 +42,12 @@ function noon:init(s)
     return noon.static.stringify(s)
     end
 
+--  ███████  █████████  ████████   ███  ███   ███   ███████   ███  ████████  ███   ███
+-- ███          ███     ███   ███  ███  ████  ███  ███        ███  ███        ███ ███ 
+-- ███████      ███     ███████    ███  ███ █ ███  ███  ████  ███  ██████      █████  
+--      ███     ███     ███   ███  ███  ███  ████  ███   ███  ███  ███          ███   
+-- ███████      ███     ███   ███  ███  ███   ███   ███████   ███  ███          ███   
+
 
 function noon.static.toString(o, buf, ind, arry, visited) 
         ind = ind or ""
@@ -123,6 +129,26 @@ end
 
 function noon.static.stringify(o) 
     return noon.toString(o, strbuff:new()):get()
+end
+
+-- ████████    ███████   ████████    ███████  ████████
+-- ███   ███  ███   ███  ███   ███  ███       ███     
+-- ████████   █████████  ███████    ███████   ███████ 
+-- ███        ███   ███  ███   ███       ███  ███     
+-- ███        ███   ███  ███   ███  ███████   ████████
+
+
+function noon.static.parse(s) 
+    local reslt = array()
+    local lines = kstr.split(s, "\n")
+    local indnt = 0
+    for line in lines do 
+        local lind = 0
+        -- while line∙sub 
+        -- reslt∙push 
+    end
+    
+    return reslt
 end
 
 return noon

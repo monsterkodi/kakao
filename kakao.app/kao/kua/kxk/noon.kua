@@ -37,6 +37,12 @@ class noon
 
     @: s -> ⮐  noon.static.stringify s
 
+#  ███████  █████████  ████████   ███  ███   ███   ███████   ███  ████████  ███   ███
+# ███          ███     ███   ███  ███  ████  ███  ███        ███  ███        ███ ███ 
+# ███████      ███     ███████    ███  ███ █ ███  ███  ████  ███  ██████      █████  
+#      ███     ███     ███   ███  ███  ███  ████  ███   ███  ███  ███          ███   
+# ███████      ███     ███   ███  ███  ███   ███   ███████   ███  ███          ███   
+
 noon.static.toString = o buf ind="" arry=false visited=[] ->
         
         escape = k arry ->
@@ -95,4 +101,22 @@ noon.static.toString = o buf ind="" arry=false visited=[] ->
     
 noon.static.stringify = o -> noon.toString(o strbuff∙new())∙get()
 
+# ████████    ███████   ████████    ███████  ████████
+# ███   ███  ███   ███  ███   ███  ███       ███     
+# ████████   █████████  ███████    ███████   ███████ 
+# ███        ███   ███  ███   ███       ███  ███     
+# ███        ███   ███  ███   ███  ███████   ████████
+
+noon.static.parse = s ->
+
+    reslt = []
+    lines = kstr.split s "\n"
+    indnt = 0
+    for line in lines
+        lind = 0
+        # while line∙sub 
+        # reslt∙push 
+    reslt
+
 ⮐  noon
+

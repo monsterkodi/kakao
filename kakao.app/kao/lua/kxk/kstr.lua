@@ -112,7 +112,7 @@ function kstr.split(s, sep, limit)
     if (sep == nil) then return {s} end
     if (sep == "") then return kstr.chars(s) end
     
-    local result = {}
+    local reslt = array()
     local start = 1
     local count = 0
     
@@ -120,16 +120,16 @@ function kstr.split(s, sep, limit)
         local pos = s:find(sep, start, true)
         
         if ((limit and (count >= limit)) or not pos) then 
-            table.insert(result, s:sub(start))
+            reslt:push(s:sub(start))
             break
         end
         
-        table.insert(result, s:sub(start, (pos - 1)))
+        reslt:push(s:sub(start, (pos - 1)))
         start = (pos + #sep)
         count = (count + 1)
     end
     
-    return result
+    return reslt
 end
 
 
