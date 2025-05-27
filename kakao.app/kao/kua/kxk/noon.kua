@@ -8,109 +8,68 @@
 
 indstr = "    "
 
-escape = k arry ->
-
-    scl = [' ' '#' '|']
+toString = o buf ind="" arry=false visited=[] ->
     
-    if kstr.find(k '\n') >= 1
+    escape = k arry ->
     
-        sp = kstr.split k '\n'
-        sp = [unpack(sp)]
-        es = sp∙map((s) -> escape(s arry))
-        es∙unshift '...'
-        es∙push '...'
-        ⮐  es∙join '\n'
+        scl = [' ' '#' '|']
         
-    if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len))
-        k = '|' & k & '|'
-    elif arry and kstr.find(k "  ") >= 1
-        k = '|' & k & '|'
-    k
-    
-# 00000000   00000000   00000000  000000000  000000000  000   000
-# 000   000  000   000  000          000        000      000 000 
-# 00000000   0000000    0000000      000        000       00000  
-# 000        000   000  000          000        000        000   
-# 000        000   000  00000000     000        000        000   
-
-pretty = o ind visited ->
-    
-    maxAlign = 32
-    maxKey   = 4
-    
-    for k v in pairs o
-        maxKey = math.max maxKey k.len+3
-        if maxKey > maxAlign
-            maxKey = maxAlign
-            break
-    
-    l = []
-    
-    keyValue = k v ->
-    
-        s = ind
-        k = escape k true
-        if kstr.find(k "  ") > 0 and k∙sub(1 1) != '|'
-            k = "|#{k}|"
-        elif k∙sub(1 1) != '|' and k∙sub(k.len k.len) == '|'
-            k &= '|' & k
-        elif k∙sub(1 1) == '|' and k∙sub(k.len k.len) != '|'
-            k &= '|'
+        if kstr.find(k '\n') >= 1
         
-        ks = kstr.pad maxKey k 
-        i  = kstr.pad maxKey ind & indstr
-
-        s &= ks
-        vs = stringify v i false visited
-        if vs∙sub(1 1) == '\n'
-            while s∙sub(s.len s.len) == ' '
-                s = kstr.pop s
-        s &= vs
-        while s∙sub(s.len s.len) == ' '
-            s = kstr.pop s
-        s
-
-    for k v in pairs o
-        l∙push keyValue(k v)
-        
-    l∙sort()
-    l∙join '\n'
-
-# 000000000   0000000    0000000  000000000  00000000 
-#    000     000   000  000          000     000   000
-#    000     000   000  0000000      000     0000000  
-#    000     000   000       000     000     000   000
-#    000      0000000   0000000      000     000   000
-
-stringify = o ind="" arry=false visited=[] ->
+            sp = kstr.split k '\n'
+            sp = [unpack(sp)]
+            es = sp∙map((s) -> escape(s arry))
+            es∙unshift '...'
+            es∙push '...'
+            ⮐  es∙join('\n')
+            
+        if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len))
+            ⮐  '|' & k & '|'
+        elif arry and kstr.find(k "  ") >= 1
+            ⮐  '|' & k & '|'
+        k
     
     switch type(o)
         
-        "string"
-        
-            ⮐  escape o arry
-            
+        "string" ➜ buf∙put escape(o arry)
         "table"
+            if visited∙has o
+                buf∙put "<v>" 
+            else            
+                visited∙push o
+                if o.len > 0 or o.class == array
+                    buf∙put ind != '' and arry and '.' or ''
+                    if o.len and ind != ''
+                        buf∙put '\n' 
+                    for _ v in ipairs o
+                        buf∙put ind
+                        toString v buf ind & indstr true visited
+                        buf∙put "\n"
+                else
+                    buf∙put (arry and '.\n') or ((ind != '') and '\n' or '')
+                    
+                    maxAlign = 32
+                    maxKey   = 2
+                    
+                    keys = []
+                    for k v in pairs o
+                        ek = escape k true
+                        keys∙push [ek v]
+                        maxKey = math.max maxKey ek.len
+                    if maxKey > maxAlign
+                        maxKey = maxAlign
+                    keys∙sort((a b) -> a[1] < b[1]) 
 
-            ⮐  "<v>" if visited∙has o
-            
-            visited∙push o
-            s = ""    
-            if o.len > 0 or o.class == array
-                s = ind != '' and arry and '.' or ''
-                if o.len and ind != ''
-                    s &= '\n' 
-                va = []
-                for _ v in ipairs o
-                    va∙push ind & stringify(v ind & indstr true visited)
-                s &= va∙join "\n"
-            else
-                s = (arry and '.\n') or ((ind != '') and '\n' or '')
-                s &= pretty o ind visited
-            ⮐  s
+                    for k i in keys∙each()
+                        buf∙put ind
+                        buf∙put kstr.pad(maxKey k[1])
+                        buf∙put "  "
+                        toString k[2] buf ind & indstr false visited
+                        buf∙put("\n") if i < keys.len
         ➜ 
-            ⮐  tostring o
-            
-    "<???>"
+            buf∙put tostring(o)
+    buf
+
+stringify = o -> toString(o strbuff∙new())∙get()
 
 ⮐  { stringify:stringify }
