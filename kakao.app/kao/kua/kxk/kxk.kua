@@ -44,16 +44,18 @@ _G.sleep = s ->
     t = os.clock()
     while os.clock() - t <= s ➜ _ = 1
     
-_G.is = v t ->
+_G.is = v c ->
 
     vt = type(v)
-    tt = type(t)
-    ⮐  false if vt != tt
-    ⮐  true  if vt != "table"
-    ⮐  true  if vt == t and tt == "string"
-    ⮐  true  if type(v.is) == "function" and v∙is(t)
+    ct = type(c)
+    if v and vt == "table" 
+        ⮐  false if ct == "table" and c.static and c != v.class
+        ⮐  false if vt == ct and v.class != c.class and v.class != c
+        ⮐  true if type(v.is) == "function" and v∙is(c)
+    ⮐  true if vt == ct
+    ⮐  true if vt == c and ct == "string"
     false
-    
+
 _G.write = ... ->
 
     s = table.concat {...} ""

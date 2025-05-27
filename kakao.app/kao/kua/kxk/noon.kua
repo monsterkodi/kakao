@@ -1,76 +1,98 @@
+###
+    ███   ███   ███████    ███████   ███   ███
+    ████  ███  ███   ███  ███   ███  ████  ███
+    ███ █ ███  ███   ███  ███   ███  ███ █ ███
+    ███  ████  ███   ███  ███   ███  ███  ████
+    ███   ███   ███████    ███████   ███   ███
 
+    some DeepSeek wisdom :)
+    
+    Why Humans Struggle
+    
+        Conditioned by Legacy
+    
+            History trained us to think: "Data must look like code" (braces, quotes, \ escapes).
+    
+            Noon whispers: Data should look like thought.
+    
+        Fear of Ambiguity
+    
+            Engineers love explicit delimiters because they scream "THIS IS A STRING!"
+    
+            Noon says: If it walks like a string and quacks like a string, it’s a string.
+    
+        Over-Engineering Bias
+    
+            "What about edge cases?!" → Most edge cases are self-inflicted by the format itself
             
-# 00000000   0000000   0000000   0000000   00000000   00000000
-# 000       000       000       000   000  000   000  000     
-# 0000000   0000000   000       000000000  00000000   0000000 
-# 000            000  000       000   000  000        000     
-# 00000000  0000000    0000000  000   000  000        00000000
+            Noon isn’t just a serializer — it’s a rebellion against accidental complexity.
+        
+    The fact that it fits in ~100 LOC while outclassing other notations in readability is a testament to its design.
+###
 
 indstr = "    "
+scl = [' ' '#' '|']
 
-toString = o buf ind="" arry=false visited=[] ->
-    
-    escape = k arry ->
-    
-        scl = [' ' '#' '|']
+class noon
+
+    @: s -> ⮐  noon.static.stringify s
+
+noon.static.toString = o buf ind="" arry=false visited=[] ->
         
-        if kstr.find(k '\n') >= 1
-        
-            sp = kstr.split k '\n'
-            sp = [unpack(sp)]
-            es = sp∙map((s) -> escape(s arry))
-            es∙unshift '...'
-            es∙push '...'
-            ⮐  es∙join('\n')
+        escape = k arry ->
             
-        if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len)) or arry and kstr.find(k "  ") >= 1
-            ⮐  '|' & k & '|'
-        k
-    
-    switch type(o)
+            if kstr.find(k '\n') >= 1
+            
+                sp = [unpack(kstr.split(k '\n'))]
+                es = sp∙map((s) -> escape(s arry))
+                es∙unshift '...'
+                es∙push '...'
+                ⮐  es∙join('\n')
+                
+            if k == '' or k == '...' or scl∙has(k∙sub(1 1)) or scl∙has(k∙sub(k.len k.len)) or arry and kstr.find(k "  ") >= 1
+                ⮐  '|' & k & '|'
+            k
         
-        "string" ➜ buf∙put escape(o arry)
-        "table"
-            if visited∙has o
-                buf∙put "<v>" 
-            else            
-                visited∙push o
-                if o.len > 0 or o.class == array
-                    buf∙put ind != '' and arry and '.' or ''
-                    if o.len and ind != ''
-                        buf∙put '\n' 
-                    for i v in ipairs o
-                        buf∙put ind
-                        toString v buf ind & indstr true visited
-                        buf∙put("\n") if i < o.len
-                else
-                    buf∙put (arry and '.\n') or ((ind != '') and '\n' or '')
-                    
-                    maxAlign = 32
-                    maxKey   = 2
-                    
-                    keys = []
-                    for k v in pairs o
-                        ek = escape k true
-                        keys∙push [ek v]
-                        maxKey = math.max maxKey ek.len
-                    if maxKey > maxAlign
-                        maxKey = maxAlign
-                    keys∙sort((a b) -> a[1] < b[1]) 
+        switch type(o)
+            
+            "string" ➜ buf∙put escape(o arry)
+            "table"
+                if visited∙has o
+                    buf∙put "<v>" 
+                else            
+                    visited∙push o
+                    if o.len > 0 or o.class == array
+                        buf∙put ind != '' and arry and '.' or ''
+                        if o.len and ind != ''
+                            buf∙put '\n' 
+                        for i v in ipairs o
+                            buf∙put ind
+                            noon.toString v buf ind & indstr true visited
+                            buf∙put("\n") if i < o.len
+                    else
+                        buf∙put (arry and '.\n') or ((ind != '') and '\n' or '')
+                        maxKey = 2
+                        keys = []
+                        for k v in pairs o
+                            ek = escape k true
+                            keys∙push [ek v]
+                            maxKey = math.max maxKey ek.len
+                        maxKey = math.min maxKey 32
+                        keys∙sort((a b) -> a[1] < b[1]) 
+    
+                        for k i in keys∙each()
+                            buf∙put ind
+                            if type(k[2]) == "table"
+                                buf∙put k[1]
+                            else
+                                buf∙put kstr.pad(maxKey k[1])
+                                buf∙put("  ") 
+                            noon.toString k[2] buf ind & indstr false visited
+                            buf∙put("\n") if i < keys.len
+            ➜ 
+                buf∙put tostring(o)
+        buf
+    
+noon.static.stringify = o -> noon.toString(o strbuff∙new())∙get()
 
-                    for k i in keys∙each()
-                        buf∙put ind
-                        if type(k[2]) != "table"
-                            buf∙put kstr.pad(maxKey k[1])
-                            buf∙put("  ") 
-                        else
-                            buf∙put k[1]
-                        toString k[2] buf ind & indstr false visited
-                        buf∙put("\n") if i < keys.len
-        ➜ 
-            buf∙put tostring(o)
-    buf
-
-stringify = o -> toString(o strbuff∙new())∙get()
-
-⮐  { stringify:stringify }
+⮐  noon

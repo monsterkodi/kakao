@@ -96,6 +96,16 @@ a   1
 b   2]])
         
         test.cmp(noon.stringify({key = "value   with    some    spaces  ."}), "key  value   with    some    spaces  .")
+        
+        test.cmp(noon.stringify({["key with    some    spaces  ."] = "value"}), "|key with    some    spaces  .|  value")
+        
+        test.cmp(noon.stringify({a12345678901234567890123456789001234567890 = 1, 
+                         a123 = 0.5, 
+                         b123456789012345678901234567890 = 2
+                         }), [[
+a123                              0.5
+a12345678901234567890123456789001234567890  1
+b123456789012345678901234567890   2]])
     end)
     
     -- 00000000   0000000   0000000   0000000   00000000   00000000  
@@ -162,12 +172,11 @@ b   2]])
         
         test.cmp(noon.stringify({o = " 1 \n2 \n  3"}), 'o   ...\n| 1 |\n|2 |\n|  3|\n...')
         
-        -- noon.stringify { a: ["a  b", "1   3", "   c    d  e   "] } ▸
-        --     """
-        --     a
-        --         |a  b|
-        --         |1   3|
-        --         |   c    d  e   |"""
+        test.cmp(noon.stringify({a = array("a  b", "1   3", "   c    d  e   ")}), [[
+a
+    |a  b|
+    |1   3|
+    |   c    d  e   |]])
     end)
     
     test("trim", function()
@@ -177,15 +186,13 @@ b   2]])
 a   1
 c   2]])
         
-        --noon.stringify { a: { b: {c:1} } } ▸
-        --    """
-        --    a
-        --        b
-        --            c   1
-        --    """
+        test.cmp(noon.stringify({a = {b = {c = 1}}}), [[
+a
+    b
+        c   1]])
     end)
     
-    test("maxalign", function()
+    test("object", function()
         local o = {o = 1, ooOOoo = 2}
         
         test.cmp(noon.stringify(o), [[

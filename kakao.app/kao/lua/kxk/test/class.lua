@@ -59,37 +59,53 @@ test("class", function()
     
     test("is", function()
         local f = FunInc()
+        local p = Print()
         test.cmp(type(f), "table")
         test.cmp(tostring(f), "instance of class FunInc")
         test.cmp(f.class.name, "FunInc")
         test.cmp(type(f.is), "function")
+        
+        local a = array()
+        test.cmp(is(a, "table"), true)
+        test.cmp(is(a, array()), true)
+        test.cmp(is(a, array), true)
+        test.cmp(is(a, "string"), false)
+        
+        local d = {}
+        test.cmp(is(d, "table"), true)
+        test.cmp(is(d, {}), true)
+        test.cmp(is(d, "string"), false)
+        test.cmp(is(d, array), false)
+        
         test.cmp(f:is(FunInc), true)
         test.cmp(f:is(Print), false)
+        test.cmp(p:is(Print), true)
+        test.cmp(p:is(FunInc), false)
         
-        test.cmp(_G.is(nil, nil), true)
-        test.cmp(_G.is(1, 2), true)
-        test.cmp(_G.is("", ""), true)
-        test.cmp(_G.is("a", "z"), true)
-        test.cmp(_G.is(f, FunInc), true)
-        test.cmp(_G.is(f, Print), false)
-        test.cmp(_G.is(nil, ""), false)
-        test.cmp(_G.is("", nil), false)
-        test.cmp(_G.is("a", 1), false)
-        test.cmp(_G.is(1, "a"), false)
-        test.cmp(_G.is(nil, 0), false)
-        test.cmp(_G.is(0, nil), false)
+        -- _G.is nil nil   ▸ true
+        -- _G.is 1     2   ▸ true
+        -- _G.is ""   ""   ▸ true
+        -- _G.is "a" "z"   ▸ true
+        -- _G.is f FunInc  ▸ true
+        -- _G.is f Print   ▸ false
+        -- _G.is nil  ""   ▸ false
+        -- _G.is ""  nil   ▸ false
+        -- _G.is "a"   1   ▸ false
+        -- _G.is 1   "a"   ▸ false
+        -- _G.is nil   0   ▸ false
+        -- _G.is 0   nil   ▸ false
         
-        test.cmp(is(nil, nil), true)
-        test.cmp(is(1, 2), true)
-        test.cmp(is("", ""), true)
-        test.cmp(is("a", "z"), true)
-        test.cmp(is(f, FunInc), true)
-        test.cmp(is(f, Print), false)
-        test.cmp(is(nil, ""), false)
-        test.cmp(is("", nil), false)
-        test.cmp(is("a", 1), false)
-        test.cmp(is(1, "a"), false)
-        test.cmp(is(nil, 0), false)
-        test.cmp(is(0, nil), false)
+        -- nil is nil      ▸ true
+        -- 1   is   2      ▸ true
+        -- ""  is  ""      ▸ true
+        -- "a" is "z"      ▸ true
+        -- f   is  FunInc  ▸ true
+        -- f   is  Print   ▸ false
+        -- nil is   ""     ▸ false
+        -- ""  is  nil     ▸ false
+        -- "a" is   1      ▸ false
+        -- 1   is "a"      ▸ false
+        -- nil is   0      ▸ false
+        -- 0   is nil      ▸ false
     end)
     end)

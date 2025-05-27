@@ -57,13 +57,17 @@ function _G.sleep(s)
 end
 
 
-function _G.is(v, t) 
+function _G.is(v, c) 
     local vt = type(v)
-    local tt = type(t)
-    if (vt ~= tt) then return false end
-    if (vt ~= "table") then return true end
-    if ((vt == t) and (tt == "string")) then return true end
-    if ((type(v.is) == "function") and v:is(t)) then return true end
+    local ct = type(c)
+    if (v and (vt == "table")) then 
+        if (((ct == "table") and c.static) and (c ~= v.class)) then return false end
+        if (((vt == ct) and (v.class ~= c.class)) and (v.class ~= c)) then return false end
+        if ((type(v.is) == "function") and v:is(c)) then return true end
+    end
+    
+    if (vt == ct) then return true end
+    if ((vt == c) and (ct == "string")) then return true end
     return false
 end
 
