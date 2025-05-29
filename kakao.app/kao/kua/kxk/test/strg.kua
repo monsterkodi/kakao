@@ -12,9 +12,10 @@ use kxk/kxk
 
     ▸ init
     
-        $strg()         ▸ ""
-        $strg("a")      ▸ "a"
-        $strg("a" "b")  ▸ "ab"
+        $strg()                ▸ ""
+        $strg("a")             ▸ "a"
+        $strg("a" "b")         ▸ "ab"
+        $strg("a" "b" 1 2 1/2) ▸ "ab120.5"
         
     ▸ add
     
@@ -70,4 +71,13 @@ use kxk/kxk
         $l[1] ▸ "1a"
         l[2] += "b"
         $l[2] ▸ "2b"
+        
+    ▸ unicode
+    
+        s = strg "▸"
+        s∙num() ▸ 1
+        s∙len() ▸ 3
+        s += "●"
+        s∙num() ▸ 2
+        s∙len() ▸ 6
         

@@ -13,6 +13,7 @@ test("strg", function()
         test.cmp(tostring(strg()), "")
         test.cmp(tostring(strg("a")), "a")
         test.cmp(tostring(strg("a", "b")), "ab")
+        test.cmp(tostring(strg("a", "b", 1, 2, (1 / 2))), "ab120.5")
     end)
     
     test("add", function()
@@ -70,5 +71,14 @@ test("strg", function()
         test.cmp(tostring(l[1]), "1a")
         l[2] = l[2] + "b"
         test.cmp(tostring(l[2]), "2b")
+    end)
+    
+    test("unicode", function()
+        local s = strg("▸")
+        test.cmp(s:num(), 1)
+        test.cmp(s:len(), 3)
+        s = s + "●"
+        test.cmp(s:num(), 2)
+        test.cmp(s:len(), 6)
     end)
     end)
