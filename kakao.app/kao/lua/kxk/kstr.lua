@@ -109,7 +109,7 @@ end
 
 
 function kstr.split(s, sep, limit) 
-    if (sep == nil) then return {s} end
+    if (sep == nil) then return array(s) end
     if (sep == "") then return kstr.chars(s) end
     
     local reslt = array()

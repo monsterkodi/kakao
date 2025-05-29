@@ -8,7 +8,9 @@
 
 use kxk.array
 
-class strg extends array 
+strbuff = require "string.buffer"
+
+class strg 
 
     @: ... ->
     
@@ -18,9 +20,6 @@ class strg extends array
             @ += v
                         
     $: ->
-    
-        if @frags.len == 0 and @buff
-            ⮐  @buff∙get()
     
         @debuff()
         
@@ -78,18 +77,34 @@ class strg extends array
             @frags∙push @buff∙get()
             @buff = nil
             
+    lines: ->
+    
+        @debuff()
+        ls = []
+        for f in @frags∙each()
+            if type(f) != "string"
+                f = f∙join()             
+            sl = kstr.split f "\n"
+            for s in sl∙each()
+                ls∙push strg(s)
+        ls
+            
     __add: s ->
     
         if s
             if not @buff
                 @buff = strbuff∙new()
-            @.buff∙put s
+            @buff∙put s
         @
     
     __index: k ->    
 
         if type(k) == "number"
             ⮐  @seg(k)
-              
+            
+        v = rawget @ k
+        # log "__index" k, v
+        ⮐  v
+        
 ⮐  strg
 

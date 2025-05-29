@@ -17,7 +17,7 @@ test("strg", function()
     
     test("add", function()
         local itr = 100000
-        profileStart("add1")
+        profileStart("add")
         local s = strg("a")
         s = s + "b"
         test.cmp(s:num(), 2)
@@ -26,13 +26,13 @@ test("strg", function()
             s = s + "c"
         end
         
-        profileStop("add1")
-        profileStart("len1")
+        profileStop("add")
+        profileStart("len")
         test.cmp(s:len(), (itr + 3))
-        profileStop("len1")
-        profileStart("num1")
+        profileStop("len")
+        profileStart("num")
         test.cmp(s:num(), (itr + 3))
-        profileStop("num1")
+        profileStop("num")
         
         -- profileStart "add2"
         -- s = "a"
@@ -58,5 +58,17 @@ test("strg", function()
         test.cmp(s[1], "a")
         test.cmp(s[2], "b")
         test.cmp(s[3], "c")
+    end)
+    
+    test("lines", function()
+        local s = strg("1\n2\n3")
+        local l = s:lines()
+        test.cmp(tostring(l[1]), "1")
+        test.cmp(tostring(l[2]), "2")
+        test.cmp(tostring(l[3]), "3")
+        l[1] = l[1] + "a"
+        test.cmp(tostring(l[1]), "1a")
+        l[2] = l[2] + "b"
+        test.cmp(tostring(l[2]), "2b")
     end)
     end)

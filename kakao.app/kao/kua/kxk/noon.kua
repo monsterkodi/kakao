@@ -73,7 +73,7 @@ noon.static.toString = o buf ind="" arry=false visited=[] ->
                             buf += '\n' 
                         for i v in ipairs o
                             buf += ind
-                            noon.toString v buf ind & indstr true visited
+                            noon.toString v buf ind&indstr true visited
                             if i < o.len ➜ buf += ("\n") 
                     else
                         buf += (arry and '.\n') or ((ind != '') and '\n' or '')
@@ -93,7 +93,7 @@ noon.static.toString = o buf ind="" arry=false visited=[] ->
                             else
                                 buf += kstr.pad(maxKey k[1])
                                 buf += ("  ") 
-                            noon.toString k[2] buf ind & indstr false visited
+                            noon.toString k[2] buf ind&indstr false visited
                             if i < keys.len ➜ buf += "\n"
             ➜ 
                 buf += tostring(o)

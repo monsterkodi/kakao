@@ -8,8 +8,10 @@
 
 array = require "kxk.array"
 
+local strbuff = require("string.buffer")
 
-local strg = class("strg", array)
+
+local strg = class("strg")
     
 
 
@@ -27,10 +29,6 @@ end
 
 
 function strg:__tostring() 
-        if ((#self.frags == 0) and self.buff) then 
-            return self.buff:get()
-        end
-        
         self:debuff()
         
         if (#self.frags == 0) then return "" end
@@ -62,10 +60,10 @@ function strg:len()
         local l = 0
         for f in self.frags:each() do 
             if (type(f) == 'string') then 
-                l = l + #f
+                l = l + (#f)
             else 
                 for s in f:each() do 
-                    l = l + #s
+                    l = l + (#s)
                 end
             end
         end
@@ -111,6 +109,24 @@ function strg:debuff()
     end
 
 
+function strg:lines() 
+        self:debuff()
+        local ls = array()
+        for f in self.frags:each() do 
+            if (type(f) ~= "string") then 
+                f = f:join()
+            end
+            
+            local sl = kstr.split(f, "\n")
+            for s in sl:each() do 
+                ls:push(strg(s))
+            end
+        end
+        
+        return ls
+    end
+
+
 function strg:__add(s) 
         if s then 
             if not self.buff then 
@@ -128,6 +144,10 @@ function strg:__index(k)
         if (type(k) == "number") then 
             return self:seg(k)
         end
+        
+        local v = rawget(self, k)
+        -- log "__index" k, v
+        return v
     end
 
 return strg

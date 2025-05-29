@@ -81,7 +81,6 @@ _G.profileStop = msg ->
     write ◌b msg " " ◌m tick-timers[msg]
     timers[msg] = nil
 
-_G.strbuff  = require "string.buffer"
 _G.class    = require "kxk.class"
 _G.inspect  = require "kxk.inspect"
 _G.slash    = require "kxk.slash"

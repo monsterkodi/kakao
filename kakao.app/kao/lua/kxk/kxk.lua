@@ -104,7 +104,6 @@ function _G.profileStop(msg)
     return timers[msg]
 end
 
-_G.strbuff = require("string.buffer")
 _G.class = require("kxk.class")
 _G.inspect = require("kxk.inspect")
 _G.slash = require("kxk.slash")

@@ -47,7 +47,7 @@ kstr.chars = s ->
    
 kstr.split = s sep limit ->
     
-    if sep == nil ➜ ⮐  { s }
+    if sep == nil ➜ ⮐  [s]
     if sep == ""  ➜ ⮐  kstr.chars s
     
     reslt = []

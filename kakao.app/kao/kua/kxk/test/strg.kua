@@ -19,20 +19,20 @@ use kxk/kxk
     ▸ add
     
         itr = 100000
-        profileStart "add1"
+        profileStart "add"
         s = strg "a"
         s += "b"
         s∙num() ▸ 2
         $s ▸ "ab"
         for i in 0..itr
             s += "c"
-        profileStop "add1"
-        profileStart "len1"
+        profileStop "add"
+        profileStart "len"
         s∙len() ▸ itr+3
-        profileStop "len1"
-        profileStart "num1"
+        profileStop "len"
+        profileStart "num"
         s∙num() ▸ itr+3
-        profileStop "num1"
+        profileStop "num"
         
         # profileStart "add2"
         # s = "a"
@@ -58,3 +58,16 @@ use kxk/kxk
         s[1] ▸ "a"
         s[2] ▸ "b"
         s[3] ▸ "c"
+
+    ▸ lines
+    
+        s = strg "1\n2\n3"
+        l = s∙lines()
+        $l[1] ▸ "1"
+        $l[2] ▸ "2"
+        $l[3] ▸ "3"
+        l[1] += "a"
+        $l[1] ▸ "1a"
+        l[2] += "b"
+        $l[2] ▸ "2b"
+        
