@@ -1,0 +1,95 @@
+###
+     ███████  █████████  ████████    ███████ 
+    ███          ███     ███   ███  ███      
+    ███████      ███     ███████    ███  ████
+         ███     ███     ███   ███  ███   ███
+    ███████      ███     ███   ███   ███████ 
+###
+
+use kxk.array
+
+class strg extends array 
+
+    @: ... ->
+    
+        @buff = nil
+        @frags = []
+        for v in ...
+            @ += v
+                        
+    $: ->
+    
+        if @frags.len == 0 and @buff
+            ⮐  @buff∙get()
+    
+        @debuff()
+        
+        ⮐  "" if @frags.len == 0
+        
+        if @frags.len == 1 
+            if type(@frags[1]) == "string"
+                ⮐  @frags[1]
+            ⮐  @frags[1]∙join()
+                
+        b = strbuff∙new()
+        for f in @frags∙each()
+            if type(f) == 'string'
+                b∙put f
+            else
+                b∙put f∙join()
+        b∙get()
+        
+    len: ->
+    
+        @debuff()
+        ⮐  0 if @frags.len == 0
+        l = 0
+        for f in @frags∙each()
+            if type(f) == 'string'
+                l += f.len
+            else
+                for s in f∙each()
+                    l += s.len
+        l
+
+    num: ->
+    
+        @flatten()
+        @frags[1].len
+        
+    seg: i ->
+    
+        @flatten()
+        @frags[1][i]
+                
+    flatten: ->
+    
+        @debuff()
+        segl = []
+        for f i in @frags∙each()
+            if type(f) == "string"
+                f = kseg(f)
+            segl += f
+        @frags = [segl]
+        
+    debuff: ->
+    
+        if @buff
+            @frags∙push @buff∙get()
+            @buff = nil
+            
+    __add: s ->
+    
+        if s
+            if not @buff
+                @buff = strbuff∙new()
+            @.buff∙put s
+        @
+    
+    __index: k ->    
+
+        if type(k) == "number"
+            ⮐  @seg(k)
+              
+⮐  strg
+

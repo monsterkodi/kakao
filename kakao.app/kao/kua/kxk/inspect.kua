@@ -114,11 +114,10 @@ class Inspector
         @level   = 0
         countCycles(root, @cycles)
         
-        @buf = strbuff∙new()
+        @buf = strg()
         @putValue root
-        buf = @buf
         # don't return self here
-        ⮐  buf∙get()
+        ⮐  $@buf
 
     getId: v ->
     
@@ -132,62 +131,61 @@ class Inspector
 
     putValue: v ->
     
-        tabify = -> buf=@buf ; buf∙put(@newline & string.rep(@indent @level))
+        tabify = -> @buf + @newline + string.rep(@indent @level)
     
         tv = type(v)
-        buf = @buf
         if tv == 'string'
-            buf∙put smartQuote(escape(v))
+            @buf += smartQuote(escape(v))
         elif tv == 'number' or tv == 'boolean' or tv == 'nil' or tv == 'cdata' or tv == 'ctype' 
-            buf∙put tostring(v)
+            @buf += tostring(v)
         elif tv == 'table' and not @ids[v]
             t = v
             
             if @level >= @depth
-                buf∙put '{...}'
+                @buf += '{...}'
             else
                 @level = @level + 1
                 
-                if @cycles[t] > 1 
+                if @cycles[t] and @cycles[t] > 1 
                     tabify()
-                    buf∙put string.format('<%d>' @getId(t))
+                    @buf += string.format('<%d>' @getId(t))
                 
                 (keys keysLen seqLen) = getKeys(t)
                 
                 for i in 1..seqLen + keysLen 
                     if i <= seqLen
-                        buf∙put ' '
+                        @buf += ' '
                         @putValue(t[i])
                     else
                         tabify()
                         k = keys[i - seqLen]
                         if isIdentifier k
-                            buf∙put k
+                            @buf += k
                             if k.len < 12
-                                buf∙put string.rep(" " 12-k.len)
+                                @buf += string.rep(" " 12-k.len)
                         else
-                            buf∙put "["
+                            @buf += "["
                             @putValue k
-                            buf∙put "]"
-                        buf∙put '  '
+                            @buf += "]"
+                        @buf += '  '
                         @putValue t[k]
                 
                 mt = getmetatable(t)
                 if type(mt) == 'table'
                     tabify()
-                    buf∙put '<meta> '
-                    @putValue(mt)
+                    @buf += '<meta> '
+                    @putValue mt
                 
                 @level = @level - 1
                 
                 if seqLen > 0
-                    buf∙put ' '
+                    @buf += ' '
         else
             if tv == "function"
-                buf∙put "->"
+                @buf += "->"
             elif tv == "table"
-                buf∙put "<" & @getId(v) & ">"
+                @buf += "<" & @getId(v) & ">"
             else
-                buf∙put string.format('<%s %d>' tv @getId(v))
+                @buf += string.format('<%s %d>' tv @getId(v))
 
 ⮐  (root) -> Inspector(root)

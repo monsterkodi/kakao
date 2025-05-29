@@ -8,7 +8,7 @@ main = ... ->
 
     use std io
     use kxk.kxk
-    
+        
     optparser = std.optparse """
         0.1
         Usage: kao [Options ...] [Files ...]

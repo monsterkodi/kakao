@@ -1,0 +1,60 @@
+###
+     ███████  █████████  ████████    ███████ 
+    ███          ███     ███   ███  ███      
+    ███████      ███     ███████    ███  ████
+         ███     ███     ███   ███  ███   ███
+    ███████      ███     ███   ███   ███████ 
+###
+
+use kxk/kxk
+
+▸ strg
+
+    ▸ init
+    
+        $strg()         ▸ ""
+        $strg("a")      ▸ "a"
+        $strg("a" "b")  ▸ "ab"
+        
+    ▸ add
+    
+        itr = 100000
+        profileStart "add1"
+        s = strg "a"
+        s += "b"
+        s∙num() ▸ 2
+        $s ▸ "ab"
+        for i in 0..itr
+            s += "c"
+        profileStop "add1"
+        profileStart "len1"
+        s∙len() ▸ itr+3
+        profileStop "len1"
+        profileStart "num1"
+        s∙num() ▸ itr+3
+        profileStop "num1"
+        
+        # profileStart "add2"
+        # s = "a"
+        # s &= "b"
+        # s.len ▸ 2
+        # s ▸ "ab"
+        # for i in 0..itr
+        #     s &= "c"
+        # s.len ▸ itr+3 
+        # profileStop "add2"
+        # 1 ▸ 2
+    
+    ▸ num
+    
+        s = strg "a"
+        s∙num() ▸ 1
+        s += "bc"
+        s∙num() ▸ 3
+        
+    ▸ index
+    
+        s = strg "abc"
+        s[1] ▸ "a"
+        s[2] ▸ "b"
+        s[3] ▸ "c"

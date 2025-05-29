@@ -237,3 +237,15 @@ local a = (function ()
     return 3
     end
 end)()""")
+    test "for loop": 
+        l("""
+for f i in x
+    f = c
+    i = 3
+    j = 1
+""", """
+for f, i in x do 
+    f = c
+    i = 3
+    local j = 1
+end""")

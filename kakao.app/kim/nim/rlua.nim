@@ -167,7 +167,10 @@ proc ▸operation(this : Rlua, n : Node) =
             of ◂or: this.add("or")
             else: this.tok(n)
         this.spc()
+        var rbr = (((n.token.tok != ◂assign) and (n.token.tok in assignToks)) and (n.operand_right.kind notin {●literal, ●string}))
+        if rbr: this.add("(")
         this.rnd(n.operand_right)
+        if rbr: this.add(")")
         if outerbr: this.add(")")
 
 proc ▸literal(this : Rlua, n : Node) = 

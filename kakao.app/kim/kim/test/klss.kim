@@ -502,6 +502,7 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
         l   """
             class trim
                 f: -> @rtrim(c)∙ltrim(c)
+                g: -> @rtrim∙ltrim(c)
             """ """
             
             local trim = class("trim")
@@ -509,6 +510,10 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
             
             function trim:f() 
                 return self:rtrim(c):ltrim(c)
+                end
+            
+            function trim:g() 
+                return self.rtrim:ltrim(c)
                 end"""
         
         

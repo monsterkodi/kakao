@@ -932,10 +932,8 @@ class Parser
         token.str = ""
         color_value = nod ●literal token
         lt = @peek(-1)
-        log "darfugginuggi" @tok, @isConnectedLeft(), @isConnectedRight(), @current.str, lt.col, lt.str, lt.str.len, @peek(0).col
         while @tok notin {◂comma ◂eof ◂indent} and @isConnectedLeft()
             t = @consume()
-            log "rColor" t, t.str
             color_value.token.str &= t.str
         nod ●color token color_value
                         
@@ -1280,16 +1278,15 @@ class Parser
     lRange: ◇Node left ➜Node ->
     
         ⮐  if @isTokAhead ◂func
-        
         token = @consume()
         right = @expression token
         nod ●range token left right
         
     rRange: ◇Node ➜Node ->
-                
+
         token = @consume()
         right ◇ Node
-        if @tok notin {◂paren_close} and not @isTokAhead ◂func
+        if @tok notin {◂paren_close ◂indent ◂then} and not @isTokAhead ◂func
             right = @expression token
         nod ●range token nil right
             

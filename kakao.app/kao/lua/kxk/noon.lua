@@ -52,7 +52,7 @@ function noon:init(s)
 function noon.static.toString(o, buf, ind, arry, visited) 
         ind = ind or ""
         arry = arry or false
-        visited = visited or array()
+        visited = visited or (array())
         
         
         function escape(k, arry) 
@@ -73,25 +73,25 @@ end)
             return k
         end
         
-        if (type(o) == "string") then buf:put(escape(o, arry))
+        if (type(o) == "string") then buf = buf + (escape(o, arry))
         elseif (type(o) == "table") then 
                 if visited:has(o) then 
-                    buf:put("<v>")
+                    buf = buf + "<v>"
                 else 
                     visited:push(o)
                     if ((#o > 0) or (o.class == array)) then 
-                        buf:put(((((ind ~= '') and arry) and '.') or ''))
+                        buf = buf + (((((ind ~= '') and arry) and '.') or ''))
                         if (#o and (ind ~= '')) then 
-                            buf:put('\n')
+                            buf = buf + '\n'
                         end
                         
                         for i, v in ipairs(o) do 
-                            buf:put(ind)
+                            buf = buf + ind
                             noon.toString(v, buf, ind .. indstr, true, visited)
-                            if (i < #o) then buf:put("\n") end
+                            if (i < #o) then buf = buf + ("\n") end
                         end
                     else 
-                        buf:put(((arry and '.\n') or (((ind ~= '') and '\n') or '')))
+                        buf = buf + (((arry and '.\n') or (((ind ~= '') and '\n') or '')))
                         local maxKey = 2
                         local keys = array()
                         for k, v in pairs(o) do 
@@ -106,21 +106,21 @@ end)
 end)
                         
                         for k, i in keys:each() do 
-                            buf:put(ind)
+                            buf = buf + ind
                             if (type(k[2]) == "table") then 
-                                buf:put(k[1])
+                                buf = buf + (k[1])
                             else 
-                                buf:put(kstr.pad(maxKey, k[1]))
-                                buf:put("  ")
+                                buf = buf + (kstr.pad(maxKey, k[1]))
+                                buf = buf + ("  ")
                             end
                             
                             noon.toString(k[2], buf, ind .. indstr, false, visited)
-                            if (i < #keys) then buf:put("\n") end
+                            if (i < #keys) then buf = buf + "\n" end
                         end
                     end
                 end
         else 
-                buf:put(tostring(o))
+                buf = buf + (tostring(o))
         end
         
         return buf
@@ -128,7 +128,7 @@ end
 
 
 function noon.static.stringify(o) 
-    return noon.toString(o, strbuff:new()):get()
+    return tostring(noon.toString(o, strg()))
 end
 
 -- ████████    ███████   ████████    ███████  ████████

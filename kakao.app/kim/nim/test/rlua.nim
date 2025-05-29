@@ -239,6 +239,32 @@ end""")
         t("for key, val in opt", "for key, val in opt do end")
         t("for (key val) in opt", "for key, val in opt do end")
         t("for (key, val) in opt", "for key, val in opt do end")
+    test "dotdotdot": 
+        t("for v in ...\n    x = v\n    y = w", """
+_argl_ = select("#", ...)
+for _argi_ = 1, (_argl_ + 1)-1 do 
+    v = select(_argi_, ...)
+    x = v
+    y = w
+end""")
+        v("for v in ...\n    x = v\n    v = w", """
+local _argl_ = select("#", ...)
+for _argi_ = 1, (_argl_ + 1)-1 do 
+    local v = select(_argi_, ...)
+    local x = v
+    v = w
+end""")
+        v("f = (...) ->\n  for v in ...\n    x = v\n    y = w", """
+
+function f(...) 
+  local _argl_ = select("#", ...)
+  for _argi_ = 1, (_argl_ + 1)-1 do 
+    local v = select(_argi_, ...)
+    
+    local x = v
+    local y = w
+end
+end""")
     test "while": 
         t("while true ➜ log a", "while true do print(a) end")
     test "switch                                         ": 

@@ -236,8 +236,7 @@ class Node*
         ➜ discard
         
     @: ->    
-        # super() -> procCall constructor(Base(@))
-        log "NODE"
+        log "NODE"        
     
     $: ➜string ->
     
@@ -465,4 +464,12 @@ nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
             n.list_values = args
         ➜ discard
     n
+
+bodify* = ◇Node body ➜Node ->
+
+    if not body
+        ⮐  nod ●block tkn(◂indent "    ") []
+    if body.kind notin {●block ●semicolon}
+        ⮐  nod ●block tkn(◂indent "    " body.token.line) [body]
+    body
     

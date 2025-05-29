@@ -140,11 +140,10 @@ function Inspector:init(root)
         self.level = 0
         countCycles(root, self.cycles)
         
-        self.buf = strbuff:new()
+        self.buf = strg()
         self:putValue(root)
-        local buf = self.buf
         -- don't return self here
-        return buf:get()
+        return tostring(self.buf)
     end
 
 
@@ -164,49 +163,51 @@ function Inspector:getId(v)
 function Inspector:putValue(v) 
         
         function tabify() 
-                 local buf = self.buf ; return buf:put(self.newline .. string.rep(self.indent, self.level))
+    return ((self.buf + self.newline) + string.rep(self.indent, self.level))
         end
         
         local tv = type(v)
-        local buf = self.buf
         if (tv == 'string') then 
-            return buf:put(smartQuote(escape(v)))
+            self.buf = self.buf + (smartQuote(escape(v)))
+            return self.buf
         elseif (((((tv == 'number') or (tv == 'boolean')) or (tv == 'nil')) or (tv == 'cdata')) or (tv == 'ctype')) then 
-            return buf:put(tostring(v))
+            self.buf = self.buf + (tostring(v))
+            return self.buf
         elseif ((tv == 'table') and not self.ids[v]) then 
             local t = v
             
             if (self.level >= self.depth) then 
-                return buf:put('{...}')
+                self.buf = self.buf + '{...}'
+                return self.buf
             else 
                 self.level = (self.level + 1)
                 
-                if (self.cycles[t] > 1) then 
+                if (self.cycles[t] and (self.cycles[t] > 1)) then 
                     tabify()
-                    buf:put(string.format('<%d>', self:getId(t)))
+                    self.buf = self.buf + (string.format('<%d>', self:getId(t)))
                 end
                 
                 local keys, keysLen, seqLen = getKeys(t)
                 
                 for i in iter(1, (seqLen + keysLen)) do 
                     if (i <= seqLen) then 
-                        buf:put(' ')
+                        self.buf = self.buf + ' '
                         self:putValue(t[i])
                     else 
                         tabify()
                         local k = keys[(i - seqLen)]
                         if isIdentifier(k) then 
-                            buf:put(k)
+                            self.buf = self.buf + k
                             if (#k < 12) then 
-                                buf:put(string.rep(" ", (12 - #k)))
+                                self.buf = self.buf + (string.rep(" ", (12 - #k)))
                             end
                         else 
-                            buf:put("[")
+                            self.buf = self.buf + "["
                             self:putValue(k)
-                            buf:put("]")
+                            self.buf = self.buf + "]"
                         end
                         
-                        buf:put('  ')
+                        self.buf = self.buf + '  '
                         self:putValue(t[k])
                     end
                 end
@@ -214,23 +215,27 @@ function Inspector:putValue(v)
                 local mt = getmetatable(t)
                 if (type(mt) == 'table') then 
                     tabify()
-                    buf:put('<meta> ')
+                    self.buf = self.buf + '<meta> '
                     self:putValue(mt)
                 end
                 
                 self.level = (self.level - 1)
                 
                 if (seqLen > 0) then 
-                    return buf:put(' ')
+                    self.buf = self.buf + ' '
+                    return self.buf
                 end
             end
         else 
             if (tv == "function") then 
-                return buf:put("->")
+                self.buf = self.buf + "->"
+                return self.buf
             elseif (tv == "table") then 
-                return buf:put("<" .. self:getId(v) .. ">")
+                self.buf = self.buf + ("<" .. self:getId(v) .. ">")
+                return self.buf
             else 
-                return buf:put(string.format('<%s %d>', tv, self:getId(v)))
+                self.buf = self.buf + (string.format('<%s %d>', tv, self:getId(v)))
+                return self.buf
             end
         end
     end

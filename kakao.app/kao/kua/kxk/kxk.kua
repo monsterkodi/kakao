@@ -88,6 +88,7 @@ _G.slash    = require "kxk.slash"
 _G.array    = require "kxk.array"
 _G.kstr     = require "kxk.kstr"
 _G.kseg     = require "kxk.kseg"
+_G.strg     = require "kxk.strg"
 _G.test     = require "kxk.test"
 
 ⮐  {}

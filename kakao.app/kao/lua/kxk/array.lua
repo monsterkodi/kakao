@@ -10,13 +10,13 @@ local array = class("array")
 
 
 function array:init(...) 
-        local l = select("#", ...)
-        if (l > 0) then 
-            for i in iter(1, l) do 
-                local v = select(i, ...)
-                self:insert(v)
-            end
-        end
+        local _argl_ = select("#", ...)
+        for _argi_ = 1, (_argl_ + 1)-1 do 
+    local v = select(_argi_, ...)
+    
+    self:insert(v)
+end
+        
         return self
     end
 
@@ -86,12 +86,12 @@ function array:pop()
 
 
 function array:push(...) 
-        local l = select("#", ...)
-        if (l > 0) then 
-            for i in iter(1, l) do 
-                self[(#self + 1)] = select(i, ...)
-            end
-        end
+        local _argl_ = select("#", ...)
+        for _argi_ = 1, (_argl_ + 1)-1 do 
+    local v = select(_argi_, ...)
+    
+    self[(#self + 1)] = v
+end
         
         return self
     end
@@ -196,6 +196,15 @@ function array:has(e)
 
 function array:contains(e) 
     return (self:indexof(e) >= 0)
+    end
+
+
+function array:__add(a) 
+        for i, o in ipairs(a) do 
+            table.insert(self, o)
+        end
+        
+        return self
     end
 
 

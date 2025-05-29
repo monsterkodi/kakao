@@ -81,6 +81,8 @@ proc traverse(n : Node, iter : NodeIt, hint = "") : Node =
             trvl(n.list_values)
         of ●func: 
             trav(n.func_body)
+        of ●testSuite, ●testSection: 
+            trav(n.test_block)
         else: 
             # log "clss.traverse -- unhandled #{n.kind}"
             discard
@@ -208,14 +210,14 @@ proc methodifyLua(clss : Node) : seq[Node] =
     var strugt = (clss.kind == ●struct)
     var className = clss.class_name.token.str
     
-    proc thisify(n : Node, hint = "") : Node = 
+    proc selfify(n : Node, hint = "") : Node = 
         if (n.token.tok == ◂name): 
             if (n.token.str[0] == '@'): 
                 if (n.token.str.len > 1): 
                     var owner = nod(●literal, tkn(◂name, "self"))
                     var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
                     var token = tkn(◂dot, ".", n.token.line, n.token.col)
-                    if (hint == "callee"): 
+                    if ((hint == "callee") and not strutils.contains(n.token.str, ":")): 
                         token.tok = ◂colon
                         token.str = ":"
                     return nod(●propertyAccess, token, owner, property)
@@ -248,7 +250,7 @@ proc methodifyLua(clss : Node) : seq[Node] =
         if (it.kind == ●comment): return it
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
-        funcn.func_body = traverse(funcn.func_body, thisify)
+        funcn.func_body = traverse(funcn.func_body, selfify)
         superize(funcn)
         var meth = it.member_key
         if (meth.token.str == "@"): 
@@ -275,4 +277,35 @@ proc classifyLua*(body : Node) : Node =
         if (e.kind in {●class, ●struct}): 
             var methods = methodifyLua(e)
             body.expressions.insert(methods, (i + 1))
+    var emptyBody : seq[Node]
+    
+    proc bodyWalk(n : Node, body : var seq[Node] = emptyBody, index = -1) = 
+        if (n == nil): return
+        case n.kind:
+            of ●block, ●semicolon: 
+                for i in countdown(n.expressions.high, 0): 
+                    var e = n.expressions[i]
+                    bodyWalk(e, n.expressions, i)
+            of ●func: 
+                bodyWalk(n.func_body)
+            of ●for: 
+                if (((n.for_range.kind == ●range) and (n.for_range.range_start == nil)) and (n.for_range.range_end == nil)): 
+                    var v = n.for_value.token.str
+                    var a = ast(&"_argl_ = select(\"#\", ...)\nfor _argi_ in 1..._argl_+1\n    {v} = select(_argi_, ...)", "lua")
+                    var forNode = a.expressions[^1]
+                    var forBody = forNode.for_body
+                    for e in n.for_body.expressions: 
+                        (e.token.line += 2)
+                    forBody.expressions = forBody.expressions.concat(n.for_body.expressions)
+                    body.splice(index, 1, a.expressions[0], a.expressions[1])
+                bodyWalk(n.for_body)
+            of ●operation: 
+                if (n.operand_right.kind == ●func): 
+                    if n.operand_right.func_body: 
+                        n.operand_right.func_body = bodify(n.operand_right.func_body)
+                        bodyWalk(n.operand_right.func_body)
+            of ●testSuite, ●testSection: 
+                bodyWalk(n.test_block)
+            else: discard
+    bodyWalk(body)
     body

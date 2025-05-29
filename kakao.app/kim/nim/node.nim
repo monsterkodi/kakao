@@ -160,7 +160,6 @@ type Node* = ref object of RootObj
         else: discard
 
 proc init*(this : Node) : Node = 
-        # super() -> procCall constructor(Base(@))
         echo("NODE")
         this
 
@@ -378,3 +377,10 @@ proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node =
             n.list_values = args
         else: discard
     n
+
+proc bodify*(body : Node) : Node = 
+    if not body: 
+        return nod(●block, tkn(◂indent, "    "), @[])
+    if (body.kind notin {●block, ●semicolon}): 
+        return nod(●block, tkn(◂indent, "    ", body.token.line), @[body])
+    body

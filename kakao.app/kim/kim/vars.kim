@@ -27,15 +27,7 @@ class Scoper
     exp    : ◇Node body ◇int i ◇Node e ->
     scope  : ◇Node body ➜Node ->
     branch : ◇Node body -> discard @scope(body)
-    
-    bodify : ◇Node body ➜Node ->
-    
-        if not body
-            ⮐  nod ●block tkn(◂indent "    ") []
-        if body.kind notin {●block ●semicolon}
-            ⮐  nod ●block tkn(◂indent "    ") [body]
-        body
-        
+            
     returnize: ◇Node body ->
     
         ⮐  if not body
@@ -50,25 +42,26 @@ class Scoper
                     lastExp.kind == ●if
                     
                         for cndthn in lastExp.condThens
-                            cndthn.then_branch = @bodify cndthn.then_branch
+                            cndthn.then_branch = bodify cndthn.then_branch
                             @returnize cndthn.then_branch
                         if lastExp.else_branch
-                            lastExp.else_branch = @bodify lastExp.else_branch
+                            lastExp.else_branch = bodify lastExp.else_branch
                             @returnize lastExp.else_branch
                             
                     lastExp.kind == ●switch
                     
                         for cases in lastExp.switch_cases
-                            cases.case_then = @bodify cases.case_then
+                            cases.case_then = bodify cases.case_then
                             @returnize cases.case_then
                         if lastExp.switch_default
-                            lastExp.switch_default = @bodify lastExp.switch_default
+                            lastExp.switch_default = bodify lastExp.switch_default
                             @returnize lastExp.switch_default
                             
                     lastExp.kind != ●operation or lastExp.token.tok notin assignToks
                     
                         retval = lastExp
                         line   = retval.token.line
+                        log "NOTOP" lastExp.kind
                         body.expressions[^1] = nod(●return tkn(◂return "return" line) retval)
                     ➜ 
                         retval = lastExp.operand_left
@@ -78,7 +71,7 @@ class Scoper
     
     luanize: ◇Node fn ->
         
-        fn.func_body = @bodify fn.func_body
+        fn.func_body = bodify fn.func_body
         @returnize fn.func_body
 
         if fn.func_signature and fn.func_signature.sig_args.list_values
@@ -167,6 +160,11 @@ class Scoper
                     @branch condThen.then_branch
                 @branch e.else_branch
             ●for
+                if e.for_value.kind == ●list
+                    for item in e.for_value.list_values
+                        add item.token.str
+                else
+                    add e.for_value.token.str
                 @branch e.for_body
             ●while
                 @branch e.while_body

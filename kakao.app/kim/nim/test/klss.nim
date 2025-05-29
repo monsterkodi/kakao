@@ -461,6 +461,7 @@ function Print:__tostring()
         l("""
 class trim
     f: -> @rtrim(c)∙ltrim(c)
+    g: -> @rtrim∙ltrim(c)
 """, """
 
 local trim = class("trim")
@@ -468,4 +469,8 @@ local trim = class("trim")
 
 function trim:f() 
     return self:rtrim(c):ltrim(c)
+    end
+
+function trim:g() 
+    return self.rtrim:ltrim(c)
     end""")

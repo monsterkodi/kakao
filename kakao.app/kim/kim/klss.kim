@@ -85,6 +85,9 @@ traverse = ◇Node n ◇NodeIt iter hint="" ➜ Node ->
             trvl n.list_values
         ●func
             trav n.func_body
+        ●testSuite
+        ●testSection
+            trav n.test_block
         ➜ 
             # log "clss.traverse -- unhandled #{n.kind}"
             discard
@@ -233,7 +236,7 @@ methodifyLua = ◇Node clss ➜ seq[Node] ->
     strugt     = clss.kind == ●struct
     className  = clss.class_name.token.str
     
-    thisify = ◇Node n hint="" ➜ Node ->
+    selfify = ◇Node n hint="" ➜ Node ->
     
         if n.token.tok == ◂name
             if n.token.str[0] == '@' 
@@ -241,7 +244,7 @@ methodifyLua = ◇Node clss ➜ seq[Node] ->
                     owner    = nod ●literal tkn(◂name "self")
                     property = nod ●literal tkn(◂name n.token.str[1..^1])
                     token    = tkn(◂dot  "." n.token.line n.token.col)
-                    if hint == "callee"
+                    if hint == "callee" and not strutils.contains(n.token.str ":")
                         token.tok = ◂colon
                         token.str = ":"
                     ⮐  nod ●propertyAccess token owner property
@@ -279,7 +282,7 @@ methodifyLua = ◇Node clss ➜ seq[Node] ->
         token = tkn(◂assign it.token.line it.token.col)
         funcn = it.member_value
                 
-        funcn.func_body = traverse funcn.func_body thisify
+        funcn.func_body = traverse funcn.func_body selfify
         
         superize funcn
         
@@ -293,6 +296,7 @@ methodifyLua = ◇Node clss ➜ seq[Node] ->
         nod ●operation token meth funcn
         
     memberify = ◇Node it ➜ Node ->
+    
         if it.kind == ●member
             owner = nod ●literal tkn(◂name className)
             it.member_key = nod ●propertyAccess tkn(◂dot ".") owner it.member_key
@@ -301,6 +305,7 @@ methodifyLua = ◇Node clss ➜ seq[Node] ->
     clss.class_body.expressions = members.map memberify
     methods = funcs.map funkify
     methods
+    
 
 classifyLua* = ◇Node body ➜Node ->
 
@@ -312,5 +317,44 @@ classifyLua* = ◇Node body ➜Node ->
         if e.kind in {●class ●struct}
             methods = methodifyLua e
             body.expressions.insert methods i+1
+    
+    emptyBody ◇seq[Node]
+    bodyWalk = ◇Node n ◆seq[Node] body=emptyBody index=-1 ->
+        
+        ⮐  if n == nil
+
+        switch n.kind
+        
+            ●block
+            ●semicolon
+                for i in countdown(n.expressions.high, 0)
+                    e = n.expressions[i]
+                    bodyWalk e n.expressions i
+            ●func
+                bodyWalk n.func_body
+            ●for
+                if n.for_range.kind == ●range and n.for_range.range_start == nil and n.for_range.range_end == nil 
+                    v = n.for_value.token.str
+                    a = ast "_argl_ = select(\"#\", ...)\nfor _argi_ in 1..._argl_+1\n    #{v} = select(_argi_, ...)" "lua"
+                    forNode = a.expressions[^1]
+                    forBody = forNode.for_body
+                    for e in n.for_body.expressions
+                        e.token.line += 2
+                    forBody.expressions = forBody.expressions.concat n.for_body.expressions
+                    body.splice index 1 a.expressions[0] a.expressions[1]
+                bodyWalk n.for_body
+            ●operation
+                if n.operand_right.kind == ●func
+                    if n.operand_right.func_body 
+                        n.operand_right.func_body = bodify n.operand_right.func_body
+                        bodyWalk n.operand_right.func_body
+            ●testSuite 
+            ●testSection
+                bodyWalk n.test_block
+                
+            ➜ discard
+    
+    bodyWalk body
+    
     body
     

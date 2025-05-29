@@ -336,6 +336,7 @@ else    # 5
         t("for a in 0..2 ➜\n  true", "▪[(◂for ◂name in (◂number .. ◂number) ▪[✔])]")
         t("for key val in a", "▪[(◂for ◂[◂name, ◂name] in ◂name)]")
         t("for kind, key, val in a", "▪[(◂for ◂[◂name, ◂name, ◂name] in ◂name)]")
+        t("for v in ...\n    x = v", "▪[(◂for ◂name in (NIL ... NIL) ▪[(◂name = ◂name)])]")
     test "switch": 
         t("switch x\n  a ➜ 1\n  b c ➜ 2", "▪[(◂switch ◂name @[(@[◂name] ◂number), (@[◂name, ◂name] ◂number)])]")
         t("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4", "▪[(◂switch ◂name @[(@[◂name] ◂number), (@[◂name, ◂name] ◂number)] ◂number)]")

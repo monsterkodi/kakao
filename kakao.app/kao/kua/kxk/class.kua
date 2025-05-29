@@ -16,7 +16,7 @@ _wrapIndex = aClass f ->
         ⮐  (self name) ->
             value = aClass.__members[name]
             
-            if value != nil
+            if value
                 ⮐  value
             else
                 ⮐  f(self name)
@@ -26,7 +26,7 @@ _wrapIndex = aClass f ->
         ⮐  (self name) ->
             value = aClass.__members[name]
             
-            if value != nil
+            if value
                 ⮐  value
             else
                 ⮐  f[name]
@@ -69,6 +69,7 @@ _createClass = name super ->
         name:       name
         super:      super
         static:     {}
+        wrapIndex:  _wrapIndex
         __proto:    {}
         __members:  dict
         subclasses: setmetatable({}, {__mode='k'}) 
@@ -120,7 +121,7 @@ DefaultMixin = {
         alloc: self ->
         
             ▴ type(self) == 'table' "Use ∙alloc instead of .alloc"
-            instance = { class = self }
+            instance = { class:self }
             for k m in pairs(self.__proto)
                 instance[k] = m
             setmetatable(instance, self.__members)

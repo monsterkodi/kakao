@@ -71,7 +71,7 @@ end
 
 function build() 
     local luajit, _ = slash.shell("brew", "--prefix", "luajit")
-    local luajit = kstr.trim(luajit)
+    luajit = kstr.trim(luajit)
     local libjit = luajit .. "/lib/libluajit.a"
     local incjit = luajit .. "/include/luajit-2.1"
     -- log "luajit" luajit

@@ -14,7 +14,7 @@ function _wrapIndex(aClass, f)
         return function (self, name) 
             local value = aClass.__members[name]
             
-            if (value ~= nil) then 
+            if value then 
                 return value
             else 
                 return f(self, name)
@@ -25,7 +25,7 @@ function _wrapIndex(aClass, f)
         return function (self, name) 
             local value = aClass.__members[name]
             
-            if (value ~= nil) then 
+            if value then 
                 return value
             else 
                 return f[name]
@@ -81,6 +81,7 @@ function _createClass(name, super)
         name = name, 
         super = super, 
         static = {}, 
+        wrapIndex = _wrapIndex, 
         __proto = {}, 
         __members = dict, 
         subclasses = setmetatable({}, {__mode = 'k'})

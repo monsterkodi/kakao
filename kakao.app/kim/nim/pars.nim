@@ -775,10 +775,8 @@ proc rColor(this : Parser) : Node =
         token.str = ""
         var color_value = nod(●literal, token)
         var lt = this.peek(-1)
-        echo("darfugginuggi", this.tok, this.isConnectedLeft(), this.isConnectedRight(), this.current.str, lt.col, lt.str, lt.str.len, this.peek(0).col)
         while ((this.tok notin {◂comma, ◂eof, ◂indent}) and this.isConnectedLeft()): 
             var t = this.consume()
-            echo("rColor", t, t.str)
             (color_value.token.str &= t.str)
         nod(●color, token, color_value)
 
@@ -1054,7 +1052,7 @@ proc lRange(this : Parser, left : Node) : Node =
 proc rRange(this : Parser) : Node = 
         var token = this.consume()
         var right : Node
-        if ((this.tok notin {◂paren_close}) and not this.isTokAhead(◂func)): 
+        if ((this.tok notin {◂paren_close, ◂indent, ◂then}) and not this.isTokAhead(◂func)): 
             right = this.expression(token)
         nod(●range, token, nil, right)
 

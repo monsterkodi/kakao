@@ -9,11 +9,8 @@ class array
 
     @: ... ->
     
-        l = select("#", ...)
-        if l > 0
-            for i in 1..l
-                v = select(i, ...)
-                @insert v
+        for v in ...
+            @insert v
 
     $: -> 
     
@@ -53,18 +50,16 @@ class array
         
     push: ... -> 
 
-        l = select("#", ...)
-        if l > 0
-            for i in 1..l
-                @[@len+1] = select(i, ...)
+        for v in ...
+            @[@len+1] = v
         @
         
     unshift: ... -> 
-        
-        l = select("#", ...)
-        if l > 0
+
+        l = select("#", ...)        
+        if l > 0                    
             for i in l..1
-                v = select(i, ...)
+                v = select(i, ...)     
                 @insert 1 v
         @
         
@@ -124,6 +119,12 @@ class array
         
     has:      e -> @indexof(e) >= 0
     contains: e -> @indexof(e) >= 0
+    
+    __add: a ->
+    
+        for i o in ipairs a
+            table.insert @ o
+        @
 
 array.static.isarr = a ->
     

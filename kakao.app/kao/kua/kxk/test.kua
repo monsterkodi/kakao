@@ -27,37 +27,35 @@ class test
         t()
         table.remove testStack
         if testStack.len == 0
-            # log "exit" _G.testFail
             os.exit _G.testFail
     
 test.static.cmp = a b ->
 
     _G.testIndex += 1
     
-    fail = msg ->
-        write ◌r "✘ " ◌r- "[" _G.testIndex "] " ◌y msg
+    fail = ... ->
+        write ◌r "✘ " ◌r- "[" _G.testIndex "] " ◌y $strg(...)
         _G.testFail += 1
         ⮐  false
     
     if type(a) != type(b)
-        ⮐  fail ◌d- & "type mismatch " & ◌b- & "◇" & ◌b & type(a) & ◌r & " != " & ◌b- & "◇" & ◌b & type(b) & ◌d & " (" & $a & " != " & $b & ")"
+        ⮐  fail ◌d- "type mismatch " ◌b- "◇" ◌b type(a) ◌r " != " ◌b- "◇" ◌b type(b) ◌d " (" $a " != " $b ")"
         
     switch type(a)
     
         "table"
             for k v in rawpairs a
                 if type(v) != "function" and (type(k) != "string" or k∙sub(1 2) != "__")
-                    # log "cmp" k, type(v)
                     if not test.static.cmp v b[k]
                         key = k
                         if type(k) == "number"
                             key = kstr.index k
-                        ⮐  fail ◌d- & "table mismatch at " & ◌b & $key & "\n" & ◌y & $[unpack(a)] & ◌r & "!=\n" & ◌g &  $[unpack(b)]
+                        ⮐  fail ◌d- "table mismatch at " ◌b $key "\n" ◌y $[unpack(a)] ◌r "!=\n" ◌g $[unpack(b)]
         "number"
             if math.abs(a - b) > 1e-10
-                ⮐  fail ◌d- & "number mismatch " & ◌g & $a & ◌r & " != " & ◌y & $b
+                ⮐  fail ◌d- "number mismatch " ◌y $a ◌r " != " ◌g $b
         ➜  
-            if a != b ➜ ⮐  fail ◌b- & "◇" & ◌b & type(a) & ◌d- & " mismatch\n" & ◌y & $a & ◌r & "\n!=\n" & ◌g & $b 
+            if a != b ➜ ⮐  fail ◌b- "◇" ◌b type(a) ◌d- " mismatch\n" ◌y $a ◌r "\n!=\n" ◌g $b
     true
     
 test.static.run = files ->

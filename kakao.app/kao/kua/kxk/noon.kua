@@ -61,22 +61,22 @@ noon.static.toString = o buf ind="" arry=false visited=[] ->
         
         switch type(o)
             
-            "string" ➜ buf∙put escape(o arry)
+            "string" ➜ buf += escape(o arry)
             "table"
                 if visited∙has o
-                    buf∙put "<v>" 
+                    buf += "<v>" 
                 else            
                     visited∙push o
                     if o.len > 0 or o.class == array
-                        buf∙put ind != '' and arry and '.' or ''
+                        buf += ind != '' and arry and '.' or ''
                         if o.len and ind != ''
-                            buf∙put '\n' 
+                            buf += '\n' 
                         for i v in ipairs o
-                            buf∙put ind
+                            buf += ind
                             noon.toString v buf ind & indstr true visited
-                            buf∙put("\n") if i < o.len
+                            if i < o.len ➜ buf += ("\n") 
                     else
-                        buf∙put (arry and '.\n') or ((ind != '') and '\n' or '')
+                        buf += (arry and '.\n') or ((ind != '') and '\n' or '')
                         maxKey = 2
                         keys = []
                         for k v in pairs o
@@ -87,19 +87,19 @@ noon.static.toString = o buf ind="" arry=false visited=[] ->
                         keys∙sort((a b) -> a[1] < b[1]) 
     
                         for k i in keys∙each()
-                            buf∙put ind
+                            buf += ind
                             if type(k[2]) == "table"
-                                buf∙put k[1]
+                                buf += k[1]
                             else
-                                buf∙put kstr.pad(maxKey k[1])
-                                buf∙put("  ") 
+                                buf += kstr.pad(maxKey k[1])
+                                buf += ("  ") 
                             noon.toString k[2] buf ind & indstr false visited
-                            buf∙put("\n") if i < keys.len
+                            if i < keys.len ➜ buf += "\n"
             ➜ 
-                buf∙put tostring(o)
+                buf += tostring(o)
         buf
     
-noon.static.stringify = o -> noon.toString(o strbuff∙new())∙get()
+noon.static.stringify = o -> $noon.toString(o strg())
 
 # ████████    ███████   ████████    ███████  ████████
 # ███   ███  ███   ███  ███   ███  ███       ███     

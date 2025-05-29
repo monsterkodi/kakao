@@ -31,13 +31,6 @@ proc scope(this : Scoper, body : Node) : Node
 
 proc branch(this : Scoper, body : Node) = discard this.scope(body)
 
-proc bodify(this : Scoper, body : Node) : Node = 
-        if not body: 
-            return nod(●block, tkn(◂indent, "    "), @[])
-        if (body.kind notin {●block, ●semicolon}): 
-            return nod(●block, tkn(◂indent, "    "), @[body])
-        body
-
 proc returnize(this : Scoper, body : Node) = 
         if not body: return
         case body.kind:
@@ -47,21 +40,22 @@ proc returnize(this : Scoper, body : Node) =
                 if (lastExp.kind in {●while, ●for, ●return}): return
                 if (lastExp.kind == ●if): 
                         for cndthn in lastExp.condThens: 
-                            cndthn.then_branch = this.bodify(cndthn.then_branch)
+                            cndthn.then_branch = bodify(cndthn.then_branch)
                             this.returnize(cndthn.then_branch)
                         if lastExp.else_branch: 
-                            lastExp.else_branch = this.bodify(lastExp.else_branch)
+                            lastExp.else_branch = bodify(lastExp.else_branch)
                             this.returnize(lastExp.else_branch)
                 elif (lastExp.kind == ●switch): 
                         for cases in lastExp.switch_cases: 
-                            cases.case_then = this.bodify(cases.case_then)
+                            cases.case_then = bodify(cases.case_then)
                             this.returnize(cases.case_then)
                         if lastExp.switch_default: 
-                            lastExp.switch_default = this.bodify(lastExp.switch_default)
+                            lastExp.switch_default = bodify(lastExp.switch_default)
                             this.returnize(lastExp.switch_default)
                 elif ((lastExp.kind != ●operation) or (lastExp.token.tok notin assignToks)): 
                         var retval = lastExp
                         var line = retval.token.line
+                        echo("NOTOP", lastExp.kind)
                         body.expressions[^1] = nod(●return, tkn(◂return, "return", line), retval)
                 else: 
                         var retval = lastExp.operand_left
@@ -70,7 +64,7 @@ proc returnize(this : Scoper, body : Node) =
             else: discard
 
 proc luanize(this : Scoper, fn : Node) = 
-        fn.func_body = this.bodify(fn.func_body)
+        fn.func_body = bodify(fn.func_body)
         this.returnize(fn.func_body)
         if (fn.func_signature and fn.func_signature.sig_args.list_values): 
             var line = 0
@@ -152,6 +146,11 @@ proc exp(this : Scoper, body : Node, i : int, e : Node) =
                     this.branch(condThen.then_branch)
                 this.branch(e.else_branch)
             of ●for: 
+                if (e.for_value.kind == ●list): 
+                    for item in e.for_value.list_values: 
+                        add(item.token.str)
+                else: 
+                    add(e.for_value.token.str)
                 this.branch(e.for_body)
             of ●while: 
                 this.branch(e.while_body)
