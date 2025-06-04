@@ -24,7 +24,7 @@ use kxk/kxk
         s = a∙slice 1 2
         s ▸ [1 2]
         s = a∙slice 1 1
-        s ▸ [1 1]
+        s ▸ [1]
         s = a∙slice 3
         s ▸ [3 4 5]
         s = a∙slice 5 1
@@ -210,11 +210,11 @@ use kxk/kxk
         a ▸ array(-4 -2 0 2 4)
         
         a = array()
-        for i in iter(4 0 -2) ➜ a∙push i
+        for i in iter(4 -4 -2) ➜ a∙push i
         a ▸ array 4 2 0 -2 -4
         
         a = array()
-        for i in iter(4 2 2) ➜ a∙push i
+        for i in iter(4 -4 2) ➜ a∙push i
         a ▸ array 4 2 0 -2 -4
         
         a = array()

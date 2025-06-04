@@ -25,7 +25,7 @@ function test:__tostring()
 
 function test:init(s, t) 
         self.suite = s
-        _G.testStack = _G.testStack or {}
+        _G.testStack = _G.testStack or ({})
         _G.testIndex = 0
         table.insert(testStack, self.suite)
         if (#_G.testStack == 1) then 
@@ -53,23 +53,35 @@ function test.static.cmp(a, b)
         return false
     end
     
+    
+    function cmpTable(a, b) 
+        for k, v in rawpairs(a) do 
+            if ((type(v) ~= "function") and ((type(k) ~= "string") or (k:sub(1, 2) ~= "__"))) then 
+                if not test.static.cmp(v, b[k]) then 
+                    local key = k
+                    if (type(k) == "number") then 
+                        key = kstr.index(k)
+                    end
+                    
+                    return fail("\x1b[0m\x1b[90m\x1b[2m", "table mismatch at ", "\x1b[0m\x1b[34m", tostring(key), "\n", "\x1b[0m\x1b[33m", tostring(array(unpack(a))), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", tostring(array(unpack(b))))
+                end
+            end
+            
+            -- else if v != b[k]
+            --     ⮐  fail ◌d- "table ??? " ◌b $k "\n" ◌y $[unpack(a)] ◌r "!=\n" ◌g $[unpack(b)]
+        end
+        
+        if (#b > #a) then 
+            return fail("\x1b[0m\x1b[90m\x1b[2m", "table mismatch at ", "\x1b[0m\x1b[34m", (#a + 1), "\n", "\x1b[0m\x1b[33m", tostring(array(unpack(a))), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", tostring(array(unpack(b))))
+        end
+    end
+    
     if (type(a) ~= type(b)) then 
         return fail("\x1b[0m\x1b[90m\x1b[2m", "type mismatch ", "\x1b[0m\x1b[34m\x1b[2m", "◇", "\x1b[0m\x1b[34m", type(a), "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[34m\x1b[2m", "◇", "\x1b[0m\x1b[34m", type(b), "\x1b[0m\x1b[90m", " (", tostring(a), " != ", tostring(b), ")")
     end
     
     if (type(a) == "table") then 
-            for k, v in rawpairs(a) do 
-                if ((type(v) ~= "function") and ((type(k) ~= "string") or (k:sub(1, 2) ~= "__"))) then 
-                    if not test.static.cmp(v, b[k]) then 
-                        local key = k
-                        if (type(k) == "number") then 
-                            key = kstr.index(k)
-                        end
-                        
-                        return fail("\x1b[0m\x1b[90m\x1b[2m", "table mismatch at ", "\x1b[0m\x1b[34m", tostring(key), "\n", "\x1b[0m\x1b[33m", tostring(array(unpack(a))), "\x1b[0m\x1b[31m", "!=\n", "\x1b[0m\x1b[32m", tostring(array(unpack(b))))
-                    end
-                end
-            end
+            cmpTable(a, b)
     elseif (type(a) == "number") then 
             if (math.abs((a - b)) > 1e-10) then 
                 return fail("\x1b[0m\x1b[90m\x1b[2m", "number mismatch ", "\x1b[0m\x1b[33m", tostring(a), "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[32m", tostring(b))

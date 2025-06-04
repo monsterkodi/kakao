@@ -139,13 +139,33 @@ end
 
 
 function noon.static.parse(s) 
+    s = strg(s)
     local reslt = array()
-    local lines = kstr.split(s, "\n")
+    local lines = s:lines()
     local indnt = 0
-    for line in lines do 
-        local lind = 0
-        -- while line∙sub 
-        -- reslt∙push 
+    for line in lines:each() do 
+        local number = line:number()
+        if (number ~= nil) then 
+            reslt:push(number)
+        else 
+            local booln = line:bool()
+            if (booln ~= nil) then 
+                reslt:push(booln)
+            else 
+                line:trim()
+                if (line:num() > 0) then 
+                    if (line[line:num()] == "|") then 
+                        line:pop()
+                    end
+                    
+                    if (line[1] == "|") then 
+                        line:shift()
+                    end
+                    
+                    reslt:push(tostring(line))
+                end
+            end
+        end
     end
     
     return reslt

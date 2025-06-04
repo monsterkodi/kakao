@@ -20,20 +20,20 @@ use kxk/kxk
     ▸ add
     
         itr = 100000
-        profileStart "add"
+        # profileStart "add"
         s = strg "a"
         s += "b"
-        s∙num() ▸ 2
+        s∙num()                 ▸ 2
         $s ▸ "ab"
         for i in 0..itr
             s += "c"
-        profileStop "add"
-        profileStart "len"
-        s∙len() ▸ itr+3
-        profileStop "len"
-        profileStart "num"
-        s∙num() ▸ itr+3
-        profileStop "num"
+        # profileStop "add"
+        # profileStart "len"
+        s∙len()                 ▸ itr+3
+        # profileStop "len"
+        # profileStart "num"
+        s∙num()                 ▸ itr+3
+        # profileStop "num"
         
         # profileStart "add2"
         # s = "a"
@@ -45,39 +45,97 @@ use kxk/kxk
         # s.len ▸ itr+3 
         # profileStop "add2"
         # 1 ▸ 2
+        
+    ▸ flatten
+    
+        s = strg "ab"
+        s += "cde"
+        s.buff.len              ▸ 5
+        s.frags.len             ▸ 0
+        $s                      ▸ "abcde"
+        s∙flatten()
+        s.buff                  ▸ nil
+        s.frags.len             ▸ 1
+        $s                      ▸ "abcde"
+   
+    ▸ startsWith
+    
+        s = strg "abcde"    
+        s∙startsWith "b"        ▸ false
+        s∙startsWith "a"        ▸ true
+        s∙startsWith "ab"       ▸ true
+        s∙startsWith "abcde"    ▸ true
+        s∙startsWith "abcdef"   ▸ false
+
+    ▸ endsWith
+    
+        s = strg "abcde"    
+        s∙endsWith "b"          ▸ false
+        s∙endsWith "e"          ▸ true
+        s∙endsWith "abcde"      ▸ true
+        s∙endsWith "xabcde"     ▸ false
+    
+    ▸ trim
+    
+        s = strg "  bb c  "     
+        $s∙trim()               ▸ "bb c"
+        s = strg "  bb c  "     
+        $s∙ltrim()              ▸ "bb c  "
+        s = strg "  bb c  "     
+        $s∙rtrim()              ▸ "  bb c"
     
     ▸ num
     
         s = strg "a"
-        s∙num() ▸ 1
+        s∙num()                 ▸ 1
         s += "bc"
-        s∙num() ▸ 3
+        s∙num()                 ▸ 3
         
     ▸ index
     
         s = strg "abc"
-        s[1] ▸ "a"
-        s[2] ▸ "b"
-        s[3] ▸ "c"
+        s[1]                    ▸ "a"
+        s[2]                    ▸ "b"
+        s[3]                    ▸ "c"
+        
+    ▸ number
+    
+        s = strg "10"
+        s∙number()              ▸ 10
+
+        s = strg "10z"
+        s∙number()              ▸ nil
+
+        s = strg "1 2"
+        s∙number()              ▸ nil
+
+        s = strg "1.0"
+        s∙number()              ▸ 1
+
+        s = strg "1.5"
+        s∙number()              ▸ 1.5
+
+        s = strg "1.5.0"
+        s∙number()              ▸ nil
 
     ▸ lines
     
         s = strg "1\n2\n3"
         l = s∙lines()
-        $l[1] ▸ "1"
-        $l[2] ▸ "2"
-        $l[3] ▸ "3"
+        $l[1]                   ▸ "1"
+        $l[2]                   ▸ "2"
+        $l[3]                   ▸ "3"
         l[1] += "a"
-        $l[1] ▸ "1a"
+        $l[1]                   ▸ "1a"
         l[2] += "b"
-        $l[2] ▸ "2b"
+        $l[2]                   ▸ "2b"
         
     ▸ unicode
     
         s = strg "▸"
-        s∙num() ▸ 1
-        s∙len() ▸ 3
+        s∙num()                 ▸ 1
+        s∙len()                 ▸ 3
         s += "●"
-        s∙num() ▸ 2
-        s∙len() ▸ 6
+        s∙num()                 ▸ 2
+        s∙len()                 ▸ 6
         

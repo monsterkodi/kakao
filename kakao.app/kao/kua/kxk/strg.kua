@@ -50,7 +50,57 @@ class strg
                 for s in f∙each()
                     l += s.len
         l
+                    
+    endsWith:   o -> 
+    
+        @flatten()
+        kstr.endsWith $@frags[1] o
+        
+    startsWith: o -> 
+    
+        @flatten()
+        kstr.startsWith $@frags[1] o
+    
+    rtrim: c=' ' ->
+    
+        @flatten() 
+        @frags[1] = @frags[1]∙rtrim(c)
+        @
+        
+    ltrim: c=' ' -> 
+    
+        @flatten() 
+        @frags[1] = @frags[1]∙ltrim(c)
+        @
+        
+    trim: c=' ' -> 
+    
+        @flatten() 
+        @frags[1] = @frags[1]∙trim(c)
+        @
+        
+    shift: ->
+    
+        @flatten()
+        @frags[1]∙shift()
 
+    pop: ->
+    
+        @flatten()
+        @frags[1]∙pop()
+
+    number: ->
+        
+        tonumber $@
+
+    bool: ->
+        
+        s = $@
+        log "BOOL" s
+        if s == "true"  ➜ ⮐  true
+        if s == "false" ➜ ⮐  false
+        nil
+        
     num: ->
     
         @flatten()
@@ -64,18 +114,20 @@ class strg
     flatten: ->
     
         @debuff()
-        segl = []
+        seg = kseg()
         for f i in @frags∙each()
             if type(f) == "string"
                 f = kseg(f)
-            segl += f
-        @frags = [segl]
+            seg += f
+        @frags = [seg]
+        @
         
     debuff: ->
     
         if @buff
             @frags∙push @buff∙get()
             @buff = nil
+        @
             
     lines: ->
     
@@ -88,6 +140,12 @@ class strg
             for s in sl∙each()
                 ls∙push strg(s)
         ls
+            
+    __len: ->
+    
+        log "LEN!!!!!!!!!!!!!!"
+    
+        @num()
             
     __add: s ->
     
@@ -102,9 +160,7 @@ class strg
         if type(k) == "number"
             ⮐  @seg(k)
             
-        v = rawget @ k
-        # log "__index" k, v
-        ⮐  v
+        rawget @ k
         
 ⮐  strg
 

@@ -72,6 +72,71 @@ function strg:len()
     end
 
 
+function strg:endsWith(o) 
+        self:flatten()
+        return kstr.endsWith(tostring(self.frags[1]), o)
+    end
+
+
+function strg:startsWith(o) 
+        self:flatten()
+        return kstr.startsWith(tostring(self.frags[1]), o)
+    end
+
+
+function strg:rtrim(c) 
+        c = c or ' '
+        
+        self:flatten()
+        self.frags[1] = self.frags[1]:rtrim(c)
+        return self
+    end
+
+
+function strg:ltrim(c) 
+        c = c or ' '
+        
+        self:flatten()
+        self.frags[1] = self.frags[1]:ltrim(c)
+        return self
+    end
+
+
+function strg:trim(c) 
+        c = c or ' '
+        
+        self:flatten()
+        self.frags[1] = self.frags[1]:trim(c)
+        return self
+    end
+
+
+function strg:shift() 
+        self:flatten()
+        return self.frags[1]:shift()
+    end
+
+
+function strg:pop() 
+        self:flatten()
+        return self.frags[1]:pop()
+    end
+
+
+function strg:number() 
+        return tonumber(tostring(self))
+    end
+
+
+function strg:bool() 
+        local s = tostring(self)
+        print("BOOL", s)
+        if (s == "true") then return true end
+        if (s == "false") then return false end
+        return nil
+    end
+
+
 function strg:num() 
         self:flatten()
         return #self.frags[1]
@@ -86,17 +151,17 @@ function strg:seg(i)
 
 function strg:flatten() 
         self:debuff()
-        local segl = array()
+        local seg = kseg()
         for f, i in self.frags:each() do 
             if (type(f) == "string") then 
                 f = kseg(f)
             end
             
-            segl = segl + f
+            seg = seg + f
         end
         
-        self.frags = array(segl)
-        return self.frags
+        self.frags = array(seg)
+        return self
     end
 
 
@@ -104,8 +169,9 @@ function strg:debuff()
         if self.buff then 
             self.frags:push(self.buff:get())
             self.buff = nil
-            return self.buff
         end
+        
+        return self
     end
 
 
@@ -127,6 +193,13 @@ function strg:lines()
     end
 
 
+function strg:__len() 
+        print("LEN!!!!!!!!!!!!!!")
+        
+        return self:num()
+    end
+
+
 function strg:__add(s) 
         if s then 
             if not self.buff then 
@@ -145,9 +218,7 @@ function strg:__index(k)
             return self:seg(k)
         end
         
-        local v = rawget(self, k)
-        -- log "__index" k, v
-        return v
+        return rawget(self, k)
     end
 
 return strg

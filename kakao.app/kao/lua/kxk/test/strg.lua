@@ -18,7 +18,7 @@ test("strg", function()
     
     test("add", function()
         local itr = 100000
-        profileStart("add")
+        -- profileStart "add"
         local s = strg("a")
         s = s + "b"
         test.cmp(s:num(), 2)
@@ -27,13 +27,13 @@ test("strg", function()
             s = s + "c"
         end
         
-        profileStop("add")
-        profileStart("len")
+        -- profileStop "add"
+        -- profileStart "len"
         test.cmp(s:len(), (itr + 3))
-        profileStop("len")
-        profileStart("num")
+        -- profileStop "len"
+        -- profileStart "num"
         test.cmp(s:num(), (itr + 3))
-        profileStop("num")
+        -- profileStop "num"
         
         -- profileStart "add2"
         -- s = "a"
@@ -45,6 +45,44 @@ test("strg", function()
         -- s.len ▸ itr+3 
         -- profileStop "add2"
         -- 1 ▸ 2
+    end)
+    
+    test("flatten", function()
+        local s = strg("ab")
+        s = s + "cde"
+        test.cmp(#s.buff, 5)
+        test.cmp(#s.frags, 0)
+        test.cmp(tostring(s), "abcde")
+        s:flatten()
+        test.cmp(s.buff, nil)
+        test.cmp(#s.frags, 1)
+        test.cmp(tostring(s), "abcde")
+    end)
+    
+    test("startsWith", function()
+        local s = strg("abcde")
+        test.cmp(s:startsWith("b"), false)
+        test.cmp(s:startsWith("a"), true)
+        test.cmp(s:startsWith("ab"), true)
+        test.cmp(s:startsWith("abcde"), true)
+        test.cmp(s:startsWith("abcdef"), false)
+    end)
+    
+    test("endsWith", function()
+        local s = strg("abcde")
+        test.cmp(s:endsWith("b"), false)
+        test.cmp(s:endsWith("e"), true)
+        test.cmp(s:endsWith("abcde"), true)
+        test.cmp(s:endsWith("xabcde"), false)
+    end)
+    
+    test("trim", function()
+        local s = strg("  bb c  ")
+        test.cmp(tostring(s:trim()), "bb c")
+        s = strg("  bb c  ")
+        test.cmp(tostring(s:ltrim()), "bb c  ")
+        s = strg("  bb c  ")
+        test.cmp(tostring(s:rtrim()), "  bb c")
     end)
     
     test("num", function()
@@ -59,6 +97,26 @@ test("strg", function()
         test.cmp(s[1], "a")
         test.cmp(s[2], "b")
         test.cmp(s[3], "c")
+    end)
+    
+    test("number", function()
+        local s = strg("10")
+        test.cmp(s:number(), 10)
+        
+        s = strg("10z")
+        test.cmp(s:number(), nil)
+        
+        s = strg("1 2")
+        test.cmp(s:number(), nil)
+        
+        s = strg("1.0")
+        test.cmp(s:number(), 1)
+        
+        s = strg("1.5")
+        test.cmp(s:number(), 1.5)
+        
+        s = strg("1.5.0")
+        test.cmp(s:number(), nil)
     end)
     
     test("lines", function()

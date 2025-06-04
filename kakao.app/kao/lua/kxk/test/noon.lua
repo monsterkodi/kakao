@@ -249,96 +249,87 @@ ugag    3]])
         --# ████████   █████████  ███████    ███████   ███████ 
         --# ███        ███   ███  ███   ███       ███  ███     
         --# ███        ███   ███  ███   ███  ███████   ████████
-        --        
-        --▸ parse
     end)
     
-    --▸ number
-    --    
-    --    noon.parse "666" ▸ [666]
-    --    
-    --    noon.parse "1.23" ▸ [1.23]
-    --    
-    --    noon.parse "0.000" ▸ [0]
-    --    
-    --    noon.parse "Infinity" ▸ [Infinity]
-    --    
-    --    noon.parse """ 
-    --    42
-    --    66.0
-    --    0.42
-    --    66.60
-    --    Infinity
-    --    +20
-    --    -20
-    --    +0
-    --    -1.23
-    --    """ ▸ 
-    --    [42,66,0.42,66.6,Infinity,20,-20,0,-1.23]
+    test("number", function()
+        test.cmp(noon.parse("666"), array(666))
+        test.cmp(noon.parse("1.23"), array(1.23))
+        test.cmp(noon.parse("0.000"), array(0))
+        test.cmp(noon.parse("0"), array(0))
+        
+        test.cmp(noon.parse([[ 
+42
+66.0
+0.42
+66.60
++20
+-20
++0
+-1.23]]), array(42, 66, 0.42, 66.6, 20, -20, 0, -1.23))
+    end)
     
-    --▸ bool
-    --    
-    --    noon.parse "true" ▸ [true]
-    --    
-    --    noon.parse """
-    --    true
-    --    false
-    --    """ ▸
-    --    [true,false]
-    --    
-    --▸ null
-    --    
-    --    noon.parse """
-    --    nil
-    --    """ ▸ [nil]
-    --    
-    --▸ string
-    --    
-    --    noon.parse "hello world" ▸ ['hello world']
-    --    noon.parse "| hello world |" ▸ [' hello world ']
-    --    noon.parse('| .  ... |  ') ▸ [' .  ... ']
-    --    noon.parse "|66.6000|" ▸ ['66.6000']
-    --    noon.parse "6.6.6" ▸ ['6.6.6']
-    --    noon.parse "^1.2" ▸ ['^1.2']
-    --    noon.parse "++2" ▸ ['++2']
-    --    noon.parse "+-0" ▸ ['+-0']
-    --    noon.parse('... \n line 1 \n line 2 \n ...') ▸ ['line 1\nline 2']
-    --    
-    --▸ list
-    --    
-    --    noon.parse("""
-    --    a
-    --    a1
-    --    a 1
-    --    """) ▸ ['a', 'a1', 'a 1']
-    --    
-    --    noon.parse("""
-    --    ,
-    --    .
-    --    ;
-    --    :
-    --    ~
-    --    !
-    --    ?
-    --    @
-    --    |#
-    --    ||
-    --    """) ▸ [',' '.' ';' ':' '~' '!' '?' '@' '#' '']
-    --    
-    --    noon.parse("""
-    --    key
-    --        ,
-    --        .
-    --        ;
-    --        :
-    --        ~
-    --        !
-    --        ?
-    --        @
-    --        |#
-    --        ||
-    --    """)  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
-    --    
+    test("bool", function()
+        test.cmp(noon.parse("true"), array(true))
+        test.cmp(noon.parse("false"), array(false))
+        
+        test.cmp(noon.parse([[
+true
+false
+]]), array(true, false))
+    end)
+    
+    test("no null", function()
+        test.cmp(noon.parse("nil"), array("nil"))
+        test.cmp(noon.parse("null"), array("null"))
+    end)
+    
+    test("string", function()
+        test.cmp(noon.parse("hello world"), array('hello world'))
+        test.cmp(noon.parse("| hello world |"), array(' hello world '))
+        test.cmp(noon.parse('| .  ... |  '), array(' .  ... '))
+        test.cmp(noon.parse("|66.6000|"), array('66.6000'))
+        test.cmp(noon.parse("6.6.6"), array('6.6.6'))
+        test.cmp(noon.parse("^1.2"), array('^1.2'))
+        test.cmp(noon.parse("++2"), array('++2'))
+        test.cmp(noon.parse("+-0"), array('+-0'))
+        -- noon.parse('... \n line 1 \n line 2 \n ...') ▸ ['line 1\nline 2']
+    end)
+    
+    test("list", function()
+        test.cmp(noon.parse([[
+a
+a1
+a 1
+]]), array('a', 'a1', 'a 1'))
+        
+        test.cmp(noon.parse([[
+,
+.
+;
+:
+~
+!
+?
+@
+|#
+||
+]]), array(',', '.', ';', ':', '~', '!', '?', '@', '#', ''))
+        
+        --noon.parse("""
+        --key
+        --    ,
+        --    .
+        --    ;
+        --    :
+        --    ~
+        --    !
+        --    ?
+        --    @
+        --    |#
+        --    ||
+        --""")  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
+    end)
+    
     --▸ object
     --    
     --    noon.parse """
@@ -466,15 +457,14 @@ ugag    3]])
     --    
     --    """ ▸ o
     
-    --▸ escape
-    --    
-    --    noon.parse """
-    --     | 1|
-    --     |2 |
-    --     | 3 |
-    --    """ ▸ 
-    --    [' 1', '2 ', ' 3 ']
-    --    
+    test("escape", function()
+        test.cmp(noon.parse([[
+ | 1|
+ |2 |
+ | 3 |
+]]), array(' 1', '2 ', ' 3 '))
+    end)
+    
     --    noon.parse """
     --    a  | 1  1
     --    b  | 2  2  |

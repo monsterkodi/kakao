@@ -276,95 +276,85 @@ use kxk/kxk kxk/noon
         ## ████████   █████████  ███████    ███████   ███████ 
         ## ███        ███   ███  ███   ███       ███  ███     
         ## ███        ███   ███  ███   ███  ███████   ████████
-        #
-        #▸ parse
 
-    #▸ number
-    #
-    #    noon.parse "666" ▸ [666]
-    #
-    #    noon.parse "1.23" ▸ [1.23]
-    #
-    #    noon.parse "0.000" ▸ [0]
-    #
-    #    noon.parse "Infinity" ▸ [Infinity]
-    #
-    #    noon.parse """ 
-    #    42
-    #    66.0
-    #    0.42
-    #    66.60
-    #    Infinity
-    #    +20
-    #    -20
-    #    +0
-    #    -1.23
-    #    """ ▸ 
-    #    [42,66,0.42,66.6,Infinity,20,-20,0,-1.23]
+    ▸ number
+    
+        noon.parse "666"    ▸ [666]
+        noon.parse "1.23"   ▸ [1.23]
+        noon.parse "0.000"  ▸ [0]
+        noon.parse "0"      ▸ [0]
+        noon.parse """ 
+            42
+            66.0
+            0.42
+            66.60
+            +20
+            -20
+            +0
+            -1.23""" ▸ [42  66  0.42  66.6  20  -20  0  -1.23]
 
-    #▸ bool
-    #
-    #    noon.parse "true" ▸ [true]
-    #
-    #    noon.parse """
-    #    true
-    #    false
-    #    """ ▸
-    #    [true,false]
-    #
-    #▸ null
-    #
-    #    noon.parse """
-    #    nil
-    #    """ ▸ [nil]
-    #
-    #▸ string
-    #
-    #    noon.parse "hello world" ▸ ['hello world']
-    #    noon.parse "| hello world |" ▸ [' hello world ']
-    #    noon.parse('| .  ... |  ') ▸ [' .  ... ']
-    #    noon.parse "|66.6000|" ▸ ['66.6000']
-    #    noon.parse "6.6.6" ▸ ['6.6.6']
-    #    noon.parse "^1.2" ▸ ['^1.2']
-    #    noon.parse "++2" ▸ ['++2']
-    #    noon.parse "+-0" ▸ ['+-0']
-    #    noon.parse('... \n line 1 \n line 2 \n ...') ▸ ['line 1\nline 2']
-    #
-    #▸ list
-    #
-    #    noon.parse("""
-    #    a
-    #    a1
-    #    a 1
-    #    """) ▸ ['a', 'a1', 'a 1']
-    #
-    #    noon.parse("""
-    #    ,
-    #    .
-    #    ;
-    #    :
-    #    ~
-    #    !
-    #    ?
-    #    @
-    #    |#
-    #    ||
-    #    """) ▸ [',' '.' ';' ':' '~' '!' '?' '@' '#' '']
-    #
-    #    noon.parse("""
-    #    key
-    #        ,
-    #        .
-    #        ;
-    #        :
-    #        ~
-    #        !
-    #        ?
-    #        @
-    #        |#
-    #        ||
-    #    """)  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
-    #
+    ▸ bool
+    
+        noon.parse "true"   ▸ [true]
+        noon.parse "false"  ▸ [false]
+        
+        noon.parse """
+            true
+            false
+            """ ▸ [true false]
+    
+    ▸ no null
+    
+        noon.parse "nil"  ▸ ["nil"]
+        noon.parse "null" ▸ ["null"]
+    
+    ▸ string
+    
+        noon.parse "hello world" ▸ ['hello world']
+        noon.parse "| hello world |" ▸ [' hello world ']
+        noon.parse('| .  ... |  ') ▸ [' .  ... ']
+        noon.parse "|66.6000|" ▸ ['66.6000']
+        noon.parse "6.6.6" ▸ ['6.6.6']
+        noon.parse "^1.2" ▸ ['^1.2']
+        noon.parse "++2" ▸ ['++2']
+        noon.parse "+-0" ▸ ['+-0']
+        # noon.parse('... \n line 1 \n line 2 \n ...') ▸ ['line 1\nline 2']
+
+    ▸ list
+    
+        noon.parse("""
+        a
+        a1
+        a 1
+        """) ▸ ['a' 'a1' 'a 1']
+    
+        noon.parse("""
+        ,
+        .
+        ;
+        :
+        ~
+        !
+        ?
+        @
+        |#
+        ||
+        """) ▸ [',' '.' ';' ':' '~' '!' '?' '@' '#' '']
+    
+        #noon.parse("""
+        #key
+        #    ,
+        #    .
+        #    ;
+        #    :
+        #    ~
+        #    !
+        #    ?
+        #    @
+        #    |#
+        #    ||
+        #""")  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
+        
     #▸ object
     #
     #    noon.parse """
@@ -492,15 +482,15 @@ use kxk/kxk kxk/noon
     #
     #    """ ▸ o
 
-    #▸ escape
-    #
-    #    noon.parse """
-    #     | 1|
-    #     |2 |
-    #     | 3 |
-    #    """ ▸ 
-    #    [' 1', '2 ', ' 3 ']
-    #
+    ▸ escape
+    
+        noon.parse """
+         | 1|
+         |2 |
+         | 3 |
+        """ ▸ 
+        [' 1', '2 ', ' 3 ']
+    
     #    noon.parse """
     #    a  | 1  1
     #    b  | 2  2  |

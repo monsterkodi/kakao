@@ -27,7 +27,7 @@ end)
         local s = a:slice(1, 2)
         test.cmp(s, array(1, 2))
         s = a:slice(1, 1)
-        test.cmp(s, array(1, 1))
+        test.cmp(s, array(1))
         s = a:slice(3)
         test.cmp(s, array(3, 4, 5))
         s = a:slice(5, 1)
@@ -216,11 +216,11 @@ end)
         test.cmp(a, array(-4, -2, 0, 2, 4))
         
         a = array()
-        for i in iter(4, 0, -2) do a:push(i) end
+        for i in iter(4, -4, -2) do a:push(i) end
         test.cmp(a, array(4, 2, 0, -2, -4))
         
         a = array()
-        for i in iter(4, 2, 2) do a:push(i) end
+        for i in iter(4, -4, 2) do a:push(i) end
         test.cmp(a, array(4, 2, 0, -2, -4))
         
         a = array()

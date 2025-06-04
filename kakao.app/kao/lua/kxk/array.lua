@@ -22,9 +22,9 @@ end
 
 
 function array:__tostring() 
-        local s = ".\n"
+        local s = "."
         for i, v in ipairs(self) do 
-            s = s .. "    " .. tostring(i) .. "    " .. tostring(v) .. "\n"
+            s = s .. ("\n" .. "    " .. tostring(i) .. "    " .. tostring(v))
         end
         
         return s

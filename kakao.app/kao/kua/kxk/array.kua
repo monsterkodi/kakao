@@ -14,9 +14,9 @@ class array
 
     $: -> 
     
-        s = ".\n"  
+        s = "."  
         for i v in ipairs @
-            s = s & "    " & $i & "    " & $v & "\n"
+            s &= "\n" & "    " & $i & "    " & $v
         s
 
     str: -> $@
