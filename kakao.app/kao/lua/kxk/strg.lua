@@ -128,9 +128,14 @@ function strg:number()
     end
 
 
+function strg:indent() 
+        self:flatten()
+        return self.frags[1]:indent()
+    end
+
+
 function strg:bool() 
         local s = tostring(self)
-        print("BOOL", s)
         if (s == "true") then return true end
         if (s == "false") then return false end
         return nil
@@ -149,8 +154,46 @@ function strg:seg(i)
     end
 
 
+function strg:each() 
+        self:flatten()
+        return self.frags[1]:each()
+    end
+
+
+function strg:find(c) 
+        self:flatten()
+        return self.frags[1]:find(c)
+    end
+
+
+function strg:rfind(c) 
+        self:flatten()
+        return self.frags[1]:rfind(c)
+    end
+
+
+function strg:slice(f, t) 
+        self:flatten()
+        local s = strg()
+        s.frags:push(self.frags[1]:slice(f, t))
+        return s
+    end
+
+
 function strg:flatten() 
         self:debuff()
+        if (#self.frags == 0) then 
+            return self
+        end
+        
+        if (#self.frags == 1) then 
+            if (type(self.frags[1]) == "string") then 
+                self.frags = array(kseg(self.frags[1]))
+            end
+            
+            return self
+        end
+        
         local seg = kseg()
         for f, i in self.frags:each() do 
             if (type(f) == "string") then 
@@ -190,13 +233,6 @@ function strg:lines()
         end
         
         return ls
-    end
-
-
-function strg:__len() 
-        print("LEN!!!!!!!!!!!!!!")
-        
-        return self:num()
     end
 
 

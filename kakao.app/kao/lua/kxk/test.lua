@@ -55,6 +55,10 @@ function test.static.cmp(a, b)
     
     
     function cmpTable(a, b) 
+        if (#a ~= #b) then 
+            return fail("\x1b[0m\x1b[90m\x1b[2m", "table length mismatch ", "\x1b[0m\x1b[34m", #a, "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[32m", #b) --"\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
+        end
+        
         for k, v in rawpairs(a) do 
             if ((type(v) ~= "function") and ((type(k) ~= "string") or (k:sub(1, 2) ~= "__"))) then 
                 if not test.static.cmp(v, b[k]) then 
@@ -63,7 +67,7 @@ function test.static.cmp(a, b)
                         key = kstr.index(k)
                     end
                     
-                    return fail("\x1b[0m\x1b[90m\x1b[2m", "table mismatch at ", "\x1b[0m\x1b[34m", tostring(key), "\n", "\x1b[0m\x1b[33m", tostring(array(unpack(a))), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", tostring(array(unpack(b))))
+                    return fail("\x1b[0m\x1b[90m\x1b[2m", "table value mismatch at ", "\x1b[0m\x1b[34m", key, "\n", "\x1b[0m\x1b[33m", array(unpack(a)), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", array(unpack(b)))
                 end
             end
             
@@ -71,9 +75,7 @@ function test.static.cmp(a, b)
             --     ⮐  fail ◌d- "table ??? " ◌b $k "\n" ◌y $[unpack(a)] ◌r "!=\n" ◌g $[unpack(b)]
         end
         
-        if (#b > #a) then 
-            return fail("\x1b[0m\x1b[90m\x1b[2m", "table mismatch at ", "\x1b[0m\x1b[34m", (#a + 1), "\n", "\x1b[0m\x1b[33m", tostring(array(unpack(a))), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", tostring(array(unpack(b))))
-        end
+        return true
     end
     
     if (type(a) ~= type(b)) then 
@@ -81,13 +83,13 @@ function test.static.cmp(a, b)
     end
     
     if (type(a) == "table") then 
-            cmpTable(a, b)
+            return cmpTable(a, b)
     elseif (type(a) == "number") then 
             if (math.abs((a - b)) > 1e-10) then 
-                return fail("\x1b[0m\x1b[90m\x1b[2m", "number mismatch ", "\x1b[0m\x1b[33m", tostring(a), "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[32m", tostring(b))
+                return fail("\x1b[0m\x1b[90m\x1b[2m", "number mismatch ", "\x1b[0m\x1b[33m", a, "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[32m", b)
             end
     else 
-            if (a ~= b) then return fail("\x1b[0m\x1b[34m\x1b[2m", "◇", "\x1b[0m\x1b[34m", type(a), "\x1b[0m\x1b[90m\x1b[2m", " mismatch\n", "\x1b[0m\x1b[33m", tostring(a), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", tostring(b)) end
+            if (a ~= b) then return fail("\x1b[0m\x1b[34m\x1b[2m", "◇", "\x1b[0m\x1b[34m", type(a), "\x1b[0m\x1b[90m\x1b[2m", " mismatch\n", "\x1b[0m\x1b[33m", a, "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", b) end
     end
     
     return true

@@ -58,8 +58,11 @@ _G.is = v c ->
 
 _G.write = ... ->
 
-    s = table.concat {...} ""
-    s = s & "\27[0m\n"
+    s = ""
+    for i v in ipairs {...}
+        s &= $v
+    # s = table.concat {...} ""
+    s &= "\27[0m\n"
     ffi.C.write 1 s s.len
     
 timers = {}

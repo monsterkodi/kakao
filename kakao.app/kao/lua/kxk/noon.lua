@@ -152,22 +152,55 @@ function noon.static.parse(s)
             if (booln ~= nil) then 
                 reslt:push(booln)
             else 
+                local ind = line:indent()
+                if ((ind > indnt) and (ind < line:len())) then 
+                    print("indent", indnt, ind, "▸" .. tostring(line) .. "◂")
+                else if ((ind < indnt) and (ind < line:len())) then 
+                    print("dedent", indnt, ind, line)
+                     end
+                end
+                
                 line:trim()
-                if (line:num() > 0) then 
-                    if (line[line:num()] == "|") then 
-                        line:pop()
+                local ddi = line:find("  ")
+                local lpi = line:rfind("|")
+                if ((ddi > 0) and (ddi > lpi)) then 
+                    if (#reslt >= 0) then 
+                        write("obj ", "▸", line, "◂")
+                        reslt = {}
                     end
                     
-                    if (line[1] == "|") then 
-                        line:shift()
+                    local k = tostring(line:slice(1, (ddi - 1)))
+                    local v = line:slice((ddi + 1))
+                    v = v:ltrim()
+                    if (v:number() ~= nil) then 
+                        v = v:number()
+                    elseif (v:bool() ~= nil) then 
+                        v = v:bool()
+                    else 
+                        v = tostring(v)
                     end
                     
-                    reslt:push(tostring(line))
+                    -- log "kv" k, v
+                    reslt[k] = v
+                else 
+                    if (line:num() > 0) then 
+                        if (line[line:num()] == "|") then 
+                            line:pop()
+                        end
+                        
+                        if (line[1] == "|") then 
+                            line:shift()
+                        end
+                        
+                        reslt:push(tostring(line))
+                    end
                 end
             end
         end
     end
     
+    -- for o p in pairs reslt
+    --     write "reslt " o " " p
     return reslt
 end
 

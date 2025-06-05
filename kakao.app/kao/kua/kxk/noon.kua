@@ -122,13 +122,38 @@ noon.static.parse = s ->
             if booln != nil
                 reslt∙push booln
             else
+                ind = line∙indent()
+                if ind > indnt and ind < line∙len()
+                    log "indent" indnt, ind, "▸" & $line & "◂"
+                else if ind < indnt and ind < line∙len()
+                    log "dedent" indnt, ind, line
                 line∙trim()
-                if line∙num() > 0
-                    if line[line∙num()] == "|"
-                        line∙pop()
-                    if line[1] == "|"
-                        line∙shift()
-                    reslt∙push $line
+                ddi = line∙find "  "
+                lpi = line∙rfind "|"
+                if ddi > 0 and ddi > lpi
+                    if reslt.len >= 0
+                        write "obj " "▸" line "◂"
+                        reslt = {}
+                    k = $line∙slice 1 ddi-1
+                    v = line∙slice ddi+1
+                    v = v∙ltrim()
+                    if v∙number() != nil
+                        v = v∙number()
+                    elif v∙bool() != nil
+                        v = v∙bool()
+                    else
+                        v = $v
+                    # log "kv" k, v
+                    reslt[k] = v
+                else
+                    if line∙num() > 0
+                        if line[line∙num()] == "|"
+                            line∙pop()
+                        if line[1] == "|"
+                            line∙shift()
+                        reslt∙push $line
+    # for o p in pairs reslt
+    #     write "reslt " o " " p
     reslt
 
 ⮐  noon

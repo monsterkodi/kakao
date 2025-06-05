@@ -1,6 +1,29 @@
 kxk = require "kxk/kxk"
+strg = require "kxk/strg"
 
 test("kseg", function()
+    test("construct", function()
+        local s = kseg()
+        test.cmp(s:str(), "")
+        s = kseg("  ")
+        test.cmp(s:str(), "  ")
+        s = kseg(kseg("xx"))
+        test.cmp(s:str(), "xx")
+        s = kseg(kseg(kseg("yy")))
+        test.cmp(s:str(), "yy")
+        local st = strg("zz")
+        s = kseg(strg("zz"))
+        test.cmp(s:str(), "zz")
+    end)
+    
+    test("find", function()
+        local s = "a  b"
+        test.cmp(s:find(" "), 2)
+        test.cmp(s:find("  "), 2)
+        test.cmp(s:find(" b"), 3)
+        test.cmp(s:find("b"), 4)
+    end)
+    
     test("pop", function()
         local s = kseg("../")
         s:pop()

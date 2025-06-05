@@ -73,7 +73,12 @@ end
 
 
 function _G.write(...) 
-    local s = table.concat({...}, "")
+    local s = ""
+    for i, v in ipairs({...}) do 
+        s = s .. (tostring(v))
+    end
+    
+    -- s = table.concat {...} ""
     s = s .. "\27[0m\n"
     return ffi.C.write(1, s, #s)
 end

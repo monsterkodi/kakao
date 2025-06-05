@@ -5,9 +5,21 @@ class kseg extends array
 
     @: s ->
         
-        if s and s.len > 0
-            for i seg in @codes s
-                @push seg
+        if s 
+            switch type(s)
+                "string" 
+                    if s.len > 0
+                        for i seg in @codes s
+                            @push seg
+                "table"
+                    if s.len > 0
+                        for g in s∙each()
+                            @push g
+                    else if s∙len()
+                        for g in s∙each()
+                            @push g
+                ➜ 
+                    log ">>?????" type(s)
 
     decode: str startPos=1 ->
     
@@ -63,5 +75,52 @@ class kseg extends array
         @
         
     trim: c=" \n" -> @rtrim(c)∙ltrim(c)
+
+    lcount: c ->
+
+        ⮐  0 if @len <= 0
+        cnt = 0
+        for i in 1..@len
+            if @[i] == c
+                cnt += 1
+            else
+                break
+        cnt
+        
+    indent: -> @lcount " "
+    
+    find: c ->
+    
+        ⮐  -1 if @len <= 0
+        c = kseg c
+        ⮐  -1 if c.len >= @len
+        for i in 1..@len+1-c.len
+            for j in 1..c.len
+                if c[j] != @[i+j-1]
+                    break 
+                if j == c.len
+                    ⮐  i
+        -1
+
+    rfind: c ->
+    
+        ⮐  -1 if @len <= 0
+        c = kseg c
+        ⮐  -1 if c.len >= @len
+        for i in @len+1-c.len..1
+            for j in 1..c.len
+                if c[j] != @[i+j-1]
+                    break 
+                if j == c.len
+                    ⮐  i
+        -1
+        
+    slice: f t ->
+    
+        t ?= @len
+        r = kseg()
+        for i in f..t
+            r∙push @[i]
+        r
    
 ⮐  kseg

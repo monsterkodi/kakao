@@ -330,113 +330,124 @@ a 1
         --""")  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
     end)
     
-    --▸ object
-    --    
-    --    noon.parse """
-    --    a
-    --    b
-    --    c  3
-    --    """ ▸ { c:3 }
-    --    
-    --▸ nested lists
-    --    
-    --    noon.parse """
-    --    a
-    --    b
-    --    .
-    --        c
-    --        .
-    --        .
-    --            .
-    --        d
-    --    .
-    --        e
-    --        .
-    --            f
-    --    """ ▸
-    --    [
-    --        'a'
-    --        'b'
-    --        ['c', [], [[]],'d']
-    --        ['e', ['f']]
-    --    ]
-    --    
-    --▸ nested objects
-    --    
-    --    noon.parse """
-    --    a
-    --    b
-    --        c
-    --        d
-    --            e  0
-    --        f   1
-    --    g
-    --    """ ▸ {
-    --        a:nil
-    --        b: {
-    --            c: nil
-    --            d: {
-    --                e: 0 }
-    --            f: 1 }
-    --        g: nil }
-    --    
-    --▸ complex object
-    --    
-    --    noon.parse """
-    --    a
-    --        b
-    --          c
-    --        d
-    --    e f
-    --        g  h
-    --    1  one  two
-    --    j
-    --        .
-    --            k  l
-    --        .
-    --            .|  true|false
-    --    """ ▸ {
-    --        a: {
-    --            b: ['c']
-    --            d: nil }
-    --        'e f': {
-    --            g: 'h' }
-    --        '1': 'one  two'
-    --        j: [{k: 'l'}, {'.|':'true|false'}] }
-    --   
-    --    
-    --▸ spaces
-    --    o = {a: 1, b: 2}
-    --    
-    --    noon.parse """
-    --    a  1
-    --    b  2
-    --    """ ▸ o
-    --    
-    --    noon.parse """
-    --     a  1
-    --     b  2
-    --    """ ▸ o
-    --    
-    --    noon.parse """
-    --        a  1
-    --        b  2
-    --    """ ▸ o
-    --    
-    --    noon.parse """
-    --    
-    --    
-    --    a  1
-    --    
-    --    b  2
-    --    
-    --    """ ▸ o
-    --    
-    --    noon.parse """
-    --    key      value   with    some    spaces   .
-    --    """ ▸
-    --    {key: "value   with    some    spaces   ."}
-    --    
+    test("object", function()
+        test.cmp(noon.parse("a  1"), {a = 1})
+        
+        test.cmp(noon.parse([[
+a
+b
+c  3
+]]), {c = 3})
+    end)
+    
+    test("spaces", function()
+        local o = {a = 0, b = 2}
+        local p = noon.parse([[
+a  1
+b  2]])
+        
+        for k, v in pairs(p) do 
+            print(k, v)
+        end
+        
+        test.cmp({b = 2}, o)
+        
+        test.cmp(noon.parse([[
+a  1
+b  2]]), o)
+        
+        -- 1 ▸ 2
+        
+        --noon.parse """
+        --    a  1
+        --    b  2
+        --  """ ▸ o
+        --    
+        --noon.parse """
+        --        a  1
+        --        b  2
+        --    """ ▸ o
+        --        
+        --noon.parse """
+        --    
+        --    a  1
+        --    
+        --    b  2
+        --    
+        --    """ ▸ o
+        
+        -- noon.parse """
+        -- key      value   with    some    spaces   .
+        -- """ ▸
+        -- {key: "value   with    some    spaces   ."}
+        
+        --▸ nested lists
+        --        
+        --    noon.parse """
+        --    a
+        --    b
+        --    .
+        --        c
+        --        .
+        --        .
+        --            .
+        --        d
+        --    .
+        --        e
+        --        .
+        --            f
+        --    """ ▸
+        --    [
+        --        'a'
+        --        'b'
+        --        ['c', [], [[]],'d']
+        --        ['e', ['f']]
+        --    ]
+        --        
+        --▸ nested objects
+        --        
+        --    noon.parse """
+        --    a
+        --    b
+        --        c
+        --        d
+        --            e  0
+        --        f   1
+        --    g
+        --    """ ▸ {
+        --        a:nil
+        --        b: {
+        --            c: nil
+        --            d: {
+        --                e: 0 }
+        --            f: 1 }
+        --        g: nil }
+        --        
+        --▸ complex object
+        --        
+        --    noon.parse """
+        --    a
+        --        b
+        --          c
+        --        d
+        --    e f
+        --        g  h
+        --    1  one  two
+        --    j
+        --        .
+        --            k  l
+        --        .
+        --            .|  true|false
+        --    """ ▸ {
+        --        a: {
+        --            b: ['c']
+        --            d: nil }
+        --        'e f': {
+        --            g: 'h' }
+        --        '1': 'one  two'
+        --        j: [{k: 'l'}, {'.|':'true|false'}] }
+    end)
+    
     --▸ whitespace lines
     --    
     --    o = {a: 1, b: 2}
@@ -459,10 +470,9 @@ a 1
     
     test("escape", function()
         test.cmp(noon.parse([[
- | 1|
- |2 |
- | 3 |
-]]), array(' 1', '2 ', ' 3 '))
+| 1|
+|2 |
+| 3 |]]), array(' 1', '2 ', ' 3 '))
     end)
     
     --    noon.parse """

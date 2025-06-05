@@ -6,9 +6,26 @@ local kseg = class("kseg", array)
 
 
 function kseg:init(s) 
-        if (s and (#s > 0)) then 
-            for i, seg in self:codes(s) do 
-                self:push(seg)
+        if s then 
+            if (type(s) == "string") then 
+                    if (#s > 0) then 
+                        for i, seg in self:codes(s) do 
+                            self:push(seg)
+                        end
+                    end
+            elseif (type(s) == "table") then 
+                    if (#s > 0) then 
+                        for g in s:each() do 
+                            self:push(g)
+                        end
+                    else if s:len() then 
+                        for g in s:each() do 
+                            self:push(g)
+                        end
+                         end
+                    end
+            else 
+                    print(">>?????", type(s))
             end
         end
         return self
@@ -95,6 +112,77 @@ function kseg:trim(c)
     c = c or " \n"
     
     return self:rtrim(c):ltrim(c)
+    end
+
+
+function kseg:lcount(c) 
+        if (#self <= 0) then return 0 end
+        local cnt = 0
+        for i in iter(1, #self) do 
+            if (self[i] == c) then 
+                cnt = cnt + 1
+            else 
+                break
+            end
+        end
+        
+        return cnt
+    end
+
+
+function kseg:indent() 
+    return self:lcount(" ")
+    end
+
+
+function kseg:find(c) 
+        if (#self <= 0) then return -1 end
+        c = kseg(c)
+        if (#c >= #self) then return -1 end
+        for i in iter(1, ((#self + 1) - #c)) do 
+            for j in iter(1, #c) do 
+                if (c[j] ~= self[((i + j) - 1)]) then 
+                    break
+                end
+                
+                if (j == #c) then 
+                    return i
+                end
+            end
+        end
+        
+        return -1
+    end
+
+
+function kseg:rfind(c) 
+        if (#self <= 0) then return -1 end
+        c = kseg(c)
+        if (#c >= #self) then return -1 end
+        for i in iter(((#self + 1) - #c), 1) do 
+            for j in iter(1, #c) do 
+                if (c[j] ~= self[((i + j) - 1)]) then 
+                    break
+                end
+                
+                if (j == #c) then 
+                    return i
+                end
+            end
+        end
+        
+        return -1
+    end
+
+
+function kseg:slice(f, t) 
+        t = t or (#self)
+        local r = kseg()
+        for i in iter(f, t) do 
+            r:push(self[i])
+        end
+        
+        return r
     end
 
 return kseg

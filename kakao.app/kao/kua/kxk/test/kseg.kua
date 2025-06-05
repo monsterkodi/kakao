@@ -1,7 +1,30 @@
 
 use kxk/kxk
+use kxk/strg
 
 ▸ kseg
+
+    ▸ construct
+        
+        s = kseg()
+        s∙str() ▸ ""
+        s = kseg("  ")
+        s∙str() ▸ "  "
+        s = kseg(kseg("xx"))
+        s∙str() ▸ "xx"
+        s = kseg(kseg(kseg("yy")))
+        s∙str() ▸ "yy"
+        st = strg("zz")
+        s = kseg(strg("zz"))
+        s∙str() ▸ "zz"
+        
+    ▸ find
+        
+        s = "a  b"
+        s∙find " "  ▸ 2
+        s∙find "  " ▸ 2
+        s∙find " b" ▸ 3
+        s∙find "b"  ▸ 4
 
     ▸ pop
     

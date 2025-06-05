@@ -355,113 +355,124 @@ use kxk/kxk kxk/noon
         #    ||
         #""")  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
         
-    #▸ object
-    #
-    #    noon.parse """
-    #    a
-    #    b
-    #    c  3
-    #    """ ▸ { c:3 }
-    #
-    #▸ nested lists
-    #
-    #    noon.parse """
-    #    a
-    #    b
-    #    .
-    #        c
-    #        .
-    #        .
-    #            .
-    #        d
-    #    .
-    #        e
-    #        .
-    #            f
-    #    """ ▸
-    #    [
-    #        'a'
-    #        'b'
-    #        ['c', [], [[]],'d']
-    #        ['e', ['f']]
-    #    ]
-    #
-    #▸ nested objects
-    #
-    #    noon.parse """
-    #    a
-    #    b
-    #        c
-    #        d
-    #            e  0
-    #        f   1
-    #    g
-    #    """ ▸ {
-    #        a:nil
-    #        b: {
-    #            c: nil
-    #            d: {
-    #                e: 0 }
-    #            f: 1 }
-    #        g: nil }
-    #
-    #▸ complex object
-    #
-    #    noon.parse """
-    #    a
-    #        b
-    #          c
-    #        d
-    #    e f
-    #        g  h
-    #    1  one  two
-    #    j
-    #        .
-    #            k  l
-    #        .
-    #            .|  true|false
-    #    """ ▸ {
-    #        a: {
-    #            b: ['c']
-    #            d: nil }
-    #        'e f': {
-    #            g: 'h' }
-    #        '1': 'one  two'
-    #        j: [{k: 'l'}, {'.|':'true|false'}] }
-    #   
-    #
-    #▸ spaces
-    #    o = {a: 1, b: 2}
-    #
-    #    noon.parse """
-    #    a  1
-    #    b  2
-    #    """ ▸ o
-    #
-    #    noon.parse """
-    #     a  1
-    #     b  2
-    #    """ ▸ o
-    #
-    #    noon.parse """
-    #        a  1
-    #        b  2
-    #    """ ▸ o
-    #
-    #    noon.parse """
-    #
-    #
-    #    a  1
-    #
-    #    b  2
-    #
-    #    """ ▸ o
-    #
-    #    noon.parse """
-    #    key      value   with    some    spaces   .
-    #    """ ▸
-    #    {key: "value   with    some    spaces   ."}
-    #
+    ▸ object
+    
+        noon.parse "a  1"  ▸ { a: 1 }
+    
+        noon.parse """
+            a
+            b
+            c  3
+            """ ▸ { c:3 }
+            
+    ▸ spaces
+    
+        o = {a: 0 b: 2}
+        p = noon.parse """
+                    a  1
+                    b  2"""
+                
+        for k v in pairs p
+            log k, v
+            
+        { b:2 } ▸ o
+                    
+        noon.parse """
+            a  1
+            b  2""" ▸ o
+            
+        # 1 ▸ 2
+    
+        #noon.parse """
+        #    a  1
+        #    b  2
+        #  """ ▸ o
+        #    
+        #noon.parse """
+        #        a  1
+        #        b  2
+        #    """ ▸ o
+        #
+        #noon.parse """
+        #    
+        #    a  1
+        #    
+        #    b  2
+        #    
+        #    """ ▸ o
+    
+        # noon.parse """
+        # key      value   with    some    spaces   .
+        # """ ▸
+        # {key: "value   with    some    spaces   ."}
+            
+    
+        #▸ nested lists
+        #
+        #    noon.parse """
+        #    a
+        #    b
+        #    .
+        #        c
+        #        .
+        #        .
+        #            .
+        #        d
+        #    .
+        #        e
+        #        .
+        #            f
+        #    """ ▸
+        #    [
+        #        'a'
+        #        'b'
+        #        ['c', [], [[]],'d']
+        #        ['e', ['f']]
+        #    ]
+        #
+        #▸ nested objects
+        #
+        #    noon.parse """
+        #    a
+        #    b
+        #        c
+        #        d
+        #            e  0
+        #        f   1
+        #    g
+        #    """ ▸ {
+        #        a:nil
+        #        b: {
+        #            c: nil
+        #            d: {
+        #                e: 0 }
+        #            f: 1 }
+        #        g: nil }
+        #
+        #▸ complex object
+        #
+        #    noon.parse """
+        #    a
+        #        b
+        #          c
+        #        d
+        #    e f
+        #        g  h
+        #    1  one  two
+        #    j
+        #        .
+        #            k  l
+        #        .
+        #            .|  true|false
+        #    """ ▸ {
+        #        a: {
+        #            b: ['c']
+        #            d: nil }
+        #        'e f': {
+        #            g: 'h' }
+        #        '1': 'one  two'
+        #        j: [{k: 'l'}, {'.|':'true|false'}] }
+    
     #▸ whitespace lines
     #
     #    o = {a: 1, b: 2}
@@ -485,11 +496,9 @@ use kxk/kxk kxk/noon
     ▸ escape
     
         noon.parse """
-         | 1|
-         |2 |
-         | 3 |
-        """ ▸ 
-        [' 1', '2 ', ' 3 ']
+            | 1|
+            |2 |
+            | 3 |""" ▸ [' 1' '2 ' ' 3 ']
     
     #    noon.parse """
     #    a  | 1  1

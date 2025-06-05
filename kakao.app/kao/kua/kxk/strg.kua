@@ -92,11 +92,15 @@ class strg
     number: ->
         
         tonumber $@
+        
+    indent: ->
+    
+        @flatten()
+        @frags[1]∙indent()
 
     bool: ->
         
         s = $@
-        log "BOOL" s
         if s == "true"  ➜ ⮐  true
         if s == "false" ➜ ⮐  false
         nil
@@ -110,10 +114,38 @@ class strg
     
         @flatten()
         @frags[1][i]
+        
+    each: -> 
+    
+        @flatten()
+        @frags[1]∙each()
+        
+    find: c ->
+    
+        @flatten()
+        @frags[1]∙find c
+
+    rfind: c ->
+    
+        @flatten()
+        @frags[1]∙rfind c
+        
+    slice: f t ->
+    
+        @flatten()
+        s = strg()
+        s.frags∙push @frags[1]∙slice(f t)
+        s
                 
     flatten: ->
     
         @debuff()
+        if @frags.len == 0
+            ⮐  @
+        if @frags.len == 1 
+            if type(@frags[1]) == "string"
+                @frags = [kseg(@frags[1])]
+            ⮐  @
         seg = kseg()
         for f i in @frags∙each()
             if type(f) == "string"
@@ -140,12 +172,6 @@ class strg
             for s in sl∙each()
                 ls∙push strg(s)
         ls
-            
-    __len: ->
-    
-        log "LEN!!!!!!!!!!!!!!"
-    
-        @num()
             
     __add: s ->
     

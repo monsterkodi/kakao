@@ -17,6 +17,33 @@ use kxk/kxk
         $strg("a" "b")         ▸ "ab"
         $strg("a" "b" 1 2 1/2) ▸ "ab120.5"
         
+    ▸ find
+    
+        strg("")∙find("")       ▸ -1
+        strg("")∙find("x")      ▸ -1
+        strg("a  a")∙find("x")  ▸ -1
+        strg("a  a")∙find("a")  ▸ 1
+        strg("a  3")∙find(" ")  ▸ 2
+        strg("a  x")∙find("  ") ▸ 2
+        strg("a  3")∙find("3")  ▸ 4
+
+    ▸ rfind
+
+        strg("")∙rfind("")       ▸ -1
+        strg("")∙rfind("x")      ▸ -1
+        strg("a  3")∙rfind("a")  ▸ 1
+        strg("a  3")∙rfind(" ")  ▸ 3
+        strg("a  x")∙rfind("  ") ▸ 2
+        strg("3  3")∙rfind("3")  ▸ 4
+        
+    ▸ slice
+    
+        $strg("a  b")∙slice(1 2) ▸ "a "
+        $strg("a  b")∙slice(1 3) ▸ "a  "
+        $strg("a  b")∙slice(1 4) ▸ "a  b"
+        $strg("a  b")∙slice(1)   ▸ "a  b"
+        $strg("a  b")∙slice(3)   ▸ " b"
+        
     ▸ add
     
         itr = 100000
@@ -97,6 +124,19 @@ use kxk/kxk
         s[1]                    ▸ "a"
         s[2]                    ▸ "b"
         s[3]                    ▸ "c"
+        
+    ▸ indent
+    
+        s = strg ""             
+        s∙indent()              ▸ 0
+        s = strg "x"             
+        s∙indent()              ▸ 0
+        s = strg " x"             
+        s∙indent()              ▸ 1
+        s = strg "  x  "             
+        s∙indent()              ▸ 2
+        s = strg "x  "             
+        s∙indent()              ▸ 0
         
     ▸ number
     
