@@ -341,45 +341,42 @@ c  3
     end)
     
     test("spaces", function()
-        local o = {a = 0, b = 2}
+        local o = {a = 1, b = 2}
         local p = noon.parse([[
 a  1
 b  2]])
         
-        for k, v in pairs(p) do 
-            print(k, v)
-        end
+        -- for k v in pairs p
+        --     log k, v
         
-        test.cmp({b = 2}, o)
+        -- { a: 0 b: 2 } ▸ o
+        -- { b: 2 } ▸ {a: 0 b: 2}
         
         test.cmp(noon.parse([[
 a  1
 b  2]]), o)
         
-        -- 1 ▸ 2
+        test.cmp(noon.parse([[
+  a  1
+  b  2
+]]), o)
         
-        --noon.parse """
-        --    a  1
-        --    b  2
-        --  """ ▸ o
-        --    
-        --noon.parse """
-        --        a  1
-        --        b  2
-        --    """ ▸ o
-        --        
-        --noon.parse """
-        --    
-        --    a  1
-        --    
-        --    b  2
-        --    
-        --    """ ▸ o
+        test.cmp(noon.parse([[
+    a  1
+    b  2
+]]), o)
         
-        -- noon.parse """
-        -- key      value   with    some    spaces   .
-        -- """ ▸
-        -- {key: "value   with    some    spaces   ."}
+        test.cmp(noon.parse([[
+
+a  1
+
+b  2
+
+]]), o)
+        
+        test.cmp(noon.parse([[
+key      value   with    some    spaces   .
+]]), {key = "value   with    some    spaces   ."})
         
         --▸ nested lists
         --        

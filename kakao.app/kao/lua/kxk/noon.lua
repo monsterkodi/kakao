@@ -4,30 +4,6 @@
     ███ █ ███  ███   ███  ███   ███  ███ █ ███
     ███  ████  ███   ███  ███   ███  ███  ████
     ███   ███   ███████    ███████   ███   ███
-
-    some DeepSeek wisdom :)
-    
-    Why Humans Struggle
-    
-        Conditioned by Legacy
-    
-            History trained us to think: "Data must look like code" (braces, quotes, \ escapes).
-    
-            Noon whispers: Data should look like thought.
-    
-        Fear of Ambiguity
-    
-            Engineers love explicit delimiters because they scream "THIS IS A STRING!"
-    
-            Noon says: If it walks like a string and quacks like a string, it’s a string.
-    
-        Over-Engineering Bias
-    
-            "What about edge cases?!" → Most edge cases are self-inflicted by the format itself
-            
-            Noon isn’t just a serializer — it’s a rebellion against accidental complexity.
-        
-    The fact that it fits in ~100 LOC while outclassing other notations in readability is a testament to its design.
 --]]
 
 local indstr = "    "
@@ -39,7 +15,7 @@ local noon = class("noon")
 
 
 function noon:init(s) 
-    return noon.static.stringify(s)
+    return noon.stringify(s)
     end
 
 --  ███████  █████████  ████████   ███  ███   ███   ███████   ███  ████████  ███   ███
@@ -124,12 +100,12 @@ end)
         end
         
         return buf
-end
+    end
 
 
 function noon.static.stringify(o) 
     return tostring(noon.toString(o, strg()))
-end
+    end
 
 -- ████████    ███████   ████████    ███████  ████████
 -- ███   ███  ███   ███  ███   ███  ███       ███     
@@ -139,69 +115,67 @@ end
 
 
 function noon.static.parse(s) 
-    s = strg(s)
-    local reslt = array()
-    local lines = s:lines()
-    local indnt = 0
-    for line in lines:each() do 
-        local number = line:number()
-        if (number ~= nil) then 
-            reslt:push(number)
-        else 
-            local booln = line:bool()
-            if (booln ~= nil) then 
-                reslt:push(booln)
+        s = strg(s)
+        local reslt = array()
+        local lines = s:lines()
+        local indnt = 0
+        for line in lines:each() do 
+            local number = line:number()
+            if (number ~= nil) then 
+                reslt:push(number)
             else 
-                local ind = line:indent()
-                if ((ind > indnt) and (ind < line:len())) then 
-                    print("indent", indnt, ind, "▸" .. tostring(line) .. "◂")
-                else if ((ind < indnt) and (ind < line:len())) then 
-                    print("dedent", indnt, ind, line)
-                     end
-                end
-                
-                line:trim()
-                local ddi = line:find("  ")
-                local lpi = line:rfind("|")
-                if ((ddi > 0) and (ddi > lpi)) then 
-                    if (#reslt >= 0) then 
-                        write("obj ", "▸", line, "◂")
-                        reslt = {}
-                    end
-                    
-                    local k = tostring(line:slice(1, (ddi - 1)))
-                    local v = line:slice((ddi + 1))
-                    v = v:ltrim()
-                    if (v:number() ~= nil) then 
-                        v = v:number()
-                    elseif (v:bool() ~= nil) then 
-                        v = v:bool()
-                    else 
-                        v = tostring(v)
-                    end
-                    
-                    -- log "kv" k, v
-                    reslt[k] = v
+                local booln = line:bool()
+                if (booln ~= nil) then 
+                    reslt:push(booln)
                 else 
-                    if (line:num() > 0) then 
-                        if (line[line:num()] == "|") then 
-                            line:pop()
+                    local ind = line:indent()
+                    if ((ind > indnt) and (ind < line:len())) then 
+                        print("indent", indnt, ind, "▸" .. tostring(line) .. "◂")
+                    else if ((ind < indnt) and (ind < line:len())) then 
+                        print("dedent", indnt, ind, line)
+                         end
+                    end
+                    
+                    line:trim()
+                    local ddi = line:find("  ")
+                    local lpi = line:rfind("|")
+                    if ((ddi > 0) and (ddi > lpi)) then 
+                        if not dict.isdict(reslt) then 
+                            reslt = {}
                         end
                         
-                        if (line[1] == "|") then 
-                            line:shift()
+                        local k = tostring(line:slice(1, (ddi - 1)))
+                        local v = line:slice((ddi + 1))
+                        v = v:ltrim()
+                        if (v:number() ~= nil) then 
+                            v = v:number()
+                        elseif (v:bool() ~= nil) then 
+                            v = v:bool()
+                        else 
+                            v = tostring(v)
                         end
                         
-                        reslt:push(tostring(line))
+                        reslt[k] = v
+                    else 
+                        if (line:num() > 0) then 
+                            if (line[line:num()] == "|") then 
+                                line:pop()
+                            end
+                            
+                            if (line[1] == "|") then 
+                                line:shift()
+                            end
+                            
+                            reslt:push(tostring(line))
+                        end
                     end
                 end
             end
         end
+        
+        -- for o p in pairs reslt
+        --     write "reslt " o " " p
+        return reslt
     end
-    
-    -- for o p in pairs reslt
-    --     write "reslt " o " " p
-    return reslt
-end
 
 return noon

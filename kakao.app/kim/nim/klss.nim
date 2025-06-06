@@ -225,6 +225,18 @@ proc methodifyLua(clss : Node) : seq[Node] =
                     n.token.str = "self"
         n
     
+    proc staticself(n : Node, hint = "") : Node = 
+        if (n.token.tok == ◂name): 
+            if (n.token.str[0] == '@'): 
+                if (n.token.str.len > 1): 
+                    var owner = nod(●literal, tkn(◂name, className))
+                    var property = nod(●literal, tkn(◂name, n.token.str[1..^1]))
+                    var token = tkn(◂dot, ".", n.token.line, n.token.col)
+                    return nod(●propertyAccess, token, owner, property)
+                else: 
+                    n.token.str = className
+        n
+    
     proc constructor(fn : Node) : Node = 
         if fn.func_body: 
             if (fn.func_body.kind != ●block): 
@@ -250,19 +262,26 @@ proc methodifyLua(clss : Node) : seq[Node] =
         if (it.kind == ●comment): return it
         var token = tkn(◂assign, it.token.line, it.token.col)
         var funcn = it.member_value
-        funcn.func_body = traverse(funcn.func_body, selfify)
-        superize(funcn)
         var meth = it.member_key
         if (meth.token.str == "@"): 
             meth.token.str = className & ":init"
             funcn = constructor(funcn)
+            funcn.func_body = traverse(funcn.func_body, selfify)
+            superize(funcn)
+        elif (meth.token.str[0] == '@'): 
+            meth.token.str = className & ".static." & meth.token.str[1..^1]
+            funcn.func_body = traverse(funcn.func_body, staticself)
         else: 
             meth.token.str = className & ":" & meth.token.str
+            funcn.func_body = traverse(funcn.func_body, selfify)
+            superize(funcn)
         nod(●operation, token, meth, funcn)
     
     proc memberify(it : Node) : Node = 
         if (it.kind == ●member): 
             var owner = nod(●literal, tkn(◂name, className))
+            if (it.member_key.token.str[0] == '@'): 
+                it.member_key.token.str = "static." & it.member_key.token.str[1..^1]
             it.member_key = nod(●propertyAccess, tkn(◂dot, "."), owner, it.member_key)
         it
     clss.class_body.expressions = members.map(memberify)

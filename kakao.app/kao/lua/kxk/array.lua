@@ -209,9 +209,9 @@ function array:__add(a)
 
 
 function array.static.isarr(a) 
-    if (type(a) ~= "table") then return false end
-    return (#a > 0)
-end
+        if (type(a) ~= "table") then return false end
+        return (#a > 0)
+    end
 
 array:include(table)
 

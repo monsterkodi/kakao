@@ -1,9 +1,10 @@
-
-# █████████  ████████   ███████  █████████
-#    ███     ███       ███          ███   
-#    ███     ███████   ███████      ███   
-#    ███     ███            ███     ███   
-#    ███     ████████  ███████      ███   
+###
+    █████████  ████████   ███████  █████████
+       ███     ███       ███          ███   
+       ███     ███████   ███████      ███   
+       ███     ███            ███     ███   
+       ███     ████████  ███████      ███   
+###
 
 use os
 
@@ -30,59 +31,82 @@ class test
             os.exit _G.testFail
             
     
-test.static.cmp = a b ->
+    #  ███████  ██     ██  ████████ 
+    # ███       ███   ███  ███   ███
+    # ███       █████████  ████████ 
+    # ███       ███ █ ███  ███      
+    #  ███████  ███   ███  ███      
 
-    _G.testIndex += 1
+    @cmp: a b ->
     
-    fail = ... ->
-        write ◌r "✘ " ◌r- "[" _G.testIndex "] " ◌y $strg(...)
-        _G.testFail += 1
-        ⮐  false
-    
-    cmpTable = a b ->
-        if a.len != b.len
-            ⮐  fail ◌d- "table length mismatch " ◌b a.len ◌r " != " ◌g b.len #"\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
-        for k v in rawpairs a
-            if type(v) != "function" and (type(k) != "string" or k∙sub(1 2) != "__")
-                if not test.static.cmp v b[k]
-                    key = k
-                    if type(k) == "number"
-                        key = kstr.index k
-                    ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
-            # else if v != b[k]
-            #     ⮐  fail ◌d- "table ??? " ◌b $k "\n" ◌y $[unpack(a)] ◌r "!=\n" ◌g $[unpack(b)]
-        true
-                
-    if type(a) != type(b)
-        ⮐  fail ◌d- "type mismatch " ◌b- "◇" ◌b type(a) ◌r " != " ◌b- "◇" ◌b type(b) ◌d " (" $a " != " $b ")"
+        _G.testIndex += 1
         
-    switch type(a)
+        fail = ... ->
+            write ◌r "✘ " ◌r- "[" _G.testIndex "] " ◌y $strg(...)
+            _G.testFail += 1
+            ⮐  false
+        
+        cmpTable = a b ->
+            if a.len != b.len
+                ⮐  fail ◌d- "array length mismatch " ◌b a.len ◌r " != " ◌g b.len
+            if a.len == 0 and dict.size(a) != dict.size(b)
+                ⮐  fail ◌d- "dict size mismatch " ◌b dict.size(a) ◌r " != " ◌g dict.size(b) ◌d " (" dict.str(a) " != " dict.str(b) ")"
+            for k v in rawpairs a
+                if type(v) != "function" and (type(k) != "string" or k∙sub(1 2) != "__")
+                    if not test.static.cmp v b[k]
+                        key = k
+                        if type(k) == "number"
+                            key = kstr.index k
+                        # ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
+                        as = ""
+                        for k v in pairs a
+                            as &= k & "  " & $v & "\n"
+                        as = kstr.pop as
+                        bs = ""
+                        for k v in pairs b
+                            bs &= k & "  " & $v & "\n"
+                        bs = kstr.pop bs
+                        ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y as ◌r "\n!=\n" ◌g bs
+                # else if v != b[k]
+                #     ⮐  fail ◌d- "table ??? " ◌b $k "\n" ◌y $[unpack(a)] ◌r "!=\n" ◌g $[unpack(b)]
+            true
+                    
+        if type(a) != type(b)
+            ⮐  fail ◌d- "type mismatch " ◌b- "◇" ◌b type(a) ◌r " != " ◌b- "◇" ◌b type(b) ◌d " (" $a " != " $b ")"
+            
+        switch type(a)
+        
+            "table"
+                ⮐  cmpTable a b
+            "number"
+                if math.abs(a - b) > 1e-10
+                    ⮐  fail ◌d- "number mismatch " ◌y a ◌r " != " ◌g b
+            ➜  
+                if a != b ➜ ⮐  fail ◌b- "◇" ◌b type(a) ◌d- " mismatch\n" ◌y a ◌r "\n!=\n" ◌g b
+        true
     
-        "table"
-            ⮐  cmpTable a b
-        "number"
-            if math.abs(a - b) > 1e-10
-                ⮐  fail ◌d- "number mismatch " ◌y a ◌r " != " ◌g b
-        ➜  
-            if a != b ➜ ⮐  fail ◌b- "◇" ◌b type(a) ◌d- " mismatch\n" ◌y a ◌r "\n!=\n" ◌g b
-    true
-    
-test.static.run = files ->
+    # ████████   ███   ███  ███   ███
+    # ███   ███  ███   ███  ████  ███
+    # ███████    ███   ███  ███ █ ███
+    # ███   ███  ███   ███  ███  ████
+    # ███   ███   ███████   ███   ███
 
-    # log "test.run" array.str files
-    success = true
-    for f _ in pairs files
-        # log "test" f
-        (output ok exitcode) = slash.shell "luajit" f
-        if ok
-            # log output
-            # log output, ok, exitcode
-            # log "✔ " f
-            a = 1
-        else
-            log output
-            write ◌r "✘ " ◌b slash.tilde(slash.dir(f)) "/" ◌aaf slash.name(f) ◌66f "." slash.ext(f)
-            success = false
-    success
+    @run: files ->
+    
+        # log "test.run" array.str files
+        success = true
+        for f _ in pairs files
+            # log "test" f
+            (output ok exitcode) = slash.shell "luajit" f
+            if ok
+                # log output
+                # log output, ok, exitcode
+                # log "✔ " f
+                a = 1
+            else
+                log output
+                write ◌r "✘ " ◌b slash.tilde(slash.dir(f)) "/" ◌aaf slash.name(f) ◌66f "." slash.ext(f)
+                success = false
+        success
         
 ⮐  test

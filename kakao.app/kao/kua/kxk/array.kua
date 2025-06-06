@@ -126,10 +126,10 @@ class array
             table.insert @ o
         @
 
-array.static.isarr = a ->
-    
-    ⮐  false if type(a) != "table"
-    a.len > 0
+    @isarr: a ->
+        
+        ⮐  false if type(a) != "table"
+        a.len > 0
 
 array∙include table
 

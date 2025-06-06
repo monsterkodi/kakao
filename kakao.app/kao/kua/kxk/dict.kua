@@ -1,0 +1,29 @@
+###
+    ███████    ███   ███████  █████████
+    ███   ███  ███  ███          ███   
+    ███   ███  ███  ███          ███   
+    ███   ███  ███  ███          ███   
+    ███████    ███   ███████     ███   
+###
+
+class dict
+
+    @size: d ->
+    
+        s = 0
+        for _ in pairs d
+            s += 1
+        s
+    
+    @str: d ->
+    
+        s = ""
+        for k v in pairs d
+            s &= k & ":"  & $v & " "
+        kstr.pop s
+    
+    @isdict: d ->
+    
+        d.len <= 0 and dict.size(d) >= 1 and d.class != array
+
+⮐  dict

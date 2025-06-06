@@ -1,0 +1,16 @@
+
+use kxk/kxk
+
+▸ dict
+
+    ▸ size
+    
+        d = {a:1 b:2}
+        dict.size d ▸ 2
+        
+    ▸ isdict
+    
+        dict.isdict {a:1 b:2} ▸ true
+        dict.isdict {"1":2}   ▸ true
+        dict.isdict {a b}     ▸ false
+        dict.isdict {}        ▸ false

@@ -367,44 +367,43 @@ use kxk/kxk kxk/noon
             
     ▸ spaces
     
-        o = {a: 0 b: 2}
+        o = {a: 1 b: 2}
         p = noon.parse """
                     a  1
                     b  2"""
                 
-        for k v in pairs p
-            log k, v
+        # for k v in pairs p
+        #     log k, v
             
-        { b:2 } ▸ o
+        # { a: 0 b: 2 } ▸ o
+        # { b: 2 } ▸ {a: 0 b: 2}
                     
         noon.parse """
             a  1
             b  2""" ▸ o
             
-        # 1 ▸ 2
+        noon.parse """
+            a  1
+            b  2
+          """ ▸ o
+            
+        noon.parse """
+                a  1
+                b  2
+            """ ▸ o
+        
+        noon.parse """
+            
+            a  1
+            
+            b  2
+            
+            """ ▸ o
     
-        #noon.parse """
-        #    a  1
-        #    b  2
-        #  """ ▸ o
-        #    
-        #noon.parse """
-        #        a  1
-        #        b  2
-        #    """ ▸ o
-        #
-        #noon.parse """
-        #    
-        #    a  1
-        #    
-        #    b  2
-        #    
-        #    """ ▸ o
-    
-        # noon.parse """
-        # key      value   with    some    spaces   .
-        # """ ▸
-        # {key: "value   with    some    spaces   ."}
+        noon.parse """
+        key      value   with    some    spaces   .
+        """ ▸
+        {key: "value   with    some    spaces   ."}
             
     
         #▸ nested lists

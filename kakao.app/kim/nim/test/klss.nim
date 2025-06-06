@@ -443,6 +443,29 @@ function FunInc:fun(m)
 function FunInc:inc(a1) 
         return self:fun((self.m + 1))
     end""")
+    test "static": 
+        l("""
+class Static
+    @m: 1
+    @fun: m -> 
+        @m = m
+    @inc: a1 ->
+        @fun @m + 1
+""", """
+
+local Static = class("Static")
+    Static.static.m = 1
+
+
+function Static.static.fun(m) 
+        Static.m = m
+        return Static.m
+    end
+
+
+function Static.static.inc(a1) 
+        return Static.fun((Static.m + 1))
+    end""")
     test "tostring": 
         l("""
 class Print
