@@ -120,54 +120,50 @@ function noon.static.parse(s)
         local lines = s:lines()
         local indnt = 0
         for line in lines:each() do 
-            local number = line:number()
-            if (number ~= nil) then 
-                reslt:push(number)
+            if (line:number() ~= nil) then 
+                reslt:push(line:number())
+            elseif (line:bool() ~= nil) then 
+                reslt:push(line:bool())
             else 
-                local booln = line:bool()
-                if (booln ~= nil) then 
-                    reslt:push(booln)
-                else 
-                    local ind = line:indent()
-                    if ((ind > indnt) and (ind < line:len())) then 
-                        print("indent", indnt, ind, "▸" .. tostring(line) .. "◂")
-                    else if ((ind < indnt) and (ind < line:len())) then 
-                        print("dedent", indnt, ind, line)
-                         end
+                local ind = line:indent()
+                if ((ind > indnt) and (ind < line:len())) then 
+                    print("indent", indnt, ind, "▸" .. tostring(line) .. "◂")
+                else if ((ind < indnt) and (ind < line:len())) then 
+                    print("dedent", indnt, ind, line)
+                     end
+                end
+                
+                line:trim()
+                local ddi = line:find("  ")
+                local lpi = line:rfind("|")
+                if ((ddi > 0) and (ddi > lpi)) then 
+                    if not dict.isdict(reslt) then 
+                        reslt = {}
                     end
                     
-                    line:trim()
-                    local ddi = line:find("  ")
-                    local lpi = line:rfind("|")
-                    if ((ddi > 0) and (ddi > lpi)) then 
-                        if not dict.isdict(reslt) then 
-                            reslt = {}
-                        end
-                        
-                        local k = tostring(line:slice(1, (ddi - 1)))
-                        local v = line:slice((ddi + 1))
-                        v = v:ltrim()
-                        if (v:number() ~= nil) then 
-                            v = v:number()
-                        elseif (v:bool() ~= nil) then 
-                            v = v:bool()
-                        else 
-                            v = tostring(v)
-                        end
-                        
-                        reslt[k] = v
+                    local k = tostring(line:slice(1, (ddi - 1)))
+                    local v = line:slice((ddi + 1))
+                    v = v:ltrim()
+                    if (v:number() ~= nil) then 
+                        v = v:number()
+                    elseif (v:bool() ~= nil) then 
+                        v = v:bool()
                     else 
-                        if (line:num() > 0) then 
-                            if (line[line:num()] == "|") then 
-                                line:pop()
-                            end
-                            
-                            if (line[1] == "|") then 
-                                line:shift()
-                            end
-                            
-                            reslt:push(tostring(line))
+                        v = tostring(v)
+                    end
+                    
+                    reslt[k] = v
+                else 
+                    if (line:num() > 0) then 
+                        if (line[line:num()] == "|") then 
+                            line:pop()
                         end
+                        
+                        if (line[1] == "|") then 
+                            line:shift()
+                        end
+                        
+                        reslt:push(tostring(line))
                     end
                 end
             end

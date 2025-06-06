@@ -55,7 +55,6 @@ proc returnize(this : Scoper, body : Node) =
                 elif ((lastExp.kind != ●operation) or (lastExp.token.tok notin assignToks)): 
                         var retval = lastExp
                         var line = retval.token.line
-                        echo("NOTOP", lastExp.kind)
                         body.expressions[^1] = nod(●return, tkn(◂return, "return", line), retval)
                 else: 
                         var retval = lastExp.operand_left

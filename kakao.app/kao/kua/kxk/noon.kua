@@ -90,42 +90,39 @@ class noon
         lines = s∙lines()
         indnt = 0
         for line in lines∙each()
-            number = line∙number()
-            if number != nil
-                reslt∙push number
+            if line∙number() != nil
+                reslt∙push line∙number()
+            elif line∙bool() != nil
+                reslt∙push line∙bool()
             else
-                booln = line∙bool()
-                if booln != nil
-                    reslt∙push booln
-                else
-                    ind = line∙indent()
-                    if ind > indnt and ind < line∙len()
-                        log "indent" indnt, ind, "▸" & $line & "◂"
-                    else if ind < indnt and ind < line∙len()
-                        log "dedent" indnt, ind, line
-                    line∙trim()
-                    ddi = line∙find "  "
-                    lpi = line∙rfind "|"
-                    if ddi > 0 and ddi > lpi
-                        if not dict.isdict reslt
-                            reslt = {}
-                        k = $line∙slice 1 ddi-1
-                        v = line∙slice ddi+1
-                        v = v∙ltrim()
-                        if v∙number() != nil
-                            v = v∙number()
-                        elif v∙bool() != nil
-                            v = v∙bool()
-                        else
-                            v = $v
-                        reslt[k] = v
+                ind = line∙indent()
+                if ind > indnt and ind < line∙len()
+                    log "indent" indnt, ind, "▸" & $line & "◂"
+                else if ind < indnt and ind < line∙len()
+                    log "dedent" indnt, ind, line
+                line∙trim()
+                ddi = line∙find "  "
+                lpi = line∙rfind "|"
+                if ddi > 0 and ddi > lpi
+                    if not dict.isdict reslt
+                        reslt = {}
+                    k = $line∙slice 1 ddi-1
+                    v = line∙slice ddi+1
+                    v = v∙ltrim()
+                    if v∙number() != nil
+                        v = v∙number()
+                    elif v∙bool() != nil
+                        v = v∙bool()
                     else
-                        if line∙num() > 0
-                            if line[line∙num()] == "|"
-                                line∙pop()
-                            if line[1] == "|"
-                                line∙shift()
-                            reslt∙push $line
+                        v = $v
+                    reslt[k] = v
+                else
+                    if line∙num() > 0
+                        if line[line∙num()] == "|"
+                            line∙pop()
+                        if line[1] == "|"
+                            line∙shift()
+                        reslt∙push $line
         # for o p in pairs reslt
         #     write "reslt " o " " p
         reslt

@@ -61,7 +61,6 @@ class Scoper
                     
                         retval = lastExp
                         line   = retval.token.line
-                        log "NOTOP" lastExp.kind
                         body.expressions[^1] = nod(●return tkn(◂return "return" line) retval)
                     ➜ 
                         retval = lastExp.operand_left
