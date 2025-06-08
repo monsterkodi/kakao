@@ -1,0 +1,132 @@
+###
+    ███   ███  ████████  ███      ████████ 
+    ███   ███  ███       ███      ███   ███
+    █████████  ███████   ███      ████████ 
+    ███   ███  ███       ███      ███      
+    ███   ███  ████████  ███████  ███      
+###
+
+# use ../theme     ◆ color
+# use ../edit/tool ◆ belt
+
+class help
+
+    @header: -> '\n' + color.linesForCells(@headerCells()).join('\n') + '\n'
+        
+    @headerCells: f=1 ->
+            
+        h = """
+            
+        
+        
+            ╭───╮                ╭───╮                ╭───╮     
+            │○○○│                │○○○│                │○○○│     
+            │○○○│                ╰───╯                │○○○│     
+            │○○○│     ╭───╮    ╭───────╮       ╭──────╯○○○│     
+            │○○○│   ╭─╯○○○│  ╭─╯○○○○○○○╰─╮   ╭─╯○○○○○○○○○○│     
+            │○○○│ ╭─╯○○╭──╯ ╭╯○○╭─────╮○○╰╮ ╭╯○○╭─────╮○○○│     
+            │○○○╰─╯○○╭─╯    │○○○│     │○○○│ │○○○│     │○○○│     
+            │○○○○○○○○│      │○○○╰─────╯○○○│ │○○○│     │○○○│     
+            │○○○╭─╮○○╰─╮    │○○○╭─────────╯ │○○○│     │○○○│     
+            │○○○│ ╰─╮○○╰─╮  │○○○│     ╭───╮ │○○○│     │○○○│     
+            │○○○│   ╰─╮○○╰╮ ╰╮○○╰─────╯○○╭╯ ╰╮○○╰─────╯○○╭╯     
+            │○○○│     │○○○│  ╰─╮○○○○○○○╭─╯   ╰─╮○○○○○○○╭─╯      
+            ╰───╯     ╰───╯    ╰───────╯       ╰───────╯        
+            
+            
+            
+            """ 
+            
+        # cells = belt.cellsForLines belt.indentLines(belt.seglsForText(h) 5)
+        
+        # profileStart "headerCells"
+        
+        cells = belt.cellsForLines belt.seglsForText(h)
+        
+        color1 = [0 255 0]
+        color2 = [120 120 255]
+        color3 = [255 160 0]
+        
+        fc1 = color1∙map((v) -> math.floor(v*f))
+        fc2 = color2∙map((v) -> math.floor(v*f))
+        fc3 = color3∙map((v) -> math.floor(v*f))
+        
+        kcells = belt.cellsInRect cells 1 1 20 cells.len
+        for _ c in ipairs kcells
+            switch c.cell.char
+                ' ' ➜ c.cell.fg = [0 0 0]
+                    ➜ c.cell.fg = fc1
+                                
+        ecells = belt.cellsInRect cells 20 1 35 cells.len
+        for _ c in ipairs ecells
+            switch c.cell.char
+                ' ' ➜ c.cell.fg = [0 0 0]
+                    ➜ c.cell.fg = fc2
+        
+        dcells = belt.cellsInRect cells 36 1 cells[1].len cells.len
+        for _ c in ipairs dcells
+            switch c.cell.char
+                ' ' ➜ c.cell.fg = [0 0 0]
+                    ➜ c.cell.fg = fc3
+
+        # profileStart "glow"
+        color.glowEffect cells
+        # profileStop "glow"
+        color.dimCellsColor     belt.cellsWithChar(cells '○') 'fg' 0.26
+        color.variateCellsColor belt.cellsWithChar(cells '○') 'fg' 0.15
+
+        fc1 = color1∙map((v) -> math.floor(v*(0.5+0.5*f)))
+        fc2 = color2∙map((v) -> math.floor(v*(0.5+0.5*f)))
+        fc3 = color3∙map((v) -> math.floor(v*(0.5+0.5*f)))
+        
+        for _ c in ipairs kcells
+            if c.cell.char != ' ' and c.cell.char != '○'
+                c.cell.fg = fc1
+                                 
+        for _ c in ipairs ecells
+            if c.cell.char != ' ' and c.cell.char != '○'
+                c.cell.fg = fc2
+
+        for _ c in ipairs dcells
+            if c.cell.char != ' ' and c.cell.char != '○'
+                c.cell.fg = fc3
+        
+        # profileStop "headerCells"            
+        cells
+
+###
+╭─┬─┬─╮ ╭─╮╭─╮╭─╮   ╭ ╮
+│k│ė│d│ │k││ė││d│ ─  │ 
+╰─┴─┴─╯ ╰─╯╰─╯╰─╯   ╰ ╯
+
+            ╭───╮                 ╭───╮                 ╭───╮
+            │   │                 │   │                 │   │
+            │   │                 ╰───╯                 │   │
+            │   │     ╭───╮     ╭───────╮        ╭──────╯   │
+            │   │   ╭─╯   │   ╭─╯       ╰─╮    ╭─╯          │
+            │   │ ╭─╯  ╭──╯  ╭╯  ╭─────╮  ╰╮  ╭╯  ╭─────╮   │
+            │   ╰─╯  ╭─╯     │   │     │   │  │   │     │   │
+            │        │       │   ╰─────╯   │  │   │     │   │
+            │   ╭─╮  ╰─╮     │   ╭─────────╯  │   │     │   │
+            │   │ ╰─╮  ╰─╮   │   │     ╭───╮  │   │     │   │
+            │   │   ╰─╮  ╰╮  ╰╮  ╰─────╯  ╭╯  ╰╮  ╰─────╯  ╭╯
+            │   │     │   │   ╰─╮       ╭─╯    ╰─╮       ╭─╯
+            ╰───╯     ╰───╯     ╰───────╯        ╰───────╯  
+
+            ████                  ████                  ████
+            ████                  ████                  ████
+            ████                                        ████
+            ████      ████      ████████         ███████████
+            ████    ██████    ████████████     █████████████
+            ████  █████      ████      ████   ████      ████
+            █████████        ████      ████   ████      ████
+            █████████        ██████████████   ████      ████
+            ████  █████      ████             ████      ████
+            ████    █████    ████      ████   ████      ████
+            ████      ████    ████████████     ████████████ 
+            ████      ████      ████████         ████████   
+                
+    kėd
+###
+
+⮐  help

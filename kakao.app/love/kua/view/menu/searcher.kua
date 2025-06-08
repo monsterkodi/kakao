@@ -1,0 +1,239 @@
+###
+     ███████  ████████   ███████   ████████    ███████  ███   ███  ████████  ████████ 
+    ███       ███       ███   ███  ███   ███  ███       ███   ███  ███       ███   ███
+    ███████   ███████   █████████  ███████    ███       █████████  ███████   ███████  
+         ███  ███       ███   ███  ███   ███  ███       ███   ███  ███       ███   ███
+    ███████   ████████  ███   ███  ███   ███   ███████  ███   ███  ████████  ███   ███
+
+    searches in multiple files provided by index▸prjcts
+###
+
+use ../../../kxk    ▪ post kseg slash
+use ../../../kxk    ◆ nfs
+use ../../edit/tool ◆ belt
+use ../../index     ◆ prjcts
+use ../base         ◆ view
+use                 ◆ finder searcherfile
+
+class searcher extends finder
+
+    @: @screen @editor name='searcher' ->
+
+        super @screen @editor name
+        
+        if @name == 'searcher'
+            post.on 'searcher.show' @show
+            post.on 'file.loaded'   @onFileLoaded
+        
+        @sfils = []
+        
+    #  0000000   00000000   00000000    0000000   000   000   0000000   00000000  
+    # 000   000  000   000  000   000  000   000  0000  000  000        000       
+    # 000000000  0000000    0000000    000000000  000 0 000  000  0000  0000000   
+    # 000   000  000   000  000   000  000   000  000  0000  000   000  000       
+    # 000   000  000   000  000   000  000   000  000   000   0000000   00000000  
+
+    arrangeRect: ->
+    
+        [
+            int(@editor.cells.x-@editor.gutter.cells.cols-1)
+            int(@editor.cells.y)
+            int(@editor.cells.cols+@editor.gutter.cells.cols+1)
+            int(@editor.cells.rows-3)
+        ]
+
+    arrange: =>
+
+        super()    
+    
+        for sfil in @sfils
+            y = @choices.cells.y - @choices.state.s.view[1] + sfil.lineIndex
+            sfil.layout @choices.cells.x y @choices.cells.cols 1
+            
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    draw: ->
+
+        ⮐  if @hidden()
+
+        super()
+        
+        for sfil in @sfils
+            if @choices.state.s.view[1] <= sfil.lineIndex < @choices.state.s.view[1]+@choices.cells.rows
+                sfil.draw()
+            
+    # ██     ██   ███████   ███   ███   ███████  ████████
+    # ███   ███  ███   ███  ███   ███  ███       ███     
+    # █████████  ███   ███  ███   ███  ███████   ███████ 
+    # ███ █ ███  ███   ███  ███   ███       ███  ███     
+    # ███   ███   ███████    ███████   ███████   ████████
+
+    onMouse: event =>
+
+        ⮐  if @hidden()
+        
+        for sfil in @sfils
+            ret = sfil.onMouse event ; ⮐ ret if ret?.redraw
+        
+        super event
+        
+    # ███       ███████    ███████   ███████    ████████  ███████  
+    # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███      ███   ███  █████████  ███   ███  ███████   ███   ███
+    # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████   ███████   ███   ███  ███████    ████████  ███████  
+
+    onFileLoaded: file =>
+    
+        ⮐  if @hidden()
+    
+        @hide()
+        
+        ⮐  if empty @fileToHighlight
+        ⮐  if empty @textToHighlight
+        ⮐  if empty file
+    
+        post∙emit 'editor.highlight' @textToHighlight
+        
+        delete @fileToHighlight
+        delete @textToHighlight
+        
+    # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
+    # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
+    # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
+    # ███       ███ █ ███  ███     ███           ███       ███  ███      ███             ███   ███  ███        ███       ███  ████
+    # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
+
+    emitFileOpen: choice ->
+    
+        # log 'emit file.open'
+    
+        @textToHighlight = @input.current()
+        @fileToHighlight = choice.path
+        
+        post∙emit 'file.open' choice.path choice.row choice.col
+        
+    # ███   ███  ███  ███      ███   ███████   ███   ███  █████████        ████          ███████    ████████    ███████   ███   ███
+    # ███   ███  ███  ███      ███  ███        ███   ███     ███          ██  ██         ███   ███  ███   ███  ███   ███  ███ █ ███
+    # █████████  ███  ███      ███  ███  ████  █████████     ███           ████ ██       ███   ███  ███████    █████████  █████████
+    # ███   ███  ███  ███      ███  ███   ███  ███   ███     ███          ██  ███        ███   ███  ███   ███  ███   ███  ███   ███
+    # ███   ███  ███  ███████  ███   ███████   ███   ███     ███           █████ █       ███████    ███   ███  ███   ███  ██     ██
+
+    highlightTextAndEmitRedraw: text ->
+    
+        @choices.state.highlightText text
+        post∙emit 'redraw'
+        
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: text ○=>
+    
+        # log "searcher show |#{text}|"
+        
+        text = @searchText text # to use selection or cursor word if text is empty
+        
+        # log g4("#{r6 'searcher'} '#{text}'")
+        
+        if empty text
+            @input.grabFocus()
+            ⮐  super()
+        
+        editorFile = ked_session.get 'editor▸file'
+        
+        dir   = prjcts.dir   editorFile
+        files = prjcts.files editorFile
+
+        # log "searcher - search #{files.length} files in #{dir} for |#{text}|"
+        
+        view.prototype.show.call @ # bypass finder to avoid reading selection or cursor word again
+        
+        @input.grabFocus()
+        @choices.clearEmpty()        
+        @sfils = []
+        
+        for file,idx in files
+                    
+            filet =○ nfs.readText file
+            
+            segls = kseg.segls filet
+            spans = belt.lineSpansForText segls text
+            
+            if idx == files.length-1
+                log y6('▸▸▸ searcher done')
+                @highlightTextAndEmitRedraw text
+            
+            continue if empty spans
+            
+            front = belt.frontmostSpans spans
+            ext = slash.ext file
+            
+            items = []
+            items.push line:'' 
+
+            sfil = new searcherfile @screen "#{@name}_sfil_#{idx}"
+            sfil.lineIndex = @choices.items.length+1
+            sfil.set slash.relative(file dir)            
+            @sfils.push sfil
+
+            items.push
+                line:  '●'
+                type:  'file'
+                path:  file
+                row:   0
+                col:   0
+                
+            for span in front
+                if items[-1].row != span[1]-1
+                    items.push line:''
+                items.push
+                    line:  ' ' + kseg.str(segls[span[1]])
+                    path:  file
+                    row:   span[1]
+                    col:   span[2]
+            
+            @choices.append items ext # this is quite expensive, maybe need to queue this with a delay?
+            
+            ⮐  if @hidden()
+            
+            if idx == files.length-1
+                @highlightTextAndEmitRedraw text
+                
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+        
+    apply: choice ->
+        
+        ⮐  @emitFileOpen(choice) if choice?.path
+        
+        super choice
+                                    
+    # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███  ███  ████  ███        ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ███  ████
+    # ███  ███   ███  ███         ███████      ███         ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onInputAction: action text ->
+    
+        # log "searcher.onInputAction #{action} #{text}"
+    
+        switch action
+            
+            'submit' ➜ ⮐  @show text
+            'right'  ➜ ⮐  
+            'change' ➜ ⮐  
+            
+        super action text
+
+⮐  searcher

@@ -1,0 +1,193 @@
+###
+    00     00  000   0000000   0000000  
+    000   000  000  000       000       
+    000000000  000  0000000   000       
+    000 0 000  000       000  000       
+    000   000  000  0000000    0000000  
+###
+
+use ../../../kxk ▪ kutil kseg
+use ../../../kxk ◆ pepe
+use              ◆ belt
+
+function misc
+        
+    ###
+     0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
+    000       000   000  000   000  000   000  000      000          000     000  000   000  0000  000  
+    000       000   000  000000000  00000000   000      0000000      000     000  000   000  000 0 000  
+    000       000   000  000 0 000  000        000      000          000     000  000   000  000  0000  
+     0000000   0000000   000   000  000        0000000  00000000     000     000   0000000   000   000  
+
+    args:
+        before   the chunk before the cursor
+        turd     the part of it that needs completion, usually the last word or the last punctuation character  
+        words    list of chunks collected from current file and other sources
+    
+    ⮐  list of strings suitable for completion
+    
+    filters chunks that don't match
+    removes trailing crappy punctuation from the matching chunks
+    inserts matching subwords if chunk contains punctuation, eg: for chunk 'obj.prop' and before 'my.' it will include '.prop'
+    ###
+    
+    @prepareWordsForCompletion: before turd words ->
+        
+        filtered = []
+        
+        for w in words
+        
+            if w.startsWith turd # check anything that starts with turd
+                continue if w.startsWith '..' # .. skip if it is the start of a relative path
+                continue if w.startsWith './' #  ▴ this prevents relative use paths to clutter 
+                                              #  ▴ the completion when turd is a dot.
+                continue if /\d+\.\d+/.test(w) and not w.startsWith before # skip float decimals if the integer part doesn't match
+                
+                p = pepe w
+                if p.unbalanced or p.mismatch
+                    
+                    if w.endsWith(p.tail) and p.mismatch
+                        fix = p.mismatch[0].content[0]
+                        #◂ #{w} #{fix}"
+                        filtered.push fix
+                        if valid (wds = kseg.words fix)
+                            fst = fix[0..wds[0].index+wds[0].word.length]
+                            if fst != fix
+                                #▴ #{w} #{fst}"
+                                filtered.push fst 
+                    else if p.unbalanced
+                        fix = p.unbalanced[0].content[0]
+                        #◂ #{w} #{fix}"
+                        filtered.push fix
+                    else
+                        #skip |#{w}| pepe" p
+                    
+                    continue 
+                    
+                if 0 <= w.indexOf '\n'
+                    w = w[0...w.indexOf('\n')]
+                    
+                if valid (wds = kseg.words w)
+                    lst = wds[0].index+wds[0].word.length
+                    if lst < w.length-1
+                        if lst > before.length
+                            fst = w[0..lst]
+                            p = pepe fst
+                            if not p.unbalanced or p.mismatch
+                                #▸▸ #{fst} #{before} #{turd} #{wds[0].index+wds[0].word.length} < #{w.length}"
+                                filtered.push fst
+                                continue
+                            else
+                                balanced = true
+                        if not balanced
+                            #⮐  #{before} #{turd} #{lst} < #{w.length} |#{w}|"
+                            continue 
+                        
+                #■ #{w} #{before} #{turd}" kseg.words(w)
+                
+                filtered.push w
+                continue                        
+            
+            wds = kseg.words w
+            for subw,idx in wds          # split chunk into words and 
+                if subw.word.startsWith turd  # add any that starts with turd 
+                    #◆ #{w} #{before} |#{subw.word}|"
+                    filtered.push subw.word    
+                    
+                    if idx == wds.length-1 and subw.index+subw.word.length < w.length-1
+                        rwd = w[subw.index..]
+                        p = pepe rwd
+                        if not (p.unbalanced or p.mismatch)
+                            #◆◆ #{w} #{before} ▸#{turd}◂ |#{rwd}|" 
+                            filtered.push rwd
+                            
+                else if turd.length == 1 and turd == w[subw.index-1] # if subword is prefixed with turd
+                    if turd != '.'
+                        #○ #{w} #{before}"
+                        filtered.push turd[-1] + subw.word
+                    else
+                    if /\d+\./.test(before) and /\d+/.test(subw.word)
+                        if w.startsWith before 
+                            #✔ #{w} #{before}"
+                            filtered.push turd[-1] + subw.word           
+                        # else
+                        #     #✘ #{w} #{before}"
+                    else if not /\d+\./.test(before) and not /\d+/.test(subw.word)
+                        #▴ #{w} #{before}"
+                        filtered.push turd[-1] + subw.word
+           
+        words = kutil.uniq filtered
+        
+        ⮐  [] if empty words
+        
+        segls = []
+        
+        push = s ->
+            
+            ⮐  if kseg.str(s) == turd # don't include what we are trying to complete
+            
+            ws = kseg.words s
+            ws = ws.filter (w) -> w.index+w.segl.length > turd.length
+            
+            if valid ws[0] 
+                if ws[0].index == 0 and turd != ws[0].word != s and ws[0].word.startsWith(turd)
+                    segls.push ws[0].segl # add the first word of longer completion 
+            # if kseg.headCountTurd(s[turd.length..]) # if completion starts with turd, 
+            #     if not s[turd.length] in '([{'
+            #         #✘ #{kseg.str s[0..turd.length+1]} #{before} |#{s[turd.length]}|"
+            #         segls.push s[0..turd.length+1]      # add the first character
+                
+            segls.push s
+        
+        for segl in kseg.segls words
+            #
+            tc = kseg.tailCountTurd segl
+            
+            if tc == 0 or tc == 1 and segl[0] == segl[-1]
+                push segl
+            else
+                end = kseg.str segl[segl.length-tc..]
+                if end in '])}' or end[-1] in ')]}' and end[-2] not in ','
+                    push segl
+                else
+                    beforeTurd = segl[0...segl.length-tc]
+                    if valid beforeTurd
+                        push segl[0...segl.length-tc]
+                    
+        strs = segls.map kseg.str
+        strs.sort()
+        kutil.uniq strs
+        
+    #  0000000   0000000   00     00  00     00  00000000  000   000  000000000  
+    # 000       000   000  000   000  000   000  000       0000  000     000     
+    # 000       000   000  000000000  000000000  0000000   000 0 000     000     
+    # 000       000   000  000 0 000  000 0 000  000       000  0000     000     
+    #  0000000   0000000   000   000  000   000  00000000  000   000     000     
+    
+    @isCommentLine: line ->
+    
+        trimmed = kseg.trim(line)
+        trimmed[0] == "#"
+
+    @indexOfExtremePositionInDirection: posl dir index ->
+        
+        switch dir
+            'left' 'right' ➜ ci = 0
+            'up'   'down'  ➜ ci = 1
+            
+        switch dir
+            'left' 'up'    ➜ start =  Infinity  ; cmp = (a b) -> a > b
+            'right' 'down' ➜ start = -Infinity  ; cmp = (a b) -> a < b
+            
+        for pos,idx in posl
+            if cmp start pos[ci]
+                start = pos[ci]
+                exi   = idx
+                
+        if valid index and valid posl[index]    
+            if posl[exi][ci] == posl[index][ci]  
+                ⮐  index                         
+        
+        exi
+
+export misc

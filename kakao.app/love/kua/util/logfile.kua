@@ -1,0 +1,61 @@
+###
+000       0000000    0000000   00000000  000  000      00000000
+000      000   000  000        000       000  000      000     
+000      000   000  000  0000  000000    000  000      0000000 
+000      000   000  000   000  000       000  000      000     
+0000000   0000000    0000000   000       000  0000000  00000000
+###
+
+class logfile
+
+    @: ->
+        
+        logfile = '/Users/kodi/s/kakao/kakao.app/lov.log'
+        @stream = io.open(logfile,"w+")
+        @closed = false
+        _G.print = (...) -> @log ...
+        _G.error = (...) -> @error ...
+        
+    log: ... -> 
+        
+        ⮐  if @closed
+        
+        args = {...}
+        
+        if args.len >= 1 and args[1] is "string"
+            s = ""
+            for _ v in ipairs args
+                s &= $v
+            @write ◌333 & "▸ " & ◌g & s
+        else        
+            @write ◌444 & "▾" & ◌g 
+            for _ v in pairs args
+                @write $v
+        @stream∙flush()
+
+    error: ... -> 
+    
+        ⮐  if @closed
+        
+        args = {...}
+        
+        if args.len == 1 and args[1] is "string"
+            @write ◌r & "▴ " & ◌ff0 & args[1]
+        else        
+            @write ◌r & "▴"
+            for _ v in ipairs args
+                @write $v
+        @stream∙flush()
+
+    write: txt ->
+        
+        @stream∙write txt & '\n'
+        
+    close: cb ->
+    
+        ⮐  if @closed
+        @stream∙write ◌r & '▪\n'
+        @closed = true
+        @stream∙close()
+        
+⮐  logfile

@@ -237,20 +237,20 @@ suite "slash":
         check slash.isAbsolute("a/b") == false
         check slash.isAbsolute("/a/b") == true
         check slash.isAbsolute("~") == true
-    #  0000000   0000000   000   000  000000000   0000000   000  000   000   0000000  
-    # 000       000   000  0000  000     000     000   000  000  0000  000  000       
-    # 000       000   000  000 0 000     000     000000000  000  000 0 000  0000000   
-    # 000       000   000  000  0000     000     000   000  000  000  0000       000  
-    #  0000000   0000000   000   000     000     000   000  000  000   000  0000000   
-    test "contains": 
-        c(slash.contains, "/c/users/home/", "users", true)
-        c(slash.contains, "/home", "hom", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "abc", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "def", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "ghi", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "jkl", false)
-        c(slash.contains, "/abc.def/ghi.jkl", "abc.def", true)
-        c(slash.contains, "/abc.def/ghi.jkl", "ghi.jkl", true)
+    # ███   ███   ███████    ███████  
+    # ███   ███  ███   ███  ███       
+    # █████████  █████████  ███████   
+    # ███   ███  ███   ███       ███  
+    # ███   ███  ███   ███  ███████   
+    test "has": 
+        c(slash.has, "/c/users/home/", "users", true)
+        c(slash.has, "/home", "hom", false)
+        c(slash.has, "/abc.def/ghi.jkl", "abc", false)
+        c(slash.has, "/abc.def/ghi.jkl", "def", false)
+        c(slash.has, "/abc.def/ghi.jkl", "ghi", false)
+        c(slash.has, "/abc.def/ghi.jkl", "jkl", false)
+        c(slash.has, "/abc.def/ghi.jkl", "abc.def", true)
+        c(slash.has, "/abc.def/ghi.jkl", "ghi.jkl", true)
     test "files": 
         var fls = slash.files(slash.dir(currentSourcePath()))
         check (fls.find(currentSourcePath()) >= 0) == true

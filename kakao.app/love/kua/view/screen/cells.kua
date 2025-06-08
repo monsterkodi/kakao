@@ -1,0 +1,286 @@
+###
+     ███████  ████████  ███      ███       ███████  
+    ███       ███       ███      ███      ███       
+    ███       ███████   ███      ███      ███████   
+    ███       ███       ███      ███           ███  
+     ███████  ████████  ███████  ███████  ███████   
+
+    represents a rectangular subset of screen cells
+    wraps screen cell manipulation functions with transformed coordinates
+    provides some utilities to quickly fill cells
+###
+
+use edit.tool.belt
+use theme.color theme.theme
+# use util.img.rounded
+
+class cells
+
+    @: screen -> 
+    
+        @screen = screen
+        @x    = 1
+        @y    = 1
+        @cols = 0
+        @rows = 0
+    
+    rect: -> [@x, @y, @x+@cols-1, @y+@rows-1]
+    
+    layout: x y cols rows ->
+     
+        @x    = x 
+        @y    = y 
+        @cols = cols  
+        @rows = rows
+        
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+
+    wx: x -> if x < 0 ➜ @x+@cols+x ➜ @x+x
+    wy: y -> if y < 0 ➜ @y+@rows+y ➜ @y+y
+    
+    inside:  x y -> 1 <= x and x <= @cols and 1 <= y and y <= @rows
+    outside: x y -> not @inside x y
+    
+    add:        x y char fg bg -> if @inside(x y) ➜ @screen∙add       (@wx(x) @wy(y) char fg bg) ➜ 0xffffffffff
+    set:        x y char fg bg -> if @inside(x y) ➜ @screen∙set       (@wx(x) @wy(y) char fg bg)
+    set_unsafe: x y char fg bg ->                   @screen∙set        @x+x   @y+y  char fg bg
+    set_char:   x y char       -> if @inside(x y) ➜ @screen∙set_char  @wx(x) @wy(y) char
+    set_ch_fg:  x y char fg    -> if @inside(x y) ➜ @screen∙set_ch_fg @wx(x) @wy(y) char fg
+    set_bg:     x y bg         -> if @inside(x y) ➜ @screen∙set_bg    @wx(x) @wy(y) bg
+    set_fg:     x y fg         -> if @inside(x y) ➜ @screen∙set_fg    @wx(x) @wy(y) fg
+    set_fg_bg:  x y fg bg      -> if @inside(x y) ➜ @screen∙set_fg_bg @wx(x) @wy(y) fg bg
+    
+    meta_clear: -> delete @m
+    meta_pre:   x y p -> if @inside(x y) ➜ @m ?= belt.metas(@cols @rows) ; @m[y][x].pre∙push p
+    meta_pst:   x y p -> if @inside(x y) ➜ @m ?= belt.metas(@cols @rows) ; @m[y][x].pst∙push p
+    meta_clone: x y ->
+        ⮐  if empty @m 
+        # log "clone #{x} #{y} #{@m[y][x].pre} #{@m[y][x].pst}" @m[y][x]
+        @screen∙meta_set @wx(x) @wy(y) @m[y][x]
+    
+    #  0000000   00000000  000000000  
+    # 000        000          000     
+    # 000  0000  0000000      000     
+    # 000   000  000          000     
+    #  0000000   00000000     000     
+    
+    get_char: x y -> @screen∙get_char @wx(x) @wy(y)
+    get_bg:   x y -> @screen∙get_bg   @wx(x) @wy(y)
+    get_fg:   x y -> @screen∙get_fg   @wx(x) @wy(y)
+        
+    # 00000000    0000000    0000000  
+    # 000   000  000   000  000       
+    # 00000000   000   000  0000000   
+    # 000        000   000       000  
+    # 000         0000000   0000000   
+    
+    isInsidePos:     x y -> (x y) = belt.pos(x y); (0 <= x < @cols) and (0 <= y < @rows)
+    isOutsidePos:    x y -> (x y) = belt.pos(x y); x < 0 or x >= @cols or y < 0 or y >= @rows
+    
+    isInsideScreen:  x y -> @isInsidePos  @posForScreen(x y)
+    isOutsideScreen: x y -> @isOutsidePos @posForScreen(x y)
+    
+    isInsideEvent:   evt -> @isInsidePos  @posForEvent(evt)
+    isOutsideEvent:  evt -> @isOutsidePos @posForEvent(evt)
+        
+    posForScreen:    x y -> (x y) = belt.pos(x y); [x-@x y-@y]
+    screenForPos:    x y -> (x y) = belt.pos(x y); [x+@x y+@y]
+    posForEvent:     evt -> @posForScreen evt.cell
+        
+    # 0000000     0000000           00000000   00000000   0000000  000000000  
+    # 000   000  000                000   000  000       000          000     
+    # 0000000    000  0000          0000000    0000000   000          000     
+    # 000   000  000   000          000   000  000       000          000     
+    # 0000000     0000000   000000  000   000  00000000   0000000     000     
+    
+    bg_rect: x1 y1 x2 y2 bg ->
+    
+        if x1 < 0 ➜ x1 = @cols + x1 
+        if x2 < 0 ➜ x2 = @cols + x2 
+
+        if y1 < 0 ➜ y1 = @rows + y1 
+        if y2 < 0 ➜ y2 = @rows + y2 
+        
+        for row in y1..y2
+            if row < @rows
+                for col in x1..x2
+                    if col < @cols
+                        @set_bg col row bg
+
+    # ████████  ███  ███      ███    
+    # ███       ███  ███      ███    
+    # ██████    ███  ███      ███    
+    # ███       ███  ███      ███    
+    # ███       ███  ███████  ███████
+
+    bg_fill: x1 y1 x2 y2 bg ->
+    
+        if x1 < 0 ➜ x1 = @cols + x1 
+        if x2 < 0 ➜ x2 = @cols + x2 
+
+        if y1 < 0 ➜ y1 = @rows + y1 
+        if y2 < 0 ➜ y2 = @rows + y2 
+        
+        ⮐  if x1 > x2
+        
+        for row in y1..y2
+            if row < @rows
+                for col in x1..x2
+                    if col < @cols
+                        @set_bg   col row bg
+                        @set_char col row ' '
+                        
+    fill_rect: x1 y1 x2 y2 char fg bg ->
+        
+        x1 = clamp 0 @cols-1 x1
+        y1 = clamp 0 @rows-1 y1
+        if x2 < 0 ➜ x2 = @cols + x2 
+        if y2 < 0 ➜ y2 = @rows + y2 
+        
+        for row in y1..y2
+            for col in x1..x2
+                @set col row char fg bg
+                
+    fill_row: row x1 x2 char fg bg ->
+        
+        ⮐  if x1 < 0 and x2 < 0
+
+        x1 = clamp 0 @cols-1 x1
+        x2 = clamp 0 @cols-1 x2
+        
+        ⮐  if x2 < x1
+        
+        for col in x1..x2
+            @set col row char fg bg
+
+    fill_col: col y1 y2 char fg bg ->
+        
+        ⮐  if y1 < 0 and y2 < 0
+
+        y1 = clamp 0 @rows-1 y1
+        y2 = clamp 0 @rows-1 y2
+        
+        ⮐  if y2 < y1
+        
+        for row in y1..y2
+            @set col row char fg bg
+            
+    # ████████  ████████    ███████   ██     ██  ████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     
+    # ██████    ███████    █████████  █████████  ███████ 
+    # ███       ███   ███  ███   ███  ███ █ ███  ███     
+    # ███       ███   ███  ███   ███  ███   ███  ████████
+
+    draw_frame: x1 y1 x2 y2 opt ->
+
+        ⮐  if x1 < 0 and x2 < 0
+        ⮐  if y1 < 0 and y2 < 0
+        
+        if x2 < 0 ➜ x2 = @cols + x2 
+        if y2 < 0 ➜ y2 = @rows + y2 
+        
+        opt ?= {}
+        opt.pad ?= [1 0] # padding at left and right edge by default
+        
+        # ╭─┬─╮
+        # │ │ │
+        # ├─┼─┤ 
+        # │ │ │
+        # ╰─┴─╯
+        
+        fg = opt.fg or '#888'
+        bg = opt.bg or nil
+        
+        @set  x1  y1 '╭' fg bg
+        @set  x2  y1 '╮' fg bg
+        @set  x1  y2 '╰' fg bg
+        @set  x2  y2 '╯' fg bg
+        
+        @fill_row y1 x1+1 x2-1 '─' fg bg
+        @fill_row y2 x1+1 x2-1 '─' fg bg
+        @fill_col x1 y1+1 y2-1 '│' fg bg
+        @fill_col x2 y1+1 y2-1 '│' fg bg
+        
+        for x in 0...opt.pad[0]
+            @fill_col x1+1+x y1+1 y2-1 ' ' fg bg
+            @fill_col x2-1-x y1+1 y2-1 ' ' fg bg
+        
+        for y in opt.hdiv
+            @set  x1  y '' fg bg
+            @set  x2  y '' fg bg
+            @fill_row y x1+1 x2-1 '─' fg bg
+            
+    # ████████    ███████   ███   ███  ███   ███  ███████    ████████  ███████  
+    # ███   ███  ███   ███  ███   ███  ████  ███  ███   ███  ███       ███   ███
+    # ███████    ███   ███  ███   ███  ███ █ ███  ███   ███  ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███       ███   ███
+    # ███   ███   ███████    ███████   ███   ███  ███████    ████████  ███████  
+
+    draw_rounded_border: x1 y1 x2 y2 opt ->
+    
+        ⮐  if x1 < 0 and x2 < 0
+        ⮐  if y1 < 0 and y2 < 0
+        
+        if x2 < 0 ➜ x2 = @cols + x2 
+        if y2 < 0 ➜ y2 = @rows + y2 
+        
+        opt ?= {}
+        fg     = opt.fg or '#888'
+        zLayer = opt.zLayer or 1000
+        
+        @img x1 y1 'rounded.border.tl' fg zLayer  
+        @img x2 y1 'rounded.border.tr' fg zLayer  
+        @img x1 y2 'rounded.border.bl' fg zLayer  
+        @img x2 y2 'rounded.border.br' fg zLayer  
+        
+        @img x1+1 y1 'rounded.border.t'  fg zLayer x2-1 
+        if y1+1 < y2 ➜ @img x1 y1+1 'rounded.border.l'  fg zLayer x1 y2-1  
+        if x1+1 < x2 ➜ @img x1+1 y2 'rounded.border.lb' fg zLayer          
+        @img x1+2 y2 'rounded.border.b'  fg zLayer x2-1
+        if y1+1 < y2 ➜ @img x2 y1+1 'rounded.border.rt' fg zLayer x2       
+        if y1+2 < y2 ➜ @img x2 y1+2 'rounded.border.r'  fg zLayer x2 y2-1  
+        
+    draw_vertical_padding: x y fg bg zLayer=1000 ->
+    
+        rounded.place @wx(x) @wy(y) 'rounded.vertical' fg nil nil zLayer bg
+
+    draw_horizontal_padding: x y fg bg zLayer=1000 ->
+    
+        rounded.place @wx(x) @wy(y) 'rounded.horizontal' fg nil nil zLayer bg
+        
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████  
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███
+
+    draw_rounded_cursor: x y fg ->
+    
+        @img x y "rounded.cursor" fg
+        
+    draw_rounded_multi_cursor: x y fg ->
+    
+        @img x y "rounded.multi" fg
+        
+    img: x y name fg zLayer=1000 xe ye ->
+    
+        ⮐  if @outside x y
+        
+        # rounded.place @wx(x) @wy(y) name fg @wx(xe) @wy(ye) zLayer
+        
+    #  0000000   0000000          000         0000000   0000000   000   000  000000000  00000000    0000000    0000000  000000000  
+    # 000   000  000   000        000        000       000   000  0000  000     000     000   000  000   000  000          000     
+    # 000000000  000   000        000        000       000   000  000 0 000     000     0000000    000000000  0000000      000     
+    # 000   000  000   000  000   000        000       000   000  000  0000     000     000   000  000   000       000     000     
+    # 000   000  0000000     0000000          0000000   0000000   000   000     000     000   000  000   000  0000000      000     
+    
+    adjustContrastForHighlight: x y highlightColor ->
+        
+        ofg = @get_fg x y
+        @set_fg x y color.adjustForBackground(ofg highlightColor)        
+                        
+⮐  cells

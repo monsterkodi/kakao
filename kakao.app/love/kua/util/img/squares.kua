@@ -1,0 +1,99 @@
+###
+     ███████   ███████   ███   ███   ███████   ████████   ████████   ███████
+    ███       ███   ███  ███   ███  ███   ███  ███   ███  ███       ███     
+    ███████   ███ ██ ██  ███   ███  █████████  ███████    ███████   ███████ 
+         ███  ███ ████   ███   ███  ███   ███  ███   ███  ███            ███
+    ███████    █████ ██   ███████   ███   ███  ███   ███  ████████  ███████ 
+###
+
+use ◆ png
+
+function squares
+
+    @pixlArr: new Uint32Array(new ArrayBuffer(4))
+    @tileArr: null
+    @csz:   []
+    @cache: {}
+    
+    # █████████  ███  ███      ████████
+    #    ███     ███  ███      ███     
+    #    ███     ███  ███      ███████ 
+    #    ███     ███  ███      ███     
+    #    ███     ███  ███████  ████████
+        
+    @tilesInRect: px py pw ph ->
+    
+        tiles = []
+        
+        rgtx = px+pw
+        boty = py+ph
+        
+        cy = py
+        
+        while cy < boty
+            cx = px
+            
+            ty = floor cy / @csz[1]
+            oy = cy - ty * @csz[1]
+            sh = clamp 0 @csz[1] @csz[1]-oy
+            sh = min sh boty-cy
+            
+            while cx < rgtx
+                tx = floor cx / @csz[0]
+                ox = cx - tx * @csz[0]
+                sw = clamp 0 @csz[0] @csz[0]-ox
+                sw = min sw rgtx-cx
+                
+                tiles.push [tx ty ox oy sw sh]
+                
+                cx += sw
+            cy += sh
+        
+        tiles
+
+    @tileImg: tw th fg ->
+    
+        @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
+        
+        img = w:tw h:th
+            
+        for c in 0...tw
+            @tileArr.set @pixlArr c
+        for r in 1...th
+            @tileArr.copyWithin r*tw (r-1)*tw r*tw
+        
+        img.png = Buffer.from png.encode([@tileArr.buffer] img.w img.h 2)
+        img
+        
+    # ████████   ███       ███████    ███████  ████████
+    # ███   ███  ███      ███   ███  ███       ███     
+    # ████████   ███      █████████  ███       ███████ 
+    # ███        ███      ███   ███  ███       ███     
+    # ███        ███████  ███   ███   ███████  ████████
+
+    @place: sx sy sw sh fg z ->
+    
+        ⮐  if empty @csz
+        
+        img = @cache[fg]
+        if empty img
+        
+            img = @tileImg @csz[0] @csz[1] fg
+            @cache[fg] = img
+            
+        for t in @tilesInRect sx sy sw sh
+            ked_ttio.placeImg img t[0] t[1] t[2] t[3] t[4] t[5] z
+        
+# ████████   ████████   ███████  ███  ███████  ████████
+# ███   ███  ███       ███       ███     ███   ███     
+# ███████    ███████   ███████   ███    ███    ███████ 
+# ███   ███  ███            ███  ███   ███     ███     
+# ███   ███  ████████  ███████   ███  ███████  ████████
+
+    @onResize: cols rows pixels cellsz -> 
+
+        @csz     = cellsz # should this be copied instead?
+        @cache   = {}
+        @tileArr = new Uint32Array(new ArrayBuffer(@csz[0]*@csz[1]*4))
+    
+export squares

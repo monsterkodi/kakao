@@ -1,0 +1,104 @@
+
+([^\/\s]+)(\.noon)          . file_noon   . file_ext_noon
+([^\/\s]+)(\.kode)          . file_kode   . file_ext_kode
+([^\/\s]+)(\.kim)           . file_kim    . file_ext_kim
+([^\/\s]+)(\.nim)           . file_nim    . file_ext_nim
+([^\/\s]+)(\.kua)           . file_kua    . file_ext_kua
+([^\/\s]+)(\.lua)           . file_lua    . file_ext_lua
+([^\/\s]+)(\.html)          . file_html   . file_ext_html
+([^\/\s]+)(\.md)            . file_md     . file_ext_md
+([^\/\s]+)(\.json)          . file_json   . file_ext_json
+([^\/\s]+)(\.js)            . file_js     . file_ext_js
+([^\/\s]+)(\.pug)           . file_pug    . file_ext_pug
+([^\/\s]+)(\.styl)          . file_styl   . file_ext_styl
+                                          
+([^\/\s]+)(\.plist)         . file_plist  . file_ext_plist
+([^\/\s]+)(\.py)            . file_py     . file_ext_py
+([^\/\s]+)(\.png)           . file_png    . file_ext_png
+([^\/\s]+)(\.icns)          . file_icns   . file_ext_icns
+([^\/\s]+)(\.cpp)           . file_cpp    . file_ext_cpp
+([^\/\s]+)(\.h)             . file_h      . file_ext_h
+([^\/\s]+)(\.mm)            . file_mm     . file_ext_mm
+([^\/\s]+)(\.log)           . file_log    . file_ext_log
+([^\/\s]+)(\.txt)           . file_txt    . file_ext_txt
+
+(\/)([\w\.\-]+)(\/)         . dir_punct   . dir  . dir_punct  
+([\w\-]+)(\.[\w\-]+)        . file               . ext
+([\w\-]+|~)(\/)             . dir                . dir_punct
+([⏷⏵])([\.\w\s\-]+)(\s?✔?)$   . dir . dir_leaf . dir
+
+\.\.                        . dir  
+\s\.                        . dir
+\/                          . dir_punct
+
+# [⏷⏵]                      . dir
+
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_noon  . file_noon . file_icon_noon  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_kode  . file_kode . file_icon_kode  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_md    . file_md   . file_icon_md   
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_styl  . file_styl . file_icon_styl  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_json  . file_json . file_icon_json  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_js    . file_js   . file_icon_js   
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_html  . file_html . file_icon_html  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_css   . file_css  . file_icon_css  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_pug   . file_pug  . file_icon_pug  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_nim   . file_nim  . file_icon_nim  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_kim   . file_kim  . file_icon_kim  
+()(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_lua   . file_lua  . file_icon_lua  
+(☾)(\s?[^\/\s]*)(\s?[✔✚]?)  . file_icon_kua   . file_kua  . file_icon_kua  
+
+[]     . file_icon_text
+[]     . file_icon_png
+[]     . file_icon_bash
+[]     . file_icon_c
+[]     . file_icon_cc
+[]     . file_icon_clj
+[]     . file_icon_cljs
+[]     . file_icon_coffee
+[]     . file_icon_cpp
+[]     . file_icon_cs
+[]     . file_icon_d
+[]     . file_icon_dart
+[]     . file_icon_db
+[]     . file_icon_diff
+[]     . file_icon_elm
+[]     . file_icon_erl
+[]     . file_icon_ex
+[]     . file_icon_fs
+[]     . file_icon_go
+[]     . file_icon_h
+[]     . file_icon_hbs
+[]     . file_icon_hs
+[]     . file_icon_ini
+[]     . file_icon_java
+[]     . file_icon_jl
+[]     . file_icon_jsx
+[]     . file_icon_less
+[]     . file_icon_lua
+[☾]     . file_icon_kua
+[λ]     . file_icon_ml
+[]     . file_icon_mm
+[]     . file_icon_nix
+[]     . file_icon_php
+[]     . file_icon_pl
+[]     . file_icon_plist
+[]     . file_icon_pp
+[]     . file_icon_py
+[ﳒ]     . file_icon_r
+[]     . file_icon_rb
+[]     . file_icon_rs
+[]     . file_icon_rss
+[]     . file_icon_sass
+[]     . file_icon_scala
+[]     . file_icon_sh
+[]     . file_icon_sln
+[ﲹ]     . file_icon_sol
+[]     . file_icon_sql
+[]     . file_icon_suo
+[]     . file_icon_swift
+[ﭨ]     . file_icon_tex
+[]     . file_icon_ts
+[]     . file_icon_tsx
+[]     . file_icon_vim
+[﵂]     . file_icon_vue
+[]     . file_icon_xul

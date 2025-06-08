@@ -1,0 +1,147 @@
+###
+00000000  000   000  000   000   0000000   0000000   000    
+000       000   000  0000  000  000       000   000  000    
+000000    000   000  000 0 000  000       000   000  000    
+000       000   000  000  0000  000       000   000  000    
+000        0000000   000   000   0000000   0000000   0000000
+###
+
+use ../../../kxk ▪ post slash
+use ../../theme  ◆ color theme
+use ../base      ◆ view knob
+use              ◆ funtree
+
+function funcol extends view
+
+    @: screen @editor features ->
+        
+        super screen 'funcol' features
+        
+        @isVisible = false
+        @active    = false
+        
+        @pointerType = 'pointer'
+        
+        @knob    = new knob    screen  "#{@name}_knob"
+        @funtree = new funtree @editor "#{@name}_funtree" ['scrllr']       
+        
+        @knob.frameSide = 'left'
+        
+        @funtree.setColor 'bg'            theme.funtree.bg
+        @funtree.setColor 'empty'         @funtree.color.bg
+        @funtree.setColor 'cursor_main'   @funtree.color.bg
+        @funtree.setColor 'cursor_empty'  @funtree.color.bg
+        @funtree.scroll.setColor 'bg'     @funtree.color.bg
+        
+        @knob   .setColor 'bg'            @funtree.color.bg
+        
+        post.on 'funcol.resize' @onFuncolResize
+        post.on 'funcol.toggle' @onFuncolToggle
+        post.on 'session.merge' @onSessionMerge
+        
+    onSessionMerge: recent =>
+    
+        ⮐  if empty recent.funcol
+        
+        if recent.funcol.active
+            @active = true
+            @show()
+            
+        ked_session.set 'funcol' recent.funcol
+        
+    # ███       ███████   ███   ███   ███████   ███   ███  █████████
+    # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
+    # ███      █████████    █████    ███   ███  ███   ███     ███   
+    # ███      ███   ███     ███     ███   ███  ███   ███     ███   
+    # ███████  ███   ███     ███      ███████    ███████      ███   
+
+    layout: x y w h ->
+        
+        @funtree.layout x y w h
+        @knob.layout    x y 1 h
+                
+        super x y w h
+        
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    draw: ->
+        
+        ⮐  if @hidden() or @collapsed() or not @active
+        
+        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funtree.bg
+        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
+        
+        @funtree.draw()
+        @knob.draw()
+    
+        super()
+        
+    #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
+    # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
+    # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   
+    # ███       ███   ███  ███  ████     ███     ███        ███ ███      ███   
+    #  ███████   ███████   ███   ███     ███     ████████  ███   ███     ███   
+
+    onContext: event =>
+    
+        ⮐  if not @hover
+    
+        log "funcol.onContext: #{@hover}" event
+        
+    # █████████   ███████    ███████    ███████   ███      ████████
+    #    ███     ███   ███  ███        ███        ███      ███     
+    #    ███     ███   ███  ███  ████  ███  ████  ███      ███████ 
+    #    ███     ███   ███  ███   ███  ███   ███  ███      ███     
+    #    ███      ███████    ███████    ███████   ███████  ████████
+    
+    onFuncolResize: => @knob.doDrag = true
+    onFuncolToggle: => 
+    
+        @toggle() if not (@visible() and @collapsed())
+        @active = @visible()
+        ked_session.set 'funcol▸active' @active
+        cols = max 16 int(@cells.screen.cols / 6)
+        post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+  
+    onMouse: event =>
+    
+        ⮐  if @hidden() or @collapsed() or not @active
+        
+        ret = super event            ; ⮐  ret if ret?.redraw
+        ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
+        ret = @funtree.onMouse event ; ⮐  ret if ret?.redraw
+        
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event =>
+        
+        ⮐  if @hidden() or @collapsed() or not @active
+        @funtree.onWheel event
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event =>
+        
+        ⮐  if not @funtree.hasFocus()
+        
+        @funtree.onKey key event
+
+export funcol

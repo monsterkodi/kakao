@@ -1,0 +1,127 @@
+###
+    ███   ███  ███  ████████  ███   ███ 
+    ███   ███  ███  ███       ███ █ ███ 
+     ███ ███   ███  ███████   █████████ 
+       ███     ███  ███       ███   ███ 
+        █      ███  ████████  ██     ██ 
+
+    keeps track of
+        ▪ screen cells
+        ▪ visibility
+        ▪ theme colors
+        ▪ view features
+        ▪ mouse enter and leave
+        ▪ current popup
+###
+
+# use ../../../kxk ▪ events post
+# use ../../theme  ◆ color
+# use ../screen    ◆ cells 
+use view.screen.cells
+
+class view extends events
+
+    @currentPopup: nil
+
+    @: screen name features ->
+        
+        @screen = screen
+        @name   = name
+        @cells  = cells @screen
+        @color  = {}
+        @feats  = {}
+        if features
+            for _ f in ipairs features
+                @feats[f] = true 
+        
+        @isVisible = true
+        @focusable = false
+                        
+    setColor: key clr -> @color[key] = color.values(clr)
+        
+    # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
+    # 000   000  000  000       000  000   000  000  000      000     000      000 000   
+    #  000 000   000  0000000   000  0000000    000  000      000     000       00000    
+    #    000     000       000  000  000   000  000  000      000     000        000     
+    #     0      000  0000000   000  0000000    000  0000000  000     000        000     
+  
+    show: -> 
+    
+        @isVisible = true
+        
+        if @isPopup
+            if view.currentPopup and view.currentPopup != @
+                popup = view.currentPopup
+                view.currentPopup = nil
+                popu∙hide()
+            view.currentPopup = @
+            # log "view popup.show #{@name}" 
+            post∙emit 'popup.show' @name
+        
+        @arrange()
+        {redraw:true}
+        
+    hide: ->
+    
+        @isVisible = false 
+        
+        if @isPopup
+            if @ == view.currentPopup
+                view.currentPopup = nil
+                # log "view popup.hide #{@name}" 
+                post.emit 'popup.hide' @name
+        
+        {redraw:true}
+        
+    arrange: ->    
+    hidden:  -> not @visible()
+    visible: -> @isVisible
+    toggle:  -> if @hidden() then @show() else @hide()
+         
+    collapsed: -> @cells.rows <= 0 or @cells.cols <= 0
+    
+    eventPos: event -> @cells.posForEvent event
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event -> @handleHover event
+    onWheel: event -> log "view.onWheel #{@name}"
+    
+    onMouseLeave: event -> post.emit 'redraw'
+    onMouseEnter: event -> 
+        
+        if @focusable and @grabFocus is func
+            @grabFocus()
+        
+        if @pointerType 
+            post.emit 'pointer' @pointerType
+            post.emit 'redraw'
+        
+    handleHover: event ->
+        
+        inside = not event.handled and @cells.isInsideEvent event
+        if @hover and not inside
+            @hover = false
+            @onMouseLeave event
+        else if inside and not @hover
+            @hover = true
+            @onMouseEnter event
+        @hover
+    
+    onKey: key event -> log "view.onKey #{@name}"
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    layout: x y w h -> @cells∙layout x y w h 
+    
+    draw: -> 
+        
+⮐  view

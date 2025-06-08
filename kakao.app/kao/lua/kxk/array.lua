@@ -169,6 +169,15 @@ function array:indexof(e)
     end
 
 
+function array:find(e) 
+        for i, v in ipairs(self) do 
+            if (v == e) then return i end
+        end
+        
+        return -1
+    end
+
+
 function array:rnd() 
     return self[math.random(#self)]
     end

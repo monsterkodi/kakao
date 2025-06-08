@@ -102,6 +102,12 @@ class array
         for i v in ipairs @
             if v == e ➜ ⮐  i 
         -1
+
+    find: e ->
+    
+        for i v in ipairs @
+            if v == e ➜ ⮐  i 
+        -1
         
     rnd: -> @[math.random(@len)]
     

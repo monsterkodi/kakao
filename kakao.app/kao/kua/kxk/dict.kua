@@ -21,6 +21,20 @@ class dict
         for k v in pairs d
             s &= k & ":"  & $v & " "
         kstr.pop s
+        
+    @keys: d ->
+    
+        a = []
+        for k _ in pairs d
+            a∙push k
+        a
+
+    @values: d ->
+    
+        a = []
+        for _ v in pairs d
+            a∙push v
+        a
     
     @isdict: d ->
     

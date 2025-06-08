@@ -1,0 +1,116 @@
+###
+     ███████  ████████   ███████   ████████    ███████  ███   ███  ████████  ████████   ████████  ███  ███      ████████  
+    ███       ███       ███   ███  ███   ███  ███       ███   ███  ███       ███   ███  ███       ███  ███      ███       
+    ███████   ███████   █████████  ███████    ███       █████████  ███████   ███████    ██████    ███  ███      ███████   
+         ███  ███       ███   ███  ███   ███  ███       ███   ███  ███       ███   ███  ███       ███  ███      ███       
+    ███████   ████████  ███   ███  ███   ███   ███████  ███   ███  ████████  ███   ███  ███       ███  ███████  ████████  
+
+    clickable file headings used by searcher
+###
+
+use ../../../kxk ▪ slash kseg
+use ../../theme  ◆ theme
+use ../base      ◆ view crumbs bubble
+
+class searcherfile extends view
+
+    @: @screen @name ->
+
+        super @screen @name
+        
+        @crumbs = new crumbs @screen "#{@name}_crumbs"
+        @bubble = new bubble @screen "#{@name}_bubble"
+        
+        @setColor 'bg'     theme.finder.bg
+        @setColor 'frame'  theme.finder.frame
+        
+        @crumbs.setColor 'empty' @color.bg
+        @bubble.setColor 'empty' @color.bg
+
+        @crumbs.dotlessRelative = true
+        @crumbs.on 'action'  @onCrumbsAction
+
+    #  ███████  ████████  █████████
+    # ███       ███          ███   
+    # ███████   ███████      ███   
+    #      ███  ███          ███   
+    # ███████   ████████     ███   
+
+    set: file ->
+        
+        @crumbs.set slash.dir(file)
+        
+        name = slash.file file
+        
+        @bubble.set tilde:name path:file segls:kseg.segls('/'+name)
+        
+    # ███       ███████   ███   ███   ███████   ███   ███  █████████
+    # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
+    # ███      █████████    █████    ███   ███  ███   ███     ███   
+    # ███      ███   ███     ███     ███   ███  ███   ███     ███   
+    # ███████  ███   ███     ███      ███████    ███████      ███   
+
+    layout: x y w h ->
+    
+        cw = @crumbs.rounded.length
+        bw = @bubble.rounded.length
+        
+        if true
+            @crumbs.layout x+w-bw-cw  y cw 1
+            @bubble.layout x+w-bw     y bw 1
+        else
+            @crumbs.layout x        y cw 1
+            @bubble.layout x+cw     y bw 1
+            
+        @cells.layout  x    y w  1
+        
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    draw: ->
+
+        ⮐  if @hidden()
+        
+        super()
+        
+        @crumbs.draw()
+        @bubble.draw()
+        
+        if true
+            @cells.fill_row 0 0 @cells.cols-@crumbs.rounded.length-@bubble.rounded.length-1 '─' @color.frame @color.bg
+        else
+            xs = @crumbs.rounded.length + @bubble.rounded.length
+            xe = @cells.x + @cells.cols
+            @cells.fill_row 0 xs xe '─' @color.frame @color.bg
+            
+    # ██     ██   ███████   ███   ███   ███████  ████████
+    # ███   ███  ███   ███  ███   ███  ███       ███     
+    # █████████  ███   ███  ███   ███  ███████   ███████ 
+    # ███ █ ███  ███   ███  ███   ███       ███  ███     
+    # ███   ███   ███████    ███████   ███████   ████████
+
+    onMouse: event =>
+
+        ⮐  if @hidden()
+        
+        ret = @crumbs.onMouse event  
+        ⮐  ret if ret.redraw
+        ret = @bubble.onMouse event  
+        ⮐  ret if ret.redraw
+        
+        super event
+                
+    #  ███████  ████████   ███   ███  ██     ██  ███████     ███████      ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███       ███   ███  ███   ███  ███   ███  ███   ███  ███          ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███       ███████    ███   ███  █████████  ███████    ███████      █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███       ███   ███  ███   ███  ███ █ ███  ███   ███       ███     ███   ███  ███          ███     ███  ███   ███  ███  ████
+    #  ███████  ███   ███   ███████   ███   ███  ███████    ███████      ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onCrumbsAction: action path =>
+        
+        log "#{@name} onCrumbsAction #{action} #{path}" 
+
+export searcherfile

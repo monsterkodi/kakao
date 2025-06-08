@@ -1,0 +1,163 @@
+###
+ 0000000  000   000  000   000  000000000   0000000   000   000
+000        000 000   0000  000     000     000   000   000 000 
+0000000     00000    000 0 000     000     000000000    00000  
+     000     000     000  0000     000     000   000   000 000 
+0000000      000     000   000     000     000   000  000   000
+###
+
+# use ../../kxk   ◆ matchr kstr kseg
+# use ../../kolor ◆ kulur
+# use ../theme    ◆ theme
+
+class syntax
+
+    @: name -> 
+    
+        @name = name
+        @ext  = 'txt' 
+        @clear()
+        
+    clear: -> 
+        
+        @diss = []  
+        @hash = {}  
+        @liha = {}
+        
+    setExt: ext -> @ext = ext; @ansi = false
+    
+    setRgxs: rgxs -> @config = matchr.config rgxs 'u'
+    
+    setLines: lines -> @setSegls kseg.segls(lines) 
+    
+    setColors: colors -> @colors = colors; @ansi = true
+        
+    #  ███████  ████████   ███████   ███       ███████
+    # ███       ███       ███        ███      ███     
+    # ███████   ███████   ███  ████  ███      ███████ 
+    #      ███  ███       ███   ███  ███           ███
+    # ███████   ████████   ███████   ███████  ███████ 
+
+    setSegls: segls ->
+        
+        # if valid @config
+        #     @diss = []
+        #     for segs in segls
+        #         dss = matchr.ranges(@config kseg.str(segs) 'u')
+        #         for ds in dss
+        #             if ds.clss is arr
+        #                 ds.clss = trim ds.clss.map(kstr.trim).join(' ') 
+        #         @diss.push dss
+        #     # log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
+        # else
+        #     ⮐  if @partialUpdate segls
+        # 
+        #     @clear()
+        #     
+        #     @diss = kulur.dissect segls @ext
+        #     for segl,idx in segls
+        #         hsh = kseg.hash(segl)
+        #         @hash[hsh] = @diss[idx]
+        #         @liha[idx] = hsh
+            
+    # ███   ███  ████████   ███████     ███████   █████████  ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███     ███     ███     
+    # ███   ███  ████████   ███   ███  █████████     ███     ███████ 
+    # ███   ███  ███        ███   ███  ███   ███     ███     ███     
+    #  ███████   ███        ███████    ███   ███     ███     ████████
+
+    partialUpdate: segls ->
+        
+        ⮐  if @diss.length != segls.length
+        ⮐  if empty @hash
+        
+        newHash = {}
+        
+        for segl,idx in segls
+        
+            hsh = kseg.hash segl
+            if @hash[hsh]
+                newHash[hsh] = @hash[hsh]
+            else
+                newHash[hsh] = kulur.dissect([segl] @ext)[0]
+            
+            if @liha[idx] != hsh
+                @diss.splice idx 1 newHash[hsh]
+                @liha[idx] = hsh
+
+        @hash = newHash
+            
+    addSegl: segl ext ->
+    
+        @diss = @diss.concat kulur.dissect([segl] ext)
+        
+    appendSegls: segls ext ->
+    
+        # @diss = @diss.concat kulur.dissect(segls ext)
+        for segl in segls
+            @addSegl segl ext
+            
+    #  ███████  ███       ███████    ███████   ███████
+    # ███       ███      ███   ███  ███       ███     
+    # ███       ███      █████████  ███████   ███████ 
+    # ███       ███      ███   ███       ███       ███
+    #  ███████  ███████  ███   ███  ███████   ███████ 
+
+    getClass: x y ->
+        
+        for dss in @diss[y]
+            if dss.start <= x < dss.start+dss.length
+                ⮐  dss.clss
+        'text'
+        
+    #  ███████   ███████   ███       ███████   ████████ 
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    # ███       ███   ███  ███      ███   ███  ███████  
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    #  ███████   ███████   ███████   ███████   ███   ███
+
+    getColor: x y ->
+        
+        if @ansi ➜ ⮐  @getAnsiColor x y
+        
+        if x is num
+            clss = @getClass x y
+        else
+            clss = x
+        
+        # if empty theme.syntax[clss] and not clss.endsWith 'italic'
+            # log "syntax.getColor - no syntax color for '#{clss}'" # @diss[y] 
+        
+        theme.syntax[clss] or [255 0 0]
+        
+    #  ███████   ███   ███   ███████  ███
+    # ███   ███  ████  ███  ███       ███
+    # █████████  ███ █ ███  ███████   ███
+    # ███   ███  ███  ████       ███  ███
+    # ███   ███  ███   ███  ███████   ███
+
+    getAnsiColor: x y ->
+        
+        for clr in @colors[y]
+            if clr.x <= x
+                if clr.w
+                    if x < clr.x + clr.w
+                        ⮐  clr.fg
+                else
+                    ⮐  clr.fg
+                
+        [256 0 256]
+        
+    #  ███████  ███   ███   ███████   ████████ 
+    # ███       ███   ███  ███   ███  ███   ███
+    # ███       █████████  █████████  ███████  
+    # ███       ███   ███  ███   ███  ███   ███
+    #  ███████  ███   ███  ███   ███  ███   ███
+
+    getChar: x y char ->
+        
+        clss = @getClass x y
+        ⮐  '█' if kstr.find(clss 'header') >= 1 
+        char
+        
+⮐  syntax

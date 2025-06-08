@@ -1,0 +1,450 @@
+###
+     ███████  █████████   ███████   █████████  ████████  
+    ███          ███     ███   ███     ███     ███       
+    ███████      ███     █████████     ███     ███████   
+         ███     ███     ███   ███     ███     ███       
+    ███████      ███     ███   ███     ███     ████████  
+
+    handles basic text editing for the editor
+    wraps text and editor state like cursors and selections 
+        in an immutable to simplify undo
+    delegates almost all text manipulation to pure functions
+        in tool▸belt to simplify testing
+###
+
+# use child_process os
+# use ../../kxk ▪ immutable kstr kseg events absMin
+# use ../util   ◆ syntax
+# use ./act     ◆ del insert select join indent multi main
+# use ./tool    ◆ belt
+# use           ◆ keys mode
+use util.syntax
+
+class state extends events
+
+    @: cells name ->
+    
+        @cells = cells
+
+        @name = name & '.state'
+        
+        @allowedModes = {}
+
+        # for act in [del insert select join indent multi main]
+        #     for k v in pairs act
+        #         @[k] = v.bind @
+                
+        # @handleKey = keys.bind @
+
+        @syntax   = syntax @name & '.syntax'
+        @hasFocus = false
+
+        @clearSingle()
+
+    toggleMode: name -> mode.toggle(@ name) if @allowedModes[name]
+    startMode:  name -> mode.start(@ name) if @allowedModes[name]
+    stopMode:   name -> mode.stop(@ name) if @allowedModes[name]
+        
+    owner: -> 
+        
+        if kstr.endsWith @name '.state'
+            string.sub @name 1 -6
+        else
+            @name
+        
+    clearHistory: ->
+    
+        @h = [@s] # undo states (history)
+        @r = []   # redo states
+
+    #  0000000  00000000  000000000
+    # 000       000          000
+    # 0000000   0000000      000
+    #      000  000          000
+    # 0000000   00000000     000
+
+    set: item arg ->
+
+        # @s = @s.set item arg
+        @s[item] = arg
+        @swapState()
+        @
+
+    setSelections: selections -> @set 'selections' belt.mergeLineRanges(@s.lines selections)
+    setHighlights: highlights -> @set 'highlights' belt.normalizeSpans(highlights)
+
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000
+    # 000       000   000  000   000  000       000   000  000   000  000
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000
+    # 000       000   000  000   000       000  000   000  000   000       000
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000
+
+    setCursors: cursors opt ->
+        
+        opt ?= {}
+        opt.mc ?= @mainCursor()
+        
+        main = opt.main
+
+        if main is arr ➜ main = belt.indexOfPosInPositions main cursors
+        if main is num and main < 0 ➜ main = cursors.length+main
+
+        mainCursor = @mainCursor()
+        if main
+            mainCursor = cursors[clamp(0, cursors.length-1, main)]
+            # mainCursor = copy cursors[clamp 0 cursors.length-1 main]
+        
+        cursors = belt.normalizePositions cursors @s.lines.length-1
+        
+        @s = @s.set 'cursors' cursors
+
+        main = -1
+        for cur,idx in cursors
+            if cur eql mainCursor
+                main = idx
+                break
+
+        if main < 0 ➜ main = @s.main 
+        main = clamp 0 @s.cursors.length-1 main
+
+        @s = @s.set 'main' main
+        
+        @adjustViewForMainCursor opt
+        
+        @swapState()
+        
+        mode.cursorsSet @
+        @emit 'cursorsSet'
+        @
+            
+    textOfSelectionOrWordAtCursor: -> 
+        
+        if @s.selections.length
+            ⮐  @textOfSelection()
+        else
+            ⮐  @wordAtCursor()
+
+    # 000      000  000   000  00000000   0000000
+    # 000      000  0000  000  000       000
+    # 000      000  000 0 000  0000000   0000000
+    # 000      000  000  0000  000            000
+    # 0000000  000  000   000  00000000  0000000
+
+    setLines: lines ->
+        
+        if empty lines ➜ lines = ['']
+        
+        @setSegls kseg.segls(lines)
+        
+    setSegls: segls ->
+    
+        @segls = segls
+        
+        if empty @segls ➜ @segls = [[]]
+        
+        @syntax∙setSegls @segls
+                    
+        @changeLinesSegls()
+        
+        @r = []
+        
+        @maxLineWidth = belt.widthOfLines @s.lines
+        
+        @pushState()
+        
+    loadLines: lines -> 
+    
+        if valid lines and not lines[0] is str ➜ error "#{@name}.loadLines - first line not a string?" lines[0]
+        
+        @loadSegls kseg.segls(lines)
+    
+    loadSegls: segls ->
+    
+        @clearEmpty()
+        @setSegls segls
+
+    clearSingle: -> @clearSegls [[]]
+    clearEmpty:  -> @clearSegls [  ]
+    clearSegls: segls ->
+    
+        @segls = segls
+    
+        # @s = immutable {
+        @s = {
+            lines:       @segls
+            selections:  []
+            highlights:  []
+            cursors:     [[0 0]]
+            main:        0
+            view:        [0 0]
+            }
+            
+        @syntax∙clear()
+        
+        @h = []
+        @r = []
+        
+    addLine: line ext ->
+
+        segl = kseg line
+        @syntax.addSegl segl ext
+        @segls ?= []
+        @segls.push segl
+
+        @changeLinesSegls()
+        
+    appendLines: lines ext ->
+
+        segls = kseg.segls lines
+        @syntax.appendSegls segls ext
+        @segls ?= []
+        @segls = @segls.concat segls
+
+        @changeLinesSegls()
+        
+    #  ███████  ███   ███   ███████   ███   ███   ███████   ████████        ███      ███  ███   ███  ████████   ███████
+    # ███       ███   ███  ███   ███  ████  ███  ███        ███             ███      ███  ████  ███  ███       ███     
+    # ███       █████████  █████████  ███ █ ███  ███  ████  ███████         ███      ███  ███ █ ███  ███████   ███████ 
+    # ███       ███   ███  ███   ███  ███  ████  ███   ███  ███             ███      ███  ███  ████  ███            ███
+    #  ███████  ███   ███  ███   ███  ███   ███   ███████   ████████        ███████  ███  ███   ███  ████████  ███████ 
+
+    changeLinesSegls: ->
+    
+         #oldLines = @s.lines
+         #
+         #@s = @s.set 'lines' @segls
+         #
+         #if oldLines != @s.lines
+         #    diff = belt.diffLines oldLines @s.lines            
+         #    @emit 'lines.changed' diff
+
+    linesInView: -> @s.lines∙slice(@s.view[1] @s.view[1]+@cells.rows)
+
+    clearLines: ->
+
+        @setSegls [[]]
+        @setMainCursor 0 0
+
+    isValidLineIndex:   li -> 0 <= li < @s.lines.length
+    isInvalidLineIndex: li -> not @isValidLineIndex li
+
+    # 000   000  000   000  0000000     0000000
+    # 000   000  0000  000  000   000  000   000
+    # 000   000  000 0 000  000   000  000   000
+    # 000   000  000  0000  000   000  000   000
+    #  0000000   000   000  0000000     0000000
+
+    undo: ->
+
+        ⮐  if @h.length <= 1
+        @r.push @h.pop()
+        @s = @h[-1]
+        @syntax.setSegls @s.lines
+
+    redo: ->
+
+        ⮐  if empty @r
+        @h.push @r.pop()
+        @s = @h[-1]
+        @syntax.setSegls @s.lines
+
+    begin: -> @beginIndex = @h.length
+
+    ende: ->
+
+        if valid @beginIndex
+
+            @h.splice @beginIndex @h.length-@beginIndex-1
+            @beginIndex = nil
+            # delete @beginIndex
+        @
+
+    pushState: -> @h∙push @s ; @
+    swapState: -> @h∙pop() ; @pushState()
+
+    isDirty: -> @h.length > 1
+    hasRedo: -> @r.length > 0
+
+    gutterWidth: -> math.max 4 2 + math.ceil(math.log10(@s.lines.length+1))
+
+    #  0000000  000   000  000000000
+    # 000       000   000     000
+    # 000       000   000     000
+    # 000       000   000     000
+    #  0000000   0000000      000
+
+    cut: ->
+
+        @copy {deselect:false}
+        if empty @s.selections
+            @selectCursorLines()
+        @deleteSelection()
+
+    #  0000000   0000000   00000000   000   000
+    # 000       000   000  000   000   000 000
+    # 000       000   000  00000000     00000
+    # 000       000   000  000           000
+    #  0000000   0000000   000           000
+
+    copy: opt ->
+    
+        opt ?= {}
+
+        switch os.platform()
+
+            'darwin'
+
+                proc = child_process.spawn 'pbcopy'
+                proc.stdin.write @textOfSelectionOrCursorLines()
+                proc.stdin.close()
+
+            'linux'
+
+                proc = child_process.spawn("xsel", {"-i", "--clipboard"})
+                proc.stdin.write @textOfSelectionOrCursorLines()
+                proc.stdin.close()
+
+            'win32'
+
+                proc = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
+                proc.stdin.write @textOfSelectionOrCursorLines()
+                proc.stdin.close()
+                
+        @deselect() if opt.deselect != false
+
+    # 00000000    0000000    0000000  000000000  00000000
+    # 000   000  000   000  000          000     000
+    # 00000000   000000000  0000000      000     0000000
+    # 000        000   000       000     000     000
+    # 000        000   000  0000000      000     00000000
+
+    paste: ->
+
+        switch os.platform()
+
+            'darwin'
+
+                @insert child_process.execSync('pbpaste').toString("utf8")
+
+            'linux'
+
+                text = child_process.execSync('xsel -o --clipboard')
+
+                log 'paste\n' noon(text.toString("utf8"))
+
+                @insert text.toString("utf8")
+
+            'win32'
+
+                @insert child_process.execSync("#{slash.cwd()}/../../bin/utf8clip.exe").toString("utf8")
+
+    #  0000000   0000000  00000000    0000000   000      000          000   000  000  00000000  000   000  
+    # 000       000       000   000  000   000  000      000          000   000  000  000       000 0 000  
+    # 0000000   000       0000000    000   000  000      000           000 000   000  0000000   000000000  
+    #      000  000       000   000  000   000  000      000             000     000  000       000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000          0      000  00000000  00     00  
+
+    scrollView: dir steps=1 ->
+
+        sx = sy = 0
+
+        switch dir
+            'left'  ➜ sx = -1
+            'right' ➜ sx =  1
+            'up'    ➜ sy = -steps
+            'down'  ➜ sy =  steps
+
+        view = @s.view.asMutable()
+
+        view[0] += sx
+        view[1] += sy
+
+        view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
+
+        maxOffsetX = max 0 @maxLineWidth-@cells.cols+2
+        maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+2
+        view[0] = clamp 0 maxOffsetX view[0]
+        
+        ⮐  if view eql @s.view
+
+        @setView view
+
+    #  0000000   0000000          000  000   000   0000000  000000000       000   000  000  00000000  000   000  
+    # 000   000  000   000        000  000   000  000          000          000   000  000  000       000 0 000  
+    # 000000000  000   000        000  000   000  0000000      000           000 000   000  0000000   000000000  
+    # 000   000  000   000  000   000  000   000       000     000             000     000  000       000   000  
+    # 000   000  0000000     0000000    0000000   0000000      000              0      000  00000000  00     00  
+    
+    adjustViewForMainCursor: opt ->
+        
+        opt ?= {}
+        
+        ⮐  if @cells.cols <= 0 or @cells.rows <= 0
+        
+        ⮐  if opt.adjust == false
+
+        (x y) = @mainCursor()
+
+        view = @s.view.asMutable()
+        
+        topBotDelta = 7
+        topDelta = 7
+        botDelta = max topDelta int(@cells.rows/2)
+        
+        if opt.adjust == 'topDelta'
+
+            view[1] = y - topDelta
+            
+        elif opt.adjust == 'topBotDeltaGrow' and opt.mc
+        
+            dtt = y-view[1]
+            dtb = y-(view[1]+@cells.rows)
+            if dtt < 0 
+                view[1] = y - topDelta
+            elif dtb > 0
+                view[1] = y - (@cells.rows-botDelta)
+            else
+                dir = y - opt.mc[1]
+                if dtt < topDelta and dir < 0  or -dtb < botDelta and dir > 0
+                    view[1] += dir
+        else        
+            if opt.adjust != 'topBotDelta'
+                topBotDelta = 0
+    
+            if y >= view[1] + @cells.rows - 1 - topBotDelta
+                view[1] = y - @cells.rows + 1 + topBotDelta
+            elif y < view[1] + topBotDelta
+                view[1] = y - topBotDelta
+
+        if view[1] > 0 and @s.lines.length <= @cells.rows
+            view[1] = 0
+
+        if not @skipAdjustViewForMainCursor
+            view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
+        
+        ⮐  if view eql @s.view
+        
+        @setView view
+
+    initView: ->
+
+        # view = @s.view.asMutable()
+        view = @s.view
+        
+        view[1] = clamp 0 math.max(0 @s.lines.length-@cells.rows) view[1]
+        view[0] = math.max 0 view[0] or 0
+
+        @setView view
+
+    setView: view ->
+        
+        ⮐  if @s.view == view
+        @set 'view' view
+        @emit 'view.changed' @s.view
+        @
+
+    rangeForVisibleLines: ->
+
+        [@s.view[0] @s.view[1] @s.view[0]+@cells.cols-1 @s.view[1]+@cells.rows-1]
+
+⮐  state

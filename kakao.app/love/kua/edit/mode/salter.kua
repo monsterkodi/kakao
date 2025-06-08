@@ -1,0 +1,172 @@
+#  ███████   ███████   ███    █████████  ████████  ████████ 
+# ███       ███   ███  ███       ███     ███       ███   ███
+# ███████   █████████  ███       ███     ███████   ███████  
+#      ███  ███   ███  ███       ███     ███       ███   ███
+# ███████   ███   ███  ███████   ███     ████████  ███   ███
+
+use ../../../kxk ◆ salter
+use ../../theme  ◆ color theme
+use ../tool      ◆ belt
+use ..           ◆ mode
+      
+function salterMode
+        
+    @syms: []
+
+    @: @state -> 
+    
+        @name = 'salter'
+        
+        if empty salterMode.syms
+            salterMode.syms = Object.keys salter.font
+        
+        @start()
+        
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
+    # 000       000   000  000   000  000       000   000  000   000  000       
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
+    # 000       000   000  000   000       000  000   000  000   000       000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+    
+    @checkCursorsSet: state ->
+    
+        ⮐  if not state.allowedModes?.salter
+        ⮐  if state.s.cursors.length != 1
+        ⮐  if state.s.selections.length
+        
+        cursors = belt.findPositionsForSaltInsert state.s.lines state.mainCursor()
+        if valid cursors                # start the salter mode if the main
+            mode.start state 'salter'   # cursor moved inside a salted line 
+
+    ###
+     0000000   0000000   000    000000000  00000000  00000000   
+    000       000   000  000       000     000       000   000  
+    0000000   000000000  000       000     0000000   0000000    
+         000  000   000  000       000     000       000   000  
+    0000000   000   000  0000000   000     00000000  000   000  
+    ###
+    # ███      ███  ███   ███  ████████
+    # ███      ███  ████  ███  ███     
+    # ███      ███  ███ █ ███  ███████ 
+    # ███      ███  ███  ████  ███     
+    # ███████  ███  ███   ███  ████████
+    
+    start: -> 
+    
+        cursors = @findCursors()
+
+        if valid cursors
+            mc = @state.mainCursor()
+            @state.s = @state.s.set 'cursors' cursors
+            for pos,main in cursors
+                break if pos eql mc
+            @state.s = @state.s.set 'main' main
+        if @state.s.cursors.length == 5 and belt.positionColumns(@state.s.cursors).length == 1
+            true
+        else
+            ●▸ salted cursor
+            @state.begin()
+            @state.moveCursors 'eol'
+            @state.singleCursorAtIndentOrStartOfLine()
+            for i in 0...5
+                @state.insert '# \n'
+            @state.moveCursors 'right'
+            @state.moveCursors 'right'
+            @state.moveCursors 'up'
+            for i in 0...4
+                @state.expandCursors 'up'
+            @state.end()
+            ●▪ salted cursor
+        
+    stop: ->
+    
+        # @state.setMainCursor @state.mainCursor()
+        
+    findCursors:    -> belt.findPositionsForSaltInsert @state.s.lines @state.mainCursor()
+    isSaltedLine: y -> belt.isSaltedLine @state.s.lines[y]
+
+    cursorsSet: ->
+    
+        cursors = @findCursors()
+        
+        if valid cursors 
+            if @state.s.cursors eql cursors
+                true
+            else
+                @state.setCursors cursors
+        else
+            mode.stop @state 'salter'
+            
+    # 0000000    00000000  000      00000000  000000000  00000000  
+    # 000   000  000       000      000          000     000       
+    # 000   000  0000000   000      0000000      000     0000000   
+    # 000   000  000       000      000          000     000       
+    # 0000000    00000000  0000000  00000000     000     00000000  
+    
+    deleteSelection: ->
+    
+        cursors = @state.allCursors()
+        lineids = belt.lineIndicesForPositions cursors
+        
+        for idx in lineids
+            ⮐  if not @state.isFullySelectedLine idx
+            
+        @state.moveCursors 'bol'
+        @state.delete 'eol'
+        @state.setCursors lineids.map((idx) -> [0 idx])
+        
+        @state.deselect()
+        mode.start @state 'salter' # 𝜏𝖍𝚒𝖘 𝚒𝖘 ϝ𝓊⊂𝛋ϵ𝒹 𝓊𝔭 𝖘⊚⫙ϵ𝖍⊚⟒, 𝔟𝓊𝜏 𝚒𝜏 𝓢ϵξ⫙𝖘 𝜏⊚ ⟒◯ɼ𝛋 ϝ⊚ɼ ∩⊚⟒
+        true
+    
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
+    handleKey: key event ->
+    
+        # switch key
+        switch event.combo
+        
+            'up'
+                if @state.s.main > 0
+                    @state.setMain @state.s.main-1
+                    ⮐  
+                if not @isSaltedLine @state.mainCursor()[1]-1
+                    @state.s = @state.s.set 'cursors' [@state.mainCursor()]
+                    @state.s = @state.s.set 'main' 0
+                    ⮐  'unhandled'
+            'down'
+                if @state.s.main < 4
+                    @state.setMain @state.s.main+1
+                    ⮐  
+                if not @isSaltedLine @state.mainCursor()[1]+1
+                    @state.s = @state.s.set 'cursors' [@state.mainCursor()]
+                    @state.s = @state.s.set 'main' 0
+                    ⮐  'unhandled'
+            
+        char = valid(event.char) ? event.char : key
+            
+        if salter.hasChar char
+            @state.insert salter(char char:'█' postfix:'  ')
+            ⮐
+        
+        'unhandled'
+        
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    themeColor: colorName defaultColor ->
+        
+        switch colorName
+            'cursor.multi' ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.2)
+            'cursor.main'  ➜ ⮐  color.brighten(theme.syntax['comment triple header'] 0.6)
+        
+        defaultColor
+
+export salterMode

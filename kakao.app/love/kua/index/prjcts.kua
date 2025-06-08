@@ -1,0 +1,106 @@
+###
+    00000000   00000000         000   0000000  000000000   0000000  
+    000   000  000   000        000  000          000     000       
+    00000000   0000000          000  000          000     0000000   
+    000        000   000  000   000  000          000          000  
+    000        000   000   0000000    0000000     000     0000000   
+###
+
+use ../../kxk ▪ post slash
+use ../../kxk ◆ nfs
+use ../util   ◆ walker
+
+class prjcts
+        
+    @queue:    []
+    @projects: {}
+    @allFiles: {}
+    @indexing: null
+
+    @files: path -> @projects[@dir(path)]?.files ? []
+    
+    @dir: path ->
+
+        if valid path
+            
+            path = slash.absolute path process.cwd()
+            
+            if prjPath = @allFiles[path]
+                ⮐  prjPath
+            if prjcts.projects[path]
+                ⮐  @projects[path].dir
+            for prjPath,project of prjcts.projects
+                if path.startsWith prjPath
+                    ⮐  prjPath
+        log 'missing prj?' path
+        null
+        
+    # 000  000   000  0000000    00000000  000   000  
+    # 000  0000  000  000   000  000        000 000   
+    # 000  000 0 000  000   000  0000000     00000    
+    # 000  000  0000  000   000  000        000 000   
+    # 000  000   000  0000000    00000000  000   000  
+    
+    @index: file ○=>
+        
+        if not file is str
+            error "prjcts.index - expected a string, got" file
+            ⮐  
+            
+        ⮐  if file.startsWith 'untitled-'
+        
+        file = slash.absolute file process.cwd()
+        
+        # log 'prjcts.index ●' file
+        
+        exists =○ nfs.exists file
+        
+        ⮐  if not exists
+        
+        prjPath =○ nfs.prj file
+        
+        # log 'prjcts.index ▪' prjPath
+        
+        prjPath = null if prjPath == '/'
+        
+        prjPath ?= slash.dir file
+        
+        # log 'prjcts.index ▸' prjPath
+        
+        if @indexing
+            ⮐  if @indexing == prjPath
+            @queue ?= []
+            if prjPath not in @queue
+                @queue.push prjPath
+            ⮐ 
+        
+        ⮐  if valid @projects[prjPath]
+            
+        @indexing = prjPath
+        
+        walk = new walker
+            root:     prjPath
+            maxDepth: 12
+            maxFiles: 10000
+            # file:     (f) => post.emit 'prjcts.file.indexed' f
+                  
+        # log 'start walker'
+        result =○ walk.start()
+        
+        if result
+            @projects[prjPath] = dir:prjPath files:result.files
+            for file in result.files
+                @allFiles[file] = prjPath
+                
+            # log 'prjcts.index ▪' prjcts.projects
+
+            post.emit 'project.indexed' prjPath
+        
+        delete @indexing
+        
+        if valid @queue
+            # log 'dequeue' @queue[0]
+            ○ @index @queue.shift()
+            
+export prjcts
+

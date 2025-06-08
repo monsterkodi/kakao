@@ -54,15 +54,15 @@ split* = ◇string path ➜seq[string] ->
     s.setLen(s.len - 1) if s[^1].len == 0
     s
     
-contains* = ◇string path ◇string subpath ➜bool -> subpath in slash.split path
-
-home*     = ◇varargs[string] args ➜string -> slash.path @[slash.normalize(appDirs.getHomeDir().string)].concat(args.toSeq())
-cwd*      = ◇varargs[string] args ➜string -> slash.path @[paths.getCurrentDir().string].concat(args.toSeq())
-app*      = ◇varargs[string] args ➜string -> slash.path @[getAppDir().string].concat(args.toSeq())
-exe*      = ➜string -> getAppFilename().string
-
-untilde*  = ◇string path ➜string -> path.expandTilde()
-tilde*    = ◇string path ➜string -> path.replace slash.home() "~"
+has*     = ◇string path ◇string subpath ➜bool -> subpath in slash.split path
+         
+home*    = ◇varargs[string] args ➜string -> slash.path @[slash.normalize(appDirs.getHomeDir().string)].concat(args.toSeq())
+cwd*     = ◇varargs[string] args ➜string -> slash.path @[paths.getCurrentDir().string].concat(args.toSeq())
+app*     = ◇varargs[string] args ➜string -> slash.path @[getAppDir().string].concat(args.toSeq())
+exe*     = ➜string -> getAppFilename().string
+         
+untilde* = ◇string path ➜string -> path.expandTilde()
+tilde*   = ◇string path ➜string -> path.replace slash.home() "~"
     
 type parseInfo* = tuple[dir: string, name: string, ext: string, file: string, path: string]
 

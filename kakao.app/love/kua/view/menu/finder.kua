@@ -1,0 +1,212 @@
+###
+    ████████  ███  ███   ███  ███████    ████████  ████████   
+    ███       ███  ████  ███  ███   ███  ███       ███   ███  
+    ██████    ███  ███ █ ███  ███   ███  ███████   ███████    
+    ███       ███  ███  ████  ███   ███  ███       ███   ███  
+    ███       ███  ███   ███  ███████    ████████  ███   ███  
+
+    searches and highlights in the current fileeditor file 
+###
+
+use ../../../kxk    ▪ post kseg kutil
+use ../../theme     ◆ theme
+use ../../edit/tool ◆ belt
+use                 ◆ inputchoice
+
+class finder extends inputchoice
+
+    @: @screen @editor name='finder' ->
+    
+        @state = @editor.state
+
+        super @screen name ['gutter' 'scroll']
+        
+        @autoHideInput = false
+        
+        post.on 'finder.show' @show if @name == 'finder'
+        
+        @setColor 'bg'    theme.finder.bg
+        @setColor 'frame' theme.finder.frame
+        
+        @choices.state.skipAdjustViewForMainCursor = true
+        @choices.state.syntax.setExt 'kode'
+        @choices.gutter.lineno = @lineno
+        # revert gutter highlight color to default fg color since all lines are highlighted
+        @choices.gutter.setColor 'highlight'         theme.gutter.fg 
+        @choices.gutter.setColor 'bg_fully_selected' theme.finder.bg
+
+    # ███      ███  ███   ███  ████████  ███   ███   ███████ 
+    # ███      ███  ████  ███  ███       ████  ███  ███   ███
+    # ███      ███  ███ █ ███  ███████   ███ █ ███  ███   ███
+    # ███      ███  ███  ████  ███       ███  ████  ███   ███
+    # ███████  ███  ███   ███  ████████  ███   ███   ███████ 
+
+    lineno: y ->
+     
+        pad = @choices.gutter.cells.cols-1
+        if 0 <= y < @choices.fuzzied.length
+            if @choices.fuzzied[y].type == 'file'
+                if @choices.fuzzied[y].line
+                    ⮐  lpad(pad @choices.fuzzied[y].line) + ' '
+                else
+                    ⮐  lpad(pad '●') + ' '
+            if @choices.fuzzied[y].row is num
+                ⮐  lpad(pad @choices.fuzzied[y].row+1) + ' '
+        lpad pad+1
+    
+    #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
+    # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    arrangeRect: ->
+    
+        [
+            int(@editor.cells.x-@editor.gutter.cells.cols-1)
+            int(@editor.cells.y)
+            int(@editor.cells.cols+@editor.gutter.cells.cols+1)
+            int(@editor.cells.rows-3)
+        ]
+        
+    arrange: ->
+
+        [x y w h] = @arrangeRect()
+
+        cs = min h-1 @choices.numFiltered()
+        
+        @input.layout    x+2   y+1  w-4  1
+        @choices.layout  x+1   y+3  w-2  cs
+        @cells.layout    x     y    w    cs+4
+        
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: text ->
+        
+        # log "finder.show #{@name} #{text}"
+        
+        if empty text 
+            cursorLine = @state.mainCursor()[1]
+        
+        text = @searchText text
+        
+        # log g4("#{r6 'finder.show'} #{m5 @name} '#{text}'")
+        
+        if empty text
+            @choices.clear()
+            @input.show()
+            ⮐  super()
+                    
+        @state.highlightText text
+        
+        @choices.clearEmpty()
+        
+        front = belt.frontmostSpans @state.s.highlights
+        for span in front
+            if @choices.items.length>1 and @choices.items[-1].row != span[1]-1
+                @choices.add line:''
+            @choices.add
+                ext:  'kode' 
+                line: ' ' + kseg.str(@state.s.lines[span[1]])
+                row:  span[1]
+                col:  span[2]
+            
+        @choices.state.highlightText text
+        
+        if cursorLine
+            @choices.select kutil.findIndex(@choices.items (l) -> l.row == cursorLine) or 0
+        else
+            @choices.selectFirst()
+
+        #inputFocus = @input.hasFocus()
+        @input.show()
+        super()            # this might set focus to choices
+        @input.grabFocus() # but in finder and searcher input should always be focused
+        
+    #  0000000  00000000   0000000   00000000    0000000  000   000        000000000  00000000  000   000  000000000  
+    # 000       000       000   000  000   000  000       000   000           000     000        000 000      000     
+    # 0000000   0000000   000000000  0000000    000       000000000           000     0000000     00000       000     
+    #      000  000       000   000  000   000  000       000   000           000     000        000 000      000     
+    # 0000000   00000000  000   000  000   000   0000000  000   000           000     00000000  000   000     000     
+    
+    searchText: text ->
+    
+        # log "finder.searchText #{@name} #{text}"
+        
+        if empty text 
+            # log "finder.searchText #{@name} take text of selection or word at cursor"
+            text = @state.textOfSelectionOrWordAtCursor()
+            
+        text ?= ''
+
+        if text != @input.current()
+            @input.set text
+            @input.selectAll()
+            @input.state.moveCursors 'eol'
+                
+        text
+                
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+        
+    apply: choice ->
+        
+        if valid choice
+            
+            post.emit 'goto.line' choice.row choice.col
+                
+        post.emit 'focus' 'editor'
+        # log "#{@name} applyChoice -> hide"
+        @hide()
+        redraw:true
+        
+    applyChoice: choice -> @apply choice
+    
+    #  ███████  ███   ███   ███████   ███   ███████  ████████   ███████         ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███       ███   ███  ███   ███  ███  ███       ███       ███             ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███       █████████  ███   ███  ███  ███       ███████   ███████         █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███       ███   ███  ███   ███  ███  ███       ███            ███        ███   ███  ███          ███     ███  ███   ███  ███  ████
+    #  ███████  ███   ███   ███████   ███   ███████  ████████  ███████         ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onChoicesAction: action choice ->
+    
+        # log "finder.onChoicesAction #{action}"
+    
+        switch action
+            'delete' 
+                @input.state.delete 'back'
+                @input.grabFocus()
+                ⮐ 
+            'left' 
+                @input.grabFocus()
+                ⮐  true
+    
+        super action choice
+        
+    # ███  ███   ███  ████████   ███   ███  █████████         ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███  ████  ███  ███   ███  ███   ███     ███           ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███  ███ █ ███  ████████   ███   ███     ███           █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███  ███  ████  ███        ███   ███     ███           ███   ███  ███          ███     ███  ███   ███  ███  ████
+    # ███  ███   ███  ███         ███████      ███           ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onInputAction: action text ->
+    
+        switch action
+            
+            'submit' ➜ ⮐  @apply @choices.current()
+            'change'
+                if valid text
+                    ⮐  @show text
+                else   
+                    ⮐  @choices.clear()
+            
+        super action text
+
+export finder

@@ -422,8 +422,12 @@ proc parseNamesUntil(this : Parser, stop : tok) : Node =
 proc parseList(this : Parser, token : Token) : Node = 
         var list_values : seq[Node]
         while (this.tok notin {◂eof, ◂semicolon, ◂indent, ◂comment_start}): 
-            list_values.add(this.expression(token))
-            this.swallow(◂comma)
+            var exp = this.expression(token)
+            if exp: 
+                list_values.add(exp)
+                this.swallow(◂comma)
+            else: 
+                return this.error("list expression expected", token)
         nod(●list, token, list_values)
 
 proc parseExprOrList(this : Parser, token : Token) : Node = 
@@ -449,8 +453,12 @@ proc thenExpressions(this : Parser) : Node =
         var token = this.current()
         var expressions : seq[Node]
         while (this.tok notin {◂eof, ◂indent, ◂paren_close}): 
-            expressions.add(this.expression())
-            this.swallow(◂semicolon)
+            var exp = this.expression()
+            if exp: 
+                expressions.add(exp)
+                this.swallow(◂semicolon)
+            else: 
+                return this.error("then expression expected", token)
         if (expressions.len == 0): 
             nil
         elif (expressions.len == 1): 
@@ -722,6 +730,7 @@ proc rString(this : Parser) : Node =
                 var stripol_xprssns : seq[Node]
                 while (this.tok notin {◂stripol_end, ◂eof}): 
                     var xpr = this.expression()
+                    if not xpr: return this.error("Expected string interpolation", token)
                     stripol_xprssns.add(xpr)
                 stripol.stripol_xprssns = stripol_xprssns
                 this.swallowError(◂stripol_end, "Expected string interpolation end", token)
@@ -1102,11 +1111,15 @@ proc lMember(this : Parser, left : Node) : Node =
             var token = this.consume()
             token.col = left.token.col
             var right = this.value()
+            if not right: 
+                return this.error("Expected member value", token)
             nod(●member, token, left, right)
         else: 
             var token = this.consume()
             token.col = left.token.col
             var right = this.funcOrExpression(token)
+            if not right: 
+                return this.error("Expected member value", token)
             nod(●member, token, left, right)
 
 proc lTestCase(this : Parser, left : Node) : Node = 

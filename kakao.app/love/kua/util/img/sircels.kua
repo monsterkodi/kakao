@@ -1,0 +1,74 @@
+###
+     ███████  ███  ████████    ███████  ████████  ███       ███████
+    ███       ███  ███   ███  ███       ███       ███      ███     
+    ███████   ███  ███████    ███       ███████   ███      ███████ 
+         ███  ███  ███   ███  ███       ███       ███           ███
+    ███████   ███  ███   ███   ███████  ████████  ███████  ███████ 
+###
+
+use ◆ png
+
+function sircels
+
+    @pixlArr: new Uint32Array(new ArrayBuffer(4))
+    @sircArr: null
+    @csz:   []
+    @cache: {}
+    
+    @sircImg: sd fg -> # generates a png containing a circle of diameter sd and color fg
+        
+        @pixlArr.set [fg[0] | fg[1] << 8 | fg[2] << 16 | (fg[3] ? 255) << 24]
+        
+        img = w:sd h:sd
+        
+        sr  = floor sd/2
+        rsq = sr * sr
+        
+        offset = (sd % 2 == 0) ? 0.5 : 0
+        
+        for x in -sr..sr
+            for y in -sr..sr
+                dx = x + offset
+                dy = y + offset
+                if dx**2 + dy**2 <= rsq
+                    @sircArr.set @pixlArr (x+sr)+(y+sr)*sd
+        
+        img.png = Buffer.from png.encode([@sircArr.buffer] img.w img.h 2)
+        img
+        
+    # ████████   ███       ███████    ███████  ████████
+    # ███   ███  ███      ███   ███  ███       ███     
+    # ████████   ███      █████████  ███       ███████ 
+    # ███        ███      ███   ███  ███       ███     
+    # ███        ███████  ███   ███   ███████  ████████
+    
+    @place: sx sy sd fg z ->
+    
+        ⮐  if empty @csz
+        
+        img = @cache[fg]
+        if empty img
+            img = @sircImg sd fg
+            @cache[fg] = img
+            
+        ty = floor sy / @csz[1]
+        tx = floor sx / @csz[0]
+        
+        oy = sy - ty * @csz[1]
+        ox = sx - tx * @csz[0]
+        
+        ked_ttio.placeImg img tx ty ox oy sd sd z
+
+    # ████████   ████████   ███████  ███  ███████  ████████
+    # ███   ███  ███       ███       ███     ███   ███     
+    # ███████    ███████   ███████   ███    ███    ███████ 
+    # ███   ███  ███            ███  ███   ███     ███     
+    # ███   ███  ████████  ███████   ███  ███████  ████████
+
+    @onResize: cols rows pixels cellsz -> 
+
+        @csz     = cellsz # should this be copied instead?
+        @cache   = {}
+        @sircArr = new Uint32Array(new ArrayBuffer(@csz[0]*@csz[0]*4))
+    
+export sircels

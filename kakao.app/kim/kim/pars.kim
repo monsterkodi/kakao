@@ -495,8 +495,12 @@ class Parser
     
         list_values ◇ seq[Node]
         while @tok not in {◂eof ◂semicolon ◂indent ◂comment_start}
-            list_values.add @expression(token)
-            @swallow ◂comma
+            exp = @expression(token)
+            if exp
+                list_values.add exp
+                @swallow ◂comma
+            else
+                ⮐  @error "list expression expected" token
         nod ●list token list_values
         
     parseExprOrList: ◇Token token ➜Node ->
@@ -527,8 +531,12 @@ class Parser
         token = @current()
         expressions ◇ seq[Node]
         while @tok not in {◂eof ◂indent ◂paren_close}
-            expressions.add @expression()
-            @swallow ◂semicolon
+            exp = @expression()
+            if exp
+                expressions.add exp
+                @swallow ◂semicolon
+            else
+                ⮐  @error "then expression expected" token
 
         if expressions.len == 0
             nil
@@ -870,6 +878,7 @@ class Parser
                 stripol_xprssns ◇ seq[Node]
                 while @tok notin {◂stripol_end ◂eof}
                     xpr = @expression()
+                    if not xpr ➜ ⮐  @error "Expected string interpolation" token
                     stripol_xprssns.add xpr
                     
                 stripol.stripol_xprssns = stripol_xprssns
@@ -1345,11 +1354,15 @@ class Parser
             token = @consume()
             token.col = left.token.col
             right = @value()
+            if not right
+                ⮐  @error "Expected member value" token
             nod ●member token left right
         else            
             token = @consume()
             token.col = left.token.col
             right = @funcOrExpression token
+            if not right
+                ⮐  @error "Expected member value" token
             nod ●member token left right
         
     lTestCase: ◇Node left ➜Node ->

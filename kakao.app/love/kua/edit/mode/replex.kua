@@ -1,0 +1,41 @@
+# ████████   ████████  ████████   ███      ████████  ███   ███
+# ███   ███  ███       ███   ███  ███      ███        ███ ███ 
+# ███████    ███████   ████████   ███      ███████     █████  
+# ███   ███  ███       ███        ███      ███        ███ ███ 
+# ███   ███  ████████  ███        ███████  ████████  ███   ███
+
+use ../../../kxk ▪ kseg kutil
+use ../tool      ◆ belt
+use ..           ◆ mode specs
+
+function replex
+        
+    @autoStart: true
+        
+    @: @state ->
+
+        @name = 'replex'
+    
+    # ███  ███   ███   ███████  ████████  ████████   █████████
+    # ███  ████  ███  ███       ███       ███   ███     ███   
+    # ███  ███ █ ███  ███████   ███████   ███████       ███   
+    # ███  ███  ████       ███  ███       ███   ███     ███   
+    # ███  ███   ███  ███████   ████████  ███   ███     ███   
+
+    postInsert: ->
+
+        chunks = @state.chunksBeforeCursors()
+        repls  = []
+        
+        for chunk in chunks
+            end = chunk[-2..-1]
+            if repl = specs.replex[end]
+                repls.push repl
+                # log "▸ repl #{repl}"
+                
+        if repls.length == @state.s.cursors.length
+            @state.delete 'back'
+            @state.delete 'back'
+            @state.insert repls.join('\n')
+        
+export replex

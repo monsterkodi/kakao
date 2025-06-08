@@ -1,0 +1,154 @@
+###
+     ███████   ███████  ████████   ████████  ████████  ███   ███
+    ███       ███       ███   ███  ███       ███       ████  ███
+    ███████   ███       ███████    ███████   ███████   ███ █ ███
+         ███  ███       ███   ███  ███       ███       ███  ████
+    ███████    ███████  ███   ███  ████████  ████████  ███   ███
+
+    an array of cells (background|foreground colors and character)
+###
+
+use kxk.kxk
+use theme.color
+use edit.tool.belt
+
+class screen
+
+    @: cols rows -> 
+    
+        @rows = rows
+        @cols = cols
+        
+        @c = belt.cells @cols @rows
+    
+    initSize: cols rows -> 
+
+        @rows = rows
+        @cols = cols
+        
+        # @meta_clear()
+        @c = belt.cells @cols @rows
+        @
+        
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    add: x y char fg bg ->
+        
+        w = kseg.segWidth char
+        if w > 1
+            if char.length > 4
+                char = '\x1b]66;w=2;' + char + '\x07'
+            @set x   y char fg bg
+            @set x+1 y null fg bg
+            ⮐  2
+        else
+            @set x y char fg bg
+            ⮐  1
+    
+    set: x y char fg bg ->
+        
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            @c[y][x].char = char
+            @c[y][x].fg = fg or []
+            @c[y][x].bg = bg or []
+        @
+            
+    set_char: x y char ->
+
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            @c[y][x].char = char
+        @
+
+    set_ch_fg: x y char fg ->
+
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            @c[y][x].char = char
+            @c[y][x].fg   = fg
+        @
+            
+    set_bg: x y bg ->
+        
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            @c[y][x].bg = bg
+        @
+
+    set_fg: x y fg ->
+        
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            @c[y][x].fg = fg
+        @
+
+    set_fg_bg: x y fg bg ->
+        
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            @c[y][x].fg = fg
+            @c[y][x].bg = bg
+        @
+            
+    # ██     ██  ████████  █████████   ███████ 
+    # ███   ███  ███          ███     ███   ███
+    # █████████  ███████      ███     █████████
+    # ███ █ ███  ███          ███     ███   ███
+    # ███   ███  ████████     ███     ███   ███
+            
+    # meta_set: x y m ->
+    #     
+    #     if 0 <= x < @cols and 0 <= y < @rows
+    #         @m[y][x] = m
+            
+    # meta_clear: ->
+    #     
+    #     @m = belt.metas @cols @rows
+            
+    #  0000000   00000000  000000000  
+    # 000        000          000     
+    # 000  0000  0000000      000     
+    # 000   000  000          000     
+    #  0000000   00000000     000     
+    
+    get_char: x y ->
+
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            ⮐  @c[y][x].char
+        ''
+
+    get_fg: x y ->
+        
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            ⮐  @c[y][x].fg
+        []
+
+    get_bg: x y ->
+        
+        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            ⮐  @c[y][x].bg
+        []
+        
+    # 00000000   00000000  000   000  0000000    00000000  00000000   
+    # 000   000  000       0000  000  000   000  000       000   000  
+    # 0000000    0000000   000 0 000  000   000  0000000   0000000    
+    # 000   000  000       000  0000  000   000  000       000   000  
+    # 000   000  00000000  000   000  0000000    00000000  000   000  
+    
+    render: ox oy fontStep fontSize ->
+
+        for y in 1..@rows
+            for x in 1..@cols
+                char = @c[y][x].char
+                    
+                if @c[y][x].bg and @c[y][x].bg.len > 0
+                    love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
+                    love.graphics.rectangle("fill", ox+(x-1)*fontStep, oy+(y-1)*fontSize, fontStep, fontSize) 
+                
+                if @c[y][x].fg.len > 0
+                    love.graphics.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
+                
+                # love.graphics.print char, ox+(x-1)*fontStep, oy+(y-1)*fontSize
+                love.graphics.print char, ox+(x-1)*fontStep, oy+(y-1)*fontSize
+        @
+        
+⮐  screen

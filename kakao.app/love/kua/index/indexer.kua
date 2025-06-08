@@ -1,0 +1,216 @@
+###
+000  000   000  0000000    00000000  000   000  00000000  00000000
+000  0000  000  000   000  000        000 000   000       000   000
+000  000 0 000  000   000  0000000     00000    0000000   0000000
+000  000  0000  000   000  000        000 000   000       000   000
+000  000   000  0000000    00000000  000   000  00000000  000   000
+###
+
+use ../../kxk ▪ pickBy pullIf deleteBy kstr sds matchr slash post
+use ../../kxk ◆ nfs
+use ../util   ◆ fileutil
+use           ◆ prjcts index_utils index_kode index_styl index_js index_hpp index_mm index_nim index_kim index_lua index_kua
+
+class indexer
+    
+    ###    
+    000  000   000  0000000    00000000  000   000  00000000  00000000   
+    000  0000  000  000   000  000        000 000   000       000   000  
+    000  000 0 000  000   000  0000000     00000    0000000   0000000    
+    000  000  0000  000   000  000        000 000   000       000   000  
+    000  000   000  0000000    00000000  000   000  00000000  000   000  
+    ###
+    
+    @: ->
+        
+        indexer.singleton = @
+        
+        post.on 'project.indexed' @onProjectIndexed
+        post.on 'index'       (file) => @index file
+        post.on 'file.change' (info) => 
+            if @files[info.path]
+                @index info.path refresh:true
+        
+        @dirs    = Object.create null
+        @files   = Object.create null
+        @classes = Object.create null
+        @funcs   = Object.create null
+        @words   = Object.create null
+                
+    @file: file -> @singleton.files[file]
+    
+    #  0000000   0000000    0000000        00000000  000   000  000   000   0000000  
+    # 000   000  000   000  000   000      000       000   000  0000  000  000       
+    # 000000000  000   000  000   000      000000    000   000  000 0 000  000       
+    # 000   000  000   000  000   000      000       000   000  000  0000  000       
+    # 000   000  0000000    0000000        000        0000000   000   000   0000000  
+
+    addFuncInfo: funcName funcInfo ->
+        
+        ⮐  if not funcName
+        
+        if funcName.length > 1 and funcName.startsWith '@'
+            funcName = funcName.slice 1
+            funcInfo.static = true
+            
+        funcInfo.name = funcName
+        
+        funcInfos = @funcs[funcName] ? []
+        funcInfos = [] if not funcInfos is arr
+        funcInfos.push funcInfo
+        @funcs[funcName] = funcInfos
+        
+        funcInfo
+
+    addMethod: className funcName file li async bound statik=false ->
+
+        funcInfo = @addFuncInfo funcName,
+            line:   li+1
+            file:   file
+            class:  className
+            async:  async
+            bound:  bound
+            static: statik
+
+        sds.set @classes "#{className}.methods.#{funcInfo.name}" funcInfo
+        
+        funcInfo
+
+    # 00000000   00000000  00     00   0000000   000   000  00000000        00000000  000  000      00000000
+    # 000   000  000       000   000  000   000  000   000  000             000       000  000      000
+    # 0000000    0000000   000000000  000   000   000 000   0000000         000000    000  000      0000000
+    # 000   000  000       000 0 000  000   000     000     000             000       000  000      000
+    # 000   000  00000000  000   000   0000000       0      00000000        000       000  0000000  00000000
+
+    removeFile: file ->
+        
+        ⮐  if not @files[file]?
+        
+        for name,infos of @funcs
+            pullIf infos (v) -> v.file == file
+            delete @funcs[name] if not infos.length
+                    
+        deleteBy @classes (k v) -> v.file == file
+        
+        delete @files[file]
+        
+    #  0000000   00000000   00000000   000      000   000  000  000   000  0000000    00000000  000   000  00000000  00000000   
+    # 000   000  000   000  000   000  000       000 000   000  0000  000  000   000  000        000 000   000       000   000  
+    # 000000000  00000000   00000000   000        00000    000  000 0 000  000   000  0000000     00000    0000000   0000000    
+    # 000   000  000        000        000         000     000  000  0000  000   000  000        000 000   000       000   000  
+    # 000   000  000        000        0000000     000     000  000   000  0000000    00000000  000   000  00000000  000   000  
+    
+    applyIndexer: file fileInfo text indexerClass ->
+                
+        indexr = new indexerClass
+        parsed = indexr.parse text
+        
+        # log "indexer.applyIndexer #{file}" parsed
+        
+        funcAdded = not empty(parsed.classes) or not empty(parsed.funcs)
+        
+        for clss in parsed.classes
+            
+            sds.set @classes "#{clss.name}.file" file
+            sds.set @classes "#{clss.name}.line" clss.line+1
+            
+            fileInfo.classes.push 
+                clss: true
+                name: clss.name
+                line: clss.line+1
+                
+        for func in parsed.funcs
+
+            if func.method
+                funcInfo = @addMethod func.class func.method file func.line func.async func.bound func.static
+            else
+                func.line = func.line+1
+                func.file = file
+                funcInfo = @addFuncInfo func.name func
+                
+            fileInfo.funcs.push funcInfo
+            
+        @files[file] = fileInfo
+        post.emit 'file.indexed' file fileInfo        
+        
+    # ████████   ████████         ███   ███████  █████████        ███  ███   ███  ███████    ███   ███  ███████    
+    # ███   ███  ███   ███        ███  ███          ███           ███  ████  ███  ███   ███   ███ ███   ███   ███  
+    # ████████   ███████          ███  ███          ███           ███  ███ █ ███  ███   ███    █████    ███   ███  
+    # ███        ███   ███  ███   ███  ███          ███           ███  ███  ████  ███   ███   ███ ███   ███   ███  
+    # ███        ███   ███   ███████    ███████     ███           ███  ███   ███  ███████    ███   ███  ███████    
+
+    onProjectIndexed: prjDir ○=>
+    
+        files = prjcts.projects[prjDir].files
+        for file in files
+            ○ @index file
+            
+    # 000  000   000  0000000    00000000  000   000
+    # 000  0000  000  000   000  000        000 000 
+    # 000  000 0 000  000   000  0000000     00000  
+    # 000  000  0000  000   000  000        000 000 
+    # 000  000   000  0000000    00000000  000   000
+
+    index: file opt ○=>
+        
+        # ● indexFile
+        
+        if @files[file]? and not opt?.refresh
+            # log "index.cached #{slash.file file}"
+            post.emit 'file.indexed' file @files[file]
+            ⮐ 
+
+        # log "indexer.index #{file}" 
+        
+        fileExt = slash.ext file 
+
+        if fileExt in fileutil.imageExtensions
+            @files[file] = {}
+            ⮐ 
+                    
+        nfs.read(file).then (text) =>
+        
+            ⮐  if empty text
+            
+            # ●▸ hash
+            hash = kstr.hash text
+            # ●▪ hash
+            
+            if @files[file]?.hash == hash
+                # log "index.match #{slash.file file}"
+                post.emit 'file.indexed' file @files[file]
+                ⮐ 
+            
+            # ●▸ index
+            lines = text.split /\r?\n/
+            
+            fileInfo =
+                lines:   lines.length
+                funcs:   []
+                classes: []
+                hash:    hash
+                
+            funcAdded = false
+            funcStack = []
+            currentClass = null
+            
+            isCpp = fileExt in ['cpp' 'cc' 'c' 'frag' 'vert']
+            isHpp = fileExt in ['hpp' 'h' ]
+            isJS  = fileExt in ['js' 'mjs']
+            
+            if 
+                
+                isHpp or isCpp    ➜ ⮐  @applyIndexer file fileInfo text index_hpp
+                isJS              ➜ ⮐  @applyIndexer file fileInfo text index_js
+                fileExt == 'mm'   ➜ ⮐  @applyIndexer file fileInfo text index_mm
+                fileExt == 'styl' ➜ ⮐  @applyIndexer file fileInfo text index_styl
+                fileExt == 'kode' ➜ ⮐  @applyIndexer file fileInfo text index_kode
+                fileExt == 'nim'  ➜ ⮐  @applyIndexer file fileInfo text index_nim
+                fileExt == 'lua'  ➜ ⮐  @applyIndexer file fileInfo text index_lua
+                fileExt == 'kim'  ➜ ⮐  @applyIndexer file fileInfo text index_kim
+                fileExt == 'kua'  ➜ ⮐  @applyIndexer file fileInfo text index_kua
+                        
+            # ●▪ index
+        @
+
+export indexer

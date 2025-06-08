@@ -6,17 +6,7 @@
 
 
 local events = class("events")
-    events.emit = event function (...) 
-        ret = false
-        list = @handlers[event]
-        if list then 
-            for i in iter(#list, 1) do 
-                if list[i] then 
-                    list[i](...)
-                end
-            end
-        end
-    end
+    
 
 
 function events:init() 
@@ -25,23 +15,53 @@ function events:init()
     end
 
 
-function events:on(event, handler) 
+function events:on(event, handler, o) 
+        self.handlers = self.handlers or (array())
         local list = (self.handlers[event] or array())
+        
         if list:has(handler) then return self end
         
-        list:push(handler)
+        if o then 
+            list.push(array(o, handler))
+        else 
+            list:push(handler)
+        end
+        
         self.handlers[event] = list
         return self
     end
 
 
-function events:removeListener(event, handler) 
+function events:emit(event, ...) 
+        -- log 'emit ' event
+        local ret = false
+        self.handlers = self.handlers or (array())
+        local list = self.handlers[event]
+        if list then 
+            for i in iter(#list, 1) do 
+                if list[i] then 
+                    if is(list[i], "function") then 
+                        list[i](...)
+                    else 
+                        list[i][1](list[i][0], ...)
+                    end
+                end
+            end
+        end
+    end
+
+
+function events:removeListener(event, handler, o) 
+        self.handlers = self.handlers or (array())
         local list = self.handlers[event]
         if not list then return self end
         
         if handler then 
             for i in iter(1, #list) do 
                 if (list[i] == handler) then 
+                    table.remove(list, i)
+                    break
+                elseif ((is(list[i], array) and (list[i][0] == o)) and (list[i][1] == handler)) then 
                     table.remove(list, i)
                     break
                 end

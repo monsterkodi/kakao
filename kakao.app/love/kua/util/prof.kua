@@ -1,0 +1,43 @@
+###
+00000000   00000000    0000000   00000000
+000   000  000   000  000   000  000     
+00000000   0000000    000   000  000000  
+000        000   000  000   000  000     
+000        000   000   0000000   000     
+###
+
+use ../../kxk ▪ kstr
+
+function prof
+
+    @tils: {}
+    @til: args -> 
+        
+        key = ''
+        while args.length
+            key += args.shift()
+            if prof.tils[key]
+                ⮐  [key prof.tils[key] args.join(' ')] 
+            key += ' '
+        log r5("prof! #{g5(key)} doesn't match #{b8(Object.keys(prof.tils).join(' '))}")
+        ['' [] '']
+            
+    @tstr: til idx -> lpad(6 kstr.time(BigInt(process.hrtime(til[idx < 0 ? til.length+idx : idx])[1])))
+    
+    @start: args... -> prof.tils[args.join(' ')] = [process.hrtime()]
+    
+    @time:  args... -> 
+        
+        [key til rst] = prof.til args
+        if valid til
+            til.push process.hrtime()
+            log key lpad(5 rst) prof.tstr(til -2)
+        
+    @end:   args... -> 
+        
+        [key til rst] = prof.til args
+        if valid til
+            prof.time.apply prof [key rst] 
+            log key lpad(5) prof.tstr(til 0)
+
+export prof

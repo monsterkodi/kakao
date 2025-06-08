@@ -1,0 +1,61 @@
+###
+000   000  000   000  000   000  00000000   00000000
+000   000  0000  000   000 000   000   000  000     
+000   000  000 0 000    00000    00000000   0000000 
+000   000  000  0000     000     000        000     
+ 0000000   000   000     000     000        00000000
+###
+
+use ../../../kxk ◆ kseg
+use ../../theme  ◆ theme
+  
+import fonts from '../../util/fonts.json' with { type: "json" }
+
+function unype
+
+    @map: {}
+    
+    @: ->   
+    
+        @name = 'unype'
+        @font = 'crazy'
+        
+        if empty unype.map
+            def = fonts.default.join ' '
+            for font,text of fonts
+                continue if font == 'default'
+                unype.map[font] = {}
+                for char,idx in kseg(text.join(' '))
+                    if def[idx] != ' '
+                        unype.map[font][def[idx]] = char
+                        
+            unype.map['full width'][' '] = '　'
+    
+    # ███  ███   ███   ███████  ████████  ████████   █████████
+    # ███  ████  ███  ███       ███       ███   ███     ███   
+    # ███  ███ █ ███  ███████   ███████   ███████       ███   
+    # ███  ███  ████       ███  ███       ███   ███     ███   
+    # ███  ███   ███  ███████   ████████  ███   ███     ███   
+
+    insert: text ->
+    
+        if repl = unype.map[@font][text]
+            text = repl
+            
+        text
+
+    #  0000000   0000000   000       0000000   00000000   
+    # 000       000   000  000      000   000  000   000  
+    # 000       000   000  000      000   000  0000000    
+    # 000       000   000  000      000   000  000   000  
+    #  0000000   0000000   0000000   0000000   000   000  
+    
+    themeColor: colorName defaultColor ->
+        
+        switch colorName
+            'cursor.multi' ➜ ⮐  theme.scroll.hover
+            'cursor.main'  ➜ ⮐  theme.scroll.dot
+        
+        defaultColor
+
+export unype

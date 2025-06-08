@@ -1,0 +1,664 @@
+###
+    ███   ███  ████████  ███████    
+    ███  ███   ███       ███   ███  
+    ███████    ███████   ███   ███  
+    ███  ███   ███       ███   ███  
+    ███   ███  ████████  ███████    
+
+    bun --watch js/ked/ked.js
+###
+
+use kxk.kxk
+# use ../kxk        ◆ nfs
+# use ./index       ◆ prjcts indexer
+# use ./util        ◆ logfile session help frecent watcher git 
+# use ./util/img    ◆ rounded squares sircels
+# use ./edit/tool   ◆ belt
+# use ./edit        ◆ mode
+# use ./edit/mode   ◆ filepos
+# use ./view/base   ◆ view input
+# use ./view/status ◆ status 
+# use ./view/editor ◆ fileeditor
+use util.logfile
+use util.session
+use view.editor.fileeditor
+use view.status.status
+use view.screen.screen
+use view.menu.menu
+# use ./view/menu   ◆ context menu macro finder searcher differ 
+# use ./view/colmns ◆ browse dircol funcol quicky droop
+
+class KED
+
+    @: ->
+
+        @version = '0.1.0'
+        
+        # @args = karg """
+        #     
+        #     ked [file]
+        #         options                                       **
+        #         new        start with empty buffer          = false
+        #         fresh      don't load previous session      = false
+        #         timeout    session save timeout in ms       = 1000
+        #         version    log version                      = false
+        #         
+        #     """ preHelp:help.header() version:@version
+        # 
+        # process.on 'uncaughtException' @quit
+            
+        @session = session @args
+        @logfile = logfile()
+        
+        _G.ked_session = @session
+
+        # @session.on 'loaded' @onSessionLoaded
+        
+        @screen = screen(160 40)
+        
+        _G.ked_screen = @screen
+                  
+        # @indexer  = indexer()
+        # @git      = git()
+
+        @menu     = menu(       @screen )
+        # @macro    = macro(      @screen )
+        # @quicky   = quicky(     @screen )
+        # @browse   = browse(     @screen )
+        @editor   = fileeditor( @screen 'editor')
+        # @droop    = droop(      @screen @editor )
+        # @dircol   = dircol(     @screen @editor  ['scroll' 'knob'])
+        # @funcol   = funcol(     @screen @editor  ['scroll' 'knob'])
+        # @finder   = finder(     @screen @editor)
+        # @searcher = searcher(   @screen @editor)
+        # @differ   = differ(     @screen @editor)
+        @status   = status(     @screen @editor)
+        # @context  = context(    @screen)
+        # @input    = input(      @screen)
+
+        # @input.on 'action' @onInputAction
+        
+        log ◌d "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━ " ◌g @session.name, ◌d " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+
+        # @editor.state.hasFocus = true
+        # @editor.funtree = @funcol.funtree
+        
+        # post.on 'redraw'        @redraw
+        # post.on 'window.focus'  @redraw
+        # post.on 'window.blur'   @redraw
+        # post.on 'input.popup'   @onInputPopup
+        # post.on 'view.size'     @onViewSize
+        # post.on 'quicky'        @onQuicky
+        # post.on 'file.new'      @newFile
+        # post.on 'file.reload'   @reloadFile
+        # post.on 'file.open'     @openFile
+        # post.on 'quit'          @quit
+        # post.on 'file.change'   @onFileChange
+        # post.on 'focus'         (name) -> # log "focus: '#{name}'"
+        
+        # @contextHandlers = [                                                                               @editor         @dircol @funcol ]
+        # @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
+        # @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
+        # @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
+        
+        # @t.on 'key'    @onKey
+        # @t.on 'mouse'  @onMouse
+        # @t.on 'wheel'  @onWheel
+        # @t.on 'resize' @onResize
+        # @t.on 'paste'  @onPaste
+                                    
+        # log 'ked args:' @args
+        
+        # ked_session.set 'ked▸args' @args
+        # 
+        # if valid @args.options
+        #     @loadFile @args.options[0]
+        # elif @args.fresh
+        #     @hideEditor()
+        #     @menu.show true
+        # elif @args.new
+        #     @newFile()
+        
+        @menu∙show true
+            
+    showEditor: -> 
+    
+        @editor.show()
+        @status.show()
+        @dircol.show()
+        @funcol.show()
+
+    hideEditor: -> 
+    
+        @editor.hide()
+        @status.hide()
+        @dircol.hide()
+        @funcol.hide()
+        
+    # 00000000   000   000  000   000  
+    # 000   000  000   000  0000  000  
+    # 0000000    000   000  000 0 000  
+    # 000   000  000   000  000  0000  
+    # 000   000   0000000   000   000  
+    
+    @run: -> new KED()
+
+    #  ███████  ████████   ███████   ███████  ███   ███████   ███   ███
+    # ███       ███       ███       ███       ███  ███   ███  ████  ███
+    # ███████   ███████   ███████   ███████   ███  ███   ███  ███ █ ███
+    #      ███  ███            ███       ███  ███  ███   ███  ███  ████
+    # ███████   ████████  ███████   ███████   ███   ███████   ███   ███
+
+    onSessionLoaded: ->
+    
+        ⮐  if @args.fresh
+        ⮐  if @args.new
+        
+        if empty(@currentFile) and empty(@loadingFile)
+            file = ked_session.get "editor▸file"
+            if file
+                # log 'no current or loading file ... loading last session file'
+                @loadFile file
+            else
+                @hideEditor()
+                @menu.show true
+                
+    #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
+    # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    arrange: cols rows ->
+        
+        w = cols
+        h = rows
+        
+        # dcw = @dircol.cells.cols
+        # fcw = @funcol.cells.cols
+        # 
+        # dcw = 0 if @dircol.hidden() or not @dircol.active
+        # fcw = 0 if @funcol.hidden() or not @funcol.active
+        # 
+        
+        dcw = 0
+        fcw = 0
+        
+        # if @viewSizeDelta
+        #     if 
+        #         @viewSizeDelta.name == @dircol.name ➜ dcw = @dircol.cells.cols + @viewSizeDelta.delta
+        #         @viewSizeDelta.name == @funcol.name ➜ fcw = @funcol.cells.cols + @viewSizeDelta.delta
+        #     delete @viewSizeDelta
+        # 
+        # if @dircol.visible() and @dircol.active
+        #     @dircol.layout  0     0  dcw        h    
+        # if @funcol.visible() and @funcol.active
+        #     @funcol.layout  w-fcw 1  fcw        h-1  
+        @status∙layout  dcw   0  w-dcw      1
+        @editor∙layout  dcw   1  w-dcw-fcw  h-1
+    
+    #  ███████   ███   ███  ███  █████████
+    # ███   ███  ███   ███  ███     ███   
+    # ███ ██ ██  ███   ███  ███     ███   
+    # ███ ████   ███   ███  ███     ███   
+    #  █████ ██   ███████   ███     ███   
+
+    quit: msg ->
+        
+        # clearImmediate @redrawId
+        
+        @quitting = true
+        
+        # @session.save()
+        
+        log ◌d "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━ " ◌g @session.name, ◌d " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+        
+        if msg != nil
+           if msg.stack
+               error msg.stack 
+           error msg
+
+        @logfile∙close()
+        @
+            
+    # 000   000  00000000  000   000  
+    # 0000  000  000       000 0 000  
+    # 000 0 000  0000000   000000000  
+    # 000  0000  000       000   000  
+    # 000   000  00000000  00     00  
+    
+    newFile: ->
+        
+        delete @currentFile
+
+        @status.setFile ''
+    
+        @editor.state.syntax.ext = 'txt'
+        @editor.state.loadLines ['']
+
+        # @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
+        # @editor.cells.meta_pst 0 0 '\x07'
+        # 
+        # @editor.cells.meta_pre 1 0 '\x1b]66;n=3:d=4:w=1;'
+        # @editor.cells.meta_pst 1 0 '\x07'
+        
+        @t.setCursor 0 0
+        @t.setTitle 'kėd'
+        
+        @editor.mapscr.reload()
+        
+        post∙emit 'file.loaded' nil
+
+        @showEditor()
+        
+        @editor.grabFocus()
+        
+        @redraw()
+            
+    # ████████  ███  ███      ████████   ███████  ███   ███   ███████   ███   ███   ███████   ████████
+    # ███       ███  ███      ███       ███       ███   ███  ███   ███  ████  ███  ███        ███     
+    # ██████    ███  ███      ███████   ███       █████████  █████████  ███ █ ███  ███  ████  ███████ 
+    # ███       ███  ███      ███       ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███       ███  ███████  ████████   ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    onFileChange: event ->
+    
+        if event.path == @currentFile
+            switch event.change
+                'delete' ➜ @newFile() # todo: load current text into new file
+                'change'
+                'rename' ➜ @reloadFile()
+        
+    # ████████   ████████  ███       ███████    ███████   ███████  
+    # ███   ███  ███       ███      ███   ███  ███   ███  ███   ███
+    # ███████    ███████   ███      ███   ███  █████████  ███   ███
+    # ███   ███  ███       ███      ███   ███  ███   ███  ███   ███
+    # ███   ███  ████████  ███████   ███████   ███   ███  ███████  
+
+    reloadFile: -> 
+        
+        if valid @currentFile
+            @loadFile @currentFile
+        else
+            @newFile()
+            
+    #  0000000   00000000   00000000  000   000  
+    # 000   000  000   000  000       0000  000  
+    # 000   000  00000000   0000000   000 0 000  
+    # 000   000  000        000       000  0000  
+    #  0000000   000        00000000  000   000  
+    
+    openFile: path row col view ->
+        
+        @loadFile path row col view
+        @editor.grabFocus()
+        
+    #  0000000   000   000  000   0000000  000   000  000   000  
+    # 000   000  000   000  000  000       000  000    000 000   
+    # 000 00 00  000   000  000  000       0000000      00000    
+    # 000 0000   000   000  000  000       000  000      000     
+    #  00000 00   0000000   000   0000000  000   000     000     
+    
+    onQuicky: path ->
+        
+        ⮐  if valid @loadingFile
+        
+        if slash.isAbsolute path
+            file = path
+        else
+            file = slash.absolute path slash.dir(@currentFile)
+        
+        ⮐  if slash.samePath(file @currentFile)
+        
+        @loadFile file
+                                
+    # ███       ███████    ███████   ███████          ████████  ███  ███      ████████
+    # ███      ███   ███  ███   ███  ███   ███        ███       ███  ███      ███     
+    # ███      ███   ███  █████████  ███   ███        ██████    ███  ███      ███████ 
+    # ███      ███   ███  ███   ███  ███   ███        ███       ███  ███      ███     
+    # ███████   ███████   ███   ███  ███████          ███       ███  ███████  ████████
+
+    loadFile: p row col view ->
+    
+        # log "ked.loadFile #{p} #{row} #{col} #{noon view}"
+        
+        start = process.hrtime()
+        
+        if slash.isAbsolute p
+            absFile = slash.absolute p
+        else
+            absFile = slash.path process.cwd() p
+            
+        ⮐  if slash.samePath absFile @loadingFile
+        
+        @loadingFile = absFile
+        
+        exists = nfs.fileExists @loadingFile
+        
+        if not exists
+            warn "ked.loadFile - file doesn't exist! #{@loadingFile}"
+            delete @loadingFile
+            ⮐ 
+        
+        @loadingFile = nfs.resolveSymlink @loadingFile
+        
+        if empty @loadingFile
+            warn "ked.loadFile - #{absFile} resolved to empty!"
+            ⮐  
+        
+        ▴ 'loadingFile' @loadingFile
+        
+        readingFile = @loadingFile
+        
+        text = nfs.readText @loadingFile
+        
+        if @loadingFile != readingFile
+            # warn 'another file started loading, skip editor update'
+            ⮐  
+        
+        @currentFile = @loadingFile
+        
+        ▴ 'currentFile' @currentFile
+        
+        delete @loadingFile
+        
+        @status.setFile slash.tilde(@currentFile)
+                
+        if text == undefined
+            text = '○ binary ○'
+        
+        (colors, segls) = belt.colorSeglsForText text
+        
+        if valid colors
+            @editor.state.syntax.setColors colors
+        else
+            @editor.state.syntax.setExt slash.ext(@currentFile)
+        
+        @editor.state.loadSegls segls
+        @editor.setCurrentFile @currentFile     
+        ked_session.set "editor▸file" @currentFile
+        
+        @status.time = process.hrtime(start)[1]
+        
+        mode.fileLoaded @editor.state @currentFile row col view
+        
+        post∙emit 'file.loaded' @currentFile
+        
+        @showEditor()
+        @redraw()
+        
+        @indexer.index @currentFile
+        prjcts.index   @currentFile
+        git.diff       @currentFile
+        
+        watcher.watch  @currentFile
+                
+        @t.setTitle slash.file(@status.file)
+        
+        @saveSessionFile @currentFile 'loaded'        
+        
+        gitDir = git.dir @currentFile
+        if gitDir
+            watcher.watch slash.path(gitDir '.git/refs/heads') {recursive: false}
+            
+        @
+                    
+    #  0000000   0000000   000   000  00000000  
+    # 000       000   000  000   000  000       
+    # 0000000   000000000   000 000   0000000   
+    #      000  000   000     000     000       
+    # 0000000   000   000      0      00000000  
+    
+    saveFile: ->
+        
+        text = kseg.str @editor.state.s.lines
+        
+        if valid @currentFile
+            nfs.write @currentFile text
+            @editor.state.clearHistory() # lazy way to 'undirty' :> no undo after save :(
+            @redraw()
+            @saveSessionFile @currentFile 'saved'
+            
+    saveSessionFile: file typ ->
+        
+        frecent.fileAction file typ
+                
+        @session.set 'files▸recent' frecent.store('file')
+            
+    saveAs: -> log 'todo: saveAs'
+    
+    # 00000000    0000000    0000000  000000000  00000000  
+    # 000   000  000   000  000          000     000       
+    # 00000000   000000000  0000000      000     0000000   
+    # 000        000   000       000     000     000       
+    # 000        000   000  0000000      000     00000000  
+    
+    onPaste: text -> 
+    
+        @editor.state.insert text
+        @redraw()
+                                    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+
+        if event.type == 'wheel'
+
+            for handler in @wheelHandlers
+                ret = handler.onWheel event
+                if ret
+                    if ret.redraw == true
+                        @redraw()
+                    ⮐ 
+            ⮐ 
+
+        redraw = false
+        
+        for handler in @mouseHandlers
+            ret = handler.onMouse event
+            if ret
+                event.handled = true
+                if ret.redraw == true
+                    redraw = true
+                break if event.type != 'move' or handler.isPopup
+
+        if event.button == 'right' and event.type == 'press' and event.count == 1
+            
+            for handler in @contextHandlers
+                if handler.hover
+                    ret = handler.onContext event
+                    if ret
+                        if ret.redraw == true
+                            redraw = true
+                        break
+
+        @redraw() if redraw
+        
+    showFinderOrSearcher: ->
+    
+        if @finder.visible() and valid @finder.input.current()
+            @searcher.show @finder.input.current()
+        else
+            @finder.show()
+        @
+            
+    showFileposHistory: ->
+    
+        if filepos.fileposl.length > 1
+
+            files = filepos.fileposl.map((fp) -> fp[0])
+            files = files.reverse()
+            files.shift() if filepos.offset == 0
+            scx = int @screen.cols/2
+            scy = int @screen.rows/2
+            post∙emit 'droop.show' {files:files pos:[scx scy-6]}
+        @
+                
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event ->
+    
+        # log 'ked.onKey' event
+            
+        switch key
+            
+            'alt+1'                      ➜ ⮐  post.emit 'filepos.goBackward'  
+            'alt+2'                      ➜ ⮐  post.emit 'filepos.goForward'   
+            'cmd+1'                      ➜ ⮐  post.emit 'filepos.swapPrevious'
+            'alt+h'                      ➜ ⮐  @showFileposHistory()
+            'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
+            'ctrl+r' 'cmd+r'             ➜ ⮐  @reloadFile()
+            'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()
+            'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐  @saveAs()
+            'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()
+            'alt+m'                      ➜ ⮐  @menu.show()
+            'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky.showProjectFiles @currentFile
+            'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
+            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
+            'alt+o'                      ➜ ⮐  @editor.jumpToCounterpart()
+            'alt+,'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfPrevFunc()
+            'alt+.'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfNextFunc()
+            'cmd+o' 'ctrl+o'
+            'cmd+m' 'cmd+;' 'ctrl+;'     ➜ ⮐  @macro.show()
+            'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)
+            'cmd+i'                      ➜ ⮐  post.emit 'differ.status'
+            'alt+r'                      ➜ ⮐  post.emit 'dircol.reveal' @currentFile
+            "cmd+\\" "ctrl+\\"           ➜ ⮐  post.emit 'dircol.toggle'
+            "cmd+'" "ctrl+'"             ➜ ⮐  post.emit 'funcol.toggle'
+            
+        for handler in @keyHandlers
+            # ●▸ on key
+            if not handler.hidden()
+                result = handler.onKey key event
+                if result
+                    break 
+            # ●▪ on key
+                
+        @redraw() if result.redraw != false
+        
+    #  0000000  000  0000000  00000000  
+    # 000       000     000   000       
+    # 0000000   000    000    0000000   
+    #      000  000   000     000       
+    # 0000000   000  0000000  00000000  
+    
+    onViewSize: name side delta ->
+        
+        @viewSizeDelta = {name:name side:side delta:delta}
+        @redraw()
+        
+    onResize: cols rows size cellsz -> 
+    
+        mcw = int cols/6
+        
+        rounded.cache = {}
+        
+        if mcw >= 16
+            @dircol.cells.cols = mcw
+            @funcol.cells.cols = mcw
+            @dircol.show()
+            @funcol.show()
+        else
+            @dircol.hide()
+            @funcol.hide()
+        
+        squares.onResize cols rows size cellsz
+        sircels.onResize cols rows size cellsz
+        @redraw()
+        @editor.mapscr.onResize()
+        
+    # ███  ███   ███  ████████   ███   ███  █████████       ████████    ███████   ████████   ███   ███  ████████ 
+    # ███  ████  ███  ███   ███  ███   ███     ███          ███   ███  ███   ███  ███   ███  ███   ███  ███   ███
+    # ███  ███ █ ███  ████████   ███   ███     ███          ████████   ███   ███  ████████   ███   ███  ████████ 
+    # ███  ███  ████  ███        ███   ███     ███          ███        ███   ███  ███        ███   ███  ███      
+    # ███  ███   ███  ███         ███████      ███          ███         ███████   ███         ███████   ███      
+
+    onInputPopup: opt ->
+    
+        @input.set opt.text
+        @input.state.moveCursors 'eol'
+        @input.layout opt.x opt.y opt.w 1
+        @input.grabFocus()
+        @input.orig = opt.text
+        @input.cb = opt.cb
+        @redraw()
+        
+    onInputAction: action event ->
+    
+        # log "ked.onInputAction #{action} #{event}"
+        switch action
+            'submit'
+                if @input.cb is func
+                    @input.cb @input.current()
+                @input.hide()
+            'cancel'
+                if @input.cb is func
+                    @input.cb @input.orig
+                @input.hide()
+    
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    redraw: ->    
+        
+        ⮐  if @quitting
+
+        # clearImmediate @redrawId
+        # @redrawId = setImmediate @draw
+                                      
+    draw: cols rows ox oy fontStep fontSize ->
+            
+        ⮐  if @quitting
+        
+        # ● sum
+        
+        # start = process.hrtime()
+        
+        # @status.gutter = @editor.state.gutterWidth()
+        
+        @screen∙initSize cols rows
+        
+        @arrange cols rows
+        
+        # ●▸ draw
+        # if @menu.greet.hidden()
+        #     @editor.draw() if not @differ.visible()
+        #     @status.draw()
+        #     @dircol.draw()
+        #     @funcol.draw()
+
+        # for y in 1..rows
+        #     for x in 1..cols
+        #         @screen∙set x y string.sub($x 1 1) [50 0 0] 
+            
+        @menu∙draw()
+        # @macro.draw()
+        # @quicky.draw()
+        # @browse.draw()
+        # @droop.draw()
+        # @finder.draw()
+        # @searcher.draw()
+        # @differ.draw()
+        # @context.draw()
+        # @input.draw()
+        # ●▪ draw
+        # ●▸ render
+            
+        @screen∙render ox oy fontStep fontSize
+        # @t.removeImgs()
+        # ●▪ render
+        
+        # @status.time = process.hrtime(start)[1]
+        
+⮐  KED

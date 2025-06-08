@@ -1,0 +1,738 @@
+###
+    █████████  █████████  ███   ███████   
+       ███        ███     ███  ███   ███  
+       ███        ███     ███  ███   ███  
+       ███        ███     ███  ███   ███  
+       ███        ███     ███   ███████   
+
+    interfaces with the terminal
+    handles mouse and keyboard input and
+    kitty image display
+###
+
+use ../../../kxk   ▪ events post kstr
+use ../../../kxk   ◆ nfs
+use ../../util/img ◆ rounded
+
+class TTIO extends events
+
+    @: ->
+        
+        @store()
+        
+        @hasFocus = true
+        
+        @imgIds     = 100
+        @lastplImgs = {}
+        @placedImgs = {}
+        
+        @modifiers  = ['cmd' 'ctrl' 'alt' 'shift']
+        @activeMods = {}
+        
+        @hideCursor()
+        
+        if process.stdin.isTTY ➜ process.stdin.setRawMode true
+            
+        @write '\x1b[?1000h'    # mouse events
+        @write '\x1b[?1002h'    # cell motion tracking
+        @write '\x1b[?1003h'    # mouse move events
+        @write '\x1b[?1004h'    # focus events        
+        @write '\x1b[?1006h'    # mouse SGR mode
+        @write '\x1b[?1016h'    # mouse SGR pixel mode
+        @write '\x1b[?1049h'    # alternate screen buffer
+        @write '\x1b[?2004h'    # bracketed paste mode
+        @write '\x1b[>1s'       # send shift in mouse press events
+        @write '\x1b[>1u'       # kitty keyboard protocol
+        @write '\x1b[=31;1u'    # 1 disambiguate escape codes
+                                # 2 event types
+                                # 4 alternate keys
+                                # 8 all keys as escape codes
+                                # 16 associated text
+        
+        process.stdout.on 'resize' @onResize
+        process.stdin.on  'data'   @onData
+        post.on 'pointer'          @onPointer
+        
+        @setTitle 'kėd'
+        
+        global.ked_ttio = @
+        
+        setTimeout @onResize 10 # delay screen size request due to ghostty bug
+                            
+    write: str => process.stdout.write str
+    
+    quit: =>
+        
+        process.stdout.removeListener 'resize' @onResize
+        process.stdin.removeListener  'data'   @onData
+        
+        @clear()
+        @write '\x1b[>0s'    # end sending shift in mouse press
+        @write '\x1b[<u'     # end kitty keyboard protocol
+        @write '\x1b[?1000l' # end mouse events
+        @write '\x1b[?1002l' # end cell motion tracking
+        @write '\x1b[?1003l' # end mouse move events
+        @write '\x1b[?1004l' # end focus events        
+        @write '\x1b[?1006l' # end mouse SGR mode
+        @write '\x1b[?1016l' # end mouse SGR pixel mode
+        @write '\x1b[?1049l' # end alternate screen buffer
+        @write '\x1b[?2004l' # end bracketed paste mode
+        @write '\x1b[?1049l' # end scrollback screen buffer
+        @showCursor()
+        @restore()
+        
+    clear: =>
+        @write '\x1b[2J' # clear screen
+        @write '\x1b[H'  # cursor home
+    
+    cols: => process.stdout.columns
+    rows: => process.stdout.rows  
+    
+    setTitle: t -> @write "\x1b]2;#{t}\x1b\\"
+    
+    # ████████   ███       ███████    ███████  ████████     ███  ██     ██   ███████    ███████   ████████
+    # ███   ███  ███      ███   ███  ███       ███          ███  ███   ███  ███   ███  ███        ███     
+    # ████████   ███      █████████  ███       ███████      ███  █████████  █████████  ███  ████  ███████ 
+    # ███        ███      ███   ███  ███       ███          ███  ███ █ ███  ███   ███  ███   ███  ███     
+    # ███        ███████  ███   ███   ███████  ████████     ███  ███   ███  ███   ███   ███████   ████████
+
+    placeLineImage: id cx y py ry=1 ->
+        
+        for placement in 0...ry
+            
+            pl = py + placement
+            cy = y + int(pl / @cellsz[1])
+            oy = pl % @cellsz[1]
+            
+            @setCursor cx cy
+            
+            @write "\x1b_Gq=1,a=p,i=#{id},p=#{placement+1},X=0,Y=#{oy},C=1\x1b\\"
+
+    #  0000000   000   000  00000000  00000000   000       0000000   000   000  
+    # 000   000  000   000  000       000   000  000      000   000   000 000   
+    # 000   000   000 000   0000000   0000000    000      000000000    00000    
+    # 000   000     000     000       000   000  000      000   000     000     
+    #  0000000       0      00000000  000   000  0000000  000   000     000     
+    
+    placeImageOverlay: id x y py pw ph ->
+        
+        if not @overlayID
+            @overlayID = @sendImg rounded.rect(300 400 0 [255 255 255 2]) 1
+
+        cy = y + int(py / @cellsz[1])
+        oy = py % @cellsz[1]
+        
+        @setCursor x cy
+        @write "\x1b_Gq=1,a=p,i=#{@overlayID},p=#{id},X=0,Y=#{oy},w=#{pw},h=#{ph},z=1000,C=1\x1b\\"
+        
+    hideImageOverlay: id ->
+    
+        @write "\x1b_Gq=1,a=d,d=i,i=#{@overlayID},p=#{id}\x1b\\"
+        
+    # ███  ██     ██   ███████ 
+    # ███  ███   ███  ███      
+    # ███  █████████  ███  ████
+    # ███  ███ █ ███  ███   ███
+    # ███  ███   ███   ███████ 
+
+    sendImg: img id ->
+    
+        if empty id
+            @imgIds += 1
+            id = @imgIds
+            
+        base64 = img.png.toString 'base64'
+        @write "\x1b_Gq=1,i=#{id},f=100;#{base64}\x1b\\"
+        img.id = id
+        id
+        
+    placeImg: img x y px py pw ph z ->
+    
+        if empty img.id
+            @sendImg img
+    
+        @setCursor x y
+        
+        px ?= 0
+        py ?= 0
+        pw ?= @cellsz[0]      
+        ph ?= @cellsz[1]
+
+        if @lastplImgs[img.id]
+            if placed = @lastplImgs[img.id][[x y px py pw ph]]
+                # log "◆#{img.id} #{placed} #{[x y px py pw ph]}"  
+                @placedImgs[img.id] ?= {}
+                @placedImgs[img.id][[x y px py pw ph]] = placed
+                ⮐
+
+        img.pid ?= 0                   
+        img.pid++
+        
+        @placedImgs[img.id] ?= {}
+        @placedImgs[img.id][[x y px py pw ph].toString()] = img.pid
+        
+        # log "●#{img.id} #{img.pid} #{img.name} #{[x y px py pw ph].toString()} z:#{z}"
+        z ?= 1000
+        @write "\x1b_Gq=1,a=p,i=#{img.id},p=#{img.pid},X=#{px},Y=#{py},w=#{pw},h=#{ph},z=#{z},C=1\x1b\\"
+
+    hideImg: id pl ->
+        
+        # log "▪#{id} #{pl}"
+        @write "\x1b_Gq=1,a=d,d=i,i=#{id},p=#{pl}\x1b\\"
+        
+    removeImgs: ->
+        
+        for posplids iid in ipairs @lastplImgs
+            for plid pos in ipairs posplids
+                if empty(@placedImgs[iid]) or empty(@placedImgs[iid][pos])
+                    @hideImg iid plid
+                
+        @lastplImgs = @placedImgs
+        @placedImgs = {}
+
+    # 000   000  000  0000000    00000000  
+    # 000   000  000  000   000  000       
+    # 000000000  000  000   000  0000000   
+    # 000   000  000  000   000  000       
+    # 000   000  000  0000000    00000000  
+    
+    hideImage: id ->
+        
+        @write "\x1b_Gq=1,a=d,d=i,i=#{id}\x1b\\"
+        
+    hideImagesInRange: start end ->
+    
+        @write "\x1b_Gq=2,a=d,d=r,x=#{start},y=#{end}\x1b\\"
+            
+    deleteImage: id ->
+        
+        @write "\x1b_Gq=1,a=d,d=I,i=#{id}\x1b\\"
+        
+    deleteImagesInRange: start end ->
+        
+        ⮐  log "range start '#{start}' not a number" if not start is num
+        ⮐  log "range end '#{end}' not a number" if not end is num
+        @write "\x1b_Gq=2,a=d,d=R,x=#{start},y=#{end}\x1b\\"
+    
+    #  0000000  00000000  000   000  0000000    
+    # 000       000       0000  000  000   000  
+    # 0000000   0000000   000 0 000  000   000  
+    #      000  000       000  0000  000   000  
+    # 0000000   00000000  000   000  0000000    
+            
+    sendImageData: data id w h bytesperpixel=3 ->
+        
+        ###
+            q=1  don't send OK q=2 don't send OK and failure
+            i=n  image id 
+            p=n  placement id
+            f=24 3 bytes per pixel
+            s=n  width v=n  height
+            m=1  image chunk not larger than 4096 bytes
+            m=0  last chunk of image
+            a=p  placement action
+        ###
+        
+        base64 = data.toString 'base64'
+        
+        if base64.length > 4096 # and 'kitty' in process.env.TERM
+            chunk = base64[0...4096]
+            @write "\x1b_Gq=1,i=#{id},p=#{id},f=#{8*bytesperpixel},s=#{w},v=#{h},m=1;#{chunk}\x1b\\"
+            chunks = ceil base64.length / 4096
+            for i in 1...chunks
+                chunk = base64[i*4096...min((i+1)*4096 base64.length)]
+                @write "\x1b_Gq=1,m=#{(i == chunks - 1) ? 0 : 1};#{chunk}\x1b\\"
+        else            
+            @write "\x1b_Gq=1,i=#{id},p=#{id},f=#{8*bytesperpixel},s=#{w},v=#{h};#{base64}\x1b\\"
+    
+    #  0000000  000   000  00000000    0000000   0000000   00000000   
+    # 000       000   000  000   000  000       000   000  000   000  
+    # 000       000   000  0000000    0000000   000   000  0000000    
+    # 000       000   000  000   000       000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  
+    
+    setCursor: x y => @write "\x1b[#{y+1};#{x+1}H"
+    requestCursor: => @write "\x1b[6n"
+    hideCursor: => @write '\x1b[?25l'
+    showCursor: show=true => 
+        if show
+            @write '\x1b[?25h'
+        else
+            @hideCursor()
+            
+    store:    => @write '\x1b7'
+    restore:  => @write '\x1b8'
+
+    onResize: => 
+        
+        @emit 'preResize'
+        @write '\x1b[14t' # request screen size in pixels
+                
+    # 000   000  000  000000000  000000000  000   000  
+    # 000  000   000     000        000      000 000   
+    # 0000000    000     000        000       00000    
+    # 000  000   000     000        000        000     
+    # 000   000  000     000        000        000     
+    #
+    # https://sw.kovidgoyal.net/kitty/keyboard-protocol/
+    # doesn't work in terminal.app
+    
+    parseKitty: csi data ->
+                        
+        if csi[-1] not in 'uABCDFH~'
+            if ':3u' in csi
+                log '?????' data.length
+                for di in 1...data.length
+                    log "#{di} 0x#{data[di].toString(16)} #{String.fromCodePoint(data[di])}"
+            ⮐ 
+        
+        # log "parseKitty csi: #{csi}" 
+        
+        key = switch csi[-1]
+            'A' ➜ 'up'    
+            'B' ➜ 'down'  
+            'D' ➜ 'left'  
+            'C' ➜ 'right'  
+            'H' ➜ 'home'
+            'F' ➜ 'end'
+                                   
+        if csi[-1] == '~'
+            key = switch csi[0..-2].split(';')[0]
+                '3'  ➜ 'entf'
+                '5'  ➜ 'pageup'
+                '6'  ➜ 'pagedown'
+                '13' ➜ 'f3'
+                '15' ➜ 'f5'
+                '17' ➜ 'f6'
+                '18' ➜ 'f7'
+                '19' ➜ 'f8'
+
+        char = ''
+            
+        if csi[-1] == 'u'
+            code = int csi
+
+            ⮐  if empty code
+
+            key = switch code
+                9       ➜ 'tab'
+                27      ➜ 'esc'
+                32      ➜ 'space'
+                13      ➜ 'return'
+                127     ➜ 'delete'
+                57441   ➜ 'shift'
+                57442   ➜ 'ctrl'
+                57443   ➜ 'alt'
+                57444   ➜ 'cmd'
+                        ➜ String.fromCodePoint code
+                        
+            char = switch key
+                'tab'    ➜ '\t'
+                'return' ➜ '\n'
+                'space'  ➜ ' '
+                         ➜ ''
+                         
+        mods = []
+        type = 'press'
+        
+        splt = csi[0..-2].split ';'
+           
+        if splt.length > 1
+        
+            type = 'repeat'  if splt[1].endsWith ':2'
+            type = 'release' if splt[1].endsWith(':3') # and csi != '27;9:3u'
+            
+            if splt.length > 2
+                code = int splt[2]
+                if valid code
+                    char = String.fromCodePoint code
+            
+            mbit = int(splt[1])-1
+            if mbit & 0x1 ➜ mods.push 'shift'
+            if mbit & 0x4 ➜ mods.push 'ctrl'
+            if mbit & 0x2 ➜ mods.push 'alt'
+            if mbit & 0x8 ➜ mods.push 'cmd'
+                
+        if key not in mods
+            mods.push key
+            
+        combo = mods.join '+'
+            
+        event = 
+            key:    key
+            combo:  combo
+            type:   type
+            char:   char
+            
+        event
+        
+    #  0000000   0000000  000  
+    # 000       000       000  
+    # 000       0000000   000  
+    # 000            000  000  
+    #  0000000  0000000   000  
+    
+    parseCsi: csi =>
+        
+        switch csi
+            'H'      ➜ ⮐  @keyEventForCombo('home')
+            'F'      ➜ ⮐  @keyEventForCombo('end')
+            '3~'     ➜ ⮐  @keyEventForCombo('entf')
+            '5~'     ➜ ⮐  @keyEventForCombo('pageup')
+            '6~'     ➜ ⮐  @keyEventForCombo('pagedown')
+            'Z'      ➜ ⮐  @keyEventForCombo('shift+z' 'Z')
+            'Q'      ➜ ⮐  @keyEventForCombo('f2')
+            'S'      ➜ ⮐  @keyEventForCombo('f4')
+            'I'      ➜ @hasFocus = true;  @activeMods={}; post.emit 'window.focus' ; ⮐  type:'focus'
+            'O'      ➜ @hasFocus = false; @activeMods={}; post.emit 'window.blur'  ; ⮐  type:'focus'
+            
+        null
+        
+    # 00000000   0000000   0000000  
+    # 000       000       000       
+    # 0000000   0000000   000       
+    # 000            000  000       
+    # 00000000  0000000    0000000  
+    
+    parseEsc: esc =>
+        
+        if esc.length == 1
+            code = esc.charCodeAt 0
+            if 1 <= code <= 26
+                key = String.fromCharCode code + 96
+                ⮐  @keyEventForCombo "alt+cmd+#{key}"
+            ⮐  if esc == '\\' # esc\ end of kitty graphics message
+        else
+            ⮐  if esc.startsWith '_G' # start of kitty graphics message
+        
+        switch esc
+        
+            'OP' ➜ ⮐  @keyEventForCombo('f1')
+            'OQ' ➜ ⮐  @keyEventForCombo('f2')
+            'OR' ➜ ⮐  @keyEventForCombo('f3')
+            'OS' ➜ ⮐  @keyEventForCombo('f4')   
+                 ➜ log 'esc' esc.charCodeAt(0) esc.length
+            
+        ⮐  event if event = @keyEventForChar esc
+            
+        log '---- esc' esc 
+        null
+        
+    # 00000000    0000000   000   000  
+    # 000   000  000   000  000 0 000  
+    # 0000000    000000000  000000000  
+    # 000   000  000   000  000   000  
+    # 000   000  000   000  00     00  
+    
+    parseRaw: raw =>
+        
+        # log '---- raw' '0x'+Number(raw[0]).toString(16) #'a'.charCodeAt(0)
+        
+        if raw.length == 1
+                                
+            switch raw[0]
+                0x9  ➜ ⮐  @keyEventForCombo('tab')
+                0xd  ➜ ⮐  @keyEventForCombo('return' '\n')
+                0x1b ➜ ⮐  @keyEventForCombo('esc')
+                0x7f ➜ ⮐  @keyEventForCombo('delete')
+
+            if 0x1 <= raw[0] <= 0x1a
+                ⮐  @keyEventForCombo("ctrl+#{String.fromCharCode(raw[0]+96)}")
+                
+            char = raw.toString 'utf8'
+            
+            if event = @keyEventForChar char
+                ⮐  event
+                
+            if raw[0] > 127 
+                raw[0] -= 128
+                ⮐  parseEsc raw.toString 'utf8'
+                
+    keyEventForChar: char =>
+        
+        if char.length
+            key = char.toLowerCase()
+            ⮐  
+                key:    key
+                type:   'press'
+                combo:  key != char ? 'shift' : ''
+                char:   char
+                
+    keyEventForCombo: combo char='' =>
+    
+        key:    combo.split('+')[-1]
+        type:   'press'
+        combo:  combo
+        char:   char
+            
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onPointer: style =>
+        
+        if style != @pointerStyle
+
+            @pointerStyle = style
+            @setPointerStyle @pointerStyle
+
+    setPointerStyle: pointerStyle='pointer' =>
+    
+        @write "\x1b]22;#{pointerStyle}\x1b\\"
+    
+    parseMouse: csi =>
+                
+        [code px py] = csi[1..-2].split(';').map (s) -> int s
+        
+        ⮐  if empty @cellsz
+        
+        cx = int px/@cellsz[0]
+        cy = int py/@cellsz[1]        
+        
+        event =
+            type:   'release'
+            cell:   [cx cy]
+            pixel:  [px py]
+        
+        mods = []
+        mods.push 'shift' if code & 0b00100
+        mods.push 'alt'   if code & 0b01000
+        mods.push 'ctrl'  if code & 0b10000
+        
+        event.mods = mods.join '+' if valid mods
+        event[m] = (m in mods) for m in ['shift' 'ctrl' 'alt' 'cmd']
+
+        if csi.endsWith 'M'
+            
+            event.type = switch code & 0b11100000
+                32  ➜ ((code & 0b11) == 3) ? 'move' : 'drag'
+                64  ➜ 'wheel'
+                0   ➜ 'press' 
+        else 
+
+            event.type = switch code
+                35  ➜ 'move' # win terminal reports move differently?
+                    ➜ 'release' 
+                
+        if event.type == 'wheel'
+            
+            event.dir = switch code & 0b11
+                0 ➜ 'up'
+                1 ➜ 'down'
+                2 ➜ 'left'
+                3 ➜ 'right'
+                
+        else if (code & 0b11) != 3
+            
+            event.button = switch code & 0b11
+                0 ➜ 'left'
+                1 ➜ 'middle'
+                2 ➜ 'right'
+
+        event
+            
+    emitMouseEvent: event =>
+        
+        if event.type == 'press'
+        
+            @lastClick ?= 
+                x:      event.cell[0]
+                y:      event.cell[1]
+                count:  0
+                time:   process.hrtime()
+            
+            if @lastClick.x == event.cell[0] and @lastClick.y == event.cell[1]
+                diff = process.hrtime @lastClick.time
+                @lastClick.time = process.hrtime()
+                if diff[0] < 1 and diff[1] < 500000000
+                    @lastClick.count += 1
+                else    
+                    @lastClick.count = 1
+            else
+               @lastClick.x     = event.cell[0]
+               @lastClick.y     = event.cell[1]
+               @lastClick.count = 1
+               @lastClick.time  = process.hrtime()
+               
+            event.count = @lastClick.count
+            
+        @lastPixels ?= []
+        if @lastPixels.length >= 4
+            event.delta = [event.pixel[0]-@lastPixels[0][0] event.pixel[1]-@lastPixels[0][1]]
+        @lastPixels.push event.pixel
+        @lastPixels.shift() if @lastPixels.length > 4
+        
+        event.cmd = @activeMods.cmd
+        
+        @emit 'mouse' event
+                
+    # 00000000    0000000   00000000    0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 00000000   000000000  0000000    0000000   0000000   
+    # 000        000   000  000   000       000  000       
+    # 000        000   000  000   000  0000000   00000000  
+    
+    parseData: data =>
+        
+        seqs = []
+        s = 0
+        
+        while s < data.length
+        
+            type = if
+                data[s] == 0x1b and data[s+1] == 0x5b ➜ 'csi'
+                data[s] == 0x1b                       ➜ 'esc'
+                                                      ➜ 'raw'
+            e = s+1
+            
+            while e < data.length
+                break if data[e] == 0x1b
+                e += 1
+                                                      
+            raw = data[s...e]
+            seq = type:type data:raw
+                
+            switch type
+                'csi' ➜ seq.csi = data[s+2...e].toString 'utf8'
+                'esc' ➜ seq.esc = data[s+1...e].toString 'utf8'
+                'raw' ➜ seq.raw =           raw.toString 'utf8'
+                
+            s = e
+                
+            seqs.push seq
+            
+        log "multiseq #{seq.length}" if seq.length > 1
+        seqs
+    
+    # 0000000     0000000   000000000   0000000   
+    # 000   000  000   000     000     000   000  
+    # 000   000  000000000     000     000000000  
+    # 000   000  000   000     000     000   000  
+    # 0000000    000   000     000     000   000  
+    
+    onData: data =>
+    
+        if @pasteBuffer?
+        
+            dataStr = data.toString 'utf8'
+            
+            if dataStr.endsWith '\x1b[201~'
+                @pasteBuffer += data[0...-6].toString 'utf8'
+                log 'tty paste end' noon(@pasteBuffer)
+                @emit 'paste' kstr.clean(@pasteBuffer)
+                delete @pasteBuffer
+            else
+                @pasteBuffer += dataStr
+                log 'tty paste cont' noon(@pasteBuffer)
+            ⮐ 
+        
+        for seq in @parseData data
+        
+            data = seq.data
+            csi  = seq.csi
+            esc  = seq.esc
+            raw  = seq.raw
+        
+            if csi
+                
+                # log "ttio.onData csi #{noon csi}"
+                
+                if csi.startsWith('4;') and csi.endsWith('t') # screen size in pixels
+                    
+                    pxs = csi[2..-2].split(';').map (p) -> int(p)
+                    @pixels = [pxs[1] pxs[0]]
+                    @cellsz = [int(@pixels[0]/@cols()) int(@pixels[1]/@rows())]
+                    
+                    # log "ttio.cellsz #{@cellsz[0]} #{@cellsz[1]} #{@cellsz[1]/@cellsz[0]}"
+    
+                    @emit 'resize' @cols() @rows() @pixels @cellsz
+                    
+                    continue
+                
+                if csi.startsWith '200~' # paste start
+                    
+                    @pasteBuffer = data[6..].toString('utf8')
+                    
+                    log 'tty paste start' noon(@pasteBuffer)
+                    
+                    continue
+                    
+                if csi.startsWith '201~' # paste end
+                    
+                    log 'tty paste end' noon(@pasteBuffer)
+                    
+                    @emit 'paste' kstr.clean(@pasteBuffer)
+                    delete @pasteBuffer
+                    
+                    continue
+
+                    
+                if csi.startsWith('<') and csi[-1] in 'Mm'
+                    
+                    if event = @parseMouse csi
+                        @emitMouseEvent event
+                        continue
+                        
+                    log 'unhandled mouse event?' csi
+                    continue 
+                
+                if event = @parseKitty csi data
+                
+                    if event.type == 'release'
+                        if event.key in @modifiers
+                            @activeMods[event.key] = false
+                        @emit 'release' event.combo event
+                        continue
+                    else
+                        if event.key in @modifiers
+                            @activeMods[event.key] = true
+                        @emit 'key' event.combo event
+                        continue
+                        
+                if event = @parseCsi csi
+                
+                    if event.type in ['press' 'repeat']
+                        @emit 'key' event.combo event
+                        continue
+                        
+                    if event.type == 'release' # ignore release events for now
+                        log "ignored csi key release #{noon event}"
+                        continue 
+                        
+                    if event.type == 'focus'
+                        continue
+
+                # log "-------------- unhandled csi #{csi}"
+                        
+            else if esc
+                
+                if event = @parseEsc esc
+                    if event.type in ['press' 'repeat']
+                        @emit 'key' event.combo event
+                        continue
+                        
+                continue if esc == '\\' # probably end of kitty graphics message
+                continue if esc.startsWith '_G'
+                    
+            else # not a csi or esc sequence
+    
+                if event = @parseRaw data
+                    if event.type in ['press' 'repeat']
+                        @emit 'key' event.combo event
+                        continue
+            
+                text = data.toString 'utf8'
+                
+                if text.length > 1
+                    log 'paste?' text
+                    # @emit 'paste' kstr.clean(text)
+                    continue
+                            
+            # log "unhandled sequence:" seq
+            # for i in 0...data.length
+            #     log "#{i} 0x#{data[i].toString(16)} ▸#{data[i] == 0x1b ? 'esc' :String.fromCodePoint(data[i])}◂" 
+            # log "#{data.length} bytes ▪"
+                
+export TTIO

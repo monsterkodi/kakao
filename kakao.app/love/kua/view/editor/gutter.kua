@@ -1,0 +1,228 @@
+###
+     ███████   ███   ███  █████████  █████████  ████████  ████████   
+    ███        ███   ███     ███        ███     ███       ███   ███  
+    ███  ████  ███   ███     ███        ███     ███████   ███████    
+    ███   ███  ███   ███     ███        ███     ███       ███   ███  
+     ███████    ███████      ███        ███     ████████  ███   ███  
+
+    displays line numbers to the left of an editor
+    used in fileeditor and searcher/finder 
+    searcher/finder replaces lineno to display source line numbers 
+###
+
+# use ../../../kxk   ▪ post kseg
+# use ../../../kolor ◆ kulur
+# use ../../util/img ◆ squares
+# use ../../util     ◆ prof syntax
+# use ../../theme    ◆ color theme 
+# use ../base        ◆ view
+
+use view.base.view
+
+class gutter extends view
+
+    @: editor ->
+    
+        @editor = editor
+    
+        @state = @editor.state
+        
+        view.init @ @editor.screen @state∙owner() & '.gutter'
+        
+        @setColor 'fg'                theme.gutter.fg
+        @setColor 'bg'                theme.gutter.bg
+        @setColor 'bg_selected'       theme.gutter.bg_selected
+        @setColor 'bg_fully_selected' theme.gutter.bg_fully_selected
+        @setColor 'bg_git_mod'        theme.gutter.bg_git_mod
+        @setColor 'bg_git_add'        theme.gutter.bg_git_add
+        @setColor 'bg_git_del'        theme.gutter.bg_git_del
+        @setColor 'cursor_main'       theme.cursor.main
+        @setColor 'cursor_multi'      theme.cursor.multi
+        @setColor 'selection'         theme.selection.span
+        @setColor 'selection_line'    theme.selection.line
+        @setColor 'highlight'         theme.highlight.bg
+        
+        @gitChanges = {}
+        
+    # ██     ██   ███████   ███   ███   ███████  ████████
+    # ███   ███  ███   ███  ███   ███  ███       ███     
+    # █████████  ███   ███  ███   ███  ███████   ███████ 
+    # ███ █ ███  ███   ███  ███   ███       ███  ███     
+    # ███   ███   ███████    ███████   ███████   ████████
+
+    onMouse: event ->
+
+        if @cells.isOutsideEvent event
+            if valid @preview
+                @preview = []
+                post∙emit 'redraw'
+            ⮐  
+                
+        if valid @gitChanges and (event.cmd or event.ctrl or event.alt)            
+            pos = @eventPos event
+            idx = pos[1]+@state.s.view[1]
+            if @gitChanges[idx]
+                if event.type == 'press'
+                    log 'todo: press on git change!' @gitChanges[idx]
+                else if event.type == 'move'
+                    if @gitChanges[idx].old
+                        @preview = [idx]
+                        ⮐  {redraw:true}
+
+        if valid @preview
+            @preview = []
+            post∙emit 'redraw'
+                
+    drawPreviews: -> 
+    
+        ⮐  if empty @preview or empty @gitChanges
+        
+        for idx in @preview
+            segl = kseg(@gitChanges[idx].old or '')
+            # log "drawPreviewLine #{idx}" segl
+            syntax = @editor.state.syntax
+            oldDiss = syntax.diss[idx]
+            syntax.diss[idx] = kulur.dissect [segl] syntax.ext
+            @editor.drawLine segl idx
+            syntax.diss[idx] = oldDiss
+        
+    lineno: y ->
+                
+        lineno = lpad @cells.cols-1 y+1
+        lineno += ' '
+        lineno
+        
+    fgcolor: x y ->
+
+    clearChanges: ->
+        
+        @gitChanges = {}
+        @gitBlocks  = []
+        
+    #  ███████   ███  █████████     ███████    ███  ████████  ████████
+    # ███        ███     ███        ███   ███  ███  ███       ███     
+    # ███  ████  ███     ███        ███   ███  ███  ██████    ██████  
+    # ███   ███  ███     ███        ███   ███  ███  ███       ███     
+    #  ███████   ███     ███        ███████    ███  ███       ███     
+
+    onGitDiff: diff ->
+        
+        @clearChanges()
+            
+        for change in diff.changes
+        
+            firstLine = change.line
+            
+            mod = change.mod or []
+            add = change.add or []
+            del = change.del or []
+            
+            mods     = mod.concat add
+            numLines = mods.length
+            mods     = mods.concat del
+            
+            for modi in 0...numLines
+                off = if mods[modi].new ➜ -1 ➜ 0
+                @gitChanges[firstLine+modi+off] = mods[modi]
+                
+            @gitBlocks.push [change.line-1 numLines mod.length]
+
+        if valid @gitChanges
+            # log 'gutter.onGitDiff' @gitChanges
+            post∙emit 'redraw'
+            
+    #  ███████   ███  █████████         ███████   ███████  ████████    ███████   ███      ███            
+    # ███        ███     ███           ███       ███       ███   ███  ███   ███  ███      ███            
+    # ███  ████  ███     ███           ███████   ███       ███████    ███   ███  ███      ███            
+    # ███   ███  ███     ███                ███  ███       ███   ███  ███   ███  ███      ███            
+    #  ███████   ███     ███           ███████    ███████  ███   ███   ███████   ███████  ███████        
+
+    drawGitScroll: ->
+    
+        ⮐  if empty @gitBlocks
+        csz = @screen.t.cellsz
+        ⮐  if empty csz
+        
+        sw = int csz[0]/2 
+        sx = (@cells.x-1)*csz[0]
+        oy = @cells.y*csz[1]
+        pixelsPerRow = clamp 0 csz[1] csz[1] * @cells.rows / @state.s.lines.length
+        
+        for gb in @gitBlocks
+        
+            sy = int gb[0]*pixelsPerRow + oy
+            
+            if gb[1] <= 0
+                fg = @color.bg_git_del
+                sh = int pixelsPerRow
+            else
+                fg = if gb[2] ➜ @color.bg_git_mod ➜ @color.bg_git_add
+                sh = int gb[1]*pixelsPerRow 
+    
+            if gb[2] and gb[2] < gb[1]
+                mh = int gb[2]*pixelsPerRow 
+                squares.place sx sy sw mh @color.bg_git_mod
+                sy += mh
+                ah  = sh-mh
+                squares.place sx sy sw ah @color.bg_git_add
+            else
+                squares.place sx sy sw sh fg
+        
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    draw: ->
+        
+        mainCursor = @state.mainCursor()
+        
+        for row in 0...@cells.rows
+                        
+            y = @state.s.view[1] + row
+            
+            lineno = @lineno y
+            
+            hasCursor   = @state.isAnyCursorInLine  y
+            selected    = @state.isSelectedLine     y
+            highlighted = @state.isHighlightedLine  y
+            spansel     = @state.isSpanSelectedLine y
+            
+            for c,i in lineno
+                
+                col = i
+                if col < @cells.rows
+                    sc = @fgcolor i y c
+                    if sc
+                        fg = sc
+                    else
+                        df = if @state.hasFocus ➜ 1 ➜ 0.5
+                        fg = @color.fg
+                        if
+                            y == mainCursor[1] ➜ fg = color.darken(@color.cursor_main df)
+                            hasCursor          ➜ fg = @color.cursor_multi
+                            spansel            ➜ fg = @color.selection
+                            selected           ➜ fg = @color.selection_line
+                            highlighted        ➜ fg = @color.highlight
+
+                        if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
+                            fg = color.darken fg 
+                    
+                    bg = @color.bg
+                    if 
+                        @gitChanges[y].old and @gitChanges[y].new ➜ bg = @color.bg_git_mod
+                        @gitChanges[y].old    ➜ bg = @color.bg_git_del
+                        @gitChanges[y]        ➜ bg = @color.bg_git_add
+                        spansel               ➜ bg = @color.bg_selected
+                        selected              ➜ bg = @color.bg_fully_selected
+                                 
+                    if selected and not @cells.screen.t.hasFocus
+                        bg = color.darken bg 
+                    cr = if (y<@state.s.lines.length) ➜  c ➜ ' '
+                    @cells.set col row cr fg bg
+                    
+        @drawPreviews()
+        @drawGitScroll()
+
+⮐  gutter

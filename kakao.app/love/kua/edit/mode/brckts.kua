@@ -1,0 +1,184 @@
+###
+    ███████    ████████    ███████  ███   ███  █████████   ███████
+    ███   ███  ███   ███  ███       ███  ███      ███     ███     
+    ███████    ███████    ███       ███████       ███     ███████ 
+    ███   ███  ███   ███  ███       ███  ███      ███          ███
+    ███████    ███   ███   ███████  ███   ███     ███     ███████ 
+###
+
+use ../../../kxk ▪ kseg kutil
+use ../tool      ◆ belt
+use ..           ◆ mode
+
+function brckts
+
+    @autoStart: true
+    @surround: 
+    
+        '#': ['#{' '}'] # <- this has to come
+        '{': ['{' '}']  # <- before that (does it?)
+        '}': ['{' '}']
+        '[': ['[' ']']
+        ']': ['[' ']']
+        '(': ['(' ')']
+        ')': ['(' ')']
+        "'": ["'" "'"]
+        '"': ['"' '"']
+        # '<': ['<' '>'] # html 
+        # '>': ['<' '>'] # html 
+        # '*': ['*' '*'] # md   
+        
+    @: @state ->      
+        
+        @name = 'brckts'      
+        
+    # ███   ███  ███   ███████   ███   ███  ███      ███   ███████   ███   ███  █████████
+    # ███   ███  ███  ███        ███   ███  ███      ███  ███        ███   ███     ███   
+    # █████████  ███  ███  ████  █████████  ███      ███  ███  ████  █████████     ███   
+    # ███   ███  ███  ███   ███  ███   ███  ███      ███  ███   ███  ███   ███     ███   
+    # ███   ███  ███   ███████   ███   ███  ███████  ███   ███████   ███   ███     ███   
+
+    cursorsSet: ->
+    
+
+        if @state.s.selections.length # don't highlight when selection exists (interferes with cmd+d currently)
+            if @allSpans eql @state.s.highlights
+                @state.setHighlights []
+            ⮐  
+            
+        if @state.s.highlights.length     # don't highlight brackets when other highlights exist and it's different
+            ⮐  if not @allSpans eql @state.s.highlights.asMutable() # from the previous brckts highlight
+        
+        [spans openClose strings] = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors)
+
+        if empty spans
+            @openCloseSpans       = belt.openCloseSpansForPositions @state.s.lines @state.s.cursors
+            @stringDelimiterSpans = belt.stringDelimiterSpansForPositions          @state.s.cursors
+            spans = @openCloseSpans.concat(@stringDelimiterSpans)
+        else
+            @openCloseSpans       = openClose
+            @stringDelimiterSpans = strings
+            
+        @state.setHighlights spans
+        
+        @allSpans = @state.s.highlights.asMutable()
+
+    #  ███████  ███   ███   ███████   ████████ 
+    # ███       ███ █ ███  ███   ███  ███   ███
+    # ███████   █████████  █████████  ████████ 
+    #      ███  ███   ███  ███   ███  ███      
+    # ███████   ██     ██  ███   ███  ███      
+
+    swapStringDelimiters: =>
+ 
+        @state.begin()
+        @state.pushState()   
+        cursors = @state.allCursors()
+        selections = @state.allSelections()
+        @state.setSelections belt.rangesForSpans(@stringDelimiterSpans)
+        @state.moveCursorsToEndOfSelections()
+        if @state.textOfSelection().startsWith('"')
+            @state.insert "'"
+        else
+            @state.insert '"'
+        @state.setCursors cursors
+        @state.setSelections selections
+        @state.end()
+        
+    conditionalSwapStringDelimiters: =>
+    
+        ⮐  if not @stringDelimiterSpans
+        if belt.textForSpans(@state.s.lines @stringDelimiterSpans).startsWith "'"
+            @swapStringDelimiters()
+        
+    # ███   ███  ████████  ███   ███        
+    # ███  ███   ███        ███ ███         
+    # ███████    ███████     █████          
+    # ███  ███   ███          ███           
+    # ███   ███  ████████     ███           
+
+    handleKey: key event =>
+    
+        switch key
+        
+            "alt+cmd+'"
+                if valid @stringDelimiterSpans
+                    @swapStringDelimiters()
+                    ⮐  
+        
+            'alt+cmd+b' 
+            
+                if valid @stringDelimiterSpans
+                    @state.setSelections belt.rangesForSpans(@stringDelimiterSpans)
+                    @state.moveCursorsToEndOfSelections()
+                    ⮐  
+                    
+                if valid @openCloseSpans
+                    @state.setSelections belt.rangesForSpans(@openCloseSpans)
+                    @state.moveCursorsToEndOfSelections()
+                    ⮐  
+            
+            'delete'
+        
+                if empty @state.s.selections
+                    pairs = kutil.uniq Object.values(brckts.surround)
+                    if valid (rngs = belt.rangesOfPairsSurroundingPositions(@state.s.lines pairs @state.s.cursors))
+                        @state.setSelections rngs
+                        @state.deleteSelection()
+                        ⮐ 
+        
+        ⮐  'unhandled' if empty brckts.surround[event.char]
+            
+        if event.char == '#' # handle string interpolation
+
+            ⮐  'unhandled' if valid belt.positionsAndRangesOutsideStrings(@state.s.lines @state.s.selections @state.s.cursors)
+            
+            @conditionalSwapStringDelimiters()
+            
+            @state.begin()
+            
+            if valid @state.s.selections
+                @state.surroundSelection event.char brckts.surround[event.char]
+            else            
+                @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
+                @state.moveCursors 'left' 
+                
+            @state.end()
+                                
+            ⮐
+            
+        else # not a string interpolation
+            
+            if valid @state.s.selections
+                
+                if valid @stringDelimiterSpans
+                    delrngs = belt.normalizeRanges belt.rangesForSpans(@stringDelimiterSpans)
+                    if delrngs eql @state.s.selections 
+                        ⮐  'unhandled'                 # don't surround selected string delimiters
+            
+                ⮐  @state.surroundSelection event.char brckts.surround[event.char]
+            
+            nsegl = belt.segsForPositions @state.s.lines @state.s.cursors # collect all graphemes at the cursors
+            nsegs = kutil.uniq nsegl                                      # get set of graphemes
+            
+            for seg in nsegs
+            
+                if brckts.surround[event.char][1] == event.char # if entering closing bracket         # should check if this condition 
+                    if seg == event.char                        # and it is already there             # is true for all cursors 
+                        @state.moveCursors 'right'              # move cursor over existing bracket   # ϝ𝓊𝜏𝓊ɼϵ ⫙ϵ 𝖍𝕒𝜏ϵ ⟅𝚒𝛋ϵ⟅𝛾 
+                        ⮐                                       # to not disturb manual closing       # 𝔟𝓊𝜏 𝔭ℜϵ𝖘ϵ∩𝜏 ⫙ϵ ⟅⩜𝓏𝛾 ;)
+                        
+                if seg not in ['' undefined ' ' '}' ']' ')']    # if any cursor is not at a space or eol or on a closing bracket
+                    ⮐  "unhandled"                              # abort the insertion
+
+            for pos in @state.s.cursors
+                if belt.isUnbalancedPosition @state.s.lines pos event.char
+                    ⮐  "unhandled"
+                    
+            @state.insert brckts.surround[event.char][0]+brckts.surround[event.char][1] # insert empty bracket pair
+            @state.moveCursors 'left'                                                   # move cursors inside pair
+            ⮐  
+
+        'unhandled'
+        
+export brckts

@@ -1,0 +1,118 @@
+###
+    ███   ███   ███████   █████████   ███████  ███   ███  ████████  ████████ 
+    ███ █ ███  ███   ███     ███     ███       ███   ███  ███       ███   ███
+    █████████  █████████     ███     ███       █████████  ███████   ███████  
+    ███   ███  ███   ███     ███     ███       ███   ███  ███       ███   ███
+    ██     ██  ███   ███     ███      ███████  ███   ███  ████████  ███   ███
+
+    watches for file system changes and posts notifications when changes occur
+###
+
+use ../../kxk ▪ watch slash post
+use ../../kxk ◆ nfs
+use fs
+
+function watcher
+
+    @watchers: {}
+    @renameTimer: {}
+    
+    @fileStats: {}
+    
+    #  0000000  000   000   0000000   00000000    0000000  000   000   0000000   000000000  
+    # 000       0000  000  000   000  000   000  000       000   000  000   000     000     
+    # 0000000   000 0 000  000000000  00000000   0000000   000000000  000   000     000     
+    #      000  000  0000  000   000  000             000  000   000  000   000     000     
+    # 0000000   000   000  000   000  000        0000000   000   000   0000000      000     
+    
+    @snapshot: file ○->
+    
+        if stat =○ nfs.fileExists file
+            @fileStats[file] = stat
+
+    @watch: path opt ○->
+    
+        if empty path
+            error "watcher.watch - can't watch empty path!"
+            ⮐  
+        
+        path = slash.untilde path
+                
+        isDir =○ nfs.isDir path
+        
+        opt ?= {}
+        opt.recursive ?= true
+        
+        if isDir 
+            dir = path
+        else
+            prjPath =○ nfs.prj path
+            
+            if empty watcher.watchers[path]
+                # log "watcher ● #{g4 path}"
+                w = fs.watch path
+                w.on 'error' (err) => error "watch file:'#{path}' error: #{err}"
+                w.on 'change' ((dir) => (change path) => @onChange(change path dir))(slash.dir(path))
+                watcher.watchers[path] = w
+            
+            if empty prjPath
+                log "✘ #{r6 path}"
+                ⮐ 
+                
+            if prjPath != '/'
+                dir = prjPath
+            else
+                dir = slash.dir path
+            
+        if empty watcher.watchers[dir]
+            
+            opt.recursive = false if dir == '/' or dir == slash.untilde '~'
+            
+            # log "watcher ○ #{y6 dir}"
+            
+            w = fs.watch dir
+            w.on 'error' (err) => error "watch dir:'#{dir}' error: #{err}"
+            w.on 'change' ((dir) => (change path) => @onChange(change path dir))(dir)
+            watcher.watchers[dir] = w
+        
+            ⮐  if not opt.recursive
+            
+            items =○ nfs.list dir
+            for item in items
+                if item.type == 'dir'
+                    if item.file in ['node_modules' '.git']
+                        continue
+                    watcher.watch item.path
+        
+    @onChange: change path dir ○=>
+        
+        path = slash.path dir path
+
+        exists =○ nfs.exists path
+        
+        if exists
+            if change == 'rename'      # when saving files, two 'rename' changes happen
+                                       # try to post only the last one
+                if @renameTimer[path]               # this seems to be the second one
+                    clearTimeout @renameTimer[path] # clear the timeout for the 1st one
+                    delete @renameTimer[path]
+                else
+                    @renameTimer[path] = setTimeout ((p) => => @postRename p)(path) 100
+                    ⮐ 
+                    
+            if change == 'change'      # workaround for a node quirk: when a file is read, 
+                if @fileStats[path]?   # node reports a change because the atimeMs changes :(
+                    if @fileStats[path].size == exists.size and @fileStats[path].mtimeMs == exists.mtimeMs
+                        ⮐  # assume the file didn't change when the size and modification time is unchanged
+
+            post.emit 'file.change' path:path change:change   watcher:@
+        else
+            post.emit 'file.change' path:path change:'remove' watcher:@
+            
+    @postRename: path =>
+
+        clearTimeout @renameTimer[path]
+        delete @renameTimer[path]
+        post.emit 'file.change' path:path change:'rename' watcher:@
+                
+export watcher

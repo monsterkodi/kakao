@@ -1,0 +1,303 @@
+###
+ 0000000   0000000   00     00  00000000   000      00000000  000000000  00000000
+000       000   000  000   000  000   000  000      000          000     000     
+000       000   000  000000000  00000000   000      0000000      000     0000000 
+000       000   000  000 0 000  000        000      000          000     000     
+ 0000000   0000000   000   000  000        0000000  00000000     000     00000000
+###
+
+# use ../../kxk ▪ kseg kutil post
+# use ../theme  ◆ theme 
+# use ./tool    ◆ belt
+# use           ◆ specs
+
+use view.menu.choices
+
+class complete
+
+    @: editor ->
+    
+        @editor = editor
+        
+        @name = @editor.name & '_complete'
+        
+        @choices = choices @editor.cells.screen "#{@name}_choices" ['scrllr']
+        @choices.focusable = false
+        
+        @color = { 
+            bg:       theme.complete.bg
+            complete: theme.selection.span
+            scroll:   theme.complete.scroll
+            }
+            
+        @choices∙setColor        'hover' {bg:theme.hover.bg blur:theme.hover.bg}
+        @choices∙setColor        'bg'    @color.bg
+        if @choices.scroll
+            @choices.scroll∙setColor 'bg'    @color.bg
+            @choices.scroll∙setColor 'knob'  @color.scroll
+            @choices.scroll∙setColor 'dot'   @color.scroll
+        
+        @choices∙on 'action' @onChoicesAction
+        
+        @visible = false
+
+    #  0000000   0000000   00     00  00000000   000      00000000  000000000  00000000  
+    # 000       000   000  000   000  000   000  000      000          000     000       
+    # 000       000   000  000000000  00000000   000      0000000      000     0000000   
+    # 000       000   000  000 0 000  000        000      000          000     000       
+    #  0000000   0000000   000   000  000        0000000  00000000     000     00000000  
+    
+    complete: -> 
+        
+        before = @editor.state.chunkBeforeCursor()
+        after  = @editor.state.chunkAfterCursor()
+        
+        hcw = kseg.headCountWord after
+        tcw = kseg.tailCountWord before
+        
+        # log "complete.complete #{tcw} #{hcw}"
+        
+        ⮐  if tcw > 1 and hcw # don't complete if cursor is inside a word
+        
+        tct = kseg.tailCountTurd before
+        
+        turd = before
+        if tct 
+            # turd = before[before.length-1..] # start from the last punctuation character
+            turd = string.sub before before.length-1 # start from the last punctuation character
+        else if tcw and tcw < before.length
+            # turd = before[before.length-tcw..] # start from the last word
+            turd = string.sub before before.length-tcw # start from the last word
+                
+        @word turd
+        
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
+    word: turd ->
+    
+        @turd = turd
+    
+        # log "complete.word(#{@turd}"
+            
+        if empty @turd
+            @hide()
+            ⮐ 
+            
+        before = @editor.state.chunkBeforeCursor()
+                
+        @words = kseg.chunks(@editor.state.s.lines).map((chunk) -> ⮐  chunk.chunk)
+        @words = belt.prepareWordsForCompletion before @turd @words
+        
+        if @turd.length == 1 
+            inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
+            if inserts
+                # log 'add specs trigger' inserts
+                @words = inserts.concat @words
+
+        @visible = valid @words
+        
+        ⮐  if empty @words
+        
+        mc = @editor.state.mainCursor()
+        
+        head = @words[0]
+        
+        cx = mc[0] - @editor.state.s.view[0]     
+        cy = mc[1] - @editor.state.s.view[1]
+        
+        if @words.length <= 1
+            @choices.clear()                    
+        else
+            mlw = max 1 belt.widthOfLinesIncludingColorBubbles(@words)
+            
+            h = min 8 @words.length
+            x  = @editor.cells.x+cx-@turd.length
+            y  = @editor.cells.y+cy+1
+            
+            @choices.layout x y mlw+3 h
+            @choices.set(@words.map((w) -> ⮐  ' ' & w))
+            @choices.selectFirst()
+        
+    # 000   000  000  0000000    00000000  
+    # 000   000  000  000   000  000       
+    # 000000000  000  000   000  0000000   
+    # 000   000  000  000   000  000       
+    # 000   000  000  0000000    00000000  
+    
+    hide: -> 
+        ⮐  if not @visible
+        @editor.state.syntax.setSegls @editor.state.s.lines
+        @visible = false
+        
+    hidden: -> not @visible
+        
+    onEditorLayout: ->
+    
+        ⮐  if @hidden()
+        
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
+    handleKey: key event ->
+        
+        ⮐  'unhandled' if @hidden() or empty @words
+        
+        switch key
+            'tab'
+            'return' ➜ ⮐  @apply()
+            'esc'    ➜ ⮐  @hide()
+            'up'
+            'down' 
+                if @words.length > 1
+                    ⮐  @moveSelection key
+        
+        'unhandled'
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+        
+        ⮐  if @hidden()
+        
+        cret = @choices.onMouse event
+        
+        if not(cret) and ['press' 'drag' 'release']∙has(event.type)
+            @hide()
+            ⮐ 
+        
+        cret
+
+    onWheel: event -> 
+        
+        ⮐  if @hidden()
+        
+        @choices.onWheel event
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    moveSelection: dir ->
+        
+        @choices.moveSelection dir
+        
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    apply: ->
+    
+        word = @currentWord()
+        
+        if specs.inserts[word]
+            @editor.state.delete 'back'
+            @editor.state.insert word
+        else
+            # @editor.state.insert word[@turd.length..]
+            @editor.state.insert string.sub(word @turd.length)
+                    
+        post∙emit 'focus' 'editor'
+        @complete()
+        
+    #  ███████  ███   ███   ███████   ███   ███████  ████████    ███████          ███████    ███████  █████████  ███  ███   ███
+    # ███       ███   ███  ███   ███  ███  ███       ███        ███              ███   ███  ███          ███     ███  ████  ███
+    # ███       █████████  ███   ███  ███  ███       ███████    ███████          █████████  ███          ███          ███ █ ███
+    # ███       ███   ███  ███   ███  ███  ███       ███             ███         ███   ███  ███          ███          ███  ████
+    #  ███████  ███   ███   ███████   ███   ███████  ████████   ███████          ███   ███   ███████     ███          ███   ███
+
+    onChoicesAction: action choice->
+        
+        switch action
+            'click' ➜ ⮐  @apply()
+            
+    #  ███████  ███   ███  ████████   ████████   ████████  ███   ███  █████████      ███   ███   ███████   ████████   ███████  
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███         ███ █ ███  ███   ███  ███   ███  ███   ███
+    # ███       ███   ███  ███████    ███████    ███████   ███ █ ███     ███         █████████  ███   ███  ███████    ███   ███
+    # ███       ███   ███  ███   ███  ███   ███  ███       ███  ████     ███         ███   ███  ███   ███  ███   ███  ███   ███
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███         ██     ██   ███████   ███   ███  ███████  
+
+    currentWord: ->
+        
+        word = @choices.current {trim:'front'}
+        if empty word
+            word = @words[0]
+        word
+        
+    preDrawLines: lines ->
+    
+        ⮐  lines if @hidden() or empty @words
+
+        word  = @currentWord()
+        lines = lines.asMutable()
+        for pos in @editor.state.s.cursors
+            # kutil.replace lines[pos[1]] pos[0] 0 kseg(word[@turd.length..])
+            kutil.replace lines[pos[1]] pos[0] 0 kseg(string.sub(word @turd.length))
+        @editor.state.syntax.setSegls kseg.segls(lines)
+        lines
+        
+    # 0000000    00000000    0000000   000   000       0000000   0000000   00     00  00000000   000    000000000  000   000  
+    # 000   000  000   000  000   000  000 0 000      000       000   000  000   000  000   000  000       000     0000  000  
+    # 000   000  0000000    000000000  000000000      000       000   000  000000000  00000000   000       000     000 0 000  
+    # 000   000  000   000  000   000  000   000      000       000   000  000 0 000  000        000       000     000  0000  
+    # 0000000    000   000  000   000  00     00       0000000   0000000   000   000  000        0000000   000     000   000  
+    
+    drawCompletion: ->
+        
+        ⮐  if @hidden() or empty @words
+
+        word = @currentWord()
+        
+        for pos in @editor.state.s.cursors
+
+            cx = pos[0] - @editor.state.s.view[0]
+            cy = pos[1] - @editor.state.s.view[1]
+            
+            for ci in 0...word.length-@turd.length
+                @editor.cells.set_bg cx+ci cy @color.complete
+        @
+
+    # 0000000    00000000    0000000   000   000       00000000    0000000   00000000   000   000  00000000   
+    # 000   000  000   000  000   000  000 0 000       000   000  000   000  000   000  000   000  000   000  
+    # 000   000  0000000    000000000  000000000       00000000   000   000  00000000   000   000  00000000   
+    # 000   000  000   000  000   000  000   000       000        000   000  000        000   000  000        
+    # 0000000    000   000  000   000  00     00       000         0000000   000         0000000   000        
+    
+    drawPopup: ->
+        
+        ⮐  if @hidden() or empty @words
+        ⮐  if @words.length <= 1
+        
+        mc = @editor.state.mainCursor()  
+         
+        cx = mc[0] - @editor.state.s.view[0]    
+        cy = mc[1] - @editor.state.s.view[1]
+        
+        fx = cx-@turd.length-2
+        x  = fx+1+@editor.cells.x
+        y  = cy+@editor.cells.y+2
+        w  = @choices.cells.cols+1
+        h  = @choices.cells.rows
+        
+        fy = cy+1
+
+        @editor.cells.draw_rounded_border fx fy fx+w+1 fy+h+1 {fg:@color.bg}
+        
+        @choices.layout x y w h
+        @choices.draw()
+
+⮐  complete

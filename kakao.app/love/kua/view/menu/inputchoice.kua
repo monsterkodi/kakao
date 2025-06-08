@@ -1,0 +1,285 @@
+###
+    ███  ███   ███  ████████   ███   ███  █████████   ███████  ███   ███   ███████   ███   ███████  ████████  
+    ███  ████  ███  ███   ███  ███   ███     ███     ███       ███   ███  ███   ███  ███  ███       ███       
+    ███  ███ █ ███  ████████   ███   ███     ███     ███       █████████  ███   ███  ███  ███       ███████   
+    ███  ███  ████  ███        ███   ███     ███     ███       ███   ███  ███   ███  ███  ███       ███       
+    ███  ███   ███  ███         ███████      ███      ███████  ███   ███   ███████   ███   ███████  ████████  
+
+    a combination of input and choices
+    the input is usually hidden and only shown when user types text to filter the choices
+###
+
+# use ../../../kxk ▪ post
+# use ../../theme  ◆ color theme
+# use ../base      ◆ view input
+# use ../menu      ◆ choices
+
+use view.base.view
+use view.base.input
+
+class inputchoice extends view
+
+    @: screen name features ->
+    
+        @screen = screen 
+        @name   = name
+
+        # super @screen @name features
+        view.init @ screen name features
+        
+        @autoHideInput = true
+        @isVisible = false
+        @isPopup   = true
+        
+        @input   = input   @screen "#{@name}_input"
+        @choices = choices @screen "#{@name}_choices" features
+        
+        @setColor 'bg'    theme.quicky.bg
+        @setColor 'frame' theme.quicky.frame
+
+        if @choices.mapscr
+            @choices.mapscr∙hide()       
+        
+        @input∙hide()
+        @choices∙show()
+
+        @input∙on   'action'  @onInputAction
+        @choices∙on 'action'  @onChoicesAction
+        
+    setColor: key clr ->
+    
+        # super key clr
+        
+        if key == 'bg'
+        
+            @input∙setColor     'bg_blur' @color.bg
+            @choices∙setColor   'bg'      @color.bg
+        
+    inputIsActive: -> @input∙hasFocus() or @input∙current().len > 0
+        
+    #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
+    # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
+    # █████████  ███████    ███████    █████████  ███ █ ███  ███  ████  ███████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    arrange: ->
+
+        x = int @screen.cols/4
+        y = int @screen.rows/4
+        w = int @screen.cols/2
+        h = int @screen.rows/2-4
+
+        cs = min h @choices.numFiltered()
+        
+        @input.layout    x+2   y+1  w-4  1
+        @choices.layout  x+2   y+3  w-3  cs
+        @cells.layout    x     y    w    cs+4
+        
+    #  0000000  000   000   0000000   000   000
+    # 000       000   000  000   000  000 0 000
+    # 0000000   000000000  000   000  000000000
+    #      000  000   000  000   000  000   000
+    # 0000000   000   000   0000000   00     00
+
+    show: ->
+
+        view.show @
+        
+        if @choices∙numFiltered()
+            @choices∙grabFocus()
+        elif @input∙visible()
+            @input∙grabFocus()
+            
+        {redraw:true}
+
+    hide: -> 
+        
+        @choices.mapscr.hide()     
+        # super()
+                            
+    # 000  000   000  00000000   000   000  000000000  
+    # 000  0000  000  000   000  000   000     000     
+    # 000  000 0 000  00000000   000   000     000     
+    # 000  000  0000  000        000   000     000     
+    # 000  000   000  000         0000000      000     
+    
+    onInputChange: text ->
+        
+        ⮐  if text == @choices.filterText
+
+        @choices.filter text
+        @choices.state.selectLine 0
+
+        @choices.state.setMainCursor 0 0
+        @choicesFiltered()
+        @arrange()
+        
+    onInputAction: action text ->
+        
+        switch action
+            'submit' ➜ ⮐  @applyChoice @choices.current()
+            'change' ➜ ⮐  @onInputChange text
+            'up'          
+            'down'   ➜ ⮐  @choices.moveSelection action
+    
+    autoHide: -> @input.hide() if @autoHideInput and not @inputIsActive()
+        
+    #  0000000  000   000   0000000   000   0000000  00000000   0000000  
+    # 000       000   000  000   000  000  000       000       000       
+    # 000       000000000  000   000  000  000       0000000   0000000   
+    # 000       000   000  000   000  000  000       000            000  
+    #  0000000  000   000   0000000   000   0000000  00000000  0000000   
+    
+    onChoicesAction: action choice ->
+    
+        switch action
+            'click'
+            'right'
+            'space'
+            'return' ➜ ⮐  @applyChoice @choices.current()
+            
+            'hover'  ➜ @autoHide()
+            
+            'boundary'
+            'left'
+                if @input.visible() 
+                    @input.grabFocus()
+                    ⮐  true
+                                             
+    choicesFiltered: ->
+        
+    currentChoice: ->
+    
+        choice = @choices.current() or @input.current()
+        choice = trim(choice) if choice is str
+            
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
+    draw: ->
+
+        ⮐  if @hidden()
+        
+        @arrange()
+        @drawFrame()
+        @drawChoices()
+
+    drawChoices: ->
+        
+        @input∙draw()
+        @choices∙draw()    
+        
+    drawFrame: ->
+
+        sy = 0
+        
+        if @input∙visible()
+        
+            outer = if @input∙hasFocus() ➜ color.brighten(@color.bg) ➜ @color.bg
+            inner = if @input∙hasFocus() ➜ @input.color.bg_focus ➜ @input.color.bg_blur
+            
+            @cells∙draw_rounded_border 0 0 -1 2 {fg:outer}
+            
+            # add left and right half-width padding to input
+            @cells∙draw_vertical_padding 1 1 outer inner
+            @cells∙draw_vertical_padding @cells.cols-2 1 inner outer
+            
+            sy = 2
+        
+        @cells∙draw_rounded_border 0 sy -1 -1 {fg:@color.bg zLayer: 1001}
+        
+    moveFocus: ->
+        
+        if @choices∙hasFocus()
+            @input∙grabFocus()
+            @input∙selectAll()
+        else
+            @choices∙grabFocus()
+            @autoHide()
+
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000
+    # 0000000    0000000     00000
+    # 000  000   000          000
+    # 000   000  00000000     000
+
+    onKey: key event ->
+
+        ⮐  if @hidden()
+
+        switch event.combo
+            
+            'tab' 
+            
+                ⮐  @moveFocus()
+            
+            'esc'     
+
+                post.emit 'focus' 'editor'
+                ⮐  @hide()
+
+        if @input∙hasFocus()
+            result = @input∙onKey key event
+            if result
+                @autoHide()
+                ⮐  result
+            log "focused input didn't handle key #{key}?"
+
+        result = @choices∙onKey key event
+        if result
+
+            if event.char and event.char != ' ' and event.char != '\n'
+                @input∙grabFocus()
+                result = @input∙onKey key event
+                if result
+                    @autoHide()
+                    ⮐  result
+            else
+                @choices∙grabFocus() if key == 'down'
+                @autoHide()
+                ⮐  result
+        true
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+
+        ⮐  if @hidden()
+        
+        ret = @input∙onMouse   event ; ⮐  ret if ret.redraw
+        ret = @choices▸onMouse event ; ⮐  ret if ret.redraw
+        ret = super event            ; ⮐  ret if ret.redraw
+        
+        if event.type == 'press' and not @hover
+            post∙emit 'focus' 'editor'
+            @hide() 
+            ⮐  # give other views a chance to handle the closing click
+            
+        @hover
+
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event ->
+
+        ⮐  if @hidden()
+        ret = @input∙onWheel   event 
+        ⮐  ret if ret.redraw
+        ret = @choices∙onWheel event 
+        ⮐  ret if ret.redraw
+        
+        inside = @cells∙isInsideEvent event
+        if inside ➜ ⮐  {redraw:false}
+        
+⮐  inputchoice

@@ -1,0 +1,41 @@
+
+use kxk.kxk
+use ked
+
+love.load = ->
+
+    _G.fontWidth = 12
+    _G.fontSize  = fontWidth*2
+    _G.fontStep  = fontWidth+2
+    _G.font  = love.graphics.setNewFont "font.ttf" fontSize
+    _G.count = 0
+    #love.window.maximize()
+    
+    _G.ked = ked()
+    
+    nil
+
+love.draw = ->
+
+    count += 1
+    (_ _ w h) = love.window.getSafeArea()
+    scale = love.window.getDPIScale()
+    love.graphics.setColor 0.1 0.1 0.1 
+    ox = math.ceil((w-math.floor(w/fontStep)*fontStep)/2)
+    oy = math.floor((h-math.floor(h/fontSize)*fontSize)/4)
+    cols = math.floor w/fontStep
+    rows = math.floor h/fontSize
+    # for x in 0...cols
+    #     for y in 0...rows
+    #         love.graphics.print "#{x % 10}" ox+x*fontStep oy+y*fontSize
+    love.graphics.setColor 0.2 0.2 0.2 
+    love.graphics.print "#{cols} #{rows} #{w} #{h} #{scale} #{count} #{love.timer.getFPS()} ◂" 2*fontStep h-fontSize*2
+    
+    ked∙draw cols rows ox oy fontStep fontSize
+    
+    nil
+    
+love.quit = ->
+
+    ked∙quit()
+    false

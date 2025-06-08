@@ -1,0 +1,332 @@
+###
+0000000    00000000    0000000   000   000
+000   000  000   000  000   000  000 0 000
+000   000  0000000    000000000  000000000
+000   000  000   000  000   000  000   000
+0000000    000   000  000   000  00     00
+###
+
+# use ../../kxk    ▪ kseg kstr 
+# use ../util      ◆ prof
+# use ../util/img  ◆ rounded
+# use ../theme     ◆ color theme 
+# use ../view/base ◆ view
+# use ./tool       ◆ belt
+# use              ◆ mode
+
+use view.base.view
+
+class draw extends view
+
+    @: screen name features ->
+        
+        view.init @ screen name features
+        
+        @setColor 'bg'        theme.editor.bg
+        @setColor 'empty'     theme.editor.empty
+                              
+        @setColor 'cursor'    theme.cursor
+        @setColor 'selection' theme.selection
+        @setColor 'highlight' theme.highlight
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: ->
+        
+        ⮐  if @hidden()
+        
+        # prof.start 'draw' if @name == 'editor'
+        # ● draw
+                
+        view   = @state.s.view
+        lines  = @state.s.lines
+        if @complete
+            lines = @complete∙preDrawLines lines 
+        # lines  = mode.preDrawLines @state @state.s.lines
+        
+        for row in 0...@cells.rows
+            
+            y = row+view[1]
+            
+            break if y >= lines.length
+            
+            @drawLine lines[y] y row
+            
+        @drawTrailingRows()        
+        @drawHighlights()
+        @drawSelections()
+        
+        if @complete
+            @complete∙drawCompletion()
+        @drawCursors()
+        if @complete
+            @complete∙drawPopup()
+        
+        if @gutter
+            @gutter∙draw()
+        if @mapscr
+            @mapscr∙draw()
+        if @scroll
+            @scroll∙draw()
+        
+        # prof.end 'draw'   if @name == 'editor'
+        
+        mode.postDraw @state
+        
+    # ███      ███  ███   ███  ████████
+    # ███      ███  ████  ███  ███     
+    # ███      ███  ███ █ ███  ███████ 
+    # ███      ███  ███  ████  ███     
+    # ███████  ███  ███   ███  ████████
+
+    drawLine: line y row ->
+    
+        row ?= y-@state.s.view[1]
+        bg = @color.bg
+        
+        checkColor = false
+        headerClass = null
+        
+        syntax = @state.syntax
+        view   = @state.s.view
+    
+        linel = kseg.width(line) - view[0]
+        
+        c = 0
+        firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
+        firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
+        c = 1 if firstIndex != firstSegi            # one column to the right 
+        
+        x = 0
+        while x < @cells.cols
+            
+            ci = x+view[0]
+            si = kseg.indexAtWidth line ci
+            
+            # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
+            
+            if si >= line.length
+                # log "#{@name} #{r5 'break!'}"
+                break 
+            
+            fg = syntax.getColor ci y
+                
+            ch = syntax.getChar ci y line[si]
+            if ch == "#" ➜ checkColor = true
+            elif ch == '0' or ch == '█'
+                clss = syntax.getClass ci y
+                if clss.endsWith('header') ➜ headerClass = clss
+
+            cw = kseg.segWidth line[si]
+            cw = max 1 cw # todo: this is to prevent endless loop with zero width characters, should be fixed eventually
+            x += cw
+            
+            if x < @cells.cols
+                # @cells.meta_clone c row # ϵ⌶⟙ℍϵℜ 𝛋𝚒⟅⟅ 𝚒𝜏 ⊚ℜ ⫐◯ 𝚒𝜏!
+                c += @cells.add c row ch fg bg
+            
+            if clss == 'invert_bg'
+                bg = @color.bg
+                
+        @drawRowBackground row linel
+                
+        if checkColor ➜ @drawColorPills  line row linel       
+        if headerClass ➜ @drawAsciiHeader line row headerClass 
+        
+    # 00000000    0000000   000   000       0000000     0000000    0000000  000   000   0000000   00000000   0000000    
+    # 000   000  000   000  000 0 000       000   000  000   000  000       000  000   000        000   000  000   000  
+    # 0000000    000   000  000000000       0000000    000000000  000       0000000    000  0000  0000000    000   000  
+    # 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
+    # 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
+    
+    drawRowBackground: row linel ->
+        
+        if row+view[1] == @state.mainCursor()[1]
+            if linel > 0
+                @cells.bg_rect 0 row linel row @color.cursor.main
+            if linel < @cells.cols
+                @cells.bg_fill max(0 linel) row -1 row @color.cursor.empty
+        else
+            if linel > 0
+                @cells.bg_rect 0 row linel row @color.bg
+            @cells.bg_fill max(0 linel) row -1 row @color.empty
+            
+    # 000000000  00000000    0000000   000  000      000  000   000   0000000   
+    #    000     000   000  000   000  000  000      000  0000  000  000        
+    #    000     0000000    000000000  000  000      000  000 0 000  000  0000  
+    #    000     000   000  000   000  000  000      000  000  0000  000   000  
+    #    000     000   000  000   000  000  0000000  000  000   000   0000000   
+    
+    drawTrailingRows: ->
+        # fill empty rows below last line
+        vl = @state.s.lines.length - @state.s.view[1]
+        ⮐  if vl >= @cells.rows 
+
+        for row in vl...@cells.rows
+            @cells∙bg_fill 0 row -1 row @color.empty         
+                
+    # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
+    # 000   000  000  000        000   000  000      000  000        000   000     000     000       
+    # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     0000000   
+    # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
+    # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
+    
+    drawHighlights: ->
+                            
+        bg = @color.highlight.bg
+        ul = @color.highlight.ul
+        # bg = color.darken(bg) if not @cells.screen.t.hasFocus
+        
+        (vx vy) = @state.s.view
+        
+        for highlight in @state.s.highlights∙each()
+            
+            y = highlight[1]-vy
+            
+            break if y >= @cells.rows
+                
+            for x in highlight[0]...highlight[2]
+                hlc = @cells∙get_char x-vx y
+                switch hlc
+                    '{' '[' '(' ')' ']' '}' ➜ ulc = @color.highlight.bracket_ul ; bgc = @color.highlight.bracket
+                    "'" '"'                 ➜ ulc = @color.highlight.string_ul  ; bgc = @color.highlight.string
+                                            ➜ ulc = ul ; bgc = bg
+                
+                @cells∙set_bg x-vx y bgc
+                @cells∙set_char x-vx y color.ul_rgb(ulc)+'\x1b[4:1m'+hlc+'\x1b[4:0m'
+                @cells∙adjustContrastForHighlight x-vx y bgc
+                    
+    #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
+    # 000       000       000      000       000          000     000  000   000  0000  000  000       
+    # 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  0000000   
+    #      000  000       000      000       000          000     000  000   000  000  0000       000  
+    # 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  0000000   
+    
+    drawSelections: ->
+        
+        # prof.start 'selection'
+        
+        spanbg = @color.selection.span
+        linebg = @color.selection.line
+        
+        if not @cells.screen.t.hasFocus
+            spanbg = color.darken spanbg
+            linebg = color.darken linebg
+        
+        for selection in @state.s.selections
+                
+            bg = belt.isSpanLineRange(@state.s.lines selection) or {spanbg: linebg}
+            
+            for li in selection[1]..selection[3]
+                
+                y = li-@state.s.view[1]
+                
+                break if y >= @cells.rows
+                
+                if li == selection[1]
+                    xs = selection[0]
+                else
+                    xs = 0
+                    
+                if li == selection[3]
+                    xe = selection[2]
+                else
+                    xe = kseg.width(@state.s.lines[li])
+                
+                for x in xs...xe
+                    @cells.set_bg x-@state.s.view[0] y bg 
+                    @cells.adjustContrastForHighlight x y bg
+                    
+        # prof.end 'selection'
+            
+    #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
+    # 000       000   000  000   000  000       000   000  000   000  000       
+    # 000       000   000  0000000    0000000   000   000  0000000    0000000   
+    # 000       000   000  000   000       000  000   000  000   000       000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  0000000   
+    
+    drawCursors: ->
+        
+        s = @state.s
+        mainCursor = @state.mainCursor()
+        
+        fg = @color.cursor.fg
+
+        bg = mode.themeColor @state 'cursor.multi' @color.cursor.multi
+
+        bg = color.darken(bg) if not @cells.screen.t.hasFocus
+        
+        for cursor in s.cursors
+ 
+            if cursor != mainCursor
+            
+                if @isCursorVisible cursor
+                 
+                    @cells.draw_rounded_multi_cursor cursor[0]-s.view[0] cursor[1]-s.view[1] bg
+                        
+        if @isCursorVisible mainCursor
+             
+            fg  = @color.cursor.fg
+            
+            bg = mode.themeColor @state 'cursor.main' @color.cursor.main
+
+            if not @hasFocus() ➜ bg = color.darken bg 
+             
+            (x y) = [mainCursor[0]-s.view[0] mainCursor[1]-s.view[1]]
+             
+            if s.cursors.length <= 1
+                if @isCursorInEmpty()
+                    bg = color.darken bg 0.5
+                elif ' ' == @cells.get_char(x y)
+                    bg = color.darken bg 0.8
+                     
+            bg = color.darken(bg) if not @cells.screen.t.hasFocus
+                 
+            @cells.draw_rounded_cursor x y bg
+
+    #  0000000   0000000   000       0000000   00000000   00000000   000  000      000       0000000  
+    # 000       000   000  000      000   000  000   000  000   000  000  000      000      000       
+    # 000       000   000  000      000   000  0000000    00000000   000  000      000      0000000   
+    # 000       000   000  000      000   000  000   000  000        000  000      000           000  
+    #  0000000   0000000   0000000   0000000   000   000  000        000  0000000  0000000  0000000   
+    
+    drawColorPills: line row linel ->
+    
+        rngs = kstr.colorRanges kseg.str(line)
+        if rngs
+            cx = max(0 linel)+1
+            for rng,idx in rngs
+                dta = 4
+                if idx == 0             ➜ @cells.set cx row '' rng.color @color.empty; cx += 1; dta -= 1
+                if idx == rngs.length-1 ➜ dta -= 1
+                @cells.bg_rect cx row cx+dta row rng.color; cx += dta
+                if idx == rngs.length-1 ➜ @cells.set cx row '' rng.color @color.empty
+                    
+    drawAsciiHeader: line row clss ->
+        
+        # █ █ █ █ █ █ █ █
+        # █ ▉ ▊ ▋ ▌ ▍ ▏ ▕
+        
+        # log "▸ #{kseg.str line}"
+        
+        chunks = kseg.chunks line
+        for chunk in chunks
+            if chunk.segl[0] == '█'
+                x = chunk.index-@state.s.view[0]
+                ch = '▎'
+                fg = theme.syntax[clss+' highlight']
+                bg = theme.syntax[clss]
+                @cells.set x row ch fg bg
+                
+                if chunk.segl.length > 1
+                    x += chunk.segl.length - 1 
+                    ch = '▋'
+                    fg = theme.syntax[clss]
+                    bg = theme.syntax[clss+' shadow']
+                    @cells.set x row ch fg bg
+
+⮐  draw

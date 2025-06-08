@@ -1,0 +1,50 @@
+###
+     0000000  00000000   00000000   0000000   0000000
+    000       000   000  000       000       000     
+    0000000   00000000   0000000   000       0000000 
+         000  000        000       000            000
+    0000000   000        00000000   0000000  0000000 
+
+    provides support for quick insertion of certain 
+    unicode symbols: (spe)cial (c)haracter(s)  
+###
+
+function specs
+    
+    @replex: # auto replacements by replex mode 
+        
+        '~c':   '●'
+        '~s':   '▪'
+        '~d':   '◆'
+        '~C':   '○' 
+        "~#":   '◌' 
+        "~.":   '∙'
+        "~\"":  '¨'
+        '~S':   '□'
+        '~D':   '◇'
+        '~>':   '▸'
+        '~<':   '◂'
+        '~^':   '▴'
+        '~v':   '▾'
+        '~o':   '✔'
+        '~x':   '✘'
+        '~b':   '■'
+        '~B':   '█'
+        '~r':   '⮐ '
+        '~t':   '➜'
+        
+    @trigger: # prepended to auto completion 
+                         
+        '~': [  '◌' '∙' '○' '◇' '□' '✔' '✘' '▸' '▾' '▴' '◂' '●' '◆' '▪' '◼' '■' '█' '⮐  ' '➜ ' '△' '▷' '▽' '◁' '◯'
+                '│' '─' '┬' '├' '┼' '┤' '┴' '╭' '' '╰' '╮' '' '╯' 
+             ]
+        'r': [ '⮐  ']
+        't': [ '➜ ']
+    
+    @inserts: {} # map of inserts, to make check in complete easier
+
+for trigger,vals of specs.trigger
+    for v in vals
+        specs.inserts[v] = v
+
+export specs

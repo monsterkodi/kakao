@@ -1,0 +1,121 @@
+###
+    ███  ███   ███  ████████   ███   ███  █████████ 
+    ███  ████  ███  ███   ███  ███   ███     ███    
+    ███  ███ █ ███  ████████   ███   ███     ███    
+    ███  ███  ████  ███        ███   ███     ███    
+    ███  ███   ███  ███         ███████      ███    
+
+    simple text input field
+    used in inputchoice to filter choices
+###
+
+# use ../../../kxk ▪ kseg
+# use ../../theme  ◆ theme
+# use ../../edit   ◆ editor
+
+use edit.editor
+
+class input extends editor
+
+    @: screen name ->
+        
+        editor.init @ screen name ['brckts' 'replex' 'unype']
+        
+        @setColor 'selection_line'  @color.selection
+        @setColor 'bg'              theme.quicky.bg
+        @setColor 'bg_blur'         theme.quicky.bg
+        @setColor 'bg_focus'        theme.editor.bg
+                
+    # ████████   ███████    ███████  ███   ███   ███████
+    # ███       ███   ███  ███       ███   ███  ███     
+    # ██████    ███   ███  ███       ███   ███  ███████ 
+    # ███       ███   ███  ███       ███   ███       ███
+    # ███        ███████    ███████   ███████   ███████ 
+
+    hasFocus: -> @state.hasFocus
+
+    onMouseLeave: event -> 
+    
+        @emit 'action' 'cancel'
+        editor.onMouseLeave @ event
+        
+    onMouse: event ->
+    
+        ⮐  if @hidden()
+        
+        editor.onMouse @ event
+
+    current: -> 
+        if valid @state.s.lines
+            ⮐  @state.s.lines[0]∙str()
+        ""
+
+    set: text ->
+    
+        @state∙loadLines [text]
+
+    selectAll: -> 
+    
+        @state∙selectLine 0
+        @state∙moveCursors 'eol'
+
+    # ███   ███  ████████  ███   ███
+    # ███  ███   ███        ███ ███ 
+    # ███████    ███████     █████  
+    # ███  ███   ███          ███   
+    # ███   ███  ████████     ███   
+
+    onKey: key event ->
+        
+        ⮐  if not @hasFocus()
+        
+        switch event.combo
+            
+            'return'    
+                
+                @emit 'action' 'submit' @current()
+                ⮐  true
+                
+            'up' 'down'
+                
+                @emit 'action' event.combo 
+                ⮐  false
+                
+            'right'
+                
+                if @state.mainCursor()[0] >= @current().length
+                    @emit 'action' 'right'
+                    ⮐  true
+                    
+            'esc'
+            
+                @emit 'action' 'cancel'
+                ⮐  true
+
+        before = @current()
+
+        sr = editor.onKey @ key event
+        
+        if before != @current()
+            @emit 'action' 'change' @current() 
+            ⮐  true
+        
+        sr
+        
+    # ███████    ████████    ███████   ███   ███
+    # ███   ███  ███   ███  ███   ███  ███ █ ███
+    # ███   ███  ███████    █████████  █████████
+    # ███   ███  ███   ███  ███   ███  ███   ███
+    # ███████    ███   ███  ███   ███  ██     ██
+
+    draw: ->
+        
+        ⮐  if @hidden() or @collapsed()
+        
+        bg = if @hasFocus() ➜ @color.bg_focus ➜ @color.bg_blur
+        @setColor 'bg' bg
+        @setColor 'empty' @color.bg
+        
+        editor.draw @
+
+⮐  input

@@ -1,0 +1,103 @@
+###
+     ███████  █████████   ███████   █████████  ███   ███   ███████  ████████  ███  ███      ████████  
+    ███          ███     ███   ███     ███     ███   ███  ███       ███       ███  ███      ███       
+    ███████      ███     █████████     ███     ███   ███  ███████   ██████    ███  ███      ███████   
+         ███     ███     ███   ███     ███     ███   ███       ███  ███       ███  ███      ███       
+    ███████      ███     ███   ███     ███      ███████   ███████   ███       ███  ███████  ████████  
+
+    used by status to display the currently edited file in the fileeditor
+###
+
+# use ../../../kxk ▪ slash post
+# use ../../theme  ◆ color theme 
+# use ../../util   ◆ syntax
+# use ../base      ◆ view
+
+use view.base.view
+use util.syntax
+
+class statusfile extends view
+
+    @: screen name ->
+
+        view.init @ screen name
+        
+        @setColor 'bg'     theme.status.bg
+        @setColor 'empty'  theme.status.empty
+        @setColor 'hover'  theme.hover.bg
+        
+        @pointerType = 'pointer'
+        @syntax = syntax()
+        @syntax∙setExt 'noon'
+        
+        @rounded = ''
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: -> 
+        
+        ⮐  if @hidden()
+    
+        super()
+            
+        bg = if @hover ➜ @color.hover ➜ @color.bg
+        
+        for ch,x in @rounded
+            if ch == '' or ch == ''
+                @cells.set x 0 ch bg @color.empty
+            else
+                fg = @syntax.getColor x 0
+                @cells.set x 0 ch fg bg 
+                if @hover
+                    @cells.adjustContrastForHighlight x 0 bg 
+                
+    #  0000000   0000000          000  000   000   0000000  000000000  
+    # 000   000  000   000        000  000   000  000          000     
+    # 000000000  000   000        000  000   000  0000000      000     
+    # 000   000  000   000  000   000  000   000       000     000     
+    # 000   000  0000000     0000000    0000000   0000000      000     
+    
+    adjustText: ->
+    
+        @file ?= ''
+        @pars = slash.parse @file
+        @syntax.clear()
+        @syntax.setLines ['/'+@pars.file]
+        @rounded = '' & @pars.file & ''
+            
+    set: file ->
+    
+        ⮐  if @file == trim file
+        
+        @file = trim file
+        @adjustText()
+        
+    show: file -> 
+        
+        @set file 
+        @cells.rows = 1
+    
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+        
+        view.onMouse @ event
+        
+        switch event.type
+            
+            'press' 
+                
+                if @hover
+                    @emit 'action' 'click' @file
+                    ⮐  {redraw:true}
+        @hover
+    
+⮐  statusfile

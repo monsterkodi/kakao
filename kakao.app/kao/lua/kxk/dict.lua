@@ -31,6 +31,26 @@ function dict.static.str(d)
     end
 
 
+function dict.static.keys(d) 
+        local a = array()
+        for k, _ in pairs(d) do 
+            a:push(k)
+        end
+        
+        return a
+    end
+
+
+function dict.static.values(d) 
+        local a = array()
+        for _, v in pairs(d) do 
+            a:push(v)
+        end
+        
+        return a
+    end
+
+
 function dict.static.isdict(d) 
         return (((#d <= 0) and (dict.size(d) >= 1)) and (d.class ~= array))
     end

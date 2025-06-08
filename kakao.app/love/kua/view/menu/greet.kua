@@ -1,0 +1,81 @@
+###
+     ███████   ████████   ████████  ████████  █████████  
+    ███        ███   ███  ███       ███          ███     
+    ███  ████  ███████    ███████   ███████      ███     
+    ███   ███  ███   ███  ███       ███          ███     
+     ███████   ███   ███  ████████  ████████     ███     
+
+    the fancy glowing app name ascii art thingy
+###
+
+# use ../../../kxk    ▪ kstr post
+# use ../../util      ◆ help
+# use ../../theme     ◆ theme 
+# use ../../edit/tool ◆ belt
+# use ../../edit      ◆ editor
+# use ../base         ◆ view
+use util.help
+use edit.tool.belt
+use view.base.view
+
+class greet extends view
+
+    @: screen ->
+        
+        view.init @ screen 'greet'
+        
+        @isVisible = false
+                
+        @header  = help.headerCells()
+        @name    = 'greet'
+        @a       = 120
+        
+        @cells.rows = 0
+
+    #  ███████  ███   ███   ███████   ███   ███  
+    # ███       ███   ███  ███   ███  ███ █ ███  
+    # ███████   █████████  ███   ███  █████████  
+    #      ███  ███   ███  ███   ███  ███   ███  
+    # ███████   ███   ███   ███████   ██     ██  
+
+    hide: -> 
+    
+        post∙emit 'greet.hide'
+        view.hide @
+
+    show: ->
+        
+        post∙emit 'greet.show'
+        view.show @
+        
+    layout: x y ->
+    
+        (w h) = belt.cellSize @header
+
+        @cells∙layout x y w h
+
+    # ███████    ████████    ███████   ███   ███  
+    # ███   ███  ███   ███  ███   ███  ███ █ ███  
+    # ███   ███  ███████    █████████  █████████  
+    # ███   ███  ███   ███  ███   ███  ███   ███  
+    # ███████    ███   ███  ███   ███  ██     ██  
+
+    draw: ->
+        
+        ⮐  if @hidden()
+
+        duration = 480
+        @a += 1
+        if @a > duration ➜ @a = 0 
+            
+        f = 0.4 + 0.6 * math.abs(math.sin(2 * math.pi * @a / duration))
+        
+        @header = help.headerCells f
+        
+        for y row in ipairs @header
+            for x cell in ipairs row
+                @cells∙set x y cell.char cell.fg cell.bg
+                
+        # post∙emit 'redraw'
+
+⮐  greet

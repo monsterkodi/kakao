@@ -48,7 +48,7 @@ proc split*(path : string) : seq[string] =
     if (s[^1].len == 0): s.setLen((s.len - 1))
     s
 
-proc contains*(path : string, subpath : string) : bool = (subpath in slash.split(path))
+proc has*(path : string, subpath : string) : bool = (subpath in slash.split(path))
 
 proc home*(args : varargs[string]) : string = slash.path(@[slash.normalize(appDirs.getHomeDir().string)].concat(args.toSeq()))
 

@@ -1,0 +1,168 @@
+###
+     0000000  00000000   0000000   0000000  000   0000000   000   000    
+    000       000       000       000       000  000   000  0000  000    
+    0000000   0000000   0000000   0000000   000  000   000  000 0 000    
+         000  000            000       000  000  000   000  000  0000    
+    0000000   00000000  0000000   0000000   000   0000000   000   000    
+
+    key value store with delayed saving to disk  
+    
+    is coupled to the process: doesn't care about other instances
+    
+    stores 
+    
+        - main cursor position and view offset per file
+        - recent file history
+###
+
+# use ../../kxk ◆ noon events slash post nfs sds
+# use ../../kxk/util ▪ isEqual defaults sessionId
+# use ◆ frecent
+
+class session extends events
+
+    @: opt ->
+
+        @name = util.sessionId()
+
+        opt ?= {}
+
+        @timeout = opt.timeout or 1000
+        
+        @sep  = opt.separator or '▸'
+        
+        @dir  = slash.absolute "~/.config/ked/sessions/"
+        log 'session/dir' & @dir
+        @file = slash.path @dir "#{@name}.noon"
+        
+        # if not opt.fresh
+        #     @loadAndMerge()
+        #     @cleanSessions()
+        
+    keypath: key -> key.split @sep
+    
+    #  0000000   00000000  000000000
+    # 000        000          000   
+    # 000  0000  0000000      000   
+    # 000   000  000          000   
+    #  0000000   00000000     000   
+        
+    get: key value ->
+        
+        ⮐  value if not key.split
+        clone sds.get @data @keypath(key) value
+         
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: key value ->
+        
+        ⮐  if not key is str
+        ⮐  if @get(key) eql value
+        ⮐  if @get(key) == value
+        ⮐  @del(key) if empty value
+
+        @data ?= {}
+        sds.set @data @keypath(key) value
+        @delayedSave()
+        
+    del: key -> 
+    
+        ⮐  if not @data
+        sds.del @data @keypath(key)
+        @delayedSave()
+        
+    delayedSave: ->
+        
+        clearTimeout @timer
+        @timer = setTimeout (-> @save()) @timeout
+                
+    clear: ->
+        
+        @data = {}
+        
+        clearTimeout @timer
+        
+    recentFiles: -> dict.keys @get('files▸recent' {}) 
+        
+    # 000       0000000    0000000   0000000    
+    # 000      000   000  000   000  000   000  
+    # 000      000   000  000000000  000   000  
+    # 000      000   000  000   000  000   000  
+    # 0000000   0000000   000   000  0000000    
+    
+    reload: -> @load()
+    
+    load: ->
+        
+        @data = noon.load @file
+        # error "session -- can't load '#{@file}':" err
+        
+    #  0000000   0000000   000   000  00000000
+    # 000       000   000  000   000  000     
+    # 0000000   000000000   000 000   0000000 
+    #      000  000   000     000     000     
+    # 0000000   000   000      0      00000000
+
+    save: ->
+        
+        ⮐  if not @file
+        ⮐  if empty @data
+        
+        # clearTimeout @timer
+        # @timer = null
+
+        text = noon.stringify(@data {indent:4 maxalign:8}) & '\n'
+
+        result = nfs.write @file text
+        if result.error
+            log 'session.save failed!' @file result
+
+    # 00     00  00000000  00000000    0000000   00000000        00000000   00000000   0000000  00000000  000   000  000000000  
+    # 000   000  000       000   000  000        000             000   000  000       000       000       0000  000     000     
+    # 000000000  0000000   0000000    000  0000  0000000         0000000    0000000   000       0000000   000 0 000     000     
+    # 000 0 000  000       000   000  000   000  000             000   000  000       000       000       000  0000     000     
+    # 000   000  00000000  000   000   0000000   00000000        000   000  00000000   0000000  00000000  000   000     000     
+
+    loadAndMerge: ->
+        
+        file = @newestSessionFile()
+        
+        if valid file
+            
+            recent = noon.read file
+            
+            post.emit 'session.merge' recent
+            
+            @set 'files'  recent.files # probably should actually merge here instead of overriding!
+            @set 'editor' recent.editor
+        
+        @emit 'loaded'
+    
+    # 00000000  000  000      00000000   0000000  
+    # 000       000  000      000       000       
+    # 000000    000  000      0000000   0000000   
+    # 000       000  000      000            000  
+    # 000       000  0000000  00000000  0000000   
+
+    newestSessionFile: ->
+        
+        files = @listSessions()
+        files[-1]
+            
+    listSessions: ->
+        
+        files = nfs.list @dir
+        files.filter((f) -> ⮐  f.path)
+        
+    cleanSessions: ->
+        
+        maxFiles = 100
+        files = @listSessions()
+        for i in 1...files.len-maxFiles+1
+            nfs.remove files[i]
+                    
+⮐  session

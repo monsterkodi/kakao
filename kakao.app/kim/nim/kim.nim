@@ -225,6 +225,7 @@ proc watch(paths : seq[string]) =
         var (dir, name, ext) = p.dirNameExt()
         styledEcho(fgBlue, styleDim, "● ", resetStyle, styleBright, fgBlue, dir, " ", resetStyle, styleBright, fgYellow, name, styleDim, ext, resetStyle)
     while true: 
+        var loveProc : Process
         var kimToTranspile : seq[string]
         var kxkToTranspile : seq[string]
         var kuaToTranspile : seq[string]
@@ -260,14 +261,23 @@ proc watch(paths : seq[string]) =
             if not fail: 
                 discard runTests(kxkTests)
         if kuaChanged: 
+            var love = false
             var fail = false
             for f in kuaToTranspile: 
                 var (output, exitCode) = execCmdEx("bin/kim -v " & f)
                 echo(output)
+                if f.contains("love"): 
+                    love = true
                 if (exitCode != 0): 
                     fail = true
-            # if not fail
-            #     discard runTests kxkTests
+            if (not fail and love): 
+                if loveProc: 
+                    echo("CLOSE")
+                    loveProc.close()
+                var (output, exitCode) = execCmdEx("killall love")
+                (output, exitCode) = execCmdEx("killall love")
+                (output, exitCode) = execCmdEx("killall love")
+                loveProc = startProcess("/opt/homebrew/bin/love", cwd(), @[cwd("../love/lua")])
         if kimChanged: 
             if stage(kimFiles, ".", "k1m"): 
                 if stage(kimFiles, "k1m", "k2m"): 
@@ -279,4 +289,4 @@ proc watch(paths : seq[string]) =
                         echo("-> enjoy")
                         restart()
         sleep(200)
-watch(@[cwd("kim"), cwd("../kao")])
+watch(@[cwd("kim"), cwd("../kao"), cwd("../love")])

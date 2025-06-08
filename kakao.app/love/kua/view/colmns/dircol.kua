@@ -1,0 +1,245 @@
+###
+    ███████    ███  ████████    ███████   ███████   ███      
+    ███   ███  ███  ███   ███  ███       ███   ███  ███      
+    ███   ███  ███  ███████    ███       ███   ███  ███      
+    ███   ███  ███  ███   ███  ███       ███   ███  ███      
+    ███████    ███  ███   ███   ███████   ███████   ███████  
+###
+
+use ../../../kxk    ▪ post slash
+use ../../edit/tool ◆ belt
+use ../../theme     ◆ color theme
+use ../base         ◆ view knob crumbs input
+use ../menu         ◆ context
+use                 ◆ dirtree
+
+function dircol extends view
+
+    @: screen @editor features ->
+        
+        super screen 'dircol' features
+        
+        @isVisible = false
+        @active    = true
+        
+        @pointerType = 'pointer'
+        
+        @knob    = new knob    screen "#{@name}_knob"
+        @crumbs  = new crumbs  screen "#{@name}_crumbs"
+        @dirtree = new dirtree screen "#{@name}_dirtree" ['scroll']
+        
+        @crumbs.on 'action' @onCrumbsAction
+        
+        bg = theme.dirtree.bg
+        
+        @dirtree.setColor 'bg'            bg
+        @dirtree.setColor 'empty'         bg
+        @dirtree.setColor 'cursor_main'   bg
+        @dirtree.setColor 'cursor_empty'  bg
+        
+        @dirtree.scroll.setColor 'bg'     bg
+        
+        @knob   .setColor 'bg'            bg
+        
+        @crumbs .setColor 'empty'         theme.gutter.bg
+        
+        post.on 'dircol.reveal' @onReveal
+        post.on 'dircol.resize' @onResize
+        post.on 'dircol.toggle' @onToggle
+        post.on 'dircol.root'   @setRoot
+        
+        post.on 'session.merge' @onSessionMerge
+        
+        root = ked_session.get 'dircol▸root' process.cwd()
+        
+        @setRoot root
+        
+    onCrumbsAction: action path =>
+
+        if action == 'click'
+            @setRoot path
+            
+    onSessionMerge: recent =>
+        
+        ⮐  if empty recent.dircol
+        
+        args = ked_session.get 'ked▸args' {}
+        if valid args.options
+            log "dircol.onSessionMerge - use first options dir #{slash.dir args.options[0]}"
+            root = slash.dir args.options[0]
+        else
+            log "dircol.onSessionMerge - use last session dir #{recent.dircol.root}"
+            root = recent.dircol.root
+        
+        if root
+            @setRoot root
+
+        if recent.funcol?.active            
+            @active = true
+            @show()
+            
+        ked_session.set 'dircol' recent.dircol
+            
+    setRoot: path =>
+    
+        ⮐  if empty path
+    
+        path = slash.tilde path
+        @crumbs.set path
+        @dirtree.setRoot path redraw:true
+        
+        ked_session.set 'dircol▸root' path
+        
+    layout: x y w h =>
+        
+        @crumbs.layout  x     y   w   1
+        @dirtree.layout x     y+1 w h-1
+        @knob.layout    x+w-1 y+1 1 h-1
+        
+        super x y w h
+        
+    draw: =>
+        
+        ⮐  if @hidden() or @collapsed() or not @active
+        
+        @cells.fill_rect 0 1 -1 -1 ' ' null @dirtree.color.bg
+        @cells.fill_rect 0 0 -1  0 ' ' null @crumbs.color.empty
+        
+        @crumbs.draw()
+        @dirtree.draw()
+        @knob.draw()
+    
+        super()
+        
+    #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
+    # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
+    # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   
+    # ███       ███   ███  ███  ████     ███     ███        ███ ███      ███   
+    #  ███████   ███████   ███   ███     ███     ████████  ███   ███     ███   
+
+    onContext: event =>
+    
+        # if @dirtree.current()?.type == 'file'
+    
+        context.show event.cell @onContextChoice [
+            " " 
+            " " 
+            " " 
+            ]
+                
+    onContextChoice: choice ○=>
+    
+        if current = @dirtree.current()
+            
+            switch choice
+            
+                ''
+                    @rename()
+                    
+                ''
+                    dir = current.path
+                    if current.type == 'file'
+                        dir = slash.dir dir
+                    post.emit 'file.new_folder' dir
+                    
+                '' 
+                    post.emit 'file.trash' current.path
+                        
+    onReveal: p ○=>
+    
+        ⮐  if @dirtree.itemForPath p
+
+        if d = @dirtree.itemForPath slash.dir(p)
+            if not d.open
+                ○ @dirtree.openDir d redraw:true
+            else
+                error "dircol.onReveal already open? #{d}"
+        else
+            if dd = @dirtree.itemForPath slash.dir(slash.dir(p))
+                if not dd.open
+                    ○ @dirtree.openDir dd
+                    ○ @dirtree.openDir d redraw:true
+                else
+                    error "dircol.onReveal already open dd? #{d}"
+            else
+                @setRoot d
+                
+    # ████████   ████████  ███   ███   ███████   ██     ██  ████████
+    # ███   ███  ███       ████  ███  ███   ███  ███   ███  ███     
+    # ███████    ███████   ███ █ ███  █████████  █████████  ███████ 
+    # ███   ███  ███       ███  ████  ███   ███  ███ █ ███  ███     
+    # ███   ███  ████████  ███   ███  ███   ███  ███   ███  ████████
+
+    rename: =>
+    
+        current = @dirtree.current()
+        ox = belt.numIndent(current.tilde) + 2
+        x  = @dirtree.cells.x + ox
+        y  = @dirtree.cells.y + @dirtree.currentIndex()
+        w  = @dirtree.cells.cols - ox
+        fileName = slash.file current.path
+        post.emit 'input.popup' text:fileName x:x y:y w:w cb: (res) =>
+            @dirtree.grabFocus() if @hover
+            if res != fileName
+                post.emit 'file.rename' current.path slash.path(slash.dir(current.path) res)
+    
+    # █████████   ███████    ███████    ███████   ███      ████████
+    #    ███     ███   ███  ███        ███        ███      ███     
+    #    ███     ███   ███  ███  ████  ███  ████  ███      ███████ 
+    #    ███     ███   ███  ███   ███  ███   ███  ███      ███     
+    #    ███      ███████    ███████    ███████   ███████  ████████
+
+    onResize: => @knob.doDrag = true
+    onToggle: => 
+        
+        @toggle() if not (@visible() and @collapsed())
+        @active = @visible()
+        ked_session.set 'dircol▸active' @active
+        cols = max 16 int(@cells.screen.cols / 6)
+        post.emit 'view.size' @name 'right' (@hidden() ? -@cells.cols : cols-@cells.cols )
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+
+    onMouse: event =>
+    
+        ⮐  if @hidden() or @collapsed() or not @active
+        
+        ret = super event            ; ⮐  ret if ret?.redraw
+        ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
+        ret = @crumbs.onMouse event  ; ⮐  ret if ret?.redraw
+        ret = @dirtree.onMouse event ; ⮐  ret if ret?.redraw
+        
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event =>
+        
+        ⮐  if @hidden() or @collapsed() or not @active
+        
+        @dirtree.onWheel event
+        
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event =>
+        
+        ⮐  if not @dirtree.hasFocus()
+        
+        switch key
+            'f2'        ➜ ⮐  @rename()
+            'cmd+left'
+            'ctrl+left' ➜ ⮐  @setRoot slash.dir(@dirtree.currentRoot)
+            
+        @dirtree.onKey key event
+
+export dircol

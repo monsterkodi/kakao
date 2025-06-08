@@ -36,6 +36,16 @@ function _G.empty(v)
 end
 
 
+function _G.valid(v) 
+    return not empty(v)
+end
+
+
+function _G.clamp(l, h, v) 
+    return math.min(math.max(l, v), h)
+end
+
+
 function _G.slice(a, first, last) 
     if (type(a) == "string") then 
     return string.sub(a, first, last)
@@ -78,9 +88,9 @@ function _G.write(...)
         s = s .. (tostring(v))
     end
     
-    -- s = table.concat {...} ""
     s = s .. "\27[0m\n"
-    return ffi.C.write(1, s, #s)
+    -- ffi.C.write 1 s s.len
+    return print(s)
 end
 
 local timers = {}
@@ -118,5 +128,7 @@ _G.kstr = require("kxk.kstr")
 _G.kseg = require("kxk.kseg")
 _G.strg = require("kxk.strg")
 _G.test = require("kxk.test")
+_G.events = require("kxk.events")
+_G.util = require("kxk.util")
 
 return {}

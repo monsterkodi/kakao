@@ -1,0 +1,354 @@
+###
+ 0000000   000   000  000   0000000  000   000  000   000
+000   000  000   000  000  000       000  000    000 000
+000 00 00  000   000  000  000       0000000      00000
+000 0000   000   000  000  000       000  000      000
+ 00000 00   0000000   000   0000000  000   000     000
+###
+
+use ../../../kxk    ▪ kstr slash post kutil
+use ../../../kxk    ◆ nfs
+use ../../index     ◆ prjcts
+use ../../util      ◆ fileutil
+use ../../edit/tool ◆ belt
+use ../../theme     ◆ icons
+use ../base         ◆ crumbs 
+use ../menu         ◆ inputchoice
+use                 ◆ diritem
+               
+import rgxs from './quicky.json' with { type: "json" }
+
+function quicky extends inputchoice
+
+    @: @screen @name='quicky'->
+
+        super @screen @name ['mapview' 'scroll']
+        
+        @crumbs = new crumbs  @screen 'quicky_crumbs'
+
+        @crumbs.padLast = true
+        @crumbs.setColor 'empty' @color.bg
+
+        @choices.state.syntax.setRgxs rgxs
+        @choices.on 'select' @preview
+        
+        @choices.mapscr.rowOffset = 0
+        @choices.frontRoundOffset = 0
+        
+        @crumbs.on 'action' @onCrumbsAction
+
+        post.on 'quicky.files' @showFiles if @name == 'quicky'
+
+    #  0000000   00000000   00000000    0000000   000   000   0000000   00000000  
+    # 000   000  000   000  000   000  000   000  0000  000  000        000       
+    # 000000000  0000000    0000000    000000000  000 0 000  000  0000  0000000   
+    # 000   000  000   000  000   000  000   000  000  0000  000   000  000       
+    # 000   000  000   000  000   000  000   000  000   000   0000000   00000000  
+    
+    arrange: =>
+        
+        scx = int @screen.cols/2
+        scy = int @screen.rows/2
+        
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
+        
+        hs = int @screen.rows/2
+        y  = int scy - hs/2 - ih
+        
+        cr = @crumbs.visible() ? 1 : 0
+        ch = @crumbs.visible() ? hs : min(hs @choices.numFiltered())
+        h  = ch + ih + cr + 2
+
+        cw = @choicesWidth
+        w  = cw+2 
+        x  = int scx-w/2
+        
+        @input.layout    x+2      y+1        w-4   iz
+        @crumbs.layout   x+2      y+1+ih     w-4   cr
+        @choices.layout  x+1      y+1+ih+cr  cw    ch
+        @cells.layout    x        y          w     h
+
+    # 0000000    00000000    0000000   000   000
+    # 000   000  000   000  000   000  000 0 000
+    # 000   000  0000000    000000000  000000000
+    # 000   000  000   000  000   000  000   000
+    # 0000000    000   000  000   000  00     00
+
+    draw: =>
+
+        ⮐  if @hidden()
+         
+        @arrange()
+        @drawFrame()
+        @crumbs.draw()
+        @drawChoices()
+                
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+
+        ⮐  if @hidden()
+        ret = @crumbs.onMouse event ; ⮐  ret if ret?.redraw
+        ret = super event           ; ⮐  ret if ret?.redraw
+        @hover
+                
+    #  0000000  000   000   0000000   000   000        00000000  000  000      00000000   0000000  
+    # 000       000   000  000   000  000 0 000        000       000  000      000       000       
+    # 0000000   000000000  000   000  000000000        000000    000  000      0000000   0000000   
+    #      000  000   000  000   000  000   000        000       000  000      000            000  
+    # 0000000   000   000   0000000   00     00        000       000  0000000  00000000  0000000   
+    
+    showFiles: files =>
+    
+        items = files.map (path) -> path:path type:'file' 
+        for item in items
+            item.tilde = ' ' + diritem.symbolName(item)
+        @crumbs.hide()
+        @calcWidthAndShowPathItems items
+        
+    # 00000000   00000000    0000000         000  00000000   0000000  000000000  00000000  000  000      00000000   0000000  
+    # 000   000  000   000  000   000        000  000       000          000     000       000  000      000       000       
+    # 00000000   0000000    000   000        000  0000000   000          000     000000    000  000      0000000   0000000   
+    # 000        000   000  000   000  000   000  000       000          000     000       000  000      000            000  
+    # 000        000   000   0000000    0000000   00000000   0000000     000     000       000  0000000  00000000  0000000   
+    
+    showProjectFiles: @currentFile =>
+        
+        items  = prjcts.files @currentFile
+        prjDir = prjcts.dir @currentFile
+        
+        items = items.concat ked_session.recentFiles()[0...10]
+                
+        ⮐  @gotoDir process.cwd() if empty items
+        
+        items = kutil.uniq items
+        
+        @currentDir = slash.dir @currentFile
+        
+        @currentDir = process.cwd() if empty @currentDir
+        
+        @crumbs.hide()
+        @choices.mapscr.rowOffset = 0
+        
+        weight = item =>
+
+            t = item.tilde
+            p = slash.parse t
+
+            w = 0
+            w += (t.split('../').length-1) * 1024 * 4
+            for s,i in slash.split(p.dir)
+                w += kstr.weight(s) / ((i+1)*(i+1))
+            w
+
+        items = items.map (path) => 
+        
+            rel = slash.relative path prjDir
+            if slash.isAbsolute rel
+                prs = slash.parse rel
+                rel = slash.join slash.split(prs.dir)[-2..] prs.file
+            
+            item = type:'file' path:path 
+            item.tilde = ' ' + diritem.symbolName(item)
+            item
+            
+        items.sort (a b) -> weight(a) - weight(b)            
+
+        @calcWidthAndShowPathItems items
+        
+    calcWidthAndShowPathItems: items =>
+    
+        lines = items.map (i) -> i.tilde
+        
+        @choicesWidth = min int(@screen.rows*1.2) 16+belt.widthOfLines(lines)
+    
+        @showPathItems items
+        
+    # 00000000    0000000   000000000  000   000        000  000000000  00000000  00     00   0000000  
+    # 000   000  000   000     000     000   000        000     000     000       000   000  000       
+    # 00000000   000000000     000     000000000        000     000     0000000   000000000  0000000   
+    # 000        000   000     000     000   000        000     000     000       000 0 000       000  
+    # 000        000   000     000     000   000        000     000     00000000  000   000  0000000   
+    
+    showPathItems: items select =>
+
+        @input.set ''
+        @input.hide()
+        
+        selectIndex = 0
+        
+        if select
+            select = slash.untilde select
+            for item,idx in items
+                if slash.samePath item.path select
+                    selectIndex = idx
+                    break
+                    
+        @preview items[selectIndex]
+        
+        @choices.set items 'tilde'
+        
+        @choices.state.selectLine selectIndex
+        @choices.state.setMainCursor 0 selectIndex
+        @choices.state.setView [0 0]
+        
+        @show()
+        @choices.grabFocus()
+        
+    #  0000000   00000000   00000000  000   000     000  000   000     00000000  0000000    000  000000000   0000000   00000000   
+    # 000   000  000   000  000       0000  000     000  0000  000     000       000   000  000     000     000   000  000   000  
+    # 000   000  00000000   0000000   000 0 000     000  000 0 000     0000000   000   000  000     000     000   000  0000000    
+    # 000   000  000        000       000  0000     000  000  0000     000       000   000  000     000     000   000  000   000  
+    #  0000000   000        00000000  000   000     000  000   000     00000000  0000000    000     000      0000000   000   000  
+    
+    openFileInEditor: file =>
+        
+        @hide()
+        post.emit 'quicky' file
+        post.emit 'focus' 'editor'
+        redraw:true
+                             
+    #  0000000  00000000  000      00000000   0000000  000000000
+    # 000       000       000      000       000          000
+    # 0000000   0000000   000      0000000   000          000
+    #      000  000       000      000       000          000
+    # 0000000   00000000  0000000  00000000   0000000     000
+
+    moveSelection: dir =>
+        
+        switch dir
+            'down' ➜ ⮐  if not @choices.hasNext()
+            'up'   ➜ ⮐  if not @choices.hasPrev()
+        
+        @hideMap()
+
+        @choices.moveSelection dir
+        
+    # 00000000   00000000   00000000  000   000  000  00000000  000   000  
+    # 000   000  000   000  000       000   000  000  000       000 0 000  
+    # 00000000   0000000    0000000    000 000   000  0000000   000000000  
+    # 000        000   000  000          000     000  000       000   000  
+    # 000        000   000  00000000      0      000  00000000  00     00  
+    
+    choicesFiltered: =>
+        
+        @preview @choices.current()
+    
+    preview: item ○=>
+        
+        ⮐  @hideMap() if empty item?.path
+        
+        if item.type == 'file' and slash.ext(item.path) in fileutil.sourceFileExtensions
+            text =○ nfs.read item.path
+            segls = belt.seglsForText text
+            @choices.mapscr.show()
+            @choices.mapscr.setSyntaxSegls slash.ext(item.path) segls
+        else
+            @hideMap()
+            
+        post.emit 'redraw'
+
+    # ███████    ████████    ███████   ███   ███   ███████  ████████  ███████    ███  ████████ 
+    # ███   ███  ███   ███  ███   ███  ███ █ ███  ███       ███       ███   ███  ███  ███   ███
+    # ███████    ███████    ███   ███  █████████  ███████   ███████   ███   ███  ███  ███████  
+    # ███   ███  ███   ███  ███   ███  ███   ███       ███  ███       ███   ███  ███  ███   ███
+    # ███████    ███   ███   ███████   ██     ██  ███████   ████████  ███████    ███  ███   ███
+
+    browseDir: dir select ○=>
+    
+        log "#{@name} browseDir #{dir}"
+        post.emit 'browse.dir' dir
+        @hide()
+            
+    hideMap: => 
+    
+        @choices.mapscr.hide()
+    
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+    
+    applyChoice: choice =>
+        
+        switch @input.current()
+            
+            '/'  ➜ ⮐  @browseDir '/'
+            '~'  ➜ ⮐  @browseDir '~'
+            '.'  ➜ ⮐  @browseDir @currentDir
+            '..' ➜ ⮐  @browseDir slash.dir(@currentDir)
+            
+        # if empty choice and valid @input.current()
+        #     @gotoDirOrOpenFile @input.current()
+        #     ⮐ redraw:true
+            
+        if empty choice      ➜ ⮐  redraw:false 
+        # if empty choice.path ➜ ⮐ redraw:false 
+
+        if choice.type == 'dir'
+            @browseDir choice.path
+        else
+            @openFileInEditor choice.path 
+        redraw:true
+                
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    onCrumbsAction: action path =>
+
+        switch action
+            
+            'click' ➜ ⮐  @applyChoice tilde:path path:slash.untilde(path)
+    
+    onInputAction: action text =>
+        
+        super action text
+    
+    onChoicesAction: action choice =>
+    
+        switch action
+            
+            'right' 
+                
+                if choice.path
+                    if choice.tilde == ' ..'
+                        ⮐  @moveSelection 'down'
+                    if choice.type == 'file'
+                        ⮐  post.emit 'quicky' choice.path
+                    else
+                        @hideMap()
+                        ⮐  @gotoDirOrOpenFile choice.link ? choice.path
+                        
+            'left' 
+                
+                if @choices.currentIndex() == 0
+                    if @input.visible()
+                        @input.grabFocus()
+                else
+                    @choices.select 0
+                ⮐  
+                
+            'delete'
+                
+                if choice.path
+                    upDir = slash.dir @currentDir
+                    ⮐  if empty upDir
+                    @hideMap()
+                    ⮐  @gotoDir upDir @currentDir
+            'space'            
+                
+                if choice.path and choice.type == 'file'
+                    ⮐  post.emit 'quicky' choice.path
+                    
+        super action choice
+
+export quicky

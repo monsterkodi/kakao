@@ -1,0 +1,1076 @@
+###
+    ████████   ███   ███   ███████ 
+    ███   ███  ████  ███  ███      
+    ████████   ███ █ ███  ███  ████
+    ███        ███  ████  ███   ███
+    ███        ███   ███   ███████ 
+
+    the encode part of UPNG.js:
+    https://github.com/photopea/UPNG.js 
+###
+
+use zlib
+             
+getBPP = out ->
+    
+    noc = [1 null 3 1 2 null 4][out.ctype]
+    noc * out.depth
+
+filterZero = data out off w h ->
+
+    bpp = getBPP(out) 
+    bpl = ceil(w*bpp/8)
+    bpp = ceil(bpp/8)
+    
+    type = data[off]
+    x = 0
+    
+    if type > 1 ➜ data[off] = [0 0 1][type-2]
+    if type == 3 
+        for x in bpp...bpl 
+            data[x+1] = (data[x+1] + (data[x+1-bpp]>>>1))&255
+
+    for y in 0...h
+        i    = off+y*bpl
+        di   = i+y+1
+        type = data[di-1]
+        x    = 0
+        if 
+            type==0   
+                    while x<bpl ➜ data[i+x] =  data[di+x]; x++
+            type==1 
+                    while x<bpp ➜ data[i+x] =  data[di+x]; x++
+                    while x<bpl ➜ data[i+x] = (data[di+x] + data[i+x-bpp]); x++
+            type==2   
+                    while x<bpl ➜ data[i+x] = (data[di+x] + data[i+x-bpl]); x++
+            type==3  
+                    while x<bpp ➜ data[i+x] = (data[di+x] + ( data[i+x-bpl]>>>1)); x++
+                    while x<bpl ➜ data[i+x] = (data[di+x] + ((data[i+x-bpl]+data[i+x-bpp])>>>1) ); x++
+            ➜       
+                    while x<bpp ➜ data[i+x] = (data[di+x] + paeth(0 data[i+x-bpl] 0)); x++
+                    while x<bpl ➜ data[i+x] = (data[di+x] + paeth(data[i+x-bpp] data[i+x-bpl] data[i+x-bpp-bpl]) ); x++
+    data
+
+paeth = a b c -> 
+
+    p  = a+b-c 
+    pa = (p-a) 
+    pb = (p-b) 
+    pc = (p-c)
+    ⮐  a if pa*pa <= pb*pb and pa*pa <= pc*pc
+    ⮐  b if pb*pb <= pc*pc
+    ⮐  c
+
+copyTile = sb sw sh tb tw th xoff yoff mode ->
+
+    w = min sw tw
+    h = min sh th
+    si=ti=0
+    for y in 0...h
+        for x in 0...w
+
+            if xoff>=0 and yoff>=0 ➜  si = (y*sw+x)<<2;  ti = (( yoff+y)*tw+xoff+x)<<2
+            else                      si = ((-yoff+y)*sw-xoff+x)<<2;  ti = (y*tw+x)<<2
+            
+            switch mode 
+                0 
+                    tb[ti] = sb[si];  tb[ti+1] = sb[si+1];  tb[ti+2] = sb[si+2];  tb[ti+3] = sb[si+3]
+                1 
+                    fa = sb[si+3]*(1/255); fr=sb[si]*fa; fg=sb[si+1]*fa; fb=sb[si+2]*fa
+                    ba = tb[ti+3]*(1/255); br=tb[ti]*ba; bg=tb[ti+1]*ba; bb=tb[ti+2]*ba
+                    
+                    ifa=1-fa 
+                    oa = fa+ba*ifa 
+                    ioa = (oa==0 ? 0 : 1/oa)
+                    tb[ti+3] = 255*oa
+                    tb[ti+0] = (fr+br*ifa)*ioa
+                    tb[ti+1] = (fg+bg*ifa)*ioa 
+                    tb[ti+2] = (fb+bb*ifa)*ioa
+                2
+                    fa = sb[si+3]; fr=sb[si]; fg=sb[si+1]; fb=sb[si+2]
+                    ba = tb[ti+3]; br=tb[ti]; bg=tb[ti+1]; bb=tb[ti+2]
+                    if fa==ba and fr==br and fg==bg and fb==bb
+                        tb[ti]=0;  tb[ti+1]=0;  tb[ti+2]=0;  tb[ti+3]=0
+                    else 
+                        tb[ti]=fr; tb[ti+1]=fg; tb[ti+2]=fb; tb[ti+3]=fa
+    
+                3
+                    fa = sb[si+3]; fr=sb[si]; fg=sb[si+1]; fb=sb[si+2]
+                    ba = tb[ti+3]; br=tb[ti]; bg=tb[ti+1]; bb=tb[ti+2]
+                    continue if fa==ba and fr==br and fg==bg and fb==bb
+
+                    ⮐  false if fa < 220 and ba > 20
+    true
+
+crcLib = 
+
+    table: (->
+        tab = new Uint32Array(256)
+        for n in 0...256
+            c = n
+            for k in 0...8 
+                if c & 1
+                    c = 0xedb88320 ^ (c >>> 1)
+                else        
+                    c = c >>> 1
+            tab[n] = c
+        tab)()
+        
+    update: c buf off len ->
+        for i in 0...len 
+            c = crcLib.table[(c ^ buf[off+i]) & 0xff] ^ (c >>> 8)
+        c
+
+    crc: b o l -> crcLib.update(0xffffffff b o l) ^ 0xffffffff
+
+addErr = er tg ti f ->
+
+    tg[ti]   += (er[0]*f) >> 4  
+    tg[ti+1] += (er[1]*f) >> 4  
+    tg[ti+2] += (er[2]*f) >> 4  
+    tg[ti+3] += (er[3]*f) >> 4
+
+N = x   ->  max(0 min(255 x))
+D = a b ->  
+    dr = a[0] - b[0] 
+    dg = a[1] - b[1] 
+    db = a[2] - b[2]
+    da = a[3] - b[3]
+    dr*dr + dg*dg + db*db + da*da
+    
+dither = sb w h plte tb oind MTD -> # MTD: 0:None 1:floyd-steinberg 2:Bayer
+
+    MTD ?= 1
+    
+    pc   = plte.length 
+    nplt = [] 
+    rads = []
+    for i in 0...pc
+        c = plte[i]
+        nplt.push [((c>>>0)&255) ((c>>>8)&255) ((c>>>16)&255) ((c>>>24)&255)]
+
+    for i in 0...pc
+        ne = 0xffffffff
+        ni = 0
+        for j in 0...pc
+            ce = D nplt[i] nplt[j]
+            if j!=i and ce<ne
+                ne = ce
+                ni = j
+        hd = Math.sqrt(ne)/2
+        rads[i] = ~~(hd*hd)
+        
+    tb32 = new Uint32Array(tb.buffer)
+    err = new Int16Array(w*h*4)
+    
+    S = 4 
+    M = [ 0 8 2 10   12 4 14 6   3 11 1 9   15 7 13 5 ]
+    
+    for i in 0...M.length
+        M[i] = 255*(-0.5 + (M[i]+0.5)/(S*S))
+    
+    for y in 0...h
+        for x in 0...w
+            i = (y*w+x)*4
+            
+            if MTD!=2 
+                cc = [N(sb[i]+err[i]) N(sb[i+1]+err[i+1]) N(sb[i+2]+err[i+2]) N(sb[i+3]+err[i+3])]
+            else
+                ce = M[(y&(S-1))*S+(x&(S-1))]
+                cc = [N(sb[i]+ce) N(sb[i+1]+ce) N(sb[i+2]+ce) N(sb[i+3]+ce)]
+            
+            ni = 0 
+            nd = 0xffffff
+            for j in 0...pc
+                cd = D cc nplt[j]
+                if cd < nd   
+                    nd = cd  
+                    ni = j
+            
+            nc = nplt[ni]
+            er = [cc[0]-nc[0] cc[1]-nc[1] cc[2]-nc[2] cc[3]-nc[3]]
+            
+            if MTD==1
+                if x != w-1 addErr(er err i+4 7)
+                if y != h-1
+                    if x != 0  
+                        addErr(er err i+4*w-4 3)
+                        addErr(er err i+4*w   5)
+                    if x != w-1  
+                        addErr(er err i+4*w+4 1)  
+            oind[i>>2] = ni  
+            tb32[i>>2] = plte[ni]
+
+# ████████  ███   ███   ███████   ███████   ███████    ████████
+# ███       ████  ███  ███       ███   ███  ███   ███  ███     
+# ███████   ███ █ ███  ███       ███   ███  ███   ███  ███████ 
+# ███       ███  ████  ███       ███   ███  ███   ███  ███     
+# ████████  ███   ███   ███████   ███████   ███████    ████████
+
+encode = bufs w h ps dels tabs forbidPlte ->
+
+    ps ?= 0
+    forbidPlte ?= false
+    dither = false
+
+    nimg = compress bufs w h ps dither
+    
+    compressPNG nimg -1
+    
+    tabs ?= {}
+    crc = crcLib.crc 
+    
+    wUs = buff p n -> 
+
+        buff[p]   = (n>>8)  & 255   
+        buff[p+1] =  n      & 255
+        
+    wUi = buff p n -> 
+
+        buff[p]   = (n>>24) & 255  
+        buff[p+1] = (n>>16) & 255  
+        buff[p+2] = (n>>8)  & 255  
+        buff[p+3] =  n      & 255
+                       
+    wAs = data p s ->
+        
+        for i in 0...s.length
+            data[p+i] = s.charCodeAt(i)
+    
+    offset = 8 
+    anim = nimg.frames.length>1 
+    pltAlpha = false
+    
+    leng = 8 + (16+5+4) + (anim ? 20 : 0)
+    if tabs["sRGB"]? leng += 8+1+4
+    if tabs["pHYs"]? leng += 8+9+4
+    if tabs["iCCP"]? 
+        cicc = zlib.deflateSync(tabs["iCCP"])  
+        leng += 8 + 11 + 2 + cicc.length + 4
+    if nimg.ctype==3
+        dl = nimg.plte.length
+        for i in 0...dl 
+            if (nimg.plte[i]>>>24) != 255 
+                pltAlpha = true
+        leng += (8 + dl*3 + 4) + (pltAlpha ? (8 + dl*1 + 4) : 0)
+
+    for j in 0...nimg.frames.length
+
+        fr = nimg.frames[j]
+        leng += 38 if anim
+        leng += fr.cimg.length + 12
+        leng+=4 if j!=0 
+
+    leng += 12    
+    data = new Uint8Array(leng)
+    wr = [0x89 0x50 0x4e 0x47 0x0d 0x0a 0x1a 0x0a]
+    for i in 0...8 
+        data[i] = wr[i]
+    
+    wUi(data offset  13);                                   offset+=4
+    wAs(data offset "IHDR");                                offset+=4
+    wUi(data offset w);                                     offset+=4
+    wUi(data offset h);                                     offset+=4
+    data[offset] = nimg.depth;                              offset++
+    data[offset] = nimg.ctype;                              offset++
+    data[offset] = 0;                                       offset++  # compress
+    data[offset] = 0;                                       offset++  # filter
+    data[offset] = 0;                                       offset++  # interlace
+    
+    wUi(data offset crc(data offset-17 17));                offset+=4
+
+    if tabs["sRGB"]? 
+        wUi(data offset  1);                                offset+=4
+        wAs(data offset "sRGB");                            offset+=4
+        data[offset] = tabs["sRGB"];                        offset+=1
+        wUi(data offset crc(data offset-5 5));              offset+=4
+
+    if tabs["iCCP"]?
+        sl = 11+2+cicc.length;
+        wUi(data offset  sl);                               offset+=4
+        wAs(data offset "iCCP");                            offset+=4
+        wAs(data offset "ICC profile");                     offset+=13
+        data.set(cicc offset);                              offset+=cicc.length
+        wUi(data offset crc(data offset-(sl+4) sl+4));      offset+=4
+
+    if tabs["pHYs"]?
+        wUi(data offset  9);                                offset+=4
+        wAs(data offset "pHYs");                            offset+=4
+        wUi(data offset  tabs["pHYs"][0]);                  offset+=4
+        wUi(data offset  tabs["pHYs"][1]);                  offset+=4
+        data[offset]=tabs["pHYs"][2];                       offset+=1
+        wUi(data offset crc(data offset-13 13));            offset+=4
+
+    if anim
+        wUi(data offset 8);                                 offset+=4
+        wAs(data offset "acTL");                            offset+=4
+        wUi(data offset nimg.frames.length);                offset+=4
+        wUi(data offset (tabs["loop"] ? 0));                offset+=4
+        wUi(data offset crc(data offset-12 12));            offset+=4
+
+    if nimg.ctype==3
+        dl = nimg.plte.length
+        wUi(data offset  dl*3);                             offset+=4
+        wAs(data offset "PLTE");                            offset+=4
+        
+        for i in 0...dl
+            ti = i*3
+            c  = nimg.plte[i]
+            r  = (c)&255
+            g  = (c>>>8)&255
+            b  = (c>>>16)&255
+            data[offset+ti+0] = r 
+            data[offset+ti+1] = g  
+            data[offset+ti+2] = b
+
+        offset += dl*3
+        wUi(data offset crc(data offset-dl*3-4 dl*3+4));    offset+=4
+
+        if pltAlpha
+            wUi(data offset  dl);                           offset+=4
+            wAs(data offset "tRNS");                        offset+=4
+            for i in 0...dl  
+                data[offset+i]=(nimg.plte[i]>>>24)&255
+            offset += dl
+            wUi(data offset crc(data offset-dl-4 dl+4));    offset+=4
+            
+    fi = 0
+
+    for j in 0...nimg.frames.length
+
+        fr = nimg.frames[j]
+        if anim
+            wUi(data offset 26);                            offset+=4
+            wAs(data offset "fcTL");                        offset+=4
+            wUi(data offset fi++);                          offset+=4
+            wUi(data offset fr.rect.width );                offset+=4
+            wUi(data offset fr.rect.height);                offset+=4
+            wUi(data offset fr.rect.x);                     offset+=4
+            wUi(data offset fr.rect.y);                     offset+=4
+            wUs(data offset dels[j]);                       offset+=2
+            wUs(data offset   1000);                        offset+=2
+            data[offset] = fr.dispose;                      offset+=1
+            data[offset] = fr.blend;                        offset+=1
+            wUi(data offset crc(data offset-30 30));        offset+=4
+            
+        imgd = fr.cimg 
+        dl = imgd.length
+        wUi(data offset dl+(j==0 ? 0 : 4));                 offset+=4
+        ioff = offset
+        wAs(data offset (j==0 ? "IDAT" : "fdAT"));          offset+=4
+        
+        if j!=0 
+            wUi(data offset fi++);                          offset+=4
+
+        data.set(imgd offset)
+
+        offset += dl
+        wUi(data offset crc(data ioff offset-ioff));        offset+=4
+
+    wUi(data offset  0);                                    offset+=4
+    wAs(data offset "IEND");                                offset+=4
+    wUi(data offset crc(data offset-4 4));                  offset+=4
+
+    data.buffer
+
+compressPNG = out filter levelZero ->
+
+    for i in 0...out.frames.length
+        frm = out.frames[i] 
+        nw  = frm.rect.width
+        nh  = frm.rect.height
+        fdata = new Uint8Array(nh*frm.bpl+nh)
+        frm.cimg = filterZero(frm.img nh frm.bpp frm.bpl fdata filter levelZero)
+
+compress = bufs w h ps dith -> 
+
+    onlyBlend  = false
+    evenCrd    = false
+    forbidPrev = false
+    forbidPlte = false
+    
+    ctype = 6 
+    depth = 8 
+    alphaAnd = 255
+    
+    for j in 0...bufs.length
+        img = new Uint8Array(bufs[j]) 
+        ilen = img.length
+        i = 0
+        while i < ilen 
+            alphaAnd &= img[i+3]
+            i += 4
+
+    gotAlpha = alphaAnd!=255
+    
+    frms = framize bufs w h onlyBlend evenCrd forbidPrev
+    
+    cmap = {}
+    plte = []
+    inds = []
+    
+    if ps!=0
+    
+        nbufs = []  
+        
+        for i in 0...frms.length
+            nbufs.push frms[i].img.buffer
+        
+        abuf = concatRGBA nbufs
+        qres = quantize abuf ps
+
+        for i in 0...qres.plte.length
+            plte.push qres.plte[i].est.rgba
+        
+        cof = 0
+        for i in 0...frms.length
+            frm = frms[i] 
+            bln = frm.img.length
+            ind = new Uint8Array(qres.inds.buffer cof>>2 bln>>2)
+            inds.push ind
+            bb = new Uint8Array(qres.abuf cof bln)
+            
+            if dith
+                dither frm.img frm.rect.width frm.rect.height plte bb ind
+            frm.img.set bb
+            cof += bln
+    else 
+        for j in 0...frms.length
+            frm   = frms[j] 
+            img32 = new Uint32Array(frm.img.buffer)
+            nw    = frm.rect.width
+            ilen  = img32.length
+            ind   = new Uint8Array(ilen)  
+            inds.push ind
+            for i in 0...ilen
+                c = img32[i]
+                if
+                    i != 0 and c == img32[i-1]  ➜ ind[i] = ind[i-1]
+                    i > nw and c == img32[i-nw] ➜ ind[i] = ind[i-nw]
+                    ➜  
+                        cmc = cmap[c]
+                        if cmc == null
+                            cmap[c] = cmc = plte.length  
+                            plte.push c
+                            if plte.length >= 300 
+                                break
+                        ind[i] = cmc
+    
+    cc = plte.length
+    
+    if cc <= 256 and forbidPlte==false
+        if
+            cc<= 2 ➜ depth=1
+            cc<= 4 ➜ depth=2
+            cc<=16 ➜ depth=4
+                   ➜ depth=8
+        depth = max depth 0
+    
+    for j in 0...frms.length
+
+        frm = frms[j]
+        nx = frm.rect.x
+        ny = frm.rect.y
+        nw = frm.rect.width
+        nh = frm.rect.height
+        cimg = frm.img
+        cimg32 = new Uint32Array(cimg.buffer)
+        bpl = 4*nw
+        bpp = 4
+        if cc<=256 and forbidPlte==false
+            bpl = ceil(depth*nw/8)
+            nimg = new Uint8Array(bpl*nh)
+            inj = inds[j]
+            for y in 0...nh
+                i  = y*bpl
+                ii = y*nw
+                if     
+                    depth == 8 ➜ for x in 0...nw ➜ nimg[i+(x)   ]  = (inj[ii+x]             )
+                    depth == 4 ➜ for x in 0...nw ➜ nimg[i+(x>>1)] |= (inj[ii+x]<<(4-(x&1)*4))
+                    depth == 2 ➜ for x in 0...nw ➜ nimg[i+(x>>2)] |= (inj[ii+x]<<(6-(x&3)*2))
+                    depth == 1 ➜ for x in 0...nw ➜ nimg[i+(x>>3)] |= (inj[ii+x]<<(7-(x&7)*1))
+
+            cimg  = nimg  
+            ctype = 3  
+            bpp   = 1
+
+        else if gotAlpha==false and frms.length==1
+            nimg = new Uint8Array(nw*nh*3)
+            area = nw*nh
+            for i in 0...area
+                ti=i*3
+                qi=i*4
+                nimg[ti]   = cimg[qi]
+                nimg[ti+1] = cimg[qi+1]
+                nimg[ti+2] = cimg[qi+2]
+            cimg=nimg  
+            ctype=2
+            bpp=3
+            bpl=3*nw
+
+        frm.img=cimg  
+        frm.bpl=bpl  
+        frm.bpp=bpp
+
+    ctype:  ctype
+    depth:  depth
+    plte:   plte 
+    frames: frms
+
+framize = bufs w h alwaysBlend evenCrd forbidPrev ->
+
+    frms = []
+    for j in 0...bufs.length
+        cimg   = new Uint8Array(bufs[j]) 
+        cimg32 = new Uint32Array(cimg.buffer)
+        
+        nx = ny=0 
+        nw = w 
+        nh = h 
+        blend = alwaysBlend ? 1 : 0
+        if j!=0 
+            tlim = (forbidPrev or alwaysBlend or j==1 or frms[j-2].dispose!=0) ? 1 : 2
+            tstp = 0 
+            tarea = 1e9
+            for it in 0...tlim
+
+                pimg = new Uint8Array(bufs[j-1-it])
+                p32  = new Uint32Array(bufs[j-1-it])
+                mix = w
+                miy = h
+                mx = -1 
+                my = -1
+                for y in 0...h
+                    for x in 0...w 
+                        i = y*w+x
+                        if cimg32[i] != p32[i]
+                            if x<mix ➜ mix=x  
+                            if x>mx  ➜ mx=x
+                            if y<miy ➜ miy=y  
+                            if y>my  ➜ my=y
+
+                if mx==-1 
+                    mix=miy=mx=my=0
+                if evenCrd
+                    if (mix&1)==1 ➜ mix--  
+                    if (miy&1)==1 ➜ miy--
+                sarea = (mx-mix+1)*(my-miy+1)
+                if sarea<tarea
+                    tarea = sarea  
+                    tstp = it
+                    nx = mix 
+                    ny = miy 
+                    nw = mx-mix+1 
+                    nh = my-miy+1
+            
+            pimg = new Uint8Array(bufs[j-1-tstp])
+            if tstp == 1 
+                frms[j-1].dispose = 2
+            
+            nimg = new Uint8Array(nw*nh*4)
+            copyTile pimg w h nimg nw nh -nx -ny 0
+            
+            blend = copyTile(cimg w h nimg nw nh -nx -ny 3) ? 1 : 0
+            if blend == 1
+                prepareDiff cimg w h nimg x:nx y:ny width:nw height:nh
+            else         
+                copyTile cimg w h nimg nw nh -nx -ny 0
+
+        else 
+            nimg = cimg.slice(0)
+        
+        frms.push rect:{x:nx y:ny width:nw height:nh} img:nimg blend:blend dispose:0
+    
+    if alwaysBlend 
+        for j in 0...frms.length
+            frm = frms[j]  
+            if frm.blend == 1 ➜ continue
+            r0 = frm.rect 
+            r1 = frms[j-1].rect
+            miX = min(r0.x r1.x) 
+            miY = min(r0.y r1.y)
+            maX = max(r0.x+r0.width r1.x+r1.width) 
+            maY = max(r0.y+r0.height r1.y+r1.height)
+            r = x:miX y:miY width:maX-miX height:maY-miY
+            
+            frms[j-1].dispose = 1
+            if j-1 != 0
+                updateFrame bufs w h frms j-1 r evenCrd
+                updateFrame bufs w h frms j   r evenCrd
+
+    area = 0
+    if bufs.length != 1
+        for i in 0...frms.length
+            frm = frms[i]
+            area += frm.rect.width*frm.rect.height
+    frms
+
+updateFrame = bufs w h frms i r evenCrd ->
+
+    U8     = Uint8Array 
+    U32    = Uint32Array
+    pimg   = new U8(bufs[i-1]) 
+    pimg32 = new U32(bufs[i-1]) 
+    nimg   = (i+1<bufs.length) ? new U8(bufs[i+1]) : null
+    cimg   = new U8(bufs[i]) 
+    cimg32 = new U32(cimg.buffer)
+    
+    mix = w
+    miy = h
+    mxx = -1
+    mxy = -1
+    for y in 0...r.height
+        for x in 0...r.width
+            cx = r.x+x 
+            cy = r.y+y
+            j  = cy*w+cx 
+            cc = cimg32[j]
+            if cc == 0 or (frms[i-1].dispose==0 and pimg32[j]==cc and (nimg==null or nimg[j*4+3]!=0))
+                true 
+            else
+                if cx<mix ➜ mix=cx  
+                if cx>mxx ➜ mxx=cx
+                if cy<miy ➜ miy=cy  
+                if cy>mxy ➜ mxy=cy
+    
+    if mxx == -1 
+        mix=miy=mxx=mxy=0
+        
+    if evenCrd 
+        if (mix&1)==1 ➜ mix--  
+        if (miy&1)==1 ➜ miy--
+        
+    r = x:mix y:miy width:mxx-mix+1 height:mxy-miy+1
+    
+    fr = frms[i]
+    fr.rect = r  
+    fr.blend = 1  
+    fr.img = new Uint8Array(r.width*r.height*4)
+    if frms[i-1].dispose==0
+        copyTile    pimg w h fr.img r.width r.height -r.x -r.y 0
+        prepareDiff cimg w h fr.img r
+    else
+        copyTile cimg w h fr.img r.width r.height -r.x -r.y 0
+
+prepareDiff = cimg w h nimg rec ->
+
+    copyTile cimg w h nimg rec.width rec.height -rec.x -rec.y 2
+
+filterZero = img h bpp bpl data filter levelZero ->
+
+    fls  = [] 
+    ftry = [0 1 2 3 4]
+    if filter != -1               
+        ftry = [filter]
+    else if h*bpl > 500000 or bpp==1 
+        ftry = [0]
+    if levelZero
+        opts = level:0
+    
+    for i in 0...ftry.length
+        for y in 0...h ➜ filterLine(data img y bpl bpp ftry[i])
+        fls.push zlib.deflateSync(data opts)
+    
+    tsize = 1e9
+    for i in 0...fls.length 
+        if fls[i].length < tsize
+            ti = i
+            tsize = fls[i].length
+    fls[ti]
+
+filterLine = data img y bpl bpp type ->
+
+    i  = y*bpl 
+    di = i+y
+    data[di]=type  
+    di++
+
+    if
+        type==0
+            if bpl < 500
+                for x in 0...bpl ➜  data[di+x] = img[i+x]
+            else 
+                data.set new Uint8Array(img.buffer i bpl) di
+    
+        type==1
+            for x in   0...bpp ➜ data[di+x] =  img[i+x]
+            for x in bpp...bpl ➜ data[di+x] = (img[i+x]-img[i+x-bpp]+256)&255
+
+        y==0
+            for x in   0...bpp ➜ data[di+x] = img[i+x]
+    
+            if type==2 ➜ for x in bpp...bpl ➜ data[di+x] =  img[i+x]
+            if type==3 ➜ for x in bpp...bpl ➜ data[di+x] = (img[i+x] - (img[i+x-bpp]>>1) + 256)&255
+            if type==4 ➜ for x in bpp...bpl ➜ data[di+x] = (img[i+x] - paeth(img[i+x-bpp] 0 0) + 256)&255
+        ➜ 
+            if type==2 ➜ for x in   0...bpl ➜ data[di+x] = (img[i+x]+256 - img[i+x-bpl])&255; 
+            if type==3           
+                         for x in   0...bpp ➜ data[di+x] = (img[i+x]+256 - (img[i+x-bpl]>>1))&255
+                         for x in bpp...bpl ➜ data[di+x] = (img[i+x]+256 - ((img[i+x-bpl]+img[i+x-bpp])>>1))&255
+            if type==4           
+                         for x in   0...bpp ➜ data[di+x] = (img[i+x]+256 - paeth(0 img[i+x-bpl] 0))&255
+                         for x in bpp...bpl ➜ data[di+x] = (img[i+x]+256 - paeth(img[i+x-bpp] img[i+x-bpl] img[i+x-bpp-bpl]))&255
+
+quantize = abuf ps doKmeans ->
+
+    sb   = new Uint8Array(abuf)
+    tb   = sb.slice(0)
+    tb32 = new Uint32Array(tb.buffer)
+    
+    KD    = getKDtree tb ps
+    root  = KD[0]
+    leafs = KD[1]
+    K=leafs.length
+    
+    cl32 = new Uint32Array(K)
+    clr8 = new Uint8Array(cl32.buffer)
+    for i in 0...K
+        cl32[i]=leafs[i].est.rgba
+    
+    len = sb.length
+        
+    inds = new Uint8Array(len>>2)
+    if K <= 60
+        findNearest sb inds clr8
+        remap inds tb32 cl32
+    else if sb.length < 32e6
+        i = 0
+        while i < len
+            r = sb[i]*(1/255)
+            g = sb[i+1]*(1/255)
+            b = sb[i+2]*(1/255)
+            a = sb[i+3]*(1/255)
+            
+            nd = getNearest root r g b a
+            inds[i>>2] = nd.ind  
+            tb32[i>>2] = nd.est.rgba
+            i += 4
+    else 
+        i = 0
+        while i < len
+            r = sb[i]*(1/255)
+            g = sb[i+1]*(1/255)
+            b = sb[i+2]*(1/255)
+            a = sb[i+3]*(1/255)
+            
+            nd = root  
+            while nd.left 
+                nd = (planeDst(nd.est r g b a) <= 0) ? nd.left : nd.right
+            inds[i>>2] = nd.ind  
+            tb32[i>>2] = nd.est.rgba
+            i+=4
+        
+    if doKmeans or sb.length*K < 4e7
+        le = 1e9
+        for i in 0...10
+            ce = kmeans sb inds clr8
+            break if ce / le > 0.997
+            le = ce
+        for i in 0...K
+            leafs[i].est.rgba = cl32[i]
+        remap inds tb32 cl32
+    
+    abuf:tb.buffer inds:inds plte:leafs
+
+remap  = inds tb32 pl32 -> for i in 0...inds.length ➜ tb32[i] = pl32[inds[i]]
+kmeans = sb inds plte ->
+    updatePalette sb inds plte
+    findNearest sb inds plte
+
+updatePalette = sb inds plte ->
+
+    K = plte.length>>>2
+    
+    sums = new Uint32Array(K*4)
+    cnts = new Uint32Array(K)
+    
+    i = 0
+    while i < sb.length
+    
+        ind = inds[i>>>2]
+        qi  = ind*4
+        cnts[ind]++
+        sums[qi  ] += sb[i  ]  
+        sums[qi+1] += sb[i+1]
+        sums[qi+2] += sb[i+2]  
+        sums[qi+3] += sb[i+3]
+        i+=4
+
+    for i in 0...plte.length 
+        plte[i] = round sums[i]/cnts[i>>>2]
+
+findNearest = sb inds plte ->
+
+    terr = 0
+    
+    K = plte.length>>>2
+    
+    nd = []
+    for i in 0...K
+        qi = i*4
+        r  = plte[qi] 
+        g  = plte[qi+1] 
+        b  = plte[qi+2] 
+        a  = plte[qi+3] 
+        ti = 0 
+        te = 1e9
+        for j in 0...K
+            continue if i==j
+            qj=j*4 
+            dr=r-plte[qj] 
+            dg=g-plte[qj+1]
+            db=b-plte[qj+2] 
+            da=a-plte[qj+3]
+            err = dr*dr+dg*dg+db*db+da*da
+            if err < te 
+                te = err  
+                ti = j
+
+        nd[i] = Math.sqrt(te)*0.5  
+        nd[i] = nd[i]*nd[i]
+    
+    i = 0
+    while i < sb.length 
+        r  = sb[i] 
+        g  = sb[i+1] 
+        b  = sb[i+2]  
+        a  = sb[i+3]
+        ti = inds[i>>>2] 
+        qi = ti*4 
+        dr = r-plte[qi] 
+        dg = g-plte[qi+1] 
+        db = b-plte[qi+2] 
+        da = a-plte[qi+3] 
+        te = dr*dr+dg*dg+db*db+da*da
+        if te > nd[ti]
+            for j in 0...K
+                qi = j*4
+                dr = r-plte[qi] 
+                dg = g-plte[qi+1] 
+                db = b-plte[qi+2] 
+                da = a-plte[qi+3]
+                err = dr*dr+dg*dg+db*db+da*da
+                if err < te 
+                    te = err  
+                    ti = j  
+                    break if te < nd[j] 
+        inds[i>>>2] = ti
+        terr += te
+        i += 4
+
+    terr / (sb.length>>>2)
+
+getKDtree = nimg ps err ->
+
+    err ?= 0.0001
+    nimg32 = new Uint32Array(nimg.buffer)
+    
+    root = i0:0 i1:nimg.length bst:null est:null tdst:0 left:null right:null
+    root.bst = stats nimg root.i0 root.i1
+    root.est = estats root.bst
+    leafs = [root]
+    
+    while leafs.length<ps
+
+        maxL = 0 
+        mi   = 0
+        for i in 0...leafs.length
+            if leafs[i].est.L > maxL
+                maxL=leafs[i].est.L
+                mi=i
+        break if maxL < err
+        node = leafs[mi]
+        
+        s0 = splitPixels nimg nimg32 node.i0 node.i1 node.est.e node.est.eMq255
+        s0wrong = node.i0 >= s0 or node.i1 <= s0
+
+        if s0wrong  
+            node.est.L = 0  
+            continue
+        
+        ln = i0:node.i0 i1:s0 bst:null est:null tdst:0 left:null right:null
+        ln.bst = stats nimg ln.i0 ln.i1
+        ln.est = estats ln.bst
+        rn = i0:s0 i1:node.i1 bst:null est:null tdst:0 left:null right:null
+        rn.bst = R:[] m:[] N:node.bst.N-ln.bst.N
+        for i in 0...16 ➜ rn.bst.R[i] = node.bst.R[i]-ln.bst.R[i]
+        for i in 0...4  ➜ rn.bst.m[i] = node.bst.m[i]-ln.bst.m[i]
+        rn.est = estats rn.bst
+        
+        node.left  = ln  
+        node.right = rn
+        leafs[mi]  = ln  
+        leafs.push rn
+
+    leafs.sort (a b) -> b.bst.N - a.bst.N
+    
+    for i in 0...leafs.length 
+        leafs[i].ind = i
+        
+    [root leafs]
+
+getNearest = nd r g b a ->
+
+    if nd.left == null
+        nd.tdst = dist nd.est.q r g b a
+        ⮐  nd
+        
+    pd = planeDst nd.est r g b a
+    
+    node0 = nd.left
+    node1 = nd.right
+    if pd > 0
+        node0 = nd.right 
+        node1 = nd.left
+    
+    ln = getNearest node0 r g b a
+    ⮐  ln if ln.tdst <= pd*pd
+    rn = getNearest node1 r g b a
+    
+    (rn.tdst < ln.tdst) ? rn : ln
+
+planeDst = est r g b a ->  e = est.e; e[0]*r + e[1]*g + e[2]*b + e[3]*a - est.eMq
+dist     = q   r g b a ->  d0=r-q[0]; d1=g-q[1]; d2=b-q[2]; d3=a-q[3]; d0*d0+d1*d1+d2*d2+d3*d3
+
+splitPixels = nimg nimg32 i0 i1 e eMq ->
+
+    i1 -= 4
+    shfs = 0
+    while i0 < i1
+              
+        while vecDot(nimg i0 e) <= eMq ➜ i0 += 4
+        while vecDot(nimg i1 e) >  eMq ➜ i1 -= 4
+        break if i0>=i1
+        
+        t = nimg32[i0>>2]  
+        nimg32[i0>>2] = nimg32[i1>>2]  
+        nimg32[i1>>2] = t
+        
+        i0 += 4
+        i1 -= 4
+
+    while vecDot(nimg i0 e) > eMq ➜ i0 -= 4
+    
+    i0 + 4
+
+vecDot = nimg i e -> nimg[i]*e[0] + nimg[i+1]*e[1] + nimg[i+2]*e[2] + nimg[i+3]*e[3]
+
+stats = nimg i0 i1 ->
+
+    R = [0 0 0 0   0 0 0 0   0 0 0 0   0 0 0 0]
+    m = [0 0 0 0]
+    N = (i1-i0) >> 2
+    i = i0
+    
+    while i < i1 
+
+        r = nimg[i]*(1/255)
+        g = nimg[i+1]*(1/255) 
+        b = nimg[i+2]*(1/255) 
+        a = nimg[i+3]*(1/255)
+        
+        m[0] += r  
+        m[1] += g  
+        m[2] += b  
+        m[3] += a
+        
+        R[ 0] += r*r  
+        R[ 1] += r*g
+        R[ 2] += r*b
+        R[ 3] += r*a  
+        R[ 5] += g*g  
+        R[ 6] += g*b
+        R[ 7] += g*a 
+        R[10] += b*b  
+        R[11] += b*a  
+        R[15] += a*a  
+        
+        i += 4
+
+    R[4]  = R[1]  
+    R[8]  = R[2]  
+    R[9]  = R[6]  
+    R[12] = R[3]  
+    R[13] = R[7]  
+    R[14] = R[11]
+    
+    R:R m:m N:N
+
+estats = stats ->
+
+    R = stats.R 
+    m = stats.m 
+    N = stats.N
+    
+    m0 = m[0] 
+    m1 = m[1] 
+    m2 = m[2] 
+    m3 = m[3] 
+    iN = (N==0 ? 0 : 1/N)
+    Rj = [
+        R[ 0] - m0*m0*iN  R[ 1] - m0*m1*iN  R[ 2] - m0*m2*iN  R[ 3] - m0*m3*iN  
+        R[ 4] - m1*m0*iN  R[ 5] - m1*m1*iN  R[ 6] - m1*m2*iN  R[ 7] - m1*m3*iN
+        R[ 8] - m2*m0*iN  R[ 9] - m2*m1*iN  R[10] - m2*m2*iN  R[11] - m2*m3*iN  
+        R[12] - m3*m0*iN  R[13] - m3*m1*iN  R[14] - m3*m2*iN  R[15] - m3*m3*iN 
+    ]
+    
+    A = Rj 
+    M = M4
+    b = [Math.random() Math.random() Math.random() Math.random()] 
+    mi = tmi = 0
+    
+    if N!=0
+        for i in 0...16
+            b = M.multVec(A b)
+            tmi = Math.sqrt(M.dot(b b))
+            b = M.sml(1/tmi b)
+            break if i!=0 and abs(tmi-mi) < 1e-9
+            mi = tmi
+    q = [m0*iN m1*iN m2*iN m3*iN]
+    eMq255 = M.dot(M.sml(255 q) b)
+    
+    Cov:    Rj
+    q:      q
+    e:      b
+    L:      mi  
+    eMq255: eMq255 
+    eMq :   M.dot(b q)
+    rgba:   (((round(255*q[3])<<24) | (round(255*q[2])<<16) | (round(255*q[1])<<8) | (round(255*q[0])<<0))>>>0)
+
+M4 = 
+    multVec: m v -> [
+            m[ 0]*v[0] + m[ 1]*v[1] + m[ 2]*v[2] + m[ 3]*v[3]
+            m[ 4]*v[0] + m[ 5]*v[1] + m[ 6]*v[2] + m[ 7]*v[3]
+            m[ 8]*v[0] + m[ 9]*v[1] + m[10]*v[2] + m[11]*v[3]
+            m[12]*v[0] + m[13]*v[1] + m[14]*v[2] + m[15]*v[3]
+        ]
+    dot: x y -> x[0]*y[0]+x[1]*y[1]+x[2]*y[2]+x[3]*y[3]
+    sml: a y -> [a*y[0] a*y[1] a*y[2] a*y[3]]
+
+concatRGBA = bufs ->
+
+    tlen = 0
+    for i in 0...bufs.length
+        tlen += bufs[i].byteLength
+    nimg = new Uint8Array(tlen) 
+    noff = 0
+    for i in 0...bufs.length
+        img = new Uint8Array(bufs[i]) 
+        il = img.length
+        j = 0
+        while j < il   
+            r = img[j]
+            g = img[j+1] 
+            b = img[j+2] 
+            a = img[j+3]
+            if a==0 ➜ r=g=b=0
+            nimg[noff+j]=r  
+            nimg[noff+j+1]=g
+            nimg[noff+j+2]=b
+            nimg[noff+j+3]=a
+            j+=4
+        noff += il
+
+    nimg.buffer
+    
+export encode:encode

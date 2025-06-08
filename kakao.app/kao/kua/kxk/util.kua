@@ -1,0 +1,15 @@
+
+class util
+
+    @sessionId: ->
+    
+        now       = os.time()
+        date      = os.date "*t" now
+        yearStart = os.time {year:date.year month:1 day:1}
+        string.format "%08x" now-yearStart
+        
+    @randRange: f t ->
+    
+        f+math.random()*(t-f)
+
+⮐  util

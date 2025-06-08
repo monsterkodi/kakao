@@ -300,6 +300,8 @@ watch = ◇seq[string] paths ->
     
     while true
     
+        loveProc ◇ Process
+        
         kimToTranspile ◇ seq[string]
         kxkToTranspile ◇ seq[string]
         kuaToTranspile ◇ seq[string]
@@ -348,14 +350,23 @@ watch = ◇seq[string] paths ->
                 discard runTests kxkTests
                 
         if kuaChanged
+            love = false
             fail = false
             for f in kuaToTranspile
                 (output exitCode) = execCmdEx "bin/kim -v " & f
                 log output
+                if f.contains "love"
+                    love = true
                 if exitCode != 0
                     fail = true                
-            # if not fail
-            #     discard runTests kxkTests
+            if not fail and love
+                if loveProc 
+                    log "CLOSE"
+                    loveProc.close()
+                (output exitCode) = execCmdEx "killall love"
+                (output exitCode) = execCmdEx "killall love"
+                (output exitCode) = execCmdEx "killall love"
+                loveProc = startProcess "/opt/homebrew/bin/love" cwd() [cwd("../love/lua")]
                 
         if kimChanged
             if stage kimFiles "." "k1m"
@@ -369,5 +380,5 @@ watch = ◇seq[string] paths ->
                         restart()
         sleep 200
         
-watch [cwd("kim") cwd("../kao")]
+watch [cwd("kim") cwd("../kao") cwd("../love")]
                  

@@ -1,0 +1,227 @@
+###
+    ████████  ███████    ███  █████████   ███████   ████████   
+    ███       ███   ███  ███     ███     ███   ███  ███   ███  
+    ███████   ███   ███  ███     ███     ███   ███  ███████    
+    ███       ███   ███  ███     ███     ███   ███  ███   ███  
+    ████████  ███████    ███     ███      ███████   ███   ███  
+
+    configurable text editor
+    used by fileeditor, input and choices
+    basic editing is handled in state
+    complex editing is delegated to mode(s)
+###
+
+# use ../../kxk      ▪ post
+# use ../view/base   ◆ scroll view
+# use ../view/editor ◆ gutter mapview
+# use ./tool         ◆ belt
+# use                ◆ state draw complete mode
+use edit.draw
+use edit.state
+use edit.mode
+use view.base.scroll
+use view.editor.gutter
+
+class editor extends draw
+
+    @: screen name features ->
+        
+        # super screen name features
+        
+        draw.init @ screen name features
+        
+        @screen = screen
+        @name = name
+        
+        @focusable = true
+        
+        @state = state @cells @name
+        
+        post∙on 'focus' @onFocus @
+        
+        use edit.complete
+                
+        if @feats.scrllr   ➜ @scroll   = scroll   @screen @state 'right'
+        if @feats.scroll   ➜ @scroll   = scroll   @screen @state 'left'
+        if @feats.mapview  ➜ @mapscr   = mapview  @screen @state
+        if @feats.gutter   ➜ @gutter   = gutter   @
+        if @feats.complete ➜ @complete = complete @
+            
+        mode.autoStartForEditor @
+        
+        post∙on 'modes.loaded' @onModesLoaded @
+        @onModesLoaded()
+        
+    onModesLoaded: ->
+                        
+        for m in mode.names()∙each()
+            if @feats[m] 
+                @state.allowedModes[m] = true
+            
+    # 000       0000000   000   000   0000000   000   000  000000000  
+    # 000      000   000   000 000   000   000  000   000     000     
+    # 000      000000000    00000    000   000  000   000     000     
+    # 000      000   000     000     000   000  000   000     000     
+    # 0000000  000   000     000      0000000    0000000      000     
+    
+    layout: x y w h ->
+        
+        g = 0
+        m = 0
+        s = 0
+        sl = 0
+        sr = 0
+        
+        if @scroll
+            s = 1
+            if @feats.scrllr
+                sr = s
+                @scroll∙layout x+w-sr y   s   h 
+            else
+                sl = s
+                @scroll∙layout x      y   s   h 
+            
+        if @gutter
+
+            g = @state∙gutterWidth()
+            @gutter∙layout    x+sl    y   g   h
+            
+        if @mapscr
+            if @name == 'editor'
+                mw = math.min(12 math.floor(w/10))
+            else
+                mw = 12
+            m = if @mapscr.visible() ➜ mw ➜ 0
+            @mapscr∙layout x+w-sr-m  y  mw   h
+            
+        @cells∙layout x+sl+g  y   w-s-g-m    h
+        
+        if @complete
+            @complete∙onEditorLayout()
+        
+        @state∙initView()
+                
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+        
+        # super event
+        
+        ret = @gutter.onMouse(event)   ; ⮐  ret if ret.redraw
+        ret = @mapscr.onMouse(event)   ; ⮐  ret if ret.redraw
+        ret = @scroll.onMouse(event)   ; ⮐  ret if ret.redraw
+        ret = @complete.onMouse(event) ; ⮐  ret if ret.redraw
+                        
+        false
+                
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event ->
+        
+        ⮐  if event.cell[1] >= @cells.y + @cells.rows
+                
+        inside = @cells.isInsideEvent(event)
+        inside = inside or @scroll.cells.isInsideEvent(event)
+        inside = inside or @gutter.cells.isInsideEvent(event)
+        inside = inside or @mapscr.cells.isInsideEvent(event)
+        
+        ⮐  if not inside
+
+        if @complete
+            res = @complete.onWheel(event)
+            if res
+                ⮐  res
+                
+        steps  = 1 # should be 4 if not using a mouse pad -> config
+        if event.shift ➜ steps *= 2 
+        if event.ctrl ➜ steps *= 2 
+        if event.alt ➜ steps *= 2 
+
+        switch event.dir
+            'up' 'down' 'left' 'right' ➜ @state.scrollView(event.dir steps) 
+            
+        {redraw:true}
+            
+    #  0000000  000   000  00000000    0000000   0000000   00000000   
+    # 000       000   000  000   000  000       000   000  000   000  
+    # 000       000   000  0000000    0000000   000   000  0000000    
+    # 000       000   000  000   000       000  000   000  000   000  
+    #  0000000   0000000   000   000  0000000    0000000   000   000  
+            
+    isCursorInEmpty: cursor ->
+        
+        cursor ?= @state.mainCursor()
+        
+        belt.isLinesPosOutside @state.s.lines cursor
+        
+    isCursorVisible: cursor ->
+        
+        cursor ?= @state∙mainCursor()
+                
+        v = @state.s.view
+        
+        v[0] <= cursor[0] < v[0] + @cells.cols and v[1] <= cursor[1] < v[1] + @cells.rows
+        
+    # 00000000   0000000    0000000  000   000   0000000  
+    # 000       000   000  000       000   000  000       
+    # 000000    000   000  000       000   000  0000000   
+    # 000       000   000  000       000   000       000  
+    # 000        0000000    0000000   0000000   0000000   
+    
+    grabFocus: ->
+    
+        @show() if @hidden()
+        post∙emit 'focus' @name
+        @redraw()
+        
+    hasFocus: ->
+        
+        @state.hasFocus
+        
+    onFocus: name ->
+        
+        @state.hasFocus = (name == @name)
+        
+    # 00000000   00000000  0000000    00000000    0000000   000   000  
+    # 000   000  000       000   000  000   000  000   000  000 0 000  
+    # 0000000    0000000   000   000  0000000    000000000  000000000  
+    # 000   000  000       000   000  000   000  000   000  000   000  
+    # 000   000  00000000  0000000    000   000  000   000  00     00  
+    
+    redraw: -> post∙emit 'redraw'
+                    
+    # 000   000  00000000  000   000  
+    # 000  000   000        000 000   
+    # 0000000    0000000     00000    
+    # 000  000   000          000     
+    # 000   000  00000000     000     
+    
+    onKey: key event ->
+        
+        ⮐  if not @hasFocus()
+        
+        if @complete
+            ⮐  true if @complete.handleKey(key event) != 'unhandled'
+
+        if @state.handleKey(key event) != 'unhandled'
+            @complete.hide()
+            ⮐  true
+        
+        if valid event.char
+            @state.insert event.char
+            @complete.complete()
+            ⮐  true
+        else
+            splt = kstr.split key "+"
+            if not ['shift' 'ctrl' 'alt' 'cmd']∙has splt[^1]
+                log "editor.onKey? |#{key}|" event 
+
+⮐  editor

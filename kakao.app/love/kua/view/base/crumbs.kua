@@ -1,0 +1,209 @@
+###
+     0000000  00000000   000   000  00     00  0000000     0000000  
+    000       000   000  000   000  000   000  000   000  000       
+    000       0000000    000   000  000000000  0000000    0000000   
+    000       000   000  000   000  000 0 000  000   000       000  
+     0000000  000   000   0000000   000   000  0000000    0000000   
+
+    clickable sequence of path segments with half-circles inbetween 
+    used in the status, dircol, browse and searcher file headings
+###
+
+# use ../../../kxk ▪ slash post
+# use ../../theme  ◆ color theme
+# use              ◆ view
+
+use view.base.view
+
+class crumbs extends view
+
+    @: screen name ->
+
+        view.init @ screen name
+        
+        @pointerType = 'pointer'
+        @rounded = ''
+        
+        @setColor 'hover'       theme.hover.bg
+        @setColor 'bg'          theme.crumbs.bg
+        @setColor 'fg'          theme.crumbs.fg
+        @setColor 'empty'       theme.editor.bg
+        
+    setColor: key color ->
+        
+        switch key
+            'empty' 
+                @setColor 'empty_left'  color
+                @setColor 'empty_right' color
+        
+        view.setColor @ key color
+        
+    layout: x y w h ->
+    
+        view.layout @ x y w h  
+        
+        @adjustText()
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: ->
+        
+        ⮐  if @hidden()
+        ⮐  if empty @rounded
+            
+        colors = []
+        for i in 0...@split.length
+            if i == @hoverIndex
+                colors.push @color.hover
+            else
+                colors.push color.darken(@color.bg 0.4+0.6*(i+1)/@split.length)
+        
+        for x in 0...@rounded.length 
+            
+            si = @splitIndexAtCol x
+            bg = colors[si]
+            ch = @rounded[x]
+            
+            if ch == '' or ch == ''
+                fg = bg
+                bg = if si > 0 ➜ colors[si-1] ➜ @color.empty_left
+                if x == @rounded.length-1
+                    bg = @color.empty_right 
+                @cells.set x 0 ch fg bg
+            else
+                if si == @hoverIndex
+                    fg = color.adjustForBackground @color.fg bg 
+                elif si < @split.length-1
+                    fg = color.darken(@color.fg, math.min(1, (si+3)/@split.length))
+                else
+                    fg = color.brighten @color.fg
+                
+                @cells.set x 0 ch fg bg 
+                
+    #  0000000  00000000   000      000  000000000  000  000   000  0000000    00000000  000   000  
+    # 000       000   000  000      000     000     000  0000  000  000   000  000        000 000   
+    # 0000000   00000000   000      000     000     000  000 0 000  000   000  0000000     00000    
+    #      000  000        000      000     000     000  000  0000  000   000  000        000 000   
+    # 0000000   000        0000000  000     000     000  000   000  0000000    00000000  000   000  
+    
+    splitIndexAtCol: col ->
+
+        sl = 0
+        for si in 0...@split.length
+            sl += @split[si].length + 2
+            if sl > col
+                ⮐  si
+        @split.length-1
+        
+    colsAtSplitIndex: idx ->
+    
+        si = ei = 0
+        
+        for i in 0..idx
+            if i < idx
+                si += @split[i].length + 2
+            ei += @split[i].length + 2
+    
+        [si ei]
+        
+    pathAtSplitIndex: idx ->
+    
+        path = slash.path unpack(@split.slice(1, idx))
+        path = slash.path @root path
+        if path[1] != "~" and path[1] != "/"
+            path = '/' & path 
+        path
+        
+    #  0000000   0000000          000  000   000   0000000  000000000  
+    # 000   000  000   000        000  000   000  000          000     
+    # 000000000  000   000        000  000   000  0000000      000     
+    # 000   000  000   000  000   000  000   000       000     000     
+    # 000   000  0000000     0000000    0000000   0000000      000     
+    
+    adjustText: ->
+        
+        ⮐  if @hidden()
+    
+        @path ?= ''
+        
+        if @path == ''
+            @rounded = ''
+            ⮐  
+                                  
+        @split = slash.split @path
+        
+        if not @dotlessRelative
+            if kstr.find("~/." @split[0]) < 0
+                @split.unshift('/') 
+        
+        @root = []
+        
+        @rounded = @split.join ' '
+        
+        while @split.length > 1 and @rounded.length > @cells.cols-2
+            @root.push @split.shift()
+            @rounded = @split.join ' '
+            
+        @root = @root.join '/'
+        
+        padding = if @padLast ➜ kstr.lpad(@cells.cols-2-@rounded.length) ➜ ''
+        
+        @rounded = '' & @rounded & padding & ''
+            
+    set: path ->
+    
+        @cells.rows = 1 # 𝜏𝖍𝚒𝖘 s⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾
+        @path = trim path
+        @adjustText()
+        
+    show: path -> @set slash.tilde(path)
+    visible: -> @cells.rows > 0 
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+
+    onMouseLeave: event ->
+     
+        index = @hoverIndex
+        @emit 'action' 'leave' @pathAtSplitIndex(index) {index:index cols:@colsAtSplitIndex(index)}
+
+    onMouse: event ->
+        
+        (col row) = @eventPos event
+        
+        # super event
+        
+        if not @hover
+            if @hoverIndex
+                @hoverIndex = nil
+                ⮐  true
+            ⮐ 
+
+        switch event.type
+            
+            'press' 
+                
+                si = @splitIndexAtCol col
+                if 0 <= @hoverIndex < @split.length
+                    path = @pathAtSplitIndex @hoverIndex
+                    @emit 'action' 'click' path event
+                ⮐  {redraw:true}
+                
+            'move'
+            
+                index = @splitIndexAtCol col
+                if @hoverIndex != index
+                    @hoverIndex = index
+                    @emit 'action' 'enter' @pathAtSplitIndex(index) {index:index cols:@colsAtSplitIndex(index)}
+                    ⮐  {redraw:true}
+
+        @hover
+                    
+⮐  crumbs

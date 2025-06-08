@@ -1,0 +1,88 @@
+###
+    000   000  000   000   0000000   0000000  
+    000  000   0000  000  000   000  000   000
+    0000000    000 0 000  000   000  0000000  
+    000  000   000  0000  000   000  000   000
+    000   000  000   000   0000000   0000000  
+
+    handles view resizing
+    used by dircol and funcol
+###
+
+use ../../../kxk ▪ post
+use ../../theme  ◆ theme
+use              ◆ view
+
+function knob extends view
+
+    @: screen name ->
+        
+        super screen name
+        
+        @setColor 'fg' theme.knob.fg
+        @setColor 'bg' theme.knob.bg
+        
+        @parentName  = @name[0...-5]
+        @frameSide   = 'right'
+        @maxWidth    = 68
+        @pointerType = 'ew-resize'
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event =>
+        
+        super event
+        
+        switch event.type
+            
+            'press'
+            
+                if @hover
+                    post.emit 'pointer' 'grabbing'
+                    @doDrag = true
+                    ⮐  redraw:true
+                    
+            'drag'
+            
+                if @doDrag
+                    @hover = true
+                    
+                    [col row] = @eventPos event
+                    
+                    delta = switch @frameSide
+                        'left'  ➜ -col
+                        'right' ➜ col
+                    
+                    post.emit 'pointer' 'grabbing'
+                    if delta
+                        post.emit 'view.size' @parentName @frameSide delta
+                        
+                    ⮐  redraw:true
+                    
+                @hover = false
+                
+            'release'
+            
+                if @doDrag
+                    post.emit 'pointer' @pointerType if @hover
+                    delete @doDrag
+                    ⮐  redraw:true
+        @hover
+            
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: =>
+    
+        ⮐  if not @hover
+        
+        @cells.fill_col 0 0 @cells.rows-1 '|' @color.fg @color.bg
+
+export knob

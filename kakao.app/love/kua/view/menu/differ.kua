@@ -1,0 +1,360 @@
+###
+    0000000    000  00000000  00000000  00000000  00000000   
+    000   000  000  000       000       000       000   000  
+    000   000  000  000000    000000    0000000   0000000    
+    000   000  000  000       000       000       000   000  
+    0000000    000  000       000       00000000  000   000  
+
+    displays git diffs
+###
+
+use ../../../kxk    ▪ post kseg slash
+use ../../../kxk    ◆ nfs
+use ../../edit/tool ◆ belt
+use ../../index     ◆ prjcts
+use ../../util      ◆ git fileutil
+use ../base         ◆ view
+use                 ◆ searcher searcherfile
+
+class differ extends searcher
+
+    @: @screen @editor ->
+    
+        super @screen @editor 'differ'
+        
+        @symbol = 
+            changed: '●'
+            added:   '✔'
+            deleted: '✘'
+            renamed: '➜'
+            
+        @symbolColors =
+            '✘': [155 0 0] 
+            '✔': [0 200 0] 
+            '●': [50 50 50] 
+            '➜': [150 150 250] 
+        
+        @choices.gutter.fgcolor = (x y c) -> 
+            if y == @choices.currentIndex()
+                [255 255 0]
+            else
+                @symbolColors[c]
+        
+        post.on 'differ.status'  @status
+        post.on 'differ.file'    @file
+        post.on 'differ.history' @history
+                
+    onFileLoaded: file ->
+    
+    #  0000000  000   000   0000000   000   000  
+    # 000       000   000  000   000  000 0 000  
+    # 0000000   000000000  000   000  000000000  
+    #      000  000   000  000   000  000   000  
+    # 0000000   000   000   0000000   00     00  
+    
+    show: ->
+        
+        view.prototype.show.call @
+        
+        @input.grabFocus()
+        @choices.clearEmpty()        
+        @sfils = []
+        redraw:true
+                
+    # ███████    ███  ████████  ████████
+    # ███   ███  ███  ███       ███     
+    # ███   ███  ███  ██████    ██████  
+    # ███   ███  ███  ███       ███     
+    # ███████    ███  ███       ███     
+
+    diff: diff ->
+    
+        file = diff.file
+        ext  = slash.ext file
+        
+        items = []
+            
+        for change in diff.changes
+        
+            if empty change.add and empty change.mod
+                continue # skip when only deleted
+        
+            modded = change.mod or []
+            added  = change.add or []
+            modadd = modded.concat added
+            if empty modadd.filter((m) -> valid trim(m.new))
+                continue
+        
+            items.push line:''
+            
+            for add,li in change.add
+                if valid trim add.new
+                    items.push
+                        line:  ' ' + add.new
+                        path:  file
+                        row:   change.line+li-1
+                        col:   0
+                    
+            for add,li in change.mod
+                if valid trim add.new
+                    items.push
+                        line:  ' ' + add.new
+                        path:  file
+                        row:   change.line+li-1
+                        col:   0
+                    
+        items.push line:'' 
+
+        @choices.append items ext
+        @input.grabFocus()
+        post.emit 'redraw'
+
+    # ████████  ███  ███      ████████
+    # ███       ███  ███      ███     
+    # ██████    ███  ███      ███████ 
+    # ███       ███  ███      ███     
+    # ███       ███  ███████  ████████
+
+    file: ○->
+    
+        currentFile = ked_session.get 'editor▸file'
+        diff =○ git.diff currentFile
+                       
+        if valid diff
+            @show()
+            @diff diff
+            
+    #  ███████  █████████   ███████   █████████  ███   ███   ███████
+    # ███          ███     ███   ███     ███     ███   ███  ███     
+    # ███████      ███     █████████     ███     ███   ███  ███████ 
+    #      ███     ███     ███   ███     ███     ███   ███       ███
+    # ███████      ███     ███   ███     ███      ███████   ███████ 
+
+    status: -> 
+    
+        @show()        
+    
+        currentFile = ked_session.get 'editor▸file'
+        status =○ git.status currentFile
+
+        ⮐  @hide() if empty status
+        ⮐  @hide() if empty status.gitDir
+        
+        @input.set '▸'
+        @input.state.moveCursors 'eol'
+        
+        fileHeader = change file status ->
+
+            symbol = @symbol[change]
+
+            path = slash.relative file status.gitDir
+                
+            sfil = new searcherfile @screen "#{@name}_sfil_#{@sfils.length}"
+            sfil.lineIndex = @choices.items.length#+1
+            sfil.set path
+            @sfils.push sfil
+            
+            @choices.append [
+                line:   symbol
+                type:  'file'
+                path:  file
+                row:   0
+                col:   0
+                ]
+    
+        noCounterpart = file ->
+        
+            cpt = 
+                js:  'kode'
+                pug: 'html'
+                css: 'styl'
+            
+            if ext = cpt[slash.ext file]
+                counter = slash.swapExt file ext
+                ⮐  if status.files[counter]
+                counter = fileutil.swapLastDir counter slash.ext(file) ext 
+                ⮐  if status.files[counter]
+            true
+    
+        for file in status.deleted
+
+            fileHeader 'deleted' file status
+
+        for file in status.added
+
+            if noCounterpart(file)
+            
+                fileHeader 'added' file status
+            
+                text  = nfs.read file
+                lines = belt.linesForText text
+                newl  = lines.map (l) -> new:l
+                diff  = file:file changes:[line:1 add:newl]
+                @diff diff
+
+        for file in status.changed
+            
+            if noCounterpart(file)
+            
+                fileHeader 'changed' file status
+                
+                diff = git.diff file
+                
+                if @hidden()
+                    log 'hidden?'
+                
+                @diff diff if valid diff
+
+    #  ███████   ███████   ██     ██  ██     ██  ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ███     ███   
+
+    commit: msg ->
+    
+        currentFile = ked_session.get 'editor▸file'
+        gitDir = git.dir currentFile
+        
+        ⮐  if empty gitDir
+        
+        @hide()
+        post.emit 'focus' 'editor'
+        
+        out = ''
+        out += git.exec "add ."                cwd:gitDir       
+        out += git.exec "commit -m \"#{msg}\"" cwd:gitDir
+        out += git.exec "push -q"              cwd:gitDir
+
+        log r4("differ.commit\n#{b7 out}")
+        
+        post.emit 'git.commit'
+        post.emit 'redraw'
+                        
+    # ███   ███  ███   ███████  █████████   ███████   ████████   ███   ███
+    # ███   ███  ███  ███          ███     ███   ███  ███   ███   ███ ███ 
+    # █████████  ███  ███████      ███     ███   ███  ███████      █████  
+    # ███   ███  ███       ███     ███     ███   ███  ███   ███     ███   
+    # ███   ███  ███  ███████      ███      ███████   ███   ███     ███   
+
+    history: ->
+        
+        history = git.history()
+
+        ⮐  if empty history
+        
+        @show()
+        
+        currentFile = ked_session.get 'editor▸file'
+        gitDir = git.dir currentFile
+        
+        items = []
+        for h in history 
+            items.push 
+                line:   ' ● ' + h.msg
+                commit: h.commit
+
+            for f in h.files
+                
+                symbol = switch f.type[0]
+                    'D' ➜ @symbol.deleted
+                    'A' ➜ @symbol.added
+                    'R' ➜ @symbol.renamed
+                    'M' ➜ @symbol.changed
+                        ➜ '◆'
+            
+                items.push
+                    line:  '      ' + symbol + ' ' + f.path
+                    path:   slash.path(gitDir f.path)
+                    commit: h.commit
+        
+        @choices.append items
+        post.emit 'redraw'
+        
+    # ████████    ███████   █████████   ███████  ███   ███
+    # ███   ███  ███   ███     ███     ███       ███   ███
+    # ████████   █████████     ███     ███       █████████
+    # ███        ███   ███     ███     ███       ███   ███
+    # ███        ███   ███     ███      ███████  ███   ███
+
+    patch: rev ->
+    
+        patch = git.patch rev
+        
+        ⮐  if empty patch
+        
+        # log "rev #{rev}" patch
+        
+        currentFile = ked_session.get 'editor▸file'
+        gitDir = git.dir currentFile
+        
+        items = []
+        
+        for p in patch
+        
+            file = slash.path gitDir p.tgtfile[2..^1]
+        
+            # log "file #{file}"
+        
+            items.push 
+                line:   ' ● ' + p.tgtfile[2..^1]
+                path:   file
+                
+            if p.changes is arr
+                for c in p.changes
+                    for l in c.changedlines
+                        items.push
+                            line:   l.type + ' ' + l.line
+                            path:   file
+
+        @choices.set items 'line'
+        post.emit 'redraw'
+    
+    # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
+    # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
+    # ███████   █████████  ███     ███           ██████    ███  ███      ███████         ███   ███  ████████   ███████   ███ █ ███
+    # ███       ███ █ ███  ███     ███           ███       ███  ███      ███             ███   ███  ███        ███       ███  ████
+    # ████████  ███   ███  ███     ███           ███       ███  ███████  ████████         ███████   ███        ████████  ███   ███
+
+
+    emitFileOpen: choice ->
+    
+        post.emit 'file.open' choice.path choice.row choice.col
+        
+        @hide()
+    
+    #  0000000   00000000   00000000   000      000   000  
+    # 000   000  000   000  000   000  000       000 000   
+    # 000000000  00000000   00000000   000        00000    
+    # 000   000  000        000        000         000     
+    # 000   000  000        000        0000000     000     
+        
+    apply: choice ->
+    
+        if valid choice
+        
+            ⮐  @emitFileOpen(choice) if choice.path
+            ⮐  @patch(choice.commit) if choice.commit
+        
+        log "differ.apply?" choice
+        
+        super choice
+                                            
+    # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
+    # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
+    # ███  ███ █ ███  ████████   ███   ███     ███         █████████  ███          ███     ███  ███   ███  ███ █ ███
+    # ███  ███  ████  ███        ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ███  ████
+    # ███  ███   ███  ███         ███████      ███         ███   ███   ███████     ███     ███   ███████   ███   ███
+
+    onInputAction: action text ->
+    
+        switch action
+
+            'submit' 
+                if valid text and text.startsWith '▸'
+                    @commit text[1..^1]
+                    ⮐  
+            
+        super action text
+
+export differ

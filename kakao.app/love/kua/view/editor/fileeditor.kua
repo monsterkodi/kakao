@@ -1,0 +1,382 @@
+###
+00000000  000  000      00000000  00000000  0000000    000  000000000   0000000   00000000 
+000       000  000      000       000       000   000  000     000     000   000  000   000
+000000    000  000      0000000   0000000   000   000  000     000     000   000  0000000  
+000       000  000      000       000       000   000  000     000     000   000  000   000
+000       000  0000000  00000000  00000000  0000000    000     000      0000000   000   000
+###
+
+# use ../../../kxk    ▪ post kstr slash
+# use ../../../kxk    ◆ nfs
+# use ../../edit/tool ◆ belt
+# use ../../edit      ◆ editor 
+# use ../../util      ◆ fileutil
+# use ../../index     ◆ indexer
+# use ../base         ◆ view 
+# use ../menu         ◆ context
+# use                 ◆ mapscr 
+use edit.editor
+
+class fileeditor extends editor
+
+    @: screen name ->
+        
+        features = [
+            'scroll'
+            'gutter' 
+            'mapscr' 
+            'complete' 
+            'filepos'
+            'replex' 
+            'brckts' 
+            'unype'
+            'salter' 
+            'vimple' 
+            'uniko' 
+            ]
+        
+        editor.init @ screen name features
+        # super screen name features
+        
+        # if @feats.mapscr
+        #     @mapscr = mapscr @
+        #     @mapscr.show()
+        
+        post∙on 'editor.highlight' @state.highlightText @state
+        post∙on 'goto.line'        @onGotoLine          @
+        post∙on 'goto.bof'         @onGotoBof           @
+        post∙on 'goto.eof'         @onGotoEof           @
+        post∙on 'goto.func'        @onGotoFunc          @
+        post∙on 'git.diff'         @onGitDiff           @
+        post∙on 'git.commit'       @onGitCommit         @
+        
+        post∙on 'funtree.loaded'   @onFuntreeLoaded     @
+        
+    setCurrentFile: currentFile ->
+    
+        @currentFile = currentFile
+        @cells.meta_clear()
+        @gutter.clearChanges()
+        
+    onFuntreeLoaded: ->
+        
+        if valid @gotoFuncOnLoad
+            @onGotoFunc @gotoFuncOnLoad
+            delete @gotoFuncOnLoad
+
+    onGitCommit: ->
+    
+        @gutter.clearChanges()
+        
+    #  ███████   ███  █████████     ███████    ███  ████████  ████████
+    # ███        ███     ███        ███   ███  ███  ███       ███     
+    # ███  ████  ███     ███        ███   ███  ███  ██████    ██████  
+    # ███   ███  ███     ███        ███   ███  ███  ███       ███     
+    #  ███████   ███     ███        ███████    ███  ███       ███     
+
+    onGitDiff: diff ->
+    
+        currentFile = ked_session.get 'editor▸file'
+        if diff.file == currentFile
+            @gutter.onGitDiff diff
+            
+    ###        
+     ███████    ███████   █████████   ███████         ███      ███  ███   ███  ████████  
+    ███        ███   ███     ███     ███   ███        ███      ███  ████  ███  ███       
+    ███  ████  ███   ███     ███     ███   ███        ███      ███  ███ █ ███  ███████   
+    ███   ███  ███   ███     ███     ███   ███        ███      ███  ███  ████  ███       
+     ███████    ███████      ███      ███████         ███████  ███  ███   ███  ████████  
+    
+    sets the main cursor:
+        ◆ row       zero based line index to move the main cursor to
+        ◆ col       optional column for the main cursor
+        ◆ view      optional view offset
+    ###
+        
+    onGotoLine: row col view ->
+        
+        mc = @state.mainCursor()
+        
+        col ?= mc[0]
+        if col is str
+            switch col
+                'ind' ➜ col = belt.numIndent @state.s.lines[row]
+        
+        if valid(view) and view is array
+            @state.setView view
+            @state.setCursors [[col row]]
+        else
+            adjust = view or 'topBotDeltaGrow'
+            @state.setCursors [[col row]] {adjust:adjust}
+            
+    onGotoBof: -> @state.moveCursors 'bof'
+    onGotoEof: -> @state.moveCursors 'eof'
+    
+    onGotoFunc: func -> 
+        li = @funtree.lineIndexForFunc(func)
+        if li
+            @onGotoLine li 'ind' 'topDelta'
+            
+    #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
+    # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
+    # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   
+    # ███       ███   ███  ███  ████     ███     ███        ███ ███      ███   
+    #  ███████   ███████   ███   ███     ███     ████████  ███   ███     ███   
+
+    onContext: event ->
+    
+        word = @state.textOfSelectionOrWordAtCursor()
+        if valid word ➜ word = " '#{word}'"
+        context.show event.cell @onContextChoice [
+            "search#{word}" 
+            "find#{word}"
+            'status'
+            ]
+                
+    onContextChoice: choice ->
+
+        if choice.startsWith 'search'
+            post∙emit 'searcher.show' kstr.trim(string.sub(choice 7 -2) " '")
+        elif choice.startsWith 'find'
+            post∙emit 'finder.show' kstr.trim(string.sub(choice 5 -2) " '")
+        else
+            switch choice
+                'status' ➜ post∙emit 'differ.status'
+                
+    #       ███  ███   ███  ██     ██  ████████         █████████   ███████         ███   ███   ███████   ████████   ███████  
+    #       ███  ███   ███  ███   ███  ███   ███           ███     ███   ███        ███ █ ███  ███   ███  ███   ███  ███   ███
+    #       ███  ███   ███  █████████  ████████            ███     ███   ███        █████████  ███   ███  ███████    ███   ███
+    # ███   ███  ███   ███  ███ █ ███  ███                 ███     ███   ███        ███   ███  ███   ███  ███   ███  ███   ███
+    #  ███████    ███████   ███   ███  ███                 ███      ███████         ██     ██   ███████   ███   ███  ███████  
+
+    jumpToWord: word ->
+    
+        # log "fileeditor.jumpToWord '#{word}'"
+        # log 'fileeditor.jumpToWord classes' Object.keys(indexer.singleton.classes)
+        # log 'fileeditor.jumpToWord funcs'   Object.keys(indexer.singleton.funcs)
+        
+        clss = indexer.singleton.classes[word]
+        if clss
+            post∙emit 'file.open' clss.file clss.line-1
+            ⮐  true
+        elif indexer.singleton.funcs[word]
+            fnc = indexer.singleton.funcs[word]
+            if fnc is array
+                currentFile = ked_session.get 'editor▸file'
+                for fun,idx in fnc
+                    if fun.file == currentFile
+                        fnc = fnc[(idx+1) % fnc.length]
+                        break
+                if fnc is array
+                    fnc = fnc[0]
+            if valid fnc.file
+                post∙emit 'file.open' fnc.file fnc.line-1 'ind'
+                ⮐  true
+        else 
+            log "fileeditor.jumpToWord(#{word}) nothing found to jump to"
+        false
+            
+    singleCursorAtLine: li ->
+    
+        ⮐  if empty li
+    
+        @state.setCursors [[0 li]] {main:'ind' adjust:'topBotDelta'}
+        
+        post∙emit 'redraw'
+            
+    #  ███████   ███████   ███   ███  ███   ███  █████████  ████████  ████████   ████████    ███████   ████████   █████████
+    # ███       ███   ███  ███   ███  ████  ███     ███     ███       ███   ███  ███   ███  ███   ███  ███   ███     ███   
+    # ███       ███   ███  ███   ███  ███ █ ███     ███     ███████   ███████    ████████   █████████  ███████       ███   
+    # ███       ███   ███  ███   ███  ███  ████     ███     ███       ███   ███  ███        ███   ███  ███   ███     ███   
+    #  ███████   ███████    ███████   ███   ███     ███     ████████  ███   ███  ███        ███   ███  ███   ███     ███   
+
+    jumpToCounterpart: ->
+            
+        currentFile = ked_session.get 'editor▸file'
+        currext = slash.ext currentFile
+        
+        for ext in fileutil.counterparts[currext] or []
+            
+            if nfs.fileExists slash.swapExt(currentFile, ext)
+                @gotoFuncOnLoad = @funtree.current()
+                post∙emit 'file.open' slash.swapExt(currentFile, ext)
+                ⮐ 
+
+        for ext in fileutil.counterparts[currext] or []
+            
+            counter = slash.swapExt currentFile ext
+            file = fileutil.swapLastDir counter currext ext
+            
+            if nfs.fileExists file
+                @gotoFuncOnLoad = @funtree.current()
+                post∙emit 'file.open' file
+                ⮐ 
+
+        for ext in fileutil.counterparts[currext] or []
+            
+            counter = slash.swapExt currentFile, ext
+            
+            if currext == 'noon'
+
+                file = fileutil.swapLastDir counter 'kode' 'js'
+                if nfs.fileExists file
+                    post∙emit 'file.open' file
+                    ⮐
+                    
+            if currext == 'json'
+                
+                file = fileutil.swapLastDir counter 'js' 'kode'
+                if nfs.fileExists file
+                    post∙emit 'file.open' file
+                    ⮐ 
+
+        log 'cant find counterpart' currentFile
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+    
+        ret = super event 
+        if ret.redraw
+            ⮐  ret 
+        
+        if not (@dragStart or @cells.isInsideEvent(event) or (@gutter.cells.isInsideEvent(event)))
+            ⮐  @hover 
+        
+        (col row) = @eventPos event
+        
+        switch event.type
+            
+            'press'
+            
+                if event.count > 1
+
+                    @state.deselect() if not event.shift and event.button=='left'
+                    
+                    x = col + @state.s.view[0]
+                    y = row + @state.s.view[1]
+                    
+                    @state.clearHighlights()
+                    
+                    if event.count == 2
+                        if event.alt
+                            @state.selectChunk x y
+                        else
+                            @state.selectWord x y
+                    else
+                        @state.selectLine y
+                        
+                    @state.highlightSelection()
+                        
+                    @dragStart = copy @state.s.selections[0]
+                    
+                    ⮐  {redraw:true}
+                    
+                else
+                    
+                    x = col + @state.s.view[0]
+                    y = row + @state.s.view[1]
+                    
+                    if event.cmd or event.ctrl
+                        word = belt.wordAtPos @state.s.lines [x y]
+                        if word
+                            log "jumpToWord #{word}" event
+                            if @jumpToWord word
+                                ⮐ 
+
+                    @dragStart = [x y x]
+                                        
+                    @state.deselect()     if not event.shift and event.button=='left'
+                    @state.clearCursors() if not event.alt
+
+                    if event.alt
+                        @state.addCursor x y
+                    else
+                        if event.shift and @state.s.cursors.length == 1
+                            @state.setMainCursorAndSelect x y
+                        else
+                            @state.setMainCursor x y
+                    
+                    @grabFocus()
+                    
+                    ⮐  {redraw:true}
+                    
+            'drag'
+            
+                if @dragStart
+                    
+                    x = col + @state.s.view[0]
+                    y = row + @state.s.view[1]
+                    
+                    start = [@dragStart[0] @dragStart[1]]
+                    
+                    if y < @dragStart[1] 
+                        start = [@dragStart[2] @dragStart[1]]
+                    
+                    if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd belt.rangeFromStartToEnd(start [x y])
+                    else             @state.select start [x y]
+                        
+                    ⮐  {redraw:true}
+                    
+            'release'
+            
+                delete @dragStart
+                
+            'move'
+            
+                if @hover
+                    
+                    if not @hasFocus() and empty view.currentPopup
+                        @grabFocus()
+                    
+                    post∙emit 'pointer' 'text'
+                    
+                elif @gutter.cells.isInsideEvent event
+                    
+                    post∙emit 'pointer' 'vertical-text'
+        @hover
+        
+    # 000   000  000   000  00000000  00000000  000      
+    # 000 0 000  000   000  000       000       000      
+    # 000000000  000000000  0000000   0000000   000      
+    # 000   000  000   000  000       000       000      
+    # 00     00  000   000  00000000  00000000  0000000  
+    
+    onWheel: event ->
+        
+        ⮐  if event.cell[1] >= @cells.y + @cells.rows
+        
+        if @dragStart
+            
+            steps  = 1 # should be 4 if not using a mouse pad -> config
+            if event.shift ➜ steps *= 2 
+            if event.ctrl ➜ steps *= 2 
+            if event.alt ➜ steps *= 2 
+            
+            (x y) = @state.mainCursor()
+            
+            switch event.dir
+                'up'    ➜ y -= steps    
+                'down'  ➜ y += steps    
+                'left'  ➜ x -= 1    
+                'right' ➜ x += 1    
+                
+            y = clamp 0 @state.s.lines.length-1 y
+            x = clamp 0 @state.s.lines[y].length-1 x
+            
+            start = [@dragStart[0] @dragStart[1]]
+            
+            if y < @dragStart[1] 
+                start = [@dragStart[2] @dragStart[1]]
+            
+            if @state.select start [x y]
+                @redraw()
+            ⮐ 
+        # super event
+        @
+    
+⮐  fileeditor

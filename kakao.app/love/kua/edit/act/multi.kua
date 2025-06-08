@@ -1,0 +1,197 @@
+###
+00     00  000   000  000      000000000  000    
+000   000  000   000  000         000     000    
+000000000  000   000  000         000     000    
+000 0 000  000   000  000         000     000    
+000   000   0000000   0000000     000     000    
+###
+
+use ../../../kxk ▪ kseg
+use ../tool      ◆ belt
+
+export
+
+    #  0000000   000      000      
+    # 000   000  000      000      
+    # 000000000  000      000      
+    # 000   000  000      000      
+    # 000   000  0000000  0000000  
+    
+    allCursors: -> @s.cursors.asMutable()
+    
+    # 00000000  000   000  00000000    0000000   000   000  0000000    
+    # 000        000 000   000   000  000   000  0000  000  000   000  
+    # 0000000     00000    00000000   000000000  000 0 000  000   000  
+    # 000        000 000   000        000   000  000  0000  000   000  
+    # 00000000  000   000  000        000   000  000   000  0000000    
+    
+    expandCursors: dir ->
+        
+        cursors = @allCursors()
+
+        dy = dir == 'up' ? -1 : 1
+        
+        newCursors = []
+        for c in cursors
+            newCursors.push c
+            newCursors.push [c[0] c[1]+dy]
+
+        mc = belt.traversePositionsInDirection newCursors @mainCursor() dir
+        @setCursors newCursors main:mc adjust:'topBotDelta'
+        
+    contractCursors: dir ->
+        
+        cursors = @allCursors()
+
+        newCursors = []
+        for c in cursors
+            nbup = belt.positionsContain cursors belt.positionInDirection(c 'down')
+            nbdn = belt.positionsContain cursors belt.positionInDirection(c 'up')
+            solo = not (nbup or nbdn)
+            add = switch dir
+                'up'   ➜ nbup or solo
+                'down' ➜ nbdn or solo
+            
+            newCursors.push c if add
+
+        @setCursors newCursors
+        
+    #  0000000   0000000    0000000    
+    # 000   000  000   000  000   000  
+    # 000000000  000   000  000   000  
+    # 000   000  000   000  000   000  
+    # 000   000  0000000    0000000    
+    
+    addCursor: x y ->
+        
+        pos = belt.pos x y
+        cursors = @allCursors()
+        cursors.push pos
+        @setCursors cursors main:-1
+        
+    addCursors: cursors ->
+        
+        @setCursors @allCursors().concat(cursors)
+        
+    delCursorsInRange: rng ->
+        
+        outside = belt.positionsOutsideRange @allCursors() rng
+        outside.push belt.endOfRange(rng)
+        @setCursors outside main:-1
+        
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    moveCursors: dir opt ->
+
+        if dir is arr
+
+            switch dir[0]
+                'bos' ➜ ⮐  if @moveCursorsToStartOfSelections(); dir = dir[1..]
+                'eos' ➜ ⮐  if @moveCursorsToEndOfSelections();   dir = dir[1..]
+                    
+            dir = dir[0]
+        
+        opt ?= {}
+        opt.count ?= 1
+        opt.jumpWords ?= false
+        
+        if @s.highlights.length
+            @deselect()
+        
+        cursors = @allCursors()
+        lines   = @s.lines
+
+        for c in cursors
+            
+            line = lines[c[1]]
+            
+            switch dir
+                'left'  
+                'right'     ➜ c[0] += belt.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
+                'up'        ➜ c[1] -= opt.count
+                'down'      ➜ c[1] += opt.count
+                'eol'       ➜ c[0] = kseg.width(@s.lines[c[1]])
+                'bol'       ➜ c[0] = 0
+                'bof'       ➜ c[0] = 0; c[1] = 0
+                'eof'       ➜ c[1] = @s.lines.length-1; c[0] = kseg.width(line)
+                'ind'       ➜ c[0] = belt.numIndent(line)
+                'ind_eol'   ➜ ind  = belt.numIndent(line); c[0] = c[0] < ind ? ind : kseg.width(line)
+                'ind_bol'   ➜ ind  = belt.numIndent(line); c[0] = c[0] > ind ? ind : 0
+
+        main   = @s.main
+        adjust = opt.adjust ? 'topBotDelta'
+        
+        switch dir
+            'up' 'down' 'left' 'right' 
+                main = belt.indexOfExtremePositionInDirection cursors dir main
+                adjust = 'topBotDeltaGrow'
+                
+        @setCursors cursors main:main adjust:adjust
+        
+        true
+        
+    moveCursorsToStartOfSelections: ->
+        
+        selections = @allSelections()
+        
+        ⮐  if empty selections
+        
+        rngs = belt.splitLineRanges @s.lines selections false
+
+        @setCursors belt.startPositionsOfRanges(rngs)
+        
+        true
+        
+    moveCursorsToEndOfSelections: ->
+        
+        selections = @allSelections()
+         
+        ⮐  if empty selections
+         
+        rngs = belt.splitLineRanges @s.lines selections false
+
+        @setCursors belt.endPositionsOfRanges(rngs)
+        
+        true
+        
+    moveCursorsToEndOfLines: ->
+        
+        cursors = @allCursors()
+        
+        for cur in cursors
+            cur[0] = belt.lineRangeAtPos(@s.lines cur)[2]
+        
+        @setCursors cursors
+        
+        true
+                
+    isAnyCursorInLine: y ->
+        
+        for c in @allCursors()
+            ⮐  true if c[1] == y
+            
+    #  0000000  000   000  000   000  000   000   0000000  0000000    00000000  00000000   0000000   00000000   00000000  
+    # 000       000   000  0000  000  000  000   000       000   000  000       000       000   000  000   000  000       
+    # 000       000000000  000 0 000  0000000    0000000   0000000    0000000   000000    000   000  0000000    0000000   
+    # 000       000   000  000  0000  000  000        000  000   000  000       000       000   000  000   000  000       
+    #  0000000  000   000  000   000  000   000  0000000   0000000    00000000  000        0000000   000   000  00000000  
+    
+    chunksBeforeCursors: -> @s.cursors.map (c) => belt.chunkBeforePos(@s.lines c)
+            
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    moveCursorsAndSelect: dir opt ->
+        
+        [selections cursors] = belt.extendLineRangesByMovingPositionsInDirection @s.lines @s.selections @s.cursors dir opt
+        
+        @setSelections selections
+        @setCursors cursors adjust:'topBotDelta'
+

@@ -67,6 +67,8 @@ kstr.split = s sep limit ->
         count = count + 1
     
     reslt
+    
+kstr.lines = s -> kstr.split s "\n"
 
 kstr.find = s c -> string.find(s c 1 true) or -1
     
@@ -95,5 +97,45 @@ kstr.count = s c ->
         if kstr.find(c s∙sub(i i)) >= 0
             cnt += 1
     cnt
+    
+    
+kstr.hex = s -> 
+    
+    if s is str ➜ ⮐ Number.parseInt s 16
+    if s is num ➜ ⮐ Number(s).toString 16
+        
+kstr.scaleColor = s f=0.5 ->
+    
+    if not s is "string"
+        s = str.hexColor(s) 
+    str.hexColor(str.hexColor(s).map((v) -> clamp(0 255 parseInt(f*v))))
+    
+kstr.hexColor = s ->
+    
+    if s is array
+        
+        h = '#' + s∙slice(1 3).map((v) -> kstr.lpad(2 kstr.hex(v) '0')).join('')
+        if s.length > 3 and s[3] is num
+            h = kstr.scaleColor h s[3]
+        ⮐  h
+        
+    if s is "string"
+        validate = a -> 
+            for _ v in ipairs a 
+                ⮐  if empty(v)
+            a
+        # if s = kstr.rgbaToHexColor(s) if s.startsWith 'rgb'
+        ⮐  if empty s
+        l = s.length
+        if (l == 7 or l == 4) and s[0] == "#" 
+            s = kstr.shift(s)
+            l -= 1
+        if l == 6 ➜ ⮐  validate [kstr.hex(string.sub(s 1 2)) kstr.hex(string.sub(s 3 4)) kstr.hex(string.sub(s 5 6))]
+        if l == 3 ➜ ⮐  validate [kstr.hex(s[0])*17 kstr.hex(s[1])*17 kstr.hex(s[2])*17]
+        ⮐
+        
+    if s is "number"
+        
+        ⮐  kstr.hexColor kstr.hexColor(kstr.lpad(6 tostring(s, 16) '0'))
     
 ⮐  kstr

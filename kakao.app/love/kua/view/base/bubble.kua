@@ -1,0 +1,96 @@
+###
+    0000000    000   000  0000000    0000000    000      00000000  
+    000   000  000   000  000   000  000   000  000      000       
+    0000000    000   000  0000000    0000000    000      0000000   
+    000   000  000   000  000   000  000   000  000      000       
+    0000000     0000000   0000000    0000000    0000000  00000000  
+
+    displays some clickable text in a rounded 'bubble'
+    used by 
+        ◆ searcher to display file headings
+        ◆ status to display filepos status
+###
+
+# use ../../../kxk ▪ slash kseg
+# use ../../theme  ◆ theme 
+# use ../../util   ◆ syntax
+# use ../base      ◆ view
+
+use util.syntax
+use view.base.view
+
+class bubble extends view
+
+    @: screen name ->
+
+        view.init @ screen name
+        
+        @pointerType = 'pointer'
+        @syntax = syntax()
+        @syntax∙setExt 'noon'
+        
+        @rounded = '' # ''
+        
+        @setColor 'bg'    theme.hover.blur
+        @setColor 'hover' theme.hover.bg 
+        @setColor 'empty' theme.editor.bg
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: ->
+        
+        ⮐  if @hidden()
+    
+        super()
+            
+        bg = if @hover ➜ @color.hover ➜ @color.bg 
+        
+        for ch,x in @rounded
+            if ch == '' or ch == ''
+                @cells.set x 0 ch bg @color.empty
+            else
+                fg = @syntax.getColor x 0 ch
+                @cells.set x 0 ch fg bg 
+                if @hover
+                    @cells.adjustContrastForHighlight(x 0 bg) 
+                
+    set: item ->
+    
+        @item = item
+        
+        if empty @item
+            @rounded = ''
+        else
+            @syntax.setSegls @item.segls or [kseg(item.tilde)]
+            @rounded = '' & @item.tilde & ''
+        
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouseEnter: event -> 
+    
+        @emit 'action' 'enter'
+        view.onMouseEnter @ event
+        
+    onMouse: event ->
+        
+        view.onMouse @ event
+        
+        switch event.type
+            
+            'press' 
+                
+                if @hover
+                    @emit 'action' 'click' @item
+                    ⮐  {redraw:true}
+                    
+        @hover
+    
+⮐  bubble

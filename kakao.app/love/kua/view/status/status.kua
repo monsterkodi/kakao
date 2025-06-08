@@ -1,0 +1,300 @@
+###
+     ███████  █████████   ███████   █████████  ███   ███   ███████  
+    ███          ███     ███   ███     ███     ███   ███  ███       
+    ███████      ███     █████████     ███     ███   ███  ███████   
+         ███     ███     ███   ███     ███     ███   ███       ███  
+    ███████      ███     ███   ███     ███      ███████   ███████   
+
+    the row above the fileeditor
+    displays currently edited file and editor state information 
+###
+
+# use ../../../kxk    ▪ post slash kstr kseg
+# use ../../../kxk    ◆ nfs
+# use ../../edit/tool ◆ belt
+# use ../../edit/mode ◆ filepos
+# use ../../theme     ◆ color theme
+# use ../base         ◆ view crumbs bubble 
+# use                 ◆ statusfile
+
+use view.base.view
+use view.base.crumbs
+use view.base.bubble
+use view.status.statusfile
+
+class fileposSyntax
+
+    @: ->
+    
+        @color = {}
+        @color.number = theme.status.filepos
+        # @color.symbol = color.darken @color.number 0.8
+        @color.symbol = theme.status.filepos
+        
+    getColor: x y ch ->
+    
+        switch ch
+            '' ➜ @color.symbol
+                ➜ @color.number
+
+class status extends view
+
+    @: screen editor ->
+    
+        @screen = screen
+        @editor = editor
+        
+        view.init @ screen 'status'
+        # super @screen 'status'
+        
+        @state    = @editor.state
+        @gutter   = 4
+        @file     = ''
+        @drawTime = ''
+        @fileposl = []
+        @fileoffs = []
+        
+        @pointerType = 'pointer'
+        
+        @setColor 'gutter' theme.gutter.bg
+           
+        @crumbs     = crumbs     @screen 'status_crumbs'
+        @statusfile = statusfile @screen 'status_file'
+        @filepos    = bubble     @screen "status_filepos"
+        
+        @crumbs∙setColor 'empty_left'  @color.gutter
+        @crumbs∙setColor 'empty_right' theme.status.empty
+        
+        @filepos∙setColor 'empty' theme.status.empty
+        @filepos.syntax = fileposSyntax()
+        
+        @crumbs∙on     'action' @onCrumbsAction
+        @statusfile∙on 'action' @onFileAction
+        @filepos∙on    'action' @onFileposAction
+        
+        # post.on 'status.filepos' @onStatusFilepos
+        
+    # onStatusFilepos: @fileposl @fileoffs -> 
+    # 
+    #     if @fileposl.length > 1
+    #         tilde = if @fileoffs ➜ @fileposl.length-@fileoffs-1 ➜ ''
+    #         @filepos.set tilde:"#{tilde}#{@fileposl.length-1}"
+    #     else
+    #         @filepos.set null 
+            
+    onFileposAction: action item ->
+    
+        switch action
+            'leave' ➜ log 'hide filepos files?'
+            'click' ➜ post∙emit 'filepos.swapPrevious'
+            'enter'
+                if filepos.fileposl.length > 1
+                    files = filepos.fileposl.map((fp) -> ⮐  fp[0])
+                    files = files.reverse()
+                    files.shift() if filepos.offset == 0
+                    # post∙emit 'droop.show' files:files pos:[@filepos.cells.x+int(@filepos.cells.cols/2) @filepos.cells.y+1]
+        
+    onCrumbsAction: action path event ->
+    
+        # switch action
+        # 
+        #     'click'  
+        #         
+        #         clearTimeout @droopTimer
+        #         if valid event.mods
+        #             post∙emit 'dircol.root' path
+        #         else
+        #             post∙emit 'browse.dir' path
+        #             
+        #     'enter'
+        #         
+        #         post∙emit 'droop.hide'
+        #         clearTimeout @droopTimer
+        #         @droopTimer = setTimeout ((p e) -> ->  @droopCrumb(p e))(path event), 500
+        #         
+        #     'leave'
+        #         
+        #         clearTimeout @droopTimer
+        #         delete @droopTimer
+                
+    droopCrumb: path crumb ○->
+
+        clearTimeout @droopTimer
+        delete @droopTimer
+    
+        path = slash.untilde path
+        files =○ nfs.list path {recursive:false}
+        x = @crumbs.cells.x+int((crumb.cols[1]+crumb.cols[0])/2)
+        post∙emit 'droop.show' {files:files pos:[x @crumbs.cells.y+1]}
+
+    onFileAction: action file ->
+        
+        switch action
+            'click' ➜ post∙emit 'browse.dir' slash.dir(file) file
+            
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+
+        cret = @crumbs.onMouse event
+        sret = @statusfile.onMouse event
+        fret = @filepos.onMouse event
+        
+        if sret or cret or fret
+            ⮐  sret or cret or fret 
+
+        # super event
+        
+        (col row) = @eventPos event
+        
+        if @hover
+            post∙emit 'pointer' @pointerType 
+        
+        switch event.type 
+            
+            'press' 
+                
+                if @hover 
+                    if 0 <= col < 4
+                        post∙emit 'dircol.toggle'
+                        ⮐  {redraw:true}
+                    if @cells.cols-12 <= col < @cells.cols
+                        post∙emit 'funcol.toggle'
+                        ⮐  {redraw:true}
+                    
+        @hover
+        
+    #  0000000  00000000  000000000        00000000  000  000      00000000  
+    # 000       000          000           000       000  000      000       
+    # 0000000   0000000      000           000000    000  000      0000000   
+    #      000  000          000           000       000  000      000       
+    # 0000000   00000000     000           000       000  0000000  00000000  
+    
+    setFile: file -> 
+        
+        @file = file
+        ⮐  if empty @file
+        @crumbs.set slash.dir(@file)
+        @statusfile.set @file
+        
+    # ███       ███████   ███   ███   ███████   ███   ███  █████████
+    # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
+    # ███      █████████    █████    ███   ███  ███   ███     ███   
+    # ███      ███   ███     ███     ███   ███  ███   ███     ███   
+    # ███████  ███   ███     ███      ███████    ███████      ███   
+
+    layout: x y w h ->
+        
+        view.layout @ x y w h
+        
+        cw = math.floor w/2
+        
+        x += @gutter+1
+        
+        @crumbs∙layout x y cw 1                     # 𝜏𝖍𝚒𝖘 ⟅◯⊚𝛋𝖘 ϝ𝚒𝖘𝖍𝛾 
+        @crumbs∙layout x y @crumbs.rounded.length 1 # ⟒𝖍𝛾 𝜏⟒⊚ ⟅𝕒𝛾◯𝓊𝜏𝖘?
+    
+        x += @crumbs.rounded.length
+        
+        @statusfile∙layout x y @statusfile.rounded.length 1
+        
+        x += @statusfile.rounded.length
+        
+        @filepos∙layout x y @filepos.rounded.length 1
+                
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: ->
+        
+        ⮐  if @hidden() or empty @file
+                
+        x      = 0
+        y      = 0
+        cursor = @state.mainCursor()
+        cols   = @cells.cols
+        fnl    = @file.length
+        rdo    = @state.hasRedo()
+        dty    = @state.isDirty()
+        
+        set = x char fg bg -> 
+            if fg is str ➜ fg = theme.status[fg]
+            if bg is str ➜ bg = theme.status[bg]
+            @cells.set x y char fg bg
+            1
+        add = char fg bg -> x += set x char fg bg
+        
+        add '' 'col' @color.gutter # column number ...
+        colno = rpad @gutter-1 "#{cursor[0]}"
+        for ci in 1...@gutter
+            fg = if cursor[0] ➜ 'fg' ➜ 'col_zero'
+            if belt.isLinesPosOutside @state.s.lines cursor 
+                fg = 'col_empty' 
+            char = if (ci-1 < colno.length) ➜ colno[ci-1] ➜ ' '
+            add char fg 'col'
+        add '' 'col' @color.gutter # column number end
+              
+        @crumbs.draw() # dir path
+        @statusfile.draw() # file
+        @filepos.draw()
+        
+        x += @crumbs.rounded.length
+        x += @statusfile.rounded.length
+        x += @filepos.rounded.length
+        
+        # dirty and redo indicators
+        add '' 'dark'  'empty'
+        if dty ➜ add '' 'dirty' 'dark' 
+        if dty ➜ add ' ' 'dirty' 'dark' 
+        if rdo ➜ add '' 'redo'  'dark' 
+        add ' ' 'dark'  'dark'
+        
+        if @state.s.cursors.length > 1
+
+            cur = "#{@state.s.cursors.length}♦"
+             
+            for i in 0...cur.length
+                color = if (i<cur.length-1) ➜ 'cur' ➜ color.darken(theme.status.cur)
+                add cur[i] color 'dark'
+                
+        if @state.s.selections.length
+
+            sel = "#{@state.s.selections.length}≡"
+             
+            for i in 0...sel.length
+                color = if (i<sel.length-1) ➜ 'sel' ➜ color.darken(theme.status.sel) 
+                add sel[i] color 'dark'
+
+        if @state.s.highlights.length
+
+            hil = "#{@state.s.highlights.length}❇"
+             
+            for i in 0...hil.length
+                color = if (i<hil.length-1) ➜ 'hil' ➜ color.darken(theme.status.hil) 
+                add hil[i] color 'dark'
+                                
+        # fill to the right
+        
+        for ci in x...cols-1
+            add ' ' null 'dark'
+            
+        add '' 'dark' @color.gutter 
+            
+        ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
+        ch = string.sub " •" ci # 
+        fg = [[32 32 32] [0 96 0] [255 0 0] [255 255 0]][ci]
+        # switch ch
+        #     '•' ➜ 1 #log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
+        #     '' ➜ 1 #log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
+        #     '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
+        set cols-2 ch fg 'dark'
+             
+⮐  status
+

@@ -1,0 +1,451 @@
+###
+0000000    000  00000000   000000000  00000000   00000000  00000000
+000   000  000  000   000     000     000   000  000       000     
+000   000  000  0000000       000     0000000    0000000   0000000 
+000   000  000  000   000     000     000   000  000       000     
+0000000    000  000   000     000     000   000  00000000  00000000
+###
+
+use ../../../kxk ▪ kutil kseg kstr slash post
+use ../../../kxk ◆ nfs
+use ../../index  ◆ prjcts 
+use ../../theme  ◆ theme icons
+use ../../util   ◆ git
+use ../menu      ◆ choices 
+use              ◆ diritem
+
+import rgxs from './quicky.json' with { type: "json" }
+
+function dirtree extends choices
+
+    @: screen name features ->
+        
+        super screen name features
+                        
+        @state.syntax.setRgxs rgxs
+        
+        post.on 'session.merge' @onSessionMerge
+        post.on 'file.change'   @onFileChange
+        post.on 'git.status'    @onGitStatus
+        
+        @frontRoundOffset = 0
+        
+    #  ███████   ███  █████████         ███████  █████████   ███████   █████████  ███   ███   ███████
+    # ███        ███     ███           ███          ███     ███   ███     ███     ███   ███  ███     
+    # ███  ████  ███     ███           ███████      ███     █████████     ███     ███   ███  ███████ 
+    # ███   ███  ███     ███                ███     ███     ███   ███     ███     ███   ███       ███
+    #  ███████   ███     ███           ███████      ███     ███   ███     ███      ███████   ███████ 
+
+    tilde: item -> item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+
+    onGitStatus: status =>
+    
+        # todo: handle added files
+        
+        # log 'dirtree.onGitStatus' status
+    
+        for item in @items
+        
+            if item.type == 'dir' 
+            
+                foundChange = false
+                
+                if item.path in status.dirs
+                
+                    for file of status.files
+                        if file.startsWith item.path
+                            item.modified = true
+                            @tilde item
+                            redraw = true
+                            foundChange = true
+                            break
+                            
+                if item.modified and not foundChange
+                
+                    delete item.modified
+                    @tilde item
+                    redraw = true
+                            
+            else # if item.type == 'file'
+        
+                if item.path in status.changed 
+                    item.modified = true
+                    @tilde item                    
+                    redraw = true
+                    
+                if item.path in status.added
+                    item.added = true
+                    @tilde item
+                    redraw = true
+                    
+                if item.modified and item.path not in status.changed or item.added and item.path not in status.added
+                    delete item.modified
+                    @tilde item
+                    redraw = true
+                
+        if redraw
+            @set @items @currentIndex()        
+            post.emit 'redraw' 
+                
+    # ████████  ███  ███      ████████         ███████  ███   ███   ███████   ███   ███   ███████   ████████
+    # ███       ███  ███      ███             ███       ███   ███  ███   ███  ████  ███  ███        ███     
+    # ██████    ███  ███      ███████         ███       █████████  █████████  ███ █ ███  ███  ████  ███████ 
+    # ███       ███  ███      ███             ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
+    # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
+
+    onFileChange: info =>
+        
+        if info.path.startsWith @currentRoot
+            if info.change == 'rename'
+                for item in @items
+                    if item.path == info.path
+                        ⮐  
+                @setRoot @currentRoot redraw:true index:@currentIndex()
+                
+            if info.change in ['remove' 'deleted']
+                for item in @items
+                    if item.path == info.path
+                        @setRoot @currentRoot redraw:true index:@currentIndex()
+                        ⮐  
+                    
+    # 00000000    0000000    0000000   000000000  
+    # 000   000  000   000  000   000     000     
+    # 0000000    000   000  000   000     000     
+    # 000   000  000   000  000   000     000     
+    # 000   000   0000000    0000000      000     
+    
+    setRoot: path opt ○=>
+        
+        opt ?= {}
+        
+        dir = slash.untilde path
+        
+        items =○ @dirItems dir 'dirtree.setRoot'
+        
+        @currentRoot = dir
+                
+        ⮐  if empty items
+        
+        for item in items
+            item.depth = 0
+            @tilde item
+
+        items.sort (a b) => @weight(a) - @weight(b)
+        
+        # log 'setRoot' opt
+                    
+        @set items opt.index ? 0
+        
+        @restoreSessionState opt
+        
+        post.emit 'redraw' if opt.redraw
+        
+    # 00000000   00000000   0000000  000000000   0000000   00000000   00000000  
+    # 000   000  000       000          000     000   000  000   000  000       
+    # 0000000    0000000   0000000      000     000   000  0000000    0000000   
+    # 000   000  000            000     000     000   000  000   000  000       
+    # 000   000  00000000  0000000      000      0000000   000   000  00000000  
+        
+    restoreSessionState: opt ->
+        
+        opt ?= {}
+        opt.redraw = true
+        
+        state = ked_session.get @name {}
+
+        ⮐  if empty state.open
+        
+        for key,value of state.open
+            
+            if key.startsWith @currentRoot
+                @openDir @itemForPath(key) opt
+        
+    #  0000000  000000000   0000000   000000000  00000000  
+    # 000          000     000   000     000     000       
+    # 0000000      000     000000000     000     0000000   
+    #      000     000     000   000     000     000       
+    # 0000000      000     000   000     000     00000000  
+    
+    onSessionMerge: recent => @setState recent[@name]    
+        
+    setState: state =>
+        
+        ⮐  if empty state
+        ⮐  if not state is obj
+        
+        # log "dirtree.setState" state
+        
+        ked_session.set @name state
+                    
+    #  0000000    0000000  000000000  000   0000000   000   000  
+    # 000   000  000          000     000  000   000  0000  000  
+    # 000000000  000          000     000  000   000  000 0 000  
+    # 000   000  000          000     000  000   000  000  0000  
+    # 000   000   0000000     000     000   0000000   000   000  
+    
+    emitAction: action choice event  ->
+    
+        # log "emitAction #{action}" choice
+        
+        if action == 'hover'
+            @grabFocus()
+            if (event.alt or event.cmd) and choice.type == 'file'
+                post.emit 'quicky' choice.path
+            ⮐ 
+            
+        if action == 'cmd+delete'
+            if choice.type == 'file'
+                post.emit 'file.trash' choice.path
+            ⮐  
+            
+        switch choice.type
+            
+            'dir' 
+                
+                switch action
+                    
+                    'click'
+                    'space'
+                        
+                        if action == 'click' and event.mods ➜ ⮐  post.emit 'dircol.root' choice.path
+                        
+                        if not choice.open ➜ @openDir(choice redraw:true) 
+                        else @closeDir choice
+                        ⮐ 
+                        
+                    'right'
+                    
+                        if not choice.open ➜ @openDir(choice redraw:true)
+                        else @selectNextKeepOffset()
+                        ⮐ 
+
+                    'left'
+                    
+                        if choice.open ➜ @closeDir(choice redraw:true)
+                        else @selectPrevKeepOffset()
+                        ⮐ 
+                        
+                    'delete'
+                    'esc'
+                    
+                        @selectOpenSiblingAboveOrParent() if not choice.open
+                        @closeDir(choice redraw:true) if choice.open
+                        ⮐ 
+                        
+                    'doubleclick'
+                    'return' ➜ ⮐  post.emit 'dircol.root' choice.path
+                
+            'file'
+
+                switch action
+                    
+                    'left'   ➜ ⮐  @selectPrevKeepOffset()
+                    'right'  ➜ ⮐  @selectNextKeepOffset()                             
+                    
+                    'delete'
+                    'esc'    ➜ ⮐  @selectParent()
+                    
+                    'drag'
+                    'space'  ➜ ⮐  post.emit 'quicky' choice.path
+                    
+                    'click'
+                    'return' ➜ ⮐  post.emit 'file.open' choice.path
+        
+        super action choice event
+        
+    #  0000000   00000000   00000000  000   000  0000000    000  00000000   
+    # 000   000  000   000  000       0000  000  000   000  000  000   000  
+    # 000   000  00000000   0000000   000 0 000  000   000  000  0000000    
+    # 000   000  000        000       000  0000  000   000  000  000   000  
+    #  0000000   000        00000000  000   000  0000000    000  000   000  
+    
+    openDir: dirItem opt ○->
+        
+        ⮐  if empty dirItem
+        ⮐  if dirItem.open
+        
+        opt ?= {}
+        
+        dirItem.open = true
+        
+        items =○ @dirItems dirItem.path 'dirtree.openDir'
+        
+        dirItem.tilde = dirItem.tilde.replace icons.dir_close icons.dir_open 
+            
+        state = ked_session.get @name {}
+        
+        depth = dirItem.depth + 1
+        for item in items
+            item.depth = depth
+            @tilde item
+            if item.type == 'dir' and state.open?[item.path]
+                if empty opt.select and empty opt.index
+                    opt.select = dirItem
+                opt.redraw = true
+                @openDir item opt
+        
+        items.sort (a b) => @weight(a) - @weight(b)
+        
+        index = @items.indexOf dirItem
+        
+        kutil.insert @items index+1 items
+        
+        if opt.index?
+            index = opt.index
+        else if opt.select?
+            index = @items.indexOf opt.select
+        
+        @set @items index
+        
+        ked_session.set "#{@name}▸open▸#{dirItem.path}" '✔'
+        
+        git.status dirItem.path
+        
+        post.emit 'redraw' if opt.redraw
+        
+    #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
+    # 000       000      000   000  000       000       000   000  000  000   000  
+    # 000       000      000   000  0000000   0000000   000   000  000  0000000    
+    # 000       000      000   000       000  000       000   000  000  000   000  
+    #  0000000  0000000   0000000   0000000   00000000  0000000    000  000   000  
+    
+    closeDir: dirItem opt ->
+        
+        ⮐  if empty dirItem
+        
+        opt ?= {}
+        
+        dirItem.open = false
+        
+        dirItem.tilde = dirItem.tilde.replace icons.dir_open icons.dir_close
+        
+        index = @items.indexOf dirItem
+        
+        numChildren = 0
+        while index+numChildren+1 < @items.length and @items[index+numChildren+1].path.startsWith dirItem.path
+            numChildren += 1
+        
+        kutil.replace @items index+1 numChildren []
+        
+        @set @items index
+        
+        ked_session.del "#{@name}▸open▸#{dirItem.path}"
+        
+        post.emit 'redraw' if opt.redraw
+                
+    # 000  000000000  00000000  00     00   0000000  
+    # 000     000     000       000   000  000       
+    # 000     000     0000000   000000000  0000000   
+    # 000     000     000       000 0 000       000  
+    # 000     000     00000000  000   000  0000000   
+    
+    dirItems: dir info ○=>
+        
+        try
+            items =○ nfs.list dir recursive:false
+        catch err
+            error "list error -- #{info}" err
+            ⮐ 
+
+    #  0000000  00000000  000000000  
+    # 000       000          000     
+    # 0000000   0000000      000     
+    #      000  000          000     
+    # 0000000   00000000     000     
+    
+    set: items index=0 -> 
+        
+        oldTop = @state.s.view[1]
+        super items 'tilde'
+        @state.setView [0 oldTop]
+        @state.selectLine index
+        @state.setMainCursor 0 index
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    selectPrevKeepOffset: ->
+        
+        @selectPrev()
+        post.emit 'quicky' @current().path if @current().type == 'file'
+        @state.setView [0 @state.s.view[1]-1]
+
+    selectNextKeepOffset: ->
+    
+        if @current().type == 'file' and ked_session.get('editor▸file') != @current().path
+            post.emit 'quicky' @current().path
+            ⮐  
+        
+        @selectNext()
+        post.emit 'quicky' @current().path if @current().type == 'file'
+        @state.setView [0 @state.s.view[1]+1]
+        
+    selectOpenSiblingAboveOrParent: ->
+    
+        index = @fuzzied.indexOf @current()
+        index -= 1
+        while index > 0 and @fuzzied[index].depth >= @current().depth and not @fuzzied[index].open
+            index -= 1
+        @state.selectLine index
+        @state.setMainCursor 0 index
+        
+    selectParent: ->
+    
+        index = @fuzzied.indexOf @current()
+        index -= 1
+        while index > 0 and @fuzzied[index].depth >= @current().depth
+            index -= 1
+        @state.selectLine index
+        @state.setMainCursor 0 index
+        
+    drawSelections: ->
+        
+        if li = @indexOfOpenFile()
+            bg = theme.gutter.bg
+            y  = li-@state.s.view[1]
+            if y < @cells.rows and li < @state.s.lines.length
+                xs = kseg.headCount(@state.s.lines[li] ' ')
+                @cells.set xs-1-@state.s.view[0] y '' bg @color.bg
+                for x in xs...@cells.cols
+                    @cells.set_bg x-@state.s.view[0] y bg
+        
+        super()
+                
+    indexOfOpenFile: ->
+    
+        currentFile = ked_session.get 'editor▸file'
+        
+        ⮐  if empty currentFile
+        
+        for item,idx in @fuzzied
+            ⮐  idx if item.path == currentFile
+            
+    itemForPath: p ->
+        
+        for item,idx in @items
+            ⮐  item if slash.samePath item.path p
+
+    itemIndexForPath: p ->
+        
+        for item,idx in @items
+            ⮐  idx if slash.samePath item.path p
+            
+    # 000   000  00000000  000   0000000   000   000  000000000  
+    # 000 0 000  000       000  000        000   000     000     
+    # 000000000  0000000   000  000  0000  000000000     000     
+    # 000   000  000       000  000   000  000   000     000     
+    # 00     00  00000000  000   0000000   000   000     000     
+    
+    weight: item ->
+
+        p = slash.parse item.path
+
+        w = 0
+        w += 10000 if item.type == 'file'
+        w += kstr.weight(p.file)
+        w
+        
+export dirtree

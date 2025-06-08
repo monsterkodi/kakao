@@ -299,22 +299,22 @@ template c(f:(proc (_:string, _:string) : bool), a:string, b:string, c:bool) = t
         slash.isAbsolute "/a/b"                 ▸ true
         slash.isAbsolute "~"                    ▸ true
 
-    #  0000000   0000000   000   000  000000000   0000000   000  000   000   0000000  
-    # 000       000   000  0000  000     000     000   000  000  0000  000  000       
-    # 000       000   000  000 0 000     000     000000000  000  000 0 000  0000000   
-    # 000       000   000  000  0000     000     000   000  000  000  0000       000  
-    #  0000000   0000000   000   000     000     000   000  000  000   000  0000000   
+    # ███   ███   ███████    ███████  
+    # ███   ███  ███   ███  ███       
+    # █████████  █████████  ███████   
+    # ███   ███  ███   ███       ███  
+    # ███   ███  ███   ███  ███████   
     
-    ▸ contains
+    ▸ has
     
-        c slash.contains "/c/users/home/" "users"     true
-        c slash.contains "/home" "hom"                false
-        c slash.contains "/abc.def/ghi.jkl" "abc"     false
-        c slash.contains "/abc.def/ghi.jkl" "def"     false
-        c slash.contains "/abc.def/ghi.jkl" "ghi"     false
-        c slash.contains "/abc.def/ghi.jkl" "jkl"     false
-        c slash.contains "/abc.def/ghi.jkl" "abc.def" true
-        c slash.contains "/abc.def/ghi.jkl" "ghi.jkl" true
+        c slash.has "/c/users/home/" "users"     true
+        c slash.has "/home" "hom"                false
+        c slash.has "/abc.def/ghi.jkl" "abc"     false
+        c slash.has "/abc.def/ghi.jkl" "def"     false
+        c slash.has "/abc.def/ghi.jkl" "ghi"     false
+        c slash.has "/abc.def/ghi.jkl" "jkl"     false
+        c slash.has "/abc.def/ghi.jkl" "abc.def" true
+        c slash.has "/abc.def/ghi.jkl" "ghi.jkl" true
         
     ▸ files
         

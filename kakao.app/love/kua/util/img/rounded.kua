@@ -1,0 +1,286 @@
+###
+    ████████    ███████   ███   ███  ███   ███  ███████    ████████  ███████  
+    ███   ███  ███   ███  ███   ███  ████  ███  ███   ███  ███       ███   ███
+    ███████    ███   ███  ███   ███  ███ █ ███  ███   ███  ███████   ███   ███
+    ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███       ███   ███
+    ███   ███   ███████    ███████   ███   ███  ███████    ████████  ███████  
+###
+
+use ◆ png
+
+function rounded
+
+    @cache:  {}
+    @shadow: [0 0 0 100]
+
+    # ███  ██     ██   ███████ 
+    # ███  ███   ███  ███      
+    # ███  █████████  ███  ████
+    # ███  ███ █ ███  ███   ███
+    # ███  ███   ███   ███████ 
+
+    @img: w h ->
+        
+        buff = new ArrayBuffer w*h*4
+        view = new DataView buff
+    
+        w:    w
+        h:    h
+        buff: buff
+        view: view
+
+    @encode: img maxColors=4 ->
+    
+        img.png = Buffer.from png.encode([img.buff] img.w img.h maxColors)
+        img
+
+    #  ███████  ████████  █████████
+    # ███       ███          ███   
+    # ███████   ███████      ███   
+    #      ███  ███          ███   
+    # ███████   ████████     ███   
+
+    @set: img x y rgba ->
+    
+        ⮐  if x < 0 or y < 0
+        ⮐  if x >= img.w
+        ⮐  if y >= img.h
+        
+        for i in 0...rgba.length
+            img.view.setUint8 ((x+y*img.w)*4)+i rgba[i]
+        if rgba.length == 3
+             img.view.setUint8 ((x+y*img.w)*4)+3 255
+                    
+    @circle: img cx cy r fg ->
+    
+        rsq = r * r
+        for x in cx-r..cx+r
+            for y in cy-r..cy+r
+                if (cx-x)**2 + (cy-y)**2 <= rsq
+                    @set img x y fg
+                    
+    @fill: img x y w h fg ->
+        
+        for r in x..x+w
+            for c in y..y+h
+                @set img r c fg
+                    
+    @rect: w h r fg ->
+        
+        img = @img w h
+        rx = r
+        ry = r
+        rw = w-2*r
+        rh = h-2*r
+        @fill img rx ry rw rh fg
+        @encode img
+
+    @topLeft: w h fg ->
+    
+        img = @img w h
+        r   = min w h
+        @circle img r r r   fg
+        @fill   img 0 r w h fg
+        @encode img 
+
+    # ███████     ███████   ████████   ███████    ████████  ████████ 
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████    ███   ███  ███████    ███   ███  ███████   ███████  
+    # ███   ███  ███   ███  ███   ███  ███   ███  ███       ███   ███
+    # ███████     ███████   ███   ███  ███████    ████████  ███   ███
+
+    @borderTopLeft: w h fg ->    
+    
+        img = @img w h
+        r   = int w/2
+        h2  = int h/2 
+        
+        @circle img w h2+r r        fg
+        @fill   img r h2+r r h-h2-r fg
+        @encode img 
+        
+    @borderTopRight: w h fg ->
+        
+        img = @img w h
+        r   = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2+r r        fg
+        @fill   img 0 h2+r r h-h2-r fg
+        @encode img 
+
+    @borderBottomLeft: w h fg ->
+    
+        img = @img w h
+        r   = int w/2
+        h2  = int h/2
+        
+        @circle img w h2-r r   fg
+        @fill   img r 0 r h2-r fg
+        @encode img 
+
+    @borderBottomRight: w h fg ->
+        
+        img = @img w h
+        r   = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2 w     @shadow
+        @fill   img 0 0  w h2  @shadow
+        @circle img 0 h2-r r   fg    
+        @fill   img 0 0 r h2-r fg
+        
+        @encode img 
+
+    @borderBottomRightNoShadow: w h fg bg ->
+        
+        img = @img w h
+        r   = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2+r r     bg
+        @fill   img 0 h2+r r h-r bg
+        
+        @encode img 
+
+    @borderBottom: w h fg ->
+        
+        img = @img w h
+        h2  = int h/2
+        
+        @fill   img 0 0    w h2 fg
+        @fill   img 0 h2+1 w h2 @shadow
+        @encode img 
+
+    @borderLeftBottom: w h fg ->
+        
+        img = @img w h
+        h2  = int h/2
+        
+        @circle img w h2+1 w @shadow
+        @fill   img 0 0 w h2 fg
+        @encode img 
+        
+    @borderTop: w h fg ->
+        
+        img = @img w h
+        h2  = int h/2
+        
+        @fill   img 0 h2 w h2 fg
+        @encode img 
+
+    @borderLeft: w h fg ->
+        
+        img = @img w h
+        w2  = int w/2
+        
+        @fill   img w2 0 w2 h fg
+        @encode img 
+        
+    @borderRight: w h fg ->
+        
+        img = @img w h
+        w2  = int(w/2)-1
+        
+        @fill   img 0    0 w2 h fg
+        @fill   img w2+1 0 w2 h @shadow
+        @encode img
+        
+    @borderRightTop: w h fg ->
+        
+        img = @img w h
+        w2  = int(w/2)-1
+        h2  = int h/2
+        
+        @circle img 0 h2 w     @shadow
+        @fill   img 0 h2 w h2  @shadow
+        @fill   img 0 0 w2 h fg
+        @encode img 
+
+    @vertical: w h left right ->
+        
+        img = @img w h
+        w2  = int w/2
+        
+        @fill   img  0 0 w2 h left
+        @fill   img w2+1 0 w2 h right
+        @encode img 
+
+    @horizontal: w h top bottom ->
+        
+        img = @img w h
+        h2  = int h/2
+        
+        @fill   img 0 0  h2 h2 top
+        @fill   img 0 h2 h2 h2 bottom
+        @encode img 
+        
+    #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
+    # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███
+    # ███       ███   ███  ███████    ███████   ███   ███  ███████  
+    # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███
+    #  ███████   ███████   ███   ███  ███████    ███████   ███   ███
+
+    @cursor: w h fg ->
+    
+        img = @img w h
+        r   = int w/2
+        
+        @circle img r r     r fg
+        @circle img r h-r-1 r fg
+        @fill   img 0 r w h-w fg
+        @encode img 
+
+    @multi: w h fg ->
+    
+        img = @img w h
+        @fill   img 0 0 w h fg
+        @encode img 
+        
+    # ████████   ███       ███████    ███████  ████████
+    # ███   ███  ███      ███   ███  ███       ███     
+    # ████████   ███      █████████  ███       ███████ 
+    # ███        ███      ███   ███  ███       ███     
+    # ███        ███████  ███   ███   ███████  ████████
+
+    @place: x y name fg xe ye z bg ->
+        
+        csz = ked_ttio.cellsz
+        ⮐  if empty csz
+        
+        key = name+fg 
+        img = @cache[key]
+        
+        if empty img
+            img = switch name 
+                'rounded.border.tl'     ➜ @borderTopLeft                csz[0] csz[1] fg 
+                'rounded.border.tr'     ➜ @borderTopRight               csz[0] csz[1] fg 
+                'rounded.border.bl'     ➜ @borderBottomLeft             csz[0] csz[1] fg 
+                'rounded.border.br'     ➜ @borderBottomRight            csz[0] csz[1] fg 
+                'rounded.border.t'      ➜ @borderTop                    csz[0] csz[1] fg 
+                'rounded.border.r'      ➜ @borderRight                  csz[0] csz[1] fg 
+                'rounded.border.l'      ➜ @borderLeft                   csz[0] csz[1] fg 
+                'rounded.border.b'      ➜ @borderBottom                 csz[0] csz[1] fg 
+                'rounded.border.rt'     ➜ @borderRightTop               csz[0] csz[1] fg 
+                'rounded.border.lb'     ➜ @borderLeftBottom             csz[0] csz[1] fg 
+                'rounded.vertical'      ➜ @vertical                     csz[0] csz[1] fg bg
+                'rounded.horizontal'    ➜ @horizontal                   csz[0] csz[1] fg bg
+                'rounded.border.br_ns'  ➜ @borderBottomRightNoShadow    csz[0] csz[1] fg bg
+                'rounded.cursor'        ➜ @cursor                   int(csz[0]/5 )*2+1 csz[1] fg 
+                'rounded.multi'         ➜ @multi                    int(csz[0]/10)*2+1 csz[1] fg 
+            # img.name = name 
+            @cache[key] = img
+
+        switch name 
+            'rounded.cursor' ➜ ked_ttio.placeImg img x-1 y int(9*csz[0]/10)+1 null null null 666
+                             ➜ ked_ttio.placeImg img x   y               null null null null z
+        
+        if xe and xe > x
+            for xr in x+1..xe
+                ked_ttio.placeImg img xr y null null null null z
+
+        if ye and ye > y
+            for yr in y+1..ye
+                ked_ttio.placeImg img x yr null null null null z
+            
+export rounded

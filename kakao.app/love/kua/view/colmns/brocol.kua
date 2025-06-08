@@ -1,0 +1,78 @@
+###
+    ███████    ████████    ███████    ███████   ███████   ███      
+    ███   ███  ███   ███  ███   ███  ███       ███   ███  ███      
+    ███████    ███████    ███   ███  ███       ███   ███  ███      
+    ███   ███  ███   ███  ███   ███  ███       ███   ███  ███      
+    ███████    ███   ███   ███████    ███████   ███████   ███████  
+###
+
+use ../../../kxk ▪ slash post kstr
+use ../../../kxk ◆ nfs
+use ../../theme  ◆ icons 
+use ../menu      ◆ choices
+use              ◆ diritem
+
+import rgxs from './quicky.json' with { type: "json" }
+
+function brocol extends choices
+
+    @: screen name ->
+        
+        super screen name ['scrllr']
+        
+        @frontRoundOffset = 2
+        @state.syntax.setRgxs rgxs
+        
+    isCursorVisible: -> false
+    
+    show: dir => 
+    
+        @listDir dir
+        super()
+    
+    onMouse: event =>
+        
+        ⮐  if @hidden()
+        
+        [col row] = @eventPos event
+        
+        ret = super event
+        
+        if @hoverIndex >= 0 and (not(@hover) or @state.isInvalidLineIndex(row))
+            ⮐  @unhover()
+            
+        ret
+        
+    listDir: dir ○->
+        
+        try
+            items =○ nfs.list dir recursive:false
+        catch err
+            @clear()
+            post.emit 'redraw'
+            ⮐ 
+
+        for item in items
+            item.tilde = ' ' + diritem.symbolName(item)
+
+        weight = item =>
+
+            p = slash.parse item.path
+
+            w = 0
+            w += 10000 if item.type == 'file'
+            w += 1000  if item.tilde.startsWith icons.dir + ' .'
+            w += 1     if slash.ext(item.tilde) in ['js' 'json']
+            w += kstr.weight(p.file)
+            w
+            
+        items.sort (a b) -> weight(a) - weight(b)
+        
+        items.unshift(tilde:'')
+            
+        @set items 'tilde'
+        @state.setView [0 0]
+        
+        post.emit 'redraw'
+        
+export brocol

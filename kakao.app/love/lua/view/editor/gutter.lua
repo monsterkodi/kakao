@@ -1,0 +1,282 @@
+--[[
+     ███████   ███   ███  █████████  █████████  ████████  ████████   
+    ███        ███   ███     ███        ███     ███       ███   ███  
+    ███  ████  ███   ███     ███        ███     ███████   ███████    
+    ███   ███  ███   ███     ███        ███     ███       ███   ███  
+     ███████    ███████      ███        ███     ████████  ███   ███  
+
+    displays line numbers to the left of an editor
+    used in fileeditor and searcher/finder 
+    searcher/finder replaces lineno to display source line numbers 
+--]]
+
+-- use ../../../kxk   ▪ post kseg
+-- use ../../../kolor ◆ kulur
+-- use ../../util/img ◆ squares
+-- use ../../util     ◆ prof syntax
+-- use ../../theme    ◆ color theme 
+-- use ../base        ◆ view
+
+view = require "view.base.view"
+
+
+local gutter = class("gutter", view)
+    
+
+
+function gutter:init(editor) 
+        self.editor = editor
+        
+        self.state = self.editor.state
+        
+        view.init(self, self.editor.screen, self.state:owner() .. '.gutter')
+        
+        self:setColor('fg', theme.gutter.fg)
+        self:setColor('bg', theme.gutter.bg)
+        self:setColor('bg_selected', theme.gutter.bg_selected)
+        self:setColor('bg_fully_selected', theme.gutter.bg_fully_selected)
+        self:setColor('bg_git_mod', theme.gutter.bg_git_mod)
+        self:setColor('bg_git_add', theme.gutter.bg_git_add)
+        self:setColor('bg_git_del', theme.gutter.bg_git_del)
+        self:setColor('cursor_main', theme.cursor.main)
+        self:setColor('cursor_multi', theme.cursor.multi)
+        self:setColor('selection', theme.selection.span)
+        self:setColor('selection_line', theme.selection.line)
+        self:setColor('highlight', theme.highlight.bg)
+        
+        self.gitChanges = {}
+        return self
+    end
+
+-- ██     ██   ███████   ███   ███   ███████  ████████
+-- ███   ███  ███   ███  ███   ███  ███       ███     
+-- █████████  ███   ███  ███   ███  ███████   ███████ 
+-- ███ █ ███  ███   ███  ███   ███       ███  ███     
+-- ███   ███   ███████    ███████   ███████   ████████
+
+
+function gutter:onMouse(event) 
+        if self.cells.isOutsideEvent(event) then 
+            if valid(self.preview) then 
+                self.preview = array()
+                post:emit('redraw')
+            end
+            
+            return
+        end
+        
+        if valid((self.gitChanges and ((event.cmd or event.ctrl) or event.alt))) then 
+            local pos = self:eventPos(event)
+            local idx = (pos[1] + self.state.s.view[1])
+            if self.gitChanges[idx] then 
+                if (event.type == 'press') then 
+                    print('todo: press on git change!', self.gitChanges[idx])
+                else if (event.type == 'move') then 
+                    if self.gitChanges[idx].old then 
+                        self.preview = array(idx)
+                        return {redraw = true}
+                    end
+                     end
+                end
+            end
+        end
+        
+        if valid(self.preview) then 
+            self.preview = array()
+            return post:emit('redraw')
+        end
+    end
+
+
+function gutter:drawPreviews() 
+        if empty((self.preview or empty), self.gitChanges) then return end
+        
+        for idx in self.preview do 
+            local segl = kseg((self.gitChanges[idx].old or ''))
+            -- log "drawPreviewLine #{idx}" segl
+            local syntax = self.editor.state.syntax
+            local oldDiss = syntax.diss[idx]
+            syntax.diss[idx] = kulur.dissect(array(segl), syntax.ext)
+            self.editor.drawLine(segl, idx)
+            syntax.diss[idx] = oldDiss
+        end
+    end
+
+
+function gutter:lineno(y) 
+        local lineno = lpad((self.cells.cols - 1), (y + 1))
+        lineno = lineno + ' '
+        return lineno
+    end
+
+
+function gutter:fgcolor(x, y) 
+    
+    end
+
+
+function gutter:clearChanges() 
+        self.gitChanges = {}
+        self.gitBlocks = array()
+        return self.gitBlocks
+    end
+
+--  ███████   ███  █████████     ███████    ███  ████████  ████████
+-- ███        ███     ███        ███   ███  ███  ███       ███     
+-- ███  ████  ███     ███        ███   ███  ███  ██████    ██████  
+-- ███   ███  ███     ███        ███   ███  ███  ███       ███     
+--  ███████   ███     ███        ███████    ███  ███       ███     
+
+
+function gutter:onGitDiff(diff) 
+        self:clearChanges()
+        
+        for change in diff.changes do 
+            local firstLine = change.line
+            
+            local mod = (change.mod or array())
+            local add = (change.add or array())
+            local del = (change.del or array())
+            
+            local mods = mod.concat(add)
+            local numLines = #mods
+            mods = mods.concat(del)
+            
+            for modi = 0, numLines-1 do 
+                local off = (function () 
+    if mods[modi].new then 
+    return -1 else 
+    return 0
+                      end
+end)()
+                self.gitChanges[((firstLine + modi) + off)] = mods[modi]
+            end
+            
+            self.gitBlocks.push(array((change.line - 1), numLines, #mod))
+        end
+        
+        if valid(self.gitChanges) then 
+            -- log 'gutter.onGitDiff' @gitChanges
+            return post:emit('redraw')
+        end
+    end
+
+--  ███████   ███  █████████         ███████   ███████  ████████    ███████   ███      ███            
+-- ███        ███     ███           ███       ███       ███   ███  ███   ███  ███      ███            
+-- ███  ████  ███     ███           ███████   ███       ███████    ███   ███  ███      ███            
+-- ███   ███  ███     ███                ███  ███       ███   ███  ███   ███  ███      ███            
+--  ███████   ███     ███           ███████    ███████  ███   ███   ███████   ███████  ███████        
+
+
+function gutter:drawGitScroll() 
+        if empty(self.gitBlocks) then return end
+        local csz = self.screen.t.cellsz
+        if empty(csz) then return end
+        
+        local sw = int((csz[0] / 2))
+        local sx = ((self.cells.x - 1) * csz[0])
+        local oy = (self.cells.y * csz[1])
+        local pixelsPerRow = clamp(0, csz[1], ((csz[1] * self.cells.rows) / #self.state.s.lines))
+        
+        for gb in self.gitBlocks do 
+            local sy = int(((gb[0] * pixelsPerRow) + oy))
+            
+            if (gb[1] <= 0) then 
+                local fg = self.color.bg_git_del
+                local sh = int(pixelsPerRow)
+            else 
+                local fg = (function () 
+    if gb[2] then 
+    return self.color.bg_git_mod else 
+    return self.color.bg_git_add
+                     end
+end)()
+                local sh = int((gb[1] * pixelsPerRow))
+            end
+            
+            if (gb[2] and (gb[2] < gb[1])) then 
+                local mh = int((gb[2] * pixelsPerRow))
+                squares.place(sx, sy, sw, mh, self.color.bg_git_mod)
+                sy = sy + mh
+                local ah = (sh - mh)
+                squares.place(sx, sy, sw, ah, self.color.bg_git_add)
+            else 
+                squares.place(sx, sy, sw, sh, fg)
+            end
+        end
+    end
+
+-- ███████    ████████    ███████   ███   ███
+-- ███   ███  ███   ███  ███   ███  ███ █ ███
+-- ███   ███  ███████    █████████  █████████
+-- ███   ███  ███   ███  ███   ███  ███   ███
+-- ███████    ███   ███  ███   ███  ██     ██
+
+
+function gutter:draw() 
+        local mainCursor = self.state.mainCursor()
+        
+        for row = 0, self.cells.rows-1 do 
+            local y = (self.state.s.view[1] + row)
+            
+            local lineno = self:lineno(y)
+            
+            local hasCursor = self.state.isAnyCursorInLine(y)
+            local selected = self.state.isSelectedLine(y)
+            local highlighted = self.state.isHighlightedLine(y)
+            local spansel = self.state.isSpanSelectedLine(y)
+            
+            for c, i in lineno do 
+                local col = i
+                if (col < self.cells.rows) then 
+                    local sc = self:fgcolor(i, y, c)
+                    if sc then 
+                        local fg = sc
+                    else 
+                        local df = (function () 
+    if self.state.hasFocus then 
+    return 1 else 
+    return 0.5
+                             end
+end)()
+                        local fg = self.color.fg
+                        if (y == mainCursor[1]) then fg = color.darken(self.color.cursor_main, df)
+                        elseif hasCursor then fg = self.color.cursor_multi
+                        elseif spansel then fg = self.color.selection
+                        elseif selected then fg = self.color.selection_line
+                        elseif highlighted then fg = self.color.highlight
+                        end
+                        
+                        if (((selected or hasCursor) or highlighted) and not self.cells.screen.t.hasFocus) then 
+                            fg = color.darken(fg)
+                        end
+                    end
+                    
+                    local bg = self.color.bg
+                    if (self.gitChanges[y].old and self.gitChanges[y].new) then bg = self.color.bg_git_mod
+                    elseif self.gitChanges[y].old then bg = self.color.bg_git_del
+                    elseif self.gitChanges[y] then bg = self.color.bg_git_add
+                    elseif spansel then bg = self.color.bg_selected
+                    elseif selected then bg = self.color.bg_fully_selected
+                    end
+                    
+                    if (selected and not self.cells.screen.t.hasFocus) then 
+                        bg = color.darken(bg)
+                    end
+                    
+                    local cr = (function () 
+    if (y < #self.state.s.lines) then 
+    return c else 
+    return ' '
+                         end
+end)()
+                    self.cells.set(col, row, cr, fg, bg)
+                end
+            end
+        end
+        
+        self:drawPreviews()
+        return self:drawGitScroll()
+    end
+
+return gutter

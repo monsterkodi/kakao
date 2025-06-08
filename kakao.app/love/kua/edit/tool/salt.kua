@@ -1,0 +1,73 @@
+###
+ 0000000   0000000   000      000000000
+000       000   000  000         000   
+0000000   000000000  000         000   
+     000  000   000  000         000   
+0000000   000   000  0000000     000   
+###
+
+use ../../../kxk ▪ kseg
+use ../../../kxk ◆ salter
+                 
+function salt
+
+    #  0000000   0000000   000      000000000  00000000  0000000    
+    # 000       000   000  000         000     000       000   000  
+    # 0000000   000000000  000         000     0000000   000   000  
+    #      000  000   000  000         000     000       000   000  
+    # 0000000   000   000  0000000     000     00000000  0000000    
+    
+    @isSaltedLine: line ->
+    
+        trimmed = kseg.trim(kseg.trim(kseg.trim(line) '#'))
+        if trimmed[0] in '█0'
+            kseg.collectGraphemes(trimmed).length <= 3
+        
+    #  0000000   0000000   000      000000000        000  000   000   0000000  00000000  00000000   000000000  
+    # 000       000   000  000         000           000  0000  000  000       000       000   000     000     
+    # 0000000   000000000  000         000           000  000 0 000  0000000   0000000   0000000       000     
+    #      000  000   000  000         000           000  000  0000       000  000       000   000     000     
+    # 0000000   000   000  0000000     000           000  000   000  0000000   00000000  000   000     000     
+    
+    @findPositionsForSaltInsert: lines pos ->
+    
+        y = pos[1]
+        ⮐  if not @isSaltedLine lines[y]
+        
+        sy = y
+        while @isSaltedLine lines[sy-1]
+            sy -= 1
+            break if y-sy >= 4
+            
+        ey = y
+        while @isSaltedLine lines[ey+1]
+            ey += 1
+            break if ey-sy >= 4
+                    
+        posl = []
+        if ey-sy >= 4
+            for y in sy..sy+4
+                posl.push [pos[0] y]
+        posl
+        
+    #  0000000    0000000   0000000  000  000  000   000  00000000   0000000   0000000    00000000  00000000   
+    # 000   000  000       000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000000000  0000000   000       000  000  000000000  0000000   000000000  000   000  0000000   0000000    
+    # 000   000       000  000       000  000  000   000  000       000   000  000   000  000       000   000  
+    # 000   000  0000000    0000000  000  000  000   000  00000000  000   000  0000000    00000000  000   000  
+    
+    @insertAsciiHeaderForPositionsAndRanges: lines posl ranges ->
+        
+        if empty ranges
+            ranges = posl.map (p) => @rangeOfClosestWordToPos(lines p)
+        
+        text = @joinLines @textForLineRanges(lines ranges) ' '
+        
+        indt = lpad @lineIndentAtPos(lines posl[0])
+        
+        salt = salter(text prepend:indt+'# ') + '\n'
+                
+        [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]]]
+        [lines posl []]
+
+export salt

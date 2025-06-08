@@ -1,0 +1,93 @@
+###
+    ███████    ████████    ███████    ███████   ████████ 
+    ███   ███  ███   ███  ███   ███  ███   ███  ███   ███
+    ███   ███  ███████    ███   ███  ███   ███  ████████ 
+    ███   ███  ███   ███  ███   ███  ███   ███  ███      
+    ███████    ███   ███   ███████    ███████   ███      
+###
+
+use ../../../kxk    ▪ post slash
+use ../../edit/tool ◆ belt
+use ../../theme     ◆ color theme
+use ../../util/img  ◆ rounded
+use ../menu         ◆ inputchoice
+use                 ◆ quicky diritem
+
+function droop extends quicky
+
+    @: @screen @editor ->
+
+        super @screen 'droop' 
+
+        @isVisible = false
+        
+        @setColor 'bg'    theme.droop.bg
+        @setColor 'frame' theme.quicky.frame
+    
+        post.on 'droop.show' @onShow
+        post.on 'droop.hide' @onHide
+        
+    onHide: => @hide()
+    
+    onShow: d =>
+    
+        @pos = d.pos
+        
+        ⮐  if empty d.files
+        
+        if d.files[0] is str
+            items = d.files.map (f) -> path:f
+        else
+            items = d.files
+
+        for item in items
+            item.tilde = ' '+diritem.symbolName(item)
+            
+        lines = items.map (i) -> i.tilde
+        @choicesWidth = belt.widthOfLines lines
+        @showPathItems items
+        
+    preview: item ○=>        
+    
+    drawFrame: ->
+
+        super()
+        
+        sy = 0
+        bg = @color.bg
+        
+        if @input.visible()
+            sy = 2
+            bg = color.brighten(bg) if @input.hasFocus() 
+        
+        if @cells.y <= 1 and @input.hidden()
+            @cells.fill_row sy 1 @cells.cols-2 ' ' null bg
+            @cells.img 0             sy 'rounded.border.l' bg 1002
+            @cells.img @cells.cols-1 sy 'rounded.border.r' bg 1002
+
+    onChoicesAction: action choice =>
+    
+        inputchoice.prototype.onChoicesAction.call @ action choice
+        
+    arrange: =>
+            
+        ih = @inputIsActive() ? 2 : 0
+        iz = max 0 ih - 1
+        
+        cw = @choicesWidth+3
+        w  = cw+2 
+        
+        ch = min 10 @choices.numFiltered()
+        h  = ch + ih + 2
+    
+        x  = @pos[0] - int(cw/2)
+        y  = @pos[1]
+        
+        x = min x @editor.cells.x + @editor.cells.cols - w # clamp position to right side of editor
+        x = max x @editor.cells.x # clamp position to left side of editor
+        
+        @input.layout    x+2  y+1     w-4  iz
+        @choices.layout  x+1  y+1+ih  cw   ch
+        @cells.layout    x    y       w    h
+    
+export droop

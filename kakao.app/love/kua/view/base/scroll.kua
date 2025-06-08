@@ -1,0 +1,138 @@
+###
+     ███████   ███████  ████████    ███████   ███      ███      
+    ███       ███       ███   ███  ███   ███  ███      ███      
+    ███████   ███       ███████    ███   ███  ███      ███      
+         ███  ███       ███   ███  ███   ███  ███      ███      
+    ███████    ███████  ███   ███   ███████   ███████  ███████  
+
+    scrolls a view
+    used by any multiline editor
+###
+
+# use ../../../kxk   ▪ post
+# use ../../theme    ◆ theme
+# use ../../util/img ◆ squares sircels
+# use                ◆ view
+use view.base.view
+
+class scroll extends view
+
+    @: screen state side='left' -> 
+    
+        @state = state
+        @side = side
+        view.init @ screen @state∙owner() & '_scroll'
+        
+        @pointerType = 'pointer'
+        
+        @setColor 'bg'    theme.gutter.bg
+        @setColor 'dot'   theme.scroll.dot
+        @setColor 'knob'  theme.scroll.knob
+        @setColor 'hover' theme.scroll.hover
+            
+    # 00     00   0000000   000   000   0000000  00000000  
+    # 000   000  000   000  000   000  000       000       
+    # 000000000  000   000  000   000  0000000   0000000   
+    # 000 0 000  000   000  000   000       000  000       
+    # 000   000   0000000    0000000   0000000   00000000  
+    
+    onMouse: event ->
+        
+        (col row) = @eventPos event
+        
+        # super event
+        
+        switch event.type
+            
+            'press'
+            
+                if @hover
+                    @doDrag = true
+                    post.emit 'pointer''grabbing' 
+                    ⮐  @scrollToPixel event.pixel
+                    
+            'drag'
+            
+                if @doDrag
+                    @hover = true
+                    post.emit 'pointer''grab' 
+                    ⮐  @scrollToPixel event.pixel
+                    
+                @hover = false
+                
+            'release'
+            
+                if @doDrag
+                    if @hover
+                        post∙emit 'pointer' 'pointer' 
+                    @doDrag = nil
+                    ⮐  true
+        @hover
+        
+    isActive: ->
+        
+        @state.s.lines.length > @cells.rows
+        
+    #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
+    # 000       000       000   000  000   000  000      000         000     000   000  
+    # 0000000   000       0000000    000   000  000      000         000     000   000  
+    #      000  000       000   000  000   000  000      000         000     000   000  
+    # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
+    
+    scrollToPixel: pixel ->
+    
+        csz = @screen.t.cellsz
+        ⮐  if empty(csz)
+
+        view = @state.s.view.asMutable()
+        
+        rowf = pixel[1]/csz[1]-@cells.y
+        view[1] = math.floor(rowf * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        
+        maxY = @state.s.lines.length - @cells.rows
+        
+        if maxY > 0
+            view[1] = math.min maxY view[1] 
+        view[1] = math.max 0 view[1]
+        
+        ⮐  true if view eql @state.s.view
+        
+        @state.setView view 
+        
+        {redraw:true}
+        
+    # 0000000    00000000    0000000   000   000  
+    # 000   000  000   000  000   000  000 0 000  
+    # 000   000  0000000    000000000  000000000  
+    # 000   000  000   000  000   000  000   000  
+    # 0000000    000   000  000   000  00     00  
+    
+    draw: ->
+
+        csz = @screen.t.cellsz
+        ⮐  if empty csz
+        
+        rows = @cells.rows
+        
+        @cells.fill_col 0 0 rows ' ' null @color.bg
+        
+        lnum = @state.s.lines.length
+        
+        ⮐  if lnum <= rows
+        
+        kh = ((rows*rows) / lnum) * csz[1]
+        ky = ((rows*csz[1]-kh) * @state.s.view[1] / (lnum-rows)) 
+
+        fg = if @hover ➜ @color.hover ➜ @color.knob
+        
+        x  = @cells.x*csz[0]
+        y  = int @cells.y*csz[1]+ky
+        w  = int csz[0]/2
+        h  = int kh
+        
+        squares.place x int(y+w/2) w h-w fg
+        
+        sircels.place x y     w (ky or {fg: @color.dot}) 1111
+        sircels.place x y+h-w w ((y+h < (@cells.y+rows)*csz[1]-1) or {fg: @color.dot}) 1111
+
+⮐  scroll

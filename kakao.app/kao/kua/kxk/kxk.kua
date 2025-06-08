@@ -26,6 +26,12 @@ _G.empty = v ->
         "nil"    ➜ ⮐  true
         
     false
+    
+_G.valid = v -> not empty v
+    
+_G.clamp = l h v ->
+
+    math.min(math.max(l v) h)
 
 _G.slice = a first last ->
 
@@ -61,9 +67,9 @@ _G.write = ... ->
     s = ""
     for i v in ipairs {...}
         s &= $v
-    # s = table.concat {...} ""
     s &= "\27[0m\n"
-    ffi.C.write 1 s s.len
+    # ffi.C.write 1 s s.len
+    log s
     
 timers = {}
     
@@ -93,5 +99,7 @@ _G.kstr     = require "kxk.kstr"
 _G.kseg     = require "kxk.kseg"
 _G.strg     = require "kxk.strg"
 _G.test     = require "kxk.test"
+_G.events   = require "kxk.events"
+_G.util     = require "kxk.util"
 
 ⮐  {}

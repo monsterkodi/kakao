@@ -8,32 +8,45 @@ class events
 
     @: -> @handlers = []
     
-    on: event handler ->
+    on: event handler o ->
     
+        @handlers ?= []
         list = @handlers[event] or []
-        ⮐  @ if list:has handler
         
-        list:push handler
+        ⮐  @ if list∙has handler
+        
+        if o
+            list.push [o handler]
+        else
+            list∙push handler
         @handlers[event] = list
         @
         
-    emit: event ... ->
-    
+    emit: (event, ...) ->
+        # log 'emit ' event
         ret  = false
+        @handlers ?= []
         list = @handlers[event]
         if list
             for i in list.len..1
                 if list[i]
-                    list[i](...)
+                    if list[i] is "function"
+                        list[i](...)
+                    else
+                        list[i][1](list[i][0], ...)
         
-    removeListener: event handler ->
+    removeListener: event handler o ->
     
+        @handlers ?= []
         list = @handlers[event]
         ⮐  @ if not list
         
         if handler
             for i in 1..list.len
                 if list[i] == handler
+                    table.remove(list, i)
+                    break
+                elif list[i] is array and list[i][0] == o and list[i][1] == handler
                     table.remove(list, i)
                     break
             
