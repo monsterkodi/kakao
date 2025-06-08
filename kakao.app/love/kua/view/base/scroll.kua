@@ -20,8 +20,10 @@ class scroll extends view
     @: screen state side='left' -> 
     
         @state = state
-        @side = side
-        view.init @ screen @state∙owner() & '_scroll'
+        @side  = side
+        log "----state " @state.name
+        # view.init @ screen (@state∙owner() & '_scroll')
+        view.init @, screen, (@state.name & '_scroll')
         
         @pointerType = 'pointer'
         

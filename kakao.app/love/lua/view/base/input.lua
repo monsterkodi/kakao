@@ -57,7 +57,7 @@ function input:onMouse(event)
 
 function input:current() 
         if valid(self.state.s.lines) then 
-            return self.state.s.lines[0]:str()
+            return self.state.s.lines[1]:str()
         end
         
         return ""

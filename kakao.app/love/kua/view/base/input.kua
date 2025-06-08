@@ -47,7 +47,7 @@ class input extends editor
 
     current: -> 
         if valid @state.s.lines
-            ⮐  @state.s.lines[0]∙str()
+            ⮐  @state.s.lines[1]∙str()
         ""
 
     set: text ->

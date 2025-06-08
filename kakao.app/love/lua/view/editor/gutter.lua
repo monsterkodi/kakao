@@ -29,7 +29,7 @@ function gutter:init(editor)
         
         self.state = self.editor.state
         
-        view.init(self, self.editor.screen, self.state:owner() .. '.gutter')
+        view.init(self, self.editor.screen, self.state.name .. '.gutter')
         
         self:setColor('fg', theme.gutter.fg)
         self:setColor('bg', theme.gutter.bg)

@@ -43,7 +43,8 @@ function screen:initSize(cols, rows)
 
 
 function screen:add(x, y, char, fg, bg) 
-        local w = kseg.segWidth(char)
+        -- w = kseg.segWidth char
+        local w = 1
         if (w > 1) then 
             if (#char > 4) then 
                 char = (('\x1b]66;w=2;' + char) + '\x07')

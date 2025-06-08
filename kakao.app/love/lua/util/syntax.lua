@@ -133,9 +133,11 @@ function syntax:appendSegls(segls, ext)
 
 
 function syntax:getClass(x, y) 
-        for dss in self.diss[y] do 
-            if ((dss.start <= x) < (dss.start + #dss)) then 
-                return dss.clss
+        if (self.diss and self.diss[y]) then 
+            for dss in self.diss[y] do 
+                if ((dss.start <= x) < (dss.start + #dss)) then 
+                    return dss.clss
+                end
             end
         end
         

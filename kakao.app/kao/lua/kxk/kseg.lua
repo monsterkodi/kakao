@@ -38,6 +38,14 @@ function kseg.static.segls(any)
     return kseg(l)
 end)
         end
+        
+        if is(any, array) then 
+            return any:map(function (l) 
+    return kseg(l)
+end)
+        end
+        
+        return error("segls???", any)
     end
 
 

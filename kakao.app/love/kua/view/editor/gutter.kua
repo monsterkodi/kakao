@@ -27,7 +27,7 @@ class gutter extends view
     
         @state = @editor.state
         
-        view.init @ @editor.screen @state∙owner() & '.gutter'
+        view.init @, @editor.screen, (@state.name & '.gutter')
         
         @setColor 'fg'                theme.gutter.fg
         @setColor 'bg'                theme.gutter.bg

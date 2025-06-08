@@ -20,7 +20,7 @@ class draw extends view
 
     @: screen name features ->
         
-        view.init @ screen name features
+        view.init @, screen, name, features
         
         @setColor 'bg'        theme.editor.bg
         @setColor 'empty'     theme.editor.empty
@@ -47,12 +47,11 @@ class draw extends view
         if @complete
             lines = @complete∙preDrawLines lines 
         # lines  = mode.preDrawLines @state @state.s.lines
-        
-        for row in 0...@cells.rows
+        for row in 1..@cells.rows
             
             y = row+view[1]
-            
-            break if y >= lines.length
+            # log "drawRow #{y} #{lines.len}"
+            break if y > lines.len
             
             @drawLine lines[y] y row
             
@@ -85,7 +84,7 @@ class draw extends view
 
     drawLine: line y row ->
     
-        row ?= y-@state.s.view[1]
+        row ?= y-@state.s.view[2]
         bg = @color.bg
         
         checkColor = false
@@ -94,47 +93,49 @@ class draw extends view
         syntax = @state.syntax
         view   = @state.s.view
     
-        linel = kseg.width(line) - view[0]
+        linel = kseg.width(line) - view[1]
         
-        c = 0
-        firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
-        firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
-        c = 1 if firstIndex != firstSegi            # one column to the right 
-        
-        x = 0
-        while x < @cells.cols
+        c = 1
+        # firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
+        # firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
+        # c = 1 if firstIndex != firstSegi            # one column to the right 
+        x = 1
+        while x <= @cells.cols
             
-            ci = x+view[0]
-            si = kseg.indexAtWidth line ci
+            ci = x+view[1]
+            # si = kseg.indexAtWidth line ci
+            si = ci
             
             # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
             
-            if si >= line.length
+            if si > line.len
                 # log "#{@name} #{r5 'break!'}"
                 break 
             
-            fg = syntax.getColor ci y
+            fg = syntax∙getColor ci y
                 
-            ch = syntax.getChar ci y line[si]
+            ch = syntax∙getChar ci y line[si]
             if ch == "#" ➜ checkColor = true
-            elif ch == '0' or ch == '█'
-                clss = syntax.getClass ci y
-                if clss.endsWith('header') ➜ headerClass = clss
+            # elif ch == '0' or ch == '█'
+            #     clss = syntax∙getClass ci y
+            #     if clss.endsWith('header') ➜ headerClass = clss
 
-            cw = kseg.segWidth line[si]
-            cw = max 1 cw # todo: this is to prevent endless loop with zero width characters, should be fixed eventually
+            # cw = kseg.segWidth line[si]
+            cw = 1
+            # cw = max 1 cw # todo: this is to prevent endless loop with zero width characters, should be fixed eventually
             x += cw
             
-            if x < @cells.cols
+            if x <= @cells.cols
                 # @cells.meta_clone c row # ϵ⌶⟙ℍϵℜ 𝛋𝚒⟅⟅ 𝚒𝜏 ⊚ℜ ⫐◯ 𝚒𝜏!
-                c += @cells.add c row ch fg bg
+                # log c, row, ch, fg, bg
+                c += @cells∙add c row ch fg bg
             
             if clss == 'invert_bg'
                 bg = @color.bg
                 
         @drawRowBackground row linel
                 
-        if checkColor ➜ @drawColorPills  line row linel       
+        if checkColor  ➜ @drawColorPills  line row linel       
         if headerClass ➜ @drawAsciiHeader line row headerClass 
         
     # 00000000    0000000   000   000       0000000     0000000    0000000  000   000   0000000   00000000   0000000    
@@ -145,15 +146,15 @@ class draw extends view
     
     drawRowBackground: row linel ->
         
-        if row+view[1] == @state.mainCursor()[1]
-            if linel > 0
-                @cells.bg_rect 0 row linel row @color.cursor.main
-            if linel < @cells.cols
-                @cells.bg_fill max(0 linel) row -1 row @color.cursor.empty
-        else
-            if linel > 0
-                @cells.bg_rect 0 row linel row @color.bg
-            @cells.bg_fill max(0 linel) row -1 row @color.empty
+        # if row+@state.s.view[1] == @state∙mainCursor()[1]
+        #     if linel > 0
+        #         @cells∙bg_rect 0 row linel row @color.cursor.main
+        #     if linel < @cells.cols
+        #         @cells∙bg_fill math.max(0 linel) row -1 row @color.cursor.empty
+        # else
+        #     if linel > 0
+        #         @cells∙bg_rect 0 row linel row @color.bg
+        #     @cells∙bg_fill math.max(0 linel) row -1 row @color.empty
             
     # 000000000  00000000    0000000   000  000      000  000   000   0000000   
     #    000     000   000  000   000  000  000      000  0000  000  000        

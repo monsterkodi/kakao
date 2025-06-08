@@ -53,11 +53,10 @@ function draw:draw()
         end
         
         -- lines  = mode.preDrawLines @state @state.s.lines
-        
-        for row = 0, self.cells.rows-1 do 
+        for row in iter(1, self.cells.rows) do 
             local y = (row + view[1])
-            
-            if (y >= #lines) then break end
+            -- log "drawRow #{y} #{lines.len}"
+            if (y > #lines) then break end
             
             self:drawLine(lines[y], y, row)
         end
@@ -100,7 +99,7 @@ function draw:draw()
 
 
 function draw:drawLine(line, y, row) 
-        row = row or ((y - self.state.s.view[1]))
+        row = row or ((y - self.state.s.view[2]))
         local bg = self.color.bg
         
         local checkColor = false
@@ -109,45 +108,42 @@ function draw:drawLine(line, y, row)
         local syntax = self.state.syntax
         local view = self.state.s.view
         
-        local linel = (kseg.width(line) - view[0])
+        local linel = (kseg.width(line) - view[1])
         
-        local c = 0
-        local firstIndex = kseg.indexAtWidth(line, view[0]) -- check if leftmost grapheme is 
-        local firstSegi = kseg.segiAtWidth(line, view[0]) -- cut in half, if yes, start at
-        c = (function () 
-    if (firstIndex ~= firstSegi) then 
-    return 1
-              end
-end)() -- one column to the right 
-        
-        local x = 0
-        while (x < self.cells.cols) do 
-            local ci = (x + view[0])
-            local si = kseg.indexAtWidth(line, ci)
+        local c = 1
+        -- firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
+        -- firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
+        -- c = 1 if firstIndex != firstSegi            # one column to the right 
+        local x = 1
+        while (x <= self.cells.cols) do 
+            local ci = (x + view[1])
+            -- si = kseg.indexAtWidth line ci
+            local si = ci
             
             -- log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
             
-            if (si >= #line) then 
+            if (si > #line) then 
                 -- log "#{@name} #{r5 'break!'}"
                 break
             end
             
-            local fg = syntax.getColor(ci, y)
+            local fg = syntax:getColor(ci, y)
             
-            local ch = syntax.getChar(ci, y, line[si])
-            if (ch == "#") then checkColor = true
-            elseif ((ch == '0') or (ch == '█')) then 
-                local clss = syntax.getClass(ci, y)
-                if clss.endsWith('header') then headerClass = clss end
-            end
+            local ch = syntax:getChar(ci, y, line[si])
+            if (ch == "#") then checkColor = true end
+            -- elif ch == '0' or ch == '█'
+            --     clss = syntax∙getClass ci y
+            --     if clss.endsWith('header') ➜ headerClass = clss
             
-            local cw = kseg.segWidth(line[si])
-            cw = max(1, cw) -- todo: this is to prevent endless loop with zero width characters, should be fixed eventually
+            -- cw = kseg.segWidth line[si]
+            local cw = 1
+            -- cw = max 1 cw # todo: this is to prevent endless loop with zero width characters, should be fixed eventually
             x = x + cw
             
-            if (x < self.cells.cols) then 
+            if (x <= self.cells.cols) then 
                 -- @cells.meta_clone c row # ϵ⌶⟙ℍϵℜ 𝛋𝚒⟅⟅ 𝚒𝜏 ⊚ℜ ⫐◯ 𝚒𝜏!
-                c = c + (self.cells.add(c, row, ch, fg, bg))
+                -- log c, row, ch, fg, bg
+                c = c + (self.cells:add(c, row, ch, fg, bg))
             end
             
             if (clss == 'invert_bg') then 
@@ -171,21 +167,15 @@ end)() -- one column to the right
 
 
 function draw:drawRowBackground(row, linel) 
-        if ((row + view[1]) == self.state.mainCursor()[1]) then 
-            if (linel > 0) then 
-                self.cells.bg_rect(0, row, linel, row, self.color.cursor.main)
-            end
-            
-            if (linel < self.cells.cols) then 
-                return self.cells.bg_fill(max(0, linel), row, -1, row, self.color.cursor.empty)
-            end
-        else 
-            if (linel > 0) then 
-                self.cells.bg_rect(0, row, linel, row, self.color.bg)
-            end
-            
-            return self.cells.bg_fill(max(0, linel), row, -1, row, self.color.empty)
-        end
+        -- if row+@state.s.view[1] == @state∙mainCursor()[1]
+        --     if linel > 0
+        --         @cells∙bg_rect 0 row linel row @color.cursor.main
+        --     if linel < @cells.cols
+        --         @cells∙bg_fill math.max(0 linel) row -1 row @color.cursor.empty
+        -- else
+        --     if linel > 0
+        --         @cells∙bg_rect 0 row linel row @color.bg
+        return --     @cells∙bg_fill math.max(0 linel) row -1 row @color.empty
     end
 
 -- 000000000  00000000    0000000   000  000      000  000   000   0000000   

@@ -26,7 +26,6 @@ function fileeditor:init(screen, name)
         local features = array('scroll', 'gutter', 'mapscr', 'complete', 'filepos', 'replex', 'brckts', 'unype', 'salter', 'vimple', 'uniko')
         
         editor.init(self, screen, name, features)
-        -- super screen name features
         
         -- if @feats.mapscr
         --     @mapscr = mapscr @

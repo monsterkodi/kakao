@@ -27,9 +27,8 @@ local state = class("state", events)
 
 function state:init(cells, name) 
         self.cells = cells
-        
         self.name = name .. '.state'
-        
+        print("STATE ", self.name)
         self.allowedModes = {}
         
         -- for act in [del insert select join indent multi main]
@@ -43,6 +42,11 @@ function state:init(cells, name)
         
         self:clearSingle()
         return self
+    end
+
+
+function state:__tostring() 
+    return self.name
     end
 
 
@@ -176,6 +180,8 @@ function state:setLines(lines)
 function state:setSegls(segls) 
         self.segls = segls
         
+        print("setSegls", segls)
+        
         if empty(self.segls) then self.segls = array(array()) end
         
         self.syntax:setSegls(self.segls)
@@ -191,7 +197,9 @@ function state:setSegls(segls)
 
 
 function state:loadLines(lines) 
-        if valid((lines and is(not lines[0], str))) then error("" .. self.name .. ".loadLines - first line not a string?", lines[0]) end
+        if (valid(lines) and not is(lines[1], "string")) then 
+            error("" .. self.name .. ".loadLines - first line not a string?", lines)
+        end
         
         return self:loadSegls(kseg.segls(lines))
     end
@@ -261,7 +269,9 @@ function state:appendLines(lines, ext)
 function state:changeLinesSegls() 
          --oldLines = @s.lines
          --         
-         --@s = @s.set 'lines' @segls
+         -- @s = @s.set 'lines' @segls
+         self.s.lines = self.segls
+         print(#self.s.lines)
          --         
          --if oldLines != @s.lines
          --    diff = belt.diffLines oldLines @s.lines            
@@ -329,11 +339,14 @@ function state:ende()
 
 
 function state:pushState() 
-               self.h:push(self.s) ; return self
+        self.h:push(self.s)
+        return self
     end
 
+
 function state:swapState() 
-               self.h:pop() ; return self:pushState()
+        self.h:pop()
+        return self:pushState()
     end
 
 
@@ -377,20 +390,17 @@ function state:copy(opt)
         opt = opt or ({})
         
         if (os.platform() == 'darwin') then 
-                
-                proc = child_process.spawn 'pbcopy'
-                proc.stdin.write(self:textOfSelectionOrCursorLines())
-                proc.stdin.close()
+                local prcs = child_process.spawn('pbcopy')
+                prcs.stdin.write(self:textOfSelectionOrCursorLines())
+                prcs.stdin.close()
         elseif (os.platform() == 'linux') then 
-                
-                proc = child_process.spawn("xsel", {"-i", "--clipboard"})
-                proc.stdin.write(self:textOfSelectionOrCursorLines())
-                proc.stdin.close()
+                local prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
+                prcs.stdin.write(self:textOfSelectionOrCursorLines())
+                prcs.stdin.close()
         elseif (os.platform() == 'win32') then 
-                
-                proc = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
-                proc.stdin.write(self:textOfSelectionOrCursorLines())
-                proc.stdin.close()
+                local prcs = child_process.spawn("" .. slash.cwd() .. "/../../bin/utf8clip.exe")
+                prcs.stdin.write(self:textOfSelectionOrCursorLines())
+                prcs.stdin.close()
         end
         
         if (opt.deselect ~= false) then 
@@ -537,6 +547,161 @@ function state:setView(view)
 
 function state:rangeForVisibleLines() 
         return array(self.s.view[0], self.s.view[1], ((self.s.view[0] + self.cells.cols) - 1), ((self.s.view[1] + self.cells.rows) - 1))
+    end
+
+
+function state:setMain(m) 
+        local mc = self:mainCursor()
+        -- @s = @s.set 'main' clamp(1 @s.cursors.length m)
+        self.s.main = clamp(1, #self.s.cursors, m)
+        return self:adjustViewForMainCursor({adjust = 'topBotDeltaGrow', mc = mc})
+    end
+
+
+function state:mainCursor() 
+        --.asMutable()
+        return self.s.cursors[self.s.main]
+    end
+
+--  ███████  ████████  █████████
+-- ███       ███          ███   
+-- ███████   ███████      ███   
+--      ███  ███          ███   
+-- ███████   ████████     ███   
+
+
+function state:setMainCursor(x, y) 
+        local x, y = belt.pos(x, y)
+        
+        y = clamp(1, #self.s.lines, y)
+        x = math.max(1, x)
+        
+        return self:setCursors(array(array(x, y)))
+    end
+
+-- ██     ██   ███████   ███   ███  ████████
+-- ███   ███  ███   ███  ███   ███  ███     
+-- █████████  ███   ███   ███ ███   ███████ 
+-- ███ █ ███  ███   ███     ███     ███     
+-- ███   ███   ███████       █      ████████
+
+
+function state:moveMainCursorInDirection(dir, opt) 
+        opt = opt or ({})
+        
+        local mc = belt.positionInDirection(self:mainCursor(), dir)
+        
+        if opt.keep then 
+            return self:addCursor(mc)
+        else 
+            return self:moveMainCursor(mc)
+        end
+    end
+
+
+function state:moveMainCursor(x, y) 
+        local x, y = belt.pos(x, y)
+        
+        y = clamp(1, #self.s.lines, y)
+        x = max(1, x)
+        
+        local mainCursor = self:mainCursor()
+        
+        if (mainCursor == array(x, y)) then return end
+        
+        local cursors = self:allCursors()
+        
+        cursors:splice(belt.indexOfPosInPositions(mainCursor, cursors), 1)
+        
+        local main = belt.indexOfPosInPositions(array(x, y), cursors)
+        if (main < 1) then 
+            cursors:push(array(x, y))
+            main = #cursors
+        end
+        
+        return self:setCursors(cursors, {main = main})
+    end
+
+-- ████████   ███████    ███    
+-- ███       ███   ███   ███    
+-- ███████   ███   ███   ███    
+-- ███       ███   ███   ███    
+-- ████████   ███████    ███████
+
+
+function state:singleCursorAtEndOfLine() 
+        local rng = belt.lineRangeAtPos(self.s.lines, self:mainCursor())
+        local mc = belt.endOfRange(rng)
+        
+        self:deselect()
+        return self:setCursors(array(mc))
+    end
+
+-- ███  ███   ███  ███████            ███████     ███████   ███      
+-- ███  ████  ███  ███   ███          ███   ███  ███   ███  ███      
+-- ███  ███ █ ███  ███   ███          ███████    ███   ███  ███      
+-- ███  ███  ████  ███   ███          ███   ███  ███   ███  ███      
+-- ███  ███   ███  ███████    ██████  ███████     ███████   ███████  
+
+
+function state:singleCursorAtIndentOrStartOfLine() 
+        local lines = self.s.lines
+        local mc = self:mainCursor()
+        
+        local rng = belt.lineRangeAtPos(lines, mc)
+        local ind = belt.lineIndentAtPos(lines, mc)
+        
+        if (ind < mc[0]) then 
+            mc[0] = ind
+        else 
+            mc = belt.startOfRange(rng)
+        end
+        
+        self:deselect()
+        return self:setCursors(array(mc))
+    end
+
+-- ████████    ███████    ███████   ████████
+-- ███   ███  ███   ███  ███        ███     
+-- ████████   █████████  ███  ████  ███████ 
+-- ███        ███   ███  ███   ███  ███     
+-- ███        ███   ███   ███████   ████████
+
+
+function state:singleCursorPage(dir) 
+        local mc = self:mainCursor()
+        
+        if (dir == 'up') then mc[1] = mc[1] - (self.cells.rows)
+        elseif (dir == 'down') then mc[1] = mc[1] + (self.cells.rows)
+        end
+        
+        self:deselect()
+        return self:setCursors(array(mc))
+    end
+
+
+function state:wordAtCursor() 
+    return belt.wordAtPos(self.s.lines, self:mainCursor())
+    end
+
+function state:chunkBeforeCursor() 
+    return belt.chunkBeforePos(self.s.lines, self:mainCursor())
+    end
+
+function state:chunkAfterCursor() 
+    return belt.chunkAfterPos(self.s.lines, self:mainCursor())
+    end
+
+--  0000000  00000000  000      00000000   0000000  000000000  
+-- 000       000       000      000       000          000     
+-- 0000000   0000000   000      0000000   000          000     
+--      000  000       000      000       000          000     
+-- 0000000   00000000  0000000  00000000   0000000     000     
+
+
+function state:setMainCursorAndSelect(x, y) 
+        self:setSelections(belt.extendLineRangesFromPositionToPosition, self.s.lines, self:allSelections(), self:mainCursor(), array(x, y))
+        return self:setCursors(array(array(x, y)), {adjust = 'topBotDelta'})
     end
 
 return state

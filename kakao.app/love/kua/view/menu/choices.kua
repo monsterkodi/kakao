@@ -205,16 +205,16 @@ class choices extends editor
     
     select: row -> 
     
-        ⮐  if not row is num
-        ⮐  if row < 0 or row >= @state.s.lines.length
+        ⮐  if not row is "number"
+        ⮐  if row < 1 or row > @state.s.lines.len
     
-        @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
-        @state.setMainCursor 0 row
+        # @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
+        @state.setMainCursor 1 row
 
         @grabFocus() if @focusable
         @emit 'select' @choiceAtRow(row)
         
-    selectFirst: -> @select 0
+    selectFirst: -> @select 1
     
     moveSelection: dir ->
         

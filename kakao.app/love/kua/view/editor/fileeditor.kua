@@ -36,7 +36,6 @@ class fileeditor extends editor
             ]
         
         editor.init @ screen name features
-        # super screen name features
         
         # if @feats.mapscr
         #     @mapscr = mapscr @

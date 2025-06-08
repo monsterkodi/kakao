@@ -25,9 +25,8 @@ class state extends events
     @: cells name ->
     
         @cells = cells
-
-        @name = name & '.state'
-        
+        @name  = name & '.state'
+        log "STATE " @name
         @allowedModes = {}
 
         # for act in [del insert select join indent multi main]
@@ -40,6 +39,8 @@ class state extends events
         @hasFocus = false
 
         @clearSingle()
+        
+    $: -> @name
 
     toggleMode: name -> mode.toggle(@ name) if @allowedModes[name]
     startMode:  name -> mode.start(@ name) if @allowedModes[name]
@@ -140,6 +141,8 @@ class state extends events
     
         @segls = segls
         
+        log "setSegls" segls
+        
         if empty @segls ➜ @segls = [[]]
         
         @syntax∙setSegls @segls
@@ -154,7 +157,8 @@ class state extends events
         
     loadLines: lines -> 
     
-        if valid lines and not lines[0] is str ➜ error "#{@name}.loadLines - first line not a string?" lines[0]
+        if valid(lines) and not (lines[1] is "string")
+            error "#{@name}.loadLines - first line not a string?" lines
         
         @loadSegls kseg.segls(lines)
     
@@ -212,7 +216,9 @@ class state extends events
     
          #oldLines = @s.lines
          #
-         #@s = @s.set 'lines' @segls
+         # @s = @s.set 'lines' @segls
+         @s.lines = @segls
+         log @s.lines.len
          #
          #if oldLines != @s.lines
          #    diff = belt.diffLines oldLines @s.lines            
@@ -259,8 +265,14 @@ class state extends events
             # delete @beginIndex
         @
 
-    pushState: -> @h∙push @s ; @
-    swapState: -> @h∙pop() ; @pushState()
+    pushState: -> 
+        @h∙push @s  
+        @
+        
+    swapState: -> 
+    
+        @h∙pop()  
+        @pushState()
 
     isDirty: -> @h.length > 1
     hasRedo: -> @r.length > 0
@@ -294,21 +306,21 @@ class state extends events
 
             'darwin'
 
-                proc = child_process.spawn 'pbcopy'
-                proc.stdin.write @textOfSelectionOrCursorLines()
-                proc.stdin.close()
+                prcs = child_process.spawn 'pbcopy'
+                prcs.stdin.write @textOfSelectionOrCursorLines()
+                prcs.stdin.close()
 
             'linux'
 
-                proc = child_process.spawn("xsel", {"-i", "--clipboard"})
-                proc.stdin.write @textOfSelectionOrCursorLines()
-                proc.stdin.close()
+                prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
+                prcs.stdin.write @textOfSelectionOrCursorLines()
+                prcs.stdin.close()
 
             'win32'
 
-                proc = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
-                proc.stdin.write @textOfSelectionOrCursorLines()
-                proc.stdin.close()
+                prcs = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
+                prcs.stdin.write @textOfSelectionOrCursorLines()
+                prcs.stdin.close()
                 
         @deselect() if opt.deselect != false
 
@@ -446,5 +458,136 @@ class state extends events
     rangeForVisibleLines: ->
 
         [@s.view[0] @s.view[1] @s.view[0]+@cells.cols-1 @s.view[1]+@cells.rows-1]
+
+    setMain: m -> 
+    
+        mc = @mainCursor()
+        # @s = @s.set 'main' clamp(1 @s.cursors.length m)
+        @s.main = clamp(1 @s.cursors.length m)
+        @adjustViewForMainCursor {adjust:'topBotDeltaGrow' mc:mc}
+        
+    mainCursor: -> 
+        #.asMutable()
+        @s.cursors[@s.main] 
+    
+    #  ███████  ████████  █████████
+    # ███       ███          ███   
+    # ███████   ███████      ███   
+    #      ███  ███          ███   
+    # ███████   ████████     ███   
+
+    setMainCursor: x y ->
+        
+        (x y) = belt.pos x y
+        
+        y = clamp 1 @s.lines.length y
+        x = math.max 1 x
+                        
+        @setCursors [[x y]]
+        
+    # ██     ██   ███████   ███   ███  ████████
+    # ███   ███  ███   ███  ███   ███  ███     
+    # █████████  ███   ███   ███ ███   ███████ 
+    # ███ █ ███  ███   ███     ███     ███     
+    # ███   ███   ███████       █      ████████
+
+    moveMainCursorInDirection: dir opt={} ->
+        
+        mc = belt.positionInDirection @mainCursor() dir
+        
+        if opt.keep
+            @addCursor mc
+        else
+            @moveMainCursor mc
+                        
+    moveMainCursor: x y ->
+                
+        (x y) = belt.pos x y
+        
+        y = clamp 1 @s.lines.length y
+        x = max 1 x
+        
+        mainCursor = @mainCursor()
+        
+        ⮐  if mainCursor == [x y]
+
+        cursors = @allCursors()
+
+        cursors∙splice belt.indexOfPosInPositions(mainCursor cursors) 1
+        
+        main = belt.indexOfPosInPositions [x y] cursors
+        if main < 1
+            cursors∙push [x y]
+            main = cursors.len
+        
+        @setCursors cursors {main:main}
+                
+    # ████████   ███████    ███    
+    # ███       ███   ███   ███    
+    # ███████   ███   ███   ███    
+    # ███       ███   ███   ███    
+    # ████████   ███████    ███████
+
+    singleCursorAtEndOfLine: ->
+        
+        rng = belt.lineRangeAtPos @s.lines @mainCursor()
+        mc  = belt.endOfRange rng
+        
+        @deselect()
+        @setCursors [mc]
+        
+    # ███  ███   ███  ███████            ███████     ███████   ███      
+    # ███  ████  ███  ███   ███          ███   ███  ███   ███  ███      
+    # ███  ███ █ ███  ███   ███          ███████    ███   ███  ███      
+    # ███  ███  ████  ███   ███          ███   ███  ███   ███  ███      
+    # ███  ███   ███  ███████    ██████  ███████     ███████   ███████  
+
+    singleCursorAtIndentOrStartOfLine: ->
+        
+        lines = @s.lines
+        mc    = @mainCursor()
+        
+        rng   = belt.lineRangeAtPos  lines mc
+        ind   = belt.lineIndentAtPos lines mc
+        
+        if ind < mc[0]
+            mc[0] = ind
+        else
+            mc  = belt.startOfRange rng
+        
+        @deselect()
+        @setCursors [mc]
+
+    # ████████    ███████    ███████   ████████
+    # ███   ███  ███   ███  ███        ███     
+    # ████████   █████████  ███  ████  ███████ 
+    # ███        ███   ███  ███   ███  ███     
+    # ███        ███   ███   ███████   ████████
+
+    singleCursorPage: dir ->
+
+        mc = @mainCursor()
+        
+        switch dir
+            'up'   ➜  mc[1] -= @cells.rows
+            'down' ➜  mc[1] += @cells.rows
+
+        @deselect()
+        @setCursors [mc]
+                                    
+    wordAtCursor:      -> belt.wordAtPos      @s.lines @mainCursor()
+    chunkBeforeCursor: -> belt.chunkBeforePos @s.lines @mainCursor()
+    chunkAfterCursor:  -> belt.chunkAfterPos  @s.lines @mainCursor()
+        
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    setMainCursorAndSelect: x y ->
+        
+        @setSelections belt.extendLineRangesFromPositionToPosition @s.lines @allSelections() @mainCursor() [x y]
+        @setCursors [[x y]] {adjust:'topBotDelta'}
 
 ⮐  state

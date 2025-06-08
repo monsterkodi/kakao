@@ -25,6 +25,9 @@ class kseg extends array
 
         if any is "string" 
             ⮐  kstr.lines(any)∙map((l) -> ⮐  kseg(l))
+        if any is array
+            ⮐  any∙map((l) -> ⮐  kseg(l))
+        error "segls???" any
         
     @codepoint: rune ->
     

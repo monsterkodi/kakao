@@ -25,7 +25,9 @@ function scroll:init(screen, state, side)
         
         self.state = state
         self.side = side
-        view.init(self, screen, self.state:owner() .. '_scroll')
+        print("----state ", self.state.name)
+        -- view.init @ screen (@state∙owner() & '_scroll')
+        view.init(self, screen, self.state.name .. '_scroll')
         
         self.pointerType = 'pointer'
         

@@ -38,7 +38,8 @@ class screen
     
     add: x y char fg bg ->
         
-        w = kseg.segWidth char
+        # w = kseg.segWidth char
+        w = 1
         if w > 1
             if char.length > 4
                 char = '\x1b]66;w=2;' + char + '\x07'

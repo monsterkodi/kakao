@@ -279,11 +279,11 @@ function choices:pageDownRow()
 
 
 function choices:select(row) 
-        if is(not row, num) then return end
-        if ((row < 0) or (row >= #self.state.s.lines)) then return end
+        if is(not row, "number") then return end
+        if ((row < 1) or (row > #self.state.s.lines)) then return end
         
-        self.state.setSelections(array(belt.rangeOfLine(self.state.s.lines, row)))
-        self.state.setMainCursor(0, row)
+        -- @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
+        self.state.setMainCursor(1, row)
         
         if self.focusable then self:grabFocus() end
         return self:emit('select', self:choiceAtRow(row))
@@ -291,7 +291,7 @@ function choices:select(row)
 
 
 function choices:selectFirst() 
-    return self:select(0)
+    return self:select(1)
     end
 
 
