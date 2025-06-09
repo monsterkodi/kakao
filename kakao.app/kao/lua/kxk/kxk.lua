@@ -130,5 +130,6 @@ _G.strg = require("kxk.strg")
 _G.test = require("kxk.test")
 _G.events = require("kxk.events")
 _G.util = require("kxk.util")
+_G.noon = require("kxk.noon")
 
 return {}

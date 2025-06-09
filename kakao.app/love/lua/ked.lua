@@ -25,6 +25,7 @@ fileeditor = require "view.editor.fileeditor"
 status = require "view.status.status"
 screen = require "view.screen.screen"
 menu = require "view.menu.menu"
+theme = require "theme.theme"
 -- use ./view/menu   ◆ context menu macro finder searcher differ 
 -- use ./view/colmns ◆ browse dircol funcol quicky droop
 
@@ -56,7 +57,7 @@ function KED:init()
         
         -- @session.on 'loaded' @onSessionLoaded
         
-        self.screen = screen(160, 40)
+        self.screen = screen(1, 1)
         
         _G.ked_screen = self.screen
         
@@ -81,6 +82,8 @@ function KED:init()
         -- @input.on 'action' @onInputAction
         
         print("\x1b[0m\x1b[90m", "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ", "\x1b[0m\x1b[32m", self.session.name, "\x1b[0m\x1b[90m", " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+        
+        -- log "THEME" noon(theme)
         
         -- @editor.state.hasFocus = true
         -- @editor.funtree = @funcol.funtree

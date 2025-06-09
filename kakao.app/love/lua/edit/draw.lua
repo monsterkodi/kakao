@@ -54,7 +54,7 @@ function draw:draw()
         
         -- lines  = mode.preDrawLines @state @state.s.lines
         for row in iter(1, self.cells.rows) do 
-            local y = (row + view[1])
+            local y = ((row + view[2]) - 1)
             -- log "drawRow #{y} #{lines.len}"
             if (y > #lines) then break end
             
@@ -99,7 +99,7 @@ function draw:draw()
 
 
 function draw:drawLine(line, y, row) 
-        row = row or ((y - self.state.s.view[2]))
+        -- row ?= y-@state.s.view[2]
         local bg = self.color.bg
         
         local checkColor = false
@@ -109,7 +109,7 @@ function draw:drawLine(line, y, row)
         local view = self.state.s.view
         
         local linel = (kseg.width(line) - view[1])
-        
+        -- log line, noon(dict.keys(@color))
         local c = 1
         -- firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
         -- firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at

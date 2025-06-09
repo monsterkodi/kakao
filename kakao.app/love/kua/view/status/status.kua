@@ -44,8 +44,7 @@ class status extends view
         @screen = screen
         @editor = editor
         
-        view.init @ screen 'status'
-        # super @screen 'status'
+        view.init @, screen, 'status'
         
         @state    = @editor.state
         @gutter   = 4
@@ -178,8 +177,8 @@ class status extends view
         
         @file = file
         ⮐  if empty @file
-        @crumbs.set slash.dir(@file)
-        @statusfile.set @file
+        @crumbs∙set slash.dir(@file)
+        @statusfile∙set @file
         
     # ███       ███████   ███   ███   ███████   ███   ███  █████████
     # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
@@ -218,11 +217,11 @@ class status extends view
                 
         x      = 0
         y      = 0
-        cursor = @state.mainCursor()
+        cursor = @state∙mainCursor()
         cols   = @cells.cols
         fnl    = @file.length
-        rdo    = @state.hasRedo()
-        dty    = @state.isDirty()
+        rdo    = @state∙hasRedo()
+        dty    = @state∙isDirty()
         
         set = x char fg bg -> 
             if fg is str ➜ fg = theme.status[fg]
@@ -241,9 +240,9 @@ class status extends view
             add char fg 'col'
         add '' 'col' @color.gutter # column number end
               
-        @crumbs.draw() # dir path
-        @statusfile.draw() # file
-        @filepos.draw()
+        @crumbs∙draw() # dir path
+        @statusfile∙draw() # file
+        @filepos∙draw()
         
         x += @crumbs.rounded.length
         x += @statusfile.rounded.length
@@ -287,7 +286,7 @@ class status extends view
             
         add '' 'dark' @color.gutter 
             
-        ci = clamp 0 3 int((@time/(1000*1000)-8)/8)
+        ci = clamp 0 3 math.floor((@time/(1000*1000)-8)/8)
         ch = string.sub " •" ci # 
         fg = [[32 32 32] [0 96 0] [255 0 0] [255 255 0]][ci]
         # switch ch

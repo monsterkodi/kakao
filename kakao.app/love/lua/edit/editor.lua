@@ -28,16 +28,13 @@ local editor = class("editor", draw)
 
 
 function editor:init(screen, name, features) 
-        print("editor1 ", name)
         draw.init(self, screen, name, features)
         
         self.screen = screen
         self.name = name
-        print("editor2 ", self.name)
         self.focusable = true
         
         self.state = state(self.cells, self.name)
-        print("+++++ ", self.state.name)
         post:on('focus', self.onFocus, self)
         
         complete = require "edit.complete"

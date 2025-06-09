@@ -28,13 +28,12 @@ local state = class("state", events)
 function state:init(cells, name) 
         self.cells = cells
         self.name = name .. '.state'
-        print("STATE ", self.name)
+        
         self.allowedModes = {}
         
         -- for act in [del insert select join indent multi main]
         --     for k v in pairs act
         --         @[k] = v.bind @
-        
         -- @handleKey = keys.bind @
         
         self.syntax = syntax(self.name .. '.syntax')
@@ -180,8 +179,6 @@ function state:setLines(lines)
 function state:setSegls(segls) 
         self.segls = segls
         
-        print("setSegls", segls)
-        
         if empty(self.segls) then self.segls = array(array()) end
         
         self.syntax:setSegls(self.segls)
@@ -271,7 +268,6 @@ function state:changeLinesSegls()
          --         
          -- @s = @s.set 'lines' @segls
          self.s.lines = self.segls
-         print(#self.s.lines)
          --         
          --if oldLines != @s.lines
          --    diff = belt.diffLines oldLines @s.lines            
@@ -439,7 +435,8 @@ function state:paste()
 function state:scrollView(dir, steps) 
         steps = steps or 1
         
-        local sy = 0
+        local sx = 1
+        local sy = 1
         
         if (dir == 'left') then sx = -1
         elseif (dir == 'right') then sx = 1
@@ -447,18 +444,18 @@ function state:scrollView(dir, steps)
         elseif (dir == 'down') then sy = steps
         end
         
-        local view = self.s.view.asMutable()
+        local view = self.s.view --.asMutable()
         
-        view[0] = view[0] + sx
-        view[1] = view[1] + sy
+        view[1] = view[1] + sx
+        view[2] = view[2] + sy
         
-        view[1] = clamp(0, max(0, (#self.s.lines - self.cells.rows)), view[1])
+        view[2] = clamp(1, math.max(1, (#self.s.lines - self.cells.rows)), view[2])
         
-        local maxOffsetX = max(0, ((self.maxLineWidth - self.cells.cols) + 2))
-        maxOffsetX = max(maxOffsetX, ((self:mainCursor()[0] - self.cells.cols) + 2))
-        view[0] = clamp(0, maxOffsetX, view[0])
+        local maxOffsetX = math.max(1, ((self.maxLineWidth - self.cells.cols) + 2))
+        maxOffsetX = math.max(maxOffsetX, ((self:mainCursor()[1] - self.cells.cols) + 2))
+        view[1] = clamp(1, maxOffsetX, view[1])
         
-        if view(eql, self.s.view) then return end
+        if (view == self.s.view) then return end
         
         return self:setView(view)
     end
@@ -479,25 +476,25 @@ function state:adjustViewForMainCursor(opt)
         
         local x, y = self:mainCursor()
         
-        local view = self.s.view.asMutable()
+        local view = self.s.view --.asMutable()
         
         local topBotDelta = 7
         local topDelta = 7
-        local botDelta = max(topDelta, int((self.cells.rows / 2)))
+        local botDelta = max(topDelta, math.floor((self.cells.rows / 2)))
         
         if (opt.adjust == 'topDelta') then 
-            view[1] = (y - topDelta)
+            view[2] = (y - topDelta)
         elseif ((opt.adjust == 'topBotDeltaGrow') and opt.mc) then 
-            local dtt = (y - view[1])
-            local dtb = (y - (view[1] + self.cells.rows))
+            local dtt = (y - view[2])
+            local dtb = (y - (view[2] + self.cells.rows))
             if (dtt < 0) then 
-                view[1] = (y - topDelta)
+                view[2] = (y - topDelta)
             elseif (dtb > 0) then 
-                view[1] = (y - (self.cells.rows - botDelta))
+                view[2] = (y - (self.cells.rows - botDelta))
             else 
-                local dir = (y - opt.mc[1])
+                local dir = (y - opt.mc[2])
                 if (((dtt < topDelta) and (dir < 0)) or ((-dtb < botDelta) and (dir > 0))) then 
-                    view[1] = view[1] + dir
+                    view[2] = view[2] + dir
                 end
             end
         else 
@@ -505,22 +502,22 @@ function state:adjustViewForMainCursor(opt)
                 topBotDelta = 0
             end
             
-            if (y >= (((view[1] + self.cells.rows) - 1) - topBotDelta)) then 
-                view[1] = (((y - self.cells.rows) + 1) + topBotDelta)
-            elseif (y < (view[1] + topBotDelta)) then 
-                view[1] = (y - topBotDelta)
+            if (y >= (((view[2] + self.cells.rows) - 1) - topBotDelta)) then 
+                view[2] = (((y - self.cells.rows) + 1) + topBotDelta)
+            elseif (y < (view[2] + topBotDelta)) then 
+                view[2] = (y - topBotDelta)
             end
         end
         
-        if ((view[1] > 0) and (#self.s.lines <= self.cells.rows)) then 
-            view[1] = 0
+        if ((view[2] > 1) and (#self.s.lines <= self.cells.rows)) then 
+            view[2] = 1
         end
         
         if not self.skipAdjustViewForMainCursor then 
-            view[0] = max(0, ((x - self.cells.cols) + 2)) -- adding one for wide graphemes
+            view[1] = math.max(1, ((x - self.cells.cols) + 2)) -- adding one for wide graphemes
         end
         
-        if view(eql, self.s.view) then return end
+        if (view == self.s.view) then return end
         
         return self:setView(view)
     end
@@ -530,8 +527,8 @@ function state:initView()
         -- view = @s.view.asMutable()
         local view = self.s.view
         
-        view[1] = clamp(0, math.max(0, (#self.s.lines - self.cells.rows)), view[1])
-        view[0] = math.max(0, (view[0] or 0))
+        view[2] = clamp(1, math.max(1, (#self.s.lines - self.cells.rows)), view[2])
+        view[1] = math.max(1, (view[1] or 1))
         
         return self:setView(view)
     end
@@ -546,7 +543,7 @@ function state:setView(view)
 
 
 function state:rangeForVisibleLines() 
-        return array(self.s.view[0], self.s.view[1], ((self.s.view[0] + self.cells.cols) - 1), ((self.s.view[1] + self.cells.rows) - 1))
+        return array(self.s.view[1], self.s.view[2], ((self.s.view[1] + self.cells.cols) - 1), ((self.s.view[2] + self.cells.rows) - 1))
     end
 
 
@@ -651,8 +648,8 @@ function state:singleCursorAtIndentOrStartOfLine()
         local rng = belt.lineRangeAtPos(lines, mc)
         local ind = belt.lineIndentAtPos(lines, mc)
         
-        if (ind < mc[0]) then 
-            mc[0] = ind
+        if (ind < mc[1]) then 
+            mc[1] = ind
         else 
             mc = belt.startOfRange(rng)
         end
@@ -671,8 +668,8 @@ function state:singleCursorAtIndentOrStartOfLine()
 function state:singleCursorPage(dir) 
         local mc = self:mainCursor()
         
-        if (dir == 'up') then mc[1] = mc[1] - (self.cells.rows)
-        elseif (dir == 'down') then mc[1] = mc[1] + (self.cells.rows)
+        if (dir == 'up') then mc[2] = mc[2] - (self.cells.rows)
+        elseif (dir == 'down') then mc[2] = mc[2] + (self.cells.rows)
         end
         
         self:deselect()

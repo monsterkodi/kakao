@@ -182,7 +182,7 @@ function screen:render(ox, oy, fontStep, fontSize)
                     love.graphics.rectangle("fill", (ox + ((x - 1) * fontStep)), (oy + ((y - 1) * fontSize)), fontStep, fontSize)
                 end
                 
-                if (#self.c[y][x].fg > 0) then 
+                if ((#self.c[y][x].fg > 0) and is(self.c[y][x].fg, array)) then 
                     love.graphics.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))
                 end
                 

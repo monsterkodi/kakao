@@ -23,7 +23,7 @@ class bubble extends view
 
     @: screen name ->
 
-        view.init @ screen name
+        view.init @, screen, name
         
         @pointerType = 'pointer'
         @syntax = syntax()

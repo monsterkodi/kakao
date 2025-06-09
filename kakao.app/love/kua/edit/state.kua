@@ -26,13 +26,12 @@ class state extends events
     
         @cells = cells
         @name  = name & '.state'
-        log "STATE " @name
+
         @allowedModes = {}
 
         # for act in [del insert select join indent multi main]
         #     for k v in pairs act
         #         @[k] = v.bind @
-                
         # @handleKey = keys.bind @
 
         @syntax   = syntax @name & '.syntax'
@@ -141,8 +140,6 @@ class state extends events
     
         @segls = segls
         
-        log "setSegls" segls
-        
         if empty @segls ➜ @segls = [[]]
         
         @syntax∙setSegls @segls
@@ -218,7 +215,6 @@ class state extends events
          #
          # @s = @s.set 'lines' @segls
          @s.lines = @segls
-         log @s.lines.len
          #
          #if oldLines != @s.lines
          #    diff = belt.diffLines oldLines @s.lines            
@@ -358,7 +354,8 @@ class state extends events
 
     scrollView: dir steps=1 ->
 
-        sx = sy = 0
+        sx = 1 
+        sy = 1
 
         switch dir
             'left'  ➜ sx = -1
@@ -366,18 +363,18 @@ class state extends events
             'up'    ➜ sy = -steps
             'down'  ➜ sy =  steps
 
-        view = @s.view.asMutable()
+        view = @s.view #.asMutable()
 
-        view[0] += sx
-        view[1] += sy
+        view[1] += sx
+        view[2] += sy
 
-        view[1] = clamp 0 max(0 @s.lines.length-@cells.rows) view[1]
+        view[2] = clamp 1 math.max(1 @s.lines.length-@cells.rows) view[2]
 
-        maxOffsetX = max 0 @maxLineWidth-@cells.cols+2
-        maxOffsetX = max maxOffsetX @mainCursor()[0]-@cells.cols+2
-        view[0] = clamp 0 maxOffsetX view[0]
+        maxOffsetX = math.max 1 @maxLineWidth-@cells.cols+2
+        maxOffsetX = math.max maxOffsetX @mainCursor()[1]-@cells.cols+2
+        view[1] = clamp 1 maxOffsetX view[1]
         
-        ⮐  if view eql @s.view
+        ⮐  if view == @s.view
 
         @setView view
 
@@ -397,44 +394,44 @@ class state extends events
 
         (x y) = @mainCursor()
 
-        view = @s.view.asMutable()
+        view = @s.view #.asMutable()
         
         topBotDelta = 7
         topDelta = 7
-        botDelta = max topDelta int(@cells.rows/2)
+        botDelta = max topDelta math.floor(@cells.rows/2)
         
         if opt.adjust == 'topDelta'
 
-            view[1] = y - topDelta
+            view[2] = y - topDelta
             
         elif opt.adjust == 'topBotDeltaGrow' and opt.mc
         
-            dtt = y-view[1]
-            dtb = y-(view[1]+@cells.rows)
+            dtt = y-view[2]
+            dtb = y-(view[2]+@cells.rows)
             if dtt < 0 
-                view[1] = y - topDelta
+                view[2] = y - topDelta
             elif dtb > 0
-                view[1] = y - (@cells.rows-botDelta)
+                view[2] = y - (@cells.rows-botDelta)
             else
-                dir = y - opt.mc[1]
+                dir = y - opt.mc[2]
                 if dtt < topDelta and dir < 0  or -dtb < botDelta and dir > 0
-                    view[1] += dir
+                    view[2] += dir
         else        
             if opt.adjust != 'topBotDelta'
                 topBotDelta = 0
     
-            if y >= view[1] + @cells.rows - 1 - topBotDelta
-                view[1] = y - @cells.rows + 1 + topBotDelta
-            elif y < view[1] + topBotDelta
-                view[1] = y - topBotDelta
+            if y >= view[2] + @cells.rows - 1 - topBotDelta
+                view[2] = y - @cells.rows + 1 + topBotDelta
+            elif y < view[2] + topBotDelta
+                view[2] = y - topBotDelta
 
-        if view[1] > 0 and @s.lines.length <= @cells.rows
-            view[1] = 0
+        if view[2] > 1 and @s.lines.length <= @cells.rows
+            view[2] = 1
 
         if not @skipAdjustViewForMainCursor
-            view[0] = max 0 x - @cells.cols + 2 # adding one for wide graphemes
+            view[1] = math.max 1 x - @cells.cols + 2 # adding one for wide graphemes
         
-        ⮐  if view eql @s.view
+        ⮐  if view == @s.view
         
         @setView view
 
@@ -443,8 +440,8 @@ class state extends events
         # view = @s.view.asMutable()
         view = @s.view
         
-        view[1] = clamp 0 math.max(0 @s.lines.length-@cells.rows) view[1]
-        view[0] = math.max 0 view[0] or 0
+        view[2] = clamp 1 math.max(1 @s.lines.len-@cells.rows) view[2]
+        view[1] = math.max 1 view[1] or 1
 
         @setView view
 
@@ -457,7 +454,7 @@ class state extends events
 
     rangeForVisibleLines: ->
 
-        [@s.view[0] @s.view[1] @s.view[0]+@cells.cols-1 @s.view[1]+@cells.rows-1]
+        [@s.view[1] @s.view[2] @s.view[1]+@cells.cols-1 @s.view[2]+@cells.rows-1]
 
     setMain: m -> 
     
@@ -550,8 +547,8 @@ class state extends events
         rng   = belt.lineRangeAtPos  lines mc
         ind   = belt.lineIndentAtPos lines mc
         
-        if ind < mc[0]
-            mc[0] = ind
+        if ind < mc[1]
+            mc[1] = ind
         else
             mc  = belt.startOfRange rng
         
@@ -569,8 +566,8 @@ class state extends events
         mc = @mainCursor()
         
         switch dir
-            'up'   ➜  mc[1] -= @cells.rows
-            'down' ➜  mc[1] += @cells.rows
+            'up'   ➜  mc[2] -= @cells.rows
+            'down' ➜  mc[2] += @cells.rows
 
         @deselect()
         @setCursors [mc]

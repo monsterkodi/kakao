@@ -92,4 +92,62 @@ test("kstr", function()
 1, ...
 20]])
     end)
+    
+    --  0000000   0000000   000       0000000   00000000   
+    -- 000       000   000  000      000   000  000   000  
+    -- 000       000   000  000      000   000  0000000    
+    -- 000       000   000  000      000   000  000   000  
+    --  0000000   0000000   0000000   0000000   000   000  
+    
+    test("hexColor", function()
+        test.cmp(kstr.hexColor(nil), nil)
+        test.cmp(kstr.hexColor('dead'), nil)
+        test.cmp(kstr.hexColor("#dead"), nil)
+        -- kstr.hexColor 'alive?'              ▸ nil
+        test.cmp(kstr.hexColor('deadbeef'), nil)
+        
+        -- kstr.hexColor 0                     ▸ '#000000'
+        -- kstr.hexColor 128<<8                ▸ '#008000'
+        -- kstr.hexColor 255<<16               ▸ '#ff0000'
+        -- kstr.hexColor [0 0 0]               ▸ '#000000'
+        -- kstr.hexColor [0 255 0]             ▸ '#00ff00'
+        -- kstr.hexColor [255 255 0]           ▸ '#ffff00'
+        
+        test.cmp(kstr.hexColor("#ead"), array(238, 170, 221))
+        test.cmp(kstr.hexColor("#adbeef"), array(173, 190, 239))
+        test.cmp(kstr.hexColor("#ffffff"), array(255, 255, 255))
+        test.cmp(kstr.hexColor("#fff"), array(255, 255, 255))
+        test.cmp(kstr.hexColor("#ffff00"), array(255, 255, 0))
+        test.cmp(kstr.hexColor("#ff0"), array(255, 255, 0))
+        
+        -- kstr.hexColor 'rgb(255,100,0)'      ▸ [255 100   0]
+        -- kstr.hexColor 'rgba(255,100,0)'     ▸ [255 100   0]
+        -- kstr.hexColor 'rgba(255,100,0,0)'   ▸ [  0   0   0]
+        -- kstr.hexColor 'rgba(255,100,0,1)'   ▸ [255 100   0]
+        -- kstr.hexColor 'rgba(255,100,0,0.5)' ▸ [127  50   0]
+        -- 
+        -- kstr.hexColor 'rgb(a,b,c)'          ▸ nil
+        -- kstr.hexColor 'rgba(a,b,c)'         ▸ nil
+        -- kstr.hexColor 'rgba(a,b,c,d)'       ▸ nil
+        -- kstr.hexColor 'rgba(-1,-2,-3)'      ▸ nil
+        -- kstr.hexColor 'rgba(256,256,256)'   ▸ nil
+        -- kstr.hexColor 'rgba(255,100,0,1.1)' ▸ nil
+        -- kstr.hexColor 'rgba(255,100,0,-1)'  ▸ nil
+    end)
+    
+    -- ▸ scaleColor
+    -- 
+    --     kstr.scaleColor 'ffff00' 1    ▸ '#ffff00'
+    --     kstr.scaleColor 'ffff00' 0.9  ▸ '#e5e500'
+    --     kstr.scaleColor 'ffff00' 0.8  ▸ '#cccc00'
+    --     kstr.scaleColor 'ffff00' 0.7  ▸ '#b2b200'
+    --     kstr.scaleColor 'ffff00' 0.6  ▸ '#999900'
+    --     kstr.scaleColor 'ffff00'      ▸ '#7f7f00'
+    --     kstr.scaleColor 'ffff00' 0.4  ▸ '#666600'
+    --     kstr.scaleColor 'ffff00' 0.3  ▸ '#4c4c00'
+    --     kstr.scaleColor 'ffff00' 0.2  ▸ '#333300'
+    --     kstr.scaleColor 'ffff00' 0.1  ▸ '#191900'
+    --     kstr.scaleColor 'ffff00' 0    ▸ '#000000'
+    
+        
     end)

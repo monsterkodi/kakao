@@ -54,7 +54,6 @@ function status:init(screen, editor)
         self.editor = editor
         
         view.init(self, screen, 'status')
-        -- super @screen 'status'
         
         self.state = self.editor.state
         self.gutter = 4
@@ -204,8 +203,8 @@ function status:onMouse(event)
 function status:setFile(file) 
         self.file = file
         if empty(self.file) then return end
-        self.crumbs.set(slash.dir(self.file))
-        return self.statusfile.set(self.file)
+        self.crumbs:set(slash.dir(self.file))
+        return self.statusfile:set(self.file)
     end
 
 -- ███       ███████   ███   ███   ███████   ███   ███  █████████
@@ -246,11 +245,11 @@ function status:draw()
         
         local x = 0
         local y = 0
-        local cursor = self.state.mainCursor()
+        local cursor = self.state:mainCursor()
         local cols = self.cells.cols
         local fnl = #self.file
-        local rdo = self.state.hasRedo()
-        local dty = self.state.isDirty()
+        local rdo = self.state:hasRedo()
+        local dty = self.state:isDirty()
         
         
         function set(x, char, fg, bg) 
@@ -290,9 +289,9 @@ end)()
         
         add('', 'col', self.color.gutter) -- column number end
         
-        self.crumbs.draw() -- dir path
-        self.statusfile.draw() -- file
-        self.filepos.draw()
+        self.crumbs:draw() -- dir path
+        self.statusfile:draw() -- file
+        self.filepos:draw()
         
         x = x + (#self.crumbs.rounded)
         x = x + (#self.statusfile.rounded)
@@ -355,7 +354,7 @@ end)()
         
         add('', 'dark', self.color.gutter)
         
-        ci = clamp(0, 3, int((((self.time / (1000 * 1000)) - 8) / 8)))
+        ci = clamp(0, 3, math.floor((((self.time / (1000 * 1000)) - 8) / 8)))
         local ch = string.sub(" •", ci) -- 
         local fg = array(array(32, 32, 32), array(0, 96, 0), array(255, 0, 0), array(255, 255, 0))[ci]
         -- switch ch

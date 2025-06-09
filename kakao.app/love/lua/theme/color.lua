@@ -62,17 +62,18 @@ local color = class("color")
 
 
 function color.static.hex(c) 
-    if is(c, arr) then 
+    if is(c, array) then 
     return kstr.hexColor(c) else 
     return c
                   end
     end
 
 function color.static.values(c) 
-    if is(c, str) then 
-    return kstr.hexColor(c) else 
-    return c
-                  end
+        if is(c, "string") then 
+            return kstr.hexColor(c)
+        end
+        
+        return c
     end
 
 -- ███████     ███████   ████████   ███   ███  ████████  ███   ███

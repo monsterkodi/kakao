@@ -145,7 +145,7 @@ class screen
                     love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
                     love.graphics.rectangle("fill", ox+(x-1)*fontStep, oy+(y-1)*fontSize, fontStep, fontSize) 
                 
-                if @c[y][x].fg.len > 0
+                if @c[y][x].fg.len > 0 and @c[y][x].fg is array
                     love.graphics.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
                 
                 # love.graphics.print char, ox+(x-1)*fontStep, oy+(y-1)*fontSize

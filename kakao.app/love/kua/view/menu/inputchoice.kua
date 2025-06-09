@@ -21,11 +21,7 @@ class inputchoice extends view
 
     @: screen name features ->
     
-        @screen = screen 
-        @name   = name
-
-        # super @screen @name features
-        view.init @ screen name features
+        view.init @, screen, name, features
         
         @autoHideInput = true
         @isVisible = false
@@ -35,6 +31,9 @@ class inputchoice extends view
         @choices = choices @screen "#{@name}_choices" features
         
         @setColor 'bg'    theme.quicky.bg
+        
+        log "theme.quicky.bg" theme.quicky.bg
+        
         @setColor 'frame' theme.quicky.frame
 
         if @choices.mapscr
@@ -47,8 +46,8 @@ class inputchoice extends view
         @choices∙on 'action'  @onChoicesAction
         
     setColor: key clr ->
-    
-        # super key clr
+        
+        # view.setColor @ key clr
         
         if key == 'bg'
         
@@ -65,16 +64,16 @@ class inputchoice extends view
 
     arrange: ->
 
-        x = int @screen.cols/4
-        y = int @screen.rows/4
-        w = int @screen.cols/2
-        h = int @screen.rows/2-4
+        x = math.floor @screen.cols/4
+        y = math.floor @screen.rows/4
+        w = math.floor @screen.cols/2
+        h = math.floor @screen.rows/2-4
 
-        cs = min h @choices.numFiltered()
+        cs = math.min h @choices∙numFiltered()
         
-        @input.layout    x+2   y+1  w-4  1
-        @choices.layout  x+2   y+3  w-3  cs
-        @cells.layout    x     y    w    cs+4
+        @input∙layout    x+2   y+1  w-4  1
+        @choices∙layout  x+2   y+3  w-3  cs
+        @cells∙layout    x     y    w    cs+4
         
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -175,7 +174,7 @@ class inputchoice extends view
         
     drawFrame: ->
 
-        sy = 0
+        sy = 1
         
         if @input∙visible()
         
@@ -190,7 +189,7 @@ class inputchoice extends view
             
             sy = 2
         
-        @cells∙draw_rounded_border 0 sy -1 -1 {fg:@color.bg zLayer: 1001}
+        @cells∙draw_rounded_border 1 sy -1 -1 {fg:@color.bg zLayer: 1001}
         
     moveFocus: ->
         

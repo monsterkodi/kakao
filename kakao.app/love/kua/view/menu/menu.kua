@@ -20,7 +20,7 @@ class menu extends inputchoice
 
     @: screen name='menu' ->
     
-        inputchoice.init @ screen name
+        inputchoice.init @, screen, name
         
         @greet = greet @screen
         
@@ -35,8 +35,8 @@ class menu extends inputchoice
         w = @width+2+1 # 2 for frame, 1 for right 
         c = @choices∙numChoices()
         
-        ih = if @inputIsActive() ➜  2 ➜  0
-        iz = math.max 1 ih - 1
+        ih = if @inputIsActive() ➜  2 ➜ 0
+        iz = math.max 0 ih - 1
         
         h = c + 2 + ih
         scy = math.floor @screen.rows/2
@@ -51,18 +51,6 @@ class menu extends inputchoice
         gx = math.floor(scx-gw/2)
         gy = math.max(1 math.floor(y-gh-1+ih))
         
-        #if @greet∙visible() and y <= gy+gh
-        #    
-        #    diff = (gy+gh)-y
-        #    
-        #    while diff and gy
-        #         gy -= 1           
-        #         diff = (gy+gh)-y  
-        #         
-        #    while diff and y+h < @screen.rows
-        #        y += 1
-        #        diff = (gy+gh)-y
-
         @greet∙layout    gx    gy
         @input∙layout    x+2   y+1      w-4  iz
         @choices∙layout  x+1   y+1+ih   w-2  c
@@ -78,7 +66,6 @@ class menu extends inputchoice
         
         if greet
             @greet∙show() 
-            # @screen.t.setTitle 'kėd'
         
         items = belt.linesForText """
             recent ...
@@ -89,7 +76,7 @@ class menu extends inputchoice
             """
         
         if not greet
-            items.splice items.len-2 0 'about' 
+            items∙splice items.len-2 0 'about' 
             
         if empty ked_session∙recentFiles()
             items∙splice items∙find('recent ...') 1 
@@ -116,11 +103,11 @@ class menu extends inputchoice
     
     showRecent: ->
                 
-        recent = frecent.list 'file'
+        recent = frecent∙list 'file'
         
-        @choices.set recent
+        @choices∙set recent
 
-        post.emit 'quicky.files' recent
+        post∙emit 'quicky.files' recent
         
     hide: ->
     
@@ -138,12 +125,12 @@ class menu extends inputchoice
         # log "applyChoice ▸#{choice}◂"
         
         switch choice
-            'new'        ➜ @hide(); post.emit 'file.new'
+            'new'        ➜ @hide(); post∙emit 'file.new'
             'about'      ➜ @show true # reopen with greeting header
-            'quit'       ➜ @greet.hide(); post.emit 'quit'                    
-            'open ...'   ➜ post.emit 'browse.dir' process.cwd()
+            'quit'       ➜ @greet∙hide(); post∙emit 'quit'                    
+            'open ...'   ➜ post∙emit 'browse.dir' process.cwd()
             'recent ...' ➜ @showRecent()
-            'help'       ➜ @hide(); post.emit 'file.open' slash.path(slash.cwd() '../../../../kode/ked/help.md')
+            'help'       ➜ @hide(); post∙emit 'file.open' slash.path(slash.cwd() '../../../../kode/ked/help.md')
             
         true
         

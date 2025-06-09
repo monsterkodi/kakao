@@ -19,15 +19,17 @@ end
 function love.draw() 
     count = count + 1
     local _, _, w, h = love.window.getSafeArea()
+    
     local scale = love.window.getDPIScale()
+    
     love.graphics.setColor(0.1, 0.1, 0.1)
+    
     local ox = math.ceil(((w - (math.floor((w / fontStep)) * fontStep)) / 2))
     local oy = math.floor(((h - (math.floor((h / fontSize)) * fontSize)) / 4))
+    
     local cols = math.floor((w / fontStep))
     local rows = math.floor((h / fontSize))
-    -- for x in 0...cols
-    --     for y in 0...rows
-    --         love.graphics.print "#{x % 10}" ox+x*fontStep oy+y*fontSize
+    
     love.graphics.setColor(0.2, 0.2, 0.2)
     love.graphics.print("" .. cols .. " " .. rows .. " " .. w .. " " .. h .. " " .. scale .. " " .. count .. " " .. love.timer.getFPS() .. " ◂", (2 * fontStep), (h - (fontSize * 2)))
     

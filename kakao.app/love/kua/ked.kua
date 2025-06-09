@@ -25,6 +25,7 @@ use view.editor.fileeditor
 use view.status.status
 use view.screen.screen
 use view.menu.menu
+use theme.theme
 # use ./view/menu   ◆ context menu macro finder searcher differ 
 # use ./view/colmns ◆ browse dircol funcol quicky droop
 
@@ -54,7 +55,7 @@ class KED
 
         # @session.on 'loaded' @onSessionLoaded
         
-        @screen = screen(160 40)
+        @screen = screen(1 1)
         
         _G.ked_screen = @screen
                   
@@ -79,6 +80,8 @@ class KED
         # @input.on 'action' @onInputAction
         
         log ◌d "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━ " ◌g @session.name, ◌d " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+
+        # log "THEME" noon(theme)
 
         # @editor.state.hasFocus = true
         # @editor.funtree = @funcol.funtree

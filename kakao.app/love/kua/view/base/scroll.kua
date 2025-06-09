@@ -21,9 +21,7 @@ class scroll extends view
     
         @state = state
         @side  = side
-        log "----state " @state.name
-        # view.init @ screen (@state∙owner() & '_scroll')
-        view.init @, screen, (@state.name & '_scroll')
+        view.init @, screen, (@state∙owner() & '_scroll')
         
         @pointerType = 'pointer'
         
@@ -42,7 +40,7 @@ class scroll extends view
         
         (col row) = @eventPos event
         
-        # super event
+        view.onMouse @ event
         
         switch event.type
             

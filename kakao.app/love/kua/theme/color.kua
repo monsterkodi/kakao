@@ -60,8 +60,11 @@ class color
     #    '#bcbcbc' '#c6c6c6' '#d0d0d0' '#dadada' '#e4e4e4' '#eeeeee'
     #    ]
     
-    @hex:    c -> if c is arr ➜ kstr.hexColor(c) ➜ c
-    @values: c -> if c is str ➜ kstr.hexColor(c) ➜ c
+    @hex:    c -> if c is array ➜ kstr.hexColor(c) ➜ c
+    @values: c -> 
+        if c is "string" 
+            ⮐  kstr.hexColor(c) 
+        c
     
     # ███████     ███████   ████████   ███   ███  ████████  ███   ███
     # ███   ███  ███   ███  ███   ███  ███  ███   ███       ████  ███

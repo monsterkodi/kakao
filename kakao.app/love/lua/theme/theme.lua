@@ -110,19 +110,19 @@ for key, val in pairs(theme) do
         theme[key] = color.values(val)
     else 
         for k, v in pairs(val) do 
-            val[k] = color.values(v)
+            if is(v, "string") then 
+                val[k] = color.values(v)
+            end
         end
     end
 end
 
-for key, value in pairs(theme.syntax) do 
-    if kstr.startsWith(key, 'file_') then 
-        local ext = string.sub(key, 6)
-        theme.syntax[('file_ext_' + ext)] = color.darken(value, 0.4)
-        theme.syntax[('file_icon_' + ext)] = color.darken(value, 0.6)
-        theme.syntax[('file_punct_' + ext)] = color.darken(value, 0.3)
-    end
-end
+-- for key value in pairs theme.syntax
+--     if kstr.startsWith key 'file_'
+--         ext = string.sub key 6
+--         theme.syntax['file_ext_'+ext]   = color.darken value 0.4
+--         theme.syntax['file_icon_'+ext]  = color.darken value 0.6
+--         theme.syntax['file_punct_'+ext] = color.darken value 0.3
 
 -- ███   ███  ███  ███████    ████████    ███████   ███   ███  █████████
 -- ███   ███  ███  ███   ███  ███   ███  ███   ███  ████  ███     ███   

@@ -22,7 +22,7 @@ class greet extends view
 
     @: screen ->
         
-        view.init @ screen 'greet'
+        view.init @, screen, 'greet'
         
         @isVisible = false
                 

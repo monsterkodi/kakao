@@ -47,7 +47,7 @@ function menu:arrange()
     return 0
              end
 end)()
-        local iz = math.max(1, (ih - 1))
+        local iz = math.max(0, (ih - 1))
         
         local h = ((c + 2) + ih)
         local scy = math.floor((self.screen.rows / 2))
@@ -61,18 +61,6 @@ end)()
         
         local gx = math.floor((scx - (gw / 2)))
         local gy = math.max(1, math.floor((((y - gh) - 1) + ih)))
-        
-        --if @greet∙visible() and y <= gy+gh
-        --    
-        --    diff = (gy+gh)-y
-        --    
-        --    while diff and gy
-        --         gy -= 1           
-        --         diff = (gy+gh)-y  
-        --         
-        --    while diff and y+h < @screen.rows
-        --        y += 1
-        --        diff = (gy+gh)-y
         
         self.greet:layout(gx, gy)
         self.input:layout((x + 2), (y + 1), (w - 4), iz)
@@ -92,7 +80,6 @@ function menu:show(greet)
         
         if greet then 
             self.greet:show()
-            -- @screen.t.setTitle 'kėd'
         end
         
         local items = belt.linesForText([[
@@ -104,7 +91,7 @@ quit
 ]])
         
         if not greet then 
-            items.splice((#items - 2), 0, 'about')
+            items:splice((#items - 2), 0, 'about')
         end
         
         if empty(ked_session:recentFiles()) then 
@@ -136,11 +123,11 @@ end) -- padding for  
 
 
 function menu:showRecent() 
-        local recent = frecent.list('file')
+        local recent = frecent:list('file')
         
-        self.choices.set(recent)
+        self.choices:set(recent)
         
-        return post.emit('quicky.files', recent)
+        return post:emit('quicky.files', recent)
     end
 
 
@@ -159,12 +146,12 @@ function menu:hide()
 function menu:applyChoice(choice) 
         -- log "applyChoice ▸#{choice}◂"
         
-        if (choice == 'new') then self:hide() ; post.emit('file.new')
+        if (choice == 'new') then self:hide() ; post:emit('file.new')
         elseif (choice == 'about') then self:show(true) ; -- reopen with greeting header
-        elseif (choice == 'quit') then self.greet.hide() ; post.emit('quit')
-        elseif (choice == 'open ...') then post.emit('browse.dir', process.cwd())
+        elseif (choice == 'quit') then self.greet:hide() ; post:emit('quit')
+        elseif (choice == 'open ...') then post:emit('browse.dir', process.cwd())
         elseif (choice == 'recent ...') then self:showRecent()
-        elseif (choice == 'help') then self:hide() ; post.emit('file.open', slash.path(slash.cwd(), '../../../../kode/ked/help.md'))
+        elseif (choice == 'help') then self:hide() ; post:emit('file.open', slash.path(slash.cwd(), '../../../../kode/ked/help.md'))
         end
         
         return true

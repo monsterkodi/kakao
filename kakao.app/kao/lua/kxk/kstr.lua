@@ -180,9 +180,9 @@ end
 
 
 function kstr.hex(s) 
-    if is(s, str) then return Number.parseInt(s, 16) end
-    if is(s, num) then 
-    return Number(s).toString(16)
+    if is(s, "string") then return tonumber(s, 16) end
+    if is(s, "number") then 
+    return tostring(s)
     end
 end
 
@@ -191,16 +191,44 @@ function kstr.scaleColor(s, f)
     f = f or 0.5
     
     if is(not s, "string") then 
-        s = str.hexColor(s)
+        s = kstr.hexColor(s)
     end
     
-    return str.hexColor(str.hexColor(s).map(function (v) clamp(0, 255, parseInt((f * v))) end))
+    return kstr.hexColor(kstr.hexColor(s):map(function (v) clamp(0, 255, math.floor((f * v))) end))
 end
 
 
 function kstr.hexColor(s) 
+    if empty(s) then return s end
+    
+    if is(s, "string") then 
+        
+        function validate(a) 
+            for _, v in ipairs(a) do 
+                if empty(v) then 
+                    return
+                end
+            end
+            
+            -- log "hexColor STRING " s, a
+            return a
+        end
+        
+        -- if s = kstr.rgbaToHexColor(s) if s.startsWith 'rgb'
+        local l = #s
+        if (((l == 7) or (l == 4)) and (string.sub(s, 1, 1) == "#")) then 
+            s = kstr.shift(s)
+            l = l - 1
+        end
+        
+        if (l == 6) then return validate(array(kstr.hex(string.sub(s, 1, 2)), kstr.hex(string.sub(s, 3, 4)), kstr.hex(string.sub(s, 5, 6)))) end
+        if (l == 3) then return validate(array((kstr.hex(string.sub(s, 1, 1)) * 17), (kstr.hex(string.sub(s, 2, 2)) * 17), (kstr.hex(string.sub(s, 3, 3)) * 17))) end
+        return nil
+    end
+    
     if is(s, array) then 
-        local h = ('#' + s:slice(1, 3).map(function (v) kstr.lpad(2, kstr.hex(v), '0') end).join(''))
+        -- log "hexColor ARRAY " s
+        local h = '#' .. s:slice(1, 3):map(function (v) kstr.lpad(2, kstr.hex(v), '0') end):join('')
         if ((#s > 3) and is(s[3], num)) then 
             h = kstr.scaleColor(h, s[3])
         end
@@ -208,32 +236,11 @@ function kstr.hexColor(s)
         return h
     end
     
-    if is(s, "string") then 
-        
-        function validate(a) 
-            for _, v in ipairs(a) do 
-                if empty(v) then return end
-            end
-            
-            return a
-        end
-        
-        -- if s = kstr.rgbaToHexColor(s) if s.startsWith 'rgb'
-        if empty(s) then return end
-        local l = #s
-        if (((l == 7) or (l == 4)) and (s[0] == "#")) then 
-            s = kstr.shift(s)
-            l = l - 1
-        end
-        
-        if (l == 6) then return validate(array(kstr.hex(string.sub(s, 1, 2)), kstr.hex(string.sub(s, 3, 4)), kstr.hex(string.sub(s, 5, 6)))) end
-        if (l == 3) then return validate(array((kstr.hex(s[0]) * 17), (kstr.hex(s[1]) * 17), (kstr.hex(s[2]) * 17))) end
-        return
-    end
-    
     if is(s, "number") then 
         return kstr.hexColor(kstr.hexColor(kstr.lpad(6, tostring(s, 16), '0')))
     end
+    
+    return s
 end
 
 return kstr

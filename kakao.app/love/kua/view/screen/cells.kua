@@ -180,8 +180,8 @@ class cells
         ⮐  if x1 < 0 and x2 < 0
         ⮐  if y1 < 0 and y2 < 0
         
-        if x2 < 0 ➜ x2 = @cols + x2 
-        if y2 < 0 ➜ y2 = @rows + y2 
+        if x2 < 0 ➜ x2 = @cols + 1 + x2 
+        if y2 < 0 ➜ y2 = @rows + 1 + y2 
         
         opt ?= {}
         opt.pad ?= [1 0] # padding at left and right edge by default
@@ -192,7 +192,7 @@ class cells
         # │ │ │
         # ╰─┴─╯
         
-        fg = opt.fg or '#888'
+        fg = opt.fg or [100 100 100]
         bg = opt.bg or nil
         
         @set  x1  y1 '╭' fg bg
@@ -205,14 +205,14 @@ class cells
         @fill_col x1 y1+1 y2-1 '│' fg bg
         @fill_col x2 y1+1 y2-1 '│' fg bg
         
-        for x in 0...opt.pad[0]
+        for x in 1...opt.pad[1]+1
             @fill_col x1+1+x y1+1 y2-1 ' ' fg bg
             @fill_col x2-1-x y1+1 y2-1 ' ' fg bg
         
-        for y in opt.hdiv
-            @set  x1  y '' fg bg
-            @set  x2  y '' fg bg
-            @fill_row y x1+1 x2-1 '─' fg bg
+        # for y in opt.hdiv
+        #     @set  x1  y '' fg bg
+        #     @set  x2  y '' fg bg
+        #     @fill_row y x1+1 x2-1 '─' fg bg
             
     # ████████    ███████   ███   ███  ███   ███  ███████    ████████  ███████  
     # ███   ███  ███   ███  ███   ███  ████  ███  ███   ███  ███       ███   ███
@@ -222,27 +222,31 @@ class cells
 
     draw_rounded_border: x1 y1 x2 y2 opt ->
     
-        ⮐  if x1 < 0 and x2 < 0
-        ⮐  if y1 < 0 and y2 < 0
+        # ⮐  if x1 < 0 and x2 < 0
+        # ⮐  if y1 < 0 and y2 < 0
+        # 
+        # if x2 < 0 ➜ x2 = @cols + x2 
+        # if y2 < 0 ➜ y2 = @rows + y2 
+        # 
+        # opt ?= {}
+        # fg     = opt.fg or '#888'
+        # zLayer = opt.zLayer or 1000
         
-        if x2 < 0 ➜ x2 = @cols + x2 
-        if y2 < 0 ➜ y2 = @rows + y2 
+        @draw_frame x1 y1 x2 y2 opt
         
-        opt ?= {}
-        fg     = opt.fg or '#888'
-        zLayer = opt.zLayer or 1000
-        
-        @img x1 y1 'rounded.border.tl' fg zLayer  
-        @img x2 y1 'rounded.border.tr' fg zLayer  
-        @img x1 y2 'rounded.border.bl' fg zLayer  
-        @img x2 y2 'rounded.border.br' fg zLayer  
-        
-        @img x1+1 y1 'rounded.border.t'  fg zLayer x2-1 
-        if y1+1 < y2 ➜ @img x1 y1+1 'rounded.border.l'  fg zLayer x1 y2-1  
-        if x1+1 < x2 ➜ @img x1+1 y2 'rounded.border.lb' fg zLayer          
-        @img x1+2 y2 'rounded.border.b'  fg zLayer x2-1
-        if y1+1 < y2 ➜ @img x2 y1+1 'rounded.border.rt' fg zLayer x2       
-        if y1+2 < y2 ➜ @img x2 y1+2 'rounded.border.r'  fg zLayer x2 y2-1  
+        # log "HROGLS"
+        # 
+        # @img x1 y1 'rounded.border.tl' fg zLayer  
+        # @img x2 y1 'rounded.border.tr' fg zLayer  
+        # @img x1 y2 'rounded.border.bl' fg zLayer  
+        # @img x2 y2 'rounded.border.br' fg zLayer  
+        # 
+        # @img x1+1 y1 'rounded.border.t'  fg zLayer x2-1 
+        # if y1+1 < y2 ➜ @img x1 y1+1 'rounded.border.l'  fg zLayer x1 y2-1  
+        # if x1+1 < x2 ➜ @img x1+1 y2 'rounded.border.lb' fg zLayer          
+        # @img x1+2 y2 'rounded.border.b'  fg zLayer x2-1
+        # if y1+1 < y2 ➜ @img x2 y1+1 'rounded.border.rt' fg zLayer x2       
+        # if y1+2 < y2 ➜ @img x2 y1+2 'rounded.border.r'  fg zLayer x2 y2-1  
         
     draw_vertical_padding: x y fg bg zLayer=1000 ->
     

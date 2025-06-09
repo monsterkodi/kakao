@@ -120,12 +120,12 @@ function context:draw()
 function context:drawFrame() 
         local cy = 0
         
-        if self.input.visible() then 
-            self.cells.draw_rounded_border(0, 0, -1, 2, fg:self.color.bg)
+        if self.input:visible() then 
+            self.cells:draw_rounded_border(0, 0, -1, 2, {fg = self.color.bg})
             cy = 2
         end
         
-        return self.cells.draw_rounded_border(0, cy, -1, -1, fg:self.color.bg)
+        return self.cells:draw_rounded_border(0, cy, -1, -1, {fg = self.color.bg})
     end
 
 export context

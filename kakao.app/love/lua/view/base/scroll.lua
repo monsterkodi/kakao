@@ -25,9 +25,7 @@ function scroll:init(screen, state, side)
         
         self.state = state
         self.side = side
-        print("----state ", self.state.name)
-        -- view.init @ screen (@state∙owner() & '_scroll')
-        view.init(self, screen, self.state.name .. '_scroll')
+        view.init(self, screen, self.state:owner() .. '_scroll')
         
         self.pointerType = 'pointer'
         
@@ -48,7 +46,7 @@ function scroll:init(screen, state, side)
 function scroll:onMouse(event) 
         local col, row = self:eventPos(event)
         
-        -- super event
+        view.onMouse(self, event)
         
         if (event.type == 'press') then 
                 if self.hover then 

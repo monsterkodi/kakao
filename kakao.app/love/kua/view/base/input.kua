@@ -19,7 +19,7 @@ class input extends editor
 
     @: screen name ->
         
-        editor.init @ screen name ['brckts' 'replex' 'unype']
+        editor.init @, screen, name, ['brckts' 'replex' 'unype']
         
         @setColor 'selection_line'  @color.selection
         @setColor 'bg'              theme.quicky.bg

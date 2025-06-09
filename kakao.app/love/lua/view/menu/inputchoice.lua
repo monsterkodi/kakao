@@ -23,10 +23,6 @@ local inputchoice = class("inputchoice", view)
 
 
 function inputchoice:init(screen, name, features) 
-        self.screen = screen
-        self.name = name
-        
-        -- super @screen @name features
         view.init(self, screen, name, features)
         
         self.autoHideInput = true
@@ -37,6 +33,9 @@ function inputchoice:init(screen, name, features)
         self.choices = choices(self.screen, "" .. self.name .. "_choices", features)
         
         self:setColor('bg', theme.quicky.bg)
+        
+        print("theme.quicky.bg", theme.quicky.bg)
+        
         self:setColor('frame', theme.quicky.frame)
         
         if self.choices.mapscr then 
@@ -53,7 +52,7 @@ function inputchoice:init(screen, name, features)
 
 
 function inputchoice:setColor(key, clr) 
-        -- super key clr
+        -- view.setColor @ key clr
         
         if (key == 'bg') then 
             self.input:setColor('bg_blur', self.color.bg)
@@ -74,16 +73,16 @@ function inputchoice:inputIsActive()
 
 
 function inputchoice:arrange() 
-        local x = int((self.screen.cols / 4))
-        local y = int((self.screen.rows / 4))
-        local w = int((self.screen.cols / 2))
-        local h = int(((self.screen.rows / 2) - 4))
+        local x = math.floor((self.screen.cols / 4))
+        local y = math.floor((self.screen.rows / 4))
+        local w = math.floor((self.screen.cols / 2))
+        local h = math.floor(((self.screen.rows / 2) - 4))
         
-        local cs = min(h, self.choices.numFiltered())
+        local cs = math.min(h, self.choices:numFiltered())
         
-        self.input.layout((x + 2), (y + 1), (w - 4), 1)
-        self.choices.layout((x + 2), (y + 3), (w - 3), cs)
-        return self.cells.layout(x, y, w, (cs + 4))
+        self.input:layout((x + 2), (y + 1), (w - 4), 1)
+        self.choices:layout((x + 2), (y + 3), (w - 3), cs)
+        return self.cells:layout(x, y, w, (cs + 4))
     end
 
 --  0000000  000   000   0000000   000   000
@@ -206,7 +205,7 @@ function inputchoice:drawChoices()
 
 
 function inputchoice:drawFrame() 
-        local sy = 0
+        local sy = 1
         
         if self.input:visible() then 
             local outer = (function () 
@@ -231,7 +230,7 @@ end)()
             sy = 2
         end
         
-        return self.cells:draw_rounded_border(0, sy, -1, -1, {fg = self.color.bg, zLayer = 1001})
+        return self.cells:draw_rounded_border(1, sy, -1, -1, {fg = self.color.bg, zLayer = 1001})
     end
 
 

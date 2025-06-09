@@ -311,8 +311,8 @@ function cells:draw_frame(x1, y1, x2, y2, opt)
         if ((x1 < 0) and (x2 < 0)) then return end
         if ((y1 < 0) and (y2 < 0)) then return end
         
-        if (x2 < 0) then x2 = (self.cols + x2) end
-        if (y2 < 0) then y2 = (self.rows + y2) end
+        if (x2 < 0) then x2 = ((self.cols + 1) + x2) end
+        if (y2 < 0) then y2 = ((self.rows + 1) + y2) end
         
         opt = opt or ({})
         opt.pad = opt.pad or (array(1, 0)) -- padding at left and right edge by default
@@ -323,7 +323,7 @@ function cells:draw_frame(x1, y1, x2, y2, opt)
         -- │ │ │
         -- ╰─┴─╯
         
-        local fg = (opt.fg or '#888')
+        local fg = (opt.fg or array(100, 100, 100))
         local bg = (opt.bg or nil)
         
         self:set(x1, y1, '╭', fg, bg)
@@ -336,16 +336,15 @@ function cells:draw_frame(x1, y1, x2, y2, opt)
         self:fill_col(x1, (y1 + 1), (y2 - 1), '│', fg, bg)
         self:fill_col(x2, (y1 + 1), (y2 - 1), '│', fg, bg)
         
-        for x = 0, opt.pad[0]-1 do 
+        for x = 1, (opt.pad[1] + 1)-1 do 
             self:fill_col(((x1 + 1) + x), (y1 + 1), (y2 - 1), ' ', fg, bg)
             self:fill_col(((x2 - 1) - x), (y1 + 1), (y2 - 1), ' ', fg, bg)
         end
         
-        for y in opt.hdiv do 
-            self:set(x1, y, '', fg, bg)
-            self:set(x2, y, '', fg, bg)
-            self:fill_row(y, (x1 + 1), (x2 - 1), '─', fg, bg)
-        end
+        -- for y in opt.hdiv
+        --     @set  x1  y '' fg bg
+        --     @set  x2  y '' fg bg
+        return --     @fill_row y x1+1 x2-1 '─' fg bg
     end
 
 -- ████████    ███████   ███   ███  ███   ███  ███████    ████████  ███████  
@@ -356,29 +355,31 @@ function cells:draw_frame(x1, y1, x2, y2, opt)
 
 
 function cells:draw_rounded_border(x1, y1, x2, y2, opt) 
-        if ((x1 < 0) and (x2 < 0)) then return end
-        if ((y1 < 0) and (y2 < 0)) then return end
+        -- ⮐  if x1 < 0 and x2 < 0
+        -- ⮐  if y1 < 0 and y2 < 0
+        -- 
+        -- if x2 < 0 ➜ x2 = @cols + x2 
+        -- if y2 < 0 ➜ y2 = @rows + y2 
+        -- 
+        -- opt ?= {}
+        -- fg     = opt.fg or '#888'
+        -- zLayer = opt.zLayer or 1000
         
-        if (x2 < 0) then x2 = (self.cols + x2) end
-        if (y2 < 0) then y2 = (self.rows + y2) end
+        self:draw_frame(x1, y1, x2, y2, opt)
         
-        opt = opt or ({})
-        local fg = (opt.fg or '#888')
-        local zLayer = (opt.zLayer or 1000)
-        
-        self:img(x1, y1, 'rounded.border.tl', fg, zLayer)
-        self:img(x2, y1, 'rounded.border.tr', fg, zLayer)
-        self:img(x1, y2, 'rounded.border.bl', fg, zLayer)
-        self:img(x2, y2, 'rounded.border.br', fg, zLayer)
-        
-        self:img((x1 + 1), y1, 'rounded.border.t', fg, zLayer, (x2 - 1))
-        if ((y1 + 1) < y2) then self:img(x1, (y1 + 1), 'rounded.border.l', fg, zLayer, x1, (y2 - 1)) end
-        if ((x1 + 1) < x2) then self:img((x1 + 1), y2, 'rounded.border.lb', fg, zLayer) end
-        self:img((x1 + 2), y2, 'rounded.border.b', fg, zLayer, (x2 - 1))
-        if ((y1 + 1) < y2) then self:img(x2, (y1 + 1), 'rounded.border.rt', fg, zLayer, x2) end
-        if ((y1 + 2) < y2) then 
-    return self:img(x2, (y1 + 2), 'rounded.border.r', fg, zLayer, x2, (y2 - 1))
-        end
+        -- log "HROGLS"
+        -- 
+        -- @img x1 y1 'rounded.border.tl' fg zLayer  
+        -- @img x2 y1 'rounded.border.tr' fg zLayer  
+        -- @img x1 y2 'rounded.border.bl' fg zLayer  
+        -- @img x2 y2 'rounded.border.br' fg zLayer  
+        -- 
+        -- @img x1+1 y1 'rounded.border.t'  fg zLayer x2-1 
+        -- if y1+1 < y2 ➜ @img x1 y1+1 'rounded.border.l'  fg zLayer x1 y2-1  
+        -- if x1+1 < x2 ➜ @img x1+1 y2 'rounded.border.lb' fg zLayer          
+        -- @img x1+2 y2 'rounded.border.b'  fg zLayer x2-1
+        -- if y1+1 < y2 ➜ @img x2 y1+1 'rounded.border.rt' fg zLayer x2       
+        return -- if y1+2 < y2 ➜ @img x2 y1+2 'rounded.border.r'  fg zLayer x2 y2-1  
     end
 
 

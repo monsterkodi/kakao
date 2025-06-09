@@ -49,7 +49,7 @@ class draw extends view
         # lines  = mode.preDrawLines @state @state.s.lines
         for row in 1..@cells.rows
             
-            y = row+view[1]
+            y = row+view[2]-1
             # log "drawRow #{y} #{lines.len}"
             break if y > lines.len
             
@@ -84,7 +84,7 @@ class draw extends view
 
     drawLine: line y row ->
     
-        row ?= y-@state.s.view[2]
+        # row ?= y-@state.s.view[2]
         bg = @color.bg
         
         checkColor = false
@@ -94,7 +94,7 @@ class draw extends view
         view   = @state.s.view
     
         linel = kseg.width(line) - view[1]
-        
+        # log line, noon(dict.keys(@color))
         c = 1
         # firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
         # firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at

@@ -26,7 +26,7 @@ class choices extends editor
 
     @: screen name features=[] ->
 
-        editor.init @ screen name features
+        editor.init @, screen, name, features
         
         @setColor 'bg'    theme.editor.bg
         @setColor 'hover' theme.hover

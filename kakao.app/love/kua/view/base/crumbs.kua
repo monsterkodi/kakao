@@ -19,7 +19,7 @@ class crumbs extends view
 
     @: screen name ->
 
-        view.init @ screen name
+        view.init @, screen, name
         
         @pointerType = 'pointer'
         @rounded = ''

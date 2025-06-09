@@ -43,8 +43,14 @@ function view:init(screen, name, features)
 
 
 function view:setColor(key, clr) 
-    self.color[key] = color.values(clr)
-    return self.color[key]
+        if empty(clr) then 
+            self.color[key] = array(100, 0, 100)
+            return
+        end
+        
+        print("" .. self.name .. " setColor ", key, " ", clr, " ", color.values(clr))
+        self.color[key] = color.values(clr)
+        return self.color[key]
     end
 
 -- 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
@@ -81,7 +87,7 @@ function view:hide()
             if (self == view.currentPopup) then 
                 view.currentPopup = nil
                 -- log "view popup.hide #{@name}" 
-                post.emit('popup.hide', self.name)
+                post:emit('popup.hide', self.name)
             end
         end
         
@@ -115,7 +121,7 @@ function view:collapsed()
 
 
 function view:eventPos(event) 
-    return self.cells.posForEvent(event)
+    return self.cells:posForEvent(event)
     end
 
 -- 00     00   0000000   000   000   0000000  00000000  
@@ -135,7 +141,7 @@ function view:onWheel(event)
 
 
 function view:onMouseLeave(event) 
-    return post.emit('redraw')
+    return post:emit('redraw')
     end
 
 function view:onMouseEnter(event) 
@@ -143,15 +149,15 @@ function view:onMouseEnter(event)
             self:grabFocus()
         end)) then 
         if self.pointerType then 
-            post.emit('pointer', self.pointerType)
-            return post.emit('redraw')
+            post:emit('pointer', self.pointerType)
+            return post:emit('redraw')
         end
         end
     end
 
 
 function view:handleHover(event) 
-        local inside = (not event.handled and self.cells.isInsideEvent(event))
+        local inside = (not event.handled and self.cells:isInsideEvent(event))
         if (self.hover and not inside) then 
             self.hover = false
             self:onMouseLeave(event)

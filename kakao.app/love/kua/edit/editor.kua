@@ -25,16 +25,14 @@ use view.editor.gutter
 class editor extends draw
 
     @: screen name features ->
-        log "editor1 " name
+
         draw.init @, screen, name, features
         
         @screen = screen
         @name = name
-        log "editor2 " @name
         @focusable = true
         
         @state = state @cells @name
-        log "+++++ " @state.name
         post∙on 'focus' @onFocus @
         
         use edit.complete

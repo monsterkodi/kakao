@@ -20,7 +20,7 @@ class statusfile extends view
 
     @: screen name ->
 
-        view.init @ screen name
+        view.init @, screen, name
         
         @setColor 'bg'     theme.status.bg
         @setColor 'empty'  theme.status.empty

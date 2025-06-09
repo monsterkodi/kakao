@@ -37,7 +37,13 @@ class view extends events
         @isVisible = true
         @focusable = false
                         
-    setColor: key clr -> @color[key] = color.values(clr)
+    setColor: key clr -> 
+        
+        if empty(clr)
+            @color[key] = [100 0 100]
+            ⮐  
+        log "#{@name} setColor " key, " " clr, " " color.values(clr)
+        @color[key] = color.values(clr)
         
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  
     # 000   000  000  000       000  000   000  000  000      000     000      000 000   
@@ -69,7 +75,7 @@ class view extends events
             if @ == view.currentPopup
                 view.currentPopup = nil
                 # log "view popup.hide #{@name}" 
-                post.emit 'popup.hide' @name
+                post∙emit 'popup.hide' @name
         
         {redraw:true}
         
@@ -80,7 +86,7 @@ class view extends events
          
     collapsed: -> @cells.rows <= 0 or @cells.cols <= 0
     
-    eventPos: event -> @cells.posForEvent event
+    eventPos: event -> @cells∙posForEvent event
     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -91,19 +97,19 @@ class view extends events
     onMouse: event -> @handleHover event
     onWheel: event -> log "view.onWheel #{@name}"
     
-    onMouseLeave: event -> post.emit 'redraw'
+    onMouseLeave: event -> post∙emit 'redraw'
     onMouseEnter: event -> 
         
         if @focusable and @grabFocus is func
             @grabFocus()
         
         if @pointerType 
-            post.emit 'pointer' @pointerType
-            post.emit 'redraw'
+            post∙emit 'pointer' @pointerType
+            post∙emit 'redraw'
         
     handleHover: event ->
         
-        inside = not event.handled and @cells.isInsideEvent event
+        inside = not event.handled and @cells∙isInsideEvent event
         if @hover and not inside
             @hover = false
             @onMouseLeave event
