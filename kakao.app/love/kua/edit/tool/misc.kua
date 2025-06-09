@@ -170,7 +170,7 @@ class misc
                 start = pos[ci]
                 exi   = idx
                 
-        if valid index and valid posl[index]    
+        if valid(index) and valid(posl[index])
             if posl[exi][ci] == posl[index][ci]  
                 ⮐  index                         
         

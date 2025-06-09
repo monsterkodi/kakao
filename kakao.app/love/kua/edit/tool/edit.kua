@@ -84,9 +84,9 @@ class edit
             
             before = after
             
-        if posl[^1][2] <= lines.len
+        if posl.len >= 1 and posl[^1][2] <= lines.len
             newls += before 
-            
+        log "AFTER INSERT" newls, newpl
         (newls newpl)
         
     #  0000000  000   000  00000000   00000000    0000000   000   000  000   000  0000000    

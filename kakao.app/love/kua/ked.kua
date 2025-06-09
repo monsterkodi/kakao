@@ -619,7 +619,7 @@ class KED
         # clearImmediate @redrawId
         # @redrawId = setImmediate @draw
                                       
-    draw: cols rows ox oy fontStep fontSize ->
+    draw: cols rows cw ch ->
             
         ⮐  if @quitting
         
@@ -629,7 +629,7 @@ class KED
         
         # @status.gutter = @editor.state.gutterWidth()
         
-        @screen∙initSize cols rows
+        @screen∙initSize cols rows cw ch
         
         @arrange cols rows
         
@@ -657,7 +657,7 @@ class KED
         # ●▪ draw
         # ●▸ render
             
-        @screen∙render ox oy fontStep fontSize
+        @screen∙render()
         # @t.removeImgs()
         # ●▪ render
         

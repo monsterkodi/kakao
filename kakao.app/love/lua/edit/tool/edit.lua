@@ -95,10 +95,11 @@ function edit.static.insertTextAtPositions(lines, text, posl)
             before = after
         end
         
-        if (posl[#posl][2] <= #lines) then 
+        if ((#posl >= 1) and (posl[#posl][2] <= #lines)) then 
             newls = newls + before
         end
         
+        print("AFTER INSERT", newls, newpl)
         return newls, newpl
     end
 

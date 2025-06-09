@@ -389,7 +389,10 @@ function cells:draw_horizontal_padding(x, y, fg, bg, zLayer)
 
 
 function cells:draw_rounded_cursor(x, y, fg) 
-        return -- @img x y "rounded.cursor" fg
+        -- @img x y "rounded.cursor" fg
+        -- love.graphics.rectangle 
+        local csz = self.screen:cell()
+        return love.graphics.rectangle("fill", ((x - 1) * csz[1]), ((y - 1) * csz[2]), csz[1], csz[2])
     end
 
 

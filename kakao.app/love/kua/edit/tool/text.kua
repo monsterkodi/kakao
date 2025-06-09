@@ -290,7 +290,7 @@ class text
         lns = [lines[firstLineIndex]∙slice(segi lines[firstLineIndex].len)]
         if nl > 2
             lns += lines∙slice(firstLineIndex+1 lastLineIndex)
-        segi = kseg.indexAtWidth lines[lastLineIndex] rng[3]
+        segi = kseg.segiAtWidth lines[lastLineIndex] rng[3]
         lns += [lines[lastLineIndex]∙slice(1 segi)]
                 
     @indexOfLongestLine: lines ->
@@ -567,7 +567,7 @@ class text
         if x <= 0
             ⮐  [x y x y] 
         
-        segi = kseg.indexAtWidth lines[y] x
+        segi = kseg.segiAtWidth lines[y] x
         left = lines[y]∙slice 1 segi
         tc = kseg.tailCount left ' '
         if tc
@@ -581,7 +581,7 @@ class text
         
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
-        segi = kseg.indexAtWidth lines[y] x
+        segi = kseg.segiAtWidth lines[y] x
         left = lines[y]∙slice(1 segi)
         tc = kseg.tailCount left ' '
         if tc

@@ -392,7 +392,7 @@ function text.static.seglsForRange(lines, rng)
             lns = lns + (lines:slice((firstLineIndex + 1), lastLineIndex))
         end
         
-        segi = kseg.indexAtWidth(lines[lastLineIndex], rng[3])
+        segi = kseg.segiAtWidth(lines[lastLineIndex], rng[3])
         lns = lns + (array(lines[lastLineIndex]:slice(1, segi)))
         return lns
     end
@@ -754,7 +754,7 @@ function text.static.rangeOfWhitespaceLeftToPos(lines, pos)
             return array(x, y, x, y)
         end
         
-        local segi = kseg.indexAtWidth(lines[y], x)
+        local segi = kseg.segiAtWidth(lines[y], x)
         local left = lines[y]:slice(1, segi)
         local tc = kseg.tailCount(left, ' ')
         if tc then 
@@ -770,7 +770,7 @@ function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos)
         
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
-        local segi = kseg.indexAtWidth(lines[y], x)
+        local segi = kseg.segiAtWidth(lines[y], x)
         local left = lines[y]:slice(1, segi)
         local tc = kseg.tailCount(left, ' ')
         if tc then 

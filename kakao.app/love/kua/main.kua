@@ -5,9 +5,7 @@ use ked
 love.load = ->
 
     _G.fontWidth = 12
-    _G.fontSize  = fontWidth*2
-    _G.fontStep  = fontWidth+2
-    _G.font  = love.graphics.setNewFont "font.ttf" fontSize
+    _G.font  = love.graphics.setNewFont "font.ttf" fontWidth*2
     _G.count = 0
     #love.window.maximize()
     
@@ -23,19 +21,19 @@ love.draw = ->
     (_ _ w h) = love.window.getSafeArea()
     
     scale = love.window.getDPIScale()
+    lg = love.graphics
     
-    love.graphics.setColor 0.1 0.1 0.1 
+    lg.setColor 0.1 0.1 0.1 
+    cw = fontWidth
+    ch = fontWidth*2
     
-    ox = math.ceil((w-math.floor(w/fontStep)*fontStep)/2)
-    oy = math.floor((h-math.floor(h/fontSize)*fontSize)/4)
-    
-    cols = math.floor w/fontStep
-    rows = math.floor h/fontSize
+    cols = math.floor w/cw
+    rows = math.floor h/ch
 
-    love.graphics.setColor 0.2 0.2 0.2 
-    love.graphics.print "#{cols} #{rows} #{w} #{h} #{scale} #{count} #{love.timer.getFPS()} ◂" 2*fontStep h-fontSize*2
+    lg.setColor 0.2 0.2 0.2 
+    lg.print "#{cols} #{rows} #{w} #{h} #{scale} #{count} #{love.timer.getFPS()} ◂" 2*cw h-ch*2
     
-    ked∙draw cols rows ox oy fontStep fontSize
+    ked∙draw cols rows cw ch
     
     nil
     
@@ -54,22 +52,21 @@ love.keypressed = key scancode isrepeat ->
         "lalt"   "ralt"
         "lgui"   "rgui"
             ⮐  
-    if love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
-        mods &= "shift+"
-    if love.keyboard.isDown('lctrl') or love.keyboard.isDown('rctrl')
-        mods &= "ctrl+"
-    if love.keyboard.isDown('lalt') or love.keyboard.isDown('ralt')
-        mods &= "alt+"
-    if love.keyboard.isDown('lgui') or love.keyboard.isDown('rgui')
-        mods &= "cmd+"
+            
+    lk = love.keyboard        
+    
+    if lk.isDown('lshift') or lk.isDown('rshift') ➜ mods &= "shift+"
+    if lk.isDown('lctrl')  or lk.isDown('rctrl')  ➜ mods &= "ctrl+"
+    if lk.isDown('lalt')   or lk.isDown('ralt')   ➜ mods &= "alt+"
+    if lk.isDown('lgui')   or lk.isDown('rgui')   ➜ mods &= "cmd+"
     # log 'keypressed ' mods, key
     combo = mods & key
-    char = ""
-    switch key
-        "return" ➜ char = "\n"
-        "space" ➜ char = " "
-    event = { "repeat": isrepeat combo: combo char: char}
-    ked∙onKey combo, event
+    char = switch key
+        "return" ➜ "\n"
+        "space"  ➜ " "
+                 ➜ ""
+    event = {"repeat":isrepeat combo:combo char:char}
+    ked∙onKey combo event
     true
     
 # love.keyreleased = key scancode ->

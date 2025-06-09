@@ -258,6 +258,9 @@ class cells
     draw_rounded_cursor: x y fg ->
     
         # @img x y "rounded.cursor" fg
+        # love.graphics.rectangle 
+        csz = @screen∙cell()
+        love.graphics.rectangle("fill", (x-1)*csz[1], (y-1)*csz[2], csz[1], csz[2]) 
         
     draw_rounded_multi_cursor: x y fg ->
     

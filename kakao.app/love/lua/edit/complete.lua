@@ -23,7 +23,7 @@ function complete:init(editor)
         
         self.name = self.editor.name .. '_complete'
         
-        self.choices = choices(self.editor.cells.screen, "" .. self.name .. "_choices", array('scrllr'))
+        self.choices = choices(self.editor.cells.screen, "" .. tostring(self.name) .. "_choices", array('scrllr'))
         self.choices.focusable = false
         
         self.color = {
@@ -54,8 +54,12 @@ function complete:init(editor)
 
 
 function complete:complete() 
-        local before = self.editor.state.chunkBeforeCursor()
-        local after = self.editor.state.chunkAfterCursor()
+        if true then 
+            return
+        end
+        
+        local before = self.editor.state:chunkBeforeCursor()
+        local after = self.editor.state:chunkAfterCursor()
         
         local hcw = kseg.headCountWord(after)
         local tcw = kseg.tailCountWord(before)
@@ -70,10 +74,9 @@ function complete:complete()
         if tct then 
             -- turd = before[before.length-1..] # start from the last punctuation character
             turd = string.sub(before, (#before - 1)) -- start from the last punctuation character
-        else if (tcw and (tcw < #before)) then 
+        elseif (tcw and (tcw < #before)) then 
             -- turd = before[before.length-tcw..] # start from the last word
             turd = string.sub(before, (#before - tcw)) -- start from the last word
-             end
         end
         
         return self:word(turd)

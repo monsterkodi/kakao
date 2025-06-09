@@ -207,7 +207,7 @@ function misc.static.indexOfExtremePositionInDirection(posl, dir, index)
             end
         end
         
-        if valid((index and valid), posl[index]) then 
+        if (valid(index) and valid(posl[index])) then 
             if (posl[exi][ci] == posl[index][ci]) then 
                 return index
             end

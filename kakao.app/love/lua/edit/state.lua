@@ -234,6 +234,7 @@ function state:setCursors(cursors, opt)
         
         mode.cursorsSet(self)
         self:emit('cursorsSet')
+        print('cursorsSet', self.s.cursors, self.s.main)
         return self
     end
 
@@ -643,7 +644,13 @@ function state:setMain(m)
 
 function state:mainCursor() 
         --.asMutable()        
-        return self.s.cursors[self.s.main]
+        local mc = self.s.cursors[self.s.main]
+        if not mc then 
+            -- error "no mainCursor!"
+            return array(1, 1)
+        end
+        
+        return mc
     end
 
 --  ███████  ████████  █████████

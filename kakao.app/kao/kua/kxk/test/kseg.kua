@@ -22,8 +22,8 @@ use kxk/strg
         kseg.segiAtWidth kseg('🧑🧑') 3 ▸ 2
         kseg.segiAtWidth kseg('🧑🧑') 4 ▸ 2
         kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 2
-        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2   
-
+        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2  
+        
     ▸ construct
         
         s = kseg()

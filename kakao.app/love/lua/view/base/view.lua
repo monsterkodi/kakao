@@ -136,7 +136,7 @@ function view:onMouse(event)
     end
 
 function view:onWheel(event) 
-    return print("view.onWheel " .. self.name .. "")
+    return print("view.onWheel " .. tostring(self.name) .. "")
     end
 
 
@@ -172,7 +172,7 @@ function view:handleHover(event)
 
 
 function view:onKey(key, event) 
-    return print("view.onKey " .. self.name .. "")
+    return print("view.onKey " .. tostring(self.name) .. "")
     end
 
 -- 0000000    00000000    0000000   000   000  

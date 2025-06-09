@@ -222,6 +222,7 @@ class state extends events
         
         mode.cursorsSet @
         @emit 'cursorsSet'
+        log 'cursorsSet' @s.cursors, @s.main
         @
             
     textOfSelectionOrWordAtCursor: -> 
@@ -574,7 +575,11 @@ class state extends events
         
     mainCursor: -> 
         #.asMutable()        
-        @s.cursors[@s.main] 
+        mc = @s.cursors[@s.main]
+        if not mc
+            # error "no mainCursor!"
+            ⮐  [1 1]
+        mc
     
     #  ███████  ████████  █████████
     # ███       ███          ███   

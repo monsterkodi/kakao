@@ -118,7 +118,7 @@ function draw:drawLine(line, y, row)
         -- c = 1 if firstIndex != firstSegi            # one column to the right 
         local x = 1
         
-        print("drawLine", bg, linel)
+        -- log "drawLine" y, line
         
         while (x <= self.cells.cols) do 
             local ci = ((x + view[1]) - 1)
@@ -147,7 +147,7 @@ function draw:drawLine(line, y, row)
             x = x + cw
             
             if (x <= self.cells.cols) then 
-                print("drawChar", c, row, ch, self.cells)
+                -- log "drawChar" c, row, ch, @cells
                 c = c + (self.cells:add(c, row, ch, fg, bg))
             end
             

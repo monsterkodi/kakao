@@ -699,7 +699,7 @@ function KED:redraw()
     end
 
 
-function KED:draw(cols, rows, ox, oy, fontStep, fontSize) 
+function KED:draw(cols, rows, cw, ch) 
         if self.quitting then return end
         
         -- ● sum
@@ -708,7 +708,7 @@ function KED:draw(cols, rows, ox, oy, fontStep, fontSize)
         
         -- @status.gutter = @editor.state.gutterWidth()
         
-        self.screen:initSize(cols, rows)
+        self.screen:initSize(cols, rows, cw, ch)
         
         self:arrange(cols, rows)
         
@@ -738,7 +738,7 @@ function KED:draw(cols, rows, ox, oy, fontStep, fontSize)
         -- ●▪ draw
         -- ●▸ render
         
-        self.screen:render(ox, oy, fontStep, fontSize)
+        self.screen:render()
         -- @t.removeImgs()
         -- ●▪ render
         

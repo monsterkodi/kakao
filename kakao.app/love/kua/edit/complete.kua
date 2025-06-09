@@ -49,8 +49,11 @@ class complete
     
     complete: -> 
         
-        before = @editor.state.chunkBeforeCursor()
-        after  = @editor.state.chunkAfterCursor()
+        if true
+            ⮐  
+        
+        before = @editor.state∙chunkBeforeCursor()
+        after  = @editor.state∙chunkAfterCursor()
         
         hcw = kseg.headCountWord after
         tcw = kseg.tailCountWord before
@@ -64,10 +67,10 @@ class complete
         turd = before
         if tct 
             # turd = before[before.length-1..] # start from the last punctuation character
-            turd = string.sub before before.length-1 # start from the last punctuation character
-        else if tcw and tcw < before.length
+            turd = string.sub before before.len-1 # start from the last punctuation character
+        elif tcw and tcw < before.length
             # turd = before[before.length-tcw..] # start from the last word
-            turd = string.sub before before.length-tcw # start from the last word
+            turd = string.sub before before.len-tcw # start from the last word
                 
         @word turd
         
