@@ -104,7 +104,7 @@ function choices:set(items, key)
     return self.items
                 end
 end)()
-        -- log "#{@name} set #{key}" lines
+        print("" .. tostring(self.name) .. " set lines", lines)
         return self.state:loadLines(lines)
     end
 
@@ -138,39 +138,38 @@ function choices:drawCursors()
 function choices:drawSelections() 
         if empty(self.state.s.selections) then return end
         
-        if not self.roundedSelections then return super() end
-        
-        local fg = (function () 
-    if self:hasFocus() then 
-    return self.color.hover.bg else 
-    return self.color.hover.blur
-             end
-end)()
-        
-        if not self.cells.screen.t.hasFocus then 
-            fg = color.darken(fg)
+        if not self.roundedSelections then 
+            return editor.drawSelections(self)
         end
         
-        local sel = self.state.s.selections[0]
+        -- fg = if @hasFocus() ➜ @color.hover.bg ➜ @color.hover.blur
+        -- fg = @color.hover
+        local fg = array(255, 255, 0)
         
-        local li = sel[1]
-        local y = (li - self.state.s.view[1])
+        -- if not @cells.screen.t.hasFocus
+        --     fg = color.darken fg
         
-        if (y >= self.cells.rows) then return end
+        local sel = self.state.s.selections[1]
         
-        local xs = max(sel[0], kseg.headCount(self.state.s.lines[li], ' '))
-        if (xs == 0) then 
+        local li = sel[2]
+        local y = ((li - self.state.s.view[2]) + 1)
+        
+        if (y > self.cells.rows) then return end
+        
+        -- xs = max sel[1] kseg.headCount(@state.s.lines[li] ' ')
+        local xs = max(sel[1], (self.state.s.lines[li]:indent() + 1))
+        if (xs == 1) then 
             xs = xs + (self.frontRoundOffset)
         end
         
-        self.cells.set_ch_fg(((xs - 1) - self.state.s.view[0]), y, '', fg)
+        self.cells:set_ch_fg(1, y, '', fg)
         
-        for x = xs, sel[2]-1 do 
-            self.cells.set_bg((x - self.state.s.view[0]), y, fg)
-            self.cells.adjustContrastForHighlight((x - self.state.s.view[0]), y, fg)
+        for x in iter(xs, sel[3]) do 
+            self.cells:set_bg(((x - self.state.s.view[1]) + 1), y, fg)
+            -- @cells∙adjustContrastForHighlight x-@state.s.view[1] y fg
         end
         
-        return self.cells.set_ch_fg((x - self.state.s.view[0]), y, '', fg)
+        return self.cells:set_ch_fg(((sel[3] + 2) - self.state.s.view[1]), y, '', fg)
     end
 
 
@@ -184,16 +183,17 @@ function choices:numFiltered()
 
 
 function choices:currentIndex() 
-    return self.state:mainCursor()[1]
+    return self.state:mainCursor()[2]
     end
 
 function choices:current(opt) 
+        opt = opt or ({})
         local cc = self.fuzzied[self:currentIndex()]
-        if is(cc, str) then 
+        if is(cc, "string") then 
             if (opt.trim == 'front') then 
-                cc = ltrim(cc)
+                cc = kstr.ltrim(cc)
             else if (opt.trim ~= false) then 
-                cc = trim(cc)
+                cc = kstr.trim(cc)
                  end
             end
         end
@@ -287,10 +287,11 @@ function choices:select(row)
         if is(not row, "number") then return end
         if ((row < 1) or (row > #self.state.s.lines)) then return end
         
-        -- @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
+        self.state:setSelections(array(belt.rangeOfLine(self.state.s.lines, row)))
         self.state:setMainCursor(1, row)
         
         if self.focusable then self:grabFocus() end
+        
         return self:emit('select', self:choiceAtRow(row))
     end
 
@@ -326,7 +327,6 @@ function choices:selectNext()
 function choices:selectPrev() 
         local row = self:prevRow()
         if empty(row) then 
-            print("selectPrev", self:current())
             return self:emitAction('boundary', self:current())
         else 
             return self:select(row)
@@ -380,7 +380,7 @@ function choices:filter(text)
         if (text == self.filterText) then return end
         
         if empty(text) then return self:set(self.items, self.key) end
-        
+        print("FILTER")
         self.filterText = text
         
         local fuzz = krzl({values = self.items, extract = self.extract})
@@ -502,7 +502,7 @@ function choices:onMouse(event)
 
 
 function choices:emitAction(action, choice, event) 
-        print("emitAction", action, choice, event)
+        -- log "emitAction" action, choice, event
         return self:emit('action', action, choice, event)
     end
 
@@ -525,14 +525,8 @@ function choices:onKey(key, event)
         
         if not self:hasFocus() then return end
         
-        -- switch event.combo
-        -- 
-        --     'esc'
-        --     'left' 
-        --     'right'  
-        --     'space'  
-        --     'delete'
-        --     'return' ➜ @emitAction event.combo @current() event
+        if (event.combo == 'esc') or (event.combo == 'left') or (event.combo == 'right') or (event.combo == 'space') or (event.combo == 'delete') or (event.combo == 'return') then self:emitAction(event.combo, self:current(), event)
+        end
         
         self:emitAction(event.combo, self:current(), event)
         

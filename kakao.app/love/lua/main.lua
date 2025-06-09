@@ -33,7 +33,7 @@ function love.draw()
     local rows = math.floor((h / fontSize))
     
     love.graphics.setColor(0.2, 0.2, 0.2)
-    love.graphics.print("" .. cols .. " " .. rows .. " " .. w .. " " .. h .. " " .. scale .. " " .. count .. " " .. love.timer.getFPS() .. " ◂", (2 * fontStep), (h - (fontSize * 2)))
+    love.graphics.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(scale) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * fontStep), (h - (fontSize * 2)))
     
     ked:draw(cols, rows, ox, oy, fontStep, fontSize)
     
@@ -49,7 +49,8 @@ end
 
 function love.keypressed(key, scancode, isrepeat) 
     local mods = ""
-    if (key == "lshift") or (key == "rshift") or (key == "lctrl") or (key == "rctrl") or (key == "lalt") or (key == "ralt") or (key == "lgui") or (key == "rgui") then 
+    if (key == "escape") then key = "esc"
+    elseif (key == "lshift") or (key == "rshift") or (key == "lctrl") or (key == "rctrl") or (key == "lalt") or (key == "ralt") or (key == "lgui") or (key == "rgui") then 
             return
     end
     
@@ -69,7 +70,7 @@ function love.keypressed(key, scancode, isrepeat)
         mods = mods .. "cmd+"
     end
     
-    print('keypressed ', mods, key)
+    -- log 'keypressed ' mods, key
     local combo = mods .. key
     local char = ""
     if (key == "return") then char = "\n"

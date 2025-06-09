@@ -612,7 +612,7 @@ function text.static.splitLineRanges(lines, rngs, includeEmpty)
 
 
 function text.static.isLinesPosInside(lines, pos) 
-    return ((pos[1] < #lines) and ((0 <= pos[0]) <= kseg.width(lines[pos[1]])))
+    return (((pos[2] < #lines) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
     end
 
 function text.static.isLinesPosOutside(lines, pos) 
@@ -621,7 +621,7 @@ function text.static.isLinesPosOutside(lines, pos)
 
 
 function text.static.isValidLineIndex(lines, li) 
-    return ((0 <= li) < #lines)
+    return ((1 <= li) <= #lines)
     end
 
 function text.static.isInvalidLineIndex(lines, li) 
@@ -630,22 +630,22 @@ function text.static.isInvalidLineIndex(lines, li)
 
 
 function text.static.isMultiLineRange(lines, rng) 
-    return (rng[1] ~= rng[3])
+    return (rng[2] ~= rng[4])
     end
 
 
 function text.static.isFullLineRange(lines, rng) 
-    return (((((0 <= rng[1]) <= rng[3]) < #lines) and (rng[0] == 0)) and ((rng[2] >= #lines[rng[3]]) or ((rng[2] == 0) and (rng[1] < rng[3]))))
+    return (((((1 <= rng[2]) and (rng[2] <= rng[4])) and (rng[4] < #lines)) and (rng[1] == 1)) and ((rng[3] >= #lines[rng[4]]) or ((rng[3] == 1) and (rng[2] < rng[4]))))
     end
 
 
 function text.static.isSpanLineRange(lines, rng) 
-    return ((((0 <= rng[1]) == rng[3]) < #lines) and ((rng[0] > 0) or (rng[2] < #lines[rng[1]])))
+    return ((((1 <= rng[2]) and (rng[2] == rng[4])) and (rng[4] < #lines)) and ((rng[1] > 1) or (rng[3] < #lines[rng[2]])))
     end
 
 
 function text.static.rangeOfLine(lines, y) 
-    return array(0, y, kseg.width(lines[y]), y)
+    return array(1, y, kseg.width(lines[y]), y)
     end
 
 --  0000000  000   000  000   000  000   000  000   000  

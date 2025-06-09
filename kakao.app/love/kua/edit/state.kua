@@ -18,6 +18,7 @@
 # use ./act     ◆ del insert select join indent multi main
 # use ./tool    ◆ belt
 # use           ◆ keys mode
+
 use util.syntax
 
 class state extends events
@@ -588,4 +589,610 @@ class state extends events
         @setSelections belt.extendLineRangesFromPositionToPosition @s.lines @allSelections() @mainCursor() [x y]
         @setCursors [[x y]] {adjust:'topBotDelta'}
 
+    #  0000000   000      000      
+    # 000   000  000      000      
+    # 000000000  000      000      
+    # 000   000  000      000      
+    # 000   000  0000000  0000000  
+    
+    allCursors: -> 
+        #.asMutable()
+        @s.cursors
+    
+    # 00000000  000   000  00000000    0000000   000   000  0000000    
+    # 000        000 000   000   000  000   000  0000  000  000   000  
+    # 0000000     00000    00000000   000000000  000 0 000  000   000  
+    # 000        000 000   000        000   000  000  0000  000   000  
+    # 00000000  000   000  000        000   000  000   000  0000000    
+    
+    expandCursors: dir ->
+        
+        cursors = @allCursors()
+        dy = if dir == 'up' ➜ -1 ➜ 1
+        
+        newCursors = []
+        for c in cursors
+            newCursors∙push c
+            newCursors∙push [c[1] c[2]+dy]
+        mc = belt.traversePositionsInDirection newCursors @mainCursor() dir
+        @setCursors newCursors {main:mc adjust:'topBotDelta'}
+        
+    contractCursors: dir ->
+        
+        cursors = @allCursors()
+        newCursors = []
+        for ci c in ipairs cursors
+            nbup = belt.positionsContain cursors belt.positionInDirection(c 'down')
+            nbdn = belt.positionsContain cursors belt.positionInDirection(c 'up')
+            solo = not (nbup or nbdn)
+            add = switch dir
+                'up'   ➜ nbup or solo
+                'down' ➜ nbdn or solo
+            
+            if add
+                newCursors∙push c 
+        @setCursors newCursors
+        
+    #  0000000   0000000    0000000    
+    # 000   000  000   000  000   000  
+    # 000000000  000   000  000   000  
+    # 000   000  000   000  000   000  
+    # 000   000  0000000    0000000    
+    
+    addCursor: x y ->
+        
+        pos = belt.pos x y
+        cursors = @allCursors()
+        cursors∙push pos
+        @setCursors cursors {main:-1}
+        
+    addCursors: cursors ->
+        
+        @setCursors @allCursors().concat(cursors)
+        
+    delCursorsInRange: rng ->
+        
+        outside = belt.positionsOutsideRange @allCursors() rng
+        outside∙push belt.endOfRange(rng)
+        @setCursors outside {main:-1}
+        
+    # 00     00   0000000   000   000  00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000   000 000   0000000   
+    # 000 0 000  000   000     000     000       
+    # 000   000   0000000       0      00000000  
+    
+    moveCursors: dir opt ->
+        if dir is array
+            switch dir[0]
+                'bos' ➜ 
+                    if @moveCursorsToStartOfSelections() ➜ ⮐  
+                    dir = dir∙slice(1)
+                'eos' ➜ 
+                    if @moveCursorsToEndOfSelections() ➜ ⮐     
+                    dir = dir∙slice(1)
+                    
+            dir = dir[0]
+        
+        opt ?= {}
+        opt.count ?= 1
+        opt.jumpWords ?= false
+        
+        if @s.highlights.len > 0
+            @deselect()
+        
+        cursors = @allCursors()
+        lines   = @s.lines
+        for ci c in ipairs cursors
+            
+            line = lines[c[2]]
+            
+            switch dir
+                'left'  
+                'right'     ➜ c[0] += belt.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
+                'up'        ➜ c[1] -= opt.count
+                'down'      ➜ c[1] += opt.count
+                'eol'       ➜ c[0] = kseg.width(@s.lines[c[2]])
+                'bol'       ➜ c[0] = 0
+                'bof'       ➜ c[0] = 0; c[2] = 0
+                'eof'       ➜ c[1] = @s.lines.length-1; c[1] = kseg.width(line)
+                'ind'       ➜ c[0] = belt.numIndent(line)
+                'ind_eol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] < ind ➜  ind ➜  kseg.width(line)
+                'ind_bol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] > ind ➜  ind ➜  1
+        main   = @s.main
+        adjust = opt.adjust or 'topBotDelta'
+        
+        switch dir
+            'up' 'down' 'left' 'right' 
+                main = belt.indexOfExtremePositionInDirection cursors dir main
+                adjust = 'topBotDeltaGrow'
+                
+        @setCursors cursors {main:main adjust:adjust}
+        
+        true
+        
+    moveCursorsToStartOfSelections: ->
+        
+        selections = @allSelections()
+        
+        ⮐  if empty selections
+        
+        rngs = belt.splitLineRanges @s.lines selections false
+        @setCursors belt.startPositionsOfRanges(rngs)
+        
+        true
+        
+    moveCursorsToEndOfSelections: ->
+        
+        selections = @allSelections()
+         
+        ⮐  if empty selections
+         
+        rngs = belt.splitLineRanges @s.lines selections false
+        @setCursors belt.endPositionsOfRanges(rngs)
+        
+        true
+        
+    moveCursorsToEndOfLines: ->
+        
+        cursors = @allCursors()
+        
+        for i cur in ipairs cursors
+            cur[2] = belt.lineRangeAtPos(@s.lines cur)[3]
+        
+        @setCursors cursors
+        
+        true
+                
+    isAnyCursorInLine: y ->
+        
+        for i c in ipairs @allCursors()
+            ⮐  true if c[2] == y
+            
+    #  0000000  000   000  000   000  000   000   0000000  0000000    00000000  00000000   0000000   00000000   00000000  
+    # 000       000   000  0000  000  000  000   000       000   000  000       000       000   000  000   000  000       
+    # 000       000000000  000 0 000  0000000    0000000   0000000    0000000   000000    000   000  0000000    0000000   
+    # 000       000   000  000  0000  000  000        000  000   000  000       000       000   000  000   000  000       
+    #  0000000  000   000  000   000  000   000  0000000   0000000    00000000  000        0000000   000   000  00000000  
+    
+    chunksBeforeCursors: -> @s.cursors∙map((c) -> belt.chunkBeforePos(@s.lines c))
+            
+    #  0000000  00000000  000      00000000   0000000  000000000  
+    # 000       000       000      000       000          000     
+    # 0000000   0000000   000      0000000   000          000     
+    #      000  000       000      000       000          000     
+    # 0000000   00000000  0000000  00000000   0000000     000     
+    
+    moveCursorsAndSelect: dir opt ->
+        
+        (selections cursors) = belt.extendLineRangesByMovingPositionsInDirection @s.lines @s.selections @s.cursors dir opt
+        
+        @setSelections selections
+        @setCursors cursors {adjust:'topBotDelta'}
+
+    select: from to ->
+        
+        selections = []
+        
+        @setMainCursor to[1] to[2]
+        
+        if from[2] > to[2] or from[2] == to[2] and from[1] > to[1]
+            (from to) = (to from)
+
+        to[2]   = clamp 0 @s.lines.len-1 to[2]
+        from[2] = clamp 0 @s.lines.len-1 from[2]
+            
+        to[1]   = clamp 0 @s.lines[to[2]].len to[1]
+        from[1] = clamp 0 @s.lines[from[2]].len from[1]
+        
+        selections.push [from[1] from[2] to[1] to[2]]
+        
+        @setSelections selections
+        
+    allSelections: -> @s.selections.asMutable()
+    allHighlights: -> @s.highlights.asMutable()
+        
+    # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
+    # 000   000  000  000        000   000  000      000  000        000   000     000     
+    # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
+    # 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
+    # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
+    
+    selectWordAtCursor_highlightSelection_selectAllHighlights: ->
+        # alt+cmd+d alt+ctrl+d
+        if valid @s.highlights 
+            pos = @mainCursor()
+            if @s.selections.len < @s.highlights.len
+                @selectAllHighlights()
+            else
+                @addNextHighlightToSelection()
+            ⮐ 
+        
+        @selectWordAtCursor_highlightSelection()
+        @selectAllHighlights()
+    
+    highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight: ->
+        # cmd+e ctrl+e
+        if valid @s.highlights 
+            if not @deselectCursorHighlight()
+                @moveCursorToNextHighlight()
+            ⮐ 
+            
+        @selectWordAtCursor_highlightSelection()
+        @deselectCursorHighlight()
+    
+    selectWordAtCursor_highlightSelection_addNextHighlightToSelection: ->
+        # cmd+d ctrl+d
+        if valid @s.highlights ➜ ⮐  @addCurrentOrNextHighlightToSelection()
+            
+        @selectWordAtCursor_highlightSelection()
+        
+    selectWordAtCursor_highlightSelection_selectNextHighlight: ->
+        # cmd+g ctrl+g
+        if valid @s.highlights 
+            @clearCursors()
+            @selectNextHighlight()
+            
+        @selectWordAtCursor_highlightSelection()
+        
+    highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight: ->
+        # shift+cmd+e shift+ctrl+e
+        if valid @s.highlights 
+            if not @deselectCursorHighlight()
+                @moveCursorToPrevHighlight()
+            ⮐ 
+            
+        @selectWordAtCursor_highlightSelection()
+        @deselectCursorHighlight()
+    
+    selectWordAtCursor_highlightSelection_addPrevHighlightToSelection: ->
+        # shift+cmd+d shift+ctrl+d
+        if valid @s.highlights ➜ ⮐  @addCurrentOrPrevHighlightToSelection()
+            
+        @selectWordAtCursor_highlightSelection()
+        
+    selectWordAtCursor_highlightSelection_selectPrevHighlight: ->
+        # shift+cmd+g shift+ctrl+g
+        if valid @s.highlights 
+            @clearCursors()
+            @selectPrevHighlight()
+            
+        @selectWordAtCursor_highlightSelection()
+        
+    selectWordAtCursor_highlightSelection: ->
+        
+        if empty @s.selections
+            @selectWord @mainCursor() 
+        
+        @highlightSelection()
+    
+    highlightSelection: ->
+        
+        ⮐  if empty @s.selections
+        
+        spans = []
+        for ri rng in ipairs @allSelections()
+            if rng[2] == rng[4]
+                text  = belt.textForLineRange @s.lines rng
+                spans += belt.lineSpansForText(@s.lines text)
+        
+        @setHighlights spans
+        
+    highlightText: text ->
+        
+        ⮐  if empty text
+        
+        @setHighlights belt.lineSpansForText(@s.lines text)
+    
+    deselectCursorHighlight: ->
+        
+        ⮐  if empty @s.highlights
+        ⮐  if empty @s.selections
+        prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
+        if prev
+            @deselectSpan prev
+
+    selectAllHighlights: ->
+        
+        ⮐  if empty @s.highlights
+        
+        selections = []
+        cursors = []
+        for si span in ipairs @s.highlights
+            selections∙push belt.rangeForSpan(span)
+            cursors∙push belt.endOfSpan(span)
+            
+        @addCursors cursors        
+        @setSelections selections
+                    
+    selectNextHighlight: ->
+        
+        ⮐  if empty @s.highlights
+        next = belt.nextSpanAfterPos @s.highlights @mainCursor()
+        if next
+            @selectSpan next
+            @setMainCursor belt.endOfSpan(next)
+
+    selectPrevHighlight: ->
+        
+        ⮐  if empty @s.highlights
+        
+        pos = @mainCursor()
+        prev = belt.prevSpanBeforePos @s.highlights pos
+        if prev
+            if belt.endOfSpan(prev) == pos
+                prev = belt.prevSpanBeforePos @s.highlights belt.startOfSpan(prev)
+            if prev
+                @selectSpan prev
+                @setMainCursor belt.endOfSpan(prev)
+            
+    addCurrentOrNextHighlightToSelection: ->            
+        prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
+        if prev
+            if not belt.rangesContainSpan @s.selections prev
+                @addSpanToSelection prev
+                @addCursor belt.endOfSpan(prev)
+                ⮐ 
+                
+        @addNextHighlightToSelection()
+
+    addCurrentOrPrevHighlightToSelection: ->            
+        prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
+        if prev
+            if not belt.rangesContainSpan @s.selections prev
+                @addSpanToSelection prev
+                @addCursor belt.endOfSpan(prev)
+                ⮐ 
+                
+        @addPrevHighlightToSelection()
+        
+    addNextHighlightToSelection: ->
+        
+        ⮐  if empty @s.highlights
+        next = belt.nextSpanAfterPos @s.highlights @mainCursor()
+        if next
+            @addSpanToSelection next
+            @addCursor belt.endOfSpan(next)
+
+    addPrevHighlightToSelection: ->
+        
+        ⮐  if empty @s.highlights
+        
+        pos = @mainCursor()
+        prev = belt.prevSpanBeforePos @s.highlights pos
+        if prev
+            if belt.endOfSpan(prev) == pos
+                prev = belt.prevSpanBeforePos @s.highlights belt.startOfSpan(prev)
+            if prev
+                @addSpanToSelection prev
+                @addCursor belt.endOfSpan(prev)
+            
+    moveCursorToNextHighlight: pos ->
+        
+        ⮐  if empty @s.highlights
+        
+        pos ?= @mainCursor()
+        next = belt.nextSpanAfterPos @s.highlights pos
+        if next
+            @moveMainCursor belt.endOfSpan(next)
+
+    moveCursorToPrevHighlight: pos ->
+        
+        ⮐  if empty @s.highlights
+        
+        pos ?= @mainCursor()
+        prev = belt.prevSpanBeforePos @s.highlights pos
+        if prev
+            if belt.endOfSpan(prev) == pos
+                prev = belt.prevSpanBeforePos @s.highlights belt.startOfSpan(prev)
+            if prev
+                @moveMainCursor belt.endOfSpan(prev)
+            
+    selectSpan: span ->
+        
+        @setSelections [belt.rangeForSpan(span)]
+        
+    deselectSpan: span ->
+        
+        rng = belt.rangeForSpan span
+        
+        selections = @allSelections()
+        for index selection in ipairs selections
+            if belt.isSameRange selection rng
+                selections∙splice index 1
+                @setSelections selections
+                ⮐  true
+        false
+        
+    addRangeToSelectionWithMainCursorAtEnd: rng ->
+        
+        @addRangeToSelection rng
+        @delCursorsInRange rng
+        
+    addRangeToSelection: rng ->
+        
+        selections = @allSelections()
+        
+        selections∙push rng
+        
+        @setSelections selections
+                    
+    addSpanToSelection: span -> @addRangeToSelection belt.rangeForSpan(span)
+                
+    #  0000000  000   000  000   000  000   000  000   000  
+    # 000       000   000  000   000  0000  000  000  000   
+    # 000       000000000  000   000  000 0 000  0000000    
+    # 000       000   000  000   000  000  0000  000  000   
+    #  0000000  000   000   0000000   000   000  000   000  
+    
+    selectChunk: x y ->
+        rng = belt.rangeOfClosestChunkToPos @s.lines belt.pos(x y)
+        if rng
+            @addRangeToSelectionWithMainCursorAtEnd rng
+        @
+
+    # 000   000   0000000   00000000   0000000    
+    # 000 0 000  000   000  000   000  000   000  
+    # 000000000  000   000  0000000    000   000  
+    # 000   000  000   000  000   000  000   000  
+    # 00     00   0000000   000   000  0000000    
+    
+    selectWord: x y ->
+        rng = belt.rangeOfClosestWordToPos @s.lines belt.pos(x y)
+        if rng
+            @addRangeToSelectionWithMainCursorAtEnd rng
+        @
+                
+    # 000      000  000   000  00000000  
+    # 000      000  0000  000  000       
+    # 000      000  000 0 000  0000000   
+    # 000      000  000  0000  000       
+    # 0000000  000  000   000  00000000  
+    
+    selectLine: y ->
+        
+        y ?= @mainCursor()[2]
+        if 1 <= y <= @s.lines.len
+            @select [1 y] [@s.lines[y].leng y]
+        @
+        
+    selectPrevLine: y ->
+        
+        y ?= @mainCursor()[2]
+        @selectLine y-1
+        
+    selectNextLine: y ->
+        
+        y ?= @mainCursor()[2]
+        @selectLine y+1
+        
+    selectCursorLines: ->
+                    
+        selections = belt.lineRangesForPositions(@s.lines @s.cursors)
+        
+        ▴ selections.length == @s.cursors.length
+                    
+        @setSelections selections
+        
+    selectAllLines: ->
+        
+        allsel = [[1 1 kseg.width(@s.lines[@s.lines.length]) @s.lines.length]]
+        
+        if allsel == @s.selections
+            @deselect()
+        else
+            @setSelections allsel
+        
+    # 00     00   0000000   00000000   00000000  
+    # 000   000  000   000  000   000  000       
+    # 000000000  000   000  0000000    0000000   
+    # 000 0 000  000   000  000   000  000       
+    # 000   000   0000000   000   000  00000000  
+    
+    selectMoreLines: ->
+        
+        (cursors selections) = belt.addLinesBelowPositionsToRanges @s.lines @s.cursors @s.selections
+        
+        @setSelections selections
+        @setCursors cursors {main:-1}
+
+    # 000      00000000   0000000   0000000  
+    # 000      000       000       000       
+    # 000      0000000   0000000   0000000   
+    # 000      000            000       000  
+    # 0000000  00000000  0000000   0000000   
+    
+    selectLessLines: ->
+        
+        (cursors selections) = belt.removeLinesAtPositionsFromRanges @s.lines @s.cursors @s.selections
+        
+        @setSelections selections
+        @setCursors cursors {main:-1}
+                
+    # 000000000  00000000  000   000  000000000  
+    #    000     000        000 000      000     
+    #    000     0000000     00000       000     
+    #    000     000        000 000      000     
+    #    000     00000000  000   000     000     
+    
+    textOfSelection: -> belt.textForLineRanges @s.lines @s.selections
+    selectedText:    -> belt.textForLineRanges @s.lines @s.selections
+    
+    selectionsOrCursorLineRanges: -> @s.selections or belt.lineRangesForPositions(@s.lines @s.cursors true)
+    
+    textOfSelectionOrCursorLines: -> 
+        
+        belt.textForLineRanges @s.lines @selectionsOrCursorLineRanges()
+
+    isSingleLineSelected: ->
+        
+        @s.selections.len == 1 and @s.selections[1][2] == @s.selections[1][4]
+        
+    isSelectedLine: y ->
+        
+        for si selection in ipairs @s.selections
+            if not (selection[4] == y and selection[3] == 0)
+                if selection[2] <= y and y <= selection[4]
+                    ⮐  true
+        false
+        
+    isFullySelectedLine: y ->
+        
+        for si selection in ipairs @s.selections
+            if selection[2] <= y and y <= selection[4]
+                ⮐  belt.isFullLineRange(@s.lines selection)
+        false
+        
+    isPartiallySelectedLine: y ->
+        
+        for si selection in ipairs @s.selections
+            if selection[2] <= y and y <= selection[4]
+                ⮐  not belt.isFullLineRange(@s.lines selection)
+        false
+        
+    isSpanSelectedLine: y ->
+        
+        for si selection in ipairs @s.selections
+            if selection[2] <= y and y <= selection[4]
+                span = belt.isSpanLineRange(@s.lines selection)
+                if span
+                    ⮐  true 
+            ⮐  false if selection[2] > y
+        false
+        
+    isHighlightedLine: y ->
+
+        for hi highlight in ipairs @s.highlights
+            ⮐  true if highlight[2] == y
+                
+        false
+        
+    # 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  
+    # 000   000  000       000       000       000      000       000          000     
+    # 000   000  0000000   0000000   0000000   000      0000000   000          000     
+    # 000   000  000            000  000       000      000       000          000     
+    # 0000000    00000000  0000000   00000000  0000000  00000000   0000000     000     
+    
+    deselect: ->
+        
+        if valid @s.selections
+            @setSelections []
+            
+    clearHighlights: ->
+
+        if valid @s.highlights
+            @setHighlights []
+            
+    clearCursors: ->
+            
+        if @s.cursors.length > 1
+            @setCursors [@mainCursor()]
+            
+    clearCursorsHighlightsAndSelections: ->
+        
+        @pushState() if @s.cursors.length>1 or valid @s.selections
+        @clearCursors()
+        @clearHighlights()
+        @deselect()
+            
 ⮐  state

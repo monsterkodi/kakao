@@ -21,6 +21,8 @@ class screen
         
         @c = belt.cells @cols @rows
     
+    size: -> [@cols @rows]
+    
     initSize: cols rows -> 
 
         @rows = rows

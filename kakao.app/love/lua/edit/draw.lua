@@ -101,14 +101,13 @@ function draw:draw()
 function draw:drawLine(line, y, row) 
         -- row ?= y-@state.s.view[2]
         local bg = self.color.bg
-        
         local checkColor = false
         local headerClass = null
         
         local syntax = self.state.syntax
         local view = self.state.s.view
         
-        local linel = (kseg.width(line) - view[1])
+        local linel = ((kseg.width(line) + 1) - view[1])
         -- log line, noon(dict.keys(@color))
         local c = 1
         -- firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
@@ -116,7 +115,7 @@ function draw:drawLine(line, y, row)
         -- c = 1 if firstIndex != firstSegi            # one column to the right 
         local x = 1
         while (x <= self.cells.cols) do 
-            local ci = (x + view[1])
+            local ci = ((x + view[1]) - 1)
             -- si = kseg.indexAtWidth line ci
             local si = ci
             
@@ -141,17 +140,14 @@ function draw:drawLine(line, y, row)
             x = x + cw
             
             if (x <= self.cells.cols) then 
-                -- @cells.meta_clone c row # ϵ⌶⟙ℍϵℜ 𝛋𝚒⟅⟅ 𝚒𝜏 ⊚ℜ ⫐◯ 𝚒𝜏!
-                -- log c, row, ch, fg, bg
                 c = c + (self.cells:add(c, row, ch, fg, bg))
             end
             
-            if (clss == 'invert_bg') then 
-                bg = self.color.bg
-            end
+            -- if clss == 'invert_bg'
+            --     bg = @color.bg
         end
         
-        self:drawRowBackground(row, linel)
+        -- @drawRowBackground row linel
         
         if checkColor then self:drawColorPills(line, row, linel) end
         if headerClass then 
@@ -241,12 +237,11 @@ function draw:drawSelections()
         local spanbg = self.color.selection.span
         local linebg = self.color.selection.line
         
-        if not self.cells.screen.t.hasFocus then 
-            spanbg = color.darken(spanbg)
-            linebg = color.darken(linebg)
-        end
+        -- if not @cells.screen.t.hasFocus
+        --     spanbg = color.darken spanbg
+        --     linebg = color.darken linebg
         
-        for selection in self.state.s.selections do 
+        for si, selection in ipairs(self.state.s.selections) do 
             local bg = (belt.isSpanLineRange(self.state.s.lines, selection) or {spanbg = linebg})
             
             for li in iter(selection[1], selection[3]) do 
@@ -267,8 +262,8 @@ function draw:drawSelections()
                 end
                 
                 for x = xs, xe-1 do 
-                    self.cells.set_bg((x - self.state.s.view[0]), y, bg)
-                    self.cells.adjustContrastForHighlight(x, y, bg)
+                    self.cells:set_bg((x - self.state.s.view[0]), y, bg)
+                    self.cells:adjustContrastForHighlight(x, y, bg)
                 end
             end
         end
@@ -285,22 +280,18 @@ function draw:drawSelections()
 
 function draw:drawCursors() 
         local s = self.state.s
-        local mainCursor = self.state.mainCursor()
+        local mainCursor = self.state:mainCursor()
         
         local fg = self.color.cursor.fg
         
         local bg = mode.themeColor(self.state, 'cursor.multi', self.color.cursor.multi)
         
-        bg = (function () 
-    if not self.cells.screen.t.hasFocus then 
-    return color.darken(bg)
-                              end
-end)()
+        -- bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        for cursor in s.cursors do 
+        for ci, cursor in ipairs(s.cursors) do 
             if (cursor ~= mainCursor) then 
                 if self:isCursorVisible(cursor) then 
-                    self.cells.draw_rounded_multi_cursor((cursor[0] - s.view[0]), (cursor[1] - s.view[1]), bg)
+                    self.cells:draw_rounded_multi_cursor((cursor[1] - s.view[1]), (cursor[2] - s.view[2]), bg)
                 end
             end
         end
@@ -312,23 +303,20 @@ end)()
             
             if not self:hasFocus() then bg = color.darken(bg) end
             
-            local x, y = array((mainCursor[0] - s.view[0]), (mainCursor[1] - s.view[1]))
+            local x = (mainCursor[1] - s.view[1])
+            local y = (mainCursor[2] - s.view[2])
             
             if (#s.cursors <= 1) then 
                 if self:isCursorInEmpty() then 
                     bg = color.darken(bg, 0.5)
-                elseif (' ' == self.cells.get_char(x, y)) then 
+                elseif (' ' == self.cells:get_char(x, y)) then 
                     bg = color.darken(bg, 0.8)
                 end
             end
             
-            bg = (function () 
-    if not self.cells.screen.t.hasFocus then 
-    return color.darken(bg)
-                                  end
-end)()
+            -- bg = color.darken(bg) if not @cells.screen.t.hasFocus
             
-            return self.cells.draw_rounded_cursor(x, y, bg)
+            return self.cells:draw_rounded_cursor(x, y, bg)
         end
     end
 
@@ -340,7 +328,8 @@ end)()
 
 
 function draw:drawColorPills(line, row, linel) 
-        local rngs = kstr.colorRanges(kseg.str(line))
+        -- rngs = kstr.colorRanges kseg.str(line)
+        local rngs = kstr.colorRanges(line:str())
         if rngs then 
             local cx = (max(0, linel) + 1)
             for rng, idx in rngs do 

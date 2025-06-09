@@ -34,8 +34,6 @@ function inputchoice:init(screen, name, features)
         
         self:setColor('bg', theme.quicky.bg)
         
-        print("theme.quicky.bg", theme.quicky.bg)
-        
         self:setColor('frame', theme.quicky.frame)
         
         if self.choices.mapscr then 
@@ -52,7 +50,7 @@ function inputchoice:init(screen, name, features)
 
 
 function inputchoice:setColor(key, clr) 
-        -- view.setColor @ key clr
+        view.setColor(self, key, clr)
         
         if (key == 'bg') then 
             self.input:setColor('bg_blur', self.color.bg)
@@ -73,12 +71,12 @@ function inputchoice:inputIsActive()
 
 
 function inputchoice:arrange() 
-        local x = math.floor((self.screen.cols / 4))
-        local y = math.floor((self.screen.rows / 4))
-        local w = math.floor((self.screen.cols / 2))
-        local h = math.floor(((self.screen.rows / 2) - 4))
+        local x = floor((self.screen.cols / 4))
+        local y = floor((self.screen.rows / 4))
+        local w = floor((self.screen.cols / 2))
+        local h = floor(((self.screen.rows / 2) - 4))
         
-        local cs = math.min(h, self.choices:numFiltered())
+        local cs = min(h, self.choices:numFiltered())
         
         self.input:layout((x + 2), (y + 1), (w - 4), 1)
         self.choices:layout((x + 2), (y + 3), (w - 3), cs)
@@ -106,8 +104,11 @@ function inputchoice:show()
 
 
 function inputchoice:hide() 
-        self.choices.mapscr.hide()
-        return -- super()
+        if self.choices.mapscr then 
+            self.choices.mapscr:hide()
+        end
+        
+        return view.hide(self)
     end
 
 -- 000  000   000  00000000   000   000  000000000  
@@ -257,7 +258,7 @@ function inputchoice:onKey(key, event)
         if (event.combo == 'tab') then 
                 return self:moveFocus()
         elseif (event.combo == 'esc') then 
-                post.emit('focus', 'editor')
+                post:emit('focus', 'editor')
                 return self:hide()
         end
         
@@ -272,8 +273,9 @@ function inputchoice:onKey(key, event)
         end
         
         local result = self.choices:onKey(key, event)
+        
         if result then 
-            if ((event.char and (event.char ~= ' ')) and (event.char ~= '\n')) then 
+            if ((valid(event.char) and (event.char ~= ' ')) and (event.char ~= '\n')) then 
                 self.input:grabFocus()
                 result = self.input:onKey(key, event)
                 if result then 
@@ -302,7 +304,7 @@ function inputchoice:onMouse(event)
         
         local ret = self.input:onMouse(event) ; if ret.redraw then return ret end
         local ret = self.choices:onMouse(event) ; if ret.redraw then return ret end
-        local ret = super(event) ; if ret.redraw then return ret end
+        local ret = view.onMouse(self, event) ; if ret.redraw then return ret end
         
         if ((event.type == 'press') and not self.hover) then 
             post:emit('focus', 'editor')

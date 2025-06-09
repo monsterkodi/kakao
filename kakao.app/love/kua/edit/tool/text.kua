@@ -470,19 +470,19 @@ class text
             split = split.concat @splitLineRange(lines rng includeEmpty)
         split
         
-    @isLinesPosInside:  lines pos -> pos[1] < lines.length and 0 <= pos[0] <= kseg.width(lines[pos[1]])
+    @isLinesPosInside:  lines pos -> pos[2] < lines.len and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
     @isLinesPosOutside: lines pos -> not @isLinesPosInside lines pos 
     
-    @isValidLineIndex:   lines li -> 0 <= li < lines.length
+    @isValidLineIndex:   lines li -> 1 <= li <= lines.len
     @isInvalidLineIndex: lines li -> not @isValidLineIndex lines li
     
-    @isMultiLineRange: lines rng -> rng[1] != rng[3]
+    @isMultiLineRange: lines rng -> rng[2] != rng[4]
         
-    @isFullLineRange: lines rng -> (0 <= rng[1] <= rng[3] < lines.length) and (rng[0] == 0) and (rng[2] >= lines[rng[3]].length or rng[2] == 0 and rng[1] < rng[3])
+    @isFullLineRange: lines rng -> (1 <= rng[2] and rng[2] <= rng[4] and rng[4] < lines.len) and (rng[1] == 1) and (rng[3] >= lines[rng[4]].len or rng[3] == 1 and rng[2] < rng[4])
     
-    @isSpanLineRange: lines rng -> (0 <= rng[1] == rng[3] < lines.length) and (rng[0] > 0 or rng[2] < lines[rng[1]].length)
+    @isSpanLineRange: lines rng -> (1 <= rng[2] and rng[2] == rng[4] and rng[4] < lines.len) and (rng[1] > 1 or rng[3] < lines[rng[2]].len)
         
-    @rangeOfLine: lines y -> [0 y kseg.width(lines[y]) y]
+    @rangeOfLine: lines y -> [1 y kseg.width(lines[y]) y]
     
     #  0000000  000   000  000   000  000   000  000   000  
     # 000       000   000  000   000  0000  000  000  000   

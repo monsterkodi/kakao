@@ -276,7 +276,9 @@ proc ▸string(this : Rlua, n : Node) =
                 this.add("]] .. ")
             else: 
                 this.add("\" .. ")
+            this.add("tostring(")
             this.rnd(stripol.stripol_xprssns)
+            this.add(")")
             if triple: 
                 this.add(" .. [[")
             else: 

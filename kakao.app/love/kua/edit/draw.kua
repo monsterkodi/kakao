@@ -86,14 +86,13 @@ class draw extends view
     
         # row ?= y-@state.s.view[2]
         bg = @color.bg
-        
         checkColor = false
         headerClass = null
         
         syntax = @state.syntax
         view   = @state.s.view
     
-        linel = kseg.width(line) - view[1]
+        linel = kseg.width(line)+1 - view[1]
         # log line, noon(dict.keys(@color))
         c = 1
         # firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
@@ -102,7 +101,7 @@ class draw extends view
         x = 1
         while x <= @cells.cols
             
-            ci = x+view[1]
+            ci = x+view[1]-1
             # si = kseg.indexAtWidth line ci
             si = ci
             
@@ -126,14 +125,12 @@ class draw extends view
             x += cw
             
             if x <= @cells.cols
-                # @cells.meta_clone c row # ϵ⌶⟙ℍϵℜ 𝛋𝚒⟅⟅ 𝚒𝜏 ⊚ℜ ⫐◯ 𝚒𝜏!
-                # log c, row, ch, fg, bg
                 c += @cells∙add c row ch fg bg
             
-            if clss == 'invert_bg'
-                bg = @color.bg
+            # if clss == 'invert_bg'
+            #     bg = @color.bg
                 
-        @drawRowBackground row linel
+        # @drawRowBackground row linel
                 
         if checkColor  ➜ @drawColorPills  line row linel       
         if headerClass ➜ @drawAsciiHeader line row headerClass 
@@ -214,11 +211,11 @@ class draw extends view
         spanbg = @color.selection.span
         linebg = @color.selection.line
         
-        if not @cells.screen.t.hasFocus
-            spanbg = color.darken spanbg
-            linebg = color.darken linebg
+        # if not @cells.screen.t.hasFocus
+        #     spanbg = color.darken spanbg
+        #     linebg = color.darken linebg
         
-        for selection in @state.s.selections
+        for si selection in ipairs @state.s.selections
                 
             bg = belt.isSpanLineRange(@state.s.lines selection) or {spanbg: linebg}
             
@@ -239,8 +236,8 @@ class draw extends view
                     xe = kseg.width(@state.s.lines[li])
                 
                 for x in xs...xe
-                    @cells.set_bg x-@state.s.view[0] y bg 
-                    @cells.adjustContrastForHighlight x y bg
+                    @cells∙set_bg x-@state.s.view[0] y bg 
+                    @cells∙adjustContrastForHighlight x y bg
                     
         # prof.end 'selection'
             
@@ -253,21 +250,21 @@ class draw extends view
     drawCursors: ->
         
         s = @state.s
-        mainCursor = @state.mainCursor()
+        mainCursor = @state∙mainCursor()
         
         fg = @color.cursor.fg
 
         bg = mode.themeColor @state 'cursor.multi' @color.cursor.multi
 
-        bg = color.darken(bg) if not @cells.screen.t.hasFocus
+        # bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        for cursor in s.cursors
+        for ci cursor in ipairs s.cursors
  
             if cursor != mainCursor
             
                 if @isCursorVisible cursor
                  
-                    @cells.draw_rounded_multi_cursor cursor[0]-s.view[0] cursor[1]-s.view[1] bg
+                    @cells∙draw_rounded_multi_cursor cursor[1]-s.view[1] cursor[2]-s.view[2] bg
                         
         if @isCursorVisible mainCursor
              
@@ -277,17 +274,18 @@ class draw extends view
 
             if not @hasFocus() ➜ bg = color.darken bg 
              
-            (x y) = [mainCursor[0]-s.view[0] mainCursor[1]-s.view[1]]
+            x = mainCursor[1]-s.view[1] 
+            y = mainCursor[2]-s.view[2]
              
             if s.cursors.length <= 1
                 if @isCursorInEmpty()
                     bg = color.darken bg 0.5
-                elif ' ' == @cells.get_char(x y)
+                elif ' ' == @cells∙get_char(x y)
                     bg = color.darken bg 0.8
                      
-            bg = color.darken(bg) if not @cells.screen.t.hasFocus
+            # bg = color.darken(bg) if not @cells.screen.t.hasFocus
                  
-            @cells.draw_rounded_cursor x y bg
+            @cells∙draw_rounded_cursor x y bg
 
     #  0000000   0000000   000       0000000   00000000   00000000   000  000      000       0000000  
     # 000       000   000  000      000   000  000   000  000   000  000  000      000      000       
@@ -297,7 +295,8 @@ class draw extends view
     
     drawColorPills: line row linel ->
     
-        rngs = kstr.colorRanges kseg.str(line)
+        # rngs = kstr.colorRanges kseg.str(line)
+        rngs = kstr.colorRanges line∙str()
         if rngs
             cx = max(0 linel)+1
             for rng,idx in rngs

@@ -455,5 +455,6 @@ slash.isFile     = path -> s = slash.stat path ; if s and s.type == "file" ➜ �
 slash.isLink     = path -> s = slash.stat path ; if s and s.type == "link" ➜ ⮐  s
 slash.dirExists  = path -> slash.isDir  path
 slash.fileExists = path -> slash.isFile path
+slash.samePath   = p1 p2 -> slash.untilde(p1) == slash.untilde(p2)
     
 ⮐  slash

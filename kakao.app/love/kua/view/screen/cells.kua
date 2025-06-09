@@ -12,7 +12,6 @@
 
 use edit.tool.belt
 use theme.color theme.theme
-# use util.img.rounded
 
 class cells
 
@@ -54,14 +53,6 @@ class cells
     set_fg:     x y fg         -> if @inside(x y) ➜ @screen∙set_fg    @wx(x) @wy(y) fg
     set_fg_bg:  x y fg bg      -> if @inside(x y) ➜ @screen∙set_fg_bg @wx(x) @wy(y) fg bg
     
-    meta_clear: -> delete @m
-    meta_pre:   x y p -> if @inside(x y) ➜ @m ?= belt.metas(@cols @rows) ; @m[y][x].pre∙push p
-    meta_pst:   x y p -> if @inside(x y) ➜ @m ?= belt.metas(@cols @rows) ; @m[y][x].pst∙push p
-    meta_clone: x y ->
-        ⮐  if empty @m 
-        # log "clone #{x} #{y} #{@m[y][x].pre} #{@m[y][x].pst}" @m[y][x]
-        @screen∙meta_set @wx(x) @wy(y) @m[y][x]
-    
     #  0000000   00000000  000000000  
     # 000        000          000     
     # 000  0000  0000000      000     
@@ -78,8 +69,8 @@ class cells
     # 000        000   000       000  
     # 000         0000000   0000000   
     
-    isInsidePos:     x y -> (x y) = belt.pos(x y); (0 <= x < @cols) and (0 <= y < @rows)
-    isOutsidePos:    x y -> (x y) = belt.pos(x y); x < 0 or x >= @cols or y < 0 or y >= @rows
+    isInsidePos:     x y -> (x y) = belt.pos(x y); (1 <= x <= @cols) and (1 <= y <= @rows)
+    isOutsidePos:    x y -> (x y) = belt.pos(x y); x < 1 or x > @cols or y < 1 or y > @rows
     
     isInsideScreen:  x y -> @isInsidePos  @posForScreen(x y)
     isOutsideScreen: x y -> @isOutsidePos @posForScreen(x y)
@@ -264,11 +255,11 @@ class cells
 
     draw_rounded_cursor: x y fg ->
     
-        @img x y "rounded.cursor" fg
+        # @img x y "rounded.cursor" fg
         
     draw_rounded_multi_cursor: x y fg ->
     
-        @img x y "rounded.multi" fg
+        # @img x y "rounded.multi" fg
         
     img: x y name fg zLayer=1000 xe ye ->
     

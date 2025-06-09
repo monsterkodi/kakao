@@ -453,29 +453,30 @@ function belt.static.rangesContainRange(rngs, range)
 
 
 function belt.static.normalizeRanges(rngs) 
-        if empty((rngs or is(not rngs, arr))) then return array() end
+        if (empty(rngs) or not is(rngs, array)) then return array() end
         
-        rngs = rngs.map(function (a) 
+        rngs = rngs:map(function (a) 
     if (a[1] > a[3]) then 
     return array(a[2], a[3], a[0], a[1]) else 
     return a
                                end
 end)
-        rngs = rngs.map(function (a) 
+        rngs = rngs:map(function (a) 
     if ((a[1] == a[3]) and (a[0] > a[2])) then 
     return array(a[2], a[1], a[0], a[3]) else 
     return a
                                end
 end)
-        rngs.sort(function (a, b) 
+        rngs:sort(function (a, b) 
     if (a[1] == b[1]) then 
     return (a[0] - b[0]) else 
     return (a[1] - b[1])
                            end
 end)
-        return rngs.filter(function (a) 
+        rngs:filter(function (a) 
     return ((a[1] ~= a[3]) or (a[0] ~= a[2]))
 end)
+        return rngs
     end
 
 
@@ -638,18 +639,18 @@ function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl)
 
 
 function belt.static.mergeLineRanges(lines, rngs) 
-        if empty((rngs or is(not rngs, arr))) then return array() end
+        if (empty(rngs) or not is(rngs, array)) then return array() end
         
         rngs = belt.normalizeRanges(rngs)
         
         local mrgd = array()
-        for s, i in rngs do 
-            if (((empty(mrgd) or (s[1] > (tail[3] + 1))) or ((s[1] == tail[3]) and (s[0] > tail[2]))) or ((s[1] == (tail[3] + 1)) and ((s[0] > 0) or (tail[2] < #lines[tail[3]])))) then 
-                    mrgd.push(s)
+        for i, s in ipairs(rngs) do 
+            if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < #lines[tail[4]])))) then 
+                    mrgd:push(s)
                     local tail = s
-            else if ((s[3] > tail[3]) or ((s[3] == tail[3]) and (s[2] > tail[2]))) then 
-                tail[2] = s[2]
+            else if ((s[4] > tail[4]) or ((s[4] == tail[4]) and (s[3] > tail[3]))) then 
                 tail[3] = s[3]
+                tail[4] = s[4]
                  end
             end
         end

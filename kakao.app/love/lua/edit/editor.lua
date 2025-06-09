@@ -35,7 +35,6 @@ function editor:init(screen, name, features)
         self.focusable = true
         
         self.state = state(self.cells, self.name)
-        post:on('focus', self.onFocus, self)
         
         complete = require "edit.complete"
         
@@ -47,7 +46,9 @@ function editor:init(screen, name, features)
         
         mode.autoStartForEditor(self)
         
+        post:on('focus', self.onFocus, self)
         post:on('modes.loaded', self.onModesLoaded, self)
+        
         self:onModesLoaded()
         return self
     end
@@ -126,10 +127,10 @@ end)()
 function editor:onMouse(event) 
         -- super event
         
-        local ret = self.gutter.onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.mapscr.onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.scroll.onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.complete.onMouse(event) ; if ret.redraw then return ret end
+        local ret = self.gutter:onMouse(event) ; if ret.redraw then return ret end
+        local ret = self.mapscr:onMouse(event) ; if ret.redraw then return ret end
+        local ret = self.scroll:onMouse(event) ; if ret.redraw then return ret end
+        local ret = self.complete:onMouse(event) ; if ret.redraw then return ret end
         
         return false
     end
@@ -144,15 +145,15 @@ function editor:onMouse(event)
 function editor:onWheel(event) 
         if (event.cell[1] >= (self.cells.y + self.cells.rows)) then return end
         
-        local inside = self.cells.isInsideEvent(event)
-        inside = (inside or self.scroll.cells.isInsideEvent(event))
-        inside = (inside or self.gutter.cells.isInsideEvent(event))
-        inside = (inside or self.mapscr.cells.isInsideEvent(event))
+        local inside = self.cells:isInsideEvent(event)
+        inside = (inside or self.scroll.cells:isInsideEvent(event))
+        inside = (inside or self.gutter.cells:isInsideEvent(event))
+        inside = (inside or self.mapscr.cells:isInsideEvent(event))
         
         if not inside then return end
         
         if self.complete then 
-            local res = self.complete.onWheel(event)
+            local res = self.complete:onWheel(event)
             if res then 
                 return res
             end
@@ -163,7 +164,7 @@ function editor:onWheel(event)
         if event.ctrl then steps = steps * 2 end
         if event.alt then steps = steps * 2 end
         
-        if (event.dir == 'up') or (event.dir == 'down') or (event.dir == 'left') or (event.dir == 'right') then self.state.scrollView(event.dir, steps)
+        if (event.dir == 'up') or (event.dir == 'down') or (event.dir == 'left') or (event.dir == 'right') then self.state:scrollView(event.dir, steps)
         end
         
         return {redraw = true}
@@ -176,19 +177,19 @@ function editor:onWheel(event)
 --  0000000   0000000   000   000  0000000    0000000   000   000  
 
 
-function editor:isCursorInEmpty(cursor) 
-        cursor = cursor or (self.state.mainCursor())
+function editor:isCursorInEmpty(mc) 
+        mc = mc or (self.state:mainCursor())
         
-        return belt.isLinesPosOutside(self.state.s.lines, cursor)
+        return belt.isLinesPosOutside(self.state.s.lines, mc)
     end
 
 
-function editor:isCursorVisible(cursor) 
-        cursor = cursor or (self.state:mainCursor())
+function editor:isCursorVisible(mc) 
+        mc = mc or (self.state:mainCursor())
         
         local v = self.state.s.view
         
-        return (((v[0] <= cursor[0]) < (v[0] + self.cells.cols)) and ((v[1] <= cursor[1]) < (v[1] + self.cells.rows)))
+        return ((((v[1] <= mc[1]) and (mc[1] <= (v[1] + self.cells.cols))) and (v[2] <= mc[2])) and (mc[2] <= (v[2] + self.cells.rows)))
     end
 
 -- 00000000   0000000    0000000  000   000   0000000  
@@ -237,22 +238,22 @@ function editor:onKey(key, event)
         if not self:hasFocus() then return end
         
         if self.complete then 
-            if (self.complete.handleKey(key, event) ~= 'unhandled') then return true end
+            if (self.complete:handleKey(key, event) ~= 'unhandled') then return true end
         end
         
-        if (self.state.handleKey(key, event) ~= 'unhandled') then 
-            self.complete.hide()
+        if (self.state:handleKey(key, event) ~= 'unhandled') then 
+            self.complete:hide()
             return true
         end
         
         if valid(event.char) then 
-            self.state.insert(event.char)
-            self.complete.complete()
+            self.state:insert(event.char)
+            self.complete:complete()
             return true
         else 
             local splt = kstr.split(key, "+")
             if not array('shift', 'ctrl', 'alt', 'cmd'):has(splt[#splt]) then 
-                return print("editor.onKey? |" .. key .. "|", event)
+                return print("editor.onKey? |" .. tostring(key) .. "|", event)
             end
         end
     end

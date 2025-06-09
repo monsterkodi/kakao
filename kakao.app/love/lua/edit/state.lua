@@ -18,6 +18,7 @@
 -- use ./act     ◆ del insert select join indent multi main
 -- use ./tool    ◆ belt
 -- use           ◆ keys mode
+
 syntax = require "util.syntax"
 
 
@@ -196,7 +197,7 @@ function state:setSegls(segls)
 
 function state:loadLines(lines) 
         if (valid(lines) and not is(lines[1], "string")) then 
-            error("" .. self.name .. ".loadLines - first line not a string?", lines)
+            error("" .. tostring(self.name) .. ".loadLines - first line not a string?", lines)
         end
         
         return self:loadSegls(kseg.segls(lines))
@@ -395,7 +396,7 @@ function state:copy(opt)
                 prcs.stdin.write(self:textOfSelectionOrCursorLines())
                 prcs.stdin.close()
         elseif (os.platform() == 'win32') then 
-                local prcs = child_process.spawn("" .. slash.cwd() .. "/../../bin/utf8clip.exe")
+                local prcs = child_process.spawn("" .. tostring(slash.cwd()) .. "/../../bin/utf8clip.exe")
                 prcs.stdin.write(self:textOfSelectionOrCursorLines())
                 prcs.stdin.close()
         end
@@ -422,7 +423,7 @@ function state:paste()
                 
                 return self:insert(text.toString("utf8"))
         elseif (os.platform() == 'win32') then 
-                return self:insert(child_process.execSync("" .. slash.cwd() .. "/../../bin/utf8clip.exe").toString("utf8"))
+                return self:insert(child_process.execSync("" .. tostring(slash.cwd()) .. "/../../bin/utf8clip.exe").toString("utf8"))
         end
     end
 
@@ -700,6 +701,798 @@ function state:chunkAfterCursor()
 function state:setMainCursorAndSelect(x, y) 
         self:setSelections(belt.extendLineRangesFromPositionToPosition, self.s.lines, self:allSelections(), self:mainCursor(), array(x, y))
         return self:setCursors(array(array(x, y)), {adjust = 'topBotDelta'})
+    end
+
+--  0000000   000      000      
+-- 000   000  000      000      
+-- 000000000  000      000      
+-- 000   000  000      000      
+-- 000   000  0000000  0000000  
+
+
+function state:allCursors() 
+        --.asMutable()
+        return self.s.cursors
+    end
+
+-- 00000000  000   000  00000000    0000000   000   000  0000000    
+-- 000        000 000   000   000  000   000  0000  000  000   000  
+-- 0000000     00000    00000000   000000000  000 0 000  000   000  
+-- 000        000 000   000        000   000  000  0000  000   000  
+-- 00000000  000   000  000        000   000  000   000  0000000    
+
+
+function state:expandCursors(dir) 
+        local cursors = self:allCursors()
+        local dy = (function () 
+    if (dir == 'up') then 
+    return -1 else 
+    return 1
+             end
+end)()
+        
+        local newCursors = array()
+        for c in cursors do 
+            newCursors:push(c)
+            newCursors:push(array(c[1], (c[2] + dy)))
+        end
+        
+        local mc = belt.traversePositionsInDirection(newCursors, self:mainCursor(), dir)
+        return self:setCursors(newCursors, {main = mc, adjust = 'topBotDelta'})
+    end
+
+
+function state:contractCursors(dir) 
+        local cursors = self:allCursors()
+        local newCursors = array()
+        for ci, c in ipairs(cursors) do 
+            local nbup = belt.positionsContain(cursors, belt.positionInDirection(c, 'down'))
+            local nbdn = belt.positionsContain(cursors, belt.positionInDirection(c, 'up'))
+            local solo = not (nbup or nbdn)
+            local add = (function () 
+    if (dir == 'up') then 
+    return (nbup or solo)
+                  elseif (dir == 'down') then 
+    return (nbdn or solo)
+                  end
+end)()
+            
+            if add then 
+                newCursors:push(c)
+            end
+        end
+        
+        return self:setCursors(newCursors)
+    end
+
+--  0000000   0000000    0000000    
+-- 000   000  000   000  000   000  
+-- 000000000  000   000  000   000  
+-- 000   000  000   000  000   000  
+-- 000   000  0000000    0000000    
+
+
+function state:addCursor(x, y) 
+        local pos = belt.pos(x, y)
+        local cursors = self:allCursors()
+        cursors:push(pos)
+        return self:setCursors(cursors, {main = -1})
+    end
+
+
+function state:addCursors(cursors) 
+        return self:setCursors(self:allCursors().concat(cursors))
+    end
+
+
+function state:delCursorsInRange(rng) 
+        local outside = belt.positionsOutsideRange(self:allCursors(), rng)
+        outside:push(belt.endOfRange(rng))
+        return self:setCursors(outside, {main = -1})
+    end
+
+-- 00     00   0000000   000   000  00000000  
+-- 000   000  000   000  000   000  000       
+-- 000000000  000   000   000 000   0000000   
+-- 000 0 000  000   000     000     000       
+-- 000   000   0000000       0      00000000  
+
+
+function state:moveCursors(dir, opt) 
+        if is(dir, array) then 
+            if (dir[0] == 'bos') then 
+                    if self:moveCursorsToStartOfSelections() then return end
+                    dir = dir:slice(1)
+            elseif (dir[0] == 'eos') then 
+                    if self:moveCursorsToEndOfSelections() then return end
+                    dir = dir:slice(1)
+            end
+            
+            dir = dir[0]
+        end
+        
+        opt = opt or ({})
+        opt.count = opt.count or 1
+        opt.jumpWords = opt.jumpWords or false
+        
+        if (#self.s.highlights > 0) then 
+            self:deselect()
+        end
+        
+        local cursors = self:allCursors()
+        local lines = self.s.lines
+        for ci, c in ipairs(cursors) do 
+            local line = lines[c[2]]
+            
+            if (dir == 'left') or (dir == 'right') then c[0] = c[0] + (belt.numCharsFromPosToWordOrPunctInDirection(lines, c, dir, opt))
+            elseif (dir == 'up') then c[1] = c[1] - (opt.count)
+            elseif (dir == 'down') then c[1] = c[1] + (opt.count)
+            elseif (dir == 'eol') then c[0] = kseg.width(self.s.lines[c[2]])
+            elseif (dir == 'bol') then c[0] = 0
+            elseif (dir == 'bof') then c[0] = 0 ; c[2] = 0
+            elseif (dir == 'eof') then c[1] = (#self.s.lines - 1) ; c[1] = kseg.width(line)
+            elseif (dir == 'ind') then c[0] = belt.numIndent(line)
+            elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; c[1] = (function () 
+    if (c[1] < ind) then 
+    return ind else 
+    return kseg.width(line)
+                                                                  end
+end)()
+            elseif (dir == 'ind_bol') then local ind = belt.numIndent(line) ; c[1] = (function () 
+    if (c[1] > ind) then 
+    return ind else 
+    return 1
+                                                                  end
+end)()
+            end
+        end
+        
+        local main = self.s.main
+        local adjust = (opt.adjust or 'topBotDelta')
+        
+        if (dir == 'up') or (dir == 'down') or (dir == 'left') or (dir == 'right') then 
+                main = belt.indexOfExtremePositionInDirection(cursors, dir, main)
+                adjust = 'topBotDeltaGrow'
+        end
+        
+        self:setCursors(cursors, {main = main, adjust = adjust})
+        
+        return true
+    end
+
+
+function state:moveCursorsToStartOfSelections() 
+        local selections = self:allSelections()
+        
+        if empty(selections) then return end
+        
+        local rngs = belt.splitLineRanges(self.s.lines, selections, false)
+        self:setCursors(belt.startPositionsOfRanges(rngs))
+        
+        return true
+    end
+
+
+function state:moveCursorsToEndOfSelections() 
+        local selections = self:allSelections()
+        
+        if empty(selections) then return end
+        
+        local rngs = belt.splitLineRanges(self.s.lines, selections, false)
+        self:setCursors(belt.endPositionsOfRanges(rngs))
+        
+        return true
+    end
+
+
+function state:moveCursorsToEndOfLines() 
+        local cursors = self:allCursors()
+        
+        for i, cur in ipairs(cursors) do 
+            cur[2] = belt.lineRangeAtPos(self.s.lines, cur)[3]
+        end
+        
+        self:setCursors(cursors)
+        
+        return true
+    end
+
+
+function state:isAnyCursorInLine(y) 
+        for i, c in ipairs(self:allCursors()) do 
+            if (c[2] == y) then return true end
+        end
+    end
+
+--  0000000  000   000  000   000  000   000   0000000  0000000    00000000  00000000   0000000   00000000   00000000  
+-- 000       000   000  0000  000  000  000   000       000   000  000       000       000   000  000   000  000       
+-- 000       000000000  000 0 000  0000000    0000000   0000000    0000000   000000    000   000  0000000    0000000   
+-- 000       000   000  000  0000  000  000        000  000   000  000       000       000   000  000   000  000       
+--  0000000  000   000  000   000  000   000  0000000   0000000    00000000  000        0000000   000   000  00000000  
+
+
+function state:chunksBeforeCursors() 
+    return self.s.cursors:map(function (c) 
+    return belt.chunkBeforePos(self.s.lines, c)
+end)
+    end
+
+--  0000000  00000000  000      00000000   0000000  000000000  
+-- 000       000       000      000       000          000     
+-- 0000000   0000000   000      0000000   000          000     
+--      000  000       000      000       000          000     
+-- 0000000   00000000  0000000  00000000   0000000     000     
+
+
+function state:moveCursorsAndSelect(dir, opt) 
+        local selections, cursors = belt.extendLineRangesByMovingPositionsInDirection(self.s.lines, self.s.selections, self.s.cursors, dir, opt)
+        
+        self:setSelections(selections)
+        return self:setCursors(cursors, {adjust = 'topBotDelta'})
+    end
+
+
+function state:select(from, to) 
+        local selections = array()
+        
+        self:setMainCursor(to[1], to[2])
+        
+        if ((from[2] > to[2]) or ((from[2] == to[2]) and (from[1] > to[1]))) then 
+            local from, to = to, from
+        end
+        
+        to[2] = clamp(0, (#self.s.lines - 1), to[2])
+        from[2] = clamp(0, (#self.s.lines - 1), from[2])
+        
+        to[1] = clamp(0, #self.s.lines[to[2]], to[1])
+        from[1] = clamp(0, #self.s.lines[from[2]], from[1])
+        
+        selections.push(array(from[1], from[2], to[1], to[2]))
+        
+        return self:setSelections(selections)
+    end
+
+
+function state:allSelections() 
+    return self.s.selections.asMutable()
+    end
+
+function state:allHighlights() 
+    return self.s.highlights.asMutable()
+    end
+
+-- 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
+-- 000   000  000  000        000   000  000      000  000        000   000     000     
+-- 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
+-- 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
+-- 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
+
+
+function state:selectWordAtCursor_highlightSelection_selectAllHighlights() 
+        -- alt+cmd+d alt+ctrl+d
+        if valid(self.s.highlights) then 
+            local pos = self:mainCursor()
+            if (#self.s.selections < #self.s.highlights) then 
+                self:selectAllHighlights()
+            else 
+                self:addNextHighlightToSelection()
+            end
+            
+            return
+        end
+        
+        self:selectWordAtCursor_highlightSelection()
+        return self:selectAllHighlights()
+    end
+
+
+function state:highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight() 
+        -- cmd+e ctrl+e
+        if valid(self.s.highlights) then 
+            if not self:deselectCursorHighlight() then 
+                self:moveCursorToNextHighlight()
+            end
+            
+            return
+        end
+        
+        self:selectWordAtCursor_highlightSelection()
+        return self:deselectCursorHighlight()
+    end
+
+
+function state:selectWordAtCursor_highlightSelection_addNextHighlightToSelection() 
+        -- cmd+d ctrl+d
+        if valid(self.s.highlights) then return self:addCurrentOrNextHighlightToSelection() end
+        
+        return self:selectWordAtCursor_highlightSelection()
+    end
+
+
+function state:selectWordAtCursor_highlightSelection_selectNextHighlight() 
+        -- cmd+g ctrl+g
+        if valid(self.s.highlights) then 
+            self:clearCursors()
+            self:selectNextHighlight()
+        end
+        
+        return self:selectWordAtCursor_highlightSelection()
+    end
+
+
+function state:highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight() 
+        -- shift+cmd+e shift+ctrl+e
+        if valid(self.s.highlights) then 
+            if not self:deselectCursorHighlight() then 
+                self:moveCursorToPrevHighlight()
+            end
+            
+            return
+        end
+        
+        self:selectWordAtCursor_highlightSelection()
+        return self:deselectCursorHighlight()
+    end
+
+
+function state:selectWordAtCursor_highlightSelection_addPrevHighlightToSelection() 
+        -- shift+cmd+d shift+ctrl+d
+        if valid(self.s.highlights) then return self:addCurrentOrPrevHighlightToSelection() end
+        
+        return self:selectWordAtCursor_highlightSelection()
+    end
+
+
+function state:selectWordAtCursor_highlightSelection_selectPrevHighlight() 
+        -- shift+cmd+g shift+ctrl+g
+        if valid(self.s.highlights) then 
+            self:clearCursors()
+            self:selectPrevHighlight()
+        end
+        
+        return self:selectWordAtCursor_highlightSelection()
+    end
+
+
+function state:selectWordAtCursor_highlightSelection() 
+        if empty(self.s.selections) then 
+            self:selectWord(self:mainCursor())
+        end
+        
+        return self:highlightSelection()
+    end
+
+
+function state:highlightSelection() 
+        if empty(self.s.selections) then return end
+        
+        local spans = array()
+        for ri, rng in ipairs(self:allSelections()) do 
+            if (rng[2] == rng[4]) then 
+                local text = belt.textForLineRange(self.s.lines, rng)
+                spans = spans + (belt.lineSpansForText(self.s.lines, text))
+            end
+        end
+        
+        return self:setHighlights(spans)
+    end
+
+
+function state:highlightText(text) 
+        if empty(text) then return end
+        
+        return self:setHighlights(belt.lineSpansForText(self.s.lines, text))
+    end
+
+
+function state:deselectCursorHighlight() 
+        if empty(self.s.highlights) then return end
+        if empty(self.s.selections) then return end
+        local prev = belt.prevSpanBeforePos(self.s.highlights, self:mainCursor())
+        if prev then 
+            return self:deselectSpan(prev)
+        end
+    end
+
+
+function state:selectAllHighlights() 
+        if empty(self.s.highlights) then return end
+        
+        local selections = array()
+        local cursors = array()
+        for si, span in ipairs(self.s.highlights) do 
+            selections:push(belt.rangeForSpan(span))
+            cursors:push(belt.endOfSpan(span))
+        end
+        
+        self:addCursors(cursors)
+        return self:setSelections(selections)
+    end
+
+
+function state:selectNextHighlight() 
+        if empty(self.s.highlights) then return end
+        local next = belt.nextSpanAfterPos(self.s.highlights, self:mainCursor())
+        if next then 
+            self:selectSpan(next)
+            return self:setMainCursor(belt.endOfSpan(next))
+        end
+    end
+
+
+function state:selectPrevHighlight() 
+        if empty(self.s.highlights) then return end
+        
+        local pos = self:mainCursor()
+        local prev = belt.prevSpanBeforePos(self.s.highlights, pos)
+        if prev then 
+            if (belt.endOfSpan(prev) == pos) then 
+                prev = belt.prevSpanBeforePos(self.s.highlights, belt.startOfSpan(prev))
+            end
+            
+            if prev then 
+                self:selectSpan(prev)
+                return self:setMainCursor(belt.endOfSpan(prev))
+            end
+        end
+    end
+
+
+function state:addCurrentOrNextHighlightToSelection() 
+        local prev = belt.prevSpanBeforePos(self.s.highlights, self:mainCursor())
+        if prev then 
+            if not belt.rangesContainSpan(self.s.selections, prev) then 
+                self:addSpanToSelection(prev)
+                self:addCursor(belt.endOfSpan(prev))
+                return
+            end
+        end
+        
+        return self:addNextHighlightToSelection()
+    end
+
+
+function state:addCurrentOrPrevHighlightToSelection() 
+        local prev = belt.prevSpanBeforePos(self.s.highlights, self:mainCursor())
+        if prev then 
+            if not belt.rangesContainSpan(self.s.selections, prev) then 
+                self:addSpanToSelection(prev)
+                self:addCursor(belt.endOfSpan(prev))
+                return
+            end
+        end
+        
+        return self:addPrevHighlightToSelection()
+    end
+
+
+function state:addNextHighlightToSelection() 
+        if empty(self.s.highlights) then return end
+        local next = belt.nextSpanAfterPos(self.s.highlights, self:mainCursor())
+        if next then 
+            self:addSpanToSelection(next)
+            return self:addCursor(belt.endOfSpan(next))
+        end
+    end
+
+
+function state:addPrevHighlightToSelection() 
+        if empty(self.s.highlights) then return end
+        
+        local pos = self:mainCursor()
+        local prev = belt.prevSpanBeforePos(self.s.highlights, pos)
+        if prev then 
+            if (belt.endOfSpan(prev) == pos) then 
+                prev = belt.prevSpanBeforePos(self.s.highlights, belt.startOfSpan(prev))
+            end
+            
+            if prev then 
+                self:addSpanToSelection(prev)
+                return self:addCursor(belt.endOfSpan(prev))
+            end
+        end
+    end
+
+
+function state:moveCursorToNextHighlight(pos) 
+        if empty(self.s.highlights) then return end
+        
+        pos = pos or (self:mainCursor())
+        local next = belt.nextSpanAfterPos(self.s.highlights, pos)
+        if next then 
+            return self:moveMainCursor(belt.endOfSpan(next))
+        end
+    end
+
+
+function state:moveCursorToPrevHighlight(pos) 
+        if empty(self.s.highlights) then return end
+        
+        pos = pos or (self:mainCursor())
+        local prev = belt.prevSpanBeforePos(self.s.highlights, pos)
+        if prev then 
+            if (belt.endOfSpan(prev) == pos) then 
+                prev = belt.prevSpanBeforePos(self.s.highlights, belt.startOfSpan(prev))
+            end
+            
+            if prev then 
+                return self:moveMainCursor(belt.endOfSpan(prev))
+            end
+        end
+    end
+
+
+function state:selectSpan(span) 
+        return self:setSelections(array(belt.rangeForSpan(span)))
+    end
+
+
+function state:deselectSpan(span) 
+        local rng = belt.rangeForSpan(span)
+        
+        local selections = self:allSelections()
+        for index, selection in ipairs(selections) do 
+            if belt.isSameRange(selection, rng) then 
+                selections:splice(index, 1)
+                self:setSelections(selections)
+                return true
+            end
+        end
+        
+        return false
+    end
+
+
+function state:addRangeToSelectionWithMainCursorAtEnd(rng) 
+        self:addRangeToSelection(rng)
+        return self:delCursorsInRange(rng)
+    end
+
+
+function state:addRangeToSelection(rng) 
+        local selections = self:allSelections()
+        
+        selections:push(rng)
+        
+        return self:setSelections(selections)
+    end
+
+
+function state:addSpanToSelection(span) 
+    return self:addRangeToSelection(belt.rangeForSpan(span))
+    end
+
+--  0000000  000   000  000   000  000   000  000   000  
+-- 000       000   000  000   000  0000  000  000  000   
+-- 000       000000000  000   000  000 0 000  0000000    
+-- 000       000   000  000   000  000  0000  000  000   
+--  0000000  000   000   0000000   000   000  000   000  
+
+
+function state:selectChunk(x, y) 
+        local rng = belt.rangeOfClosestChunkToPos(self.s.lines, belt.pos(x, y))
+        if rng then 
+            self:addRangeToSelectionWithMainCursorAtEnd(rng)
+        end
+        
+        return self
+    end
+
+-- 000   000   0000000   00000000   0000000    
+-- 000 0 000  000   000  000   000  000   000  
+-- 000000000  000   000  0000000    000   000  
+-- 000   000  000   000  000   000  000   000  
+-- 00     00   0000000   000   000  0000000    
+
+
+function state:selectWord(x, y) 
+        local rng = belt.rangeOfClosestWordToPos(self.s.lines, belt.pos(x, y))
+        if rng then 
+            self:addRangeToSelectionWithMainCursorAtEnd(rng)
+        end
+        
+        return self
+    end
+
+-- 000      000  000   000  00000000  
+-- 000      000  0000  000  000       
+-- 000      000  000 0 000  0000000   
+-- 000      000  000  0000  000       
+-- 0000000  000  000   000  00000000  
+
+
+function state:selectLine(y) 
+        y = y or (self:mainCursor()[2])
+        if ((1 <= y) <= #self.s.lines) then 
+            self:select(array(1, y), array(self.s.lines[y].leng, y))
+        end
+        
+        return self
+    end
+
+
+function state:selectPrevLine(y) 
+        y = y or (self:mainCursor()[2])
+        return self:selectLine((y - 1))
+    end
+
+
+function state:selectNextLine(y) 
+        y = y or (self:mainCursor()[2])
+        return self:selectLine((y + 1))
+    end
+
+
+function state:selectCursorLines() 
+        local selections = belt.lineRangesForPositions(self.s.lines, self.s.cursors)
+        
+        assert((#selections == #self.s.cursors))
+        
+        return self:setSelections(selections)
+    end
+
+
+function state:selectAllLines() 
+        local allsel = array(array(1, 1, kseg.width(self.s.lines[#self.s.lines]), #self.s.lines))
+        
+        if (allsel == self.s.selections) then 
+            return self:deselect()
+        else 
+            return self:setSelections(allsel)
+        end
+    end
+
+-- 00     00   0000000   00000000   00000000  
+-- 000   000  000   000  000   000  000       
+-- 000000000  000   000  0000000    0000000   
+-- 000 0 000  000   000  000   000  000       
+-- 000   000   0000000   000   000  00000000  
+
+
+function state:selectMoreLines() 
+        local cursors, selections = belt.addLinesBelowPositionsToRanges(self.s.lines, self.s.cursors, self.s.selections)
+        
+        self:setSelections(selections)
+        return self:setCursors(cursors, {main = -1})
+    end
+
+-- 000      00000000   0000000   0000000  
+-- 000      000       000       000       
+-- 000      0000000   0000000   0000000   
+-- 000      000            000       000  
+-- 0000000  00000000  0000000   0000000   
+
+
+function state:selectLessLines() 
+        local cursors, selections = belt.removeLinesAtPositionsFromRanges(self.s.lines, self.s.cursors, self.s.selections)
+        
+        self:setSelections(selections)
+        return self:setCursors(cursors, {main = -1})
+    end
+
+-- 000000000  00000000  000   000  000000000  
+--    000     000        000 000      000     
+--    000     0000000     00000       000     
+--    000     000        000 000      000     
+--    000     00000000  000   000     000     
+
+
+function state:textOfSelection() 
+    return belt.textForLineRanges(self.s.lines, self.s.selections)
+    end
+
+function state:selectedText() 
+    return belt.textForLineRanges(self.s.lines, self.s.selections)
+    end
+
+
+function state:selectionsOrCursorLineRanges() 
+    return (self.s.selections or belt.lineRangesForPositions(self.s.lines, self.s.cursors, true))
+    end
+
+
+function state:textOfSelectionOrCursorLines() 
+        return belt.textForLineRanges(self.s.lines, self:selectionsOrCursorLineRanges())
+    end
+
+
+function state:isSingleLineSelected() 
+        return ((#self.s.selections == 1) and (self.s.selections[1][2] == self.s.selections[1][4]))
+    end
+
+
+function state:isSelectedLine(y) 
+        for si, selection in ipairs(self.s.selections) do 
+            if not ((selection[4] == y) and (selection[3] == 0)) then 
+                if ((selection[2] <= y) and (y <= selection[4])) then 
+                    return true
+                end
+            end
+        end
+        
+        return false
+    end
+
+
+function state:isFullySelectedLine(y) 
+        for si, selection in ipairs(self.s.selections) do 
+            if ((selection[2] <= y) and (y <= selection[4])) then 
+                return belt.isFullLineRange(self.s.lines, selection)
+            end
+        end
+        
+        return false
+    end
+
+
+function state:isPartiallySelectedLine(y) 
+        for si, selection in ipairs(self.s.selections) do 
+            if ((selection[2] <= y) and (y <= selection[4])) then 
+                return not belt.isFullLineRange(self.s.lines, selection)
+            end
+        end
+        
+        return false
+    end
+
+
+function state:isSpanSelectedLine(y) 
+        for si, selection in ipairs(self.s.selections) do 
+            if ((selection[2] <= y) and (y <= selection[4])) then 
+                local span = belt.isSpanLineRange(self.s.lines, selection)
+                if span then 
+                    return true
+                end
+            end
+            
+            if (selection[2] > y) then return false end
+        end
+        
+        return false
+    end
+
+
+function state:isHighlightedLine(y) 
+        for hi, highlight in ipairs(self.s.highlights) do 
+            if (highlight[2] == y) then return true end
+        end
+        
+        return false
+    end
+
+-- 0000000    00000000   0000000  00000000  000      00000000   0000000  000000000  
+-- 000   000  000       000       000       000      000       000          000     
+-- 000   000  0000000   0000000   0000000   000      0000000   000          000     
+-- 000   000  000            000  000       000      000       000          000     
+-- 0000000    00000000  0000000   00000000  0000000  00000000   0000000     000     
+
+
+function state:deselect() 
+        if valid(self.s.selections) then 
+            return self:setSelections(array())
+        end
+    end
+
+
+function state:clearHighlights() 
+        if valid(self.s.highlights) then 
+            return self:setHighlights(array())
+        end
+    end
+
+
+function state:clearCursors() 
+        if (#self.s.cursors > 1) then 
+            return self:setCursors(array(self:mainCursor()))
+        end
+    end
+
+
+function state:clearCursorsHighlightsAndSelections() 
+        if ((#self.s.cursors > 1) or valid(self.s.selections)) then self:pushState() end
+        self:clearCursors()
+        self:clearHighlights()
+        return self:deselect()
     end
 
 return state

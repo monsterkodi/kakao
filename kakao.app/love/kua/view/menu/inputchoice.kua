@@ -32,8 +32,6 @@ class inputchoice extends view
         
         @setColor 'bg'    theme.quicky.bg
         
-        log "theme.quicky.bg" theme.quicky.bg
-        
         @setColor 'frame' theme.quicky.frame
 
         if @choices.mapscr
@@ -47,7 +45,7 @@ class inputchoice extends view
         
     setColor: key clr ->
         
-        # view.setColor @ key clr
+        view.setColor @ key clr
         
         if key == 'bg'
         
@@ -64,12 +62,12 @@ class inputchoice extends view
 
     arrange: ->
 
-        x = math.floor @screen.cols/4
-        y = math.floor @screen.rows/4
-        w = math.floor @screen.cols/2
-        h = math.floor @screen.rows/2-4
+        x = floor @screen.cols/4
+        y = floor @screen.rows/4
+        w = floor @screen.cols/2
+        h = floor @screen.rows/2-4
 
-        cs = math.min h @choices∙numFiltered()
+        cs = min h @choices∙numFiltered()
         
         @input∙layout    x+2   y+1  w-4  1
         @choices∙layout  x+2   y+3  w-3  cs
@@ -93,9 +91,11 @@ class inputchoice extends view
         {redraw:true}
 
     hide: -> 
-        
-        @choices.mapscr.hide()     
-        # super()
+    
+        if @choices.mapscr
+            @choices.mapscr∙hide()     
+            
+        view.hide @
                             
     # 000  000   000  00000000   000   000  000000000  
     # 000  0000  000  000   000  000   000     000     
@@ -218,10 +218,11 @@ class inputchoice extends view
             
             'esc'     
 
-                post.emit 'focus' 'editor'
+                post∙emit 'focus' 'editor'
                 ⮐  @hide()
 
         if @input∙hasFocus()
+
             result = @input∙onKey key event
             if result
                 @autoHide()
@@ -229,9 +230,11 @@ class inputchoice extends view
             log "focused input didn't handle key #{key}?"
 
         result = @choices∙onKey key event
+        
         if result
 
-            if event.char and event.char != ' ' and event.char != '\n'
+            if valid(event.char) and event.char != ' ' and event.char != '\n'
+
                 @input∙grabFocus()
                 result = @input∙onKey key event
                 if result
@@ -255,7 +258,7 @@ class inputchoice extends view
         
         ret = @input∙onMouse   event ; ⮐  ret if ret.redraw
         ret = @choices∙onMouse event ; ⮐  ret if ret.redraw
-        ret = super event            ; ⮐  ret if ret.redraw
+        ret = view.onMouse @ event   ; ⮐  ret if ret.redraw
         
         if event.type == 'press' and not @hover
             post∙emit 'focus' 'editor'

@@ -86,18 +86,18 @@ class KED
         # @editor.state.hasFocus = true
         # @editor.funtree = @funcol.funtree
         
-        # post.on 'redraw'        @redraw
-        # post.on 'window.focus'  @redraw
-        # post.on 'window.blur'   @redraw
-        # post.on 'input.popup'   @onInputPopup
-        # post.on 'view.size'     @onViewSize
-        # post.on 'quicky'        @onQuicky
-        # post.on 'file.new'      @newFile
-        # post.on 'file.reload'   @reloadFile
-        # post.on 'file.open'     @openFile
-        # post.on 'quit'          @quit
-        # post.on 'file.change'   @onFileChange
-        # post.on 'focus'         (name) -> # log "focus: '#{name}'"
+        post∙on 'redraw'        @redraw        @
+        post∙on 'window.focus'  @redraw        @
+        post∙on 'window.blur'   @redraw        @
+        post∙on 'input.popup'   @onInputPopup  @
+        post∙on 'view.size'     @onViewSize    @
+        post∙on 'quicky'        @onQuicky      @
+        post∙on 'file.new'      @newFile       @
+        post∙on 'file.reload'   @reloadFile    @
+        post∙on 'file.open'     @openFile      @
+        post∙on 'quit'          @quit          @
+        post∙on 'file.change'   @onFileChange  @
+        # post∙on 'focus'         (name) -> # log "focus: '#{name}'"
         
         # @contextHandlers = [                                                                               @editor         @dircol @funcol ]
         # @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
@@ -126,17 +126,17 @@ class KED
             
     showEditor: -> 
     
-        @editor.show()
-        @status.show()
-        @dircol.show()
-        @funcol.show()
+        @editor∙show()
+        @status∙show()
+        # @dircol∙show()
+        # @funcol∙show()
 
     hideEditor: -> 
     
-        @editor.hide()
-        @status.hide()
-        @dircol.hide()
-        @funcol.hide()
+        @editor∙hide()
+        @status∙hide()
+        # @dircol∙hide()
+        # @funcol∙hide()
         
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -232,12 +232,12 @@ class KED
     
     newFile: ->
         
-        delete @currentFile
+        @currentFile = nil
 
-        @status.setFile ''
+        @status∙setFile ''
     
         @editor.state.syntax.ext = 'txt'
-        @editor.state.loadLines ['']
+        @editor.state∙loadLines ['hello' 'world!']
 
         # @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
         # @editor.cells.meta_pst 0 0 '\x07'
@@ -245,16 +245,17 @@ class KED
         # @editor.cells.meta_pre 1 0 '\x1b]66;n=3:d=4:w=1;'
         # @editor.cells.meta_pst 1 0 '\x07'
         
-        @t.setCursor 0 0
-        @t.setTitle 'kėd'
+        # @t.setCursor 0 0
+        # @t.setTitle 'kėd'
         
-        @editor.mapscr.reload()
+        if @editor.mapscr
+            @editor.mapscr∙reload()
         
         post∙emit 'file.loaded' nil
 
         @showEditor()
         
-        @editor.grabFocus()
+        @editor∙grabFocus()
         
         @redraw()
             
@@ -323,15 +324,14 @@ class KED
 
     loadFile: p row col view ->
     
-        # log "ked.loadFile #{p} #{row} #{col} #{noon view}"
+        log "ked.loadFile #{p} #{row} #{col} #{noon view}"
         
-        start = process.hrtime()
-        
+        absFile = p
         if slash.isAbsolute p
             absFile = slash.absolute p
         else
             absFile = slash.path process.cwd() p
-            
+        
         ⮐  if slash.samePath absFile @loadingFile
         
         @loadingFile = absFile
@@ -340,13 +340,13 @@ class KED
         
         if not exists
             warn "ked.loadFile - file doesn't exist! #{@loadingFile}"
-            delete @loadingFile
+            @loadingFile = nil
             ⮐ 
         
         @loadingFile = nfs.resolveSymlink @loadingFile
         
         if empty @loadingFile
-            warn "ked.loadFile - #{absFile} resolved to empty!"
+            error "ked.loadFile - #{absFile} resolved to empty!"
             ⮐  
         
         ▴ 'loadingFile' @loadingFile
@@ -363,9 +363,9 @@ class KED
         
         ▴ 'currentFile' @currentFile
         
-        delete @loadingFile
+        @loadingFile = nil
         
-        @status.setFile slash.tilde(@currentFile)
+        @status∙setFile slash.tilde(@currentFile)
                 
         if text == undefined
             text = '○ binary ○'
@@ -373,15 +373,13 @@ class KED
         (colors, segls) = belt.colorSeglsForText text
         
         if valid colors
-            @editor.state.syntax.setColors colors
+            @editor.state.syntax∙setColors colors
         else
-            @editor.state.syntax.setExt slash.ext(@currentFile)
+            @editor.state.syntax∙setExt slash.ext(@currentFile)
         
-        @editor.state.loadSegls segls
-        @editor.setCurrentFile @currentFile     
-        ked_session.set "editor▸file" @currentFile
-        
-        @status.time = process.hrtime(start)[1]
+        @editor.state∙loadSegls segls
+        @editor∙setCurrentFile @currentFile     
+        ked_session∙set "editor▸file" @currentFile
         
         mode.fileLoaded @editor.state @currentFile row col view
         
@@ -390,13 +388,12 @@ class KED
         @showEditor()
         @redraw()
         
-        @indexer.index @currentFile
+        @indexer∙index @currentFile
         prjcts.index   @currentFile
         git.diff       @currentFile
-        
         watcher.watch  @currentFile
                 
-        @t.setTitle slash.file(@status.file)
+        # @t.setTitle slash.file(@status.file)
         
         @saveSessionFile @currentFile 'loaded'        
         
@@ -509,7 +506,7 @@ class KED
     
     onKey: key event ->
     
-        log 'ked.onKey' event
+        # log 'ked.onKey' event
             
         switch key
             
@@ -541,7 +538,7 @@ class KED
         for handler in @keyHandlers∙each()
             # ●▸ on key
             if not handler∙hidden()
-                log "handler" handler.name
+                # log "handler" handler.name
                 result = handler∙onKey key event
                 if result
                     break 
@@ -637,26 +634,26 @@ class KED
         @arrange cols rows
         
         # ●▸ draw
-        # if @menu.greet.hidden()
-        #     @editor.draw() if not @differ.visible()
-        #     @status.draw()
-        #     @dircol.draw()
-        #     @funcol.draw()
+        if @menu.greet∙hidden()
+            @editor∙draw() #if not @differ∙visible()
+        #     @status∙draw()
+        #     @dircol∙draw()
+        #     @funcol∙draw()
 
         # for y in 1..rows
         #     for x in 1..cols
         #         @screen∙set x y string.sub($x 1 1) [50 0 0] 
             
         @menu∙draw()
-        # @macro.draw()
-        # @quicky.draw()
-        # @browse.draw()
-        # @droop.draw()
-        # @finder.draw()
-        # @searcher.draw()
-        # @differ.draw()
-        # @context.draw()
-        # @input.draw()
+        # @macro∙draw()
+        # @quicky∙draw()
+        # @browse∙draw()
+        # @droop∙draw()
+        # @finder∙draw()
+        # @searcher∙draw()
+        # @differ∙draw()
+        # @context∙draw()
+        # @input∙draw()
         # ●▪ draw
         # ●▸ render
             

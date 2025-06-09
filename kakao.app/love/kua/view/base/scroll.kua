@@ -81,23 +81,22 @@ class scroll extends view
     
     scrollToPixel: pixel ->
     
-        csz = @screen.t.cellsz
-        ⮐  if empty(csz)
+        csz = @screen∙size()
 
-        view = @state.s.view.asMutable()
+        view = @state.s.view #.asMutable()
         
-        rowf = pixel[1]/csz[1]-@cells.y
-        view[1] = math.floor(rowf * (@state.s.lines.length - @cells.rows + 1)  / (@cells.rows-1))
+        rowf = pixel[2]/csz[2]-@cells.y
+        view[2] = floor(rowf * (@state.s.lines.len - @cells.rows + 1)  / (@cells.rows-1))
         
-        maxY = @state.s.lines.length - @cells.rows
+        maxY = @state.s.lines.len - @cells.rows
         
-        if maxY > 0
-            view[1] = math.min maxY view[1] 
-        view[1] = math.max 0 view[1]
+        if maxY > 1
+            view[2] = min maxY view[2] 
+        view[2] = max 1 view[2]
         
-        ⮐  true if view eql @state.s.view
+        ⮐  true if view == @state.s.view
         
-        @state.setView view 
+        @state∙setView view 
         
         {redraw:true}
         
@@ -109,30 +108,31 @@ class scroll extends view
     
     draw: ->
 
-        csz = @screen.t.cellsz
-        ⮐  if empty csz
+        # csz = @screen.t.cellsz
+        # ⮐  if empty csz
+        csz = @screen∙size()
         
         rows = @cells.rows
         
-        @cells.fill_col 0 0 rows ' ' null @color.bg
+        @cells∙fill_col 1 1 rows ' ' nil @color.bg
         
-        lnum = @state.s.lines.length
-        
-        ⮐  if lnum <= rows
-        
-        kh = ((rows*rows) / lnum) * csz[1]
-        ky = ((rows*csz[1]-kh) * @state.s.view[1] / (lnum-rows)) 
+        # lnum = @state.s.lines.len
+        # 
+        # ⮐  if lnum <= rows
+        # 
+        # kh = ((rows*rows) / lnum) * csz[2]
+        # ky = ((rows*csz[2]-kh) * @state.s.view[2] / (lnum-rows)) 
 
-        fg = if @hover ➜ @color.hover ➜ @color.knob
+        # fg = if @hover ➜ @color.hover ➜ @color.knob
         
-        x  = @cells.x*csz[0]
-        y  = int @cells.y*csz[1]+ky
-        w  = int csz[0]/2
-        h  = int kh
+        # x  = @cells.x*csz[1]
+        # y  = int @cells.y*csz[2]+ky
+        # w  = int csz[1]/2
+        # h  = int kh
         
-        squares.place x int(y+w/2) w h-w fg
-        
-        sircels.place x y     w (ky or {fg: @color.dot}) 1111
-        sircels.place x y+h-w w ((y+h < (@cells.y+rows)*csz[1]-1) or {fg: @color.dot}) 1111
+        # squares∙place x int(y+w/2) w h-w fg
+        # 
+        # sircels∙place x y     w (ky or {fg: @color.dot}) 1111
+        # sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*csz[1]-1) or {fg: @color.dot}) 1111
 
 ⮐  scroll

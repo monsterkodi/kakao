@@ -77,19 +77,19 @@ class gutter extends view
     
         ⮐  if empty @preview or empty @gitChanges
         
-        for idx in @preview
-            segl = kseg(@gitChanges[idx].old or '')
-            # log "drawPreviewLine #{idx}" segl
-            syntax = @editor.state.syntax
-            oldDiss = syntax.diss[idx]
-            syntax.diss[idx] = kulur.dissect [segl] syntax.ext
-            @editor.drawLine segl idx
-            syntax.diss[idx] = oldDiss
+        # for idx _ in ipairs @preview
+        #     segl = kseg(@gitChanges[idx].old or '')
+        #     # log "drawPreviewLine #{idx}" segl
+        #     syntax = @editor.state.syntax
+        #     oldDiss = syntax.diss[idx]
+        #     syntax.diss[idx] = kulur.dissect [segl] syntax.ext
+        #     @editor.drawLine segl idx
+        #     syntax.diss[idx] = oldDiss
         
     lineno: y ->
                 
-        lineno = lpad @cells.cols-1 y+1
-        lineno += ' '
+        lineno = kstr.lpad @cells.cols-1 $(y+1)
+        lineno &= ' '
         lineno
         
     fgcolor: x y ->
@@ -176,21 +176,21 @@ class gutter extends view
 
     draw: ->
         
-        mainCursor = @state.mainCursor()
+        mainCursor = @state∙mainCursor()
         
-        for row in 0...@cells.rows
+        for row in 1..@cells.rows
                         
-            y = @state.s.view[1] + row
+            y = @state.s.view[2] + row
             
             lineno = @lineno y
             
-            hasCursor   = @state.isAnyCursorInLine  y
-            selected    = @state.isSelectedLine     y
-            highlighted = @state.isHighlightedLine  y
-            spansel     = @state.isSpanSelectedLine y
+            hasCursor   = @state∙isAnyCursorInLine  y
+            selected    = @state∙isSelectedLine     y
+            highlighted = @state∙isHighlightedLine  y
+            spansel     = @state∙isSpanSelectedLine y
             
-            for c,i in lineno
-                
+            for i in 1..lineno.len
+                c = string.sub(lineno i i)
                 col = i
                 if col < @cells.rows
                     sc = @fgcolor i y c
@@ -206,21 +206,21 @@ class gutter extends view
                             selected           ➜ fg = @color.selection_line
                             highlighted        ➜ fg = @color.highlight
 
-                        if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
-                            fg = color.darken fg 
+                        # if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
+                        #     fg = color.darken fg 
                     
                     bg = @color.bg
+                        # @gitChanges[y].old and @gitChanges[y].new ➜ bg = @color.bg_git_mod
+                        # @gitChanges[y].old    ➜ bg = @color.bg_git_del
+                        # @gitChanges[y]        ➜ bg = @color.bg_git_add
                     if 
-                        @gitChanges[y].old and @gitChanges[y].new ➜ bg = @color.bg_git_mod
-                        @gitChanges[y].old    ➜ bg = @color.bg_git_del
-                        @gitChanges[y]        ➜ bg = @color.bg_git_add
                         spansel               ➜ bg = @color.bg_selected
                         selected              ➜ bg = @color.bg_fully_selected
                                  
-                    if selected and not @cells.screen.t.hasFocus
-                        bg = color.darken bg 
-                    cr = if (y<@state.s.lines.length) ➜  c ➜ ' '
-                    @cells.set col row cr fg bg
+                    # if selected and not @cells.screen.t.hasFocus
+                    #     bg = color.darken bg 
+                    cr = if (y<@state.s.lines.len) ➜  c ➜ ' '
+                    @cells∙set col row cr fg bg
                     
         @drawPreviews()
         @drawGitScroll()

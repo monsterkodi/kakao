@@ -312,7 +312,9 @@ class Rlua
                 @add "]] .. "
             else
                 @add "\" .. "
+            @add "tostring("
             @rnd stripol.stripol_xprssns
+            @add ")"
             if triple
                 @add " .. [["
             else

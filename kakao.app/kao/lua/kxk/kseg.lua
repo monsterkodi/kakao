@@ -151,11 +151,33 @@ function kseg:trim(c)
     end
 
 
+function kseg.static.trim(s, c) 
+    c = c or " \n"
+    
+    return kseg(s):trim(c)
+    end
+
+
 function kseg:lcount(c) 
         if (#self <= 0) then return 0 end
         local cnt = 0
         for i in iter(1, #self) do 
             if (self[i] == c) then 
+                cnt = cnt + 1
+            else 
+                break
+            end
+        end
+        
+        return cnt
+    end
+
+
+function kseg:headCount(c) 
+        if (#self <= 0) then return 0 end
+        local cnt = 0
+        for i, s in ipairs(self) do 
+            if (s == c) then 
                 cnt = cnt + 1
             else 
                 break

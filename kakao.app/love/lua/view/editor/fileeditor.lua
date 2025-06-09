@@ -38,7 +38,6 @@ function fileeditor:init(screen, name)
         post:on('goto.func', self.onGotoFunc, self)
         post:on('git.diff', self.onGitDiff, self)
         post:on('git.commit', self.onGitCommit, self)
-        
         post:on('funtree.loaded', self.onFuntreeLoaded, self)
         return self
     end
@@ -135,8 +134,8 @@ function fileeditor:onGotoFunc(func)
 
 function fileeditor:onContext(event) 
         local word = self.state.textOfSelectionOrWordAtCursor()
-        if valid(word) then word = " '" .. word .. "'" end
-        return context.show(event.cell, self.onContextChoice, array("search" .. word .. "", "find" .. word .. "", 'status'))
+        if valid(word) then word = " '" .. tostring(word) .. "'" end
+        return context.show(event.cell, self.onContextChoice, array("search" .. tostring(word) .. "", "find" .. tostring(word) .. "", 'status'))
     end
 
 
@@ -189,7 +188,7 @@ function fileeditor:jumpToWord(word)
                 return true
             end
         else 
-            print("fileeditor.jumpToWord(" .. word .. ") nothing found to jump to")
+            print("fileeditor.jumpToWord(" .. tostring(word) .. ") nothing found to jump to")
         end
         
         return false
@@ -307,7 +306,7 @@ function fileeditor:onMouse(event)
                     if (event.cmd or event.ctrl) then 
                         local word = belt.wordAtPos(self.state.s.lines, array(x, y))
                         if word then 
-                            print("jumpToWord " .. word .. "", event)
+                            print("jumpToWord " .. tostring(word) .. "", event)
                             if self:jumpToWord(word) then 
                                 return
                             end

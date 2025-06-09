@@ -48,6 +48,7 @@ love.keypressed = key scancode isrepeat ->
 
     mods = ""
     switch key 
+        "escape" ➜ key = "esc"
         "lshift" "rshift"
         "lctrl"  "rctrl"
         "lalt"   "ralt"
@@ -61,7 +62,7 @@ love.keypressed = key scancode isrepeat ->
         mods &= "alt+"
     if love.keyboard.isDown('lgui') or love.keyboard.isDown('rgui')
         mods &= "cmd+"
-    log 'keypressed ' mods, key
+    # log 'keypressed ' mods, key
     combo = mods & key
     char = ""
     switch key

@@ -26,6 +26,11 @@ function screen:init(cols, rows)
     end
 
 
+function screen:size() 
+    return array(self.cols, self.rows)
+    end
+
+
 function screen:initSize(cols, rows) 
         self.rows = rows
         self.cols = cols

@@ -283,12 +283,13 @@ class belt
                 
     @normalizeRanges: rngs ->
         
-        ⮐  [] if empty rngs or not rngs is arr
+        ⮐  [] if empty(rngs) or not (rngs is array)
         
-        rngs = rngs.map((a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a)
-        rngs = rngs.map((a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a)
-        rngs.sort((a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1])
-        rngs.filter((a) -> a[1] != a[3] or a[0] != a[2])
+        rngs = rngs∙map((a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a)
+        rngs = rngs∙map((a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a)
+        rngs∙sort((a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1])
+        rngs∙filter((a) -> a[1] != a[3] or a[0] != a[2])
+        rngs
         
     @startPositionsOfRanges: rngs -> rngs.map((r) -> @startOfRange(r))
     @endPositionsOfRanges:   rngs -> rngs.map((r) -> @endOfRange(r))
@@ -410,19 +411,18 @@ class belt
     
     @mergeLineRanges: lines rngs ->
         
-        ⮐  [] if empty rngs or not rngs is arr
+        ⮐  [] if empty(rngs) or not (rngs is array)
         
         rngs = @normalizeRanges rngs
         
         mrgd = []
-        for s i in rngs
-            if empty(mrgd) or s[1] > tail[3]+1 or s[1] == tail[3] and s[0] > tail[2] or s[1] == tail[3]+1 and (s[0] > 0 or tail[2] < lines[tail[3]].length)
-                    mrgd.push s
+        for i s in ipairs rngs
+            if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]].len)
+                    mrgd∙push s
                     tail = s
-            else if s[3] > tail[3] or s[3] == tail[3] and s[2] > tail[2]
-                tail[2] = s[2] 
-                tail[3] = s[3]
-
+            else if s[4] > tail[4] or s[4] == tail[4] and s[3] > tail[3]
+                tail[3] = s[3] 
+                tail[4] = s[4]
         mrgd
 
 # merge methods of sibling modules into tool/belt 

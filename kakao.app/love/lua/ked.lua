@@ -88,18 +88,18 @@ function KED:init()
         -- @editor.state.hasFocus = true
         -- @editor.funtree = @funcol.funtree
         
-        -- post.on 'redraw'        @redraw
-        -- post.on 'window.focus'  @redraw
-        -- post.on 'window.blur'   @redraw
-        -- post.on 'input.popup'   @onInputPopup
-        -- post.on 'view.size'     @onViewSize
-        -- post.on 'quicky'        @onQuicky
-        -- post.on 'file.new'      @newFile
-        -- post.on 'file.reload'   @reloadFile
-        -- post.on 'file.open'     @openFile
-        -- post.on 'quit'          @quit
-        -- post.on 'file.change'   @onFileChange
-        -- post.on 'focus'         (name) -> # log "focus: '#{name}'"
+        post:on('redraw', self.redraw, self)
+        post:on('window.focus', self.redraw, self)
+        post:on('window.blur', self.redraw, self)
+        post:on('input.popup', self.onInputPopup, self)
+        post:on('view.size', self.onViewSize, self)
+        post:on('quicky', self.onQuicky, self)
+        post:on('file.new', self.newFile, self)
+        post:on('file.reload', self.reloadFile, self)
+        post:on('file.open', self.openFile, self)
+        post:on('quit', self.quit, self)
+        post:on('file.change', self.onFileChange, self)
+        -- post∙on 'focus'         (name) -> # log "focus: '#{name}'"
         
         -- @contextHandlers = [                                                                               @editor         @dircol @funcol ]
         -- @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
@@ -130,18 +130,18 @@ function KED:init()
 
 
 function KED:showEditor() 
-        self.editor.show()
-        self.status.show()
-        self.dircol.show()
-        return self.funcol.show()
+        self.editor:show()
+        self.status:show()
+        -- @dircol∙show()
+        return -- @funcol∙show()
     end
 
 
 function KED:hideEditor() 
-        self.editor.hide()
-        self.status.hide()
-        self.dircol.hide()
-        return self.funcol.hide()
+        self.editor:hide()
+        self.status:hide()
+        -- @dircol∙hide()
+        return -- @funcol∙hide()
     end
 
 -- 00000000   000   000  000   000  
@@ -249,12 +249,12 @@ function KED:quit(msg)
 
 
 function KED:newFile() 
-        delete(self.currentFile)
+        self.currentFile = nil
         
-        self.status.setFile('')
+        self.status:setFile('')
         
         self.editor.state.syntax.ext = 'txt'
-        self.editor.state.loadLines(array(''))
+        self.editor.state:loadLines(array('hello', 'world!'))
         
         -- @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
         -- @editor.cells.meta_pst 0 0 '\x07'
@@ -262,16 +262,18 @@ function KED:newFile()
         -- @editor.cells.meta_pre 1 0 '\x1b]66;n=3:d=4:w=1;'
         -- @editor.cells.meta_pst 1 0 '\x07'
         
-        self.t.setCursor(0, 0)
-        self.t.setTitle('kėd')
+        -- @t.setCursor 0 0
+        -- @t.setTitle 'kėd'
         
-        self.editor.mapscr.reload()
+        if self.editor.mapscr then 
+            self.editor.mapscr:reload()
+        end
         
         post:emit('file.loaded', nil)
         
         self:showEditor()
         
-        self.editor.grabFocus()
+        self.editor:grabFocus()
         
         return self:redraw()
     end
@@ -348,14 +350,13 @@ function KED:onQuicky(path)
 
 
 function KED:loadFile(p, row, col, view) 
-        -- log "ked.loadFile #{p} #{row} #{col} #{noon view}"
+        print("ked.loadFile " .. tostring(p) .. " " .. tostring(row) .. " " .. tostring(col) .. " " .. tostring(noon(view)) .. "")
         
-        local start = process.hrtime()
-        
+        local absFile = p
         if slash.isAbsolute(p) then 
-            local absFile = slash.absolute(p)
+            absFile = slash.absolute(p)
         else 
-            local absFile = slash.path(process.cwd(), p)
+            absFile = slash.path(process.cwd(), p)
         end
         
         if slash.samePath(absFile, self.loadingFile) then return end
@@ -365,15 +366,15 @@ function KED:loadFile(p, row, col, view)
         local exists = nfs.fileExists(self.loadingFile)
         
         if not exists then 
-            warn("ked.loadFile - file doesn't exist! " .. self.loadingFile .. "")
-            delete(self.loadingFile)
+            warn("ked.loadFile - file doesn't exist! " .. tostring(self.loadingFile) .. "")
+            self.loadingFile = nil
             return
         end
         
         self.loadingFile = nfs.resolveSymlink(self.loadingFile)
         
         if empty(self.loadingFile) then 
-            warn("ked.loadFile - " .. absFile .. " resolved to empty!")
+            error("ked.loadFile - " .. tostring(absFile) .. " resolved to empty!")
             return
         end
         
@@ -392,9 +393,9 @@ function KED:loadFile(p, row, col, view)
         
         assert('currentFile', self.currentFile)
         
-        delete(self.loadingFile)
+        self.loadingFile = nil
         
-        self.status.setFile(slash.tilde(self.currentFile))
+        self.status:setFile(slash.tilde(self.currentFile))
         
         if (text == undefined) then 
             text = '○ binary ○'
@@ -403,16 +404,14 @@ function KED:loadFile(p, row, col, view)
         local colors, segls = belt.colorSeglsForText(text)
         
         if valid(colors) then 
-            self.editor.state.syntax.setColors(colors)
+            self.editor.state.syntax:setColors(colors)
         else 
-            self.editor.state.syntax.setExt(slash.ext(self.currentFile))
+            self.editor.state.syntax:setExt(slash.ext(self.currentFile))
         end
         
-        self.editor.state.loadSegls(segls)
-        self.editor.setCurrentFile(self.currentFile)
-        ked_session.set("editor▸file", self.currentFile)
-        
-        self.status.time = process.hrtime(start)[1]
+        self.editor.state:loadSegls(segls)
+        self.editor:setCurrentFile(self.currentFile)
+        ked_session:set("editor▸file", self.currentFile)
         
         mode.fileLoaded(self.editor.state, self.currentFile, row, col, view)
         
@@ -421,13 +420,12 @@ function KED:loadFile(p, row, col, view)
         self:showEditor()
         self:redraw()
         
-        self.indexer.index(self.currentFile)
+        self.indexer:index(self.currentFile)
         prjcts.index(self.currentFile)
         git.diff(self.currentFile)
-        
         watcher.watch(self.currentFile)
         
-        self.t.setTitle(slash.file(self.status.file))
+        -- @t.setTitle slash.file(@status.file)
         
         self:saveSessionFile(self.currentFile, 'loaded')
         
@@ -573,7 +571,7 @@ end)
 
 
 function KED:onKey(key, event) 
-        print('ked.onKey', event)
+        -- log 'ked.onKey' event
         
         if (key == 'alt+1') then return post:emit('filepos.goBackward')
         elseif (key == 'alt+2') then return post:emit('filepos.goForward')
@@ -603,7 +601,7 @@ function KED:onKey(key, event)
         for handler in self.keyHandlers:each() do 
             -- ●▸ on key
             if not handler:hidden() then 
-                print("handler", handler.name)
+                -- log "handler" handler.name
                 result = handler:onKey(key, event)
                 if result then 
                     break
@@ -715,26 +713,28 @@ function KED:draw(cols, rows, ox, oy, fontStep, fontSize)
         self:arrange(cols, rows)
         
         -- ●▸ draw
-        -- if @menu.greet.hidden()
-        --     @editor.draw() if not @differ.visible()
-        --     @status.draw()
-        --     @dircol.draw()
-        --     @funcol.draw()
+        if self.menu.greet:hidden() then 
+            self.editor:draw() --if not @differ∙visible()
+        end
+        
+        --     @status∙draw()
+        --     @dircol∙draw()
+        --     @funcol∙draw()
         
         -- for y in 1..rows
         --     for x in 1..cols
         --         @screen∙set x y string.sub($x 1 1) [50 0 0] 
         
         self.menu:draw()
-        -- @macro.draw()
-        -- @quicky.draw()
-        -- @browse.draw()
-        -- @droop.draw()
-        -- @finder.draw()
-        -- @searcher.draw()
-        -- @differ.draw()
-        -- @context.draw()
-        -- @input.draw()
+        -- @macro∙draw()
+        -- @quicky∙draw()
+        -- @browse∙draw()
+        -- @droop∙draw()
+        -- @finder∙draw()
+        -- @searcher∙draw()
+        -- @differ∙draw()
+        -- @context∙draw()
+        -- @input∙draw()
         -- ●▪ draw
         -- ●▸ render
         

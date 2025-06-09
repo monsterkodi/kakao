@@ -91,21 +91,20 @@ function gutter:onMouse(event)
 function gutter:drawPreviews() 
         if empty((self.preview or empty), self.gitChanges) then return end
         
-        for idx in self.preview do 
-            local segl = kseg((self.gitChanges[idx].old or ''))
-            -- log "drawPreviewLine #{idx}" segl
-            local syntax = self.editor.state.syntax
-            local oldDiss = syntax.diss[idx]
-            syntax.diss[idx] = kulur.dissect(array(segl), syntax.ext)
-            self.editor.drawLine(segl, idx)
-            syntax.diss[idx] = oldDiss
-        end
+        -- for idx _ in ipairs @preview
+        --     segl = kseg(@gitChanges[idx].old or '')
+        --     # log "drawPreviewLine #{idx}" segl
+        --     syntax = @editor.state.syntax
+        --     oldDiss = syntax.diss[idx]
+        --     syntax.diss[idx] = kulur.dissect [segl] syntax.ext
+        --     @editor.drawLine segl idx
+        return --     syntax.diss[idx] = oldDiss
     end
 
 
 function gutter:lineno(y) 
-        local lineno = lpad((self.cells.cols - 1), (y + 1))
-        lineno = lineno + ' '
+        local lineno = kstr.lpad((self.cells.cols - 1), tostring((y + 1)))
+        lineno = lineno .. ' '
         return lineno
     end
 
@@ -214,19 +213,20 @@ end)()
 
 
 function gutter:draw() 
-        local mainCursor = self.state.mainCursor()
+        local mainCursor = self.state:mainCursor()
         
-        for row = 0, self.cells.rows-1 do 
-            local y = (self.state.s.view[1] + row)
+        for row in iter(1, self.cells.rows) do 
+            local y = (self.state.s.view[2] + row)
             
             local lineno = self:lineno(y)
             
-            local hasCursor = self.state.isAnyCursorInLine(y)
-            local selected = self.state.isSelectedLine(y)
-            local highlighted = self.state.isHighlightedLine(y)
-            local spansel = self.state.isSpanSelectedLine(y)
+            local hasCursor = self.state:isAnyCursorInLine(y)
+            local selected = self.state:isSelectedLine(y)
+            local highlighted = self.state:isHighlightedLine(y)
+            local spansel = self.state:isSpanSelectedLine(y)
             
-            for c, i in lineno do 
+            for i in iter(1, #lineno) do 
+                local c = string.sub(lineno, i, i)
                 local col = i
                 if (col < self.cells.rows) then 
                     local sc = self:fgcolor(i, y, c)
@@ -247,30 +247,29 @@ end)()
                         elseif highlighted then fg = self.color.highlight
                         end
                         
-                        if (((selected or hasCursor) or highlighted) and not self.cells.screen.t.hasFocus) then 
-                            fg = color.darken(fg)
-                        end
+                        -- if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
+                        --     fg = color.darken fg 
                     end
                     
                     local bg = self.color.bg
-                    if (self.gitChanges[y].old and self.gitChanges[y].new) then bg = self.color.bg_git_mod
-                    elseif self.gitChanges[y].old then bg = self.color.bg_git_del
-                    elseif self.gitChanges[y] then bg = self.color.bg_git_add
-                    elseif spansel then bg = self.color.bg_selected
+                    
+                        -- @gitChanges[y].old and @gitChanges[y].new ➜ bg = @color.bg_git_mod
+                        -- @gitChanges[y].old    ➜ bg = @color.bg_git_del
+                        -- @gitChanges[y]        ➜ bg = @color.bg_git_add
+                    
+                    if spansel then bg = self.color.bg_selected
                     elseif selected then bg = self.color.bg_fully_selected
                     end
                     
-                    if (selected and not self.cells.screen.t.hasFocus) then 
-                        bg = color.darken(bg)
-                    end
-                    
+                    -- if selected and not @cells.screen.t.hasFocus
+                    --     bg = color.darken bg 
                     local cr = (function () 
     if (y < #self.state.s.lines) then 
     return c else 
     return ' '
                          end
 end)()
-                    self.cells.set(col, row, cr, fg, bg)
+                    self.cells:set(col, row, cr, fg, bg)
                 end
             end
         end

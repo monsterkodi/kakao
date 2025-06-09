@@ -33,7 +33,6 @@ class editor extends draw
         @focusable = true
         
         @state = state @cells @name
-        post∙on 'focus' @onFocus @
         
         use edit.complete
                 
@@ -45,7 +44,9 @@ class editor extends draw
             
         mode.autoStartForEditor @
         
+        post∙on 'focus'        @onFocus @
         post∙on 'modes.loaded' @onModesLoaded @
+        
         @onModesLoaded()
         
     onModesLoaded: ->
@@ -107,10 +108,10 @@ class editor extends draw
         
         # super event
         
-        ret = @gutter.onMouse(event)   ; ⮐  ret if ret.redraw
-        ret = @mapscr.onMouse(event)   ; ⮐  ret if ret.redraw
-        ret = @scroll.onMouse(event)   ; ⮐  ret if ret.redraw
-        ret = @complete.onMouse(event) ; ⮐  ret if ret.redraw
+        ret = @gutter∙onMouse(event)   ; ⮐  ret if ret.redraw
+        ret = @mapscr∙onMouse(event)   ; ⮐  ret if ret.redraw
+        ret = @scroll∙onMouse(event)   ; ⮐  ret if ret.redraw
+        ret = @complete∙onMouse(event) ; ⮐  ret if ret.redraw
                         
         false
                 
@@ -124,15 +125,15 @@ class editor extends draw
         
         ⮐  if event.cell[1] >= @cells.y + @cells.rows
                 
-        inside = @cells.isInsideEvent(event)
-        inside = inside or @scroll.cells.isInsideEvent(event)
-        inside = inside or @gutter.cells.isInsideEvent(event)
-        inside = inside or @mapscr.cells.isInsideEvent(event)
+        inside = @cells∙isInsideEvent(event)
+        inside = inside or @scroll.cells∙isInsideEvent(event)
+        inside = inside or @gutter.cells∙isInsideEvent(event)
+        inside = inside or @mapscr.cells∙isInsideEvent(event)
         
         ⮐  if not inside
 
         if @complete
-            res = @complete.onWheel(event)
+            res = @complete∙onWheel(event)
             if res
                 ⮐  res
                 
@@ -142,7 +143,7 @@ class editor extends draw
         if event.alt ➜ steps *= 2 
 
         switch event.dir
-            'up' 'down' 'left' 'right' ➜ @state.scrollView(event.dir steps) 
+            'up' 'down' 'left' 'right' ➜ @state∙scrollView(event.dir steps) 
             
         {redraw:true}
             
@@ -152,19 +153,19 @@ class editor extends draw
     # 000       000   000  000   000       000  000   000  000   000  
     #  0000000   0000000   000   000  0000000    0000000   000   000  
             
-    isCursorInEmpty: cursor ->
+    isCursorInEmpty: mc ->
         
-        cursor ?= @state.mainCursor()
+        mc ?= @state∙mainCursor()
         
-        belt.isLinesPosOutside @state.s.lines cursor
+        belt.isLinesPosOutside @state.s.lines mc
         
-    isCursorVisible: cursor ->
+    isCursorVisible: mc ->
         
-        cursor ?= @state∙mainCursor()
+        mc ?= @state∙mainCursor()
                 
         v = @state.s.view
         
-        v[0] <= cursor[0] < v[0] + @cells.cols and v[1] <= cursor[1] < v[1] + @cells.rows
+        v[1] <= mc[1] and mc[1] <= v[1] + @cells.cols and v[2] <= mc[2] and mc[2] <= v[2] + @cells.rows
         
     # 00000000   0000000    0000000  000   000   0000000  
     # 000       000   000  000       000   000  000       
@@ -183,7 +184,7 @@ class editor extends draw
         @state.hasFocus
         
     onFocus: name ->
-        
+    
         @state.hasFocus = (name == @name)
         
     # 00000000   00000000  0000000    00000000    0000000   000   000  
@@ -205,15 +206,15 @@ class editor extends draw
         ⮐  if not @hasFocus()
         
         if @complete
-            ⮐  true if @complete.handleKey(key event) != 'unhandled'
+            ⮐  true if @complete∙handleKey(key event) != 'unhandled'
 
-        if @state.handleKey(key event) != 'unhandled'
-            @complete.hide()
+        if @state∙handleKey(key event) != 'unhandled'
+            @complete∙hide()
             ⮐  true
         
         if valid event.char
-            @state.insert event.char
-            @complete.complete()
+            @state∙insert event.char
+            @complete∙complete()
             ⮐  true
         else
             splt = kstr.split key "+"

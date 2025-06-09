@@ -48,7 +48,6 @@ class fileeditor extends editor
         post∙on 'goto.func'        @onGotoFunc          @
         post∙on 'git.diff'         @onGitDiff           @
         post∙on 'git.commit'       @onGitCommit         @
-        
         post∙on 'funtree.loaded'   @onFuntreeLoaded     @
         
     setCurrentFile: currentFile ->

@@ -78,20 +78,20 @@ class menu extends inputchoice
         if not greet
             items∙splice items.len-2 0 'about' 
             
-        if empty ked_session∙recentFiles()
-            items∙splice items∙find('recent ...') 1 
+        # if empty ked_session∙recentFiles()
+        #     items∙splice items∙find('recent ...') 1 
         
         items = items∙map((i) -> ' ' & i) # padding for  
             
-        ccol = math.floor(@screen.cols/2) - 5
+        ccol = floor(@screen.cols/2) - 5
 
         @width = belt.widthOfLines items
         
         @input∙set ''
         @input∙hide()
         @choices∙set items
-        @choices∙select 0
-        @choices.state∙setView [0 0]
+        @choices∙select 1
+        @choices.state∙setView [1 1]
         
         inputchoice.show @
         
@@ -103,16 +103,16 @@ class menu extends inputchoice
     
     showRecent: ->
                 
-        recent = frecent∙list 'file'
-        
-        @choices∙set recent
-
-        post∙emit 'quicky.files' recent
+         #recent = frecent∙list 'file'
+         #
+         #@choices∙set recent
+         #
+         #post∙emit 'quicky.files' recent
         
     hide: ->
     
-        @greet.hide()
-        super()
+        @greet∙hide()
+        inputchoice.hide @
     
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -128,7 +128,7 @@ class menu extends inputchoice
             'new'        ➜ @hide(); post∙emit 'file.new'
             'about'      ➜ @show true # reopen with greeting header
             'quit'       ➜ @greet∙hide(); post∙emit 'quit'                    
-            'open ...'   ➜ post∙emit 'browse.dir' process.cwd()
+            'open ...'   ➜ post∙emit 'browse.dir' slash.cwd()
             'recent ...' ➜ @showRecent()
             'help'       ➜ @hide(); post∙emit 'file.open' slash.path(slash.cwd() '../../../../kode/ked/help.md')
             

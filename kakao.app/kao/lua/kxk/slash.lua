@@ -88,7 +88,7 @@ ffi.C.signal(2, ffi.cast("sighandler_t", sigint))
 
 function cmdargs(cmd, args) 
     assert(cmd)
-    args = args or {}
+    args = args or ({})
     local alen = (#args + 2)
     local argv = ffi.new("char*[?]", alen)
     argv[0] = ffi.cast("char*", cmd)
@@ -326,7 +326,7 @@ end
 function slash.absolute(path, parent) 
     if empty(path) then return end
     if slash.isRelative(path) then 
-        parent = parent or slash.cwd()
+        parent = parent or (slash.cwd())
         return slash.path(parent, path)
     else 
         return slash.untilde(path)
@@ -511,8 +511,8 @@ end
 
 
 function slash.walk(path, opt) 
-    opt = opt or {recursive = true}
-    opt.files = opt.files or array()
+    opt = opt or ({recursive = true})
+    opt.files = opt.files or (array())
     
     local dir = ffi.C.opendir(path)
     if (dir == nil) then 
@@ -544,7 +544,9 @@ function slash.walk(path, opt)
     end
     
     ffi.C.closedir(dir)
-    table.sort(opt.files, function (a, b) return (a.path < b.path) end)
+    table.sort(opt.files, function (a, b) 
+    return (a.path < b.path)
+end)
     return opt.files
 end
 
@@ -557,7 +559,9 @@ end
 
 function slash.files(path, ext) 
     local files = slash.walk(path)
-    files = files:map(function (info) return info.path end)
+    files = files:map(function (info) 
+    return info.path
+end)
     if ext then 
         
         function fext(f) 
@@ -598,6 +602,10 @@ end
 
 function slash.fileExists(path) 
     return slash.isFile(path)
+end
+
+function slash.samePath(p1, p2) 
+    return (slash.untilde(p1) == slash.untilde(p2))
 end
 
 return slash

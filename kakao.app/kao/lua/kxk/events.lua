@@ -22,7 +22,7 @@ function events:on(event, handler, o)
         if list:has(handler) then return self end
         
         if o then 
-            list.push(array(o, handler))
+            list:push(array(o, handler))
         else 
             list:push(handler)
         end
@@ -33,17 +33,16 @@ function events:on(event, handler, o)
 
 
 function events:emit(event, ...) 
-        print('--- emit ', self, event)
-        local ret = false
         self.handlers = self.handlers or (array())
         local list = self.handlers[event]
+        
         if valid(list) then 
             for i in iter(#list, 1) do 
                 if list[i] then 
                     if is(list[i], "function") then 
                         list[i](...)
                     else 
-                        list[i][1](list[i][0], ...)
+                        list[i][2](list[i][1], ...)
                     end
                 end
             end
@@ -61,7 +60,7 @@ function events:removeListener(event, handler, o)
                 if (list[i] == handler) then 
                     table.remove(list, i)
                     break
-                elseif ((is(list[i], array) and (list[i][0] == o)) and (list[i][1] == handler)) then 
+                elseif ((is(list[i], array) and (list[i][1] == o)) and (list[i][2] == handler)) then 
                     table.remove(list, i)
                     break
                 end

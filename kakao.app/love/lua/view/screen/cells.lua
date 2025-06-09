@@ -13,7 +13,6 @@
 belt = require "edit.tool.belt"
 color = require "theme.color"
 theme = require "theme.theme"
--- use util.img.rounded
 
 
 local cells = class("cells")
@@ -121,25 +120,6 @@ function cells:set_fg_bg(x, y, fg, bg)
                                   end
     end
 
-
-function cells:meta_clear() 
-    return delete(self.m)
-    end
-
-function cells:meta_pre(x, y, p) 
-    if self:inside(x, y) then self.m = self.m or (belt.metas(self.cols, self.rows)) ; return self.m[y][x].pre:push(p) end
-    end
-
-function cells:meta_pst(x, y, p) 
-    if self:inside(x, y) then self.m = self.m or (belt.metas(self.cols, self.rows)) ; return self.m[y][x].pst:push(p) end
-    end
-
-function cells:meta_clone(x, y) 
-        if empty(self.m) then return end
-        -- log "clone #{x} #{y} #{@m[y][x].pre} #{@m[y][x].pst}" @m[y][x]
-        return self.screen:meta_set(self:wx(x), self:wy(y), self.m[y][x])
-    end
-
 --  0000000   00000000  000000000  
 -- 000        000          000     
 -- 000  0000  0000000      000     
@@ -167,11 +147,11 @@ function cells:get_fg(x, y)
 
 
 function cells:isInsidePos(x, y) 
-                     local x, y = belt.pos(x, y) ; return (((0 <= x) < self.cols) and ((0 <= y) < self.rows))
+                     local x, y = belt.pos(x, y) ; return (((1 <= x) <= self.cols) and ((1 <= y) <= self.rows))
     end
 
 function cells:isOutsidePos(x, y) 
-                     local x, y = belt.pos(x, y) ; return ((((x < 0) or (x >= self.cols)) or (y < 0)) or (y >= self.rows))
+                     local x, y = belt.pos(x, y) ; return ((((x < 1) or (x > self.cols)) or (y < 1)) or (y > self.rows))
     end
 
 
@@ -404,12 +384,12 @@ function cells:draw_horizontal_padding(x, y, fg, bg, zLayer)
 
 
 function cells:draw_rounded_cursor(x, y, fg) 
-        return self:img(x, y, "rounded.cursor", fg)
+        return -- @img x y "rounded.cursor" fg
     end
 
 
 function cells:draw_rounded_multi_cursor(x, y, fg) 
-        return self:img(x, y, "rounded.multi", fg)
+        return -- @img x y "rounded.multi" fg
     end
 
 

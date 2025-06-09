@@ -89,25 +89,24 @@ function scroll:isActive()
 
 
 function scroll:scrollToPixel(pixel) 
-        local csz = self.screen.t.cellsz
-        if empty(csz) then return end
+        local csz = self.screen:size()
         
-        local view = self.state.s.view.asMutable()
+        local view = self.state.s.view --.asMutable()
         
-        local rowf = ((pixel[1] / csz[1]) - self.cells.y)
-        view[1] = math.floor(((rowf * ((#self.state.s.lines - self.cells.rows) + 1)) / (self.cells.rows - 1)))
+        local rowf = ((pixel[2] / csz[2]) - self.cells.y)
+        view[2] = floor(((rowf * ((#self.state.s.lines - self.cells.rows) + 1)) / (self.cells.rows - 1)))
         
         local maxY = (#self.state.s.lines - self.cells.rows)
         
-        if (maxY > 0) then 
-            view[1] = math.min(maxY, view[1])
+        if (maxY > 1) then 
+            view[2] = min(maxY, view[2])
         end
         
-        view[1] = math.max(0, view[1])
+        view[2] = max(1, view[2])
         
-        if view(eql, self.state.s.view) then return true end
+        if (view == self.state.s.view) then return true end
         
-        self.state.setView(view)
+        self.state:setView(view)
         
         return {redraw = true}
     end
@@ -120,36 +119,32 @@ function scroll:scrollToPixel(pixel)
 
 
 function scroll:draw() 
-        local csz = self.screen.t.cellsz
-        if empty(csz) then return end
+        -- csz = @screen.t.cellsz
+        -- ⮐  if empty csz
+        local csz = self.screen:size()
         
         local rows = self.cells.rows
         
-        self.cells.fill_col(0, 0, rows, ' ', null, self.color.bg)
+        self.cells:fill_col(1, 1, rows, ' ', nil, self.color.bg)
         
-        local lnum = #self.state.s.lines
+        -- lnum = @state.s.lines.len
+        -- 
+        -- ⮐  if lnum <= rows
+        -- 
+        -- kh = ((rows*rows) / lnum) * csz[2]
+        -- ky = ((rows*csz[2]-kh) * @state.s.view[2] / (lnum-rows)) 
         
-        if (lnum <= rows) then return end
+        -- fg = if @hover ➜ @color.hover ➜ @color.knob
         
-        local kh = (((rows * rows) / lnum) * csz[1])
-        local ky = ((((rows * csz[1]) - kh) * self.state.s.view[1]) / (lnum - rows))
+        -- x  = @cells.x*csz[1]
+        -- y  = int @cells.y*csz[2]+ky
+        -- w  = int csz[1]/2
+        -- h  = int kh
         
-        local fg = (function () 
-    if self.hover then 
-    return self.color.hover else 
-    return self.color.knob
-             end
-end)()
-        
-        local x = (self.cells.x * csz[0])
-        local y = int(((self.cells.y * csz[1]) + ky))
-        local w = int((csz[0] / 2))
-        local h = int(kh)
-        
-        squares.place(x, int((y + (w / 2))), w, (h - w), fg)
-        
-        sircels.place(x, y, w((ky or {fg = self.color.dot})), 1111)
-        return sircels.place(x, ((y + h) - w), w((((y + h) < (((self.cells.y + rows) * csz[1]) - 1)) or {fg = self.color.dot})), 1111)
+        -- squares∙place x int(y+w/2) w h-w fg
+        -- 
+        -- sircels∙place x y     w (ky or {fg: @color.dot}) 1111
+        return -- sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*csz[1]-1) or {fg: @color.dot}) 1111
     end
 
 return scroll

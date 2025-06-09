@@ -94,23 +94,22 @@ quit
             items:splice((#items - 2), 0, 'about')
         end
         
-        if empty(ked_session:recentFiles()) then 
-            items:splice(items:find('recent ...'), 1)
-        end
+        -- if empty ked_session∙recentFiles()
+        --     items∙splice items∙find('recent ...') 1 
         
         items = items:map(function (i) 
     return ' ' .. i
 end) -- padding for  
         
-        local ccol = (math.floor((self.screen.cols / 2)) - 5)
+        local ccol = (floor((self.screen.cols / 2)) - 5)
         
         self.width = belt.widthOfLines(items)
         
         self.input:set('')
         self.input:hide()
         self.choices:set(items)
-        self.choices:select(0)
-        self.choices.state:setView(array(0, 0))
+        self.choices:select(1)
+        self.choices.state:setView(array(1, 1))
         
         return inputchoice.show(self)
     end
@@ -123,17 +122,17 @@ end) -- padding for  
 
 
 function menu:showRecent() 
-        local recent = frecent:list('file')
-        
-        self.choices:set(recent)
-        
-        return post:emit('quicky.files', recent)
+         --recent = frecent∙list 'file'
+         --         
+         --@choices∙set recent
+         --         
+         return --post∙emit 'quicky.files' recent
     end
 
 
 function menu:hide() 
-        self.greet.hide()
-        return super()
+        self.greet:hide()
+        return inputchoice.hide(self)
     end
 
 --  0000000   00000000   00000000   000      000   000  
@@ -149,7 +148,7 @@ function menu:applyChoice(choice)
         if (choice == 'new') then self:hide() ; post:emit('file.new')
         elseif (choice == 'about') then self:show(true) ; -- reopen with greeting header
         elseif (choice == 'quit') then self.greet:hide() ; post:emit('quit')
-        elseif (choice == 'open ...') then post:emit('browse.dir', process.cwd())
+        elseif (choice == 'open ...') then post:emit('browse.dir', slash.cwd())
         elseif (choice == 'recent ...') then self:showRecent()
         elseif (choice == 'help') then self:hide() ; post:emit('file.open', slash.path(slash.cwd(), '../../../../kode/ked/help.md'))
         end

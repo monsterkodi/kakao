@@ -55,7 +55,7 @@ class choices extends editor
     extract: item -> 
     
         if @key 
-            item[@key]  
+            item[@key]
         else
             kseg.str item
         
@@ -82,7 +82,7 @@ class choices extends editor
         @filterText = ''
         
         lines = if @key ➜ @items∙map(@extract) ➜ @items
-        # log "#{@name} set #{key}" lines
+        log "#{@name} set lines" lines
         @state∙loadLines lines
         
     add: item ->
@@ -108,44 +108,49 @@ class choices extends editor
         
         ⮐  if empty @state.s.selections
         
-        ⮐  super() if not @roundedSelections
+        if not @roundedSelections
+            ⮐  editor.drawSelections @
         
-        fg = if @hasFocus() ➜ @color.hover.bg ➜ @color.hover.blur
+        # fg = if @hasFocus() ➜ @color.hover.bg ➜ @color.hover.blur
+        # fg = @color.hover
+        fg = [255 255 0]
         
-        if not @cells.screen.t.hasFocus
-            fg = color.darken fg
+        # if not @cells.screen.t.hasFocus
+        #     fg = color.darken fg
         
-        sel = @state.s.selections[0]
+        sel = @state.s.selections[1]
                 
-        li = sel[1]
-        y  = li-@state.s.view[1]
+        li = sel[2]
+        y  = li-@state.s.view[2]+1
         
-        ⮐  if y >= @cells.rows
+        ⮐  if y > @cells.rows
         
-        xs = max sel[0] kseg.headCount(@state.s.lines[li] ' ')
-        if xs == 0
+        # xs = max sel[1] kseg.headCount(@state.s.lines[li] ' ')
+        xs = max sel[1] @state.s.lines[li]∙indent()+1
+        if xs == 1
             xs += @frontRoundOffset 
 
-        @cells.set_ch_fg xs-1-@state.s.view[0] y '' fg
+        @cells∙set_ch_fg 1 y '' fg
         
-        for x in xs...sel[2]
-            @cells.set_bg x-@state.s.view[0] y fg
-            @cells.adjustContrastForHighlight x-@state.s.view[0] y fg
+        for x in xs..sel[3]
+            @cells∙set_bg x-@state.s.view[1]+1 y fg
+            # @cells∙adjustContrastForHighlight x-@state.s.view[1] y fg
             
-        @cells.set_ch_fg x-@state.s.view[0] y '' fg
+        @cells∙set_ch_fg sel[3]+2-@state.s.view[1] y '' fg
 
-    numChoices:  -> @items.length
-    numFiltered: -> @fuzzied.length
+    numChoices:  -> @items.len
+    numFiltered: -> @fuzzied.len
 
-    currentIndex: -> @state∙mainCursor()[1]
+    currentIndex: -> @state∙mainCursor()[2]
     current: opt ->
     
+        opt ?= {}
         cc = @fuzzied[@currentIndex()]
-        if cc is str
+        if cc is "string"
             if opt.trim == 'front'
-                cc = ltrim cc
+                cc = kstr.ltrim cc
             else if opt.trim != false 
-                cc = trim cc
+                cc = kstr.trim cc
         cc
         
     choiceAtRow: row -> @fuzzied[row]
@@ -211,10 +216,11 @@ class choices extends editor
         ⮐  if not row is "number"
         ⮐  if row < 1 or row > @state.s.lines.len
     
-        # @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
+        @state∙setSelections [belt.rangeOfLine(@state.s.lines row)]
         @state∙setMainCursor 1 row
-
+        
         @grabFocus() if @focusable
+
         @emit 'select' @choiceAtRow(row)
         
     selectFirst: -> @select 1
@@ -234,7 +240,6 @@ class choices extends editor
     selectPrev: -> 
         row = @prevRow()
         if empty row
-            log "selectPrev" @current()
             @emitAction 'boundary' @current()
         else
             @select row
@@ -279,7 +284,7 @@ class choices extends editor
         ⮐  if text == @filterText
            
         ⮐  @set(@items @key) if empty text
-            
+        log "FILTER"    
         @filterText = text
             
         fuzz = krzl {values:@items extract:@extract}
@@ -392,7 +397,7 @@ class choices extends editor
     
     emitAction: action choice event ->
         
-        log "emitAction" action, choice, event
+        # log "emitAction" action, choice, event
         @emit 'action' action choice event
                     
     # 000   000  00000000  000   000  
@@ -418,14 +423,14 @@ class choices extends editor
         
         ⮐  if not @hasFocus()
             
-        # switch event.combo
-        # 
-        #     'esc'
-        #     'left' 
-        #     'right'  
-        #     'space'  
-        #     'delete'
-        #     'return' ➜ @emitAction event.combo @current() event
+        switch event.combo
+        
+            'esc'
+            'left' 
+            'right'  
+            'space'  
+            'delete'
+            'return' ➜ @emitAction event.combo @current() event
             
         @emitAction event.combo @current() event
                         
