@@ -45,8 +45,8 @@ function inputchoice:init(screen, name, features)
         self.input:hide()
         self.choices:show()
         
-        self.input:on('action', self.onInputAction)
-        self.choices:on('action', self.onChoicesAction)
+        self.input:on('action', self.onInputAction, self)
+        self.choices:on('action', self.onChoicesAction, self)
         return self
     end
 
@@ -131,18 +131,18 @@ function inputchoice:onInputChange(text)
 
 function inputchoice:onInputAction(action, text) 
         if (action == 'submit') then 
-    return self:applyChoice(self.choices.current())
+    return self:applyChoice(self.choices:current())
         elseif (action == 'change') then 
     return self:onInputChange(text)
         elseif (action == 'up') or (action == 'down') then 
-    return self.choices.moveSelection(action)
+    return self.choices:moveSelection(action)
         end
     end
 
 
 function inputchoice:autoHide() 
     if (self.autoHideInput and not self:inputIsActive()) then 
-    return self.input.hide()
+    return self.input:hide()
                                end
     end
 
@@ -155,12 +155,12 @@ function inputchoice:autoHide()
 
 function inputchoice:onChoicesAction(action, choice) 
         if (action == 'click') or (action == 'right') or (action == 'space') or (action == 'return') then 
-    return self:applyChoice(self.choices.current())
+    return self:applyChoice(self.choices:current())
         elseif (action == 'hover') then 
     return self:autoHide()
         elseif (action == 'boundary') or (action == 'left') then 
-                if self.input.visible() then 
-                    self.input.grabFocus()
+                if self.input:visible() then 
+                    self.input:grabFocus()
                     return true
                 end
         end
@@ -173,11 +173,11 @@ function inputchoice:choicesFiltered()
 
 
 function inputchoice:currentChoice() 
-        local choice = (self.choices.current() or self.input.current())
+        local choice = (self.choices:current() or self.input:current())
         choice = (function () 
-    if is(choice, str) then 
-    return trim(choice)
-                              end
+    if is(choice, "string") then 
+    return kstr.trim(choice)
+                                   end
 end)()
         return choice
     end
@@ -301,7 +301,7 @@ function inputchoice:onMouse(event)
         if self:hidden() then return end
         
         local ret = self.input:onMouse(event) ; if ret.redraw then return ret end
-        local ret = self:choices▸onMouse(event) ; if ret.redraw then return ret end
+        local ret = self.choices:onMouse(event) ; if ret.redraw then return ret end
         local ret = super(event) ; if ret.redraw then return ret end
         
         if ((event.type == 'press') and not self.hover) then 

@@ -81,7 +81,7 @@ function KED:init()
         
         -- @input.on 'action' @onInputAction
         
-        print("\x1b[0m\x1b[90m", "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ", "\x1b[0m\x1b[32m", self.session.name, "\x1b[0m\x1b[90m", " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+        print("\x1b[0m\x1b[90m", "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "\x1b[0m\x1b[32m", self.session.name, "\x1b[0m\x1b[90m", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
         
         -- log "THEME" noon(theme)
         
@@ -104,7 +104,7 @@ function KED:init()
         -- @contextHandlers = [                                                                               @editor         @dircol @funcol ]
         -- @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
         -- @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
-        -- @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
+        self.keyHandlers = array(self.input, self.context, self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.menu, self.macro, self.editor, self.dircol, self.funcol)
         
         -- @t.on 'key'    @onKey
         -- @t.on 'mouse'  @onMouse
@@ -573,36 +573,38 @@ end)
 
 
 function KED:onKey(key, event) 
-        -- log 'ked.onKey' event
+        print('ked.onKey', event)
         
-        if (key == 'alt+1') then return post.emit('filepos.goBackward')
-        elseif (key == 'alt+2') then return post.emit('filepos.goForward')
-        elseif (key == 'cmd+1') then return post.emit('filepos.swapPrevious')
+        if (key == 'alt+1') then return post:emit('filepos.goBackward')
+        elseif (key == 'alt+2') then return post:emit('filepos.goForward')
+        elseif (key == 'cmd+1') then return post:emit('filepos.swapPrevious')
         elseif (key == 'alt+h') then return self:showFileposHistory()
         elseif (key == 'alt+q') or (key == 'ctrl+q') or (key == 'cmd+esc') then return self:quit()
         elseif (key == 'ctrl+r') or (key == 'cmd+r') then return self:reloadFile()
         elseif (key == 'ctrl+s') or (key == 'cmd+s') then return self:saveFile()
         elseif (key == 'shift+cmd+s') or (key == 'shift+ctrl+s') then return self:saveAs()
         elseif (key == 'cmd+n') or (key == 'ctrl+n') then return self:newFile()
-        elseif (key == 'alt+m') then return self.menu.show()
-        elseif (key == 'cmd+p') or (key == 'ctrl+p') then return self.quicky.showProjectFiles(self.currentFile)
+        elseif (key == 'alt+m') then return self.menu:show()
+        elseif (key == 'cmd+p') or (key == 'ctrl+p') then return self.quicky:showProjectFiles(self.currentFile)
         elseif (key == 'cmd+f') or (key == 'ctrl+f') then return self:showFinderOrSearcher()
-        elseif (key == 'shift+cmd+f') or (key == 'shift+ctrl+f') then return self.searcher.show()
-        elseif (key == 'alt+o') then return self.editor.jumpToCounterpart()
-        elseif (key == 'alt+,') then return self.editor.singleCursorAtLine(self.funcol.funtree.lineIndexOfPrevFunc())
-        elseif (key == 'alt+.') then return self.editor.singleCursorAtLine(self.funcol.funtree.lineIndexOfNextFunc())
-        elseif (key == 'cmd+o') or (key == 'ctrl+o') or (key == 'cmd+m') or (key == 'cmd+;') or (key == 'ctrl+;') then return self.macro.show()
-        elseif (key == 'cmd+.') or (key == 'ctrl+.') then return self.browse.gotoDir(slash.dir(self.currentFile))
-        elseif (key == 'cmd+i') then return post.emit('differ.status')
-        elseif (key == 'alt+r') then return post.emit('dircol.reveal', self.currentFile)
-        elseif (key == "cmd+\\") or (key == "ctrl+\\") then return post.emit('dircol.toggle')
-        elseif (key == "cmd+'") or (key == "ctrl+'") then return post.emit('funcol.toggle')
+        elseif (key == 'shift+cmd+f') or (key == 'shift+ctrl+f') then return self.searcher:show()
+        elseif (key == 'alt+o') then return self.editor:jumpToCounterpart()
+        elseif (key == 'alt+,') then return self.editor:singleCursorAtLine(self.funcol.funtree:lineIndexOfPrevFunc())
+        elseif (key == 'alt+.') then return self.editor:singleCursorAtLine(self.funcol.funtree:lineIndexOfNextFunc())
+        elseif (key == 'cmd+o') or (key == 'ctrl+o') or (key == 'cmd+m') or (key == 'cmd+;') or (key == 'ctrl+;') then return self.macro:show()
+        elseif (key == 'cmd+.') or (key == 'ctrl+.') then return self.browse:gotoDir(slash.dir(self.currentFile))
+        elseif (key == 'cmd+i') then return post:emit('differ.status')
+        elseif (key == 'alt+r') then return post:emit('dircol.reveal', self.currentFile)
+        elseif (key == "cmd+\\") or (key == "ctrl+\\") then return post:emit('dircol.toggle')
+        elseif (key == "cmd+'") or (key == "ctrl+'") then return post:emit('funcol.toggle')
         end
         
-        for handler in self.keyHandlers do 
+        local result = nil
+        for handler in self.keyHandlers:each() do 
             -- ●▸ on key
-            if not handler.hidden() then 
-                local result = handler.onKey(key, event)
+            if not handler:hidden() then 
+                print("handler", handler.name)
+                result = handler:onKey(key, event)
                 if result then 
                     break
                 end
@@ -611,9 +613,8 @@ function KED:onKey(key, event)
             -- ●▪ on key
         end
         
-        if (result.redraw ~= false) then 
-    return self:redraw()
-                  end
+        -- @redraw() if result.redraw != false
+        return self
     end
 
 --  0000000  000  0000000  00000000  

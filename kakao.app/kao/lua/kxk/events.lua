@@ -33,11 +33,11 @@ function events:on(event, handler, o)
 
 
 function events:emit(event, ...) 
-        -- log 'emit ' event
+        print('--- emit ', self, event)
         local ret = false
         self.handlers = self.handlers or (array())
         local list = self.handlers[event]
-        if list then 
+        if valid(list) then 
             for i in iter(#list, 1) do 
                 if list[i] then 
                     if is(list[i], "function") then 

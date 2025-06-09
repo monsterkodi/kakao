@@ -135,16 +135,20 @@ function mode.static.isActive(state, name)
 
 
 function mode.static.get(state, name) 
-        for m in mode.active[state.name]:each() do 
-            if (m.name == name) then return m end
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if (m.name == name) then return m end
+            end
         end
     end
 
 
 function mode.static.insert(state, text) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.insert, "function") then 
-                text = m.insert(text)
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.insert, "function") then 
+                    text = m.insert(text)
+                end
             end
         end
         
@@ -153,18 +157,22 @@ function mode.static.insert(state, text)
 
 
 function mode.static.postInsert(state) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.postInsert, "function") then 
-                m.postInsert()
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.postInsert, "function") then 
+                    m.postInsert()
+                end
             end
         end
     end
 
 
 function mode.static.deleteSelection(state) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.deleteSelection, "function") then 
-                if m.deleteSelection() then return true end
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.deleteSelection, "function") then 
+                    if m.deleteSelection() then return true end
+                end
             end
         end
         
@@ -173,9 +181,11 @@ function mode.static.deleteSelection(state)
 
 
 function mode.static.handleKey(state, key, event) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.handleKey, "function") then 
-                if (m.handleKey(key, event) ~= 'unhandled') then return end
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.handleKey, "function") then 
+                    if (m.handleKey(key, event) ~= 'unhandled') then return end
+                end
             end
         end
         
@@ -184,24 +194,28 @@ function mode.static.handleKey(state, key, event)
 
 
 function mode.static.cursorsSet(state, editor) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.cursorsSet, "function") then 
-                m.cursorsSet(editor)
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.cursorsSet, "function") then 
+                    m.cursorsSet(editor)
+                end
             end
         end
         
         if not mode.isActive(state, 'salter') then 
             if mode.modes['salter'] then 
-                return mode.modes['salter'].checkCursorsSet(state)
+                return mode.modes['salter']:checkCursorsSet(state)
             end
         end
     end
 
 
 function mode.static.themeColor(state, colorName, defaultColor) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.themeColor, "function") then 
-                return m.themeColor(colorName, defaultColor)
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.themeColor, "function") then 
+                    return m.themeColor(colorName, defaultColor)
+                end
             end
         end
         
@@ -210,9 +224,11 @@ function mode.static.themeColor(state, colorName, defaultColor)
 
 
 function mode.static.preDrawLines(state, lines) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.preDrawLines, "function") then 
-                lines = m.preDrawLines(lines)
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.preDrawLines, "function") then 
+                    lines = m.preDrawLines(lines)
+                end
             end
         end
         
@@ -232,9 +248,11 @@ function mode.static.postDraw(state)
 
 
 function mode.static.fileLoaded(state, file, row, col, view) 
-        for m in mode.active[state.name]:each() do 
-            if is(m.fileLoaded, "function") then 
-                m.fileLoaded(file, row, col, view)
+        if mode.active[state.name] then 
+            for m in mode.active[state.name]:each() do 
+                if is(m.fileLoaded, "function") then 
+                    m.fileLoaded(file, row, col, view)
+                end
             end
         end
         

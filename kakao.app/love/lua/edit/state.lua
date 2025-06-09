@@ -118,31 +118,32 @@ function state:setCursors(cursors, opt)
         
         local main = opt.main
         
-        if is(main, arr) then main = belt.indexOfPosInPositions(main, cursors) end
-        if (is(main, num) and (main < 0)) then main = (#cursors + main) end
+        if is(main, array) then main = belt.indexOfPosInPositions(main, cursors) end
+        if (is(main, "number") and (main < 0)) then main = ((#cursors + main) - 1) end
         
         local mainCursor = self:mainCursor()
         if main then 
-            mainCursor = cursors[clamp(0, (#cursors - 1), main)]
+            mainCursor = cursors[clamp(1, #cursors, main)]
             -- mainCursor = copy cursors[clamp 0 cursors.length-1 main]
         end
         
-        cursors = belt.normalizePositions(cursors, (#self.s.lines - 1))
-        
-        self.s = self.s.set('cursors', cursors)
+        cursors = belt.normalizePositions(cursors, #self.s.lines)
+        -- @s = @s.set 'cursors' cursors
+        self.s.cursors = cursors
         
         main = -1
-        for cur, idx in cursors do 
-            if cur(eql, mainCursor) then 
+        for idx, cur in ipairs(cursors) do 
+            if (cur == mainCursor) then 
                 main = idx
                 break
             end
         end
         
-        if (main < 0) then main = self.s.main end
-        main = clamp(0, (#self.s.cursors - 1), main)
+        if (main < 1) then main = self.s.main end
+        main = clamp(1, #self.s.cursors, main)
         
-        self.s = self.s.set('main', main)
+        -- @s = @s.set 'main' main
+        self.s.main = main
         
         self:adjustViewForMainCursor(opt)
         
@@ -224,9 +225,9 @@ function state:clearSegls(segls)
             lines = self.segls, 
             selections = array(), 
             highlights = array(), 
-            cursors = array(array(0, 0)), 
-            main = 0, 
-            view = array(0, 0)
+            cursors = array(array(1, 1)), 
+            main = 1, 
+            view = array(1, 1)
             }
         
         self.syntax:clear()
@@ -474,13 +475,15 @@ function state:adjustViewForMainCursor(opt)
         
         if (opt.adjust == false) then return end
         
-        local x, y = self:mainCursor()
+        local mc = self:mainCursor()
+        local x = mc[1]
+        local y = mc[2]
         
         local view = self.s.view --.asMutable()
         
         local topBotDelta = 7
         local topDelta = 7
-        local botDelta = max(topDelta, math.floor((self.cells.rows / 2)))
+        local botDelta = max(topDelta, floor((self.cells.rows / 2)))
         
         if (opt.adjust == 'topDelta') then 
             view[2] = (y - topDelta)
@@ -556,7 +559,7 @@ function state:setMain(m)
 
 
 function state:mainCursor() 
-        --.asMutable()
+        --.asMutable()        
         return self.s.cursors[self.s.main]
     end
 
@@ -569,10 +572,8 @@ function state:mainCursor()
 
 function state:setMainCursor(x, y) 
         local x, y = belt.pos(x, y)
-        
         y = clamp(1, #self.s.lines, y)
-        x = math.max(1, x)
-        
+        x = max(1, x)
         return self:setCursors(array(array(x, y)))
     end
 

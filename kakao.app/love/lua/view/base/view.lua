@@ -48,7 +48,7 @@ function view:setColor(key, clr)
             return
         end
         
-        print("" .. self.name .. " setColor ", key, " ", clr, " ", color.values(clr))
+        -- log "#{@name} setColor " key, " " clr, " " color.values(clr)
         self.color[key] = color.values(clr)
         return self.color[key]
     end

@@ -79,7 +79,7 @@ class KED
 
         # @input.on 'action' @onInputAction
         
-        log ◌d "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━ " ◌g @session.name, ◌d " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+        log ◌d "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━" ◌g @session.name, ◌d "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
 
         # log "THEME" noon(theme)
 
@@ -102,7 +102,7 @@ class KED
         # @contextHandlers = [                                                                               @editor         @dircol @funcol ]
         # @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
         # @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
-        # @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
+        @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
         
         # @t.on 'key'    @onKey
         # @t.on 'mouse'  @onMouse
@@ -509,43 +509,45 @@ class KED
     
     onKey: key event ->
     
-        # log 'ked.onKey' event
+        log 'ked.onKey' event
             
         switch key
             
-            'alt+1'                      ➜ ⮐  post.emit 'filepos.goBackward'  
-            'alt+2'                      ➜ ⮐  post.emit 'filepos.goForward'   
-            'cmd+1'                      ➜ ⮐  post.emit 'filepos.swapPrevious'
+            'alt+1'                      ➜ ⮐  post∙emit 'filepos.goBackward'  
+            'alt+2'                      ➜ ⮐  post∙emit 'filepos.goForward'   
+            'cmd+1'                      ➜ ⮐  post∙emit 'filepos.swapPrevious'
             'alt+h'                      ➜ ⮐  @showFileposHistory()
             'alt+q' 'ctrl+q' 'cmd+esc'   ➜ ⮐  @quit()
             'ctrl+r' 'cmd+r'             ➜ ⮐  @reloadFile()
             'ctrl+s' 'cmd+s'             ➜ ⮐  @saveFile()
             'shift+cmd+s' 'shift+ctrl+s' ➜ ⮐  @saveAs()
             'cmd+n' 'ctrl+n'             ➜ ⮐  @newFile()
-            'alt+m'                      ➜ ⮐  @menu.show()
-            'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky.showProjectFiles @currentFile
+            'alt+m'                      ➜ ⮐  @menu∙show()
+            'cmd+p' 'ctrl+p'             ➜ ⮐  @quicky∙showProjectFiles @currentFile
             'cmd+f' 'ctrl+f'             ➜ ⮐  @showFinderOrSearcher()
-            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher.show()
-            'alt+o'                      ➜ ⮐  @editor.jumpToCounterpart()
-            'alt+,'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfPrevFunc()
-            'alt+.'                      ➜ ⮐  @editor.singleCursorAtLine @funcol.funtree.lineIndexOfNextFunc()
+            'shift+cmd+f' 'shift+ctrl+f' ➜ ⮐  @searcher∙show()
+            'alt+o'                      ➜ ⮐  @editor∙jumpToCounterpart()
+            'alt+,'                      ➜ ⮐  @editor∙singleCursorAtLine @funcol.funtree∙lineIndexOfPrevFunc()
+            'alt+.'                      ➜ ⮐  @editor∙singleCursorAtLine @funcol.funtree∙lineIndexOfNextFunc()
             'cmd+o' 'ctrl+o'
-            'cmd+m' 'cmd+;' 'ctrl+;'     ➜ ⮐  @macro.show()
-            'cmd+.' 'ctrl+.'             ➜ ⮐  @browse.gotoDir slash.dir(@currentFile)
-            'cmd+i'                      ➜ ⮐  post.emit 'differ.status'
-            'alt+r'                      ➜ ⮐  post.emit 'dircol.reveal' @currentFile
-            "cmd+\\" "ctrl+\\"           ➜ ⮐  post.emit 'dircol.toggle'
-            "cmd+'" "ctrl+'"             ➜ ⮐  post.emit 'funcol.toggle'
-            
-        for handler in @keyHandlers
+            'cmd+m' 'cmd+;' 'ctrl+;'     ➜ ⮐  @macro∙show()
+            'cmd+.' 'ctrl+.'             ➜ ⮐  @browse∙gotoDir slash.dir(@currentFile)
+            'cmd+i'                      ➜ ⮐  post∙emit 'differ.status'
+            'alt+r'                      ➜ ⮐  post∙emit 'dircol.reveal' @currentFile
+            "cmd+\\" "ctrl+\\"           ➜ ⮐  post∙emit 'dircol.toggle'
+            "cmd+'" "ctrl+'"             ➜ ⮐  post∙emit 'funcol.toggle'
+        
+        result = nil    
+        for handler in @keyHandlers∙each()
             # ●▸ on key
-            if not handler.hidden()
-                result = handler.onKey key event
+            if not handler∙hidden()
+                log "handler" handler.name
+                result = handler∙onKey key event
                 if result
                     break 
             # ●▪ on key
-                
-        @redraw() if result.redraw != false
+        # @redraw() if result.redraw != false
+        @        
         
     #  0000000  000  0000000  00000000  
     # 000       000     000   000       

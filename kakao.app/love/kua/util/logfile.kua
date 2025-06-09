@@ -26,6 +26,8 @@ class logfile
             s = ""
             for _ v in ipairs args
                 s &= $v
+                if string.sub($v, 1, 1) != "\x1b"
+                    s &= " "
             @write ◌333 & "▸ " & ◌g & s
         else        
             @write ◌444 & "▾" & ◌g 

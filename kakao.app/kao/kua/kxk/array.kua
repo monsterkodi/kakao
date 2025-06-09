@@ -111,6 +111,11 @@ class array
         
     rnd: -> @[math.random(@len)]
     
+    sort: f ->
+    
+        @sort f
+        @
+    
     swap: i j -> 
     
         ⮐  if i < 1 or i > @len

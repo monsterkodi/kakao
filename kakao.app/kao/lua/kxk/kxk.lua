@@ -45,6 +45,13 @@ function _G.clamp(l, h, v)
     return math.min(math.max(l, v), h)
 end
 
+_G.max = math.max
+_G.min = math.min
+_G.floor = math.floor
+_G.int = math.floor
+_G.ceil = math.ceil
+_G.sqrt = math.sqrt
+
 
 function _G.slice(a, first, last) 
     if (type(a) == "string") then 

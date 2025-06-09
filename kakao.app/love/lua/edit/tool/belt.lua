@@ -40,20 +40,19 @@ function belt.static.pos(x, y)
             return x
         end
         
-        return array(x, y)
+        return x, y
     end
 
 
 function belt.static.samePos(a, b) 
-    return ((a[0] == b[0]) and (a[1] == b[1]))
+    return ((a[1] == b[1]) and (a[2] == b[2]))
     end
 
 
 function belt.static.normalizePositions(posl, maxY) 
         if empty(posl) then return array() end
-        
-        posl = posl.map(function (a) 
-    return array(max(0, a[0]), clamp(0, maxY, a[1]))
+        posl = posl:map(function (a) 
+    return array(max(1, a[1]), clamp(1, maxY, a[2]))
 end)
         posl = belt.sortPositions(posl)
         posl = belt.removeDuplicatePositions(posl)
@@ -62,21 +61,22 @@ end)
 
 
 function belt.static.sortPositions(posl) 
-    return posl.sort(function (a, b) 
-    if (a[1] == b[1]) then 
-    return (a[0] - b[0]) else 
-    return (a[1] - b[1])
-                                               end
+        posl:sort(function (a, b) 
+    if (a[2] == b[2]) then 
+    return (a[1] - b[1]) else 
+    return (a[2] - b[2])
+                           end
 end)
+        return posl
     end
 
 
 function belt.static.removeDuplicatePositions(posl) 
-        if (#posl <= 1) then return posl end
+        if (empty(posl) or (#posl <= 1)) then return posl end
         
-        for i in iter((#posl - 1), 1) do 
+        for i in iter(#posl, 2) do 
             if belt.samePos(posl[i], posl[(i - 1)]) then 
-                posl.splice(i, 1)
+                posl:splice(i, 1)
             end
         end
         

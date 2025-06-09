@@ -36,6 +36,9 @@ function logfile:log(...)
             local s = ""
             for _, v in ipairs(args) do 
                 s = s .. (tostring(v))
+                if (string.sub(tostring(v), 1, 1) ~= "\x1b") then 
+                    s = s .. " "
+                end
             end
             
             self:write("\x1b[0m\x1b[38;2;48;48;48m" .. "▸ " .. "\x1b[0m\x1b[32m" .. s)

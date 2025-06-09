@@ -184,7 +184,7 @@ function choices:numFiltered()
 
 
 function choices:currentIndex() 
-    return self.state.mainCursor()[1]
+    return self.state:mainCursor()[1]
     end
 
 function choices:current(opt) 
@@ -223,32 +223,36 @@ function choices:hasPrev()
 
 
 function choices:nextRow() 
-        local y = self.state.mainCursor()[1]
-        while (y < (#self.state.s.lines - 1)) do 
+        local y = self.state:mainCursor()[2]
+        while (y < #self.state.s.lines) do 
             y = y + 1
-            if #kseg.trim(self.state.s.lines[y]) then return y end
+            if (#kseg.trim(self.state.s.lines[y]) >= 1) then 
+                return y
+            end
         end
     end
 
 
 function choices:prevRow() 
-        local y = self.state.mainCursor()[1]
-        while (y > 0) do 
+        local y = self.state:mainCursor()[2]
+        while (y > 1) do 
             y = y - 1
-            if #kseg.trim(self.state.s.lines[y]) then return y end
+            if (#kseg.trim(self.state.s.lines[y]) >= 1) then 
+                return y
+            end
         end
     end
 
 
 function choices:pageUpRow() 
-        local y = ((self.state.mainCursor()[1] - self.cells.rows) + 1)
-        y = max(y, 0)
+        local y = ((self.state:mainCursor()[2] - self.cells.rows) + 1)
+        y = max(y, 1)
         
-        while ((y > 0) and empty(kseg.trim(self.state.s.lines[y]))) do 
+        while ((y > 1) and empty(kseg.trim(self.state.s.lines[y]))) do 
             y = y - 1
         end
         
-        if empty((kseg.trim(self.state.s.lines[y]) and (y < (#self.state.s.lines - 1)))) then 
+        if empty((kseg.trim(self.state.s.lines[y]) and (y < #self.state.s.lines))) then 
             y = y + 1
         end
         
@@ -257,14 +261,14 @@ function choices:pageUpRow()
 
 
 function choices:pageDownRow() 
-        local y = ((self.state.mainCursor()[1] + self.cells.rows) - 1)
-        y = min(y, (#self.state.s.lines - 1))
+        local y = ((self.state:mainCursor()[2] + self.cells.rows) - 1)
+        y = min(y, #self.state.s.lines)
         
-        while ((y < (#self.state.s.lines - 1)) and empty(kseg.trim(self.state.s.lines[y]))) do 
+        while ((y < #self.state.s.lines) and empty(kseg.trim(self.state.s.lines[y]))) do 
             y = y + 1
         end
         
-        if empty((kseg.trim(self.state.s.lines[y]) and (y > 0))) then 
+        if empty((kseg.trim(self.state.s.lines[y]) and (y > 1))) then 
             y = y - 1
         end
         
@@ -279,11 +283,12 @@ function choices:pageDownRow()
 
 
 function choices:select(row) 
+        if not row then return end
         if is(not row, "number") then return end
         if ((row < 1) or (row > #self.state.s.lines)) then return end
         
         -- @state.setSelections [belt.rangeOfLine(@state.s.lines row)]
-        self.state.setMainCursor(1, row)
+        self.state:setMainCursor(1, row)
         
         if self.focusable then self:grabFocus() end
         return self:emit('select', self:choiceAtRow(row))
@@ -321,6 +326,7 @@ function choices:selectNext()
 function choices:selectPrev() 
         local row = self:prevRow()
         if empty(row) then 
+            print("selectPrev", self:current())
             return self:emitAction('boundary', self:current())
         else 
             return self:select(row)
@@ -405,7 +411,7 @@ function choices:hoverChoiceAtIndex(index, event)
         if (self.hoverIndex == index) then return true end
         
         self.hoverIndex = index
-        self.state.setMainCursor(0, index)
+        self.state:setMainCursor(0, index)
         self:select(self.hoverIndex)
         post.emit('pointer', 'pointer')
         self:emitAction('hover', self:current(), event)
@@ -496,6 +502,7 @@ function choices:onMouse(event)
 
 
 function choices:emitAction(action, choice, event) 
+        print("emitAction", action, choice, event)
         return self:emit('action', action, choice, event)
     end
 

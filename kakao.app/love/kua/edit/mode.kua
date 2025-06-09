@@ -114,60 +114,68 @@ class mode
     @isActive: state name -> valid @get(state name)
         
     @get: state name ->
-        
-        for m in @active[state.name]∙each()
-            ⮐  m if m.name == name
+    
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                ⮐  m if m.name == name
 
     @insert: state text ->
         
-        for m in @active[state.name]∙each()
-            if m.insert is "function"
-                text = m.insert text
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.insert is "function"
+                    text = m.insert text
         text
         
     @postInsert: state ->
         
-        for m in @active[state.name]∙each()
-            if m.postInsert is "function"
-                m.postInsert()
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.postInsert is "function"
+                    m.postInsert()
         
     @deleteSelection: state ->
         
-        for m in @active[state.name]∙each()
-            if m.deleteSelection is "function"
-                ⮐  true if m.deleteSelection()
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.deleteSelection is "function"
+                    ⮐  true if m.deleteSelection()
         false        
         
     @handleKey: state key event ->
 
-        for m in @active[state.name]∙each()
-            if m.handleKey is "function"
-                ⮐  if m.handleKey(key event) != 'unhandled'
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.handleKey is "function"
+                    ⮐  if m.handleKey(key event) != 'unhandled'
         'unhandled'
         
     @cursorsSet: state editor ->
 
-        for m in @active[state.name]∙each()
-            if m.cursorsSet is "function"
-                m.cursorsSet editor
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.cursorsSet is "function"
+                    m.cursorsSet editor
                 
         if not @isActive state 'salter'
             if mode.modes['salter']
-                mode.modes['salter'].checkCursorsSet state
+                mode.modes['salter']∙checkCursorsSet state
         
     @themeColor: state colorName defaultColor ->
     
-        for m in @active[state.name]∙each()
-            if m.themeColor is "function"
-                ⮐  m.themeColor colorName defaultColor
-        
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.themeColor is "function"
+                    ⮐  m.themeColor colorName defaultColor
+            
         defaultColor
         
     @preDrawLines: state lines ->
 
-        for m in @active[state.name]∙each()
-            if m.preDrawLines is "function"
-                lines = m.preDrawLines(lines)
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.preDrawLines is "function"
+                    lines = m.preDrawLines(lines)
         lines
         
     @postDraw: state ->
@@ -179,9 +187,10 @@ class mode
                 
     @fileLoaded: state file row col view ->
         
-        for m in @active[state.name]∙each()
-            if m.fileLoaded is "function"
-                m.fileLoaded file row col view
+        if @active[state.name]
+            for m in @active[state.name]∙each()
+                if m.fileLoaded is "function"
+                    m.fileLoaded file row col view
         nil
             
 # ███   ███  ███  ██     ██  ████████   ███      ████████

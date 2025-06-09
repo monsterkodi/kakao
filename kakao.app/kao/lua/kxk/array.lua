@@ -183,6 +183,12 @@ function array:rnd()
     end
 
 
+function array:sort(f) 
+        self:sort(f)
+        return self
+    end
+
+
 function array:swap(i, j) 
         if ((i < 1) or (i > #self)) then return end
         if ((j < 1) or (j > #self)) then return end

@@ -250,11 +250,11 @@ class cells
         
     draw_vertical_padding: x y fg bg zLayer=1000 ->
     
-        rounded.place @wx(x) @wy(y) 'rounded.vertical' fg nil nil zLayer bg
+        # rounded.place @wx(x) @wy(y) 'rounded.vertical' fg nil nil zLayer bg
 
     draw_horizontal_padding: x y fg bg zLayer=1000 ->
     
-        rounded.place @wx(x) @wy(y) 'rounded.horizontal' fg nil nil zLayer bg
+        # rounded.place @wx(x) @wy(y) 'rounded.horizontal' fg nil nil zLayer bg
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████ 
     # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███

@@ -86,28 +86,29 @@ class state extends events
         
         main = opt.main
 
-        if main is arr ➜ main = belt.indexOfPosInPositions main cursors
-        if main is num and main < 0 ➜ main = cursors.length+main
+        if main is array ➜ main = belt.indexOfPosInPositions main cursors
+        if main is "number" and main < 0 ➜ main = cursors.len+main-1
 
         mainCursor = @mainCursor()
         if main
-            mainCursor = cursors[clamp(0, cursors.length-1, main)]
+            mainCursor = cursors[clamp(1, cursors.length, main)]
             # mainCursor = copy cursors[clamp 0 cursors.length-1 main]
         
-        cursors = belt.normalizePositions cursors @s.lines.length-1
-        
-        @s = @s.set 'cursors' cursors
+        cursors = belt.normalizePositions cursors @s.lines.len
+        # @s = @s.set 'cursors' cursors
+        @s.cursors = cursors
 
         main = -1
-        for cur,idx in cursors
-            if cur eql mainCursor
+        for idx cur in ipairs cursors
+            if cur == mainCursor
                 main = idx
                 break
 
-        if main < 0 ➜ main = @s.main 
-        main = clamp 0 @s.cursors.length-1 main
+        if main < 1 ➜ main = @s.main 
+        main = clamp 1 @s.cursors.length main
 
-        @s = @s.set 'main' main
+        # @s = @s.set 'main' main
+        @s.main = main
         
         @adjustViewForMainCursor opt
         
@@ -175,9 +176,9 @@ class state extends events
             lines:       @segls
             selections:  []
             highlights:  []
-            cursors:     [[0 0]]
-            main:        0
-            view:        [0 0]
+            cursors:     [[1 1]]
+            main:        1
+            view:        [1 1]
             }
             
         @syntax∙clear()
@@ -392,13 +393,15 @@ class state extends events
         
         ⮐  if opt.adjust == false
 
-        (x y) = @mainCursor()
+        mc = @mainCursor()
+        x = mc[1]
+        y = mc[2]
 
         view = @s.view #.asMutable()
-        
+
         topBotDelta = 7
         topDelta = 7
-        botDelta = max topDelta math.floor(@cells.rows/2)
+        botDelta = max topDelta floor(@cells.rows/2)
         
         if opt.adjust == 'topDelta'
 
@@ -464,7 +467,7 @@ class state extends events
         @adjustViewForMainCursor {adjust:'topBotDeltaGrow' mc:mc}
         
     mainCursor: -> 
-        #.asMutable()
+        #.asMutable()        
         @s.cursors[@s.main] 
     
     #  ███████  ████████  █████████
@@ -474,12 +477,10 @@ class state extends events
     # ███████   ████████     ███   
 
     setMainCursor: x y ->
-        
+
         (x y) = belt.pos x y
-        
-        y = clamp 1 @s.lines.length y
-        x = math.max 1 x
-                        
+        y = clamp 1 @s.lines.len y
+        x = max 1 x
         @setCursors [[x y]]
         
     # ██     ██   ███████   ███   ███  ████████

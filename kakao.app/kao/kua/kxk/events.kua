@@ -23,11 +23,11 @@ class events
         @
         
     emit: (event, ...) ->
-        # log 'emit ' event
-        ret  = false
+        log '--- emit ' @, event
+        ret = false
         @handlers ?= []
         list = @handlers[event]
-        if list
+        if valid list
             for i in list.len..1
                 if list[i]
                     if list[i] is "function"

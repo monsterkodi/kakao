@@ -386,14 +386,14 @@ function cells:draw_rounded_border(x1, y1, x2, y2, opt)
 function cells:draw_vertical_padding(x, y, fg, bg, zLayer) 
         zLayer = zLayer or 1000
         
-        return rounded.place(self:wx(x), self:wy(y), 'rounded.vertical', fg, nil, nil, zLayer, bg)
+        return -- rounded.place @wx(x) @wy(y) 'rounded.vertical' fg nil nil zLayer bg
     end
 
 
 function cells:draw_horizontal_padding(x, y, fg, bg, zLayer) 
         zLayer = zLayer or 1000
         
-        return rounded.place(self:wx(x), self:wy(y), 'rounded.horizontal', fg, nil, nil, zLayer, bg)
+        return -- rounded.place @wx(x) @wy(y) 'rounded.horizontal' fg nil nil zLayer bg
     end
 
 --  ███████  ███   ███  ████████    ███████   ███████   ████████ 

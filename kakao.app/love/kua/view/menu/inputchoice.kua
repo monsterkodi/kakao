@@ -42,8 +42,8 @@ class inputchoice extends view
         @input∙hide()
         @choices∙show()
 
-        @input∙on   'action'  @onInputAction
-        @choices∙on 'action'  @onChoicesAction
+        @input∙on   'action'  @onInputAction    @
+        @choices∙on 'action'  @onChoicesAction  @
         
     setColor: key clr ->
         
@@ -117,12 +117,12 @@ class inputchoice extends view
     onInputAction: action text ->
         
         switch action
-            'submit' ➜ ⮐  @applyChoice @choices.current()
+            'submit' ➜ ⮐  @applyChoice @choices∙current()
             'change' ➜ ⮐  @onInputChange text
             'up'          
-            'down'   ➜ ⮐  @choices.moveSelection action
+            'down'   ➜ ⮐  @choices∙moveSelection action
     
-    autoHide: -> @input.hide() if @autoHideInput and not @inputIsActive()
+    autoHide: -> @input∙hide() if @autoHideInput and not @inputIsActive()
         
     #  0000000  000   000   0000000   000   0000000  00000000   0000000  
     # 000       000   000  000   000  000  000       000       000       
@@ -136,22 +136,22 @@ class inputchoice extends view
             'click'
             'right'
             'space'
-            'return' ➜ ⮐  @applyChoice @choices.current()
+            'return' ➜ ⮐  @applyChoice @choices∙current()
             
             'hover'  ➜ @autoHide()
             
             'boundary'
             'left'
-                if @input.visible() 
-                    @input.grabFocus()
+                if @input∙visible() 
+                    @input∙grabFocus()
                     ⮐  true
                                              
     choicesFiltered: ->
         
     currentChoice: ->
     
-        choice = @choices.current() or @input.current()
-        choice = trim(choice) if choice is str
+        choice = @choices∙current() or @input∙current()
+        choice = kstr.trim(choice) if choice is "string"
             
     # 0000000    00000000    0000000   000   000
     # 000   000  000   000  000   000  000 0 000
@@ -254,7 +254,7 @@ class inputchoice extends view
         ⮐  if @hidden()
         
         ret = @input∙onMouse   event ; ⮐  ret if ret.redraw
-        ret = @choices▸onMouse event ; ⮐  ret if ret.redraw
+        ret = @choices∙onMouse event ; ⮐  ret if ret.redraw
         ret = super event            ; ⮐  ret if ret.redraw
         
         if event.type == 'press' and not @hover
