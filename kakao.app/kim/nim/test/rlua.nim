@@ -154,6 +154,16 @@ b = false""")
         t("if true\n  log msg", "if true then \n  print(msg)\nend")
         t("if true\n  log msg\n  log msg", "if true then \n  print(msg)\n  print(msg)\nend")
         t("""
+if 
+    a ➜ nil
+    b ➜ 1
+    ➜ 2
+""", """
+if a then nil
+elseif b then 1
+else 2
+end""")
+        t("""
 if a
     if b
         if c

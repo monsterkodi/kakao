@@ -8,6 +8,8 @@
 
 use kxk.kxk
 use edit.tool.cell
+use edit.tool.edit
+use edit.tool.misc
 use edit.tool.text
 # use ◆ text cell edit misc pair salt
 
@@ -309,12 +311,14 @@ class belt
     @rangesForLinesSplitAtPositions: lines posl ->
         
         ⮐  [] if empty posl
-        ⮐  [[0 0 kseg.width(lines[-1]) lines.length-1] [kseg.width(lines[-1]) lines.length-1 kseg.width(lines[-1]) lines.length-1]] if posl[0][1] >= lines.length
-        rngs = [[0 0 posl[0][0] posl[0][1]]]
+        if posl[1][2] > lines.len
+            ⮐  [[1 1 kseg.width(lines[^1]) lines.len] [kseg.width(lines[^1]) lines.len kseg.width(lines[^1]) lines.len]] 
+        rngs = [[1 1 posl[1][1] posl[1][2]]]
         for idx pos in ipairs posl
-            if idx > 0
-                rngs.push [posl[idx-1][0] posl[idx-1][1] pos[0] pos[1]]
-        rngs.push [pos[0] pos[1] kseg.width(lines[-1]) lines.length-1]
+            if idx > 1
+                rngs.push [posl[idx-1][1] posl[idx-1][2] pos[1] pos[2]]
+            if idx == posl.len
+                rngs.push [pos[1] pos[2] kseg.width(lines[^1]) lines.len]
         rngs
 
     @rangeInRangesContainingPos: rngs pos ->
@@ -428,7 +432,7 @@ class belt
 # merge methods of sibling modules into tool/belt 
         
 # for _ mod in ipairs [text cell edit misc pair salt]
-for _ mod in ipairs [text cell]
+for _ mod in ipairs [text cell edit misc]
     belt∙include mod
     # for key val in pairs mod
     #     belt[key] = val

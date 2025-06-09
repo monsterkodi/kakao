@@ -47,6 +47,9 @@ class draw extends view
         if @complete
             lines = @complete∙preDrawLines lines 
         # lines  = mode.preDrawLines @state @state.s.lines
+        
+        # log "draw" @cells.cols, @cells.rows, lines
+        
         for row in 1..@cells.rows
             
             y = row+view[2]-1
@@ -99,6 +102,9 @@ class draw extends view
         # firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
         # c = 1 if firstIndex != firstSegi            # one column to the right 
         x = 1
+        
+        log "drawLine" bg, linel
+        
         while x <= @cells.cols
             
             ci = x+view[1]-1
@@ -114,6 +120,8 @@ class draw extends view
             fg = syntax∙getColor ci y
                 
             ch = syntax∙getChar ci y line[si]
+            
+            
             if ch == "#" ➜ checkColor = true
             # elif ch == '0' or ch == '█'
             #     clss = syntax∙getClass ci y
@@ -125,6 +133,7 @@ class draw extends view
             x += cw
             
             if x <= @cells.cols
+                log "drawChar" c, row, ch, @cells
                 c += @cells∙add c row ch fg bg
             
             # if clss == 'invert_bg'

@@ -8,6 +8,8 @@
 
 kxk = require "kxk.kxk"
 cell = require "edit.tool.cell"
+edit = require "edit.tool.edit"
+misc = require "edit.tool.misc"
 text = require "edit.tool.text"
 -- use ◆ text cell edit misc pair salt
 
@@ -510,15 +512,21 @@ function belt.static.removeTrailingEmptyRange(rngs)
 
 function belt.static.rangesForLinesSplitAtPositions(lines, posl) 
         if empty(posl) then return array() end
-        if (posl[0][1] >= #lines) then return array(array(0, 0, kseg.width(lines[-1]), (#lines - 1)), array(kseg.width(lines[-1]), (#lines - 1), kseg.width(lines[-1]), (#lines - 1))) end
-        local rngs = array(array(0, 0, posl[0][0], posl[0][1]))
+        if (posl[1][2] > #lines) then 
+            return array(array(1, 1, kseg.width(lines[#lines]), #lines), array(kseg.width(lines[#lines]), #lines, kseg.width(lines[#lines]), #lines))
+        end
+        
+        local rngs = array(array(1, 1, posl[1][1], posl[1][2]))
         for idx, pos in ipairs(posl) do 
-            if (idx > 0) then 
-                rngs.push(array(posl[(idx - 1)][0], posl[(idx - 1)][1], pos[0], pos[1]))
+            if (idx > 1) then 
+                rngs.push(array(posl[(idx - 1)][1], posl[(idx - 1)][2], pos[1], pos[2]))
+            end
+            
+            if (idx == #posl) then 
+                rngs.push(array(pos[1], pos[2], kseg.width(lines[#lines]), #lines))
             end
         end
         
-        rngs.push(array(pos[0], pos[1], kseg.width(lines[-1]), (#lines - 1)))
         return rngs
     end
 
@@ -661,7 +669,7 @@ function belt.static.mergeLineRanges(lines, rngs)
 -- merge methods of sibling modules into tool/belt 
 
 -- for _ mod in ipairs [text cell edit misc pair salt]
-for _, mod in ipairs(array(text, cell)) do 
+for _, mod in ipairs(array(text, cell, edit, misc)) do 
     belt:include(mod)
     -- for key val in pairs mod
     --     belt[key] = val

@@ -170,6 +170,26 @@ class kseg extends array
         for seg in s∙each()
             w += wcwidth kseg.codepoint(seg)
         w
+
+    @segiAtWidth: segs w ->
+    
+        w = min w segs.len * 2
+        i = 1
+        s = 0
+        while i <= segs.len
+            s += kseg.width segs[i]
+            ⮐  i if s >= w
+            i += 1
+        segs.len
+        
+    @rep: n s=' ' ->
+        
+        ⮐  [] if n <= 0
+        s = kseg s
+        a = kseg()
+        for i in 1..n
+            a += s
+        a
         
 # https://github.com/joshuarubin/wcwidth9            
             

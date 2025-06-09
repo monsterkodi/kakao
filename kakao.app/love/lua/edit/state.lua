@@ -50,6 +50,88 @@ function state:__tostring()
     end
 
 
+function state:handleKey(key, event) 
+        if ('unhandled' ~= mode.handleKey(self, key, event)) then return end
+        
+        if (key == 'up') then return self:moveCursors('up')
+        elseif (key == 'down') then return self:moveCursors('down')
+        elseif (key == 'left') then return self:moveCursors('left')
+        elseif (key == 'right') then return self:moveCursors('right')
+        elseif (key == 'ctrl+alt+up') then return self:singleCursorPage('up')
+        elseif (key == 'ctrl+alt+down') then return self:singleCursorPage('down')
+        elseif (key == 'shift+ctrl+alt+up') then return self:moveCursors('up', {count = 16})
+        elseif (key == 'shift+ctrl+alt+down') then return self:moveCursors('down', {count = 16})
+        elseif (key == 'cmd+left') or (key == 'ctrl+left') then return self:moveCursors(array('bos', 'ind_bol'))
+        elseif (key == 'cmd+right') or (key == 'ctrl+right') then return self:moveCursors(array('eos', 'ind_eol'))
+        elseif (key == 'alt+left') then return self:moveCursors('left', {jump = array('ws', 'word', 'empty', 'punct')})
+        elseif (key == 'alt+right') then return self:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        elseif (key == 'shift+alt+right') then return self:moveCursorsAndSelect('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        elseif (key == 'shift+alt+left') then return self:moveCursorsAndSelect('left', {jump = array('ws', 'word', 'empty', 'punct')})
+        elseif (key == 'shift+up') then return self:moveCursorsAndSelect('up')
+        elseif (key == 'shift+down') then return self:moveCursorsAndSelect('down')
+        elseif (key == 'shift+left') then return self:moveCursorsAndSelect('left')
+        elseif (key == 'shift+right') then return self:moveCursorsAndSelect('right')
+        elseif (key == 'shift+cmd+right') then return self:moveCursorsAndSelect('ind_eol')
+        elseif (key == 'shift+cmd+left') then return self:moveCursorsAndSelect('ind_bol')
+        elseif (key == 'shift+ctrl+h') then return self:moveCursorsAndSelect('bof')
+        elseif (key == 'shift+ctrl+j') then return self:moveCursorsAndSelect('eof')
+        elseif (key == 'shift+alt+cmd+up') then return self:moveMainCursorInDirection('up', {keep = true}) ; -- 'paint' cursors
+        elseif (key == 'shift+alt+cmd+down') then return self:moveMainCursorInDirection('down', {keep = true}) ; -- 'paint' cursors
+        elseif (key == 'shift+alt+cmd+left') then return self:moveMainCursorInDirection('left', {keep = true}) ; -- 'paint' cursors
+        elseif (key == 'shift+alt+cmd+right') then return self:moveMainCursorInDirection('right', {keep = true}) ; -- 'paint' cursors
+        elseif (key == 'alt+up') then return self:moveSelectionOrCursorLines('up')
+        elseif (key == 'alt+down') then return self:moveSelectionOrCursorLines('down')
+        elseif (key == 'shift+alt+up') then return self:cloneSelectionAndCursorLines('up')
+        elseif (key == 'shift+alt+down') then return self:cloneSelectionAndCursorLines('down')
+        elseif (key == 'cmd+up') or (key == 'ctrl+up') then return self:expandCursors('up')
+        elseif (key == 'cmd+down') or (key == 'ctrl+down') then return self:expandCursors('down')
+        elseif (key == 'shift+cmd+up') or (key == 'shift+ctrl+up') then return self:contractCursors('up')
+        elseif (key == 'shift+cmd+down') or (key == 'shift+ctrl+down') then return self:contractCursors('down')
+        elseif (key == 'pageup') then return self:singleCursorPage('up')
+        elseif (key == 'pagedown') then return self:singleCursorPage('down')
+        elseif (key == 'home') then return self:singleCursorAtIndentOrStartOfLine()
+        elseif (key == 'end') then return self:singleCursorAtEndOfLine()
+        elseif (key == 'ctrl+h') then return self:setMainCursor(0, 0)
+        elseif (key == 'ctrl+j') then return self:setMainCursor(#self.s.lines[(#self.s.lines - 1)], (#self.s.lines - 1))
+        elseif (key == 'alt+d') then return self:delete('next', true)
+        elseif (key == 'shift+ctrl+k') or (key == 'entf') then return self:delete('next')
+        elseif (key == 'ctrl+k') then return self:delete('eol')
+        elseif (key == 'delete') then return self:delete('back')
+        elseif (key == 'ctrl+delete') then return self:delete('back', true)
+        elseif (key == 'cmd+delete') then return self:delete('back', true)
+        elseif (key == 'shift+tab') then return self:deindentSelectedOrCursorLines()
+        elseif (key == 'tab') then return self:insert('\t')
+        elseif (key == 'alt+x') or (key == 'cmd+x') or (key == 'ctrl+x') then return self:cut()
+        elseif (key == 'alt+c') or (key == 'cmd+c') or (key == 'ctrl+c') then return self:copy()
+        elseif (key == 'alt+v') or (key == 'cmd+v') or (key == 'ctrl+v') then return self:paste()
+        elseif (key == 'cmd+z') or (key == 'ctrl+z') then return self:undo()
+        elseif (key == 'shift+cmd+z') or (key == 'cmd+y') or (key == 'ctrl+y') then return self:redo()
+        elseif (key == 'cmd+a') or (key == 'ctrl+a') then return self:selectAllLines()
+        elseif (key == 'cmd+j') or (key == 'ctrl+j') then return self:joinLines()
+        elseif (key == 'cmd+l') or (key == 'ctrl+l') then return self:selectMoreLines()
+        elseif (key == 'shift+cmd+l') or (key == 'shift+ctrl+l') then return self:selectLessLines()
+        elseif (key == 'cmd+e') or (key == 'ctrl+e') then return self:highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+        elseif (key == 'cmd+d') or (key == 'ctrl+d') then return self:selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+        elseif (key == 'cmd+g') or (key == 'ctrl+g') then return self:selectWordAtCursor_highlightSelection_selectNextHighlight()
+        elseif (key == 'shift+cmd+e') or (key == 'shift+ctrl+e') then return self:highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
+        elseif (key == 'shift+cmd+d') or (key == 'shift+ctrl+d') then return self:selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
+        elseif (key == 'shift+cmd+g') or (key == 'shift+ctrl+g') then return self:selectWordAtCursor_highlightSelection_selectPrevHighlight()
+        elseif (key == 'alt+y') then return self:toggleMode('unype')
+        elseif (key == 'alt+r') then return self:toggleMode('record')
+        elseif (key == 'alt+u') then return self:toggleMode('uniko')
+        elseif (key == 'alt+;') then return self:toggleMode('vimple')
+        elseif (key == 'alt+3') then return self:toggleMode('salter')
+        elseif (key == 'cmd+3') or (key == 'ctrl+3') then return self:insertAsciiHeaderForSelectionOrWordAtCursor()
+        elseif (key == 'alt+cmd+d') or (key == 'alt+ctrl+d') then return self:selectWordAtCursor_highlightSelection_selectAllHighlights()
+        elseif (key == 'cmd+/') or (key == 'ctrl+/') then return self:toggleCommentAtSelectionOrCursorLines()
+        elseif (key == 'alt+cmd+/') or (key == 'ctrl+alt+/') then return self:toggleCommentTypeAtSelectionOrCursorLines()
+        elseif (key == 'esc') then return self:clearCursorsHighlightsAndSelections()
+        end
+        
+        return 'unhandled'
+    end
+
+
 function state:toggleMode(name) 
     if self.allowedModes[name] then 
     return mode.toggle(self, name)
@@ -824,14 +906,14 @@ function state:moveCursors(dir, opt)
         for ci, c in ipairs(cursors) do 
             local line = lines[c[2]]
             
-            if (dir == 'left') or (dir == 'right') then c[0] = c[0] + (belt.numCharsFromPosToWordOrPunctInDirection(lines, c, dir, opt))
-            elseif (dir == 'up') then c[1] = c[1] - (opt.count)
-            elseif (dir == 'down') then c[1] = c[1] + (opt.count)
-            elseif (dir == 'eol') then c[0] = kseg.width(self.s.lines[c[2]])
-            elseif (dir == 'bol') then c[0] = 0
-            elseif (dir == 'bof') then c[0] = 0 ; c[2] = 0
-            elseif (dir == 'eof') then c[1] = (#self.s.lines - 1) ; c[1] = kseg.width(line)
-            elseif (dir == 'ind') then c[0] = belt.numIndent(line)
+            if (dir == 'left') or (dir == 'right') then c[1] = c[1] + (belt.numCharsFromPosToWordOrPunctInDirection(lines, c, dir, opt))
+            elseif (dir == 'up') then c[2] = c[2] - (opt.count)
+            elseif (dir == 'down') then c[2] = c[2] + (opt.count)
+            elseif (dir == 'eol') then c[1] = kseg.width(self.s.lines[c[2]])
+            elseif (dir == 'bol') then c[1] = 0
+            elseif (dir == 'bof') then c[1] = 0 ; c[2] = 0
+            elseif (dir == 'eof') then c[2] = (#self.s.lines - 1) ; c[1] = kseg.width(line)
+            elseif (dir == 'ind') then c[1] = belt.numIndent(line)
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; c[1] = (function () 
     if (c[1] < ind) then 
     return ind else 
@@ -1493,6 +1575,60 @@ function state:clearCursorsHighlightsAndSelections()
         self:clearCursors()
         self:clearHighlights()
         return self:deselect()
+    end
+
+-- █████████  ████████  ███   ███  █████████
+--    ███     ███        ███ ███      ███   
+--    ███     ███████     █████       ███   
+--    ███     ███        ███ ███      ███   
+--    ███     ████████  ███   ███     ███   
+
+
+function state:insert(text) 
+        text = mode.insert(self, text)
+        
+        if valid(self.s.selections) then 
+            if (text == '\t') then return self:indentSelectedLines() end
+            self:deleteSelection()
+        end
+        
+        local lines, cursors = belt.insertTextAtPositions(self.s.lines, text, self.s.cursors)
+        
+        self:clearHighlights()
+        self:setLines(lines)
+        self:setCursors(cursors)
+        
+        return mode.postInsert(self)
+    end
+
+-- ███   ███  ████████   ███████   ███████    ████████  ████████ 
+-- ███   ███  ███       ███   ███  ███   ███  ███       ███   ███
+-- █████████  ███████   █████████  ███   ███  ███████   ███████  
+-- ███   ███  ███       ███   ███  ███   ███  ███       ███   ███
+-- ███   ███  ████████  ███   ███  ███████    ████████  ███   ███
+
+
+function state:insertAsciiHeaderForSelectionOrWordAtCursor() 
+        local lines, cursors, selections = belt.insertAsciiHeaderForPositionsAndRanges(self.s.lines, self.s.cursors, self.s.selections)
+        
+        self:clearHighlights()
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
+--  ███████  ███   ███  ████████   ████████    ███████   ███   ███  ███   ███  ███████  
+-- ███       ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███   ███
+-- ███████   ███   ███  ███████    ███████    ███   ███  ███   ███  ███ █ ███  ███   ███
+--      ███  ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███
+-- ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
+
+
+function state:surroundSelection(trigger, pair) 
+        local lines, posl = belt.insertSurroundAtRanges(self.s.lines, self.s.selections, trigger, pair)
+        self:setLines(lines)
+        self:setSelections(array())
+        return self:setCursors(posl)
     end
 
 return state

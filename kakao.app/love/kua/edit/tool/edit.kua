@@ -6,10 +6,10 @@
     00000000  0000000    000     000   
 ###
 
-use ../../../kxk ▪ kstr kseg
-use ../../util   ◆ prof
+# use ../../../kxk ▪ kstr kseg
+# use ../../util   ◆ prof
 
-function edit
+class edit
     
     # 000  000   000   0000000  00000000  00000000   000000000
     # 000  0000  000  000       000       000   000     000   
@@ -19,89 +19,75 @@ function edit
     
     @insertTextAtPositions: lines text posl ->
                           
-        # prof.start 'insert'
-        
-        ⮐  [lines posl] if empty text
+        ⮐  (lines posl) if empty text
         
         if text == '\t'
             pos  = posl[0]
-            text = lpad 4-pos[0]%4 ' '
-            
-        # log y5("insert text ▸#{text}◂")
+            text = kstr.lpad 4-pos[0]%4 ' '
             
         text   = kstr.detab text
-        txtls  = @seglsForText text  # the text to insert split into segls
-        newls  = []                      # list of new lines 
-        newpl  = []                      # list of new positions
-        rngs   = @rangesForLinesSplitAtPositions lines posl
+        txtls  = belt.seglsForText text
+        newls  = []                
+        newpl  = []                
+        rngs   = belt.rangesForLinesSplitAtPositions lines posl
         before = []
         
-        # log y5("insert text ▸#{text}◂") rngs
-        
-        for rng,idx in rngs
+        for idx rng in ipairs rngs
             
-            after = @seglsForRange lines rng # all the lines in the current range (after current position)
+            after = belt.seglsForRange lines rng
             
-            # log "#{idx} #{rng} after" after
+            if empty after or empty after[1]
+                if posl[^1][2] >= lines.len
+                    before∙push [] 
             
-            if empty after or empty after[0] 
-                before.push [] if posl[-1][1] >= lines.length
-            
-            if idx > 0                           # start processing ranges after the first position
-                # log "#{idx} before" before
-                [x y] = posl[idx-1]              # coordinates of current position 
+            if idx > 1
+                (x y) = posl[idx-1]
                 
-                if valid before ➜ line = before.pop() # pop the last line from before the current position
-                else              line = newls.pop()  # or the last of the already generated lines
+                if valid before ➜ line = before∙pop()
+                else              line = newls∙pop() 
                 
-                if x > kseg.width(line) and text != '\n'   # if pos is in empty space 
-                    line = line.concat(lpad(x-line.length).split('')) # fill line at end with spaces 
+                if x > kseg.width(line) and text != '\n'
+                    line += kstr.lpad(x-line.len).split('')
                                         
-                # log 'line' line line.length x txtls
-                
-                if txtls.length > 1     # handle multiples lines to insert (including two empty lines when inserting \n)
+                if txtls.len > 1
                     
-                    if posl.length > 1 and text != '\n' # insert into multiple cursors (doesn't autoindent)
-                        # log 'insert multiple lines into multiple cursors (no autoindent)'
-                        insertLineIndex = (idx-1) % txtls.length
-                        before.push line.concat(txtls[insertLineIndex])
-                        newpl.push [kseg.width(last(before)) newls.length+before.length-1]
-                        before.push before.pop().concat(after.shift())
-                    else                                 # insert into single cursor with autoindent
-                        # log 'insert multiple lines into single cursor with autoindent'
-                        posLineIndent = @numIndent line
-                        indent = kseg lpad(posLineIndent)
-                        before.push line.concat(txtls[0])
+                    if posl.len > 1 and text != '\n'
+                        insertLineIndex = (idx-1) % txtls.len
+                        before∙push line + txtls[insertLineIndex]
+                        newpl∙push [kseg.width(before[^1]) newls.len+before.len-1]
+                        before∙push before∙pop() + after∙shift()
+                    else
+                        posLineIndent = belt.numIndent line
+                        indent = kseg(kstr.lpad(posLineIndent))
+                        before∙push line + txtls[1]
                         
-                        for insl,lidx in txtls[1..]
-                            if lidx < txtls.length-2 or valid insl or text == '\n'
-                                # log "insl ▸#{indent}|#{insl}▪"  
-                                before.push indent.concat(insl)
+                        for lidx insl in ipairs txtls∙slice(1)
+                            if lidx < txtls.len-2 or valid insl or text == '\n'
+                                before∙push indent + insl
                     
                         if x > posLineIndent
-                            newpl.push [kseg.width(last(before)) newls.length+before.length-1]
-                            before.push before.pop().concat(after.shift())
+                            newpl∙push [kseg.width(before[^1]) newls.len+before.len-1]
+                            before∙push before∙pop() + after∙shift()
                         else
-                            after.unshift indent.concat(after.shift()) 
-                            before.pop() if text == '\n'
-                            newpl.push [kseg.width(indent) newls.length+before.length] 
+                            after∙unshift indent + after∙shift()
+                            before∙pop() if text == '\n'
+                            newpl∙push [kseg.width(indent) newls.len+before.len] 
                         
-                    newls = newls.concat before
+                    newls += before
                             
-                else                                # if text is the only line to insert
-                    newpl.push [kseg.width(line)+kseg.width(txtls[0]) newls.length+before.length] # move position to the end of the inserted text
-                    line  = line.concat txtls[0]       # append it and first line after to current line
-                    line  = line.concat after.shift()  #               
-                    newls = newls.concat before        # add lines from before and current line to result
-                    newls.push line                    #     
+                else
+                    newpl∙push [kseg.width(line)+kseg.width(txtls[1]) newls.len+before.len]
+                    line  += txtls[1]
+                    line  += after∙shift()
+                    newls += before      
+                    newls∙push line                  
             
             before = after
             
-        newls = newls.concat before if posl[-1][1] < lines.length
+        if posl[^1][2] <= lines.len
+            newls += before 
             
-        # prof.end 'insert'
-        
-        [newls newpl]  
+        (newls newpl)
         
     #  0000000  000   000  00000000   00000000    0000000   000   000  000   000  0000000    
     # 000       000   000  000   000  000   000  000   000  000   000  0000  000  000   000  
@@ -111,20 +97,20 @@ function edit
     
     @insertSurroundAtRanges: lines rngs trigger pair ->
         
-        begl = @startPositionsOfRanges rngs
+        begl = belt.startPositionsOfRanges rngs
         
-        [lines begl] = @insertTextAtPositions lines pair[0] begl
+        (lines begl) = belt.insertTextAtPositions lines pair[0] begl
         
         endl = []
         for pos,idx in begl
-            endl.push [pos[0]+rngs[idx][2]-rngs[idx][0] pos[1]]
+            endl∙push [pos[0]+rngs[idx][2]-rngs[idx][0] pos[1]]
             
-        [lines endl] = @insertTextAtPositions lines pair[1] endl
+        (lines endl) = belt.insertTextAtPositions lines pair[1] endl
         
         if pair[0][0] == trigger and pair[0] != pair[1]
-            [lines begl]
+            (lines begl)
         else
-            [lines endl]
+            (lines endl)
 
     # 0000000    00000000  000      00000000  000000000  00000000  
     # 000   000  000       000      000          000     000       
@@ -134,70 +120,70 @@ function edit
     
     @deleteLineRangesAndAdjustPositions: lines rngs posl ->
         
-        lines = lines.map (l) -> l
+        lines = lines∙map((l) -> l)
         posl  = clone posl
         
-        ⮐  [lines posl] if empty rngs
+        ⮐  (lines posl) if empty rngs
         
-        for ri in rngs.length-1..0
+        for ri in rngs.len-1..0
         
             rng = rngs[ri]
             
-            if rng[1] >= lines.length or rng[3] >= lines.length
-                warn "range out of bounds?" rng
-                continue
+            if rng[1] >= lines.len or rng[3] >= lines.len
+                error "range out of bounds?" rng
+                ⮐  (lines posl)
             
-            posl = @adjustPositionsForDeletedLineRange posl lines rng
+            posl = belt.adjustPositionsForDeletedLineRange posl lines rng
             
             if rng[1] == rng[3] # single line range
                 
-                if rng[0] == 0 and rng[2] == lines[rng[1]].length
-                    lines.splice rng[1] 1
+                if rng[0] == 0 and rng[2] == lines[rng[1]].len
+                    lines∙splice rng[1] 1
                 else
-                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]].concat(lines[rng[1]][rng[2]..])   
+                    lines∙splice rng[1] 1 lines[rng[1]]∙slice(1 rng[0]) + lines[rng[1]]∙slice(rng[2])
                     
-            else                # range spans multiple lines
+            else
                         
-                if rng[2] == lines[rng[3]].length                   # range ends at end of last line
-                    lines.splice rng[3] 1                           #   remove last line
+                if rng[2] == lines[rng[3]].len                   
+                    lines∙splice rng[3] 1                           
                 else
-                    lines.splice rng[3] 1 lines[rng[3]][rng[2]..]   #   remove head of last line 
-                    partialLast = true                              #   and remember to join it with head of first line
+                    lines∙splice rng[3] 1 lines[rng[3]]∙slice(rng[2])
+                    partialLast = true                              
                                                                     
-                if rng[3]-rng[1] >= 2                               # more than 2 lines in range
-                    lines.splice rng[1]+1 rng[3]-rng[1]-1           #   remove middle lines
+                if rng[3]-rng[1] >= 2                               
+                    lines∙splice rng[1]+1 rng[3]-rng[1]-1           
                                                                     
-                if rng[0] == 0                                      # range starts at start of first line
-                    lines.splice rng[1] 1                           #   remove first line
+                if rng[0] == 0                                      
+                    lines∙splice rng[1] 1                           
                 else
-                    lines.splice rng[1] 1 lines[rng[1]][0...rng[0]] #   remove tail of first line
+                    lines∙splice rng[1] 1 lines[rng[1]]∙slice(1 rng[0])
                     
-                    if partialLast                                  #   when only part of last line was removed 
-                        lines.splice rng[1] 2 lines[rng[1]].concat(lines[rng[1]+1]) # join head of first with tail of last line
+                    if partialLast                                  
+                        lines∙splice rng[1] 2 lines[rng[1]] + lines[rng[1]+1]
                
-        [lines posl]
+        (lines posl)
         
     @adjustPositionsForDeletedLineRange: posl lines rng ->
         
         ⮐  posl if empty posl
         
-        for pi in posl.length-1..0
+        for pi in posl.len-1..0
             pos = posl[pi]
             
-            if @isPosTouchingRange pos rng
+            if belt.isPosTouchingRange pos rng
                 pos[0] = rng[0] 
                 pos[1] = rng[1]
-            else if @isPosAfterRange pos rng
-                if pos[1] == rng[3] # pos in last line of range
+            elif belt.isPosAfterRange pos rng
+                if pos[1] == rng[3]
                     pos[0] -= rng[2] - rng[0]
-                    if rng[1] < rng[3] # multi line range
+                    if rng[1] < rng[3]
                         pos[1] -= rng[3] - rng[1]
                 else
-                    pos[1] -= @numFullLinesInRange(lines rng)
+                    pos[1] -= belt.numFullLinesInRange(lines rng)
             else
                 break
                     
-        @removeDuplicatePositions posl
+        belt.removeDuplicatePositions posl
         
     @moveCursorsInSameLineBy: cursors cursor delta ->
     
@@ -206,9 +192,9 @@ function edit
         while true
             
             cursors[ci][0] += delta
-            ci++
+            ci += 1
             
-            ⮐  if ci >= cursors.length
+            ⮐  if ci >= cursors.len
             ⮐  if cursors[ci][1] > cursor[1]
             
     #  0000000   0000000    0000000          00000000    0000000   000   000   0000000   00000000   0000000  
@@ -220,24 +206,25 @@ function edit
     @addLinesBelowPositionsToRanges: lines posl rngs ->
     
         newp = []
-        newr = rngs.asMutable()
+        newr = rngs #.asMutable()
     
-        addLineAtIndex = c i =>
+        addLineAtIndex = c i ->
 
-            range = @rangeOfLine lines i
-            range[1] += 1 if @isEmptyRange range
-            newr.push range
-            newp.push @endOfRange(range)
+            range = belt.rangeOfLine lines i
+            if belt.isEmptyRange range
+                range[1] += 1 
+            newr∙push range
+            newp∙push belt.endOfRange(range)
             
         for c in posl
-            if not @rangesContainLine(rngs c[1])
+            if not belt.rangesContainLine(rngs c[1])
                 addLineAtIndex c c[1]
-            else if c[1] < lines.length-1
+            elif c[1] < lines.len-1
                 addLineAtIndex c c[1]+1 
 
-        ⮐  [posl rngs] if empty newp
+        ⮐  (posl rngs) if empty newp
         
-        [newp newr]
+        (newp newr)
     
     # 00000000   00000000  00     00   0000000   000   000  00000000     00000000   000   000   0000000    0000000    
     # 000   000  000       000   000  000   000  000   000  000          000   000  0000  000  000        000         
@@ -248,23 +235,26 @@ function edit
     @removeLinesAtPositionsFromRanges: lines posl rngs ->
         
         newp = []
-        newr = @splitLineRanges lines rngs
+        newr = belt.splitLineRanges lines rngs
         
         for pos in posl
-            if rng = @rangeInRangesTouchingPos newr pos
+            rng = belt.rangeInRangesTouchingPos newr pos
+            if rng
                 idx = newr.indexOf rng
                 if idx > 0
-                    newp.push @endOfRange(newr[idx-1])
+                    newp∙push belt.endOfRange(newr[idx-1])
                 else
-                    newp.push @endOfRange(newr[idx])
-                newr.splice idx 1
+                    newp∙push belt.endOfRange(newr[idx])
+                newr∙splice idx 1
             else
-                newp.push pos
-        [newp newr]
+                newp∙push pos
+        (newp newr)
         
-    @rangeForJoiningLine: lines idx -> [lines[idx].length idx 0 idx+1]
+    @rangeForJoiningLine: lines idx -> [lines[idx].len idx 0 idx+1]
         
-    @rangesForJoiningLines: lines idxs -> idxs.map (idx) => @rangeForJoiningLine lines idx
+    @rangesForJoiningLines: lines idxs -> 
+    
+        idxs∙map((idx) -> belt.rangeForJoiningLine(lines idx))
     
     # 00     00   0000000   000   000  00000000         000      000  000   000  00000000   0000000  
     # 000   000  000   000  000   000  000              000      000  0000  000  000       000       
@@ -274,16 +264,16 @@ function edit
     
     @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
         
-        if empty indices or dir == 'down' and indices[-1] >= lines.length-1 or dir == 'up' and indices[0] <= 0
+        if empty indices or dir == 'down' and indices[-1] >= lines.len-1 or dir == 'up' and indices[0] <= 0
             ⮐  [lines rngs posl]
         
-        newLines = lines.map (l) -> l
-        newRngs  = rngs.asMutable()
-        newPosl  = posl.asMutable()
+        newLines = lines∙map((l) -> l)
+        newRngs  = rngs #.asMutable()
+        newPosl  = posl #.asMutable()
         
-        [rs re] = switch dir
-            'down' ➜ [indices.length-1 0]
-            'up'   ➜ [0 indices.length-1]
+        (rs re) = switch dir
+            'down' ➜ [indices.len-1 0]
+            'up'   ➜ [0 indices.len-1]
 
         d = switch dir
             'down' ➜ 1
@@ -293,8 +283,8 @@ function edit
             index = indices[ii]
             
             switch dir 
-                'down' ➜ newLines.splice index   2 newLines[index+1] newLines[index] 
-                'up'   ➜ newLines.splice index-1 2 newLines[index]   newLines[index-1]
+                'down' ➜ newLines∙splice index   2 newLines[index+1] newLines[index] 
+                'up'   ➜ newLines∙splice index-1 2 newLines[index]   newLines[index-1]
                 
             for pos in newPosl
                 if pos[1] == index 
@@ -315,16 +305,16 @@ function edit
     
     @cloneLineBlockRangesAndMoveRangesAndPositionsInDirection: lines blocks rngs posl dir ->
         
-        if empty blocks or dir == 'down' and blocks[-1][3] > lines.length-1 or dir == 'up' and blocks[0][1] < 0
+        if empty blocks or dir == 'down' and blocks[-1][3] > lines.len-1 or dir == 'up' and blocks[0][1] < 0
             ⮐  [lines rngs posl]
         
-        newLines = lines.asMutable()
-        newRngs  = rngs.asMutable()
-        newPosl  = posl.asMutable()
+        newLines = lines #.asMutable()
+        newRngs  = rngs #.asMutable()
+        newPosl  = posl #.asMutable()
         
-        [rs re] = switch dir
-            'down' ➜ [blocks.length-1 0]
-            'up'   ➜ [0 blocks.length-1]
+        (rs re) = switch dir
+            'down' ➜ [blocks.len-1 0]
+            'up'   ➜ [0 blocks.len-1]
 
         d = switch dir
             'down' ➜ 1
@@ -333,26 +323,26 @@ function edit
         for bi in rs..re
             block = blocks[bi]
   
-            text = @textForLineRange newLines block
+            text = belt.textForLineRange newLines block
             text += '\n'
 
-            insidx = dir == 'up' ? block[1] : block[3]+1
+            insidx = if dir == 'up' ➜ block[1] ➜ block[3]+1
 
-            [newLines posl] = @insertTextAtPositions newLines text [[0 insidx]]
+            (newLines posl) = belt.insertTextAtPositions newLines text [[0 insidx]]
 
             if dir == 'down'
                 d = block[3]-block[1]+1
                 
                 for pos in newPosl
-                    if @rangeContainsPos block pos
+                    if belt.rangeContainsPos block pos
                         pos[1] += d                
     
                 for rng in newRngs
-                    if @rangeContainsRange block rng
+                    if belt.rangeContainsRange block rng
                         rng[1] += d
                         rng[3] += d
         
-        [newLines newRngs newPosl]
+        (newLines newRngs newPosl)
         
     #  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
     # 000       000   000  000   000  000   000  000       0000  000     000     000       
@@ -362,48 +352,50 @@ function edit
     
     @toggleCommentsInLineRangesAtIndices: lines rngs posl indices ->
         
-        ⮐  [lines rngs posl] if empty indices
+        ⮐  (lines rngs posl) if empty indices
         
-        newLines = lines.asMutable()
-        newRngs  = rngs.asMutable()
-        newPosl  = posl.asMutable()
+        newLines = lines #.asMutable()
+        newRngs  = rngs #.asMutable()
+        newPosl  = posl #.asMutable()
         
         comStart = '#'
         minIndent = Infinity
              
         for index in indices
             
-            [indent line] = @splitLineIndent newLines[index]
+            (indent line) = belt.splitLineIndent newLines[index]
             if not kseg.startsWith(line comStart)
                 comment = comStart
-                minIndent = min indent.length minIndent
-            
-        comIndent = kseg.repeat(minIndent) if comment
+                minIndent = min indent.len minIndent
+        
+        comIndent = ''    
+        if comment
+            comIndent = kseg.rep(minIndent) 
                 
-        for index in indices
+        for _ index in ipairs indices
             
-            [indent line] = @splitLineIndent newLines[index]
+            (indent line) = belt.splitLineIndent newLines[index]
             if comment
-                indent  = kseg.repeat indent.length-minIndent
+                indent  = kseg.rep indent.len-minIndent
                 newLine = kseg.join comIndent comment indent ' ' line
             else
-                d = line[comStart.length] == ' ' ? 1 : 0
-                newLine = kseg.join indent line[comStart.length+d..]
-            newLines.splice index 1 newLine
+                d = if line[comStart.len] == ' ' ➜ 1 ➜ 0
+                newLine = kseg.join indent line∙slice(comStart.len+d)
+            newLines∙splice index 1 newLine
         
-        [newLines newRngs newPosl]  
+        (newLines newRngs newPosl)
         
     @toggleCommentTypesInLineRangesAtIndices: lines rngs posl indices ->
         
-        ⮐  [lines rngs posl] if empty indices
+        ⮐  (lines rngs posl) if empty indices
         
-        newLines = lines.map (l) -> l
-        newRngs  = rngs.asMutable()
-        newPosl  = posl.asMutable()
+        newLines = lines∙map((l) -> l)
+        newRngs  = rngs #.asMutable()
+        newPosl  = posl #.asMutable()
         
         log "todo: toggleCommentTypes #{indices}"
         
-        [newLines newRngs newPosl]  
+        (newLines newRngs newPosl)
         
     # 0000000    00000000  000  000   000  0000000    00000000  000   000  000000000  
     # 000   000  000       000  0000  000  000   000  000       0000  000     000     
@@ -413,20 +405,20 @@ function edit
     
     @deindentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
         
-        ⮐  [lines rngs posl] if empty indices  
+        ⮐  (lines rngs posl) if empty indices  
         
-        newLines = lines.map (l) -> l
-        newRngs  = rngs.asMutable()
-        newPosl  = posl.asMutable()
+        newLines = lines∙map((l) -> l)
+        newRngs  = rngs #.asMutable()
+        newPosl  = posl #.asMutable()
         
         for index in indices
             
-            [indent line] = @splitLineIndent newLines[index]
+            (indent line) = belt.splitLineIndent newLines[index]
         
-            if indent.length
+            if indent.len
                 
-                sc = min 4 indent.length
-                newLines.splice index 1 kseg.join(indent[sc..] line)
+                sc = min 4 indent.len
+                newLines∙splice index 1 kseg.join(indent∙slice(sc) line)
                 
                 for pos in newPosl
                     if pos[1] == index 
@@ -437,7 +429,7 @@ function edit
                         rng[0] = max 0 rng[0] - sc
                         rng[2] = max 0 rng[2] - sc
         
-        [newLines newRngs newPosl]
+        (newLines newRngs newPosl)
 
     # 000  000   000  0000000    00000000  000   000  000000000  
     # 000  0000  000  000   000  000       0000  000     000     
@@ -447,17 +439,17 @@ function edit
     
     @indentLineRangesAndPositionsAtIndices: lines rngs posl indices ->
         
-        ⮐  [lines rngs posl] if empty indices  
+        ⮐  (lines rngs posl) if empty indices  
         
-        newLines = lines.map (l) -> l
-        newRngs  = rngs.asMutable()
-        newPosl  = posl.asMutable()
+        newLines = lines∙map((l) -> l)
+        newRngs  = rngs #.asMutable()
+        newPosl  = posl #.asMutable()
         
         for index in indices
             
-            [indent line] = @splitLineIndent newLines[index]
+            (indent line) = belt.splitLineIndent newLines[index]
         
-            newLines[index] = kseg.join kseg.repeat(4) newLines[index]
+            newLines[index] = kseg.join kseg.rep(4) newLines[index]
             
             for pos in newPosl
                 if pos[1] == index 
@@ -468,7 +460,7 @@ function edit
                     rng[0] += 4
                     rng[2] += 4
         
-        [newLines newRngs newPosl]
+        (newLines newRngs newPosl)
         
     # 00000000  000   000  000000000  00000000  000   000  0000000          00000000   000   000   0000000    0000000  
     # 000        000 000      000     000       0000  000  000   000        000   000  0000  000  000        000       
@@ -478,62 +470,65 @@ function edit
     
     @extendLineRangesFromPositionToPosition: lines rngs start pos ->
 
-        if empty rngs ➜ ⮐  [@rangeFromStartToEnd(start pos)]
+        if empty rngs ➜ ⮐  [belt.rangeFromStartToEnd(start pos)]
 
-        newRngs = rngs.asMutable()
+        newRngs = rngs #.asMutable()
         
-        if rng = @rangeInRangesTouchingPos newRngs start
-            if @isPosAfterRange pos rng
+        rng = belt.rangeInRangesTouchingPos newRngs start
+        if rng
+            if belt.isPosAfterRange pos rng
                 rng[2] = pos[0]
                 rng[3] = pos[1]
-            else if @isPosBeforeRange pos rng
+            elif belt.isPosBeforeRange pos rng
                 rng[0] = pos[0]
                 rng[1] = pos[1]
         else
-            newRngs.push @rangeFromStartToEnd(start pos)
+            newRngs∙push belt.rangeFromStartToEnd(start pos)
 
         newRngs
     
     @extendLineRangesByMovingPositionsInDirection: lines rngs posl dir opt ->
         
-        newRngs = rngs.asMutable()
-        newPosl = posl.asMutable()
+        newRngs = rngs #.asMutable()
+        newPosl = posl #.asMutable()
         
-        for pos in newPosl
+        for pi pos in ipairs newPosl
             
-            line = lines[pos[1]]
-            rng = [pos[0] pos[1] pos[0] pos[1]]
-            newRngs.push rng
+            line = lines[pos[2]]
+            rng = [pos[1] pos[2] pos[1] pos[2]]
+            newRngs∙push rng
             
             switch dir
                 'left'  
-                'right'     ➜ nc = @numCharsFromPosToWordOrPunctInDirection(lines pos dir opt); pos[0] += nc
-                'up'        ➜ pos[1] -= 1
-                'down'      ➜ pos[1] += 1
-                'eol'       ➜ pos[0] = line.length
-                'bol'       ➜ pos[0] = 0
-                'bof'       ➜ pos[0] = 0; pos[1] = 0
-                'eof'       ➜ pos[1] = lines.length-1; pos[0] = lines[lines.length-1].length
+                'right'     ➜ nc = belt.numCharsFromPosToWordOrPunctInDirection(lines pos dir opt); pos[1] += nc
+                'up'        ➜ pos[2] -= 1
+                'down'      ➜ pos[2] += 1
+                'eol'       ➜ pos[1] = line.len
+                'bol'       ➜ pos[1] = 0
+                'bof'       ➜ pos[1] = 0; pos[2] = 0
+                'eof'       ➜ pos[2] = lines.len-1; pos[1] = lines[lines.len-1].len
 
-                'ind_bol'   ➜ ind = @numIndent(line); pos[0] = pos[0] > ind ? ind : 0
-                'ind_eol'   ➜ ind = @numIndent(line); pos[0] = pos[0] < ind ? ind : line.length
+                'ind_bol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] > ind ➜ ind ➜ 0
+                'ind_eol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] < ind ➜ ind ➜ line.len
                 
             switch dir
-                'left'      ➜ rng[0] = rng[0]+nc
-                'right'     ➜ rng[2] = rng[2]+nc
-                'up'        ➜ rng[1] = max 0 rng[1]-1
-                'down'      ➜ rng[3] = min lines.length-1 rng[3]+1
-                'eol'       ➜ rng[2] = Infinity
-                'bol'       ➜ rng[0] = 0
-                'bof'       ➜ rng[1] = rng[0] = 0
-                'eof'       ➜ rng[3] = lines.length-1; rng[2] = lines[lines.length-1].length
+                'left'      ➜ rng[1] = rng[1]+nc
+                'right'     ➜ rng[3] = rng[3]+nc
+                'up'        ➜ rng[2] = max 0 rng[2]-1
+                'down'      ➜ rng[3] = min lines.len-1 rng[3]+1
+                'eol'       ➜ rng[3] = Infinity
+                'bol'       ➜ rng[1] = 0
+                'bof'       ➜ rng[2] = 0; rng[1] = 0
+                'eof'       ➜ rng[3] = lines.len-1; rng[3] = lines[lines.len-1].len
 
-                'ind_bol'   ➜ ind = @numIndent(line); rng[0] = rng[0] > ind ? ind : 0
-                'ind_eol'   ➜ ind = @numIndent(line); rng[2] = rng[2] < ind ? ind : line.length
-                
-            rng[0] = clamp 0 lines[rng[1]].length rng[0] if rng[1] < lines.length
-            rng[2] = clamp 0 lines[rng[3]].length rng[2] if rng[3] < lines.length
+                'ind_bol'   ➜ ind = belt.numIndent(line); rng[1] = if rng[1] > ind ➜ ind ➜ 0
+                'ind_eol'   ➜ ind = belt.numIndent(line); rng[3] = if rng[3] < ind ➜ ind ➜ line.len
+            
+            if rng[2] < lines.len
+                rng[1] = clamp 0 lines[rng[2]].len rng[1] 
+            if rng[3] < lines.len
+                rng[3] = clamp 0 lines[rng[3]].len rng[3] 
         
-        [newRngs newPosl]
+        (newRngs newPosl)
         
-export edit
+⮐  edit

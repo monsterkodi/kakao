@@ -258,6 +258,34 @@ function kseg.static.width(s)
         return w
     end
 
+
+function kseg.static.segiAtWidth(segs, w) 
+        w = min(w, (#segs * 2))
+        local i = 1
+        local s = 0
+        while (i <= #segs) do 
+            s = s + (kseg.width(segs[i]))
+            if (s >= w) then return i end
+            i = i + 1
+        end
+        
+        return #segs
+    end
+
+
+function kseg.static.rep(n, s) 
+        s = s or ' '
+        
+        if (n <= 0) then return array() end
+        s = kseg(s)
+        local a = kseg()
+        for i in iter(1, n) do 
+            a = a + s
+        end
+        
+        return a
+    end
+
 -- https://github.com/joshuarubin/wcwidth9            
 
 local wcwidth_private = array(array(0x00e000, 0x00f8ff), array(0x0f0000, 0x0ffffd), array(0x100000, 0x10fffd))

@@ -4,6 +4,26 @@ use kxk/strg
 
 ▸ kseg
 
+    ▸ static
+    
+        kseg.rep(4)∙str() ▸ "    "
+        kseg.rep(4 'x')∙str() ▸ "xxxx"
+        kseg.rep(2 'xy')∙str() ▸ "xyxy"
+
+        kseg.segiAtWidth kseg('')    1 ▸ 0
+        kseg.segiAtWidth kseg('a')   1 ▸ 1
+        kseg.segiAtWidth kseg('a')   2 ▸ 1
+        kseg.segiAtWidth kseg('abc') 2 ▸ 2
+        kseg.segiAtWidth kseg('ab3') 3 ▸ 3
+        kseg.segiAtWidth kseg('ab3') 4 ▸ 3
+        
+        kseg.segiAtWidth kseg('🧑🧑') 1 ▸ 1
+        kseg.segiAtWidth kseg('🧑🧑') 2 ▸ 1
+        kseg.segiAtWidth kseg('🧑🧑') 3 ▸ 2
+        kseg.segiAtWidth kseg('🧑🧑') 4 ▸ 2
+        kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 2
+        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2   
+
     ▸ construct
         
         s = kseg()

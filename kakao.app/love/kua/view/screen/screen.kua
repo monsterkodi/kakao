@@ -55,6 +55,8 @@ class screen
     set: x y char fg bg ->
         
         if 1 <= x and x <= @cols and 1 <= y and y <= @rows
+            if char != " "
+                log "screen.set #{x} #{y} #{char}" fg, bg
             @c[y][x].char = char
             @c[y][x].fg = fg or []
             @c[y][x].bg = bg or []
@@ -138,14 +140,14 @@ class screen
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
     render: ox oy fontStep fontSize ->
-
+        log "screen.render" @rows, @cols
         for y in 1..@rows
             for x in 1..@cols
                 char = @c[y][x].char
                     
-                if @c[y][x].bg and @c[y][x].bg.len > 0
-                    love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
-                    love.graphics.rectangle("fill", ox+(x-1)*fontStep, oy+(y-1)*fontSize, fontStep, fontSize) 
+                # if @c[y][x].bg and @c[y][x].bg.len > 0
+                #     love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
+                #     love.graphics.rectangle("fill", ox+(x-1)*fontStep, oy+(y-1)*fontSize, fontStep, fontSize) 
                 
                 if @c[y][x].fg.len > 0 and @c[y][x].fg is array
                     love.graphics.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255

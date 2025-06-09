@@ -243,4 +243,18 @@ function kstr.hexColor(s)
     return s
 end
 
+
+function kstr.detab(s) 
+    local i = 1
+    while (i <= #s) do 
+        if (string.sub(s, i, i) == '\t') then 
+            s = string.sub(s, 1, (i - 1)) .. kstr.lpad((4 - ((i - 1) % 4)), '') .. string.sub(s, (i + 1))
+        end
+        
+        i = i + 1
+    end
+    
+    return s
+end
+
 return kstr

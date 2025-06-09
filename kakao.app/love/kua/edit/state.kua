@@ -42,6 +42,111 @@ class state extends events
         
     $: -> @name
 
+    handleKey: key event ->
+    
+        ⮐  if 'unhandled' != mode.handleKey(@ key event)
+        
+        switch key                  
+                         
+            'up'                                ➜ ⮐  @moveCursors 'up'   
+            'down'                              ➜ ⮐  @moveCursors 'down' 
+            'left'                              ➜ ⮐  @moveCursors 'left' 
+            'right'                             ➜ ⮐  @moveCursors 'right'
+                                                     
+            'ctrl+alt+up'                       ➜ ⮐  @singleCursorPage 'up'  
+            'ctrl+alt+down'                     ➜ ⮐  @singleCursorPage 'down'
+            'shift+ctrl+alt+up'                 ➜ ⮐  @moveCursors 'up'    {count:16}
+            'shift+ctrl+alt+down'               ➜ ⮐  @moveCursors 'down'  {count:16}
+                
+                                                     
+            'cmd+left'  'ctrl+left'             ➜ ⮐  @moveCursors ['bos' 'ind_bol']
+            'cmd+right' 'ctrl+right'            ➜ ⮐  @moveCursors ['eos' 'ind_eol']
+                                                     
+            'alt+left'                          ➜ ⮐  @moveCursors 'left'  {jump:['ws' 'word' 'empty' 'punct']}
+            'alt+right'                         ➜ ⮐  @moveCursors 'right' {jump:['ws' 'word' 'empty' 'punct']}
+                                                     
+            'shift+alt+right'                   ➜ ⮐  @moveCursorsAndSelect 'right' {jump:['ws' 'word' 'empty' 'punct']}
+            'shift+alt+left'                    ➜ ⮐  @moveCursorsAndSelect 'left'  {jump:['ws' 'word' 'empty' 'punct']}
+            'shift+up'                          ➜ ⮐  @moveCursorsAndSelect 'up'
+            'shift+down'                        ➜ ⮐  @moveCursorsAndSelect 'down'
+            'shift+left'                        ➜ ⮐  @moveCursorsAndSelect 'left'
+            'shift+right'                       ➜ ⮐  @moveCursorsAndSelect 'right'
+            'shift+cmd+right'                   ➜ ⮐  @moveCursorsAndSelect 'ind_eol'
+            'shift+cmd+left'                    ➜ ⮐  @moveCursorsAndSelect 'ind_bol'
+            'shift+ctrl+h'                      ➜ ⮐  @moveCursorsAndSelect 'bof'
+            'shift+ctrl+j'                      ➜ ⮐  @moveCursorsAndSelect 'eof'
+                                                     
+            'shift+alt+cmd+up'                  ➜ ⮐  @moveMainCursorInDirection 'up'    {keep:true} # 'paint' cursors
+            'shift+alt+cmd+down'                ➜ ⮐  @moveMainCursorInDirection 'down'  {keep:true} # 'paint' cursors
+            'shift+alt+cmd+left'                ➜ ⮐  @moveMainCursorInDirection 'left'  {keep:true} # 'paint' cursors
+            'shift+alt+cmd+right'               ➜ ⮐  @moveMainCursorInDirection 'right' {keep:true} # 'paint' cursors
+                                                     
+            'alt+up'                            ➜ ⮐  @moveSelectionOrCursorLines 'up'
+            'alt+down'                          ➜ ⮐  @moveSelectionOrCursorLines 'down'
+            'shift+alt+up'                      ➜ ⮐  @cloneSelectionAndCursorLines 'up'
+            'shift+alt+down'                    ➜ ⮐  @cloneSelectionAndCursorLines 'down'
+                                                     
+            'cmd+up'   'ctrl+up'                ➜ ⮐  @expandCursors   'up'
+            'cmd+down' 'ctrl+down'              ➜ ⮐  @expandCursors   'down'
+            'shift+cmd+up'   'shift+ctrl+up'    ➜ ⮐  @contractCursors 'up'
+            'shift+cmd+down' 'shift+ctrl+down'  ➜ ⮐  @contractCursors 'down'
+                                                     
+            'pageup'                            ➜ ⮐  @singleCursorPage 'up'
+            'pagedown'                          ➜ ⮐  @singleCursorPage 'down'
+                                                     
+            'home'                              ➜ ⮐  @singleCursorAtIndentOrStartOfLine()
+            'end'                               ➜ ⮐  @singleCursorAtEndOfLine()
+                                                     
+            'ctrl+h'                            ➜ ⮐  @setMainCursor 0 0
+            'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines.length-1].length @s.lines.length-1
+                                                     
+            'alt+d'                             ➜ ⮐  @delete 'next' true
+            'shift+ctrl+k' 'entf'               ➜ ⮐  @delete 'next'
+            'ctrl+k'                            ➜ ⮐  @delete 'eol'
+            'delete'                            ➜ ⮐  @delete 'back'
+            'ctrl+delete'                       ➜ ⮐  @delete 'back' true
+            'cmd+delete'                        ➜ ⮐  @delete 'back' true
+                                                     
+            'shift+tab'                         ➜ ⮐  @deindentSelectedOrCursorLines()
+            'tab'                               ➜ ⮐  @insert '\t'
+                                                     
+            'alt+x' 'cmd+x' 'ctrl+x'            ➜ ⮐  @cut()     
+            'alt+c' 'cmd+c' 'ctrl+c'            ➜ ⮐  @copy()        
+            'alt+v' 'cmd+v' 'ctrl+v'            ➜ ⮐  @paste()
+                                                     
+            'cmd+z' 'ctrl+z'                    ➜ ⮐  @undo()
+            'shift+cmd+z'                            
+            'cmd+y' 'ctrl+y'                    ➜ ⮐  @redo()
+                                                     
+            'cmd+a'       'ctrl+a'              ➜ ⮐  @selectAllLines()
+            'cmd+j'       'ctrl+j'              ➜ ⮐  @joinLines()
+            'cmd+l'       'ctrl+l'              ➜ ⮐  @selectMoreLines()
+            'shift+cmd+l' 'shift+ctrl+l'        ➜ ⮐  @selectLessLines()
+                                                     
+            'cmd+e' 'ctrl+e'                    ➜ ⮐  @highlightWordAtCursor_deselectCursorHighlight_moveCursorToNextHighlight()
+            'cmd+d' 'ctrl+d'                    ➜ ⮐  @selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+            'cmd+g' 'ctrl+g'                    ➜ ⮐  @selectWordAtCursor_highlightSelection_selectNextHighlight()
+                                                     
+            'shift+cmd+e' 'shift+ctrl+e'        ➜ ⮐  @highlightWordAtCursor_deselectCursorHighlight_moveCursorToPrevHighlight()
+            'shift+cmd+d' 'shift+ctrl+d'        ➜ ⮐  @selectWordAtCursor_highlightSelection_addPrevHighlightToSelection()
+            'shift+cmd+g' 'shift+ctrl+g'        ➜ ⮐  @selectWordAtCursor_highlightSelection_selectPrevHighlight()
+                                                     
+            'alt+y'                             ➜ ⮐  @toggleMode 'unype'
+            'alt+r'                             ➜ ⮐  @toggleMode 'record'
+            'alt+u'                             ➜ ⮐  @toggleMode 'uniko'
+            'alt+;'                             ➜ ⮐  @toggleMode 'vimple'
+            'alt+3'                             ➜ ⮐  @toggleMode 'salter'
+                                                     
+            'cmd+3' 'ctrl+3'                    ➜ ⮐  @insertAsciiHeaderForSelectionOrWordAtCursor()
+            'alt+cmd+d' 'alt+ctrl+d'            ➜ ⮐  @selectWordAtCursor_highlightSelection_selectAllHighlights()
+                                                     
+            'cmd+/' 'ctrl+/'                    ➜ ⮐  @toggleCommentAtSelectionOrCursorLines()
+            'alt+cmd+/' 'ctrl+alt+/'            ➜ ⮐  @toggleCommentTypeAtSelectionOrCursorLines()
+                                                     
+            'esc'                               ➜ ⮐  @clearCursorsHighlightsAndSelections()
+        
+        'unhandled'
+
     toggleMode: name -> mode.toggle(@ name) if @allowedModes[name]
     startMode:  name -> mode.start(@ name) if @allowedModes[name]
     stopMode:   name -> mode.stop(@ name) if @allowedModes[name]
@@ -689,21 +794,21 @@ class state extends events
             
             switch dir
                 'left'  
-                'right'     ➜ c[0] += belt.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
-                'up'        ➜ c[1] -= opt.count
-                'down'      ➜ c[1] += opt.count
-                'eol'       ➜ c[0] = kseg.width(@s.lines[c[2]])
-                'bol'       ➜ c[0] = 0
-                'bof'       ➜ c[0] = 0; c[2] = 0
-                'eof'       ➜ c[1] = @s.lines.length-1; c[1] = kseg.width(line)
-                'ind'       ➜ c[0] = belt.numIndent(line)
+                'right'     ➜ c[1] += belt.numCharsFromPosToWordOrPunctInDirection(lines c dir opt)
+                'up'        ➜ c[2] -= opt.count
+                'down'      ➜ c[2] += opt.count
+                'eol'       ➜ c[1] = kseg.width(@s.lines[c[2]])
+                'bol'       ➜ c[1] = 0
+                'bof'       ➜ c[1] = 0; c[2] = 0
+                'eof'       ➜ c[2] = @s.lines.length-1; c[1] = kseg.width(line)
+                'ind'       ➜ c[1] = belt.numIndent(line)
                 'ind_eol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] < ind ➜  ind ➜  kseg.width(line)
                 'ind_bol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] > ind ➜  ind ➜  1
         main   = @s.main
         adjust = opt.adjust or 'topBotDelta'
         
         switch dir
-            'up' 'down' 'left' 'right' 
+            'up' 'down' 'left' 'right'                 
                 main = belt.indexOfExtremePositionInDirection cursors dir main
                 adjust = 'topBotDeltaGrow'
                 
@@ -1194,5 +1299,55 @@ class state extends events
         @clearCursors()
         @clearHighlights()
         @deselect()
+
+    # █████████  ████████  ███   ███  █████████
+    #    ███     ███        ███ ███      ███   
+    #    ███     ███████     █████       ███   
+    #    ███     ███        ███ ███      ███   
+    #    ███     ████████  ███   ███     ███   
+    
+    insert: text ->
+    
+        text = mode.insert @ text
+        
+        if valid @s.selections
+            ⮐  @indentSelectedLines() if text == '\t'
+            @deleteSelection()
+            
+        (lines cursors) = belt.insertTextAtPositions @s.lines text @s.cursors
+        
+        @clearHighlights()
+        @setLines   lines
+        @setCursors cursors
+        
+        mode.postInsert @
+        
+    # ███   ███  ████████   ███████   ███████    ████████  ████████ 
+    # ███   ███  ███       ███   ███  ███   ███  ███       ███   ███
+    # █████████  ███████   █████████  ███   ███  ███████   ███████  
+    # ███   ███  ███       ███   ███  ███   ███  ███       ███   ███
+    # ███   ███  ████████  ███   ███  ███████    ████████  ███   ███
+    
+    insertAsciiHeaderForSelectionOrWordAtCursor: ->
+    
+        (lines cursors selections) = belt.insertAsciiHeaderForPositionsAndRanges @s.lines @s.cursors @s.selections
+        
+        @clearHighlights()
+        @setLines      lines
+        @setSelections selections
+        @setCursors    cursors
+        
+    #  ███████  ███   ███  ████████   ████████    ███████   ███   ███  ███   ███  ███████  
+    # ███       ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███   ███
+    # ███████   ███   ███  ███████    ███████    ███   ███  ███   ███  ███ █ ███  ███   ███
+    #      ███  ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███
+    # ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
+    
+    surroundSelection: trigger pair ->
+        
+        (lines posl) = belt.insertSurroundAtRanges @s.lines @s.selections trigger pair
+        @setLines      lines
+        @setSelections []
+        @setCursors    posl
             
 ⮐  state

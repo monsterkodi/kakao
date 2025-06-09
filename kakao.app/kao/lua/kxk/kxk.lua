@@ -51,6 +51,7 @@ _G.floor = math.floor
 _G.int = math.floor
 _G.ceil = math.ceil
 _G.sqrt = math.sqrt
+_G.Infinity = math.huge
 
 
 function _G.slice(a, first, last) 
@@ -108,14 +109,14 @@ function _G.profileStart(msg)
         timers[msg] = os.clock()
         return timers[msg]
     else 
-        return print("[WARNING] Duplicate profileStart for '" .. msg .. "'")
+        return print("[WARNING] Duplicate profileStart for '" .. tostring(msg) .. "'")
     end
 end
 
 
 function _G.profileStop(msg) 
     if not timers[msg] then 
-        print("[ERROR] profileStop for unknown label '" .. msg .. "'")
+        print("[ERROR] profileStop for unknown label '" .. tostring(msg) .. "'")
         return
     end
     

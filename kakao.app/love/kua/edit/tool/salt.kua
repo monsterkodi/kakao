@@ -6,10 +6,10 @@
 0000000   000   000  0000000     000   
 ###
 
-use ../../../kxk ▪ kseg
-use ../../../kxk ◆ salter
+# use ../../../kxk ▪ kseg
+# use ../../../kxk ◆ salter
                  
-function salt
+class salt
 
     #  0000000   0000000   000      000000000  00000000  0000000    
     # 000       000   000  000         000     000       000   000  
@@ -70,4 +70,4 @@ function salt
         [lines posl] = @insertTextAtPositions lines salt [[0 posl[0][1]]]
         [lines posl []]
 
-export salt
+⮐  salt

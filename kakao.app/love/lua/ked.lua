@@ -254,7 +254,7 @@ function KED:newFile()
         self.status:setFile('')
         
         self.editor.state.syntax.ext = 'txt'
-        self.editor.state:loadLines(array('hello', 'world!'))
+        self.editor.state:loadLines(array('hello world!1', 'hello world!2', 'hello world!3'))
         
         -- @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
         -- @editor.cells.meta_pst 0 0 '\x07'

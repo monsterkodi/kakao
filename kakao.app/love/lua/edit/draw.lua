@@ -53,6 +53,9 @@ function draw:draw()
         end
         
         -- lines  = mode.preDrawLines @state @state.s.lines
+        
+        -- log "draw" @cells.cols, @cells.rows, lines
+        
         for row in iter(1, self.cells.rows) do 
             local y = ((row + view[2]) - 1)
             -- log "drawRow #{y} #{lines.len}"
@@ -114,6 +117,9 @@ function draw:drawLine(line, y, row)
         -- firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
         -- c = 1 if firstIndex != firstSegi            # one column to the right 
         local x = 1
+        
+        print("drawLine", bg, linel)
+        
         while (x <= self.cells.cols) do 
             local ci = ((x + view[1]) - 1)
             -- si = kseg.indexAtWidth line ci
@@ -129,6 +135,7 @@ function draw:drawLine(line, y, row)
             local fg = syntax:getColor(ci, y)
             
             local ch = syntax:getChar(ci, y, line[si])
+            
             if (ch == "#") then checkColor = true end
             -- elif ch == '0' or ch == '█'
             --     clss = syntax∙getClass ci y
@@ -140,6 +147,7 @@ function draw:drawLine(line, y, row)
             x = x + cw
             
             if (x <= self.cells.cols) then 
+                print("drawChar", c, row, ch, self.cells)
                 c = c + (self.cells:add(c, row, ch, fg, bg))
             end
             

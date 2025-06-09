@@ -2,6 +2,26 @@ kxk = require "kxk/kxk"
 strg = require "kxk/strg"
 
 test("kseg", function()
+    test("static", function()
+        test.cmp(kseg.rep(4):str(), "    ")
+        test.cmp(kseg.rep(4, 'x'):str(), "xxxx")
+        test.cmp(kseg.rep(2, 'xy'):str(), "xyxy")
+        
+        test.cmp(kseg.segiAtWidth(kseg(''), 1), 0)
+        test.cmp(kseg.segiAtWidth(kseg('a'), 1), 1)
+        test.cmp(kseg.segiAtWidth(kseg('a'), 2), 1)
+        test.cmp(kseg.segiAtWidth(kseg('abc'), 2), 2)
+        test.cmp(kseg.segiAtWidth(kseg('ab3'), 3), 3)
+        test.cmp(kseg.segiAtWidth(kseg('ab3'), 4), 3)
+        
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 1), 1)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 2), 1)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 3), 2)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 4), 2)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 5), 2)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 6), 2)
+    end)
+    
     test("construct", function()
         local s = kseg()
         test.cmp(s:str(), "")

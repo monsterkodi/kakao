@@ -29,6 +29,11 @@ function cells:init(screen)
     end
 
 
+function cells:__tostring() 
+    return "[cells " .. tostring(self.x) .. " " .. tostring(self.y) .. " " .. tostring(self.cols) .. " " .. tostring(self.rows) .. "]"
+    end
+
+
 function cells:rect() 
     return array(self.x, self.y, ((self.x + self.cols) - 1), ((self.y + self.rows) - 1))
     end

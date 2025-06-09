@@ -75,7 +75,7 @@ class color
     @darken: c f=0.5 -> 
     
         ⮐  [0 0 0] if empty c
-        c.map((v) -> clamp(0 255 int(f*v)))
+        c∙map((v) -> clamp(0 255 int(f*v)))
         
     # ███████    ████████   ███   ███████   ███   ███  █████████  ████████  ███   ███
     # ███   ███  ███   ███  ███  ███        ███   ███     ███     ███       ████  ███
@@ -86,7 +86,7 @@ class color
     @brighten: c f=0.5 ->
     
         ⮐  [255 255 255] if empty c
-        c.map((v) -> clamp(0 255 int((1+f)*v)))
+        c∙map((v) -> clamp(0 255 int((1+f)*v)))
         
     # ███   ███  ███  ███████    ████████    ███████   ███   ███  █████████
     # ███   ███  ███  ███   ███  ███   ███  ███   ███  ████  ███     ███   
@@ -100,9 +100,9 @@ class color
         w = (c[0] + c[1] + c[2]) / 3
         if c[0] * c[1] * c[2] == 0 ➜ w *= 2 
         [
-            min(255 parseInt(c[0]*f+w*(1-f)))
-            min(255 parseInt(c[1]*f+w*(1-f)))
-            min(255 parseInt(c[2]*f+w*(1-f)))
+            min(255 int(c[0]*f+w*(1-f)))
+            min(255 int(c[1]*f+w*(1-f)))
+            min(255 int(c[2]*f+w*(1-f)))
         ]
         
     @saturate: c s=1.0 l=1.0->
@@ -226,7 +226,7 @@ class color
                 if char == ' '
                     clr = '\x1b[49m' if idx and line[idx-1] != ' '
                 else
-                    clr = color.bg_rgb @darken(bg 0.75+Math.random()*0.25)
+                    clr = color.bg_rgb @darken(bg 0.75+math.random()*0.25)
                 rl +=  clr + char 
             resl.push rl + '\x1b[49m'
         resl
@@ -240,13 +240,13 @@ class color
     @linesForCells: cells ->
         
         lines = []
-        for row in cells
+        for ri row in ipairs cells
             line = ''
-            for cell,idx in row
-                line += color.bg_rgb cell.bg
-                line += color.fg_rgb cell.fg
-                line += cell.char
-            lines.push line + '\x1b[49m'
+            for idx cell in ipairs row
+                line &= color.bg_rgb cell.bg
+                line &= color.fg_rgb cell.fg
+                line &= cell.char
+            lines∙push line & '\x1b[49m'
         lines
         
     #  0000000   000       0000000   000   000  
@@ -268,16 +268,16 @@ class color
                     for yo in -3..3
                         if x+xo >= 1 and x+xo <= rl and y+yo >= 1 and y+yo <= cl
                             nc = cells[y+yo][x+xo]
-                            df = 1 - math.sqrt(xo*xo + yo*yo) / 6
+                            df = 1 - sqrt(xo*xo + yo*yo) / 6
                             sumr += nc.fg[1]*df
                             sumg += nc.fg[2]*df
                             sumb += nc.fg[3]*df
                             
                 scl = strength * 0.014 * util.randRange(0.98 1.02)
                 cell.bg = {
-                    math.min(255 scl * sumr)
-                    math.min(255 scl * sumg)
-                    math.min(255 scl * sumb)
+                        min(255 scl * sumr)
+                        min(255 scl * sumg)
+                        min(255 scl * sumb)
                     }
         cells
         
@@ -292,7 +292,7 @@ class color
         for cell in cells∙each()
             clr = cell.cell[typ]
             f = 1 + util.randRange(-amount/2 amount/2)
-            cell.cell[typ] = clr∙map((v) -> math.floor(clamp(0 255 v * f)))
+            cell.cell[typ] = clr∙map((v) -> int(clamp(0 255 v * f)))
 
     # 0000000    000  00     00  
     # 000   000  000  000   000  
@@ -304,7 +304,7 @@ class color
         
         for cell in cells∙each()
             clr = cell.cell[typ]
-            cell.cell[typ] = clr∙map((v) -> math.floor(clamp(0 255 v * amount)))
+            cell.cell[typ] = clr∙map((v) -> int(clamp(0 255 v * amount)))
             
     # ███      ███   ███  ██     ██  ███  ███   ███   ███████   ███   ███   ███████  ████████
     # ███      ███   ███  ███   ███  ███  ████  ███  ███   ███  ████  ███  ███       ███     

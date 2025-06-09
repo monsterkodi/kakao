@@ -87,7 +87,7 @@ function color.static.darken(c, f)
         f = f or 0.5
         
         if empty(c) then return array(0, 0, 0) end
-        return c.map(function (v) 
+        return c:map(function (v) 
     return clamp(0, 255, int((f * v)))
 end)
     end
@@ -103,7 +103,7 @@ function color.static.brighten(c, f)
         f = f or 0.5
         
         if empty(c) then return array(255, 255, 255) end
-        return c.map(function (v) 
+        return c:map(function (v) 
     return clamp(0, 255, int(((1 + f) * v)))
 end)
     end
@@ -121,7 +121,7 @@ function color.static.vibrant(c, f)
         if empty(c) then return array(128, 128, 128) end
         local w = (((c[0] + c[1]) + c[2]) / 3)
         if (((c[0] * c[1]) * c[2]) == 0) then w = w * 2 end
-        return array(min(255, parseInt(((c[0] * f) + (w * (1 - f))))), min(255, parseInt(((c[1] * f) + (w * (1 - f))))), min(255, parseInt(((c[2] * f) + (w * (1 - f))))))
+        return array(min(255, int(((c[0] * f) + (w * (1 - f))))), min(255, int(((c[1] * f) + (w * (1 - f))))), min(255, int(((c[2] * f) + (w * (1 - f))))))
     end
 
 
@@ -228,20 +228,20 @@ function color.static.hslToRgb(c)
 
 function color.static.bg_rgb(c) 
         if empty(c) then return '\x1b[49m' end
-        return "\x1b[48;2;" .. c[0] .. ";" .. c[1] .. ";" .. c[2] .. "m"
+        return "\x1b[48;2;" .. tostring(c[0]) .. ";" .. tostring(c[1]) .. ";" .. tostring(c[2]) .. "m"
     end
 
 
 function color.static.fg_rgb(c) 
         if empty(c) then return '\x1b[39m' end
-        return "\x1b[38;2;" .. c[0] .. ";" .. c[1] .. ";" .. c[2] .. "m"
+        return "\x1b[38;2;" .. tostring(c[0]) .. ";" .. tostring(c[1]) .. ";" .. tostring(c[2]) .. "m"
     end
 
 
 function color.static.ul_rgb(c) 
         -- underline color
         if empty(c) then return '\x1b[59m' end
-        return "\x1b[58;2;" .. c[0] .. ";" .. c[1] .. ";" .. c[2] .. "m"
+        return "\x1b[58;2;" .. tostring(c[0]) .. ";" .. tostring(c[1]) .. ";" .. tostring(c[2]) .. "m"
     end
 
 -- ████████    ███████   ███   ███  ███████     ███████   ██     ██
@@ -265,7 +265,7 @@ function color.static.randomBackgroundColors(lines, bg, fg)
                                      end
 end)()
                 else 
-                    clr = color.bg_rgb(color.darken(bg, (0.75 + (Math.random() * 0.25))))
+                    clr = color.bg_rgb(color.darken(bg, (0.75 + (math.random() * 0.25))))
                 end
                 
                 rl = rl + ((clr + char))
@@ -286,15 +286,15 @@ end)()
 
 function color.static.linesForCells(cells) 
         local lines = array()
-        for row in cells do 
+        for ri, row in ipairs(cells) do 
             local line = ''
-            for cell, idx in row do 
-                line = line + (color.bg_rgb(cell.bg))
-                line = line + (color.fg_rgb(cell.fg))
-                line = line + (cell.char)
+            for idx, cell in ipairs(row) do 
+                line = line .. (color.bg_rgb(cell.bg))
+                line = line .. (color.fg_rgb(cell.fg))
+                line = line .. (cell.char)
             end
             
-            lines.push((line + '\x1b[49m'))
+            lines:push(line .. '\x1b[49m')
         end
         
         return lines
@@ -321,7 +321,7 @@ function color.static.glowEffect(cells, strength)
                     for yo in iter(-3, 3) do 
                         if (((((x + xo) >= 1) and ((x + xo) <= rl)) and ((y + yo) >= 1)) and ((y + yo) <= cl)) then 
                             local nc = cells[(y + yo)][(x + xo)]
-                            local df = (1 - (math.sqrt(((xo * xo) + (yo * yo))) / 6))
+                            local df = (1 - (sqrt(((xo * xo) + (yo * yo))) / 6))
                             sumr = sumr + ((nc.fg[1] * df))
                             sumg = sumg + ((nc.fg[2] * df))
                             sumb = sumb + ((nc.fg[3] * df))
@@ -331,10 +331,10 @@ function color.static.glowEffect(cells, strength)
                 
                 local scl = ((strength * 0.014) * util.randRange(0.98, 1.02))
                 cell.bg = {
-                            math.min(255, (scl * sumr)), 
-                            math.min(255, (scl * sumg)), 
-                            math.min(255, (scl * sumb))
-                            }
+                           min(255, (scl * sumr)), 
+                           min(255, (scl * sumg)), 
+                           min(255, (scl * sumb))
+                           }
             end
         end
         
@@ -353,7 +353,7 @@ function color.static.variateCellsColor(cells, typ, amount)
             local clr = cell.cell[typ]
             local f = (1 + util.randRange(-(amount / 2), (amount / 2)))
             cell.cell[typ] = clr:map(function (v) 
-    return math.floor(clamp(0, 255, (v * f)))
+    return int(clamp(0, 255, (v * f)))
 end)
         end
     end
@@ -369,7 +369,7 @@ function color.static.dimCellsColor(cells, typ, amount)
         for cell in cells:each() do 
             local clr = cell.cell[typ]
             cell.cell[typ] = clr:map(function (v) 
-    return math.floor(clamp(0, 255, (v * amount)))
+    return int(clamp(0, 255, (v * amount)))
 end)
         end
     end

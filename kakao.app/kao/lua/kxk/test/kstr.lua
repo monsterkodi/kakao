@@ -83,14 +83,20 @@ test("kstr", function()
     end)
     
     test("stripol", function()
-        test.cmp("" .. (1 + 2) .. " x " .. (3 * 4) .. "", "3 x 12")
+        test.cmp("" .. tostring((1 + 2)) .. " x " .. tostring((3 * 4)) .. "", "3 x 12")
         
         test.cmp([[
-]] .. (2 / 2) .. [[, ...
-]] .. (5 * 4) .. [[
+]] .. tostring((2 / 2)) .. [[, ...
+]] .. tostring((5 * 4)) .. [[
 ]], [[
 1, ...
 20]])
+    end)
+    
+    test("detab", function()
+        test.cmp(kstr.detab('\t\t'), '        ')
+        test.cmp(kstr.detab('aa\tbb'), 'aa  bb')
+        test.cmp(kstr.detab('a\tb\tc\td'), 'a   b   c   d')
     end)
     
     --  0000000   0000000   000       0000000   00000000   

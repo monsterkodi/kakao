@@ -6,11 +6,11 @@
     000   000  000  0000000    0000000  
 ###
 
-use ../../../kxk ▪ kutil kseg
-use ../../../kxk ◆ pepe
-use              ◆ belt
+# use ../../../kxk ▪ kutil kseg
+# use ../../../kxk ◆ pepe
+# use              ◆ belt
 
-function misc
+class misc
         
     ###
      0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
@@ -35,86 +35,71 @@ function misc
         
         filtered = []
         
-        for w in words
+        for wi w in ipairs words
         
-            if w.startsWith turd # check anything that starts with turd
-                continue if w.startsWith '..' # .. skip if it is the start of a relative path
-                continue if w.startsWith './' #  ▴ this prevents relative use paths to clutter 
-                                              #  ▴ the completion when turd is a dot.
-                continue if /\d+\.\d+/.test(w) and not w.startsWith before # skip float decimals if the integer part doesn't match
-                
-                p = pepe w
-                if p.unbalanced or p.mismatch
-                    
-                    if w.endsWith(p.tail) and p.mismatch
-                        fix = p.mismatch[0].content[0]
-                        #◂ #{w} #{fix}"
-                        filtered.push fix
-                        if valid (wds = kseg.words fix)
-                            fst = fix[0..wds[0].index+wds[0].word.length]
-                            if fst != fix
-                                #▴ #{w} #{fst}"
-                                filtered.push fst 
-                    else if p.unbalanced
-                        fix = p.unbalanced[0].content[0]
-                        #◂ #{w} #{fix}"
-                        filtered.push fix
-                    else
-                        #skip |#{w}| pepe" p
-                    
-                    continue 
-                    
-                if 0 <= w.indexOf '\n'
-                    w = w[0...w.indexOf('\n')]
-                    
-                if valid (wds = kseg.words w)
-                    lst = wds[0].index+wds[0].word.length
-                    if lst < w.length-1
-                        if lst > before.length
-                            fst = w[0..lst]
-                            p = pepe fst
-                            if not p.unbalanced or p.mismatch
-                                #▸▸ #{fst} #{before} #{turd} #{wds[0].index+wds[0].word.length} < #{w.length}"
-                                filtered.push fst
-                                continue
-                            else
-                                balanced = true
-                        if not balanced
-                            #⮐  #{before} #{turd} #{lst} < #{w.length} |#{w}|"
-                            continue 
-                        
-                #■ #{w} #{before} #{turd}" kseg.words(w)
-                
-                filtered.push w
-                continue                        
-            
-            wds = kseg.words w
-            for subw,idx in wds          # split chunk into words and 
-                if subw.word.startsWith turd  # add any that starts with turd 
-                    #◆ #{w} #{before} |#{subw.word}|"
-                    filtered.push subw.word    
-                    
-                    if idx == wds.length-1 and subw.index+subw.word.length < w.length-1
-                        rwd = w[subw.index..]
-                        p = pepe rwd
-                        if not (p.unbalanced or p.mismatch)
-                            #◆◆ #{w} #{before} ▸#{turd}◂ |#{rwd}|" 
-                            filtered.push rwd
+            if kstr.startsWith w turd
+                if 
+                    kstr.startsWith(w '..') ➜ _ = nil
+                    kstr.startsWith(w './') ➜ _ = nil
+                    string.match(w "\\d+.\\d+") and not w.startsWith(before) ➜ _ = nil
+                    ➜ 
+                        p = pepe w
+                        if p.unbalanced or p.mismatch
                             
-                else if turd.length == 1 and turd == w[subw.index-1] # if subword is prefixed with turd
-                    if turd != '.'
-                        #○ #{w} #{before}"
-                        filtered.push turd[-1] + subw.word
-                    else
-                    if /\d+\./.test(before) and /\d+/.test(subw.word)
-                        if w.startsWith before 
-                            #✔ #{w} #{before}"
-                            filtered.push turd[-1] + subw.word           
-                        # else
-                        #     #✘ #{w} #{before}"
-                    else if not /\d+\./.test(before) and not /\d+/.test(subw.word)
-                        #▴ #{w} #{before}"
-                        filtered.push turd[-1] + subw.word
+                            if w.endsWith(p.tail) and p.mismatch
+                                fix = p.mismatch[1].content[1]
+                                filtered∙push fix
+                                wds = kseg.words fix
+                                if valid wds
+                                    fst = string.sub(fix 1 wds[1].index+wds[1].word.len)
+                                    if fst != fix
+                                        filtered∙push fst 
+                            elif p.unbalanced
+                                fix = p.unbalanced[1].content[1]
+                                filtered∙push fix
+                        else    
+                            if 0 <= kstr.find(w '\n')
+                                w = string.sub w 1 kstr.find(w '\n')
+                                
+                            push = true
+                            wds = kseg.words w
+                            if valid wds
+                                balanced = false
+                                lst = wds[1].index+wds[1].word.length
+                                if lst < w.length
+                                    if lst >= before.length
+                                        fst = string.sub(w 1 lst)
+                                        p = pepe fst
+                                        if not p.unbalanced or p.mismatch
+                                            filtered∙push fst
+                                            push = false
+                                        else
+                                            balanced = true
+                                    if not balanced
+                                        push = false
+                            if push        
+                                filtered∙push w
+            else            
+                wds = kseg.words w
+                for idx subw in ipairs wds        
+                    if subw.word.startsWith turd
+                        filtered∙push subw.word    
+                        
+                        if idx == wds.length-1 and subw.index+subw.word.length < w.length-1
+                            rwd = string.sub(w subw.index)
+                            p = pepe rwd
+                            if not (p.unbalanced or p.mismatch)
+                                filtered∙push rwd
+                                
+                    elif turd.length == 1 and turd == w[subw.index-1]
+                        if turd != '.'
+                            filtered∙push turd[-1] + subw.word
+                        else
+                            if string.match(before "\\d+\\." ) and string.match(subw.word "\\d+")
+                                if w.startsWith before 
+                                    filtered∙push turd[-1] + subw.word           
+                            elif not string.match(before "\\d+\\.") and not string.match(subw.word "\\d+")
+                                filtered∙push turd[-1] + subw.word
            
         words = kutil.uniq filtered
         
@@ -124,35 +109,31 @@ function misc
         
         push = s ->
             
-            ⮐  if kseg.str(s) == turd # don't include what we are trying to complete
+            ⮐  if kseg.str(s) == turd
             
             ws = kseg.words s
-            ws = ws.filter (w) -> w.index+w.segl.length > turd.length
+            ws = ws.filter((w) -> w.index+w.segl.len > turd.len)
             
             if valid ws[0] 
                 if ws[0].index == 0 and turd != ws[0].word != s and ws[0].word.startsWith(turd)
-                    segls.push ws[0].segl # add the first word of longer completion 
-            # if kseg.headCountTurd(s[turd.length..]) # if completion starts with turd, 
-            #     if not s[turd.length] in '([{'
-            #         #✘ #{kseg.str s[0..turd.length+1]} #{before} |#{s[turd.length]}|"
-            #         segls.push s[0..turd.length+1]      # add the first character
+                    segls.push ws[0].segl
                 
             segls.push s
         
-        for segl in kseg.segls words
-            #
+        for si segl in ipairs kseg.segls(words)
+
             tc = kseg.tailCountTurd segl
             
             if tc == 0 or tc == 1 and segl[0] == segl[-1]
                 push segl
             else
-                end = kseg.str segl[segl.length-tc..]
-                if end in '])}' or end[-1] in ')]}' and end[-2] not in ','
+                ends = kseg.str segl∙slice(segl.length-tc)
+                if kstr.find('])}' ends) >= 1 or kstr.find('])}' string.sub(ends ends.len ends.len)) >= 1 and string.sub(ends ends.len-1 ends.len-1) != ','
                     push segl
                 else
-                    beforeTurd = segl[0...segl.length-tc]
+                    beforeTurd = segl∙slice(1 segl.length-tc)
                     if valid beforeTurd
-                        push segl[0...segl.length-tc]
+                        push segl∙slice(1 segl.length-tc)
                     
         strs = segls.map kseg.str
         strs.sort()
@@ -171,16 +152,21 @@ function misc
 
     @indexOfExtremePositionInDirection: posl dir index ->
         
+        cmp   = nil
+        exi   = nil
+        start = nil
+        ci    = 1
+        
         switch dir
-            'left' 'right' ➜ ci = 0
-            'up'   'down'  ➜ ci = 1
-            
+            'left' 'right' ➜ ci = 1
+            'up'   'down'  ➜ ci = 2
+        
         switch dir
-            'left' 'up'    ➜ start =  Infinity  ; cmp = (a b) -> a > b
-            'right' 'down' ➜ start = -Infinity  ; cmp = (a b) -> a < b
-            
-        for pos,idx in posl
-            if cmp start pos[ci]
+            'left' 'up'    ➜ start =  Infinity ; cmp = (a b) -> a > b
+            'right' 'down' ➜ start = -Infinity ; cmp = (a b) -> a < b
+        
+        for idx pos in ipairs posl
+            if cmp(start pos[ci])
                 start = pos[ci]
                 exi   = idx
                 
@@ -190,4 +176,4 @@ function misc
         
         exi
 
-export misc
+⮐  misc

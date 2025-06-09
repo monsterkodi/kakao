@@ -94,6 +94,12 @@ use kxk/kxk
         """ ▸ """
         1, ...
         20"""
+        
+    ▸ detab
+        
+        kstr.detab('\t\t') ▸ '        '
+        kstr.detab('aa\tbb') ▸ 'aa  bb'
+        kstr.detab('a\tb\tc\td') ▸ 'a   b   c   d'
 
     #  0000000   0000000   000       0000000   00000000   
     # 000       000   000  000      000   000  000   000  

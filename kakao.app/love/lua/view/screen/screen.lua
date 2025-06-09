@@ -67,6 +67,10 @@ function screen:add(x, y, char, fg, bg)
 
 function screen:set(x, y, char, fg, bg) 
         if ((((1 <= x) and (x <= self.cols)) and (1 <= y)) and (y <= self.rows)) then 
+            if (char ~= " ") then 
+                print("screen.set " .. tostring(x) .. " " .. tostring(y) .. " " .. tostring(char) .. "", fg, bg)
+            end
+            
             self.c[y][x].char = char
             self.c[y][x].fg = (fg or array())
             self.c[y][x].bg = (bg or array())
@@ -178,14 +182,14 @@ function screen:get_bg(x, y)
 
 
 function screen:render(ox, oy, fontStep, fontSize) 
+        print("screen.render", self.rows, self.cols)
         for y in iter(1, self.rows) do 
             for x in iter(1, self.cols) do 
                 local char = self.c[y][x].char
                 
-                if (self.c[y][x].bg and (#self.c[y][x].bg > 0)) then 
-                    love.graphics.setColor((self.c[y][x].bg[1] / 255), (self.c[y][x].bg[2] / 255), (self.c[y][x].bg[3] / 255))
-                    love.graphics.rectangle("fill", (ox + ((x - 1) * fontStep)), (oy + ((y - 1) * fontSize)), fontStep, fontSize)
-                end
+                -- if @c[y][x].bg and @c[y][x].bg.len > 0
+                --     love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
+                --     love.graphics.rectangle("fill", ox+(x-1)*fontStep, oy+(y-1)*fontSize, fontStep, fontSize) 
                 
                 if ((#self.c[y][x].fg > 0) and is(self.c[y][x].fg, array)) then 
                     love.graphics.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))

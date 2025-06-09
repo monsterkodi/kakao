@@ -23,6 +23,8 @@ class cells
         @cols = 0
         @rows = 0
     
+    $: -> "[cells #{@x} #{@y} #{@cols} #{@rows}]"
+    
     rect: -> [@x, @y, @x+@cols-1, @y+@rows-1]
     
     layout: x y cols rows ->
