@@ -183,21 +183,22 @@ function screen:get_bg(x, y)
 
 
 function screen:render() 
+        local lg = love.graphics
         -- log "screen.render" @rows, @cols
         for y in iter(1, self.rows) do 
             for x in iter(1, self.cols) do 
                 local char = self.c[y][x].char
                 
-                -- if @c[y][x].bg and @c[y][x].bg.len > 0
-                --     love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
-                --     love.graphics.rectangle("fill", (x-1)*@csz[1], (y-1)*@csz[2], @csz[1], @csz[2]) 
-                
-                if ((#self.c[y][x].fg > 0) and is(self.c[y][x].fg, array)) then 
-                    love.graphics.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))
+                if (self.c[y][x].bg and (#self.c[y][x].bg > 0)) then 
+                    lg.setColor((self.c[y][x].bg[1] / 255), (self.c[y][x].bg[2] / 255), (self.c[y][x].bg[3] / 255))
+                    lg.rectangle("fill", ((x - 1) * self.csz[1]), ((y - 1) * self.csz[2]), self.csz[1], self.csz[2])
                 end
                 
-                -- love.graphics.print char, (x-1)*@csz[1], (y-1)*@csz[2]
-                love.graphics.print(char, ((x - 1) * self.csz[1]), ((y - 1) * self.csz[2]))
+                if ((#self.c[y][x].fg > 0) and is(self.c[y][x].fg, array)) then 
+                    lg.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))
+                end
+                
+                lg.print(char, ((x - 1) * self.csz[1]), ((y - 1) * self.csz[2]))
             end
         end
         

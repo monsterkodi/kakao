@@ -140,20 +140,20 @@ class screen
     # 000   000  00000000  000   000  0000000    00000000  000   000  
     
     render: ->
+        lg = love.graphics
         # log "screen.render" @rows, @cols
         for y in 1..@rows
             for x in 1..@cols
                 char = @c[y][x].char
                     
-                # if @c[y][x].bg and @c[y][x].bg.len > 0
-                #     love.graphics.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
-                #     love.graphics.rectangle("fill", (x-1)*@csz[1], (y-1)*@csz[2], @csz[1], @csz[2]) 
+                if @c[y][x].bg and @c[y][x].bg.len > 0
+                    lg.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
+                    lg.rectangle("fill", (x-1)*@csz[1], (y-1)*@csz[2], @csz[1], @csz[2]) 
                 
                 if @c[y][x].fg.len > 0 and @c[y][x].fg is array
-                    love.graphics.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
+                    lg.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
                 
-                # love.graphics.print char, (x-1)*@csz[1], (y-1)*@csz[2]
-                love.graphics.print char, (x-1)*@csz[1], (y-1)*@csz[2]
+                lg.print char, (x-1)*@csz[1], (y-1)*@csz[2]
         @
         
 ⮐  screen

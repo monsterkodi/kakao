@@ -68,12 +68,9 @@ class draw extends view
         if @complete
             @complete∙drawPopup()
         
-        if @gutter
-            @gutter∙draw()
-        if @mapscr
-            @mapscr∙draw()
-        if @scroll
-            @scroll∙draw()
+        if @gutter ➜ @gutter∙draw()
+        if @mapscr ➜ @mapscr∙draw()
+        if @scroll ➜ @scroll∙draw()
         
         # prof.end 'draw'   if @name == 'editor'
         

@@ -77,17 +77,9 @@ function draw:draw()
             self.complete:drawPopup()
         end
         
-        if self.gutter then 
-            self.gutter:draw()
-        end
-        
-        if self.mapscr then 
-            self.mapscr:draw()
-        end
-        
-        if self.scroll then 
-            self.scroll:draw()
-        end
+        if self.gutter then self.gutter:draw() end
+        if self.mapscr then self.mapscr:draw() end
+        if self.scroll then self.scroll:draw() end
         
         -- prof.end 'draw'   if @name == 'editor'
         

@@ -7,7 +7,6 @@ function love.load()
     _G.font = love.graphics.setNewFont("font.ttf", (fontWidth * 2))
     _G.count = 0
     --love.window.maximize()
-    
     love.keyboard.setKeyRepeat(true)
     
     _G.ked = ked()
@@ -19,19 +18,23 @@ end
 function love.draw() 
     count = count + 1
     local _, _, w, h = love.window.getSafeArea()
-    
     local scale = love.window.getDPIScale()
+    
     local lg = love.graphics
     
     lg.setColor(0.1, 0.1, 0.1)
-    local cw = fontWidth
-    local ch = (fontWidth * 2)
     
-    local cols = math.floor((w / cw))
-    local rows = math.floor((h / ch))
+    local tth = lg.newText(_G.font, "Xg")
+    local ttw = lg.newText(_G.font, "W")
+    
+    tw, th = ttw:getDimensions() ; local cw = tw
+    tw, th = tth:getDimensions() ; local ch = th
+    
+    local cols = floor((w / cw))
+    local rows = floor((h / ch))
     
     lg.setColor(0.2, 0.2, 0.2)
-    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(scale) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * cw), (h - (ch * 2)))
+    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(scale) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * cw), (h - (ch * 2)))
     
     ked:draw(cols, rows, cw, ch)
     
