@@ -333,7 +333,7 @@ class state extends events
     clearLines: ->
 
         @setSegls [[]]
-        @setMainCursor 0 0
+        @setMainCursor 1 1
 
     isValidLineIndex:   li -> 0 <= li < @s.lines.length
     isInvalidLineIndex: li -> not @isValidLineIndex li
@@ -346,27 +346,26 @@ class state extends events
 
     undo: ->
 
-        ⮐  if @h.length <= 1
-        @r.push @h.pop()
-        @s = @h[-1]
-        @syntax.setSegls @s.lines
+        ⮐  if @h.len <= 1
+        @r∙push @h∙pop()
+        @s = @h[^1]
+        @syntax∙setSegls @s.lines
 
     redo: ->
 
         ⮐  if empty @r
         @h.push @r.pop()
-        @s = @h[-1]
+        @s = @h[^1]
         @syntax.setSegls @s.lines
 
-    begin: -> @beginIndex = @h.length
+    begin: -> @beginIndex = @h.len
 
     ende: ->
 
         if valid @beginIndex
 
-            @h.splice @beginIndex @h.length-@beginIndex-1
+            @h.splice @beginIndex @h.len-@beginIndex-1
             @beginIndex = nil
-            # delete @beginIndex
         @
 
     pushState: -> 
@@ -378,8 +377,8 @@ class state extends events
         @h∙pop()  
         @pushState()
 
-    isDirty: -> @h.length > 1
-    hasRedo: -> @r.length > 0
+    isDirty: -> @h.len > 1
+    hasRedo: -> @r.len > 0
 
     gutterWidth: -> math.max 4 2 + math.ceil(math.log10(@s.lines.length+1))
 
@@ -1162,8 +1161,8 @@ class state extends events
     selectLine: y ->
         
         y ?= @mainCursor()[2]
-        if 1 <= y <= @s.lines.len
-            @select [1 y] [@s.lines[y].leng y]
+        if 1 <= y and y <= @s.lines.len
+            @select [1 y] [@s.lines[y].len y]
         @
         
     selectPrevLine: y ->

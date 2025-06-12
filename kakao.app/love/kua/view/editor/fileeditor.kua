@@ -238,11 +238,9 @@ class fileeditor extends editor
     
     onMouse: event ->
     
-        ret = super event 
-        if ret.redraw
-            ⮐  ret 
+        if editor.onMouse @ event ➜ ⮐  true
         
-        if not (@dragStart or @cells.isInsideEvent(event) or (@gutter.cells.isInsideEvent(event)))
+        if not (@dragStart or @cells∙isInsideEvent(event) or (@gutter.cells∙isInsideEvent(event)))
             ⮐  @hover 
         
         (col row) = @eventPos event
@@ -333,7 +331,7 @@ class fileeditor extends editor
                     
                     post∙emit 'pointer' 'text'
                     
-                elif @gutter.cells.isInsideEvent event
+                elif @gutter.cells∙isInsideEvent event
                     
                     post∙emit 'pointer' 'vertical-text'
         @hover

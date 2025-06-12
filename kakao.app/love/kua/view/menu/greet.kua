@@ -60,9 +60,11 @@ class greet extends view
     # ███   ███  ███   ███  ███   ███  ███   ███  
     # ███████    ███   ███  ███   ███  ██     ██  
 
-    draw: ->
-        
+    draw: screen ->
+    
         ⮐  if @hidden()
+        
+        @cells∙setScreen screen
 
         duration = 480
         @a += 1
@@ -75,7 +77,8 @@ class greet extends view
         for y row in ipairs @header
             for x cell in ipairs row
                 @cells∙set x y cell.char cell.fg cell.bg
-                
+        
+        view.draw @        
         # post∙emit 'redraw'
 
 ⮐  greet

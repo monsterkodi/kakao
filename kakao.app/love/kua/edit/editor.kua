@@ -106,12 +106,12 @@ class editor extends draw
     
     onMouse: event ->
         
-        # super event
-        
-        ret = @gutter∙onMouse(event)   ; ⮐  ret if ret.redraw
-        ret = @mapscr∙onMouse(event)   ; ⮐  ret if ret.redraw
-        ret = @scroll∙onMouse(event)   ; ⮐  ret if ret.redraw
-        ret = @complete∙onMouse(event) ; ⮐  ret if ret.redraw
+        draw.onMouse @ event
+  
+        if @gutter   and @gutter∙onMouse(event)   ➜ ⮐  true
+        if @mapscr   and @mapscr∙onMouse(event)   ➜ ⮐  true 
+        if @scroll   and @scroll∙onMouse(event)   ➜ ⮐  true
+        if @complete and @complete∙onMouse(event) ➜ ⮐  true
                         
         false
                 

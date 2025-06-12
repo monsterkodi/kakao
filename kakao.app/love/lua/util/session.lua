@@ -35,7 +35,7 @@ function session:init(opt)
         
         self.dir = slash.absolute("~/.config/ked/sessions/")
         print('session/dir' .. self.dir)
-        self.file = slash.path(self.dir, "" .. self.name .. ".noon")
+        self.file = slash.path(self.dir, "" .. tostring(self.name) .. ".noon")
         
         -- if not opt.fresh
         --     @loadAndMerge()
@@ -68,36 +68,34 @@ function session:get(key, value)
 
 
 function session:set(key, value) 
-        if is(not key, str) then return end
-        if self:get(key) then return end eql(value)
+        if is(not key, "string") then return end
+        if (self:get(key) == value) then return end
         if (self:get(key) == value) then return end
         if empty(value) then return self:del(key) end
         
         self.data = self.data or ({})
-        sds.set(self.data, self:keypath(key), value)
+        -- sds∙set @data @keypath(key) value
         return self:delayedSave()
     end
 
 
 function session:del(key) 
         if not self.data then return end
-        sds.del(self.data, self:keypath(key))
+        -- sds∙del @data @keypath(key)
         return self:delayedSave()
     end
 
 
 function session:delayedSave() 
-        clearTimeout(self.timer)
-        self.timer = setTimeout(function () 
-    return self:save()
-end) return self.timeout
+        -- clearTimeout @timer
+        return -- @timer = setTimeout (-> @save()) @timeout
     end
 
 
 function session:clear() 
         self.data = {}
         
-        return clearTimeout(self.timer)
+        return -- clearTimeout @timer
     end
 
 

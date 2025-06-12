@@ -22,8 +22,6 @@ love.draw = ->
 
     lg = love.graphics
     
-    lg.setColor 0.1 0.1 0.1 
-    
     tth = lg.newText _G.font "Xg" 
     ttw = lg.newText _G.font "W" 
     
@@ -32,11 +30,11 @@ love.draw = ->
     
     cols = floor w/cw
     rows = floor h/ch
-
-    lg.setColor 0.2 0.2 0.2 
-    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{scale} #{count} #{love.timer.getFPS()} ◂" 2*cw h-ch*2
     
     ked∙draw cols rows cw ch
+    
+    lg.setColor 0.2 0.2 0.2 
+    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{scale} #{count} #{love.timer.getFPS()} ◂" 2*cw h-ch*2
     
     nil
     
@@ -66,11 +64,24 @@ love.keypressed = key scancode isrepeat ->
     combo = mods & key
     char = switch key
         "return" ➜ "\n"
+        "tab"    ➜ "\t"
         "space"  ➜ " "
                  ➜ ""
     event = {"repeat":isrepeat combo:combo char:char}
     ked∙onKey combo event
     true
+
+love.mousepressed = x y button istouch presses ->
+
+    button = "right"
+    event = {x:x y:y type:"press" button:button count:1}
+    ked∙onMouse event
+
+love.mousemoved = x y ->
+
+    button = "right"
+    event = {x:x y:y type:"move" button:button}
+    ked∙onMouse event
     
 # love.keyreleased = key scancode ->
 # 

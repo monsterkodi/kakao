@@ -125,12 +125,12 @@ end)()
 
 
 function editor:onMouse(event) 
-        -- super event
+        draw.onMouse(self, event)
         
-        local ret = self.gutter:onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.mapscr:onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.scroll:onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.complete:onMouse(event) ; if ret.redraw then return ret end
+        if (self.gutter and self.gutter:onMouse(event)) then return true end
+        if (self.mapscr and self.mapscr:onMouse(event)) then return true end
+        if (self.scroll and self.scroll:onMouse(event)) then return true end
+        if (self.complete and self.complete:onMouse(event)) then return true end
         
         return false
     end

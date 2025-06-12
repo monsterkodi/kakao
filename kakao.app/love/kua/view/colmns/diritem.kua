@@ -6,10 +6,12 @@
     000     000     00000000  000   000
 ###
 
-use ../../theme  ◆ icons
-use ../../../kxk ▪ slash
+# use ../../theme  ◆ icons
+# use ../../../kxk ▪ slash
 
-function diritem
+use theme.icons
+
+class diritem
 
     #  0000000  000   000  00     00  0000000     0000000   000      
     # 000        000 000   000   000  000   000  000   000  000      
@@ -20,11 +22,12 @@ function diritem
     @symbol: item ->
                           
         switch item.type
-            'dir' ➜ ⮐  item.open ? icons.dir_open : icons.dir_close
-                  ➜ ⮐  icons[slash.ext(item.path)] ? icons.file
+            'dir' ➜ if item.open ➜ ⮐  icons.dir_open ➜ ⮐  icons.dir_close
+                  ➜ ⮐  icons[slash.ext(item.path)] or icons.file
                 
     @symbolName: item -> 
         
+        name = ""
         switch slash.ext item.path
             'kode'
             'noon'
@@ -42,10 +45,10 @@ function diritem
             else
                 name = slash.file item.path
         # ✔✚        
-        name += ' ✔' if item.modified
-        name += ' ✚' if item.added
+        if item.modified ➜ name &= ' ✔' 
+        if item.added    ➜ name &= ' ✚' 
                 
         # non-breakable space ▾ that prevents icons from growing in some fonts
-        @symbol(item) + '\u00A0' + name
+        @symbol(item) & '\x00A0' & name
 
-export diritem
+⮐  diritem

@@ -64,8 +64,9 @@ class view extends events
             # log "view popup.show #{@name}" 
             post∙emit 'popup.show' @name
         
-        @arrange()
-        {redraw:true}
+        # @arrange()
+        # {redraw:true}
+        true
         
     hide: ->
     
@@ -113,7 +114,7 @@ class view extends events
         if @hover and not inside
             @hover = false
             @onMouseLeave event
-        else if inside and not @hover
+        elif inside and not @hover
             @hover = true
             @onMouseEnter event
         @hover
@@ -128,6 +129,6 @@ class view extends events
     
     layout: x y w h -> @cells∙layout x y w h 
     
-    draw: -> 
+    draw: -> @cells∙render()
         
 ⮐  view

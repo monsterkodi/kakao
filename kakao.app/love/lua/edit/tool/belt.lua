@@ -39,7 +39,7 @@ function belt.static.sum(arrays)
 
 function belt.static.pos(x, y) 
         if (is(x, array) and (y == nil)) then 
-            return x
+            return x[1], x[2]
         end
         
         return x, y

@@ -9,20 +9,20 @@
     used by dircol and funcol
 ###
 
-use ../../../kxk ▪ post
-use ../../theme  ◆ theme
-use              ◆ view
+# use ../../../kxk ▪ post
+# use ../../theme  ◆ theme
+# use              ◆ view
 
-function knob extends view
+class knob extends view
 
     @: screen name ->
         
-        super screen name
+        view.init @ screen name
         
         @setColor 'fg' theme.knob.fg
         @setColor 'bg' theme.knob.bg
         
-        @parentName  = @name[0...-5]
+        @parentName  = string.sub @name 1 -5
         @frameSide   = 'right'
         @maxWidth    = 68
         @pointerType = 'ew-resize'
@@ -33,9 +33,9 @@ function knob extends view
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event =>
+    onMouse: event ->
         
-        super event
+        view.onMouse @ event
         
         switch event.type
             
@@ -44,14 +44,14 @@ function knob extends view
                 if @hover
                     post.emit 'pointer' 'grabbing'
                     @doDrag = true
-                    ⮐  redraw:true
+                    ⮐  true
                     
             'drag'
             
                 if @doDrag
                     @hover = true
                     
-                    [col row] = @eventPos event
+                    (col row) = @eventPos event
                     
                     delta = switch @frameSide
                         'left'  ➜ -col
@@ -61,16 +61,17 @@ function knob extends view
                     if delta
                         post.emit 'view.size' @parentName @frameSide delta
                         
-                    ⮐  redraw:true
+                    ⮐  true
                     
                 @hover = false
                 
             'release'
             
                 if @doDrag
-                    post.emit 'pointer' @pointerType if @hover
-                    delete @doDrag
-                    ⮐  redraw:true
+                    if @hover
+                        post.emit 'pointer' @pointerType 
+                    @doDrag = nil
+                    ⮐  true
         @hover
             
     # 0000000    00000000    0000000   000   000  
@@ -79,10 +80,10 @@ function knob extends view
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    draw: =>
+    draw: ->
     
         ⮐  if not @hover
         
         @cells.fill_col 0 0 @cells.rows-1 '|' @color.fg @color.bg
 
-export knob
+⮐  knob

@@ -56,7 +56,7 @@ function gutter:init(editor)
 
 
 function gutter:onMouse(event) 
-        if self.cells.isOutsideEvent(event) then 
+        if self.cells:isOutsideEvent(event) then 
             if valid(self.preview) then 
                 self.preview = array()
                 post:emit('redraw')
@@ -65,21 +65,16 @@ function gutter:onMouse(event)
             return
         end
         
-        if valid((self.gitChanges and ((event.cmd or event.ctrl) or event.alt))) then 
-            local pos = self:eventPos(event)
-            local idx = (pos[1] + self.state.s.view[1])
-            if self.gitChanges[idx] then 
-                if (event.type == 'press') then 
-                    print('todo: press on git change!', self.gitChanges[idx])
-                else if (event.type == 'move') then 
-                    if self.gitChanges[idx].old then 
-                        self.preview = array(idx)
-                        return {redraw = true}
-                    end
-                     end
-                end
-            end
-        end
+        -- if valid @gitChanges and (event.cmd or event.ctrl or event.alt)            
+        --     pos = @eventPos event
+        --     idx = pos[1]+@state.s.view[1]
+        --     if @gitChanges[idx]
+        --         if event.type == 'press'
+        --             log 'todo: press on git change!' @gitChanges[idx]
+        --         else if event.type == 'move'
+        --             if @gitChanges[idx].old
+        --                 @preview = [idx]
+        --                 ⮐  {redraw:true}
         
         if valid(self.preview) then 
             self.preview = array()

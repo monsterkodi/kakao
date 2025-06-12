@@ -40,7 +40,7 @@ function draw:init(screen, name, features)
 -- 0000000    000   000  000   000  00     00  
 
 
-function draw:draw() 
+function draw:draw(screen) 
         if self:hidden() then return end
         
         -- prof.start 'draw' if @name == 'editor'

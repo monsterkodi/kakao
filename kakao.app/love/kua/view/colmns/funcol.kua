@@ -6,40 +6,44 @@
 000        0000000   000   000   0000000   0000000   0000000
 ###
 
-use ../../../kxk ▪ post slash
-use ../../theme  ◆ color theme
-use ../base      ◆ view knob
-use              ◆ funtree
+# use ../../../kxk ▪ post slash
+# use ../../theme  ◆ color theme
+# use ../base      ◆ view knob
+# use              ◆ funtree
 
-function funcol extends view
+use view.colmns.funtree
 
-    @: screen @editor features ->
+class funcol extends view
+
+    @: screen editor features ->
+    
+        @editor = editor
         
-        super screen 'funcol' features
+        view.init @ screen 'funcol' features
         
         @isVisible = false
         @active    = false
         
         @pointerType = 'pointer'
         
-        @knob    = new knob    screen  "#{@name}_knob"
-        @funtree = new funtree @editor "#{@name}_funtree" ['scrllr']       
+        @knob    = knob    screen  "#{@name}_knob"
+        @funtree = funtree @editor "#{@name}_funtree" ['scrllr']       
         
         @knob.frameSide = 'left'
         
-        @funtree.setColor 'bg'            theme.funtree.bg
-        @funtree.setColor 'empty'         @funtree.color.bg
-        @funtree.setColor 'cursor_main'   @funtree.color.bg
-        @funtree.setColor 'cursor_empty'  @funtree.color.bg
-        @funtree.scroll.setColor 'bg'     @funtree.color.bg
+        @funtree∙setColor 'bg'            theme.funtree.bg
+        @funtree∙setColor 'empty'         @funtree.color.bg
+        @funtree∙setColor 'cursor_main'   @funtree.color.bg
+        @funtree∙setColor 'cursor_empty'  @funtree.color.bg
+        @funtree.scroll∙setColor 'bg'     @funtree.color.bg
         
-        @knob   .setColor 'bg'            @funtree.color.bg
+        @knob∙setColor 'bg'               @funtree.color.bg
         
-        post.on 'funcol.resize' @onFuncolResize
-        post.on 'funcol.toggle' @onFuncolToggle
-        post.on 'session.merge' @onSessionMerge
+        post∙on 'funcol.resize' @onFuncolResize
+        post∙on 'funcol.toggle' @onFuncolToggle
+        post∙on 'session.merge' @onSessionMerge
         
-    onSessionMerge: recent =>
+    onSessionMerge: recent ->
     
         ⮐  if empty recent.funcol
         
@@ -47,7 +51,7 @@ function funcol extends view
             @active = true
             @show()
             
-        ked_session.set 'funcol' recent.funcol
+        ked_session∙set 'funcol' recent.funcol
         
     # ███       ███████   ███   ███   ███████   ███   ███  █████████
     # ███      ███   ███   ███ ███   ███   ███  ███   ███     ███   
@@ -57,10 +61,11 @@ function funcol extends view
 
     layout: x y w h ->
         
-        @funtree.layout x y w h
-        @knob.layout    x y 1 h
+        @funtree∙layout x y w h
+        @knob∙layout    x y 1 h
                 
-        super x y w h
+        view∙layout @ x y w h
+        @
         
     # ███████    ████████    ███████   ███   ███
     # ███   ███  ███   ███  ███   ███  ███ █ ███
@@ -72,13 +77,14 @@ function funcol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells.fill_rect 0 1 -1 -1 ' ' null theme.funtree.bg
-        @cells.fill_rect 0 0 -1  0 ' ' null theme.gutter.bg
+        @cells∙fill_rect 0 1 -1 -1 ' ' nil theme.funtree.bg
+        @cells∙fill_rect 0 0 -1  0 ' ' nil theme.gutter.bg
         
-        @funtree.draw()
-        @knob.draw()
+        @funtree∙draw()
+        @knob∙draw()
     
-        super()
+        view.draw @
+        @
         
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
     # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
@@ -86,7 +92,7 @@ function funcol extends view
     # ███       ███   ███  ███  ████     ███     ███        ███ ███      ███   
     #  ███████   ███████   ███   ███     ███     ████████  ███   ███     ███   
 
-    onContext: event =>
+    onContext: event ->
     
         ⮐  if not @hover
     
@@ -98,14 +104,14 @@ function funcol extends view
     #    ███     ███   ███  ███   ███  ███   ███  ███      ███     
     #    ███      ███████    ███████    ███████   ███████  ████████
     
-    onFuncolResize: => @knob.doDrag = true
-    onFuncolToggle: => 
+    onFuncolResize: -> @knob.doDrag = true
+    onFuncolToggle: -> 
     
         @toggle() if not (@visible() and @collapsed())
         @active = @visible()
-        ked_session.set 'funcol▸active' @active
+        ked_session∙set 'funcol▸active' @active
         cols = max 16 int(@cells.screen.cols / 6)
-        post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
+        # post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -113,13 +119,13 @@ function funcol extends view
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
   
-    onMouse: event =>
+    onMouse: event ->
     
         ⮐  if @hidden() or @collapsed() or not @active
         
-        ret = super event            ; ⮐  ret if ret?.redraw
-        ret = @knob.onMouse event    ; ⮐  ret if ret?.redraw
-        ret = @funtree.onMouse event ; ⮐  ret if ret?.redraw
+        if view.onMouse @ event   ➜ ⮐  true
+        if @knob∙onMouse event    ➜ ⮐  true
+        if @funtree∙onMouse event ➜ ⮐  true
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      
@@ -127,10 +133,10 @@ function funcol extends view
     # 000   000  000   000  000       000       000      
     # 00     00  000   000  00000000  00000000  0000000  
     
-    onWheel: event =>
+    onWheel: event ->
         
         ⮐  if @hidden() or @collapsed() or not @active
-        @funtree.onWheel event
+        @funtree∙onWheel event
         
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
@@ -138,10 +144,10 @@ function funcol extends view
     # 000  000   000          000     
     # 000   000  00000000     000     
     
-    onKey: key event =>
+    onKey: key event ->
         
-        ⮐  if not @funtree.hasFocus()
+        ⮐  if not @funtree∙hasFocus()
         
-        @funtree.onKey key event
+        @funtree∙onKey key event
 
-export funcol
+⮐  funcol

@@ -160,15 +160,15 @@ function status:onFileAction(action, file)
 
 
 function status:onMouse(event) 
-        local cret = self.crumbs.onMouse(event)
-        local sret = self.statusfile.onMouse(event)
-        local fret = self.filepos.onMouse(event)
+        local cret = self.crumbs:onMouse(event)
+        local sret = self.statusfile:onMouse(event)
+        local fret = self.filepos:onMouse(event)
         
         if ((sret or cret) or fret) then 
             return ((sret or cret) or fret)
         end
         
-        -- super event
+        view.onMouse(self, event)
         
         local col, row = self:eventPos(event)
         
@@ -180,12 +180,12 @@ function status:onMouse(event)
                 if self.hover then 
                     if ((0 <= col) < 4) then 
                         post:emit('dircol.toggle')
-                        return {redraw = true}
+                        return true
                     end
                     
                     if (((self.cells.cols - 12) <= col) < self.cells.cols) then 
                         post:emit('funcol.toggle')
-                        return {redraw = true}
+                        return true
                     end
                 end
         end
@@ -266,7 +266,7 @@ function status:draw()
         end
         
         add('', 'col', self.color.gutter) -- column number ...
-        local colno = rpad((self.gutter - 1), "" .. cursor[0] .. "")
+        local colno = rpad((self.gutter - 1), "" .. tostring(cursor[0]) .. "")
         for ci = 1, self.gutter-1 do 
             local fg = (function () 
     if cursor[0] then 
@@ -305,7 +305,7 @@ end)()
         add(' ', 'dark', 'dark')
         
         if (#self.state.s.cursors > 1) then 
-            local cur = "" .. #self.state.s.cursors .. "♦"
+            local cur = "" .. tostring(#self.state.s.cursors) .. "♦"
             
             for i = 0, #cur-1 do 
                 local color = (function () 
@@ -319,7 +319,7 @@ end)()
         end
         
         if #self.state.s.selections then 
-            local sel = "" .. #self.state.s.selections .. "≡"
+            local sel = "" .. tostring(#self.state.s.selections) .. "≡"
             
             for i = 0, #sel-1 do 
                 local color = (function () 
@@ -333,7 +333,7 @@ end)()
         end
         
         if #self.state.s.highlights then 
-            local hil = "" .. #self.state.s.highlights .. "❇"
+            local hil = "" .. tostring(#self.state.s.highlights) .. "❇"
             
             for i = 0, #hil-1 do 
                 local color = (function () 

@@ -167,21 +167,21 @@ function crumbs:adjustText()
         self.split = slash.split(self.path)
         
         if not self.dotlessRelative then 
-            if (kstr.find("~/.", self.split[0]) < 0) then 
-                self.split.unshift('/')
+            if (kstr.find("~/.", self.split[1]) < 0) then 
+                self.split:unshift('/')
             end
         end
         
         self.root = array()
         
-        self.rounded = self.split.join(' ')
+        self.rounded = self.split:join(' ')
         
         while ((#self.split > 1) and (#self.rounded > (self.cells.cols - 2))) do 
-            self.root.push(self.split.shift())
-            self.rounded = self.split.join(' ')
+            self.root:push(self.split:shift())
+            self.rounded = self.split:join(' ')
         end
         
-        self.root = self.root.join('/')
+        self.root = self.root:join('/')
         
         local padding = (function () 
     if self.padLast then 
@@ -197,7 +197,7 @@ end)()
 
 function crumbs:set(path) 
         self.cells.rows = 1 -- 𝜏𝖍𝚒𝖘 s⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾
-        self.path = trim(path)
+        self.path = kstr.trim(path)
         return self:adjustText()
     end
 

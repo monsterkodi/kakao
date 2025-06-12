@@ -8,11 +8,6 @@
     simple list of actions with optional greet
 --]]
 
--- use ../../../kxk    ▪ kstr slash post noon
--- use ../../util      ◆ frecent
--- use ../../edit/tool ◆ belt
--- use ../../theme     ◆ theme 
--- use ../screen       ◆ cells 
 inputchoice = require "view.menu.inputchoice"
 greet = require "view.menu.greet"
 
@@ -47,20 +42,20 @@ function menu:arrange()
     return 0
              end
 end)()
-        local iz = math.max(0, (ih - 1))
+        local iz = max(0, (ih - 1))
         
         local h = ((c + 2) + ih)
-        local scy = math.floor((self.screen.rows / 2))
-        local y = math.floor((scy - ((c + 2) / 2)))
+        local scy = floor((self.screen.rows / 2))
+        local y = floor((scy - ((c + 2) / 2)))
         y = y - ih
         
-        local scx = math.floor((self.screen.cols / 2))
-        local x = math.floor((scx - (w / 2)))
+        local scx = floor((self.screen.cols / 2))
+        local x = floor((scx - (w / 2)))
         
         local gw, gh = belt.cellSize(self.greet.header)
         
-        local gx = math.floor((scx - (gw / 2)))
-        local gy = math.max(1, math.floor((((y - gh) - 1) + ih)))
+        local gx = floor((scx - (gw / 2)))
+        local gy = max(1, floor((((y - gh) - 1) + ih)))
         
         self.greet:layout(gx, gy)
         self.input:layout((x + 2), (y + 1), (w - 4), iz)
@@ -168,11 +163,13 @@ function menu:onWheel()
 -- 0000000    000   000  000   000  00     00
 
 
-function menu:draw() 
+function menu:draw(screen) 
         if self:hidden() then return end
         
+        self.cells:setScreen(screen)
+        
         self:arrange()
-        self.greet:draw()
+        self.greet:draw(screen)
         self:drawFrame()
         return self:drawChoices()
     end

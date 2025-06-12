@@ -4,156 +4,58 @@
     ███████   ███       ███████    ███████   ███████   ███ █ ███
          ███  ███       ███   ███  ███       ███       ███  ████
     ███████    ███████  ███   ███  ████████  ████████  ███   ███
-
-    an array of cells (background|foreground colors and character)
 ###
-
-use kxk.kxk
-use theme.color
-use edit.tool.belt
 
 class screen
 
-    @: cols rows -> 
+    @: cols rows cw ch -> 
     
-        @rows = rows
-        @cols = cols
-        @csz  = [0 0]
-        @c = belt.cells @cols @rows
-    
-    size: -> [@cols @rows]
-    cell: -> @csz
-    
-    initSize: cols rows cw ch -> 
-
-        @csz  = [cw ch]
-        @rows = rows
-        @cols = cols
-        @c = belt.cells @cols @rows
-        @
+        @rows  = rows
+        @cols  = cols
+        @cw    = cw
+        @ch    = ch
+        @areas = [] 
         
-    #  0000000  00000000  000000000  
-    # 000       000          000     
-    # 0000000   0000000      000     
-    #      000  000          000     
-    # 0000000   00000000     000     
+    $: -> "[screen sw #{@sw} sh #{@sh} cols #{@cols} rows #{@rows} cw #{@cw} ch #{@ch}]"
     
-    add: x y char fg bg ->
-        
-        # w = kseg.segWidth char
-        w = 1
-        if w > 1
-            if char.length > 4
-                char = '\x1b]66;w=2;' + char + '\x07'
-            @set x   y char fg bg
-            @set x+1 y null fg bg
-            ⮐  2
-        else
-            @set x y char fg bg
-            ⮐  1
+    layout: node ->
     
-    set: x y char fg bg ->
-        
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            # if char != " "
-            #     log "screen.set #{x} #{y} #{char}" fg, bg
-            @c[y][x].char = char
-            @c[y][x].fg = fg or []
-            @c[y][x].bg = bg or []
-        @
+        children = []
+        if node.hbox
+            log "HBOX"
+            node.width  = 0
+            node.height = 0
+            node.dir    = "horz"
+            children = node.hbox
+        elif node.vbox
+            log "VBOX"
+            node.width  = 0
+            node.height = 0
+            node.dir    = "vert"
+            children = node.vbox
+        elif node.view
+            log "VIEW" node.view.name
+            if type(node.w) == "number"
+                node.width = node.w
+                if node.parent.dir == "horz"
+                    node.parent.width += node.w
+                else
+                    node.parent.width = max node.parent.width node.w
+            if type(node.h) == "number"
+                node.height = node.h
+                if node.parent.dir == "vert"
+                    node.parent.height += node.h
+                else
+                    node.parent.height = max node.parent.height node.h
             
-    set_char: x y char ->
-
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            @c[y][x].char = char
-        @
-
-    set_ch_fg: x y char fg ->
-
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            @c[y][x].char = char
-            @c[y][x].fg   = fg
-        @
+        for _ child in ipairs children
+            child.parent = node
+            @layout child
             
-    set_bg: x y bg ->
-        
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            @c[y][x].bg = bg
-        @
-
-    set_fg: x y fg ->
-        
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            @c[y][x].fg = fg
-        @
-
-    set_fg_bg: x y fg bg ->
-        
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            @c[y][x].fg = fg
-            @c[y][x].bg = bg
-        @
-            
-    # ██     ██  ████████  █████████   ███████ 
-    # ███   ███  ███          ███     ███   ███
-    # █████████  ███████      ███     █████████
-    # ███ █ ███  ███          ███     ███   ███
-    # ███   ███  ████████     ███     ███   ███
-            
-    # meta_set: x y m ->
-    #     
-    #     if 0 <= x < @cols and 0 <= y < @rows
-    #         @m[y][x] = m
-            
-    # meta_clear: ->
-    #     
-    #     @m = belt.metas @cols @rows
-            
-    #  0000000   00000000  000000000  
-    # 000        000          000     
-    # 000  0000  0000000      000     
-    # 000   000  000          000     
-    #  0000000   00000000     000     
+        log node.width, node.height
     
-    get_char: x y ->
-
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            ⮐  @c[y][x].char
-        ''
-
-    get_fg: x y ->
-        
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            ⮐  @c[y][x].fg
-        []
-
-    get_bg: x y ->
-        
-        if 1 <= x and x <= @cols and 1 <= y and y <= @rows
-            ⮐  @c[y][x].bg
-        []
-        
-    # 00000000   00000000  000   000  0000000    00000000  00000000   
-    # 000   000  000       0000  000  000   000  000       000   000  
-    # 0000000    0000000   000 0 000  000   000  0000000   0000000    
-    # 000   000  000       000  0000  000   000  000       000   000  
-    # 000   000  00000000  000   000  0000000    00000000  000   000  
+    area: w h dir pad gap ->
     
-    render: ->
-        lg = love.graphics
-        # log "screen.render" @rows, @cols
-        for y in 1..@rows
-            for x in 1..@cols
-                char = @c[y][x].char
-                    
-                if @c[y][x].bg and @c[y][x].bg.len > 0
-                    lg.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
-                    lg.rectangle("fill", (x-1)*@csz[1], (y-1)*@csz[2], @csz[1], @csz[2]) 
-                
-                if @c[y][x].fg.len > 0 and @c[y][x].fg is array
-                    lg.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
-                
-                lg.print char, (x-1)*@csz[1], (y-1)*@csz[2]
-        @
+        @areas∙push { w:w h:h dir:dir pad:pad gap:gap }
         
-⮐  screen
+⮐  screen    

@@ -52,22 +52,22 @@ class gutter extends view
 
     onMouse: event ->
 
-        if @cells.isOutsideEvent event
+        if @cells∙isOutsideEvent event
             if valid @preview
                 @preview = []
                 post∙emit 'redraw'
             ⮐  
                 
-        if valid @gitChanges and (event.cmd or event.ctrl or event.alt)            
-            pos = @eventPos event
-            idx = pos[1]+@state.s.view[1]
-            if @gitChanges[idx]
-                if event.type == 'press'
-                    log 'todo: press on git change!' @gitChanges[idx]
-                else if event.type == 'move'
-                    if @gitChanges[idx].old
-                        @preview = [idx]
-                        ⮐  {redraw:true}
+        # if valid @gitChanges and (event.cmd or event.ctrl or event.alt)            
+        #     pos = @eventPos event
+        #     idx = pos[1]+@state.s.view[1]
+        #     if @gitChanges[idx]
+        #         if event.type == 'press'
+        #             log 'todo: press on git change!' @gitChanges[idx]
+        #         else if event.type == 'move'
+        #             if @gitChanges[idx].old
+        #                 @preview = [idx]
+        #                 ⮐  {redraw:true}
 
         if valid @preview
             @preview = []

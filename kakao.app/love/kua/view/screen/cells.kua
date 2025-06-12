@@ -33,6 +33,15 @@ class cells
         @y    = y 
         @cols = cols  
         @rows = rows
+        @c = belt.cells @cols @rows
+
+    size: -> [@cols @rows]
+    
+    setScreen: screen -> 
+    
+        @screen = screen
+        @csz  = [screen.cw screen.ch]
+        @
         
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -46,14 +55,60 @@ class cells
     inside:  x y -> 1 <= x and x <= @cols and 1 <= y and y <= @rows
     outside: x y -> not @inside x y
     
-    add:        x y char fg bg -> if @inside(x y) ➜ @screen∙add       (@wx(x) @wy(y) char fg bg) ➜ 0xffffffffff
-    set:        x y char fg bg -> if @inside(x y) ➜ @screen∙set       (@wx(x) @wy(y) char fg bg)
-    set_unsafe: x y char fg bg ->                   @screen∙set        @x+x   @y+y  char fg bg
-    set_char:   x y char       -> if @inside(x y) ➜ @screen∙set_char  @wx(x) @wy(y) char
-    set_ch_fg:  x y char fg    -> if @inside(x y) ➜ @screen∙set_ch_fg @wx(x) @wy(y) char fg
-    set_bg:     x y bg         -> if @inside(x y) ➜ @screen∙set_bg    @wx(x) @wy(y) bg
-    set_fg:     x y fg         -> if @inside(x y) ➜ @screen∙set_fg    @wx(x) @wy(y) fg
-    set_fg_bg:  x y fg bg      -> if @inside(x y) ➜ @screen∙set_fg_bg @wx(x) @wy(y) fg bg
+    add: x y char fg bg ->
+        
+        if @outside(x y) ➜ ⮐  math.huge
+        
+        w = 1
+        if w > 1
+            if char.length > 4
+                char = '\x1b]66;w=2;' + char + '\x07'
+            @set x   y char fg bg
+            @set x+1 y null fg bg
+            ⮐  2
+        else
+            @set x y char fg bg
+            ⮐  1
+    
+    set: x y char fg bg ->
+        
+        if @inside x y
+            @c[y][x].char = char
+            @c[y][x].fg = fg or []
+            @c[y][x].bg = bg or []
+        @
+            
+    set_char: x y char ->
+
+        if @inside x y
+            @c[y][x].char = char
+        @
+
+    set_ch_fg: x y char fg ->
+
+        if @inside x y
+            @c[y][x].char = char
+            @c[y][x].fg   = fg
+        @
+            
+    set_bg: x y bg ->
+        
+        if @inside x y
+            @c[y][x].bg = bg
+        @
+
+    set_fg: x y fg ->
+        
+        if @inside x y
+            @c[y][x].fg = fg
+        @
+
+    set_fg_bg: x y fg bg ->
+        
+        if @inside x y
+            @c[y][x].fg = fg
+            @c[y][x].bg = bg
+        @
     
     #  0000000   00000000  000000000  
     # 000        000          000     
@@ -64,6 +119,24 @@ class cells
     get_char: x y -> @screen∙get_char @wx(x) @wy(y)
     get_bg:   x y -> @screen∙get_bg   @wx(x) @wy(y)
     get_fg:   x y -> @screen∙get_fg   @wx(x) @wy(y)
+    
+    get_char: x y ->
+
+        if @inside x y
+            ⮐  @c[y][x].char
+        ''
+
+    get_fg: x y ->
+        
+        if @inside x y
+            ⮐  @c[y][x].fg
+        []
+
+    get_bg: x y ->
+        
+        if @inside x y
+            ⮐  @c[y][x].bg
+        []
         
     # 00000000    0000000    0000000  
     # 000   000  000   000  000       
@@ -71,7 +144,7 @@ class cells
     # 000        000   000       000  
     # 000         0000000   0000000   
     
-    isInsidePos:     x y -> (x y) = belt.pos(x y); (1 <= x <= @cols) and (1 <= y <= @rows)
+    isInsidePos:     x y -> (x y) = belt.pos(x y); (1 <= x and x <= @cols) and (1 <= y and y <= @rows)
     isOutsidePos:    x y -> (x y) = belt.pos(x y); x < 1 or x > @cols or y < 1 or y > @rows
     
     isInsideScreen:  x y -> @isInsidePos  @posForScreen(x y)
@@ -82,7 +155,7 @@ class cells
         
     posForScreen:    x y -> (x y) = belt.pos(x y); [x-@x y-@y]
     screenForPos:    x y -> (x y) = belt.pos(x y); [x+@x y+@y]
-    posForEvent:     evt -> @posForScreen evt.cell
+    posForEvent:     evt -> @posForScreen evt.x evt.y
         
     # 0000000     0000000           00000000   00000000   0000000  000000000  
     # 000   000  000                000   000  000       000          000     
@@ -227,8 +300,6 @@ class cells
         
         @draw_frame x1 y1 x2 y2 opt
         
-        # log "HROGLS"
-        # 
         # @img x1 y1 'rounded.border.tl' fg zLayer  
         # @img x2 y1 'rounded.border.tr' fg zLayer  
         # @img x1 y2 'rounded.border.bl' fg zLayer  
@@ -282,5 +353,30 @@ class cells
         
         ofg = @get_fg x y
         @set_fg x y color.adjustForBackground(ofg highlightColor)        
+                        
+                        
+    # ████████   ████████  ███   ███  ███████    ████████  ████████ 
+    # ███   ███  ███       ████  ███  ███   ███  ███       ███   ███
+    # ███████    ███████   ███ █ ███  ███   ███  ███████   ███████  
+    # ███   ███  ███       ███  ████  ███   ███  ███       ███   ███
+    # ███   ███  ████████  ███   ███  ███████    ████████  ███   ███
+
+    render: ->
+    
+        lg = love.graphics
+
+        for y in 1..@rows
+            for x in 1..@cols
+                char = @c[y][x].char
+                    
+                if @c[y][x].bg and @c[y][x].bg.len > 0
+                    lg.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
+                    lg.rectangle("fill", (x-1)*@csz[1], (y-1)*@csz[2], @csz[1], @csz[2]) 
+                
+                if @c[y][x].fg.len > 0 and @c[y][x].fg is array
+                    lg.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
+                
+                lg.print char, (x-1)*@csz[1], (y-1)*@csz[2]
+        @
                         
 ⮐  cells

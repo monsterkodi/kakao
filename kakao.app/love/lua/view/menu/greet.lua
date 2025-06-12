@@ -68,8 +68,10 @@ function greet:layout(x, y)
 -- ███████    ███   ███  ███   ███  ██     ██  
 
 
-function greet:draw() 
+function greet:draw(screen) 
         if self:hidden() then return end
+        
+        self.cells:setScreen(screen)
         
         local duration = 480
         self.a = self.a + 1
@@ -85,6 +87,7 @@ function greet:draw()
             end
         end
         
+        view.draw(self)
         return -- post∙emit 'redraw'
     end
 

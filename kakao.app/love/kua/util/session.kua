@@ -60,31 +60,31 @@ class session extends events
     
     set: key value ->
         
-        ⮐  if not key is str
-        ⮐  if @get(key) eql value
+        ⮐  if not key is "string"
+        ⮐  if @get(key) == value
         ⮐  if @get(key) == value
         ⮐  @del(key) if empty value
 
         @data ?= {}
-        sds.set @data @keypath(key) value
+        # sds∙set @data @keypath(key) value
         @delayedSave()
         
     del: key -> 
     
         ⮐  if not @data
-        sds.del @data @keypath(key)
+        # sds∙del @data @keypath(key)
         @delayedSave()
         
     delayedSave: ->
         
-        clearTimeout @timer
-        @timer = setTimeout (-> @save()) @timeout
+        # clearTimeout @timer
+        # @timer = setTimeout (-> @save()) @timeout
                 
     clear: ->
         
         @data = {}
         
-        clearTimeout @timer
+        # clearTimeout @timer
         
     recentFiles: -> dict.keys @get('files▸recent' {}) 
         

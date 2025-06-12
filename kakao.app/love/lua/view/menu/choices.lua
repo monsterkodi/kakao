@@ -81,7 +81,7 @@ function choices:clear()
 function choices:clearEmpty() 
         self.items = array()
         self.fuzzied = self.items
-        return self.state.clearEmpty()
+        return self.state:clearEmpty()
     end
 
 --  0000000  00000000  000000000  
@@ -98,14 +98,11 @@ function choices:set(items, key)
         self.fuzzied = self.items
         self.filterText = ''
         
-        local lines = (function () 
-    if self.key then 
-    return self.items:map(self.extract) else 
-    return self.items
-                end
-end)()
+        local lines = self.items
+        if self.key then lines = self.items:map(function (i) self:extract(i) end) end
         print("" .. tostring(self.name) .. " set lines", lines)
-        return self.state:loadLines(lines)
+        self.state:loadLines(lines)
+        return self
     end
 
 
@@ -455,12 +452,9 @@ function choices:doubleClickChoiceAtIndex(index, event)
 
 
 function choices:onMouse(event) 
-        local ret = editor.onMouse(self, event)
-        if ret.redraw then return ret end
+        if editor.onMouse(self, event) then return true end
         
-        ret = self.mapscr.onMouse(event)
-        -- mapview doesn't do mouse yet, just to prevent clickthrough to editor
-        if ret then return ret end
+        if (self.mapscr and self.mapscr.onMouse(event)) then return true end
         
         if self.hover then 
             local col, row = self:eventPos(event)

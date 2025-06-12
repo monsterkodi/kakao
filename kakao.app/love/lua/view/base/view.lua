@@ -75,8 +75,9 @@ function view:show()
             post:emit('popup.show', self.name)
         end
         
-        self:arrange()
-        return {redraw = true}
+        -- @arrange()
+        -- {redraw:true}
+        return true
     end
 
 
@@ -161,10 +162,9 @@ function view:handleHover(event)
         if (self.hover and not inside) then 
             self.hover = false
             self:onMouseLeave(event)
-        else if (inside and not self.hover) then 
+        elseif (inside and not self.hover) then 
             self.hover = true
             self:onMouseEnter(event)
-             end
         end
         
         return self.hover
@@ -188,7 +188,7 @@ function view:layout(x, y, w, h)
 
 
 function view:draw() 
-    
+    return self.cells:render()
     end
 
 return view

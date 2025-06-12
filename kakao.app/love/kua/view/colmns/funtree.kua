@@ -4,11 +4,11 @@
 #    ███       ███   ███  ███  ████     ███     ███   ███  ███       ███       
 #    ███        ███████   ███   ███     ███     ███   ███  ████████  ████████  
 
-use ../../../kxk    ▪ post slash
-use ../../../kxk    ◆ nfs
-use ../../theme     ◆ color theme icons
-use ../../edit/tool ◆ belt
-use ../menu         ◆ choices 
+# use ../../../kxk    ▪ post slash
+# use ../../../kxk    ◆ nfs
+# use ../../theme     ◆ color theme icons
+# use ../../edit/tool ◆ belt
+# use ../menu         ◆ choices 
 
 ###
      ███████  ███   ███  ███   ███  █████████   ███████   ███   ███
@@ -18,18 +18,21 @@ use ../menu         ◆ choices
     ███████      ███     ███   ███     ███     ███   ███  ███   ███
 ###
 
-SYMBOL = 
+SYMBOL = {
     clss:          '■'  # '■' 
     unbound:       '->' # '▸'
-    bound:         '=>' # '▸'
+    bound:         '->' # '▸'
     async_unbound: '○→' # '○'
     async_bound:   '●→' # '●' 
+    }
         
-function funSyntax
+class funSyntax
 
-    @: @tree ->
+    @: tree ->
     
-        @color =
+        @tree = tree
+    
+        @color = {
             class:          theme.funtree.class
             async:          theme.funtree.async
             bound:          theme.funtree.bound
@@ -40,11 +43,12 @@ function funSyntax
             test1:          theme.funtree.test1
             test2:          theme.funtree.test2
             test3:          theme.funtree.test3
+            }
         
-    clear: =>
+    clear: ->
 
-    setLines: lines => log 'setLines'
-    setSegls: segls =>
+    setLines: lines -> log 'setLines'
+    setSegls: segls ->
         
     #  ███████   ███████   ███       ███████   ████████ 
     # ███       ███   ███  ███      ███   ███  ███   ███
@@ -52,8 +56,8 @@ function funSyntax
     # ███       ███   ███  ███      ███   ███  ███   ███
     #  ███████   ███████   ███████   ███████   ███   ███
 
-    getClass: x y => ''
-    getColor: x y =>
+    getClass: x y -> ''
+    getColor: x y ->
         
         item = @tree.items[y]
         name = item.name
@@ -63,7 +67,7 @@ function funSyntax
         if 
             item.clss       ➜ clr = @color.class
             item.test       ➜ clr = @color['test' + int(belt.numIndent(item.name)/2)] 
-            item.async      ➜ clr = item.bound ? @color.bound_async : @color.func_async
+            item.async      ➜ clr = item.bound and @color.bound_async or @color.func_async
             item.bound      ➜ clr = @color.bound
                             ➜ clr = @color.func
         if 
@@ -72,14 +76,13 @@ function funSyntax
                               clr = @color.class
         if 
             char == '▸'            ➜ clr = color.darken clr 0.5
-            char == '@'            ➜ clr = color.darken clr (clr == @color.class ? 0.75 : 0.5)
+            char == '@'            ➜ clr = color.darken clr (clr == @color.class and 0.75 or 0.5)
             char == SYMBOL.clss    ➜ clr = color.darken clr 0.2
-            char in SYMBOL.bound   and item.bound ➜ clr = color.darken clr 0.5
-            char in SYMBOL.unbound                ➜ clr = color.darken clr 0.7
-        
+            # char in SYMBOL.bound   and item.bound ➜ clr = color.darken clr 0.5
+            # char in SYMBOL.unbound                ➜ clr = color.darken clr 0.7
         clr
         
-    getChar: x y char => char
+    getChar: x y char -> char
 
 ###    
     ████████  ███   ███  ███   ███  █████████  ████████   ████████  ████████
@@ -89,35 +92,37 @@ function funSyntax
     ███        ███████   ███   ███     ███     ███   ███  ████████  ████████
 ###
 
-function funtree extends choices
+class funtree extends choices
 
-    @: @editor name features ->
+    @: editor name features ->
+    
+        @editor = editor
         
-        super @editor.screen name features
+        choices.init @ @editor.screen name features
         
-        @state.syntax = new funSyntax @
+        @state.syntax = funSyntax @
         
-        @editor.state.on 'cursorsSet' @onCursorsSet
+        @editor.state∙on 'cursorsSet' @onCursorsSet
         
-        post.on 'file.loaded'  @clear
-        post.on 'file.indexed' @onFileIndexed
+        post∙on 'file.loaded'  @clear
+        post∙on 'file.indexed' @onFileIndexed
         
-    onCursorsSet: =>
+    onCursorsSet: ->
     
         @selectItemForLineIndex @editor.state.mainCursor()[1]
         
-    selectItemForLineIndex: li =>
+    selectItemForLineIndex: li ->
     
         for item,idx in @items
             if item.line-1 <= li and (idx >= @items.length-1 or @items[idx+1].line-1 > li)
-                @state.setSelections [belt.rangeOfLine(@state.s.lines idx)]
-                @state.setMainCursor 0 idx
+                @state∙setSelections [belt.rangeOfLine(@state.s.lines idx)]
+                @state∙setMainCursor 0 idx
                 ⮐  
                 
-    nameOfCurrentFunc:      => @current().name
-    lineIndexOfCurrentFunc: => @current().line-1
-    lineIndexOfNextFunc:    => @items[@currentIndex()+1]?.line-1 
-    lineIndexOfPrevFunc:    => @items[@currentIndex()-1]?.line-1
+    nameOfCurrentFunc:      -> @current().name
+    lineIndexOfCurrentFunc: -> @current().line-1
+    lineIndexOfNextFunc:    -> @items[@currentIndex()+1].line-1 
+    lineIndexOfPrevFunc:    -> @items[@currentIndex()-1].line-1
     
     # ███      ███  ███   ███  ████████        ████████   ███████   ████████         ████████  ███   ███  ███   ███   ███████
     # ███      ███  ████  ███  ███             ███       ███   ███  ███   ███        ███       ███   ███  ████  ███  ███     
@@ -125,17 +130,18 @@ function funtree extends choices
     # ███      ███  ███  ████  ███             ███       ███   ███  ███   ███        ███       ███   ███  ███  ████  ███     
     # ███████  ███  ███   ███  ████████        ███        ███████   ███   ███        ███        ███████   ███   ███   ███████
     
-    lineIndexForFunc: func => 
+    lineIndexForFunc: func -> 
     
-        for item in @items
+        for _ item in ipairs @items
             if item.name == func.name and item.class == func.class
                 ⮐  item.line-1 
                 
-        if func.name == "   -> #{func.class}" and func.line
-            ⮐  @lineIndexForFunc class:func.class name:'   -> @'
+        funcname = "   -> #{func.class}"
+        if func.name == funcname and func.line
+            ⮐  @lineIndexForFunc {class:func.class name:'   -> @'}
             
         if func.name == "   -> @" and func.line
-            ⮐  @lineIndexForFunc class:func.class name: "   -> #{func.class}"
+            ⮐  @lineIndexForFunc {class:func.class name:funcname}
                 
         # log "can't find func: items:" @items
         log "can't find func:" func
@@ -146,7 +152,7 @@ function funtree extends choices
     # ███   ███  ███  ████        ███  ███  ████  ███   ███  ███        ███ ███ 
     #  ███████   ███   ███        ███  ███   ███  ███████    ████████  ███   ███
 
-    onFileIndexed: path info =>
+    onFileIndexed: path info ->
     
         ⮐  if path != @editor.currentFile
         ⮐  if empty info.classes and empty info.funcs
@@ -154,13 +160,13 @@ function funtree extends choices
         clssl = clone info.classes
         funcs = clone info.funcs
         
-        for clss in clssl
+        for _ clss in ipairs clssl
             clss.file ?= path
-            clss.name = ' ' + SYMBOL.clss + ' ' + clss.name
+            clss.name = ' ' & SYMBOL.clss & ' ' + clss.name
             
-        for func in funcs
+        for _ func in ipairs funcs
             if func.test
-                func.name = ' ' + belt.reindent(4 2 func.name)
+                func.name = ' ' & belt.reindent(4 2 func.name)
             else
                 if func.async
                     if func.bound
@@ -174,17 +180,18 @@ function funtree extends choices
                         symbol = SYMBOL.unbound
                         
                 name = func.name
-                name = '@' + name if func.static
-                indt = func.class ? '   ' : ' '
-                func.name = indt + symbol + ' ' + name
+                if func.static
+                    name = '@' + name 
+                indt = if func.class ➜ '   ' ➜ ' '
+                func.name = indt & symbol & ' ' & name
         
-        items = clssl.concat funcs
-        items.sort (a b) -> a.line - b.line
+        items = clssl + funcs
+        items∙sort((a b) -> a.line - b.line)
         
         @set items 'name'
-        post.emit 'funtree.loaded'
+        post∙emit 'funtree.loaded'
         @onCursorsSet()
-        post.emit 'redraw'
+        post∙emit 'redraw'
         
     #  0000000    0000000  000000000  000   0000000   000   000  
     # 000   000  000          000     000  000   000  0000  000  
@@ -203,21 +210,21 @@ function funtree extends choices
         
             'right'
             
-                post.emit 'goto.line' choice.line-1 'ind' 'topDelta'
+                post∙emit 'goto.line' choice.line-1 'ind' 'topDelta'
                 ⮐  
                 
             'click'
             'return'
             
-                post.emit 'goto.line' choice.line-1 'ind' 'topDelta'
-                post.emit 'focus' 'editor'
+                post∙emit 'goto.line' choice.line-1 'ind' 'topDelta'
+                post∙emit 'focus' 'editor'
                 ⮐  
                 
             'drag'
             
-                post.emit 'goto.line' choice.line-1 'ind' 'topDelta'
+                post∙emit 'goto.line' choice.line-1 'ind' 'topDelta'
                 ⮐  
                  
-        super action choice event
+        choices.emitAction @ action choice event
         
-export funtree
+⮐  funtree

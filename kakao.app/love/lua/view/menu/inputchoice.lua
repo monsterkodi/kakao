@@ -29,8 +29,8 @@ function inputchoice:init(screen, name, features)
         self.isVisible = false
         self.isPopup = true
         
-        self.input = input(self.screen, "" .. self.name .. "_input")
-        self.choices = choices(self.screen, "" .. self.name .. "_choices", features)
+        self.input = input(self.screen, "" .. tostring(self.name) .. "_input")
+        self.choices = choices(self.screen, "" .. tostring(self.name) .. "_choices", features)
         
         self:setColor('bg', theme.quicky.bg)
         
@@ -190,8 +190,10 @@ end)()
 -- 0000000    000   000  000   000  00     00
 
 
-function inputchoice:draw() 
+function inputchoice:draw(screen) 
         if self:hidden() then return end
+        
+        self.cells:setScreen(screen)
         
         self:arrange()
         self:drawFrame()
@@ -200,8 +202,8 @@ function inputchoice:draw()
 
 
 function inputchoice:drawChoices() 
-        self.input:draw()
-        return self.choices:draw()
+        self.input:draw(self.screen)
+        return self.choices:draw(self.screen)
     end
 
 
@@ -269,7 +271,7 @@ function inputchoice:onKey(key, event)
                 return result
             end
             
-            print("focused input didn't handle key " .. key .. "?")
+            print("focused input didn't handle key " .. tostring(key) .. "?")
         end
         
         local result = self.choices:onKey(key, event)
@@ -302,9 +304,10 @@ function inputchoice:onKey(key, event)
 function inputchoice:onMouse(event) 
         if self:hidden() then return end
         
-        local ret = self.input:onMouse(event) ; if ret.redraw then return ret end
-        local ret = self.choices:onMouse(event) ; if ret.redraw then return ret end
-        local ret = view.onMouse(self, event) ; if ret.redraw then return ret end
+        local ret = nil
+        ret = self.input:onMouse(event) ; if (ret and ret.redraw) then return ret end
+        ret = self.choices:onMouse(event) ; if (ret and ret.redraw) then return ret end
+        ret = view.onMouse(self, event) ; if (ret and ret.redraw) then return ret end
         
         if ((event.type == 'press') and not self.hover) then 
             post:emit('focus', 'editor')

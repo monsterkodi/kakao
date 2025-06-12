@@ -4,30 +4,18 @@
     ███████    ███████   ███   ███  
     ███  ███   ███       ███   ███  
     ███   ███  ████████  ███████    
-
-    bun --watch js/ked/ked.js
 ###
 
 use kxk.kxk
-# use ../kxk        ◆ nfs
-# use ./index       ◆ prjcts indexer
-# use ./util        ◆ logfile session help frecent watcher git 
-# use ./util/img    ◆ rounded squares sircels
-# use ./edit/tool   ◆ belt
-# use ./edit        ◆ mode
-# use ./edit/mode   ◆ filepos
-# use ./view/base   ◆ view input
-# use ./view/status ◆ status 
-# use ./view/editor ◆ fileeditor
 use util.logfile
 use util.session
 use view.editor.fileeditor
 use view.status.status
 use view.screen.screen
 use view.menu.menu
+use view.colmns.dircol
+use view.colmns.funcol
 use theme.theme
-# use ./view/menu   ◆ context menu macro finder searcher differ 
-# use ./view/colmns ◆ browse dircol funcol quicky droop
 
 class KED
 
@@ -35,19 +23,6 @@ class KED
 
         @version = '0.1.0'
         
-        # @args = karg """
-        #     
-        #     ked [file]
-        #         options                                       **
-        #         new        start with empty buffer          = false
-        #         fresh      don't load previous session      = false
-        #         timeout    session save timeout in ms       = 1000
-        #         version    log version                      = false
-        #         
-        #     """ preHelp:help.header() version:@version
-        # 
-        # process.on 'uncaughtException' @quit
-            
         @session = session @args
         @logfile = logfile()
         
@@ -68,8 +43,8 @@ class KED
         # @browse   = browse(     @screen )
         @editor   = fileeditor( @screen 'editor')
         # @droop    = droop(      @screen @editor )
-        # @dircol   = dircol(     @screen @editor  ['scroll' 'knob'])
-        # @funcol   = funcol(     @screen @editor  ['scroll' 'knob'])
+        @dircol   = dircol(     @screen @editor  ['scroll' 'knob'])
+        @funcol   = funcol(     @screen @editor  ['scroll' 'knob'])
         # @finder   = finder(     @screen @editor)
         # @searcher = searcher(   @screen @editor)
         # @differ   = differ(     @screen @editor)
@@ -97,19 +72,12 @@ class KED
         post∙on 'file.open'     @openFile      @
         post∙on 'quit'          @quit          @
         post∙on 'file.change'   @onFileChange  @
-        # post∙on 'focus'         (name) -> # log "focus: '#{name}'"
         
-        # @contextHandlers = [                                                                               @editor         @dircol @funcol ]
-        # @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
-        # @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
+        @contextHandlers = [                                                                               @editor         @dircol @funcol ]
+        @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
+        @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
         @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
         
-        # @t.on 'key'    @onKey
-        # @t.on 'mouse'  @onMouse
-        # @t.on 'wheel'  @onWheel
-        # @t.on 'resize' @onResize
-        # @t.on 'paste'  @onPaste
-                                    
         # log 'ked args:' @args
         
         # ked_session.set 'ked▸args' @args
@@ -172,11 +140,22 @@ class KED
     # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
     # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
 
-    arrange: cols rows ->
+    arrange: si ->
         
-        w = cols
-        h = rows
+        s = screen si
         
+        s∙layout { hbox: [
+            { view: @dircol w:20 }
+            { view: @gutter w:6  }
+            { vbox: [
+                { view: @status h:1 } 
+                { hbox: [
+                    { view: @editor }
+                    { view: @funcol w:16 }
+                ]}
+            ]}
+        ]}
+
         # dcw = @dircol.cells.cols
         # fcw = @funcol.cells.cols
         # 
@@ -197,8 +176,8 @@ class KED
         #     @dircol.layout  0     0  dcw        h    
         # if @funcol.visible() and @funcol.active
         #     @funcol.layout  w-fcw 1  fcw        h-1  
-        @status∙layout  dcw   0  w-dcw      1
-        @editor∙layout  dcw   1  w-dcw-fcw  h-1
+        # @status∙layout  dcw   0  w-dcw      1
+        # @editor∙layout  dcw   1  w-dcw-fcw  h-1
     
     #  ███████   ███   ███  ███  █████████
     # ███   ███  ███   ███  ███     ███   
@@ -448,35 +427,22 @@ class KED
 
         if event.type == 'wheel'
 
-            for handler in @wheelHandlers
-                ret = handler.onWheel event
-                if ret
-                    if ret.redraw == true
-                        @redraw()
+            for _ handler in ipairs @wheelHandlers
+                if handler∙onWheel event
                     ⮐ 
             ⮐ 
 
-        redraw = false
-        
-        for handler in @mouseHandlers
-            ret = handler.onMouse event
-            if ret
+        for _ handler in ipairs @mouseHandlers
+            if handler∙onMouse event
                 event.handled = true
-                if ret.redraw == true
-                    redraw = true
                 break if event.type != 'move' or handler.isPopup
 
         if event.button == 'right' and event.type == 'press' and event.count == 1
             
-            for handler in @contextHandlers
+            for _ handler in ipairs @contextHandlers
                 if handler.hover
-                    ret = handler.onContext event
-                    if ret
-                        if ret.redraw == true
-                            redraw = true
+                    if handler∙onContext event
                         break
-
-        @redraw() if redraw
         
     showFinderOrSearcher: ->
     
@@ -629,13 +595,11 @@ class KED
         
         # @status.gutter = @editor.state.gutterWidth()
         
-        @screen∙initSize cols rows cw ch
-        
-        @arrange cols rows
+        @arrange {cols:cols rows:rows cw:cw ch:ch}
         
         # ●▸ draw
-        if @menu.greet∙hidden()
-            @editor∙draw() #if not @differ∙visible()
+        # if @menu.greet∙hidden()
+        #     @editor∙draw() #if not @differ∙visible()
         #     @status∙draw()
         #     @dircol∙draw()
         #     @funcol∙draw()
@@ -644,7 +608,7 @@ class KED
         #     for x in 1..cols
         #         @screen∙set x y string.sub($x 1 1) [50 0 0] 
             
-        @menu∙draw()
+        # @menu∙draw screen
         # @macro∙draw()
         # @quicky∙draw()
         # @browse∙draw()
@@ -657,7 +621,7 @@ class KED
         # ●▪ draw
         # ●▸ render
             
-        @screen∙render()
+        # @screen∙render()
         # @t.removeImgs()
         # ●▪ render
         

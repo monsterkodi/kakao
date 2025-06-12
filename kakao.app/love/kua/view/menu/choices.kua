@@ -65,7 +65,7 @@ class choices extends editor
     
         @items = []
         @fuzzied = @items
-        @state.clearEmpty()
+        @state∙clearEmpty()
         
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -81,9 +81,11 @@ class choices extends editor
         @fuzzied = @items
         @filterText = ''
         
-        lines = if @key ➜ @items∙map(@extract) ➜ @items
+        lines = @items
+        if @key ➜ lines = @items∙map((i)->@extract(i))
         log "#{@name} set lines" lines
         @state∙loadLines lines
+        @
         
     add: item ->
     
@@ -350,12 +352,9 @@ class choices extends editor
         
     onMouse: event ->
         
-        ret = editor.onMouse @ event 
-        ⮐  ret if ret.redraw
+        if editor.onMouse @ event ➜ ⮐  true
         
-        ret = @mapscr.onMouse event
-        # mapview doesn't do mouse yet, just to prevent clickthrough to editor
-        ⮐  ret if ret 
+        if @mapscr and @mapscr.onMouse event ➜ ⮐  true
         
         if @hover
         

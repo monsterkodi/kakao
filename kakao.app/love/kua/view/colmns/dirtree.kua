@@ -6,27 +6,30 @@
 0000000    000  000   000     000     000   000  00000000  00000000
 ###
 
-use ../../../kxk ▪ kutil kseg kstr slash post
-use ../../../kxk ◆ nfs
-use ../../index  ◆ prjcts 
-use ../../theme  ◆ theme icons
-use ../../util   ◆ git
-use ../menu      ◆ choices 
-use              ◆ diritem
+# use ../../../kxk ▪ kutil kseg kstr slash post
+# use ../../../kxk ◆ nfs
+# use ../../index  ◆ prjcts 
+# use ../../theme  ◆ theme icons
+# use ../../util   ◆ git
+# use ../menu      ◆ choices 
+# use              ◆ diritem
 
-import rgxs from './quicky.json' with { type: "json" }
+# import rgxs from './quicky.json' with { type: "json" }
 
-function dirtree extends choices
+use view.colmns.diritem
+use view.menu.choices
+
+class dirtree extends choices
 
     @: screen name features ->
         
-        super screen name features
+        choices.init @ screen name features
                         
-        @state.syntax.setRgxs rgxs
+        # @state.syntax.setRgxs rgxs
         
-        post.on 'session.merge' @onSessionMerge
-        post.on 'file.change'   @onFileChange
-        post.on 'git.status'    @onGitStatus
+        post∙on 'session.merge' @onSessionMerge
+        post∙on 'file.change'   @onFileChange
+        post∙on 'git.status'    @onGitStatus
         
         @frontRoundOffset = 0
         
@@ -36,23 +39,23 @@ function dirtree extends choices
     # ███   ███  ███     ███                ███     ███     ███   ███     ███     ███   ███       ███
     #  ███████   ███     ███           ███████      ███     ███   ███     ███      ███████   ███████ 
 
-    tilde: item -> item.tilde = lpad(item.depth*2+1) + diritem.symbolName(item)
+    tilde: item -> item.tilde = kstr.lpad(item.depth*2+1) & diritem.symbolName(item)
 
-    onGitStatus: status =>
+    onGitStatus: status ->
     
         # todo: handle added files
         
         # log 'dirtree.onGitStatus' status
     
-        for item in @items
+        for _ item in ipairs @items
         
             if item.type == 'dir' 
             
                 foundChange = false
                 
-                if item.path in status.dirs
+                if status.dirs∙has item.path
                 
-                    for file of status.files
+                    for _ file in ipairs status.files
                         if file.startsWith item.path
                             item.modified = true
                             @tilde item
@@ -62,24 +65,24 @@ function dirtree extends choices
                             
                 if item.modified and not foundChange
                 
-                    delete item.modified
+                    item.modified = nil
                     @tilde item
                     redraw = true
                             
-            else # if item.type == 'file'
+            else
         
-                if item.path in status.changed 
+                if status.changed∙has item.path
                     item.modified = true
                     @tilde item                    
                     redraw = true
                     
-                if item.path in status.added
+                if status.added∙has item.path
                     item.added = true
                     @tilde item
                     redraw = true
                     
-                if item.modified and item.path not in status.changed or item.added and item.path not in status.added
-                    delete item.modified
+                if item.modified and not status.changed∙has(item.path) or item.added and not status.added∙has(item.path)
+                    item.modified = nil
                     @tilde item
                     redraw = true
                 
@@ -93,19 +96,19 @@ function dirtree extends choices
     # ███       ███  ███      ███             ███       ███   ███  ███   ███  ███  ████  ███   ███  ███     
     # ███       ███  ███████  ████████         ███████  ███   ███  ███   ███  ███   ███   ███████   ████████
 
-    onFileChange: info =>
+    onFileChange: info ->
         
-        if info.path.startsWith @currentRoot
+        if kstr.startWith info.path @currentRoot
             if info.change == 'rename'
-                for item in @items
+                for _ item in ipairs @items
                     if item.path == info.path
                         ⮐  
-                @setRoot @currentRoot redraw:true index:@currentIndex()
+                @setRoot @currentRoot {redraw:true index:@currentIndex()}
                 
-            if info.change in ['remove' 'deleted']
-                for item in @items
+            if ['remove' 'deleted']∙has info.change
+                for _ item in ipairs @items
                     if item.path == info.path
-                        @setRoot @currentRoot redraw:true index:@currentIndex()
+                        @setRoot @currentRoot {redraw:true index:@currentIndex()}
                         ⮐  
                     
     # 00000000    0000000    0000000   000000000  
@@ -114,31 +117,32 @@ function dirtree extends choices
     # 000   000  000   000  000   000     000     
     # 000   000   0000000    0000000      000     
     
-    setRoot: path opt ○=>
+    setRoot: path opt ->
         
         opt ?= {}
         
         dir = slash.untilde path
         
-        items =○ @dirItems dir 'dirtree.setRoot'
+        items = @dirItems dir 'dirtree.setRoot'
         
         @currentRoot = dir
                 
         ⮐  if empty items
         
-        for item in items
+        for _ item in ipairs items
             item.depth = 0
             @tilde item
 
-        items.sort (a b) => @weight(a) - @weight(b)
+        # items∙sort((a b) -> @weight(a) - @weight(b))
         
         # log 'setRoot' opt
                     
-        @set items opt.index ? 0
+        @set items opt.index or 0
         
         @restoreSessionState opt
         
-        post.emit 'redraw' if opt.redraw
+        if opt.redraw
+            post∙emit 'redraw' 
         
     # 00000000   00000000   0000000  000000000   0000000   00000000   00000000  
     # 000   000  000       000          000     000   000  000   000  000       
@@ -151,13 +155,13 @@ function dirtree extends choices
         opt ?= {}
         opt.redraw = true
         
-        state = ked_session.get @name {}
+        state = ked_session∙get @name {}
 
         ⮐  if empty state.open
         
-        for key,value of state.open
+        for key value in pairs state.open
             
-            if key.startsWith @currentRoot
+            if kstr.startsWith key @currentRoot
                 @openDir @itemForPath(key) opt
         
     #  0000000  000000000   0000000   000000000  00000000  
@@ -166,14 +170,11 @@ function dirtree extends choices
     #      000     000     000   000     000     000       
     # 0000000      000     000   000     000     00000000  
     
-    onSessionMerge: recent => @setState recent[@name]    
+    onSessionMerge: recent -> @setState recent[@name]    
         
-    setState: state =>
+    setState: state ->
         
         ⮐  if empty state
-        ⮐  if not state is obj
-        
-        # log "dirtree.setState" state
         
         ked_session.set @name state
                     
@@ -185,8 +186,6 @@ function dirtree extends choices
     
     emitAction: action choice event  ->
     
-        # log "emitAction #{action}" choice
-        
         if action == 'hover'
             @grabFocus()
             if (event.alt or event.cmd) and choice.type == 'file'
@@ -209,19 +208,19 @@ function dirtree extends choices
                         
                         if action == 'click' and event.mods ➜ ⮐  post.emit 'dircol.root' choice.path
                         
-                        if not choice.open ➜ @openDir(choice redraw:true) 
+                        if not choice.open ➜ @openDir(choice {redraw:true}) 
                         else @closeDir choice
                         ⮐ 
                         
                     'right'
                     
-                        if not choice.open ➜ @openDir(choice redraw:true)
+                        if not choice.open ➜ @openDir(choice {redraw:true})
                         else @selectNextKeepOffset()
                         ⮐ 
 
                     'left'
                     
-                        if choice.open ➜ @closeDir(choice redraw:true)
+                        if choice.open ➜ @closeDir(choice {redraw:true})
                         else @selectPrevKeepOffset()
                         ⮐ 
                         
@@ -229,7 +228,7 @@ function dirtree extends choices
                     'esc'
                     
                         @selectOpenSiblingAboveOrParent() if not choice.open
-                        @closeDir(choice redraw:true) if choice.open
+                        @closeDir(choice {redraw:true}) if choice.open
                         ⮐ 
                         
                     'doubleclick'
@@ -251,7 +250,7 @@ function dirtree extends choices
                     'click'
                     'return' ➜ ⮐  post.emit 'file.open' choice.path
         
-        super action choice event
+        choices.emitAction @ action choice event
         
     #  0000000   00000000   00000000  000   000  0000000    000  00000000   
     # 000   000  000   000  000       0000  000  000   000  000  000   000  
@@ -278,21 +277,21 @@ function dirtree extends choices
         for item in items
             item.depth = depth
             @tilde item
-            if item.type == 'dir' and state.open?[item.path]
+            if item.type == 'dir' and state.open[item.path]
                 if empty opt.select and empty opt.index
                     opt.select = dirItem
                 opt.redraw = true
                 @openDir item opt
         
-        items.sort (a b) => @weight(a) - @weight(b)
+        items.sort((a b) -> @weight(a) - @weight(b))
         
         index = @items.indexOf dirItem
         
         kutil.insert @items index+1 items
         
-        if opt.index?
+        if opt.index
             index = opt.index
-        else if opt.select?
+        elif opt.select
             index = @items.indexOf opt.select
         
         @set @items index
@@ -301,7 +300,9 @@ function dirtree extends choices
         
         git.status dirItem.path
         
-        post.emit 'redraw' if opt.redraw
+        if opt.redraw
+            post.emit 'redraw' 
+        @
         
     #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
     # 000       000      000   000  000       000       000   000  000  000   000  
@@ -331,7 +332,9 @@ function dirtree extends choices
         
         ked_session.del "#{@name}▸open▸#{dirItem.path}"
         
-        post.emit 'redraw' if opt.redraw
+        if opt.redraw
+            post.emit 'redraw'
+        @
                 
     # 000  000000000  00000000  00     00   0000000  
     # 000     000     000       000   000  000       
@@ -339,13 +342,9 @@ function dirtree extends choices
     # 000     000     000       000 0 000       000  
     # 000     000     00000000  000   000  0000000   
     
-    dirItems: dir info ○=>
+    dirItems: dir info ->
         
-        try
-            items =○ nfs.list dir recursive:false
-        catch err
-            error "list error -- #{info}" err
-            ⮐ 
+        slash.walk dir {recursive:false}
 
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -355,11 +354,11 @@ function dirtree extends choices
     
     set: items index=0 -> 
         
-        oldTop = @state.s.view[1]
-        super items 'tilde'
-        @state.setView [0 oldTop]
-        @state.selectLine index
-        @state.setMainCursor 0 index
+        oldTop = @state.s.view[2]
+        choices.set @ items 'tilde'
+        @state∙setView [1 oldTop]
+        @state∙selectLine index
+        @state∙setMainCursor 1 index
         
     #  0000000  00000000  000      00000000   0000000  000000000  
     # 000       000       000      000       000          000     
@@ -370,18 +369,20 @@ function dirtree extends choices
     selectPrevKeepOffset: ->
         
         @selectPrev()
-        post.emit 'quicky' @current().path if @current().type == 'file'
-        @state.setView [0 @state.s.view[1]-1]
+        if @current().type == 'file'
+            post∙emit 'quicky' @current().path 
+        @state∙setView [0 @state.s.view[1]-1]
 
     selectNextKeepOffset: ->
     
         if @current().type == 'file' and ked_session.get('editor▸file') != @current().path
-            post.emit 'quicky' @current().path
+            post∙emit 'quicky' @current().path
             ⮐  
         
         @selectNext()
-        post.emit 'quicky' @current().path if @current().type == 'file'
-        @state.setView [0 @state.s.view[1]+1]
+        if @current().type == 'file'
+            post∙emit 'quicky' @current().path 
+        @state∙setView [0 @state.s.view[1]+1]
         
     selectOpenSiblingAboveOrParent: ->
     
@@ -402,8 +403,9 @@ function dirtree extends choices
         @state.setMainCursor 0 index
         
     drawSelections: ->
-        
-        if li = @indexOfOpenFile()
+    
+        li = @indexOfOpenFile()
+        if li
             bg = theme.gutter.bg
             y  = li-@state.s.view[1]
             if y < @cells.rows and li < @state.s.lines.length
@@ -412,7 +414,7 @@ function dirtree extends choices
                 for x in xs...@cells.cols
                     @cells.set_bg x-@state.s.view[0] y bg
         
-        super()
+        choices.drawSelections @
                 
     indexOfOpenFile: ->
     
@@ -444,8 +446,9 @@ function dirtree extends choices
         p = slash.parse item.path
 
         w = 0
-        w += 10000 if item.type == 'file'
-        w += kstr.weight(p.file)
+        if item.type == 'file'
+            w += 10000 
+        # w += kstr.weight(p.file)
         w
         
-export dirtree
+⮐  dirtree

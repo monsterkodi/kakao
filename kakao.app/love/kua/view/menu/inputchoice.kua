@@ -159,9 +159,11 @@ class inputchoice extends view
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000  00     00
 
-    draw: ->
+    draw: screen ->
 
         ⮐  if @hidden()
+        
+        @cells∙setScreen screen
         
         @arrange()
         @drawFrame()
@@ -169,8 +171,8 @@ class inputchoice extends view
 
     drawChoices: ->
         
-        @input∙draw()
-        @choices∙draw()    
+        @input∙draw @screen
+        @choices∙draw @screen    
         
     drawFrame: ->
 
@@ -256,9 +258,10 @@ class inputchoice extends view
 
         ⮐  if @hidden()
         
-        ret = @input∙onMouse   event ; ⮐  ret if ret.redraw
-        ret = @choices∙onMouse event ; ⮐  ret if ret.redraw
-        ret = view.onMouse @ event   ; ⮐  ret if ret.redraw
+        ret = nil
+        ret = @input∙onMouse   event ; ⮐  ret if ret and ret.redraw
+        ret = @choices∙onMouse event ; ⮐  ret if ret and ret.redraw
+        ret = view.onMouse @ event   ; ⮐  ret if ret and ret.redraw
         
         if event.type == 'press' and not @hover
             post∙emit 'focus' 'editor'

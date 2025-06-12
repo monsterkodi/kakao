@@ -22,8 +22,6 @@ function love.draw()
     
     local lg = love.graphics
     
-    lg.setColor(0.1, 0.1, 0.1)
-    
     local tth = lg.newText(_G.font, "Xg")
     local ttw = lg.newText(_G.font, "W")
     
@@ -33,10 +31,10 @@ function love.draw()
     local cols = floor((w / cw))
     local rows = floor((h / ch))
     
+    ked:draw(cols, rows, cw, ch)
+    
     lg.setColor(0.2, 0.2, 0.2)
     lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(scale) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * cw), (h - (ch * 2)))
-    
-    ked:draw(cols, rows, cw, ch)
     
     return nil
 end
@@ -66,6 +64,8 @@ function love.keypressed(key, scancode, isrepeat)
     local char = (function () 
     if (key == "return") then 
     return "\n"
+           elseif (key == "tab") then 
+    return "\t"
            elseif (key == "space") then 
     return " "
            else 
@@ -76,6 +76,20 @@ end)()
     local event = {["repeat"] = isrepeat, combo = combo, char = char}
     ked:onKey(combo, event)
     return true
+end
+
+
+function love.mousepressed(x, y, button, istouch, presses) 
+    button = "right"
+    local event = {x = x, y = y, type = "press", button = button, count = 1}
+    return ked:onMouse(event)
+end
+
+
+function love.mousemoved(x, y) 
+    local button = "right"
+    local event = {x = x, y = y, type = "move", button = button}
+    return ked:onMouse(event)
 end
 
 -- love.keyreleased = key scancode ->

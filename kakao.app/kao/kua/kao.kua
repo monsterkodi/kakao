@@ -136,18 +136,15 @@ watch = ... ->
             
             if not test.run kxkTests 
                 testPass = false
-                # write "\x1b[1F\x1b[2K" ◌rx "testing"
                 write ◌rx "testing"
             
         if luaChanged.len > 0 or kxkChanged.len > 0
             if testPass
                 write ◌s~ "compile"
                 (output ok) = build()
-                # log output 
                 if ok
                     write ◌-r. "restart"
                     slash.respawn()
-                    log "DAFUK?"
                     os.exit(1)
                 else
                     write ◌r "✘"

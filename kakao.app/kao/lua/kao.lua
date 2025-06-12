@@ -150,7 +150,6 @@ function watch(...)
             
             if not test.run(kxkTests) then 
                 testPass = false
-                -- write "\x1b[1F\x1b[2K" ◌rx "testing"
                 write("\x1b[0m\x1b[31m\x1b[9m", "testing")
             end
         end
@@ -159,11 +158,9 @@ function watch(...)
             if testPass then 
                 write("\x1b[0m\x1b[30m\x1b[4:3m", "compile")
                 local output, ok = build()
-                -- log output 
                 if ok then 
                     write("\x1b[0m\x1b[2m\x1b[31m\x1b[4:4m", "restart")
                     slash.respawn()
-                    print("DAFUK?")
                     os.exit(1)
                 else 
                     write("\x1b[0m\x1b[31m", "✘")

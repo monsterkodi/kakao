@@ -44,7 +44,20 @@ function cells:layout(x, y, cols, rows)
         self.y = y
         self.cols = cols
         self.rows = rows
-        return self.rows
+        self.c = belt.cells(self.cols, self.rows)
+        return self.c
+    end
+
+
+function cells:size() 
+    return array(self.cols, self.rows)
+    end
+
+
+function cells:setScreen(screen) 
+        self.screen = screen
+        self.csz = array(screen.cw, screen.ch)
+        return self
     end
 
 --  0000000  00000000  000000000  
@@ -79,50 +92,79 @@ function cells:outside(x, y)
 
 
 function cells:add(x, y, char, fg, bg) 
-    if self:inside(x, y) then 
-    return self.screen:add(self:wx(x), self:wy(y), char, fg, bg) else 
-    return 0xffffffffff
-                                  end
+        if self:outside(x, y) then return math.huge end
+        
+        local w = 1
+        if (w > 1) then 
+            if (#char > 4) then 
+                char = (('\x1b]66;w=2;' + char) + '\x07')
+            end
+            
+            self:set(x, y, char, fg, bg)
+            self:set((x + 1), y, null, fg, bg)
+            return 2
+        else 
+            self:set(x, y, char, fg, bg)
+            return 1
+        end
     end
+
 
 function cells:set(x, y, char, fg, bg) 
-    if self:inside(x, y) then 
-    return self.screen:set(self:wx(x), self:wy(y), char, fg, bg)
-                                  end
+        if self:inside(x, y) then 
+            self.c[y][x].char = char
+            self.c[y][x].fg = (fg or array())
+            self.c[y][x].bg = (bg or array())
+        end
+        
+        return self
     end
 
-function cells:set_unsafe(x, y, char, fg, bg) 
-    return self.screen:set((self.x + x), (self.y + y), char, fg, bg)
-    end
 
 function cells:set_char(x, y, char) 
-    if self:inside(x, y) then 
-    return self.screen:set_char(self:wx(x), self:wy(y), char)
-                                  end
+        if self:inside(x, y) then 
+            self.c[y][x].char = char
+        end
+        
+        return self
     end
+
 
 function cells:set_ch_fg(x, y, char, fg) 
-    if self:inside(x, y) then 
-    return self.screen:set_ch_fg(self:wx(x), self:wy(y), char, fg)
-                                  end
+        if self:inside(x, y) then 
+            self.c[y][x].char = char
+            self.c[y][x].fg = fg
+        end
+        
+        return self
     end
+
 
 function cells:set_bg(x, y, bg) 
-    if self:inside(x, y) then 
-    return self.screen:set_bg(self:wx(x), self:wy(y), bg)
-                                  end
+        if self:inside(x, y) then 
+            self.c[y][x].bg = bg
+        end
+        
+        return self
     end
+
 
 function cells:set_fg(x, y, fg) 
-    if self:inside(x, y) then 
-    return self.screen:set_fg(self:wx(x), self:wy(y), fg)
-                                  end
+        if self:inside(x, y) then 
+            self.c[y][x].fg = fg
+        end
+        
+        return self
     end
 
+
 function cells:set_fg_bg(x, y, fg, bg) 
-    if self:inside(x, y) then 
-    return self.screen:set_fg_bg(self:wx(x), self:wy(y), fg, bg)
-                                  end
+        if self:inside(x, y) then 
+            self.c[y][x].fg = fg
+            self.c[y][x].bg = bg
+        end
+        
+        return self
     end
 
 --  0000000   00000000  000000000  
@@ -144,6 +186,33 @@ function cells:get_fg(x, y)
     return self.screen:get_fg(self:wx(x), self:wy(y))
     end
 
+
+function cells:get_char(x, y) 
+        if self:inside(x, y) then 
+            return self.c[y][x].char
+        end
+        
+        return ''
+    end
+
+
+function cells:get_fg(x, y) 
+        if self:inside(x, y) then 
+            return self.c[y][x].fg
+        end
+        
+        return array()
+    end
+
+
+function cells:get_bg(x, y) 
+        if self:inside(x, y) then 
+            return self.c[y][x].bg
+        end
+        
+        return array()
+    end
+
 -- 00000000    0000000    0000000  
 -- 000   000  000   000  000       
 -- 00000000   000   000  0000000   
@@ -152,7 +221,7 @@ function cells:get_fg(x, y)
 
 
 function cells:isInsidePos(x, y) 
-                     local x, y = belt.pos(x, y) ; return (((1 <= x) <= self.cols) and ((1 <= y) <= self.rows))
+                     local x, y = belt.pos(x, y) ; return (((1 <= x) and (x <= self.cols)) and ((1 <= y) and (y <= self.rows)))
     end
 
 function cells:isOutsidePos(x, y) 
@@ -187,7 +256,7 @@ function cells:screenForPos(x, y)
     end
 
 function cells:posForEvent(evt) 
-    return self:posForScreen(evt.cell)
+    return self:posForScreen(evt.x, evt.y)
     end
 
 -- 0000000     0000000           00000000   00000000   0000000  000000000  
@@ -352,8 +421,6 @@ function cells:draw_rounded_border(x1, y1, x2, y2, opt)
         
         self:draw_frame(x1, y1, x2, y2, opt)
         
-        -- log "HROGLS"
-        -- 
         -- @img x1 y1 'rounded.border.tl' fg zLayer  
         -- @img x2 y1 'rounded.border.tr' fg zLayer  
         -- @img x1 y2 'rounded.border.bl' fg zLayer  
@@ -419,6 +486,36 @@ function cells:img(x, y, name, fg, zLayer, xe, ye)
 function cells:adjustContrastForHighlight(x, y, highlightColor) 
         local ofg = self:get_fg(x, y)
         return self:set_fg(x, y, color.adjustForBackground(ofg, highlightColor))
+    end
+
+-- ████████   ████████  ███   ███  ███████    ████████  ████████ 
+-- ███   ███  ███       ████  ███  ███   ███  ███       ███   ███
+-- ███████    ███████   ███ █ ███  ███   ███  ███████   ███████  
+-- ███   ███  ███       ███  ████  ███   ███  ███       ███   ███
+-- ███   ███  ████████  ███   ███  ███████    ████████  ███   ███
+
+
+function cells:render() 
+        local lg = love.graphics
+        
+        for y in iter(1, self.rows) do 
+            for x in iter(1, self.cols) do 
+                local char = self.c[y][x].char
+                
+                if (self.c[y][x].bg and (#self.c[y][x].bg > 0)) then 
+                    lg.setColor((self.c[y][x].bg[1] / 255), (self.c[y][x].bg[2] / 255), (self.c[y][x].bg[3] / 255))
+                    lg.rectangle("fill", ((x - 1) * self.csz[1]), ((y - 1) * self.csz[2]), self.csz[1], self.csz[2])
+                end
+                
+                if ((#self.c[y][x].fg > 0) and is(self.c[y][x].fg, array)) then 
+                    lg.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))
+                end
+                
+                lg.print(char, ((x - 1) * self.csz[1]), ((y - 1) * self.csz[2]))
+            end
+        end
+        
+        return self
     end
 
 return cells

@@ -32,7 +32,7 @@ class belt
 
     @pos: x y -> 
         if x is array and y == nil 
-            ⮐  x 
+            ⮐  (x[1], x[2])
         (x y)
     
     @samePos: a b -> a[1] == b[1] and a[2] == b[2]

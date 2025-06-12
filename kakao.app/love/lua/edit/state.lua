@@ -367,7 +367,7 @@ function state:linesInView()
 
 function state:clearLines() 
         self:setSegls(array(array()))
-        return self:setMainCursor(0, 0)
+        return self:setMainCursor(1, 1)
     end
 
 
@@ -388,16 +388,16 @@ function state:isInvalidLineIndex(li)
 
 function state:undo() 
         if (#self.h <= 1) then return end
-        self.r.push(self.h.pop())
-        self.s = self.h[-1]
-        return self.syntax.setSegls(self.s.lines)
+        self.r:push(self.h:pop())
+        self.s = self.h[#self.h]
+        return self.syntax:setSegls(self.s.lines)
     end
 
 
 function state:redo() 
         if empty(self.r) then return end
         self.h.push(self.r.pop())
-        self.s = self.h[-1]
+        self.s = self.h[#self.h]
         return self.syntax.setSegls(self.s.lines)
     end
 
@@ -412,7 +412,6 @@ function state:ende()
         if valid(self.beginIndex) then 
             self.h.splice(self.beginIndex, ((#self.h - self.beginIndex) - 1))
             self.beginIndex = nil
-            -- delete @beginIndex
         end
         
         return self
@@ -1392,8 +1391,8 @@ function state:selectWord(x, y)
 
 function state:selectLine(y) 
         y = y or (self:mainCursor()[2])
-        if ((1 <= y) <= #self.s.lines) then 
-            self:select(array(1, y), array(self.s.lines[y].leng, y))
+        if ((1 <= y) and (y <= #self.s.lines)) then 
+            self:select(array(1, y), array(#self.s.lines[y], y))
         end
         
         return self

@@ -6,7 +6,7 @@
     000   0000000   0000000   000   000  0000000     
 ###
 
-icons = 
+icons = {
          
     dir:        ''
     dir_close:  ''
@@ -118,5 +118,6 @@ icons =
     yaml:       ''
     yml:        ''
     zsh:        ''
+    }
     
-export icons
+⮐  icons

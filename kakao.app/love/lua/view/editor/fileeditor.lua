@@ -264,12 +264,9 @@ function fileeditor:jumpToCounterpart()
 
 
 function fileeditor:onMouse(event) 
-        local ret = super(event)
-        if ret.redraw then 
-            return ret
-        end
+        if editor.onMouse(self, event) then return true end
         
-        if not ((self.dragStart or self.cells.isInsideEvent(event)) or self.gutter.cells.isInsideEvent(event)) then 
+        if not ((self.dragStart or self.cells:isInsideEvent(event)) or self.gutter.cells:isInsideEvent(event)) then 
             return self.hover
         end
         
@@ -358,7 +355,7 @@ function fileeditor:onMouse(event)
                     end
                     
                     post:emit('pointer', 'text')
-                elseif self.gutter.cells.isInsideEvent(event) then 
+                elseif self.gutter.cells:isInsideEvent(event) then 
                     post:emit('pointer', 'vertical-text')
                 end
         end

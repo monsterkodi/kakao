@@ -139,14 +139,15 @@ class status extends view
     
     onMouse: event ->
 
-        cret = @crumbs.onMouse event
-        sret = @statusfile.onMouse event
-        fret = @filepos.onMouse event
+        
+        cret = @crumbs∙onMouse event
+        sret = @statusfile∙onMouse event
+        fret = @filepos∙onMouse event
         
         if sret or cret or fret
             ⮐  sret or cret or fret 
 
-        # super event
+        view.onMouse @ event
         
         (col row) = @eventPos event
         
@@ -160,10 +161,10 @@ class status extends view
                 if @hover 
                     if 0 <= col < 4
                         post∙emit 'dircol.toggle'
-                        ⮐  {redraw:true}
+                        ⮐  true
                     if @cells.cols-12 <= col < @cells.cols
                         post∙emit 'funcol.toggle'
-                        ⮐  {redraw:true}
+                        ⮐  true
                     
         @hover
         

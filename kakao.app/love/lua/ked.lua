@@ -4,30 +4,18 @@
     ███████    ███████   ███   ███  
     ███  ███   ███       ███   ███  
     ███   ███  ████████  ███████    
-
-    bun --watch js/ked/ked.js
 --]]
 
 kxk = require "kxk.kxk"
--- use ../kxk        ◆ nfs
--- use ./index       ◆ prjcts indexer
--- use ./util        ◆ logfile session help frecent watcher git 
--- use ./util/img    ◆ rounded squares sircels
--- use ./edit/tool   ◆ belt
--- use ./edit        ◆ mode
--- use ./edit/mode   ◆ filepos
--- use ./view/base   ◆ view input
--- use ./view/status ◆ status 
--- use ./view/editor ◆ fileeditor
 logfile = require "util.logfile"
 session = require "util.session"
 fileeditor = require "view.editor.fileeditor"
 status = require "view.status.status"
 screen = require "view.screen.screen"
 menu = require "view.menu.menu"
+dircol = require "view.colmns.dircol"
+funcol = require "view.colmns.funcol"
 theme = require "theme.theme"
--- use ./view/menu   ◆ context menu macro finder searcher differ 
--- use ./view/colmns ◆ browse dircol funcol quicky droop
 
 
 local KED = class("KED")
@@ -36,19 +24,6 @@ local KED = class("KED")
 
 function KED:init() 
         self.version = '0.1.0'
-        
-        -- @args = karg """
-        --     
-        --     ked [file]
-        --         options                                       **
-        --         new        start with empty buffer          = false
-        --         fresh      don't load previous session      = false
-        --         timeout    session save timeout in ms       = 1000
-        --         version    log version                      = false
-        --         
-        --     """ preHelp:help.header() version:@version
-        -- 
-        -- process.on 'uncaughtException' @quit
         
         self.session = session(self.args)
         self.logfile = logfile()
@@ -70,8 +45,8 @@ function KED:init()
         -- @browse   = browse(     @screen )
         self.editor = fileeditor(self.screen, 'editor')
         -- @droop    = droop(      @screen @editor )
-        -- @dircol   = dircol(     @screen @editor  ['scroll' 'knob'])
-        -- @funcol   = funcol(     @screen @editor  ['scroll' 'knob'])
+        self.dircol = dircol(self.screen, self.editor, array('scroll', 'knob'))
+        self.funcol = funcol(self.screen, self.editor, array('scroll', 'knob'))
         -- @finder   = finder(     @screen @editor)
         -- @searcher = searcher(   @screen @editor)
         -- @differ   = differ(     @screen @editor)
@@ -99,18 +74,11 @@ function KED:init()
         post:on('file.open', self.openFile, self)
         post:on('quit', self.quit, self)
         post:on('file.change', self.onFileChange, self)
-        -- post∙on 'focus'         (name) -> # log "focus: '#{name}'"
         
-        -- @contextHandlers = [                                                                               @editor         @dircol @funcol ]
-        -- @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
-        -- @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
+        self.contextHandlers = array(self.editor, self.dircol, self.funcol)
+        self.mouseHandlers = array(self.input, self.context, self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.menu, self.macro, self.editor, self.status, self.dircol, self.funcol)
+        self.wheelHandlers = array(self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.macro, self.editor, self.dircol, self.funcol)
         self.keyHandlers = array(self.input, self.context, self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.menu, self.macro, self.editor, self.dircol, self.funcol)
-        
-        -- @t.on 'key'    @onKey
-        -- @t.on 'mouse'  @onMouse
-        -- @t.on 'wheel'  @onWheel
-        -- @t.on 'resize' @onResize
-        -- @t.on 'paste'  @onPaste
         
         -- log 'ked args:' @args
         
@@ -185,9 +153,10 @@ function KED:onSessionLoaded()
 -- ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
 
 
-function KED:arrange(cols, rows) 
-        local w = cols
-        local h = rows
+function KED:arrange(si) 
+        local s = screen(si)
+        
+        s:layout({hbox = array({view = self.dircol, w = 20}, {view = self.gutter, w = 6}, {vbox = array({view = self.status, h = 1}, {hbox = array({view = self.editor}, {view = self.funcol, w = 16})})})})
         
         -- dcw = @dircol.cells.cols
         -- fcw = @funcol.cells.cols
@@ -209,8 +178,8 @@ function KED:arrange(cols, rows)
         --     @dircol.layout  0     0  dcw        h    
         -- if @funcol.visible() and @funcol.active
         --     @funcol.layout  w-fcw 1  fcw        h-1  
-        self.status:layout(dcw, 0, (w - dcw), 1)
-        return self.editor:layout(dcw, 1, ((w - dcw) - fcw), (h - 1))
+        -- @status∙layout  dcw   0  w-dcw      1
+        return -- @editor∙layout  dcw   1  w-dcw-fcw  h-1
     end
 
 --  ███████   ███   ███  ███  █████████
@@ -488,13 +457,8 @@ function KED:onPaste(text)
 
 function KED:onMouse(event) 
         if (event.type == 'wheel') then 
-            for handler in self.wheelHandlers do 
-                local ret = handler.onWheel(event)
-                if ret then 
-                    if (ret.redraw == true) then 
-                        self:redraw()
-                    end
-                    
+            for _, handler in ipairs(self.wheelHandlers) do 
+                if handler:onWheel(event) then 
                     return
                 end
             end
@@ -502,38 +466,22 @@ function KED:onMouse(event)
             return
         end
         
-        local redraw = false
-        
-        for handler in self.mouseHandlers do 
-            local ret = handler.onMouse(event)
-            if ret then 
+        for _, handler in ipairs(self.mouseHandlers) do 
+            if handler:onMouse(event) then 
                 event.handled = true
-                if (ret.redraw == true) then 
-                    redraw = true
-                end
-                
                 if ((event.type ~= 'move') or handler.isPopup) then break end
             end
         end
         
         if (((event.button == 'right') and (event.type == 'press')) and (event.count == 1)) then 
-            for handler in self.contextHandlers do 
+            for _, handler in ipairs(self.contextHandlers) do 
                 if handler.hover then 
-                    local ret = handler.onContext(event)
-                    if ret then 
-                        if (ret.redraw == true) then 
-                            redraw = true
-                        end
-                        
+                    if handler:onContext(event) then 
                         break
                     end
                 end
             end
         end
-        
-        if redraw then 
-    return self:redraw()
-                  end
     end
 
 
@@ -708,15 +656,11 @@ function KED:draw(cols, rows, cw, ch)
         
         -- @status.gutter = @editor.state.gutterWidth()
         
-        self.screen:initSize(cols, rows, cw, ch)
-        
-        self:arrange(cols, rows)
+        self:arrange({cols = cols, rows = rows, cw = cw, ch = ch})
         
         -- ●▸ draw
-        if self.menu.greet:hidden() then 
-            self.editor:draw() --if not @differ∙visible()
-        end
-        
+        -- if @menu.greet∙hidden()
+        --     @editor∙draw() #if not @differ∙visible()
         --     @status∙draw()
         --     @dircol∙draw()
         --     @funcol∙draw()
@@ -725,7 +669,7 @@ function KED:draw(cols, rows, cw, ch)
         --     for x in 1..cols
         --         @screen∙set x y string.sub($x 1 1) [50 0 0] 
         
-        self.menu:draw()
+        -- @menu∙draw screen
         -- @macro∙draw()
         -- @quicky∙draw()
         -- @browse∙draw()
@@ -738,7 +682,7 @@ function KED:draw(cols, rows, cw, ch)
         -- ●▪ draw
         -- ●▸ render
         
-        self.screen:render()
+        -- @screen∙render()
         -- @t.removeImgs()
         -- ●▪ render
         

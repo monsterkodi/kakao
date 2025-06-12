@@ -8,11 +8,6 @@
     simple list of actions with optional greet
 ###
 
-# use ../../../kxk    ▪ kstr slash post noon
-# use ../../util      ◆ frecent
-# use ../../edit/tool ◆ belt
-# use ../../theme     ◆ theme 
-# use ../screen       ◆ cells 
 use  view.menu.inputchoice
 use  view.menu.greet
 
@@ -31,25 +26,25 @@ class menu extends inputchoice
     # 000   000  000   000  000   000  000   000  000   000   0000000   00000000  
     
     arrange: ->
-
+        
         w = @width+2+1 # 2 for frame, 1 for right 
         c = @choices∙numChoices()
         
         ih = if @inputIsActive() ➜  2 ➜ 0
-        iz = math.max 0 ih - 1
+        iz = max 0 ih - 1
         
         h = c + 2 + ih
-        scy = math.floor @screen.rows/2
-        y  = math.floor scy-(c+2)/2
+        scy = floor @screen.rows/2
+        y  = floor scy-(c+2)/2
         y -= ih
         
-        scx = math.floor @screen.cols/2
-        x  = math.floor scx - w/2
+        scx = floor @screen.cols/2
+        x  = floor scx - w/2
         
         (gw gh) = belt.cellSize @greet.header
             
-        gx = math.floor(scx-gw/2)
-        gy = math.max(1 math.floor(y-gh-1+ih))
+        gx = floor(scx-gw/2)
+        gy = max(1 floor(y-gh-1+ih))
         
         @greet∙layout    gx    gy
         @input∙layout    x+2   y+1      w-4  iz
@@ -142,12 +137,14 @@ class menu extends inputchoice
     # 000   000  000   000  000   000  000   000
     # 0000000    000   000  000   000  00     00
 
-    draw: ->
+    draw: screen ->
 
         ⮐  if @hidden()
         
+        @cells∙setScreen screen
+        
         @arrange()
-        @greet∙draw()
+        @greet∙draw screen
         @drawFrame()
         @drawChoices()
 

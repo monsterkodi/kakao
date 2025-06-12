@@ -137,27 +137,27 @@ class crumbs extends view
         @split = slash.split @path
         
         if not @dotlessRelative
-            if kstr.find("~/." @split[0]) < 0
-                @split.unshift('/') 
+            if kstr.find("~/." @split[1]) < 0
+                @split∙unshift('/') 
         
         @root = []
         
-        @rounded = @split.join ' '
+        @rounded = @split∙join ' '
         
         while @split.length > 1 and @rounded.length > @cells.cols-2
-            @root.push @split.shift()
-            @rounded = @split.join ' '
+            @root∙push @split∙shift()
+            @rounded = @split∙join ' '
             
-        @root = @root.join '/'
+        @root = @root∙join '/'
         
-        padding = if @padLast ➜ kstr.lpad(@cells.cols-2-@rounded.length) ➜ ''
+        padding = if @padLast ➜ kstr.lpad(@cells.cols-2-@rounded.len) ➜ ''
         
         @rounded = '' & @rounded & padding & ''
             
     set: path ->
     
         @cells.rows = 1 # 𝜏𝖍𝚒𝖘 s⫙ϵ⟅⟅𝖘 ϝ𝚒𝖘𝖍𝛾
-        @path = trim path
+        @path = kstr.trim path
         @adjustText()
         
     show: path -> @set slash.tilde(path)
