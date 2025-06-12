@@ -12,13 +12,6 @@
         in tool▸belt to simplify testing
 --]]
 
--- use child_process os
--- use ../../kxk ▪ immutable kstr kseg events absMin
--- use ../util   ◆ syntax
--- use ./act     ◆ del insert select join indent multi main
--- use ./tool    ◆ belt
--- use           ◆ keys mode
-
 syntax = require "util.syntax"
 
 
@@ -31,11 +24,6 @@ function state:init(cells, name)
         self.name = name .. '.state'
         
         self.allowedModes = {}
-        
-        -- for act in [del insert select join indent multi main]
-        --     for k v in pairs act
-        --         @[k] = v.bind @
-        -- @handleKey = keys.bind @
         
         self.syntax = syntax(self.name .. '.syntax')
         self.hasFocus = false
@@ -1635,6 +1623,84 @@ function state:surroundSelection(trigger, pair)
         self:setLines(lines)
         self:setSelections(array())
         return self:setCursors(posl)
+    end
+
+-- 000      000  000   000  00000000   0000000  
+-- 000      000  0000  000  000       000       
+-- 000      000  000 0 000  0000000   0000000   
+-- 000      000  000  0000  000            000  
+-- 0000000  000  000   000  00000000  0000000   
+
+
+function state:joinLines() 
+        self:moveCursorsToEndOfLines()
+        
+        local idxs = belt.lineIndicesForPositions(self.s.cursors)
+        local rngs = belt.rangesForJoiningLines(self.s.lines, idxs)
+        
+        return self:deleteRanges(rngs, self:allCursors())
+    end
+
+-- ██     ██   ███████   ███   ███  ████████
+-- ███   ███  ███   ███  ███   ███  ███     
+-- █████████  ███   ███   ███ ███   ███████ 
+-- ███ █ ███  ███   ███     ███     ███     
+-- ███   ███   ███████       █      ████████
+
+
+function state:moveSelectionOrCursorLines(dir) 
+        local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
+        
+        local lines, selections, cursors = belt.moveLineRangesAndPositionsAtIndicesInDirection(self.s.lines, self.s.selections, self.s.cursors, indices, dir)
+        
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
+--  ███████  ███       ███████   ███   ███  ████████
+-- ███       ███      ███   ███  ████  ███  ███     
+-- ███       ███      ███   ███  ███ █ ███  ███████ 
+-- ███       ███      ███   ███  ███  ████  ███     
+--  ███████  ███████   ███████   ███   ███  ████████
+
+
+function state:cloneSelectionAndCursorLines(dir) 
+        local blocks = belt.blockRangesForRangesAndPositions(self.s.lines, self.s.selections, self.s.cursors)
+        
+        local lines, selections, cursors = belt.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(self.s.lines, blocks, self.s.selections, self.s.cursors, dir)
+        
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
+--  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+-- ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+-- ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+-- ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+--  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
+
+function state:toggleCommentAtSelectionOrCursorLines() 
+        local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
+        
+        local lines, selections, cursors = belt.toggleCommentsInLineRangesAtIndices(self.s.lines, self.s.selections, self.s.cursors, indices)
+        
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
+
+function state:toggleCommentTypeAtSelectionOrCursorLines() 
+        local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
+        
+        local lines, selections, cursors = belt.toggleCommentTypesInLineRangesAtIndices(self.s.lines, self.s.selections, self.s.cursors, indices)
+        
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
     end
 
 return state

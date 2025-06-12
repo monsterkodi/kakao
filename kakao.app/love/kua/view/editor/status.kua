@@ -12,7 +12,7 @@
 use view.base.view
 use view.base.crumbs
 use view.base.bubble
-use view.status.statusfile
+use view.editor.statusfile
 
 class fileposSyntax
 
@@ -182,7 +182,7 @@ class status extends view
         
         view.layout @ x y w h
         
-        cw = math.floor w/2
+        cw = floor w/2
         
         x += @gutter+1
         
@@ -211,7 +211,7 @@ class status extends view
         y      = 0
         cursor = @state∙mainCursor()
         cols   = @cells.cols
-        fnl    = @file.length
+        fnl    = @file.len
         rdo    = @state∙hasRedo()
         dty    = @state∙isDirty()
         
@@ -236,9 +236,9 @@ class status extends view
         @statusfile∙draw() # file
         @filepos∙draw()
         
-        x += @crumbs.rounded.length
-        x += @statusfile.rounded.length
-        x += @filepos.rounded.length
+        x += @crumbs.rounded.len
+        x += @statusfile.rounded.len
+        x += @filepos.rounded.len
         
         # dirty and redo indicators
         add '' 'dark'  'empty'
@@ -247,28 +247,28 @@ class status extends view
         if rdo ➜ add '' 'redo'  'dark' 
         add ' ' 'dark'  'dark'
         
-        if @state.s.cursors.length > 1
+        if @state.s.cursors.len > 1
 
-            cur = "#{@state.s.cursors.length}♦"
+            cur = "#{@state.s.cursors.len}♦"
              
-            for i in 0...cur.length
-                color = if (i<cur.length-1) ➜ 'cur' ➜ color.darken(theme.status.cur)
+            for i in 0...cur.len
+                color = if (i<cur.len-1) ➜ 'cur' ➜ color.darken(theme.status.cur)
                 add cur[i] color 'dark'
                 
-        if @state.s.selections.length
+        if @state.s.selections.len
 
-            sel = "#{@state.s.selections.length}≡"
+            sel = "#{@state.s.selections.len}≡"
              
-            for i in 0...sel.length
-                color = if (i<sel.length-1) ➜ 'sel' ➜ color.darken(theme.status.sel) 
+            for i in 0...sel.len
+                color = if (i<sel.len-1) ➜ 'sel' ➜ color.darken(theme.status.sel) 
                 add sel[i] color 'dark'
 
-        if @state.s.highlights.length
+        if @state.s.highlights.len
 
-            hil = "#{@state.s.highlights.length}❇"
+            hil = "#{@state.s.highlights.len}❇"
              
-            for i in 0...hil.length
-                color = if (i<hil.length-1) ➜ 'hil' ➜ color.darken(theme.status.hil) 
+            for i in 0...hil.len
+                color = if (i<hil.len-1) ➜ 'hil' ➜ color.darken(theme.status.hil) 
                 add hil[i] color 'dark'
                                 
         # fill to the right
@@ -278,7 +278,7 @@ class status extends view
             
         add '' 'dark' @color.gutter 
             
-        ci = clamp 0 3 math.floor((@time/(1000*1000)-8)/8)
+        ci = clamp 0 3 floor((@time/(1000*1000)-8)/8)
         ch = string.sub " •" ci # 
         fg = [[32 32 32] [0 96 0] [255 0 0] [255 255 0]][ci]
         # switch ch
@@ -286,6 +286,8 @@ class status extends view
         #     '' ➜ 1 #log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
         #     '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
         set cols-2 ch fg 'dark'
+        
+        @render()
              
 ⮐  status
 

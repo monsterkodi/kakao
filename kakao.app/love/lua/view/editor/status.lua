@@ -12,7 +12,7 @@
 view = require "view.base.view"
 crumbs = require "view.base.crumbs"
 bubble = require "view.base.bubble"
-statusfile = require "view.status.statusfile"
+statusfile = require "view.editor.statusfile"
 
 
 local fileposSyntax = class("fileposSyntax")
@@ -208,7 +208,7 @@ function status:setFile(file)
 function status:layout(x, y, w, h) 
         view.layout(self, x, y, w, h)
         
-        local cw = math.floor((w / 2))
+        local cw = floor((w / 2))
         
         x = x + ((self.gutter + 1))
         
@@ -345,14 +345,16 @@ end)()
         
         add('', 'dark', self.color.gutter)
         
-        ci = clamp(0, 3, math.floor((((self.time / (1000 * 1000)) - 8) / 8)))
+        ci = clamp(0, 3, floor((((self.time / (1000 * 1000)) - 8) / 8)))
         local ch = string.sub(" •", ci) -- 
         local fg = array(array(32, 32, 32), array(0, 96, 0), array(255, 0, 0), array(255, 255, 0))[ci]
         -- switch ch
         --     '•' ➜ 1 #log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
         --     '' ➜ 1 #log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
         --     '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
-        return set((cols - 2), ch, fg, 'dark')
+        set((cols - 2), ch, fg, 'dark')
+        
+        return self:render()
     end
 
 return status

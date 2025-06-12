@@ -12,13 +12,6 @@
         in tool▸belt to simplify testing
 ###
 
-# use child_process os
-# use ../../kxk ▪ immutable kstr kseg events absMin
-# use ../util   ◆ syntax
-# use ./act     ◆ del insert select join indent multi main
-# use ./tool    ◆ belt
-# use           ◆ keys mode
-
 use util.syntax
 
 class state extends events
@@ -29,11 +22,6 @@ class state extends events
         @name  = name & '.state'
 
         @allowedModes = {}
-
-        # for act in [del insert select join indent multi main]
-        #     for k v in pairs act
-        #         @[k] = v.bind @
-        # @handleKey = keys.bind @
 
         @syntax   = syntax @name & '.syntax'
         @hasFocus = false
@@ -1353,5 +1341,78 @@ class state extends events
         @setLines      lines
         @setSelections []
         @setCursors    posl
-            
+
+    # 000      000  000   000  00000000   0000000  
+    # 000      000  0000  000  000       000       
+    # 000      000  000 0 000  0000000   0000000   
+    # 000      000  000  0000  000            000  
+    # 0000000  000  000   000  00000000  0000000   
+    
+    joinLines: ->
+        
+        @moveCursorsToEndOfLines()
+        
+        idxs = belt.lineIndicesForPositions @s.cursors
+        rngs = belt.rangesForJoiningLines @s.lines idxs
+
+        @deleteRanges rngs @allCursors()
+        
+    # ██     ██   ███████   ███   ███  ████████
+    # ███   ███  ███   ███  ███   ███  ███     
+    # █████████  ███   ███   ███ ███   ███████ 
+    # ███ █ ███  ███   ███     ███     ███     
+    # ███   ███   ███████       █      ████████
+
+    moveSelectionOrCursorLines: dir ->
+        
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
+        
+        (lines selections cursors) = belt.moveLineRangesAndPositionsAtIndicesInDirection @s.lines @s.selections @s.cursors indices dir
+        
+        @setLines lines
+        @setSelections selections
+        @setCursors cursors
+        
+    #  ███████  ███       ███████   ███   ███  ████████
+    # ███       ███      ███   ███  ████  ███  ███     
+    # ███       ███      ███   ███  ███ █ ███  ███████ 
+    # ███       ███      ███   ███  ███  ████  ███     
+    #  ███████  ███████   ███████   ███   ███  ████████
+
+    cloneSelectionAndCursorLines: dir ->
+        
+        blocks = belt.blockRangesForRangesAndPositions @s.lines @s.selections @s.cursors
+        
+        (lines selections cursors) = belt.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection @s.lines blocks @s.selections @s.cursors dir
+        
+        @setLines lines
+        @setSelections selections
+        @setCursors cursors
+        
+    #  ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+    # ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+    # ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+    # ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+    #  ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
+    toggleCommentAtSelectionOrCursorLines: ->
+
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
+
+        (lines selections cursors) = belt.toggleCommentsInLineRangesAtIndices @s.lines @s.selections @s.cursors indices
+                
+        @setLines lines        
+        @setSelections selections
+        @setCursors cursors
+
+    toggleCommentTypeAtSelectionOrCursorLines: ->
+
+        indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
+
+        (lines selections cursors) = belt.toggleCommentTypesInLineRangesAtIndices @s.lines @s.selections @s.cursors indices
+                
+        @setLines lines        
+        @setSelections selections
+        @setCursors cursors
+        
 ⮐  state
