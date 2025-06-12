@@ -15,19 +15,24 @@
     unype    unicode type writer
 --]]
 
--- use ../../kxk ▪ kseg slash post
--- use ../../kxk ◆ nfs
--- use ../theme  ◆ theme
+unype = require "edit.mode.unype"
+brckts = require "edit.mode.brckts"
+replex = require "edit.mode.replex"
+salter = require "edit.mode.salter"
+filepos = require "edit.mode.filepos"
 
 
 local mode = class("mode")
     mode.static.active = {}
-    mode.static.modes = {}
-    mode.static.pending = array()
+    mode.static.modes = {
+        brckts = brckts, 
+        filepos = filepos, 
+        replex = replex, 
+        salter = salter, 
+        unype = unype
+        }
 
 -- maps editor state names to active mode instances
--- maps mode names to mode classes
--- list of editors that requested autostart before modes were loaded
 
 
 function mode.static.names() 
@@ -39,36 +44,6 @@ function mode.static.names()
         return n
     end
 
--- 000       0000000    0000000   0000000        00     00   0000000   0000000     000   000  000      00000000   0000000  
--- 000      000   000  000   000  000   000      000   000  000   000  000   000   000   000  000      000       000       
--- 000      000   000  000000000  000   000      000000000  000   000  000   000   000   000  000      0000000   0000000   
--- 000      000   000  000   000  000   000      000 0 000  000   000  000   000   000   000  000      000            000  
--- 0000000   0000000   000   000  0000000        000   000   0000000   0000000      0000000   0000000  00000000  0000000   
-
--- @loadModules: ->
-
---         list = nfs.list slash.path(slash.cwd() 'mode')
---         
---         for item in list
---             file = item.path
---             continue if slash.ext(file) != 'js'
--- 
---             try
---                 moduleJS    = './' + slash.relative(file ◆dir)
---                 moduleExport = import(moduleJS)
---             catch err
---                 error "import of #{moduleJS} failed" err
---                 continue
---                 
---             moduleName  = slash.name file
---             moduleClass = moduleExport.default
---             mode.modes[moduleName] = moduleClass
---             
---         post.emit 'modes.loaded'
---         
---         while valid mode.pending
---             mode.autoStartForEditor mode.pending.shift()
-
 --  0000000   000   000  000000000   0000000    0000000  000000000   0000000   00000000   000000000  
 -- 000   000  000   000     000     000   000  000          000     000   000  000   000     000     
 -- 000000000  000   000     000     000   000  0000000      000     000000000  0000000       000     
@@ -77,11 +52,8 @@ function mode.static.names()
 
 
 function mode.static.autoStartForEditor(editor) 
-        if empty(mode.modes) then 
-            return mode.pending:push(editor)
-        end
-        
-        for name in mode.names() do 
+        for _, name in ipairs(mode.names()) do 
+            print("autostartForEditor", editor.feats[name], name, mode.modes[name])
             if (editor.feats[name] and mode.modes[name].autoStart) then 
                 mode.start(editor.state, name)
             end
@@ -99,7 +71,7 @@ function mode.static.start(state, name)
         if mode.isActive(state, name) then return end
         
         mode.active[state.name] = mode.active[state.name] or (array())
-        return mode.active[state.name].push(new, mode.modes[name], state)
+        return mode.active[state.name]:push(mode.modes[name](state))
     end
 
 
@@ -184,7 +156,7 @@ function mode.static.handleKey(state, key, event)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.handleKey, "function") then 
-                    if (m.handleKey(key, event) ~= 'unhandled') then return end
+                    if (m.handleKey(m, key, event) ~= 'unhandled') then return end
                 end
             end
         end
@@ -197,7 +169,7 @@ function mode.static.cursorsSet(state, editor)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.cursorsSet, "function") then 
-                    m.cursorsSet(editor)
+                    m:cursorsSet(editor)
                 end
             end
         end

@@ -1,3 +1,12 @@
+--[[
+000   000  000   000  000   000  00000000   00000000
+000   000  0000  000   000 000   000   000  000     
+000   000  000 0 000    00000    00000000   0000000 
+000   000  000  0000     000     000        000     
+ 0000000   000   000     000     000        00000000
+--]]
+
+local fontlist = [[
 default
     the quick brown fox jumps over the lazy dog
     THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 0123456789!@#$%^&*()-+=<>,./?;:'"
@@ -68,3 +77,61 @@ full width
     ｔｈｅ　ｑｕｉｃｋ　ｂｒｏｗｎ　ｆｏｘ　ｊｕｍｐｓ　ｏｖｅｒ　ｔｈｅ　ｌａｚｙ　ｄｏｇ
     ＴＨＥ　ＱＵＩＣＫ　ＢＲＯＷＮ　ＦＯＸ　ＪＵＭＰＳ　ＯＶＥＲ　ＴＨＥ　ＬＡＺＹ　ＤＯＧ
     ０１２３４５６７８９！＠＃＄％＾＆＊（）－＋＝＜＞，．／？；：＇＂
+]]
+
+
+local unype = class("unype")
+    unype.static.map = {}
+
+
+function unype:init() 
+        self.name = 'unype'
+        self.font = 'crazy'
+        
+        local fonts = noon.parse(fontlist)
+        
+        if empty(unype.map) then 
+            local def = fonts.default.join(' ')
+            for font, text in pairs(fonts) do 
+                if (font ~= 'default') then 
+                    unype.map[font] = {}
+                    for idx, char in ipairs(kseg(text.join(' '))) do 
+                        if (def[idx] ~= ' ') then 
+                            unype.map[font][def[idx]] = char
+                        end
+                    end
+                end
+            end
+            
+            unype.map['full width'][' '] = '　'
+        end
+        return self
+    end
+
+-- ███  ███   ███   ███████  ████████  ████████   █████████
+-- ███  ████  ███  ███       ███       ███   ███     ███   
+-- ███  ███ █ ███  ███████   ███████   ███████       ███   
+-- ███  ███  ████       ███  ███       ███   ███     ███   
+-- ███  ███   ███  ███████   ████████  ███   ███     ███   
+
+
+function unype:insert(text) 
+        return (unype.map[self.font][text] or text)
+    end
+
+--  0000000   0000000   000       0000000   00000000   
+-- 000       000   000  000      000   000  000   000  
+-- 000       000   000  000      000   000  0000000    
+-- 000       000   000  000      000   000  000   000  
+--  0000000   0000000   0000000   0000000   000   000  
+
+
+function unype:themeColor(colorName, defaultColor) 
+        if (colorName == 'cursor.multi') then return theme.scroll.hover
+        elseif (colorName == 'cursor.main') then return theme.scroll.dot
+        end
+        
+        return defaultColor
+    end
+
+return unype

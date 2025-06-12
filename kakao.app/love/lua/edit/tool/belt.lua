@@ -11,7 +11,6 @@ cell = require "edit.tool.cell"
 edit = require "edit.tool.edit"
 misc = require "edit.tool.misc"
 text = require "edit.tool.text"
--- use ◆ text cell edit misc pair salt
 
 
 local belt = class("belt")
@@ -668,11 +667,8 @@ function belt.static.mergeLineRanges(lines, rngs)
 
 -- merge methods of sibling modules into tool/belt 
 
--- for _ mod in ipairs [text cell edit misc pair salt]
 for _, mod in ipairs(array(text, cell, edit, misc)) do 
     belt:include(mod)
-    -- for key val in pairs mod
-    --     belt[key] = val
 end
 
 return belt

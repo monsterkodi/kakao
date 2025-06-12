@@ -15,15 +15,22 @@
     unype    unicode type writer
 ###
 
-# use ../../kxk ▪ kseg slash post
-# use ../../kxk ◆ nfs
-# use ../theme  ◆ theme
- 
+use edit.mode.unype
+use edit.mode.brckts
+use edit.mode.replex
+use edit.mode.salter
+use edit.mode.filepos
+
 class mode
 
     @active:  {} # maps editor state names to active mode instances
-    @modes:   {} # maps mode names to mode classes
-    @pending: [] # list of editors that requested autostart before modes were loaded
+    @modes:   { 
+        brckts:brckts
+        filepos:filepos
+        replex:replex
+        salter:salter
+        unype:unype
+        } 
     
     @names: -> 
     
@@ -32,36 +39,6 @@ class mode
             n∙push k
         n
     
-    # 000       0000000    0000000   0000000        00     00   0000000   0000000     000   000  000      00000000   0000000  
-    # 000      000   000  000   000  000   000      000   000  000   000  000   000   000   000  000      000       000       
-    # 000      000   000  000000000  000   000      000000000  000   000  000   000   000   000  000      0000000   0000000   
-    # 000      000   000  000   000  000   000      000 0 000  000   000  000   000   000   000  000      000            000  
-    # 0000000   0000000   000   000  0000000        000   000   0000000   0000000      0000000   0000000  00000000  0000000   
-    
-    # @loadModules: ->
-
-    #         list = nfs.list slash.path(slash.cwd() 'mode')
-    #         
-    #         for item in list
-    #             file = item.path
-    #             continue if slash.ext(file) != 'js'
-    # 
-    #             try
-    #                 moduleJS    = './' + slash.relative(file ◆dir)
-    #                 moduleExport = import(moduleJS)
-    #             catch err
-    #                 error "import of #{moduleJS} failed" err
-    #                 continue
-    #                 
-    #             moduleName  = slash.name file
-    #             moduleClass = moduleExport.default
-    #             mode.modes[moduleName] = moduleClass
-    #             
-    #         post.emit 'modes.loaded'
-    #         
-    #         while valid mode.pending
-    #             mode.autoStartForEditor mode.pending.shift()
-        
     #  0000000   000   000  000000000   0000000    0000000  000000000   0000000   00000000   000000000  
     # 000   000  000   000     000     000   000  000          000     000   000  000   000     000     
     # 000000000  000   000     000     000   000  0000000      000     000000000  0000000       000     
@@ -69,11 +46,8 @@ class mode
     # 000   000   0000000      000      0000000   0000000      000     000   000  000   000     000     
     
     @autoStartForEditor: editor ->
-        
-        if empty(mode.modes)
-            ⮐  mode.pending∙push editor
-
-        for name in mode.names()
+        for _ name in ipairs mode.names()
+            log "autostartForEditor" editor.feats[name], name, mode.modes[name]
             if editor.feats[name] and mode.modes[name].autoStart
                 mode.start editor.state name
 
@@ -88,7 +62,7 @@ class mode
         ⮐  if @isActive state name
         
         @active[state.name] ?= []
-        @active[state.name].push new mode.modes[name] state
+        @active[state.name]∙push mode.modes[name](state)
         
     @stop: state name ->
         
@@ -147,7 +121,7 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.handleKey is "function"
-                    ⮐  if m.handleKey(key event) != 'unhandled'
+                    ⮐  if m.handleKey(m key event) != 'unhandled'
         'unhandled'
         
     @cursorsSet: state editor ->
@@ -155,7 +129,7 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.cursorsSet is "function"
-                    m.cursorsSet editor
+                    m∙cursorsSet editor
                 
         if not @isActive state 'salter'
             if mode.modes['salter']

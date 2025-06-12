@@ -6,9 +6,6 @@
 0000000   000   000  0000000     000   
 --]]
 
--- use ../../../kxk ▪ kseg
--- use ../../../kxk ◆ salter
-
 
 local salt = class("salt")
     

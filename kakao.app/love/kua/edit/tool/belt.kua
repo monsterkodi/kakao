@@ -11,7 +11,6 @@ use edit.tool.cell
 use edit.tool.edit
 use edit.tool.misc
 use edit.tool.text
-# use ◆ text cell edit misc pair salt
 
 class belt
 
@@ -431,10 +430,7 @@ class belt
 
 # merge methods of sibling modules into tool/belt 
         
-# for _ mod in ipairs [text cell edit misc pair salt]
 for _ mod in ipairs [text cell edit misc]
     belt∙include mod
-    # for key val in pairs mod
-    #     belt[key] = val
 
 ⮐  belt

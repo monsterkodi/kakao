@@ -4,16 +4,13 @@
 # ███   ███  ███       ███        ███      ███        ███ ███ 
 # ███   ███  ████████  ███        ███████  ████████  ███   ███
 
-use ../../../kxk ▪ kseg kutil
-use ../tool      ◆ belt
-use ..           ◆ mode specs
-
-function replex
+class replex
         
     @autoStart: true
         
-    @: @state ->
-
+    @: state ->
+    
+        @state = state
         @name = 'replex'
     
     # ███  ███   ███   ███████  ████████  ████████   █████████
@@ -24,18 +21,18 @@ function replex
 
     postInsert: ->
 
-        chunks = @state.chunksBeforeCursors()
+        chunks = @state∙chunksBeforeCursors()
         repls  = []
         
-        for chunk in chunks
-            end = chunk[-2..-1]
-            if repl = specs.replex[end]
-                repls.push repl
-                # log "▸ repl #{repl}"
+        for _ chunk in ipairs chunks
+            ende = chunk∙slice -2 -1
+            repl = specs.replex[ende]
+            if repl
+                repls∙push repl
                 
-        if repls.length == @state.s.cursors.length
-            @state.delete 'back'
-            @state.delete 'back'
-            @state.insert repls.join('\n')
+        if repls.len == @state.s.cursors.len
+            @state∙delete 'back'
+            @state∙delete 'back'
+            @state∙insert repls∙join('\n')
         
-export replex
+⮐  replex

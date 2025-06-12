@@ -6,10 +6,6 @@
    000     00000000  000   000     000   
 --]]
 
--- use ../../../kxk ▪ kstr kutil kseg 
--- use ../../theme  ◆ color
--- use              ◆ belt
-
 
 local text = class("text")
     
@@ -40,7 +36,6 @@ function text.static.colorSeglsForText(text)
         local colors = array()
         local segls = array()
         
-        -- pattern = /\x1b\[((?:\d{1,3};?)+)m/gu
         local pattern = "\\x1b\\[([:;]?%d+)m"
         
         for line, li in belt.linesForText(text) do 

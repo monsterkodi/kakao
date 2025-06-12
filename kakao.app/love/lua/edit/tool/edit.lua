@@ -6,9 +6,6 @@
     00000000  0000000    000     000   
 --]]
 
--- use ../../../kxk ▪ kstr kseg
--- use ../../util   ◆ prof
-
 
 local edit = class("edit")
     

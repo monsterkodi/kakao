@@ -59,18 +59,14 @@ function complete:complete()
         local hcw = kseg.headCountWord(after)
         local tcw = kseg.tailCountWord(before)
         
-        -- log "complete.complete #{tcw} #{hcw}"
-        
         if ((tcw > 1) and hcw) then return end -- don't complete if cursor is inside a word
         
         local tct = kseg.tailCountTurd(before)
         
         local turd = before
         if tct then 
-            -- turd = before[before.length-1..] # start from the last punctuation character
             turd = string.sub(before, (#before - 1)) -- start from the last punctuation character
         elseif (tcw and (tcw < #before)) then 
-            -- turd = before[before.length-tcw..] # start from the last word
             turd = string.sub(before, (#before - tcw)) -- start from the last word
         end
         
@@ -87,8 +83,6 @@ function complete:complete()
 function complete:word(turd) 
         self.turd = turd
         
-        -- log "complete.word(#{@turd}"
-        
         if empty(self.turd) then 
             self:hide()
             return
@@ -104,7 +98,6 @@ end)
         if (#self.turd == 1) then 
             local inserts = specs.trigger[self.turd] -- prepend special completions, eg ~O 
             if inserts then 
-                -- log 'add specs trigger' inserts
                 self.words = inserts.concat(self.words)
             end
         end
@@ -234,7 +227,6 @@ function complete:apply()
             self.editor.state.delete('back')
             self.editor.state.insert(word)
         else 
-            -- @editor.state.insert word[@turd.length..]
             self.editor.state.insert(string.sub(word, #self.turd))
         end
         
@@ -278,7 +270,6 @@ function complete:preDrawLines(lines)
         local word = self:currentWord()
         lines = lines.asMutable()
         for pos in self.editor.state.s.cursors do 
-            -- kutil.replace lines[pos[1]] pos[0] 0 kseg(word[@turd.length..])
             kutil.replace(lines[pos[1]], pos[0], 0, kseg(string.sub(word, #self.turd)))
         end
         

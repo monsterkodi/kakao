@@ -53,18 +53,14 @@ class complete
         hcw = kseg.headCountWord after
         tcw = kseg.tailCountWord before
         
-        # log "complete.complete #{tcw} #{hcw}"
-        
         ⮐  if tcw > 1 and hcw # don't complete if cursor is inside a word
         
         tct = kseg.tailCountTurd before
         
         turd = before
         if tct 
-            # turd = before[before.length-1..] # start from the last punctuation character
             turd = string.sub before before.len-1 # start from the last punctuation character
         elif tcw and tcw < before.length
-            # turd = before[before.length-tcw..] # start from the last word
             turd = string.sub before before.len-tcw # start from the last word
                 
         @word turd
@@ -79,8 +75,6 @@ class complete
     
         @turd = turd
     
-        # log "complete.word(#{@turd}"
-            
         if empty @turd
             @hide()
             ⮐ 
@@ -93,7 +87,6 @@ class complete
         if @turd.length == 1 
             inserts = specs.trigger[@turd]  # prepend special completions, eg ~O 
             if inserts
-                # log 'add specs trigger' inserts
                 @words = inserts.concat @words
 
         @visible = valid @words
@@ -206,7 +199,6 @@ class complete
             @editor.state.delete 'back'
             @editor.state.insert word
         else
-            # @editor.state.insert word[@turd.length..]
             @editor.state.insert string.sub(word @turd.length)
                     
         post∙emit 'focus' 'editor'
@@ -243,7 +235,6 @@ class complete
         word  = @currentWord()
         lines = lines.asMutable()
         for pos in @editor.state.s.cursors
-            # kutil.replace lines[pos[1]] pos[0] 0 kseg(word[@turd.length..])
             kutil.replace lines[pos[1]] pos[0] 0 kseg(string.sub(word @turd.length))
         @editor.state.syntax.setSegls kseg.segls(lines)
         lines

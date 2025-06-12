@@ -1703,4 +1703,40 @@ function state:toggleCommentTypeAtSelectionOrCursorLines()
         return self:setCursors(cursors)
     end
 
+--  0000000  00000000  000      00000000   0000000  000000000  00000000  0000000    
+-- 000       000       000      000       000          000     000       000   000  
+-- 0000000   0000000   000      0000000   000          000     0000000   000   000  
+--      000  000       000      000       000          000     000       000   000  
+-- 0000000   00000000  0000000  00000000   0000000     000     00000000  0000000    
+
+
+function state:indentSelectedLines() 
+        if empty(self.s.selections) then return end
+        
+        local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
+        
+        local lines, selections, cursors = belt.indentLineRangesAndPositionsAtIndices(self.s.lines, self.s.selections, self.s.cursors, indices)
+        
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
+-- 0000000    00000000  000  000   000  0000000    00000000  000   000  000000000  
+-- 000   000  000       000  0000  000  000   000  000       0000  000     000     
+-- 000   000  0000000   000  000 0 000  000   000  0000000   000 0 000     000     
+-- 000   000  000       000  000  0000  000   000  000       000  0000     000     
+-- 0000000    00000000  000  000   000  0000000    00000000  000   000     000     
+
+
+function state:deindentSelectedOrCursorLines() 
+        local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
+        
+        local lines, selections, cursors = belt.deindentLineRangesAndPositionsAtIndices(self.s.lines, self.s.selections, self.s.cursors, indices)
+        
+        self:setLines(lines)
+        self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
 return state
