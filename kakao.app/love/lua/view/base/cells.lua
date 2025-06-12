@@ -5,9 +5,8 @@
     ███       ███       ███      ███           ███  
      ███████  ████████  ███████  ███████  ███████   
 
-    represents a rectangular subset of screen cells
-    wraps screen cell manipulation functions with transformed coordinates
-    provides some utilities to quickly fill cells
+    represents a rectangular set of character cells
+    provides some utilities to quickly draw cells
 --]]
 
 belt = require "edit.tool.belt"
@@ -19,8 +18,7 @@ local cells = class("cells")
     
 
 
-function cells:init(screen) 
-        self.screen = screen
+function cells:init() 
         self.x = 1
         self.y = 1
         self.cols = 0
@@ -51,13 +49,6 @@ function cells:layout(x, y, cols, rows)
 
 function cells:size() 
     return array(self.cols, self.rows)
-    end
-
-
-function cells:setScreen(screen) 
-        self.screen = screen
-        self.csz = array(screen.cw, screen.ch)
-        return self
     end
 
 --  0000000  00000000  000000000  

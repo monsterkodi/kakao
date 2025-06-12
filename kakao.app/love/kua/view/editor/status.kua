@@ -9,14 +9,6 @@
     displays currently edited file and editor state information 
 ###
 
-# use ../../../kxk    ▪ post slash kstr kseg
-# use ../../../kxk    ◆ nfs
-# use ../../edit/tool ◆ belt
-# use ../../edit/mode ◆ filepos
-# use ../../theme     ◆ color theme
-# use ../base         ◆ view crumbs bubble 
-# use                 ◆ statusfile
-
 use view.base.view
 use view.base.crumbs
 use view.base.bubble
@@ -39,12 +31,11 @@ class fileposSyntax
 
 class status extends view
 
-    @: screen editor ->
+    @: editor ->
     
-        @screen = screen
         @editor = editor
         
-        view.init @, screen, 'status'
+        view.init @, 'status'
         
         @state    = @editor.state
         @gutter   = 4
@@ -57,9 +48,9 @@ class status extends view
         
         @setColor 'gutter' theme.gutter.bg
            
-        @crumbs     = crumbs     @screen 'status_crumbs'
-        @statusfile = statusfile @screen 'status_file'
-        @filepos    = bubble     @screen "status_filepos"
+        @crumbs     = crumbs     "status_crumbs"
+        @statusfile = statusfile "status_file"
+        @filepos    = bubble     "status_filepos"
         
         @crumbs∙setColor 'empty_left'  @color.gutter
         @crumbs∙setColor 'empty_right' theme.status.empty

@@ -5,9 +5,8 @@
     ███       ███       ███      ███           ███  
      ███████  ████████  ███████  ███████  ███████   
 
-    represents a rectangular subset of screen cells
-    wraps screen cell manipulation functions with transformed coordinates
-    provides some utilities to quickly fill cells
+    represents a rectangular set of character cells
+    provides some utilities to quickly draw cells
 ###
 
 use edit.tool.belt
@@ -15,9 +14,8 @@ use theme.color theme.theme
 
 class cells
 
-    @: screen -> 
+    @: -> 
     
-        @screen = screen
         @x    = 1
         @y    = 1
         @cols = 0
@@ -33,16 +31,10 @@ class cells
         @y    = y 
         @cols = cols  
         @rows = rows
-        @c = belt.cells @cols @rows
+        @c    = belt.cells @cols @rows
 
     size: -> [@cols @rows]
     
-    setScreen: screen -> 
-    
-        @screen = screen
-        @csz  = [screen.cw screen.ch]
-        @
-        
     #  0000000  00000000  000000000  
     # 000       000          000     
     # 0000000   0000000      000     
@@ -115,10 +107,6 @@ class cells
     # 000  0000  0000000      000     
     # 000   000  000          000     
     #  0000000   00000000     000     
-    
-    get_char: x y -> @screen∙get_char @wx(x) @wy(y)
-    get_bg:   x y -> @screen∙get_bg   @wx(x) @wy(y)
-    get_fg:   x y -> @screen∙get_fg   @wx(x) @wy(y)
     
     get_char: x y ->
 
@@ -328,10 +316,14 @@ class cells
 
     draw_rounded_cursor: x y fg ->
     
-        # @img x y "rounded.cursor" fg
-        # love.graphics.rectangle 
-        csz = @screen∙cell()
-        love.graphics.rectangle("fill", (x-1)*csz[1], (y-1)*csz[2], csz[1], csz[2]) 
+        cw = _G.screen.cw
+        ch = _G.screen.ch
+        
+        xo = @x*cw
+        yo = @y*ch
+        
+        love.graphics.setColor 255 255 0
+        love.graphics.rectangle("fill", xo+(x-1)*cw, yo+(y-1)*ch, cw, ch) 
         
     draw_rounded_multi_cursor: x y fg ->
     
@@ -354,7 +346,6 @@ class cells
         ofg = @get_fg x y
         @set_fg x y color.adjustForBackground(ofg highlightColor)        
                         
-                        
     # ████████   ████████  ███   ███  ███████    ████████  ████████ 
     # ███   ███  ███       ████  ███  ███   ███  ███       ███   ███
     # ███████    ███████   ███ █ ███  ███   ███  ███████   ███████  
@@ -364,19 +355,25 @@ class cells
     render: ->
     
         lg = love.graphics
+        
+        cw = _G.screen.cw
+        ch = _G.screen.ch
+        
+        xo = @x*cw
+        yo = @y*ch
 
         for y in 1..@rows
             for x in 1..@cols
                 char = @c[y][x].char
                     
                 if @c[y][x].bg and @c[y][x].bg.len > 0
-                    lg.setColor @c[y][x].bg[1]/255, @c[y][x].bg[2]/255, @c[y][x].bg[3]/255
-                    lg.rectangle("fill", (x-1)*@csz[1], (y-1)*@csz[2], @csz[1], @csz[2]) 
+                    lg.setColor @c[y][x].bg[1]/255 @c[y][x].bg[2]/255 @c[y][x].bg[3]/255
+                    lg.rectangle "fill" xo+(x-1)*cw yo+(y-1)*ch cw ch
                 
                 if @c[y][x].fg.len > 0 and @c[y][x].fg is array
-                    lg.setColor @c[y][x].fg[1]/255, @c[y][x].fg[2]/255, @c[y][x].fg[3]/255
+                    lg.setColor @c[y][x].fg[1]/255 @c[y][x].fg[2]/255 @c[y][x].fg[3]/255
                 
-                lg.print char, (x-1)*@csz[1], (y-1)*@csz[2]
+                lg.print char xo+(x-1)*cw yo+(y-1)*ch
         @
                         
 ⮐  cells

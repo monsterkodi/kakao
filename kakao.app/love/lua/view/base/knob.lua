@@ -9,17 +9,13 @@
     used by dircol and funcol
 --]]
 
--- use ../../../kxk ▪ post
--- use ../../theme  ◆ theme
--- use              ◆ view
-
 
 local knob = class("knob", view)
     
 
 
-function knob:init(screen, name) 
-        view.init(self, screen, name)
+function knob:init(name) 
+        view.init(self, name)
         
         self:setColor('fg', theme.knob.fg)
         self:setColor('bg', theme.knob.bg)

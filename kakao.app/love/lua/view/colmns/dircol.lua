@@ -6,13 +6,6 @@
     ███████    ███  ███   ███   ███████   ███████   ███████  
 --]]
 
--- use ../../../kxk    ▪ post slash
--- use ../../edit/tool ◆ belt
--- use ../../theme     ◆ color theme
--- use ../base         ◆ view knob crumbs input
--- use ../menu         ◆ context
--- use                 ◆ dirtree
-
 knob = require "view.base.knob"
 view = require "view.base.view"
 dirtree = require "view.colmns.dirtree"
@@ -22,19 +15,19 @@ local dircol = class("dircol", view)
     
 
 
-function dircol:init(screen, editor, features) 
+function dircol:init(editor, features) 
         self.editor = editor
         
-        view.init(self, screen, 'dircol', features)
+        view.init(self, 'dircol', features)
         
         self.isVisible = false
         self.active = true
         
         self.pointerType = 'pointer'
         
-        self.knob = knob(screen, "" .. tostring(self.name) .. "_knob")
-        self.crumbs = crumbs(screen, "" .. tostring(self.name) .. "_crumbs")
-        self.dirtree = dirtree(screen, "" .. tostring(self.name) .. "_dirtree", array('scroll'))
+        self.knob = knob("" .. tostring(self.name) .. "_knob")
+        self.crumbs = crumbs("" .. tostring(self.name) .. "_crumbs")
+        self.dirtree = dirtree("" .. tostring(self.name) .. "_dirtree", array('scroll'))
         
         self.crumbs:on('action', self.onCrumbsAction)
         
@@ -113,7 +106,7 @@ function dircol:layout(x, y, w, h)
         self.dirtree:layout(x, (y + 1), w, (h - 1))
         self.knob:layout(((x + w) - 1), (y + 1), 1, (h - 1))
         
-        view:layout(self, x, y, w, h)
+        view.layout(self, x, y, w, h)
         return self
     end
 

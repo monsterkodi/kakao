@@ -9,17 +9,13 @@
     used in the status, dircol, browse and searcher file headings
 ###
 
-# use ../../../kxk ▪ slash post
-# use ../../theme  ◆ color theme
-# use              ◆ view
-
 use view.base.view
 
 class crumbs extends view
 
-    @: screen name ->
+    @: name ->
 
-        view.init @, screen, name
+        view.init @, name
         
         @pointerType = 'pointer'
         @rounded = ''

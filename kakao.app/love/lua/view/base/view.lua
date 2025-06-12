@@ -14,20 +14,16 @@
         ▪ current popup
 --]]
 
--- use ../../../kxk ▪ events post
--- use ../../theme  ◆ color
--- use ../screen    ◆ cells 
-cells = require "view.screen.cells"
+cells = require "view.base.cells"
 
 
 local view = class("view", events)
     view.static.currentPopup = nil
 
 
-function view:init(screen, name, features) 
-        self.screen = screen
+function view:init(name, features) 
         self.name = name
-        self.cells = cells(self.screen)
+        self.cells = cells()
         self.color = {}
         self.feats = {}
         if features then 
@@ -187,7 +183,7 @@ function view:layout(x, y, w, h)
     end
 
 
-function view:draw() 
+function view:render() 
     return self.cells:render()
     end
 

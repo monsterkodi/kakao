@@ -11,11 +11,6 @@
     complex editing is delegated to mode(s)
 ###
 
-# use ../../kxk      ▪ post
-# use ../view/base   ◆ scroll view
-# use ../view/editor ◆ gutter mapview
-# use ./tool         ◆ belt
-# use                ◆ state draw complete mode
 use edit.draw
 use edit.state
 use edit.mode
@@ -24,11 +19,10 @@ use view.editor.gutter
 
 class editor extends draw
 
-    @: screen name features ->
+    @: name features ->
 
-        draw.init @, screen, name, features
+        draw.init @, name, features
         
-        @screen = screen
         @name = name
         @focusable = true
         
@@ -36,9 +30,9 @@ class editor extends draw
         
         use edit.complete
                 
-        if @feats.scrllr   ➜ @scroll   = scroll   @screen @state 'right'
-        if @feats.scroll   ➜ @scroll   = scroll   @screen @state 'left'
-        if @feats.mapview  ➜ @mapscr   = mapview  @screen @state
+        if @feats.scrllr   ➜ @scroll   = scroll   @state 'right'
+        if @feats.scroll   ➜ @scroll   = scroll   @state 'left'
+        if @feats.mapview  ➜ @mapscr   = mapview  @state
         if @feats.gutter   ➜ @gutter   = gutter   @
         if @feats.complete ➜ @complete = complete @
             

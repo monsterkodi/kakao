@@ -9,10 +9,6 @@
     used by any multiline editor
 --]]
 
--- use ../../../kxk   ▪ post
--- use ../../theme    ◆ theme
--- use ../../util/img ◆ squares sircels
--- use                ◆ view
 view = require "view.base.view"
 
 
@@ -20,12 +16,12 @@ local scroll = class("scroll", view)
     
 
 
-function scroll:init(screen, state, side) 
+function scroll:init(state, side) 
         side = side or 'left'
         
         self.state = state
         self.side = side
-        view.init(self, screen, self.state:owner() .. '_scroll')
+        view.init(self, self.state:owner() .. '_scroll')
         
         self.pointerType = 'pointer'
         
@@ -119,9 +115,8 @@ function scroll:scrollToPixel(pixel)
 
 
 function scroll:draw() 
-        -- csz = @screen.t.cellsz
-        -- ⮐  if empty csz
-        local csz = self.screen:size()
+        local cw = _G.screen.cw
+        local ch = _G.screen.ch
         
         local rows = self.cells.rows
         
@@ -131,20 +126,20 @@ function scroll:draw()
         -- 
         -- ⮐  if lnum <= rows
         -- 
-        -- kh = ((rows*rows) / lnum) * csz[2]
-        -- ky = ((rows*csz[2]-kh) * @state.s.view[2] / (lnum-rows)) 
+        -- kh = ((rows*rows) / lnum) * ch
+        -- ky = ((rows*ch-kh) * @state.s.view[2] / (lnum-rows)) 
         
         -- fg = if @hover ➜ @color.hover ➜ @color.knob
         
-        -- x  = @cells.x*csz[1]
-        -- y  = int @cells.y*csz[2]+ky
-        -- w  = int csz[1]/2
+        -- x  = @cells.x*cw
+        -- y  = int @cells.y*ch+ky
+        -- w  = int cw/2
         -- h  = int kh
         
         -- squares∙place x int(y+w/2) w h-w fg
         -- 
         -- sircels∙place x y     w (ky or {fg: @color.dot}) 1111
-        return -- sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*csz[1]-1) or {fg: @color.dot}) 1111
+        return -- sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*cw-1) or {fg: @color.dot}) 1111
     end
 
 return scroll

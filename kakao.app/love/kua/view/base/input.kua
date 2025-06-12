@@ -9,17 +9,13 @@
     used in inputchoice to filter choices
 ###
 
-# use ../../../kxk ▪ kseg
-# use ../../theme  ◆ theme
-# use ../../edit   ◆ editor
-
 use edit.editor
 
 class input extends editor
 
-    @: screen name ->
+    @: name ->
         
-        editor.init @, screen, name, ['brckts' 'replex' 'unype']
+        editor.init @, name, ['brckts' 'replex' 'unype']
         
         @setColor 'selection_line'  @color.selection
         @setColor 'bg'              theme.quicky.bg

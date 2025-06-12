@@ -8,18 +8,15 @@
     quick and dirty context menu for the fileeditor
 --]]
 
-kxk = require "../../../kxk"
-tool = require "../../edit/tool"
-theme = require "../../theme"
- = require ""
+inputchoice = require "view.menu.inputchoice"
 
 
 local context = class("context", inputchoice)
-    context.static.menu = null
+    context.static.menu = nil
 
 
-function context:init(@screen) 
-        discard procCall init(inputchoice(self), self.screen, 'context')
+function context:init() 
+        inputchoice.init(self, 'context')
         
         self:setColor('bg', theme.context.bg)
         
@@ -34,7 +31,7 @@ function context:init(@screen)
 -- ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
 
 
-method context:arrange() 
+function context:arrange() 
         local w = ((self.width + 2) + 1) -- 2 for frame, 1 for right 
         local c = self.choices.numChoices()
         
@@ -128,4 +125,4 @@ function context:drawFrame()
         return self.cells:draw_rounded_border(0, cy, -1, -1, {fg = self.color.bg})
     end
 
-export context
+return context

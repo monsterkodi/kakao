@@ -6,9 +6,6 @@
     000     000     00000000  000   000
 --]]
 
--- use ../../theme  ◆ icons
--- use ../../../kxk ▪ slash
-
 icons = require "theme.icons"
 
 

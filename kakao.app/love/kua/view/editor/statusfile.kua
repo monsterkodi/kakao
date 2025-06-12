@@ -8,19 +8,14 @@
     used by status to display the currently edited file in the fileeditor
 ###
 
-# use ../../../kxk ▪ slash post
-# use ../../theme  ◆ color theme 
-# use ../../util   ◆ syntax
-# use ../base      ◆ view
-
 use view.base.view
 use util.syntax
 
 class statusfile extends view
 
-    @: screen name ->
+    @: name ->
 
-        view.init @, screen, name
+        view.init @, name
         
         @setColor 'bg'     theme.status.bg
         @setColor 'empty'  theme.status.empty

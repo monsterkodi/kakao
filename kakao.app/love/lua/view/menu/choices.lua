@@ -15,11 +15,6 @@
     supports filtering of the items
 --]]
 
--- use ../../../kxk    ▪ kstr kseg slash krzl post
--- use ../../theme     ◆ color theme 
--- use ../../edit/tool ◆ belt
--- use ../../edit      ◆ editor
-
 editor = require "edit.editor"
 
 
@@ -27,10 +22,10 @@ local choices = class("choices", editor)
     
 
 
-function choices:init(screen, name, features) 
+function choices:init(name, features) 
         features = features or (array())
         
-        editor.init(self, screen, name, features)
+        editor.init(self, name, features)
         
         self:setColor('bg', theme.editor.bg)
         self:setColor('hover', theme.hover)

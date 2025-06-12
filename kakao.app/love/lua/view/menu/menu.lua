@@ -16,12 +16,12 @@ local menu = class("menu", inputchoice)
     
 
 
-function menu:init(screen, name) 
+function menu:init(name) 
         name = name or 'menu'
         
-        inputchoice.init(self, screen, name)
+        inputchoice.init(self, name)
         
-        self.greet = greet(self.screen)
+        self.greet = greet()
         return self
     end
 
@@ -45,11 +45,11 @@ end)()
         local iz = max(0, (ih - 1))
         
         local h = ((c + 2) + ih)
-        local scy = floor((self.screen.rows / 2))
+        local scy = floor((_G.screen.rows / 2))
         local y = floor((scy - ((c + 2) / 2)))
         y = y - ih
         
-        local scx = floor((self.screen.cols / 2))
+        local scx = floor((_G.screen.cols / 2))
         local x = floor((scx - (w / 2)))
         
         local gw, gh = belt.cellSize(self.greet.header)
@@ -95,8 +95,6 @@ quit
         items = items:map(function (i) 
     return ' ' .. i
 end) -- padding for  
-        
-        local ccol = (floor((self.screen.cols / 2)) - 5)
         
         self.width = belt.widthOfLines(items)
         
@@ -163,13 +161,11 @@ function menu:onWheel()
 -- 0000000    000   000  000   000  00     00
 
 
-function menu:draw(screen) 
+function menu:draw() 
         if self:hidden() then return end
         
-        self.cells:setScreen(screen)
-        
         self:arrange()
-        self.greet:draw(screen)
+        self.greet:draw()
         self:drawFrame()
         return self:drawChoices()
     end

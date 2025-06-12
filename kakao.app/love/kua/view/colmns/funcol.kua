@@ -6,27 +6,22 @@
 000        0000000   000   000   0000000   0000000   0000000
 ###
 
-# use ../../../kxk ▪ post slash
-# use ../../theme  ◆ color theme
-# use ../base      ◆ view knob
-# use              ◆ funtree
-
 use view.colmns.funtree
 
 class funcol extends view
 
-    @: screen editor features ->
+    @: editor features ->
     
         @editor = editor
         
-        view.init @ screen 'funcol' features
+        view.init @ 'funcol' features
         
         @isVisible = false
         @active    = false
         
         @pointerType = 'pointer'
         
-        @knob    = knob    screen  "#{@name}_knob"
+        @knob    = knob            "#{@name}_knob"
         @funtree = funtree @editor "#{@name}_funtree" ['scrllr']       
         
         @knob.frameSide = 'left'
@@ -64,7 +59,7 @@ class funcol extends view
         @funtree∙layout x y w h
         @knob∙layout    x y 1 h
                 
-        view∙layout @ x y w h
+        view.layout @ x y w h
         @
         
     # ███████    ████████    ███████   ███   ███

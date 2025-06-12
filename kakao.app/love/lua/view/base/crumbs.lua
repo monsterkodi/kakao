@@ -9,10 +9,6 @@
     used in the status, dircol, browse and searcher file headings
 --]]
 
--- use ../../../kxk ▪ slash post
--- use ../../theme  ◆ color theme
--- use              ◆ view
-
 view = require "view.base.view"
 
 
@@ -20,8 +16,8 @@ local crumbs = class("crumbs", view)
     
 
 
-function crumbs:init(screen, name) 
-        view.init(self, screen, name)
+function crumbs:init(name) 
+        view.init(self, name)
         
         self.pointerType = 'pointer'
         self.rounded = ''

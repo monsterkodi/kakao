@@ -8,12 +8,6 @@
     the fancy glowing app name ascii art thingy
 --]]
 
--- use ../../../kxk    ▪ kstr post
--- use ../../util      ◆ help
--- use ../../theme     ◆ theme 
--- use ../../edit/tool ◆ belt
--- use ../../edit      ◆ editor
--- use ../base         ◆ view
 help = require "util.help"
 belt = require "edit.tool.belt"
 view = require "view.base.view"
@@ -23,8 +17,8 @@ local greet = class("greet", view)
     
 
 
-function greet:init(screen) 
-        view.init(self, screen, 'greet')
+function greet:init() 
+        view.init(self, 'greet')
         
         self.isVisible = false
         
@@ -68,10 +62,8 @@ function greet:layout(x, y)
 -- ███████    ███   ███  ███   ███  ██     ██  
 
 
-function greet:draw(screen) 
+function greet:draw() 
         if self:hidden() then return end
-        
-        self.cells:setScreen(screen)
         
         local duration = 480
         self.a = self.a + 1
@@ -87,8 +79,7 @@ function greet:draw(screen)
             end
         end
         
-        view.draw(self)
-        return -- post∙emit 'redraw'
+        return self:render()
     end
 
 return greet

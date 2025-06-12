@@ -15,18 +15,13 @@
     supports filtering of the items
 ###
 
-# use ../../../kxk    ▪ kstr kseg slash krzl post
-# use ../../theme     ◆ color theme 
-# use ../../edit/tool ◆ belt
-# use ../../edit      ◆ editor
-
 use edit.editor
 
 class choices extends editor
 
-    @: screen name features=[] ->
+    @: name features=[] ->
 
-        editor.init @, screen, name, features
+        editor.init @, name, features
         
         @setColor 'bg'    theme.editor.bg
         @setColor 'hover' theme.hover

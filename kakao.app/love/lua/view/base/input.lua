@@ -9,10 +9,6 @@
     used in inputchoice to filter choices
 --]]
 
--- use ../../../kxk ▪ kseg
--- use ../../theme  ◆ theme
--- use ../../edit   ◆ editor
-
 editor = require "edit.editor"
 
 
@@ -20,8 +16,8 @@ local input = class("input", editor)
     
 
 
-function input:init(screen, name) 
-        editor.init(self, screen, name, array('brckts', 'replex', 'unype'))
+function input:init(name) 
+        editor.init(self, name, array('brckts', 'replex', 'unype'))
         
         self:setColor('selection_line', self.color.selection)
         self:setColor('bg', theme.quicky.bg)

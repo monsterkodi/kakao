@@ -14,20 +14,16 @@
         ▪ current popup
 ###
 
-# use ../../../kxk ▪ events post
-# use ../../theme  ◆ color
-# use ../screen    ◆ cells 
-use view.screen.cells
+use view.base.cells
 
 class view extends events
 
     @currentPopup: nil
 
-    @: screen name features ->
+    @: name features ->
         
-        @screen = screen
         @name   = name
-        @cells  = cells @screen
+        @cells  = cells()
         @color  = {}
         @feats  = {}
         if features
@@ -129,6 +125,6 @@ class view extends events
     
     layout: x y w h -> @cells∙layout x y w h 
     
-    draw: -> @cells∙render()
+    render: -> @cells∙render()
         
 ⮐  view

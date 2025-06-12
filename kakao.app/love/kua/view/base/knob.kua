@@ -9,15 +9,11 @@
     used by dircol and funcol
 ###
 
-# use ../../../kxk ▪ post
-# use ../../theme  ◆ theme
-# use              ◆ view
-
 class knob extends view
 
-    @: screen name ->
+    @: name ->
         
-        view.init @ screen name
+        view.init @ name
         
         @setColor 'fg' theme.knob.fg
         @setColor 'bg' theme.knob.bg

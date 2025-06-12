@@ -6,11 +6,6 @@
  0000000   0000000   000   000  000        0000000  00000000     000     00000000
 ###
 
-# use ../../kxk ▪ kseg kutil post
-# use ../theme  ◆ theme 
-# use ./tool    ◆ belt
-# use           ◆ specs
-
 use view.menu.choices
 
 class complete
@@ -21,7 +16,7 @@ class complete
         
         @name = @editor.name & '_complete'
         
-        @choices = choices @editor.cells.screen "#{@name}_choices" ['scrllr']
+        @choices = choices "#{@name}_choices" ['scrllr']
         @choices.focusable = false
         
         @color = { 

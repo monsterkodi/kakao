@@ -121,25 +121,25 @@ local funtree = class("funtree", choices)
 function funtree:init(editor, name, features) 
         self.editor = editor
         
-        choices.init(self, self.editor.screen, name, features)
+        choices.init(self, name, features)
         
         self.state.syntax = funSyntax(self)
         
-        self.editor.state:on('cursorsSet', self.onCursorsSet)
+        self.editor.state:on('cursorsSet', self.onCursorsSet, self)
         
-        post:on('file.loaded', self.clear)
-        post:on('file.indexed', self.onFileIndexed)
+        post:on('file.loaded', self.clear, self)
+        post:on('file.indexed', self.onFileIndexed, self)
         return self
     end
 
 
 function funtree:onCursorsSet() 
-        return self:selectItemForLineIndex(self.editor.state.mainCursor()[1])
+        return self:selectItemForLineIndex(self.editor.state:mainCursor()[1])
     end
 
 
 function funtree:selectItemForLineIndex(li) 
-        for item, idx in self.items do 
+        for idx, item in ipairs(self.items) do 
             if (((item.line - 1) <= li) and ((idx >= (#self.items - 1)) or ((self.items[(idx + 1)].line - 1) > li))) then 
                 self.state:setSelections(array(belt.rangeOfLine(self.state.s.lines, idx)))
                 self.state:setMainCursor(0, idx)

@@ -6,21 +6,13 @@
 0000000    000   000  000   000  00     00
 ###
 
-# use ../../kxk    ▪ kseg kstr 
-# use ../util      ◆ prof
-# use ../util/img  ◆ rounded
-# use ../theme     ◆ color theme 
-# use ../view/base ◆ view
-# use ./tool       ◆ belt
-# use              ◆ mode
-
 use view.base.view
 
 class draw extends view
 
-    @: screen name features ->
+    @: name features ->
         
-        view.init @, screen, name, features
+        view.init @, name, features
         
         @setColor 'bg'        theme.editor.bg
         @setColor 'empty'     theme.editor.empty
@@ -35,13 +27,10 @@ class draw extends view
     # 000   000  000   000  000   000  000   000  
     # 0000000    000   000  000   000  00     00  
     
-    draw: screen ->
+    draw: ->
         
         ⮐  if @hidden()
         
-        # prof.start 'draw' if @name == 'editor'
-        # ● draw
-                
         view   = @state.s.view
         lines  = @state.s.lines
         if @complete
@@ -64,6 +53,9 @@ class draw extends view
         
         if @complete
             @complete∙drawCompletion()
+            
+        @render()
+        
         @drawCursors()
         if @complete
             @complete∙drawPopup()
@@ -71,8 +63,6 @@ class draw extends view
         if @gutter ➜ @gutter∙draw()
         if @mapscr ➜ @mapscr∙draw()
         if @scroll ➜ @scroll∙draw()
-        
-        # prof.end 'draw'   if @name == 'editor'
         
         mode.postDraw @state
         
@@ -256,7 +246,7 @@ class draw extends view
     drawCursors: ->
         
         s = @state.s
-        mainCursor = @state∙mainCursor()
+        mc = @state∙mainCursor()
         
         fg = @color.cursor.fg
 
@@ -266,13 +256,13 @@ class draw extends view
         
         for ci cursor in ipairs s.cursors
  
-            if cursor != mainCursor
+            if cursor != mc
             
                 if @isCursorVisible cursor
                  
                     @cells∙draw_rounded_multi_cursor cursor[1]-s.view[1] cursor[2]-s.view[2] bg
                         
-        if @isCursorVisible mainCursor
+        if @isCursorVisible mc
              
             fg  = @color.cursor.fg
             
@@ -280,8 +270,8 @@ class draw extends view
 
             if not @hasFocus() ➜ bg = color.darken bg 
              
-            x = mainCursor[1]-s.view[1] 
-            y = mainCursor[2]-s.view[2]
+            x = mc[1]-s.view[1]+1
+            y = mc[2]-s.view[2]+1
              
             if s.cursors.length <= 1
                 if @isCursorInEmpty()

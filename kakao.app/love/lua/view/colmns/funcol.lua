@@ -6,11 +6,6 @@
 000        0000000   000   000   0000000   0000000   0000000
 --]]
 
--- use ../../../kxk ▪ post slash
--- use ../../theme  ◆ color theme
--- use ../base      ◆ view knob
--- use              ◆ funtree
-
 funtree = require "view.colmns.funtree"
 
 
@@ -18,17 +13,17 @@ local funcol = class("funcol", view)
     
 
 
-function funcol:init(screen, editor, features) 
+function funcol:init(editor, features) 
         self.editor = editor
         
-        view.init(self, screen, 'funcol', features)
+        view.init(self, 'funcol', features)
         
         self.isVisible = false
         self.active = false
         
         self.pointerType = 'pointer'
         
-        self.knob = knob(screen, "" .. tostring(self.name) .. "_knob")
+        self.knob = knob("" .. tostring(self.name) .. "_knob")
         self.funtree = funtree(self.editor, "" .. tostring(self.name) .. "_funtree", array('scrllr'))
         
         self.knob.frameSide = 'left'
@@ -70,7 +65,7 @@ function funcol:layout(x, y, w, h)
         self.funtree:layout(x, y, w, h)
         self.knob:layout(x, y, 1, h)
         
-        view:layout(self, x, y, w, h)
+        view.layout(self, x, y, w, h)
         return self
     end
 

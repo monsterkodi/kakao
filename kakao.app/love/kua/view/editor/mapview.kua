@@ -10,16 +10,13 @@
     also used for browse and quicky previews
 ###
 
-use ../../../kxk ▪ kstr post
-use ../../util   ◆ prof syntax 
-use ../../theme  ◆ color theme
-use ../base      ◆ view
+use view.base.view
 
-function mapview extends view
+class mapview extends view
 
-    @: screen @state ->
+    @: @state ->
         
-        super screen @state.owner() + '.mapview'
+        view.init @ @state.owner() + '.mapview'
         
         @setColor 'bg' theme.quicky.bg
         
@@ -230,4 +227,4 @@ function mapview extends view
         
         @drawImages()
         
-export mapview
+⮐  mapview

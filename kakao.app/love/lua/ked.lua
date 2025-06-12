@@ -10,8 +10,7 @@ kxk = require "kxk.kxk"
 logfile = require "util.logfile"
 session = require "util.session"
 fileeditor = require "view.editor.fileeditor"
-status = require "view.status.status"
-screen = require "view.screen.screen"
+status = require "view.editor.status"
 menu = require "view.menu.menu"
 dircol = require "view.colmns.dircol"
 funcol = require "view.colmns.funcol"
@@ -32,27 +31,23 @@ function KED:init()
         
         -- @session.on 'loaded' @onSessionLoaded
         
-        self.screen = screen(1, 1)
-        
-        _G.ked_screen = self.screen
-        
         -- @indexer  = indexer()
         -- @git      = git()
         
-        self.menu = menu(self.screen)
-        -- @macro    = macro(      @screen )
-        -- @quicky   = quicky(     @screen )
-        -- @browse   = browse(     @screen )
-        self.editor = fileeditor(self.screen, 'editor')
-        -- @droop    = droop(      @screen @editor )
-        self.dircol = dircol(self.screen, self.editor, array('scroll', 'knob'))
-        self.funcol = funcol(self.screen, self.editor, array('scroll', 'knob'))
-        -- @finder   = finder(     @screen @editor)
-        -- @searcher = searcher(   @screen @editor)
-        -- @differ   = differ(     @screen @editor)
-        self.status = status(self.screen, self.editor)
-        -- @context  = context(    @screen)
-        -- @input    = input(      @screen)
+        self.menu = menu()
+        -- @macro    = macro()
+        -- @quicky   = quicky()
+        -- @browse   = browse()
+        self.editor = fileeditor('editor')
+        -- @droop    = droop     @screen @editor
+        self.dircol = dircol(self.editor, array('scroll', 'knob'))
+        self.funcol = funcol(self.editor, array('scroll', 'knob'))
+        -- @finder   = finder    @editor
+        -- @searcher = searcher  @editor
+        -- @differ   = differ    @editor
+        self.status = status(self.editor)
+        -- @context  = context()
+        -- @input    = input()
         
         -- @input.on 'action' @onInputAction
         
@@ -154,32 +149,13 @@ function KED:onSessionLoaded()
 
 
 function KED:arrange(si) 
-        local s = screen(si)
-        
-        s:layout({hbox = array({view = self.dircol, w = 20}, {view = self.gutter, w = 6}, {vbox = array({view = self.status, h = 1}, {hbox = array({view = self.editor}, {view = self.funcol, w = 16})})})})
-        
-        -- dcw = @dircol.cells.cols
-        -- fcw = @funcol.cells.cols
-        -- 
-        -- dcw = 0 if @dircol.hidden() or not @dircol.active
-        -- fcw = 0 if @funcol.hidden() or not @funcol.active
-        -- 
-        
         local dcw = 0
         local fcw = 0
         
-        -- if @viewSizeDelta
-        --     if 
-        --         @viewSizeDelta.name == @dircol.name ➜ dcw = @dircol.cells.cols + @viewSizeDelta.delta
-        --         @viewSizeDelta.name == @funcol.name ➜ fcw = @funcol.cells.cols + @viewSizeDelta.delta
-        --     delete @viewSizeDelta
-        -- 
-        -- if @dircol.visible() and @dircol.active
-        --     @dircol.layout  0     0  dcw        h    
-        -- if @funcol.visible() and @funcol.active
-        --     @funcol.layout  w-fcw 1  fcw        h-1  
-        -- @status∙layout  dcw   0  w-dcw      1
-        return -- @editor∙layout  dcw   1  w-dcw-fcw  h-1
+        self.dircol:layout(0, 0, dcw, si.rows)
+        self.status:layout(dcw, 0, (si.cols - dcw), 1)
+        self.funcol:layout((si.cols - fcw), 1, fcw, (si.rows - 1))
+        return self.editor:layout(dcw, 1, ((si.cols - dcw) - fcw), (si.rows - 1))
     end
 
 --  ███████   ███   ███  ███  █████████
@@ -190,8 +166,6 @@ function KED:arrange(si)
 
 
 function KED:quit(msg) 
-        -- clearImmediate @redrawId
-        
         self.quitting = true
         
         -- @session.save()
@@ -224,12 +198,6 @@ function KED:newFile()
         
         self.editor.state.syntax.ext = 'txt'
         self.editor.state:loadLines(array('hello world!1', 'hello world!2', 'hello world!3'))
-        
-        -- @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
-        -- @editor.cells.meta_pst 0 0 '\x07'
-        -- 
-        -- @editor.cells.meta_pre 1 0 '\x1b]66;n=3:d=4:w=1;'
-        -- @editor.cells.meta_pst 1 0 '\x07'
         
         -- @t.setCursor 0 0
         -- @t.setTitle 'kėd'
@@ -640,36 +608,33 @@ function KED:onInputAction(action, event)
 
 
 function KED:redraw() 
-        if self.quitting then return end
-        
-        -- clearImmediate @redrawId
-        return -- @redrawId = setImmediate @draw
+        if self.quitting then 
+    return
+           end
     end
 
 
 function KED:draw(cols, rows, cw, ch) 
         if self.quitting then return end
         
-        -- ● sum
-        
-        -- start = process.hrtime()
-        
         -- @status.gutter = @editor.state.gutterWidth()
         
-        self:arrange({cols = cols, rows = rows, cw = cw, ch = ch})
+        _G.screen = {cols = cols, rows = rows, cw = cw, ch = ch}
         
-        -- ●▸ draw
-        -- if @menu.greet∙hidden()
-        --     @editor∙draw() #if not @differ∙visible()
-        --     @status∙draw()
-        --     @dircol∙draw()
-        --     @funcol∙draw()
+        self:arrange(screen)
+        
+        if self.menu.greet:hidden() then 
+             self.editor:draw() --if not @differ∙visible()
+             self.status:draw()
+             self.dircol:draw()
+             self.funcol:draw()
+        end
         
         -- for y in 1..rows
         --     for x in 1..cols
         --         @screen∙set x y string.sub($x 1 1) [50 0 0] 
         
-        -- @menu∙draw screen
+        self.menu:draw()
         -- @macro∙draw()
         -- @quicky∙draw()
         -- @browse∙draw()
@@ -678,15 +643,7 @@ function KED:draw(cols, rows, cw, ch)
         -- @searcher∙draw()
         -- @differ∙draw()
         -- @context∙draw()
-        -- @input∙draw()
-        -- ●▪ draw
-        -- ●▸ render
-        
-        -- @screen∙render()
-        -- @t.removeImgs()
-        -- ●▪ render
-        
-        return -- @status.time = process.hrtime(start)[1]
+        return -- @input∙draw()
     end
 
 return KED

@@ -10,13 +10,6 @@
     searcher/finder replaces lineno to display source line numbers 
 --]]
 
--- use ../../../kxk   ▪ post kseg
--- use ../../../kolor ◆ kulur
--- use ../../util/img ◆ squares
--- use ../../util     ◆ prof syntax
--- use ../../theme    ◆ color theme 
--- use ../base        ◆ view
-
 view = require "view.base.view"
 
 
@@ -26,10 +19,9 @@ local gutter = class("gutter", view)
 
 function gutter:init(editor) 
         self.editor = editor
-        
         self.state = self.editor.state
         
-        view.init(self, self.editor.screen, self.state.name .. '.gutter')
+        view.init(self, self.state.name .. '.gutter')
         
         self:setColor('fg', theme.gutter.fg)
         self:setColor('bg', theme.gutter.bg)
@@ -98,7 +90,7 @@ function gutter:drawPreviews()
 
 
 function gutter:lineno(y) 
-        local lineno = kstr.lpad((self.cells.cols - 1), tostring((y + 1)))
+        local lineno = kstr.lpad((self.cells.cols - 1), tostring(y))
         lineno = lineno .. ' '
         return lineno
     end
@@ -164,13 +156,13 @@ end)()
 
 function gutter:drawGitScroll() 
         if empty(self.gitBlocks) then return end
-        local csz = self.screen.t.cellsz
-        if empty(csz) then return end
+        local cw = _G.screen.cw
+        local ch = _G.screen.ch
         
-        local sw = int((csz[0] / 2))
-        local sx = ((self.cells.x - 1) * csz[0])
-        local oy = (self.cells.y * csz[1])
-        local pixelsPerRow = clamp(0, csz[1], ((csz[1] * self.cells.rows) / #self.state.s.lines))
+        local sw = int((cw / 2))
+        local sx = ((self.cells.x - 1) * cw)
+        local oy = (self.cells.y * ch)
+        local pixelsPerRow = clamp(0, ch, ((ch * self.cells.rows) / #self.state.s.lines))
         
         for gb in self.gitBlocks do 
             local sy = int(((gb[0] * pixelsPerRow) + oy))
@@ -211,7 +203,7 @@ function gutter:draw()
         local mainCursor = self.state:mainCursor()
         
         for row in iter(1, self.cells.rows) do 
-            local y = (self.state.s.view[2] + row)
+            local y = ((self.state.s.view[2] + row) - 1)
             
             local lineno = self:lineno(y)
             
@@ -225,8 +217,9 @@ function gutter:draw()
                 local col = i
                 if (col < self.cells.rows) then 
                     local sc = self:fgcolor(i, y, c)
+                    local fg = self.color.fg
                     if sc then 
-                        local fg = sc
+                        fg = sc
                     else 
                         local df = (function () 
     if self.state.hasFocus then 
@@ -234,19 +227,19 @@ function gutter:draw()
     return 0.5
                              end
 end)()
-                        local fg = self.color.fg
-                        if (y == mainCursor[1]) then fg = color.darken(self.color.cursor_main, df)
-                        elseif hasCursor then fg = self.color.cursor_multi
-                        elseif spansel then fg = self.color.selection
-                        elseif selected then fg = self.color.selection_line
-                        elseif highlighted then fg = self.color.highlight
-                        end
+                        -- if
+                        --     y == mainCursor[1] ➜ fg = color.darken(@color.cursor_main df)
+                        --     hasCursor          ➜ fg = @color.cursor_multi
+                        --     spansel            ➜ fg = @color.selection
+                        --     selected           ➜ fg = @color.selection_line
+                        --     highlighted        ➜ fg = @color.highlight
                         
                         -- if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
                         --     fg = color.darken fg 
                     end
                     
                     local bg = self.color.bg
+                    
                     
                         -- @gitChanges[y].old and @gitChanges[y].new ➜ bg = @color.bg_git_mod
                         -- @gitChanges[y].old    ➜ bg = @color.bg_git_del
@@ -264,13 +257,15 @@ end)()
     return ' '
                          end
 end)()
+                    
                     self.cells:set(col, row, cr, fg, bg)
                 end
             end
         end
         
         self:drawPreviews()
-        return self:drawGitScroll()
+        self:drawGitScroll()
+        return self:render()
     end
 
 return gutter

@@ -8,21 +8,15 @@
     the fancy glowing app name ascii art thingy
 ###
 
-# use ../../../kxk    ▪ kstr post
-# use ../../util      ◆ help
-# use ../../theme     ◆ theme 
-# use ../../edit/tool ◆ belt
-# use ../../edit      ◆ editor
-# use ../base         ◆ view
 use util.help
 use edit.tool.belt
 use view.base.view
 
 class greet extends view
 
-    @: screen ->
+    @: ->
         
-        view.init @, screen, 'greet'
+        view.init @, 'greet'
         
         @isVisible = false
                 
@@ -51,7 +45,7 @@ class greet extends view
     layout: x y ->
     
         (w h) = belt.cellSize @header
-
+        
         @cells∙layout x y w h
 
     # ███████    ████████    ███████   ███   ███  
@@ -60,12 +54,10 @@ class greet extends view
     # ███   ███  ███   ███  ███   ███  ███   ███  
     # ███████    ███   ███  ███   ███  ██     ██  
 
-    draw: screen ->
+    draw: ->
     
         ⮐  if @hidden()
         
-        @cells∙setScreen screen
-
         duration = 480
         @a += 1
         if @a > duration ➜ @a = 0 
@@ -78,7 +70,6 @@ class greet extends view
             for x cell in ipairs row
                 @cells∙set x y cell.char cell.fg cell.bg
         
-        view.draw @        
-        # post∙emit 'redraw'
+        @render()
 
 ⮐  greet

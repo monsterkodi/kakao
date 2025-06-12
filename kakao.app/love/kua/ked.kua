@@ -10,8 +10,7 @@ use kxk.kxk
 use util.logfile
 use util.session
 use view.editor.fileeditor
-use view.status.status
-use view.screen.screen
+use view.editor.status
 use view.menu.menu
 use view.colmns.dircol
 use view.colmns.funcol
@@ -30,27 +29,23 @@ class KED
 
         # @session.on 'loaded' @onSessionLoaded
         
-        @screen = screen(1 1)
-        
-        _G.ked_screen = @screen
-                  
         # @indexer  = indexer()
         # @git      = git()
 
-        @menu     = menu(       @screen )
-        # @macro    = macro(      @screen )
-        # @quicky   = quicky(     @screen )
-        # @browse   = browse(     @screen )
-        @editor   = fileeditor( @screen 'editor')
-        # @droop    = droop(      @screen @editor )
-        @dircol   = dircol(     @screen @editor  ['scroll' 'knob'])
-        @funcol   = funcol(     @screen @editor  ['scroll' 'knob'])
-        # @finder   = finder(     @screen @editor)
-        # @searcher = searcher(   @screen @editor)
-        # @differ   = differ(     @screen @editor)
-        @status   = status(     @screen @editor)
-        # @context  = context(    @screen)
-        # @input    = input(      @screen)
+        @menu     = menu()
+        # @macro    = macro()
+        # @quicky   = quicky()
+        # @browse   = browse()
+        @editor   = fileeditor 'editor'
+        # @droop    = droop     @screen @editor
+        @dircol   = dircol @editor  ['scroll' 'knob']
+        @funcol   = funcol @editor  ['scroll' 'knob']
+        # @finder   = finder    @editor
+        # @searcher = searcher  @editor
+        # @differ   = differ    @editor
+        @status   = status @editor
+        # @context  = context()
+        # @input    = input()
 
         # @input.on 'action' @onInputAction
         
@@ -142,43 +137,14 @@ class KED
 
     arrange: si ->
         
-        s = screen si
-        
-        s∙layout { hbox: [
-            { view: @dircol w:20 }
-            { view: @gutter w:6  }
-            { vbox: [
-                { view: @status h:1 } 
-                { hbox: [
-                    { view: @editor }
-                    { view: @funcol w:16 }
-                ]}
-            ]}
-        ]}
-
-        # dcw = @dircol.cells.cols
-        # fcw = @funcol.cells.cols
-        # 
-        # dcw = 0 if @dircol.hidden() or not @dircol.active
-        # fcw = 0 if @funcol.hidden() or not @funcol.active
-        # 
-        
         dcw = 0
         fcw = 0
+                
+        @dircol∙layout 0             0     dcw               si.rows  
+        @status∙layout dcw           0     si.cols-dcw       1        
+        @funcol∙layout si.cols-fcw   1     fcw               si.rows-1
+        @editor∙layout dcw           1     si.cols-dcw-fcw   si.rows-1
         
-        # if @viewSizeDelta
-        #     if 
-        #         @viewSizeDelta.name == @dircol.name ➜ dcw = @dircol.cells.cols + @viewSizeDelta.delta
-        #         @viewSizeDelta.name == @funcol.name ➜ fcw = @funcol.cells.cols + @viewSizeDelta.delta
-        #     delete @viewSizeDelta
-        # 
-        # if @dircol.visible() and @dircol.active
-        #     @dircol.layout  0     0  dcw        h    
-        # if @funcol.visible() and @funcol.active
-        #     @funcol.layout  w-fcw 1  fcw        h-1  
-        # @status∙layout  dcw   0  w-dcw      1
-        # @editor∙layout  dcw   1  w-dcw-fcw  h-1
-    
     #  ███████   ███   ███  ███  █████████
     # ███   ███  ███   ███  ███     ███   
     # ███ ██ ██  ███   ███  ███     ███   
@@ -186,8 +152,6 @@ class KED
     #  █████ ██   ███████   ███     ███   
 
     quit: msg ->
-        
-        # clearImmediate @redrawId
         
         @quitting = true
         
@@ -218,12 +182,6 @@ class KED
         @editor.state.syntax.ext = 'txt'
         @editor.state∙loadLines ['hello world!1' 'hello world!2' 'hello world!3']
 
-        # @editor.cells.meta_pre 0 0 '\x1b]66;n=1:d=5:w=1;'
-        # @editor.cells.meta_pst 0 0 '\x07'
-        # 
-        # @editor.cells.meta_pre 1 0 '\x1b]66;n=3:d=4:w=1;'
-        # @editor.cells.meta_pst 1 0 '\x07'
-        
         # @t.setCursor 0 0
         # @t.setTitle 'kėd'
         
@@ -582,33 +540,27 @@ class KED
         
         ⮐  if @quitting
 
-        # clearImmediate @redrawId
-        # @redrawId = setImmediate @draw
-                                      
     draw: cols rows cw ch ->
             
         ⮐  if @quitting
         
-        # ● sum
-        
-        # start = process.hrtime()
-        
         # @status.gutter = @editor.state.gutterWidth()
         
-        @arrange {cols:cols rows:rows cw:cw ch:ch}
+        _G.screen = { cols:cols rows:rows cw:cw ch:ch }
         
-        # ●▸ draw
-        # if @menu.greet∙hidden()
-        #     @editor∙draw() #if not @differ∙visible()
-        #     @status∙draw()
-        #     @dircol∙draw()
-        #     @funcol∙draw()
+        @arrange screen
+        
+        if @menu.greet∙hidden()
+             @editor∙draw() #if not @differ∙visible()
+             @status∙draw()
+             @dircol∙draw()
+             @funcol∙draw()
 
         # for y in 1..rows
         #     for x in 1..cols
         #         @screen∙set x y string.sub($x 1 1) [50 0 0] 
             
-        # @menu∙draw screen
+        @menu∙draw()
         # @macro∙draw()
         # @quicky∙draw()
         # @browse∙draw()
@@ -618,13 +570,5 @@ class KED
         # @differ∙draw()
         # @context∙draw()
         # @input∙draw()
-        # ●▪ draw
-        # ●▸ render
             
-        # @screen∙render()
-        # @t.removeImgs()
-        # ●▪ render
-        
-        # @status.time = process.hrtime(start)[1]
-        
 ⮐  KED

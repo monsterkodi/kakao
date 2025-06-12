@@ -9,29 +9,23 @@
     the input is usually hidden and only shown when user types text to filter the choices
 ###
 
-# use ../../../kxk ▪ post
-# use ../../theme  ◆ color theme
-# use ../base      ◆ view input
-# use ../menu      ◆ choices
-
 use view.base.view
 use view.base.input
 
 class inputchoice extends view
 
-    @: screen name features ->
+    @: name features ->
     
-        view.init @, screen, name, features
+        view.init @, name, features
         
         @autoHideInput = true
         @isVisible = false
         @isPopup   = true
         
-        @input   = input   @screen "#{@name}_input"
-        @choices = choices @screen "#{@name}_choices" features
+        @input   = input   "#{@name}_input"
+        @choices = choices "#{@name}_choices" features
         
         @setColor 'bg'    theme.quicky.bg
-        
         @setColor 'frame' theme.quicky.frame
 
         if @choices.mapscr

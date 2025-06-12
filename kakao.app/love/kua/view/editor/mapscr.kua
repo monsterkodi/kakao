@@ -8,17 +8,13 @@
     scrollable source map to the right of the fileeditor
 ###
 
-use ../../../kxk    ▪ post
-use ../../theme     ◆ theme
-use ../../util/img  ◆ squares
-use ../../edit/tool ◆ belt
 use                 ◆ mapview
 
-function mapscr extends mapview
+class mapscr extends mapview
 
     @: @editor ->
         
-        super @editor.screen @editor.state
+        mapview.init @ @editor.state
         
         @state.on 'view.changed' @drawKnob
         
@@ -326,4 +322,4 @@ function mapscr extends mapview
             
             squares.place xoff-hlw sy hlw @pixelsPerRow @color.highlight 2001
 
-export mapscr
+⮐  mapscr

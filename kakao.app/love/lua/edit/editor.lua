@@ -11,11 +11,6 @@
     complex editing is delegated to mode(s)
 --]]
 
--- use ../../kxk      ▪ post
--- use ../view/base   ◆ scroll view
--- use ../view/editor ◆ gutter mapview
--- use ./tool         ◆ belt
--- use                ◆ state draw complete mode
 draw = require "edit.draw"
 state = require "edit.state"
 mode = require "edit.mode"
@@ -27,10 +22,9 @@ local editor = class("editor", draw)
     
 
 
-function editor:init(screen, name, features) 
-        draw.init(self, screen, name, features)
+function editor:init(name, features) 
+        draw.init(self, name, features)
         
-        self.screen = screen
         self.name = name
         self.focusable = true
         
@@ -38,9 +32,9 @@ function editor:init(screen, name, features)
         
         complete = require "edit.complete"
         
-        if self.feats.scrllr then self.scroll = scroll(self.screen, self.state, 'right') end
-        if self.feats.scroll then self.scroll = scroll(self.screen, self.state, 'left') end
-        if self.feats.mapview then self.mapscr = mapview(self.screen, self.state) end
+        if self.feats.scrllr then self.scroll = scroll(self.state, 'right') end
+        if self.feats.scroll then self.scroll = scroll(self.state, 'left') end
+        if self.feats.mapview then self.mapscr = mapview(self.state) end
         if self.feats.gutter then self.gutter = gutter(self) end
         if self.feats.complete then self.complete = complete(self) end
         

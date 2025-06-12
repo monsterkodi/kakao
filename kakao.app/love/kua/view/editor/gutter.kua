@@ -10,13 +10,6 @@
     searcher/finder replaces lineno to display source line numbers 
 ###
 
-# use ../../../kxk   ▪ post kseg
-# use ../../../kolor ◆ kulur
-# use ../../util/img ◆ squares
-# use ../../util     ◆ prof syntax
-# use ../../theme    ◆ color theme 
-# use ../base        ◆ view
-
 use view.base.view
 
 class gutter extends view
@@ -24,10 +17,9 @@ class gutter extends view
     @: editor ->
     
         @editor = editor
-    
         @state = @editor.state
         
-        view.init @, @editor.screen, (@state.name & '.gutter')
+        view.init @, (@state.name & '.gutter')
         
         @setColor 'fg'                theme.gutter.fg
         @setColor 'bg'                theme.gutter.bg
@@ -88,7 +80,7 @@ class gutter extends view
         
     lineno: y ->
                 
-        lineno = kstr.lpad @cells.cols-1 $(y+1)
+        lineno = kstr.lpad @cells.cols-1 $y
         lineno &= ' '
         lineno
         
@@ -140,13 +132,13 @@ class gutter extends view
     drawGitScroll: ->
     
         ⮐  if empty @gitBlocks
-        csz = @screen.t.cellsz
-        ⮐  if empty csz
+        cw = _G.screen.cw
+        ch = _G.screen.ch
         
-        sw = int csz[0]/2 
-        sx = (@cells.x-1)*csz[0]
-        oy = @cells.y*csz[1]
-        pixelsPerRow = clamp 0 csz[1] csz[1] * @cells.rows / @state.s.lines.length
+        sw = int cw/2 
+        sx = (@cells.x-1)*cw
+        oy = @cells.y*ch
+        pixelsPerRow = clamp 0 ch ch * @cells.rows / @state.s.lines.length
         
         for gb in @gitBlocks
         
@@ -180,7 +172,7 @@ class gutter extends view
         
         for row in 1..@cells.rows
                         
-            y = @state.s.view[2] + row
+            y = @state.s.view[2] + row - 1
             
             lineno = @lineno y
             
@@ -194,22 +186,23 @@ class gutter extends view
                 col = i
                 if col < @cells.rows
                     sc = @fgcolor i y c
+                    fg = @color.fg
                     if sc
                         fg = sc
                     else
                         df = if @state.hasFocus ➜ 1 ➜ 0.5
-                        fg = @color.fg
-                        if
-                            y == mainCursor[1] ➜ fg = color.darken(@color.cursor_main df)
-                            hasCursor          ➜ fg = @color.cursor_multi
-                            spansel            ➜ fg = @color.selection
-                            selected           ➜ fg = @color.selection_line
-                            highlighted        ➜ fg = @color.highlight
+                        # if
+                        #     y == mainCursor[1] ➜ fg = color.darken(@color.cursor_main df)
+                        #     hasCursor          ➜ fg = @color.cursor_multi
+                        #     spansel            ➜ fg = @color.selection
+                        #     selected           ➜ fg = @color.selection_line
+                        #     highlighted        ➜ fg = @color.highlight
 
                         # if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
                         #     fg = color.darken fg 
                     
                     bg = @color.bg
+                    
                         # @gitChanges[y].old and @gitChanges[y].new ➜ bg = @color.bg_git_mod
                         # @gitChanges[y].old    ➜ bg = @color.bg_git_del
                         # @gitChanges[y]        ➜ bg = @color.bg_git_add
@@ -219,10 +212,12 @@ class gutter extends view
                                  
                     # if selected and not @cells.screen.t.hasFocus
                     #     bg = color.darken bg 
-                    cr = if (y<@state.s.lines.len) ➜  c ➜ ' '
+                    cr = if (y<@state.s.lines.len) ➜ c ➜ ' '
+
                     @cells∙set col row cr fg bg
                     
         @drawPreviews()
         @drawGitScroll()
+        @render()
 
 ⮐  gutter

@@ -8,18 +8,15 @@
     quick and dirty context menu for the fileeditor
 ###
 
-use ../../../kxk    ▪ kstr slash post noon
-use ../../edit/tool ◆ belt
-use ../../theme     ◆ theme 
-use                 ◆ inputchoice
+use view.menu.inputchoice
 
 class context extends inputchoice
 
-    @menu: null
+    @menu: nil
 
-    @: @screen ->
+    @: ->
         
-        super @screen 'context'
+        inputchoice.init @ 'context'
         
         @setColor 'bg' theme.context.bg
                 
@@ -31,7 +28,7 @@ class context extends inputchoice
     # ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███  ███     
     # ███   ███  ███   ███  ███   ███  ███   ███  ███   ███   ███████   ████████
 
-    arrange: =>
+    arrange: ->
 
         w = @width+2+1 # 2 for frame, 1 for right 
         c = @choices.numChoices()
@@ -107,4 +104,4 @@ class context extends inputchoice
         
         @cells∙draw_rounded_border 0 cy -1 -1 {fg:@color.bg}
             
-export context
+⮐  context

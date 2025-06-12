@@ -6,15 +6,6 @@
 000       000  0000000  00000000  00000000  0000000    000     000      0000000   000   000
 --]]
 
--- use ../../../kxk    ▪ post kstr slash
--- use ../../../kxk    ◆ nfs
--- use ../../edit/tool ◆ belt
--- use ../../edit      ◆ editor 
--- use ../../util      ◆ fileutil
--- use ../../index     ◆ indexer
--- use ../base         ◆ view 
--- use ../menu         ◆ context
--- use                 ◆ mapscr 
 editor = require "edit.editor"
 
 
@@ -22,10 +13,10 @@ local fileeditor = class("fileeditor", editor)
     
 
 
-function fileeditor:init(screen, name) 
+function fileeditor:init(name) 
         local features = array('scroll', 'gutter', 'mapscr', 'complete', 'filepos', 'replex', 'brckts', 'unype', 'salter', 'vimple', 'uniko')
         
-        editor.init(self, screen, name, features)
+        editor.init(self, name, features)
         
         -- if @feats.mapscr
         --     @mapscr = mapscr @

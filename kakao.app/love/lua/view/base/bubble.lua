@@ -11,11 +11,6 @@
         ◆ status to display filepos status
 --]]
 
--- use ../../../kxk ▪ slash kseg
--- use ../../theme  ◆ theme 
--- use ../../util   ◆ syntax
--- use ../base      ◆ view
-
 syntax = require "util.syntax"
 view = require "view.base.view"
 
@@ -24,8 +19,8 @@ local bubble = class("bubble", view)
     
 
 
-function bubble:init(screen, name) 
-        view.init(self, screen, name)
+function bubble:init(name) 
+        view.init(self, name)
         
         self.pointerType = 'pointer'
         self.syntax = syntax()
@@ -49,7 +44,7 @@ function bubble:init(screen, name)
 function bubble:draw() 
         if self:hidden() then return end
         
-        super()
+        view.draw(self)
         
         local bg = (function () 
     if self.hover then 

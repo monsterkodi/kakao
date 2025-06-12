@@ -6,14 +6,6 @@
 0000000    000  000   000     000     000   000  00000000  00000000
 --]]
 
--- use ../../../kxk ▪ kutil kseg kstr slash post
--- use ../../../kxk ◆ nfs
--- use ../../index  ◆ prjcts 
--- use ../../theme  ◆ theme icons
--- use ../../util   ◆ git
--- use ../menu      ◆ choices 
--- use              ◆ diritem
-
 -- import rgxs from './quicky.json' with { type: "json" }
 
 diritem = require "view.colmns.diritem"
@@ -24,8 +16,8 @@ local dirtree = class("dirtree", choices)
     
 
 
-function dirtree:init(screen, name, features) 
-        choices.init(self, screen, name, features)
+function dirtree:init(name, features) 
+        choices.init(self, name, features)
         
         -- @state.syntax.setRgxs rgxs
         

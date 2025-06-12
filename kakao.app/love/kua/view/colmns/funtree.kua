@@ -98,23 +98,23 @@ class funtree extends choices
     
         @editor = editor
         
-        choices.init @ @editor.screen name features
+        choices.init @ name features
         
         @state.syntax = funSyntax @
         
-        @editor.state∙on 'cursorsSet' @onCursorsSet
+        @editor.state∙on 'cursorsSet' @onCursorsSet @
         
-        post∙on 'file.loaded'  @clear
-        post∙on 'file.indexed' @onFileIndexed
+        post∙on 'file.loaded'  @clear          @
+        post∙on 'file.indexed' @onFileIndexed  @
         
     onCursorsSet: ->
     
-        @selectItemForLineIndex @editor.state.mainCursor()[1]
+        @selectItemForLineIndex @editor.state∙mainCursor()[1]
         
     selectItemForLineIndex: li ->
     
-        for item,idx in @items
-            if item.line-1 <= li and (idx >= @items.length-1 or @items[idx+1].line-1 > li)
+        for idx item in ipairs @items
+            if item.line-1 <= li and (idx >= @items.len-1 or @items[idx+1].line-1 > li)
                 @state∙setSelections [belt.rangeOfLine(@state.s.lines idx)]
                 @state∙setMainCursor 0 idx
                 ⮐  

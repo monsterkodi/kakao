@@ -6,11 +6,6 @@
  0000000   0000000   000   000  000        0000000  00000000     000     00000000
 --]]
 
--- use ../../kxk ▪ kseg kutil post
--- use ../theme  ◆ theme 
--- use ./tool    ◆ belt
--- use           ◆ specs
-
 choices = require "view.menu.choices"
 
 
@@ -23,7 +18,7 @@ function complete:init(editor)
         
         self.name = self.editor.name .. '_complete'
         
-        self.choices = choices(self.editor.cells.screen, "" .. tostring(self.name) .. "_choices", array('scrllr'))
+        self.choices = choices("" .. tostring(self.name) .. "_choices", array('scrllr'))
         self.choices.focusable = false
         
         self.color = {

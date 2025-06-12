@@ -9,11 +9,6 @@
     the input is usually hidden and only shown when user types text to filter the choices
 --]]
 
--- use ../../../kxk ▪ post
--- use ../../theme  ◆ color theme
--- use ../base      ◆ view input
--- use ../menu      ◆ choices
-
 view = require "view.base.view"
 input = require "view.base.input"
 
@@ -22,18 +17,17 @@ local inputchoice = class("inputchoice", view)
     
 
 
-function inputchoice:init(screen, name, features) 
-        view.init(self, screen, name, features)
+function inputchoice:init(name, features) 
+        view.init(self, name, features)
         
         self.autoHideInput = true
         self.isVisible = false
         self.isPopup = true
         
-        self.input = input(self.screen, "" .. tostring(self.name) .. "_input")
-        self.choices = choices(self.screen, "" .. tostring(self.name) .. "_choices", features)
+        self.input = input("" .. tostring(self.name) .. "_input")
+        self.choices = choices("" .. tostring(self.name) .. "_choices", features)
         
         self:setColor('bg', theme.quicky.bg)
-        
         self:setColor('frame', theme.quicky.frame)
         
         if self.choices.mapscr then 

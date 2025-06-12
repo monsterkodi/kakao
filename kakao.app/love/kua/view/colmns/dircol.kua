@@ -6,33 +6,26 @@
     ███████    ███  ███   ███   ███████   ███████   ███████  
 ###
 
-# use ../../../kxk    ▪ post slash
-# use ../../edit/tool ◆ belt
-# use ../../theme     ◆ color theme
-# use ../base         ◆ view knob crumbs input
-# use ../menu         ◆ context
-# use                 ◆ dirtree
-
 use view.base.knob
 use view.base.view
 use view.colmns.dirtree
 
 class dircol extends view
 
-    @: screen editor features ->
+    @: editor features ->
     
         @editor = editor
         
-        view.init @ screen 'dircol' features
+        view.init @ 'dircol' features
         
         @isVisible = false
         @active    = true
         
         @pointerType = 'pointer'
         
-        @knob    = knob    screen "#{@name}_knob"
-        @crumbs  = crumbs  screen "#{@name}_crumbs"
-        @dirtree = dirtree screen "#{@name}_dirtree" ['scroll']
+        @knob    = knob    "#{@name}_knob"
+        @crumbs  = crumbs  "#{@name}_crumbs"
+        @dirtree = dirtree "#{@name}_dirtree" ['scroll']
         
         @crumbs∙on 'action' @onCrumbsAction
         
@@ -102,7 +95,7 @@ class dircol extends view
         @dirtree∙layout x     y+1 w h-1
         @knob∙layout    x+w-1 y+1 1 h-1
         
-        view∙layout @ x y w h
+        view.layout @ x y w h
         @
         
     draw: ->

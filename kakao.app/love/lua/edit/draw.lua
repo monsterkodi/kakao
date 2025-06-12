@@ -6,14 +6,6 @@
 0000000    000   000  000   000  00     00
 --]]
 
--- use ../../kxk    ▪ kseg kstr 
--- use ../util      ◆ prof
--- use ../util/img  ◆ rounded
--- use ../theme     ◆ color theme 
--- use ../view/base ◆ view
--- use ./tool       ◆ belt
--- use              ◆ mode
-
 view = require "view.base.view"
 
 
@@ -21,8 +13,8 @@ local draw = class("draw", view)
     
 
 
-function draw:init(screen, name, features) 
-        view.init(self, screen, name, features)
+function draw:init(name, features) 
+        view.init(self, name, features)
         
         self:setColor('bg', theme.editor.bg)
         self:setColor('empty', theme.editor.empty)
@@ -40,11 +32,8 @@ function draw:init(screen, name, features)
 -- 0000000    000   000  000   000  00     00  
 
 
-function draw:draw(screen) 
+function draw:draw() 
         if self:hidden() then return end
-        
-        -- prof.start 'draw' if @name == 'editor'
-        -- ● draw
         
         local view = self.state.s.view
         local lines = self.state.s.lines
@@ -72,6 +61,8 @@ function draw:draw(screen)
             self.complete:drawCompletion()
         end
         
+        self:render()
+        
         self:drawCursors()
         if self.complete then 
             self.complete:drawPopup()
@@ -80,8 +71,6 @@ function draw:draw(screen)
         if self.gutter then self.gutter:draw() end
         if self.mapscr then self.mapscr:draw() end
         if self.scroll then self.scroll:draw() end
-        
-        -- prof.end 'draw'   if @name == 'editor'
         
         return mode.postDraw(self.state)
     end
@@ -280,7 +269,7 @@ function draw:drawSelections()
 
 function draw:drawCursors() 
         local s = self.state.s
-        local mainCursor = self.state:mainCursor()
+        local mc = self.state:mainCursor()
         
         local fg = self.color.cursor.fg
         
@@ -289,22 +278,22 @@ function draw:drawCursors()
         -- bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
         for ci, cursor in ipairs(s.cursors) do 
-            if (cursor ~= mainCursor) then 
+            if (cursor ~= mc) then 
                 if self:isCursorVisible(cursor) then 
                     self.cells:draw_rounded_multi_cursor((cursor[1] - s.view[1]), (cursor[2] - s.view[2]), bg)
                 end
             end
         end
         
-        if self:isCursorVisible(mainCursor) then 
+        if self:isCursorVisible(mc) then 
             fg = self.color.cursor.fg
             
             bg = mode.themeColor(self.state, 'cursor.main', self.color.cursor.main)
             
             if not self:hasFocus() then bg = color.darken(bg) end
             
-            local x = (mainCursor[1] - s.view[1])
-            local y = (mainCursor[2] - s.view[2])
+            local x = ((mc[1] - s.view[1]) + 1)
+            local y = ((mc[2] - s.view[2]) + 1)
             
             if (#s.cursors <= 1) then 
                 if self:isCursorInEmpty() then 

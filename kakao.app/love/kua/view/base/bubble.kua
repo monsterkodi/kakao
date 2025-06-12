@@ -11,19 +11,14 @@
         ◆ status to display filepos status
 ###
 
-# use ../../../kxk ▪ slash kseg
-# use ../../theme  ◆ theme 
-# use ../../util   ◆ syntax
-# use ../base      ◆ view
-
 use util.syntax
 use view.base.view
 
 class bubble extends view
 
-    @: screen name ->
+    @: name ->
 
-        view.init @, screen, name
+        view.init @, name
         
         @pointerType = 'pointer'
         @syntax = syntax()
@@ -45,7 +40,7 @@ class bubble extends view
         
         ⮐  if @hidden()
     
-        super()
+        view.draw @
             
         bg = if @hover ➜ @color.hover ➜ @color.bg 
         
