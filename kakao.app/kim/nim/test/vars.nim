@@ -244,7 +244,7 @@ for f i in x
     i = 3
     j = 1
 """, """
-for f, i in x do 
+for f, i in ipairs(x) do 
     f = c
     i = 3
     local j = 1

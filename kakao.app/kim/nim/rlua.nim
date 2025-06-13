@@ -392,7 +392,12 @@ proc ▸for(this : Rlua, n : Node) =
                 if (i < (n.for_value.list_values.len - 1)): 
                     this.add(", ")
         else: 
-            this.rnd(n.for_value)
+            # if n.for_range.kind != ●range
+            if (n.for_range.kind == ●literal): 
+                this.add("_, ")
+                this.rnd(n.for_value)
+            else: 
+                this.rnd(n.for_value)
         if (n.for_range.kind == ●range): 
             if (n.for_range.token.tok == ◂doubledot): 
                 this.add(" in iter(")
@@ -411,7 +416,13 @@ proc ▸for(this : Rlua, n : Node) =
                     this.rnd(n.for_range.range_end)
         else: 
             this.add(" in ")
-            this.rnd(n.for_range)
+            if (n.for_range.kind == ●literal): 
+                echo("IN ", n.for_range.kind)
+                this.add("ipairs(")
+                this.rnd(n.for_range)
+                this.add(")")
+            else: 
+                this.rnd(n.for_range)
         this.add(" do ")
         if n.for_body: 
             this.rnd(n.for_body)

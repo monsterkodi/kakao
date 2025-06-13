@@ -281,7 +281,7 @@ template l(a:string, b:string) = testCmp(a, renderLua(a, true), b, instantiation
                 i = 3
                 j = 1
             """ """
-            for f, i in x do 
+            for f, i in ipairs(x) do 
                 f = c
                 i = 3
                 local j = 1

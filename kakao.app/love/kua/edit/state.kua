@@ -210,7 +210,7 @@ class state extends events
         
         mode.cursorsSet @
         @emit 'cursorsSet'
-        log 'cursorsSet' @s.cursors, @s.main
+        # log 'cursorsSet' @s.cursors, @s.main
         @
             
     textOfSelectionOrWordAtCursor: -> 

@@ -222,7 +222,7 @@ function state:setCursors(cursors, opt)
         
         mode.cursorsSet(self)
         self:emit('cursorsSet')
-        print('cursorsSet', self.s.cursors, self.s.main)
+        -- log 'cursorsSet' @s.cursors, @s.main
         return self
     end
 
@@ -1761,7 +1761,7 @@ end) -- mutable copy
         
         if (typ == 'back') then 
             local minBeforeWs = Infinity
-            for cursor in cursors do 
+            for _, cursor in ipairs(cursors) do 
                 local rng = belt.rangeOfWhitespaceLeftToPos(lines, cursor)
                 minBeforeWs = min(minBeforeWs, (rng[2] - rng[0]))
             end

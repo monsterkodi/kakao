@@ -244,11 +244,21 @@ end""")
         t("for a in 0..2 ➜ true", "for a in iter(0, 2) do true end")
         t("for a in 10..2\n  true", "for a in iter(10, 2) do \n  true\nend")
         t("for a in -10..-12 ➜\n  true", "for a in iter(-10, -12) do \n  true\nend")
-        t("for key in opt", "for key in opt do end")
-        t("for key val in opt", "for key, val in opt do end")
-        t("for key, val in opt", "for key, val in opt do end")
-        t("for (key val) in opt", "for key, val in opt do end")
-        t("for (key, val) in opt", "for key, val in opt do end")
+        t("for val in opt", "for _, val in ipairs(opt) do end")
+        t("for idx val in opt", "for idx, val in ipairs(opt) do end")
+        t("for idx, val in opt", "for idx, val in ipairs(opt) do end")
+        t("for (idx val) in opt", "for idx, val in ipairs(opt) do end")
+        t("for (idx, val) in opt", "for idx, val in ipairs(opt) do end")
+        t("for key val in pairs opt", "for key, val in pairs(opt) do end")
+        t("for key, val in pairs opt", "for key, val in pairs(opt) do end")
+        t("for (key val) in pairs opt", "for key, val in pairs(opt) do end")
+        t("for (key, val) in pairs opt", "for key, val in pairs(opt) do end")
+        # t "for key val of opt"                      "for key, val in pairs(opt) do end"  
+        # t "for key, val of opt"                     "for key, val in pairs(opt) do end"  
+        # t "for (key val) of opt"                    "for key, val in pairs(opt) do end"  
+        # t "for (key, val) of opt"                   "for key, val in pairs(opt) do end"  
+        t("for i a in ipairs l", "for i, a in ipairs(l) do end")
+        t("for a in l", "for _, a in ipairs(l) do end")
     test "dotdotdot": 
         t("for v in ...\n    x = v\n    y = w", """
 _argl_ = select("#", ...)

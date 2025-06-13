@@ -461,7 +461,12 @@ class Rlua
                 if i < n.for_value.list_values.len-1
                     @add ", "
         else
-            @rnd n.for_value
+            # if n.for_range.kind != ●range
+            if n.for_range.kind == ●literal
+                @add "_, "
+                @rnd n.for_value
+            else
+                @rnd n.for_value
             
         if n.for_range.kind == ●range
             if n.for_range.token.tok == ◂doubledot
@@ -481,7 +486,13 @@ class Rlua
                     @rnd n.for_range.range_end
         else
             @add " in "
-            @rnd n.for_range
+            if n.for_range.kind == ●literal
+                log "IN " n.for_range.kind
+                @add "ipairs("
+                @rnd n.for_range
+                @add ")"
+            else
+                @rnd n.for_range
         @add " do "
         if n.for_body
             @rnd n.for_body
