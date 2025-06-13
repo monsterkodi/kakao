@@ -143,7 +143,7 @@ function color.static.saturate(c, s, l)
 
 
 function color.static.rgbToHsl(c) 
-        local r, g, b = c
+        local r, g, b = unpack(c)
         
         r = r / 255
         g = g / 255
@@ -174,12 +174,12 @@ function color.static.rgbToHsl(c)
             h = h / 6
         end
         
-        return array((h * 360), (s * 100), (l * 100))
+        return (h * 360), (s * 100), (l * 100)
     end
 
 
 function color.static.hslToRgb(c) 
-        local h, s, l = c
+        local h, s, l = unpack(c)
         
         h = h / 360
         s = s / 100
@@ -216,7 +216,7 @@ function color.static.hslToRgb(c)
             b = hue2rgb(p, q, (h - (1 / 3)))
         end
         
-        return array(round((r * 255)), round((g * 255)), round((b * 255)))
+        return round((r * 255)), round((g * 255)), round((b * 255))
     end
 
 --  ███████   ███   ███   ███████  ███        ████████    ███████   ███████  
@@ -382,7 +382,8 @@ end)
 
 
 function color.static.luminance(c) 
-        local r, g, b = c
+        print("luminance", type(c), c)
+        local r, g, b = unpack(c)
         
         r = (r / 255)
         g = (g / 255)
@@ -422,8 +423,8 @@ function color.static.adjustForBackground(fg, bg)
 
 
 function color.static.ensureReadability(fg, bg) 
-        if empty((fg or is(not fg[0], num))) then return fg end
-        if empty((bg or is(not bg[0], num))) then return fg end
+        if (empty(fg) or not is(fg[1], "number")) then return fg end
+        if (empty(bg) or not is(bg[1], "number")) then return fg end
         
         
         function contrastRatio(l1, l2) 

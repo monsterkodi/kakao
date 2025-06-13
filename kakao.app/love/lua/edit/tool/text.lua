@@ -857,7 +857,7 @@ function text.static.numCharsFromPosToWordOrPunctInDirection(lines, pos, dir, op
              end
 end)()
         
-        if opt.jump then return belt.jumpDelta(lines[pos[2]], pos[1], dx, opt.jump) end
+        if (opt and opt.jump) then return belt.jumpDelta(lines[pos[2]], pos[1], dx, opt.jump) end
         
         if ((pos[1] + dx) <= 0) then return 0 end
         return dx

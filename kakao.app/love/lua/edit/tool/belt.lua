@@ -19,7 +19,7 @@ local belt = class("belt")
 
 function belt.static.sum(arrays) 
         local sum = array()
-        for n = 0, #arrays[0]-1 do sum.push(0) end
+        for n = 0, #arrays[0]-1 do sum:push(0) end
         for array in arrays do 
             for n, i in array do 
                 sum[i] = sum[i] + n
@@ -104,7 +104,7 @@ function belt.static.lineIndicesForPositions(posl)
 
 
 function belt.static.positionInDirection(pos, dir) 
-        local x, y = pos
+        local x, y = unpack(pos)
         
         if (dir == 'up') then 
     return array(x, (y - 1))
@@ -146,7 +146,7 @@ function belt.static.neighborPositionInDirection(posl, pos, dir)
 
 function belt.static.positionsContain(posl, pos) 
         for _, p in ipairs(posl) do 
-            if p(eql, pos) then return true end
+            if (p == pos) then return true end
         end
         
         return false
@@ -182,7 +182,7 @@ function belt.static.columnPositionsMap(posl)
         local map = {}
         for p in posl do 
             map[p[0]] = map[p[0]] or (array())
-            map[p[0]].push(p)
+            map[p[0]]:push(p)
         end
         
         return map
@@ -193,9 +193,9 @@ function belt.static.neighborPositionGroups(posl)
         local groups = array()
         for p in posl do 
             if (groups[-1] and (groups[-1][-1][1] == (p[1] - 1))) then 
-               groups[-1].push(p)
+               groups[-1]:push(p)
             else 
-                groups.push(array(p))
+                groups:push(array(p))
             end
         end
         
@@ -445,8 +445,8 @@ function belt.static.rangesContainSpan(rngs, span)
     end
 
 function belt.static.rangesContainRange(rngs, range) 
-        for rng in rngs do 
-            if rng(eql, range) then return true end
+        for _, rng in ipairs(rngs) do 
+            if (rng == range) then return true end
         end
         
         return false
@@ -457,25 +457,25 @@ function belt.static.normalizeRanges(rngs)
         if (empty(rngs) or not is(rngs, array)) then return array() end
         
         rngs = rngs:map(function (a) 
-    if (a[1] > a[3]) then 
-    return array(a[2], a[3], a[0], a[1]) else 
+    if (a[2] > a[4]) then 
+    return array(a[3], a[4], a[1], a[2]) else 
     return a
                                end
 end)
         rngs = rngs:map(function (a) 
-    if ((a[1] == a[3]) and (a[0] > a[2])) then 
-    return array(a[2], a[1], a[0], a[3]) else 
+    if ((a[2] == a[4]) and (a[1] > a[3])) then 
+    return array(a[3], a[2], a[1], a[4]) else 
     return a
                                end
 end)
         rngs:sort(function (a, b) 
-    if (a[1] == b[1]) then 
-    return (a[0] - b[0]) else 
-    return (a[1] - b[1])
+    if (a[2] == b[2]) then 
+    return (a[1] - b[1]) else 
+    return (a[2] - b[2])
                            end
 end)
         rngs:filter(function (a) 
-    return ((a[1] ~= a[3]) or (a[0] ~= a[2]))
+    return ((a[2] ~= a[4]) or (a[1] ~= a[3]))
 end)
         return rngs
     end
@@ -518,11 +518,11 @@ function belt.static.rangesForLinesSplitAtPositions(lines, posl)
         local rngs = array(array(1, 1, posl[1][1], posl[1][2]))
         for idx, pos in ipairs(posl) do 
             if (idx > 1) then 
-                rngs.push(array(posl[(idx - 1)][1], posl[(idx - 1)][2], pos[1], pos[2]))
+                rngs:push(array(posl[(idx - 1)][1], posl[(idx - 1)][2], pos[1], pos[2]))
             end
             
             if (idx == #posl) then 
-                rngs.push(array(pos[1], pos[2], kseg.width(lines[#lines]), #lines))
+                rngs:push(array(pos[1], pos[2], kseg.width(lines[#lines]), #lines))
             end
         end
         
@@ -593,7 +593,7 @@ function belt.static.lineIndicesForRange(rng)
         
         for li in iter(rng[1], rng[3]) do 
             if ((li ~= rng[3]) or (rng[2] > 0)) then 
-                indices.push(li)
+                indices:push(li)
             end
         end
         
@@ -630,7 +630,7 @@ function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl)
             block[3] = index
             if (indices[(ii + 1)] ~= (index + 1)) then 
                 block[2] = #lines[index]
-                blocks.push(block)
+                blocks:push(block)
                 block = array(0, indices[(ii + 1)], -1, -1)
             end
         end
@@ -651,10 +651,11 @@ function belt.static.mergeLineRanges(lines, rngs)
         rngs = belt.normalizeRanges(rngs)
         
         local mrgd = array()
+        local tail = nil
         for i, s in ipairs(rngs) do 
             if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < #lines[tail[4]])))) then 
                     mrgd:push(s)
-                    local tail = s
+                    tail = s
             else if ((s[4] > tail[4]) or ((s[4] == tail[4]) and (s[3] > tail[3]))) then 
                 tail[3] = s[3]
                 tail[4] = s[4]

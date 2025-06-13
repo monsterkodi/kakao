@@ -16,7 +16,6 @@ class draw extends view
         
         @setColor 'bg'        theme.editor.bg
         @setColor 'empty'     theme.editor.empty
-                              
         @setColor 'cursor'    theme.cursor
         @setColor 'selection' theme.selection
         @setColor 'highlight' theme.highlight
@@ -202,40 +201,37 @@ class draw extends view
     
     drawSelections: ->
         
-        # prof.start 'selection'
-        
         spanbg = @color.selection.span
         linebg = @color.selection.line
-        
+        # log "drawSelections-" @color.selection
+        # log "drawSelections+" spanbg, linebg
         # if not @cells.screen.t.hasFocus
         #     spanbg = color.darken spanbg
         #     linebg = color.darken linebg
         
         for si selection in ipairs @state.s.selections
                 
-            bg = belt.isSpanLineRange(@state.s.lines selection) or {spanbg: linebg}
+            bg = if belt.isSpanLineRange(@state.s.lines selection) ➜ spanbg ➜ linebg
             
-            for li in selection[1]..selection[3]
+            for li in selection[2]..selection[4]
                 
-                y = li-@state.s.view[1]
+                y = li-@state.s.view[2]
                 
                 break if y >= @cells.rows
                 
-                if li == selection[1]
-                    xs = selection[0]
-                else
-                    xs = 0
-                    
-                if li == selection[3]
-                    xe = selection[2]
+                xs = 0
+                if li == selection[2]
+                    xs = selection[1]
+                
+                xe = 0    
+                if li == selection[4]
+                    xe = selection[3]
                 else
                     xe = kseg.width(@state.s.lines[li])
                 
                 for x in xs...xe
-                    @cells∙set_bg x-@state.s.view[0] y bg 
-                    @cells∙adjustContrastForHighlight x y bg
-                    
-        # prof.end 'selection'
+                    @cells∙set_bg x-@state.s.view[1] y bg
+                    @cells∙adjustContrastForHighlight x-@state.s.view[1] y bg
             
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000  
     # 000       000   000  000   000  000       000   000  000   000  000       

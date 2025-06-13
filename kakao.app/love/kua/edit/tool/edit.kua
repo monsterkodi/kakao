@@ -494,7 +494,7 @@ class edit
             line = lines[pos[2]]
             rng = [pos[1] pos[2] pos[1] pos[2]]
             newRngs∙push rng
-            
+            nc = 0
             switch dir
                 'left'  
                 'right'     ➜ nc = belt.numCharsFromPosToWordOrPunctInDirection(lines pos dir opt); pos[1] += nc

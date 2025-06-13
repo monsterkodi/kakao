@@ -38,7 +38,8 @@ class view extends events
         if empty(clr)
             @color[key] = [100 0 100]
             ⮐  
-        # log "#{@name} setColor " key, " " clr, " " color.values(clr)
+        # if @color[key] != color.values(clr)
+        #     log "#{@name} " key, " " array.isarr(clr), " " @color[key], " " clr
         @color[key] = color.values(clr)
         
     # 000   000  000   0000000  000  0000000    000  000      000  000000000  000   000  

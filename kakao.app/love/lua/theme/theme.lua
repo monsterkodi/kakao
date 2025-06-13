@@ -6,12 +6,7 @@
    000     000   000  00000000  000   000  00000000  
 --]]
 
--- use ../../kxk ▪ post
--- use ◆ color
-
 color = require "theme.color"
-
--- import theme from './theme.json' with { type: "json" }
 
 local theme = {
 hover = {

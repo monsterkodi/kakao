@@ -18,7 +18,6 @@ function draw:init(name, features)
         
         self:setColor('bg', theme.editor.bg)
         self:setColor('empty', theme.editor.empty)
-        
         self:setColor('cursor', theme.cursor)
         self:setColor('selection', theme.selection)
         self:setColor('highlight', theme.highlight)
@@ -221,43 +220,45 @@ function draw:drawHighlights()
 
 
 function draw:drawSelections() 
-        -- prof.start 'selection'
-        
         local spanbg = self.color.selection.span
         local linebg = self.color.selection.line
-        
+        -- log "drawSelections-" @color.selection
+        -- log "drawSelections+" spanbg, linebg
         -- if not @cells.screen.t.hasFocus
         --     spanbg = color.darken spanbg
         --     linebg = color.darken linebg
         
         for si, selection in ipairs(self.state.s.selections) do 
-            local bg = (belt.isSpanLineRange(self.state.s.lines, selection) or {spanbg = linebg})
+            local bg = (function () 
+    if belt.isSpanLineRange(self.state.s.lines, selection) then 
+    return spanbg else 
+    return linebg
+                 end
+end)()
             
-            for li in iter(selection[1], selection[3]) do 
-                local y = (li - self.state.s.view[1])
+            for li in iter(selection[2], selection[4]) do 
+                local y = (li - self.state.s.view[2])
                 
                 if (y >= self.cells.rows) then break end
                 
-                if (li == selection[1]) then 
-                    local xs = selection[0]
-                else 
-                    local xs = 0
+                local xs = 0
+                if (li == selection[2]) then 
+                    xs = selection[1]
                 end
                 
-                if (li == selection[3]) then 
-                    local xe = selection[2]
+                local xe = 0
+                if (li == selection[4]) then 
+                    xe = selection[3]
                 else 
-                    local xe = kseg.width(self.state.s.lines[li])
+                    xe = kseg.width(self.state.s.lines[li])
                 end
                 
                 for x = xs, xe-1 do 
-                    self.cells:set_bg((x - self.state.s.view[0]), y, bg)
-                    self.cells:adjustContrastForHighlight(x, y, bg)
+                    self.cells:set_bg((x - self.state.s.view[1]), y, bg)
+                    self.cells:adjustContrastForHighlight((x - self.state.s.view[1]), y, bg)
                 end
             end
         end
-        
-        return -- prof.end 'selection'
     end
 
 --  0000000  000   000  00000000    0000000   0000000   00000000    0000000  

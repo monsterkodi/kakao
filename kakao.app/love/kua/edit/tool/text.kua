@@ -641,7 +641,7 @@ class text
         
         dx = if dir == 'left' ➜ -1 ➜ 1
         
-        if opt.jump ➜ ⮐  belt.jumpDelta(lines[pos[2]] pos[1] dx opt.jump)
+        if opt and opt.jump ➜ ⮐  belt.jumpDelta(lines[pos[2]] pos[1] dx opt.jump)
             
         ⮐  0 if pos[1] + dx <= 0
         dx

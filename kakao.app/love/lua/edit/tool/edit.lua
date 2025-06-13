@@ -609,8 +609,8 @@ function edit.static.extendLineRangesByMovingPositionsInDirection(lines, rngs, p
             local line = lines[pos[2]]
             local rng = array(pos[1], pos[2], pos[1], pos[2])
             newRngs:push(rng)
-            
-            if (dir == 'left') or (dir == 'right') then local nc = belt.numCharsFromPosToWordOrPunctInDirection(lines, pos, dir, opt) ; pos[1] = pos[1] + nc
+            local nc = 0
+            if (dir == 'left') or (dir == 'right') then nc = belt.numCharsFromPosToWordOrPunctInDirection(lines, pos, dir, opt) ; pos[1] = pos[1] + nc
             elseif (dir == 'up') then pos[2] = pos[2] - 1
             elseif (dir == 'down') then pos[2] = pos[2] + 1
             elseif (dir == 'eol') then pos[1] = #line

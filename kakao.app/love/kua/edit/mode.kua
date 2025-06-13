@@ -47,7 +47,6 @@ class mode
     
     @autoStartForEditor: editor ->
         for _ name in ipairs mode.names()
-            log "autostartForEditor" editor.feats[name], name, mode.modes[name]
             if editor.feats[name] and mode.modes[name].autoStart
                 mode.start editor.state name
 

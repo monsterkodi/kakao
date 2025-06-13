@@ -808,7 +808,7 @@ function state:expandCursors(dir)
 end)()
         
         local newCursors = array()
-        for c in cursors do 
+        for _, c in ipairs(cursors) do 
             newCursors:push(c)
             newCursors:push(array(c[1], (c[2] + dy)))
         end
@@ -1736,6 +1736,148 @@ function state:deindentSelectedOrCursorLines()
         
         self:setLines(lines)
         self:setSelections(selections)
+        return self:setCursors(cursors)
+    end
+
+-- 0000000    00000000  000      00000000  000000000  00000000  
+-- 000   000  000       000      000          000     000       
+-- 000   000  0000000   000      0000000      000     0000000   
+-- 000   000  000       000      000          000     000       
+-- 0000000    00000000  0000000  00000000     000     00000000  
+
+
+function state:delete(typ, jump) 
+        if (array('back', 'next'):has(typ) and valid(self.s.selections)) then return self:deleteSelection() end
+        
+        local lines = self.s.lines.map(function (l) 
+    return l
+end) -- mutable copy
+        
+        local cursors = self:allCursors()
+        
+        if (((#cursors == 1) and array('back', 'next'):has(typ)) and belt.isLinesPosOutside(lines, cursors[0])) then 
+            return self:setMainCursor(kseg.width(lines[cursors[0][1]]), cursors[0][1])
+        end
+        
+        if (typ == 'back') then 
+            local minBeforeWs = Infinity
+            for cursor in cursors do 
+                local rng = belt.rangeOfWhitespaceLeftToPos(lines, cursor)
+                minBeforeWs = min(minBeforeWs, (rng[2] - rng[0]))
+            end
+        end
+        
+        for ci in iter(#cursors, 1) do 
+            local cursor = cursors[ci]
+            
+            local x, y = cursor
+            
+            local line = lines[y]
+            
+            local remove = 1
+            local dc = 0
+            
+            if (typ == 'eol') then line = line:slice(1, x)
+            elseif (typ == 'back') then 
+                    if (x == 0) then 
+                        if (#cursors == 1) then 
+                            if (y <= 0) then return end
+                            y = y - 1
+                            x = kseg.width(lines[y])
+                            remove = 2
+                            line = kseg.join(lines[y], line)
+                            cursor[0] = x
+                            cursor[1] = y
+                        end
+                    else 
+                        if jump then 
+                            local rng = belt.rangeOfWordOrWhitespaceLeftToPos(lines, cursor)
+                            if rng then 
+                                dc = (rng[2] - rng[0])
+                            else 
+                                dc = 1
+                            end
+                        else 
+                            if (minBeforeWs > 1) then 
+                                dc = (x % 4)
+                                dc = (function () 
+    if (dc == 0) then 
+    return 4
+                                       end
+end)()
+                                dc = min(minBeforeWs, dc)
+                            else 
+                                dc = 1
+                            end
+                        end
+                        
+                        if (x <= kseg.width(line)) then 
+                            local segi = kseg.indexAtWidth(line, x)
+                            line = kseg.join(line:slice(1, (segi - dc)), line:slice(segi))
+                        end
+                    end
+            elseif (typ == 'next') then 
+                    if (x == kseg.width(lines[y])) then 
+                        if (#cursors == 1) then 
+                            if (y >= (#lines - 1)) then return end
+                            x = kseg.width(lines[y])
+                            remove = 2
+                            line = kseg.join(line, lines[(y + 1)])
+                            cursor[0] = x
+                            cursor[1] = y
+                        end
+                    else 
+                        if jump then 
+                            local rng = belt.rangeOfWordOrWhitespaceRightToPos(lines, cursor)
+                            if rng then 
+                                dc = (rng[2] - rng[0])
+                                line = kseg.join(line:slice(1, x), line:slice((x + dc)))
+                            end
+                        else 
+                            dc = 1
+                            line = kseg.join(line:slice(1, x), line:slice((x + dc)))
+                        end
+                        
+                        cursor[0] = cursor[0] + dc
+                    end
+            end
+            
+            belt.moveCursorsInSameLineBy(cursors, cursor, -dc)
+            
+            lines.splice(y, remove, line)
+        end
+        
+        self:clearHighlights()
+        self:setLines(lines)
+        return self:setCursors(cursors)
+    end
+
+--  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000  
+-- 000       000       000      000       000          000     000  000   000  0000  000  
+-- 0000000   0000000   000      0000000   000          000     000  000   000  000 0 000  
+--      000  000       000      000       000          000     000  000   000  000  0000  
+-- 0000000   00000000  0000000  00000000   0000000     000     000   0000000   000   000  
+
+
+function state:deleteSelection() 
+        if mode.deleteSelection(self) then return end
+        
+        return self:deleteRanges(self:allSelections(), self:allCursors())
+    end
+
+
+function state:deleteRanges(rngs, posl) 
+        if empty(rngs) then return end
+        
+        posl = posl or (self:allCursors())
+        
+        if not self.beginIndex then self:pushState() end
+        
+        local lines, cursors = belt.deleteLineRangesAndAdjustPositions(self.s.lines, rngs, posl)
+        
+        self:deselect()
+        self:clearHighlights()
+        self:setLines(lines)
         return self:setCursors(cursors)
     end
 

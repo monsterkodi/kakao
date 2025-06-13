@@ -252,10 +252,9 @@ class inputchoice extends view
 
         ⮐  if @hidden()
         
-        ret = nil
-        ret = @input∙onMouse   event ; ⮐  ret if ret and ret.redraw
-        ret = @choices∙onMouse event ; ⮐  ret if ret and ret.redraw
-        ret = view.onMouse @ event   ; ⮐  ret if ret and ret.redraw
+        if @input∙onMouse   event ➜ ⮐  true
+        if @choices∙onMouse event ➜ ⮐  true
+        if view.onMouse @ event   ➜ ⮐  true
         
         if event.type == 'press' and not @hover
             post∙emit 'focus' 'editor'
@@ -273,12 +272,10 @@ class inputchoice extends view
     onWheel: event ->
 
         ⮐  if @hidden()
-        ret = @input∙onWheel   event 
-        ⮐  ret if ret.redraw
-        ret = @choices∙onWheel event 
-        ⮐  ret if ret.redraw
+        if @input∙onWheel   event ➜ ⮐  true
+        if @choices∙onWheel event ➜ ⮐  true
         
         inside = @cells∙isInsideEvent event
-        if inside ➜ ⮐  {redraw:false}
+        if inside ➜ ⮐  true
         
 ⮐  inputchoice

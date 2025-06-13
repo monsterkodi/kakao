@@ -27,7 +27,7 @@ end
 
 
 function _G.empty(v) 
-    if (type(v) == "table") then return ((#v == 0) or ((#v == nil) and (v == {})))
+    if (type(v) == "table") then return ((#v == 0) and not dict.isdict(v))
     elseif (type(v) == "string") then return (v == "")
     elseif (type(v) == "nil") then return true
     end
@@ -40,11 +40,6 @@ function _G.valid(v)
     return not empty(v)
 end
 
-
-function _G.clamp(l, h, v) 
-    return math.min(math.max(l, v), h)
-end
-
 _G.max = math.max
 _G.min = math.min
 _G.floor = math.floor
@@ -52,6 +47,10 @@ _G.int = math.floor
 _G.ceil = math.ceil
 _G.sqrt = math.sqrt
 _G.Infinity = math.huge
+
+function _G.clamp(l, h, v) 
+    return min(max(l, v), h)
+end
 
 
 function _G.slice(a, first, last) 

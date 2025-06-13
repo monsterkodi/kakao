@@ -17,7 +17,7 @@ class belt
     @sum: arrays -> 
         
         sum = []
-        for n in 0...arrays[0].length ➜ sum.push 0
+        for n in 0...arrays[0].length ➜ sum∙push 0
         for array in arrays
             for n,i in array
                 sum[i] += n
@@ -72,7 +72,7 @@ class belt
         
     @positionInDirection: pos dir ->
         
-        (x y) = pos
+        (x y) = unpack pos
         
         switch dir
             'up'    ➜ [x, y-1]
@@ -101,7 +101,7 @@ class belt
     @positionsContain: posl pos ->
         
         for _ p in ipairs posl
-            ⮐  true if p eql pos
+            ⮐  true if p == pos
         false
         
     @positionsOutsideRange: posl rng ->
@@ -129,7 +129,7 @@ class belt
         map = {}
         for p in posl
             map[p[0]] ?= []
-            map[p[0]].push p
+            map[p[0]]∙push p
         map
         
     @neighborPositionGroups: posl ->
@@ -137,9 +137,9 @@ class belt
         groups = []
         for p in posl
             if groups[-1] and groups[-1][-1][1] == p[1]-1
-               groups[-1].push p
+               groups[-1]∙push p
             else
-                groups.push [p]
+                groups∙push [p]
         groups
         
     @positionColumns: posl ->
@@ -278,18 +278,18 @@ class belt
     @rangesContainSpan: rngs span -> @rangesContainRange rngs @rangeForSpan(span)
     @rangesContainRange: rngs range -> 
         
-        for rng in rngs
-            ⮐  true if rng eql range
+        for _ rng in ipairs rngs
+            ⮐  true if rng == range
         false
                 
     @normalizeRanges: rngs ->
         
         ⮐  [] if empty(rngs) or not (rngs is array)
         
-        rngs = rngs∙map((a) -> if a[1] > a[3] ➜ [a[2] a[3] a[0] a[1]] else a)
-        rngs = rngs∙map((a) -> if a[1] == a[3] and a[0] > a[2] ➜ [a[2] a[1] a[0] a[3]] else a)
-        rngs∙sort((a b) -> if a[1] == b[1] ➜ a[0] - b[0] else a[1] - b[1])
-        rngs∙filter((a) -> a[1] != a[3] or a[0] != a[2])
+        rngs = rngs∙map((a) -> if a[2] > a[4] ➜ [a[3] a[4] a[1] a[2]] else a)
+        rngs = rngs∙map((a) -> if a[2] == a[4] and a[1] > a[3] ➜ [a[3] a[2] a[1] a[4]] else a)
+        rngs∙sort((a b) -> if a[2] == b[2] ➜ a[1] - b[1] else a[2] - b[2])
+        rngs∙filter((a) -> a[2] != a[4] or a[1] != a[3])
         rngs
         
     @startPositionsOfRanges: rngs -> rngs.map((r) -> @startOfRange(r))
@@ -315,9 +315,9 @@ class belt
         rngs = [[1 1 posl[1][1] posl[1][2]]]
         for idx pos in ipairs posl
             if idx > 1
-                rngs.push [posl[idx-1][1] posl[idx-1][2] pos[1] pos[2]]
+                rngs∙push [posl[idx-1][1] posl[idx-1][2] pos[1] pos[2]]
             if idx == posl.len
-                rngs.push [pos[1] pos[2] kseg.width(lines[^1]) lines.len]
+                rngs∙push [pos[1] pos[2] kseg.width(lines[^1]) lines.len]
         rngs
 
     @rangeInRangesContainingPos: rngs pos ->
@@ -369,7 +369,7 @@ class belt
         
         for li in rng[1]..rng[3]
             if li != rng[3] or rng[2] > 0
-                indices.push li
+                indices∙push li
         
         indices
         
@@ -401,7 +401,7 @@ class belt
             block[3] = index
             if indices[ii+1] != index+1
                 block[2] = lines[index].length 
-                blocks.push block
+                blocks∙push block
                 block = [0 indices[ii+1] -1 -1]
             
         blocks
@@ -419,6 +419,7 @@ class belt
         rngs = @normalizeRanges rngs
         
         mrgd = []
+        tail = nil
         for i s in ipairs rngs
             if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]].len)
                     mrgd∙push s

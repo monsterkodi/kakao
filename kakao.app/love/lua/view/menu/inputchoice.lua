@@ -298,10 +298,9 @@ function inputchoice:onKey(key, event)
 function inputchoice:onMouse(event) 
         if self:hidden() then return end
         
-        local ret = nil
-        ret = self.input:onMouse(event) ; if (ret and ret.redraw) then return ret end
-        ret = self.choices:onMouse(event) ; if (ret and ret.redraw) then return ret end
-        ret = view.onMouse(self, event) ; if (ret and ret.redraw) then return ret end
+        if self.input:onMouse(event) then return true end
+        if self.choices:onMouse(event) then return true end
+        if view.onMouse(self, event) then return true end
         
         if ((event.type == 'press') and not self.hover) then 
             post:emit('focus', 'editor')
@@ -321,14 +320,12 @@ function inputchoice:onMouse(event)
 
 function inputchoice:onWheel(event) 
         if self:hidden() then return end
-        local ret = self.input:onWheel(event)
-        if ret.redraw then return ret end
-        ret = self.choices:onWheel(event)
-        if ret.redraw then return ret end
+        if self.input:onWheel(event) then return true end
+        if self.choices:onWheel(event) then return true end
         
         local inside = self.cells:isInsideEvent(event)
         if inside then 
-    return {redraw = false}
+    return true
         end
     end
 

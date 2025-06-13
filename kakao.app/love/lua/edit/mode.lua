@@ -53,7 +53,6 @@ function mode.static.names()
 
 function mode.static.autoStartForEditor(editor) 
         for _, name in ipairs(mode.names()) do 
-            print("autostartForEditor", editor.feats[name], name, mode.modes[name])
             if (editor.feats[name] and mode.modes[name].autoStart) then 
                 mode.start(editor.state, name)
             end

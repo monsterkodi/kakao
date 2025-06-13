@@ -44,7 +44,8 @@ function view:setColor(key, clr)
             return
         end
         
-        -- log "#{@name} setColor " key, " " clr, " " color.values(clr)
+        -- if @color[key] != color.values(clr)
+        --     log "#{@name} " key, " " array.isarr(clr), " " @color[key], " " clr
         self.color[key] = color.values(clr)
         return self.color[key]
     end
