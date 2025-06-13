@@ -48,6 +48,8 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                 else line = newls:pop()
                 end
                 
+                print("x", x, kseg.width(line), line)
+                
                 if ((x > kseg.width(line)) and (text ~= '\n')) then 
                     line = line + (kstr.lpad((x - #line)).split(''))
                 end
@@ -113,7 +115,7 @@ function edit.static.insertSurroundAtRanges(lines, rngs, trigger, pair)
         local lines, begl = belt.insertTextAtPositions(lines, pair[0], begl)
         
         local endl = array()
-        for pos, idx in begl do 
+        for pos, idx in ipairs(begl) do 
             endl:push(array(((pos[0] + rngs[idx][2]) - rngs[idx][0]), pos[1]))
         end
         
@@ -246,7 +248,7 @@ function edit.static.addLinesBelowPositionsToRanges(lines, posl, rngs)
             return newp:push(belt.endOfRange(range))
         end
         
-        for c in posl do 
+        for _, c in ipairs(posl) do 
             if not belt.rangesContainLine(rngs, c[1]) then 
                 addLineAtIndex(c, c[1])
             elseif (c[1] < (#lines - 1)) then 
@@ -270,7 +272,7 @@ function edit.static.removeLinesAtPositionsFromRanges(lines, posl, rngs)
         local newp = array()
         local newr = belt.splitLineRanges(lines, rngs)
         
-        for pos in posl do 
+        for _, pos in ipairs(posl) do 
             local rng = belt.rangeInRangesTouchingPos(newr, pos)
             if rng then 
                 local idx = newr.indexOf(rng)
@@ -342,13 +344,13 @@ end)()
             elseif (dir == 'up') then newLines:splice((index - 1), 2, newLines[index], newLines[(index - 1)])
             end
             
-            for pos in newPosl do 
+            for _, pos in ipairs(newPosl) do 
                 if (pos[1] == index) then 
                     pos[1] = pos[1] + d
                 end
             end
             
-            for rng in newRngs do 
+            for _, rng in ipairs(newRngs) do 
                 if (rng[1] == index) then 
                     rng[1] = rng[1] + d
                     rng[3] = rng[3] + d
@@ -409,13 +411,13 @@ end)()
             if (dir == 'down') then 
                 d = ((block[3] - block[1]) + 1)
                 
-                for pos in newPosl do 
+                for _, pos in ipairs(newPosl) do 
                     if belt.rangeContainsPos(block, pos) then 
                         pos[1] = pos[1] + d
                     end
                 end
                 
-                for rng in newRngs do 
+                for _, rng in ipairs(newRngs) do 
                     if belt.rangeContainsRange(block, rng) then 
                         rng[1] = rng[1] + d
                         rng[3] = rng[3] + d
@@ -444,7 +446,7 @@ function edit.static.toggleCommentsInLineRangesAtIndices(lines, rngs, posl, indi
         local comStart = '#'
         local minIndent = Infinity
         
-        for index in indices do 
+        for _, index in ipairs(indices) do 
             local indent, line = belt.splitLineIndent(newLines[index])
             if not kseg.startsWith(line, comStart) then 
                 local comment = comStart
@@ -509,20 +511,20 @@ end)
         local newRngs = rngs --.asMutable()
         local newPosl = posl --.asMutable()
         
-        for index in indices do 
+        for _, index in ipairs(indices) do 
             local indent, line = belt.splitLineIndent(newLines[index])
             
             if #indent then 
                 local sc = min(4, #indent)
                 newLines:splice(index, 1, kseg.join(indent:slice(sc), line))
                 
-                for pos in newPosl do 
+                for _, pos in ipairs(newPosl) do 
                     if (pos[1] == index) then 
                         pos[0] = max(0, (pos[0] - sc))
                     end
                 end
                 
-                for rng in newRngs do 
+                for _, rng in ipairs(newRngs) do 
                     if (rng[1] == index) then 
                         rng[0] = max(0, (rng[0] - sc))
                         rng[2] = max(0, (rng[2] - sc))
@@ -550,18 +552,18 @@ end)
         local newRngs = rngs --.asMutable()
         local newPosl = posl --.asMutable()
         
-        for index in indices do 
+        for _, index in ipairs(indices) do 
             local indent, line = belt.splitLineIndent(newLines[index])
             
             newLines[index] = kseg.join(kseg.rep(4), newLines[index])
             
-            for pos in newPosl do 
+            for _, pos in ipairs(newPosl) do 
                 if (pos[1] == index) then 
                     pos[0] = pos[0] + 4
                 end
             end
             
-            for rng in newRngs do 
+            for _, rng in ipairs(newRngs) do 
                 if (rng[1] == index) then 
                     rng[0] = rng[0] + 4
                     rng[2] = rng[2] + 4

@@ -344,8 +344,7 @@ class cells
     adjustContrastForHighlight: x y highlightColor ->
         
         ofg = @get_fg x y
-        if valid ofg
-            log "adjustContrastForHighlight" type(ofg), ofg.len
+        if valid ofg and valid highlightColor
             @set_fg x y color.adjustForBackground(ofg highlightColor)        
                         
     # ████████   ████████  ███   ███  ███████    ████████  ████████ 

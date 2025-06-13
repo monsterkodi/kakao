@@ -467,8 +467,7 @@ function cells:img(x, y, name, fg, zLayer, xe, ye)
 
 function cells:adjustContrastForHighlight(x, y, highlightColor) 
         local ofg = self:get_fg(x, y)
-        if valid(ofg) then 
-            print("adjustContrastForHighlight", type(ofg), #ofg)
+        if valid((ofg and valid), highlightColor) then 
             return self:set_fg(x, y, color.adjustForBackground(ofg, highlightColor))
         end
     end

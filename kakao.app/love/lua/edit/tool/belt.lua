@@ -20,8 +20,8 @@ local belt = class("belt")
 function belt.static.sum(arrays) 
         local sum = array()
         for n = 0, #arrays[0]-1 do sum:push(0) end
-        for array in arrays do 
-            for n, i in array do 
+        for _, array in ipairs(arrays) do 
+            for n, i in ipairs(array) do 
                 sum[i] = sum[i] + n
             end
         end
@@ -64,8 +64,8 @@ end)
 function belt.static.sortPositions(posl) 
         posl:sort(function (a, b) 
     if (a[2] == b[2]) then 
-    return (a[1] - b[1]) else 
-    return (a[2] - b[2])
+    return (a[1] > b[1]) else 
+    return (a[2] > b[2])
                            end
 end)
         return posl
@@ -86,16 +86,15 @@ function belt.static.removeDuplicatePositions(posl)
 
 
 function belt.static.indexOfPosInPositions(pos, posl) 
-        if empty(posl) then return -1 end
-        posl.findIndex(p) return function () 
-    return pos(eql, p)
-end
+        -- ⮐  -1 if empty posl
+        -- posl.findIndex (p) -> pos == p
+        return posl:find(pos)
     end
 
 
 function belt.static.lineIndicesForPositions(posl) 
         local set = new(Set())
-        for pos in posl do 
+        for _, pos in ipairs(posl) do 
             set.add(pos[1])
         end
         
@@ -119,7 +118,7 @@ function belt.static.positionInDirection(pos, dir)
 
 
 function belt.static.movePositionsInDirection(posl, dir) 
-        return posl.map(function (p) 
+        return posl:map(function (p) 
     return belt.positionInDirection(p, dir)
 end)
     end
@@ -154,7 +153,7 @@ function belt.static.positionsContain(posl, pos)
 
 
 function belt.static.positionsOutsideRange(posl, rng) 
-        return posl.filter(function (p) 
+        return posl:filter(function (p) 
     return belt.isPosOutsideRange(p, rng)
 end)
     end
@@ -180,7 +179,7 @@ function belt.static.deltaOfPosToRect(p, r)
 
 function belt.static.columnPositionsMap(posl) 
         local map = {}
-        for p in posl do 
+        for _, p in ipairs(posl) do 
             map[p[0]] = map[p[0]] or (array())
             map[p[0]]:push(p)
         end
@@ -191,7 +190,7 @@ function belt.static.columnPositionsMap(posl)
 
 function belt.static.neighborPositionGroups(posl) 
         local groups = array()
-        for p in posl do 
+        for _, p in ipairs(posl) do 
             if (groups[-1] and (groups[-1][-1][1] == (p[1] - 1))) then 
                groups[-1]:push(p)
             else 
@@ -206,7 +205,7 @@ function belt.static.neighborPositionGroups(posl)
 function belt.static.positionColumns(posl) 
         local columns = array()
         for key, pl in pairs(belt.columnPositionsMap(posl)) do 
-            columns = columns.concat(belt.neighborPositionGroups(pl))
+            columns = columns + (belt.neighborPositionGroups(pl))
         end
         
         return columns
@@ -275,7 +274,7 @@ function belt.static.rangeFromStartToEnd(start, stop)
     end
 
 function belt.static.rangesForSpans(spans) 
-    return spans.map(belt.rangeForSpan)
+    return spans:map(belt.rangeForSpan)
     end
 
 
@@ -306,17 +305,17 @@ function belt.static.rangeShrunkenBy(rng, delta)
     end
 
 function belt.static.rangesShrunkenBy(rngs, delta) 
-        local filtered = rngs.filter(function (r) 
+        local filtered = rngs:filter(function (r) 
     return ((r[2] - r[0]) >= (2 * delta))
 end)
-        return filtered.map(function (r) 
+        return filtered:map(function (r) 
     return belt.rangeShrunkenBy(r, delta)
 end)
     end
 
 
 function belt.static.rangesGrownBy(rngs, delta) 
-    return rngs.map(function (r) 
+    return rngs:map(function (r) 
     return belt.rangeGrownBy(r, delta)
 end)
     end
@@ -379,7 +378,7 @@ end)()
         
         if belt.isPosBeforeSpan(pos, spans[0]) then return spans[0] end
         
-        for span, index in spans do 
+        for span, index in ipairs(spans) do 
             if belt.isPosAfterSpan(pos, span) then 
                 if (((index + 1) < #spans) and belt.isPosBeforeOrInsideSpan(pos, spans[(index + 1)])) then 
                     return spans[(index + 1)]
@@ -406,19 +405,19 @@ function belt.static.prevSpanBeforePos(spans, pos)
 function belt.static.normalizeSpans(spans) 
         if empty(spans) then return array() end
         
-        spans = spans.map(function (a) 
+        spans = spans:map(function (a) 
     if (a[0] > a[2]) then 
     return array(a[2], a[1], a[0]) else 
     return a
                                  end
 end)
-        spans.sort(function (a, b) 
+        spans:sort(function (a, b) 
     if (a[1] == b[1]) then 
-    return (a[0] - b[0]) else 
-    return (a[1] - b[1])
+    return (a[0] < b[0]) else 
+    return (a[1] < b[1])
                             end
 end)
-        spans = spans.filter(function (a) 
+        spans = spans:filter(function (a) 
     return (a[0] ~= a[2])
 end)
         return spans
@@ -432,7 +431,7 @@ end)
 
 
 function belt.static.rangesContainLine(rngs, lineIndex) 
-        for rng in rngs do 
+        for _, rng in ipairs(rngs) do 
             if ((rng[1] <= lineIndex) <= rng[3]) then return true end
         end
         
@@ -470,8 +469,8 @@ end)
 end)
         rngs:sort(function (a, b) 
     if (a[2] == b[2]) then 
-    return (a[1] - b[1]) else 
-    return (a[2] - b[2])
+    return (a[1] < b[1]) else 
+    return (a[2] < b[2])
                            end
 end)
         rngs:filter(function (a) 
@@ -482,13 +481,13 @@ end)
 
 
 function belt.static.startPositionsOfRanges(rngs) 
-    return rngs.map(function (r) 
+    return rngs:map(function (r) 
     return belt.startOfRange(r)
 end)
     end
 
 function belt.static.endPositionsOfRanges(rngs) 
-    return rngs.map(function (r) 
+    return rngs:map(function (r) 
     return belt.endOfRange(r)
 end)
     end
@@ -531,7 +530,7 @@ function belt.static.rangesForLinesSplitAtPositions(lines, posl)
 
 
 function belt.static.rangeInRangesContainingPos(rngs, pos) 
-        for rng in rngs do 
+        for _, rng in ipairs(rngs) do 
             if belt.rangeContainsPos(rng, pos) then 
                 return rng
             end
@@ -540,7 +539,7 @@ function belt.static.rangeInRangesContainingPos(rngs, pos)
 
 
 function belt.static.rangeInRangesTouchingPos(rngs, pos) 
-        for rng in rngs do 
+        for _, rng in ipairs(rngs) do 
             if belt.rangeTouchesPos(rng, pos) then 
                 return rng
             end
@@ -565,26 +564,26 @@ function belt.static.lineIndicesForRangesOrPositions(rngs, posl)
 
 
 function belt.static.lineIndicesForRangesAndPositions(rngs, posl) 
-        local indices = kxk.util.uniq(belt.lineIndicesForRanges(rngs).concat(belt.lineIndicesForPositions(posl)))
-        indices.sort()
+        local indices = kxk.util.uniq((belt.lineIndicesForRanges(rngs) + belt.lineIndicesForPositions(posl)))
+        indices:sort()
         return indices
     end
 
 
 function belt.static.lineIndicesForSpans(spans) 
-        return kxk.util.uniq(spans.map(function (s) return s[1] end))
+        return kxk.util.uniq(spans:map(function (s) return s[1] end))
     end
 
 
 function belt.static.frontmostSpans(spans) 
         local fms = {}
-        for span in spans do 
+        for _, span in ipairs(spans) do 
             if not fms[span[1]] then 
                 fms[span[1]] = span
             end
         end
         
-        return Object.values(fms)
+        return dict.values(fms)
     end
 
 
@@ -604,8 +603,8 @@ function belt.static.lineIndicesForRange(rng)
 function belt.static.lineIndicesForRanges(rngs) 
         local indices = array()
         
-        for rng in rngs do 
-            indices = indices.concat(belt.lineIndicesForRange(rng))
+        for _, rng in ipairs(rngs) do 
+            indices = indices + (belt.lineIndicesForRange(rng))
         end
         
         return indices

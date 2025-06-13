@@ -31,12 +31,14 @@ _G.valid = v -> not empty v
     
 _G.max      = math.max
 _G.min      = math.min
-_G.floor    = math.floor
 _G.int      = math.floor
+_G.floor    = math.floor
+_G.round    = math.round
 _G.ceil     = math.ceil
 _G.sqrt     = math.sqrt
 _G.Infinity = math.huge
 _G.clamp    = l h v -> min(max(l v) h)
+_G.round    = x -> x >= 0 and floor(x + 0.5) or ceil(x - 0.5)
 
 _G.slice = a first last ->
 
@@ -70,7 +72,7 @@ _G.is = v c ->
 _G.write = ... ->
 
     s = ""
-    for i v in ipairs {...}
+    for _ v in ipairs {...}
         s &= $v
     s &= "\27[0m\n"
     # ffi.C.write 1 s s.len

@@ -42,14 +42,19 @@ end
 
 _G.max = math.max
 _G.min = math.min
-_G.floor = math.floor
 _G.int = math.floor
+_G.floor = math.floor
+_G.round = math.round
 _G.ceil = math.ceil
 _G.sqrt = math.sqrt
 _G.Infinity = math.huge
 
 function _G.clamp(l, h, v) 
     return min(max(l, v), h)
+end
+
+function _G.round(x) 
+    return (((x >= 0) and floor((x + 0.5))) or ceil((x - 0.5)))
 end
 
 
@@ -91,7 +96,7 @@ end
 
 function _G.write(...) 
     local s = ""
-    for i, v in ipairs({...}) do 
+    for _, v in ipairs({...}) do 
         s = s .. (tostring(v))
     end
     

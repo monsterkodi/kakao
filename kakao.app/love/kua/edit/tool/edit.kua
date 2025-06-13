@@ -43,6 +43,8 @@ class edit
                 if valid before ➜ line = before∙pop()
                 else              line = newls∙pop() 
                 
+                log "x" x, kseg.width(line), line
+                
                 if x > kseg.width(line) and text != '\n'
                     line += kstr.lpad(x-line.len).split('')
                                         

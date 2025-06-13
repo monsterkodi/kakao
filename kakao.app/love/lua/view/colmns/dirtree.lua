@@ -287,7 +287,7 @@ function dirtree:openDir(dirItem, opt, ○)
         local state = ked_session.get(self.name, {})
         
         local depth = (dirItem.depth + 1)
-        for item in items do 
+        for _, item in ipairs(items) do 
             item.depth = depth
             self:tilde(item)
             if ((item.type == 'dir') and state.open[item.path]) then 

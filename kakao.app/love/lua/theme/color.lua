@@ -174,12 +174,12 @@ function color.static.rgbToHsl(c)
             h = h / 6
         end
         
-        return (h * 360), (s * 100), (l * 100)
+        return array((h * 360), (s * 100), (l * 100))
     end
 
 
-function color.static.hslToRgb(c) 
-        local h, s, l = unpack(c)
+function color.static.hslToRgb(hsl) 
+        local h, s, l = unpack(hsl)
         
         h = h / 360
         s = s / 100
@@ -216,7 +216,7 @@ function color.static.hslToRgb(c)
             b = hue2rgb(p, q, (h - (1 / 3)))
         end
         
-        return round((r * 255)), round((g * 255)), round((b * 255))
+        return array(round((r * 255)), round((g * 255)), round((b * 255)))
     end
 
 --  ███████   ███   ███   ███████  ███        ████████    ███████   ███████  
@@ -253,10 +253,10 @@ function color.static.ul_rgb(c)
 
 function color.static.randomBackgroundColors(lines, bg, fg) 
         local resl = array()
-        for line in lines do 
+        for _, line in ipairs(lines) do 
             local rl = ''
             rl = rl + (color.fg_rgb(fg))
-            for char, idx in line do 
+            for char, idx in ipairs(line) do 
                 local clr = ''
                 if (char == ' ') then 
                     clr = (function () 
@@ -382,7 +382,6 @@ end)
 
 
 function color.static.luminance(c) 
-        print("luminance", type(c), c)
         local r, g, b = unpack(c)
         
         r = (r / 255)
@@ -436,7 +435,8 @@ function color.static.ensureReadability(fg, bg)
         
         local contrast = contrastRatio(fgLuminance, bgLuminance)
         
-        local h, s, l = color.rgbToHsl(fg)
+        local hsl = color.rgbToHsl(fg)
+        local l = hsl[3]
         
         local step = 5
         if (bgLuminance > 0.5) then 
@@ -447,7 +447,8 @@ function color.static.ensureReadability(fg, bg)
         while (cnt < 50) do 
             cnt = cnt + 1
             
-            fg = color.hslToRgb(array(h, s, l))
+            fg = color.hslToRgb(hsl)
+            
             fgLuminance = color.luminance(fg)
             
             contrast = contrastRatio(fgLuminance, bgLuminance)
