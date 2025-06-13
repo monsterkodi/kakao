@@ -38,7 +38,8 @@ class edit
                     before∙push [] 
             
             if idx > 1
-                (x y) = posl[idx-1]
+                x = posl[idx-1][1]
+                # (x y) = posl[idx-1]
                 
                 if valid before ➜ line = before∙pop()
                 else              line = newls∙pop() 

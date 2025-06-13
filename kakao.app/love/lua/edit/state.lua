@@ -195,7 +195,7 @@ function state:setCursors(cursors, opt)
         local mainCursor = self:mainCursor()
         if main then 
             mainCursor = cursors[clamp(1, #cursors, main)]
-            -- mainCursor = copy cursors[clamp 0 cursors.length-1 main]
+            -- mainCursor = copy cursors[clamp 0 cursors.len-1 main]
         end
         
         cursors = belt.normalizePositions(cursors, #self.s.lines)
@@ -314,7 +314,7 @@ function state:addLine(line, ext)
         local segl = kseg(line)
         self.syntax.addSegl(segl, ext)
         self.segls = self.segls or (array())
-        self.segls.push(segl)
+        self.segls:push(segl)
         
         return self:changeLinesSegls()
     end
@@ -384,7 +384,7 @@ function state:undo()
 
 function state:redo() 
         if empty(self.r) then return end
-        self.h.push(self.r.pop())
+        self.h:push(self.r:pop())
         self.s = self.h[#self.h]
         return self.syntax.setSegls(self.s.lines)
     end
@@ -428,7 +428,7 @@ function state:hasRedo()
 
 
 function state:gutterWidth() 
-    return math.max(4, (2 + math.ceil(math.log10((#self.s.lines + 1)))))
+    return max(4, (2 + ceil(math.log10((#self.s.lines + 1)))))
     end
 
 --  0000000  000   000  000000000
@@ -623,7 +623,7 @@ function state:rangeForVisibleLines()
 
 function state:setMain(m) 
         local mc = self:mainCursor()
-        -- @s = @s.set 'main' clamp(1 @s.cursors.length m)
+        -- @s = @s.set 'main' clamp(1 @s.cursors.len m)
         self.s.main = clamp(1, #self.s.cursors, m)
         return self:adjustViewForMainCursor({adjust = 'topBotDeltaGrow', mc = mc})
     end
@@ -1023,18 +1023,18 @@ function state:select(from, to)
         to[1] = clamp(0, #self.s.lines[to[2]], to[1])
         from[1] = clamp(0, #self.s.lines[from[2]], from[1])
         
-        selections.push(array(from[1], from[2], to[1], to[2]))
+        selections:push(array(from[1], from[2], to[1], to[2]))
         
         return self:setSelections(selections)
     end
 
 
 function state:allSelections() 
-    return self.s.selections.asMutable()
+    return self.s.selections
     end
 
 function state:allHighlights() 
-    return self.s.highlights.asMutable()
+    return self.s.highlights
     end
 
 -- 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  

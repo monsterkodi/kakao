@@ -97,7 +97,7 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.insert is "function"
-                    text = m.insert text
+                    text = m∙insert text
         text
         
     @postInsert: state ->
@@ -105,14 +105,14 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.postInsert is "function"
-                    m.postInsert()
+                    m∙postInsert()
         
     @deleteSelection: state ->
         
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.deleteSelection is "function"
-                    ⮐  true if m.deleteSelection()
+                    ⮐  true if m∙deleteSelection()
         false        
         
     @handleKey: state key event ->
@@ -120,7 +120,7 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.handleKey is "function"
-                    ⮐  if m.handleKey(m key event) != 'unhandled'
+                    ⮐  if m∙handleKey(key event) != 'unhandled'
         'unhandled'
         
     @cursorsSet: state editor ->
@@ -139,7 +139,7 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.themeColor is "function"
-                    ⮐  m.themeColor colorName defaultColor
+                    ⮐  m∙themeColor colorName defaultColor
             
         defaultColor
         
@@ -148,7 +148,7 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.preDrawLines is "function"
-                    lines = m.preDrawLines(lines)
+                    lines = m∙preDrawLines(lines)
         lines
         
     @postDraw: state ->
@@ -156,14 +156,14 @@ class mode
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.postDraw is "function"
-                    m.postDraw()
+                    m∙postDraw()
                 
     @fileLoaded: state file row col view ->
         
         if @active[state.name]
             for m in @active[state.name]∙each()
                 if m.fileLoaded is "function"
-                    m.fileLoaded file row col view
+                    m∙fileLoaded file row col view
         nil
             
 # ███   ███  ███  ██     ██  ████████   ███      ████████

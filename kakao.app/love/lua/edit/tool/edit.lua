@@ -42,7 +42,8 @@ function edit.static.insertTextAtPositions(lines, text, posl)
             end
             
             if (idx > 1) then 
-                local x, y = posl[(idx - 1)]
+                local x = posl[(idx - 1)][1]
+                -- (x y) = posl[idx-1]
                 
                 if valid(before) then line = before:pop()
                 else line = newls:pop()

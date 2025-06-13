@@ -86,7 +86,7 @@ class state extends events
             'end'                               ➜ ⮐  @singleCursorAtEndOfLine()
                                                      
             'ctrl+h'                            ➜ ⮐  @setMainCursor 0 0
-            'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines.length-1].length @s.lines.length-1
+            'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines.len-1].len @s.lines.len-1
                                                      
             'alt+d'                             ➜ ⮐  @delete 'next' true
             'shift+ctrl+k' 'entf'               ➜ ⮐  @delete 'next'
@@ -185,8 +185,8 @@ class state extends events
 
         mainCursor = @mainCursor()
         if main
-            mainCursor = cursors[clamp(1, cursors.length, main)]
-            # mainCursor = copy cursors[clamp 0 cursors.length-1 main]
+            mainCursor = cursors[clamp(1, cursors.len, main)]
+            # mainCursor = copy cursors[clamp 0 cursors.len-1 main]
         
         cursors = belt.normalizePositions cursors @s.lines.len
         # @s = @s.set 'cursors' cursors
@@ -199,7 +199,7 @@ class state extends events
                 break
 
         if main < 1 ➜ main = @s.main 
-        main = clamp 1 @s.cursors.length main
+        main = clamp 1 @s.cursors.len main
 
         # @s = @s.set 'main' main
         @s.main = main
@@ -215,7 +215,7 @@ class state extends events
             
     textOfSelectionOrWordAtCursor: -> 
         
-        if @s.selections.length
+        if @s.selections.len
             ⮐  @textOfSelection()
         else
             ⮐  @wordAtCursor()
@@ -286,7 +286,7 @@ class state extends events
         segl = kseg line
         @syntax.addSegl segl ext
         @segls ?= []
-        @segls.push segl
+        @segls∙push segl
 
         @changeLinesSegls()
         
@@ -323,7 +323,7 @@ class state extends events
         @setSegls [[]]
         @setMainCursor 1 1
 
-    isValidLineIndex:   li -> 0 <= li < @s.lines.length
+    isValidLineIndex:   li -> 0 <= li < @s.lines.len
     isInvalidLineIndex: li -> not @isValidLineIndex li
 
     # 000   000  000   000  0000000     0000000
@@ -342,7 +342,7 @@ class state extends events
     redo: ->
 
         ⮐  if empty @r
-        @h.push @r.pop()
+        @h∙push @r∙pop()
         @s = @h[^1]
         @syntax.setSegls @s.lines
 
@@ -368,7 +368,7 @@ class state extends events
     isDirty: -> @h.len > 1
     hasRedo: -> @r.len > 0
 
-    gutterWidth: -> math.max 4 2 + math.ceil(math.log10(@s.lines.length+1))
+    gutterWidth: -> max 4 2 + ceil(math.log10(@s.lines.len+1))
 
     #  0000000  000   000  000000000
     # 000       000   000     000
@@ -463,7 +463,7 @@ class state extends events
         view[1] += sx
         view[2] += sy
 
-        view[2] = clamp 1 math.max(1 @s.lines.length-@cells.rows) view[2]
+        view[2] = clamp 1 math.max(1 @s.lines.len-@cells.rows) view[2]
 
         maxOffsetX = math.max 1 @maxLineWidth-@cells.cols+2
         maxOffsetX = math.max maxOffsetX @mainCursor()[1]-@cells.cols+2
@@ -522,7 +522,7 @@ class state extends events
             elif y < view[2] + topBotDelta
                 view[2] = y - topBotDelta
 
-        if view[2] > 1 and @s.lines.length <= @cells.rows
+        if view[2] > 1 and @s.lines.len <= @cells.rows
             view[2] = 1
 
         if not @skipAdjustViewForMainCursor
@@ -556,8 +556,8 @@ class state extends events
     setMain: m -> 
     
         mc = @mainCursor()
-        # @s = @s.set 'main' clamp(1 @s.cursors.length m)
-        @s.main = clamp(1 @s.cursors.length m)
+        # @s = @s.set 'main' clamp(1 @s.cursors.len m)
+        @s.main = clamp(1 @s.cursors.len m)
         @adjustViewForMainCursor {adjust:'topBotDeltaGrow' mc:mc}
         
     mainCursor: -> 
@@ -600,7 +600,7 @@ class state extends events
                 
         (x y) = belt.pos x y
         
-        y = clamp 1 @s.lines.length y
+        y = clamp 1 @s.lines.len y
         x = max 1 x
         
         mainCursor = @mainCursor()
@@ -792,7 +792,7 @@ class state extends events
                 'eol'       ➜ c[1] = kseg.width(@s.lines[c[2]])
                 'bol'       ➜ c[1] = 0
                 'bof'       ➜ c[1] = 0; c[2] = 0
-                'eof'       ➜ c[2] = @s.lines.length-1; c[1] = kseg.width(line)
+                'eof'       ➜ c[2] = @s.lines.len-1; c[1] = kseg.width(line)
                 'ind'       ➜ c[1] = belt.numIndent(line)
                 'ind_eol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] < ind ➜  ind ➜  kseg.width(line)
                 'ind_bol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] > ind ➜  ind ➜  1
@@ -882,12 +882,12 @@ class state extends events
         to[1]   = clamp 0 @s.lines[to[2]].len to[1]
         from[1] = clamp 0 @s.lines[from[2]].len from[1]
         
-        selections.push [from[1] from[2] to[1] to[2]]
+        selections∙push [from[1] from[2] to[1] to[2]]
         
         @setSelections selections
         
-    allSelections: -> @s.selections.asMutable()
-    allHighlights: -> @s.highlights.asMutable()
+    allSelections: -> @s.selections
+    allHighlights: -> @s.highlights
         
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     
@@ -1167,13 +1167,13 @@ class state extends events
                     
         selections = belt.lineRangesForPositions(@s.lines @s.cursors)
         
-        ▴ selections.length == @s.cursors.length
+        ▴ selections.len == @s.cursors.len
                     
         @setSelections selections
         
     selectAllLines: ->
         
-        allsel = [[1 1 kseg.width(@s.lines[@s.lines.length]) @s.lines.length]]
+        allsel = [[1 1 kseg.width(@s.lines[@s.lines.len]) @s.lines.len]]
         
         if allsel == @s.selections
             @deselect()
@@ -1282,12 +1282,12 @@ class state extends events
             
     clearCursors: ->
             
-        if @s.cursors.length > 1
+        if @s.cursors.len > 1
             @setCursors [@mainCursor()]
             
     clearCursorsHighlightsAndSelections: ->
         
-        @pushState() if @s.cursors.length>1 or valid @s.selections
+        @pushState() if @s.cursors.len>1 or valid @s.selections
         @clearCursors()
         @clearHighlights()
         @deselect()
@@ -1463,7 +1463,7 @@ class state extends events
         
         cursors = @allCursors()
         
-        if cursors.length == 1 and ['back' 'next']∙has(typ) and belt.isLinesPosOutside lines cursors[0]
+        if cursors.len == 1 and ['back' 'next']∙has(typ) and belt.isLinesPosOutside lines cursors[0]
             ⮐  @setMainCursor kseg.width(lines[cursors[0][1]]) cursors[0][1]
             
         if typ == 'back'
@@ -1489,7 +1489,7 @@ class state extends events
                 
                 'back' 
                     if x == 0
-                        if cursors.length == 1
+                        if cursors.len == 1
                             ⮐  if y <= 0
                             y -= 1
                             x = kseg.width(lines[y])
@@ -1518,8 +1518,8 @@ class state extends events
 
                 'next' 
                     if x == kseg.width(lines[y])
-                        if cursors.length == 1
-                            ⮐  if y >= lines.length-1
+                        if cursors.len == 1
+                            ⮐  if y >= lines.len-1
                             x = kseg.width(lines[y])
                             remove = 2
                             line = kseg.join line lines[y+1]

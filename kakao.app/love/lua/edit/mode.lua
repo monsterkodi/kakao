@@ -118,7 +118,7 @@ function mode.static.insert(state, text)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.insert, "function") then 
-                    text = m.insert(text)
+                    text = m:insert(text)
                 end
             end
         end
@@ -131,7 +131,7 @@ function mode.static.postInsert(state)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.postInsert, "function") then 
-                    m.postInsert()
+                    m:postInsert()
                 end
             end
         end
@@ -142,7 +142,7 @@ function mode.static.deleteSelection(state)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.deleteSelection, "function") then 
-                    if m.deleteSelection() then return true end
+                    if m:deleteSelection() then return true end
                 end
             end
         end
@@ -155,7 +155,7 @@ function mode.static.handleKey(state, key, event)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.handleKey, "function") then 
-                    if (m.handleKey(m, key, event) ~= 'unhandled') then return end
+                    if (m:handleKey(key, event) ~= 'unhandled') then return end
                 end
             end
         end
@@ -185,7 +185,7 @@ function mode.static.themeColor(state, colorName, defaultColor)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.themeColor, "function") then 
-                    return m.themeColor(colorName, defaultColor)
+                    return m:themeColor(colorName, defaultColor)
                 end
             end
         end
@@ -198,7 +198,7 @@ function mode.static.preDrawLines(state, lines)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.preDrawLines, "function") then 
-                    lines = m.preDrawLines(lines)
+                    lines = m:preDrawLines(lines)
                 end
             end
         end
@@ -211,7 +211,7 @@ function mode.static.postDraw(state)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.postDraw, "function") then 
-                    m.postDraw()
+                    m:postDraw()
                 end
             end
         end
@@ -222,7 +222,7 @@ function mode.static.fileLoaded(state, file, row, col, view)
         if mode.active[state.name] then 
             for m in mode.active[state.name]:each() do 
                 if is(m.fileLoaded, "function") then 
-                    m.fileLoaded(file, row, col, view)
+                    m:fileLoaded(file, row, col, view)
                 end
             end
         end
