@@ -113,6 +113,7 @@ type Node* = ref object of RootObj
             while_body*: Node
         of ●for: 
             for_value*: Node
+            for_inof*: Node
             for_range*: Node
             for_body*: Node
         of ●list, ●curly, ●squarely: 
@@ -223,7 +224,7 @@ proc `$`*(this : Node) : string =
                 s = &"({this.case_when} {this.case_then})"
             of ●for: 
                 var b = choose(this.for_body, &" {this.for_body}", "")
-                s = &"({s} {this.for_value} in {this.for_range}{b})"
+                s = &"({s} {this.for_value} {this.for_inof.token.str} {this.for_range}{b})"
             of ●list: 
                 s = &"{this.list_values}"
                 s = "◂" & s[1..^1]
@@ -292,7 +293,6 @@ proc `$`*(this : Node) : string =
 # s = &"(¨s¨ ¨n.for_value¨ in ¨n.for_range¨¨b¨)"
 
 proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node = 
-    # log "#{kind} #{token}"
     var n = Node(kind: kind, token: token)
     case kind:
         of ●arg: 
@@ -365,7 +365,7 @@ proc nod*(kind : NodeKind, token : Token, args : varargs[Node]) : Node =
     n
 
 proc nod*(kind : NodeKind, token : Token, args : seq[Node]) : Node = 
-    var n = Node() #kind:kind token:token
+    var n = Node()
     n.kind = kind
     n.token = token
     case kind:

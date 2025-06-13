@@ -417,8 +417,10 @@ proc ▸for(this : Rlua, n : Node) =
         else: 
             this.add(" in ")
             if (n.for_range.kind == ●literal): 
-                echo("IN ", n.for_range.kind)
-                this.add("ipairs(")
+                if (n.for_inof.token.str == "of"): 
+                    this.add("pairs(")
+                else: 
+                    this.add("ipairs(")
                 this.rnd(n.for_range)
                 this.add(")")
             else: 

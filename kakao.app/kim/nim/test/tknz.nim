@@ -123,7 +123,6 @@ suite "tknz":
     # ███  ████  ███   ███  ███ █ ███  ███   ███  ███       ███   ███       ███
     # ███   ███   ███████   ███   ███  ███████    ████████  ███   ███  ███████ 
     test "numbers": 
-        # profileStart 'number'
         t("123", @[tk("123", ◂number, 0, 0)])
         t("1234", @[tk("1234", ◂number, 0, 0)])
         t("0xff", @[tk("0xff", ◂number, 0, 0)])
@@ -137,12 +136,12 @@ suite "tknz":
         t("0b101", @[tk("0b101", ◂number, 0, 0)])
         t("0o755", @[tk("0o755", ◂number, 0, 0)])
         t("0o755", @[tk("0o755", ◂number, 0, 0)])
-        # profileStop 'number'
     test "keywords": 
         t("for ◂for in ◂in", @[tk("for", ◂for, 0, 0), tk("◂for", ◂name, 0, 4), tk("in", ◂in, 0, 9), tk("◂in", ◂name, 0, 12)])
         t("r.▸for", @[tk("r", ◂name, 0, 0), tk(".", ◂dot, 0, 1), tk("▸for", ◂name, 0, 2)])
         t("quote", @[tk("quote", ◂quote, 0, 0)])
         t("quote do:", @[tk("quote", ◂quote, 0, 0)])
+        l("for key val of opt", @[tk("for", ◂for, 0, 0), tk("key", ◂name, 0, 4), tk("val", ◂name, 0, 8), tk("of", ◂of, 0, 12), tk("opt", ◂name, 0, 15)])
     # ███████     ███████   █████████   ███████
     # ███   ███  ███   ███     ███     ███     
     # ███   ███  ███   ███     ███     ███████ 

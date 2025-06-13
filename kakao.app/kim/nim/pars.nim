@@ -402,15 +402,16 @@ proc parseNames(this : Parser) : seq[Node] =
         (this.explicit -= 1)
         list
 
-proc parseNamesUntil(this : Parser, stop : tok) : Node = 
+proc parseNamesUntil(this : Parser, stop : set[tok]) : Node = 
         var token = this.current
         var list_values : seq[Node]
         (this.explicit += 1)
-        while (this.tok != stop): 
+        while (this.tok notin stop): 
+            echo("TOK ", this.tok, " ", this.current.str)
             if (this.tok == ◂eof): 
-                return this.error("Missing 'in' for 'for' loop (eof detected)!", token)
+                return this.error("'for' without 'in' or 'of' (eof detected)!", token)
             if (this.current.line != token.line): 
-                return this.error("Missing 'in' for 'for' loop (linebreak detected)!", token)
+                return this.error("'for' without 'in' or 'of' (linebreak detected)!", token)
             list_values.add(this.rSymbol())
             this.swallow(◂comma)
         (this.explicit -= 1)
@@ -605,11 +606,13 @@ proc rFor(this : Parser) : Node =
         if (this.tok == ◂paren_open): 
             for_value = this.rParenExpr()
         else: 
-            for_value = this.parseNamesUntil(◂in)
-        this.swallowError(◂in, "Expected 'in' after for value", token)
+            for_value = this.parseNamesUntil({◂in, ◂of})
+        if (this.tok notin {◂in, ◂of}): 
+            return this.error("Expected 'in' or 'of' after for value", token)
+        var for_inof = nod(●literal, this.consume())
         var for_range = this.expression()
         var for_body = this.thenBlock()
-        nod(●for, token, for_value, for_range, for_body)
+        Node(token: token, kind: ●for, for_value: for_value, for_inof: for_inof, for_range: for_range, for_body: for_body)
 
 proc rWhile(this : Parser) : Node = 
         nod(●while, this.consume(), this.expression(), this.thenBlock())
@@ -1241,6 +1244,7 @@ proc setup(this : Parser) =
         this.pratt(◂and, lOperation, nil, 31)
         this.pratt(◂is, lOperation, nil, 32)
         this.pratt(◂in, lOperation, nil, 33)
+        this.pratt(◂of, lOperation, nil, 33)
         this.pratt(◂notin, lOperation, nil, 34)
         this.pratt(◂equal, lOperation, nil, 40)
         this.pratt(◂not_equal, lOperation, nil, 40)

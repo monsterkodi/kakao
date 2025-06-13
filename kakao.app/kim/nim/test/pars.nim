@@ -337,6 +337,7 @@ else    # 5
         t("for key val in a", "▪[(◂for ◂[◂name, ◂name] in ◂name)]")
         t("for kind, key, val in a", "▪[(◂for ◂[◂name, ◂name, ◂name] in ◂name)]")
         t("for v in ...\n    x = v", "▪[(◂for ◂name in (NIL ... NIL) ▪[(◂name = ◂name)])]")
+        l("for key val of opt", "▪[(◂for ◂[◂name, ◂name] of ◂name)]")
     test "switch": 
         t("switch x\n  a ➜ 1\n  b c ➜ 2", "▪[(◂switch ◂name @[(@[◂name] ◂number), (@[◂name, ◂name] ◂number)])]")
         t("switch x\n  a ➜ 1\n  b c ➜ 2\n  ➜ 4", "▪[(◂switch ◂name @[(@[◂name] ◂number), (@[◂name, ◂name] ◂number)] ◂number)]")
@@ -374,8 +375,6 @@ switch z
         true
 1
 """, "▪[(◂switch ◂name @[(@[◂name] ▪[✔])])◂number]")
-    test "case": 
-        t("case x\n  of a\n    1\n  of b, c\n    2", "▪[(◂switch ◂name @[(@[◂name] ▪[◂number]), (@[◂name, ◂name] ▪[◂number])])]")
     test "tailIf": 
         t("1*2 if true", "▪[(◂if @[(✔ (◂number * ◂number))])]")
         t("1 if true", "▪[(◂if @[(✔ ◂number)])]")

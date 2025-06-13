@@ -487,8 +487,10 @@ class Rlua
         else
             @add " in "
             if n.for_range.kind == ●literal
-                log "IN " n.for_range.kind
-                @add "ipairs("
+                if n.for_inof.token.str == "of"
+                    @add "pairs("
+                else
+                    @add "ipairs("
                 @rnd n.for_range
                 @add ")"
             else

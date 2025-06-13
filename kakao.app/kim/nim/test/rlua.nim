@@ -253,10 +253,10 @@ end""")
         t("for key, val in pairs opt", "for key, val in pairs(opt) do end")
         t("for (key val) in pairs opt", "for key, val in pairs(opt) do end")
         t("for (key, val) in pairs opt", "for key, val in pairs(opt) do end")
-        # t "for key val of opt"                      "for key, val in pairs(opt) do end"  
-        # t "for key, val of opt"                     "for key, val in pairs(opt) do end"  
-        # t "for (key val) of opt"                    "for key, val in pairs(opt) do end"  
-        # t "for (key, val) of opt"                   "for key, val in pairs(opt) do end"  
+        t("for key val of opt", "for key, val in pairs(opt) do end")
+        t("for key, val of opt", "for key, val in pairs(opt) do end")
+        t("for (key val) of opt", "for key, val in pairs(opt) do end")
+        t("for (key, val) of opt", "for key, val in pairs(opt) do end")
         t("for i a in ipairs l", "for i, a in ipairs(l) do end")
         t("for a in l", "for _, a in ipairs(l) do end")
     test "dotdotdot": 

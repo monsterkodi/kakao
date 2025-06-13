@@ -19,6 +19,7 @@ enum tok*
     ◂while
     ◂for
     ◂in
+    ◂of
     ◂notin
     ◂is
     ◂break
@@ -128,7 +129,7 @@ const
     compareToks* = { ◂equal ◂not_equal ◂greater_equal ◂less_equal ◂greater ◂less }
     mathToks*    = { ◂plus ◂minus ◂divide ◂modulo ◂multiply ◂increment ◂decrement }
     boolToks*    = { ◂is ◂in ◂notin ◂not ◂and ◂or } 
-    noCallToks*  = { ◂then ◂else ◂elif ◂test 
+    noCallToks*  = { ◂then ◂else ◂elif ◂test ◂of
                      ◂val_type ◂var_type ◂colon ◂semicolon ◂indent ◂eof ◂ampersand ◂match ◂comment_start
                    } + assignToks + compareToks + mathToks + boolToks
     
@@ -576,9 +577,9 @@ class Tknzr
                                     @token.str = "switch"
                                     @push ◂switch
                                     continue
-                                "of"
-                                    @token.str = ""
-                                    continue
+                                    # "of"
+                                    #     @token.str = ""
+                                    #     continue
                                 "quote"
                                     if @scmp " do:"
                                         @incr 4

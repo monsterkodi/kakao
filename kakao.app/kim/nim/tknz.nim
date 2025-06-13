@@ -17,6 +17,7 @@ type tok* = enum
     ◂while
     ◂for
     ◂in
+    ◂of
     ◂notin
     ◂is
     ◂break
@@ -121,7 +122,7 @@ const
     compareToks* = {◂equal, ◂not_equal, ◂greater_equal, ◂less_equal, ◂greater, ◂less}
     mathToks* = {◂plus, ◂minus, ◂divide, ◂modulo, ◂multiply, ◂increment, ◂decrement}
     boolToks* = {◂is, ◂in, ◂notin, ◂not, ◂and, ◂or}
-    noCallToks* = (((({◂then, ◂else, ◂elif, ◂test, ◂val_type, ◂var_type, ◂colon, ◂semicolon, ◂indent, ◂eof, ◂ampersand, ◂match, ◂comment_start} + assignToks) + compareToks) + mathToks) + boolToks)
+    noCallToks* = (((({◂then, ◂else, ◂elif, ◂test, ◂of, ◂val_type, ◂var_type, ◂colon, ◂semicolon, ◂indent, ◂eof, ◂ampersand, ◂match, ◂comment_start} + assignToks) + compareToks) + mathToks) + boolToks)
     openToks* = {◂paren_open, ◂bracket_open, ◂square_open}
     closeToks* = {◂paren_close, ◂bracket_close, ◂square_close}
     closeOpen* = {◂paren_close: ◂paren_open, ◂bracket_close: ◂bracket_open, ◂square_close: ◂square_open}.toTable()
@@ -495,9 +496,9 @@ proc tknz(this : Tknzr, segs : seq[string], lang : string) : seq[Token] =
                                     this.token.str = "switch"
                                     this.push(◂switch)
                                     continue
-                                of "of": 
-                                    this.token.str = ""
-                                    continue
+                                    # "of"
+                                    #     @token.str = ""
+                                    #     continue
                                 of "quote": 
                                     if this.scmp(" do:"): 
                                         this.incr(4)

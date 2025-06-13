@@ -156,6 +156,7 @@ class Node*
         ●for
         
             for_value      : Node
+            for_inof       : Node
             for_range      : Node
             for_body       : Node
             
@@ -301,7 +302,7 @@ class Node*
                 s = "(#{@case_when} #{@case_then})"
             ●for
                 b = choose(@for_body, " #{@for_body}", "")
-                s = "(#{s} #{@for_value} in #{@for_range}#{b})"
+                s = "(#{s} #{@for_value} #{@for_inof.token.str} #{@for_range}#{b})"
             ●list
                 s = "#{@list_values}"
                 s = "◂" & s[1..^1]
@@ -372,7 +373,6 @@ class Node*
 
 nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
     
-    # log "#{kind} #{token}"
     var n = Node kind:kind token:token
     
     switch kind
@@ -449,7 +449,7 @@ nod* = ◇NodeKind kind ◇Token token ◇varargs[Node] args ➜ Node ->
 
 nod* = ◇NodeKind kind ◇Token token ◇seq[Node] args ➜ Node ->
 
-    n = Node() #kind:kind token:token
+    n = Node()
     
     n.kind  = kind
     n.token = token

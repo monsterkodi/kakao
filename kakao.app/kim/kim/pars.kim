@@ -472,17 +472,18 @@ class Parser
         @explicit -= 1
         list
     
-    parseNamesUntil: ◇tok stop ➜Node -> 
+    parseNamesUntil: ◇set[tok] stop ➜Node -> 
     
         token = @current
                                     
         list_values ◇ seq[Node]
         @explicit += 1
-        while @tok != stop
+        while @tok notin stop
+            log "TOK " @tok, " " @current.str
             if @tok == ◂eof
-                ⮐  @error "Missing 'in' for 'for' loop (eof detected)!" token
+                ⮐  @error "'for' without 'in' or 'of' (eof detected)!" token
             if @current.line != token.line
-                ⮐  @error "Missing 'in' for 'for' loop (linebreak detected)!" token
+                ⮐  @error "'for' without 'in' or 'of' (linebreak detected)!" token
             list_values.add @rSymbol()
             @swallow ◂comma
         @explicit -= 1
@@ -721,12 +722,14 @@ class Parser
         if @tok == ◂paren_open
             for_value = @rParenExpr()
         else
-            for_value = @parseNamesUntil ◂in
-        @swallowError ◂in "Expected 'in' after for value" token
+            for_value = @parseNamesUntil {◂in ◂of}
+        if @tok notin {◂in ◂of}
+            ⮐  @error "Expected 'in' or 'of' after for value" token
+        for_inof  = nod ●literal @consume()
         for_range = @expression()
         for_body  = @thenBlock()
     
-        nod ●for token for_value for_range for_body
+        Node token:token kind:●for for_value:for_value for_inof:for_inof for_range:for_range for_body:for_body
     
     rWhile: ➜Node ->
     
@@ -1514,6 +1517,7 @@ class Parser
         
         @pratt ◂is                lOperation        nil            32
         @pratt ◂in                lOperation        nil            33
+        @pratt ◂of                lOperation        nil            33
         @pratt ◂notin             lOperation        nil            34
             
         @pratt ◂equal             lOperation        nil            40
