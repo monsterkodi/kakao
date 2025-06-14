@@ -184,6 +184,7 @@ class kseg extends array
     @tailCountWord:  a -> kseg(a)∙tailCountWord()
         
     indent: -> @lcount " "
+    @indent: a -> kseg(a)∙indent()
     
     find: c ->
     

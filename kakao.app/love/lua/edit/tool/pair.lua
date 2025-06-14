@@ -120,7 +120,7 @@ function pair.static.positionsAndRangesOutsideStrings(lines, rngs, posl)
 function pair.static.rangesOfNestedPairsAtPositions(lines, posl) 
         local rngs = array()
         -- for pos in posl
-        --     for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+        --     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
         --         rngs∙push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
         return rngs
     end
@@ -133,7 +133,7 @@ function pair.static.spansOfNestedPairsAtPositions(lines, posl)
         
         -- for pos in posl
         --     
-        --     for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+        --     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
         --         open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.len]
         --         close = [pair.rng[1] pos[1] pair.rng[1]+pair.ende.len]
         --         spans∙push open
@@ -150,10 +150,10 @@ function pair.static.spansOfNestedPairsAtPositions(lines, posl)
     end
 
 
-function pair.static.rangesOfPairsSurroundingPositions(lines, pairs, posl) 
+function pair.static.rangesOfPairsSurroundingPositions(lines, pairl, posl) 
         local rngs = array()
         for _, pos in ipairs(posl) do 
-            for _, pair in ipairs(pairs) do 
+            for _, pair in ipairs(pairl) do 
                 if (kstr.endsWith(belt.chunkBeforePos(lines, pos), pair[1]) and kstr.startsWith(belt.chunkAfterPos(lines, pos), pair[2])) then 
                     rngs:push(array((pos[1] - #pair[1]), pos[2], (pos[1] + #pair[2]), pos[2]))
                 end
@@ -195,7 +195,7 @@ function pair.static.openCloseSpansForPositions(lines, posl)
         for _, pos in ipairs(posl) do 
             local sps = pair.openCloseSpansForPosition(lines, pos)
             if sps then 
-                spans = spans.concat(sps)
+                spans = spans + sps
             end
         end
         
@@ -204,6 +204,8 @@ function pair.static.openCloseSpansForPositions(lines, posl)
 
 
 function pair.static.openCloseSpansForPosition(lines, pos) 
+        -- log "openCloseSpansForPosition #{lines}[ ]\npos #{pos}"
+        
         local open = {
             ['['] = ']', 
             ['{'] = '}', 
@@ -221,13 +223,18 @@ function pair.static.openCloseSpansForPosition(lines, pos)
         
         local maxLookups = 1000 -- careful, increasing this drops performance significantly!
         local lastOpen = nil
+        local firstClose = nil
+        local closeEncounters = ''
+        local openEncounters = ''
+        
         local bp = array(pos[1], pos[2])
+        local stack = array()
         
         if not opns:has(lines[bp[2]][bp[1]]) then 
-            local closeEncounters = ''
-            local openEncounters = ''
+            closeEncounters = ''
+            openEncounters = ''
             
-            local stack = array()
+            stack = array()
             
             local cnt = 0
             while true do 
@@ -236,7 +243,7 @@ function pair.static.openCloseSpansForPosition(lines, pos)
                 if (bp[1] >= 1) then 
                     local prev = lines[bp[2]][bp[1]]
                     if opns:has(prev) then 
-                        if #stack then 
+                        if (#stack > 0) then 
                             if (open[prev] == stack[#stack]) then 
                                 openEncounters = openEncounters .. prev
                                 stack:pop()
@@ -271,22 +278,21 @@ function pair.static.openCloseSpansForPosition(lines, pos)
             lastOpen = lines[bp[2]][bp[1]]
         end
         
-        local stack = array()
+        stack = array()
         local ap = array(max((bp[1] + 1), pos[1]), pos[2])
         local cnt = 0
         
         while (ap[2] < #lines) do 
             local next = lines[ap[2]][ap[1]]
-            
             if clos:has(next) then 
-                if #stack then 
+                if (#stack > 0) then 
                     if (open[stack[#stack]] == next) then 
                         stack:pop()
                     else 
                         return -- stack mismatch
                     end
                 else 
-                    local firstClose = next
+                    firstClose = next
                     break
                 end
             elseif opns:has(next) then 
@@ -294,22 +300,25 @@ function pair.static.openCloseSpansForPosition(lines, pos)
             end
             
             ap[1] = ap[1] + 1
-            if (ap[1] >= #lines[ap[2]]) then 
+            if (ap[1] > #lines[ap[2]]) then 
                 ap[1] = 1
                 ap[2] = ap[2] + 1
             end
             
             cnt = cnt + 1
-            if (cnt > maxLookups) then break end
+            if (cnt > maxLookups) then 
+                break
+            end
         end
         
+        -- log "lastOpen #{lastOpen} firstClose #{firstClose}" 
         if (not lastOpen or not firstClose) then 
-            if (pos[2] >= #lines) then print("pos[2] too large") ; return end
+            if (pos[2] > #lines) then print("pos[2] too large") ; return end
             if empty(lines[pos[2]]) then return end
-            if ((pos[1] - 1) >= #lines[pos[2]]) then print("pos[1]-1 too large") ; return end
-            if (#lines[pos[2]] >= #revs) then print("lines[pos[2]] too large for revs") ; return end
-            if empty(revs[lines[pos[2]]]) then return end
-            if ((pos[1] - 1) >= #revs[lines[pos[2]]]) then print("pos[1]-1 too large for revs") ; return end
+            -- if pos[1]-1 > lines[pos[2]].len ➜ log "pos[1]-1 #{pos} too large #{lines[pos[2]].len}" ; ⮐  
+            -- if lines[pos[2]].len > opns.len ➜ log "lines[pos[2]] #{lines[pos[2]].len} too large for revs #{revs.len}" ; ⮐  
+            -- ⮐  if empty revs[lines[pos[2]]]
+            -- if pos[1]-1 >= revs[lines[pos[2]]].len ➜ log "pos[1]-1 too large for revs" ; ⮐  
             if (clos:has(lines[pos[2]][(pos[1] - 1)]) and (kstr.find(openEncounters, revs[lines[pos[2]][(pos[1] - 1)]]) >= 1)) then 
                 return pair.openCloseSpansForPosition(lines, array((pos[1] - 1), pos[2]))
             end
@@ -317,6 +326,7 @@ function pair.static.openCloseSpansForPosition(lines, pos)
             return
         end
         
+        -- log "lastOpen #{lastOpen} #{open[lastOpen]} firstClose #{firstClose}" 
         if (open[lastOpen] == firstClose) then 
             return array(array(bp[1], bp[2], (bp[1] + 1)), array(ap[1], ap[2], (ap[1] + 1)))
         end

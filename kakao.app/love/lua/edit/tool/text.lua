@@ -253,7 +253,7 @@ function text.static.isOnlyWhitespace(text)
 
 
 function text.static.numIndent(segs) 
-    return kseg.numIndent(segs)
+    return kseg.indent(segs)
     end
 
 
@@ -763,20 +763,25 @@ function text.static.rangeOfWhitespaceLeftToPos(lines, pos)
 function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos) 
         local x, y = unpack(pos)
         
+        write("rangeOfWordOrWhitespaceLeftToPos " .. tostring(lines) .. "\n" .. tostring(pos) .. "")
+        
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
         local segi = kseg.segiAtWidth(lines[y], x)
         local left = lines[y]:slice(1, segi)
         local tc = kseg.tailCount(left, ' ')
-        if tc then 
-            return array((segi - tc), y, segi, y)
+        if (tc > 0) then 
+            write("--- tc " .. tostring(tc) .. "", array(((segi - tc) + 1), y, segi, y))
+            return array(((segi - tc) + 1), y, segi, y)
         end
         
         tc = kseg.tailCountWord(left)
-        if tc then 
+        if (tc > 0) then 
+            write("+++ tc " .. tostring(tc) .. "", array((segi - tc), y, segi, y))
             return array((segi - tc), y, segi, y)
         end
         
+        write(">>>", array((segi - 1), y, segi, y))
         return array((segi - 1), y, segi, y)
     end
 

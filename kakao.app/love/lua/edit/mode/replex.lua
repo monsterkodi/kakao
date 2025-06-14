@@ -27,10 +27,12 @@ function replex:postInsert()
         local repls = array()
         
         for _, chunk in ipairs(chunks) do 
-            local ende = chunk:slice(-2, -1)
-            local repl = specs.replex[ende]
-            if repl then 
-                repls:push(repl)
+            if is(chunk, array) then 
+                local ende = chunk:slice(-2, -1)
+                local repl = specs.replex[ende]
+                if repl then 
+                    repls:push(repl)
+                end
             end
         end
         

@@ -47,7 +47,7 @@ class edit
                 log "x" x, kseg.width(line), line
                 
                 if x > kseg.width(line) and text != '\n'
-                    line += kstr.lpad(x-line.len).split('')
+                    line += kstr.split kstr.lpad(x-line.len) ''
                                         
                 if txtls.len > 1
                     

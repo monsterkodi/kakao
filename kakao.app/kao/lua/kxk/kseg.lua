@@ -299,6 +299,10 @@ function kseg:indent()
     return self:lcount(" ")
     end
 
+function kseg.static.indent(a) 
+    return kseg(a):indent()
+    end
+
 
 function kseg:find(c) 
         if (#self <= 0) then return -1 end

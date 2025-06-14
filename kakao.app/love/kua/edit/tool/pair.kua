@@ -96,7 +96,7 @@ class pair
         
         rngs = []
         # for pos in posl
-        #     for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+        #     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
         #         rngs∙push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
         rngs
 
@@ -108,7 +108,7 @@ class pair
         
         # for pos in posl
         #     
-        #     for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+        #     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
         #         open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.len]
         #         close = [pair.rng[1] pos[1] pair.rng[1]+pair.ende.len]
         #         spans∙push open
@@ -123,11 +123,11 @@ class pair
                 
         [spans brackets strings]
 
-    @rangesOfPairsSurroundingPositions: lines pairs posl ->
-        
+    @rangesOfPairsSurroundingPositions: lines pairl posl ->
+
         rngs = []
         for pos in posl
-            for pair in pairs
+            for pair in pairl
                 if kstr.endsWith(belt.chunkBeforePos(lines pos) pair[1]) and kstr.startsWith(belt.chunkAfterPos(lines pos) pair[2])
                     rngs∙push [pos[1] - pair[1].len pos[2] pos[1] + pair[2].len pos[2]]
         rngs
@@ -159,10 +159,12 @@ class pair
         for pos in posl
             sps = @openCloseSpansForPosition lines pos
             if sps
-                spans = spans.concat sps
+                spans += sps
         spans
         
     @openCloseSpansForPosition: lines pos ->
+    
+        # log "openCloseSpansForPosition #{lines}[ ]\npos #{pos}"
                 
         open = {
             '[': ']'
@@ -178,7 +180,12 @@ class pair
         
         maxLookups = 1000 # careful, increasing this drops performance significantly!
         lastOpen = nil
+        firstClose = nil
+        closeEncounters = ''
+        openEncounters = ''
+        
         bp = [pos[1] pos[2]]
+        stack = []
         
         if not opns∙has lines[bp[2]][bp[1]]
         
@@ -194,7 +201,7 @@ class pair
                 if bp[1] >= 1
                     prev = lines[bp[2]][bp[1]]
                     if opns∙has prev
-                        if stack.len
+                        if stack.len > 0
                             if open[prev] == stack[^1]
                                 openEncounters &= prev
                                 stack∙pop()
@@ -227,9 +234,8 @@ class pair
         while ap[2] < lines.len
             
             next = lines[ap[2]][ap[1]]
-            
             if clos∙has next
-                if stack.len
+                if stack.len > 0
                     if open[stack[^1]] == next
                         stack∙pop()
                     else
@@ -241,23 +247,26 @@ class pair
                 stack∙push next
 
             ap[1] += 1
-            if ap[1] >= lines[ap[2]].len
+            if ap[1] > lines[ap[2]].len
                 ap[1] = 1
                 ap[2] += 1
             cnt += 1
-            break if cnt > maxLookups
+            if cnt > maxLookups
+                break 
 
+        # log "lastOpen #{lastOpen} firstClose #{firstClose}" 
         if not lastOpen or not firstClose
-            if pos[2] >= lines.len ➜ log "pos[2] too large" ; ⮐  
+            if pos[2] > lines.len ➜ log "pos[2] too large" ; ⮐  
             ⮐  if empty lines[pos[2]]
-            if pos[1]-1 >= lines[pos[2]].len ➜ log "pos[1]-1 too large" ; ⮐  
-            if lines[pos[2]].len >= revs.len ➜ log "lines[pos[2]] too large for revs" ; ⮐  
-            ⮐  if empty revs[lines[pos[2]]]
-            if pos[1]-1 >= revs[lines[pos[2]]].len ➜ log "pos[1]-1 too large for revs" ; ⮐  
+            # if pos[1]-1 > lines[pos[2]].len ➜ log "pos[1]-1 #{pos} too large #{lines[pos[2]].len}" ; ⮐  
+            # if lines[pos[2]].len > opns.len ➜ log "lines[pos[2]] #{lines[pos[2]].len} too large for revs #{revs.len}" ; ⮐  
+            # ⮐  if empty revs[lines[pos[2]]]
+            # if pos[1]-1 >= revs[lines[pos[2]]].len ➜ log "pos[1]-1 too large for revs" ; ⮐  
             if clos∙has(lines[pos[2]][pos[1]-1]) and kstr.find(openEncounters revs[lines[pos[2]][pos[1]-1]]) >= 1
                 ⮐  @openCloseSpansForPosition lines [pos[1]-1 pos[2]]
             ⮐
         
+        # log "lastOpen #{lastOpen} #{open[lastOpen]} firstClose #{firstClose}" 
         if open[lastOpen] == firstClose
             ⮐  [[bp[1] bp[2] bp[1]+1] [ap[1] ap[2] ap[1]+1]]
         ⮐      

@@ -52,7 +52,7 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                 print("x", x, kseg.width(line), line)
                 
                 if ((x > kseg.width(line)) and (text ~= '\n')) then 
-                    line = line + (kstr.lpad((x - #line)).split(''))
+                    line = line + (kstr.split(kstr.lpad((x - #line)), ''))
                 end
                 
                 if (#txtls > 1) then 

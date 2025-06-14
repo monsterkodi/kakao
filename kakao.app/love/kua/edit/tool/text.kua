@@ -195,7 +195,7 @@ class text
     # 000  000  0000  000   000  000       000  0000     000     
     # 000  000   000  0000000    00000000  000   000     000     
     
-    @numIndent: segs -> kseg.numIndent segs
+    @numIndent: segs -> kseg.indent segs
         
     @splitLineIndent: str -> kseg.splitAtIndent str
     
@@ -575,17 +575,22 @@ class text
         
         (x y) = unpack pos
         
+        write "rangeOfWordOrWhitespaceLeftToPos #{lines}\n#{pos}" 
+        
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
         segi = kseg.segiAtWidth lines[y] x
         left = lines[y]∙slice(1 segi)
         tc = kseg.tailCount left ' '
-        if tc
-            ⮐  [segi-tc y segi y]
+        if tc > 0
+            write "--- tc #{tc}" [segi-tc+1 y segi y]
+            ⮐  [segi-tc+1 y segi y]
         tc = kseg.tailCountWord left    
-        if tc
+        if tc > 0
+            write "+++ tc #{tc}" [segi-tc y segi y]
             ⮐  [segi-tc y segi y]
         
+        write ">>>" [segi-1 y segi y]
         [segi-1 y segi y]
 
     @rangeOfWordOrWhitespaceRightToPos: lines pos ->

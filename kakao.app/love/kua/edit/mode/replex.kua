@@ -24,11 +24,12 @@ class replex
         chunks = @state∙chunksBeforeCursors()
         repls  = []
         
-        for _ chunk in ipairs chunks
-            ende = chunk∙slice -2 -1
-            repl = specs.replex[ende]
-            if repl
-                repls∙push repl
+        for chunk in chunks
+            if chunk is array
+                ende = chunk∙slice -2 -1
+                repl = specs.replex[ende]
+                if repl
+                    repls∙push repl
                 
         if repls.len == @state.s.cursors.len
             @state∙delete 'back'

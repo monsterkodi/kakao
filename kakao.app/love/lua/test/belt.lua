@@ -227,7 +227,7 @@ XYZ
         
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [2 2] ▸ [1 2 2 2]
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 2)), array(1, 2, 2, 2))
         --belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
         --        
         --segls = kseg.segls '  🧑🌾  ab🌾cde'
@@ -547,17 +547,14 @@ def
 01234567
 
 '45""6'
-'a#\{\}c'
+'a#]] .. [[{}c'
 [{([])}]
 ]])
         
         local pairs = array(array("'", "'"), array('"', '"'), array('#{', '}'), array('[', ']'), array('(', ')'))
         local posl = array(array(5, 1), array(5, 2), array(5, 3), array(5, 4), array(5, 5))
         
-        --belt.rangesOfPairsSurroundingPositions lines pairs posl ▸ [
-        --    [4 3 6 3] 
-        --    [3 4 6 4] 
-        --    [4 5 6 5]]
+        test.cmp(belt.rangesOfPairsSurroundingPositions(lines, pairs, posl), array(array(4, 3, 6, 3), array(3, 4, 6, 4), array(4, 5, 6, 5)))
     end)
     
     -- ███   ███  ████████   ███████  █████████  ████████  ███████       ████████    ███████   ███  ████████    ███████
@@ -571,7 +568,7 @@ def
 01234567
 
 '45""6'
-'a#\{\}c'
+'ab#\{\}c'
 [{([])}]
 ]])
         
@@ -624,39 +621,41 @@ def
 'a{}c'
 ]])
         
-        -- belt.openCloseSpansForPositions segls [[1 1]] ▸ [[1 1 2] [8 1 9]]
-        -- belt.openCloseSpansForPositions segls [[2 1]] ▸ [[2 1 3] [7 1 8]]
-        -- belt.openCloseSpansForPositions segls [[3 1]] ▸ [[3 1 4] [6 1 7]]
-        -- belt.openCloseSpansForPositions segls [[4 1]] ▸ [[4 1 5] [5 1 6]]
-        -- belt.openCloseSpansForPositions segls [[5 1]] ▸ [[4 1 5] [5 1 6]]
-        -- belt.openCloseSpansForPositions segls [[6 1]] ▸ [[3 1 4] [6 1 7]]
-        -- belt.openCloseSpansForPositions segls [[7 1]] ▸ [[2 1 3] [7 1 8]]
-        -- belt.openCloseSpansForPositions segls [[8 1]] ▸ [[1 1 2] [8 1 9]]
-        test.cmp(belt.openCloseSpansForPositions(segls, array(array(9, 1))), array())
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(1, 1))), array(array(1, 1, 2), array(8, 1, 9)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(2, 1))), array(array(2, 1, 3), array(7, 1, 8)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(3, 1))), array(array(3, 1, 4), array(6, 1, 7)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(4, 1))), array(array(4, 1, 5), array(5, 1, 6)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(5, 1))), array(array(4, 1, 5), array(5, 1, 6)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(6, 1))), array(array(3, 1, 4), array(6, 1, 7)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(7, 1))), array(array(2, 1, 3), array(7, 1, 8)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(8, 1))), array(array(1, 1, 2), array(8, 1, 9)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(9, 1))), array(array(1, 1, 2), array(8, 1, 9)))
+        
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(11, 1))), array())
         test.cmp(belt.openCloseSpansForPositions(segls, array(array(1, 2))), array())
         test.cmp(belt.openCloseSpansForPositions(segls, array(array(7, 2))), array())
         
-        -- belt.stringDelimiterSpansForPositions segls [[1 2]] ▸ [[1 2 2] [7 2 8]]
-        -- belt.stringDelimiterSpansForPositions segls [[7 2]] ▸ [[1 2 2] [7 2 8]]
+        test.cmp(belt.stringDelimiterSpansForPositions(segls, array(array(1, 2))), array(array(1, 2, 2), array(7, 2, 8)))
+        test.cmp(belt.stringDelimiterSpansForPositions(segls, array(array(7, 2))), array(array(1, 2, 2), array(7, 2, 8)))
         
-        -- belt.normalizeSpans belt.openCloseSpansForPositions(segls [[3 3]]) ▸ [[3 3 4] [4 3 5]]
-        -- belt.normalizeSpans belt.openCloseSpansForPositions(segls [[4 3]]) ▸ [[3 3 4] [4 3 5]]
-        test.cmp(belt.normalizeSpans(belt.openCloseSpansForPositions(segls, array(array(5, 3)))), array())
+        test.cmp(belt.normalizeSpans(belt.openCloseSpansForPositions(segls, array(array(3, 3)))), array(array(3, 3, 4), array(4, 3, 5)))
+        test.cmp(belt.normalizeSpans(belt.openCloseSpansForPositions(segls, array(array(4, 3)))), array(array(3, 3, 4), array(4, 3, 5)))
+        test.cmp(belt.normalizeSpans(belt.openCloseSpansForPositions(segls, array(array(6, 3)))), array())
         
-        -- belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[3 3]]) ▸ [[1 3 2] [6 3 7]]
-        -- belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[4 3]]) ▸ [[1 3 2] [6 3 7]]
-        -- belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[5 3]]) ▸ [[1 3 2] [6 3 7]]
+        test.cmp(belt.normalizeSpans(belt.stringDelimiterSpansForPositions(segls, array(array(3, 3)))), array(array(1, 3, 2), array(6, 3, 7)))
+        test.cmp(belt.normalizeSpans(belt.stringDelimiterSpansForPositions(segls, array(array(4, 3)))), array(array(1, 3, 2), array(6, 3, 7)))
+        test.cmp(belt.normalizeSpans(belt.stringDelimiterSpansForPositions(segls, array(array(5, 3)))), array(array(1, 3, 2), array(6, 3, 7)))
         
         segls = kseg.segls("\nnext = lines[ap[1]][ap[0]]\n")
-        
-        -- belt.openCloseSpansForPositions segls [[26 1]] ▸ [[20 1 21] [26 1 27]]
-        test.cmp(belt.openCloseSpansForPositions(segls, array(array(27, 1))), array())
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(26, 2))), array(array(20, 2, 21), array(26, 2, 27)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(27, 2))), array(array(20, 2, 21), array(26, 2, 27)))
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(28, 2))), array())
         
         segls = kseg.segls([[
 s[2]
 ]])
         
-        test.cmp(belt.openCloseSpansForPositions(segls, array(array(5, 1))), array())
+        test.cmp(belt.openCloseSpansForPositions(segls, array(array(6, 1))), array())
     end)
     
     -- ████████    ███████    ███████         ███████   ███████   ███       ███████
