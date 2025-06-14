@@ -11,6 +11,18 @@ function util.static.sessionId()
     end
 
 
+function util.static.uniq(arr) 
+        local result = array()
+        for _, item in ipairs(arr) do 
+            if not result:has(item) then 
+                result:push(item)
+            end
+        end
+        
+        return result
+    end
+
+
 function util.static.randRange(f, t) 
         return (f + (math.random() * (t - f)))
     end

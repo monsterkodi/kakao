@@ -173,6 +173,7 @@ test("kseg", function()
         test.cmp(kseg.headCount("◂◂○○●", "◂"), 2)
         
         test.cmp(kseg.tailCountWord(kseg("1  2 33")), 2)
+        test.cmp(kseg.tailCountWord(kseg("x233 ")), 0)
         
         test.cmp(kseg.headCountWord(kseg("1  2 33")), 1)
         test.cmp(kseg.headCountWord(kseg("  2 33")), 0)
@@ -183,6 +184,18 @@ test("kseg", function()
         test.cmp(kseg.tailCount(" ", ""), 0)
         test.cmp(kseg.tailCount(" ", " "), 1)
         test.cmp(kseg.tailCount("  ", " "), 2)
+        
+        test.cmp(kseg.tailCountChunk(kseg("a bc")), 2)
+        test.cmp(kseg.tailCountChunk(kseg("a b c")), 1)
+        test.cmp(kseg.tailCountChunk(kseg("a b c  ")), 0)
+        test.cmp(kseg.tailCountChunk(kseg("abc  ")), 0)
+        test.cmp(kseg.tailCountChunk(kseg("  ")), 0)
+        
+        test.cmp(kseg.headCountChunk(kseg("a bc")), 1)
+        test.cmp(kseg.headCountChunk(kseg("ab c")), 2)
+        test.cmp(kseg.headCountChunk(kseg(" a b c  ")), 0)
+        test.cmp(kseg.headCountChunk(kseg("abc  ")), 3)
+        test.cmp(kseg.headCountChunk(kseg("  ")), 0)
     end)
     
     test("spanForClosestWordAtColumn", function()

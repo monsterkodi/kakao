@@ -11,6 +11,7 @@ use edit.tool.cell
 use edit.tool.edit
 use edit.tool.misc
 use edit.tool.text
+use edit.tool.pair
 
 class belt
 
@@ -36,7 +37,7 @@ class belt
     
     @samePos: a b -> a[1] == b[1] and a[2] == b[2]
     
-    @normalizePositions: posl maxY ->
+    @normalizePositions: posl maxY=Infinity ->
         
         ⮐  [] if empty(posl)
         posl = posl∙map((a) -> [max(1 a[1]) clamp(1 maxY a[2])])
@@ -66,10 +67,11 @@ class belt
         
     @lineIndicesForPositions: posl ->
         
-        set = new Set()
+        set = []
         for pos in posl
-            set.add pos[1]
-        Array.from set
+            if not set∙has pos[2]
+                set∙push pos[2]
+        set
         
     @positionInDirection: pos dir ->
         
@@ -129,16 +131,16 @@ class belt
     
         map = {}
         for p in posl
-            map[p[0]] ?= []
-            map[p[0]]∙push p
+            map[p[1]] ?= []
+            map[p[1]]∙push p
         map
         
     @neighborPositionGroups: posl ->
         
         groups = []
         for p in posl
-            if groups[-1] and groups[-1][-1][1] == p[1]-1
-               groups[-1]∙push p
+            if groups[^1] and groups[^1][^1][2] == p[2]-1
+                groups[^1]∙push p
             else
                 groups∙push [p]
         groups
@@ -236,9 +238,11 @@ class belt
         
         ⮐  if empty spans
         
-        pos = [1 1] if @isPosAfterSpan pos spans[^1]
+        if @isPosAfterSpan pos spans[^1]
+            pos = [1 1] 
         
-        ⮐  spans[1] if @isPosBeforeSpan pos spans[1]
+        if @isPosBeforeSpan pos spans[1]
+            ⮐  spans[1] 
             
         for index span in spans
             if @isPosAfterSpan pos span
@@ -263,6 +267,7 @@ class belt
         spans = spans∙map((a) -> if a[1] > a[3] ➜ [a[3] a[2] a[1]] ➜ a)
         spans∙sort((a b) -> if a[2] == b[2] ➜ a[1] < b[1] else a[2] < b[2])
         spans = spans∙filter((a) -> a[1] != a[3])
+        spans
         
     # 00000000    0000000   000   000   0000000   00000000   0000000  
     # 000   000  000   000  0000  000  000        000       000       
@@ -348,13 +353,13 @@ class belt
 
     @lineIndicesForRangesAndPositions: rngs posl ->
 
-        indices = kxk.util.uniq @lineIndicesForRanges(rngs) + @lineIndicesForPositions(posl)
+        indices = util.uniq @lineIndicesForRanges(rngs) + @lineIndicesForPositions(posl)
         indices∙sort()
         indices
         
     @lineIndicesForSpans: spans ->
         
-        kxk.util.uniq(spans∙map((s) -> ⮐  s[1]))
+        util.uniq(spans∙map((s) -> ⮐  s[1]))
         
     @frontmostSpans: spans ->
         
@@ -398,13 +403,12 @@ class belt
         ⮐  blocks if empty indices
         
         block = [0 indices[0] -1 -1]
-        for index ii in ipairs indices
+        for index ii in indices
             block[3] = index
             if indices[ii+1] != index+1
                 block[2] = lines[index].len 
                 blocks∙push block
                 block = [0 indices[ii+1] -1 -1]
-            
         blocks
                 
     # 00     00  00000000  00000000    0000000   00000000  
@@ -432,7 +436,7 @@ class belt
 
 # merge methods of sibling modules into tool/belt 
         
-for _ mod in ipairs [text cell edit misc]
+for _ mod in ipairs [text cell edit misc pair]
     belt∙include mod
 
 ⮐  belt

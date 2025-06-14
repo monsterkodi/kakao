@@ -6,9 +6,8 @@
  0000000   0000000   0000000   0000000   000   000  
 ###
 
-# use ../../kxk    ▪ kseg
-# use ../theme     ◆ color
-# use ../edit/tool ◆ belt
+use kxk.kxk
+use theme.color
 
 ▸ color
 
@@ -18,13 +17,13 @@
     # 000   000  000        000 000   
     # 000   000  00000000  000   000  
     
-    ▸ hex
+    # ▸ hex
     
-        color.hex [0 0 0]     ▸ '#000000'
-        color.hex [0 255 0]   ▸ '#00ff00'
-        color.hex [255 255 0] ▸ '#ffff00'
+        # color.hex [0 0 0]     ▸ '#000000'
+        # color.hex [0 255 0]   ▸ '#00ff00'
+        # color.hex [255 255 0] ▸ '#ffff00'
         
-        color.hex '#ffff00'   ▸ '#ffff00'
+        # color.hex '#ffff00'   ▸ '#ffff00'
         
     # 0000000     0000000   00000000   000   000  00000000  000   000  
     # 000   000  000   000  000   000  000  000   000       0000  000  
@@ -52,22 +51,22 @@
     # 000       000   000  000      000   000  000   000           000  000       000   000  000           000  
     #  0000000   0000000   0000000   0000000   000   000      0000000   00000000   0000000   0000000  0000000   
     
-    ▸ colorSeglsForText
+    #▸ colorSeglsForText
     
-        belt.colorSeglsForText "hello\nworld" ▸ [[] kseg.segls("hello\nworld")]
-        belt.colorSeglsForText r5("red") ▸ [[[x:0 fg:[255 0 0] w:3]] kseg.segls("red")]
-        belt.colorSeglsForText r5("red") + g5("green") ▸ [[[{x:0 fg:[255 0 0] w:3} {x:3 fg:[0 255 0] w:5}]] kseg.segls("redgreen")]
-        belt.colorSeglsForText G5(r5("redOnGreen")) ▸ [[[{x:0 bg:[0 255 0] w:10}{x:0 fg:[255 0 0] w:10}]] kseg.segls("redOnGreen")]
+        #belt.colorSeglsForText "hello\nworld" ▸ [[] kseg.segls("hello\nworld")]
+        # belt.colorSeglsForText r5("red") ▸ [[[x:0 fg:[255 0 0] w:3]] kseg.segls("red")]
+        # belt.colorSeglsForText r5("red") + g5("green") ▸ [[[{x:0 fg:[255 0 0] w:3} {x:3 fg:[0 255 0] w:5}]] kseg.segls("redgreen")]
+        # belt.colorSeglsForText G5(r5("redOnGreen")) ▸ [[[{x:0 bg:[0 255 0] w:10}{x:0 fg:[255 0 0] w:10}]] kseg.segls("redOnGreen")]
 
-        belt.colorSeglsForText color.bg_rgb([12 123 234])+("bgrgb") ▸ [[[{x:0 bg:[12 123 234]}]] kseg.segls("bgrgb")]
-        belt.colorSeglsForText color.fg_rgb([12 123 234])+("fgrgb") ▸ [[[{x:0 fg:[12 123 234]}]] kseg.segls("fgrgb")]
-        belt.colorSeglsForText color.bg_rgb([12 123 234])+color.fg_rgb([12 123 234])+("rgb") ▸ [[[{x:0 bg:[12 123 234]} {x:0 fg:[12 123 234]}]] kseg.segls("rgb")]
-
-        belt.colorSeglsForText "▸ #{color.fg_rgb([255 255 00])}#{color.fg_rgb()} ms" ▸ [[[{x:2 fg:[255 255 0] w:1}]] kseg.segls("▸  ms")]
+        #belt.colorSeglsForText color.bg_rgb([12 123 234])+("bgrgb") ▸ [[[{x:0 bg:[12 123 234]}]] kseg.segls("bgrgb")]
+        #belt.colorSeglsForText color.fg_rgb([12 123 234])+("fgrgb") ▸ [[[{x:0 fg:[12 123 234]}]] kseg.segls("fgrgb")]
+        #belt.colorSeglsForText color.bg_rgb([12 123 234])+color.fg_rgb([12 123 234])+("rgb") ▸ [[[{x:0 bg:[12 123 234]} {x:0 fg:[12 123 234]}]] kseg.segls("rgb")]
+        #
+        #belt.colorSeglsForText "▸ #{color.fg_rgb([255 255 00])}#{color.fg_rgb()} ms" ▸ [[[{x:2 fg:[255 255 0] w:1}]] kseg.segls("▸  ms")]
         
-    ▸ adjustForBackground
+    # ▸ adjustForBackground
     
-        color.adjustForBackground [255 255 0] [0 0 0]         ▸ [255 255 0]
-        color.adjustForBackground [255 255 0] [200 200 0]     ▸ [76 77 0]
-        color.adjustForBackground [255 255 255] [170 170 170] ▸ [51 51 51]
+        # color.adjustForBackground [255 255 0] [0 0 0]         ▸ [255 255 0]
+        # color.adjustForBackground [255 255 0] [200 200 0]     ▸ [76 77 0]
+        # color.adjustForBackground [255 255 255] [170 170 170] ▸ [51 51 51]
         

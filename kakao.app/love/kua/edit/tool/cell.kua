@@ -129,10 +129,10 @@ class cell
         
         (x1 y1 x2 y2) = unpack @clampCellRect(cells x1 y1 x2 y2)
         
-        res = {}
+        res = []
         for y in y1..y2
             for x in x1..x2
-                res[res.len+1] = {pos:{x y} cell:cells[y][x]}
+                res∙push {pos:{x y} cell:cells[y][x]}
         res
         
     # 000   000  00000000  000   0000000   000   000  0000000     0000000   00000000    0000000  

@@ -121,16 +121,16 @@ class edit
     @deleteLineRangesAndAdjustPositions: lines rngs posl ->
         
         lines = lines∙map((l) -> l)
-        posl  = clone posl
+        # posl  = clone posl
         
         ⮐  (lines posl) if empty rngs
         
-        for ri in rngs.len-1..0
+        for ri in rngs.len..1
         
             rng = rngs[ri]
             
-            if rng[1] >= lines.len or rng[3] >= lines.len
-                error "range out of bounds?" rng
+            if rng[2] > lines.len or rng[4] > lines.len
+                log "range out of bounds?" rng
                 ⮐  (lines posl)
             
             posl = belt.adjustPositionsForDeletedLineRange posl lines rng
@@ -167,19 +167,19 @@ class edit
         
         ⮐  posl if empty posl
         
-        for pi in posl.len-1..0
+        for pi in posl.len..1
             pos = posl[pi]
             
             if belt.isPosTouchingRange pos rng
-                pos[0] = rng[0] 
-                pos[1] = rng[1]
+                pos[1] = rng[1] 
+                pos[2] = rng[2]
             elif belt.isPosAfterRange pos rng
-                if pos[1] == rng[3]
-                    pos[0] -= rng[2] - rng[0]
-                    if rng[1] < rng[3]
-                        pos[1] -= rng[3] - rng[1]
+                if pos[2] == rng[4]
+                    pos[1] -= rng[3] - rng[1]
+                    if rng[2] < rng[4]
+                        pos[2] -= rng[4] - rng[2]
                 else
-                    pos[1] -= belt.numFullLinesInRange(lines rng)
+                    pos[2] -= belt.numFullLinesInRange(lines rng)
             else
                 break
                     

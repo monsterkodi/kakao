@@ -140,15 +140,15 @@ function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl)
         lines = lines:map(function (l) 
     return l
 end)
-        posl = clone(posl)
+        -- posl  = clone posl
         
         if empty(rngs) then return lines, posl end
         
-        for ri in iter((#rngs - 1), 0) do 
+        for ri in iter(#rngs, 1) do 
             local rng = rngs[ri]
             
-            if ((rng[1] >= #lines) or (rng[3] >= #lines)) then 
-                error("range out of bounds?", rng)
+            if ((rng[2] > #lines) or (rng[4] > #lines)) then 
+                print("range out of bounds?", rng)
                 return lines, posl
             end
             
@@ -191,20 +191,20 @@ end)
 function edit.static.adjustPositionsForDeletedLineRange(posl, lines, rng) 
         if empty(posl) then return posl end
         
-        for pi in iter((#posl - 1), 0) do 
+        for pi in iter(#posl, 1) do 
             local pos = posl[pi]
             
             if belt.isPosTouchingRange(pos, rng) then 
-                pos[0] = rng[0]
                 pos[1] = rng[1]
+                pos[2] = rng[2]
             elseif belt.isPosAfterRange(pos, rng) then 
-                if (pos[1] == rng[3]) then 
-                    pos[0] = pos[0] - ((rng[2] - rng[0]))
-                    if (rng[1] < rng[3]) then 
-                        pos[1] = pos[1] - ((rng[3] - rng[1]))
+                if (pos[2] == rng[4]) then 
+                    pos[1] = pos[1] - ((rng[3] - rng[1]))
+                    if (rng[2] < rng[4]) then 
+                        pos[2] = pos[2] - ((rng[4] - rng[2]))
                     end
                 else 
-                    pos[1] = pos[1] - (belt.numFullLinesInRange(lines, rng))
+                    pos[2] = pos[2] - (belt.numFullLinesInRange(lines, rng))
                 end
             else 
                 break

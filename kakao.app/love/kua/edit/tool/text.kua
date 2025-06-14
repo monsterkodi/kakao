@@ -228,11 +228,11 @@ class text
     
     @seglRangeAtPos: segls pos ->
 
-        [0 pos[1] segls[pos[1]].len pos[1]]
+        [1 pos[2] segls[pos[2]].len pos[2]]
         
     @lineRangeAtPos: lines pos ->
 
-        [0 pos[1] kseg.width(lines[pos[1]]) pos[1]]
+        [1 pos[2] kseg.width(lines[pos[2]]) pos[2]]
 
     @lineRangesForPositions: lines posl append->
         
@@ -462,8 +462,8 @@ class text
     @splitLineRanges: lines rngs includeEmpty=true ->
 
         split = []        
-        for _ rng in ipairs rngs
-            split = split.concat belt.splitLineRange(lines rng includeEmpty)
+        for rng in rngs
+            split += belt.splitLineRange(lines rng includeEmpty)
         split
         
     @isLinesPosInside:  lines pos -> pos[2] < lines.len and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
@@ -530,15 +530,15 @@ class text
         
     @chunkBeforePos: lines pos ->
         
-        before = lines[pos[1]]∙slice(1 pos[0])
+        before = lines[pos[2]]∙slice(1 pos[1]-1)
         tcc = kseg.tailCountChunk before
         if tcc
-            ⮐  kseg.str before[before.len-tcc..before.len]
+            ⮐  kseg.str before∙slice(before.len-tcc)
         ''    
         
     @chunkAfterPos: lines pos ->
         
-        after = lines[pos[1]]∙slice(pos[0])
+        after = lines[pos[2]]∙slice(pos[1])
         hcc = kseg.headCountChunk after
         if hcc
             ⮐  kseg.str after∙slice(1 hcc)

@@ -11,6 +11,7 @@ cell = require "edit.tool.cell"
 edit = require "edit.tool.edit"
 misc = require "edit.tool.misc"
 text = require "edit.tool.text"
+pair = require "edit.tool.pair"
 
 
 local belt = class("belt")
@@ -51,6 +52,8 @@ function belt.static.samePos(a, b)
 
 
 function belt.static.normalizePositions(posl, maxY) 
+        maxY = maxY or Infinity
+        
         if empty(posl) then return array() end
         posl = posl:map(function (a) 
     return array(max(1, a[1]), clamp(1, maxY, a[2]))
@@ -93,12 +96,14 @@ function belt.static.indexOfPosInPositions(pos, posl)
 
 
 function belt.static.lineIndicesForPositions(posl) 
-        local set = new(Set())
+        local set = array()
         for _, pos in ipairs(posl) do 
-            set.add(pos[1])
+            if not set:has(pos[2]) then 
+                set:push(pos[2])
+            end
         end
         
-        return Array.from(set)
+        return set
     end
 
 
@@ -180,8 +185,8 @@ function belt.static.deltaOfPosToRect(p, r)
 function belt.static.columnPositionsMap(posl) 
         local map = {}
         for _, p in ipairs(posl) do 
-            map[p[0]] = map[p[0]] or (array())
-            map[p[0]]:push(p)
+            map[p[1]] = map[p[1]] or (array())
+            map[p[1]]:push(p)
         end
         
         return map
@@ -191,8 +196,8 @@ function belt.static.columnPositionsMap(posl)
 function belt.static.neighborPositionGroups(posl) 
         local groups = array()
         for _, p in ipairs(posl) do 
-            if (groups[-1] and (groups[-1][-1][1] == (p[1] - 1))) then 
-               groups[-1]:push(p)
+            if (groups[#groups] and (groups[#groups][#groups[#groups]][2] == (p[2] - 1))) then 
+                groups[#groups]:push(p)
             else 
                 groups:push(array(p))
             end
@@ -370,13 +375,13 @@ function belt.static.endOfSpan(s)
 function belt.static.nextSpanAfterPos(spans, pos) 
         if empty(spans) then return end
         
-        pos = (function () 
-    if belt.isPosAfterSpan(pos, spans[#spans]) then 
-    return array(1, 1)
-                    end
-end)()
+        if belt.isPosAfterSpan(pos, spans[#spans]) then 
+            pos = array(1, 1)
+        end
         
-        if belt.isPosBeforeSpan(pos, spans[1]) then return spans[1] end
+        if belt.isPosBeforeSpan(pos, spans[1]) then 
+            return spans[1]
+        end
         
         for index, span in ipairs(spans) do 
             if belt.isPosAfterSpan(pos, span) then 
@@ -564,14 +569,14 @@ function belt.static.lineIndicesForRangesOrPositions(rngs, posl)
 
 
 function belt.static.lineIndicesForRangesAndPositions(rngs, posl) 
-        local indices = kxk.util.uniq((belt.lineIndicesForRanges(rngs) + belt.lineIndicesForPositions(posl)))
+        local indices = util.uniq((belt.lineIndicesForRanges(rngs) + belt.lineIndicesForPositions(posl)))
         indices:sort()
         return indices
     end
 
 
 function belt.static.lineIndicesForSpans(spans) 
-        return kxk.util.uniq(spans:map(function (s) return s[1] end))
+        return util.uniq(spans:map(function (s) return s[1] end))
     end
 
 
@@ -667,7 +672,7 @@ function belt.static.mergeLineRanges(lines, rngs)
 
 -- merge methods of sibling modules into tool/belt 
 
-for _, mod in ipairs(array(text, cell, edit, misc)) do 
+for _, mod in ipairs(array(text, cell, edit, misc, pair)) do 
     belt:include(mod)
 end
 

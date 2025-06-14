@@ -157,10 +157,10 @@ function cell.static.cellsWithChar(cells, char)
 function cell.static.cellsInRect(cells, x1, y1, x2, y2) 
         local x1, y1, x2, y2 = unpack(cell.clampCellRect(cells, x1, y1, x2, y2))
         
-        local res = {}
+        local res = array()
         for y in iter(y1, y2) do 
             for x in iter(x1, x2) do 
-                res[(#res + 1)] = {pos = {x, y}, cell = cells[y][x]}
+                res:push({pos = {x, y}, cell = cells[y][x]})
             end
         end
         

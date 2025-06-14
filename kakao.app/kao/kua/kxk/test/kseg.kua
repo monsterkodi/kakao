@@ -176,6 +176,7 @@ use kxk/strg
         kseg.headCount "◂◂○○●" "◂" ▸ 2
         
         kseg.tailCountWord kseg("1  2 33") ▸ 2
+        kseg.tailCountWord kseg("x233 ")   ▸ 0
         
         kseg.headCountWord kseg("1  2 33") ▸ 1
         kseg.headCountWord kseg("  2 33")  ▸ 0
@@ -186,6 +187,18 @@ use kxk/strg
         kseg.tailCount " " ""   ▸ 0
         kseg.tailCount " " " "  ▸ 1
         kseg.tailCount "  " " " ▸ 2
+        
+        kseg.tailCountChunk kseg("a bc") ▸ 2
+        kseg.tailCountChunk kseg("a b c") ▸ 1
+        kseg.tailCountChunk kseg("a b c  ") ▸ 0
+        kseg.tailCountChunk kseg("abc  ") ▸ 0
+        kseg.tailCountChunk kseg("  ") ▸ 0
+
+        kseg.headCountChunk kseg("a bc") ▸ 1
+        kseg.headCountChunk kseg("ab c") ▸ 2
+        kseg.headCountChunk kseg(" a b c  ") ▸ 0
+        kseg.headCountChunk kseg("abc  ") ▸ 3
+        kseg.headCountChunk kseg("  ") ▸ 0
         
     ▸ spanForClosestWordAtColumn
     

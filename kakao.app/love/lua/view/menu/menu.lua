@@ -93,7 +93,7 @@ quit
         --     items∙splice items∙find('recent ...') 1 
         
         items = items:map(function (i) 
-    return ' ' .. i
+    return ' ' .. tostring(i)
 end) -- padding for  
         
         self.width = belt.widthOfLines(items)

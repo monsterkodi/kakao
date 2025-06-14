@@ -76,7 +76,7 @@ class menu extends inputchoice
         # if empty ked_session∙recentFiles()
         #     items∙splice items∙find('recent ...') 1 
         
-        items = items∙map((i) -> ' ' & i) # padding for  
+        items = items∙map((i) -> ' ' & $i) # padding for  
             
         @width = belt.widthOfLines items
         

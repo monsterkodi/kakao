@@ -6,8 +6,8 @@
 00000000  0000000    000     000   
 --]]
 
--- use ../../kxk    ▪ kseg immutable
--- use ../edit/tool ◆ belt
+kxk = require "kxk.kxk"
+belt = require "edit.tool.belt"
 
 test("tool edit", function()
     -- █████████   ███████    ███████    ███████   ███      ████████   ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
@@ -48,12 +48,12 @@ code = 'yes' # trailing
 abcdefghij
 ]])
         
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(5, 0, 5, 0)), array(array(5, 1))), array(lines, array(array(5, 1))))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(5, 0, 6, 0)), array(array(5, 1))), array(array(kseg('123457890'), kseg('abcdefghij')), array(array(5, 1))))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(5, 0, 5, 1)), array(array(5, 1))), array(array(kseg('12345fghij')), array(array(5, 0))))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(0, 1, 1, 1)), array(array(0, 1))), array(array(kseg('1234567890'), kseg('bcdefghij')), array(array(0, 1))))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(5, 0, 3, 1)), array(array(3, 1))), array(array(kseg('12345defghij')), array(array(5, 0))))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(3, 0, 5, 1)), array(array(3, 1))), array(array(kseg('123fghij')), array(array(3, 0))))
+        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 6 1]] [[6 2]] ▸ [lines [[5 1]]]
+        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 7 1]] [[6 2]] ▸ [[kseg('123457890') kseg('abcdefghij')] [[5 1]]]
+        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 6 2]] [[6 2]] ▸ [[kseg('12345fghij')] [[5 0]]]
+        --belt.deleteLineRangesAndAdjustPositions lines [[1 2 2 2]] [[1 2]] ▸ [[kseg('1234567890') kseg('bcdefghij')] [[0 1]]]
+        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 4 2]] [[4 2]] ▸ [[kseg('12345defghij')] [[5 0]]]
+        --belt.deleteLineRangesAndAdjustPositions lines [[4 1 6 2]] [[4 2]] ▸ [[kseg('123fghij')] [[3 0]]]
         
         lines = belt.seglsForText([[
 line 1
@@ -61,7 +61,7 @@ line 2
 line 3
 ]])
         
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(0, 0, 6, 1)), array(array(6, 0), array(6, 1))), array(array(kseg('line 3')), array(array(0, 0))))
+        -- belt.deleteLineRangesAndAdjustPositions lines [[1 1 7 2]] [[7 1] [7 2]] ▸ [[kseg('line 3')] [[1 1]]]
     end)
     
     -- 000  000   000   0000000  00000000  00000000   000000000  
@@ -79,16 +79,16 @@ line 1
 line 2
 ]]
             
-            test.cmp(belt.insertTextAtPositions(lines, '', array(array(0, 0))), array(kseg.segls('line 1\nline 2'), array(array(0, 0))))
-            test.cmp(belt.insertTextAtPositions(lines, 'a ', array(array(0, 0))), array(kseg.segls('a line 1\nline 2'), array(array(2, 0))))
-            test.cmp(belt.insertTextAtPositions(lines, 'a ', array(array(0, 0), array(0, 1))), array(kseg.segls('a line 1\na line 2'), array(array(2, 0), array(2, 1))))
-            
-            test.cmp(belt.insertTextAtPositions(lines, 'x', array(array(0, 0), array(2, 0))), array(kseg.segls('xlixne 1\nline 2'), array(array(1, 0), array(4, 0))))
-            test.cmp(belt.insertTextAtPositions(lines, 'x', array(array(0, 0), array(2, 0), array(6, 0))), array(kseg.segls('xlixne 1x\nline 2'), array(array(1, 0), array(4, 0), array(9, 0))))
-            test.cmp(belt.insertTextAtPositions(lines, 'z', array(array(0, 0), array(2, 0), array(6, 0), array(1, 1), array(2, 1), array(4, 1))), array(kseg.segls('zlizne 1z\nlziznez 2'), array(array(1, 0), array(4, 0), array(9, 0), array(2, 1), array(4, 1), array(7, 1))))
-            
-            test.cmp(belt.insertTextAtPositions(lines, 'ｔ', array(array(0, 0))), array(kseg.segls('ｔline 1\nline 2'), array(array(2, 0))))
-            test.cmp(belt.insertTextAtPositions(kseg.segls('ｔline 1\nline 2'), 'ｔ', array(array(2, 0))), array(kseg.segls('ｔｔline 1\nline 2'), array(array(4, 0))))
+            -- belt.insertTextAtPositions lines ''       [[0 0]]       ▸ [kseg.segls('line 1\nline 2') [[0 0]]]
+            --belt.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [kseg.segls('a line 1\nline 2') [[2 0]]]
+            --belt.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [kseg.segls('a line 1\na line 2') [[2 0] [2 1]]]
+            --            
+            --belt.insertTextAtPositions lines 'x'      [[0 0] [2 0]] ▸ [kseg.segls('xlixne 1\nline 2') [[1 0] [4 0]]]
+            --belt.insertTextAtPositions lines 'x'      [[0 0] [2 0] [6 0]] ▸ [kseg.segls('xlixne 1x\nline 2') [[1 0] [4 0] [9 0]]]
+            --belt.insertTextAtPositions lines 'z'      [[0 0] [2 0] [6 0] [1 1] [2 1] [4 1]] ▸ [kseg.segls('zlizne 1z\nlziznez 2') [[1 0] [4 0] [9 0] [2 1] [4 1] [7 1]]]
+            --            
+            --belt.insertTextAtPositions lines 'ｔ'      [[0 0]] ▸ [kseg.segls('ｔline 1\nline 2') [[2 0]]]
+            --belt.insertTextAtPositions kseg.segls('ｔline 1\nline 2') 'ｔ'      [[2 0]] ▸ [kseg.segls('ｔｔline 1\nline 2') [[4 0]]]
     end)
         
         test("multiple lines into single cursor", function()
@@ -99,11 +99,11 @@ line 1
 line 2
 ]]
             
-            test.cmp(belt.insertTextAtPositions(lines, 'a\nb', array(array(0, 0))), array(kseg.segls('a\nb\nline 1\nline 2'), array(array(0, 2))))
-            test.cmp(belt.insertTextAtPositions(lines, 'a\nb', array(array(2, 0))), array(kseg.segls('lia\nbne 1\nline 2'), array(array(1, 1))))
-            test.cmp(belt.insertTextAtPositions(lines, 'a\nb', array(array(0, 1))), array(kseg.segls('line 1\na\nb\nline 2'), array(array(0, 3))))
-            
-            test.cmp(belt.insertTextAtPositions(lines, 'a\n', array(array(0, 1))), array(kseg.segls('line 1\na\nline 2'), array(array(0, 2))))
+            --belt.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [kseg.segls('a\nb\nline 1\nline 2') [[0 2]]]
+            --belt.insertTextAtPositions lines 'a\nb'   [[2 0]]       ▸ [kseg.segls('lia\nbne 1\nline 2')   [[1 1]]]
+            --belt.insertTextAtPositions lines 'a\nb'   [[0 1]]       ▸ [kseg.segls('line 1\na\nb\nline 2') [[0 3]]]
+            --            
+            --belt.insertTextAtPositions lines 'a\n'    [[0 1]]       ▸ [kseg.segls('line 1\na\nline 2') [[0 2]]]
     end)
         
         test("multiple lines into multi cursor", function()
@@ -114,9 +114,9 @@ line 2
 5678
 ]]
             
-            test.cmp(belt.insertTextAtPositions(lines, 'X\nY', array(array(0, 0), array(0, 1))), array(kseg.segls('X1234\nY5678'), array(array(1, 0), array(1, 1))))
-            test.cmp(belt.insertTextAtPositions(lines, 'X\nY', array(array(0, 0), array(1, 0), array(2, 0), array(3, 0))), array(kseg.segls('X1Y2X3Y4\n5678'), array(array(1, 0), array(3, 0), array(5, 0), array(7, 0))))
-            test.cmp(belt.insertTextAtPositions(lines, '@\n$\n%', array(array(0, 0), array(1, 0), array(2, 0), array(3, 0))), array(kseg.segls('@1$2%3@4\n5678'), array(array(1, 0), array(3, 0), array(5, 0), array(7, 0))))
+            --belt.insertTextAtPositions lines 'X\nY'      [[0 0] [0 1]]              ▸ [kseg.segls('X1234\nY5678')   [[1 0] [1 1]]]
+            --belt.insertTextAtPositions lines 'X\nY'      [[0 0] [1 0] [2 0] [3 0]]  ▸ [kseg.segls('X1Y2X3Y4\n5678') [[1 0] [3 0] [5 0] [7 0]]]
+            --belt.insertTextAtPositions lines '@\n$\n%'   [[0 0] [1 0] [2 0] [3 0]]  ▸ [kseg.segls('@1$2%3@4\n5678') [[1 0] [3 0] [5 0] [7 0]]]
     end)
         
         test("newlines", function()
@@ -127,14 +127,14 @@ line 1
 line 2
 ]]
             
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(2, 0))), array(kseg.segls('li\nne 1\nline 2'), array(array(0, 1))))
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(6, 0))), array(kseg.segls('line 1\n\nline 2'), array(array(0, 1))))
-            
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(0, 1))), array(kseg.segls('line 1\n\nline 2'), array(array(0, 2))))
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(2, 1))), array(kseg.segls('line 1\nli\nne 2'), array(array(0, 2))))
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(6, 1))), array(kseg.segls('line 1\nline 2\n'), array(array(0, 2))))
-            
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(0, 0), array(0, 1))), array(kseg.segls('\nline 1\n\nline 2'), array(array(0, 1), array(0, 3))))
+            --belt.insertTextAtPositions lines '\n' [[2 0]] ▸ [kseg.segls('li\nne 1\nline 2') [[0 1]]]
+            --belt.insertTextAtPositions lines '\n' [[6 0]] ▸ [kseg.segls('line 1\n\nline 2') [[0 1]]]
+            --            
+            --belt.insertTextAtPositions lines '\n' [[0 1]] ▸ [kseg.segls('line 1\n\nline 2') [[0 2]]]
+            --belt.insertTextAtPositions lines '\n' [[2 1]] ▸ [kseg.segls('line 1\nli\nne 2') [[0 2]]]
+            --belt.insertTextAtPositions lines '\n' [[6 1]] ▸ [kseg.segls('line 1\nline 2\n') [[0 2]]]
+            --                                    
+            --belt.insertTextAtPositions lines '\n' [[0 0] [0 1]] ▸ [kseg.segls('\nline 1\n\nline 2') [[0 1] [0 3]]]
             
             lines = belt.seglsForText
             
@@ -145,7 +145,7 @@ line 2
 ◆4
 ]]
             
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(1, 0), array(1, 1), array(1, 2), array(1, 3))), array(kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4'), array(array(0, 1), array(0, 3), array(0, 5), array(0, 7))))
+            --belt.insertTextAtPositions lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4') [[0 1] [0 3] [0 5] [0 7]]]
     end)
         
         test("into indented lines", function()
@@ -157,18 +157,18 @@ line 2
         ◆3
 ]]
             
-            test("single span ", function()
-                test.cmp(belt.insertTextAtPositions(lines, '~!', array(array(4, 1))), array(kseg.segls('◆1\n    ~!◆2\n        ◆3'), array(array(6, 1))))
-                test.cmp(belt.insertTextAtPositions(lines, '#{', array(array(2, 2))), array(kseg.segls('◆1\n    ◆2\n  #{      ◆3'), array(array(4, 2))))
-    end)
-            
-            test("newline into single cursor", function()
-                test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(4, 1))), array(kseg.segls('◆1\n    \n    ◆2\n        ◆3'), array(array(4, 2))))
-    end)
-            
-            test("multiple lines into single cursor", function()
-                test.cmp(belt.insertTextAtPositions(lines, 'a\nb', array(array(4, 1))), array(kseg.segls('◆1\n    a\n    b\n    ◆2\n        ◆3'), array(array(4, 3))))
-    end)
+            --▸ single span 
+            --            
+            --    belt.insertTextAtPositions lines '~!' [[4 1]] ▸ [kseg.segls('◆1\n    ~!◆2\n        ◆3') [[6 1]]]
+            --    belt.insertTextAtPositions lines '#{' [[2 2]] ▸ [kseg.segls('◆1\n    ◆2\n  #{      ◆3') [[4 2]]]
+            --     
+            --▸ newline into single cursor
+            --            
+            --    belt.insertTextAtPositions lines '\n' [[4 1]] ▸ [kseg.segls('◆1\n    \n    ◆2\n        ◆3') [[4 2]]]
+            -- 
+            --▸ multiple lines into single cursor
+            -- 
+            --    belt.insertTextAtPositions lines 'a\nb' [[4 1]] ▸ [kseg.segls('◆1\n    a\n    b\n    ◆2\n        ◆3') [[4 3]]]
     end)
     end)
     
@@ -184,18 +184,18 @@ line1
 line2
 ]])
         
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0)), '}', array('{', '}')), array(kseg.segls('l{in}e1\nline2'), array(array(5, 0))))
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0), array(1, 1, 3, 1)), ']', array('[', ']')), array(kseg.segls('l[in]e1\nl[in]e2'), array(array(5, 0), array(5, 1))))
+        --belt.insertSurroundAtRanges lines [[1 0 3 0]] '}' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[5 0]]]
+        --belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] ']' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[5 0] [5 1]]]
         
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0)), '{', array('{', '}')), array(kseg.segls('l{in}e1\nline2'), array(array(2, 0))))
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0), array(1, 1, 3, 1)), '[', array('[', ']')), array(kseg.segls('l[in]e1\nl[in]e2'), array(array(2, 0), array(2, 1))))
-        
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0)), '"', array('"', '"')), array(kseg.segls('l"in"e1\nline2'), array(array(5, 0))))
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0), array(1, 1, 3, 1)), '"', array('"', '"')), array(kseg.segls('l"in"e1\nl"in"e2'), array(array(5, 0), array(5, 1))))
-        
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0)), "}", array('#{', '}')), array(kseg.segls("l\#{in}e1\nline2"), array(array(6, 0))))
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0)), "#", array('#{', '}')), array(kseg.segls("l\#{in}e1\nline2"), array(array(3, 0))))
-        test.cmp(belt.insertSurroundAtRanges(lines, array(array(1, 0, 3, 0), array(1, 1, 3, 1)), '"', array('"', '"')), array(kseg.segls('l"in"e1\nl"in"e2'), array(array(5, 0), array(5, 1))))
+        --belt.insertSurroundAtRanges lines [[1 0 3 0]] '{' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[2 0]]]
+        --belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '[' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[2 0] [2 1]]]
+        --        
+        --belt.insertSurroundAtRanges lines [[1 0 3 0]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nline2') [[5 0]]]
+        --belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nl"in"e2') [[5 0] [5 1]]]
+        --        
+        --belt.insertSurroundAtRanges lines [[1 0 3 0]] "}" ['#{' '}'] ▸ [kseg.segls("l\#{in}e1\nline2") [[6 0]]]
+        --belt.insertSurroundAtRanges lines [[1 0 3 0]] "#" ['#{' '}'] ▸ [kseg.segls("l\#{in}e1\nline2") [[3 0]]]
+        --belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nl"in"e2') [[5 0] [5 1]]]
     end)
     
     -- 00     00   0000000   000   000  00000000  000      000  000   000  00000000   0000000  
@@ -205,32 +205,36 @@ line2
     -- 000   000   0000000       0      00000000  0000000  000  000   000  00000000  0000000   
     
     test("moveLineRangesAndPositionsAtIndicesInDirection", function()
-        local lines = immutable(array('a', 'b', 'c'))
-        local rngs = immutable(array())
-        local posl = immutable(array())
+        -- lines = immutable ['a' 'b' 'c']
+        -- rngs  = immutable []
+        -- posl  = immutable []
+        local lines = array('a', 'b', 'c')
+        local rngs = array()
+        local posl = array()
         
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(1), 'down'), array(array('a', 'c', 'b'), array(), array()))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(2), 'down'), array(array('a', 'b', 'c'), array(), array()))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(1, 2), 'down'), array(array('a', 'b', 'c'), array(), array()))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(0, 2), 'down'), array(array('a', 'b', 'c'), array(), array()))
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'down' ▸ [['a' 'c' 'b'] [] []]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'down' ▸ [['a' 'b' 'c'] [] []]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'down' ▸ [['a' 'b' 'c'] [] []]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'down' ▸ [['a' 'b' 'c'] [] []]
+        --        
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'up' ▸ [['b' 'a' 'c'] [] []]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'up' ▸ [['a' 'c' 'b'] [] []]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'up' ▸ [['b' 'c' 'a'] [] []]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'up' ▸ [['a' 'b' 'c'] [] []]
+        --        
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2]]]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
+        --        
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0]]]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
         
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(1), 'up'), array(array('b', 'a', 'c'), array(), array()))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(2), 'up'), array(array('a', 'c', 'b'), array(), array()))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(1, 2), 'up'), array(array('b', 'c', 'a'), array(), array()))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, array(0, 2), 'up'), array(array('a', 'b', 'c'), array(), array()))
+        -- lines = immutable ['a' 'b' 'c' 'd' 'e']
+        lines = array('a', 'b', 'c', 'd', 'e')
         
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1))), array(1), 'down'), array(array('a', 'c', 'b'), array(), array(array(0, 2))))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1), array(1, 1))), array(1), 'down'), array(array('a', 'c', 'b'), array(), array(array(0, 2), array(1, 2))))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1), array(1, 1))), array(1), 'down'), array(array('a', 'c', 'b'), array(), array(array(0, 2), array(1, 2))))
-        
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1))), array(1), 'up'), array(array('b', 'a', 'c'), array(), array(array(0, 0))))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1), array(1, 1))), array(1), 'up'), array(array('b', 'a', 'c'), array(), array(array(0, 0), array(1, 0))))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1), array(1, 1))), array(1), 'up'), array(array('b', 'a', 'c'), array(), array(array(0, 0), array(1, 0))))
-        
-        lines = immutable(array('a', 'b', 'c', 'd', 'e'))
-        
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1), array(0, 2), array(0, 3))), array(1, 2, 3), 'up'), array(array('b', 'c', 'd', 'a', 'e'), array(), array(array(0, 0), array(0, 1), array(0, 2))))
-        test.cmp(belt.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, immutable(array(array(0, 1), array(0, 2), array(0, 3))), array(1, 2, 3), 'down'), array(array('a', 'e', 'b', 'c', 'd'), array(), array(array(0, 2), array(0, 3), array(0, 4))))
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [0 2] [0 3]]) [1 2 3] 'up'   ▸ [['b' 'c' 'd' 'a' 'e'] [] [[0 0] [0 1] [0 2]]]
+        --belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [0 2] [0 3]]) [1 2 3] 'down' ▸ [['a' 'e' 'b' 'c' 'd'] [] [[0 2] [0 3] [0 4]]]
     end)
     
     --  0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
@@ -254,30 +258,30 @@ line2
     Alice’s,
 ]])
         
-        test.cmp(belt.prepareWordsForCompletion('A', 'A', words), array('Alice'))
-        test.cmp(belt.prepareWordsForCompletion('"', '"', array('"#fff"')), array('"#fff"'))
-        test.cmp(belt.prepareWordsForCompletion('f', 'f', array('func()')), array('func', 'func()'))
-        test.cmp(belt.prepareWordsForCompletion('fa', 'fa', array('f')), array())
-        test.cmp(belt.prepareWordsForCompletion('w', 'w', array('word[@turd.length..]')), array('word', 'word[@turd.length..]'))
-        test.cmp(belt.prepareWordsForCompletion('a.b', 'b', array('a.b.c.d')), array())
-        test.cmp(belt.prepareWordsForCompletion('a.b.', '.', array('a.b.c.d')), array('.b', '.c', '.d'))
-        test.cmp(belt.prepareWordsForCompletion('a.b.c', 'c', array('a.b.c.d')), array())
-        test.cmp(belt.prepareWordsForCompletion('a.b.c.', '.', array('a.b.c.d')), array('.b', '.c', '.d'))
-        test.cmp(belt.prepareWordsForCompletion('word', 'word', array('word[@turd.length..]')), array())
-        test.cmp(belt.prepareWordsForCompletion('k', 'k', array('kseg', 'key')), array('key', 'kseg'))
-        test.cmp(belt.prepareWordsForCompletion('he', 'he', array('hello', 'hell')), array('hell', 'hello'))
-        test.cmp(belt.prepareWordsForCompletion('he', 'he', array('"hello"', '@hell')), array('hell', 'hello'))
-        test.cmp(belt.prepareWordsForCompletion('a.', '.', array('0.1', '1.234', 'obj.prop')), array('.prop'))
-        test.cmp(belt.prepareWordsForCompletion('0.', '.', array('0.1', '1.234', 'obj.prop')), array('.1'))
-        test.cmp(belt.prepareWordsForCompletion('3.1', '1', array('1.123', '1.234', 'obj.prop')), array())
-        test.cmp(belt.prepareWordsForCompletion('rugga', 'r', array('rofl', 'rug')), array('rofl', 'rug'))
-        test.cmp(belt.prepareWordsForCompletion('rugga', 'ru', array('rug')), array('rug'))
-        test.cmp(belt.prepareWordsForCompletion('mc', 'mc', array('mc[0]', 'mc[1]')), array())
-        test.cmp(belt.prepareWordsForCompletion('@', '@', array('@color.dot)')), array('@color', '@color.dot'))
-        test.cmp(belt.prepareWordsForCompletion('@', '@', array("@side='left")), array('@side'))
-        test.cmp(belt.prepareWordsForCompletion('@', '@', array("@side='left'")), array('@side'))
-        test.cmp(belt.prepareWordsForCompletion('b', 'b', array('a\n', 'b\n')), array())
-        test.cmp(belt.prepareWordsForCompletion('@img.pop', 'pop', array('@img.pop()')), array('pop()'))
+        --belt.prepareWordsForCompletion 'A'      'A'      words                        ▸ ['Alice']
+        --belt.prepareWordsForCompletion '"'      '"'      ['"#fff"']                   ▸ ['"#fff"']
+        --belt.prepareWordsForCompletion 'f'      'f'      ['func()']                   ▸ ['func' 'func()']
+        --belt.prepareWordsForCompletion 'fa'     'fa'     ['f']                        ▸ []
+        --belt.prepareWordsForCompletion 'w'      'w'      ['word[@turd.length..]']     ▸ ['word' 'word[@turd.length..]']
+        --belt.prepareWordsForCompletion 'a.b'    'b'      ['a.b.c.d']                  ▸ []
+        --belt.prepareWordsForCompletion 'a.b.'   '.'      ['a.b.c.d']                  ▸ ['.b' '.c' '.d']
+        --belt.prepareWordsForCompletion 'a.b.c'  'c'      ['a.b.c.d']                  ▸ []
+        --belt.prepareWordsForCompletion 'a.b.c.' '.'      ['a.b.c.d']                  ▸ ['.b' '.c' '.d']
+        --belt.prepareWordsForCompletion 'word'   'word'   ['word[@turd.length..]']     ▸ []
+        --belt.prepareWordsForCompletion 'k'      'k'      ['kseg' 'key']               ▸ ['key' 'kseg']
+        --belt.prepareWordsForCompletion 'he'     'he'     ['hello' 'hell']             ▸ ['hell' 'hello']
+        --belt.prepareWordsForCompletion 'he'     'he'     ['"hello"' '@hell']          ▸ ['hell' 'hello']    
+        --belt.prepareWordsForCompletion 'a.'     '.'      ['0.1' '1.234' 'obj.prop']   ▸ ['.prop']    
+        --belt.prepareWordsForCompletion '0.'     '.'      ['0.1' '1.234' 'obj.prop']   ▸ ['.1']    
+        --belt.prepareWordsForCompletion '3.1'    '1'      ['1.123' '1.234' 'obj.prop'] ▸ []
+        --belt.prepareWordsForCompletion 'rugga'  'r'      ['rofl' 'rug']               ▸ ['rofl' 'rug']
+        --belt.prepareWordsForCompletion 'rugga'  'ru'     ['rug']                      ▸ ['rug']
+        --belt.prepareWordsForCompletion 'mc'     'mc'     ['mc[0]' 'mc[1]']            ▸ []
+        --belt.prepareWordsForCompletion '@'   '@'         ['@color.dot)']              ▸ ['@color' '@color.dot']
+        --belt.prepareWordsForCompletion '@'   '@'         ["@side='left"]              ▸ ['@side']
+        --belt.prepareWordsForCompletion '@'   '@'         ["@side='left'"]             ▸ ['@side']
+        --belt.prepareWordsForCompletion 'b'   'b'         ['a\n' 'b\n']                ▸ []
+        --belt.prepareWordsForCompletion '@img.pop' 'pop'  ['@img.pop()']               ▸ ['pop()']
     end)
     
     -- ███  ███   ███  ███████    ████████  ███   ███  █████████
@@ -295,9 +299,11 @@ line2
         ◆3
 ]]
         
-        local posl = immutable(array(array(0, 0, 1, 1)))
-        local rngs = immutable(array(array(0, 1), array(1, 1)))
-        test.cmp(belt.indentLineRangesAndPositionsAtIndices(lines, posl, rngs, array(0, 1)), array(array(kseg('    ◆1'), kseg('        ◆2'), kseg('        ◆3')), array(array(4, 0, 5, 1)), array(array(4, 1), array(5, 1))))
+        -- posl = immutable [[0 0 1 1]]
+        -- rngs = immutable [[0 1] [1 1]]
+        local posl = array(array(0, 0, 1, 1))
+        local rngs = array(array(0, 1), array(1, 1))
+        -- belt.indentLineRangesAndPositionsAtIndices lines posl rngs [0 1] ▸ [[kseg('    ◆1') kseg('        ◆2') kseg('        ◆3')] [[4 0 5 1]] [[4 1] [5 1]]]
     end)
     
     test("deindentLineRangesAndPositionsAtIndices", function()
@@ -309,8 +315,10 @@ line2
         ◆3
 ]]
         
-        local posl = immutable(array(array(0, 1, 1, 2)))
-        local rngs = immutable(array(array(0, 1), array(1, 2)))
-        test.cmp(belt.deindentLineRangesAndPositionsAtIndices(lines, posl, rngs, array(1, 2)), array(array(kseg('◆1'), kseg('◆2'), kseg('    ◆3')), array(array(0, 1, 0, 2)), array(array(0, 1), array(0, 2))))
+        -- posl = immutable [[0 1 1 2]] 
+        -- rngs = immutable [[0 1] [1 2]]
+        local posl = array(array(0, 1, 1, 2))
+        local rngs = array(array(0, 1), array(1, 2))
+        -- belt.deindentLineRangesAndPositionsAtIndices lines posl rngs [1 2] ▸ [[kseg('◆1') kseg('◆2') kseg('    ◆3')] [[0 1 0 2]] [[0 1] [0 2]]]
     end)
     end)

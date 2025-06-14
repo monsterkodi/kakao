@@ -101,8 +101,8 @@ function _G.write(...)
     end
     
     s = s .. "\27[0m\n"
-    -- ffi.C.write 1 s s.len
-    return print(s)
+    ffi.C.write(1, s, #s)
+    return -- log s
 end
 
 local timers = {}

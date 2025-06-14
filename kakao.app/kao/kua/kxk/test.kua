@@ -59,11 +59,11 @@ class test
                             key = kstr.index k
                         # ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
                         as = ""
-                        for k v in pairs a
+                        for k v of a
                             as &= k & "  " & $v & "\n"
                         as = kstr.pop as
                         bs = ""
-                        for k v in pairs b
+                        for k v of b
                             bs &= k & "  " & $v & "\n"
                         bs = kstr.pop bs
                         ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y as ◌r "\n!=\n" ◌g bs

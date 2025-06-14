@@ -301,12 +301,12 @@ end)
 
 
 function text.static.seglRangeAtPos(segls, pos) 
-        return array(0, pos[1], #segls[pos[1]], pos[1])
+        return array(1, pos[2], #segls[pos[2]], pos[2])
     end
 
 
 function text.static.lineRangeAtPos(lines, pos) 
-        return array(0, pos[1], kseg.width(lines[pos[1]]), pos[1])
+        return array(1, pos[2], kseg.width(lines[pos[2]]), pos[2])
     end
 
 
@@ -600,7 +600,7 @@ function text.static.splitLineRanges(lines, rngs, includeEmpty)
         
         local split = array()
         for _, rng in ipairs(rngs) do 
-            split = split.concat(belt.splitLineRange(lines, rng, includeEmpty))
+            split = split + (belt.splitLineRange(lines, rng, includeEmpty))
         end
         
         return split
@@ -707,10 +707,10 @@ function text.static.wordAtPos(lines, pos)
 
 
 function text.static.chunkBeforePos(lines, pos) 
-        local before = lines[pos[1]]:slice(1, pos[0])
+        local before = lines[pos[2]]:slice(1, (pos[1] - 1))
         local tcc = kseg.tailCountChunk(before)
         if tcc then 
-            return kseg.str(before[(#before - tcc)..#before])
+            return kseg.str(before:slice((#before - tcc)))
         end
         
         return ''
@@ -718,7 +718,7 @@ function text.static.chunkBeforePos(lines, pos)
 
 
 function text.static.chunkAfterPos(lines, pos) 
-        local after = lines[pos[1]]:slice(pos[0])
+        local after = lines[pos[2]]:slice(pos[1])
         local hcc = kseg.headCountChunk(after)
         if hcc then 
             return kseg.str(after:slice(1, hcc))

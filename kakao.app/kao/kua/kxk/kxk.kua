@@ -75,8 +75,8 @@ _G.write = ... ->
     for _ v in ipairs {...}
         s &= $v
     s &= "\27[0m\n"
-    # ffi.C.write 1 s s.len
-    log s
+    ffi.C.write 1 s s.len
+    # log s
     
 timers = {}
     

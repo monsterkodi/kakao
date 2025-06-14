@@ -8,6 +8,14 @@ class util
         yearStart = os.time {year:date.year month:1 day:1}
         string.format "%08x" now-yearStart
         
+    @uniq: arr ->
+        
+        result = []
+        for item in arr
+            if not result∙has item
+                result∙push item
+        result
+        
     @randRange: f t ->
     
         f+math.random()*(t-f)

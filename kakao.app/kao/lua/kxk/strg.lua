@@ -21,7 +21,7 @@ function strg:init(...)
         for _argi_ = 1, (_argl_ + 1)-1 do 
     local v = select(_argi_, ...)
     
-    self = self + v
+    self = self + (tostring(v))
 end
         
         return self

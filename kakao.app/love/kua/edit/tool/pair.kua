@@ -16,16 +16,17 @@ class pair
 
     @isUnbalancedPosition: lines pos char ->
     
-        revs =
-            ']': '[' 
-            '}': '{' 
-            ')': '('
-            '"': '"'
-            "'": "'"
-
-        p = pepe kseg.str(lines[pos[1]])
-        start = p.unbalanced?[1..].map (s) -> s.start
-        valid start and revs[char] in start
+        # revs = {
+        #     ']': '[' 
+        #     '}': '{' 
+        #     ')': '('
+        #     '"': '"'
+        #     "'": "'"}
+        #
+        # p = pepe kseg.str(lines[pos[2]])
+        # start = p.unbalanced∙slice(2)∙map((s) -> s.start)
+        # valid start and start∙has(revs[char])
+        false
         
     #  0000000  000000000  00000000   000  000   000   0000000   
     # 000          000     000   000  000  0000  000  000        
@@ -33,35 +34,35 @@ class pair
     #      000     000     000   000  000  000  0000  000   000  
     # 0000000      000     000   000  000  000   000   0000000   
     
-    @isRangeInString: lines rng -> @rangeOfStringSurroundingRange(lines rng)?
+    @isRangeInString: lines rng -> @rangeOfStringSurroundingRange(lines rng) != nil
 
     @rangeOfStringSurroundingRange: lines rng ->
-
-        if ir = @rangeOfInnerStringSurroundingRange lines rng
-            @rangeGrownBy ir 1
+        ir = belt.rangeOfInnerStringSurroundingRange lines rng
+        if ir
+            belt.rangeGrownBy ir 1
 
     @rangeOfInnerStringSurroundingRange: lines rng ->
         
-        ⮐  if @isInvalidLineIndex lines rng[1]
+        ⮐  if belt.isInvalidLineIndex lines rng[1]
 
-        rgs = @rangesOfStringsInText lines[rng[1]] rng[1] 
-        rgs = @rangesShrunkenBy rgs 1
+        rgs = belt.rangesOfStringsInText lines[rng[1]] rng[1] 
+        rgs = belt.rangesShrunkenBy rgs 1
         for r in rgs
-            ⮐  r if @rangeContainsRange r rng
+            ⮐  r if belt.rangeContainsRange r rng
             
-    @rangesOfStringsInText: text li=0 -> # todo: handle #{}
+    @rangesOfStringsInText: text li=0 ->
         
         rngs = []
         ss = -1
         cc = null
-        for i in 0...text.length
+        for i in 0...text.len
             c = text[i]
-            if not cc and c in "'\""
+            if not cc and (c == "'" or c == '"')
                 cc = c
                 ss = i
-            else if c == cc
+            elif c == cc
                 if (text[i-1] != '\\') or (i>2 and text[i-2] == '\\')
-                    rngs.push [ss li i+1 li]
+                    rngs∙push [ss li i+1 li]
                     cc = null
                     ss = -1
         rngs
@@ -78,11 +79,11 @@ class pair
         
         for rng in rngs
             if not belt.isRangeInString(lines rng)
-                found.push rng
+                found∙push rng
                 
         for pos in posl
             if not belt.isRangeInString(lines belt.rangeForPos(pos))
-                found.push pos
+                found∙push pos
         found
         
     # 00000000    0000000   000  00000000    0000000         0000000  000   000  00000000   00000000   0000000     0000000   
@@ -94,9 +95,9 @@ class pair
     @rangesOfNestedPairsAtPositions: lines posl ->
         
         rngs = []
-        for pos in posl
-            for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
-                rngs.push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
+        # for pos in posl
+        #     for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+        #         rngs∙push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
         rngs
 
     @spansOfNestedPairsAtPositions: lines posl ->
@@ -105,20 +106,20 @@ class pair
         brackets = []
         strings  = []
         
-        for pos in posl
-            
-            for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
-                open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.length]
-                close = [pair.rng[1] pos[1] pair.rng[1]+pair.end.length]
-                spans.push open
-                spans.push close
-                
-                if pair.start in '"\''
-                    strings.push open
-                    strings.push close
-                else
-                    brackets.push open
-                    brackets.push close
+        # for pos in posl
+        #     
+        #     for pair in pepe.pairsAtCol(kseg.str(lines[pos[1]]) pos[0])
+        #         open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.len]
+        #         close = [pair.rng[1] pos[1] pair.rng[1]+pair.ende.len]
+        #         spans∙push open
+        #         spans∙push close
+        #         
+        #         if pair.start == '"' or pair.start == "'"
+        #             strings∙push open
+        #             strings∙push close
+        #         else
+        #             brackets∙push open
+        #             brackets∙push close
                 
         [spans brackets strings]
 
@@ -127,22 +128,23 @@ class pair
         rngs = []
         for pos in posl
             for pair in pairs
-                if @chunkBeforePos(lines pos).endsWith(pair[0]) and @chunkAfterPos(lines pos).startsWith(pair[1])
-                    rngs.push [pos[0] - pair[0].length pos[1] pos[0] + pair[1].length pos[1]]
+                if kstr.endsWith(belt.chunkBeforePos(lines pos) pair[1]) and kstr.startsWith(belt.chunkAfterPos(lines pos) pair[2])
+                    rngs∙push [pos[1] - pair[1].len pos[2] pos[1] + pair[2].len pos[2]]
         rngs
         
     @stringDelimiterSpansForPositions: lines posl ->
         
         spans = []
         for pos in posl
-        
-            if srng = @rangeOfStringSurroundingRange lines [pos[0] pos[1] pos[0] pos[1]]
-                spans.push [srng[0] srng[1] srng[0]+1]
-                spans.push [srng[2]-1 srng[3] srng[2]]
-            else if lines[pos[1]][pos[0]] in "\"'"
-                if srng = @rangeOfStringSurroundingRange lines [pos[0]+1 pos[1] pos[0]+1 pos[1]]
-                    spans.push [srng[0] srng[1] srng[0]+1]
-                    spans.push [srng[2]-1 srng[3] srng[2]]
+            srng = belt.rangeOfStringSurroundingRange lines [pos[1] pos[2] pos[1] pos[2]]
+            if srng
+                spans∙push [srng[1] srng[2] srng[1]+1]
+                spans∙push [srng[3]-1 srng[4] srng[3]]
+            elif lines[pos[2]][pos[1]] == '"' or lines[pos[2]][pos[1]] == "'"
+                srng = belt.rangeOfStringSurroundingRange lines [pos[1]+1 pos[2] pos[1]+1 pos[2]]
+                if srng
+                    spans∙push [srng[1] srng[2] srng[1]+1]
+                    spans∙push [srng[3]-1 srng[4] srng[3]]
         spans
         
     #  ███████   ████████   ████████  ███   ███         ███████  ███       ███████    ███████  ████████
@@ -155,29 +157,30 @@ class pair
 
         spans = []
         for pos in posl
-            if sps = @openCloseSpansForPosition lines pos
+            sps = @openCloseSpansForPosition lines pos
+            if sps
                 spans = spans.concat sps
         spans
         
     @openCloseSpansForPosition: lines pos ->
                 
-        open =
+        open = {
             '[': ']'
             '{': '}'
-            '(': ')'
-        revs =
+            '(': ')'}
+        revs = {
             ']': '['
             '}': '{'
-            ')': '('
+            ')': '('}
             
-        opns = '[{(' 
-        clos = ']})' 
+        opns = dict.keys open
+        clos = dict.values open
         
         maxLookups = 1000 # careful, increasing this drops performance significantly!
+        lastOpen = nil
+        bp = [pos[1] pos[2]]
         
-        bp = [pos[0] pos[1]]
-        
-        if lines[bp[1]][bp[0]] not in opns
+        if not opns∙has lines[bp[2]][bp[1]]
         
             closeEncounters = ''
             openEncounters = ''
@@ -185,74 +188,77 @@ class pair
             stack = []
             
             cnt = 0
-            while true # find last open bracket before
-
-                bp[0] -= 1
-                if bp[0] >= 0
-                    prev = lines[bp[1]][bp[0]]
-                    if prev in opns
-                        if stack.length
-                            if open[prev] == last(stack)
-                                openEncounters += prev
-                                stack.pop()
-                                continue
+            while true
+                cont = false
+                bp[1] -= 1
+                if bp[1] >= 1
+                    prev = lines[bp[2]][bp[1]]
+                    if opns∙has prev
+                        if stack.len
+                            if open[prev] == stack[^1]
+                                openEncounters &= prev
+                                stack∙pop()
+                                cont = true
                             else
-                                ⮐  # stack mismatch
-                        lastOpen = prev
-                        break
-                    else if prev in clos
-                        stack.push prev
-                        closeEncounters += prev
+                                ⮐ 
+                        if not cont
+                            lastOpen = prev
+                            break
+                    elif clos∙has prev
+                        stack∙push prev
+                        closeEncounters &= prev
                 else
-                    bp[1] -= 1
-                    break if bp[1] < 0
-                    bp[0] = lines[bp[1]].length
+                    bp[2] -= 1
+                    break if bp[2] < 1
+                    bp[1] = lines[bp[2]].len
     
-                break if lastOpen?
-                break if bp[1] < 0
-                break if cnt++ > maxLookups # maximum lookups exceeded            
+                if not cont
+                    break if lastOpen
+                    break if bp[2] < 1
+                    cnt += 1
+                    break if cnt > maxLookups
         else
-            lastOpen = lines[bp[1]][bp[0]]
+            lastOpen = lines[bp[2]][bp[1]]
             
         stack = []
-        ap    = [max(bp[0]+1 pos[0]) pos[1]]
+        ap    = [max(bp[1]+1 pos[1]) pos[2]]
         cnt   = 0
         
-        while ap[1] < lines.length # find first close bracket after
+        while ap[2] < lines.len
             
-            next = lines[ap[1]][ap[0]]
+            next = lines[ap[2]][ap[1]]
             
-            if next in clos
-                if stack.length
-                    if open[last(stack)] == next
-                        stack.pop()
+            if clos∙has next
+                if stack.len
+                    if open[stack[^1]] == next
+                        stack∙pop()
                     else
                         ⮐  # stack mismatch
                 else
                     firstClose = next
                     break
-            else if next in opns
-                stack.push next
+            elif opns∙has next
+                stack∙push next
 
-            ap[0] += 1
-            if ap[0] >= lines[ap[1]].length
-                ap[0] = 0
-                ap[1] += 1
-            
-            break if cnt++ > maxLookups # maximum lookups exceeded   
+            ap[1] += 1
+            if ap[1] >= lines[ap[2]].len
+                ap[1] = 1
+                ap[2] += 1
+            cnt += 1
+            break if cnt > maxLookups
 
-        if not lastOpen? or not firstClose?
-            if pos[1] >= lines.length ➜ log "pos[1] too large" ; ⮐  
-            ⮐  if empty lines[pos[1]] # ➜ "no lines[pos[1]]"
-            if pos[0]-1 >= lines[pos[1]].length ➜ log "pos[0]-1 too large" ; ⮐  
-            if lines[pos[1]] >= revs.length ➜ log "lines[pos[1]] too large for revs" ; ⮐  
-            ⮐  if empty revs[lines[pos[1]]] #➜ log "no revs[lines[pos[1]]]" ; ⮐  
-            if pos[0]-1 >= revs[lines[pos[1]]].length ➜ log "pos[0]-1 too large for revs" ; ⮐  
-            if lines[pos[1]][pos[0]-1] in clos and revs[lines[pos[1]][pos[0]-1]] in openEncounters
-                ⮐  @openCloseSpansForPosition lines [pos[0]-1 pos[1]]
+        if not lastOpen or not firstClose
+            if pos[2] >= lines.len ➜ log "pos[2] too large" ; ⮐  
+            ⮐  if empty lines[pos[2]]
+            if pos[1]-1 >= lines[pos[2]].len ➜ log "pos[1]-1 too large" ; ⮐  
+            if lines[pos[2]].len >= revs.len ➜ log "lines[pos[2]] too large for revs" ; ⮐  
+            ⮐  if empty revs[lines[pos[2]]]
+            if pos[1]-1 >= revs[lines[pos[2]]].len ➜ log "pos[1]-1 too large for revs" ; ⮐  
+            if clos∙has(lines[pos[2]][pos[1]-1]) and kstr.find(openEncounters revs[lines[pos[2]][pos[1]-1]]) >= 1
+                ⮐  @openCloseSpansForPosition lines [pos[1]-1 pos[2]]
             ⮐
         
         if open[lastOpen] == firstClose
-            ⮐  [[bp[0] bp[1] bp[0]+1] [ap[0] ap[1] ap[0]+1]]
-            
+            ⮐  [[bp[1] bp[2] bp[1]+1] [ap[1] ap[2] ap[1]+1]]
+        ⮐      
 ⮐  pair

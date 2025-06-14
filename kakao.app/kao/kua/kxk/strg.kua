@@ -17,7 +17,7 @@ class strg
         @buff = nil
         @frags = []
         for v in ...
-            @ += v
+            @ += $v
                         
     $: ->
     
