@@ -47,7 +47,7 @@ class belt
         
     @sortPositions: posl -> 
     
-        posl∙sort((a b) -> if a[2] == b[2] ➜ a[1] > b[1] ➜ a[2] > b[2])
+        posl∙sort((a b) -> if a[2] == b[2] ➜ a[1] < b[1] ➜ a[2] < b[2])
         posl
         
     @removeDuplicatePositions: posl ->
@@ -239,14 +239,14 @@ class belt
         ⮐  if empty spans
         
         if @isPosAfterSpan pos spans[^1]
-            pos = [1 1] 
+            pos = [1 1]
         
         if @isPosBeforeSpan pos spans[1]
             ⮐  spans[1] 
             
         for index span in spans
             if @isPosAfterSpan pos span
-                if index+1 < spans.len and @isPosBeforeOrInsideSpan pos spans[index+1]
+                if index+1 <= spans.len and @isPosBeforeOrInsideSpan pos spans[index+1]
                     ⮐  spans[index+1]
 
     @prevSpanBeforePos: spans pos ->
@@ -317,13 +317,13 @@ class belt
         
         ⮐  [] if empty posl
         if posl[1][2] > lines.len
-            ⮐  [[1 1 kseg.width(lines[^1]) lines.len] [kseg.width(lines[^1]) lines.len kseg.width(lines[^1]) lines.len]] 
+            ⮐  [[1 1 kseg.width(lines[^1])+1 lines.len] [kseg.width(lines[^1])+1 lines.len kseg.width(lines[^1])+1 lines.len]] 
         rngs = [[1 1 posl[1][1] posl[1][2]]]
         for idx pos in ipairs posl
             if idx > 1
                 rngs∙push [posl[idx-1][1] posl[idx-1][2] pos[1] pos[2]]
             if idx == posl.len
-                rngs∙push [pos[1] pos[2] kseg.width(lines[^1]) lines.len]
+                rngs∙push [pos[1] pos[2] kseg.width(lines[^1])+1 lines.len]
         rngs
 
     @rangeInRangesContainingPos: rngs pos ->
@@ -359,7 +359,7 @@ class belt
         
     @lineIndicesForSpans: spans ->
         
-        util.uniq(spans∙map((s) -> ⮐  s[1]))
+        util.uniq(spans∙map((s) -> ⮐  s[2]))
         
     @frontmostSpans: spans ->
         

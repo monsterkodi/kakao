@@ -67,8 +67,8 @@ end)
 function belt.static.sortPositions(posl) 
         posl:sort(function (a, b) 
     if (a[2] == b[2]) then 
-    return (a[1] > b[1]) else 
-    return (a[2] > b[2])
+    return (a[1] < b[1]) else 
+    return (a[2] < b[2])
                            end
 end)
         return posl
@@ -385,7 +385,7 @@ function belt.static.nextSpanAfterPos(spans, pos)
         
         for index, span in ipairs(spans) do 
             if belt.isPosAfterSpan(pos, span) then 
-                if (((index + 1) < #spans) and belt.isPosBeforeOrInsideSpan(pos, spans[(index + 1)])) then 
+                if (((index + 1) <= #spans) and belt.isPosBeforeOrInsideSpan(pos, spans[(index + 1)])) then 
                     return spans[(index + 1)]
                 end
             end
@@ -516,7 +516,7 @@ function belt.static.removeTrailingEmptyRange(rngs)
 function belt.static.rangesForLinesSplitAtPositions(lines, posl) 
         if empty(posl) then return array() end
         if (posl[1][2] > #lines) then 
-            return array(array(1, 1, kseg.width(lines[#lines]), #lines), array(kseg.width(lines[#lines]), #lines, kseg.width(lines[#lines]), #lines))
+            return array(array(1, 1, (kseg.width(lines[#lines]) + 1), #lines), array((kseg.width(lines[#lines]) + 1), #lines, (kseg.width(lines[#lines]) + 1), #lines))
         end
         
         local rngs = array(array(1, 1, posl[1][1], posl[1][2]))
@@ -526,7 +526,7 @@ function belt.static.rangesForLinesSplitAtPositions(lines, posl)
             end
             
             if (idx == #posl) then 
-                rngs:push(array(pos[1], pos[2], kseg.width(lines[#lines]), #lines))
+                rngs:push(array(pos[1], pos[2], (kseg.width(lines[#lines]) + 1), #lines))
             end
         end
         
@@ -576,7 +576,7 @@ function belt.static.lineIndicesForRangesAndPositions(rngs, posl)
 
 
 function belt.static.lineIndicesForSpans(spans) 
-        return util.uniq(spans:map(function (s) return s[1] end))
+        return util.uniq(spans:map(function (s) return s[2] end))
     end
 
 

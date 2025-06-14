@@ -251,7 +251,7 @@ XYZ
         test.cmp(belt.chunkBeforePos(segls, array(2, 2)), '1')
         test.cmp(belt.chunkBeforePos(segls, array(4, 2)), '1.4')
         test.cmp(belt.chunkBeforePos(segls, array(6, 2)), '')
-        -- belt.chunkBeforePos segls [10 2] ▸ 'x:z'
+        test.cmp(belt.chunkBeforePos(segls, array(10, 2)), 'x:z')
     end)
     
     test("chunkAfterPos", function()
@@ -274,8 +274,13 @@ XYZ
         test.cmp(belt.isFullLineRange(lines, array(1, 1, 1, 1)), true)
         test.cmp(belt.isFullLineRange(lines, array(1, 2, 4, 2)), true)
         test.cmp(belt.isFullLineRange(lines, array(1, 2, 6, 2)), true)
-        -- belt.isFullLineRange lines [1 2 3 2] ▸ false
-        -- belt.isFullLineRange lines [2 2 4 2] ▸ false
+        test.cmp(belt.isFullLineRange(lines, array(1, 2, 3, 2)), false)
+        test.cmp(belt.isFullLineRange(lines, array(2, 2, 4, 2)), false)
+        test.cmp(belt.isFullLineRange(lines, array(2, 3, 4, 3)), false)
+        test.cmp(belt.isFullLineRange(lines, array(1, 3, 14, 3)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 3, 7, 3)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 2, 1, 3)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 3, 6, 3)), false)
     end)
     
     -- 0000000    000       0000000    0000000  000   000   0000000  
@@ -286,14 +291,16 @@ XYZ
     
     test("lineIndicesForRangesAndPositions", function()
         test.cmp(belt.lineIndicesForRangesAndPositions(array(), array(array(1, 1), array(1, 2), array(1, 3))), array(1, 2, 3))
-        -- belt.lineIndicesForRangesAndPositions [[ 0 0 2 0 ]] [[1 1] [1 2] [1 3]] ▸ [0 1 2 3]
-        -- belt.lineIndicesForRangesAndPositions [[ 0 1 2 2 ]] [[1 6] [1 5] [1 4]] ▸ [1 2 4 5 6]
+        test.cmp(belt.lineIndicesForRangesAndPositions(array(array(0, 0, 2, 0)), array(array(1, 1), array(1, 2), array(1, 3))), array(0, 1, 2, 3))
+        test.cmp(belt.lineIndicesForRangesAndPositions(array(array(1, 1, 2, 2)), array(array(1, 6), array(1, 5), array(1, 4))), array(1, 2, 4, 5, 6))
     end)
     
     test("linesIndicesForSpans", function()
         test.cmp(belt.lineIndicesForSpans(array()), array())
-        -- belt.lineIndicesForSpans [[0 1 0]] ▸ [1]
-        -- belt.lineIndicesForSpans [[0 1 0] [1 1 1]] ▸ [1]
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1))), array(2))
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1), array(2, 2, 2))), array(2))
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1), array(2, 3, 2))), array(2, 3))
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1), array(2, 4, 2))), array(2, 4))
     end)
     
     test("blockRangesForRangesAndPositions", function()
@@ -328,10 +335,14 @@ line 2
     test("isSpanLineRange", function()
         local lines = array('', '124', 'abcdef')
         
-        -- belt.isSpanLineRange lines [0 1 1 1] ▸ true
-        -- belt.isSpanLineRange lines [0 0 0 0] ▸ false
-        -- belt.isSpanLineRange lines [0 1 3 1] ▸ false
-        -- belt.isSpanLineRange lines [1 1 1 2] ▸ false
+        test.cmp(belt.isSpanLineRange(lines, array(1, 1, 1, 1)), false)
+        test.cmp(belt.isSpanLineRange(lines, array(1, 2, 4, 2)), false)
+        test.cmp(belt.isSpanLineRange(lines, array(1, 2, 1, 3)), false)
+        
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 4, 2)), true)
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 2, 2)), true)
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 3, 2)), true)
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 4, 2)), true)
     end)
     
     test("isPosAfterSpan", function()
@@ -361,24 +372,24 @@ line 2
         test.cmp(belt.nextSpanAfterPos(spans, array(4, 0)), array(6, 0, 8))
         test.cmp(belt.nextSpanAfterPos(spans, array(0, 0)), array(1, 0, 3))
         
-        --spans = [[0 21 11] [2 22 11] [5 23 11] [7 24 11]] 
-        --        
-        --belt.nextSpanAfterPos spans [11 21] ▸ [2 22 11]
-        --belt.nextSpanAfterPos spans [11 22] ▸ [5 23 11]
-        --belt.nextSpanAfterPos spans [11 23] ▸ [7 24 11]
-        --belt.nextSpanAfterPos spans [11 24] ▸ [0 21 11]
-        --        
-        --spans = [[2 1 5] [2 2 5] [2 3 5]]
-        --        
-        --belt.nextSpanAfterPos spans [5 2]   ▸ [2 3 5]
-        --belt.nextSpanAfterPos spans [5 3]   ▸ [2 1 5]
-        --belt.nextSpanAfterPos spans [5 1]   ▸ [2 2 5]
-        --        
-        --spans = [[1 4 3] [3 4 5]]
-        --        
-        --belt.nextSpanAfterPos spans [0 0] ▸ [1 4 3]
-        --belt.nextSpanAfterPos spans [3 4] ▸ [3 4 5]
-        --belt.nextSpanAfterPos spans [5 4] ▸ [1 4 3]
+        spans = array(array(0, 21, 11), array(2, 22, 11), array(5, 23, 11), array(7, 24, 11))
+        
+        test.cmp(belt.nextSpanAfterPos(spans, array(11, 21)), array(2, 22, 11))
+        test.cmp(belt.nextSpanAfterPos(spans, array(11, 22)), array(5, 23, 11))
+        test.cmp(belt.nextSpanAfterPos(spans, array(11, 23)), array(7, 24, 11))
+        test.cmp(belt.nextSpanAfterPos(spans, array(11, 24)), array(0, 21, 11))
+        
+        spans = array(array(2, 1, 5), array(2, 2, 5), array(2, 3, 5))
+        
+        test.cmp(belt.nextSpanAfterPos(spans, array(5, 2)), array(2, 3, 5))
+        test.cmp(belt.nextSpanAfterPos(spans, array(5, 3)), array(2, 1, 5))
+        test.cmp(belt.nextSpanAfterPos(spans, array(5, 1)), array(2, 2, 5))
+        
+        spans = array(array(1, 4, 3), array(3, 4, 5))
+        
+        test.cmp(belt.nextSpanAfterPos(spans, array(0, 0)), array(1, 4, 3))
+        test.cmp(belt.nextSpanAfterPos(spans, array(3, 4)), array(3, 4, 5))
+        test.cmp(belt.nextSpanAfterPos(spans, array(5, 4)), array(1, 4, 3))
     end)
     
     test("prevSpanBeforePos", function()
@@ -401,21 +412,20 @@ line 2
     -- 000        000   000       000  000     000     000  000   000  000  0000       000  
     -- 000         0000000   0000000   000     000     000   0000000   000   000  0000000   
     
-    -- ▸ normalizePositions
-    
-    
-        -- belt.normalizePositions [[1 1] [2 1] [3 1]]     ▸ [[1 1] [2 1] [3 1]]
-        -- belt.normalizePositions [[1 0] [2 0] [0 0]]     ▸ [[0 0] [1 0] [2 0]]
-        -- belt.normalizePositions [[1 0] [2 0] [1 0]]     ▸ [[1 0] [2 0]]
-        -- belt.normalizePositions [[2 2] [3 3] [1 1]]     ▸ [[1 1] [2 2] [3 3]]
-        -- belt.normalizePositions [[2 2] [0 3] [11 1]]    ▸ [[11 1] [2 2] [0 3]]
+    test("normalizePositions", function()
+        test.cmp(belt.normalizePositions(array(array(1, 1), array(2, 1), array(3, 1))), array(array(1, 1), array(2, 1), array(3, 1)))
+        test.cmp(belt.normalizePositions(array(array(1, 0), array(2, 0), array(0, 0))), array(array(1, 1), array(2, 1)))
+        test.cmp(belt.normalizePositions(array(array(1, 0), array(2, 0), array(1, 0))), array(array(1, 1), array(2, 1)))
+        test.cmp(belt.normalizePositions(array(array(2, 2), array(3, 3), array(1, 1))), array(array(1, 1), array(2, 2), array(3, 3)))
+        test.cmp(belt.normalizePositions(array(array(2, 2), array(0, 3), array(11, 1))), array(array(11, 1), array(2, 2), array(1, 3)))
+    end)
     
     test("lineRangeAtPos", function()
         local lines = belt.seglsForText([[
 🌾🧑
 ]])
         
-        -- belt.lineRangeAtPos lines [1 1] ▸ [1 1 5 1]
+        test.cmp(belt.lineRangeAtPos(lines, array(1, 1)), array(1, 1, 5, 1))
     end)
     
     test("seglRangeAtPos", function()
@@ -423,7 +433,7 @@ line 2
 🧑🌾
 ]])
         
-        -- belt.seglRangeAtPos lines [1 1] ▸ [1 1 3 1]
+        test.cmp(belt.seglRangeAtPos(lines, array(1, 1)), array(1, 1, 3, 1))
     end)
     
     test("lineRangesInRange", function()
@@ -434,7 +444,11 @@ line 2
 abc
 ]])
         
-        -- belt.lineRangesInRange lines [1 1 1 3] ▸ [[1 1 2 1] [1 2 1 2] [1 3 3 3]]
+        test.cmp(belt.lineRangesInRange(lines, array(1, 1, 1, 3)), array(array(1, 1, 2, 1), array(1, 2, 1, 2), array(1, 3, 3, 3)))
+        test.cmp(belt.lineRangesInRange(lines, array(1, 1, 1, 1)), array(array(1, 1, 2, 1)))
+        test.cmp(belt.lineRangesInRange(lines, array(1, 1, 2, 1)), array(array(1, 1, 2, 1)))
+        test.cmp(belt.lineRangesInRange(lines, array(1, 1, 1, 2)), array(array(1, 1, 2, 1), array(1, 2, 1, 2)))
+        test.cmp(belt.lineRangesInRange(lines, array(1, 4, 1, 4)), array(array(1, 4, 4, 4)))
     end)
     
     test("splitLineRanges", function()
@@ -445,26 +459,24 @@ abc
 abc
 ]])
         
-        -- belt.splitLineRanges lines [[1 1 2 3]] ▸ [[1 1 2 1] [1 2 1 2] [1 3 2 3]]
-        -- belt.splitLineRanges lines [[1 3 2 3] [3 3 4 3]] ▸ [[1 3 2 3] [3 3 4 3]]
+        test.cmp(belt.splitLineRanges(lines, array(array(1, 1, 2, 3))), array(array(1, 1, 2, 1), array(1, 2, 1, 2), array(1, 3, 2, 3)))
+        test.cmp(belt.splitLineRanges(lines, array(array(1, 3, 2, 3), array(3, 3, 4, 3))), array(array(1, 3, 2, 3), array(3, 3, 4, 3)))
     end)
     
-    test("seglsForText", function()
+    test("seglsForRange", function()
         local segls = belt.seglsForText([[
 123
 456
 
 abc
-def
-]])
+def]])
         
-        -- segls ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]    
-        
-        -- belt.seglsForRange segls [1 1 4 5] ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]
-        -- belt.seglsForRange segls [1 1 1 1] ▸ [[]]
-        -- belt.seglsForRange segls [1 1 2 1] ▸ [['1']]
-        -- belt.seglsForRange segls [4 1 1 2] ▸ [[] []]
-        -- belt.seglsForRange segls [4 1 2 2] ▸ [[] ['4']]
+        test.cmp(#segls, 5)
+        test.cmp(belt.seglsForRange(segls, array(1, 1, 3, 5)), array(kseg("123"), kseg("456"), kseg(), kseg("abc"), kseg("de")))
+        test.cmp(belt.seglsForRange(segls, array(1, 1, 1, 1)), array(kseg()))
+        test.cmp(belt.seglsForRange(segls, array(1, 1, 2, 1)), array(kseg("1")))
+        test.cmp(belt.seglsForRange(segls, array(4, 1, 1, 2)), array(kseg(), kseg()))
+        test.cmp(belt.seglsForRange(segls, array(4, 1, 2, 2)), array(kseg(), kseg('4')))
     end)
     
     test("rangesForLinesSplitAtPositions ", function()
@@ -473,24 +485,23 @@ def
 456
 
 abc
-def
-]])
+def]])
         
-        --belt.rangesForLinesSplitAtPositions lines []      ▸ []
-        --belt.rangesForLinesSplitAtPositions lines [[1 1]] ▸ [[1 1 1 1] [1 1 4 5]]
-        --belt.rangesForLinesSplitAtPositions lines [[2 1]] ▸ [[1 1 2 1] [2 1 4 5]]
-        --belt.rangesForLinesSplitAtPositions lines [[1 3]] ▸ [[1 1 1 3] [1 3 4 5]]
-        --        
-        --belt.rangesForLinesSplitAtPositions lines [[1 1] [2 1]] ▸ [[1 1 1 1] [1 1 2 1] [2 1 4 5]]
-        --belt.rangesForLinesSplitAtPositions lines [[4 1] [4 2]] ▸ [[1 1 4 1] [4 1 4 2] [4 2 4 5]]
-        --        
-        --belt.rangesForLinesSplitAtPositions lines [[1 6]] ▸ [[1 1 4 5] [4 5 4 5]]
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array()), array())
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array(array(1, 1))), array(array(1, 1, 1, 1), array(1, 1, 4, 5)))
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array(array(2, 1))), array(array(1, 1, 2, 1), array(2, 1, 4, 5)))
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array(array(1, 3))), array(array(1, 1, 1, 3), array(1, 3, 4, 5)))
+        
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array(array(1, 1), array(2, 1))), array(array(1, 1, 1, 1), array(1, 1, 2, 1), array(2, 1, 4, 5)))
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array(array(4, 1), array(4, 2))), array(array(1, 1, 4, 1), array(4, 1, 4, 2), array(4, 2, 4, 5)))
+        
+        test.cmp(belt.rangesForLinesSplitAtPositions(lines, array(array(1, 6))), array(array(1, 1, 4, 5), array(4, 5, 4, 5)))
     end)
     
-    --▸ rangesOfStringsInText
-    --    
-    --    belt.rangesOfStringsInText "hello" ▸ []
-    --    belt.rangesOfStringsInText "he'll'o" ▸ [[3 1 7 1]]
+    test("rangesOfStringsInText", function()
+        test.cmp(belt.rangesOfStringsInText("hello"), array())
+        test.cmp(belt.rangesOfStringsInText("he'll'o"), array(array(3, 1, 7, 1)))
+    end)
     
     test("widthOfLines", function()
         --       12345678901234567890123456789012345678901234567890 
@@ -515,14 +526,14 @@ def
 def
 ]])
         
-        -- belt.isRangeInString lines [1 1 1 1] ▸ false
-        -- belt.isRangeInString lines [1 3 1 3] ▸ false
-        -- belt.isRangeInString lines [1 4 1 4] ▸ false
-        -- belt.isRangeInString lines [2 4 6 4] ▸ false
-        -- belt.isRangeInString lines [2 2 2 2] ▸ true
-        -- belt.isRangeInString lines [2 4 3 4] ▸ true
-        -- belt.isRangeInString lines [2 4 4 4] ▸ true
-        -- belt.isRangeInString lines [2 4 5 4] ▸ true
+        test.cmp(belt.isRangeInString(lines, array(1, 1, 1, 1)), false)
+        test.cmp(belt.isRangeInString(lines, array(1, 3, 1, 3)), false)
+        test.cmp(belt.isRangeInString(lines, array(1, 4, 1, 4)), false)
+        test.cmp(belt.isRangeInString(lines, array(2, 4, 6, 4)), false)
+        test.cmp(belt.isRangeInString(lines, array(2, 2, 2, 2)), true)
+        test.cmp(belt.isRangeInString(lines, array(2, 4, 3, 4)), true)
+        test.cmp(belt.isRangeInString(lines, array(2, 4, 4, 4)), true)
+        test.cmp(belt.isRangeInString(lines, array(2, 4, 5, 4)), true)
     end)
     
     --  ███████  ███   ███  ████████   ████████    ███████   ███   ███  ███   ███  ███████  

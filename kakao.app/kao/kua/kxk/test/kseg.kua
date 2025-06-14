@@ -10,19 +10,43 @@ use kxk/strg
         kseg.rep(4 'x')∙str() ▸ "xxxx"
         kseg.rep(2 'xy')∙str() ▸ "xyxy"
 
-        kseg.segiAtWidth kseg('')    1 ▸ 0
+        kseg.segiAtWidth kseg('')    0 ▸ 1
+        kseg.segiAtWidth kseg('')    1 ▸ 1
         kseg.segiAtWidth kseg('a')   1 ▸ 1
-        kseg.segiAtWidth kseg('a')   2 ▸ 1
+        kseg.segiAtWidth kseg('a')   2 ▸ 2
         kseg.segiAtWidth kseg('abc') 2 ▸ 2
         kseg.segiAtWidth kseg('ab3') 3 ▸ 3
-        kseg.segiAtWidth kseg('ab3') 4 ▸ 3
+        kseg.segiAtWidth kseg('ab3') 4 ▸ 4
+        kseg.segiAtWidth kseg('ab3') 5 ▸ 4
+        kseg.segiAtWidth kseg('ab3') 6 ▸ 4
         
+        kseg.segiAtWidth kseg('🧑🧑') 0 ▸ 1  
         kseg.segiAtWidth kseg('🧑🧑') 1 ▸ 1
         kseg.segiAtWidth kseg('🧑🧑') 2 ▸ 1
         kseg.segiAtWidth kseg('🧑🧑') 3 ▸ 2
         kseg.segiAtWidth kseg('🧑🧑') 4 ▸ 2
-        kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 2
-        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 2  
+        kseg.segiAtWidth kseg('🧑🧑') 5 ▸ 3
+        kseg.segiAtWidth kseg('🧑🧑') 6 ▸ 3  
+
+    ▸ segls
+            
+        lines = kstr.lines"""
+            123
+            456
+            
+            abc
+            def"""
+            
+        lines ▸ ["123" "456" "" "abc" "def"]
+            
+        segls = kseg.segls """
+            123
+            456
+            
+            abc
+            def"""
+        
+        segls ▸ [kseg("123") kseg("456") kseg("") kseg("abc") kseg("def")]    
         
     ▸ construct
         
@@ -128,18 +152,22 @@ use kxk/strg
         kseg.segiAtWidth kseg("abc") 1 ▸ 1
         kseg.segiAtWidth kseg("abc") 2 ▸ 2
         kseg.segiAtWidth kseg("abc") 3 ▸ 3
+        kseg.segiAtWidth kseg("abc") 4 ▸ 4
 
         kseg.segiAtWidth kseg("▸◌◂") 1 ▸ 1
         kseg.segiAtWidth kseg("▸◌◂") 2 ▸ 2
         kseg.segiAtWidth kseg("▸◌◂") 3 ▸ 3
+        kseg.segiAtWidth kseg("▸◌◂") 4 ▸ 4
 
         kseg.segiAtWidth "abc" 1 ▸ 1
         kseg.segiAtWidth "abc" 2 ▸ 2
         kseg.segiAtWidth "abc" 3 ▸ 3
+        kseg.segiAtWidth "abc" 4 ▸ 4
 
         kseg.segiAtWidth "▸◌◂" 1 ▸ 1
         kseg.segiAtWidth "▸◌◂" 2 ▸ 2
         kseg.segiAtWidth "▸◌◂" 3 ▸ 3
+        kseg.segiAtWidth "▸◌◂" 4 ▸ 4
         
     ▸ eql
 

@@ -43,27 +43,27 @@ class pair
 
     @rangeOfInnerStringSurroundingRange: lines rng ->
         
-        ⮐  if belt.isInvalidLineIndex lines rng[1]
+        ⮐  if belt.isInvalidLineIndex lines rng[2]
 
-        rgs = belt.rangesOfStringsInText lines[rng[1]] rng[1] 
+        rgs = belt.rangesOfStringsInText lines[rng[2]]∙str() rng[2] 
         rgs = belt.rangesShrunkenBy rgs 1
         for r in rgs
             ⮐  r if belt.rangeContainsRange r rng
             
-    @rangesOfStringsInText: text li=0 ->
+    @rangesOfStringsInText: text li=1 ->
         
         rngs = []
         ss = -1
-        cc = null
-        for i in 0...text.len
-            c = text[i]
+        cc = nil
+        for i in 1..text.len
+            c = string.sub(text i i)
             if not cc and (c == "'" or c == '"')
                 cc = c
                 ss = i
             elif c == cc
-                if (text[i-1] != '\\') or (i>2 and text[i-2] == '\\')
+                if (string.sub(text i-1 i-1) != '\\') or (i>2 and string.sub(text i-2 i-2) == '\\')
                     rngs∙push [ss li i+1 li]
-                    cc = null
+                    cc = nil
                     ss = -1
         rngs
         

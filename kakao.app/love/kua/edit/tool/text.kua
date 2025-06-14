@@ -228,11 +228,11 @@ class text
     
     @seglRangeAtPos: segls pos ->
 
-        [1 pos[2] segls[pos[2]].len pos[2]]
+        [1 pos[2] segls[pos[2]].len+1 pos[2]]
         
     @lineRangeAtPos: lines pos ->
 
-        [1 pos[2] kseg.width(lines[pos[2]]) pos[2]]
+        [1 pos[2] kseg.width(lines[pos[2]])+1 pos[2]]
 
     @lineRangesForPositions: lines posl append->
         
@@ -259,35 +259,35 @@ class text
             n += 1   
         n
         
-    @numLinesInRange: rng -> rng[3] - rng[1] + 1
+    @numLinesInRange: rng -> rng[4] - rng[2] + 1
     
-    @isEmptyLineAtPos: lines pos -> lines[pos[1]].len <= 0
+    @isEmptyLineAtPos: lines pos -> lines[pos[2]].len <= 0
         
     @lineRangesInRange: lines rng ->
         
         rngs = []
         for ln in 0...belt.numLinesInRange(rng)
-            rngs∙push belt.lineRangeAtPos(lines [0 rng[1]+ln])
+            rngs∙push belt.lineRangeAtPos(lines [1 rng[2]+ln])
         rngs
         
     @seglsForRange: lines rng ->
 
         nl = belt.numLinesInRange rng
-        
         if nl == 1
             bos = kseg.segiAtWidth lines[rng[2]] rng[1]
             eos = kseg.segiAtWidth lines[rng[2]] rng[3]
-            ⮐  [lines[rng[2]]∙slice(bos eos)]
+            ⮐  [lines[rng[2]]∙slice(bos eos-1)]
         
         firstLineIndex = min rng[2] lines.len
         lastLineIndex  = min rng[4] lines.len
 
         segi = kseg.segiAtWidth lines[firstLineIndex] rng[1]
-        lns = [lines[firstLineIndex]∙slice(segi lines[firstLineIndex].len)]
+        lns = [lines[firstLineIndex]∙slice(segi)]
         if nl > 2
-            lns += lines∙slice(firstLineIndex+1 lastLineIndex)
+            lns += lines∙slice(firstLineIndex+1 lastLineIndex-1)
         segi = kseg.segiAtWidth lines[lastLineIndex] rng[3]
-        lns += [lines[lastLineIndex]∙slice(1 segi)]
+        lns += [lines[lastLineIndex]∙slice(1 segi-1)]
+        lns
                 
     @indexOfLongestLine: lines ->
         
@@ -448,14 +448,14 @@ class text
         
         split = []
         
-        split∙push [rng[0] rng[1] kseg.width(lines[rng[1]]) rng[1]]
+        split∙push [rng[1] rng[2] kseg.width(lines[rng[2]])+1 rng[2]]
         
         if nl > 2
             for i in 1..nl-2
-                split∙push [0 rng[1]+i kseg.width(lines[rng[1]+i]) rng[1]+i]
+                split∙push [1 rng[2]+i kseg.width(lines[rng[2]+i])+1 rng[2]+i]
         
-        if includeEmpty or rng[2] > 0
-            split∙push [0 rng[3] rng[2] rng[3]] 
+        if includeEmpty or rng[3] > 1
+            split∙push [1 rng[4] rng[3] rng[4]] 
 
         split
                             
@@ -474,7 +474,7 @@ class text
     
     @isMultiLineRange: lines rng -> rng[2] != rng[4]
         
-    @isFullLineRange: lines rng -> (1 <= rng[2] and rng[2] <= rng[4] and rng[4] < lines.len) and (rng[1] == 1) and (rng[3] >= lines[rng[4]].len or rng[3] == 1 and rng[2] < rng[4])
+    @isFullLineRange: lines rng -> (1 <= rng[2] and rng[2] <= rng[4] and rng[4] <= lines.len) and (rng[1] == 1) and (rng[2] == rng[4] and rng[3] > lines[rng[4]].len or rng[3] == 1 and rng[2] < rng[4])
     
     @isSpanLineRange: lines rng -> (1 <= rng[2] and rng[2] == rng[4] and rng[4] < lines.len) and (rng[1] > 1 or rng[3] < lines[rng[2]].len)
         
@@ -532,8 +532,8 @@ class text
         
         before = lines[pos[2]]∙slice(1 pos[1]-1)
         tcc = kseg.tailCountChunk before
-        if tcc
-            ⮐  kseg.str before∙slice(before.len-tcc)
+        if tcc > 0
+            ⮐  kseg.str before∙slice(before.len-tcc+1)
         ''    
         
     @chunkAfterPos: lines pos ->

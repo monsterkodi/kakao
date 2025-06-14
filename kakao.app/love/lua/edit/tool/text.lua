@@ -301,12 +301,12 @@ end)
 
 
 function text.static.seglRangeAtPos(segls, pos) 
-        return array(1, pos[2], #segls[pos[2]], pos[2])
+        return array(1, pos[2], (#segls[pos[2]] + 1), pos[2])
     end
 
 
 function text.static.lineRangeAtPos(lines, pos) 
-        return array(1, pos[2], kseg.width(lines[pos[2]]), pos[2])
+        return array(1, pos[2], (kseg.width(lines[pos[2]]) + 1), pos[2])
     end
 
 
@@ -351,19 +351,19 @@ function text.static.numFullLinesInRange(lines, rng)
 
 
 function text.static.numLinesInRange(rng) 
-    return ((rng[3] - rng[1]) + 1)
+    return ((rng[4] - rng[2]) + 1)
     end
 
 
 function text.static.isEmptyLineAtPos(lines, pos) 
-    return (#lines[pos[1]] <= 0)
+    return (#lines[pos[2]] <= 0)
     end
 
 
 function text.static.lineRangesInRange(lines, rng) 
         local rngs = array()
         for ln = 0, belt.numLinesInRange(rng)-1 do 
-            rngs:push(belt.lineRangeAtPos(lines, array(0, (rng[1] + ln))))
+            rngs:push(belt.lineRangeAtPos(lines, array(1, (rng[2] + ln))))
         end
         
         return rngs
@@ -372,24 +372,23 @@ function text.static.lineRangesInRange(lines, rng)
 
 function text.static.seglsForRange(lines, rng) 
         local nl = belt.numLinesInRange(rng)
-        
         if (nl == 1) then 
             local bos = kseg.segiAtWidth(lines[rng[2]], rng[1])
             local eos = kseg.segiAtWidth(lines[rng[2]], rng[3])
-            return array(lines[rng[2]]:slice(bos, eos))
+            return array(lines[rng[2]]:slice(bos, (eos - 1)))
         end
         
         local firstLineIndex = min(rng[2], #lines)
         local lastLineIndex = min(rng[4], #lines)
         
         local segi = kseg.segiAtWidth(lines[firstLineIndex], rng[1])
-        local lns = array(lines[firstLineIndex]:slice(segi, #lines[firstLineIndex]))
+        local lns = array(lines[firstLineIndex]:slice(segi))
         if (nl > 2) then 
-            lns = lns + (lines:slice((firstLineIndex + 1), lastLineIndex))
+            lns = lns + (lines:slice((firstLineIndex + 1), (lastLineIndex - 1)))
         end
         
         segi = kseg.segiAtWidth(lines[lastLineIndex], rng[3])
-        lns = lns + (array(lines[lastLineIndex]:slice(1, segi)))
+        lns = lns + (array(lines[lastLineIndex]:slice(1, (segi - 1))))
         return lns
     end
 
@@ -579,16 +578,16 @@ function text.static.splitLineRange(lines, rng, includeEmpty)
         
         local split = array()
         
-        split:push(array(rng[0], rng[1], kseg.width(lines[rng[1]]), rng[1]))
+        split:push(array(rng[1], rng[2], (kseg.width(lines[rng[2]]) + 1), rng[2]))
         
         if (nl > 2) then 
             for i in iter(1, (nl - 2)) do 
-                split:push(array(0, (rng[1] + i), kseg.width(lines[(rng[1] + i)]), (rng[1] + i)))
+                split:push(array(1, (rng[2] + i), (kseg.width(lines[(rng[2] + i)]) + 1), (rng[2] + i)))
             end
         end
         
-        if (includeEmpty or (rng[2] > 0)) then 
-            split:push(array(0, rng[3], rng[2], rng[3]))
+        if (includeEmpty or (rng[3] > 1)) then 
+            split:push(array(1, rng[4], rng[3], rng[4]))
         end
         
         return split
@@ -631,7 +630,7 @@ function text.static.isMultiLineRange(lines, rng)
 
 
 function text.static.isFullLineRange(lines, rng) 
-    return (((((1 <= rng[2]) and (rng[2] <= rng[4])) and (rng[4] < #lines)) and (rng[1] == 1)) and ((rng[3] >= #lines[rng[4]]) or ((rng[3] == 1) and (rng[2] < rng[4]))))
+    return (((((1 <= rng[2]) and (rng[2] <= rng[4])) and (rng[4] <= #lines)) and (rng[1] == 1)) and (((rng[2] == rng[4]) and (rng[3] > #lines[rng[4]])) or ((rng[3] == 1) and (rng[2] < rng[4]))))
     end
 
 
@@ -709,8 +708,8 @@ function text.static.wordAtPos(lines, pos)
 function text.static.chunkBeforePos(lines, pos) 
         local before = lines[pos[2]]:slice(1, (pos[1] - 1))
         local tcc = kseg.tailCountChunk(before)
-        if tcc then 
-            return kseg.str(before:slice((#before - tcc)))
+        if (tcc > 0) then 
+            return kseg.str(before:slice(((#before - tcc) + 1)))
         end
         
         return ''

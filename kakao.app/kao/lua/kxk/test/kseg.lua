@@ -7,19 +7,43 @@ test("kseg", function()
         test.cmp(kseg.rep(4, 'x'):str(), "xxxx")
         test.cmp(kseg.rep(2, 'xy'):str(), "xyxy")
         
-        test.cmp(kseg.segiAtWidth(kseg(''), 1), 0)
+        test.cmp(kseg.segiAtWidth(kseg(''), 0), 1)
+        test.cmp(kseg.segiAtWidth(kseg(''), 1), 1)
         test.cmp(kseg.segiAtWidth(kseg('a'), 1), 1)
-        test.cmp(kseg.segiAtWidth(kseg('a'), 2), 1)
+        test.cmp(kseg.segiAtWidth(kseg('a'), 2), 2)
         test.cmp(kseg.segiAtWidth(kseg('abc'), 2), 2)
         test.cmp(kseg.segiAtWidth(kseg('ab3'), 3), 3)
-        test.cmp(kseg.segiAtWidth(kseg('ab3'), 4), 3)
+        test.cmp(kseg.segiAtWidth(kseg('ab3'), 4), 4)
+        test.cmp(kseg.segiAtWidth(kseg('ab3'), 5), 4)
+        test.cmp(kseg.segiAtWidth(kseg('ab3'), 6), 4)
         
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 0), 1)
         test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 1), 1)
         test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 2), 1)
         test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 3), 2)
         test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 4), 2)
-        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 5), 2)
-        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 6), 2)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 5), 3)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 6), 3)
+    end)
+    
+    test("segls", function()
+        local lines = kstr.lines [[
+123
+456
+
+abc
+def]]
+        
+        test.cmp(lines, array("123", "456", "", "abc", "def"))
+        
+        local segls = kseg.segls([[
+123
+456
+
+abc
+def]])
+        
+        test.cmp(segls, array(kseg("123"), kseg("456"), kseg(""), kseg("abc"), kseg("def")))
     end)
     
     test("construct", function()
@@ -125,18 +149,22 @@ test("kseg", function()
         test.cmp(kseg.segiAtWidth(kseg("abc"), 1), 1)
         test.cmp(kseg.segiAtWidth(kseg("abc"), 2), 2)
         test.cmp(kseg.segiAtWidth(kseg("abc"), 3), 3)
+        test.cmp(kseg.segiAtWidth(kseg("abc"), 4), 4)
         
         test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 1), 1)
         test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 2), 2)
         test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 3), 3)
+        test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 4), 4)
         
         test.cmp(kseg.segiAtWidth("abc", 1), 1)
         test.cmp(kseg.segiAtWidth("abc", 2), 2)
         test.cmp(kseg.segiAtWidth("abc", 3), 3)
+        test.cmp(kseg.segiAtWidth("abc", 4), 4)
         
         test.cmp(kseg.segiAtWidth("▸◌◂", 1), 1)
         test.cmp(kseg.segiAtWidth("▸◌◂", 2), 2)
         test.cmp(kseg.segiAtWidth("▸◌◂", 3), 3)
+        test.cmp(kseg.segiAtWidth("▸◌◂", 4), 4)
     end)
     
     test("eql", function()

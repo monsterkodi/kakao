@@ -9,7 +9,7 @@ class kseg extends array
             switch type(s)
                 "string" 
                     if s.len > 0
-                        for i seg in @codes s
+                        for i seg in @codes(s)
                             @push seg
                 "table"
                     if s.len > 0 or s is strg and s∙len()
@@ -223,14 +223,14 @@ class kseg extends array
 
     segiAtWidth: w -> 
     
-        w = min w @len * 2
+        w = min w @len * 2 + 1
         i = 1
         s = 0
         while i <= @len
             s += kseg.width @[i]
             ⮐  i if s >= w
             i += 1
-        @len
+        @len+1
 
     @segiAtWidth: a w -> kseg(a)∙segiAtWidth w
             

@@ -356,7 +356,7 @@ function kseg.static.width(s)
 
 
 function kseg:segiAtWidth(w) 
-        w = min(w, (#self * 2))
+        w = min(w, ((#self * 2) + 1))
         local i = 1
         local s = 0
         while (i <= #self) do 
@@ -365,7 +365,7 @@ function kseg:segiAtWidth(w)
             i = i + 1
         end
         
-        return #self
+        return (#self + 1)
     end
 
 

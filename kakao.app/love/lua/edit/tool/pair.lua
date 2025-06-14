@@ -52,9 +52,9 @@ function pair.static.rangeOfStringSurroundingRange(lines, rng)
 
 
 function pair.static.rangeOfInnerStringSurroundingRange(lines, rng) 
-        if belt.isInvalidLineIndex(lines, rng[1]) then return end
+        if belt.isInvalidLineIndex(lines, rng[2]) then return end
         
-        local rgs = belt.rangesOfStringsInText(lines[rng[1]], rng[1])
+        local rgs = belt.rangesOfStringsInText(lines[rng[2]]:str(), rng[2])
         rgs = belt.rangesShrunkenBy(rgs, 1)
         for _, r in ipairs(rgs) do 
             if belt.rangeContainsRange(r, rng) then return r end
@@ -63,20 +63,20 @@ function pair.static.rangeOfInnerStringSurroundingRange(lines, rng)
 
 
 function pair.static.rangesOfStringsInText(text, li) 
-        li = li or 0
+        li = li or 1
         
         local rngs = array()
         local ss = -1
-        local cc = null
-        for i = 0, #text-1 do 
-            local c = text[i]
+        local cc = nil
+        for i in iter(1, #text) do 
+            local c = string.sub(text, i, i)
             if (not cc and ((c == "'") or (c == '"'))) then 
                 cc = c
                 ss = i
             elseif (c == cc) then 
-                if ((text[(i - 1)] ~= '\\') or ((i > 2) and (text[(i - 2)] == '\\'))) then 
+                if ((string.sub(text, (i - 1), (i - 1)) ~= '\\') or ((i > 2) and (string.sub(text, (i - 2), (i - 2)) == '\\'))) then 
                     rngs:push(array(ss, li, (i + 1), li))
-                    cc = null
+                    cc = nil
                     ss = -1
                 end
             end
