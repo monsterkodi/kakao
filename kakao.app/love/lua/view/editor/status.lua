@@ -67,9 +67,9 @@ function status:init(editor)
         self.filepos:setColor('empty', theme.status.empty)
         self.filepos.syntax = fileposSyntax()
         
-        self.crumbs:on('action', self.onCrumbsAction)
-        self.statusfile:on('action', self.onFileAction)
-        self.filepos:on('action', self.onFileposAction)
+        self.crumbs:on('action', self.onCrumbsAction, self)
+        self.statusfile:on('action', self.onFileAction, self)
+        self.filepos:on('action', self.onFileposAction, self)
         
         -- post.on 'status.filepos' @onStatusFilepos
         return self
@@ -126,18 +126,20 @@ function status:onCrumbsAction(action, path, event)
     end
 
 
-function status:droopCrumb(path, crumb, ○) 
+function status:droopCrumb(path, crumb) 
         clearTimeout(self.droopTimer)
         delete(self.droopTimer)
         
         path = slash.untilde(path)
-        local files = ○(nfs.list, path, {recursive = false})
+        local files = slash.walk(path, {recursive = false})
         local x = (self.crumbs.cells.x + int(((crumb.cols[1] + crumb.cols[0]) / 2)))
         return post:emit('droop.show', {files = files, pos = array(x, (self.crumbs.cells.y + 1))})
     end
 
 
 function status:onFileAction(action, file) 
+        if empty(file) then return end
+        print("onFileAction", action, file)
         if (action == 'click') then 
     return post:emit('browse.dir', slash.dir(file), file)
         end
@@ -161,7 +163,7 @@ function status:onMouse(event)
         
         view.onMouse(self, event)
         
-        local col, row = self:eventPos(event)
+        local col, row = unpack(self:eventPos(event))
         
         if self.hover then 
             post:emit('pointer', self.pointerType)
@@ -169,12 +171,12 @@ function status:onMouse(event)
         
         if (event.type == 'press') then 
                 if self.hover then 
-                    if ((0 <= col) < 4) then 
+                    if ((1 <= col) and (col <= 4)) then 
                         post:emit('dircol.toggle')
                         return true
                     end
                     
-                    if (((self.cells.cols - 12) <= col) < self.cells.cols) then 
+                    if (((self.cells.cols - 12) <= col) and (col <= self.cells.cols)) then 
                         post:emit('funcol.toggle')
                         return true
                     end

@@ -115,12 +115,12 @@ class Returner
         if e is Array
             lst = e[-1]
             if 
-                lst.return ➜ ⮐ @profilend e, -1
-                lst.while  ➜ ⮐ @profilend e
-                lst.for    ➜ ⮐ @profilend e
-                lst.if     ➜ ⮐ @if lst.if
-                lst.try    ➜ ⮐ @try lst.try
-                lst.switch ➜ ⮐ @switch lst.switch
+                lst.return ➜ ⮐  @profilend e, -1
+                lst.while  ➜ ⮐  @profilend e
+                lst.for    ➜ ⮐  @profilend e
+                lst.if     ➜ ⮐  @if lst.if
+                lst.try    ➜ ⮐  @try lst.try
+                lst.switch ➜ ⮐  @switch lst.switch
             
             if not (lst.call?.callee?.text in ['log' 'warn' 'error' 'throw'])
                 e.push

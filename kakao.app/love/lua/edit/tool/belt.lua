@@ -231,19 +231,19 @@ function belt.static.isPosOutsideRange(pos, rng)
 
 
 function belt.static.isPosBeforeRange(pos, rng) 
-        return ((pos[1] < rng[1]) or ((pos[1] == rng[1]) and (pos[0] < rng[0])))
+        return ((pos[2] < rng[2]) or ((pos[2] == rng[2]) and (pos[1] < rng[1])))
     end
 
 
 function belt.static.isPosAfterRange(pos, rng) 
-        return ((pos[1] > rng[3]) or ((pos[1] == rng[3]) and (pos[0] > rng[2])))
+        return ((pos[2] > rng[4]) or ((pos[2] == rng[4]) and (pos[1] > rng[3])))
     end
 
 
 function belt.static.isPosTouchingRange(pos, rng) 
         if belt.isPosInsideRange(pos, rng) then return true end
-        if pos(eql, belt.endOfRange, rng) then return true end
-        if pos(eql, belt.startOfRange, rng) then return true end
+        if (pos == belt.endOfRange(rng)) then return true end
+        if (pos == belt.startOfRange(rng)) then return true end
         return false
     end
 
@@ -262,15 +262,15 @@ function belt.static.rangeTouchesPos(rng, pos)
 
 
 function belt.static.rangeForPos(pos) 
-    return array(pos[0], pos[1], pos[0], pos[1])
+    return array(pos[1], pos[2], pos[1], pos[2])
     end
 
 function belt.static.rangeForSpan(span) 
-    return array(span[0], span[1], span[2], span[1])
+    return array(span[1], span[2], span[3], span[2])
     end
 
 function belt.static.rangeFromStartToEnd(start, stop) 
-    return array(start[0], start[1], stop[0], stop[1])
+    return array(start[1], start[2], stop[1], stop[2])
     end
 
 function belt.static.rangesForSpans(spans) 
@@ -279,34 +279,34 @@ function belt.static.rangesForSpans(spans)
 
 
 function belt.static.isEmptyRange(rng) 
-    return ((rng[0] == rng[2]) and (rng[1] == rng[3]))
+    return ((rng[1] == rng[3]) and (rng[2] == rng[4]))
     end
 
 function belt.static.isRangeEmpty(rng) 
-    return ((rng[0] == rng[2]) and (rng[1] == rng[3]))
+    return ((rng[1] == rng[3]) and (rng[2] == rng[4]))
     end
 
 
 function belt.static.startOfRange(rng) 
-    return array(rng[0], rng[1])
+    return array(rng[1], rng[2])
     end
 
 function belt.static.endOfRange(rng) 
-    return array(rng[2], rng[3])
+    return array(rng[3], rng[4])
     end
 
 
 function belt.static.rangeGrownBy(rng, delta) 
-    return array((rng[0] - delta), rng[1], (rng[2] + delta), rng[3])
+    return array((rng[1] - delta), rng[2], (rng[3] + delta), rng[4])
     end
 
 function belt.static.rangeShrunkenBy(rng, delta) 
-    return array((rng[0] + delta), rng[1], (rng[2] - delta), rng[3])
+    return array((rng[1] + delta), rng[2], (rng[3] - delta), rng[4])
     end
 
 function belt.static.rangesShrunkenBy(rngs, delta) 
         local filtered = rngs:filter(function (r) 
-    return ((r[2] - r[0]) >= (2 * delta))
+    return ((r[3] - r[1]) >= (2 * delta))
 end)
         return filtered:map(function (r) 
     return belt.rangeShrunkenBy(r, delta)
@@ -328,11 +328,11 @@ end)
 
 
 function belt.static.isSameSpan(a, b) 
-    return a(eql, b)
+    return (a == b)
     end
 
 function belt.static.isSameRange(a, b) 
-    return a(eql, b)
+    return (a == b)
     end
 
 
@@ -344,12 +344,12 @@ function belt.static.isPosInsideSpan(pos, span)
 
 
 function belt.static.isPosBeforeSpan(pos, span) 
-        return ((pos[1] < span[1]) or ((pos[1] == span[1]) and (pos[0] < span[0])))
+        return ((pos[2] < span[2]) or ((pos[2] == span[2]) and (pos[1] < span[1])))
     end
 
 
 function belt.static.isPosAfterSpan(pos, span) 
-        return ((pos[1] > span[1]) or ((pos[1] == span[1]) and (pos[0] >= span[2])))
+        return ((pos[2] > span[2]) or ((pos[2] == span[2]) and (pos[1] >= span[3])))
     end
 
 
@@ -359,11 +359,11 @@ function belt.static.isPosBeforeOrInsideSpan(pos, span)
 
 
 function belt.static.startOfSpan(s) 
-    return array(s[0], s[1])
+    return array(s[1], s[2])
     end
 
 function belt.static.endOfSpan(s) 
-    return array(s[2], s[1])
+    return array(s[3], s[2])
     end
 
 
@@ -371,14 +371,14 @@ function belt.static.nextSpanAfterPos(spans, pos)
         if empty(spans) then return end
         
         pos = (function () 
-    if belt.isPosAfterSpan(pos, spans[-1]) then 
-    return array(0, 0)
+    if belt.isPosAfterSpan(pos, spans[#spans]) then 
+    return array(1, 1)
                     end
 end)()
         
-        if belt.isPosBeforeSpan(pos, spans[0]) then return spans[0] end
+        if belt.isPosBeforeSpan(pos, spans[1]) then return spans[1] end
         
-        for span, index in ipairs(spans) do 
+        for index, span in ipairs(spans) do 
             if belt.isPosAfterSpan(pos, span) then 
                 if (((index + 1) < #spans) and belt.isPosBeforeOrInsideSpan(pos, spans[(index + 1)])) then 
                     return spans[(index + 1)]
@@ -390,10 +390,10 @@ end)()
 
 function belt.static.prevSpanBeforePos(spans, pos) 
         if empty(spans) then return end
-        if belt.isPosBeforeSpan(pos, spans[0]) then return spans[-1] end
-        if belt.isPosInsideSpan(pos, spans[0]) then return spans[-1] end
+        if belt.isPosBeforeSpan(pos, spans[1]) then return spans[#spans] end
+        if belt.isPosInsideSpan(pos, spans[1]) then return spans[#spans] end
         
-        for index in iter((#spans - 1), 0) do 
+        for index in iter(#spans, 1) do 
             local span = spans[index]
             if belt.isPosAfterSpan(pos, span) then 
                 return span
@@ -406,19 +406,19 @@ function belt.static.normalizeSpans(spans)
         if empty(spans) then return array() end
         
         spans = spans:map(function (a) 
-    if (a[0] > a[2]) then 
-    return array(a[2], a[1], a[0]) else 
+    if (a[1] > a[3]) then 
+    return array(a[3], a[2], a[1]) else 
     return a
                                  end
 end)
         spans:sort(function (a, b) 
-    if (a[1] == b[1]) then 
-    return (a[0] < b[0]) else 
-    return (a[1] < b[1])
+    if (a[2] == b[2]) then 
+    return (a[1] < b[1]) else 
+    return (a[2] < b[2])
                             end
 end)
         spans = spans:filter(function (a) 
-    return (a[0] ~= a[2])
+    return (a[1] ~= a[3])
 end)
         return spans
     end
@@ -432,7 +432,7 @@ end)
 
 function belt.static.rangesContainLine(rngs, lineIndex) 
         for _, rng in ipairs(rngs) do 
-            if ((rng[1] <= lineIndex) <= rng[3]) then return true end
+            if ((rng[2] <= lineIndex) and (lineIndex <= rng[4])) then return true end
         end
         
         return false

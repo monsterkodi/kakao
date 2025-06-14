@@ -59,7 +59,7 @@ main = ... ->
     co∙shuffle()
     write co[1] cs[1] co[2] cs[2] co[3] cs[3]
     
-    watch slash.path(".")
+    watch slash.path(".") slash.path("../../love")
 
 build = ->
 
@@ -92,21 +92,29 @@ watch = ... ->
     luaFiles = array.indexdict slash.files(slash.path(dir ".") "lua")
     kxkFiles = array.indexdict slash.files(slash.path(dir "./kxk") "lua")
     kxkTests = array.indexdict slash.files(slash.path(dir "kxk/test"))
+    prjFiles = array.indexdict slash.files(slash.path(dir "../../love/lua") "lua")
+    prjTests = array.indexdict slash.files(slash.path(dir "../../love/lua/test"))
+    prjDir   = slash.path(dir "../../love/lua/")
 
-    if verbose
+    if opts.verbose
         log "\nlua files"
-        log array.str luaFiles
+        log noon(luaFiles)
         log "\nkxk files"
-        log array.str kxkFiles
+        log noon(kxkFiles)
         log "\nkxk tests"
-        log array.str kxkTests
+        log noon(kxkTests)
+        log "\nprj files"
+        log noon(prjFiles)
+        log "\nprj tests"
+        log noon(prjTests)
         
     modTimes = {}
     
     while true
     
-        kxkChanged = array()
-        luaChanged = array()
+        kxkChanged = []
+        luaChanged = []
+        prjChanged = []
         
         for _ dir in ipairs {...}
 
@@ -129,6 +137,9 @@ watch = ... ->
                         elif luaFiles[p]
                             write ◌d- "◆ " ◌i+ slash.file(p)                    
                             luaChanged∙push p
+                        elif prjFiles[p]
+                            write ◌d- "♥ " ◌i+ slash.file(p)
+                            prjChanged∙push p
             
         testPass = true    
         if kxkChanged.len > 0
@@ -137,6 +148,15 @@ watch = ... ->
             if not test.run kxkTests 
                 testPass = false
                 write ◌rx "testing"
+                
+        if prjChanged.len > 0
+            write ◌g_ "testing ♥"
+            cwd = slash.cwd()
+            slash.chdir prjDir
+            if not test.run prjTests 
+                testPass = false
+                write ◌rx "testing ♥"
+            slash.chdir cwd
             
         if luaChanged.len > 0 or kxkChanged.len > 0
             if testPass
@@ -150,7 +170,8 @@ watch = ... ->
                     write ◌r "✘"
                     log output
             else
-                write ◌rx "compile"
+                write ◌rx "compile"                            
+        
         sleep 1
         
 main()

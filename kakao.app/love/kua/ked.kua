@@ -12,6 +12,8 @@ use util.session
 use view.editor.fileeditor
 use view.editor.status
 use view.menu.menu
+use view.menu.macro
+use view.menu.context
 use view.colmns.dircol
 use view.colmns.funcol
 use theme.theme
@@ -26,6 +28,7 @@ class KED
         @logfile = logfile()
         
         _G.ked_session = @session
+        _G.screen = { cols:1 rows:1 cw:1 ch:1 }
 
         # @session.on 'loaded' @onSessionLoaded
         
@@ -33,7 +36,7 @@ class KED
         # @git      = git()
 
         @menu     = menu()
-        # @macro    = macro()
+        @macro    = macro()
         # @quicky   = quicky()
         # @browse   = browse()
         @editor   = fileeditor 'editor'
@@ -44,7 +47,7 @@ class KED
         # @searcher = searcher  @editor
         # @differ   = differ    @editor
         @status   = status @editor
-        # @context  = context()
+        @context  = context()
         # @input    = input()
 
         # @input.on 'action' @onInputAction
@@ -273,14 +276,14 @@ class KED
         
         @loadingFile = absFile
         
-        exists = nfs.fileExists @loadingFile
+        exists = slash.fileExists @loadingFile
         
         if not exists
             warn "ked.loadFile - file doesn't exist! #{@loadingFile}"
             @loadingFile = nil
             ⮐ 
         
-        @loadingFile = nfs.resolveSymlink @loadingFile
+        @loadingFile = slash.resolveSymlink @loadingFile
         
         if empty @loadingFile
             error "ked.loadFile - #{absFile} resolved to empty!"
@@ -290,7 +293,7 @@ class KED
         
         readingFile = @loadingFile
         
-        text = nfs.readText @loadingFile
+        text = slash.readText @loadingFile
         
         if @loadingFile != readingFile
             # warn 'another file started loading, skip editor update'
@@ -307,7 +310,7 @@ class KED
         if text == undefined
             text = '○ binary ○'
         
-        (colors, segls) = belt.colorSeglsForText text
+        (colors segls) = belt.colorSeglsForText text
         
         if valid colors
             @editor.state.syntax∙setColors colors
@@ -351,16 +354,16 @@ class KED
         text = kseg.str @editor.state.s.lines
         
         if valid @currentFile
-            nfs.write @currentFile text
-            @editor.state.clearHistory() # lazy way to 'undirty' :> no undo after save :(
+            slash.write @currentFile text
+            @editor.state∙clearHistory() # lazy way to 'undirty' :> no undo after save :(
             @redraw()
             @saveSessionFile @currentFile 'saved'
             
     saveSessionFile: file typ ->
         
-        frecent.fileAction file typ
+        frecent∙fileAction file typ
                 
-        @session.set 'files▸recent' frecent.store('file')
+        @session∙set 'files▸recent' frecent∙store('file')
             
     saveAs: -> log 'todo: saveAs'
     
@@ -372,7 +375,7 @@ class KED
     
     onPaste: text -> 
     
-        @editor.state.insert text
+        @editor.state∙insert text
         @redraw()
                                     
     # 00     00   0000000   000   000   0000000  00000000  
@@ -385,37 +388,39 @@ class KED
 
         if event.type == 'wheel'
 
-            for _ handler in ipairs @wheelHandlers
+            for handler in @wheelHandlers
                 if handler∙onWheel event
                     ⮐ 
             ⮐ 
 
-        for _ handler in ipairs @mouseHandlers
+        # log "mouse" event.type, event.x, event.y
+        for handler in @mouseHandlers
             if handler∙onMouse event
+                # log "handled" handler.name
                 event.handled = true
                 break if event.type != 'move' or handler.isPopup
 
         if event.button == 'right' and event.type == 'press' and event.count == 1
             
-            for _ handler in ipairs @contextHandlers
+            for handler in @contextHandlers
                 if handler.hover
                     if handler∙onContext event
                         break
         
     showFinderOrSearcher: ->
     
-        if @finder.visible() and valid @finder.input.current()
-            @searcher.show @finder.input.current()
+        if @finder∙visible() and valid @finder.input∙current()
+            @searcher∙show @finder.input∙current()
         else
-            @finder.show()
+            @finder∙show()
         @
             
     showFileposHistory: ->
     
-        if filepos.fileposl.length > 1
+        if filepos.fileposl.len > 1
 
-            files = filepos.fileposl.map((fp) -> fp[0])
-            files = files.reverse()
+            files = filepos.fileposl∙map((fp) -> fp[0])
+            files = files∙reverse()
             files.shift() if filepos.offset == 0
             scx = int @screen.cols/2
             scy = int @screen.rows/2
@@ -561,14 +566,14 @@ class KED
         #         @screen∙set x y string.sub($x 1 1) [50 0 0] 
             
         @menu∙draw()
-        # @macro∙draw()
+        @macro∙draw()
         # @quicky∙draw()
         # @browse∙draw()
         # @droop∙draw()
         # @finder∙draw()
         # @searcher∙draw()
         # @differ∙draw()
-        # @context∙draw()
+        @context∙draw()
         # @input∙draw()
             
 ⮐  KED

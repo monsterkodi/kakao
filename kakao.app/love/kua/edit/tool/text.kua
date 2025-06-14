@@ -8,11 +8,12 @@
 
 class text
 
-    @linesForText: text -> kstr.lines text
+    # @linesForText: text -> kstr.lines text
+    @linesForText: text -> kseg.segls text
         
     @joinLines: lines join='\n' ->
         
-        if lines is str
+        if lines is "string"
             lines = kstr.lines lines
         lines.join join
         
@@ -31,19 +32,19 @@ class text
             
             ansisub = m c x ->
                 
-                cs = c.split(';').map((c) -> ⮐  math.floor(c))
+                cs = c.split(';')∙map((c) -> ⮐  floor(c))
 
-                l = m.length
+                l = m.len
                 switch cs[0]
                     38
                         colors[li] ?= []
-                        if cs.length == 5 
+                        if cs.len == 5 
                             colors[li]∙push({x:x l:l fg:string.sub(cs 2 4)}) 
                         else
                             colors[li]∙push({x:x l:l fg:color.ansi256[cs[2]]})
                     48  
                         colors[li] ?= []
-                        if cs.length == 5 
+                        if cs.len == 5 
                             colors[li]∙push({x:x l:l bg:string.sub(cs 2 4)}) 
                         else
                             colors[li]∙push({x:x l:l bg:color.ansi256[cs[2]]})
@@ -62,7 +63,7 @@ class text
                 lcl = colors[li]
                 removed = 0
                 idx = 0
-                while idx < lcl.length
+                while idx < lcl.len
                     continue = false
                     clr = lcl[idx]
                     clr.x -= removed
@@ -178,7 +179,7 @@ class text
             while true
                 x1 = line.indexOf text x2
                 break if x1 < 0
-                x2 = x1+text.length
+                x2 = x1+text.len
                 spans∙push [x1 y x2]
         
         spans
@@ -202,11 +203,11 @@ class text
     
         (indent rest) = belt.splitLineIndent str
         
-        kstr.lpad(int(indent.length*newIndent/oldIndent)) & rest
+        kstr.lpad(int(indent.len*newIndent/oldIndent)) & rest
         
     @numIndentOfLines: lines ->
         
-        for _ line in ipairs lines
+        for line in lines
             if not empty kstr.trim(line)
                 ⮐  belt.numIndent line
         0
@@ -227,7 +228,7 @@ class text
     
     @seglRangeAtPos: segls pos ->
 
-        [0 pos[1] segls[pos[1]].length pos[1]]
+        [0 pos[1] segls[pos[1]].len pos[1]]
         
     @lineRangeAtPos: lines pos ->
 
@@ -235,7 +236,7 @@ class text
 
     @lineRangesForPositions: lines posl append->
         
-        rngs = belt.lineIndicesForPositions(posl).map((y) -> if lines[y].length ➜ [0 y lines[y].length y] ➜ [0 y 0 y+1])
+        rngs = belt.lineIndicesForPositions(posl)∙map((y) -> if lines[y].len ➜ [0 y lines[y].len y] ➜ [0 y 0 y+1])
         if valid rngs and append
             rngs[-1][2]  = 0 
             rngs[-1][3] += 1
@@ -254,13 +255,13 @@ class text
             n += 1   
         if d > 1    
             n += d-2     
-        if rng[2] == lines[rng[3]].length
+        if rng[2] == lines[rng[3]].len
             n += 1   
         n
         
     @numLinesInRange: rng -> rng[3] - rng[1] + 1
     
-    @isEmptyLineAtPos: lines pos -> lines[pos[1]].length <= 0
+    @isEmptyLineAtPos: lines pos -> lines[pos[1]].len <= 0
         
     @lineRangesInRange: lines rng ->
         
@@ -278,8 +279,8 @@ class text
             eos = kseg.segiAtWidth lines[rng[2]] rng[3]
             ⮐  [lines[rng[2]]∙slice(bos eos)]
         
-        firstLineIndex = math.min rng[2] lines.len
-        lastLineIndex  = math.min rng[4] lines.len
+        firstLineIndex = min rng[2] lines.len
+        lastLineIndex  = min rng[4] lines.len
 
         segi = kseg.segiAtWidth lines[firstLineIndex] rng[1]
         lns = [lines[firstLineIndex]∙slice(segi lines[firstLineIndex].len)]
@@ -334,7 +335,7 @@ class text
             ol = oldLines[oi]
             nl = newLines[ni]
 
-            while oi < oldLines.length
+            while oi < oldLines.len
 
                 if not nl # new state has not enough lines, mark remaining lines in oldState as deleted
                     deletes∙push oi
@@ -382,7 +383,7 @@ class text
                         ni += 1
                         nl = newLines[ni]
 
-            while ni < newLines.length
+            while ni < newLines.len
 
                 inserts∙push ni
                 ni += 1
@@ -408,8 +409,8 @@ class text
     
     @joinLineColumns: lineCols ->
 
-        numLines = lineCols[0].length
-        numCols  = lineCols.length
+        numLines = lineCols[0].len
+        numCols  = lineCols.len
         lines = []
         for lidx in 0...numLines
             line = ''
@@ -468,7 +469,7 @@ class text
     @isLinesPosInside:  lines pos -> pos[2] < lines.len and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
     @isLinesPosOutside: lines pos -> not belt.isLinesPosInside lines pos 
     
-    @isValidLineIndex:   lines li -> 1 <= li <= lines.len
+    @isValidLineIndex:   lines li -> 1 <= li and li <= lines.len
     @isInvalidLineIndex: lines li -> not belt.isValidLineIndex lines li
     
     @isMultiLineRange: lines rng -> rng[2] != rng[4]
@@ -487,7 +488,7 @@ class text
     
     @rangeOfClosestChunkToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = unpack pos
         
         ⮐  if belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestChunk lines[y] x
@@ -497,7 +498,7 @@ class text
                 
     @rangeOfClosestChunkLeftToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = unpack pos
         
         ⮐  if belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestChunk lines[y]∙slice(1 x) x
@@ -507,7 +508,7 @@ class text
 
     @rangeOfClosestChunkRightToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = unpack pos
         
         ⮐  if belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestChunk lines[y]∙slice(x) x
@@ -545,19 +546,19 @@ class text
     
     @rangeOfClosestWordToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = unpack pos
         ⮐  if belt.isInvalidLineIndex lines y
         r = kseg.spanForClosestWordAtColumn lines[y] x 
         if r
-            if 0 <= r[0] < r[1]
-                ⮐  [r[0] y r[1] y]
+            if 1 <= r[1] and r[1] < r[2]
+                ⮐  [r[1] y r[2] y]
                 
     @rangeOfWhitespaceLeftToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = unpack pos
         
-        y = clamp 0 lines.length-1 y
-        x = clamp 0 lines[y].length x
+        y = clamp 0 lines.len-1 y
+        x = clamp 0 lines[y].len x
         
         if x <= 0
             ⮐  [x y x y] 
@@ -572,7 +573,7 @@ class text
 
     @rangeOfWordOrWhitespaceLeftToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = unpack pos
         
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
@@ -599,9 +600,9 @@ class text
             if r[0] > 0 
                 ⮐  [x, y, r[0]+x, y]
             
-        [x y lines[y].length y]   
+        [x y lines[y].len y]   
         
-    @lineChar: line x -> line[x] if 0 <= x < line.length
+    @lineChar: line x -> line[x] if 1 <= x and x <= line.len
         
     @categoryForChar: char -> 
         
@@ -630,10 +631,10 @@ class text
         else
             ci = px - 1
             ⮐  0 if ci < 0
-            if ci >= line.length and jump∙find('empty') >= 1 ➜ ⮐  line.length - ci - 1
+            if ci >= line.len and jump∙find('empty') >= 1 ➜ ⮐  line.len - ci - 1
             cat = belt.categoryForChar belt.lineChar(line ci)
             ⮐  dx if jump∙find(cat) < 1
-            while 0 <= ci < line.length and belt.categoryForChar(belt.lineChar(line ci)) == cat
+            while 0 <= ci < line.len and belt.categoryForChar(belt.lineChar(line ci)) == cat
                 ci += dx
             min dx ci - px + 1
 

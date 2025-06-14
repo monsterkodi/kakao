@@ -12,15 +12,14 @@ inputchoice = require "view.menu.inputchoice"
 
 
 local context = class("context", inputchoice)
-    context.static.menu = nil
+    
 
 
 function context:init() 
         inputchoice.init(self, 'context')
         
         self:setColor('bg', theme.context.bg)
-        
-        context.menu = self
+        _G.contextMenu = self
         return self
     end
 
@@ -33,8 +32,7 @@ function context:init()
 
 function context:arrange() 
         local w = ((self.width + 2) + 1) -- 2 for frame, 1 for right 
-        local c = self.choices.numChoices()
-        
+        local c = self.choices:numChoices()
         local ih = (function () 
     if self:inputIsActive() then 
     return 2 else 
@@ -43,12 +41,13 @@ function context:arrange()
 end)()
         local iz = max(0, (ih - 1))
         local h = ((c + 2) + ih)
-        local x = self.pos[0]
-        local y = self.pos[1]
+        local x = self.pos[1]
+        local y = self.pos[2]
+        print("nummChoices", c, x, y, w, h, ih, iz)
         
-        self.input.layout((x + 2), (y + 1), (w - 4), iz)
-        self.choices.layout((x + 1), ((y + 1) + ih), (w - 2), c)
-        return self.cells.layout(x, y, w, h)
+        self.input:layout((x + 2), (y + 1), (w - 4), iz)
+        self.choices:layout((x + 1), ((y + 1) + ih), (w - 2), c)
+        return self.cells:layout(x, y, w, h)
     end
 
 --  0000000  000   000   0000000   000   000
@@ -59,25 +58,34 @@ end)()
 
 
 function context.static.show(pos, cb, items) 
-    return context.menu.show(pos, cb, items)
+        if _G.contextMenu then 
+            return _G.contextMenu:show(pos, cb, items)
+        else 
+            return print("DAFURGL?")
+        end
     end
 
 
-function context:show(@pos, @cb, @items) 
-        self.pos[1] = self.pos[1] - 1
+function context:show(pos, cb, items) 
+        self.pos = pos
+        self.cb = cb
+        self.items = items
         
-        function (items) 
-              items = items or (@items.map(i)) ; (' ' + i) ; return -- padding for   end
+        -- @pos[1] -= 1
+        
+        items = self.items:map(function (i) 
+    return ' ' .. i
+end) -- padding for  
         
         self.width = belt.widthOfLines(items)
         
-        self.input.set('')
-        self.input.hide()
-        self.choices.set(items)
-        self.choices.select(0)
-        self.choices.state.setView(array(0, 0))
+        self.input:set('')
+        self.input:hide()
+        self.choices:set(items)
+        self.choices:select(1)
+        self.choices.state:setView(array(1, 1))
         
-        return super()
+        return inputchoice.show(self)
     end
 
 --  0000000   00000000   00000000   000      000   000  
@@ -89,7 +97,7 @@ function context:show(@pos, @cb, @items)
 
 function context:applyChoice(choice) 
         -- log 'context applyChoice' choice
-        self:cb(choice)
+        self.cb(choice)
         return self:hide()
     end
 
@@ -110,7 +118,8 @@ function context:draw()
         
         self:arrange()
         self:drawFrame()
-        return self:drawChoices()
+        self:drawChoices()
+        return self:render()
     end
 
 

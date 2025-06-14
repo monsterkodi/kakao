@@ -50,7 +50,7 @@ function statusfile:draw()
              end
 end)()
         
-        for ch, x in self.rounded do 
+        for ch, x in ipairs(self.rounded) do 
             if ((ch == '') or (ch == '')) then 
                 self.cells.set(x, 0, ch, bg, self.color.empty)
             else 
@@ -107,7 +107,7 @@ function statusfile:onMouse(event)
         if (event.type == 'press') then 
                 if self.hover then 
                     self:emit('action', 'click', self.file)
-                    return {redraw = true}
+                    return true
                 end
         end
         

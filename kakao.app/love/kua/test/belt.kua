@@ -1,0 +1,685 @@
+
+# █████████   ███████    ███████   ███            ███████    ████████  ███      █████████
+#    ███     ███   ███  ███   ███  ███            ███   ███  ███       ███         ███   
+#    ███     ███   ███  ███   ███  ███            ███████    ███████   ███         ███   
+#    ███     ███   ███  ███   ███  ███            ███   ███  ███       ███         ███   
+#    ███      ███████    ███████   ███████        ███████    ████████  ███████     ███   
+
+use kxk.kxk
+use edit.tool.belt
+
+▸ tool belt
+
+    ▸ categoryForChar   
+
+        belt.categoryForChar "a" ▸ "word"
+        belt.categoryForChar "0" ▸ "word"
+        belt.categoryForChar "." ▸ "punct"
+        belt.categoryForChar ":" ▸ "punct"
+        belt.categoryForChar "~" ▸ "punct"
+        belt.categoryForChar "]" ▸ "punct"
+        belt.categoryForChar " " ▸ "ws"
+        belt.categoryForChar ""  ▸ "empty"
+
+    ▸ cells
+        
+        l = belt.linesForText """
+            012
+            abc
+            XYZ
+            """
+            
+        cells = belt.cellsForLines l
+        
+        belt.clampCellRect cells 0 0 1 1 ▸ [1 1 1 1]
+        
+        rect = belt.cellsInRect cells 0 1 1 1
+        for c in rect
+            c.cell.fg = [255 0 0]
+            
+        # cells[1][1].fg ▸ [255 0 0]
+        # cells[2][2].fg ▸ [255 0 0]
+        # cells[3][3].fg ▸ []
+        
+        # belt.clampCellRect cells 0 0 1 1 ▸ [0 0 1 1]
+        # belt.clampCellRect cells -1 -1 1 1 ▸ [0 0 1 1]
+        # 
+        # belt.cellsInRect(cells 0 0 1 1)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' 'a' 'b']
+        # belt.cellsInRect(cells 1 1 1 1)∙map((n) -> ⮐  n.cell.char) ▸ ['b']
+        # belt.cellsInRect(cells 0 0 2 0)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' '2']
+        # belt.cellsInRect(cells 1 2 2 2)∙map((n) -> ⮐  n.cell.char) ▸ ['Y' 'Z']
+        # 
+        # belt.cellNeighborsAtPos(cells 0 0)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' 'a' 'b']
+
+    # ▸ extendLineRangesToPosition 
+    # 
+    #     lines = ['123' '45' '6']
+    # 
+    #     belt.extendLineRangesFromPositionToPosition lines immutable([]) [0 0] [0 2] ▸ [[0 0 0 2]]
+    #     belt.extendLineRangesFromPositionToPosition lines immutable([[0 0 1 0] [2 0 3 0]]) [1 1] [0 2] ▸ [[0 0 1 0] [2 0 3 0] [1 1 0 2]]
+
+    #       000  000   000  00     00  00000000   
+    #       000  000   000  000   000  000   000  
+    #       000  000   000  000000000  00000000   
+    # 000   000  000   000  000 0 000  000        
+    #  0000000    0000000   000   000  000        
+    
+    #▸ jumpDelta
+    #
+    #    line = '1  '
+    #    
+    #    belt.jumpDelta line 0  1 ['empty'] ▸ 1
+    #    belt.jumpDelta line 1  1 ['empty'] ▸ 1
+    #    belt.jumpDelta line 2  1 ['empty'] ▸ 1
+    #    belt.jumpDelta line 3  1 ['empty'] ▸ 1
+    #    belt.jumpDelta line 4  1 ['empty'] ▸ 1
+    #
+    #    line = '    a = b ->  '
+    #
+    #    belt.jumpDelta line 0  1 ['ws'] ▸  4
+    #    belt.jumpDelta line 1  1 ['ws'] ▸  3
+    #    belt.jumpDelta line 2  1 ['ws'] ▸  2
+    #    belt.jumpDelta line 3  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 4  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 5  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 6  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 7  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 8  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 9  1 ['ws'] ▸  1
+    #    belt.jumpDelta line 10 1 ['ws'] ▸  1
+    #    belt.jumpDelta line 11 1 ['ws'] ▸  1
+    #    belt.jumpDelta line 12 1 ['ws'] ▸  2
+    #           
+    #    line = '  ab += cd ;;  '
+    #
+    #    belt.jumpDelta line 0   1 ['word'] ▸  1
+    #    belt.jumpDelta line 1   1 ['word'] ▸  1
+    #    belt.jumpDelta line 2   1 ['word'] ▸  2
+    #    belt.jumpDelta line 3   1 ['word'] ▸  1
+    #    belt.jumpDelta line 4   1 ['word'] ▸  1
+    #    belt.jumpDelta line 5   1 ['word'] ▸  1
+    #    belt.jumpDelta line 6   1 ['word'] ▸  1
+    #    belt.jumpDelta line 7   1 ['word'] ▸  1
+    #    belt.jumpDelta line 8   1 ['word'] ▸  2
+    #    belt.jumpDelta line 9   1 ['word'] ▸  1
+    #    belt.jumpDelta line 10  1 ['word'] ▸  1
+    #    belt.jumpDelta line 11  1 ['word'] ▸  1
+    #
+    #    belt.jumpDelta line 0   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 1   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 2   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 3   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 4   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 5   1 ['punct'] ▸  2
+    #    belt.jumpDelta line 6   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 7   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 8   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 9   1 ['punct'] ▸  1
+    #    belt.jumpDelta line 10  1 ['punct'] ▸  1
+    #    belt.jumpDelta line 11  1 ['punct'] ▸  2
+    #
+    #    belt.jumpDelta line 0   1 ['ws' 'word' 'punct'] ▸  2
+    #    belt.jumpDelta line 1   1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 2   1 ['ws' 'word' 'punct'] ▸  2
+    #    belt.jumpDelta line 3   1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 4   1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 5   1 ['ws' 'word' 'punct'] ▸  2
+    #    belt.jumpDelta line 6   1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 7   1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 8   1 ['ws' 'word' 'punct'] ▸  2
+    #    belt.jumpDelta line 9   1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 10  1 ['ws' 'word' 'punct'] ▸  1
+    #    belt.jumpDelta line 11  1 ['ws' 'word' 'punct'] ▸  2
+    #    
+    #    belt.jumpDelta line 0   -1 ['ws' 'word' 'punct'] ▸   0
+    #    belt.jumpDelta line 1   -1 ['ws' 'word' 'punct'] ▸  -1
+    #    belt.jumpDelta line 2   -1 ['ws' 'word' 'punct'] ▸  -2
+    #    belt.jumpDelta line 3   -1 ['ws' 'word' 'punct'] ▸  -1
+    #    belt.jumpDelta line 4   -1 ['ws' 'word' 'punct'] ▸  -2
+    #    belt.jumpDelta line 5   -1 ['ws' 'word' 'punct'] ▸  -1
+    #    belt.jumpDelta line 6   -1 ['ws' 'word' 'punct'] ▸  -1
+    #    belt.jumpDelta line 7   -1 ['ws' 'word' 'punct'] ▸  -2
+    #    belt.jumpDelta line 8   -1 ['ws' 'word' 'punct'] ▸  -1
+    #    belt.jumpDelta line 9   -1 ['ws' 'word' 'punct'] ▸  -1
+    #    belt.jumpDelta line 10  -1 ['ws' 'word' 'punct'] ▸  -2
+    #    belt.jumpDelta line 11  -1 ['ws' 'word' 'punct'] ▸  -1
+    #    
+    #    line = '  '
+    #    
+    #    belt.jumpDelta line 5  -1 ['empty'] ▸ -3
+    #    belt.jumpDelta line 4  -1 ['empty'] ▸ -2
+    #    belt.jumpDelta line 3  -1 ['empty'] ▸ -1
+    #    
+    #    belt.jumpDelta line 5  -1 ['ws'] ▸ -1
+    #    belt.jumpDelta line 4  -1 ['ws'] ▸ -1
+    #    belt.jumpDelta line 3  -1 ['ws'] ▸ -1
+    #    belt.jumpDelta line 2  -1 ['ws'] ▸ -2
+
+        
+    ▸ isPosInsideRange
+    
+        belt.isPosInsideRange [0 0]  [0 0  1 0] ▸ true
+        belt.isPosInsideRange [1 0]  [0 0  1 0] ▸ true
+        belt.isPosInsideRange [0 1]  [0 0  1 0] ▸ false
+    
+        belt.isPosInsideRange [7 1]  [5 2 10 2] ▸ false
+        belt.isPosInsideRange [7 2]  [5 2 10 2] ▸ true
+        belt.isPosInsideRange [5 2]  [5 2 10 2] ▸ true
+        belt.isPosInsideRange [10 2] [5 2 10 2] ▸ true
+        belt.isPosInsideRange [4 2]  [5 2 10 2] ▸ false
+        belt.isPosInsideRange [11 2] [5 2 10 2] ▸ false
+        belt.isPosInsideRange [7 3]  [5 2 10 2] ▸ false
+        
+    ▸ rangeContainsRange
+    
+        belt.rangeContainsRange [0 0  1 0] [0 0 0 0] ▸ true
+        belt.rangeContainsRange [0 0  1 0] [1 0 1 0] ▸ true
+        
+    # 00000000    0000000   000   000   0000000   00000000   0000000  
+    # 000   000  000   000  0000  000  000        000       000       
+    # 0000000    000000000  000 0 000  000  0000  0000000   0000000   
+    # 000   000  000   000  000  0000  000   000  000            000  
+    # 000   000  000   000  000   000   0000000   00000000  0000000   
+    
+    ▸ normalizeRanges
+    
+        belt.normalizeRanges [] ▸ []
+        
+        belt.normalizeRanges [[0 1 3 4]] ▸ [[0 1 3 4]]
+        belt.normalizeRanges [[0 4 3 1]] ▸ [[3 1 0 4]]
+        belt.normalizeRanges [[3 1 0 4]] ▸ [[3 1 0 4]]
+        belt.normalizeRanges [[3 4 2 4]] ▸ [[2 4 3 4]]
+        
+        belt.normalizeRanges [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9] [1 1 2 2]]
+        belt.normalizeRanges [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9] [1 1 2 2]]
+        
+    ▸ mergeLineRanges
+    
+        lines = ['1234567890' '1234567890' '1234567890']
+    
+        belt.mergeLineRanges lines [[0 0 9 9] [1 1 2 2]] ▸ [[0 0 9 9]]
+        belt.mergeLineRanges lines [[1 1 2 2] [0 0 9 9]] ▸ [[0 0 9 9]]
+        belt.mergeLineRanges lines [[1 1 2 2] [0 0 9 9] [0 0 10 0] [0 8 9 9]] ▸ [[0 0 9 9]]
+        
+        belt.mergeLineRanges lines [[4 0 6 0] [8 0 10 0]] ▸ [[4 0 6 0] [8 0 10 0]]
+        belt.mergeLineRanges lines [[4 0 6 0] [7 0 10 0]] ▸ [[4 0 6 0] [7 0 10 0]]
+        belt.mergeLineRanges lines [[4 0 6 0] [6 0 10 0]] ▸ [[4 0 10 0]]
+        belt.mergeLineRanges lines [[4 0 6 0] [5 0 10 0]] ▸ [[4 0 10 0]]
+        
+        belt.mergeLineRanges lines [[4 1 10 1] [0 2 4 2]] ▸ [[4 1 4 2]]
+
+    ▸ rangeOfClosestWordToPos
+    
+        lines = ['1 2  3   4' '   ab ghij']
+        
+        belt.rangeOfClosestWordToPos lines [1 1] ▸ [1 1 2 1]
+        belt.rangeOfClosestWordToPos lines [2 1] ▸ [3 1 4 1]
+        belt.rangeOfClosestWordToPos lines [3 1] ▸ [3 1 4 1]
+        belt.rangeOfClosestWordToPos lines [4 1] ▸ [3 1 4 1]
+        belt.rangeOfClosestWordToPos lines [5 1] ▸ [6 1 7 1]
+        belt.rangeOfClosestWordToPos lines [6 1] ▸ [6 1 7 1]
+
+        belt.rangeOfClosestWordToPos lines [1 2] ▸ [4 2 6 2]
+        belt.rangeOfClosestWordToPos lines [6 2] ▸ [7 2 11 2]
+        belt.rangeOfClosestWordToPos lines [7 2] ▸ [7 2 11 2]
+        
+    ▸ rangeOfWordOrWhitespaceLeftToPos
+    
+        lines = ['1 2  3   4' '   ab  ghij']
+        
+        belt.rangeOfWordOrWhitespaceLeftToPos lines [0 0] ▸ undefined
+        belt.rangeOfWordOrWhitespaceLeftToPos lines [1 0] ▸ [0 0 1 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos lines [1 1] ▸ [0 1 1 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos lines [3 1] ▸ [0 1 3 1]
+        
+        segls = kseg.segls lines.join('\n')
+        
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [0 0] ▸ undefined
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [1 0] ▸ [0 0 1 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [1 1] ▸ [0 1 1 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [0 1 3 1]
+        
+        segls = kseg.segls '  🧑🌾  ab🌾cde'
+        
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [1 0] ▸ [0 0 1 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [2 0] ▸ [0 0 2 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [3 0] ▸ [2 0 3 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [4 0] ▸ [2 0 3 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [5 0] ▸ [3 0 4 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [6 0] ▸ [3 0 4 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [7 0] ▸ [4 0 5 0]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [8 0] ▸ [4 0 6 0]
+        
+    ▸ chunkBeforePos
+    
+        segls = kseg.segls '\n1.4   x:z'
+        
+        belt.chunkBeforePos segls [0 0] ▸ ''
+        belt.chunkBeforePos segls [1 0] ▸ ''
+        belt.chunkBeforePos segls [0 1] ▸ ''
+        belt.chunkBeforePos segls [1 1] ▸ '1'
+        belt.chunkBeforePos segls [3 1] ▸ '1.4'
+        belt.chunkBeforePos segls [5 1] ▸ ''
+        belt.chunkBeforePos segls [9 1] ▸ 'x:z'
+
+    ▸ chunkAfterPos
+    
+        segls = kseg.segls '\n1.4   x:z'
+        
+        belt.chunkAfterPos segls [0 0] ▸ ''
+        belt.chunkAfterPos segls [1 0] ▸ ''
+        belt.chunkAfterPos segls [0 1] ▸ '1.4'
+        belt.chunkAfterPos segls [1 1] ▸ '.4'
+        belt.chunkAfterPos segls [3 1] ▸ ''
+        belt.chunkAfterPos segls [5 1] ▸ ''
+        belt.chunkAfterPos segls [6 1] ▸ 'x:z'
+        belt.chunkAfterPos segls [7 1] ▸ ':z'
+        
+    ▸ isFullLineRange
+    
+        lines = ['' '124' 'abcdef']
+        
+        belt.isFullLineRange lines [0 0 0 1] ▸ true
+        belt.isFullLineRange lines [0 0 0 0] ▸ true
+        belt.isFullLineRange lines [0 1 3 1] ▸ true
+        belt.isFullLineRange lines [0 1 5 1] ▸ true
+        belt.isFullLineRange lines [0 1 2 1] ▸ false
+        belt.isFullLineRange lines [1 1 3 1] ▸ false
+        
+    # 0000000    000       0000000    0000000  000   000   0000000  
+    # 000   000  000      000   000  000       000  000   000       
+    # 0000000    000      000   000  000       0000000    0000000   
+    # 000   000  000      000   000  000       000  000        000  
+    # 0000000    0000000   0000000    0000000  000   000  0000000   
+    
+    ▸ lineIndicesForRangesAndPositions
+    
+        belt.lineIndicesForRangesAndPositions [] [[1 1] [1 2] [1 3]] ▸ [1 2 3]
+        belt.lineIndicesForRangesAndPositions [[ 0 0 2 0 ]] [[1 1] [1 2] [1 3]] ▸ [0 1 2 3]
+        belt.lineIndicesForRangesAndPositions [[ 0 1 2 2 ]] [[1 6] [1 5] [1 4]] ▸ [1 2 4 5 6]
+        
+    ▸ linesIndicesForSpans
+    
+        belt.lineIndicesForSpans [] ▸ []
+        belt.lineIndicesForSpans [[0 1 0]] ▸ [1]
+        belt.lineIndicesForSpans [[0 1 0] [1 1 1]] ▸ [1]
+    
+    ▸ blockRangesForRangesAndPositions
+    
+        lines = kseg.segls """
+            line 1
+            line 2
+            """
+        belt.blockRangesForRangesAndPositions lines [] [[0 0] [0 1]]    ▸ [[0 0 6 1]]
+        belt.blockRangesForRangesAndPositions lines [[0 0 5 1]] [[0 0]] ▸ [[0 0 6 1]]
+        belt.blockRangesForRangesAndPositions lines [[0 1 5 1]] [[0 0]] ▸ [[0 0 6 1]]
+
+        lines = kseg.segls """
+            line 1
+            line 2
+            line 3
+            line 4
+            line 5
+            line 6
+            """
+            
+        belt.blockRangesForRangesAndPositions lines [] [[1 1] [1 2] [1 3]] ▸ [[0 1 6 3]]
+        belt.blockRangesForRangesAndPositions lines [] [[6 5] [4 3] [2 1]] ▸ [[0 1 6 1] [0 3 6 3] [0 5 6 5]]
+        
+    #  0000000  00000000    0000000   000   000  
+    # 000       000   000  000   000  0000  000  
+    # 0000000   00000000   000000000  000 0 000  
+    #      000  000        000   000  000  0000  
+    # 0000000   000        000   000  000   000  
+    
+    ▸ isSpanLineRange
+    
+        lines = ['' '124' 'abcdef']
+        
+        belt.isSpanLineRange lines [0 1 1 1] ▸ true
+        belt.isSpanLineRange lines [0 0 0 0] ▸ false
+        belt.isSpanLineRange lines [0 1 3 1] ▸ false
+        belt.isSpanLineRange lines [1 1 1 2] ▸ false
+        
+    ▸ isPosAfterSpan
+    
+        belt.isPosAfterSpan [0 0] [1 0 5] ▸ false
+        belt.isPosAfterSpan [4 0] [1 0 5] ▸ false
+        belt.isPosAfterSpan [5 0] [1 0 5] ▸ true
+        belt.isPosAfterSpan [6 0] [1 0 5] ▸ true
+        belt.isPosAfterSpan [0 1] [1 0 5] ▸ true
+        
+    ▸ isPosBeforeSpan
+        
+        belt.isPosBeforeSpan [0 0] [1 0 3] ▸ true
+        belt.isPosBeforeSpan [1 0] [1 0 3] ▸ false
+        belt.isPosBeforeSpan [3 1] [1 0 3] ▸ false
+        
+    ▸ isPosInsideSpan
+    
+        belt.isPosInsideSpan [0 0] [1 0 3] ▸ false
+        belt.isPosInsideSpan [1 0] [1 0 3] ▸ true
+        belt.isPosInsideSpan [2 0] [1 0 3] ▸ true
+        belt.isPosInsideSpan [3 0] [1 0 3] ▸ false
+        
+    ▸ nextSpanAfterPos
+    
+        spans = [[1 0 3] [6 0 8] [2 1 5]]
+        
+        belt.nextSpanAfterPos spans [4 0] ▸ [6 0 8]
+        belt.nextSpanAfterPos spans [0 0] ▸ [1 0 3]
+        
+        spans = [[0 21 11] [2 22 11] [5 23 11] [7 24 11]] 
+        
+        belt.nextSpanAfterPos spans [11 21] ▸ [2 22 11]
+        belt.nextSpanAfterPos spans [11 22] ▸ [5 23 11]
+        belt.nextSpanAfterPos spans [11 23] ▸ [7 24 11]
+        belt.nextSpanAfterPos spans [11 24] ▸ [0 21 11]
+        
+        spans = [[2 1 5] [2 2 5] [2 3 5]]
+        
+        belt.nextSpanAfterPos spans [5 2]   ▸ [2 3 5]
+        belt.nextSpanAfterPos spans [5 3]   ▸ [2 1 5]
+        belt.nextSpanAfterPos spans [5 1]   ▸ [2 2 5]
+        
+        spans = [[1 4 3] [3 4 5]]
+        
+        belt.nextSpanAfterPos spans [0 0] ▸ [1 4 3]
+        belt.nextSpanAfterPos spans [3 4] ▸ [3 4 5]
+        belt.nextSpanAfterPos spans [5 4] ▸ [1 4 3]
+        
+    ▸ prevSpanBeforePos
+    
+        spans = [[1 0 3] [6 0 8] [2 1 5]]
+        
+        belt.prevSpanBeforePos spans [0 0] ▸ [2 1 5]
+        belt.prevSpanBeforePos spans [1 0] ▸ [2 1 5]
+        belt.prevSpanBeforePos spans [2 0] ▸ [2 1 5]
+        belt.prevSpanBeforePos spans [3 0] ▸ [1 0 3]
+        belt.prevSpanBeforePos spans [4 0] ▸ [1 0 3]
+        belt.prevSpanBeforePos spans [6 0] ▸ [1 0 3]
+        belt.prevSpanBeforePos spans [7 0] ▸ [1 0 3]
+        belt.prevSpanBeforePos spans [9 0] ▸ [6 0 8]
+        belt.prevSpanBeforePos spans [0 1] ▸ [6 0 8]
+        
+    # 00000000    0000000    0000000  000  000000000  000   0000000   000   000   0000000  
+    # 000   000  000   000  000       000     000     000  000   000  0000  000  000       
+    # 00000000   000   000  0000000   000     000     000  000   000  000 0 000  0000000   
+    # 000        000   000       000  000     000     000  000   000  000  0000       000  
+    # 000         0000000   0000000   000     000     000   0000000   000   000  0000000   
+    
+    ▸ normalizePositions
+    
+        belt.normalizePositions [[0 0] [1 0] [2 0]]     ▸ [[0 0] [1 0] [2 0]]
+        belt.normalizePositions [[1 0] [2 0] [0 0]]     ▸ [[0 0] [1 0] [2 0]]
+        belt.normalizePositions [[1 0] [2 0] [1 0]]     ▸ [[1 0] [2 0]]
+        belt.normalizePositions [[2 2] [3 3] [1 1]]     ▸ [[1 1] [2 2] [3 3]]
+        belt.normalizePositions [[2 2] [0 3] [11 1]]    ▸ [[11 1] [2 2] [0 3]]
+
+    ▸ lineRangeAtPos
+    
+        lines = belt.seglsForText """
+            🌾🧑
+            """
+
+        belt.lineRangeAtPos lines [0 0] ▸ [0 0 4 0]
+
+    ▸ seglRangeAtPos
+    
+        lines = belt.seglsForText """
+            🧑🌾
+            """
+
+        belt.seglRangeAtPos lines [0 0] ▸ [0 0 2 0]
+        
+    ▸ lineRangesInRange
+    
+        lines = belt.seglsForText """
+            1
+            
+            12
+            abc
+            """
+        
+        belt.lineRangesInRange lines [0 0 0 2] ▸ [[0 0 1 0] [0 1 0 1] [0 2 2 2]]
+        
+    ▸ splitLineRanges
+    
+        lines = belt.linesForText """
+            1
+            
+            12
+            abc
+            """
+
+        belt.splitLineRanges lines [[0 0 1 2]] ▸ [[0 0 1 0] [0 1 0 1] [0 2 1 2]]
+        belt.splitLineRanges lines [[0 2 1 2] [2 2 3 2]] ▸ [[0 2 1 2] [2 2 3 2]]
+        
+    ▸ seglsForText
+    
+        segls = belt.seglsForText """
+            123
+            456
+            
+            abc
+            def
+            """
+            
+        segls ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]    
+            
+        ▸ seglsForRange
+            
+            belt.seglsForRange segls [0 0 3 4] ▸ [['1' '2' '3'] ['4' '5' '6'] [] ['a' 'b' 'c'] ['d' 'e' 'f']]
+            belt.seglsForRange segls [0 0 0 0] ▸ [[]]
+            belt.seglsForRange segls [0 0 1 0] ▸ [['1']]
+            belt.seglsForRange segls [3 0 0 1] ▸ [[] []]
+            belt.seglsForRange segls [3 0 1 1] ▸ [[] ['4']]
+        
+    ▸ rangesForLinesSplitAtPositions 
+    
+        lines = belt.linesForText """
+            123
+            456
+            
+            abc
+            def
+            """
+    
+        belt.rangesForLinesSplitAtPositions lines []      ▸ []
+        belt.rangesForLinesSplitAtPositions lines [[0 0]] ▸ [[0 0 0 0] [0 0 3 4]]
+        belt.rangesForLinesSplitAtPositions lines [[1 0]] ▸ [[0 0 1 0] [1 0 3 4]]
+        belt.rangesForLinesSplitAtPositions lines [[0 2]] ▸ [[0 0 0 2] [0 2 3 4]]
+        
+        belt.rangesForLinesSplitAtPositions lines [[0 0] [1 0]] ▸ [[0 0 0 0] [0 0 1 0] [1 0 3 4]]
+        belt.rangesForLinesSplitAtPositions lines [[3 0] [3 1]] ▸ [[0 0 3 0] [3 0 3 1] [3 1 3 4]]
+        
+        belt.rangesForLinesSplitAtPositions lines [[0 5]] ▸ [[0 0 3 4] [3 4 3 4]]
+        
+    ▸ rangesOfStringsInText
+    
+        belt.rangesOfStringsInText "hello" ▸ []
+        belt.rangesOfStringsInText "he'll'o" ▸ [[2 0 6 0]]
+        
+    ▸ widthOfLines
+        
+        #       12345678901234567890123456789012345678901234567890 
+        text = "ｔｈｅ　ｑｕｉｃｋ　ｂｒｏｗｎ　ｆｏｘ　ｊｕｍｐｓ"
+        lines = belt.linesForText text
+        
+        belt.widthOfLines lines ▸ 50
+        
+    # ████████   ███   ███   ███████        ███  ███   ███       ███████  █████████  ████████   
+    # ███   ███  ████  ███  ███             ███  ████  ███      ███          ███     ███   ███  
+    # ███████    ███ █ ███  ███  ████       ███  ███ █ ███      ███████      ███     ███████    
+    # ███   ███  ███  ████  ███   ███       ███  ███  ████           ███     ███     ███   ███  
+    # ███   ███  ███   ███   ███████        ███  ███   ███      ███████      ███     ███   ███  
+
+    ▸ isRangeInString
+    
+        lines = belt.linesForText """
+            123
+            '456'
+            
+            'abc'
+            def
+            """
+            
+        belt.isRangeInString lines [0 0 0 0] ▸ false
+        belt.isRangeInString lines [0 2 0 2] ▸ false
+        belt.isRangeInString lines [0 3 0 3] ▸ false
+        belt.isRangeInString lines [1 3 5 3] ▸ false
+        belt.isRangeInString lines [1 1 1 1] ▸ true
+        belt.isRangeInString lines [1 3 2 3] ▸ true
+        belt.isRangeInString lines [1 3 3 3] ▸ true
+        belt.isRangeInString lines [1 3 4 3] ▸ true
+        
+    #  ███████  ███   ███  ████████   ████████    ███████   ███   ███  ███   ███  ███████  
+    # ███       ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███   ███
+    # ███████   ███   ███  ███████    ███████    ███   ███  ███   ███  ███ █ ███  ███   ███
+    #      ███  ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███
+    # ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
+
+    ▸ rangesOfPairsSurroundingPositions
+    
+        lines = belt.linesForText """
+            01234567
+            
+            '45""6'
+            'a#\{\}c'
+            [{([])}]
+            """
+        pairs = [["'" "'"] ['"''"'] ['#{' '}'] ['['']'] ['('')']]
+        posl  = [[4 0] [4 1] [4 2] [4 3] [4 4]]
+    
+        belt.rangesOfPairsSurroundingPositions lines pairs posl ▸ [
+            [3 2 5 2] 
+            [2 3 5 3] 
+            [3 4 5 4]]
+            
+    # ███   ███  ████████   ███████  █████████  ████████  ███████       ████████    ███████   ███  ████████    ███████
+    # ████  ███  ███       ███          ███     ███       ███   ███     ███   ███  ███   ███  ███  ███   ███  ███     
+    # ███ █ ███  ███████   ███████      ███     ███████   ███   ███     ████████   █████████  ███  ███████    ███████ 
+    # ███  ████  ███            ███     ███     ███       ███   ███     ███        ███   ███  ███  ███   ███       ███
+    # ███   ███  ████████  ███████      ███     ████████  ███████       ███        ███   ███  ███  ███   ███  ███████ 
+
+    ▸ rangesOfNestedPairsAtPositions
+    
+        lines = belt.linesForText """
+            01234567
+            
+            '45""6'
+            'a#\{\}c'
+            [{([])}]
+            """
+        posl  = [[4 0] [4 1] [4 2] [4 3] [4 4]]
+    
+        belt.rangesOfNestedPairsAtPositions lines posl ▸ [
+            [0 2 6 2] 
+            [0 3 6 3] 
+            [0 4 7 4] [1 4 6 4] [2 4 5 4] [3 4 4 4]
+        ]
+
+    ▸ spansOfNestedPairsAtPositions
+    
+        lines = belt.linesForText """
+            01234567
+            
+            '45""6'
+            'a#\{\}c'
+            [{([])}]
+            """
+        posl  = [[4 0] [4 1] [4 2] [4 3] [4 4]]
+    
+        belt.spansOfNestedPairsAtPositions lines posl ▸ [
+                [
+                    [0 2 1] [6 2 7] 
+                    [0 3 1] [6 3 7] 
+                    [0 4 1] [7 4 8] [1 4 2] [6 4 7] [2 4 3] [5 4 6] [3 4 4] [4 4 5]
+                ]
+                [
+                    [0 4 1] [7 4 8] [1 4 2] [6 4 7] [2 4 3] [5 4 6] [3 4 4] [4 4 5]
+                ]
+                [
+                    [0 2 1] [6 2 7] 
+                    [0 3 1] [6 3 7] 
+                ]
+            ]
+        
+    #  ███████   ████████   ████████  ███   ███       ███████  ███       ███████    ███████  ████████
+    # ███   ███  ███   ███  ███       ████  ███      ███       ███      ███   ███  ███       ███     
+    # ███   ███  ████████   ███████   ███ █ ███      ███       ███      ███   ███  ███████   ███████ 
+    # ███   ███  ███        ███       ███  ████      ███       ███      ███   ███       ███  ███     
+    #  ███████   ███        ████████  ███   ███       ███████  ███████   ███████   ███████   ████████
+
+    ▸ openCloseSpansForPositions
+    
+        segls = kseg.segls """
+            [{([])}]
+            '45""6'
+            'a{}c'
+            """
+
+        belt.openCloseSpansForPositions segls [[0 0]] ▸ [[0 0 1] [7 0 8]]
+        belt.openCloseSpansForPositions segls [[1 0]] ▸ [[1 0 2] [6 0 7]]
+        belt.openCloseSpansForPositions segls [[2 0]] ▸ [[2 0 3] [5 0 6]]
+        belt.openCloseSpansForPositions segls [[3 0]] ▸ [[3 0 4] [4 0 5]]
+        belt.openCloseSpansForPositions segls [[4 0]] ▸ [[3 0 4] [4 0 5]]
+        belt.openCloseSpansForPositions segls [[5 0]] ▸ [[2 0 3] [5 0 6]]
+        belt.openCloseSpansForPositions segls [[6 0]] ▸ [[1 0 2] [6 0 7]]
+        belt.openCloseSpansForPositions segls [[7 0]] ▸ [[0 0 1] [7 0 8]]
+        belt.openCloseSpansForPositions segls [[8 0]] ▸ [] # [[0 0 1] [7 0 8]]
+        
+        belt.openCloseSpansForPositions segls [[0 1]] ▸ []
+        belt.openCloseSpansForPositions segls [[6 1]] ▸ []
+        
+        belt.stringDelimiterSpansForPositions segls [[0 1]] ▸ [[0 1 1] [6 1 7]]
+        belt.stringDelimiterSpansForPositions segls [[6 1]] ▸ [[0 1 1] [6 1 7]]
+        
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[2 2]]) ▸ [[2 2 3] [3 2 4]]
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[3 2]]) ▸ [[2 2 3] [3 2 4]]
+        belt.normalizeSpans belt.openCloseSpansForPositions(segls [[4 2]]) ▸ [] #[[2 2 3] [3 2 4]]
+
+        belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[2 2]]) ▸ [[0 2 1] [5 2 6]]
+        belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[3 2]]) ▸ [[0 2 1] [5 2 6]]
+        belt.normalizeSpans belt.stringDelimiterSpansForPositions(segls [[4 2]]) ▸ [[0 2 1] [5 2 6]]
+        
+        segls = kseg.segls "\nnext = lines[ap[1]][ap[0]]\n"
+            
+        belt.openCloseSpansForPositions segls [[25 0]] ▸ [[19 0 20] [25 0 26]]
+        belt.openCloseSpansForPositions segls [[26 0]] ▸ [] # [[19 0 20] [25 0 26]]
+        
+        segls = kseg.segls """
+            s[2]
+            """
+            
+        belt.openCloseSpansForPositions segls [[4 0]] ▸ [] # [[1 0 2] [3 0 4]]
+        
+    # ████████    ███████    ███████         ███████   ███████   ███       ███████
+    # ███   ███  ███   ███  ███             ███       ███   ███  ███      ███     
+    # ████████   ███   ███  ███████         ███       ███   ███  ███      ███████ 
+    # ███        ███   ███       ███        ███       ███   ███  ███           ███
+    # ███         ███████   ███████          ███████   ███████   ███████  ███████ 
+
+    ▸ positionColumns
+    
+        belt.positionColumns         [[0 0] [0 1]] ▸ [[[0 0] [0 1]]]
+        belt.positionColumns         [[0 0] [0 1] [1 1]] ▸ [[[0 0] [0 1]] [[1 1]]]
+        
+    ▸ indexOfExtremePositionInDirection
+    
+        posl = [[12 3] [4 4] [3 6] [10 6] [5 7] [13 8] [2 11]]
+        belt.indexOfExtremePositionInDirection posl 'left'  ▸ 6
+        belt.indexOfExtremePositionInDirection posl 'down'  ▸ 6
+        belt.indexOfExtremePositionInDirection posl 'right' ▸ 5
+        belt.indexOfExtremePositionInDirection posl 'up'    ▸ 0
+        
+        posl = [[3 3] [3 4] [3 5]]
+        belt.indexOfExtremePositionInDirection posl 'left' 0 ▸ 0 
+        belt.indexOfExtremePositionInDirection posl 'left' 1 ▸ 1 
+        belt.indexOfExtremePositionInDirection posl 'left' 2 ▸ 2 
+        
+        belt.indexOfExtremePositionInDirection posl 'right' 0 ▸ 0 
+        belt.indexOfExtremePositionInDirection posl 'right' 1 ▸ 1 
+        belt.indexOfExtremePositionInDirection posl 'right' 2 ▸ 2 
+        
+        

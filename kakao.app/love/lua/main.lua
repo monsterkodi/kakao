@@ -80,8 +80,14 @@ end
 
 
 function love.mousepressed(x, y, button, istouch, presses) 
-    button = "right"
-    local event = {x = x, y = y, type = "press", button = button, count = 1}
+    button = (function () 
+    if (button == 1) then 
+    return "left" else 
+    return "right"
+             end
+end)()
+    local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    local event = {x = x, y = y, type = "press", button = button, count = 1, cell = cell}
     return ked:onMouse(event)
 end
 

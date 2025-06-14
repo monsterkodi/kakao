@@ -360,7 +360,7 @@ function state:clearLines()
 
 
 function state:isValidLineIndex(li) 
-    return ((0 <= li) < #self.s.lines)
+    return ((1 <= li) and (li <= #self.s.lines))
     end
 
 function state:isInvalidLineIndex(li) 

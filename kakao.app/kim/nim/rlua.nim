@@ -393,7 +393,7 @@ proc ▸for(this : Rlua, n : Node) =
                     this.add(", ")
         else: 
             # if n.for_range.kind != ●range
-            if (n.for_range.kind == ●literal): 
+            if (n.for_range.kind in {●literal, ●propertyAccess}): 
                 this.add("_, ")
                 this.rnd(n.for_value)
             else: 
@@ -416,7 +416,7 @@ proc ▸for(this : Rlua, n : Node) =
                     this.rnd(n.for_range.range_end)
         else: 
             this.add(" in ")
-            if (n.for_range.kind == ●literal): 
+            if (n.for_range.kind in {●literal, ●propertyAccess}): 
                 if (n.for_inof.token.str == "of"): 
                     this.add("pairs(")
                 else: 

@@ -12,10 +12,7 @@ class kseg extends array
                         for i seg in @codes s
                             @push seg
                 "table"
-                    if s.len > 0
-                        for g in s∙each()
-                            @push g
-                    else if s∙len()
+                    if s.len > 0 or s is strg and s∙len()
                         for g in s∙each()
                             @push g
                 ➜ 
@@ -28,6 +25,15 @@ class kseg extends array
         if any is array
             ⮐  any∙map((l) -> ⮐  kseg(l))
         error "segls???" any
+        
+    eql: o ->
+    
+        ⮐  false if o.len != @len
+        for i c in @
+            ⮐  false if c != o[i]
+        true
+        
+    @eql: a b -> kseg(a)∙eql kseg(b)
         
     @codepoint: rune ->
     
@@ -125,6 +131,58 @@ class kseg extends array
                 break
         cnt
         
+    tailCount: c ->
+    
+        for i in 0...@len
+            ⮐  i if @[@len-i] != c
+        @len
+
+    headCountWord: ->
+    
+        for i s in @
+            ⮐  i-1 if not string.match s "%w+" 
+        @len
+    
+    headCountChunk: ->
+    
+        for i s in @
+            ⮐  i-1 if string.match s "%s+" 
+        @len
+        
+    headCountTurd: ->
+        
+        for i s in a
+            ⮐  i-1 if string.match s "[%s%w]+"
+        @len
+
+    tailCountTurd: ->
+        
+        for i in 0...@len
+            ⮐  i if string.match @[@len-i] "[%w%s]+"  
+        @len
+
+    tailCountWord: ->
+        
+        for i in 0...@len
+            ⮐  i if not string.match @[@len-i] "%w+" 
+        @len
+        
+    tailCountChunk: ->
+        
+        for i in 0...@len
+            ⮐  i if string.match @[@len-i] "%s+"  
+        @len
+        
+    @headCount: a c -> kseg(a)∙headCount c
+    @tailCount: a c -> kseg(a)∙tailCount c
+        
+    @headCountWord:  a -> kseg(a)∙headCountWord()
+    @headCountChunk: a -> kseg(a)∙headCountChunk()
+    @headCountTurd:  a -> kseg(a)∙headCountTurd()
+    @tailCountTurd:  a -> kseg(a)∙tailCountTurd()
+    @tailCountChunk: a -> kseg(a)∙tailCountChunk()
+    @tailCountWord:  a -> kseg(a)∙tailCountWord()
+        
     indent: -> @lcount " "
     
     find: c ->
@@ -152,15 +210,7 @@ class kseg extends array
                 if j == c.len
                     ⮐  i
         -1
-        
-    slice: f t ->
-    
-        t ?= @len
-        r = kseg()
-        for i in f..t
-            r∙push @[i]
-        r
-        
+                
     @width: s ->
     
         ⮐  0 if empty s
@@ -171,17 +221,19 @@ class kseg extends array
             w += wcwidth kseg.codepoint(seg)
         w
 
-    @segiAtWidth: segs w ->
+    segiAtWidth: w -> 
     
-        w = min w segs.len * 2
+        w = min w @len * 2
         i = 1
         s = 0
-        while i <= segs.len
-            s += kseg.width segs[i]
+        while i <= @len
+            s += kseg.width @[i]
             ⮐  i if s >= w
             i += 1
-        segs.len
-        
+        @len
+
+    @segiAtWidth: a w -> kseg(a)∙segiAtWidth w
+            
     @rep: n s=' ' ->
         
         ⮐  [] if n <= 0
@@ -190,6 +242,34 @@ class kseg extends array
         for i in 1..n
             a += s
         a
+        
+    spanForClosestWordAtColumn: c ->
+
+        segi  = @segiAtWidth c
+        left  = @slice 1 segi
+        right = @slice segi+1
+
+        ls = left∙tailCount ' '
+        rs = right∙headCount ' '
+    
+        lw = left∙tailCountWord()
+        rw = right∙headCountWord()
+        
+        ll = left.len
+        rl = right.len
+        
+        s = nil
+        if 
+            ls == ll and rs == rl ➜ s = [c c]
+            ls == 0 and rs == 0   ➜ s = [c-lw+1 c+rw+1]
+            ls == ll              ➜ rcw = right∙slice(rs+1)∙headCountWord();   s = [ll+rs+1 ll+rs+rcw+1] 
+            rs == rl              ➜ tcw = left∙slice(1 ll-ls)∙tailCountWord(); s = [ll-ls-tcw+1 ll-ls+1] 
+            ls == rs              ➜ s = left∙spanForClosestWordAtColumn left.len
+            ls < rs               ➜ s = left∙spanForClosestWordAtColumn left.len
+            ls > rs               ➜ s = right∙spanForClosestWordAtColumn 1; s[1] += c; s[2] += c
+        s
+        
+    @spanForClosestWordAtColumn: a c -> kseg(a)∙spanForClosestWordAtColumn(c)
         
 # https://github.com/joshuarubin/wcwidth9            
             
@@ -328,7 +408,7 @@ intable = tbl c ->
     ⮐  if c > tbl[^1][2]
   
     bot = 0
-    top = tbl.length - 1
+    top = tbl.len - 1
     
     while top >= bot
         mid = math.floor (bot + top) / 2

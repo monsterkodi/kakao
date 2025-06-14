@@ -36,6 +36,15 @@ function array:str()
     end
 
 
+function array.static.from(a) 
+    return array(unpack(a))
+    end
+
+function array.static.str(a) 
+    return tostring(array.from(a))
+    end
+
+
 function array:each() 
           local i = 0 ; return function () 
                   i = i + 1 ; return self[i], i end
@@ -129,10 +138,14 @@ function array:splice(i, n, ...)
 
 
 function array:slice(first, last) 
-        if (last == nil) then last = #self end
-        last = math.min(#self, last)
         local s = self.class()
-        for i in iter(first, last) do 
+        if (first > #self) then return s end
+        if (last == nil) then last = #self
+        else last = min(#self, last)
+        end
+        
+        if ((last < 1) or (last < first)) then return s end
+        for i = first, (last + 1)-1 do 
             s:push(self[i])
         end
         

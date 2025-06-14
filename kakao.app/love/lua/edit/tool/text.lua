@@ -10,16 +10,17 @@
 local text = class("text")
     
 
+-- @linesForText: text -> kstr.lines text
 
 function text.static.linesForText(text) 
-    return kstr.lines(text)
+    return kseg.segls(text)
     end
 
 
 function text.static.joinLines(lines, join) 
         join = join or '\n'
         
-        if is(lines, str) then 
+        if is(lines, "string") then 
             lines = kstr.lines(lines)
         end
         
@@ -41,8 +42,8 @@ function text.static.colorSeglsForText(text)
         for line, li in belt.linesForText(text) do 
             
             function ansisub(m, c, x) 
-                local cs = c.split(';').map(function (c) 
-    return math.floor(c)
+                local cs = c.split(';'):map(function (c) 
+    return floor(c)
 end)
                 
                 local l = #m
@@ -163,7 +164,7 @@ function text.static.segsForLineSpan(lines, span)
 function text.static.segsForPositions(lines, posl) 
         local l = array()
         if empty((lines or empty), posl) then return l end
-        for pos in posl do 
+        for _, pos in ipairs(posl) do 
             if belt.isInvalidLineIndex(lines, pos[1]) then return l end
             local segi = kseg.segiAtWidth(lines[pos[1]], pos[0])
             l:push(lines[pos[1]][segi])
@@ -199,7 +200,7 @@ function text.static.textForLineRanges(lines, rngs)
         if empty(lines) then return '' end
         
         local text = ''
-        for rng in rngs do 
+        for _, rng in ipairs(rngs) do 
             text = text .. (belt.textForLineRange(lines, rng))
             text = text .. '\n'
         end
@@ -216,7 +217,7 @@ function text.static.textForSpans(lines, spans)
 function text.static.lineSpansForText(lines, text) 
         local spans = array()
         
-        for line, y in lines do 
+        for line, y in ipairs(lines) do 
             line = kseg.str(line)
             local x2 = 0
             while true do 
@@ -310,7 +311,7 @@ function text.static.lineRangeAtPos(lines, pos)
 
 
 function text.static.lineRangesForPositions(lines, posl, append) 
-        local rngs = belt.lineIndicesForPositions(posl).map(function (y) 
+        local rngs = belt.lineIndicesForPositions(posl):map(function (y) 
     if #lines[y] then 
     return array(0, y, #lines[y], y) else 
     return array(0, y, 0, (y + 1))
@@ -378,8 +379,8 @@ function text.static.seglsForRange(lines, rng)
             return array(lines[rng[2]]:slice(bos, eos))
         end
         
-        local firstLineIndex = math.min(rng[2], #lines)
-        local lastLineIndex = math.min(rng[4], #lines)
+        local firstLineIndex = min(rng[2], #lines)
+        local lastLineIndex = min(rng[4], #lines)
         
         local segi = kseg.segiAtWidth(lines[firstLineIndex], rng[1])
         local lns = array(lines[firstLineIndex]:slice(segi, #lines[firstLineIndex]))
@@ -415,7 +416,7 @@ function text.static.widthOfLines(lines)
 
 function text.static.widthOfLinesIncludingColorBubbles(lines) 
         local maxWidth = 0
-        for line in lines do 
+        for _, line in ipairs(lines) do 
             local w = kseg.width(line)
             if (line.indexOf('#') >= 0) then 
                 w = w + 4
@@ -559,7 +560,7 @@ function text.static.splitLinesAtCols(lines, cols)
         
         for _, line in ipairs(lines) do 
             local spans = belt.splitTextAtCols(line, cols)
-            for span, idx in spans do 
+            for span, idx in ipairs(spans) do 
                 cls[idx]:push(span)
             end
         end
@@ -616,7 +617,7 @@ function text.static.isLinesPosOutside(lines, pos)
 
 
 function text.static.isValidLineIndex(lines, li) 
-    return ((1 <= li) <= #lines)
+    return ((1 <= li) and (li <= #lines))
     end
 
 function text.static.isInvalidLineIndex(lines, li) 
@@ -651,7 +652,7 @@ function text.static.rangeOfLine(lines, y)
 
 
 function text.static.rangeOfClosestChunkToPos(lines, pos) 
-        local x, y = pos
+        local x, y = unpack(pos)
         
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kstr.rangeOfClosestChunk(lines[y], x)
@@ -664,7 +665,7 @@ function text.static.rangeOfClosestChunkToPos(lines, pos)
 
 
 function text.static.rangeOfClosestChunkLeftToPos(lines, pos) 
-        local x, y = pos
+        local x, y = unpack(pos)
         
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kstr.rangeOfClosestChunk(lines[y]:slice(1, x), x)
@@ -677,7 +678,7 @@ function text.static.rangeOfClosestChunkLeftToPos(lines, pos)
 
 
 function text.static.rangeOfClosestChunkRightToPos(lines, pos) 
-        local x, y = pos
+        local x, y = unpack(pos)
         
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kstr.rangeOfClosestChunk(lines[y]:slice(x), x)
@@ -728,19 +729,19 @@ function text.static.chunkAfterPos(lines, pos)
 
 
 function text.static.rangeOfClosestWordToPos(lines, pos) 
-        local x, y = pos
+        local x, y = unpack(pos)
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kseg.spanForClosestWordAtColumn(lines[y], x)
         if r then 
-            if ((0 <= r[0]) < r[1]) then 
-                return array(r[0], y, r[1], y)
+            if ((1 <= r[1]) and (r[1] < r[2])) then 
+                return array(r[1], y, r[2], y)
             end
         end
     end
 
 
 function text.static.rangeOfWhitespaceLeftToPos(lines, pos) 
-        local x, y = pos
+        local x, y = unpack(pos)
         
         y = clamp(0, (#lines - 1), y)
         x = clamp(0, #lines[y], x)
@@ -761,7 +762,7 @@ function text.static.rangeOfWhitespaceLeftToPos(lines, pos)
 
 
 function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos) 
-        local x, y = pos
+        local x, y = unpack(pos)
         
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
@@ -801,7 +802,7 @@ function text.static.rangeOfWordOrWhitespaceRightToPos(lines, pos)
 
 
 function text.static.lineChar(line, x) 
-    if ((0 <= x) < #line) then 
+    if ((1 <= x) and (x <= #line)) then 
     return line[x]
                                  end
     end

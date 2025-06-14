@@ -14,15 +14,10 @@ function kseg:init(s)
                         end
                     end
             elseif (type(s) == "table") then 
-                    if (#s > 0) then 
+                    if ((#s > 0) or (is(s, strg) and s:len())) then 
                         for g in s:each() do 
                             self:push(g)
                         end
-                    else if s:len() then 
-                        for g in s:each() do 
-                            self:push(g)
-                        end
-                         end
                     end
             else 
                     print(">>?????", type(s))
@@ -46,6 +41,21 @@ end)
         end
         
         return error("segls???", any)
+    end
+
+
+function kseg:eql(o) 
+        if (#o ~= #self) then return false end
+        for i, c in ipairs(self) do 
+            if (c ~= o[i]) then return false end
+        end
+        
+        return true
+    end
+
+
+function kseg.static.eql(a, b) 
+    return kseg(a):eql(kseg(b))
     end
 
 
@@ -188,6 +198,103 @@ function kseg:headCount(c)
     end
 
 
+function kseg:tailCount(c) 
+        for i = 0, #self-1 do 
+            if (self[(#self - i)] ~= c) then return i end
+        end
+        
+        return #self
+    end
+
+
+function kseg:headCountWord() 
+        for i, s in ipairs(self) do 
+            if not string.match(s, "%w+") then return (i - 1) end
+        end
+        
+        return #self
+    end
+
+
+function kseg:headCountChunk() 
+        for i, s in ipairs(self) do 
+            if string.match(s, "%s+") then return (i - 1) end
+        end
+        
+        return #self
+    end
+
+
+function kseg:headCountTurd() 
+        for i, s in ipairs(a) do 
+            if string.match(s, "[%s%w]+") then return (i - 1) end
+        end
+        
+        return #self
+    end
+
+
+function kseg:tailCountTurd() 
+        for i = 0, #self-1 do 
+            if string.match(self[(#self - i)], "[%w%s]+") then return i end
+        end
+        
+        return #self
+    end
+
+
+function kseg:tailCountWord() 
+        for i = 0, #self-1 do 
+            if not string.match(self[(#self - i)], "%w+") then return i end
+        end
+        
+        return #self
+    end
+
+
+function kseg:tailCountChunk() 
+        for i = 0, #self-1 do 
+            if string.match(self[(#self - i)], "%s+") then return i end
+        end
+        
+        return #self
+    end
+
+
+function kseg.static.headCount(a, c) 
+    return kseg(a):headCount(c)
+    end
+
+function kseg.static.tailCount(a, c) 
+    return kseg(a):tailCount(c)
+    end
+
+
+function kseg.static.headCountWord(a) 
+    return kseg(a):headCountWord()
+    end
+
+function kseg.static.headCountChunk(a) 
+    return kseg(a):headCountChunk()
+    end
+
+function kseg.static.headCountTurd(a) 
+    return kseg(a):headCountTurd()
+    end
+
+function kseg.static.tailCountTurd(a) 
+    return kseg(a):tailCountTurd()
+    end
+
+function kseg.static.tailCountChunk(a) 
+    return kseg(a):tailCountChunk()
+    end
+
+function kseg.static.tailCountWord(a) 
+    return kseg(a):tailCountWord()
+    end
+
+
 function kseg:indent() 
     return self:lcount(" ")
     end
@@ -233,17 +340,6 @@ function kseg:rfind(c)
     end
 
 
-function kseg:slice(f, t) 
-        t = t or (#self)
-        local r = kseg()
-        for i in iter(f, t) do 
-            r:push(self[i])
-        end
-        
-        return r
-    end
-
-
 function kseg.static.width(s) 
         if empty(s) then return 0 end
         if is(s, "string") then 
@@ -259,17 +355,22 @@ function kseg.static.width(s)
     end
 
 
-function kseg.static.segiAtWidth(segs, w) 
-        w = min(w, (#segs * 2))
+function kseg:segiAtWidth(w) 
+        w = min(w, (#self * 2))
         local i = 1
         local s = 0
-        while (i <= #segs) do 
-            s = s + (kseg.width(segs[i]))
+        while (i <= #self) do 
+            s = s + (kseg.width(self[i]))
             if (s >= w) then return i end
             i = i + 1
         end
         
-        return #segs
+        return #self
+    end
+
+
+function kseg.static.segiAtWidth(a, w) 
+    return kseg(a):segiAtWidth(w)
     end
 
 
@@ -284,6 +385,39 @@ function kseg.static.rep(n, s)
         end
         
         return a
+    end
+
+
+function kseg:spanForClosestWordAtColumn(c) 
+        local segi = self:segiAtWidth(c)
+        local left = self:slice(1, segi)
+        local right = self:slice((segi + 1))
+        
+        local ls = left:tailCount(' ')
+        local rs = right:headCount(' ')
+        
+        local lw = left:tailCountWord()
+        local rw = right:headCountWord()
+        
+        local ll = #left
+        local rl = #right
+        
+        local s = nil
+        if ((ls == ll) and (rs == rl)) then s = array(c, c)
+        elseif ((ls == 0) and (rs == 0)) then s = array(((c - lw) + 1), ((c + rw) + 1))
+        elseif (ls == ll) then local rcw = right:slice((rs + 1)):headCountWord() ; s = array(((ll + rs) + 1), (((ll + rs) + rcw) + 1))
+        elseif (rs == rl) then local tcw = left:slice(1, (ll - ls)):tailCountWord() ; s = array((((ll - ls) - tcw) + 1), ((ll - ls) + 1))
+        elseif (ls == rs) then s = left:spanForClosestWordAtColumn(#left)
+        elseif (ls < rs) then s = left:spanForClosestWordAtColumn(#left)
+        elseif (ls > rs) then s = right:spanForClosestWordAtColumn(1) ; s[1] = s[1] + c ; s[2] = s[2] + c
+        end
+        
+        return s
+    end
+
+
+function kseg.static.spanForClosestWordAtColumn(a, c) 
+    return kseg(a):spanForClosestWordAtColumn(c)
     end
 
 -- https://github.com/joshuarubin/wcwidth9            

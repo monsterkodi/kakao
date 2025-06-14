@@ -100,6 +100,16 @@ use kxk/strg
         s∙trim()
         s∙str() ▸ "▴"
         
+    ▸ slice
+    
+        s = kseg "abc"
+        s∙slice(1)∙str()   ▸ "abc"
+        s∙slice(2)∙str()   ▸ "bc"
+        s∙slice(3)∙str()   ▸ "c"
+        s∙slice(4 3)∙str() ▸ ""
+        s∙slice(4 4)∙str() ▸ ""
+        s∙slice(4)∙str()   ▸ ""
+        
     ▸ emojii
     
         s = kseg "🧑"
@@ -113,6 +123,34 @@ use kxk/strg
         s.len ▸ 1
         s∙str() ▸ "🧑"
         
+    ▸ segiAtWidth
+    
+        kseg.segiAtWidth kseg("abc") 1 ▸ 1
+        kseg.segiAtWidth kseg("abc") 2 ▸ 2
+        kseg.segiAtWidth kseg("abc") 3 ▸ 3
+
+        kseg.segiAtWidth kseg("▸◌◂") 1 ▸ 1
+        kseg.segiAtWidth kseg("▸◌◂") 2 ▸ 2
+        kseg.segiAtWidth kseg("▸◌◂") 3 ▸ 3
+
+        kseg.segiAtWidth "abc" 1 ▸ 1
+        kseg.segiAtWidth "abc" 2 ▸ 2
+        kseg.segiAtWidth "abc" 3 ▸ 3
+
+        kseg.segiAtWidth "▸◌◂" 1 ▸ 1
+        kseg.segiAtWidth "▸◌◂" 2 ▸ 2
+        kseg.segiAtWidth "▸◌◂" 3 ▸ 3
+        
+    ▸ eql
+
+        kseg("abc") == kseg("abc") ▸ false
+        
+        kseg("abc")∙eql kseg("abc") ▸ true
+        
+        kseg.eql "abc" "abc"        ▸ true
+        kseg.eql "abc" kseg("abc")  ▸ true
+        kseg.eql kseg("abc") "abc"  ▸ true
+    
     ▸ is
     
         a = kseg ""
@@ -122,4 +160,49 @@ use kxk/strg
         a∙is false ▸ false
         a∙is true  ▸ false
         a∙is nil   ▸ false
+
+    ▸ count
+    
+        s = kseg "__hellooo"
+        s[^1] == "o" ▸ true
+        s∙slice(s.len)∙str() == "o" ▸ true
+        kseg.tailCount s "o" ▸ 3
+        kseg.tailCount "__hellooo" "o" ▸ 3
+
+        kseg.headCount s "_" ▸ 2
+        kseg.headCount "__hellooo" "_" ▸ 2
+
+        kseg.tailCount "◂◂○○●" "●" ▸ 1
+        kseg.headCount "◂◂○○●" "◂" ▸ 2
+        
+        kseg.tailCountWord kseg("1  2 33") ▸ 2
+        
+        kseg.headCountWord kseg("1  2 33") ▸ 1
+        kseg.headCountWord kseg("  2 33")  ▸ 0
+        kseg.headCountWord kseg(".  2 33") ▸ 0
+        kseg.headCountWord kseg("x233")   ▸ 4
+        kseg.headCountWord kseg("x233 ")   ▸ 4
+        
+        kseg.tailCount " " ""   ▸ 0
+        kseg.tailCount " " " "  ▸ 1
+        kseg.tailCount "  " " " ▸ 2
+        
+    ▸ spanForClosestWordAtColumn
+    
+        kseg.spanForClosestWordAtColumn kseg('abc def') 1 ▸ [1 4]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 2 ▸ [1 4]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 3 ▸ [1 4]        
+        kseg.spanForClosestWordAtColumn kseg('abc def') 4 ▸ [5 8]        
+        kseg.spanForClosestWordAtColumn kseg('ab  def') 3 ▸ [1 3]        
+        kseg.spanForClosestWordAtColumn kseg('ab  def') 4 ▸ [5 8]        
+        
+        kseg.spanForClosestWordAtColumn kseg('     ')   0 ▸ [0 0]        
+        kseg.spanForClosestWordAtColumn kseg('     ')   2 ▸ [2 2]        
+        kseg.spanForClosestWordAtColumn kseg('     ')   3 ▸ [3 3]
+                                                        
+        kseg.spanForClosestWordAtColumn kseg('   xy')   2 ▸ [4 6]        
+        kseg.spanForClosestWordAtColumn kseg('xy   ')   3 ▸ [1 3]        
+                                                        
+        kseg.spanForClosestWordAtColumn "   aa123   "   1 ▸ [4 9]
+        
         

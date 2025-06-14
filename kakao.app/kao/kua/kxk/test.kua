@@ -95,7 +95,7 @@ class test
     
         # log "test.run" array.str files
         success = true
-        for f _ in pairs files
+        for f _ of files
             # log "test" f
             (output ok exitcode) = slash.shell "luajit" f
             if ok

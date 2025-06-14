@@ -323,7 +323,7 @@ class state extends events
         @setSegls [[]]
         @setMainCursor 1 1
 
-    isValidLineIndex:   li -> 0 <= li < @s.lines.len
+    isValidLineIndex:   li -> 1 <= li and li <= @s.lines.len
     isInvalidLineIndex: li -> not @isValidLineIndex li
 
     # 000   000  000   000  0000000     0000000

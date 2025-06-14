@@ -12,6 +12,8 @@ session = require "util.session"
 fileeditor = require "view.editor.fileeditor"
 status = require "view.editor.status"
 menu = require "view.menu.menu"
+macro = require "view.menu.macro"
+context = require "view.menu.context"
 dircol = require "view.colmns.dircol"
 funcol = require "view.colmns.funcol"
 theme = require "theme.theme"
@@ -28,6 +30,7 @@ function KED:init()
         self.logfile = logfile()
         
         _G.ked_session = self.session
+        _G.screen = {cols = 1, rows = 1, cw = 1, ch = 1}
         
         -- @session.on 'loaded' @onSessionLoaded
         
@@ -35,7 +38,7 @@ function KED:init()
         -- @git      = git()
         
         self.menu = menu()
-        -- @macro    = macro()
+        self.macro = macro()
         -- @quicky   = quicky()
         -- @browse   = browse()
         self.editor = fileeditor('editor')
@@ -46,7 +49,7 @@ function KED:init()
         -- @searcher = searcher  @editor
         -- @differ   = differ    @editor
         self.status = status(self.editor)
-        -- @context  = context()
+        self.context = context()
         -- @input    = input()
         
         -- @input.on 'action' @onInputAction
@@ -300,7 +303,7 @@ function KED:loadFile(p, row, col, view)
         
         self.loadingFile = absFile
         
-        local exists = nfs.fileExists(self.loadingFile)
+        local exists = slash.fileExists(self.loadingFile)
         
         if not exists then 
             warn("ked.loadFile - file doesn't exist! " .. tostring(self.loadingFile) .. "")
@@ -308,7 +311,7 @@ function KED:loadFile(p, row, col, view)
             return
         end
         
-        self.loadingFile = nfs.resolveSymlink(self.loadingFile)
+        self.loadingFile = slash.resolveSymlink(self.loadingFile)
         
         if empty(self.loadingFile) then 
             error("ked.loadFile - " .. tostring(absFile) .. " resolved to empty!")
@@ -319,7 +322,7 @@ function KED:loadFile(p, row, col, view)
         
         local readingFile = self.loadingFile
         
-        local text = nfs.readText(self.loadingFile)
+        local text = slash.readText(self.loadingFile)
         
         if (self.loadingFile ~= readingFile) then 
             -- warn 'another file started loading, skip editor update'
@@ -385,8 +388,8 @@ function KED:saveFile()
         local text = kseg.str(self.editor.state.s.lines)
         
         if valid(self.currentFile) then 
-            nfs.write(self.currentFile, text)
-            self.editor.state.clearHistory() -- lazy way to 'undirty' :> no undo after save :(
+            slash.write(self.currentFile, text)
+            self.editor.state:clearHistory() -- lazy way to 'undirty' :> no undo after save :(
             self:redraw()
             return self:saveSessionFile(self.currentFile, 'saved')
         end
@@ -394,9 +397,9 @@ function KED:saveFile()
 
 
 function KED:saveSessionFile(file, typ) 
-        frecent.fileAction(file, typ)
+        frecent:fileAction(file, typ)
         
-        return self.session.set('files▸recent', frecent.store('file'))
+        return self.session:set('files▸recent', frecent:store('file'))
     end
 
 
@@ -412,7 +415,7 @@ function KED:saveAs()
 
 
 function KED:onPaste(text) 
-        self.editor.state.insert(text)
+        self.editor.state:insert(text)
         return self:redraw()
     end
 
@@ -434,8 +437,10 @@ function KED:onMouse(event)
             return
         end
         
+        -- log "mouse" event.type, event.x, event.y
         for _, handler in ipairs(self.mouseHandlers) do 
             if handler:onMouse(event) then 
+                -- log "handled" handler.name
                 event.handled = true
                 if ((event.type ~= 'move') or handler.isPopup) then break end
             end
@@ -454,10 +459,10 @@ function KED:onMouse(event)
 
 
 function KED:showFinderOrSearcher() 
-        if (self.finder.visible() and valid(self.finder.input.current())) then 
-            self.searcher.show(self.finder.input.current())
+        if (self.finder:visible() and valid(self.finder.input:current())) then 
+            self.searcher:show(self.finder.input:current())
         else 
-            self.finder.show()
+            self.finder:show()
         end
         
         return self
@@ -466,10 +471,10 @@ function KED:showFinderOrSearcher()
 
 function KED:showFileposHistory() 
         if (#filepos.fileposl > 1) then 
-            local files = filepos.fileposl.map(function (fp) 
+            local files = filepos.fileposl:map(function (fp) 
     return fp[0]
 end)
-            files = files.reverse()
+            files = files:reverse()
             if (filepos.offset == 0) then files.shift() end
             local scx = int((self.screen.cols / 2))
             local scy = int((self.screen.rows / 2))
@@ -635,14 +640,14 @@ function KED:draw(cols, rows, cw, ch)
         --         @screen∙set x y string.sub($x 1 1) [50 0 0] 
         
         self.menu:draw()
-        -- @macro∙draw()
+        self.macro:draw()
         -- @quicky∙draw()
         -- @browse∙draw()
         -- @droop∙draw()
         -- @finder∙draw()
         -- @searcher∙draw()
         -- @differ∙draw()
-        -- @context∙draw()
+        self.context:draw()
         return -- @input∙draw()
     end
 

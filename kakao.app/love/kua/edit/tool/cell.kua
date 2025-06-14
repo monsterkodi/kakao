@@ -15,7 +15,6 @@ class cell
     #  0000000  00000000  0000000  0000000  0000000   
     
     @cells: cols rows -> @matrix(cols, rows, (() -> ⮐  {bg:[] fg:[] char:' '}))
-    @metas: cols rows -> @matrix(cols, rows, (() -> ⮐  {pre:[] pst:[]}))
         
     @matrix: cols rows cb ->
         
@@ -103,7 +102,7 @@ class cell
         y1 = clamp 1 rows y1
         y2 = clamp 1 rows y2
         
-        (x1 y1 x2 y2)
+        [x1 y1 x2 y2]
 
     # 000   000  000  000000000  000   000        0000000  000   000   0000000   00000000   
     # 000 0 000  000     000     000   000       000       000   000  000   000  000   000  
@@ -128,7 +127,7 @@ class cell
     
     @cellsInRect: cells x1 y1 x2 y2 ->
         
-        (x1 y1 x2 y2) = @clampCellRect cells x1 y1 x2 y2
+        (x1 y1 x2 y2) = unpack @clampCellRect(cells x1 y1 x2 y2)
         
         res = {}
         for y in y1..y2
@@ -144,7 +143,7 @@ class cell
     
     @cellNeighborsAtPos: cells x y xd=1 yd=1->
         
-        (x1 y1 x2 y2) = @clampCellRect cells x-xd y-yd x+xd y+yd
+        (x1 y1 x2 y2) = unpack @clampCellRect(cells x-xd y-yd x+xd y+yd)
         
         @cellsInRect cells x1 y1 x2 y2
         

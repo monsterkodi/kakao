@@ -166,38 +166,38 @@ class belt
 
     @isPosBeforeRange: pos rng ->
     
-        pos[1] < rng[1] or (pos[1] == rng[1] and pos[0] < rng[0])
+        pos[2] < rng[2] or (pos[2] == rng[2] and pos[1] < rng[1])
     
     @isPosAfterRange: pos rng ->
     
-        pos[1] > rng[3] or (pos[1] == rng[3] and pos[0] > rng[2])
+        pos[2] > rng[4] or (pos[2] == rng[4] and pos[1] > rng[3])
         
     @isPosTouchingRange: pos rng ->
         
         ⮐  true if @isPosInsideRange pos rng
-        ⮐  true if pos eql @endOfRange rng
-        ⮐  true if pos eql @startOfRange rng
+        ⮐  true if pos == @endOfRange rng
+        ⮐  true if pos == @startOfRange rng
         false
 
     @rangeContainsPos:   rng pos -> @isPosInsideRange pos rng
     @rangeContainsRange: rng ins -> @isPosInsideRange(@startOfRange(ins) rng) and @isPosInsideRange(@endOfRange(ins) rng)
     @rangeTouchesPos:    rng pos -> @isPosTouchingRange pos rng
         
-    @rangeForPos: pos -> [pos[0] pos[1] pos[0] pos[1]]
-    @rangeForSpan: span -> [span[0] span[1] span[2] span[1]]
-    @rangeFromStartToEnd: start stop -> [start[0] start[1] stop[0] stop[1]]
+    @rangeForPos: pos -> [pos[1] pos[2] pos[1] pos[2]]
+    @rangeForSpan: span -> [span[1] span[2] span[3] span[2]]
+    @rangeFromStartToEnd: start stop -> [start[1] start[2] stop[1] stop[2]]
     @rangesForSpans: spans -> spans∙map @rangeForSpan
     
-    @isEmptyRange: rng -> rng[0] == rng[2] and rng[1] == rng[3]
-    @isRangeEmpty: rng -> rng[0] == rng[2] and rng[1] == rng[3]
+    @isEmptyRange: rng -> rng[1] == rng[3] and rng[2] == rng[4]
+    @isRangeEmpty: rng -> rng[1] == rng[3] and rng[2] == rng[4]
 
-    @startOfRange: rng -> [rng[0] rng[1]]
-    @endOfRange:   rng -> [rng[2] rng[3]]
+    @startOfRange: rng -> [rng[1] rng[2]]
+    @endOfRange:   rng -> [rng[3] rng[4]]
     
-    @rangeGrownBy:     rng  delta -> [rng[0]-delta rng[1] rng[2]+delta rng[3]]
-    @rangeShrunkenBy:  rng  delta -> [rng[0]+delta rng[1] rng[2]-delta rng[3]]
+    @rangeGrownBy:     rng  delta -> [rng[1]-delta rng[2] rng[3]+delta rng[4]]
+    @rangeShrunkenBy:  rng  delta -> [rng[1]+delta rng[2] rng[3]-delta rng[4]]
     @rangesShrunkenBy: rngs delta ->    
-        filtered = rngs∙filter((r) -> r[2]-r[0]>=2*delta)
+        filtered = rngs∙filter((r) -> r[3]-r[1]>=2*delta)
         filtered∙map((r) -> @rangeShrunkenBy(r delta))
         
     @rangesGrownBy:    rngs delta -> rngs∙map((r) -> @rangeGrownBy(r delta))
@@ -208,8 +208,8 @@ class belt
     #      000  000        000   000  000  0000  
     # 0000000   000        000   000  000   000  
  
-    @isSameSpan:  a b -> a eql b
-    @isSameRange: a b -> a eql b
+    @isSameSpan:  a b -> a == b
+    @isSameRange: a b -> a == b
     
     @isPosInsideSpan: pos span ->
 
@@ -219,28 +219,28 @@ class belt
         
     @isPosBeforeSpan: pos span ->
         
-        pos[1] < span[1] or (pos[1] == span[1] and pos[0] < span[0])
+        pos[2] < span[2] or (pos[2] == span[2] and pos[1] < span[1])
 
     @isPosAfterSpan: pos span ->
         
-        pos[1] > span[1] or (pos[1] == span[1] and pos[0] >= span[2])
+        pos[2] > span[2] or (pos[2] == span[2] and pos[1] >= span[3])
         
     @isPosBeforeOrInsideSpan: pos span ->
         
         @isPosBeforeSpan(pos span) or @isPosInsideSpan(pos span)
 
-    @startOfSpan: s -> [s[0] s[1]]
-    @endOfSpan:   s -> [s[2] s[1]]
+    @startOfSpan: s -> [s[1] s[2]]
+    @endOfSpan:   s -> [s[3] s[2]]
     
     @nextSpanAfterPos: spans pos ->
         
         ⮐  if empty spans
         
-        pos = [0 0] if @isPosAfterSpan pos spans[-1]
+        pos = [1 1] if @isPosAfterSpan pos spans[^1]
         
-        ⮐  spans[0] if @isPosBeforeSpan pos spans[0]
+        ⮐  spans[1] if @isPosBeforeSpan pos spans[1]
             
-        for span,index in spans
+        for index span in spans
             if @isPosAfterSpan pos span
                 if index+1 < spans.len and @isPosBeforeOrInsideSpan pos spans[index+1]
                     ⮐  spans[index+1]
@@ -248,21 +248,21 @@ class belt
     @prevSpanBeforePos: spans pos ->
         
         ⮐  if empty spans
-        ⮐  spans[-1] if @isPosBeforeSpan pos spans[0]
-        ⮐  spans[-1] if @isPosInsideSpan pos spans[0]
+        ⮐  spans[^1] if @isPosBeforeSpan pos spans[1]
+        ⮐  spans[^1] if @isPosInsideSpan pos spans[1]
             
-        for index in spans.len-1..0
+        for index in spans.len..1
             span = spans[index]
             if @isPosAfterSpan pos span
-                ⮐ span
+                ⮐  span
                     
     @normalizeSpans: spans ->
         
         ⮐  [] if empty spans
         
-        spans = spans∙map((a) -> if a[0] > a[2] ➜ [a[2] a[1] a[0]] ➜ a)
-        spans∙sort((a b) -> if a[1] == b[1] ➜ a[0] < b[0] else a[1] < b[1])
-        spans = spans∙filter((a) -> a[0] != a[2])
+        spans = spans∙map((a) -> if a[1] > a[3] ➜ [a[3] a[2] a[1]] ➜ a)
+        spans∙sort((a b) -> if a[2] == b[2] ➜ a[1] < b[1] else a[2] < b[2])
+        spans = spans∙filter((a) -> a[1] != a[3])
         
     # 00000000    0000000   000   000   0000000   00000000   0000000  
     # 000   000  000   000  0000  000  000        000       000       
@@ -273,13 +273,13 @@ class belt
     @rangesContainLine: rngs lineIndex -> 
         
         for rng in rngs
-            ⮐  true if rng[1] <= lineIndex <= rng[3]
+            ⮐  true if rng[2] <= lineIndex and lineIndex <= rng[4]
         false
         
     @rangesContainSpan: rngs span -> @rangesContainRange rngs @rangeForSpan(span)
     @rangesContainRange: rngs range -> 
         
-        for _ rng in ipairs rngs
+        for rng in rngs
             ⮐  true if rng == range
         false
                 

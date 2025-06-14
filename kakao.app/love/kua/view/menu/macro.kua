@@ -8,16 +8,13 @@
     menu for actions that don't have keyboard shortcuts
 ###
 
-use ../../../kxk    ▪ post
-use ../../edit/tool ◆ belt
-use ../../theme     ◆ theme 
-use                 ◆ inputchoice
+use view.menu.inputchoice
 
-class macro extends inputchoice
+class macros extends inputchoice
 
-    @: @screen ->
+    @: ->
         
-        super @screen 'macro'
+        inputchoice.init @ 'macro'
         
     #  0000000   00000000   00000000    0000000   000   000   0000000   00000000  
     # 000   000  000   000  000   000  000   000  0000  000  000        000       
@@ -25,25 +22,25 @@ class macro extends inputchoice
     # 000   000  000   000  000   000  000   000  000  0000  000   000  000       
     # 000   000  000   000  000   000  000   000  000   000   0000000   00000000  
     
-    arrange: =>
+    arrange: ->
 
         w = max 20 @width+2+1 # 2 for frame, 1 for right 
-        c = @choices.numChoices()
+        c = @choices∙numChoices()
         
-        ih = @inputIsActive() ? 2 : 0
+        ih = if @inputIsActive() ➜ 2 ➜ 0
         iz = max 0 ih - 1
         
         h = c + 2 + ih
-        scy = int @screen.rows/2
+        scy = int _G.screen.rows/2
         y  = int scy-(c+2)/2
         y -= ih
         
-        scx = int @screen.cols/2
+        scx = int _G.screen.cols/2
         x  = int scx - w/2
         
-        @input.layout    x+2   y+1      w-4  iz
-        @choices.layout  x+1   y+1+ih   w-2  c
-        @cells.layout    x     y        w    h
+        @input∙layout    x+2   y+1      w-4  iz
+        @choices∙layout  x+1   y+1+ih   w-2  c
+        @cells∙layout    x     y        w    h
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -60,24 +57,24 @@ class macro extends inputchoice
             history
             """
         
-        items = items.map (i) -> ' ' + i # padding for  
+        items = items∙map((i) -> ' ' & i) # padding for  
             
-        ccol = int(@screen.cols/2) - 5
+        ccol = int(_G.screen.cols/2) - 5
 
         @width = belt.widthOfLines items
         
-        @input.set ''
-        @input.hide()
-        @choices.set items
-        @choices.select 0
-        @choices.state.setView [0 0]
+        @input∙set ''
+        @input∙hide()
+        @choices∙set items
+        @choices∙select 0
+        @choices.state∙setView [0 0]
         
-        super()
+        inputchoice.show @
         
-    hide: =>
+    hide: ->
     
-        post.emit 'focus' 'editor'    
-        super()
+        post∙emit 'focus' 'editor'    
+        inputchoice.hide @
         
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -90,31 +87,31 @@ class macro extends inputchoice
         # log "macro.applyChoice ▸#{choice}◂"
         
         if empty choice
-            input = @input.current()
+            input = @input∙current()
             if 
-                input == 'bof'  ➜ post.emit 'goto.bof'
-                input == 'eof'  ➜ post.emit 'goto.eof'
-                num = int input ➜ post.emit 'goto.line' num-1 'ind'
+                input == 'bof'  ➜ post∙emit 'goto.bof'
+                input == 'eof'  ➜ post∙emit 'goto.eof'
+                tonumber(input) ➜ post∙emit 'goto.line' tonumber(input) 'ind'
                 
-                input.startsWith 'vibrant ' 
+                kstr.startsWith input 'vibrant ' 
                 
-                    sp = input.split /\s+/
-                    sf = parseFloat sp[1]
-                    lf = (sp.length > 2) ? parseFloat(sp[2]) : 1
-                    post.emit 'theme.vibrant' sf lf
+                    sp = input∙split " "
+                    sf = tonumber(sp[1])
+                    lf = if (sp.length > 2) ➜ tonumber(sp[2]) ➜ 1
+                    post∙emit 'theme.vibrant' sf lf
                     
                 input.startsWith 'class '
                 
-                    sp = input.split /\s+/
+                    sp = input∙split " "
                     if valid sp[1]
-                        post.emit 'file.class' sp[1]
+                        post∙emit 'file.class' sp[1]
         else
             switch choice
-                'diff'    ➜ post.emit 'differ.file'
-                'status'  ➜ post.emit 'differ.status'
-                'history' ➜ post.emit 'differ.history'
+                'diff'    ➜ post∙emit 'differ.file'
+                'status'  ➜ post∙emit 'differ.status'
+                'history' ➜ post∙emit 'differ.history'
                 
         @hide()
         true
         
-⮐  macro
+⮐  macros

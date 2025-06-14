@@ -7,6 +7,7 @@
 --]]
 
 editor = require "edit.editor"
+context = require "view.menu.context"
 
 
 local fileeditor = class("fileeditor", editor)
@@ -124,16 +125,16 @@ function fileeditor:onGotoFunc(func)
 
 
 function fileeditor:onContext(event) 
-        local word = self.state.textOfSelectionOrWordAtCursor()
+        local word = self.state:textOfSelectionOrWordAtCursor()
         if valid(word) then word = " '" .. tostring(word) .. "'" end
-        return context.show(event.cell, self.onContextChoice, array("search" .. tostring(word) .. "", "find" .. tostring(word) .. "", 'status'))
+        return context.show(event.cell, fileeditor.onContextChoice, array("search" .. tostring(word) .. "", "find" .. tostring(word) .. "", 'status'))
     end
 
 
-function fileeditor:onContextChoice(choice) 
-        if choice.startsWith('search') then 
+function fileeditor.static.onContextChoice(choice) 
+        if kstr.startsWith(choice, 'search') then 
             return post:emit('searcher.show', kstr.trim(string.sub(choice, 7, -2), " '"))
-        elseif choice.startsWith('find') then 
+        elseif kstr.startsWith(choice, 'find') then 
             return post:emit('finder.show', kstr.trim(string.sub(choice, 5, -2), " '"))
         else 
             if (choice == 'status') then 
@@ -162,7 +163,7 @@ function fileeditor:jumpToWord(word)
             local fnc = indexer.singleton.funcs[word]
             if is(fnc, array) then 
                 local currentFile = ked_session.get('editor▸file')
-                for fun, idx in fnc do 
+                for fun, idx in ipairs(fnc) do 
                     if (fun.file == currentFile) then 
                         fnc = fnc[((idx + 1) % #fnc)]
                         break
@@ -256,40 +257,39 @@ function fileeditor:jumpToCounterpart()
 
 function fileeditor:onMouse(event) 
         if editor.onMouse(self, event) then return true end
-        
         if not ((self.dragStart or self.cells:isInsideEvent(event)) or self.gutter.cells:isInsideEvent(event)) then 
             return self.hover
         end
         
-        local col, row = self:eventPos(event)
+        local col, row = unpack(self:eventPos(event))
         
         if (event.type == 'press') then 
                 if (event.count > 1) then 
-                    if (not event.shift and (event.button == 'left')) then self.state.deselect() end
+                    if (not event.shift and (event.button == 'left')) then self.state:deselect() end
                     
-                    local x = (col + self.state.s.view[0])
-                    local y = (row + self.state.s.view[1])
+                    local x = (col + self.state.s.view[1])
+                    local y = (row + self.state.s.view[2])
                     
-                    self.state.clearHighlights()
+                    self.state:clearHighlights()
                     
                     if (event.count == 2) then 
                         if event.alt then 
-                            self.state.selectChunk(x, y)
+                            self.state:selectChunk(x, y)
                         else 
-                            self.state.selectWord(x, y)
+                            self.state:selectWord(x, y)
                         end
                     else 
-                        self.state.selectLine(y)
+                        self.state:selectLine(y)
                     end
                     
-                    self.state.highlightSelection()
+                    self.state:highlightSelection()
                     
-                    self.dragStart = copy(self.state.s.selections[0])
+                    self.dragStart = copy(self.state.s.selections[1])
                     
-                    return {redraw = true}
+                    return true
                 else 
-                    local x = (col + self.state.s.view[0])
-                    local y = (row + self.state.s.view[1])
+                    local x = (col + self.state.s.view[1])
+                    local y = (row + self.state.s.view[2])
                     
                     if (event.cmd or event.ctrl) then 
                         local word = belt.wordAtPos(self.state.s.lines, array(x, y))
@@ -303,27 +303,27 @@ function fileeditor:onMouse(event)
                     
                     self.dragStart = array(x, y, x)
                     
-                    if (not event.shift and (event.button == 'left')) then self.state.deselect() end
-                    if not event.alt then self.state.clearCursors() end
+                    if (not event.shift and (event.button == 'left')) then self.state:deselect() end
+                    if not event.alt then self.state:clearCursors() end
                     
                     if event.alt then 
-                        self.state.addCursor(x, y)
+                        self.state:addCursor(x, y)
                     else 
                         if (event.shift and (#self.state.s.cursors == 1)) then 
-                            self.state.setMainCursorAndSelect(x, y)
+                            self.state:setMainCursorAndSelect(x, y)
                         else 
-                            self.state.setMainCursor(x, y)
+                            self.state:setMainCursor(x, y)
                         end
                     end
                     
                     self:grabFocus()
                     
-                    return {redraw = true}
+                    return true
                 end
         elseif (event.type == 'drag') then 
                 if self.dragStart then 
-                    local x = (col + self.state.s.view[0])
-                    local y = (row + self.state.s.view[1])
+                    local x = (col + self.state.s.view[1])
+                    local y = (row + self.state.s.view[2])
                     
                     local start = array(self.dragStart[0], self.dragStart[1])
                     
@@ -331,14 +331,14 @@ function fileeditor:onMouse(event)
                         start = array(self.dragStart[2], self.dragStart[1])
                     end
                     
-                    if event.shift then self.state.addRangeToSelectionWithMainCursorAtEnd(belt.rangeFromStartToEnd(start, array(x, y)))
-                    else self.state.select(start, array(x, y))
+                    if event.shift then self.state:addRangeToSelectionWithMainCursorAtEnd(belt.rangeFromStartToEnd(start, array(x, y)))
+                    else self.state:select(start, array(x, y))
                     end
                     
-                    return {redraw = true}
+                    return true
                 end
         elseif (event.type == 'release') then 
-                delete(self.dragStart)
+                self.dragStart = nil
         elseif (event.type == 'move') then 
                 if self.hover then 
                     if (not self:hasFocus() and empty(view.currentPopup)) then 

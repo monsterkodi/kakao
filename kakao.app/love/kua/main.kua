@@ -72,9 +72,9 @@ love.keypressed = key scancode isrepeat ->
     true
 
 love.mousepressed = x y button istouch presses ->
-
-    button = "right"
-    event = {x:x y:y type:"press" button:button count:1}
+    button = if button == 1 ➜ "left" ➜ "right"
+    cell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    event = {x:x y:y type:"press" button:button count:1 cell:cell}
     ked∙onMouse event
 
 love.mousemoved = x y ->

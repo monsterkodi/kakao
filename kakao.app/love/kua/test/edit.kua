@@ -1,0 +1,308 @@
+###
+00000000  0000000    000  000000000
+000       000   000  000     000   
+0000000   000   000  000     000   
+000       000   000  000     000   
+00000000  0000000    000     000   
+###
+
+# use ../../kxk    ▪ kseg immutable
+# use ../edit/tool ◆ belt
+
+▸ tool edit
+
+    # █████████   ███████    ███████    ███████   ███      ████████   ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
+    #    ███     ███   ███  ███        ███        ███      ███       ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
+    #    ███     ███   ███  ███  ████  ███  ████  ███      ███████   ███       ███   ███  █████████  █████████  ███████   ███ █ ███     ███   
+    #    ███     ███   ███  ███   ███  ███   ███  ███      ███       ███       ███   ███  ███ █ ███  ███ █ ███  ███       ███  ████     ███   
+    #    ███      ███████    ███████    ███████   ███████  ████████   ███████   ███████   ███   ███  ███   ███  ████████  ███   ███     ███   
+
+    ▸ toggleCommentTypesInLineRangesAtIndices
+    
+        lines = belt.seglsForText """
+            code = true
+            # comment
+            # a
+            code = 'yes' # trailing
+            """
+
+        result = belt.seglsForText """
+            code = true
+            ###
+            comment
+            a
+            ###
+            code = 'yes' # trailing
+            """
+            
+        # belt.toggleCommentTypesInLineRangesAtIndices lines [] [0 1] [1] ▸ [result [] [0 1]]
+
+    # 0000000    00000000  000      00000000  000000000  00000000  000      000  000   000  00000000   0000000  
+    # 000   000  000       000      000          000     000       000      000  0000  000  000       000       
+    # 000   000  0000000   000      0000000      000     0000000   000      000  000 0 000  0000000   0000000   
+    # 000   000  000       000      000          000     000       000      000  000  0000  000            000  
+    # 0000000    00000000  0000000  00000000     000     00000000  0000000  000  000   000  00000000  0000000   
+    
+    ▸ deleteLineRangesAndAdjustPositions
+    
+        lines = belt.seglsForText """
+            1234567890
+            abcdefghij
+            """
+    
+        belt.deleteLineRangesAndAdjustPositions lines [[5 0 5 0]] [[5 1]] ▸ [lines [[5 1]]]
+        belt.deleteLineRangesAndAdjustPositions lines [[5 0 6 0]] [[5 1]] ▸ [[kseg('123457890') kseg('abcdefghij')] [[5 1]]]
+        belt.deleteLineRangesAndAdjustPositions lines [[5 0 5 1]] [[5 1]] ▸ [[kseg('12345fghij')] [[5 0]]]
+        belt.deleteLineRangesAndAdjustPositions lines [[0 1 1 1]] [[0 1]] ▸ [[kseg('1234567890') kseg('bcdefghij')] [[0 1]]]
+        belt.deleteLineRangesAndAdjustPositions lines [[5 0 3 1]] [[3 1]] ▸ [[kseg('12345defghij')] [[5 0]]]
+        belt.deleteLineRangesAndAdjustPositions lines [[3 0 5 1]] [[3 1]] ▸ [[kseg('123fghij')] [[3 0]]]
+        
+        lines = belt.seglsForText """
+            line 1
+            line 2
+            line 3
+            """
+            
+        belt.deleteLineRangesAndAdjustPositions lines [[0 0 6 1]] [[6 0] [6 1]] ▸ [[kseg('line 3')] [[0 0]]]
+                
+    # 000  000   000   0000000  00000000  00000000   000000000  
+    # 000  0000  000  000       000       000   000     000     
+    # 000  000 0 000  0000000   0000000   0000000       000     
+    # 000  000  0000       000  000       000   000     000     
+    # 000  000   000  0000000   00000000  000   000     000     
+    
+    ▸ insertTextAtPositions
+    
+        ▸ single spans
+     
+            lines = belt.seglsForText 
+                """
+                line 1
+                line 2
+                """
+             
+            belt.insertTextAtPositions lines ''       [[0 0]]       ▸ [kseg.segls('line 1\nline 2') [[0 0]]]
+            belt.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [kseg.segls('a line 1\nline 2') [[2 0]]]
+            belt.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [kseg.segls('a line 1\na line 2') [[2 0] [2 1]]]
+
+            belt.insertTextAtPositions lines 'x'      [[0 0] [2 0]] ▸ [kseg.segls('xlixne 1\nline 2') [[1 0] [4 0]]]
+            belt.insertTextAtPositions lines 'x'      [[0 0] [2 0] [6 0]] ▸ [kseg.segls('xlixne 1x\nline 2') [[1 0] [4 0] [9 0]]]
+            belt.insertTextAtPositions lines 'z'      [[0 0] [2 0] [6 0] [1 1] [2 1] [4 1]] ▸ [kseg.segls('zlizne 1z\nlziznez 2') [[1 0] [4 0] [9 0] [2 1] [4 1] [7 1]]]
+            
+            belt.insertTextAtPositions lines 'ｔ'      [[0 0]] ▸ [kseg.segls('ｔline 1\nline 2') [[2 0]]]
+            belt.insertTextAtPositions kseg.segls('ｔline 1\nline 2') 'ｔ'      [[2 0]] ▸ [kseg.segls('ｔｔline 1\nline 2') [[4 0]]]
+            
+        ▸ multiple lines into single cursor
+         
+            lines = belt.seglsForText 
+                """
+                line 1
+                line 2
+                """
+                 
+            belt.insertTextAtPositions lines 'a\nb'   [[0 0]]       ▸ [kseg.segls('a\nb\nline 1\nline 2') [[0 2]]]
+            belt.insertTextAtPositions lines 'a\nb'   [[2 0]]       ▸ [kseg.segls('lia\nbne 1\nline 2')   [[1 1]]]
+            belt.insertTextAtPositions lines 'a\nb'   [[0 1]]       ▸ [kseg.segls('line 1\na\nb\nline 2') [[0 3]]]
+            
+            belt.insertTextAtPositions lines 'a\n'    [[0 1]]       ▸ [kseg.segls('line 1\na\nline 2') [[0 2]]]
+
+        ▸ multiple lines into multi cursor
+         
+            lines = belt.seglsForText 
+                """
+                1234
+                5678
+                """
+                 
+            belt.insertTextAtPositions lines 'X\nY'      [[0 0] [0 1]]              ▸ [kseg.segls('X1234\nY5678')   [[1 0] [1 1]]]
+            belt.insertTextAtPositions lines 'X\nY'      [[0 0] [1 0] [2 0] [3 0]]  ▸ [kseg.segls('X1Y2X3Y4\n5678') [[1 0] [3 0] [5 0] [7 0]]]
+            belt.insertTextAtPositions lines '@\n$\n%'   [[0 0] [1 0] [2 0] [3 0]]  ▸ [kseg.segls('@1$2%3@4\n5678') [[1 0] [3 0] [5 0] [7 0]]]
+            
+        ▸ newlines
+        
+            lines = belt.seglsForText 
+                """
+                line 1
+                line 2
+                """
+                
+            belt.insertTextAtPositions lines '\n' [[2 0]] ▸ [kseg.segls('li\nne 1\nline 2') [[0 1]]]
+            belt.insertTextAtPositions lines '\n' [[6 0]] ▸ [kseg.segls('line 1\n\nline 2') [[0 1]]]
+
+            belt.insertTextAtPositions lines '\n' [[0 1]] ▸ [kseg.segls('line 1\n\nline 2') [[0 2]]]
+            belt.insertTextAtPositions lines '\n' [[2 1]] ▸ [kseg.segls('line 1\nli\nne 2') [[0 2]]]
+            belt.insertTextAtPositions lines '\n' [[6 1]] ▸ [kseg.segls('line 1\nline 2\n') [[0 2]]]
+                                                
+            belt.insertTextAtPositions lines '\n' [[0 0] [0 1]] ▸ [kseg.segls('\nline 1\n\nline 2') [[0 1] [0 3]]]
+            
+            lines = belt.seglsForText 
+                """ 
+                ◆1
+                ◆2
+                ◆3
+                ◆4
+                """
+            
+            belt.insertTextAtPositions lines '\n' [[1 0] [1 1] [1 2] [1 3]] ▸ [kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4') [[0 1] [0 3] [0 5] [0 7]]]
+            
+        ▸ into indented lines
+                 
+            lines = belt.seglsForText
+                """ 
+                ◆1
+                    ◆2
+                        ◆3
+                """
+             
+            ▸ single span 
+         
+                belt.insertTextAtPositions lines '~!' [[4 1]] ▸ [kseg.segls('◆1\n    ~!◆2\n        ◆3') [[6 1]]]
+                belt.insertTextAtPositions lines '#{' [[2 2]] ▸ [kseg.segls('◆1\n    ◆2\n  #{      ◆3') [[4 2]]]
+                 
+            ▸ newline into single cursor
+     
+                belt.insertTextAtPositions lines '\n' [[4 1]] ▸ [kseg.segls('◆1\n    \n    ◆2\n        ◆3') [[4 2]]]
+             
+            ▸ multiple lines into single cursor
+             
+                belt.insertTextAtPositions lines 'a\nb' [[4 1]] ▸ [kseg.segls('◆1\n    a\n    b\n    ◆2\n        ◆3') [[4 3]]]
+
+    #  ███████  ███   ███  ████████   ████████    ███████   ███   ███  ███   ███  ███████  
+    # ███       ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███   ███
+    # ███████   ███   ███  ███████    ███████    ███   ███  ███   ███  ███ █ ███  ███   ███
+    #      ███  ███   ███  ███   ███  ███   ███  ███   ███  ███   ███  ███  ████  ███   ███
+    # ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
+
+    ▸ insertSurroundAtRanges
+
+        lines = belt.seglsForText """ 
+            line1
+            line2
+            """ 
+    
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] '}' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[5 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] ']' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[5 0] [5 1]]]
+
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] '{' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[2 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '[' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[2 0] [2 1]]]
+
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nline2') [[5 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nl"in"e2') [[5 0] [5 1]]]
+
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] "}" ['#{' '}'] ▸ [kseg.segls("l\#{in}e1\nline2") [[6 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0]] "#" ['#{' '}'] ▸ [kseg.segls("l\#{in}e1\nline2") [[3 0]]]
+        belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nl"in"e2') [[5 0] [5 1]]]
+        
+    # 00     00   0000000   000   000  00000000  000      000  000   000  00000000   0000000  
+    # 000   000  000   000  000   000  000       000      000  0000  000  000       000       
+    # 000000000  000   000   000 000   0000000   000      000  000 0 000  0000000   0000000   
+    # 000 0 000  000   000     000     000       000      000  000  0000  000            000  
+    # 000   000   0000000       0      00000000  0000000  000  000   000  00000000  0000000   
+    
+    ▸ moveLineRangesAndPositionsAtIndicesInDirection
+    
+        lines = immutable ['a' 'b' 'c']
+        rngs  = immutable []
+        posl  = immutable []
+    
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'down' ▸ [['a' 'c' 'b'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'down' ▸ [['a' 'b' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'down' ▸ [['a' 'b' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'down' ▸ [['a' 'b' 'c'] [] []]
+
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'up' ▸ [['b' 'a' 'c'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'up' ▸ [['a' 'c' 'b'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'up' ▸ [['b' 'c' 'a'] [] []]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'up' ▸ [['a' 'b' 'c'] [] []]
+
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
+
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
+        
+        lines = immutable ['a' 'b' 'c' 'd' 'e']
+        
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [0 2] [0 3]]) [1 2 3] 'up'   ▸ [['b' 'c' 'd' 'a' 'e'] [] [[0 0] [0 1] [0 2]]]
+        belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [0 2] [0 3]]) [1 2 3] 'down' ▸ [['a' 'e' 'b' 'c' 'd'] [] [[0 2] [0 3] [0 4]]]
+        
+    #  0000000   0000000   00     00  00000000   000      00000000  000000000  000   0000000   000   000  
+    # 000       000   000  000   000  000   000  000      000          000     000  000   000  0000  000  
+    # 000       000   000  000000000  00000000   000      0000000      000     000  000   000  000 0 000  
+    # 000       000   000  000 0 000  000        000      000          000     000  000   000  000  0000  
+    #  0000000   0000000   000   000  000        0000000  00000000     000     000   0000000   000   000  
+    
+    ▸ prepareWordsForCompletion
+    
+        words = belt.linesForText """
+            Alice
+            Alice!
+            Alice!"
+            Alice)--
+            Alice,
+            Alice,)
+            Alice.
+            Alice:
+            Alice;
+            Alice’s
+            Alice’s,
+        """
+        
+        belt.prepareWordsForCompletion 'A'      'A'      words                        ▸ ['Alice']
+        belt.prepareWordsForCompletion '"'      '"'      ['"#fff"']                   ▸ ['"#fff"']
+        belt.prepareWordsForCompletion 'f'      'f'      ['func()']                   ▸ ['func' 'func()']
+        belt.prepareWordsForCompletion 'fa'     'fa'     ['f']                        ▸ []
+        belt.prepareWordsForCompletion 'w'      'w'      ['word[@turd.length..]']     ▸ ['word' 'word[@turd.length..]']
+        belt.prepareWordsForCompletion 'a.b'    'b'      ['a.b.c.d']                  ▸ []
+        belt.prepareWordsForCompletion 'a.b.'   '.'      ['a.b.c.d']                  ▸ ['.b' '.c' '.d']
+        belt.prepareWordsForCompletion 'a.b.c'  'c'      ['a.b.c.d']                  ▸ []
+        belt.prepareWordsForCompletion 'a.b.c.' '.'      ['a.b.c.d']                  ▸ ['.b' '.c' '.d']
+        belt.prepareWordsForCompletion 'word'   'word'   ['word[@turd.length..]']     ▸ []
+        belt.prepareWordsForCompletion 'k'      'k'      ['kseg' 'key']               ▸ ['key' 'kseg']
+        belt.prepareWordsForCompletion 'he'     'he'     ['hello' 'hell']             ▸ ['hell' 'hello']
+        belt.prepareWordsForCompletion 'he'     'he'     ['"hello"' '@hell']          ▸ ['hell' 'hello']    
+        belt.prepareWordsForCompletion 'a.'     '.'      ['0.1' '1.234' 'obj.prop']   ▸ ['.prop']    
+        belt.prepareWordsForCompletion '0.'     '.'      ['0.1' '1.234' 'obj.prop']   ▸ ['.1']    
+        belt.prepareWordsForCompletion '3.1'    '1'      ['1.123' '1.234' 'obj.prop'] ▸ []
+        belt.prepareWordsForCompletion 'rugga'  'r'      ['rofl' 'rug']               ▸ ['rofl' 'rug']
+        belt.prepareWordsForCompletion 'rugga'  'ru'     ['rug']                      ▸ ['rug']
+        belt.prepareWordsForCompletion 'mc'     'mc'     ['mc[0]' 'mc[1]']            ▸ []
+        belt.prepareWordsForCompletion '@'   '@'         ['@color.dot)']              ▸ ['@color' '@color.dot']
+        belt.prepareWordsForCompletion '@'   '@'         ["@side='left"]              ▸ ['@side']
+        belt.prepareWordsForCompletion '@'   '@'         ["@side='left'"]             ▸ ['@side']
+        belt.prepareWordsForCompletion 'b'   'b'         ['a\n' 'b\n']                ▸ []
+        belt.prepareWordsForCompletion '@img.pop' 'pop'  ['@img.pop()']               ▸ ['pop()']
+        
+    # ███  ███   ███  ███████    ████████  ███   ███  █████████
+    # ███  ████  ███  ███   ███  ███       ████  ███     ███   
+    # ███  ███ █ ███  ███   ███  ███████   ███ █ ███     ███   
+    # ███  ███  ████  ███   ███  ███       ███  ████     ███   
+    # ███  ███   ███  ███████    ████████  ███   ███     ███   
+
+    ▸ indentLineRangesAndPositionsAtIndices
+
+        lines = belt.seglsForText
+            """ 
+            ◆1
+                ◆2
+                    ◆3
+            """
+        posl = immutable [[0 0 1 1]]
+        rngs = immutable [[0 1] [1 1]]
+        belt.indentLineRangesAndPositionsAtIndices lines posl rngs [0 1] ▸ [[kseg('    ◆1') kseg('        ◆2') kseg('        ◆3')] [[4 0 5 1]] [[4 1] [5 1]]]
+            
+    ▸ deindentLineRangesAndPositionsAtIndices
+    
+        lines = belt.seglsForText
+            """ 
+            ◆1
+                ◆2
+                    ◆3
+            """
+        posl = immutable [[0 1 1 2]] 
+        rngs = immutable [[0 1] [1 2]]
+        belt.deindentLineRangesAndPositionsAtIndices lines posl rngs [1 2] ▸ [[kseg('◆1') kseg('◆2') kseg('    ◆3')] [[0 1 0 2]] [[0 1] [0 2]]]
+        
+     

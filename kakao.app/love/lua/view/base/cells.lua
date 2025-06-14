@@ -226,15 +226,15 @@ function cells:isOutsideEvent(evt)
 
 
 function cells:posForScreen(x, y) 
-                     local x, y = belt.pos(x, y) ; return array((x - self.x), (y - self.y))
+                     local x, y = belt.pos(x, y) ; return array((x - (self.x - 1)), (y - (self.y - 1)))
     end
 
 function cells:screenForPos(x, y) 
-                     local x, y = belt.pos(x, y) ; return array((x + self.x), (y + self.y))
+                     local x, y = belt.pos(x, y) ; return array((x + (self.x - 1)), (y + (self.y - 1)))
     end
 
 function cells:posForEvent(evt) 
-    return self:posForScreen(evt.x, evt.y)
+        return self:posForScreen(int((evt.x / _G.screen.cw)), int((evt.y / _G.screen.ch)))
     end
 
 -- 0000000     0000000           00000000   00000000   0000000  000000000  

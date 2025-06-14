@@ -61,8 +61,7 @@ class view extends events
             # log "view popup.show #{@name}" 
             post∙emit 'popup.show' @name
         
-        # @arrange()
-        # {redraw:true}
+        @arrange()
         true
         
     hide: ->

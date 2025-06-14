@@ -462,7 +462,7 @@ class Rlua
                     @add ", "
         else
             # if n.for_range.kind != ●range
-            if n.for_range.kind == ●literal
+            if n.for_range.kind in {●literal ●propertyAccess}
                 @add "_, "
                 @rnd n.for_value
             else
@@ -486,7 +486,7 @@ class Rlua
                     @rnd n.for_range.range_end
         else
             @add " in "
-            if n.for_range.kind == ●literal
+            if n.for_range.kind in {●literal ●propertyAccess}
                 if n.for_inof.token.str == "of"
                     @add "pairs("
                 else

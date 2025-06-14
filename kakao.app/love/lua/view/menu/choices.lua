@@ -372,15 +372,15 @@ function choices:filter(text)
         if (text == self.filterText) then return end
         
         if empty(text) then return self:set(self.items, self.key) end
-        print("FILTER")
+        
         self.filterText = text
         
         local fuzz = krzl({values = self.items, extract = self.extract})
         
-        self.fuzzied = fuzz.filter(text)
+        self.fuzzied = fuzz:filter(text)
         
-        self.fuzzied.sort(function (a, b) 
-    return (self:weight(a, text) - self:weight(b, text))
+        self.fuzzied:sort(function (a, b) 
+    return (self:weight(a, text) < self:weight(b, text))
 end)
         
         local lines = self.fuzzied.map(self.extract)
@@ -389,7 +389,7 @@ end)
             lines = array('')
         end
         
-        return self.state.loadLines(lines)
+        return self.state:loadLines(lines)
     end
 
 -- ███   ███   ███████   ███   ███  ████████  ████████ 
@@ -405,17 +405,17 @@ function choices:hoverChoiceAtIndex(index, event)
         self.hoverIndex = index
         self.state:setMainCursor(0, index)
         self:select(self.hoverIndex)
-        post.emit('pointer', 'pointer')
+        post:emit('pointer', 'pointer')
         self:emitAction('hover', self:current(), event)
-        return {redraw = true}
+        return true
     end
 
 
 function choices:unhover() 
         self.hoverIndex = -1
-        self.state.deselect()
-        post.emit('pointer', 'default')
-        return {redraw = true}
+        self.state:deselect()
+        post:emit('pointer', 'default')
+        return true
     end
 
 -- 00     00   0000000   000   000   0000000  00000000  
@@ -435,14 +435,14 @@ function choices:dragChoiceAtIndex(index, event)
 function choices:clickChoiceAtIndex(index, event) 
         self.hoverIndex = -1
         self:emitAction('click', self.fuzzied[index], event)
-        return {redraw = true}
+        return true
     end
 
 
 function choices:doubleClickChoiceAtIndex(index, event) 
         self.hoverIndex = -1
         self:emitAction('doubleclick', self.fuzzied[index], event)
-        return {redraw = true}
+        return true
     end
 
 
@@ -452,30 +452,30 @@ function choices:onMouse(event)
         if (self.mapscr and self.mapscr.onMouse(event)) then return true end
         
         if self.hover then 
-            local col, row = self:eventPos(event)
+            local col, row = unpack(self:eventPos(event))
             
-            if self.state.isValidLineIndex(row) then 
+            if self.state:isValidLineIndex(row) then 
                 if ((self.hoverForSubmenu and (event.type == 'move')) and (col > kseg.width(self.state.s.lines[row]))) then 
-                    local dx = abs(event.delta[0])
-                    local dy = abs(event.delta[1])
+                    local dx = abs(event.delta[1])
+                    local dy = abs(event.delta[2])
                     if ((dx * 2) >= dy) then return end
                 end
                 
                 if (event.type == 'move') then 
-                            return self:hoverChoiceAtIndex((row + self.state.s.view[1]), event)
+                            return self:hoverChoiceAtIndex((row + self.state.s.view[2]), event)
                 elseif (event.type == 'press') then 
                         if (event.count == 2) then 
-                            return self:doubleClickChoiceAtIndex((row + self.state.s.view[1]), event)
+                            return self:doubleClickChoiceAtIndex((row + self.state.s.view[2]), event)
                         else 
                             self.dragStart = array(col, row)
-                            return self:clickChoiceAtIndex((row + self.state.s.view[1]), event)
+                            return self:clickChoiceAtIndex((row + self.state.s.view[2]), event)
                         end
                 elseif (event.type == 'drag') then 
                             if self.dragStart then 
-                                return self:dragChoiceAtIndex((row + self.state.s.view[1]), event)
+                                return self:dragChoiceAtIndex((row + self.state.s.view[2]), event)
                             end
                 elseif (event.type == 'release') then 
-                            delete(self.dragStart)
+                            self.dragStart = nil
                 end
             end
         end

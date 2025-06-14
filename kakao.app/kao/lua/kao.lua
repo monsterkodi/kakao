@@ -65,7 +65,7 @@ Options:
     co:shuffle()
     write(co[1], cs[1], co[2], cs[2], co[3], cs[3])
     
-    return watch(slash.path("."))
+    return watch(slash.path("."), slash.path("../../love"))
 end
 
 
@@ -102,14 +102,21 @@ function watch(...)
     local luaFiles = array.indexdict(slash.files(slash.path(dir, "."), "lua"))
     local kxkFiles = array.indexdict(slash.files(slash.path(dir, "./kxk"), "lua"))
     local kxkTests = array.indexdict(slash.files(slash.path(dir, "kxk/test")))
+    local prjFiles = array.indexdict(slash.files(slash.path(dir, "../../love/lua"), "lua"))
+    local prjTests = array.indexdict(slash.files(slash.path(dir, "../../love/lua/test")))
+    local prjDir = slash.path(dir, "../../love/lua/")
     
-    if verbose then 
+    if opts.verbose then 
         print("\nlua files")
-        print(array.str(luaFiles))
+        print(noon(luaFiles))
         print("\nkxk files")
-        print(array.str(kxkFiles))
+        print(noon(kxkFiles))
         print("\nkxk tests")
-        print(array.str(kxkTests))
+        print(noon(kxkTests))
+        print("\nprj files")
+        print(noon(prjFiles))
+        print("\nprj tests")
+        print(noon(prjTests))
     end
     
     local modTimes = {}
@@ -117,6 +124,7 @@ function watch(...)
     while true do 
         local kxkChanged = array()
         local luaChanged = array()
+        local prjChanged = array()
         
         for _, dir in ipairs({...}) do 
             for i, f in ipairs(slash.walk(dir)) do 
@@ -138,6 +146,9 @@ function watch(...)
                         elseif luaFiles[p] then 
                             write("\x1b[0m\x1b[90m\x1b[2m", "◆ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
                             luaChanged:push(p)
+                        elseif prjFiles[p] then 
+                            write("\x1b[0m\x1b[90m\x1b[2m", "♥ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
+                            prjChanged:push(p)
                         end
                     end
                 end
@@ -152,6 +163,18 @@ function watch(...)
                 testPass = false
                 write("\x1b[0m\x1b[31m\x1b[9m", "testing")
             end
+        end
+        
+        if (#prjChanged > 0) then 
+            write("\x1b[0m\x1b[32m\x1b[4m", "testing ♥")
+            local cwd = slash.cwd()
+            slash.chdir(prjDir)
+            if not test.run(prjTests) then 
+                testPass = false
+                write("\x1b[0m\x1b[31m\x1b[9m", "testing ♥")
+            end
+            
+            slash.chdir(cwd)
         end
         
         if ((#luaChanged > 0) or (#kxkChanged > 0)) then 

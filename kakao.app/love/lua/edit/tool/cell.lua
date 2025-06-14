@@ -21,10 +21,6 @@ function cell.static.cells(cols, rows)
     return cell.matrix(cols, rows, (function () return {bg = array(), fg = array(), char = ' '} end))
     end
 
-function cell.static.metas(cols, rows) 
-    return cell.matrix(cols, rows, (function () return {pre = array(), pst = array()} end))
-    end
-
 
 function cell.static.matrix(cols, rows, cb) 
         local lines = array()
@@ -128,7 +124,7 @@ function cell.static.clampCellRect(cells, x1, y1, x2, y2)
         y1 = clamp(1, rows, y1)
         y2 = clamp(1, rows, y2)
         
-        return x1, y1, x2, y2
+        return array(x1, y1, x2, y2)
     end
 
 -- 000   000  000  000000000  000   000        0000000  000   000   0000000   00000000   
@@ -159,7 +155,7 @@ function cell.static.cellsWithChar(cells, char)
 
 
 function cell.static.cellsInRect(cells, x1, y1, x2, y2) 
-        local x1, y1, x2, y2 = cell.clampCellRect(cells, x1, y1, x2, y2)
+        local x1, y1, x2, y2 = unpack(cell.clampCellRect(cells, x1, y1, x2, y2))
         
         local res = {}
         for y in iter(y1, y2) do 
@@ -182,7 +178,7 @@ function cell.static.cellNeighborsAtPos(cells, x, y, xd, yd)
         xd = xd or 1
         yd = yd or 1
         
-        local x1, y1, x2, y2 = cell.clampCellRect(cells, (x - xd), (y - yd), (x + xd), (y + yd))
+        local x1, y1, x2, y2 = unpack(cell.clampCellRect(cells, (x - xd), (y - yd), (x + xd), (y + yd)))
         
         return cell.cellsInRect(cells, x1, y1, x2, y2)
     end

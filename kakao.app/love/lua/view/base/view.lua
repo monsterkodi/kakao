@@ -72,8 +72,7 @@ function view:show()
             post:emit('popup.show', self.name)
         end
         
-        -- @arrange()
-        -- {redraw:true}
+        self:arrange()
         return true
     end
 

@@ -281,21 +281,21 @@ class choices extends editor
         ⮐  if text == @filterText
            
         ⮐  @set(@items @key) if empty text
-        log "FILTER"    
+
         @filterText = text
             
         fuzz = krzl {values:@items extract:@extract}
         
-        @fuzzied = fuzz.filter text
+        @fuzzied = fuzz∙filter text
 
-        @fuzzied.sort((a b) -> @weight(a text) - @weight(b text))
+        @fuzzied∙sort((a b) -> @weight(a text) < @weight(b text))
         
         lines = @fuzzied.map @extract
 
         if empty lines
             lines = [''] 
         
-        @state.loadLines lines
+        @state∙loadLines lines
 
     # ███   ███   ███████   ███   ███  ████████  ████████ 
     # ███   ███  ███   ███  ███   ███  ███       ███   ███
@@ -310,16 +310,16 @@ class choices extends editor
         @hoverIndex = index
         @state∙setMainCursor 0 index
         @select @hoverIndex
-        post.emit 'pointer' 'pointer'
+        post∙emit 'pointer' 'pointer'
         @emitAction 'hover' @current() event
-        {redraw:true}
+        true
         
     unhover: ->
         
         @hoverIndex = -1
-        @state.deselect()
-        post.emit 'pointer' 'default'
-        {redraw:true}
+        @state∙deselect()
+        post∙emit 'pointer' 'default'
+        true
 
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -337,13 +337,13 @@ class choices extends editor
         
         @hoverIndex = -1  
         @emitAction 'click' @fuzzied[index] event
-        {redraw:true}
+        true
         
     doubleClickChoiceAtIndex: index event ->
         
         @hoverIndex = -1  
         @emitAction 'doubleclick' @fuzzied[index] event
-        {redraw:true}
+        true
         
     onMouse: event ->
         
@@ -353,34 +353,34 @@ class choices extends editor
         
         if @hover
         
-            (col row) = @eventPos event
+            (col row) = unpack @eventPos(event)
             
-            if @state.isValidLineIndex(row)
+            if @state∙isValidLineIndex(row)
                 
                 if @hoverForSubmenu and event.type == 'move' and col > kseg.width(@state.s.lines[row])
-                    dx = abs event.delta[0]
-                    dy = abs event.delta[1]
+                    dx = abs event.delta[1]
+                    dy = abs event.delta[2]
                     ⮐  if dx*2 >= dy
                 
                 switch event.type
                     
                     'move'  
-                            ⮐  @hoverChoiceAtIndex row + @state.s.view[1] event
+                            ⮐  @hoverChoiceAtIndex row + @state.s.view[2] event
                             
                     'press' 
                     
                         if event.count == 2
-                            ⮐  @doubleClickChoiceAtIndex row + @state.s.view[1] event
+                            ⮐  @doubleClickChoiceAtIndex row + @state.s.view[2] event
                         else
                             @dragStart = [col row]
-                            ⮐  @clickChoiceAtIndex row + @state.s.view[1] event
+                            ⮐  @clickChoiceAtIndex row + @state.s.view[2] event
                             
                     'drag'
                             if @dragStart
-                                ⮐  @dragChoiceAtIndex row + @state.s.view[1] event
+                                ⮐  @dragChoiceAtIndex row + @state.s.view[2] event
                                 
                     'release'
-                            delete @dragStart
+                            @dragStart = nil
         @hover
         
     #  0000000    0000000  000000000  000   0000000   000   000  

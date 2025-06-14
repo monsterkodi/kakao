@@ -93,7 +93,7 @@ function inputchoice:show()
             self.input:grabFocus()
         end
         
-        return {redraw = true}
+        return true
     end
 
 
@@ -184,10 +184,8 @@ end)()
 -- 0000000    000   000  000   000  00     00
 
 
-function inputchoice:draw(screen) 
+function inputchoice:draw() 
         if self:hidden() then return end
-        
-        self.cells:setScreen(screen)
         
         self:arrange()
         self:drawFrame()

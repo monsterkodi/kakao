@@ -7,6 +7,7 @@
 ###
 
 use edit.editor
+use view.menu.context
 
 class fileeditor extends editor
 
@@ -114,19 +115,19 @@ class fileeditor extends editor
 
     onContext: event ->
     
-        word = @state.textOfSelectionOrWordAtCursor()
+        word = @state∙textOfSelectionOrWordAtCursor()
         if valid word ➜ word = " '#{word}'"
-        context.show event.cell @onContextChoice [
+        context.show event.cell fileeditor.onContextChoice [
             "search#{word}" 
             "find#{word}"
             'status'
             ]
                 
-    onContextChoice: choice ->
+    @onContextChoice: choice ->
 
-        if choice.startsWith 'search'
+        if kstr.startsWith choice 'search'
             post∙emit 'searcher.show' kstr.trim(string.sub(choice 7 -2) " '")
-        elif choice.startsWith 'find'
+        elif kstr.startsWith choice 'find'
             post∙emit 'finder.show' kstr.trim(string.sub(choice 5 -2) " '")
         else
             switch choice
@@ -230,11 +231,10 @@ class fileeditor extends editor
     onMouse: event ->
     
         if editor.onMouse @ event ➜ ⮐  true
-        
         if not (@dragStart or @cells∙isInsideEvent(event) or (@gutter.cells∙isInsideEvent(event)))
             ⮐  @hover 
         
-        (col row) = @eventPos event
+        (col row) = unpack @eventPos(event)
         
         switch event.type
             
@@ -242,31 +242,31 @@ class fileeditor extends editor
             
                 if event.count > 1
 
-                    @state.deselect() if not event.shift and event.button=='left'
+                    @state∙deselect() if not event.shift and event.button=='left'
                     
-                    x = col + @state.s.view[0]
-                    y = row + @state.s.view[1]
+                    x = col + @state.s.view[1]
+                    y = row + @state.s.view[2]
                     
-                    @state.clearHighlights()
+                    @state∙clearHighlights()
                     
                     if event.count == 2
                         if event.alt
-                            @state.selectChunk x y
+                            @state∙selectChunk x y
                         else
-                            @state.selectWord x y
+                            @state∙selectWord x y
                     else
-                        @state.selectLine y
+                        @state∙selectLine y
                         
-                    @state.highlightSelection()
+                    @state∙highlightSelection()
                         
-                    @dragStart = copy @state.s.selections[0]
+                    @dragStart = copy @state.s.selections[1]
                     
-                    ⮐  {redraw:true}
+                    ⮐  true
                     
                 else
                     
-                    x = col + @state.s.view[0]
-                    y = row + @state.s.view[1]
+                    x = col + @state.s.view[1]
+                    y = row + @state.s.view[2]
                     
                     if event.cmd or event.ctrl
                         word = belt.wordAtPos @state.s.lines [x y]
@@ -277,41 +277,41 @@ class fileeditor extends editor
 
                     @dragStart = [x y x]
                                         
-                    @state.deselect()     if not event.shift and event.button=='left'
-                    @state.clearCursors() if not event.alt
+                    @state∙deselect()     if not event.shift and event.button=='left'
+                    @state∙clearCursors() if not event.alt
 
                     if event.alt
-                        @state.addCursor x y
+                        @state∙addCursor x y
                     else
                         if event.shift and @state.s.cursors.length == 1
-                            @state.setMainCursorAndSelect x y
+                            @state∙setMainCursorAndSelect x y
                         else
-                            @state.setMainCursor x y
+                            @state∙setMainCursor x y
                     
                     @grabFocus()
                     
-                    ⮐  {redraw:true}
+                    ⮐  true
                     
             'drag'
             
                 if @dragStart
                     
-                    x = col + @state.s.view[0]
-                    y = row + @state.s.view[1]
+                    x = col + @state.s.view[1]
+                    y = row + @state.s.view[2]
                     
                     start = [@dragStart[0] @dragStart[1]]
                     
                     if y < @dragStart[1] 
                         start = [@dragStart[2] @dragStart[1]]
                     
-                    if event.shift ➜ @state.addRangeToSelectionWithMainCursorAtEnd belt.rangeFromStartToEnd(start [x y])
-                    else             @state.select start [x y]
+                    if event.shift ➜ @state∙addRangeToSelectionWithMainCursorAtEnd belt.rangeFromStartToEnd(start [x y])
+                    else             @state∙select start [x y]
                         
-                    ⮐  {redraw:true}
+                    ⮐  true
                     
             'release'
             
-                delete @dragStart
+                @dragStart = nil
                 
             'move'
             

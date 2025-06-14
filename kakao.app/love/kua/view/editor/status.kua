@@ -58,9 +58,9 @@ class status extends view
         @filepos∙setColor 'empty' theme.status.empty
         @filepos.syntax = fileposSyntax()
         
-        @crumbs∙on     'action' @onCrumbsAction
-        @statusfile∙on 'action' @onFileAction
-        @filepos∙on    'action' @onFileposAction
+        @crumbs∙on     'action' @onCrumbsAction  @
+        @statusfile∙on 'action' @onFileAction    @
+        @filepos∙on    'action' @onFileposAction @
         
         # post.on 'status.filepos' @onStatusFilepos
         
@@ -107,18 +107,19 @@ class status extends view
         #         clearTimeout @droopTimer
         #         delete @droopTimer
                 
-    droopCrumb: path crumb ○->
+    droopCrumb: path crumb ->
 
         clearTimeout @droopTimer
         delete @droopTimer
     
         path = slash.untilde path
-        files =○ nfs.list path {recursive:false}
+        files = slash.walk path {recursive:false}
         x = @crumbs.cells.x+int((crumb.cols[1]+crumb.cols[0])/2)
         post∙emit 'droop.show' {files:files pos:[x @crumbs.cells.y+1]}
 
     onFileAction: action file ->
-        
+        ⮐  if empty file
+        log "onFileAction" action, file
         switch action
             'click' ➜ post∙emit 'browse.dir' slash.dir(file) file
             
@@ -129,7 +130,6 @@ class status extends view
     # 000   000   0000000    0000000   0000000   00000000  
     
     onMouse: event ->
-
         
         cret = @crumbs∙onMouse event
         sret = @statusfile∙onMouse event
@@ -140,8 +140,8 @@ class status extends view
 
         view.onMouse @ event
         
-        (col row) = @eventPos event
-        
+        (col row) = unpack @eventPos(event)
+
         if @hover
             post∙emit 'pointer' @pointerType 
         
@@ -150,13 +150,12 @@ class status extends view
             'press' 
                 
                 if @hover 
-                    if 0 <= col < 4
+                    if 1 <= col and col <= 4
                         post∙emit 'dircol.toggle'
                         ⮐  true
-                    if @cells.cols-12 <= col < @cells.cols
+                    if @cells.cols-12 <= col and col <= @cells.cols
                         post∙emit 'funcol.toggle'
                         ⮐  true
-                    
         @hover
         
     #  0000000  00000000  000000000        00000000  000  000      00000000  

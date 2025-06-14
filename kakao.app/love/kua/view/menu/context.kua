@@ -12,15 +12,12 @@ use view.menu.inputchoice
 
 class context extends inputchoice
 
-    @menu: nil
-
     @: ->
         
         inputchoice.init @ 'context'
         
         @setColor 'bg' theme.context.bg
-                
-        context.menu = @
+        _G.contextMenu = @
 
     #  ███████   ████████   ████████    ███████   ███   ███   ███████   ████████
     # ███   ███  ███   ███  ███   ███  ███   ███  ████  ███  ███        ███     
@@ -31,17 +28,17 @@ class context extends inputchoice
     arrange: ->
 
         w = @width+2+1 # 2 for frame, 1 for right 
-        c = @choices.numChoices()
-        
+        c = @choices∙numChoices()
         ih = if @inputIsActive() ➜ 2 ➜ 0
         iz = max 0 ih - 1
         h = c + 2 + ih
-        x = @pos[0]
-        y = @pos[1]
+        x = @pos[1]
+        y = @pos[2]
+        log "nummChoices" c, x, y, w, h, ih, iz
         
-        @input.layout    x+2   y+1      w-4  iz
-        @choices.layout  x+1   y+1+ih   w-2  c
-        @cells.layout    x     y        w    h
+        @input∙layout    x+2   y+1      w-4  iz
+        @choices∙layout  x+1   y+1+ih   w-2  c
+        @cells∙layout    x     y        w    h
 
     #  0000000  000   000   0000000   000   000
     # 000       000   000  000   000  000 0 000
@@ -49,23 +46,31 @@ class context extends inputchoice
     #      000  000   000  000   000  000   000
     # 0000000   000   000   0000000   00     00
     
-    @show: pos cb items -> context.menu.show pos cb items
+    @show: pos cb items -> 
+    
+        if _G.contextMenu
+            _G.contextMenu∙show pos cb items
+        else
+            log "DAFURGL?" 
 
-    show: @pos @cb @items ->
+    show: pos cb items ->
+        @pos   = pos
+        @cb    = cb
+        @items = items
         
-        @pos[1] -= 1
+        # @pos[1] -= 1
         
-        items = @items.map (i) -> ' ' + i # padding for  
+        items = @items∙map((i) -> ' ' & i) # padding for  
             
         @width = belt.widthOfLines items
         
-        @input.set ''
-        @input.hide()
-        @choices.set items
-        @choices.select 0
-        @choices.state.setView [0 0]
+        @input∙set ''
+        @input∙hide()
+        @choices∙set items
+        @choices∙select 1
+        @choices.state∙setView [1 1]
                 
-        super()
+        inputchoice.show @
                 
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -75,7 +80,7 @@ class context extends inputchoice
     
     applyChoice: choice ->
         # log 'context applyChoice' choice
-        @cb choice
+        @.cb choice
         @hide()
         
     onWheel: ->
@@ -93,6 +98,7 @@ class context extends inputchoice
         @arrange()
         @drawFrame()
         @drawChoices()
+        @render()
         
     drawFrame: ->
         

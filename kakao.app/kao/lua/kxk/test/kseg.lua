@@ -98,6 +98,16 @@ test("kseg", function()
         test.cmp(s:str(), "▴")
     end)
     
+    test("slice", function()
+        local s = kseg("abc")
+        test.cmp(s:slice(1):str(), "abc")
+        test.cmp(s:slice(2):str(), "bc")
+        test.cmp(s:slice(3):str(), "c")
+        test.cmp(s:slice(4, 3):str(), "")
+        test.cmp(s:slice(4, 4):str(), "")
+        test.cmp(s:slice(4):str(), "")
+    end)
+    
     test("emojii", function()
         local s = kseg("🧑")
         test.cmp(#s, 1)
@@ -111,6 +121,34 @@ test("kseg", function()
         test.cmp(s:str(), "🧑")
     end)
     
+    test("segiAtWidth", function()
+        test.cmp(kseg.segiAtWidth(kseg("abc"), 1), 1)
+        test.cmp(kseg.segiAtWidth(kseg("abc"), 2), 2)
+        test.cmp(kseg.segiAtWidth(kseg("abc"), 3), 3)
+        
+        test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 1), 1)
+        test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 2), 2)
+        test.cmp(kseg.segiAtWidth(kseg("▸◌◂"), 3), 3)
+        
+        test.cmp(kseg.segiAtWidth("abc", 1), 1)
+        test.cmp(kseg.segiAtWidth("abc", 2), 2)
+        test.cmp(kseg.segiAtWidth("abc", 3), 3)
+        
+        test.cmp(kseg.segiAtWidth("▸◌◂", 1), 1)
+        test.cmp(kseg.segiAtWidth("▸◌◂", 2), 2)
+        test.cmp(kseg.segiAtWidth("▸◌◂", 3), 3)
+    end)
+    
+    test("eql", function()
+        test.cmp((kseg("abc") == kseg("abc")), false)
+        
+        test.cmp(kseg("abc"):eql(kseg("abc")), true)
+        
+        test.cmp(kseg.eql("abc", "abc"), true)
+        test.cmp(kseg.eql("abc", kseg("abc")), true)
+        test.cmp(kseg.eql(kseg("abc"), "abc"), true)
+    end)
+    
     test("is", function()
         local a = kseg("")
         test.cmp(a:is(kseg), true)
@@ -119,5 +157,49 @@ test("kseg", function()
         test.cmp(a:is(false), false)
         test.cmp(a:is(true), false)
         test.cmp(a:is(nil), false)
+    end)
+    
+    test("count", function()
+        local s = kseg("__hellooo")
+        test.cmp((s[#s] == "o"), true)
+        test.cmp((s:slice(#s):str() == "o"), true)
+        test.cmp(kseg.tailCount(s, "o"), 3)
+        test.cmp(kseg.tailCount("__hellooo", "o"), 3)
+        
+        test.cmp(kseg.headCount(s, "_"), 2)
+        test.cmp(kseg.headCount("__hellooo", "_"), 2)
+        
+        test.cmp(kseg.tailCount("◂◂○○●", "●"), 1)
+        test.cmp(kseg.headCount("◂◂○○●", "◂"), 2)
+        
+        test.cmp(kseg.tailCountWord(kseg("1  2 33")), 2)
+        
+        test.cmp(kseg.headCountWord(kseg("1  2 33")), 1)
+        test.cmp(kseg.headCountWord(kseg("  2 33")), 0)
+        test.cmp(kseg.headCountWord(kseg(".  2 33")), 0)
+        test.cmp(kseg.headCountWord(kseg("x233")), 4)
+        test.cmp(kseg.headCountWord(kseg("x233 ")), 4)
+        
+        test.cmp(kseg.tailCount(" ", ""), 0)
+        test.cmp(kseg.tailCount(" ", " "), 1)
+        test.cmp(kseg.tailCount("  ", " "), 2)
+    end)
+    
+    test("spanForClosestWordAtColumn", function()
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('abc def'), 1), array(1, 4))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('abc def'), 2), array(1, 4))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('abc def'), 3), array(1, 4))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('abc def'), 4), array(5, 8))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('ab  def'), 3), array(1, 3))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('ab  def'), 4), array(5, 8))
+        
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('     '), 0), array(0, 0))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('     '), 2), array(2, 2))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('     '), 3), array(3, 3))
+        
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('   xy'), 2), array(4, 6))
+        test.cmp(kseg.spanForClosestWordAtColumn(kseg('xy   '), 3), array(1, 3))
+        
+        test.cmp(kseg.spanForClosestWordAtColumn("   aa123   ", 1), array(4, 9))
     end)
     end)

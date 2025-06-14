@@ -44,12 +44,12 @@ function dircol:init(editor, features)
         
         self.crumbs:setColor('empty', theme.gutter.bg)
         
-        post:on('dircol.reveal', self.onReveal)
-        post:on('dircol.resize', self.onResize)
-        post:on('dircol.toggle', self.onToggle)
-        post:on('dircol.root', self.setRoot)
+        post:on('dircol.reveal', self.onReveal, self)
+        post:on('dircol.resize', self.onResize, self)
+        post:on('dircol.toggle', self.onToggle, self)
+        post:on('dircol.root', self.setRoot, self)
         
-        post:on('session.merge', self.onSessionMerge)
+        post:on('session.merge', self.onSessionMerge, self)
         
         local root = ked_session:get('dircol▸root', slash.cwd())
         
@@ -220,7 +220,7 @@ function dircol:onToggle()
         if not (self:visible() and self:collapsed()) then self:toggle() end
         self.active = self:visible()
         ked_session:set('dircol▸active', self.active)
-        local cols = max(16, int((self.cells.screen.cols / 6)))
+        local cols = max(16, int((_G.screen.cols / 6)))
         return -- post∙emit 'view.size' @name 'right' (@hidden() ? -@cells.cols : cols-@cells.cols )
     end
 

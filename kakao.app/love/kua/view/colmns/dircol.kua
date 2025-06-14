@@ -42,12 +42,12 @@ class dircol extends view
         
         @crumbs∙setColor 'empty'          theme.gutter.bg
         
-        post∙on 'dircol.reveal' @onReveal
-        post∙on 'dircol.resize' @onResize
-        post∙on 'dircol.toggle' @onToggle
-        post∙on 'dircol.root'   @setRoot
+        post∙on 'dircol.reveal' @onReveal @
+        post∙on 'dircol.resize' @onResize @
+        post∙on 'dircol.toggle' @onToggle @
+        post∙on 'dircol.root'   @setRoot  @
         
-        post∙on 'session.merge' @onSessionMerge
+        post∙on 'session.merge' @onSessionMerge @
         
         root = ked_session∙get 'dircol▸root' slash.cwd()
         
@@ -196,7 +196,7 @@ class dircol extends view
         @toggle() if not (@visible() and @collapsed())
         @active = @visible()
         ked_session∙set 'dircol▸active' @active
-        cols = max 16 int(@cells.screen.cols / 6)
+        cols = max 16 int(_G.screen.cols / 6)
         # post∙emit 'view.size' @name 'right' (@hidden() ? -@cells.cols : cols-@cells.cols )
         
     # 00     00   0000000   000   000   0000000  00000000  

@@ -23,6 +23,10 @@ function logfile:init()
         function _G.error(...) 
     return self:error(...)
         end
+        
+        function _G.warn(...) 
+    return self:error(...)
+        end
         return self
     end
 

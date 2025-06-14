@@ -92,7 +92,7 @@ class statusfile extends view
                 
                 if @hover
                     @emit 'action' 'click' @file
-                    ⮐  {redraw:true}
+                    ⮐  true
         @hover
     
 ⮐  statusfile
