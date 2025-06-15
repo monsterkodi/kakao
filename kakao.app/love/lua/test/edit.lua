@@ -45,23 +45,22 @@ code = 'yes' # trailing
     test("deleteLineRangesAndAdjustPositions", function()
         local lines = belt.seglsForText([[
 1234567890
-abcdefghij
-]])
+abcdefghij]])
         
-        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 6 1]] [[6 2]] ▸ [lines [[5 1]]]
-        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 7 1]] [[6 2]] ▸ [[kseg('123457890') kseg('abcdefghij')] [[5 1]]]
-        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 6 2]] [[6 2]] ▸ [[kseg('12345fghij')] [[5 0]]]
-        --belt.deleteLineRangesAndAdjustPositions lines [[1 2 2 2]] [[1 2]] ▸ [[kseg('1234567890') kseg('bcdefghij')] [[0 1]]]
-        --belt.deleteLineRangesAndAdjustPositions lines [[6 1 4 2]] [[4 2]] ▸ [[kseg('12345defghij')] [[5 0]]]
-        --belt.deleteLineRangesAndAdjustPositions lines [[4 1 6 2]] [[4 2]] ▸ [[kseg('123fghij')] [[3 0]]]
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 6, 1)), array(array(6, 2))), lines, array(array(5, 1)))
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 7, 1)), array(array(6, 2))), array(kseg('123457890'), kseg('abcdefghij')), array(array(5, 1)))
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 6, 2)), array(array(6, 2))), array(kseg('12345fghij')), array(array(6, 1)))
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 2, 2, 2)), array(array(1, 2))), array(kseg('1234567890'), kseg('bcdefghij')), array(array(0, 1)))
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 4, 2)), array(array(4, 2))), array(kseg('12345defghij')), array(array(5, 0)))
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(4, 1, 6, 2)), array(array(4, 2))), array(kseg('123fghij')), array(array(3, 0)))
         
         lines = belt.seglsForText([[
 line 1
 line 2
-line 3
-]])
+line 3]])
         
-        -- belt.deleteLineRangesAndAdjustPositions lines [[1 1 7 2]] [[7 1] [7 2]] ▸ [[kseg('line 3')] [[1 1]]]
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 1, 7, 2)), array(array(7, 1), array(7, 2))), array(kseg(), kseg('line 3')), array(array(1, 1)))
+        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 1, 1, 3)), array(array(7, 1), array(7, 2))), array(kseg('line 3')), array(array(1, 1)))
     end)
     
     -- 000  000   000   0000000  00000000  00000000   000000000  

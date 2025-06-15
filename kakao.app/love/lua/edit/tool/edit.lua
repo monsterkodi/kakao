@@ -140,7 +140,7 @@ function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl)
         lines = lines:map(function (l) 
     return l
 end)
-        -- posl  = clone posl
+        posl = array.from(posl)
         
         if empty(rngs) then return lines, posl end
         
@@ -154,36 +154,48 @@ end)
             
             posl = belt.adjustPositionsForDeletedLineRange(posl, lines, rng)
             
-            if (rng[1] == rng[3]) then 
-                if ((rng[0] == 0) and (rng[2] == #lines[rng[1]])) then 
-                    lines:splice(rng[1], 1)
+            if (rng[2] == rng[4]) then 
+                write("\x1b[0m\x1b[33m", "RNG -------------------------------- " .. tostring(rng) .. "")
+                
+                if ((rng[1] == 1) and (rng[3] > #lines[rng[2]])) then 
+                    lines:splice(rng[2], 1)
                 else 
-                    lines:splice(rng[1], 1, (lines[rng[1]]:slice(1, rng[0]) + lines[rng[1]]:slice(rng[2])))
+                    local slcl = lines[rng[2]]:slice(1, (rng[1] - 1))
+                    write("\x1b[0m\x1b[34m", "slcl ", slcl)
+                    local slcr = lines[rng[2]]:slice(rng[3])
+                    write("\x1b[0m\x1b[34m", "slcr ", slcr)
+                    local repl = (slcl + slcr)
+                    write("\x1b[0m\x1b[32m", "repl ", repl)
+                    write("\x1b[0m\x1b[31m", "SPLICE", rng)
+                    lines:splice(rng[2], 1, repl)
+                    write("\x1b[0m\x1b[33m", "SPLICE", lines)
                 end
             else 
-                if (rng[2] == #lines[rng[3]]) then 
-                    lines:splice(rng[3], 1)
+                local partialLast = false
+                if (rng[3] == #lines[rng[4]]) then 
+                    lines:splice(rng[4], 1)
                 else 
-                    lines:splice(rng[3], 1, lines[rng[3]]:slice(rng[2]))
-                    local partialLast = true
+                    lines:splice(rng[4], 1, lines[rng[4]]:slice(rng[3]))
+                    partialLast = true
                 end
                 
-                if ((rng[3] - rng[1]) >= 2) then 
-                    lines:splice((rng[1] + 1), ((rng[3] - rng[1]) - 1))
+                if ((rng[4] - rng[2]) >= 2) then 
+                    lines:splice((rng[2] + 1), ((rng[4] - rng[2]) - 1))
                 end
                 
-                if (rng[0] == 0) then 
-                    lines:splice(rng[1], 1)
+                if (rng[1] == 1) then 
+                    lines:splice(rng[2], 1)
                 else 
-                    lines:splice(rng[1], 1, lines[rng[1]]:slice(1, rng[0]))
+                    lines:splice(rng[2], 1, lines[rng[2]]:slice(1, (rng[1] - 1)))
                     
                     if partialLast then 
-                        lines:splice(rng[1], 2, (lines[rng[1]] + lines[(rng[1] + 1)]))
+                        lines:splice(rng[2], 2, (lines[rng[2]] + lines[(rng[2] + 1)]))
                     end
                 end
             end
         end
         
+        write("\x1b[0m\x1b[35m", "LINES ", lines, "\x1b[0m\x1b[36m", "\nPOSL ", posl)
         return lines, posl
     end
 

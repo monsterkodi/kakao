@@ -182,7 +182,7 @@ end
 function kstr.hex(s) 
     if is(s, "string") then return tonumber(s, 16) end
     if is(s, "number") then 
-    return tostring(s)
+    return string.format("%x", s)
     end
 end
 
@@ -227,10 +227,16 @@ function kstr.hexColor(s)
     end
     
     if is(s, array) then 
-        -- log "hexColor ARRAY " s
-        local h = '#' .. s:slice(1, 3):map(function (v) kstr.lpad(2, kstr.hex(v), '0') end):join('')
-        if ((#s > 3) and is(s[3], num)) then 
-            h = kstr.scaleColor(h, s[3])
+        write("hexColor ARRAY ", s:slice(1, 3))
+        local hs = s:slice(1, 3):map(function (v) 
+    return kstr.lpad(2, kstr.hex(v), '0')
+end)
+        write("HS " .. tostring(hs) .. "")
+        hs = hs:join("")
+        local h = '#' .. hs
+        if ((#s > 3) and is(s[4], "number")) then 
+            print("SCALE")
+            h = kstr.scaleColor(h, s[4])
         end
         
         return h

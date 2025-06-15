@@ -383,7 +383,8 @@ class Rlua
             @add fg(r g b)
         elif code.len
             for chr in code
-                if ansi[$chr]
+                # if ansi[$chr]
+                if ansi.hasKey($chr)
                     @add ansi[$chr]
         @add "\""
         

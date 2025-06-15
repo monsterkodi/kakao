@@ -17,13 +17,13 @@ use theme.color
     # 000   000  000        000 000   
     # 000   000  00000000  000   000  
     
-    # ▸ hex
+    ▸ hex
     
-        # color.hex [0 0 0]     ▸ '#000000'
-        # color.hex [0 255 0]   ▸ '#00ff00'
-        # color.hex [255 255 0] ▸ '#ffff00'
+        color.hex [0 0 0]     ▸ '#000000'
+        color.hex [0 255 0]   ▸ '#00ff00'
+        color.hex [255 255 0] ▸ '#ffff00'
         
-        # color.hex '#ffff00'   ▸ '#ffff00'
+        color.hex '#ffff00'   ▸ '#ffff00'
         
     # 0000000     0000000   00000000   000   000  00000000  000   000  
     # 000   000  000   000  000   000  000  000   000       0000  000  
@@ -64,9 +64,9 @@ use theme.color
         #
         #belt.colorSeglsForText "▸ #{color.fg_rgb([255 255 00])}#{color.fg_rgb()} ms" ▸ [[[{x:2 fg:[255 255 0] w:1}]] kseg.segls("▸  ms")]
         
-    # ▸ adjustForBackground
+    ▸ adjustForBackground
     
-        # color.adjustForBackground [255 255 0] [0 0 0]         ▸ [255 255 0]
-        # color.adjustForBackground [255 255 0] [200 200 0]     ▸ [76 77 0]
-        # color.adjustForBackground [255 255 255] [170 170 170] ▸ [51 51 51]
+        color.adjustForBackground [255 255 0] [0 0 0]         ▸ [255 255 0]
+        color.adjustForBackground [255 255 0] [200 200 0]     ▸ [76 77 0]
+        color.adjustForBackground [255 255 255] [170 170 170] ▸ [51 51 51]
         

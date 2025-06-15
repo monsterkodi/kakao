@@ -326,7 +326,8 @@ proc ▸color(this : Rlua, n : Node) =
             this.add(fg(r, g, b))
         elif code.len: 
             for chr in code: 
-                if ansi[$chr]: 
+                # if ansi[$chr]
+                if ansi.hasKey($chr): 
                     this.add(ansi[$chr])
         this.add("\"")
 

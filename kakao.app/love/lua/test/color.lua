@@ -16,14 +16,13 @@ test("color", function()
     -- 000   000  000        000 000   
     -- 000   000  00000000  000   000  
     
-    -- ▸ hex
-    
-    
-        -- color.hex [0 0 0]     ▸ '#000000'
-        -- color.hex [0 255 0]   ▸ '#00ff00'
-        -- color.hex [255 255 0] ▸ '#ffff00'
+    test("hex", function()
+        test.cmp(color.hex(array(0, 0, 0)), '#000000')
+        test.cmp(color.hex(array(0, 255, 0)), '#00ff00')
+        test.cmp(color.hex(array(255, 255, 0)), '#ffff00')
         
-        -- color.hex '#ffff00'   ▸ '#ffff00'
+        test.cmp(color.hex('#ffff00'), '#ffff00')
+    end)
     
     -- 0000000     0000000   00000000   000   000  00000000  000   000  
     -- 000   000  000   000  000   000  000  000   000       0000  000  
@@ -65,10 +64,9 @@ test("color", function()
         --        
         --belt.colorSeglsForText "▸ #{color.fg_rgb([255 255 00])}#{color.fg_rgb()} ms" ▸ [[[{x:2 fg:[255 255 0] w:1}]] kseg.segls("▸  ms")]
     
-    -- ▸ adjustForBackground
-    
-    
-        -- color.adjustForBackground [255 255 0] [0 0 0]         ▸ [255 255 0]
-        -- color.adjustForBackground [255 255 0] [200 200 0]     ▸ [76 77 0]
-        -- color.adjustForBackground [255 255 255] [170 170 170] ▸ [51 51 51]
+    test("adjustForBackground", function()
+        test.cmp(color.adjustForBackground(array(255, 255, 0), array(0, 0, 0)), array(255, 255, 0))
+        test.cmp(color.adjustForBackground(array(255, 255, 0), array(200, 200, 0)), array(76, 77, 0))
+        test.cmp(color.adjustForBackground(array(255, 255, 255), array(170, 170, 170)), array(51, 51, 51))
+    end)
     end)

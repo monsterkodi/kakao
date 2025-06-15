@@ -60,7 +60,11 @@ class color
     #    '#bcbcbc' '#c6c6c6' '#d0d0d0' '#dadada' '#e4e4e4' '#eeeeee'
     #    ]
     
-    @hex:    c -> if c is array ➜ kstr.hexColor(c) ➜ c
+    @hex:    c -> 
+        if c is array 
+            write "ARRAY" kstr.hexColor(c) 
+            ⮐  kstr.hexColor(c) 
+        ⮐  c
     @values: c -> 
         if c is "string" 
             ⮐  kstr.hexColor(c) 
@@ -364,9 +368,10 @@ class color
         l = hsl[3]
 
         step = 5
-        if bgLuminance > 0.5
-            step = -5
+        if bgLuminance > 0.5 ➜ step = -5
 
+        write ◌y "fg " fg ◌r "\nbg " bg ◌g "\nfgLum " fgLuminance ◌b "\nbgLum " bgLuminance ◌050 "\ncontrast " contrast ◌b "\nlum " l ◌r "\nstep " step
+        
         cnt = 0
         while cnt < 50
             cnt += 1
@@ -376,12 +381,16 @@ class color
             fgLuminance = @luminance fg
     
             contrast = contrastRatio fgLuminance bgLuminance
+
+            if contrast >= 4.5
+                write "CONTRAST #{contrast}"
+                ⮐  fg 
     
-            ⮐  fg if contrast >= 4.5
-    
-            l += step
-            if l < 0 or l > 100
+            hsl[3] += step
+            write ◌b "lum " hsl[3]
+            if hsl[3] < 0 or hsl[3] > 100
                 step = -step 
+                write ◌r "STEP " step
         fg
 
 # convert colors to rgb triplets

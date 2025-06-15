@@ -244,18 +244,18 @@ class text
                     
     @numFullLinesInRange: lines rng ->
         
-        d = rng[3] - rng[1]
+        d = rng[4] - rng[2]
         
         # if d == 0 
         #     r2 = if lines[rng[1]].len > 0 ➜ 1 ➜ 0
         #     ⮐  rng[0] == 0 and rng[2] == r2
         
         n = 0
-        if rng[0] == 0 
+        if rng[1] == 1 
             n += 1   
-        if d > 1    
+        if d > 2    
             n += d-2     
-        if rng[2] == lines[rng[3]].len
+        if rng[3] == lines[rng[4]].len
             n += 1   
         n
         
@@ -580,18 +580,19 @@ class text
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
         segi = kseg.segiAtWidth lines[y] x
-        left = lines[y]∙slice(1 segi)
-        tc = kseg.tailCount left ' '
-        if tc > 0
-            write "--- tc #{tc}" [segi-tc+1 y segi y]
-            ⮐  [segi-tc+1 y segi y]
+        left = lines[y]∙slice(1 segi-1)
+        write "LEFT|#{left}|"
+        ts = kseg.tailCount left ' '
+        if ts > 0
+            write "--- ts #{ts}" [segi-ts y segi y]
+            ⮐  [segi-ts y segi y]
         tc = kseg.tailCountWord left    
         if tc > 0
-            write "+++ tc #{tc}" [segi-tc y segi y]
-            ⮐  [segi-tc y segi y]
+            write "+++ tc #{tc}" [max(segi-tc 1) y segi y]
+            ⮐  [max(segi-tc 1) y segi y]
         
-        write ">>>" [segi-1 y segi y]
-        [segi-1 y segi y]
+        write ">>>" [max(segi-tc 1) y segi y]
+        [max(segi-tc 1) y segi y]
 
     @rangeOfWordOrWhitespaceRightToPos: lines pos ->
         

@@ -105,6 +105,11 @@ test("kstr", function()
     -- 000       000   000  000      000   000  000   000  
     --  0000000   0000000   0000000   0000000   000   000  
     
+    test("hex", function()
+        test.cmp(kstr.hex(0), "0")
+        test.cmp(kstr.hex(10), "a")
+    end)
+    
     test("hexColor", function()
         test.cmp(kstr.hexColor(nil), nil)
         test.cmp(kstr.hexColor('dead'), nil)

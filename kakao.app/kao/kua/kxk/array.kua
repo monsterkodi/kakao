@@ -73,7 +73,7 @@ class array
                 @remove i
         a = @.class(...)
         if a.len > 0
-            while a.len
+            while a.len > 0
                 @insert i a∙pop()
         @
         

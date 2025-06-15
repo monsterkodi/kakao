@@ -46,7 +46,7 @@ XYZ
         test.cmp(belt.cellsInRect(cells, 1, 1, 1, 1):map(function (n) return n.cell.char end), array('0'))
         test.cmp(belt.cellsInRect(cells, 1, 1, 3, 1):map(function (n) return n.cell.char end), array('0', '1', '2'))
         test.cmp(belt.cellsInRect(cells, 1, 2, 2, 2):map(function (n) return n.cell.char end), array('a', 'b'))
-        -- 
+        
         -- belt.cellNeighborsAtPos(cells 0 0)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' 'a' 'b']
     end)
     
@@ -227,13 +227,22 @@ XYZ
         
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(3, 1)), array(2, 1, 3, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(4, 1)), array(3, 1, 4, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(5, 1)), array(4, 1, 5, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(6, 1)), array(4, 1, 6, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(7, 1)), array(6, 1, 7, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(10, 1)), array(7, 1, 10, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(11, 1)), array(10, 1, 11, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(12, 1)), array(10, 1, 11, 1))
+        
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 2)), array(1, 2, 2, 2))
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
-        --        
-        --segls = kseg.segls '  🧑🌾  ab🌾cde'
-        --        
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [1 1 3 1]
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(4, 2)), array(1, 2, 4, 2))
+        
+        segls = kseg.segls('  🧑🌾  ab🌾cde')
+        
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(3, 1)), array(1, 1, 3, 1))
         --belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
         --belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [3 1 4 1]
         --belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 5 1]
@@ -574,11 +583,11 @@ def
         
         local posl = array(array(5, 1), array(5, 2), array(5, 3), array(5, 4), array(5, 5))
         
-        --belt.rangesOfNestedPairsAtPositions lines posl ▸ [
-        --    [1 3 7 3] 
-        --    [1 4 7 4] 
-        --    [1 5 8 5] [2 5 7 5] [3 5 6 5] [4 5 5 5]
-        --]
+        -- belt.rangesOfNestedPairsAtPositions lines posl ▸ [
+        --     [1 3 7 3] 
+        --     [1 4 7 4] 
+        --     [1 5 8 5] [2 5 7 5] [3 5 6 5] [4 5 5 5]
+        -- ]
     end)
     
     test("spansOfNestedPairsAtPositions", function()

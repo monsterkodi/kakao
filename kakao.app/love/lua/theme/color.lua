@@ -62,11 +62,14 @@ local color = class("color")
 
 
 function color.static.hex(c) 
-    if is(c, array) then 
-    return kstr.hexColor(c) else 
-    return c
-                  end
+        if is(c, array) then 
+            write("ARRAY", kstr.hexColor(c))
+            return kstr.hexColor(c)
+        end
+        
+        return c
     end
+
 
 function color.static.values(c) 
         if is(c, "string") then 
@@ -439,9 +442,9 @@ function color.static.ensureReadability(fg, bg)
         local l = hsl[3]
         
         local step = 5
-        if (bgLuminance > 0.5) then 
-            step = -5
-        end
+        if (bgLuminance > 0.5) then step = -5 end
+        
+        write("\x1b[0m\x1b[33m", "fg ", fg, "\x1b[0m\x1b[31m", "\nbg ", bg, "\x1b[0m\x1b[32m", "\nfgLum ", fgLuminance, "\x1b[0m\x1b[34m", "\nbgLum ", bgLuminance, "\x1b[0m\x1b[38;2;0;80;0m", "\ncontrast ", contrast, "\x1b[0m\x1b[34m", "\nlum ", l, "\x1b[0m\x1b[31m", "\nstep ", step)
         
         local cnt = 0
         while (cnt < 50) do 
@@ -453,11 +456,16 @@ function color.static.ensureReadability(fg, bg)
             
             contrast = contrastRatio(fgLuminance, bgLuminance)
             
-            if (contrast >= 4.5) then return fg end
+            if (contrast >= 4.5) then 
+                write("CONTRAST " .. tostring(contrast) .. "")
+                return fg
+            end
             
-            l = l + step
-            if ((l < 0) or (l > 100)) then 
+            hsl[3] = hsl[3] + step
+            write("\x1b[0m\x1b[34m", "lum ", hsl[3])
+            if ((hsl[3] < 0) or (hsl[3] > 100)) then 
                 step = -step
+                write("\x1b[0m\x1b[31m", "STEP ", step)
             end
         end
         

@@ -48,7 +48,7 @@ use edit.tool.belt
         belt.cellsInRect(cells 1 1 1 1)∙map((n) -> ⮐  n.cell.char) ▸ ['0']
         belt.cellsInRect(cells 1 1 3 1)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' '2']
         belt.cellsInRect(cells 1 2 2 2)∙map((n) -> ⮐  n.cell.char) ▸ ['a' 'b']
-        # 
+
         # belt.cellNeighborsAtPos(cells 0 0)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' 'a' 'b']
 
     # ▸ extendLineRangesToPosition 
@@ -230,13 +230,22 @@ use edit.tool.belt
         
         belt.rangeOfWordOrWhitespaceLeftToPos segls [1 1] ▸ [1 1 1 1]
         belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [2 1 3 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [4 1 5 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 6 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [7 1] ▸ [6 1 7 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [10 1] ▸ [7 1 10 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [11 1] ▸ [10 1 11 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [12 1] ▸ [10 1 11 1]
+        
         belt.rangeOfWordOrWhitespaceLeftToPos segls [2 2] ▸ [1 2 2 2]
-        #belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
-        #
-        #segls = kseg.segls '  🧑🌾  ab🌾cde'
-        #
-        #belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
-        #belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [1 1 3 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
+
+        segls = kseg.segls '  🧑🌾  ab🌾cde'
+
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
+        belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [1 1 3 1]
         #belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
         #belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [3 1 4 1]
         #belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 5 1]
@@ -577,11 +586,11 @@ use edit.tool.belt
             """
         posl  = [[5 1] [5 2] [5 3] [5 4] [5 5]]
     
-        #belt.rangesOfNestedPairsAtPositions lines posl ▸ [
-        #    [1 3 7 3] 
-        #    [1 4 7 4] 
-        #    [1 5 8 5] [2 5 7 5] [3 5 6 5] [4 5 5 5]
-        #]
+        # belt.rangesOfNestedPairsAtPositions lines posl ▸ [
+        #     [1 3 7 3] 
+        #     [1 4 7 4] 
+        #     [1 5 8 5] [2 5 7 5] [3 5 6 5] [4 5 5 5]
+        # ]
 
     ▸ spansOfNestedPairsAtPositions
     

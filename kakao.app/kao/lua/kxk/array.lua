@@ -128,7 +128,7 @@ function array:splice(i, n, ...)
         
         local a = self.class(...)
         if (#a > 0) then 
-            while #a do 
+            while (#a > 0) do 
                 self:insert(i, a:pop())
             end
         end

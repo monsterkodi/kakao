@@ -327,22 +327,22 @@ end)
 
 
 function text.static.numFullLinesInRange(lines, rng) 
-        local d = (rng[3] - rng[1])
+        local d = (rng[4] - rng[2])
         
         -- if d == 0 
         --     r2 = if lines[rng[1]].len > 0 ➜ 1 ➜ 0
         --     ⮐  rng[0] == 0 and rng[2] == r2
         
         local n = 0
-        if (rng[0] == 0) then 
+        if (rng[1] == 1) then 
             n = n + 1
         end
         
-        if (d > 1) then 
+        if (d > 2) then 
             n = n + ((d - 2))
         end
         
-        if (rng[2] == #lines[rng[3]]) then 
+        if (rng[3] == #lines[rng[4]]) then 
             n = n + 1
         end
         
@@ -768,21 +768,22 @@ function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos)
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
         local segi = kseg.segiAtWidth(lines[y], x)
-        local left = lines[y]:slice(1, segi)
-        local tc = kseg.tailCount(left, ' ')
-        if (tc > 0) then 
-            write("--- tc " .. tostring(tc) .. "", array(((segi - tc) + 1), y, segi, y))
-            return array(((segi - tc) + 1), y, segi, y)
+        local left = lines[y]:slice(1, (segi - 1))
+        write("LEFT|" .. tostring(left) .. "|")
+        local ts = kseg.tailCount(left, ' ')
+        if (ts > 0) then 
+            write("--- ts " .. tostring(ts) .. "", array((segi - ts), y, segi, y))
+            return array((segi - ts), y, segi, y)
         end
         
-        tc = kseg.tailCountWord(left)
+        local tc = kseg.tailCountWord(left)
         if (tc > 0) then 
-            write("+++ tc " .. tostring(tc) .. "", array((segi - tc), y, segi, y))
-            return array((segi - tc), y, segi, y)
+            write("+++ tc " .. tostring(tc) .. "", array(max((segi - tc), 1), y, segi, y))
+            return array(max((segi - tc), 1), y, segi, y)
         end
         
-        write(">>>", array((segi - 1), y, segi, y))
-        return array((segi - 1), y, segi, y)
+        write(">>>", array(max((segi - tc), 1), y, segi, y))
+        return array(max((segi - tc), 1), y, segi, y)
     end
 
 
