@@ -10,10 +10,9 @@
 local text = class("text")
     
 
--- @linesForText: text -> kstr.lines text
 
 function text.static.linesForText(text) 
-    return kseg.segls(text)
+    return kstr.lines(text)
     end
 
 
@@ -179,13 +178,13 @@ function text.static.textForLineRange(lines, rng)
         
         local l = array()
         
-        for y in iter(rng[1], rng[3]) do 
+        for y in iter(rng[2], rng[4]) do 
             if not belt.isInvalidLineIndex(lines, y) then 
-                if (y == rng[1]) then 
-                        if (y == rng[3]) then l:push(lines[y]:slice(rng[0], rng[2]))
-                        else l:push(lines[y]:slice(rng[0]))
+                if (y == rng[2]) then 
+                        if (y == rng[4]) then l:push(lines[y]:slice(rng[1], rng[3]))
+                        else l:push(lines[y]:slice(rng[1]))
                         end
-                elseif (y == rng[3]) then l:push(lines[y]:slice(1, rng[2]))
+                elseif (y == rng[4]) then l:push(lines[y]:slice(1, rng[3]))
                 else l:push(lines[y])
                 end
             end
@@ -846,7 +845,7 @@ function text.static.jumpDelta(line, px, dx, jump)
             if ((ci >= #line) and (jump:find('empty') >= 1)) then return ((#line - ci) - 1) end
             local cat = belt.categoryForChar(belt.lineChar(line, ci))
             if (jump:find(cat) < 1) then return dx end
-            while (((0 <= ci) < #line) and (belt.categoryForChar(belt.lineChar(line, ci)) == cat)) do 
+            while (((1 <= ci) and (ci <= #line)) and (belt.categoryForChar(belt.lineChar(line, ci)) == cat)) do 
                 ci = ci + dx
             end
             

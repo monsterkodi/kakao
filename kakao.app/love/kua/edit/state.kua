@@ -251,7 +251,7 @@ class state extends events
     loadLines: lines -> 
     
         if valid(lines) and not (lines[1] is "string")
-            error "#{@name}.loadLines - first line not a string?" lines
+            error "#{@name}.loadLines - first line not a string? #{type(lines[1])}" 
         
         @loadSegls kseg.segls(lines)
     
@@ -352,7 +352,7 @@ class state extends events
 
         if valid @beginIndex
 
-            @h.splice @beginIndex @h.len-@beginIndex-1
+            @h∙splice @beginIndex @h.len-@beginIndex-1
             @beginIndex = nil
         @
 
@@ -708,7 +708,7 @@ class state extends events
         dy = if dir == 'up' ➜ -1 ➜ 1
         
         newCursors = []
-        for _ c in ipairs cursors
+        for c in cursors
             newCursors∙push c
             newCursors∙push [c[1] c[2]+dy]
         mc = belt.traversePositionsInDirection newCursors @mainCursor() dir
@@ -1459,24 +1459,25 @@ class state extends events
                 
         ⮐  @deleteSelection() if ['back' 'next']∙has(typ) and valid @s.selections
 
-        lines = @s.lines.map((l) -> l) # mutable copy
+        lines = @s.lines∙map((l) -> l) # mutable copy
         
         cursors = @allCursors()
         
-        if cursors.len == 1 and ['back' 'next']∙has(typ) and belt.isLinesPosOutside lines cursors[0]
-            ⮐  @setMainCursor kseg.width(lines[cursors[0][1]]) cursors[0][1]
+        if cursors.len == 1 and ['back' 'next']∙has(typ) and belt.isLinesPosOutside(lines cursors[1])
+            ⮐  @setMainCursor kseg.width(lines[cursors[1][2]]) cursors[1][2]
             
+        minBeforeWs = Infinity
         if typ == 'back'
-            minBeforeWs = Infinity
             for cursor in cursors
                 rng = belt.rangeOfWhitespaceLeftToPos lines cursor
-                minBeforeWs = min minBeforeWs rng[2]-rng[0]
+                minBeforeWs = min minBeforeWs rng[3]-rng[1]
                 
         for ci in cursors.len..1
             
             cursor = cursors[ci]
             
-            (x y) = cursor
+            x = cursor[1]
+            y = cursor[2]
                             
             line = lines[y]
             
@@ -1494,51 +1495,52 @@ class state extends events
                             y -= 1
                             x = kseg.width(lines[y])
                             remove = 2
-                            line = kseg.join(lines[y] line)
-                            cursor[0] = x
-                            cursor[1] = y
+                            line = lines[y] + line
+                            cursor[1] = x
+                            cursor[2] = y
                     else
                         if jump
                             rng = belt.rangeOfWordOrWhitespaceLeftToPos lines cursor
                             if rng
-                                dc = rng[2] - rng[0]
+                                dc = rng[3] - rng[1]
                             else
                                 dc = 1
                         else
                             if minBeforeWs > 1
                                 dc = x % 4
-                                dc = 4 if dc == 0
+                                if dc == 0
+                                    dc = 4 
                                 dc = min minBeforeWs dc
                             else
                                 dc = 1
 
                         if x <= kseg.width(line)
                             segi = kseg.indexAtWidth line x
-                            line = kseg.join line∙slice(1 segi-dc) line∙slice(segi)
+                            line = line∙slice(1 segi-dc) + line∙slice(segi)
 
-                'next' 
-                    if x == kseg.width(lines[y])
+                'next'
+                    if x == kseg.width(lines[y]) 
                         if cursors.len == 1
-                            ⮐  if y >= lines.len-1
+                            ⮐  if y >= lines.len
                             x = kseg.width(lines[y])
                             remove = 2
-                            line = kseg.join line lines[y+1]
-                            cursor[0] = x
-                            cursor[1] = y
+                            line = line + lines[y+1]
+                            cursor[1] = x
+                            cursor[2] = y
                     else
                         if jump
                             rng = belt.rangeOfWordOrWhitespaceRightToPos lines cursor
                             if rng
-                                dc = rng[2] - rng[0]
-                                line = kseg.join line∙slice(1 x) line∙slice(x+dc)
+                                dc = rng[3] - rng[1]
+                                line = line∙slice(1 x) + line∙slice(x+dc)
                         else
                             dc = 1
-                            line = kseg.join line∙slice(1 x) line∙slice(x+dc)
-                        cursor[0] += dc
+                            line = line∙slice(1 x) + line∙slice(x+dc)
+                        cursor[1] += dc
                                 
             belt.moveCursorsInSameLineBy cursors cursor -dc
             
-            lines.splice y remove line
+            lines∙splice y remove line
             
         @clearHighlights()
         @setLines   lines

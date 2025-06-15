@@ -98,7 +98,7 @@ function edit.static.insertTextAtPositions(lines, text, posl)
             newls = newls + before
         end
         
-        write("AFTER INSERT", newls, newpl)
+        -- write "AFTER INSERT" newls, newpl
         return newls, newpl
     end
 
@@ -227,14 +227,14 @@ function edit.static.adjustPositionsForDeletedLineRange(posl, lines, rng)
 
 
 function edit.static.moveCursorsInSameLineBy(cursors, cursor, delta) 
-        local ci = cursors.indexOf(cursor)
+        local ci = cursors:find(cursor)
         
         while true do 
-            cursors[ci][0] = cursors[ci][0] + delta
+            cursors[ci][1] = cursors[ci][1] + delta
             ci = ci + 1
             
             if (ci >= #cursors) then return end
-            if (cursors[ci][1] > cursor[1]) then return end
+            if (cursors[ci][2] > cursor[2]) then return end
         end
     end
 
@@ -323,8 +323,8 @@ end)
 
 
 function edit.static.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, indices, dir) 
-        if empty(((indices or ((dir == 'down') and (indices[-1] >= (#lines - 1)))) or ((dir == 'up') and (indices[0] <= 0)))) then 
-            return array(lines, rngs, posl)
+        if ((empty(indices) or ((dir == 'down') and (indices[#indices] >= #lines))) or ((dir == 'up') and (indices[1] <= 1))) then 
+            return lines, rngs, posl
         end
         
         local newLines = lines:map(function (l) 
@@ -335,9 +335,9 @@ end)
         
         local rs, re = (function () 
     if (dir == 'down') then 
-    return array((#indices - 1), 0)
+    return #indices, 1
                   elseif (dir == 'up') then 
-    return array(0, (#indices - 1))
+    return 1, #indices
                   end
 end)()
         
@@ -357,20 +357,20 @@ end)()
             end
             
             for _, pos in ipairs(newPosl) do 
-                if (pos[1] == index) then 
-                    pos[1] = pos[1] + d
+                if (pos[2] == index) then 
+                    pos[2] = pos[2] + d
                 end
             end
             
             for _, rng in ipairs(newRngs) do 
-                if (rng[1] == index) then 
-                    rng[1] = rng[1] + d
-                    rng[3] = rng[3] + d
+                if (rng[2] == index) then 
+                    rng[2] = rng[2] + d
+                    rng[4] = rng[4] + d
                 end
             end
         end
         
-        return array(newLines, newRngs, newPosl)
+        return newLines, newRngs, newPosl
     end
 
 --  0000000  000       0000000   000   000  00000000        000      000  000   000  00000000   0000000  
@@ -381,8 +381,8 @@ end)()
 
 
 function edit.static.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(lines, blocks, rngs, posl, dir) 
-        if empty(((blocks or ((dir == 'down') and (blocks[-1][3] > (#lines - 1)))) or ((dir == 'up') and (blocks[0][1] < 0)))) then 
-            return array(lines, rngs, posl)
+        if ((empty(blocks) or ((dir == 'down') and (blocks[#blocks][4] > #lines))) or ((dir == 'up') and (blocks[1][2] <= 0))) then 
+            return lines, rngs, posl
         end
         
         local newLines = lines --.asMutable()
@@ -391,9 +391,9 @@ function edit.static.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(li
         
         local rs, re = (function () 
     if (dir == 'down') then 
-    return array((#blocks - 1), 0)
+    return #blocks, 1
                   elseif (dir == 'up') then 
-    return array(0, (#blocks - 1))
+    return 1, #blocks
                   end
 end)()
         
@@ -409,30 +409,30 @@ end)()
             local block = blocks[bi]
             
             local text = belt.textForLineRange(newLines, block)
-            text = text + '\n'
+            text = text .. '\n'
             
             local insidx = (function () 
     if (dir == 'up') then 
-    return block[1] else 
-    return (block[3] + 1)
+    return block[2] else 
+    return (block[4] + 1)
                      end
 end)()
             
-            newLines, posl = belt.insertTextAtPositions(newLines, text, array(array(0, insidx)))
+            newLines, posl = belt.insertTextAtPositions(newLines, text, array(array(1, insidx)))
             
             if (dir == 'down') then 
-                d = ((block[3] - block[1]) + 1)
+                d = ((block[4] - block[2]) + 1)
                 
                 for _, pos in ipairs(newPosl) do 
                     if belt.rangeContainsPos(block, pos) then 
-                        pos[1] = pos[1] + d
+                        pos[2] = pos[2] + d
                     end
                 end
                 
                 for _, rng in ipairs(newRngs) do 
                     if belt.rangeContainsRange(block, rng) then 
-                        rng[1] = rng[1] + d
-                        rng[3] = rng[3] + d
+                        rng[2] = rng[2] + d
+                        rng[4] = rng[4] + d
                     end
                 end
             end
@@ -455,7 +455,7 @@ function edit.static.toggleCommentsInLineRangesAtIndices(lines, rngs, posl, indi
         local newRngs = rngs --.asMutable()
         local newPosl = posl --.asMutable()
         
-        local comStart = '#'
+        local comStart = kseg('#')
         local minIndent = Infinity
         
         for _, index in ipairs(indices) do 

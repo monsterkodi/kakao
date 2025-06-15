@@ -85,7 +85,7 @@ class edit
             
         if posl.len >= 1 and posl[^1][2] <= lines.len
             newls += before 
-        write "AFTER INSERT" newls, newpl
+        # write "AFTER INSERT" newls, newpl
         (newls newpl)
         
     #  0000000  000   000  00000000   00000000    0000000   000   000  000   000  0000000    
@@ -196,15 +196,15 @@ class edit
         
     @moveCursorsInSameLineBy: cursors cursor delta ->
     
-        ci = cursors.indexOf cursor
+        ci = cursors∙find cursor
     
         while true
             
-            cursors[ci][0] += delta
+            cursors[ci][1] += delta
             ci += 1
             
             ⮐  if ci >= cursors.len
-            ⮐  if cursors[ci][1] > cursor[1]
+            ⮐  if cursors[ci][2] > cursor[2]
             
     #  0000000   0000000    0000000          00000000    0000000   000   000   0000000   00000000   0000000  
     # 000   000  000   000  000   000        000   000  000   000  0000  000  000        000       000       
@@ -273,16 +273,16 @@ class edit
     
     @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
         
-        if empty indices or dir == 'down' and indices[-1] >= lines.len-1 or dir == 'up' and indices[0] <= 0
-            ⮐  [lines rngs posl]
+        if empty(indices) or dir == 'down' and indices[^1] >= lines.len or dir == 'up' and indices[1] <= 1
+            ⮐  (lines rngs posl)
         
         newLines = lines∙map((l) -> l)
         newRngs  = rngs #.asMutable()
         newPosl  = posl #.asMutable()
         
         (rs re) = switch dir
-            'down' ➜ [indices.len-1 0]
-            'up'   ➜ [0 indices.len-1]
+            'down' ➜ (indices.len 1)
+            'up'   ➜ (1 indices.len)
 
         d = switch dir
             'down' ➜ 1
@@ -296,15 +296,15 @@ class edit
                 'up'   ➜ newLines∙splice index-1 2 newLines[index]   newLines[index-1]
                 
             for pos in newPosl
-                if pos[1] == index 
-                    pos[1] += d
+                if pos[2] == index 
+                    pos[2] += d
 
             for rng in newRngs
-                if rng[1] == index 
-                    rng[1] += d
-                    rng[3] += d
+                if rng[2] == index 
+                    rng[2] += d
+                    rng[4] += d
         
-        [newLines newRngs newPosl]
+        (newLines newRngs newPosl)
 
     #  0000000  000       0000000   000   000  00000000        000      000  000   000  00000000   0000000  
     # 000       000      000   000  0000  000  000             000      000  0000  000  000       000       
@@ -314,16 +314,16 @@ class edit
     
     @cloneLineBlockRangesAndMoveRangesAndPositionsInDirection: lines blocks rngs posl dir ->
         
-        if empty blocks or dir == 'down' and blocks[-1][3] > lines.len-1 or dir == 'up' and blocks[0][1] < 0
-            ⮐  [lines rngs posl]
+        if empty(blocks) or dir == 'down' and blocks[^1][4] > lines.len or dir == 'up' and blocks[1][2] <= 0
+            ⮐  (lines rngs posl)
         
         newLines = lines #.asMutable()
         newRngs  = rngs #.asMutable()
         newPosl  = posl #.asMutable()
         
         (rs re) = switch dir
-            'down' ➜ [blocks.len-1 0]
-            'up'   ➜ [0 blocks.len-1]
+            'down' ➜ (blocks.len 1)
+            'up'   ➜ (1 blocks.len)
 
         d = switch dir
             'down' ➜ 1
@@ -333,23 +333,23 @@ class edit
             block = blocks[bi]
   
             text = belt.textForLineRange newLines block
-            text += '\n'
+            text &= '\n'
 
-            insidx = if dir == 'up' ➜ block[1] ➜ block[3]+1
+            insidx = if dir == 'up' ➜ block[2] ➜ block[4]+1
 
-            (newLines posl) = belt.insertTextAtPositions newLines text [[0 insidx]]
+            (newLines posl) = belt.insertTextAtPositions newLines text [[1 insidx]]
 
             if dir == 'down'
-                d = block[3]-block[1]+1
+                d = block[4]-block[2]+1
                 
                 for pos in newPosl
                     if belt.rangeContainsPos block pos
-                        pos[1] += d                
+                        pos[2] += d                
     
                 for rng in newRngs
                     if belt.rangeContainsRange block rng
-                        rng[1] += d
-                        rng[3] += d
+                        rng[2] += d
+                        rng[4] += d
         
         (newLines newRngs newPosl)
         
@@ -367,7 +367,7 @@ class edit
         newRngs  = rngs #.asMutable()
         newPosl  = posl #.asMutable()
         
-        comStart = '#'
+        comStart  = kseg '#'
         minIndent = Infinity
              
         for index in indices

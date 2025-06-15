@@ -128,6 +128,20 @@ function kseg:__tostring()
     end
 
 
+function kseg.static.str(s) 
+        if is(s, "string") then return s end
+        if empty(s) then return "" end
+        if is(s[1], kseg) then 
+            local ls = s:map(function (c) 
+    return tostring(c)
+end)
+            return ls:join("\n")
+        end
+        
+        return tostring(s)
+    end
+
+
 function kseg:rpad(l, c) 
         c = c or ' '
         
@@ -165,6 +179,17 @@ function kseg.static.trim(s, c)
     c = c or " \n"
     
     return kseg(s):trim(c)
+    end
+
+
+function kseg.static.join(...) 
+        local r = kseg()
+        local args = {...}
+        for _, a in ipairs(args) do 
+            r = r + (kseg(a))
+        end
+        
+        return r
     end
 
 
@@ -295,12 +320,50 @@ function kseg.static.tailCountWord(a)
     end
 
 
+function kseg:startsWith(prefix) 
+        if empty((self or empty), prefix) then return false end
+        local segs = kseg(prefix)
+        if (#self < #segs) then return false end
+        
+        return self:slice(1, #segs):eql(segs)
+    end
+
+
+function kseg:endsWith(postfix) 
+        if empty((self or empty), postfix) then return false end
+        local segs = kseg(postfix)
+        if (#self < #segs) then return false end
+        
+        return self:slice(((#self - #segs) + 1)):eql(segs)
+    end
+
+
+function kseg.static.startsWith(prefix) 
+    return kseg(a):startsWith(prefix)
+    end
+
+function kseg.static.endsWith(postfix) 
+    return kseg(a):endsWith(postfix)
+    end
+
+
 function kseg:indent() 
     return self:lcount(" ")
     end
 
 function kseg.static.indent(a) 
     return kseg(a):indent()
+    end
+
+
+function kseg:splitAtIndent() 
+        local i = self:indent()
+        return self:slice(1, (i - 1)), self:slice(i)
+    end
+
+
+function kseg.static.splitAtIndent(a) 
+    return kseg(a):splitAtIndent()
     end
 
 
@@ -378,6 +441,23 @@ function kseg.static.segiAtWidth(a, w)
     end
 
 
+function kseg:indexAtWidth(w) 
+        local i = 0
+        local s = 0
+        while ((s < w) and (i < #self)) do 
+            s = s + (kseg.width(self[i]))
+            i = i + 1
+        end
+        
+        return i
+    end
+
+
+function kseg.static.indexAtWidth(s, w) 
+    return kseg(s):indexAtWidth(w)
+    end
+
+
 function kseg.static.rep(n, s) 
         s = s or ' '
         
@@ -447,11 +527,11 @@ function intable(tbl, c)
     if (c < tbl[1][1]) then return end
     if (c > tbl[#tbl][2]) then return end
     
-    local bot = 0
-    local top = (#tbl - 1)
+    local bot = 1
+    local top = #tbl
     
     while (top >= bot) do 
-        local mid = math.floor(((bot + top) / 2))
+        local mid = floor(((bot + top) / 2))
         
         if (tbl[mid][2] < c) then 
             bot = (mid + 1)

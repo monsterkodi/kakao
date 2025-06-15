@@ -8,8 +8,7 @@
 
 class text
 
-    # @linesForText: text -> kstr.lines text
-    @linesForText: text -> kseg.segls text
+    @linesForText: text -> kstr.lines text
         
     @joinLines: lines join='\n' ->
         
@@ -142,14 +141,14 @@ class text
          
         l = []
          
-        for y in rng[1]..rng[3]
+        for y in rng[2]..rng[4]
             if not belt.isInvalidLineIndex lines y
                 if
-                    y == rng[1]
+                    y == rng[2]
                         if 
-                            y == rng[3] ➜ l∙push lines[y]∙slice (rng[0] rng[2])
-                                        ➜ l∙push lines[y]∙slice (rng[0])
-                    y == rng[3] ➜ l∙push lines[y]∙slice(1 rng[2])
+                            y == rng[4] ➜ l∙push lines[y]∙slice(rng[1] rng[3])
+                                        ➜ l∙push lines[y]∙slice(rng[1])
+                    y == rng[4] ➜ l∙push lines[y]∙slice(1 rng[3])
                                 ➜ l∙push lines[y]
          
         s = kseg.str l
@@ -640,7 +639,7 @@ class text
             if ci >= line.len and jump∙find('empty') >= 1 ➜ ⮐  line.len - ci - 1
             cat = belt.categoryForChar belt.lineChar(line ci)
             ⮐  dx if jump∙find(cat) < 1
-            while 0 <= ci < line.len and belt.categoryForChar(belt.lineChar(line ci)) == cat
+            while 1 <= ci and ci <= line.len and belt.categoryForChar(belt.lineChar(line ci)) == cat
                 ci += dx
             min dx ci - px + 1
 

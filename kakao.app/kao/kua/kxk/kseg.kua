@@ -90,6 +90,15 @@ class kseg extends array
             (startPos string.sub(str startPos endPos))
     
     $: -> table.concat @ ""
+    
+    @str: s ->
+    
+        if s is "string" ➜ ⮐  s
+        if empty s ➜ ⮐  ""
+        if s[1] is kseg
+            ls = s∙map((c)->$c)
+            ⮐  ls∙join("\n")
+        $s
         
     rpad: l c=' ' ->  
         while @len < l ➜ @push c
@@ -108,6 +117,14 @@ class kseg extends array
     trim: c=" \n" -> @rtrim(c)∙ltrim(c)
     
     @trim: s c=" \n" -> kseg(s)∙trim(c)
+    
+    @join: ... ->
+        
+        r = kseg()
+        args = {...}
+        for a in args
+            r += kseg(a)
+        r
 
     lcount: c ->
 
@@ -182,9 +199,35 @@ class kseg extends array
     @tailCountTurd:  a -> kseg(a)∙tailCountTurd()
     @tailCountChunk: a -> kseg(a)∙tailCountChunk()
     @tailCountWord:  a -> kseg(a)∙tailCountWord()
+
+    startsWith: prefix ->
+        
+        ⮐  false if empty @ or empty prefix
+        segs = kseg prefix
+        ⮐  false if @len < segs.len
+        
+        @slice(1 segs.len)∙eql(segs)
+    
+    endsWith: postfix ->
+        
+        ⮐  false if empty @ or empty postfix
+        segs = kseg postfix
+        ⮐  false if @len < segs.len
+        
+        @slice(@len-segs.len+1)∙eql(segs)
+
+    @startsWith: prefix -> kseg(a)∙startsWith(prefix)
+    @endsWith: postfix -> kseg(a)∙endsWith(postfix)
         
     indent: -> @lcount " "
     @indent: a -> kseg(a)∙indent()
+    
+    splitAtIndent: ->
+            
+        i = @indent()
+        (@slice(1 i-1) @slice(i))
+        
+    @splitAtIndent: a -> kseg(a)∙splitAtIndent()
     
     find: c ->
     
@@ -234,6 +277,17 @@ class kseg extends array
         @len+1
 
     @segiAtWidth: a w -> kseg(a)∙segiAtWidth w
+         
+    indexAtWidth: w ->
+    
+        i = 0
+        s = 0
+        while s < w and i < @len
+            s += kseg.width @[i]
+            i += 1    
+        i
+        
+    @indexAtWidth: s w -> kseg(s)∙indexAtWidth w     
             
     @rep: n s=' ' ->
         
@@ -408,11 +462,11 @@ intable = tbl c ->
     ⮐  if c < tbl[1][1]
     ⮐  if c > tbl[^1][2]
   
-    bot = 0
-    top = tbl.len - 1
+    bot = 1
+    top = tbl.len
     
     while top >= bot
-        mid = math.floor (bot + top) / 2
+        mid = floor (bot + top) / 2
     
         if tbl[mid][2] < c
             bot = mid + 1

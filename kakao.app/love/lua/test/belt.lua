@@ -20,7 +20,7 @@ test("tool belt", function()
     end)
     
     test("cells", function()
-        local l = belt.linesForText([[
+        local l = belt.seglsForText([[
 012
 abc
 XYZ
@@ -527,7 +527,7 @@ def]])
     -- ███   ███  ███   ███   ███████        ███  ███   ███      ███████      ███     ███   ███  
     
     test("isRangeInString", function()
-        local lines = belt.linesForText([[
+        local lines = belt.seglsForText([[
 123
 '456'
 
@@ -552,7 +552,7 @@ def
     -- ███████    ███████   ███   ███  ███   ███   ███████    ███████   ███   ███  ███████  
     
     test("rangesOfPairsSurroundingPositions", function()
-        local lines = belt.linesForText([[
+        local lines = belt.seglsForText([[
 01234567
 
 '45""6'

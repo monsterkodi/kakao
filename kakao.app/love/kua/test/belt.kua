@@ -23,7 +23,7 @@ use edit.tool.belt
 
     ▸ cells
         
-        l = belt.linesForText """
+        l = belt.seglsForText """
             012
             abc
             XYZ
@@ -528,7 +528,7 @@ use edit.tool.belt
 
     ▸ isRangeInString
     
-        lines = belt.linesForText """
+        lines = belt.seglsForText """
             123
             '456'
             
@@ -553,7 +553,7 @@ use edit.tool.belt
 
     ▸ rangesOfPairsSurroundingPositions
     
-        lines = belt.linesForText """
+        lines = belt.seglsForText """
             01234567
             
             '45""6'

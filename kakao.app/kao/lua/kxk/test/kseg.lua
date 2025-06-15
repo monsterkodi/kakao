@@ -44,6 +44,13 @@ abc
 def]])
         
         test.cmp(segls, array(kseg("123"), kseg("456"), kseg(""), kseg("abc"), kseg("def")))
+        
+        test.cmp(kseg.str(segls), [[
+123
+456
+
+abc
+def]])
     end)
     
     test("construct", function()
@@ -60,8 +67,26 @@ def]])
         test.cmp(s:str(), "zz")
     end)
     
+    test("startsWith", function()
+        local s = kseg("a  b")
+        test.cmp(s:startsWith("a"), true)
+        test.cmp(s:startsWith("a "), true)
+        test.cmp(s:startsWith("a  b"), true)
+        test.cmp(s:startsWith("a  bc"), false)
+        test.cmp(s:startsWith("b"), false)
+    end)
+    
+    test("endsWith", function()
+        local s = kseg("a  b")
+        test.cmp(s:endsWith("b"), true)
+        test.cmp(s:endsWith(" b"), true)
+        test.cmp(s:endsWith("a  b"), true)
+        test.cmp(s:endsWith(" a  b"), false)
+        test.cmp(s:endsWith("a"), false)
+    end)
+    
     test("find", function()
-        local s = "a  b"
+        local s = kseg("a  b")
         test.cmp(s:find(" "), 2)
         test.cmp(s:find("  "), 2)
         test.cmp(s:find(" b"), 3)

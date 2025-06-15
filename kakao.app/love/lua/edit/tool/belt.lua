@@ -629,13 +629,13 @@ function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl)
         
         if empty(indices) then return blocks end
         
-        local block = array(0, indices[0], -1, -1)
+        local block = array(1, indices[1], 0, 0)
         for index, ii in ipairs(indices) do 
             block[3] = index
             if (indices[(ii + 1)] ~= (index + 1)) then 
                 block[2] = #lines[index]
                 blocks:push(block)
-                block = array(0, indices[(ii + 1)], -1, -1)
+                block = array(1, indices[(ii + 1)], 0, 0)
             end
         end
         

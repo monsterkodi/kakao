@@ -268,7 +268,7 @@ function state:setSegls(segls)
 
 function state:loadLines(lines) 
         if (valid(lines) and not is(lines[1], "string")) then 
-            error("" .. tostring(self.name) .. ".loadLines - first line not a string?", lines)
+            error("" .. tostring(self.name) .. ".loadLines - first line not a string? " .. tostring(type(lines[1])) .. "")
         end
         
         return self:loadSegls(kseg.segls(lines))
@@ -398,7 +398,7 @@ function state:begin()
 
 function state:ende() 
         if valid(self.beginIndex) then 
-            self.h.splice(self.beginIndex, ((#self.h - self.beginIndex) - 1))
+            self.h:splice(self.beginIndex, ((#self.h - self.beginIndex) - 1))
             self.beginIndex = nil
         end
         
@@ -1749,28 +1749,29 @@ function state:deindentSelectedOrCursorLines()
 function state:delete(typ, jump) 
         if (array('back', 'next'):has(typ) and valid(self.s.selections)) then return self:deleteSelection() end
         
-        local lines = self.s.lines.map(function (l) 
+        local lines = self.s.lines:map(function (l) 
     return l
 end) -- mutable copy
         
         local cursors = self:allCursors()
         
-        if (((#cursors == 1) and array('back', 'next'):has(typ)) and belt.isLinesPosOutside(lines, cursors[0])) then 
-            return self:setMainCursor(kseg.width(lines[cursors[0][1]]), cursors[0][1])
+        if (((#cursors == 1) and array('back', 'next'):has(typ)) and belt.isLinesPosOutside(lines, cursors[1])) then 
+            return self:setMainCursor(kseg.width(lines[cursors[1][2]]), cursors[1][2])
         end
         
+        local minBeforeWs = Infinity
         if (typ == 'back') then 
-            local minBeforeWs = Infinity
             for _, cursor in ipairs(cursors) do 
                 local rng = belt.rangeOfWhitespaceLeftToPos(lines, cursor)
-                minBeforeWs = min(minBeforeWs, (rng[2] - rng[0]))
+                minBeforeWs = min(minBeforeWs, (rng[3] - rng[1]))
             end
         end
         
         for ci in iter(#cursors, 1) do 
             local cursor = cursors[ci]
             
-            local x, y = cursor
+            local x = cursor[1]
+            local y = cursor[2]
             
             local line = lines[y]
             
@@ -1785,26 +1786,25 @@ end) -- mutable copy
                             y = y - 1
                             x = kseg.width(lines[y])
                             remove = 2
-                            line = kseg.join(lines[y], line)
-                            cursor[0] = x
-                            cursor[1] = y
+                            line = (lines[y] + line)
+                            cursor[1] = x
+                            cursor[2] = y
                         end
                     else 
                         if jump then 
                             local rng = belt.rangeOfWordOrWhitespaceLeftToPos(lines, cursor)
                             if rng then 
-                                dc = (rng[2] - rng[0])
+                                dc = (rng[3] - rng[1])
                             else 
                                 dc = 1
                             end
                         else 
                             if (minBeforeWs > 1) then 
                                 dc = (x % 4)
-                                dc = (function () 
-    if (dc == 0) then 
-    return 4
-                                       end
-end)()
+                                if (dc == 0) then 
+                                    dc = 4
+                                end
+                                
                                 dc = min(minBeforeWs, dc)
                             else 
                                 dc = 1
@@ -1813,38 +1813,38 @@ end)()
                         
                         if (x <= kseg.width(line)) then 
                             local segi = kseg.indexAtWidth(line, x)
-                            line = kseg.join(line:slice(1, (segi - dc)), line:slice(segi))
+                            line = (line:slice(1, (segi - dc)) + line:slice(segi))
                         end
                     end
             elseif (typ == 'next') then 
                     if (x == kseg.width(lines[y])) then 
                         if (#cursors == 1) then 
-                            if (y >= (#lines - 1)) then return end
+                            if (y >= #lines) then return end
                             x = kseg.width(lines[y])
                             remove = 2
-                            line = kseg.join(line, lines[(y + 1)])
-                            cursor[0] = x
-                            cursor[1] = y
+                            line = (line + lines[(y + 1)])
+                            cursor[1] = x
+                            cursor[2] = y
                         end
                     else 
                         if jump then 
                             local rng = belt.rangeOfWordOrWhitespaceRightToPos(lines, cursor)
                             if rng then 
-                                dc = (rng[2] - rng[0])
-                                line = kseg.join(line:slice(1, x), line:slice((x + dc)))
+                                dc = (rng[3] - rng[1])
+                                line = (line:slice(1, x) + line:slice((x + dc)))
                             end
                         else 
                             dc = 1
-                            line = kseg.join(line:slice(1, x), line:slice((x + dc)))
+                            line = (line:slice(1, x) + line:slice((x + dc)))
                         end
                         
-                        cursor[0] = cursor[0] + dc
+                        cursor[1] = cursor[1] + dc
                     end
             end
             
             belt.moveCursorsInSameLineBy(cursors, cursor, -dc)
             
-            lines.splice(y, remove, line)
+            lines:splice(y, remove, line)
         end
         
         self:clearHighlights()

@@ -48,130 +48,155 @@ use kxk/strg
         
         segls ▸ [kseg("123") kseg("456") kseg("") kseg("abc") kseg("def")]    
         
+        kseg.str(segls) ▸ """
+            123
+            456
+            
+            abc
+            def""" 
+        
     ▸ construct
         
         s = kseg()
-        s∙str() ▸ ""
+        s∙str()                 ▸ ""
         s = kseg("  ")
-        s∙str() ▸ "  "
+        s∙str()                 ▸ "  "
         s = kseg(kseg("xx"))
-        s∙str() ▸ "xx"
+        s∙str()                 ▸ "xx"
         s = kseg(kseg(kseg("yy")))
-        s∙str() ▸ "yy"
+        s∙str()                 ▸ "yy"
         st = strg("zz")
         s = kseg(strg("zz"))
-        s∙str() ▸ "zz"
+        s∙str()                 ▸ "zz"
+        
+    ▸ startsWith
+    
+        s = kseg "a  b"
+        s∙startsWith "a"        ▸ true
+        s∙startsWith "a "       ▸ true
+        s∙startsWith "a  b"     ▸ true
+        s∙startsWith "a  bc"    ▸ false
+        s∙startsWith "b"        ▸ false
+        
+    ▸ endsWith
+    
+        s = kseg "a  b"
+        s∙endsWith "b"          ▸ true
+        s∙endsWith " b"         ▸ true
+        s∙endsWith "a  b"       ▸ true
+        s∙endsWith " a  b"      ▸ false
+        s∙endsWith "a"          ▸ false
         
     ▸ find
         
-        s = "a  b"
-        s∙find " "  ▸ 2
-        s∙find "  " ▸ 2
-        s∙find " b" ▸ 3
-        s∙find "b"  ▸ 4
+        s = kseg "a  b"
+        s∙find " "              ▸ 2
+        s∙find "  "             ▸ 2
+        s∙find " b"             ▸ 3
+        s∙find "b"              ▸ 4
 
     ▸ pop
     
         s = kseg "../"
         s∙pop()
-        s∙str() ▸ ".."
+        s∙str()                 ▸ ".."
         
         s = kseg "◂▸○●"
         s∙pop()
-        s∙str() ▸ "◂▸○"
-        s∙pop()
-        s∙str() ▸ "◂▸"
+        s∙str()                 ▸ "◂▸○"
+        s∙pop()                 
+        s∙str()                 ▸ "◂▸"
         
     ▸ push
     
         s = kseg()
-        s.len ▸ 0
+        s.len                   ▸ 0
         s∙push "●"
         s∙str() ▸ "●"
-        s.len ▸ 1
+        s.len                   ▸ 1
         s∙push "▪"
-        s∙str() ▸ "●▪"
-        s.len ▸ 2
+        s∙str()                 ▸ "●▪"
+        s.len                   ▸ 2
         s∙push " "
-        s∙str() ▸ "●▪ "
-        s.len ▸ 3
+        s∙str()                 ▸ "●▪ "
+        s.len                   ▸ 3
     
     ▸ rpad
         
         s = kseg "▴"
         s∙rpad 2
-        s∙str() ▸ "▴ "
+        s∙str()                 ▸ "▴ "
         s∙rpad 4
-        s∙str() ▸ "▴   "
+        s∙str()                 ▸ "▴   "
         s∙rpad 2
-        s∙str() ▸ "▴   "
+        s∙str()                 ▸ "▴   "
         
     ▸ trim
     
         s = kseg " ▴  "
         s∙trim()
-        s∙str() ▸ "▴"
+        s∙str()                 ▸ "▴"
         
         s = kseg " ▴  "
         s∙rtrim()
-        s∙str() ▸ " ▴"
+        s∙str()                 ▸ " ▴"
 
         s = kseg " ▴  "
         s∙ltrim()
-        s∙str() ▸ "▴  "
+        s∙str()                 ▸ "▴  "
 
         s = kseg "\n\n ▴  \n  \n"
         s∙trim()
-        s∙str() ▸ "▴"
+        s∙str()                 ▸ "▴"
         
     ▸ slice
     
         s = kseg "abc"
-        s∙slice(1)∙str()   ▸ "abc"
-        s∙slice(2)∙str()   ▸ "bc"
-        s∙slice(3)∙str()   ▸ "c"
-        s∙slice(4 3)∙str() ▸ ""
-        s∙slice(4 4)∙str() ▸ ""
-        s∙slice(4)∙str()   ▸ ""
+        s∙slice(1)∙str()        ▸ "abc"
+        s∙slice(2)∙str()        ▸ "bc"
+        s∙slice(3)∙str()        ▸ "c"
+        s∙slice(4 3)∙str()      ▸ ""
+        s∙slice(4 4)∙str()      ▸ ""
+        s∙slice(4)∙str()        ▸ ""
         
     ▸ emojii
     
         s = kseg "🧑"
-        s.len ▸ 1
+        s.len                   ▸ 1
         
         s = kseg "🧑‍🌾"
-        s.len ▸ 3
-        s[^1] ▸ "🌾"
+        s.len                   ▸ 3
+        s[^1]                   ▸ "🌾"
         s∙pop()
         s∙pop()
-        s.len ▸ 1
-        s∙str() ▸ "🧑"
+        s.len                   ▸ 1
+        s∙str()                 ▸ "🧑"
         
     ▸ segiAtWidth
     
-        kseg.segiAtWidth kseg("abc") 1 ▸ 1
-        kseg.segiAtWidth kseg("abc") 2 ▸ 2
-        kseg.segiAtWidth kseg("abc") 3 ▸ 3
-        kseg.segiAtWidth kseg("abc") 4 ▸ 4
+        kseg.segiAtWidth kseg("abc") 1  ▸ 1
+        kseg.segiAtWidth kseg("abc") 2  ▸ 2
+        kseg.segiAtWidth kseg("abc") 3  ▸ 3
+        kseg.segiAtWidth kseg("abc") 4  ▸ 4
+                                        
+        kseg.segiAtWidth kseg("▸◌◂") 1  ▸ 1
+        kseg.segiAtWidth kseg("▸◌◂") 2  ▸ 2
+        kseg.segiAtWidth kseg("▸◌◂") 3  ▸ 3
+        kseg.segiAtWidth kseg("▸◌◂") 4  ▸ 4
 
-        kseg.segiAtWidth kseg("▸◌◂") 1 ▸ 1
-        kseg.segiAtWidth kseg("▸◌◂") 2 ▸ 2
-        kseg.segiAtWidth kseg("▸◌◂") 3 ▸ 3
-        kseg.segiAtWidth kseg("▸◌◂") 4 ▸ 4
-
-        kseg.segiAtWidth "abc" 1 ▸ 1
-        kseg.segiAtWidth "abc" 2 ▸ 2
-        kseg.segiAtWidth "abc" 3 ▸ 3
-        kseg.segiAtWidth "abc" 4 ▸ 4
-
-        kseg.segiAtWidth "▸◌◂" 1 ▸ 1
-        kseg.segiAtWidth "▸◌◂" 2 ▸ 2
-        kseg.segiAtWidth "▸◌◂" 3 ▸ 3
-        kseg.segiAtWidth "▸◌◂" 4 ▸ 4
+        kseg.segiAtWidth "abc" 1        ▸ 1
+        kseg.segiAtWidth "abc" 2        ▸ 2
+        kseg.segiAtWidth "abc" 3        ▸ 3
+        kseg.segiAtWidth "abc" 4        ▸ 4
+                                        
+        kseg.segiAtWidth "▸◌◂" 1        ▸ 1
+        kseg.segiAtWidth "▸◌◂" 2        ▸ 2
+        kseg.segiAtWidth "▸◌◂" 3        ▸ 3
+        kseg.segiAtWidth "▸◌◂" 4        ▸ 4
         
     ▸ eql
 
-        kseg("abc") == kseg("abc") ▸ false
+        kseg("abc") == kseg("abc")  ▸ false
         
         kseg("abc")∙eql kseg("abc") ▸ true
         
@@ -182,12 +207,12 @@ use kxk/strg
     ▸ is
     
         a = kseg ""
-        a∙is kseg  ▸ true
-        a∙is array ▸ true
-        a∙is table ▸ false
-        a∙is false ▸ false
-        a∙is true  ▸ false
-        a∙is nil   ▸ false
+        a∙is kseg                   ▸ true
+        a∙is array                  ▸ true
+        a∙is table                  ▸ false
+        a∙is false                  ▸ false
+        a∙is true                   ▸ false
+        a∙is nil                    ▸ false
 
     ▸ count
     

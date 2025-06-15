@@ -402,13 +402,13 @@ class belt
         
         ⮐  blocks if empty indices
         
-        block = [0 indices[0] -1 -1]
+        block = [1 indices[1] 0 0]
         for index ii in indices
             block[3] = index
             if indices[ii+1] != index+1
                 block[2] = lines[index].len 
                 blocks∙push block
-                block = [0 indices[ii+1] -1 -1]
+                block = [1 indices[ii+1] 0 0]
         blocks
                 
     # 00     00  00000000  00000000    0000000   00000000  
