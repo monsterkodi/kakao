@@ -78,7 +78,7 @@ line 1
 line 2
 ]]
             
-            -- belt.insertTextAtPositions lines ''       [[0 0]]       ▸ [kseg.segls('line 1\nline 2') [[0 0]]]
+            test.cmp(belt.insertTextAtPositions(lines, '', array(array(1, 1))), kseg.segls('line 1\nline 2'), array(array(1, 1)))
             --belt.insertTextAtPositions lines 'a '     [[0 0]]       ▸ [kseg.segls('a line 1\nline 2') [[2 0]]]
             --belt.insertTextAtPositions lines 'a '     [[0 0] [0 1]] ▸ [kseg.segls('a line 1\na line 2') [[2 0] [2 1]]]
             --            

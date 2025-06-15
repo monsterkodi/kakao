@@ -21,8 +21,8 @@ function edit.static.insertTextAtPositions(lines, text, posl)
         if empty(text) then return lines, posl end
         
         if (text == '\t') then 
-            local pos = posl[0]
-            text = kstr.lpad((4 - (pos[0] % 4)), ' ')
+            local pos = posl[1]
+            text = kstr.lpad((4 - (pos[1] % 4)), ' ')
         end
         
         text = kstr.detab(text)
@@ -43,13 +43,12 @@ function edit.static.insertTextAtPositions(lines, text, posl)
             
             if (idx > 1) then 
                 local x = posl[(idx - 1)][1]
-                -- (x y) = posl[idx-1]
                 
                 if valid(before) then line = before:pop()
                 else line = newls:pop()
                 end
                 
-                print("x", x, kseg.width(line), line)
+                write("x", x, kseg.width(line), line)
                 
                 if ((x > kseg.width(line)) and (text ~= '\n')) then 
                     line = line + (kstr.split(kstr.lpad((x - #line)), ''))
@@ -99,7 +98,7 @@ function edit.static.insertTextAtPositions(lines, text, posl)
             newls = newls + before
         end
         
-        print("AFTER INSERT", newls, newpl)
+        write("AFTER INSERT", newls, newpl)
         return newls, newpl
     end
 
@@ -155,20 +154,20 @@ end)
             posl = belt.adjustPositionsForDeletedLineRange(posl, lines, rng)
             
             if (rng[2] == rng[4]) then 
-                write("\x1b[0m\x1b[33m", "RNG -------------------------------- " .. tostring(rng) .. "")
+                -- write ◌y "RNG -------------------------------- #{rng}"
                 
                 if ((rng[1] == 1) and (rng[3] > #lines[rng[2]])) then 
                     lines:splice(rng[2], 1)
                 else 
                     local slcl = lines[rng[2]]:slice(1, (rng[1] - 1))
-                    write("\x1b[0m\x1b[34m", "slcl ", slcl)
+                    -- write ◌b "slcl " slcl 
                     local slcr = lines[rng[2]]:slice(rng[3])
-                    write("\x1b[0m\x1b[34m", "slcr ", slcr)
+                    -- write ◌b "slcr " slcr 
                     local repl = (slcl + slcr)
-                    write("\x1b[0m\x1b[32m", "repl ", repl)
-                    write("\x1b[0m\x1b[31m", "SPLICE", rng)
+                    -- write ◌g "repl " repl
+                    -- write ◌r "SPLICE" rng 
                     lines:splice(rng[2], 1, repl)
-                    write("\x1b[0m\x1b[33m", "SPLICE", lines)
+                    -- write ◌y "SPLICE" lines
                 end
             else 
                 local partialLast = false
@@ -195,7 +194,7 @@ end)
             end
         end
         
-        write("\x1b[0m\x1b[35m", "LINES ", lines, "\x1b[0m\x1b[36m", "\nPOSL ", posl)
+        -- write ◌m "LINES " lines ◌c "\nPOSL " posl       
         return lines, posl
     end
 

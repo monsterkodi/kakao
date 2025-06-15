@@ -19,8 +19,8 @@ class edit
         ⮐  (lines posl) if empty text
         
         if text == '\t'
-            pos  = posl[0]
-            text = kstr.lpad 4-pos[0]%4 ' '
+            pos  = posl[1]
+            text = kstr.lpad 4-pos[1]%4 ' '
             
         text   = kstr.detab text
         txtls  = belt.seglsForText text
@@ -39,12 +39,11 @@ class edit
             
             if idx > 1
                 x = posl[idx-1][1]
-                # (x y) = posl[idx-1]
                 
                 if valid before ➜ line = before∙pop()
                 else              line = newls∙pop() 
                 
-                log "x" x, kseg.width(line), line
+                write "x" x, kseg.width(line), line
                 
                 if x > kseg.width(line) and text != '\n'
                     line += kstr.split kstr.lpad(x-line.len) ''
@@ -86,7 +85,7 @@ class edit
             
         if posl.len >= 1 and posl[^1][2] <= lines.len
             newls += before 
-        log "AFTER INSERT" newls, newpl
+        write "AFTER INSERT" newls, newpl
         (newls newpl)
         
     #  0000000  000   000  00000000   00000000    0000000   000   000  000   000  0000000    
@@ -137,20 +136,20 @@ class edit
             
             if rng[2] == rng[4]
                 
-                write ◌y "RNG -------------------------------- #{rng}"
+                # write ◌y "RNG -------------------------------- #{rng}"
                 
                 if rng[1] == 1 and rng[3] > lines[rng[2]].len
                     lines∙splice rng[2] 1
                 else
                     slcl = lines[rng[2]]∙slice(1 rng[1]-1)
-                    write ◌b "slcl " slcl 
+                    # write ◌b "slcl " slcl 
                     slcr = lines[rng[2]]∙slice(rng[3])
-                    write ◌b "slcr " slcr 
+                    # write ◌b "slcr " slcr 
                     repl = slcl + slcr
-                    write ◌g "repl " repl
-                    write ◌r "SPLICE" rng 
+                    # write ◌g "repl " repl
+                    # write ◌r "SPLICE" rng 
                     lines∙splice rng[2] 1 repl
-                    write ◌y "SPLICE" lines
+                    # write ◌y "SPLICE" lines
                     
             else
                 partialLast = false        
@@ -170,7 +169,7 @@ class edit
                     
                     if partialLast                                  
                         lines∙splice rng[2] 2 lines[rng[2]] + lines[rng[2]+1]
-        write ◌m "LINES " lines ◌c "\nPOSL " posl       
+        # write ◌m "LINES " lines ◌c "\nPOSL " posl       
         (lines posl)
         
     @adjustPositionsForDeletedLineRange: posl lines rng ->
