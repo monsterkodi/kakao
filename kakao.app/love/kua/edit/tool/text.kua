@@ -466,7 +466,7 @@ class text
             split += belt.splitLineRange(lines rng includeEmpty)
         split
         
-    @isLinesPosInside:  lines pos -> pos[2] < lines.len and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
+    @isLinesPosInside:  lines pos -> pos[2] <= lines.len and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
     @isLinesPosOutside: lines pos -> not belt.isLinesPosInside lines pos 
     
     @isValidLineIndex:   lines li -> 1 <= li and li <= lines.len
@@ -557,17 +557,18 @@ class text
         
         (x y) = unpack pos
         
-        y = clamp 0 lines.len-1 y
-        x = clamp 0 lines[y].len x
+        y = clamp 1 lines.len y
+        x = clamp 1 lines[y].len+1 x
         
-        if x <= 0
+        if x <= 1
             ⮐  [x y x y] 
         
-        segi = kseg.segiAtWidth lines[y] x
-        left = lines[y]∙slice 1 segi
+        # segi = kseg.segiAtWidth lines[y] x
+        segi = kseg.indexAtWidth lines[y] x
+        left = lines[y]∙slice 1 segi-1
         tc = kseg.tailCount left ' '
         if tc
-            ⮐  [segi-tc y segi y]
+            ⮐  [max(segi-tc 1) y segi y]
             
         [x y x y]
 
@@ -575,23 +576,17 @@ class text
         
         (x y) = unpack pos
         
-        write "rangeOfWordOrWhitespaceLeftToPos #{lines}\n#{pos}" 
-        
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
         segi = kseg.segiAtWidth lines[y] x
         left = lines[y]∙slice(1 segi-1)
-        write "LEFT|#{left}|"
         ts = kseg.tailCount left ' '
         if ts > 0
-            write "--- ts #{ts}" [segi-ts y segi y]
             ⮐  [segi-ts y segi y]
         tc = kseg.tailCountWord left    
         if tc > 0
-            write "+++ tc #{tc}" [max(segi-tc 1) y segi y]
             ⮐  [max(segi-tc 1) y segi y]
         
-        write ">>>" [max(segi-tc 1) y segi y]
         [max(segi-tc 1) y segi y]
 
     @rangeOfWordOrWhitespaceRightToPos: lines pos ->

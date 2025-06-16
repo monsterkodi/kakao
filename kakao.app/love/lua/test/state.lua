@@ -295,38 +295,64 @@ line 3
     -- 0000000    00000000  0000000  00000000     000     00000000        0000000    000   000   0000000  000   000  
     
     test("delete back", function()
+        s.syntax.ext = 'kode'
+        s:loadLines(belt.linesForText("1234567890"))
+        
+        s:setMainCursor(1, 1)
+        s:delete('back')
+        txt("1234567890")
+        mul(array(1, 1))
+        
+        s:setMainCursor(2, 1)
+        s:delete('back')
+        txt("234567890")
+        mul(array(1, 1))
+        
+        s:setMainCursor(5, 1)
+        s:delete('back')
+        txt("23467890")
+        mul(array(4, 1))
+        
+        s:delete('back')
+        txt("2367890")
+        mul(array(3, 1))
+        
         text = [[
 xxxx            1
 xxxx         .  2
 xxxx    .       3
 ]]
         
-        s.syntax.ext = 'kode'
         s:loadLines(belt.linesForText(text))
         
-        s:setMainCursor(16, 1)
+        s:setMainCursor(17, 1)
         s:expandCursors('down')
         s:expandCursors('down')
         
-        mul(array(16, 1), array(16, 2), array(16, 3))
+        mul(array(17, 1), array(17, 2), array(17, 3))
         
-        s:delete('back')
-        mul(array(14, 1), array(14, 2), array(14, 3))
+        -- s∙delete 'back'
+        -- mul [15 1] [15 2] [15 3]
+        -- txt """
+        --     xxxx          1
+        --     xxxx         .2
+        --     xxxx    .     3
+        --     """
         
-        s:delete('back')
-        mul(array(13, 1), array(13, 2), array(13, 3))
-        
-        s:delete('back')
-        mul(array(12, 1), array(12, 2), array(12, 3))
-        
-        s:delete('back')
-        mul(array(9, 1), array(9, 2), array(9, 3))
-        
-        s:delete('back')
-        mul(array(8, 1), array(8, 2), array(8, 3))
-        
-        s:delete('back')
-        mul(array(4, 1), array(4, 2), array(4, 3))
+        --s∙delete 'back'
+        --mul [13 1] [13 2] [13 3]
+        --        
+        --s∙delete 'back'
+        --mul [12 1] [12 2] [12 3]
+        --        
+        --s∙delete 'back'
+        --mul [9 1] [9 2] [9 3]
+        --        
+        --s∙delete 'back'
+        --mul [8 1] [8 2] [8 3]
+        --        
+        --s∙delete 'back'
+        --mul [4 1] [4 2] [4 3]
     end)
     
     --  0000000  000       0000000   000   000  00000000         000      000  000   000  00000000   0000000  

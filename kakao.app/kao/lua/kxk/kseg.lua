@@ -425,6 +425,8 @@ function kseg.static.width(s)
         return w
     end
 
+-- index of current segment if column cuts segment
+
 
 function kseg:segiAtWidth(w) 
         w = min(w, ((#self * 2) + 1))
@@ -444,12 +446,23 @@ function kseg.static.segiAtWidth(a, w)
     return kseg(a):segiAtWidth(w)
     end
 
+-- index of next segment if column cuts segment
+
 
 function kseg:indexAtWidth(w) 
-        local i = 0
+        local i = 1
         local s = 0
-        while ((s < w) and (i < #self)) do 
-            s = s + (kseg.width(self[i]))
+        while (i <= #self) do 
+            local cw = kseg.width(self[i])
+            if (((cw > 1) and ((s + cw) >= w)) and ((s + 1) < w)) then 
+                return (i + 1)
+            end
+            
+            s = s + cw
+            if (s >= w) then 
+                return i
+            end
+            
             i = i + 1
         end
         

@@ -196,6 +196,34 @@ def]])
         test.cmp(kseg.segiAtWidth("▸◌◂", 2), 2)
         test.cmp(kseg.segiAtWidth("▸◌◂", 3), 3)
         test.cmp(kseg.segiAtWidth("▸◌◂", 4), 4)
+        
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 1), 1)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 2), 1)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 3), 2)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 4), 2)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 5), 3)
+        test.cmp(kseg.segiAtWidth(kseg('🧑🧑'), 6), 3)
+    end)
+    
+    test("indexAtWidth", function()
+        test.cmp(kseg.indexAtWidth(kseg(''), 1), 1)
+        test.cmp(kseg.indexAtWidth(kseg('a'), 1), 1)
+        test.cmp(kseg.indexAtWidth(kseg('a'), 2), 2)
+        test.cmp(kseg.indexAtWidth(kseg('abc'), 2), 2)
+        test.cmp(kseg.indexAtWidth(kseg('ab3'), 3), 3)
+        test.cmp(kseg.indexAtWidth(kseg('ab3'), 4), 4)
+        
+        test.cmp(kseg.indexAtWidth(kseg('🧑🧑'), 1), 1)
+        test.cmp(kseg.indexAtWidth(kseg('🧑🧑'), 2), 2)
+        test.cmp(kseg.indexAtWidth(kseg('🧑🧑'), 3), 2)
+        test.cmp(kseg.indexAtWidth(kseg('🧑🧑'), 4), 3)
+        test.cmp(kseg.indexAtWidth(kseg('🧑🧑'), 5), 3)
+        test.cmp(kseg.indexAtWidth(kseg('🧑🧑'), 6), 3)
+        
+        -- kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  1 ▸ 1
+        -- kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  2 ▸ 2
+        -- kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  3 ▸ 2
+        -- kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  4 ▸ 3
     end)
     
     test("eql", function()

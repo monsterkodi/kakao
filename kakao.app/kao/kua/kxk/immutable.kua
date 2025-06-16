@@ -1,0 +1,69 @@
+###
+    ███  ██     ██  ██     ██  ███   ███  █████████   ███████   ███████    ███      ████████
+    ███  ███   ███  ███   ███  ███   ███     ███     ███   ███  ███   ███  ███      ███     
+    ███  █████████  █████████  ███   ███     ███     █████████  ███████    ███      ███████ 
+    ███  ███ █ ███  ███ █ ███  ███   ███     ███     ███   ███  ███   ███  ███      ███     
+    ███  ███   ███  ███   ███   ███████      ███     ███   ███  ███████    ███████  ████████
+###
+
+class immutable
+
+    @: tbl ->
+        
+        if tbl.class == immutable
+            ⮐  tbl
+        
+        d = {}
+        if tbl.class == array
+        
+            for v i in tbl∙each()
+                if type(v) == "table" and v.class != immutable
+                    d[i] = immutable(v)
+                else
+                    d[i] = v
+                    
+        elif type(tbl) == "table"
+        
+            for k v of tbl
+                if type(v) == "table" and v.class != immutable
+                    d[k] = immutable(v)
+                else
+                    d[k] = v
+                    
+        rawset @ "_data" d
+            
+    $: -> $@_data
+    
+    __index:    k    -> @_data[k]
+    __pairs:         -> pairs(@_data)
+    __ipairs:        -> ipairs(@_data)
+    __newindex: k v  -> error("Cannot modify immutable. trying to set #{k} #{v}")
+
+    mut: ->
+        
+        mutable = {}
+        for k v of @_data
+            if type(v) == "table" 
+                mutable[k] = v∙mut()
+            else
+                mutable[k] = v
+        mutable
+        
+    mod: ->
+
+        modifiable = {}
+        for k v of @_data
+            modifiable[k] = v
+        modifiable
+
+    set: k v ->
+    
+        new_data = @mod()
+        if type(k) == "table"
+            for k v of tbl
+                new_data[k] = v
+        else
+            new_data[k] = v
+        immutable new_data
+
+⮐  immutable

@@ -1763,6 +1763,7 @@ end) -- mutable copy
         if (typ == 'back') then 
             for _, cursor in ipairs(cursors) do 
                 local rng = belt.rangeOfWhitespaceLeftToPos(lines, cursor)
+                write("WS RNG " .. tostring(rng) .. " " .. tostring(cursor) .. " " .. tostring(lines[cursor[2]]:slice(cursor[1])) .. "")
                 minBeforeWs = min(minBeforeWs, (rng[3] - rng[1]))
             end
         end
@@ -1777,12 +1778,12 @@ end) -- mutable copy
             
             local remove = 1
             local dc = 0
-            
+            write("DELETE " .. tostring(minBeforeWs) .. " " .. tostring(line) .. "")
             if (typ == 'eol') then line = line:slice(1, x)
             elseif (typ == 'back') then 
-                    if (x == 0) then 
+                    if (x == 1) then 
                         if (#cursors == 1) then 
-                            if (y <= 0) then return end
+                            if (y <= 1) then return end
                             y = y - 1
                             x = kseg.width(lines[y])
                             remove = 2
@@ -1800,7 +1801,7 @@ end) -- mutable copy
                             end
                         else 
                             if (minBeforeWs > 1) then 
-                                dc = (x % 4)
+                                dc = (((x - 1) % 4) + 1)
                                 if (dc == 0) then 
                                     dc = 4
                                 end
@@ -1812,8 +1813,10 @@ end) -- mutable copy
                         end
                         
                         if (x <= kseg.width(line)) then 
-                            local segi = kseg.indexAtWidth(line, x)
-                            line = (line:slice(1, (segi - dc)) + line:slice(segi))
+                            -- segi = kseg.indexAtWidth line x
+                            local segi = kseg.segiAtWidth(line, x)
+                            write("X " .. tostring(x) .. " " .. tostring(kseg.width(line)) .. " " .. tostring(dc) .. " " .. tostring(segi) .. "")
+                            line = (line:slice(1, ((segi - dc) - 1)) + line:slice(segi))
                         end
                     end
             elseif (typ == 'next') then 

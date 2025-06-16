@@ -1,0 +1,136 @@
+###
+    ███  ██     ██  ██     ██  ███   ███  █████████   ███████   ███████    ███      ████████      █████████  ████████   ███████  █████████  
+    ███  ███   ███  ███   ███  ███   ███     ███     ███   ███  ███   ███  ███      ███              ███     ███       ███          ███     
+    ███  █████████  █████████  ███   ███     ███     █████████  ███████    ███      ███████          ███     ███████   ███████      ███     
+    ███  ███ █ ███  ███ █ ███  ███   ███     ███     ███   ███  ███   ███  ███      ███              ███     ███            ███     ███     
+    ███  ███   ███  ███   ███   ███████      ███     ███   ███  ███████    ███████  ████████         ███     ████████  ███████      ███     
+###
+
+use kxk.kxk
+use kxk.immutable
+
+▸ immutable
+
+    ▸ construct
+    
+        immutable({}) ▸ immutable({})
+        
+        ia = immutable({a:1}) 
+        ia.a                    ▸ 1
+        ia.b                    ▸ nil
+        ia.class                ▸ immutable
+        ia._data                ▸ {a:1}
+        ia∙set "a" 2            ▸ immutable({a:2})
+        ia                      ▸ immutable({a:1})
+        ab = ia∙set "b" 2
+        ab                      ▸ immutable({a:1 b:2})
+        ab = ab∙set "a" nil     
+        ab                      ▸ immutable({b:2})
+        
+    ▸ immutability
+    
+        ia = immutable({a:1})
+        fail = pcall(-> ia.a = 2)
+        fail                    ▸ false
+        
+        fail = pcall(-> ia.b = 2)
+        fail                    ▸ false
+        
+        ib = immutable({a:[1 2 3]})
+        fail = pcall(-> ib.a[1] = 0) 
+        fail                    ▸ false
+
+        ic = immutable({[[1 2] [3 4]]})
+        fail = pcall(-> ib[1][2] = 0) 
+        fail                    ▸ false
+        
+    ▸ mutable
+        
+        ia = immutable({a:1})
+        ma = ia∙mut()
+        ia                      ▸ immutable({a:1})
+        ma.a = 2
+        ma                      ▸ {a:2}
+        ma.b = 3
+        ma                      ▸ {a:2 b:3}
+        
+        ia                      ▸ immutable({a:1})
+        ia = ia∙set "cursor" [1 2]
+        ia.cursor               ▸ immutable([1 2])
+        ia                      ▸ immutable({a:1 cursor:[1 2]})
+        
+        ia = ia∙set "cursor" [3 4]
+        ia.cursor               ▸ immutable([3 4])
+        ia                      ▸ immutable({a:1 cursor:[3 4]})
+        
+    ▸ copies
+    
+        c1 = [1 2]
+        c2 = [1 2]
+        c1 == c1                ▸ true
+        c2 == c2                ▸ true
+        c1 == c2                ▸ false
+        
+        ia = immutable({c:c1})
+        ia.c                    ▸ immutable(c1)
+        ia.c == c1              ▸ false
+        ia.c == c2              ▸ false
+
+        ib = ia∙set "x" c2
+        ib.x                    ▸ immutable(c2)
+        ib.x == c2              ▸ false
+        ib.x == c1              ▸ false
+        
+        ib.c == ia.c            ▸ true
+        
+        ic = ib∙set "y" [[1 2] [3 4] [5 6]]
+        
+        ic.c == ia.c            ▸ true
+        ic.c == ib.c            ▸ true
+        ic.x == ib.x            ▸ true
+        
+        ic.y                    ▸ immutable([[1 2] [3 4] [5 6]])
+        ic.y[1]                 ▸ immutable([1 2])
+        ic.y[2]                 ▸ immutable([3 4])
+        ic.y[3]                 ▸ immutable([5 6])
+        
+        my = ic.y∙mod()
+        my[2] = [9 9]
+        
+        id = ic∙set "y" my
+        id                      ▸ immutable({c:c1 x:c2 y:[[1 2] [9 9] [5 6]]})
+        
+        id.y[1] == ic.y[1]      ▸ true
+        id.y[2] == ic.y[2]      ▸ false
+        id.y[3] == ic.y[3]      ▸ true
+        
+    ▸ bypassing immutability
+        
+        arr = immutable({1,2,3})
+        arr.len                 ▸ 0
+        arr                     ▸ immutable({1,2,3})
+        arr[1]                  ▸ 1
+        arr[2]                  ▸ 2
+        arr[3]                  ▸ 3
+        arr[4]                  ▸ nil
+        
+        success = pcall(-> table.insert(arr, 4))
+        success                 ▸ true
+        arr.len                 ▸ 1
+        arr[1]                  ▸ 4
+        arr[2]                  ▸ 2
+        arr[3]                  ▸ 3
+        arr[4]                  ▸ nil
+
+        success = pcall(-> table.insert(arr, 5))
+        success                 ▸ true
+        arr.len                 ▸ 2
+        arr[1]                  ▸ 4
+        arr[2]                  ▸ 5
+        arr[3]                  ▸ 3
+        arr[4]                  ▸ nil
+        
+        ia = immutable({a:1})
+        success = pcall(-> ia._data = {})
+        success                 ▸ true
+        

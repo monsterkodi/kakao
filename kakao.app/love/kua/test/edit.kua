@@ -173,10 +173,10 @@ use edit.tool.belt
 
         #belt.insertSurroundAtRanges lines [[1 0 3 0]] '{' ['{' '}'] ▸ [kseg.segls('l{in}e1\nline2') [[2 0]]]
         #belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '[' ['[' ']'] ▸ [kseg.segls('l[in]e1\nl[in]e2') [[2 0] [2 1]]]
-        #
+
         #belt.insertSurroundAtRanges lines [[1 0 3 0]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nline2') [[5 0]]]
         #belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nl"in"e2') [[5 0] [5 1]]]
-        #
+
         #belt.insertSurroundAtRanges lines [[1 0 3 0]] "}" ['#{' '}'] ▸ [kseg.segls("l\#{in}e1\nline2") [[6 0]]]
         #belt.insertSurroundAtRanges lines [[1 0 3 0]] "#" ['#{' '}'] ▸ [kseg.segls("l\#{in}e1\nline2") [[3 0]]]
         #belt.insertSurroundAtRanges lines [[1 0 3 0] [1 1 3 1]] '"' ['"' '"'] ▸ [kseg.segls('l"in"e1\nl"in"e2') [[5 0] [5 1]]]
@@ -200,16 +200,16 @@ use edit.tool.belt
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'down' ▸ [['a' 'b' 'c'] [] []]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'down' ▸ [['a' 'b' 'c'] [] []]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'down' ▸ [['a' 'b' 'c'] [] []]
-        #
+
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1]   'up' ▸ [['b' 'a' 'c'] [] []]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [2]   'up' ▸ [['a' 'c' 'b'] [] []]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [1 2] 'up' ▸ [['b' 'c' 'a'] [] []]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs posl [0 2] 'up' ▸ [['a' 'b' 'c'] [] []]
-        #
+
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2]]]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'down' ▸ [['a' 'c' 'b'] [] [[0 2] [1 2]]]
-        #
+
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1]])       [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0]]]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]
         #belt.moveLineRangesAndPositionsAtIndicesInDirection lines rngs immutable([[0 1] [1 1]]) [1] 'up' ▸ [['b' 'a' 'c'] [] [[0 0] [1 0]]]

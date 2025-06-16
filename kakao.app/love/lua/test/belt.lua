@@ -221,6 +221,29 @@ XYZ
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(7, 2)), array(7, 2, 11, 2))
     end)
     
+    test("rangeOfWhitespaceLeftToPos", function()
+        local segls = kseg.segls("xxxx    yy  ")
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(2, 1)), array(2, 1, 2, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(5, 1)), array(5, 1, 5, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(6, 1)), array(5, 1, 6, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(7, 1)), array(5, 1, 7, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(9, 1)), array(5, 1, 9, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(10, 1)), array(10, 1, 10, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(11, 1)), array(11, 1, 11, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(12, 1)), array(11, 1, 12, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(13, 1)), array(11, 1, 13, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(14, 1)), array(11, 1, 13, 1))
+        
+        segls = kseg.segls('  🧑🌾  ab🌾cde')
+        
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(3, 1)), array(1, 1, 3, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(4, 1)), array(4, 1, 4, 1)) -- 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(5, 1)), array(4, 1, 4, 1)) -- 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
+    end)
+    
     test("rangeOfWordOrWhitespaceLeftToPos", function()
         local lines = array('1 2  3   4', '   ab  ghij')
         local segls = kseg.segls(lines:join('\n'))

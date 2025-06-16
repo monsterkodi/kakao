@@ -610,7 +610,7 @@ function text.static.splitLineRanges(lines, rngs, includeEmpty)
 
 
 function text.static.isLinesPosInside(lines, pos) 
-    return (((pos[2] < #lines) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
+    return (((pos[2] <= #lines) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
     end
 
 function text.static.isLinesPosOutside(lines, pos) 
@@ -745,18 +745,19 @@ function text.static.rangeOfClosestWordToPos(lines, pos)
 function text.static.rangeOfWhitespaceLeftToPos(lines, pos) 
         local x, y = unpack(pos)
         
-        y = clamp(0, (#lines - 1), y)
-        x = clamp(0, #lines[y], x)
+        y = clamp(1, #lines, y)
+        x = clamp(1, (#lines[y] + 1), x)
         
-        if (x <= 0) then 
+        if (x <= 1) then 
             return array(x, y, x, y)
         end
         
-        local segi = kseg.segiAtWidth(lines[y], x)
-        local left = lines[y]:slice(1, segi)
+        -- segi = kseg.segiAtWidth lines[y] x
+        local segi = kseg.indexAtWidth(lines[y], x)
+        local left = lines[y]:slice(1, (segi - 1))
         local tc = kseg.tailCount(left, ' ')
         if tc then 
-            return array((segi - tc), y, segi, y)
+            return array(max((segi - tc), 1), y, segi, y)
         end
         
         return array(x, y, x, y)
@@ -766,26 +767,20 @@ function text.static.rangeOfWhitespaceLeftToPos(lines, pos)
 function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos) 
         local x, y = unpack(pos)
         
-        write("rangeOfWordOrWhitespaceLeftToPos " .. tostring(lines) .. "\n" .. tostring(pos) .. "")
-        
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
         local segi = kseg.segiAtWidth(lines[y], x)
         local left = lines[y]:slice(1, (segi - 1))
-        write("LEFT|" .. tostring(left) .. "|")
         local ts = kseg.tailCount(left, ' ')
         if (ts > 0) then 
-            write("--- ts " .. tostring(ts) .. "", array((segi - ts), y, segi, y))
             return array((segi - ts), y, segi, y)
         end
         
         local tc = kseg.tailCountWord(left)
         if (tc > 0) then 
-            write("+++ tc " .. tostring(tc) .. "", array(max((segi - tc), 1), y, segi, y))
             return array(max((segi - tc), 1), y, segi, y)
         end
         
-        write(">>>", array(max((segi - tc), 1), y, segi, y))
         return array(max((segi - tc), 1), y, segi, y)
     end
 

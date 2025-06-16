@@ -266,6 +266,8 @@ class kseg extends array
             w += wcwidth kseg.codepoint(seg)
         w
 
+    # index of current segment if column cuts segment
+    
     segiAtWidth: w -> 
     
         w = min w @len * 2 + 1
@@ -278,13 +280,20 @@ class kseg extends array
         @len+1
 
     @segiAtWidth: a w -> kseg(a)∙segiAtWidth w
-         
+    
+    # index of next segment if column cuts segment
+    
     indexAtWidth: w ->
     
-        i = 0
+        i = 1
         s = 0
-        while s < w and i < @len
-            s += kseg.width @[i]
+        while i <= @len
+            cw = kseg.width @[i]
+            if cw > 1 and s + cw >= w and s+1 < w
+                ⮐  i+1
+            s += cw
+            if s >= w
+                ⮐  i
             i += 1    
         i
         

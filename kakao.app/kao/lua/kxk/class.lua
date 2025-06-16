@@ -11,7 +11,9 @@ function _wrapIndex(aClass, f)
     if (f == nil) then 
         return aClass.__members
     elseif (type(f) == "function") then 
+        -- log "wrapIndex #{aClass}"
         return function (self, name) 
+            -- log "wrapped #{name} #{self.class.name}"
             local value = aClass.__members[name]
             
             if value then 
