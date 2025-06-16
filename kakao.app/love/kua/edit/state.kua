@@ -85,7 +85,7 @@ class state extends events
             'home'                              ➜ ⮐  @singleCursorAtIndentOrStartOfLine()
             'end'                               ➜ ⮐  @singleCursorAtEndOfLine()
                                                      
-            'ctrl+h'                            ➜ ⮐  @setMainCursor 0 0
+            'ctrl+h'                            ➜ ⮐  @setMainCursor 1 1
             'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines.len-1].len @s.lines.len-1
                                                      
             'alt+d'                             ➜ ⮐  @delete 'next' true

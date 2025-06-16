@@ -127,7 +127,7 @@ function brckts:handleKey(key, event)
                 end
         elseif (key == 'delete') then 
                 if empty(self.state.s.selections) then 
-                    local pairs = kutil.uniq(dict.values(brckts.surround))
+                    local pairs = util.uniq(dict.values(brckts.surround))
                     local rngs = belt.rangesOfPairsSurroundingPositions(self.state.s.lines, pairs, self.state.s.cursors)
                     if valid(rngs) then 
                         self.state:setSelections(rngs)
@@ -149,7 +149,7 @@ function brckts:handleKey(key, event)
             if valid(self.state.s.selections) then 
                 self.state:surroundSelection(event.char, brckts.surround[event.char])
             else 
-                self.state:insert((brckts.surround[event.char][0] + brckts.surround[event.char][1]))
+                self.state:insert((brckts.surround[event.char][1] + brckts.surround[event.char][2]))
                 self.state:moveCursors('left')
             end
             
@@ -169,10 +169,10 @@ function brckts:handleKey(key, event)
             end
             
             local nsegl = belt.segsForPositions(self.state.s.lines, self.state.s.cursors) -- collect all graphemes at the cursors
-            local nsegs = kutil.uniq(nsegl) -- get set of graphemes
+            local nsegs = util.uniq(nsegl) -- get set of graphemes
             
             for _, seg in ipairs(nsegs) do 
-                if (brckts.surround[event.char][1] == event.char) then 
+                if (brckts.surround[event.char][2] == event.char) then 
                     if (seg == event.char) then 
                         self.state:moveCursors('right') -- move cursor over existing bracket   # ϝ𝓊𝜏𝓊ɼϵ ⫙ϵ 𝖍𝕒𝜏ϵ ⟅𝚒𝛋ϵ⟅𝛾 
                         return -- to not disturb manual closing       # 𝔟𝓊𝜏 𝔭ℜϵ𝖘ϵ∩𝜏 ⫙ϵ ⟅⩜𝓏𝛾 ;)
@@ -190,7 +190,7 @@ function brckts:handleKey(key, event)
                 end
             end
             
-            self.state:insert((brckts.surround[event.char][0] + brckts.surround[event.char][1])) -- insert empty bracket pair
+            self.state:insert((brckts.surround[event.char][1] + brckts.surround[event.char][2])) -- insert empty bracket pair
             self.state:moveCursors('left') -- move cursors inside pair
             return
         end

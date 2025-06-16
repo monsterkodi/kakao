@@ -40,6 +40,16 @@ use kxk/kxk
         kstr.split "a.b.c.d"    "." 0   ▸ ["a.b.c.d"]
         kstr.split "a.b.c.d"    "." 1   ▸ ["a" "b.c.d"]
         kstr.split "a.b.c.d"    "." 2   ▸ ["a" "b" "c.d"]
+        
+        kstr.split "\n"         "\n"    ▸ ["" ""]
+        kstr.split """
+            a
+            b"""                "\n"    ▸ ["a" "b"]
+        kstr.split """
+            ◆1
+            ◆2
+            ◆3
+            ◆4"""                "\n"    ▸ ["◆1" "◆2" "◆3" "◆4"]
 
     ▸ dollar
     

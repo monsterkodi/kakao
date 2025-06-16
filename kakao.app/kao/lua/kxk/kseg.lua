@@ -27,6 +27,10 @@ function kseg:init(s)
     end
 
 
+function kseg.static.from(a) 
+    return kseg(a)
+    end
+
 function kseg.static.segls(any) 
         if is(any, "string") then 
             return kstr.lines(any):map(function (l) 
@@ -461,7 +465,7 @@ function kseg.static.indexAtWidth(s, w)
 function kseg.static.rep(n, s) 
         s = s or ' '
         
-        if (n <= 0) then return array() end
+        if (n <= 0) then return kseg() end
         s = kseg(s)
         local a = kseg()
         for i in iter(1, n) do 

@@ -228,11 +228,12 @@ function array:contains(e)
 
 
 function array:__add(a) 
-        for i, o in ipairs(a) do 
-            table.insert(self, o)
+        local s = self.class.from(self)
+        for _, o in ipairs(a) do 
+            table.insert(s, o)
         end
         
-        return self
+        return s
     end
 
 

@@ -48,7 +48,7 @@ class test
         
         cmpTable = a b ->
             if a.len != b.len
-                ⮐  fail ◌d- "array length mismatch " ◌b a.len ◌r " != " ◌g b.len
+                ⮐  fail ◌d- "array length mismatch " ◌b a.len ◌r " != " ◌g b.len "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
             if a.len == 0 and dict.size(a) != dict.size(b)
                 ⮐  fail ◌d- "dict size mismatch " ◌b dict.size(a) ◌r " != " ◌g dict.size(b) ◌d " (" dict.str(a) " != " dict.str(b) ")"
             for k v in rawpairs a

@@ -22,21 +22,21 @@ function edit.static.insertTextAtPositions(lines, text, posl)
         
         if (text == '\t') then 
             local pos = posl[1]
-            text = kstr.lpad((4 - (pos[1] % 4)), ' ')
+            text = kstr.lpad((4 - ((pos[1] - (1 % 4)) + 1)), ' ')
         end
         
         text = kstr.detab(text)
         local txtls = belt.seglsForText(text)
         local newls = array()
         local newpl = array()
+        local line = kseg()
         local rngs = belt.rangesForLinesSplitAtPositions(lines, posl)
         local before = array()
-        
+        -- write ◌y "INSERT --------------------- " lines       
         for idx, rng in ipairs(rngs) do 
             local after = belt.seglsForRange(lines, rng)
-            
             if empty((after or empty), after[1]) then 
-                if (posl[#posl][2] >= #lines) then 
+                if (posl[#posl][2] > #lines) then 
                     before:push(array())
                 end
             end
@@ -48,15 +48,13 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                 else line = newls:pop()
                 end
                 
-                write("x", x, kseg.width(line), line)
-                
-                if ((x > kseg.width(line)) and (text ~= '\n')) then 
-                    line = line + (kstr.split(kstr.lpad((x - #line)), ''))
+                if (((x - 1) > kseg.width(line)) and (text ~= '\n')) then 
+                    line = line + (kstr.split(kstr.lpad(((x - 1) - #line)), ''))
                 end
                 
                 if (#txtls > 1) then 
                     if ((#posl > 1) and (text ~= '\n')) then 
-                        local insertLineIndex = ((idx - 1) % #txtls)
+                        local insertLineIndex = (((idx - 2) % #txtls) + 1)
                         before:push((line + txtls[insertLineIndex]))
                         newpl:push(array(kseg.width(before[#before]), ((#newls + #before) - 1)))
                         before:push((before:pop() + after:shift()))
@@ -65,13 +63,14 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                         local indent = kseg(kstr.lpad(posLineIndent))
                         before:push((line + txtls[1]))
                         
-                        for lidx, insl in ipairs(txtls:slice(1)) do 
-                            if ((lidx < (#txtls - 2)) or valid((insl or (text == '\n')))) then 
+                        for lidx, insl in ipairs(txtls:slice(2)) do 
+                            if ((#insl > 0) or (text == '\n')) then 
+                                write("PUSH |" .. tostring(insl) .. "|")
                                 before:push((indent + insl))
                             end
                         end
                         
-                        if (x > posLineIndent) then 
+                        if ((x - 1) > posLineIndent) then 
                             newpl:push(array(kseg.width(before[#before]), ((#newls + #before) - 1)))
                             before:push((before:pop() + after:shift()))
                         else 
@@ -98,7 +97,6 @@ function edit.static.insertTextAtPositions(lines, text, posl)
             newls = newls + before
         end
         
-        -- write "AFTER INSERT" newls, newpl
         return newls, newpl
     end
 

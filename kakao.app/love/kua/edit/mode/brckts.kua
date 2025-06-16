@@ -118,7 +118,7 @@ class brckts
             'delete'
         
                 if empty @state.s.selections
-                    pairs = kutil.uniq dict.values(brckts.surround)
+                    pairs = util.uniq dict.values(brckts.surround)
                     rngs = belt.rangesOfPairsSurroundingPositions(@state.s.lines pairs @state.s.cursors)
                     if valid rngs
                         @state∙setSelections rngs
@@ -138,7 +138,7 @@ class brckts
             if valid @state.s.selections
                 @state∙surroundSelection event.char brckts.surround[event.char]
             else            
-                @state∙insert brckts.surround[event.char][0]+brckts.surround[event.char][1]
+                @state∙insert brckts.surround[event.char][1]+brckts.surround[event.char][2]
                 @state∙moveCursors 'left' 
                 
             @state∙ende()
@@ -157,11 +157,11 @@ class brckts
                 ⮐  @state.surroundSelection event.char brckts.surround[event.char]
             
             nsegl = belt.segsForPositions @state.s.lines @state.s.cursors # collect all graphemes at the cursors
-            nsegs = kutil.uniq nsegl                                      # get set of graphemes
+            nsegs = util.uniq nsegl                                       # get set of graphemes
             
             for _ seg in ipairs nsegs
             
-                if brckts.surround[event.char][1] == event.char # if entering closing bracket         # should check if this condition 
+                if brckts.surround[event.char][2] == event.char # if entering closing bracket         # should check if this condition 
                     if seg == event.char                        # and it is already there             # is true for all cursors 
                         @state∙moveCursors 'right'              # move cursor over existing bracket   # ϝ𝓊𝜏𝓊ɼϵ ⫙ϵ 𝖍𝕒𝜏ϵ ⟅𝚒𝛋ϵ⟅𝛾 
                         ⮐                                       # to not disturb manual closing       # 𝔟𝓊𝜏 𝔭ℜϵ𝖘ϵ∩𝜏 ⫙ϵ ⟅⩜𝓏𝛾 ;)
@@ -173,7 +173,7 @@ class brckts
                 if belt.isUnbalancedPosition @state.s.lines pos event.char
                     ⮐  "unhandled"
                     
-            @state∙insert brckts.surround[event.char][0]+brckts.surround[event.char][1] # insert empty bracket pair
+            @state∙insert brckts.surround[event.char][1]+brckts.surround[event.char][2] # insert empty bracket pair
             @state∙moveCursors 'left'                                                   # move cursors inside pair
             ⮐  
 

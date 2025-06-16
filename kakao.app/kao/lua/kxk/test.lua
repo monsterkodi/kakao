@@ -64,7 +64,7 @@ function test.static.cmp(a, b)
         
         function cmpTable(a, b) 
             if (#a ~= #b) then 
-                return fail("\x1b[0m\x1b[90m\x1b[2m", "array length mismatch ", "\x1b[0m\x1b[34m", #a, "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[32m", #b)
+                return fail("\x1b[0m\x1b[90m\x1b[2m", "array length mismatch ", "\x1b[0m\x1b[34m", #a, "\x1b[0m\x1b[31m", " != ", "\x1b[0m\x1b[32m", #b, "\n", "\x1b[0m\x1b[33m", array(unpack(a)), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", array(unpack(b)))
             end
             
             if ((#a == 0) and (dict.size(a) ~= dict.size(b))) then 

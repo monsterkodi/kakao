@@ -328,9 +328,13 @@ end)
 function text.static.numFullLinesInRange(lines, rng) 
         local d = (rng[4] - rng[2])
         
-        -- if d == 0 
-        --     r2 = if lines[rng[1]].len > 0 ➜ 1 ➜ 0
-        --     ⮐  rng[0] == 0 and rng[2] == r2
+        if (d == 0) then 
+            if ((rng[1] == 1) and (rng[3] >= #lines[rng[2]])) then 
+                return 1
+            end
+            
+            return 0
+        end
         
         local n = 0
         if (rng[1] == 1) then 

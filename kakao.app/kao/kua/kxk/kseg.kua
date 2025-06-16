@@ -17,7 +17,8 @@ class kseg extends array
                             @push g
                 ➜ 
                     log ">>?????" type(s)
-
+                    
+    @from: a -> kseg a
     @segls: any -> 
 
         if any is "string" 
@@ -291,7 +292,7 @@ class kseg extends array
             
     @rep: n s=' ' ->
         
-        ⮐  [] if n <= 0
+        ⮐  kseg() if n <= 0
         s = kseg s
         a = kseg()
         for i in 1..n

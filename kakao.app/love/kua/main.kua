@@ -48,6 +48,7 @@ love.keypressed = key scancode isrepeat ->
     mods = ""
     switch key 
         "escape" ➜ key = "esc"
+        "backspace" ➜ key = "delete"
         "lshift" "rshift"
         "lctrl"  "rctrl"
         "lalt"   "ralt"

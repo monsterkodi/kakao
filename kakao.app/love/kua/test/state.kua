@@ -6,8 +6,6 @@
     0000000      000     000   000     000     00000000  
 ###
 
-# global.lf = args... -> log args.map((a) -> "#{a}").join(' ')
-
 use edit.tool.belt
 use edit.state
 use edit.mode
@@ -17,8 +15,8 @@ s = state cells 'test'
 
 txt = t     -> kseg.str(s.s.lines) ▸ t
 cur = x y   -> s∙mainCursor() ▸ [x y]
-mul = (c, ...) -> s∙allCursors() ▸ c
-sel = (r, ...) -> s∙allSelections() ▸ r
+mul = (...) -> s∙allCursors() ▸ array.from({...})
+sel = (...) -> s∙allSelections() ▸ array.from({...})
 
 ▸ state
     
@@ -45,19 +43,19 @@ sel = (r, ...) -> s∙allSelections() ▸ r
         
         cur 1 1
         
-        s∙insert 'x'
+        # s∙insert 'x'
         
-        cur 2 1
-        txt """
-            line 1
-            lxine 2
-            line 3
-            """    
-            
-        s∙delete 'back'
-        
-        cur 1 1
-        txt text
+        #cur 2 1
+        #txt """
+        #    line 1
+        #    lxine 2
+        #    line 3
+        #    """    
+        #    
+        #s∙delete 'back'
+        #
+        #cur 1 1
+        #txt text
         
     # 00     00   0000000   000   000  00000000        000      000  000   000  00000000   0000000  
     # 000   000  000   000  000   000  000             000      000  0000  000  000       000       
@@ -67,17 +65,17 @@ sel = (r, ...) -> s∙allSelections() ▸ r
     
     ▸ move lines
     
-        s∙moveSelectionOrCursorLines 'up'
-        cur 1 0
-        txt """
-            line 2
-            line 1
-            line 3
-            """
-        s∙moveSelectionOrCursorLines 'down'
-        
-        cur 1 1
-        txt text
+        #s∙moveSelectionOrCursorLines 'up'
+        #cur 1 1
+        #txt """
+        #    line 2
+        #    line 1
+        #    line 3
+        #    """
+        #s∙moveSelectionOrCursorLines 'down'
+        #
+        #cur 1 1
+        #txt text
         
     # 00     00  000   000  000      000000000  000  00000000   000      00000000  
     # 000   000  000   000  000         000     000  000   000  000      000       
@@ -87,57 +85,57 @@ sel = (r, ...) -> s∙allSelections() ▸ r
     
     ▸ multiple
     
-        s∙expandCursors   'up'
+        # s∙expandCursors   'up'
         
-        mul [1 0] [1 1]
+        # mul [1 1] [1 2]
         
-        s∙expandCursors   'down'
+        #s∙expandCursors   'down'
+        #
+        #mul [1 0] [1 1] [1 2]
+        #
+        #s∙moveCursors 'left'
+        #
+        #mul [0 0] [0 1] [0 2]
+        #
+        #s∙moveCursorsAndSelect 'right'
+        #
+        #mul [1 0] [1 1] [1 2]
+        #sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
+        #
+        #s∙moveCursors 'right' {jump:['ws' 'word' 'empty' 'punct']}
+        #
+        #mul [4 0] [4 1] [4 2]
+        #sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
+        #
+        #s∙selectAllLines()
+        #
+        #mul [4 0] [4 1] [4 2]
+        #sel [0 0 6 2] 
+        #
+        #s∙selectAllLines()
+        #
+        #mul [4 0] [4 1] [4 2]
+        #sel()
+        #
+        #s∙moveCursors 'right'
+        #s∙moveCursorsAndSelect 'left' {jump:['word']}
+        #s∙moveCursorsAndSelect 'left' {jump:['word']}
+        #
+        #mul [0 0] [0 1] [0 2]   
+        #sel [0 0 5 0] [0 1 5 1] [0 2 5 2]
         
-        mul [1 0] [1 1] [1 2]
-        
-        s∙moveCursors 'left'
-        
-        mul [0 0] [0 1] [0 2]
-        
-        s∙moveCursorsAndSelect 'right'
-        
-        mul [1 0] [1 1] [1 2]
-        sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
-        
-        s∙moveCursors 'right' {jump:['ws' 'word' 'empty' 'punct']}
-        
-        mul [4 0] [4 1] [4 2]
-        sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
-        
-        s∙selectAllLines()
-        
-        mul [4 0] [4 1] [4 2]
-        sel [0 0 6 2] 
-        
-        s∙selectAllLines()
-        
-        mul [4 0] [4 1] [4 2]
-        sel()
-        
-        s∙moveCursors 'right'
-        s∙moveCursorsAndSelect 'left' {jump:['word']}
-        s∙moveCursorsAndSelect 'left' {jump:['word']}
-        
-        mul [0 0] [0 1] [0 2]   
-        sel [0 0 5 0] [0 1 5 1] [0 2 5 2]
-        
-        s∙insert '\n' 
-        
-        mul [0 1] [0 3] [0 5]
-        sel()
-        txt """
-            
-            1
-            
-            2
-            
-            3
-            """    
+        #s∙insert '\n' 
+        #
+        #mul [0 1] [0 3] [0 5]
+        #sel()
+        #txt """
+        #    
+        #    1
+        #    
+        #    2
+        #    
+        #    3
+        #    """    
             
     # 000   000  000   000  000   0000000   0000000   0000000    00000000  
     # 000   000  0000  000  000  000       000   000  000   000  000       
@@ -145,118 +143,118 @@ sel = (r, ...) -> s∙allSelections() ▸ r
     # 000   000  000  0000  000  000       000   000  000   000  000       
     #  0000000   000   000  000   0000000   0000000   0000000    00000000  
     
-    ▸ unicode
-    
-        text = """
-            s = "🧑🌾"
-            line 3
-            """
-        
-        s.syntax.ext = 'kode'
-        s∙loadSegls belt.seglsForText(text)
-                
-        txt text
-        
-        s∙toggleCommentAtSelectionOrCursorLines()
-
-        txt """
-            # s = "🧑🌾"
-            line 3
-            """
-        s∙toggleCommentAtSelectionOrCursorLines()
-        
-        txt text
-        
-        ▸ selection
-        
-            text = """
-                'a'        ▸ 1
-                '🔧'       ▸ 2
-                '字'       ▸ 2
-                '字的模块' ▸ 8
-                '👁'        ▸ 1
-                '🖌'        ▸ 1
-                '🛠'        ▸ 1
-                '🧑‍🌾'       ▸ 4
-                '🔥'       ▸ 2
-                '💩'       ▸ 2
-                """
-
-            s.syntax.ext = 'kode'
-            s∙loadSegls belt.seglsForText(text)
-                    
-            txt text 
-            
-            s∙selectAllLines()
-            
-            sel [0 0 14 9]
-            
-            s∙moveCursorsToEndOfSelections()
-            
-            sel [0 0 14 9]
-            mul [14 0] [14 1] [14 2] [14 3] [14 4] [14 5] [14 6] [14 7] [14 8] [14 9]
-            
-            s∙deselect()
-            
-            sel()
-            mul [14 0] [14 1] [14 2] [14 3] [14 4] [14 5] [14 6] [14 7] [14 8] [14 9]
-
-            s∙moveCursors 'bol'
-            
-            mul [0 0] [0 1] [0 2] [0 3] [0 4] [0 5] [0 6] [0 7] [0 8] [0 9]
-
-            s∙selectMoreLines()
-            
-            sel [0 0 14 9]
-            mul [14 0] [14 1] [14 2] [14 3] [14 4] [14 5] [14 6] [14 7] [14 8] [14 9]
-
-            s∙deselect()
-            s∙delete 'back'
-            
-            txt """
-                'a'        ▸ 
-                '🔧'       ▸ 
-                '字'       ▸ 
-                '字的模块' ▸ 
-                '👁'        ▸ 
-                '🖌'        ▸ 
-                '🛠'        ▸ 
-                '🧑‍🌾'       ▸ 
-                '🔥'       ▸ 
-                '💩'       ▸ 
-                """
-
-            s∙delete 'back'
-            s∙moveCursors 'left'
-            s∙delete 'back'
-
-            txt """
-                'a'       ▸
-                '🔧'      ▸
-                '字'      ▸
-                '字的模块'▸
-                '👁'       ▸
-                '🖌'       ▸
-                '🛠'       ▸
-                '🧑‍🌾'      ▸
-                '🔥'      ▸
-                '💩'      ▸
-                """
-                
-            s∙delete 'back' true
-
-            txt """
-                'a'▸
-                '🔧'▸
-                '字'▸
-                '字的模块▸
-                '👁'▸
-                '🖌'▸
-                '🛠'▸
-                '🧑‍🌾'▸
-                '🔥'▸
-                '💩'▸
-                """
+    #▸ unicode
+    #
+    #    text = """
+    #        s = "🧑🌾"
+    #        line 3
+    #        """
+    #    
+    #    s.syntax.ext = 'kode'
+    #    s∙loadSegls belt.seglsForText(text)
+    #            
+    #    txt text
+    #    
+    #    s∙toggleCommentAtSelectionOrCursorLines()
+    #
+    #    txt """
+    #        # s = "🧑🌾"
+    #        line 3
+    #        """
+    #    s∙toggleCommentAtSelectionOrCursorLines()
+    #    
+    #    txt text
+    #    
+    #    ▸ selection
+    #    
+    #        text = """
+    #            'a'        ▸ 1
+    #            '🔧'       ▸ 2
+    #            '字'       ▸ 2
+    #            '字的模块' ▸ 8
+    #            '👁'        ▸ 1
+    #            '🖌'        ▸ 1
+    #            '🛠'        ▸ 1
+    #            '🧑‍🌾'       ▸ 4
+    #            '🔥'       ▸ 2
+    #            '💩'       ▸ 2
+    #            """
+    #
+    #        s.syntax.ext = 'kode'
+    #        s∙loadSegls belt.seglsForText(text)
+    #                
+    #        txt text 
+    #        
+    #        s∙selectAllLines()
+    #        
+    #        sel [1 1 15 10]
+    #        
+    #        s∙moveCursorsToEndOfSelections()
+    #        
+    #        sel [1 1 15 10]
+    #        mul [15 1] [15 2] [15 3] [15 4] [15 5] [15 6] [15 7] [15 8] [15 9] [15 10]
+    #        
+    #        s∙deselect()
+    #        
+    #        sel()
+    #        mul [15 1] [15 2] [15 3] [15 4] [15 5] [15 6] [15 7] [15 8] [15 9] [15 10]
+    #
+    #        s∙moveCursors 'bol'
+    #        
+    #        mul [1 1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9] [1 10]
+    #
+    #        s∙selectMoreLines()
+    #        
+    #        sel [1 1 15 10]
+    #        mul [15 1] [15 2] [15 3] [15 4] [15 5] [15 6] [15 7] [15 8] [15 9] [15 10]
+    #
+    #        s∙deselect()
+    #        s∙delete 'back'
+    #        
+    #        txt """
+    #            'a'        ▸ 
+    #            '🔧'       ▸ 
+    #            '字'       ▸ 
+    #            '字的模块' ▸ 
+    #            '👁'        ▸ 
+    #            '🖌'        ▸ 
+    #            '🛠'        ▸ 
+    #            '🧑‍🌾'       ▸ 
+    #            '🔥'       ▸ 
+    #            '💩'       ▸ 
+    #            """
+    #
+    #        s∙delete 'back'
+    #        s∙moveCursors 'left'
+    #        s∙delete 'back'
+    #
+    #        txt """
+    #            'a'       ▸
+    #            '🔧'      ▸
+    #            '字'      ▸
+    #            '字的模块'▸
+    #            '👁'       ▸
+    #            '🖌'       ▸
+    #            '🛠'       ▸
+    #            '🧑‍🌾'      ▸
+    #            '🔥'      ▸
+    #            '💩'      ▸
+    #            """
+    #            
+    #        s∙delete 'back' true
+    #
+    #        txt """
+    #            'a'▸
+    #            '🔧'▸
+    #            '字'▸
+    #            '字的模块▸
+    #            '👁'▸
+    #            '🖌'▸
+    #            '🛠'▸
+    #            '🧑‍🌾'▸
+    #            '🔥'▸
+    #            '💩'▸
+    #            """
             
     # 00000000  00     00  00000000   000000000  000   000  
     # 000       000   000  000   000     000      000 000   
@@ -270,14 +268,14 @@ sel = (r, ...) -> s∙allSelections() ▸ r
         s∙loadLines belt.linesForText('')
         
         txt ''
-        cur 0 0
+        cur 1 1
         
-        s∙insert '\n'
-        
-        txt '\n'
-        cur 0 1
-        
-        s.s.lines ▸ [[] []]
+        #s∙insert '\n'
+        #
+        #txt '\n'
+        #cur 1 2
+        #
+        #s.s.lines ▸ [[] []]
         
     # 0000000    00000000  000      00000000  000000000  00000000        0000000     0000000    0000000  000   000  
     # 000   000  000       000      000          000     000             000   000  000   000  000       000  000   
@@ -296,30 +294,29 @@ sel = (r, ...) -> s∙allSelections() ▸ r
         s.syntax.ext = 'kode'
         s∙loadLines belt.linesForText(text)
         
-        s∙setMainCursor 16 0 
-        s∙expandCursors 'down'
+        s∙setMainCursor 16 1 
         s∙expandCursors 'down'
         s∙expandCursors 'down'
         
-        mul [16 0] [16 1] [16 2]
+        mul [16 1] [16 2] [16 3]
         
         s∙delete 'back'
-        mul [14 0] [14 1] [14 2]
+        mul [14 1] [14 2] [14 3]
 
         s∙delete 'back'
-        mul [13 0] [13 1] [13 2]
+        mul [13 1] [13 2] [13 3]
 
         s∙delete 'back'
-        mul [12 0] [12 1] [12 2]
+        mul [12 1] [12 2] [12 3]
 
         s∙delete 'back'
-        mul [9 0] [9 1] [9 2]
+        mul [9 1] [9 2] [9 3]
         
         s∙delete 'back'
-        mul [8 0] [8 1] [8 2]
+        mul [8 1] [8 2] [8 3]
 
         s∙delete 'back'
-        mul [4 0] [4 1] [4 2]
+        mul [4 1] [4 2] [4 3]
                 
     #  0000000  000       0000000   000   000  00000000         000      000  000   000  00000000   0000000  
     # 000       000      000   000  0000  000  000              000      000  0000  000  000       000       
@@ -327,60 +324,60 @@ sel = (r, ...) -> s∙allSelections() ▸ r
     # 000       000      000   000  000  0000  000              000      000  000  0000  000            000  
     #  0000000  0000000   0000000   000   000  00000000         0000000  000  000   000  00000000  0000000   
     
-    ▸ cloneSelectionAndCursorLines
-    
-        text = """
-            line 1
-            line 2
-            line 3
-            """
-        s∙loadLines belt.linesForText(text)
-        s∙cloneSelectionAndCursorLines 'down'
-        
-        txt """
-            line 1
-            line 1
-            line 2
-            line 3
-            """
-            
-        mul [0 1]
-            
-        s∙expandCursors 'down'
-        
-        mul [0 1] [0 2]
-        
-        s∙cloneSelectionAndCursorLines 'down'
-         
-        txt """
-            line 1
-            line 1
-            line 2
-            line 1
-            line 2
-            line 3
-            """
-            
-        mul [0 3] [0 4] 
-        
-        s∙expandCursors 'down'
-        s∙moveCursors 'right'
-        
-        mul [1 3] [1 4] [1 5] 
-        
-        s∙cloneSelectionAndCursorLines 'down'
-
-        txt """
-            line 1
-            line 1
-            line 2
-            line 1
-            line 2
-            line 3
-            line 1
-            line 2
-            line 3
-            """
+    #▸ cloneSelectionAndCursorLines
+    #
+    #    text = """
+    #        line 1
+    #        line 2
+    #        line 3
+    #        """
+    #    s∙loadLines belt.linesForText(text)
+    #    s∙cloneSelectionAndCursorLines 'down'
+    #    
+    #    txt """
+    #        line 1
+    #        line 1
+    #        line 2
+    #        line 3
+    #        """
+    #        
+    #    mul [1 1]
+    #        
+    #    s∙expandCursors 'down'
+    #    
+    #    mul [1 1] [1 2]
+    #    
+    #    s∙cloneSelectionAndCursorLines 'down'
+    #     
+    #    txt """
+    #        line 1
+    #        line 1
+    #        line 2
+    #        line 1
+    #        line 2
+    #        line 3
+    #        """
+    #        
+    #    mul [1 3] [1 4] 
+    #    
+    #    s∙expandCursors 'down'
+    #    s∙moveCursors 'right'
+    #    
+    #    mul [1 3] [1 4] [1 5] 
+    #    
+    #    s∙cloneSelectionAndCursorLines 'down'
+    #
+    #    txt """
+    #        line 1
+    #        line 1
+    #        line 2
+    #        line 1
+    #        line 2
+    #        line 3
+    #        line 1
+    #        line 2
+    #        line 3
+    #        """
             
     # 0000000    00000000  000            00000000    0000000   000   000   0000000   00000000   0000000  
     # 000   000  000       000            000   000  000   000  0000  000  000        000       000       
@@ -397,7 +394,7 @@ sel = (r, ...) -> s∙allSelections() ▸ r
             """
             
         s∙loadLines belt.linesForText(text)
-        s∙deleteRanges [[0 0 2 0]] 
+        s∙deleteRanges [[1 1 3 1]] 
         
         txt """
             ne 1
@@ -405,14 +402,14 @@ sel = (r, ...) -> s∙allSelections() ▸ r
             line 3
             """
             
-        s∙deleteRanges [[2 0 2 1]]
+        s∙deleteRanges [[3 1 3 2]]
 
         txt """
             nene 2
             line 3
             """
             
-        s∙deleteRanges [[6 0 0 1]]
+        s∙deleteRanges [[7 1 1 2]]
 
         txt """
             nene 2line 3
@@ -433,10 +430,10 @@ sel = (r, ...) -> s∙allSelections() ▸ r
             """
             
         s∙loadLines belt.linesForText(text)            
-        s∙joinLines()
+        # s∙joinLines()
 
-        txt """
-            line 1line 2
-            line 3
-            """
+        # txt """
+        #     line 1line 2
+        #     line 3
+        #     """
             

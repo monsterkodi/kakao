@@ -37,6 +37,18 @@ test("kstr", function()
         test.cmp(kstr.split("a.b.c.d", ".", 0), array("a.b.c.d"))
         test.cmp(kstr.split("a.b.c.d", ".", 1), array("a", "b.c.d"))
         test.cmp(kstr.split("a.b.c.d", ".", 2), array("a", "b", "c.d"))
+        
+        test.cmp(kstr.split("\n", "\n"), array("", ""))
+        
+        test.cmp(kstr.split([[
+a
+b]], "\n"), array("a", "b"))
+        
+        test.cmp(kstr.split([[
+◆1
+◆2
+◆3
+◆4]], "\n"), array("◆1", "◆2", "◆3", "◆4"))
     end)
     
     test("dollar", function()

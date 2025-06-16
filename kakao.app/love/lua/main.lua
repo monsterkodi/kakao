@@ -49,6 +49,7 @@ end
 function love.keypressed(key, scancode, isrepeat) 
     local mods = ""
     if (key == "escape") then key = "esc"
+    elseif (key == "backspace") then key = "delete"
     elseif (key == "lshift") or (key == "rshift") or (key == "lctrl") or (key == "rctrl") or (key == "lalt") or (key == "ralt") or (key == "lgui") or (key == "rgui") then 
             return
     end

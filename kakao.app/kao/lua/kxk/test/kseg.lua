@@ -51,6 +51,12 @@ def]])
 
 abc
 def]])
+        
+        test.cmp(kseg.segls([[
+◆1
+◆2
+◆3
+◆4]], "\n"), array(kseg("◆1"), kseg("◆2"), kseg("◆3"), kseg("◆4")))
     end)
     
     test("construct", function()

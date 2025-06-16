@@ -138,9 +138,10 @@ class array
     
     __add: a ->
     
-        for i o in ipairs a
-            table.insert @ o
-        @
+        s = @.class.from @
+        for o in a
+            table.insert s o
+        s
 
     @isarr: a ->
         

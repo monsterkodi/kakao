@@ -8,6 +8,12 @@ use kxk/kxk
         array.from({1 2 3}) ▸ [1 2 3]
         type(array.from({1 2 3})) ▸ "table"
         array.from({1 2 3})∙str() ▸ ".\n    1    1\n    2    2\n    3    3"
+        
+        a = [1 2 3]
+        b = array.from(a)
+        b∙push(4)
+        b ▸ [1 2 3 4]
+        a ▸ [1 2 3]
 
     ▸ map
     
@@ -120,6 +126,15 @@ use kxk/kxk
         x = a∙unshift array(4 5 6)
         a ▸ array array(4 5 6) 1 2 3 0
         x ▸ a
+        
+    ▸ concat
+    
+        a = [1]
+        b = [2]
+        c = a + b
+        a ▸ [1]
+        b ▸ [2]
+        c ▸ [1 2]
         
     ▸ splice
     
