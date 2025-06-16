@@ -1,11 +1,10 @@
 ###
-     ███████  █████████  ████████    ███████ 
-    ███          ███     ███   ███  ███      
-    ███████      ███     ███████    ███  ████
-         ███     ███     ███   ███  ███   ███
-    ███████      ███     ███   ███   ███████ 
+     ███████  █████████  ████████    ███████          █████████  ████████   ███████  █████████  
+    ███          ███     ███   ███  ███                  ███     ███       ███          ███     
+    ███████      ███     ███████    ███  ████            ███     ███████   ███████      ███     
+         ███     ███     ███   ███  ███   ███            ███     ███            ███     ███     
+    ███████      ███     ███   ███   ███████             ███     ████████  ███████      ███     
 ###
-
 use kxk/kxk
 
 ▸ strg
@@ -47,31 +46,14 @@ use kxk/kxk
     ▸ add
     
         itr = 100000
-        # profileStart "add"
         s = strg "a"
         s += "b"
         s∙num()                 ▸ 2
         $s ▸ "ab"
         for i in 0..itr
             s += "c"
-        # profileStop "add"
-        # profileStart "len"
         s∙len()                 ▸ itr+3
-        # profileStop "len"
-        # profileStart "num"
         s∙num()                 ▸ itr+3
-        # profileStop "num"
-        
-        # profileStart "add2"
-        # s = "a"
-        # s &= "b"
-        # s.len ▸ 2
-        # s ▸ "ab"
-        # for i in 0..itr
-        #     s &= "c"
-        # s.len ▸ itr+3 
-        # profileStop "add2"
-        # 1 ▸ 2
         
     ▸ flatten
     

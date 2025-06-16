@@ -97,17 +97,18 @@ _G.profileStop = msg ->
     write ◌b msg " " ◌m tick-timers[msg]
     timers[msg] = nil
 
-_G.class    = require "kxk.class"
-_G.inspect  = require "kxk.inspect"
-_G.slash    = require "kxk.slash"
-_G.array    = require "kxk.array"
-_G.dict     = require "kxk.dict"
-_G.kstr     = require "kxk.kstr"
-_G.kseg     = require "kxk.kseg"
-_G.strg     = require "kxk.strg"
-_G.test     = require "kxk.test"
-_G.events   = require "kxk.events"
-_G.util     = require "kxk.util"
-_G.noon     = require "kxk.noon"
+_G.class     = require "kxk.class"
+_G.inspect   = require "kxk.inspect"
+_G.immutable = require "kxk.immutable"
+_G.slash     = require "kxk.slash"
+_G.array     = require "kxk.array"
+_G.dict      = require "kxk.dict"
+_G.kstr      = require "kxk.kstr"
+_G.kseg      = require "kxk.kseg"
+_G.strg      = require "kxk.strg"
+_G.test      = require "kxk.test"
+_G.events    = require "kxk.events"
+_G.util      = require "kxk.util"
+_G.noon      = require "kxk.noon"
 
 ⮐  {}

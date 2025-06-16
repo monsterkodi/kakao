@@ -133,6 +133,7 @@ end
 
 _G.class = require("kxk.class")
 _G.inspect = require("kxk.inspect")
+_G.immutable = require("kxk.immutable")
 _G.slash = require("kxk.slash")
 _G.array = require("kxk.array")
 _G.dict = require("kxk.dict")

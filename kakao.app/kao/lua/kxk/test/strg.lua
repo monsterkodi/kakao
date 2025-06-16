@@ -1,9 +1,9 @@
 --[[
-     ███████  █████████  ████████    ███████ 
-    ███          ███     ███   ███  ███      
-    ███████      ███     ███████    ███  ████
-         ███     ███     ███   ███  ███   ███
-    ███████      ███     ███   ███   ███████ 
+     ███████  █████████  ████████    ███████          █████████  ████████   ███████  █████████  
+    ███          ███     ███   ███  ███                  ███     ███       ███          ███     
+    ███████      ███     ███████    ███  ████            ███     ███████   ███████      ███     
+         ███     ███     ███   ███  ███   ███            ███     ███            ███     ███     
+    ███████      ███     ███   ███   ███████             ███     ████████  ███████      ███     
 --]]
 
 kxk = require "kxk/kxk"
@@ -45,7 +45,6 @@ test("strg", function()
     
     test("add", function()
         local itr = 100000
-        -- profileStart "add"
         local s = strg("a")
         s = s + "b"
         test.cmp(s:num(), 2)
@@ -54,24 +53,8 @@ test("strg", function()
             s = s + "c"
         end
         
-        -- profileStop "add"
-        -- profileStart "len"
         test.cmp(s:len(), (itr + 3))
-        -- profileStop "len"
-        -- profileStart "num"
         test.cmp(s:num(), (itr + 3))
-        -- profileStop "num"
-        
-        -- profileStart "add2"
-        -- s = "a"
-        -- s &= "b"
-        -- s.len ▸ 2
-        -- s ▸ "ab"
-        -- for i in 0..itr
-        --     s &= "c"
-        -- s.len ▸ itr+3 
-        -- profileStop "add2"
-        -- 1 ▸ 2
     end)
     
     test("flatten", function()

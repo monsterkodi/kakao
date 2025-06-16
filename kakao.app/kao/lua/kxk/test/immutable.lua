@@ -7,7 +7,6 @@
 --]]
 
 kxk = require "kxk.kxk"
-immutable = require "kxk.immutable"
 
 test("immutable", function()
     test("construct", function()
