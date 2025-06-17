@@ -14,7 +14,7 @@ class immutable
             ⮐  tbl
         
         d = {}
-        if tbl.class == array
+        if tbl is array
         
             for v i in tbl∙each()
                 if type(v) == "table" and v.class != immutable
@@ -24,15 +24,29 @@ class immutable
                     
         elif type(tbl) == "table"
         
-            for k v of tbl
-                if type(v) == "table" and v.class != immutable
-                    d[k] = immutable(v)
-                else
-                    d[k] = v
+            if tbl.len > 0
+                for i v in tbl
+                    if type(v) == "table" and v.class != immutable
+                        d[i] = immutable(v)
+                    else
+                        d[i] = v
+            else
+                # write ◌r "DICT #{tbl.class} #{tbl}"
+                for k v of tbl
+                    if type(v) != "function" and string.sub(k 1 2) != "__" and k != "class"
+                        # write ◌r "KV #{k} #{v}"
+                        if type(v) == "table" and v.class != immutable
+                            d[k] = immutable(v)
+                        else
+                            d[k] = v
                     
         rawset @ "_data" d
             
-    $: -> $@_data
+    $: -> 
+        s = ""
+        for k v of @_data
+            s &= "#{k} #{v}\n"
+        s
     
     __index:    k    -> @_data[k]
     __pairs:         -> pairs(@_data)
@@ -57,13 +71,14 @@ class immutable
         modifiable
 
     set: k v ->
-    
         new_data = @mod()
         if type(k) == "table"
             for k v of tbl
                 new_data[k] = v
         else
             new_data[k] = v
+        # write "SET #{k} #{v}"
+        # write "IMM #{dict.str(new_data)}"
         immutable new_data
 
 ⮐  immutable

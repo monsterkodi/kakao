@@ -59,7 +59,7 @@ class edit
                         
                         for lidx insl in ipairs txtls∙slice(2)
                             if insl.len > 0 or text == '\n'
-                                write "PUSH |#{insl}|"
+                                # write "PUSH |#{insl}|"
                                 before∙push indent + insl
                         if x-1 > posLineIndent
                             newpl∙push [kseg.width(before[^1]) newls.len+before.len-1]
@@ -115,7 +115,9 @@ class edit
     
     @deleteLineRangesAndAdjustPositions: lines rngs posl ->
         
-        lines = lines∙map((l) -> l)
+        if lines.mod is "function"
+            lines = lines∙mod()
+            
         posl  = array.from posl
         
         ⮐  (lines posl) if empty rngs
@@ -123,6 +125,10 @@ class edit
         for ri in rngs.len..1
         
             rng = rngs[ri]
+            
+            if rng == nil
+                log "nil range at index #{ri}?"
+                ⮐  (lines posl)
             
             if rng[2] > lines.len or rng[4] > lines.len
                 log "range out of bounds?" rng

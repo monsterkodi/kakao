@@ -17,7 +17,7 @@ function immutable:init(tbl)
         end
         
         local d = {}
-        if (tbl.class == array) then 
+        if is(tbl, array) then 
             for v, i in tbl:each() do 
                 if ((type(v) == "table") and (v.class ~= immutable)) then 
                     d[i] = immutable(v)
@@ -26,11 +26,25 @@ function immutable:init(tbl)
                 end
             end
         elseif (type(tbl) == "table") then 
-            for k, v in pairs(tbl) do 
-                if ((type(v) == "table") and (v.class ~= immutable)) then 
-                    d[k] = immutable(v)
-                else 
-                    d[k] = v
+            if (#tbl > 0) then 
+                for i, v in ipairs(tbl) do 
+                    if ((type(v) == "table") and (v.class ~= immutable)) then 
+                        d[i] = immutable(v)
+                    else 
+                        d[i] = v
+                    end
+                end
+            else 
+                -- write ◌r "DICT #{tbl.class} #{tbl}"
+                for k, v in pairs(tbl) do 
+                    if (((type(v) ~= "function") and (string.sub(k, 1, 2) ~= "__")) and (k ~= "class")) then 
+                        -- write ◌r "KV #{k} #{v}"
+                        if ((type(v) == "table") and (v.class ~= immutable)) then 
+                            d[k] = immutable(v)
+                        else 
+                            d[k] = v
+                        end
+                    end
                 end
             end
         end
@@ -41,7 +55,12 @@ function immutable:init(tbl)
 
 
 function immutable:__tostring() 
-    return tostring(self._data)
+        local s = ""
+        for k, v in pairs(self._data) do 
+            s = s .. "" .. tostring(k) .. " " .. tostring(v) .. "\n"
+        end
+        
+        return s
     end
 
 
@@ -96,6 +115,8 @@ function immutable:set(k, v)
             new_data[k] = v
         end
         
+        -- write "SET #{k} #{v}"
+        -- write "IMM #{dict.str(new_data)}"
         return immutable(new_data)
     end
 

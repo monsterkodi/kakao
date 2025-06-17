@@ -43,7 +43,8 @@ class input extends editor
 
     current: -> 
         if valid @state.s.lines
-            ⮐  @state.s.lines[1]∙str()
+            log "CURRENT #{@state.s.lines.len}"
+            ⮐  @state.s.lines[1]∙arr()∙str()
         ""
 
     set: text ->

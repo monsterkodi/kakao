@@ -65,7 +65,7 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                         
                         for lidx, insl in ipairs(txtls:slice(2)) do 
                             if ((#insl > 0) or (text == '\n')) then 
-                                write("PUSH |" .. tostring(insl) .. "|")
+                                -- write "PUSH |#{insl}|"
                                 before:push((indent + insl))
                             end
                         end
@@ -134,15 +134,21 @@ function edit.static.insertSurroundAtRanges(lines, rngs, trigger, pair)
 
 
 function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl) 
-        lines = lines:map(function (l) 
-    return l
-end)
+        if is(lines.mod, "function") then 
+            lines = lines:mod()
+        end
+        
         posl = array.from(posl)
         
         if empty(rngs) then return lines, posl end
         
         for ri in iter(#rngs, 1) do 
             local rng = rngs[ri]
+            
+            if (rng == nil) then 
+                print("nil range at index " .. tostring(ri) .. "?")
+                return lines, posl
+            end
             
             if ((rng[2] > #lines) or (rng[4] > #lines)) then 
                 print("range out of bounds?", rng)

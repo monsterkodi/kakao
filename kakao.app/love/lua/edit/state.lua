@@ -161,8 +161,7 @@ function state:clearHistory()
 
 
 function state:set(item, arg) 
-        -- @s = @s.set item arg
-        self.s[item] = arg
+        self.s = self.s:set(item, arg)
         self:swapState()
         return self
     end
@@ -199,8 +198,7 @@ function state:setCursors(cursors, opt)
         end
         
         cursors = belt.normalizePositions(cursors, #self.s.lines)
-        -- @s = @s.set 'cursors' cursors
-        self.s.cursors = cursors
+        self.s = self.s:set('cursors', cursors)
         
         main = -1
         for idx, cur in ipairs(cursors) do 
@@ -213,8 +211,7 @@ function state:setCursors(cursors, opt)
         if (main < 1) then main = self.s.main end
         main = clamp(1, #self.s.cursors, main)
         
-        -- @s = @s.set 'main' main
-        self.s.main = main
+        self.s = self.s:set('main', main)
         
         self:adjustViewForMainCursor(opt)
         
@@ -244,8 +241,10 @@ function state:textOfSelectionOrWordAtCursor()
 
 function state:setLines(lines) 
         if empty(lines) then lines = array('') end
-        
-        return self:setSegls(kseg.segls(lines))
+        write("\x1b[0m\x1b[33m", "state.setLines ", "\x1b[0m\x1b[36m", " ", (lines.class or "nil"), "\x1b[0m\x1b[34m", " ", #lines, "\x1b[0m\x1b[35m", " lines ", array.str(lines))
+        local segls = kseg.segls(lines)
+        write("\x1b[0m\x1b[33m", "state.setLines ", "\x1b[0m\x1b[35m", segls)
+        return self:setSegls(segls)
     end
 
 
@@ -292,15 +291,14 @@ function state:clearEmpty()
 function state:clearSegls(segls) 
         self.segls = segls
         
-        -- @s = immutable {
-        self.s = {
+        self.s = immutable({
             lines = self.segls, 
             selections = array(), 
             highlights = array(), 
             cursors = array(array(1, 1)), 
             main = 1, 
             view = array(1, 1)
-            }
+            })
         
         self.syntax:clear()
         
@@ -337,12 +335,18 @@ function state:appendLines(lines, ext)
 
 
 function state:changeLinesSegls() 
-         --oldLines = @s.lines
+         -- oldLines = @s.lines
+         
+         -- write "--- changeLinesSegls #{@s.class} #{@s}"
+         -- write "--> changeLinesSegls #{@segls} #{@segls.class} #{@segls.len} #{@segls[1].len} #{@segls[1].class}"
+         
+         self.s = self.s:set('lines', self.segls)
+         
+         -- write "<-> changeLinesSegls #{@s}"
+         
+         -- @s.lines = @segls
          --         
-         -- @s = @s.set 'lines' @segls
-         self.s.lines = self.segls
-         --         
-         --if oldLines != @s.lines
+         -- if oldLines != @s.lines
          --    diff = belt.diffLines oldLines @s.lines            
          return --    @emit 'lines.changed' diff
     end
@@ -516,7 +520,7 @@ function state:scrollView(dir, steps)
         elseif (dir == 'down') then sy = steps
         end
         
-        local view = self.s.view --.asMutable()
+        local view = self.s.view:mut()
         
         view[1] = view[1] + sx
         view[2] = view[2] + sy
@@ -550,7 +554,7 @@ function state:adjustViewForMainCursor(opt)
         local x = mc[1]
         local y = mc[2]
         
-        local view = self.s.view --.asMutable()
+        local view = self.s.view:mut()
         
         local topBotDelta = 7
         local topDelta = 7
@@ -598,8 +602,7 @@ function state:adjustViewForMainCursor(opt)
 
 
 function state:initView() 
-        -- view = @s.view.asMutable()
-        local view = self.s.view
+        local view = self.s.view:mut()
         
         view[2] = clamp(1, math.max(1, (#self.s.lines - self.cells.rows)), view[2])
         view[1] = math.max(1, (view[1] or 1))
@@ -623,16 +626,20 @@ function state:rangeForVisibleLines()
 
 function state:setMain(m) 
         local mc = self:mainCursor()
-        -- @s = @s.set 'main' clamp(1 @s.cursors.len m)
-        self.s.main = clamp(1, #self.s.cursors, m)
+        self.s = self.s:set('main', clamp(1, #self.s.cursors, m))
         return self:adjustViewForMainCursor({adjust = 'topBotDeltaGrow', mc = mc})
     end
 
 
 function state:mainCursor() 
-        --.asMutable()        
-        local mc = self.s.cursors[self.s.main]
+        if ((self.s.main < 1) or (self.s.main > #self.s.cursors)) then 
+            write("\x1b[0m\x1b[31m", "wrong mainCursor! ", "\x1b[0m\x1b[35m", " main ", self.s.main, "\x1b[0m\x1b[34m", " cursors ", #self.s.cursors)
+            return array(1, 1)
+        end
+        
+        local mc = self.s.cursors[self.s.main]:mut()
         if not mc then 
+            write("\x1b[0m\x1b[31m", "no mainCursor!")
             -- error "no mainCursor!"
             return array(1, 1)
         end
@@ -787,8 +794,7 @@ function state:setMainCursorAndSelect(x, y)
 
 
 function state:allCursors() 
-        --.asMutable()
-        return self.s.cursors
+        return self.s.cursors:mut()
     end
 
 -- 00000000  000   000  00000000    0000000   000   000  0000000    
@@ -1749,9 +1755,8 @@ function state:deindentSelectedOrCursorLines()
 function state:delete(typ, jump) 
         if (array('back', 'next'):has(typ) and valid(self.s.selections)) then return self:deleteSelection() end
         
-        local lines = self.s.lines:map(function (l) 
-    return l
-end) -- mutable copy
+        -- lines = @s.lines∙map((l) -> l) # mutable copy
+        local lines = self.s.lines:mut()
         
         local cursors = self:allCursors()
         

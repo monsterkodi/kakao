@@ -34,6 +34,13 @@ class array
         for i v in ipairs @
             t[i] = f v
         t
+        
+    @map: a f ->
+    
+        t = []
+        for i v in a
+            t[i] = f v
+        t
     
     filter: f ->
     

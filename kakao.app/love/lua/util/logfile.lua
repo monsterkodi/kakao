@@ -19,10 +19,7 @@ function logfile:init()
         function _G.print(...) 
     return self:log(...)
         end
-        
-        function _G.error(...) 
-    return self:error(...)
-        end
+        -- _G.error = (...) -> @error ...
         
         function _G.warn(...) 
     return self:error(...)

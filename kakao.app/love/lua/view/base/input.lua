@@ -53,7 +53,8 @@ function input:onMouse(event)
 
 function input:current() 
         if valid(self.state.s.lines) then 
-            return self.state.s.lines[1]:str()
+            print("CURRENT " .. tostring(#self.state.s.lines) .. "")
+            return self.state.s.lines[1]:arr():str()
         end
         
         return ""

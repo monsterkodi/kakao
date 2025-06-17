@@ -114,6 +114,31 @@ end)
         test.cmp((id.y[3] == ic.y[3]), true)
     end)
     
+    test("interop", function()
+        local ia = immutable(kseg("line 1"))
+        test.cmp(ia[1], "l")
+        test.cmp(ia[2], "i")
+        test.cmp(table.concat(ia:mut(), ""), "line 1")
+        
+        local segls = {{"l", "i", "n", "e", " ", "1"}, {"l", "i", "n", "e", " ", "2"}}
+        ia = immutable({segls = segls})
+        test.cmp(ia.segls[1], immutable(kseg("line 1")))
+        test.cmp(ia.segls[1], immutable(array("l", "i", "n", "e", " ", "1")))
+        test.cmp(ia.segls[1], immutable({"l", "i", "n", "e", " ", "1"}))
+        
+        segls = array(array("l", "i", "n", "e", " ", "1"), array("l", "i", "n", "e", " ", "2"))
+        ia = immutable({segls = segls})
+        test.cmp(ia.segls[1], immutable(kseg("line 1")))
+        test.cmp(ia.segls[1], immutable(array("l", "i", "n", "e", " ", "1")))
+        test.cmp(ia.segls[1], immutable({"l", "i", "n", "e", " ", "1"}))
+        
+        segls = kseg.segls("line 1\nline 2\nline 3")
+        ia = immutable({segls = segls})
+        test.cmp(ia.segls[1], immutable(kseg("line 1")))
+        test.cmp(ia.segls[1], immutable(array("l", "i", "n", "e", " ", "1")))
+        test.cmp(ia.segls[1], immutable({"l", "i", "n", "e", " ", "1"}))
+    end)
+    
     test("bypassing immutability", function()
         local arr = immutable({1, 2, 3})
         test.cmp(#arr, 0)

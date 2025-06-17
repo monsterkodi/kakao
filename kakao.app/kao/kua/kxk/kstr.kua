@@ -40,10 +40,10 @@ kstr.trim = s c=' ' -> kstr.ltrim kstr.rtrim(s,c) c
 
 kstr.chars = s ->
 
-    result = []
-    for i in 1..s.len
-        result∙push s∙sub(i i)
-    result
+    reslt = []
+    for i in 1...s.len+1
+        reslt∙push s∙sub(i i)
+    reslt
    
 kstr.split = s sep limit ->
     

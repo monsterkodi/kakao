@@ -27,7 +27,8 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
         """
     
     s.syntax.ext = 'kode'
-    s∙loadLines belt.linesForText(text)
+    # s∙loadLines belt.linesForText(text)
+    s∙loadSegls belt.seglsForText(text)
     
     txt text
     
@@ -37,11 +38,11 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
     # 000       000   000  000     000     000  000  0000  000   000  
     # 00000000  0000000    000     000     000  000   000   0000000   
     
-    ▸ editing
+    # ▸ editing
     
-        s∙setMainCursor 1 1
+        # s∙setMainCursor 1 1
         
-        cur 1 1
+        # cur 1 1
         
         # s∙insert 'x'
         
@@ -63,7 +64,7 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
     # 000 0 000  000   000     000     000             000      000  000  0000  000            000  
     # 000   000   0000000       0      00000000        0000000  000  000   000  00000000  0000000   
     
-    ▸ move lines
+    # ▸ move lines
     
         #s∙moveSelectionOrCursorLines 'up'
         #cur 1 1
@@ -83,7 +84,7 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
     # 000 0 000  000   000  000         000     000  000        000      000       
     # 000   000   0000000   0000000     000     000  000        0000000  00000000  
     
-    ▸ multiple
+    # ▸ multiple
     
         # s∙expandCursors   'up'
         
@@ -411,35 +412,35 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
     # 000   000  000       000            000   000  000   000  000  0000  000   000  000            000  
     # 0000000    00000000  0000000        000   000  000   000  000   000   0000000   00000000  0000000   
     
-    ▸ deleteRanges
-    
-        text = """
-            line 1
-            line 2
-            line 3
-            """
-            
-        s∙loadLines belt.linesForText(text)
-        s∙deleteRanges [[1 1 3 1]] 
-        
-        txt """
-            ne 1
-            line 2
-            line 3
-            """
-            
-        s∙deleteRanges [[3 1 3 2]]
-
-        txt """
-            nene 2
-            line 3
-            """
-            
-        s∙deleteRanges [[7 1 1 2]]
-
-        txt """
-            nene 2line 3
-            """
+    #▸ deleteRanges
+    #
+    #    text = """
+    #        line 1
+    #        line 2
+    #        line 3
+    #        """
+    #        
+    #    s∙loadLines belt.linesForText(text)
+    #    s∙deleteRanges [[1 1 3 1]] 
+    #    
+    #    txt """
+    #        ne 1
+    #        line 2
+    #        line 3
+    #        """
+    #        
+    #    s∙deleteRanges [[3 1 3 2]]
+    #
+    #    txt """
+    #        nene 2
+    #        line 3
+    #        """
+    #        
+    #    s∙deleteRanges [[7 1 1 2]]
+    #
+    #    txt """
+    #        nene 2line 3
+    #        """
         
     #       000   0000000   000  000   000        000      000  000   000  00000000   0000000  
     #       000  000   000  000  0000  000        000      000  0000  000  000       000       

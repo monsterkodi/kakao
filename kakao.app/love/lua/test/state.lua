@@ -38,7 +38,8 @@ line 3
 ]]
     
     s.syntax.ext = 'kode'
-    s:loadLines(belt.linesForText(text))
+    -- s∙loadLines belt.linesForText(text)
+    s:loadSegls(belt.seglsForText(text))
     
     txt(text)
     
@@ -48,10 +49,12 @@ line 3
     -- 000       000   000  000     000     000  000  0000  000   000  
     -- 00000000  0000000    000     000     000  000   000   0000000   
     
-    test("editing", function()
-        s:setMainCursor(1, 1)
+    -- ▸ editing
+    
+    
+        -- s∙setMainCursor 1 1
         
-        cur(1, 1)
+        -- cur 1 1
         
         -- s∙insert 'x'
         
@@ -66,7 +69,6 @@ line 3
         --        
         --cur 1 1
         --txt text
-    end)
     
     -- 00     00   0000000   000   000  00000000        000      000  000   000  00000000   0000000  
     -- 000   000  000   000  000   000  000             000      000  0000  000  000       000       
@@ -74,7 +76,9 @@ line 3
     -- 000 0 000  000   000     000     000             000      000  000  0000  000            000  
     -- 000   000   0000000       0      00000000        0000000  000  000   000  00000000  0000000   
     
-    test("move lines", function()
+    -- ▸ move lines
+    
+    
         --s∙moveSelectionOrCursorLines 'up'
         --cur 1 1
         --txt """
@@ -86,7 +90,6 @@ line 3
         --        
         --cur 1 1
         --txt text
-    end)
     
     -- 00     00  000   000  000      000000000  000  00000000   000      00000000  
     -- 000   000  000   000  000         000     000  000   000  000      000       
@@ -94,7 +97,9 @@ line 3
     -- 000 0 000  000   000  000         000     000  000        000      000       
     -- 000   000   0000000   0000000     000     000  000        0000000  00000000  
     
-    test("multiple", function()
+    -- ▸ multiple
+    
+    
         -- s∙expandCursors   'up'
         
         -- mul [1 1] [1 2]
@@ -146,7 +151,6 @@ line 3
         --    
         --    3
         --    """    
-    end)
     
     -- 000   000  000   000  000   0000000   0000000   0000000    00000000  
     -- 000   000  0000  000  000  000       000   000  000   000  000       
@@ -422,35 +426,35 @@ xxxx    .       3
     -- 000   000  000       000            000   000  000   000  000  0000  000   000  000            000  
     -- 0000000    00000000  0000000        000   000  000   000  000   000   0000000   00000000  0000000   
     
-    test("deleteRanges", function()
-        text = [[
-line 1
-line 2
-line 3
-]]
-        
-        s:loadLines(belt.linesForText(text))
-        s:deleteRanges(array(array(1, 1, 3, 1)))
-        
-        txt([[
-ne 1
-line 2
-line 3
-]])
-        
-        s:deleteRanges(array(array(3, 1, 3, 2)))
-        
-        txt([[
-nene 2
-line 3
-]])
-        
-        s:deleteRanges(array(array(7, 1, 1, 2)))
-        
-        txt([[
-nene 2line 3
-]])
-    end)
+    --▸ deleteRanges
+    --    
+    --    text = """
+    --        line 1
+    --        line 2
+    --        line 3
+    --        """
+    --        
+    --    s∙loadLines belt.linesForText(text)
+    --    s∙deleteRanges [[1 1 3 1]] 
+    --    
+    --    txt """
+    --        ne 1
+    --        line 2
+    --        line 3
+    --        """
+    --        
+    --    s∙deleteRanges [[3 1 3 2]]
+    --    
+    --    txt """
+    --        nene 2
+    --        line 3
+    --        """
+    --        
+    --    s∙deleteRanges [[7 1 1 2]]
+    --    
+    --    txt """
+    --        nene 2line 3
+    --        """
     
     --       000   0000000   000  000   000        000      000  000   000  00000000   0000000  
     --       000  000   000  000  0000  000        000      000  0000  000  000       000       

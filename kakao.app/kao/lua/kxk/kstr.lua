@@ -99,12 +99,12 @@ end
 
 
 function kstr.chars(s) 
-    local result = array()
-    for i in iter(1, #s) do 
-        result:push(s:sub(i, i))
+    local reslt = array()
+    for i = 1, (#s + 1)-1 do 
+        reslt:push(s:sub(i, i))
     end
     
-    return result
+    return reslt
 end
 
 

@@ -44,7 +44,14 @@ end)
 end)
         end
         
-        return error("segls???", any)
+        if (is(any, table) and (#any > 0)) then 
+            write("\x1b[0m\x1b[31m", "DARKFUG?", any)
+            return array.map(any, (function (l) return kseg(l) end))
+        end
+        
+        write("\x1b[0m\x1b[33m", "DARKFUG!", any)
+        -- error "segls??? #{any}"
+        return array()
     end
 
 

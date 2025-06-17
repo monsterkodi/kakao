@@ -68,6 +68,16 @@ function array:map(f)
     end
 
 
+function array.static.map(a, f) 
+        local t = array()
+        for i, v in ipairs(a) do 
+            t[i] = f(v)
+        end
+        
+        return t
+    end
+
+
 function array:filter(f) 
         local t = self.class()
         for i, v in ipairs(self) do 

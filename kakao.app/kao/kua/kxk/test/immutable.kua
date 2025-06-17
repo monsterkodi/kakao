@@ -102,6 +102,31 @@ use kxk.kxk
         id.y[2] == ic.y[2]      ▸ false
         id.y[3] == ic.y[3]      ▸ true
         
+    ▸ interop
+    
+        ia = immutable(kseg("line 1"))
+        ia[1] ▸ "l"
+        ia[2] ▸ "i"
+        table.concat ia∙mut() "" ▸ "line 1"
+        
+        segls = {{"l" "i" "n" "e" " " "1"} {"l" "i" "n" "e" " " "2"}}
+        ia = immutable({segls:segls})
+        ia.segls[1] ▸ immutable(kseg("line 1"))
+        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
+        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
+        
+        segls = [["l" "i" "n" "e" " " "1"] ["l" "i" "n" "e" " " "2"]]
+        ia = immutable({segls:segls})
+        ia.segls[1] ▸ immutable(kseg("line 1"))
+        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
+        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
+
+        segls = kseg.segls "line 1\nline 2\nline 3"
+        ia = immutable({segls:segls})
+        ia.segls[1] ▸ immutable(kseg("line 1"))
+        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
+        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
+        
     ▸ bypassing immutability
         
         arr = immutable({1,2,3})

@@ -159,8 +159,7 @@ class state extends events
 
     set: item arg ->
 
-        # @s = @s.set item arg
-        @s[item] = arg
+        @s = @s∙set item arg
         @swapState()
         @
 
@@ -189,11 +188,10 @@ class state extends events
             # mainCursor = copy cursors[clamp 0 cursors.len-1 main]
         
         cursors = belt.normalizePositions cursors @s.lines.len
-        # @s = @s.set 'cursors' cursors
-        @s.cursors = cursors
+        @s = @s∙set 'cursors' cursors
 
         main = -1
-        for idx cur in ipairs cursors
+        for idx cur in cursors
             if cur == mainCursor
                 main = idx
                 break
@@ -201,8 +199,7 @@ class state extends events
         if main < 1 ➜ main = @s.main 
         main = clamp 1 @s.cursors.len main
 
-        # @s = @s.set 'main' main
-        @s.main = main
+        @s = @s∙set 'main' main
         
         @adjustViewForMainCursor opt
         
@@ -229,8 +226,10 @@ class state extends events
     setLines: lines ->
         
         if empty lines ➜ lines = ['']
-        
-        @setSegls kseg.segls(lines)
+        write ◌y "state.setLines " ◌c " " (lines.class or "nil")  ◌b " " lines.len ◌m " lines " array.str(lines)
+        segls = kseg.segls(lines)
+        write ◌y "state.setLines " ◌m segls
+        @setSegls segls
         
     setSegls: segls ->
     
@@ -239,7 +238,7 @@ class state extends events
         if empty @segls ➜ @segls = [[]]
         
         @syntax∙setSegls @segls
-                    
+        
         @changeLinesSegls()
         
         @r = []
@@ -256,7 +255,7 @@ class state extends events
         @loadSegls kseg.segls(lines)
     
     loadSegls: segls ->
-    
+
         @clearEmpty()
         @setSegls segls
 
@@ -266,8 +265,7 @@ class state extends events
     
         @segls = segls
     
-        # @s = immutable {
-        @s = {
+        @s = immutable {
             lines:       @segls
             selections:  []
             highlights:  []
@@ -307,12 +305,18 @@ class state extends events
 
     changeLinesSegls: ->
     
-         #oldLines = @s.lines
+         # oldLines = @s.lines
+         
+         # write "--- changeLinesSegls #{@s.class} #{@s}"
+         # write "--> changeLinesSegls #{@segls} #{@segls.class} #{@segls.len} #{@segls[1].len} #{@segls[1].class}"
+         
+         @s = @s∙set 'lines' @segls
+         
+         # write "<-> changeLinesSegls #{@s}"
+         
+         # @s.lines = @segls
          #
-         # @s = @s.set 'lines' @segls
-         @s.lines = @segls
-         #
-         #if oldLines != @s.lines
+         # if oldLines != @s.lines
          #    diff = belt.diffLines oldLines @s.lines            
          #    @emit 'lines.changed' diff
 
@@ -458,7 +462,7 @@ class state extends events
             'up'    ➜ sy = -steps
             'down'  ➜ sy =  steps
 
-        view = @s.view #.asMutable()
+        view = @s.view∙mut()
 
         view[1] += sx
         view[2] += sy
@@ -491,7 +495,7 @@ class state extends events
         x = mc[1]
         y = mc[2]
 
-        view = @s.view #.asMutable()
+        view = @s.view∙mut()
 
         topBotDelta = 7
         topDelta = 7
@@ -534,8 +538,7 @@ class state extends events
 
     initView: ->
 
-        # view = @s.view.asMutable()
-        view = @s.view
+        view = @s.view∙mut()
         
         view[2] = clamp 1 math.max(1 @s.lines.len-@cells.rows) view[2]
         view[1] = math.max 1 view[1] or 1
@@ -556,14 +559,17 @@ class state extends events
     setMain: m -> 
     
         mc = @mainCursor()
-        # @s = @s.set 'main' clamp(1 @s.cursors.len m)
-        @s.main = clamp(1 @s.cursors.len m)
+        @s = @s∙set 'main' clamp(1 @s.cursors.len m)
         @adjustViewForMainCursor {adjust:'topBotDeltaGrow' mc:mc}
         
-    mainCursor: -> 
-        #.asMutable()        
-        mc = @s.cursors[@s.main]
+    mainCursor: ->
+     
+        if @s.main < 1 or @s.main > @s.cursors.len 
+            write ◌r "wrong mainCursor! " ◌m " main " @s.main ◌b " cursors " @s.cursors.len 
+            ⮐  [1 1]
+        mc = @s.cursors[@s.main]∙mut()
         if not mc
+            write ◌r "no mainCursor!"
             # error "no mainCursor!"
             ⮐  [1 1]
         mc
@@ -693,8 +699,8 @@ class state extends events
     # 000   000  0000000  0000000  
     
     allCursors: -> 
-        #.asMutable()
-        @s.cursors
+
+        @s.cursors∙mut()
     
     # 00000000  000   000  00000000    0000000   000   000  0000000    
     # 000        000 000   000   000  000   000  0000  000  000   000  
@@ -1459,7 +1465,8 @@ class state extends events
                 
         ⮐  @deleteSelection() if ['back' 'next']∙has(typ) and valid @s.selections
 
-        lines = @s.lines∙map((l) -> l) # mutable copy
+        # lines = @s.lines∙map((l) -> l) # mutable copy
+        lines = @s.lines∙mut()
         
         cursors = @allCursors()
         

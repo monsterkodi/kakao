@@ -25,7 +25,12 @@ class kseg extends array
             ⮐  kstr.lines(any)∙map((l) -> ⮐  kseg(l))
         if any is array
             ⮐  any∙map((l) -> ⮐  kseg(l))
-        error "segls???" any
+        if any is table and any.len > 0
+            write ◌r "DARKFUG?" any
+            ⮐  array.map(any, ((l) -> ⮐  kseg(l)))
+        write ◌y "DARKFUG!" any
+        # error "segls??? #{any}"
+        []
         
     eql: o ->
     
