@@ -161,7 +161,7 @@ class misc
             'left' 'up'    ➜ start =  Infinity ; cmp = (a b) -> a > b
             'right' 'down' ➜ start = -Infinity ; cmp = (a b) -> a < b
         
-        for idx pos in ipairs posl
+        for idx pos in posl
             if cmp(start pos[ci])
                 start = pos[ci]
                 exi   = idx

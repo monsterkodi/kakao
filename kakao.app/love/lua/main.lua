@@ -60,7 +60,7 @@ function love.keypressed(key, scancode, isrepeat)
     if (lk.isDown('lctrl') or lk.isDown('rctrl')) then mods = mods .. "ctrl+" end
     if (lk.isDown('lalt') or lk.isDown('ralt')) then mods = mods .. "alt+" end
     if (lk.isDown('lgui') or lk.isDown('rgui')) then mods = mods .. "cmd+" end
-    -- log 'keypressed ' mods, key
+    
     local combo = mods .. key
     local char = (function () 
     if (key == "return") then 
@@ -69,12 +69,15 @@ function love.keypressed(key, scancode, isrepeat)
     return "\t"
            elseif (key == "space") then 
     return " "
-           else 
+           elseif (key == "up") or (key == "down") or (key == "right") or (key == "esc") or (key == "delete") or (key == "left") then 
     return ""
+           else 
+    return (((#mods == 0) and key) or "")
            end
 end)()
     
     local event = {["repeat"] = isrepeat, combo = combo, char = char}
+    print("\x1b[0m\x1b[33m", " ", dict.str(event))
     ked:onKey(combo, event)
     return true
 end

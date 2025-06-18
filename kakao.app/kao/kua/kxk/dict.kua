@@ -11,8 +11,9 @@ class dict
     @size: d ->
     
         s = 0
-        for _ in pairs d
-            s += 1
+        for k v in pairs d
+            if k != "class" and type(k) == "string" and string.sub(k 1 2) != "__"
+                s += 1
         s
     
     @str: d ->

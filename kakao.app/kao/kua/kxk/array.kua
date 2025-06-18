@@ -20,11 +20,13 @@ class array
         s
 
     str: -> $@
+    len: -> @len
     
     @from: a -> array(unpack(a))
     @str:  a -> $array.from(a)
     
     each: -> i=0; -> i+=1; (@[i] i)
+    @each: a -> i=0; -> i+=1; (a[i] i)
     
     join: c="" -> @concat c
     
@@ -38,8 +40,15 @@ class array
     @map: a f ->
     
         t = []
-        for i v in a
-            t[i] = f v
+        if a.len > 0 
+            for i in 1..a.len
+                t[i] = f a[i]
+        elif a∙len() > 0 
+            for i in 1..a∙len()
+                t[i] = f a[i]
+        else
+            for i v in a
+                t[i] = f v
         t
     
     filter: f ->
@@ -93,6 +102,20 @@ class array
         ⮐  s if last < 1 or last < first
         for i in first...last+1
             s∙push @[i]
+        s
+        
+    @slice: a first last ->
+    
+        s = []
+        if a.class and a.class != immutable
+            s = a.class()
+
+        ⮐  s if first > a∙len()
+        if last == nil ➜ last = a∙len()
+        else last = min @len last
+        ⮐  s if last < 1 or last < first
+        for i in first...last+1
+            s∙push a[i]
         s
         
     keydict: key ->

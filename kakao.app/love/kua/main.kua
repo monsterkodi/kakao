@@ -61,14 +61,21 @@ love.keypressed = key scancode isrepeat ->
     if lk.isDown('lctrl')  or lk.isDown('rctrl')  ➜ mods &= "ctrl+"
     if lk.isDown('lalt')   or lk.isDown('ralt')   ➜ mods &= "alt+"
     if lk.isDown('lgui')   or lk.isDown('rgui')   ➜ mods &= "cmd+"
-    # log 'keypressed ' mods, key
+
     combo = mods & key
     char = switch key
         "return" ➜ "\n"
         "tab"    ➜ "\t"
         "space"  ➜ " "
-                 ➜ ""
+        "up"
+        "down"
+        "right"
+        "esc"
+        "delete"
+        "left"   ➜ ""
+                 ➜ mods.len == 0 and key or ""
     event = {"repeat":isrepeat combo:combo char:char}
+    log ◌y, " " dict.str(event)
     ked∙onKey combo event
     true
 

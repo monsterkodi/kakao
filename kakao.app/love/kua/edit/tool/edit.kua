@@ -15,9 +15,13 @@ class edit
     # 000  000   000  0000000   00000000  000   000     000   
     
     @insertTextAtPositions: lines text posl ->
-                          
+           
         ⮐  (lines posl) if empty text
         
+        # log "insertTextAtPositions lines " noon lines
+        # log "insertTextAtPositions text  " noon text
+        # log "insertTextAtPositions posl  " noon posl
+                
         if text == '\t'
             pos  = posl[1]
             text = kstr.lpad 4-((pos[1]-1%4)+1) ' '
@@ -29,14 +33,15 @@ class edit
         line   = kseg()                
         rngs   = belt.rangesForLinesSplitAtPositions lines posl
         before = []
-        # write ◌y "INSERT --------------------- " lines       
-        for idx rng in ipairs rngs
-            
+        # log ◌b "INSERT ------------- " rngs
+        for idx rng in rngs
+            # log ◌y "INSERT ------------- " idx, rng       
             after = belt.seglsForRange lines rng
-            if empty after or empty after[1]
-                if posl[^1][2] > lines.len
+            # log ◌y "INSERT ------------- " idx
+            if empty(after) or empty(after[1])
+                if posl[posl∙len()][2] > lines∙len()
                     before∙push [] 
-            
+            # log ◌y "INSERT ------------- " idx
             if idx > 1
                 x = posl[idx-1][1]
                 
@@ -50,38 +55,40 @@ class edit
                     if posl.len > 1 and text != '\n'
                         insertLineIndex = ((idx-2) % txtls.len)+1
                         before∙push line + txtls[insertLineIndex]
-                        newpl∙push [kseg.width(before[^1]) newls.len+before.len-1]
+                        newpl∙push [kseg.width(before[^1]) newls∙len()+before∙len()-1]
                         before∙push before∙pop() + after∙shift()
                     else
                         posLineIndent = belt.numIndent line
                         indent = kseg(kstr.lpad(posLineIndent))
                         before∙push line + txtls[1]
                         
-                        for lidx insl in ipairs txtls∙slice(2)
+                        for lidx insl in txtls∙slice(2)∙each()
                             if insl.len > 0 or text == '\n'
                                 # write "PUSH |#{insl}|"
                                 before∙push indent + insl
                         if x-1 > posLineIndent
-                            newpl∙push [kseg.width(before[^1]) newls.len+before.len-1]
+                            newpl∙push [kseg.width(before[^1]) newls∙len()+before∙len()-1]
                             before∙push before∙pop() + after∙shift()
                         else
                             after∙unshift indent + after∙shift()
                             before∙pop() if text == '\n'
-                            newpl∙push [kseg.width(indent) newls.len+before.len] 
+                            newpl∙push [kseg.width(indent) newls∙len()+before∙len()] 
                     newls += before
                             
                 else
-                    newpl∙push [kseg.width(line)+kseg.width(txtls[1]) newls.len+before.len]
+                    newpl∙push [kseg.width(line)+kseg.width(txtls[1])+1 newls∙len()+before∙len()+1]
                     line  += txtls[1]
                     line  += after∙shift()
                     newls += before      
                     newls∙push line                  
-            
+            # log ◌y "INSERT <------------ " idx
             before = after
-            
-        if posl.len >= 1 and posl[^1][2] <= lines.len
+        
+        # log ◌y "INSERT <<-----------" posl∙len(), lines∙len()
+        if posl∙len() >= 1 and posl[posl∙len()][2] <= lines∙len()
             newls += before 
-
+        # log ◌y "INSERT <<◂----------" noon newls 
+        # log ◌y "INSERT ◂◂◂----------" newpl 
         (newls newpl)
         
     #  0000000  000   000  00000000   00000000    0000000   000   000  000   000  0000000    
@@ -118,20 +125,21 @@ class edit
         if lines.mod is "function"
             lines = lines∙mod()
             
-        posl  = array.from posl
+        posl = array.from posl
         
         ⮐  (lines posl) if empty rngs
+        ⮐  (lines posl) if rngs∙len() < 1
         
-        for ri in rngs.len..1
+        for ri in rngs∙len()..1
         
             rng = rngs[ri]
             
             if rng == nil
-                log "nil range at index #{ri}?"
+                write "nil range at index #{ri}?"
                 ⮐  (lines posl)
             
             if rng[2] > lines.len or rng[4] > lines.len
-                log "range out of bounds?" rng
+                write "range out of bounds?" rng
                 ⮐  (lines posl)
             
             posl = belt.adjustPositionsForDeletedLineRange posl lines rng

@@ -467,8 +467,9 @@ class KED
         for handler in @keyHandlers∙each()
             # ●▸ on key
             if not handler∙hidden()
-                # log "handler" handler.name
+                log "handler" handler.name
                 result = handler∙onKey key event
+                log "result" result
                 if result
                     break 
             # ●▪ on key

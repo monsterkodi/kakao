@@ -21,7 +21,10 @@ _G.empty = v ->
 
     switch type(v)
     
-        "table"  ➜ ⮐  v.len == 0 and not dict.isdict(v)
+        "table"  ➜ 
+            ⮐  false if v.len >= 1
+            ⮐  false if v∙len() >= 1
+            ⮐  v.len <= 0 and not dict.isdict(v)
         "string" ➜ ⮐  v == ""
         "nil"    ➜ ⮐  true
         

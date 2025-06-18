@@ -35,6 +35,10 @@ function array:str()
     return tostring(self)
     end
 
+function array:len() 
+    return #self
+    end
+
 
 function array.static.from(a) 
     return array(unpack(a))
@@ -48,6 +52,11 @@ function array.static.str(a)
 function array:each() 
           local i = 0 ; return function () 
                   i = i + 1 ; return self[i], i end
+    end
+
+function array.static.each(a) 
+           local i = 0 ; return function () 
+                     i = i + 1 ; return a[i], i end
     end
 
 
@@ -70,8 +79,18 @@ function array:map(f)
 
 function array.static.map(a, f) 
         local t = array()
-        for i, v in ipairs(a) do 
-            t[i] = f(v)
+        if (#a > 0) then 
+            for i in iter(1, #a) do 
+                t[i] = f(a[i])
+            end
+        elseif (a:len() > 0) then 
+            for i in iter(1, a:len()) do 
+                t[i] = f(a[i])
+            end
+        else 
+            for i, v in ipairs(a) do 
+                t[i] = f(v)
+            end
         end
         
         return t
@@ -157,6 +176,26 @@ function array:slice(first, last)
         if ((last < 1) or (last < first)) then return s end
         for i = first, (last + 1)-1 do 
             s:push(self[i])
+        end
+        
+        return s
+    end
+
+
+function array.static.slice(a, first, last) 
+        local s = array()
+        if (a.class and (a.class ~= immutable)) then 
+            s = a.class()
+        end
+        
+        if (first > a:len()) then return s end
+        if (last == nil) then last = a:len()
+        else last = min(#array, last)
+        end
+        
+        if ((last < 1) or (last < first)) then return s end
+        for i = first, (last + 1)-1 do 
+            s:push(a[i])
         end
         
         return s

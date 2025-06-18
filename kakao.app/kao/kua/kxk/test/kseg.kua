@@ -45,16 +45,16 @@ use kxk/kxk
         lines ▸ ["123" "456" "" "abc" "def"]
             
         segls = kseg.segls """
-            123
+            323
             456
             
             abc
             def"""
         
-        segls ▸ [kseg("123") kseg("456") kseg("") kseg("abc") kseg("def")]    
+        segls ▸ [kseg("323") kseg("456") kseg("") kseg("abc") kseg("def")]    
         
         kseg.str(segls) ▸ """
-            123
+            323
             456
             
             abc

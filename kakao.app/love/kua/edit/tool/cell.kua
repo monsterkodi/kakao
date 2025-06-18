@@ -35,7 +35,7 @@ class cell
     @cellsForLines: lines ->
         
         width = belt.widthOfLines lines
-        cells = @cells width lines.length
+        cells = @cells width lines∙len()
         
         @stampLines cells lines
 
@@ -64,8 +64,8 @@ class cell
     
         (x y) = belt.pos x y
         
-        for li line in ipairs lines
-            for ci char in ipairs line
+        for li line in lines
+            for ci char in line
                 cells[li][ci].char = char
 
     # 000   000  00000000    0000000   00000000   
@@ -113,8 +113,8 @@ class cell
     @cellsWithChar: cells char ->
         
         res = []
-        for y row in ipairs cells
-            for x cell in ipairs row
+        for y row in cells
+            for x cell in row
                 if cell.char == char
                     res∙push {pos:[x y] cell:cells[y][x]}
         res

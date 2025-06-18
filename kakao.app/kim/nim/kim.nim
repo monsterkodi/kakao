@@ -270,14 +270,14 @@ proc watch(paths : seq[string]) =
                     love = true
                 if (exitCode != 0): 
                     fail = true
-            if (not fail and love): 
-                if loveProc: 
-                    echo("CLOSE")
-                    loveProc.close()
-                var (output, exitCode) = execCmdEx("killall love")
-                (output, exitCode) = execCmdEx("killall love")
-                (output, exitCode) = execCmdEx("killall love")
-                loveProc = startProcess("/opt/homebrew/bin/love", cwd(), @[cwd("../love/lua")])
+            # if not fail and love
+            #     if loveProc 
+            #         log "CLOSE"
+            #         loveProc.close()
+            #     (output exitCode) = execCmdEx "killall love"
+            #     (output exitCode) = execCmdEx "killall love"
+            #     (output exitCode) = execCmdEx "killall love"
+            #     loveProc = startProcess "/opt/homebrew/bin/love" cwd() [cwd("../love/lua")]
         if kimChanged: 
             if stage(kimFiles, ".", "k1m"): 
                 if stage(kimFiles, "k1m", "k2m"): 

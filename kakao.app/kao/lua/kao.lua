@@ -59,13 +59,18 @@ Options:
     
     math.randomseed(os.clock())
     
+    rndHeader()
+    
+    return watch(slash.path("."), slash.path("../../love"))
+end
+
+
+function rndHeader() 
     local cl = array("■■■", "◀■▶", "▶■◀", "▶●◀", "▶◆◀", "▶▶▶", "◀◀◀", "▲▼▲", "▼▲▼", "▪▪▪", "◆◆◆", "■◆■", "●◆●", "◆■◆", "●●●", "●▲●")
     local cs = kseg(cl:rnd())
     local co = array("\x1b[0m\x1b[31m", "\x1b[0m\x1b[38;2;240;208;0m", "\x1b[0m\x1b[38;2;128;128;240m")
     co:shuffle()
-    write(co[1], cs[1], co[2], cs[2], co[3], cs[3])
-    
-    return watch(slash.path("."), slash.path("../../love"))
+    return write(co[1], cs[1], co[2], cs[2], co[3], cs[3])
 end
 
 
@@ -141,17 +146,30 @@ function watch(...)
                         modTimes[p] = modTime
                         
                         if kxkFiles[p] then 
-                            write("\x1b[0m\x1b[90m\x1b[2m", "◇ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
                             kxkChanged:push(p)
                         elseif luaFiles[p] then 
-                            write("\x1b[0m\x1b[90m\x1b[2m", "◆ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
                             luaChanged:push(p)
                         elseif prjFiles[p] then 
-                            write("\x1b[0m\x1b[90m\x1b[2m", "♥ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
                             prjChanged:push(p)
                         end
                     end
                 end
+            end
+        end
+        
+        if (((#prjChanged > 0) or (#luaChanged > 0)) or (#kxkChanged > 0)) then 
+            write("\x1bc")
+            rndHeader()
+            for i, p in ipairs(kxkChanged) do 
+                write("\x1b[0m\x1b[90m\x1b[2m", "◇ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
+            end
+            
+            for i, p in ipairs(luaChanged) do 
+                write("\x1b[0m\x1b[90m\x1b[2m", "◆ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
+            end
+            
+            for i, p in ipairs(prjChanged) do 
+                write("\x1b[0m\x1b[90m\x1b[2m", "♥ ", "\x1b[0m\x1b[3m\x1b[1m", slash.file(p))
             end
         end
         
@@ -165,13 +183,15 @@ function watch(...)
             end
         end
         
-        if (#prjChanged > 0) then 
+        if ((#prjChanged > 0) or (#kxkChanged > 0)) then 
             write("\x1b[0m\x1b[32m\x1b[4m", "testing ♥")
             local cwd = slash.cwd()
             slash.chdir(prjDir)
             if not test.run(prjTests) then 
                 testPass = false
                 write("\x1b[0m\x1b[31m\x1b[9m", "testing ♥")
+            else 
+                rndHeader()
             end
             
             slash.chdir(cwd)

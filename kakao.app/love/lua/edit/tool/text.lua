@@ -264,7 +264,7 @@ function text.static.splitLineIndent(str)
 function text.static.reindent(oldIndent, newIndent, str) 
         local indent, rest = belt.splitLineIndent(str)
         
-        return kstr.lpad(int(((#indent * newIndent) / oldIndent))) .. rest
+        return kstr.lpad(int(((indent:len() * newIndent) / oldIndent))) .. rest
     end
 
 
@@ -300,7 +300,7 @@ end)
 
 
 function text.static.seglRangeAtPos(segls, pos) 
-        return array(1, pos[2], (#segls[pos[2]] + 1), pos[2])
+        return array(1, pos[2], (segls[pos[2]]:len() + 1), pos[2])
     end
 
 
@@ -311,8 +311,8 @@ function text.static.lineRangeAtPos(lines, pos)
 
 function text.static.lineRangesForPositions(lines, posl, append) 
         local rngs = belt.lineIndicesForPositions(posl):map(function (y) 
-    if #lines[y] then 
-    return array(0, y, #lines[y], y) else 
+    if lines[y]:len() then 
+    return array(0, y, lines[y]:len(), y) else 
     return array(0, y, 0, (y + 1))
                                                              end
 end)
@@ -329,7 +329,7 @@ function text.static.numFullLinesInRange(lines, rng)
         local d = (rng[4] - rng[2])
         
         if (d == 0) then 
-            if ((rng[1] == 1) and (rng[3] >= #lines[rng[2]])) then 
+            if ((rng[1] == 1) and (rng[3] >= lines[rng[2]]:len())) then 
                 return 1
             end
             
@@ -345,7 +345,7 @@ function text.static.numFullLinesInRange(lines, rng)
             n = n + ((d - 2))
         end
         
-        if (rng[3] == #lines[rng[4]]) then 
+        if (rng[3] == lines[rng[4]]:len()) then 
             n = n + 1
         end
         
@@ -359,7 +359,7 @@ function text.static.numLinesInRange(rng)
 
 
 function text.static.isEmptyLineAtPos(lines, pos) 
-    return (#lines[pos[2]] <= 0)
+    return (lines[pos[2]]:len() <= 0)
     end
 
 
@@ -378,11 +378,11 @@ function text.static.seglsForRange(lines, rng)
         if (nl == 1) then 
             local bos = kseg.segiAtWidth(lines[rng[2]], rng[1])
             local eos = kseg.segiAtWidth(lines[rng[2]], rng[3])
-            return array(lines[rng[2]]:slice(bos, (eos - 1)))
+            return array(array.slice(lines[rng[2]], bos, (eos - 1)))
         end
         
-        local firstLineIndex = min(rng[2], #lines)
-        local lastLineIndex = min(rng[4], #lines)
+        local firstLineIndex = min(rng[2], lines:len())
+        local lastLineIndex = min(rng[4], lines:len())
         
         local segi = kseg.segiAtWidth(lines[firstLineIndex], rng[1])
         local lns = array(lines[firstLineIndex]:slice(segi))
@@ -451,7 +451,7 @@ function text.static.diffLines(oldLines, newLines)
             local ol = oldLines[oi]
             local nl = newLines[ni]
             
-            while (oi < #oldLines) do 
+            while (oi < oldLines:len()) do 
                 if not nl then 
                     deletes:push(oi)
                     oi = oi + 1
@@ -491,7 +491,7 @@ function text.static.diffLines(oldLines, newLines)
                 end
             end
             
-            while (ni < #newLines) do 
+            while (ni < newLines:len()) do 
                 inserts:push(ni)
                 ni = ni + 1
                 nl = newLines[ni]
@@ -610,7 +610,7 @@ function text.static.splitLineRanges(lines, rngs, includeEmpty)
 
 
 function text.static.isLinesPosInside(lines, pos) 
-    return (((pos[2] <= #lines) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
+    return (((pos[2] <= lines:len()) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
     end
 
 function text.static.isLinesPosOutside(lines, pos) 
@@ -619,7 +619,7 @@ function text.static.isLinesPosOutside(lines, pos)
 
 
 function text.static.isValidLineIndex(lines, li) 
-    return ((1 <= li) and (li <= #lines))
+    return ((1 <= li) and (li <= lines:len()))
     end
 
 function text.static.isInvalidLineIndex(lines, li) 
@@ -633,12 +633,12 @@ function text.static.isMultiLineRange(lines, rng)
 
 
 function text.static.isFullLineRange(lines, rng) 
-    return (((((1 <= rng[2]) and (rng[2] <= rng[4])) and (rng[4] <= #lines)) and (rng[1] == 1)) and (((rng[2] == rng[4]) and (rng[3] > #lines[rng[4]])) or ((rng[3] == 1) and (rng[2] < rng[4]))))
+    return (((((1 <= rng[2]) and (rng[2] <= rng[4])) and (rng[4] <= lines:len())) and (rng[1] == 1)) and (((rng[2] == rng[4]) and (rng[3] > lines[rng[4]]:len())) or ((rng[3] == 1) and (rng[2] < rng[4]))))
     end
 
 
 function text.static.isSpanLineRange(lines, rng) 
-    return ((((1 <= rng[2]) and (rng[2] == rng[4])) and (rng[4] < #lines)) and ((rng[1] > 1) or (rng[3] < #lines[rng[2]])))
+    return ((((1 <= rng[2]) and (rng[2] == rng[4])) and (rng[4] < lines:len())) and ((rng[1] > 1) or (rng[3] < lines[rng[2]]:len())))
     end
 
 
@@ -670,7 +670,7 @@ function text.static.rangeOfClosestChunkLeftToPos(lines, pos)
         local x, y = unpack(pos)
         
         if belt.isInvalidLineIndex(lines, y) then return end
-        local r = kstr.rangeOfClosestChunk(lines[y]:slice(1, x), x)
+        local r = kstr.rangeOfClosestChunk(array.slice(lines[y], 1, x), x)
         if r then 
             if ((0 <= r[0]) < r[1]) then 
                 return array(r[0], y, r[1], y)
@@ -683,7 +683,7 @@ function text.static.rangeOfClosestChunkRightToPos(lines, pos)
         local x, y = unpack(pos)
         
         if belt.isInvalidLineIndex(lines, y) then return end
-        local r = kstr.rangeOfClosestChunk(lines[y]:slice(x), x)
+        local r = kstr.rangeOfClosestChunk(array.slice(lines[y], x), x)
         if r then 
             if ((0 <= r[0]) < r[1]) then 
                 return array(r[0], y, r[1], y)
@@ -709,10 +709,10 @@ function text.static.wordAtPos(lines, pos)
 
 
 function text.static.chunkBeforePos(lines, pos) 
-        local before = lines[pos[2]]:slice(1, (pos[1] - 1))
+        local before = array.slice(lines[pos[2]], 1, (pos[1] - 1))
         local tcc = kseg.tailCountChunk(before)
         if (tcc > 0) then 
-            return kseg.str(before:slice(((#before - tcc) + 1)))
+            return kseg.str(array.slice(before, ((before:len() - tcc) + 1)))
         end
         
         return ''
@@ -720,10 +720,10 @@ function text.static.chunkBeforePos(lines, pos)
 
 
 function text.static.chunkAfterPos(lines, pos) 
-        local after = lines[pos[2]]:slice(pos[1])
+        local after = array.slice(lines[pos[2]], pos[1])
         local hcc = kseg.headCountChunk(after)
         if hcc then 
-            return kseg.str(after:slice(1, hcc))
+            return kseg.str(array.slice(after, 1, hcc))
         end
         
         return ''
@@ -745,18 +745,18 @@ function text.static.rangeOfClosestWordToPos(lines, pos)
 function text.static.rangeOfWhitespaceLeftToPos(lines, pos) 
         local x, y = unpack(pos)
         
-        y = clamp(1, #lines, y)
-        x = clamp(1, (#lines[y] + 1), x)
+        y = clamp(1, lines:len(), y)
+        x = clamp(1, (lines[y]:len() + 1), x)
         
         if (x <= 1) then 
             return array(x, y, x, y)
         end
         
-        -- segi = kseg.segiAtWidth lines[y] x
-        local segi = kseg.indexAtWidth(lines[y], x)
-        local left = lines[y]:slice(1, (segi - 1))
+        local segi = kseg.segiAtWidth(lines[y], x)
+        -- segi = kseg.indexAtWidth lines[y] x
+        local left = array.slice(lines[y], 1, (segi - 1))
         local tc = kseg.tailCount(left, ' ')
-        if tc then 
+        if (tc > 0) then 
             return array(max((segi - tc), 1), y, segi, y)
         end
         
@@ -770,7 +770,7 @@ function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos)
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
         local segi = kseg.segiAtWidth(lines[y], x)
-        local left = lines[y]:slice(1, (segi - 1))
+        local left = array.slice(lines[y], 1, (segi - 1))
         local ts = kseg.tailCount(left, ' ')
         if (ts > 0) then 
             return array((segi - ts), y, segi, y)
@@ -789,7 +789,7 @@ function text.static.rangeOfWordOrWhitespaceRightToPos(lines, pos)
         local x, y = pos
         
         if ((x < 0) or belt.isInvalidLineIndex(lines, y)) then return end
-        local r = kstr.rangeOfClosestWord(lines[y]:slice(x), 0)
+        local r = kstr.rangeOfClosestWord(array.slice(lines[y], x), 0)
         if r then 
             if ((0 == r[0]) and (r[0] < r[1])) then 
                 return array(x, y, (r[1] + x), y)
@@ -800,12 +800,12 @@ function text.static.rangeOfWordOrWhitespaceRightToPos(lines, pos)
             end
         end
         
-        return array(#x, y, lines[y], y)
+        return array(x, y, lines[y]:len(), y)
     end
 
 
 function text.static.lineChar(line, x) 
-    if ((1 <= x) and (x <= #line)) then 
+    if ((1 <= x) and (x <= line:len())) then 
     return line[x]
                                  end
     end
@@ -841,10 +841,10 @@ function text.static.jumpDelta(line, px, dx, jump)
         else 
             local ci = (px - 1)
             if (ci < 0) then return 0 end
-            if ((ci >= #line) and (jump:find('empty') >= 1)) then return ((#line - ci) - 1) end
+            if ((ci >= line:len()) and (jump:find('empty') >= 1)) then return ((line:len() - ci) - 1) end
             local cat = belt.categoryForChar(belt.lineChar(line, ci))
             if (jump:find(cat) < 1) then return dx end
-            while (((1 <= ci) and (ci <= #line)) and (belt.categoryForChar(belt.lineChar(line, ci)) == cat)) do 
+            while (((1 <= ci) and (ci <= line:len())) and (belt.categoryForChar(belt.lineChar(line, ci)) == cat)) do 
                 ci = ci + dx
             end
             

@@ -52,14 +52,18 @@ main = ... ->
         os.exit 1
         
     math.randomseed(os.clock())
-        
+    
+    rndHeader()    
+    
+    watch slash.path(".") slash.path("../../love")
+
+rndHeader = ->
+
     cl = ["■■■" "◀■▶" "▶■◀" "▶●◀" "▶◆◀" "▶▶▶" "◀◀◀" "▲▼▲" "▼▲▼" "▪▪▪" "◆◆◆" "■◆■" "●◆●" "◆■◆" "●●●" "●▲●"]
     cs = kseg cl∙rnd()
     co = [ ◌r ◌fd0 ◌88f ]
     co∙shuffle()
     write co[1] cs[1] co[2] cs[2] co[3] cs[3]
-    
-    watch slash.path(".") slash.path("../../love")
 
 build = ->
 
@@ -132,14 +136,21 @@ watch = ... ->
                         modTimes[p] = modTime
                         
                         if kxkFiles[p]
-                            write ◌d- "◇ " ◌i+ slash.file(p)
                             kxkChanged∙push p
                         elif luaFiles[p]
-                            write ◌d- "◆ " ◌i+ slash.file(p)                    
                             luaChanged∙push p
                         elif prjFiles[p]
-                            write ◌d- "♥ " ◌i+ slash.file(p)
                             prjChanged∙push p
+        
+        if prjChanged.len > 0 or luaChanged.len > 0 or kxkChanged.len > 0
+            write "\x1bc"
+            rndHeader()
+            for i p in kxkChanged
+                write ◌d- "◇ " ◌i+ slash.file(p)
+            for i p in luaChanged
+                write ◌d- "◆ " ◌i+ slash.file(p)
+            for i p in prjChanged
+                write ◌d- "♥ " ◌i+ slash.file(p)
             
         testPass = true    
         if kxkChanged.len > 0
@@ -149,13 +160,15 @@ watch = ... ->
                 testPass = false
                 write ◌rx "testing"
                 
-        if prjChanged.len > 0
+        if prjChanged.len > 0 or kxkChanged.len > 0
             write ◌g_ "testing ♥"
             cwd = slash.cwd()
             slash.chdir prjDir
             if not test.run prjTests 
                 testPass = false
                 write ◌rx "testing ♥"
+            else
+                rndHeader()
             slash.chdir cwd
             
         if luaChanged.len > 0 or kxkChanged.len > 0

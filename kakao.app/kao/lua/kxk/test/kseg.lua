@@ -44,16 +44,16 @@ def]]
         test.cmp(lines, array("123", "456", "", "abc", "def"))
         
         local segls = kseg.segls([[
-123
+323
 456
 
 abc
 def]])
         
-        test.cmp(segls, array(kseg("123"), kseg("456"), kseg(""), kseg("abc"), kseg("def")))
+        test.cmp(segls, array(kseg("323"), kseg("456"), kseg(""), kseg("abc"), kseg("def")))
         
         test.cmp(kseg.str(segls), [[
-123
+323
 456
 
 abc

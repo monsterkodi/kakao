@@ -20,6 +20,10 @@ local edit = class("edit")
 function edit.static.insertTextAtPositions(lines, text, posl) 
         if empty(text) then return lines, posl end
         
+        -- log "insertTextAtPositions lines " noon lines
+        -- log "insertTextAtPositions text  " noon text
+        -- log "insertTextAtPositions posl  " noon posl
+        
         if (text == '\t') then 
             local pos = posl[1]
             text = kstr.lpad((4 - ((pos[1] - (1 % 4)) + 1)), ' ')
@@ -32,15 +36,18 @@ function edit.static.insertTextAtPositions(lines, text, posl)
         local line = kseg()
         local rngs = belt.rangesForLinesSplitAtPositions(lines, posl)
         local before = array()
-        -- write ◌y "INSERT --------------------- " lines       
+        -- log ◌b "INSERT ------------- " rngs
         for idx, rng in ipairs(rngs) do 
+            -- log ◌y "INSERT ------------- " idx, rng       
             local after = belt.seglsForRange(lines, rng)
-            if empty((after or empty), after[1]) then 
-                if (posl[#posl][2] > #lines) then 
+            -- log ◌y "INSERT ------------- " idx
+            if (empty(after) or empty(after[1])) then 
+                if (posl[posl:len()][2] > lines:len()) then 
                     before:push(array())
                 end
             end
             
+            -- log ◌y "INSERT ------------- " idx
             if (idx > 1) then 
                 local x = posl[(idx - 1)][1]
                 
@@ -56,14 +63,14 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                     if ((#posl > 1) and (text ~= '\n')) then 
                         local insertLineIndex = (((idx - 2) % #txtls) + 1)
                         before:push((line + txtls[insertLineIndex]))
-                        newpl:push(array(kseg.width(before[#before]), ((#newls + #before) - 1)))
+                        newpl:push(array(kseg.width(before[#before]), ((newls:len() + before:len()) - 1)))
                         before:push((before:pop() + after:shift()))
                     else 
                         local posLineIndent = belt.numIndent(line)
                         local indent = kseg(kstr.lpad(posLineIndent))
                         before:push((line + txtls[1]))
                         
-                        for lidx, insl in ipairs(txtls:slice(2)) do 
+                        for lidx, insl in txtls:slice(2):each() do 
                             if ((#insl > 0) or (text == '\n')) then 
                                 -- write "PUSH |#{insl}|"
                                 before:push((indent + insl))
@@ -71,18 +78,18 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                         end
                         
                         if ((x - 1) > posLineIndent) then 
-                            newpl:push(array(kseg.width(before[#before]), ((#newls + #before) - 1)))
+                            newpl:push(array(kseg.width(before[#before]), ((newls:len() + before:len()) - 1)))
                             before:push((before:pop() + after:shift()))
                         else 
                             after:unshift((indent + after:shift()))
                             if (text == '\n') then before:pop() end
-                            newpl:push(array(kseg.width(indent), (#newls + #before)))
+                            newpl:push(array(kseg.width(indent), (newls:len() + before:len())))
                         end
                     end
                     
                     newls = newls + before
                 else 
-                    newpl:push(array((kseg.width(line) + kseg.width(txtls[1])), (#newls + #before)))
+                    newpl:push(array(((kseg.width(line) + kseg.width(txtls[1])) + 1), ((newls:len() + before:len()) + 1)))
                     line = line + (txtls[1])
                     line = line + (after:shift())
                     newls = newls + before
@@ -90,13 +97,17 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                 end
             end
             
+            -- log ◌y "INSERT <------------ " idx
             before = after
         end
         
-        if ((#posl >= 1) and (posl[#posl][2] <= #lines)) then 
+        -- log ◌y "INSERT <<-----------" posl∙len(), lines∙len()
+        if ((posl:len() >= 1) and (posl[posl:len()][2] <= lines:len())) then 
             newls = newls + before
         end
         
+        -- log ◌y "INSERT <<◂----------" noon newls 
+        -- log ◌y "INSERT ◂◂◂----------" newpl 
         return newls, newpl
     end
 
@@ -141,17 +152,18 @@ function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl)
         posl = array.from(posl)
         
         if empty(rngs) then return lines, posl end
+        if (rngs:len() < 1) then return lines, posl end
         
-        for ri in iter(#rngs, 1) do 
+        for ri in iter(rngs:len(), 1) do 
             local rng = rngs[ri]
             
             if (rng == nil) then 
-                print("nil range at index " .. tostring(ri) .. "?")
+                write("nil range at index " .. tostring(ri) .. "?")
                 return lines, posl
             end
             
             if ((rng[2] > #lines) or (rng[4] > #lines)) then 
-                print("range out of bounds?", rng)
+                write("range out of bounds?", rng)
                 return lines, posl
             end
             

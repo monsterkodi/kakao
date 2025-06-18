@@ -36,18 +36,15 @@ function draw:draw()
         
         local view = self.state.s.view
         local lines = self.state.s.lines
+        -- log "draw" @cells.cols, @cells.rows, @state.s.lines
+        
         if self.complete then 
             lines = self.complete:preDrawLines(lines)
         end
         
-        -- lines  = mode.preDrawLines @state @state.s.lines
-        
-        -- log "draw" @cells.cols, @cells.rows, lines
-        
         for row in iter(1, self.cells.rows) do 
             local y = ((row + view[2]) - 1)
-            -- log "drawRow #{y} #{lines.len}"
-            if (y > #lines) then break end
+            if (y > lines:len()) then break end
             
             self:drawLine(lines[y], y, row)
         end
@@ -107,8 +104,8 @@ function draw:drawLine(line, y, row)
             
             -- log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
             
-            if (si > #line) then 
-                -- log "#{@name} #{r5 'break!'}"
+            if (si > line:len()) then 
+                write("\x1b[0m\x1b[36m", "" .. tostring(self.name) .. " break!")
                 break
             end
             
@@ -171,7 +168,7 @@ function draw:drawRowBackground(row, linel)
 
 function draw:drawTrailingRows() 
         -- fill empty rows below last line
-        local vl = (#self.state.s.lines - self.state.s.view[1])
+        local vl = (self.state.s.lines:len() - self.state.s.view[2])
         if (vl >= self.cells.rows) then return end
         
         for row = vl, self.cells.rows-1 do 
@@ -191,14 +188,14 @@ function draw:drawHighlights()
         local ul = self.color.highlight.ul
         -- bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        local vx, vy = self.state.s.view
+        local vx, vy = unpack(self.state.s.view)
         
-        for highlight in self.state.s.highlights:each() do 
+        for highlight in array.each(self.state.s.highlights) do 
             local y = (highlight[1] - vy)
             
             if (y >= self.cells.rows) then break end
             
-            for x = highlight[0], highlight[2]-1 do 
+            for x = highlight[1], highlight[3]-1 do 
                 local hlc = self.cells:get_char((x - vx), y)
                 if (hlc == '{') or (hlc == '[') or (hlc == '(') or (hlc == ')') or (hlc == ']') or (hlc == '}') then local ulc = self.color.highlight.bracket_ul ; local bgc = self.color.highlight.bracket
                 elseif (hlc == "'") or (hlc == '"') then local ulc = self.color.highlight.string_ul ; local bgc = self.color.highlight.string
@@ -296,7 +293,7 @@ function draw:drawCursors()
             local x = ((mc[1] - s.view[1]) + 1)
             local y = ((mc[2] - s.view[2]) + 1)
             
-            if (#s.cursors <= 1) then 
+            if (s.cursors:len() <= 1) then 
                 if self:isCursorInEmpty() then 
                     bg = color.darken(bg, 0.5)
                 elseif (' ' == self.cells:get_char(x, y)) then 
@@ -322,7 +319,7 @@ function draw:drawColorPills(line, row, linel)
         local rngs = kstr.colorRanges(line:str())
         if rngs then 
             local cx = (max(0, linel) + 1)
-            for rng, idx in rngs do 
+            for rng, idx in ipairs(rngs) do 
                 local dta = 4
                 if (idx == 0) then self.cells.set(cx, row, '', rng.color, self.color.empty) ; cx = cx + 1 ; dta = dta - 1 end
                 if (idx == (#rngs - 1)) then dta = dta - 1 end
@@ -340,9 +337,9 @@ function draw:drawAsciiHeader(line, row, clss)
         -- log "▸ #{kseg.str line}"
         
         local chunks = kseg.chunks(line)
-        for chunk in chunks do 
-            if (chunk.segl[0] == '█') then 
-                local x = (chunk.index - self.state.s.view[0])
+        for _, chunk in ipairs(chunks) do 
+            if (chunk.segl[1] == '█') then 
+                local x = (chunk.index - self.state.s.view[1])
                 local ch = '▎'
                 local fg = theme.syntax[(clss + ' highlight')]
                 local bg = theme.syntax[clss]

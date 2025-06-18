@@ -522,8 +522,9 @@ function KED:onKey(key, event)
         for handler in self.keyHandlers:each() do 
             -- ●▸ on key
             if not handler:hidden() then 
-                -- log "handler" handler.name
+                print("handler", handler.name)
                 result = handler:onKey(key, event)
+                print("result", result)
                 if result then 
                     break
                 end

@@ -241,13 +241,18 @@ function editor:onKey(key, event)
         end
         
         if valid(event.char) then 
+            print("INSERT " .. tostring(event.char) .. "")
             self.state:insert(event.char)
-            self.complete:complete()
+            print("INSERTED " .. tostring(event.char) .. "")
+            if self.complete then 
+                self.complete:complete()
+            end
+            
             return true
         else 
             local splt = kstr.split(key, "+")
             if not array('shift', 'ctrl', 'alt', 'cmd'):has(splt[#splt]) then 
-                return print("editor.onKey? |" .. tostring(key) .. "|", event)
+                return print("editor.onKey? |" .. tostring(key) .. "| " .. tostring(event.char) .. " " .. tostring(valid(event.char)) .. "", event)
             end
         end
     end

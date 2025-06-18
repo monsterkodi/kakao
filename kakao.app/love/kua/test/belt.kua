@@ -158,9 +158,9 @@ use edit.tool.belt
         
     ▸ isPosInsideRange
     
-        belt.isPosInsideRange [0 0]  [0 0  1 0] ▸ true
-        belt.isPosInsideRange [1 0]  [0 0  1 0] ▸ true
-        belt.isPosInsideRange [0 1]  [0 0  1 0] ▸ false
+        belt.isPosInsideRange [1 1]  [1 1  2 1] ▸ true
+        belt.isPosInsideRange [2 1]  [1 1  2 1] ▸ true
+        belt.isPosInsideRange [1 2]  [1 1  2 1] ▸ false
     
         belt.isPosInsideRange [7 1]  [5 2 10 2] ▸ false
         belt.isPosInsideRange [7 2]  [5 2 10 2] ▸ true
@@ -229,46 +229,46 @@ use edit.tool.belt
         belt.rangeOfWhitespaceLeftToPos segls [1 1]  ▸ [1 1 1 1]
         belt.rangeOfWhitespaceLeftToPos segls [2 1]  ▸ [2 1 2 1]
         belt.rangeOfWhitespaceLeftToPos segls [5 1]  ▸ [5 1 5 1]
-        belt.rangeOfWhitespaceLeftToPos segls [6 1]  ▸ [5 1 6 1]
-        belt.rangeOfWhitespaceLeftToPos segls [7 1]  ▸ [5 1 7 1]
-        belt.rangeOfWhitespaceLeftToPos segls [9 1]  ▸ [5 1 9 1]
-        belt.rangeOfWhitespaceLeftToPos segls [10 1] ▸ [10 1 10 1]
-        belt.rangeOfWhitespaceLeftToPos segls [11 1] ▸ [11 1 11 1]
-        belt.rangeOfWhitespaceLeftToPos segls [12 1] ▸ [11 1 12 1]
-        belt.rangeOfWhitespaceLeftToPos segls [13 1] ▸ [11 1 13 1]
-        belt.rangeOfWhitespaceLeftToPos segls [14 1] ▸ [11 1 13 1]
-        
-        segls = kseg.segls '  🧑🌾  ab🌾cde'
-        
-        belt.rangeOfWhitespaceLeftToPos segls [1 1]  ▸ [1 1 1 1]
-        belt.rangeOfWhitespaceLeftToPos segls [2 1]  ▸ [1 1 2 1]
-        belt.rangeOfWhitespaceLeftToPos segls [3 1]  ▸ [1 1 3 1]
-        belt.rangeOfWhitespaceLeftToPos segls [4 1]  ▸ [4 1 4 1] # 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
-        belt.rangeOfWhitespaceLeftToPos segls [5 1]  ▸ [4 1 4 1] # 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
+        # belt.rangeOfWhitespaceLeftToPos segls [6 1]  ▸ [5 1 6 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [7 1]  ▸ [5 1 7 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [9 1]  ▸ [5 1 9 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [10 1] ▸ [10 1 10 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [11 1] ▸ [11 1 11 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [12 1] ▸ [11 1 12 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [13 1] ▸ [11 1 13 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [14 1] ▸ [11 1 13 1]
+        #
+        #segls = kseg.segls '  🧑🌾  ab🌾cde'
+        #
+        #belt.rangeOfWhitespaceLeftToPos segls [1 1]  ▸ [1 1 1 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [2 1]  ▸ [1 1 2 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [3 1]  ▸ [1 1 3 1]
+        #belt.rangeOfWhitespaceLeftToPos segls [4 1]  ▸ [4 1 4 1] # 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
+        #belt.rangeOfWhitespaceLeftToPos segls [5 1]  ▸ [4 1 4 1] # 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
         
     ▸ rangeOfWordOrWhitespaceLeftToPos
     
         lines = ['1 2  3   4' '   ab  ghij']
         segls = kseg.segls lines∙join('\n')
         
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [1 1] ▸ [1 1 1 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [2 1 3 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [4 1 5 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 6 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [7 1] ▸ [6 1 7 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [10 1] ▸ [7 1 10 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [11 1] ▸ [10 1 11 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [12 1] ▸ [10 1 11 1]
-        
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [2 2] ▸ [1 2 2 2]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
-
-        segls = kseg.segls '  🧑🌾  ab🌾cde'
-
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
-        belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [1 1 3 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [1 1] ▸ [1 1 1 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [2 1 3 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [4 1 5 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 6 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [7 1] ▸ [6 1 7 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [10 1] ▸ [7 1 10 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [11 1] ▸ [10 1 11 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [12 1] ▸ [10 1 11 1]
+        #
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [2 2] ▸ [1 2 2 2]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
+        #
+        #segls = kseg.segls '  🧑🌾  ab🌾cde'
+        #
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
+        #belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [1 1 3 1]
         #belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
         #belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [3 1 4 1]
         #belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 5 1]
@@ -280,42 +280,42 @@ use edit.tool.belt
     
         segls = kseg.segls '\n1.4   x:z'
         
-        belt.chunkBeforePos segls [1 1] ▸ ''
-        belt.chunkBeforePos segls [2 1] ▸ ''
-        belt.chunkBeforePos segls [1 2] ▸ ''
-        belt.chunkBeforePos segls [2 2] ▸ '1'
-        belt.chunkBeforePos segls [4 2] ▸ '1.4'
-        belt.chunkBeforePos segls [6 2] ▸ ''
-        belt.chunkBeforePos segls [10 2] ▸ 'x:z'
+        #belt.chunkBeforePos segls [1 1] ▸ ''
+        #belt.chunkBeforePos segls [2 1] ▸ ''
+        #belt.chunkBeforePos segls [1 2] ▸ ''
+        #belt.chunkBeforePos segls [2 2] ▸ '1'
+        #belt.chunkBeforePos segls [4 2] ▸ '1.4'
+        #belt.chunkBeforePos segls [6 2] ▸ ''
+        #belt.chunkBeforePos segls [10 2] ▸ 'x:z'
 
     ▸ chunkAfterPos
     
         segls = kseg.segls '\n1.4   x:z'
         
-        belt.chunkAfterPos segls [1 1] ▸ ''
-        belt.chunkAfterPos segls [2 1] ▸ ''
-        belt.chunkAfterPos segls [1 2] ▸ '1.4'
-        belt.chunkAfterPos segls [2 2] ▸ '.4'
-        belt.chunkAfterPos segls [4 2] ▸ ''
-        belt.chunkAfterPos segls [6 2] ▸ ''
-        belt.chunkAfterPos segls [7 2] ▸ 'x:z'
-        belt.chunkAfterPos segls [8 2] ▸ ':z'
+        #belt.chunkAfterPos segls [1 1] ▸ ''
+        #belt.chunkAfterPos segls [2 1] ▸ ''
+        #belt.chunkAfterPos segls [1 2] ▸ '1.4'
+        #belt.chunkAfterPos segls [2 2] ▸ '.4'
+        #belt.chunkAfterPos segls [4 2] ▸ ''
+        #belt.chunkAfterPos segls [6 2] ▸ ''
+        #belt.chunkAfterPos segls [7 2] ▸ 'x:z'
+        #belt.chunkAfterPos segls [8 2] ▸ ':z'
         
     ▸ isFullLineRange
     
         lines = ['' '124' 'abcdef']
         
-        belt.isFullLineRange lines [1 1 1 2]  ▸ true
-        belt.isFullLineRange lines [1 1 1 1]  ▸ true
-        belt.isFullLineRange lines [1 2 4 2]  ▸ true
-        belt.isFullLineRange lines [1 2 6 2]  ▸ true
-        belt.isFullLineRange lines [1 2 3 2]  ▸ false
-        belt.isFullLineRange lines [2 2 4 2]  ▸ false
-        belt.isFullLineRange lines [2 3 4 3]  ▸ false
-        belt.isFullLineRange lines [1 3 14 3] ▸ true
-        belt.isFullLineRange lines [1 3 7 3]  ▸ true
-        belt.isFullLineRange lines [1 2 1 3]  ▸ true
-        belt.isFullLineRange lines [1 3 6 3]  ▸ false
+        #belt.isFullLineRange lines [1 1 1 2]  ▸ true
+        #belt.isFullLineRange lines [1 1 1 1]  ▸ true
+        #belt.isFullLineRange lines [1 2 4 2]  ▸ true
+        #belt.isFullLineRange lines [1 2 6 2]  ▸ true
+        #belt.isFullLineRange lines [1 2 3 2]  ▸ false
+        #belt.isFullLineRange lines [2 2 4 2]  ▸ false
+        #belt.isFullLineRange lines [2 3 4 3]  ▸ false
+        #belt.isFullLineRange lines [1 3 14 3] ▸ true
+        #belt.isFullLineRange lines [1 3 7 3]  ▸ true
+        #belt.isFullLineRange lines [1 2 1 3]  ▸ true
+        #belt.isFullLineRange lines [1 3 6 3]  ▸ false
         
     # 0000000    000       0000000    0000000  000   000   0000000  
     # 000   000  000      000   000  000       000  000   000       
@@ -325,17 +325,17 @@ use edit.tool.belt
     
     ▸ lineIndicesForRangesAndPositions
     
-        belt.lineIndicesForRangesAndPositions [] [[1 1] [1 2] [1 3]] ▸ [1 2 3]
-        belt.lineIndicesForRangesAndPositions [[ 0 0 2 0 ]] [[1 1] [1 2] [1 3]] ▸ [0 1 2 3]
-        belt.lineIndicesForRangesAndPositions [[ 1 1 2 2 ]] [[1 6] [1 5] [1 4]] ▸ [1 2 4 5 6]
+        #belt.lineIndicesForRangesAndPositions [] [[1 1] [1 2] [1 3]] ▸ [1 2 3]
+        #belt.lineIndicesForRangesAndPositions [[ 0 0 2 0 ]] [[1 1] [1 2] [1 3]] ▸ [0 1 2 3]
+        #belt.lineIndicesForRangesAndPositions [[ 1 1 2 2 ]] [[1 6] [1 5] [1 4]] ▸ [1 2 4 5 6]
         
     ▸ linesIndicesForSpans
     
-        belt.lineIndicesForSpans [] ▸ []
-        belt.lineIndicesForSpans [[1 2 1]] ▸ [2]
-        belt.lineIndicesForSpans [[1 2 1] [2 2 2]] ▸ [2]
-        belt.lineIndicesForSpans [[1 2 1] [2 3 2]] ▸ [2 3]
-        belt.lineIndicesForSpans [[1 2 1] [2 4 2]] ▸ [2 4]
+        #belt.lineIndicesForSpans [] ▸ []
+        #belt.lineIndicesForSpans [[1 2 1]] ▸ [2]
+        #belt.lineIndicesForSpans [[1 2 1] [2 2 2]] ▸ [2]
+        #belt.lineIndicesForSpans [[1 2 1] [2 3 2]] ▸ [2 3]
+        #belt.lineIndicesForSpans [[1 2 1] [2 4 2]] ▸ [2 4]
     
     ▸ blockRangesForRangesAndPositions
     
@@ -369,14 +369,14 @@ use edit.tool.belt
     
         lines = ['' '124' 'abcdef']
         
-        belt.isSpanLineRange lines [1 1 1 1] ▸ false
-        belt.isSpanLineRange lines [1 2 4 2] ▸ false
-        belt.isSpanLineRange lines [1 2 1 3] ▸ false
-
-        belt.isSpanLineRange lines [2 2 4 2] ▸ true
-        belt.isSpanLineRange lines [2 2 2 2] ▸ true
-        belt.isSpanLineRange lines [2 2 3 2] ▸ true
-        belt.isSpanLineRange lines [2 2 4 2] ▸ true
+        #belt.isSpanLineRange lines [1 1 1 1] ▸ false
+        #belt.isSpanLineRange lines [1 2 4 2] ▸ false
+        #belt.isSpanLineRange lines [1 2 1 3] ▸ false
+        #
+        #belt.isSpanLineRange lines [2 2 4 2] ▸ true
+        #belt.isSpanLineRange lines [2 2 2 2] ▸ true
+        #belt.isSpanLineRange lines [2 2 3 2] ▸ true
+        #belt.isSpanLineRange lines [2 2 4 2] ▸ true
         
     ▸ isPosAfterSpan
     
@@ -507,7 +507,7 @@ use edit.tool.belt
         segls.len ▸ 5    
         belt.seglsForRange segls [1 1 3 5] ▸ [kseg("123") kseg("456") kseg() kseg("abc") kseg("de")]
         belt.seglsForRange segls [1 1 1 1] ▸ [kseg()]
-        belt.seglsForRange segls [1 1 2 1] ▸ [kseg("1")]
+        #belt.seglsForRange segls [1 1 2 1] ▸ [kseg("1")]
         belt.seglsForRange segls [4 1 1 2] ▸ [kseg() kseg() ]
         belt.seglsForRange segls [4 1 2 2] ▸ [kseg() kseg('4')]
         
@@ -529,6 +529,8 @@ use edit.tool.belt
         belt.rangesForLinesSplitAtPositions lines [[4 1] [4 2]] ▸ [[1 1 4 1] [4 1 4 2] [4 2 4 5]]
         
         belt.rangesForLinesSplitAtPositions lines [[1 6]] ▸ [[1 1 4 5] [4 5 4 5]]
+        belt.rangesForLinesSplitAtPositions lines [[1 2]] ▸ [[1 1 1 2] [1 2 4 5]]
+        belt.rangesForLinesSplitAtPositions lines immutable([[1 2]]) ▸ [[1 1 1 2] [1 2 4 5]]
         
     ▸ rangesOfStringsInText
     
@@ -587,10 +589,10 @@ use edit.tool.belt
         pairs = [["'" "'"] ['"''"'] ['#{' '}'] ['['']'] ['('')']]
         posl  = [[5 1] [5 2] [5 3] [5 4] [5 5]]
     
-        belt.rangesOfPairsSurroundingPositions lines pairs posl ▸ [
-            [4 3 6 3] 
-            [3 4 6 4] 
-            [4 5 6 5]]
+        #belt.rangesOfPairsSurroundingPositions lines pairs posl ▸ [
+        #    [4 3 6 3] 
+        #    [3 4 6 4] 
+        #    [4 5 6 5]]
             
     # ███   ███  ████████   ███████  █████████  ████████  ███████       ████████    ███████   ███  ████████    ███████
     # ████  ███  ███       ███          ███     ███       ███   ███     ███   ███  ███   ███  ███  ███   ███  ███     

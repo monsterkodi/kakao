@@ -32,7 +32,7 @@ class belt
 
     @pos: x y -> 
         if x is array and y == nil 
-            ⮐  (x[1], x[2])
+            ⮐  (x[1] x[2])
         (x y)
     
     @samePos: a b -> a[1] == b[1] and a[2] == b[2]
@@ -40,7 +40,7 @@ class belt
     @normalizePositions: posl maxY=Infinity ->
         
         ⮐  [] if empty(posl)
-        posl = posl∙map((a) -> [max(1 a[1]) clamp(1 maxY a[2])])
+        posl = array.map(posl, (a) -> [max(1 a[1]) clamp(1 maxY a[2])])
         posl = @sortPositions posl
         posl = @removeDuplicatePositions posl
         posl
@@ -52,9 +52,9 @@ class belt
         
     @removeDuplicatePositions: posl ->
         
-        ⮐  posl if empty(posl) or posl.len <= 1
+        ⮐  posl if empty(posl) or posl∙len() <= 1
         
-        for i in posl.len..2
+        for i in posl∙len()..2
             if @samePos posl[i] posl[i-1]
                 posl∙splice i 1
         posl
@@ -316,14 +316,15 @@ class belt
     @rangesForLinesSplitAtPositions: lines posl ->
         
         ⮐  [] if empty posl
-        if posl[1][2] > lines.len
-            ⮐  [[1 1 kseg.width(lines[^1])+1 lines.len] [kseg.width(lines[^1])+1 lines.len kseg.width(lines[^1])+1 lines.len]] 
+        lend = kseg.width(lines[lines∙len()])+1
+        if posl[1][2] > lines∙len()
+            ⮐  [[1 1 lend lines∙len()] [lend lines∙len() lend lines∙len()]] 
         rngs = [[1 1 posl[1][1] posl[1][2]]]
-        for idx pos in ipairs posl
+        for pos idx in array.each posl
             if idx > 1
                 rngs∙push [posl[idx-1][1] posl[idx-1][2] pos[1] pos[2]]
-            if idx == posl.len
-                rngs∙push [pos[1] pos[2] kseg.width(lines[^1])+1 lines.len]
+            if idx == posl∙len()
+                rngs∙push [pos[1] pos[2] lend lines∙len()]
         rngs
 
     @rangeInRangesContainingPos: rngs pos ->
@@ -406,7 +407,7 @@ class belt
         for index ii in indices
             block[3] = index
             if indices[ii+1] != index+1
-                block[2] = lines[index].len 
+                block[2] = lines[index]∙len()
                 blocks∙push block
                 block = [1 indices[ii+1] 0 0]
         blocks
@@ -426,7 +427,7 @@ class belt
         mrgd = []
         tail = nil
         for i s in ipairs rngs
-            if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]].len)
+            if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]]∙len())
                     mrgd∙push s
                     tail = s
             else if s[4] > tail[4] or s[4] == tail[4] and s[3] > tail[3]

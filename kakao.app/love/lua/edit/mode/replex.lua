@@ -36,7 +36,7 @@ function replex:postInsert()
             end
         end
         
-        if (#repls == #self.state.s.cursors) then 
+        if (#repls == self.state.s.cursors:len()) then 
             self.state:delete('back')
             self.state:delete('back')
             return self.state:insert(repls:join('\n'))

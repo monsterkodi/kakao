@@ -37,11 +37,19 @@ line 2
 line 3
 ]]
     
-    s.syntax.ext = 'kode'
-    -- s∙loadLines belt.linesForText(text)
-    s:loadSegls(belt.seglsForText(text))
-    
-    txt(text)
+    --s.syntax.ext = 'kode'
+    --    
+    --s∙loadSegls belt.seglsForText(text)
+    --    
+    --txt text
+    --    
+    --belt.seglsForText(text) ▸ belt.seglsForText(text) 
+    --belt.linesForText(text) ▸ ["line 1" "line 2" "line 3" ""]
+    --kseg.segls(belt.linesForText(text)) ▸ belt.seglsForText(text) 
+    --    
+    --s∙loadLines belt.linesForText(text)
+    -- 
+    --txt text
     
     -- 00000000  0000000    000  000000000  000  000   000   0000000   
     -- 000       000   000  000     000     000  0000  000  000        
@@ -49,26 +57,31 @@ line 3
     -- 000       000   000  000     000     000  000  0000  000   000  
     -- 00000000  0000000    000     000     000  000   000   0000000   
     
-    -- ▸ editing
-    
-    
-        -- s∙setMainCursor 1 1
+    test("editing", function()
+        s:loadSegls(belt.seglsForText(text))
         
-        -- cur 1 1
+        txt(text)
         
-        -- s∙insert 'x'
+        s:setMainCursor(2, 2)
         
-        --cur 2 1
-        --txt """
-        --    line 1
-        --    lxine 2
-        --    line 3
-        --    """    
-        --    
-        --s∙delete 'back'
+        cur(2, 2)
+        
+        s:insert('x')
+        
+        txt([[
+line 1
+lxine 2
+line 3
+]])
+        
+        cur(3, 2)
+        
+        -- s∙delete 'back'
         --        
         --cur 1 1
         --txt text
+        -- 1 ▸ 2
+    end)
     
     -- 00     00   0000000   000   000  00000000        000      000  000   000  00000000   0000000  
     -- 000   000  000   000  000   000  000             000      000  0000  000  000       000       
@@ -79,8 +92,8 @@ line 3
     -- ▸ move lines
     
     
-        --s∙moveSelectionOrCursorLines 'up'
-        --cur 1 1
+        -- s∙moveSelectionOrCursorLines 'up'
+        -- cur 1 1
         --txt """
         --    line 2
         --    line 1
@@ -97,10 +110,8 @@ line 3
     -- 000 0 000  000   000  000         000     000  000        000      000       
     -- 000   000   0000000   0000000     000     000  000        0000000  00000000  
     
-    -- ▸ multiple
-    
-    
-        -- s∙expandCursors   'up'
+    test("multiple", function()
+        s:expandCursors('up')
         
         -- mul [1 1] [1 2]
         
@@ -151,6 +162,7 @@ line 3
         --    
         --    3
         --    """    
+    end)
     
     -- 000   000  000   000  000   0000000   0000000   0000000    00000000  
     -- 000   000  0000  000  000  000       000   000  000   000  000       
@@ -278,11 +290,11 @@ line 3
     -- 00000000  000   000  000           000        000     
     
     test("empty", function()
-        s.syntax.ext = 'kode'
-        s:loadLines(belt.linesForText(''))
-        
-        txt('')
-        cur(1, 1)
+        -- s.syntax.ext = 'kode'
+        -- s∙loadLines belt.linesForText('')
+        -- 
+        -- txt ''
+        -- cur 1 1
         
         --s∙insert '\n'
         --        
@@ -299,41 +311,41 @@ line 3
     -- 0000000    00000000  0000000  00000000     000     00000000        0000000    000   000   0000000  000   000  
     
     test("delete back", function()
-        s.syntax.ext = 'kode'
-        s:loadLines(belt.linesForText("1234567890"))
-        
-        s:setMainCursor(1, 1)
-        s:delete('back')
-        txt("1234567890")
-        mul(array(1, 1))
-        
-        s:setMainCursor(2, 1)
-        s:delete('back')
-        txt("234567890")
-        mul(array(1, 1))
-        
-        s:setMainCursor(5, 1)
-        s:delete('back')
-        txt("23467890")
-        mul(array(4, 1))
-        
-        s:delete('back')
-        txt("2367890")
-        mul(array(3, 1))
-        
-        text = [[
-xxxx            1
-xxxx         .  2
-xxxx    .       3
-]]
-        
-        s:loadLines(belt.linesForText(text))
-        
-        s:setMainCursor(17, 1)
-        s:expandCursors('down')
-        s:expandCursors('down')
-        
-        mul(array(17, 1), array(17, 2), array(17, 3))
+        --s.syntax.ext = 'kode'
+        --s∙loadLines belt.linesForText("1234567890")
+        --        
+        --s∙setMainCursor 1 1 
+        --s∙delete 'back'
+        --txt "1234567890"
+        --mul [1 1]
+        --        
+        --s∙setMainCursor 2 1 
+        --s∙delete 'back'
+        --txt "234567890"
+        --mul [1 1]
+        --        
+        --s∙setMainCursor 5 1 
+        --s∙delete 'back'
+        --txt "23467890"
+        --mul [4 1]
+        --        
+        --s∙delete 'back'
+        --txt "2367890"
+        --mul [3 1]
+        --        
+        --text = """
+        --    xxxx            1
+        --    xxxx         .  2
+        --    xxxx    .       3
+        --    """
+        --        
+        --s∙loadLines belt.linesForText(text)
+        --        
+        --s∙setMainCursor 17 1 
+        --s∙expandCursors 'down'
+        --s∙expandCursors 'down'
+        --        
+        --mul [17 1] [17 2] [17 3]
         
         -- s∙delete 'back'
         -- mul [15 1] [15 2] [15 3]
@@ -469,7 +481,7 @@ line 2
 line 3
 ]]
         
-        s:loadLines(belt.linesForText(text))
+        -- s∙loadLines belt.linesForText(text)            
         -- s∙joinLines()
         
         -- txt """

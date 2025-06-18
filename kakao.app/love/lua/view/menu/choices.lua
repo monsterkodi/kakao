@@ -143,6 +143,8 @@ function choices:drawSelections()
         
         local sel = self.state.s.selections[1]
         
+        if not sel then return end
+        
         local li = sel[2]
         local y = ((li - self.state.s.view[2]) + 1)
         

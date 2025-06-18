@@ -17,11 +17,13 @@ use kxk.kxk
         ia.a                    ▸ 1
         ia.b                    ▸ nil
         ia.class                ▸ immutable
-        ia._data                ▸ {a:1}
+        type(ia.set)            ▸ "function"
         ia∙set "a" 2            ▸ immutable({a:2})
         ia                      ▸ immutable({a:1})
         ab = ia∙set "b" 2
         ab                      ▸ immutable({a:1 b:2})
+        ab.class                ▸ immutable
+        type(ab.set)            ▸ "function"
         ab = ab∙set "a" nil     
         ab                      ▸ immutable({b:2})
         
@@ -93,8 +95,9 @@ use kxk.kxk
         ic.y[3]                 ▸ immutable([5 6])
         
         my = ic.y∙mod()
+        write "my #{my is array} #{my.len}" array.str(my)
         my[2] = [9 9]
-        
+        write "my #{my is array} #{my.len}" array.str(my)
         id = ic∙set "y" my
         id                      ▸ immutable({c:c1 x:c2 y:[[1 2] [9 9] [5 6]]})
         
@@ -109,35 +112,50 @@ use kxk.kxk
         ia[2] ▸ "i"
         table.concat ia∙mut() "" ▸ "line 1"
         
+        ia∙len() ▸ 6
+        
         segls = {{"l" "i" "n" "e" " " "1"} {"l" "i" "n" "e" " " "2"}}
         ia = immutable({segls:segls})
         ia.segls[1] ▸ immutable(kseg("line 1"))
         ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
         ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
         
-        segls = [["l" "i" "n" "e" " " "1"] ["l" "i" "n" "e" " " "2"]]
+        segls = [["l" "i" "n" "e" " " "3"] ["l" "i" "n" "e" " " "4"]]
         ia = immutable({segls:segls})
-        ia.segls[1] ▸ immutable(kseg("line 1"))
-        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
-        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
+        ia.segls[1] ▸ immutable(kseg("line 3"))
+        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "3"])
+        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "3"})
 
-        segls = kseg.segls "line 1\nline 2\nline 3"
+        segls = kseg.segls "line 5\nline 6\nline 7"
         ia = immutable({segls:segls})
-        ia.segls[1] ▸ immutable(kseg("line 1"))
-        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
-        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
+        ia.segls[1] ▸ immutable(kseg("line 5"))
+        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "5"])
+        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "5"})
+        
+    ▸ slice
+    
+        arr = immutable({1 2 3})
+        arr∙slice 1 2 ▸ [1 2]
+        arr∙slice 1 3 ▸ [1 2 3]
+        arr ▸ immutable({1 2 3})
+
+        arr = immutable([1 2 3])
+        arr∙slice 1 2 ▸ [1 2]
+        arr∙slice 1 3 ▸ [1 2 3]
+        arr ▸ immutable({1 2 3})
         
     ▸ bypassing immutability
         
         arr = immutable({1,2,3})
         arr.len                 ▸ 0
-        arr                     ▸ immutable({1,2,3})
+        arr∙len()               ▸ 3
+        arr                     ▸ immutable({1 2 3})
         arr[1]                  ▸ 1
         arr[2]                  ▸ 2
         arr[3]                  ▸ 3
         arr[4]                  ▸ nil
         
-        success = pcall(-> table.insert(arr, 4))
+        success = pcall(-> table.insert(arr 4))
         success                 ▸ true
         arr.len                 ▸ 1
         arr[1]                  ▸ 4
@@ -145,7 +163,7 @@ use kxk.kxk
         arr[3]                  ▸ 3
         arr[4]                  ▸ nil
 
-        success = pcall(-> table.insert(arr, 5))
+        success = pcall(-> table.insert(arr 5))
         success                 ▸ true
         arr.len                 ▸ 2
         arr[1]                  ▸ 4
@@ -154,6 +172,6 @@ use kxk.kxk
         arr[4]                  ▸ nil
         
         ia = immutable({a:1})
-        success = pcall(-> ia._data = {})
+        success = pcall(-> ia.__data = {})
         success                 ▸ true
         

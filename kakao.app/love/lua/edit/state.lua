@@ -80,7 +80,7 @@ function state:handleKey(key, event)
         elseif (key == 'home') then return self:singleCursorAtIndentOrStartOfLine()
         elseif (key == 'end') then return self:singleCursorAtEndOfLine()
         elseif (key == 'ctrl+h') then return self:setMainCursor(1, 1)
-        elseif (key == 'ctrl+j') then return self:setMainCursor(#self.s.lines[(#self.s.lines - 1)], (#self.s.lines - 1))
+        elseif (key == 'ctrl+j') then return self:setMainCursor(self.s.lines[(self.s.lines:len() - 1)]:len(), (self.s.lines:len() - 1))
         elseif (key == 'alt+d') then return self:delete('next', true)
         elseif (key == 'shift+ctrl+k') or (key == 'entf') then return self:delete('next')
         elseif (key == 'ctrl+k') then return self:delete('eol')
@@ -197,7 +197,7 @@ function state:setCursors(cursors, opt)
             -- mainCursor = copy cursors[clamp 0 cursors.len-1 main]
         end
         
-        cursors = belt.normalizePositions(cursors, #self.s.lines)
+        cursors = belt.normalizePositions(cursors, self.s.lines:len())
         self.s = self.s:set('cursors', cursors)
         
         main = -1
@@ -209,7 +209,7 @@ function state:setCursors(cursors, opt)
         end
         
         if (main < 1) then main = self.s.main end
-        main = clamp(1, #self.s.cursors, main)
+        main = clamp(1, self.s.cursors:len(), main)
         
         self.s = self.s:set('main', main)
         
@@ -225,7 +225,7 @@ function state:setCursors(cursors, opt)
 
 
 function state:textOfSelectionOrWordAtCursor() 
-        if #self.s.selections then 
+        if self.s.selections:len() then 
             return self:textOfSelection()
         else 
             return self:wordAtCursor()
@@ -241,9 +241,9 @@ function state:textOfSelectionOrWordAtCursor()
 
 function state:setLines(lines) 
         if empty(lines) then lines = array('') end
-        write("\x1b[0m\x1b[33m", "state.setLines ", "\x1b[0m\x1b[36m", " ", (lines.class or "nil"), "\x1b[0m\x1b[34m", " ", #lines, "\x1b[0m\x1b[35m", " lines ", array.str(lines))
+        -- write ◌y "state.setLines lines " ◌c " " (lines.class or "nil")  ◌b " " lines.len or lines∙len() ◌m " lines " array.str(lines)
         local segls = kseg.segls(lines)
-        write("\x1b[0m\x1b[33m", "state.setLines ", "\x1b[0m\x1b[35m", segls)
+        -- write ◌y "state.setLines segls " ◌m segls
         return self:setSegls(segls)
     end
 
@@ -279,9 +279,10 @@ function state:loadSegls(segls)
         return self:setSegls(segls)
     end
 
+-- clearSingle: -> @clearSegls [[]]
 
 function state:clearSingle() 
-    return self:clearSegls(array(array()))
+    return self:clearSegls(kseg.segls(""))
     end
 
 function state:clearEmpty() 
@@ -338,7 +339,7 @@ function state:changeLinesSegls()
          -- oldLines = @s.lines
          
          -- write "--- changeLinesSegls #{@s.class} #{@s}"
-         -- write "--> changeLinesSegls #{@segls} #{@segls.class} #{@segls.len} #{@segls[1].len} #{@segls[1].class}"
+         write("\x1b[0m\x1b[35m", "--> ", self.segls)
          
          self.s = self.s:set('lines', self.segls)
          
@@ -364,7 +365,7 @@ function state:clearLines()
 
 
 function state:isValidLineIndex(li) 
-    return ((1 <= li) and (li <= #self.s.lines))
+    return ((1 <= li) and (li <= self.s.lines:len()))
     end
 
 function state:isInvalidLineIndex(li) 
@@ -432,7 +433,7 @@ function state:hasRedo()
 
 
 function state:gutterWidth() 
-    return max(4, (2 + ceil(math.log10((#self.s.lines + 1)))))
+    return max(4, (2 + ceil(math.log10((self.s.lines:len() + 1)))))
     end
 
 --  0000000  000   000  000000000
@@ -525,7 +526,7 @@ function state:scrollView(dir, steps)
         view[1] = view[1] + sx
         view[2] = view[2] + sy
         
-        view[2] = clamp(1, math.max(1, (#self.s.lines - self.cells.rows)), view[2])
+        view[2] = clamp(1, math.max(1, (self.s.lines:len() - self.cells.rows)), view[2])
         
         local maxOffsetX = math.max(1, ((self.maxLineWidth - self.cells.cols) + 2))
         maxOffsetX = math.max(maxOffsetX, ((self:mainCursor()[1] - self.cells.cols) + 2))
@@ -587,7 +588,7 @@ function state:adjustViewForMainCursor(opt)
             end
         end
         
-        if ((view[2] > 1) and (#self.s.lines <= self.cells.rows)) then 
+        if ((view[2] > 1) and (self.s.lines:len() <= self.cells.rows)) then 
             view[2] = 1
         end
         
@@ -604,7 +605,7 @@ function state:adjustViewForMainCursor(opt)
 function state:initView() 
         local view = self.s.view:mut()
         
-        view[2] = clamp(1, math.max(1, (#self.s.lines - self.cells.rows)), view[2])
+        view[2] = clamp(1, math.max(1, (self.s.lines:len() - self.cells.rows)), view[2])
         view[1] = math.max(1, (view[1] or 1))
         
         return self:setView(view)
@@ -626,14 +627,14 @@ function state:rangeForVisibleLines()
 
 function state:setMain(m) 
         local mc = self:mainCursor()
-        self.s = self.s:set('main', clamp(1, #self.s.cursors, m))
+        self.s = self.s:set('main', clamp(1, self.s.cursors:len(), m))
         return self:adjustViewForMainCursor({adjust = 'topBotDeltaGrow', mc = mc})
     end
 
 
 function state:mainCursor() 
-        if ((self.s.main < 1) or (self.s.main > #self.s.cursors)) then 
-            write("\x1b[0m\x1b[31m", "wrong mainCursor! ", "\x1b[0m\x1b[35m", " main ", self.s.main, "\x1b[0m\x1b[34m", " cursors ", #self.s.cursors)
+        if ((self.s.main < 1) or (self.s.main > self.s.cursors:len())) then 
+            write("\x1b[0m\x1b[31m", "wrong mainCursor! ", "\x1b[0m\x1b[35m", " main ", self.s.main, "\x1b[0m\x1b[34m", " cursors ", self.s.cursors:len())
             return array(1, 1)
         end
         
@@ -656,7 +657,7 @@ function state:mainCursor()
 
 function state:setMainCursor(x, y) 
         local x, y = belt.pos(x, y)
-        y = clamp(1, #self.s.lines, y)
+        y = clamp(1, self.s.lines:len(), y)
         x = max(1, x)
         return self:setCursors(array(array(x, y)))
     end
@@ -684,7 +685,7 @@ function state:moveMainCursorInDirection(dir, opt)
 function state:moveMainCursor(x, y) 
         local x, y = belt.pos(x, y)
         
-        y = clamp(1, #self.s.lines, y)
+        y = clamp(1, self.s.lines:len(), y)
         x = max(1, x)
         
         local mainCursor = self:mainCursor()
@@ -897,7 +898,7 @@ function state:moveCursors(dir, opt)
         opt.count = opt.count or 1
         opt.jumpWords = opt.jumpWords or false
         
-        if (#self.s.highlights > 0) then 
+        if (self.s.highlights:len() > 0) then 
             self:deselect()
         end
         
@@ -912,7 +913,7 @@ function state:moveCursors(dir, opt)
             elseif (dir == 'eol') then c[1] = kseg.width(self.s.lines[c[2]])
             elseif (dir == 'bol') then c[1] = 0
             elseif (dir == 'bof') then c[1] = 0 ; c[2] = 0
-            elseif (dir == 'eof') then c[2] = (#self.s.lines - 1) ; c[1] = kseg.width(line)
+            elseif (dir == 'eof') then c[2] = (self.s.lines:len() - 1) ; c[1] = kseg.width(line)
             elseif (dir == 'ind') then c[1] = belt.numIndent(line)
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; c[1] = (function () 
     if (c[1] < ind) then 
@@ -981,7 +982,7 @@ function state:moveCursorsToEndOfLines()
 
 
 function state:isAnyCursorInLine(y) 
-        for i, c in ipairs(self:allCursors()) do 
+        for _, c in ipairs(self.s.cursors) do 
             if (c[2] == y) then return true end
         end
     end
@@ -994,7 +995,7 @@ function state:isAnyCursorInLine(y)
 
 
 function state:chunksBeforeCursors() 
-    return self.s.cursors:map(function (c) 
+    return array.map(self.s.cursors, function (c) 
     return belt.chunkBeforePos(self.s.lines, c)
 end)
     end
@@ -1023,11 +1024,11 @@ function state:select(from, to)
             local from, to = to, from
         end
         
-        to[2] = clamp(0, (#self.s.lines - 1), to[2])
-        from[2] = clamp(0, (#self.s.lines - 1), from[2])
+        to[2] = clamp(0, (self.s.lines:len() - 1), to[2])
+        from[2] = clamp(0, (self.s.lines:len() - 1), from[2])
         
-        to[1] = clamp(0, #self.s.lines[to[2]], to[1])
-        from[1] = clamp(0, #self.s.lines[from[2]], from[1])
+        to[1] = clamp(0, self.s.lines[to[2]]:len(), to[1])
+        from[1] = clamp(0, self.s.lines[from[2]]:len(), from[1])
         
         selections:push(array(from[1], from[2], to[1], to[2]))
         
@@ -1054,7 +1055,7 @@ function state:selectWordAtCursor_highlightSelection_selectAllHighlights()
         -- alt+cmd+d alt+ctrl+d
         if valid(self.s.highlights) then 
             local pos = self:mainCursor()
-            if (#self.s.selections < #self.s.highlights) then 
+            if (self.s.selections:len() < self.s.highlights:len()) then 
                 self:selectAllHighlights()
             else 
                 self:addNextHighlightToSelection()
@@ -1385,8 +1386,8 @@ function state:selectWord(x, y)
 
 function state:selectLine(y) 
         y = y or (self:mainCursor()[2])
-        if ((1 <= y) and (y <= #self.s.lines)) then 
-            self:select(array(1, y), array(#self.s.lines[y], y))
+        if ((1 <= y) and (y <= self.s.lines:len())) then 
+            self:select(array(1, y), array(self.s.lines[y]:len(), y))
         end
         
         return self
@@ -1408,14 +1409,14 @@ function state:selectNextLine(y)
 function state:selectCursorLines() 
         local selections = belt.lineRangesForPositions(self.s.lines, self.s.cursors)
         
-        assert((#selections == #self.s.cursors))
+        assert((selections:len() == self.s.cursors:len()))
         
         return self:setSelections(selections)
     end
 
 
 function state:selectAllLines() 
-        local allsel = array(array(1, 1, kseg.width(self.s.lines[#self.s.lines]), #self.s.lines))
+        local allsel = array(array(1, 1, kseg.width(self.s.lines[self.s.lines:len()]), self.s.lines:len()))
         
         if (allsel == self.s.selections) then 
             return self:deselect()
@@ -1479,7 +1480,7 @@ function state:textOfSelectionOrCursorLines()
 
 
 function state:isSingleLineSelected() 
-        return ((#self.s.selections == 1) and (self.s.selections[1][2] == self.s.selections[1][4]))
+        return ((self.s.selections:len() == 1) and (self.s.selections[1][2] == self.s.selections[1][4]))
     end
 
 
@@ -1564,14 +1565,14 @@ function state:clearHighlights()
 
 
 function state:clearCursors() 
-        if (#self.s.cursors > 1) then 
+        if (self.s.cursors:len() > 1) then 
             return self:setCursors(array(self:mainCursor()))
         end
     end
 
 
 function state:clearCursorsHighlightsAndSelections() 
-        if ((#self.s.cursors > 1) or valid(self.s.selections)) then self:pushState() end
+        if ((self.s.cursors:len() > 1) or valid(self.s.selections)) then self:pushState() end
         self:clearCursors()
         self:clearHighlights()
         return self:deselect()
@@ -1595,9 +1596,9 @@ function state:insert(text)
         local lines, cursors = belt.insertTextAtPositions(self.s.lines, text, self.s.cursors)
         
         self:clearHighlights()
+        
         self:setLines(lines)
         self:setCursors(cursors)
-        
         return mode.postInsert(self)
     end
 

@@ -31,7 +31,7 @@ class replex
                 if repl
                     repls∙push repl
                 
-        if repls.len == @state.s.cursors.len
+        if repls.len == @state.s.cursors∙len()
             @state∙delete 'back'
             @state∙delete 'back'
             @state∙insert repls∙join('\n')

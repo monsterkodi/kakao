@@ -66,8 +66,8 @@ class greet extends view
         
         @header = help.headerCells f
         
-        for y row in ipairs @header
-            for x cell in ipairs row
+        for y row in @header
+            for x cell in row
                 @cells∙set x y cell.char cell.fg cell.bg
         
         @render()

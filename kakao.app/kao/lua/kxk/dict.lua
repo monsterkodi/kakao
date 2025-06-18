@@ -13,8 +13,10 @@ local dict = class("dict")
 
 function dict.static.size(d) 
         local s = 0
-        for _ in pairs(d) do 
-            s = s + 1
+        for k, v in pairs(d) do 
+            if (((k ~= "class") and (type(k) == "string")) and (string.sub(k, 1, 2) ~= "__")) then 
+                s = s + 1
+            end
         end
         
         return s

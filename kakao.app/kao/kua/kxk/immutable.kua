@@ -31,32 +31,43 @@ class immutable
                     else
                         d[i] = v
             else
-                # write ◌r "DICT #{tbl.class} #{tbl}"
                 for k v of tbl
                     if type(v) != "function" and string.sub(k 1 2) != "__" and k != "class"
-                        # write ◌r "KV #{k} #{v}"
                         if type(v) == "table" and v.class != immutable
                             d[k] = immutable(v)
                         else
                             d[k] = v
                     
-        rawset @ "_data" d
+        rawset @ "__data" d
             
     $: -> 
         s = ""
-        for k v of @_data
+        for k v of @__data
             s &= "#{k} #{v}\n"
         s
     
-    __index:    k    -> @_data[k]
-    __pairs:         -> pairs(@_data)
-    __ipairs:        -> ipairs(@_data)
+    __index:    k    -> @__data[k]
+    __pairs:         -> write "PAIRS" ; pairs(@__data)
+    __ipairs:        -> write "IIIIIIIIIPAIRS" ; ipairs(@__data)
     __newindex: k v  -> error("Cannot modify immutable. trying to set #{k} #{v}")
+
+    slice: first last ->
+    
+        s = []
+        ⮐  s if first > @__data.len
+        if last == nil ➜ last = @__data.len
+        else last = min @__data.len last
+        ⮐  s if last < 1 or last < first
+        for i in first...last+1
+            s∙push @__data[i]
+        s
+
+    len: -> @__data.len
 
     mut: ->
         
         mutable = {}
-        for k v of @_data
+        for k v of @__data
             if type(v) == "table" 
                 mutable[k] = v∙mut()
             else
@@ -66,19 +77,19 @@ class immutable
     mod: ->
 
         modifiable = {}
-        for k v of @_data
+        for k v of @__data
             modifiable[k] = v
         modifiable
 
     set: k v ->
-        new_data = @mod()
+        new__data = @mod()
         if type(k) == "table"
             for k v of tbl
-                new_data[k] = v
+                new__data[k] = v
         else
-            new_data[k] = v
+            new__data[k] = v
         # write "SET #{k} #{v}"
-        # write "IMM #{dict.str(new_data)}"
-        immutable new_data
+        # write "IMM #{dict.str(new__data)}"
+        immutable new__data
 
 ⮐  immutable

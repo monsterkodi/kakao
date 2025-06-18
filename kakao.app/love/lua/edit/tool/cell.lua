@@ -45,7 +45,7 @@ function cell.static.matrix(cols, rows, cb)
 
 function cell.static.cellsForLines(lines) 
         local width = belt.widthOfLines(lines)
-        local cells = cell.cells(width, #lines)
+        local cells = cell.cells(width, lines:len())
         
         cell.stampLines(cells, lines)
         

@@ -116,6 +116,8 @@ class choices extends editor
         #     fg = color.darken fg
         
         sel = @state.s.selections[1]
+        
+        ⮐  if not sel
                 
         li = sel[2]
         y  = li-@state.s.view[2]+1

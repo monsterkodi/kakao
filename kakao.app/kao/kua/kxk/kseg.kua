@@ -12,9 +12,8 @@ class kseg extends array
                         for i seg in @codes(s)
                             @push seg
                 "table"
-                    if s.len > 0 or s is strg and s∙len()
-                        for g in s∙each()
-                            @push g
+                    for g in array.each s
+                        @push g
                 ➜ 
                     log ">>?????" type(s)
                     
@@ -23,13 +22,9 @@ class kseg extends array
 
         if any is "string" 
             ⮐  kstr.lines(any)∙map((l) -> ⮐  kseg(l))
-        if any is array
-            ⮐  any∙map((l) -> ⮐  kseg(l))
-        if any is table and any.len > 0
-            write ◌r "DARKFUG?" any
-            ⮐  array.map(any, ((l) -> ⮐  kseg(l)))
-        write ◌y "DARKFUG!" any
-        # error "segls??? #{any}"
+        if any is "table"
+            ⮐  array.map(any, (l) -> ⮐  kseg(l))
+        write "EMPTY"
         []
         
     eql: o ->
@@ -101,9 +96,14 @@ class kseg extends array
     
         if s is "string" ➜ ⮐  s
         if empty s ➜ ⮐  ""
-        if s[1] is kseg
-            ls = s∙map((c)->$c)
-            ⮐  ls∙join("\n")
+        if s.len > 0 or s∙len() > 0
+            ls = array.map(s, (c) -> ⮐  kseg.str(c))
+            if type(s[1]) != "string"
+                # write "JOIN LINES " s.len " " s∙len() " " ls∙len()
+                ⮐  ls∙join("\n")
+            # write "JOIN LINE " s.len " " s∙len() " " ls∙len()
+            ⮐  ls∙join("")
+        # write "PLAIN"
         $s
         
     rpad: l c=' ' ->  
@@ -267,7 +267,7 @@ class kseg extends array
         if s is "string"
             s = kseg s
         w = 0 
-        for seg in s∙each()
+        for seg in array.each s
             w += wcwidth kseg.codepoint(seg)
         w
 

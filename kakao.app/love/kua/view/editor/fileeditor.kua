@@ -352,8 +352,8 @@ class fileeditor extends editor
                 'left'  ➜ x -= 1    
                 'right' ➜ x += 1    
                 
-            y = clamp 0 @state.s.lines.length-1 y
-            x = clamp 0 @state.s.lines[y].length-1 x
+            y = clamp 0 @state.s.lines∙len()-1 y
+            x = clamp 0 @state.s.lines[y]∙len()-1 x
             
             start = [@dragStart[0] @dragStart[1]]
             

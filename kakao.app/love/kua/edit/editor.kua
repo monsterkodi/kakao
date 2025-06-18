@@ -57,9 +57,9 @@ class editor extends draw
     
     layout: x y w h ->
         
-        g = 0
-        m = 0
-        s = 0
+        g  = 0
+        m  = 0
+        s  = 0
         sl = 0
         sr = 0
         
@@ -207,12 +207,15 @@ class editor extends draw
             ⮐  true
         
         if valid event.char
+            log "INSERT #{event.char}"
             @state∙insert event.char
-            @complete∙complete()
+            log "INSERTED #{event.char}"
+            if @complete
+                @complete∙complete()
             ⮐  true
         else
             splt = kstr.split key "+"
             if not ['shift' 'ctrl' 'alt' 'cmd']∙has splt[^1]
-                log "editor.onKey? |#{key}|" event 
+                log "editor.onKey? |#{key}| #{event.char} #{valid(event.char)}" event 
 
 ⮐  editor

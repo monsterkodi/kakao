@@ -378,8 +378,8 @@ function fileeditor:onWheel(event)
             elseif (event.dir == 'right') then x = x + 1
             end
             
-            y = clamp(0, (#self.state.s.lines - 1), y)
-            x = clamp(0, (#self.state.s.lines[y] - 1), x)
+            y = clamp(0, (self.state.s.lines:len() - 1), y)
+            x = clamp(0, (self.state.s.lines[y]:len() - 1), x)
             
             local start = array(self.dragStart[0], self.dragStart[1])
             

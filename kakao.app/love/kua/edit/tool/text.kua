@@ -202,7 +202,7 @@ class text
     
         (indent rest) = belt.splitLineIndent str
         
-        kstr.lpad(int(indent.len*newIndent/oldIndent)) & rest
+        kstr.lpad(int(indent∙len()*newIndent/oldIndent)) & rest
         
     @numIndentOfLines: lines ->
         
@@ -227,7 +227,7 @@ class text
     
     @seglRangeAtPos: segls pos ->
 
-        [1 pos[2] segls[pos[2]].len+1 pos[2]]
+        [1 pos[2] segls[pos[2]]∙len()+1 pos[2]]
         
     @lineRangeAtPos: lines pos ->
 
@@ -235,7 +235,7 @@ class text
 
     @lineRangesForPositions: lines posl append->
         
-        rngs = belt.lineIndicesForPositions(posl)∙map((y) -> if lines[y].len ➜ [0 y lines[y].len y] ➜ [0 y 0 y+1])
+        rngs = belt.lineIndicesForPositions(posl)∙map((y) -> if lines[y]∙len() ➜ [0 y lines[y]∙len() y] ➜ [0 y 0 y+1])
         if valid rngs and append
             rngs[-1][2]  = 0 
             rngs[-1][3] += 1
@@ -246,7 +246,7 @@ class text
         d = rng[4] - rng[2]
         
         if d == 0 
-            if rng[1] == 1 and rng[3] >= lines[rng[2]].len
+            if rng[1] == 1 and rng[3] >= lines[rng[2]]∙len()
                 ⮐  1
             ⮐  0
         
@@ -255,13 +255,13 @@ class text
             n += 1   
         if d > 2    
             n += d-2     
-        if rng[3] == lines[rng[4]].len
+        if rng[3] == lines[rng[4]]∙len()
             n += 1   
         n
         
     @numLinesInRange: rng -> rng[4] - rng[2] + 1
     
-    @isEmptyLineAtPos: lines pos -> lines[pos[2]].len <= 0
+    @isEmptyLineAtPos: lines pos -> lines[pos[2]]∙len() <= 0
         
     @lineRangesInRange: lines rng ->
         
@@ -276,10 +276,10 @@ class text
         if nl == 1
             bos = kseg.segiAtWidth lines[rng[2]] rng[1]
             eos = kseg.segiAtWidth lines[rng[2]] rng[3]
-            ⮐  [lines[rng[2]]∙slice(bos eos-1)]
+            ⮐  [array.slice(lines[rng[2]] bos eos-1)]
         
-        firstLineIndex = min rng[2] lines.len
-        lastLineIndex  = min rng[4] lines.len
+        firstLineIndex = min rng[2] lines∙len()
+        lastLineIndex  = min rng[4] lines∙len()
 
         segi = kseg.segiAtWidth lines[firstLineIndex] rng[1]
         lns = [lines[firstLineIndex]∙slice(segi)]
@@ -335,7 +335,7 @@ class text
             ol = oldLines[oi]
             nl = newLines[ni]
 
-            while oi < oldLines.len
+            while oi < oldLines∙len()
 
                 if not nl # new state has not enough lines, mark remaining lines in oldState as deleted
                     deletes∙push oi
@@ -383,7 +383,7 @@ class text
                         ni += 1
                         nl = newLines[ni]
 
-            while ni < newLines.len
+            while ni < newLines∙len()
 
                 inserts∙push ni
                 ni += 1
@@ -466,17 +466,17 @@ class text
             split += belt.splitLineRange(lines rng includeEmpty)
         split
         
-    @isLinesPosInside:  lines pos -> pos[2] <= lines.len and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
+    @isLinesPosInside:  lines pos -> pos[2] <= lines∙len() and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
     @isLinesPosOutside: lines pos -> not belt.isLinesPosInside lines pos 
     
-    @isValidLineIndex:   lines li -> 1 <= li and li <= lines.len
+    @isValidLineIndex:   lines li -> 1 <= li and li <= lines∙len()
     @isInvalidLineIndex: lines li -> not belt.isValidLineIndex lines li
     
     @isMultiLineRange: lines rng -> rng[2] != rng[4]
         
-    @isFullLineRange: lines rng -> (1 <= rng[2] and rng[2] <= rng[4] and rng[4] <= lines.len) and (rng[1] == 1) and (rng[2] == rng[4] and rng[3] > lines[rng[4]].len or rng[3] == 1 and rng[2] < rng[4])
+    @isFullLineRange: lines rng -> (1 <= rng[2] and rng[2] <= rng[4] and rng[4] <= lines∙len()) and (rng[1] == 1) and (rng[2] == rng[4] and rng[3] > lines[rng[4]]∙len() or rng[3] == 1 and rng[2] < rng[4])
     
-    @isSpanLineRange: lines rng -> (1 <= rng[2] and rng[2] == rng[4] and rng[4] < lines.len) and (rng[1] > 1 or rng[3] < lines[rng[2]].len)
+    @isSpanLineRange: lines rng -> (1 <= rng[2] and rng[2] == rng[4] and rng[4] < lines∙len()) and (rng[1] > 1 or rng[3] < lines[rng[2]]∙len())
         
     @rangeOfLine: lines y -> [1 y kseg.width(lines[y]) y]
     
@@ -501,7 +501,7 @@ class text
         (x y) = unpack pos
         
         ⮐  if belt.isInvalidLineIndex lines y
-        r = kstr.rangeOfClosestChunk lines[y]∙slice(1 x) x
+        r = kstr.rangeOfClosestChunk array.slice(lines[y] 1 x) x
         if r
             if 0 <= r[0] < r[1]
                 ⮐  [r[0] y r[1] y]
@@ -511,7 +511,7 @@ class text
         (x y) = unpack pos
         
         ⮐  if belt.isInvalidLineIndex lines y
-        r = kstr.rangeOfClosestChunk lines[y]∙slice(x) x
+        r = kstr.rangeOfClosestChunk array.slice(lines[y] x) x
         if r
             if 0 <= r[0] < r[1]
                 ⮐  [r[0] y r[1] y]
@@ -530,19 +530,19 @@ class text
         
     @chunkBeforePos: lines pos ->
         
-        before = lines[pos[2]]∙slice(1 pos[1]-1)
+        before = array.slice(lines[pos[2]] 1 pos[1]-1)
         tcc = kseg.tailCountChunk before
         if tcc > 0
-            ⮐  kseg.str before∙slice(before.len-tcc+1)
+            ⮐  kseg.str array.slice(before before∙len()-tcc+1)
         ''    
         
     @chunkAfterPos: lines pos ->
         
-        after = lines[pos[2]]∙slice(pos[1])
+        after = array.slice(lines[pos[2]] pos[1])
         hcc = kseg.headCountChunk after
         if hcc
-            ⮐  kseg.str after∙slice(1 hcc)
-        ''    
+            ⮐  kseg.str array.slice(after 1 hcc)
+        ''
     
     @rangeOfClosestWordToPos: lines pos ->
         
@@ -557,17 +557,17 @@ class text
         
         (x y) = unpack pos
         
-        y = clamp 1 lines.len y
-        x = clamp 1 lines[y].len+1 x
+        y = clamp 1 lines∙len() y
+        x = clamp 1 lines[y]∙len()+1 x
         
         if x <= 1
             ⮐  [x y x y] 
         
-        # segi = kseg.segiAtWidth lines[y] x
-        segi = kseg.indexAtWidth lines[y] x
-        left = lines[y]∙slice 1 segi-1
+        segi = kseg.segiAtWidth lines[y] x
+        # segi = kseg.indexAtWidth lines[y] x
+        left = array.slice(lines[y] 1 segi-1)
         tc = kseg.tailCount left ' '
-        if tc
+        if tc > 0
             ⮐  [max(segi-tc 1) y segi y]
             
         [x y x y]
@@ -579,7 +579,7 @@ class text
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
         segi = kseg.segiAtWidth lines[y] x
-        left = lines[y]∙slice(1 segi-1)
+        left = array.slice(lines[y] 1 segi-1)
         ts = kseg.tailCount left ' '
         if ts > 0
             ⮐  [segi-ts y segi y]
@@ -594,16 +594,16 @@ class text
         (x y) = pos
         
         ⮐  if x < 0 or belt.isInvalidLineIndex lines y
-        r = kstr.rangeOfClosestWord lines[y]∙slice(x) 0
+        r = kstr.rangeOfClosestWord array.slice(lines[y] x) 0
         if r
             if 0 == r[0] and r[0] < r[1]
                 ⮐  [x, y, r[1]+x, y]
             if r[0] > 0 
                 ⮐  [x, y, r[0]+x, y]
             
-        [x y lines[y].len y]   
+        [x y lines[y]∙len() y]   
         
-    @lineChar: line x -> line[x] if 1 <= x and x <= line.len
+    @lineChar: line x -> line[x] if 1 <= x and x <= line∙len()
         
     @categoryForChar: char -> 
         
@@ -632,10 +632,10 @@ class text
         else
             ci = px - 1
             ⮐  0 if ci < 0
-            if ci >= line.len and jump∙find('empty') >= 1 ➜ ⮐  line.len - ci - 1
+            if ci >= line∙len() and jump∙find('empty') >= 1 ➜ ⮐  line∙len() - ci - 1
             cat = belt.categoryForChar belt.lineChar(line ci)
             ⮐  dx if jump∙find(cat) < 1
-            while 1 <= ci and ci <= line.len and belt.categoryForChar(belt.lineChar(line ci)) == cat
+            while 1 <= ci and ci <= line∙len() and belt.categoryForChar(belt.lineChar(line ci)) == cat
                 ci += dx
             min dx ci - px + 1
 

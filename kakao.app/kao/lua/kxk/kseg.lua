@@ -14,10 +14,8 @@ function kseg:init(s)
                         end
                     end
             elseif (type(s) == "table") then 
-                    if ((#s > 0) or (is(s, strg) and s:len())) then 
-                        for g in s:each() do 
-                            self:push(g)
-                        end
+                    for g in array.each(s) do 
+                        self:push(g)
                     end
             else 
                     print(">>?????", type(s))
@@ -38,19 +36,13 @@ function kseg.static.segls(any)
 end)
         end
         
-        if is(any, array) then 
-            return any:map(function (l) 
+        if is(any, "table") then 
+            return array.map(any, function (l) 
     return kseg(l)
 end)
         end
         
-        if (is(any, table) and (#any > 0)) then 
-            write("\x1b[0m\x1b[31m", "DARKFUG?", any)
-            return array.map(any, (function (l) return kseg(l) end))
-        end
-        
-        write("\x1b[0m\x1b[33m", "DARKFUG!", any)
-        -- error "segls??? #{any}"
+        write("EMPTY")
         return array()
     end
 
@@ -142,13 +134,20 @@ function kseg:__tostring()
 function kseg.static.str(s) 
         if is(s, "string") then return s end
         if empty(s) then return "" end
-        if is(s[1], kseg) then 
-            local ls = s:map(function (c) 
-    return tostring(c)
+        if ((#s > 0) or (s:len() > 0)) then 
+            local ls = array.map(s, function (c) 
+    return kseg.str(c)
 end)
-            return ls:join("\n")
+            if (type(s[1]) ~= "string") then 
+                -- write "JOIN LINES " s.len " " s∙len() " " ls∙len()
+                return ls:join("\n")
+            end
+            
+            -- write "JOIN LINE " s.len " " s∙len() " " ls∙len()
+            return ls:join("")
         end
         
+        -- write "PLAIN"
         return tostring(s)
     end
 
@@ -425,7 +424,7 @@ function kseg.static.width(s)
         end
         
         local w = 0
-        for seg in s:each() do 
+        for seg in array.each(s) do 
             w = w + (wcwidth(kseg.codepoint(seg)))
         end
         

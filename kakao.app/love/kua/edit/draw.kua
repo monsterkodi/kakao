@@ -32,17 +32,15 @@ class draw extends view
         
         view   = @state.s.view
         lines  = @state.s.lines
+        # log "draw" @cells.cols, @cells.rows, @state.s.lines
+        
         if @complete
             lines = @complete∙preDrawLines lines 
-        # lines  = mode.preDrawLines @state @state.s.lines
-        
-        # log "draw" @cells.cols, @cells.rows, lines
         
         for row in 1..@cells.rows
             
             y = row+view[2]-1
-            # log "drawRow #{y} #{lines.len}"
-            break if y > lines.len
+            break if y > lines∙len()
             
             @drawLine lines[y] y row
             
@@ -99,14 +97,13 @@ class draw extends view
             
             # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
             
-            if si > line.len
-                # log "#{@name} #{r5 'break!'}"
+            if si > line∙len()
+                write ◌c "#{@name} break!"
                 break 
             
             fg = syntax∙getColor ci y
                 
             ch = syntax∙getChar ci y line[si]
-            
             
             if ch == "#" ➜ checkColor = true
             # elif ch == '0' or ch == '█'
@@ -156,7 +153,7 @@ class draw extends view
     
     drawTrailingRows: ->
         # fill empty rows below last line
-        vl = @state.s.lines.length - @state.s.view[1]
+        vl = @state.s.lines∙len() - @state.s.view[2]
         ⮐  if vl >= @cells.rows 
 
         for row in vl...@cells.rows
@@ -174,15 +171,15 @@ class draw extends view
         ul = @color.highlight.ul
         # bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        (vx vy) = @state.s.view
+        (vx vy) = unpack @state.s.view
         
-        for highlight in @state.s.highlights∙each()
+        for highlight in array.each @state.s.highlights
             
             y = highlight[1]-vy
             
             break if y >= @cells.rows
                 
-            for x in highlight[0]...highlight[2]
+            for x in highlight[1]...highlight[3]
                 hlc = @cells∙get_char x-vx y
                 switch hlc
                     '{' '[' '(' ')' ']' '}' ➜ ulc = @color.highlight.bracket_ul ; bgc = @color.highlight.bracket
@@ -269,7 +266,7 @@ class draw extends view
             x = mc[1]-s.view[1]+1
             y = mc[2]-s.view[2]+1
              
-            if s.cursors.length <= 1
+            if s.cursors∙len() <= 1
                 if @isCursorInEmpty()
                     bg = color.darken bg 0.5
                 elif ' ' == @cells∙get_char(x y)
@@ -293,10 +290,10 @@ class draw extends view
             cx = max(0 linel)+1
             for rng,idx in rngs
                 dta = 4
-                if idx == 0             ➜ @cells.set cx row '' rng.color @color.empty; cx += 1; dta -= 1
-                if idx == rngs.length-1 ➜ dta -= 1
+                if idx == 0          ➜ @cells.set cx row '' rng.color @color.empty; cx += 1; dta -= 1
+                if idx == rngs.len-1 ➜ dta -= 1
                 @cells.bg_rect cx row cx+dta row rng.color; cx += dta
-                if idx == rngs.length-1 ➜ @cells.set cx row '' rng.color @color.empty
+                if idx == rngs.len-1 ➜ @cells.set cx row '' rng.color @color.empty
                     
     drawAsciiHeader: line row clss ->
         
@@ -307,15 +304,15 @@ class draw extends view
         
         chunks = kseg.chunks line
         for chunk in chunks
-            if chunk.segl[0] == '█'
-                x = chunk.index-@state.s.view[0]
+            if chunk.segl[1] == '█'
+                x = chunk.index-@state.s.view[1]
                 ch = '▎'
                 fg = theme.syntax[clss+' highlight']
                 bg = theme.syntax[clss]
                 @cells.set x row ch fg bg
                 
-                if chunk.segl.length > 1
-                    x += chunk.segl.length - 1 
+                if chunk.segl.len > 1
+                    x += chunk.segl.len - 1 
                     ch = '▋'
                     fg = theme.syntax[clss]
                     bg = theme.syntax[clss+' shadow']

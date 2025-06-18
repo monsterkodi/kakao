@@ -55,7 +55,7 @@ function belt.static.normalizePositions(posl, maxY)
         maxY = maxY or Infinity
         
         if empty(posl) then return array() end
-        posl = posl:map(function (a) 
+        posl = array.map(posl, function (a) 
     return array(max(1, a[1]), clamp(1, maxY, a[2]))
 end)
         posl = belt.sortPositions(posl)
@@ -76,9 +76,9 @@ end)
 
 
 function belt.static.removeDuplicatePositions(posl) 
-        if (empty(posl) or (#posl <= 1)) then return posl end
+        if (empty(posl) or (posl:len() <= 1)) then return posl end
         
-        for i in iter(#posl, 2) do 
+        for i in iter(posl:len(), 2) do 
             if belt.samePos(posl[i], posl[(i - 1)]) then 
                 posl:splice(i, 1)
             end
@@ -515,18 +515,19 @@ function belt.static.removeTrailingEmptyRange(rngs)
 
 function belt.static.rangesForLinesSplitAtPositions(lines, posl) 
         if empty(posl) then return array() end
-        if (posl[1][2] > #lines) then 
-            return array(array(1, 1, (kseg.width(lines[#lines]) + 1), #lines), array((kseg.width(lines[#lines]) + 1), #lines, (kseg.width(lines[#lines]) + 1), #lines))
+        local lend = (kseg.width(lines[lines:len()]) + 1)
+        if (posl[1][2] > lines:len()) then 
+            return array(array(1, 1, lend, lines:len()), array(lend, lines:len(), lend, lines:len()))
         end
         
         local rngs = array(array(1, 1, posl[1][1], posl[1][2]))
-        for idx, pos in ipairs(posl) do 
+        for pos, idx in array.each(posl) do 
             if (idx > 1) then 
                 rngs:push(array(posl[(idx - 1)][1], posl[(idx - 1)][2], pos[1], pos[2]))
             end
             
-            if (idx == #posl) then 
-                rngs:push(array(pos[1], pos[2], (kseg.width(lines[#lines]) + 1), #lines))
+            if (idx == posl:len()) then 
+                rngs:push(array(pos[1], pos[2], lend, lines:len()))
             end
         end
         
@@ -633,7 +634,7 @@ function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl)
         for index, ii in ipairs(indices) do 
             block[3] = index
             if (indices[(ii + 1)] ~= (index + 1)) then 
-                block[2] = #lines[index]
+                block[2] = lines[index]:len()
                 blocks:push(block)
                 block = array(1, indices[(ii + 1)], 0, 0)
             end
@@ -657,7 +658,7 @@ function belt.static.mergeLineRanges(lines, rngs)
         local mrgd = array()
         local tail = nil
         for i, s in ipairs(rngs) do 
-            if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < #lines[tail[4]])))) then 
+            if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < lines[tail[4]]:len())))) then 
                     mrgd:push(s)
                     tail = s
             else if ((s[4] > tail[4]) or ((s[4] == tail[4]) and (s[3] > tail[3]))) then 
