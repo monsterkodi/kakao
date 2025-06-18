@@ -59,18 +59,18 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                     line = line + (kstr.split(kstr.lpad(((x - 1) - #line)), ''))
                 end
                 
-                if (#txtls > 1) then 
-                    if ((#posl > 1) and (text ~= '\n')) then 
-                        local insertLineIndex = (((idx - 2) % #txtls) + 1)
+                if (txtls:len() > 1) then 
+                    if ((posl:len() > 1) and (text ~= '\n')) then 
+                        local insertLineIndex = (((idx - 2) % txtls:len()) + 1)
                         before:push((line + txtls[insertLineIndex]))
-                        newpl:push(array(kseg.width(before[#before]), ((newls:len() + before:len()) - 1)))
+                        newpl:push(array(kseg.width(before[before:len()]), ((newls:len() + before:len()) - 1)))
                         before:push((before:pop() + after:shift()))
                     else 
                         local posLineIndent = belt.numIndent(line)
                         local indent = kseg(kstr.lpad(posLineIndent))
                         before:push((line + txtls[1]))
                         
-                        for lidx, insl in txtls:slice(2):each() do 
+                        for insl, lidx in txtls:slice(2):each() do 
                             if ((#insl > 0) or (text == '\n')) then 
                                 -- write "PUSH |#{insl}|"
                                 before:push((indent + insl))
@@ -78,7 +78,7 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                         end
                         
                         if ((x - 1) > posLineIndent) then 
-                            newpl:push(array(kseg.width(before[#before]), ((newls:len() + before:len()) - 1)))
+                            newpl:push(array(kseg.width(before[before:len()]), ((newls:len() + before:len()) - 1)))
                             before:push((before:pop() + after:shift()))
                         else 
                             after:unshift((indent + after:shift()))
@@ -339,21 +339,19 @@ end)
 
 
 function edit.static.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs, posl, indices, dir) 
-        if ((empty(indices) or ((dir == 'down') and (indices[#indices] >= #lines))) or ((dir == 'up') and (indices[1] <= 1))) then 
+        if ((empty(indices) or ((dir == 'down') and (indices[indices:len()] >= lines:len()))) or ((dir == 'up') and (indices[1] <= 1))) then 
             return lines, rngs, posl
         end
         
-        local newLines = lines:map(function (l) 
-    return l
-end)
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newLines = lines:arr()
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         local rs, re = (function () 
     if (dir == 'down') then 
-    return #indices, 1
+    return indices:len(), 1
                   elseif (dir == 'up') then 
-    return 1, #indices
+    return 1, indices:len()
                   end
 end)()
         
@@ -612,16 +610,16 @@ end)
 function edit.static.extendLineRangesFromPositionToPosition(lines, rngs, start, pos) 
         if empty(rngs) then return array(belt.rangeFromStartToEnd(start, pos)) end
         
-        local newRngs = rngs --.asMutable()
+        local newRngs = rngs:arr()
         
         local rng = belt.rangeInRangesTouchingPos(newRngs, start)
         if rng then 
             if belt.isPosAfterRange(pos, rng) then 
-                rng[2] = pos[0]
                 rng[3] = pos[1]
+                rng[4] = pos[2]
             elseif belt.isPosBeforeRange(pos, rng) then 
-                rng[0] = pos[0]
                 rng[1] = pos[1]
+                rng[2] = pos[2]
             end
         else 
             newRngs:push(belt.rangeFromStartToEnd(start, pos))
@@ -632,8 +630,8 @@ function edit.static.extendLineRangesFromPositionToPosition(lines, rngs, start, 
 
 
 function edit.static.extendLineRangesByMovingPositionsInDirection(lines, rngs, posl, dir, opt) 
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         for pi, pos in ipairs(newPosl) do 
             local line = lines[pos[2]]
@@ -644,51 +642,51 @@ function edit.static.extendLineRangesByMovingPositionsInDirection(lines, rngs, p
             elseif (dir == 'up') then pos[2] = pos[2] - 1
             elseif (dir == 'down') then pos[2] = pos[2] + 1
             elseif (dir == 'eol') then pos[1] = #line
-            elseif (dir == 'bol') then pos[1] = 0
-            elseif (dir == 'bof') then pos[1] = 0 ; pos[2] = 0
-            elseif (dir == 'eof') then pos[2] = (#lines - 1) ; pos[1] = #lines[(#lines - 1)]
+            elseif (dir == 'bol') then pos[1] = 1
+            elseif (dir == 'bof') then pos[1] = 1 ; pos[2] = 1
+            elseif (dir == 'eof') then pos[2] = lines:len() ; pos[1] = lines[lines:len()]:len()
             elseif (dir == 'ind_bol') then local ind = belt.numIndent(line) ; pos[1] = (function () 
     if (pos[1] > ind) then 
     return ind else 
-    return 0
+    return 1
                                                                    end
 end)()
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; pos[1] = (function () 
     if (pos[1] < ind) then 
     return ind else 
-    return #line
+    return line:len()
                                                                    end
 end)()
             end
             
             if (dir == 'left') then rng[1] = (rng[1] + nc)
             elseif (dir == 'right') then rng[3] = (rng[3] + nc)
-            elseif (dir == 'up') then rng[2] = max(0, (rng[2] - 1))
-            elseif (dir == 'down') then rng[3] = min((#lines - 1), (rng[3] + 1))
+            elseif (dir == 'up') then rng[2] = max(1, (rng[2] - 1))
+            elseif (dir == 'down') then rng[3] = min(lines:len(), (rng[4] + 1))
             elseif (dir == 'eol') then rng[3] = Infinity
-            elseif (dir == 'bol') then rng[1] = 0
-            elseif (dir == 'bof') then rng[2] = 0 ; rng[1] = 0
-            elseif (dir == 'eof') then rng[3] = (#lines - 1) ; rng[3] = #lines[(#lines - 1)]
+            elseif (dir == 'bol') then rng[1] = 1
+            elseif (dir == 'bof') then rng[1] = 1 ; rng[2] = 1
+            elseif (dir == 'eof') then rng[4] = lines:len() ; rng[3] = lines[lines:len()]:len()
             elseif (dir == 'ind_bol') then local ind = belt.numIndent(line) ; rng[1] = (function () 
     if (rng[1] > ind) then 
     return ind else 
-    return 0
+    return 1
                                                                    end
 end)()
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; rng[3] = (function () 
     if (rng[3] < ind) then 
     return ind else 
-    return #line
+    return line:len()
                                                                    end
 end)()
             end
             
-            if (rng[2] < #lines) then 
-                rng[1] = clamp(0, #lines[rng[2]], rng[1])
+            if (rng[2] <= lines:len()) then 
+                rng[1] = clamp(1, lines[rng[2]]:len(), rng[1])
             end
             
-            if (rng[3] < #lines) then 
-                rng[3] = clamp(0, #lines[rng[3]], rng[3])
+            if (rng[4] <= lines:len()) then 
+                rng[3] = clamp(1, lines[rng[4]]:len(), rng[3])
             end
         end
         

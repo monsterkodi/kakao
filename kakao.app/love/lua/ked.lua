@@ -258,7 +258,7 @@ function KED:reloadFile()
 
 function KED:openFile(path, row, col, view) 
         self:loadFile(path, row, col, view)
-        return self.editor.grabFocus()
+        return self.editor:grabFocus()
     end
 
 --  0000000   000   000  000   0000000  000   000  000   000  
@@ -355,7 +355,7 @@ function KED:loadFile(p, row, col, view)
         
         mode.fileLoaded(self.editor.state, self.currentFile, row, col, view)
         
-        post:emit('file.loaded', self.currentFile)
+        post:emit("file.loaded", self.currentFile)
         
         self:showEditor()
         self:redraw()

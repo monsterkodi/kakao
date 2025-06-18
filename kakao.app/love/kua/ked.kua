@@ -235,7 +235,7 @@ class KED
     openFile: path row col view ->
         
         @loadFile path row col view
-        @editor.grabFocus()
+        @editor∙grabFocus()
         
     #  0000000   000   000  000   0000000  000   000  000   000  
     # 000   000  000   000  000  000       000  000    000 000   
@@ -323,7 +323,7 @@ class KED
         
         mode.fileLoaded @editor.state @currentFile row col view
         
-        post∙emit 'file.loaded' @currentFile
+        post∙emit "file.loaded" @currentFile
         
         @showEditor()
         @redraw()

@@ -446,7 +446,14 @@ function cells:draw_rounded_cursor(x, y, fg)
 
 
 function cells:draw_rounded_multi_cursor(x, y, fg) 
-        return -- @img x y "rounded.multi" fg
+        local cw = _G.screen.cw
+        local ch = _G.screen.ch
+        
+        local xo = (self.x * cw)
+        local yo = (self.y * ch)
+        
+        love.graphics.setColor(255, 0, 0)
+        return love.graphics.rectangle("fill", (xo + ((x - 1) * cw)), (yo + ((y - 1) * ch)), cw, ch)
     end
 
 

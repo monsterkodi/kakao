@@ -29,7 +29,7 @@ end
 function _G.empty(v) 
     if (type(v) == "table") then 
             if (#v >= 1) then return false end
-            if (v:len() >= 1) then return false end
+            if ((type(v["len"]) == "function") and (v:len() >= 1)) then return false end
             return ((#v <= 0) and not dict.isdict(v))
     elseif (type(v) == "string") then return (v == "")
     elseif (type(v) == "nil") then return true

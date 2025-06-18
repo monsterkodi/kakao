@@ -51,23 +51,23 @@ class edit
                 if x-1 > kseg.width(line) and text != '\n'
                     line += kstr.split kstr.lpad(x-1-line.len) ''
                     
-                if txtls.len > 1
-                    if posl.len > 1 and text != '\n'
-                        insertLineIndex = ((idx-2) % txtls.len)+1
+                if txtls∙len() > 1
+                    if posl∙len() > 1 and text != '\n'
+                        insertLineIndex = ((idx-2) % txtls∙len())+1
                         before∙push line + txtls[insertLineIndex]
-                        newpl∙push [kseg.width(before[^1]) newls∙len()+before∙len()-1]
+                        newpl∙push [kseg.width(before[before∙len()]) newls∙len()+before∙len()-1]
                         before∙push before∙pop() + after∙shift()
                     else
                         posLineIndent = belt.numIndent line
                         indent = kseg(kstr.lpad(posLineIndent))
                         before∙push line + txtls[1]
                         
-                        for lidx insl in txtls∙slice(2)∙each()
+                        for insl lidx in txtls∙slice(2)∙each()
                             if insl.len > 0 or text == '\n'
                                 # write "PUSH |#{insl}|"
                                 before∙push indent + insl
                         if x-1 > posLineIndent
-                            newpl∙push [kseg.width(before[^1]) newls∙len()+before∙len()-1]
+                            newpl∙push [kseg.width(before[before∙len()]) newls∙len()+before∙len()-1]
                             before∙push before∙pop() + after∙shift()
                         else
                             after∙unshift indent + after∙shift()
@@ -283,19 +283,19 @@ class edit
     
     @moveLineRangesAndPositionsAtIndicesInDirection: lines rngs posl indices dir ->
         
-        if empty(indices) or dir == 'down' and indices[^1] >= lines.len or dir == 'up' and indices[1] <= 1
+        if empty(indices) or dir == 'down' and indices[indices∙len()] >= lines∙len() or dir == 'up' and indices[1] <= 1
             ⮐  (lines rngs posl)
         
-        newLines = lines∙map((l) -> l)
-        newRngs  = rngs #.asMutable()
-        newPosl  = posl #.asMutable()
+        newLines = lines∙arr()
+        newRngs  = rngs∙arr()
+        newPosl  = posl∙arr()
         
         (rs re) = switch dir
-            'down' ➜ (indices.len 1)
-            'up'   ➜ (1 indices.len)
+            'down' ➜ (indices∙len() 1)
+            'up'   ➜ (1 indices∙len())
 
         d = switch dir
-            'down' ➜ 1
+            'down' ➜  1
             'up'   ➜ -1
             
         for ii in rs..re
@@ -491,16 +491,16 @@ class edit
 
         if empty rngs ➜ ⮐  [belt.rangeFromStartToEnd(start pos)]
 
-        newRngs = rngs #.asMutable()
+        newRngs = rngs∙arr()
         
         rng = belt.rangeInRangesTouchingPos newRngs start
         if rng
             if belt.isPosAfterRange pos rng
-                rng[2] = pos[0]
                 rng[3] = pos[1]
+                rng[4] = pos[2]
             elif belt.isPosBeforeRange pos rng
-                rng[0] = pos[0]
                 rng[1] = pos[1]
+                rng[2] = pos[2]
         else
             newRngs∙push belt.rangeFromStartToEnd(start pos)
 
@@ -508,10 +508,10 @@ class edit
     
     @extendLineRangesByMovingPositionsInDirection: lines rngs posl dir opt ->
         
-        newRngs = rngs #.asMutable()
-        newPosl = posl #.asMutable()
+        newRngs = rngs∙arr()
+        newPosl = posl∙arr()
         
-        for pi pos in ipairs newPosl
+        for pi pos in newPosl
             
             line = lines[pos[2]]
             rng = [pos[1] pos[2] pos[1] pos[2]]
@@ -523,30 +523,30 @@ class edit
                 'up'        ➜ pos[2] -= 1
                 'down'      ➜ pos[2] += 1
                 'eol'       ➜ pos[1] = line.len
-                'bol'       ➜ pos[1] = 0
-                'bof'       ➜ pos[1] = 0; pos[2] = 0
-                'eof'       ➜ pos[2] = lines.len-1; pos[1] = lines[lines.len-1].len
+                'bol'       ➜ pos[1] = 1
+                'bof'       ➜ pos[1] = 1; pos[2] = 1
+                'eof'       ➜ pos[2] = lines∙len(); pos[1] = lines[lines∙len()]∙len()
 
-                'ind_bol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] > ind ➜ ind ➜ 0
-                'ind_eol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] < ind ➜ ind ➜ line.len
+                'ind_bol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] > ind ➜ ind ➜ 1
+                'ind_eol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] < ind ➜ ind ➜ line∙len()
                 
             switch dir
                 'left'      ➜ rng[1] = rng[1]+nc
                 'right'     ➜ rng[3] = rng[3]+nc
-                'up'        ➜ rng[2] = max 0 rng[2]-1
-                'down'      ➜ rng[3] = min lines.len-1 rng[3]+1
+                'up'        ➜ rng[2] = max 1 rng[2]-1
+                'down'      ➜ rng[3] = min lines∙len() rng[4]+1
                 'eol'       ➜ rng[3] = Infinity
-                'bol'       ➜ rng[1] = 0
-                'bof'       ➜ rng[2] = 0; rng[1] = 0
-                'eof'       ➜ rng[3] = lines.len-1; rng[3] = lines[lines.len-1].len
+                'bol'       ➜ rng[1] = 1
+                'bof'       ➜ rng[1] = 1; rng[2] = 1
+                'eof'       ➜ rng[4] = lines∙len(); rng[3] = lines[lines∙len()]∙len()
 
-                'ind_bol'   ➜ ind = belt.numIndent(line); rng[1] = if rng[1] > ind ➜ ind ➜ 0
-                'ind_eol'   ➜ ind = belt.numIndent(line); rng[3] = if rng[3] < ind ➜ ind ➜ line.len
+                'ind_bol'   ➜ ind = belt.numIndent(line); rng[1] = if rng[1] > ind ➜ ind ➜ 1
+                'ind_eol'   ➜ ind = belt.numIndent(line); rng[3] = if rng[3] < ind ➜ ind ➜ line∙len()
             
-            if rng[2] < lines.len
-                rng[1] = clamp 0 lines[rng[2]].len rng[1] 
-            if rng[3] < lines.len
-                rng[3] = clamp 0 lines[rng[3]].len rng[3] 
+            if rng[2] <= lines∙len()
+                rng[1] = clamp 1 lines[rng[2]]∙len() rng[1] 
+            if rng[4] <= lines∙len()
+                rng[3] = clamp 1 lines[rng[4]]∙len() rng[3] 
         
         (newRngs newPosl)
         

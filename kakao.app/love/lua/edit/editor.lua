@@ -241,9 +241,9 @@ function editor:onKey(key, event)
         end
         
         if valid(event.char) then 
-            print("INSERT " .. tostring(event.char) .. "")
+            -- log "INSERT #{event.char}"
             self.state:insert(event.char)
-            print("INSERTED " .. tostring(event.char) .. "")
+            -- log "INSERTED #{event.char}"
             if self.complete then 
                 self.complete:complete()
             end

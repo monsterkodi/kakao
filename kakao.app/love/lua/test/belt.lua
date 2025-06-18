@@ -47,15 +47,16 @@ XYZ
         test.cmp(belt.cellsInRect(cells, 1, 1, 3, 1):map(function (n) return n.cell.char end), array('0', '1', '2'))
         test.cmp(belt.cellsInRect(cells, 1, 2, 2, 2):map(function (n) return n.cell.char end), array('a', 'b'))
         
-        -- belt.cellNeighborsAtPos(cells 0 0)∙map((n) -> ⮐  n.cell.char) ▸ ['0' '1' 'a' 'b']
+        test.cmp(belt.cellNeighborsAtPos(cells, 1, 1):map(function (n) return n.cell.char end), array('0', '1', 'a', 'b'))
+        test.cmp(belt.cellNeighborsAtPos(cells, 2, 2):map(function (n) return n.cell.char end), array('0', '1', '2', 'a', 'b', 'c', 'X', 'Y', 'Z'))
     end)
     
-    -- ▸ extendLineRangesToPosition 
-    -- 
-    --     lines = ['123' '45' '6']
-    -- 
-    --     belt.extendLineRangesFromPositionToPosition lines immutable([]) [0 0] [0 2] ▸ [[0 0 0 2]]
-    --     belt.extendLineRangesFromPositionToPosition lines immutable([[0 0 1 0] [2 0 3 0]]) [1 1] [0 2] ▸ [[0 0 1 0] [2 0 3 0] [1 1 0 2]]
+    test("extendLineRangesToPosition ", function()
+        local lines = array('123', '45', '6')
+        
+        test.cmp(belt.extendLineRangesFromPositionToPosition(lines, immutable(array()), array(1, 1), array(1, 3)), array(array(1, 1, 1, 3)))
+        test.cmp(belt.extendLineRangesFromPositionToPosition(lines, immutable(array(array(1, 1, 2, 1), array(3, 1, 4, 1))), array(2, 2), array(1, 3)), array(array(1, 1, 2, 1), array(3, 1, 4, 1), array(2, 2, 1, 3)))
+    end)
     
     --       000  000   000  00     00  00000000   
     --       000  000   000  000   000  000   000  
@@ -226,93 +227,89 @@ XYZ
         test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
         test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(2, 1)), array(2, 1, 2, 1))
         test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(5, 1)), array(5, 1, 5, 1))
-        -- belt.rangeOfWhitespaceLeftToPos segls [6 1]  ▸ [5 1 6 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [7 1]  ▸ [5 1 7 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [9 1]  ▸ [5 1 9 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [10 1] ▸ [10 1 10 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [11 1] ▸ [11 1 11 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [12 1] ▸ [11 1 12 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [13 1] ▸ [11 1 13 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [14 1] ▸ [11 1 13 1]
-        --        
-        --segls = kseg.segls '  🧑🌾  ab🌾cde'
-        --        
-        --belt.rangeOfWhitespaceLeftToPos segls [1 1]  ▸ [1 1 1 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [2 1]  ▸ [1 1 2 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [3 1]  ▸ [1 1 3 1]
-        --belt.rangeOfWhitespaceLeftToPos segls [4 1]  ▸ [4 1 4 1] # 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
-        --belt.rangeOfWhitespaceLeftToPos segls [5 1]  ▸ [4 1 4 1] # 𝚒𝖘 𝜏𝖍𝚒𝖘 ⟒𝖍𝕒𝜏 ⟒ϵ ⟒𝕒∩𝜏?
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(6, 1)), array(5, 1, 6, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(7, 1)), array(5, 1, 7, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(9, 1)), array(5, 1, 9, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(10, 1)), array(10, 1, 10, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(11, 1)), array(11, 1, 11, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(12, 1)), array(11, 1, 12, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(13, 1)), array(11, 1, 13, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(14, 1)), array(11, 1, 13, 1))
+        
+        segls = kseg.segls('  🧑🌾  ab🌾cde')
+        
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(3, 1)), array(1, 1, 3, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(4, 1)), array(1, 1, 3, 1))
+        test.cmp(belt.rangeOfWhitespaceLeftToPos(segls, array(5, 1)), array(5, 1, 5, 1))
     end)
     
     test("rangeOfWordOrWhitespaceLeftToPos", function()
         local lines = array('1 2  3   4', '   ab  ghij')
         local segls = kseg.segls(lines:join('\n'))
         
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [1 1] ▸ [1 1 1 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [2 1 3 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [4 1 5 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 6 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [7 1] ▸ [6 1 7 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [10 1] ▸ [7 1 10 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [11 1] ▸ [10 1 11 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [12 1] ▸ [10 1 11 1]
-        --        
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [2 2] ▸ [1 2 2 2]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [4 2] ▸ [1 2 4 2]
-        --        
-        --segls = kseg.segls '  🧑🌾  ab🌾cde'
-        --        
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [2 1] ▸ [1 1 2 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [3 1] ▸ [1 1 3 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [4 1] ▸ [3 1 4 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [5 1] ▸ [3 1 4 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [6 1] ▸ [4 1 5 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [7 1] ▸ [4 1 5 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [8 1] ▸ [5 1 6 1]
-        --belt.rangeOfWordOrWhitespaceLeftToPos segls [9 1] ▸ [5 1 7 1]
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(3, 1)), array(2, 1, 3, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(4, 1)), array(3, 1, 4, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(5, 1)), array(4, 1, 5, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(6, 1)), array(4, 1, 6, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(7, 1)), array(6, 1, 7, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(10, 1)), array(7, 1, 10, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(11, 1)), array(10, 1, 11, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(12, 1)), array(10, 1, 11, 1))
+        
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 2)), array(1, 2, 2, 2))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(4, 2)), array(1, 2, 4, 2))
+        
+        segls = kseg.segls('  🧑🌾  ab🌾cde')
+        
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(3, 1)), array(1, 1, 3, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(4, 1)), array(1, 1, 3, 1))
+        test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(5, 1)), array(4, 1, 4, 1))
     end)
     
     test("chunkBeforePos", function()
         local segls = kseg.segls('\n1.4   x:z')
         
-        --belt.chunkBeforePos segls [1 1] ▸ ''
-        --belt.chunkBeforePos segls [2 1] ▸ ''
-        --belt.chunkBeforePos segls [1 2] ▸ ''
-        --belt.chunkBeforePos segls [2 2] ▸ '1'
-        --belt.chunkBeforePos segls [4 2] ▸ '1.4'
-        --belt.chunkBeforePos segls [6 2] ▸ ''
-        --belt.chunkBeforePos segls [10 2] ▸ 'x:z'
+        test.cmp(belt.chunkBeforePos(segls, array(1, 1)), '')
+        test.cmp(belt.chunkBeforePos(segls, array(2, 1)), '')
+        test.cmp(belt.chunkBeforePos(segls, array(1, 2)), '')
+        test.cmp(belt.chunkBeforePos(segls, array(2, 2)), '1')
+        test.cmp(belt.chunkBeforePos(segls, array(4, 2)), '1.4')
+        test.cmp(belt.chunkBeforePos(segls, array(6, 2)), '')
+        test.cmp(belt.chunkBeforePos(segls, array(10, 2)), 'x:z')
     end)
     
     test("chunkAfterPos", function()
         local segls = kseg.segls('\n1.4   x:z')
         
-        --belt.chunkAfterPos segls [1 1] ▸ ''
-        --belt.chunkAfterPos segls [2 1] ▸ ''
-        --belt.chunkAfterPos segls [1 2] ▸ '1.4'
-        --belt.chunkAfterPos segls [2 2] ▸ '.4'
-        --belt.chunkAfterPos segls [4 2] ▸ ''
-        --belt.chunkAfterPos segls [6 2] ▸ ''
-        --belt.chunkAfterPos segls [7 2] ▸ 'x:z'
-        --belt.chunkAfterPos segls [8 2] ▸ ':z'
+        test.cmp(belt.chunkAfterPos(segls, array(1, 1)), '')
+        test.cmp(belt.chunkAfterPos(segls, array(2, 1)), '')
+        test.cmp(belt.chunkAfterPos(segls, array(1, 2)), '1.4')
+        test.cmp(belt.chunkAfterPos(segls, array(2, 2)), '.4')
+        test.cmp(belt.chunkAfterPos(segls, array(4, 2)), '')
+        test.cmp(belt.chunkAfterPos(segls, array(6, 2)), '')
+        test.cmp(belt.chunkAfterPos(segls, array(7, 2)), 'x:z')
+        test.cmp(belt.chunkAfterPos(segls, array(8, 2)), ':z')
     end)
     
     test("isFullLineRange", function()
         local lines = array('', '124', 'abcdef')
         
-        --belt.isFullLineRange lines [1 1 1 2]  ▸ true
-        --belt.isFullLineRange lines [1 1 1 1]  ▸ true
-        --belt.isFullLineRange lines [1 2 4 2]  ▸ true
-        --belt.isFullLineRange lines [1 2 6 2]  ▸ true
-        --belt.isFullLineRange lines [1 2 3 2]  ▸ false
-        --belt.isFullLineRange lines [2 2 4 2]  ▸ false
-        --belt.isFullLineRange lines [2 3 4 3]  ▸ false
-        --belt.isFullLineRange lines [1 3 14 3] ▸ true
-        --belt.isFullLineRange lines [1 3 7 3]  ▸ true
-        --belt.isFullLineRange lines [1 2 1 3]  ▸ true
-        --belt.isFullLineRange lines [1 3 6 3]  ▸ false
+        test.cmp(belt.isFullLineRange(lines, array(1, 1, 1, 2)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 1, 1, 1)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 2, 4, 2)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 2, 6, 2)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 2, 3, 2)), false)
+        test.cmp(belt.isFullLineRange(lines, array(2, 2, 4, 2)), false)
+        test.cmp(belt.isFullLineRange(lines, array(2, 3, 4, 3)), false)
+        test.cmp(belt.isFullLineRange(lines, array(1, 3, 14, 3)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 3, 7, 3)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 2, 1, 3)), true)
+        test.cmp(belt.isFullLineRange(lines, array(1, 3, 6, 3)), false)
     end)
     
     -- 0000000    000       0000000    0000000  000   000   0000000  
@@ -322,17 +319,17 @@ XYZ
     -- 0000000    0000000   0000000    0000000  000   000  0000000   
     
     test("lineIndicesForRangesAndPositions", function()
-        --belt.lineIndicesForRangesAndPositions [] [[1 1] [1 2] [1 3]] ▸ [1 2 3]
-        --belt.lineIndicesForRangesAndPositions [[ 0 0 2 0 ]] [[1 1] [1 2] [1 3]] ▸ [0 1 2 3]
-        --belt.lineIndicesForRangesAndPositions [[ 1 1 2 2 ]] [[1 6] [1 5] [1 4]] ▸ [1 2 4 5 6]
+        test.cmp(belt.lineIndicesForRangesAndPositions(array(), array(array(1, 1), array(1, 2), array(1, 3))), array(1, 2, 3))
+        test.cmp(belt.lineIndicesForRangesAndPositions(array(array(0, 0, 2, 0)), array(array(1, 1), array(1, 2), array(1, 3))), array(0, 1, 2, 3))
+        test.cmp(belt.lineIndicesForRangesAndPositions(array(array(1, 1, 2, 2)), array(array(1, 6), array(1, 5), array(1, 4))), array(1, 2, 4, 5, 6))
     end)
     
     test("linesIndicesForSpans", function()
-        --belt.lineIndicesForSpans [] ▸ []
-        --belt.lineIndicesForSpans [[1 2 1]] ▸ [2]
-        --belt.lineIndicesForSpans [[1 2 1] [2 2 2]] ▸ [2]
-        --belt.lineIndicesForSpans [[1 2 1] [2 3 2]] ▸ [2 3]
-        --belt.lineIndicesForSpans [[1 2 1] [2 4 2]] ▸ [2 4]
+        test.cmp(belt.lineIndicesForSpans(array()), array())
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1))), array(2))
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1), array(2, 2, 2))), array(2))
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1), array(2, 3, 2))), array(2, 3))
+        test.cmp(belt.lineIndicesForSpans(array(array(1, 2, 1), array(2, 4, 2))), array(2, 4))
     end)
     
     test("blockRangesForRangesAndPositions", function()
@@ -367,14 +364,14 @@ line 2
     test("isSpanLineRange", function()
         local lines = array('', '124', 'abcdef')
         
-        --belt.isSpanLineRange lines [1 1 1 1] ▸ false
-        --belt.isSpanLineRange lines [1 2 4 2] ▸ false
-        --belt.isSpanLineRange lines [1 2 1 3] ▸ false
-        --        
-        --belt.isSpanLineRange lines [2 2 4 2] ▸ true
-        --belt.isSpanLineRange lines [2 2 2 2] ▸ true
-        --belt.isSpanLineRange lines [2 2 3 2] ▸ true
-        --belt.isSpanLineRange lines [2 2 4 2] ▸ true
+        test.cmp(belt.isSpanLineRange(lines, array(1, 1, 1, 1)), false)
+        test.cmp(belt.isSpanLineRange(lines, array(1, 2, 4, 2)), false)
+        test.cmp(belt.isSpanLineRange(lines, array(1, 2, 1, 3)), false)
+        
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 4, 2)), true)
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 2, 2)), true)
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 3, 2)), true)
+        test.cmp(belt.isSpanLineRange(lines, array(2, 2, 4, 2)), true)
     end)
     
     test("isPosAfterSpan", function()

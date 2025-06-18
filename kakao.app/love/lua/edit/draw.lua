@@ -105,7 +105,7 @@ function draw:drawLine(line, y, row)
             -- log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
             
             if (si > line:len()) then 
-                write("\x1b[0m\x1b[36m", "" .. tostring(self.name) .. " break!")
+                -- write ◌c "#{@name} break!"
                 break
             end
             
@@ -272,13 +272,16 @@ function draw:drawCursors()
         local fg = self.color.cursor.fg
         
         local bg = mode.themeColor(self.state, 'cursor.multi', self.color.cursor.multi)
-        
         -- bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        for ci, cursor in ipairs(s.cursors) do 
+        local cursors = s.cursors:arr()
+        
+        for _, cursor in ipairs(cursors) do 
             if (cursor ~= mc) then 
                 if self:isCursorVisible(cursor) then 
-                    self.cells:draw_rounded_multi_cursor((cursor[1] - s.view[1]), (cursor[2] - s.view[2]), bg)
+                    local x = ((cursor[1] - s.view[1]) + 1)
+                    local y = ((cursor[2] - s.view[2]) + 1)
+                    self.cells:draw_rounded_multi_cursor(x, y, bg)
                 end
             end
         end

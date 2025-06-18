@@ -23,7 +23,7 @@ _G.empty = v ->
     
         "table"  ➜ 
             ⮐  false if v.len >= 1
-            ⮐  false if v∙len() >= 1
+            ⮐  false if type(v["len"]) == "function" and v∙len() >= 1
             ⮐  v.len <= 0 and not dict.isdict(v)
         "string" ➜ ⮐  v == ""
         "nil"    ➜ ⮐  true

@@ -329,7 +329,14 @@ class cells
         
     draw_rounded_multi_cursor: x y fg ->
     
-        # @img x y "rounded.multi" fg
+        cw = _G.screen.cw
+        ch = _G.screen.ch
+        
+        xo = @x*cw
+        yo = @y*ch
+        
+        love.graphics.setColor 255 0 0
+        love.graphics.rectangle("fill", xo+(x-1)*cw, yo+(y-1)*ch, cw, ch) 
         
     img: x y name fg zLayer=1000 xe ye ->
     

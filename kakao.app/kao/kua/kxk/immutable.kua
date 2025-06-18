@@ -51,6 +51,8 @@ class immutable
     __ipairs:        -> write "IIIIIIIIIPAIRS" ; ipairs(@__data)
     __newindex: k v  -> error("Cannot modify immutable. trying to set #{k} #{v}")
 
+    each: -> array.each @__data
+
     slice: first last ->
     
         s = []
@@ -70,6 +72,16 @@ class immutable
         for k v of @__data
             if type(v) == "table" 
                 mutable[k] = v∙mut()
+            else
+                mutable[k] = v
+        mutable
+        
+    arr: ->    
+    
+        mutable = []
+        for k v of @__data
+            if type(v) == "table" 
+                mutable[k] = v∙arr()
             else
                 mutable[k] = v
         mutable

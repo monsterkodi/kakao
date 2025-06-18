@@ -168,6 +168,7 @@ function array:splice(i, n, ...)
 
 function array:slice(first, last) 
         local s = self.class()
+        
         if (first > #self) then return s end
         if (last == nil) then last = #self
         else last = min(#self, last)
@@ -190,7 +191,7 @@ function array.static.slice(a, first, last)
         
         if (first > a:len()) then return s end
         if (last == nil) then last = a:len()
-        else last = min(#array, last)
+        else last = min(a:len(), last)
         end
         
         if ((last < 1) or (last < first)) then return s end

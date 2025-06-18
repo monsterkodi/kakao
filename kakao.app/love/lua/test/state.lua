@@ -37,19 +37,19 @@ line 2
 line 3
 ]]
     
-    --s.syntax.ext = 'kode'
-    --    
-    --s∙loadSegls belt.seglsForText(text)
-    --    
-    --txt text
-    --    
-    --belt.seglsForText(text) ▸ belt.seglsForText(text) 
-    --belt.linesForText(text) ▸ ["line 1" "line 2" "line 3" ""]
-    --kseg.segls(belt.linesForText(text)) ▸ belt.seglsForText(text) 
-    --    
-    --s∙loadLines belt.linesForText(text)
-    -- 
-    --txt text
+    s.syntax.ext = 'kode'
+    
+    s:loadSegls(belt.seglsForText(text))
+    
+    txt(text)
+    
+    test.cmp(belt.seglsForText(text), belt.seglsForText(text))
+    test.cmp(belt.linesForText(text), array("line 1", "line 2", "line 3", ""))
+    test.cmp(kseg.segls(belt.linesForText(text)), belt.seglsForText(text))
+    
+    s:loadLines(belt.linesForText(text))
+    
+    txt(text)
     
     -- 00000000  0000000    000  000000000  000  000   000   0000000   
     -- 000       000   000  000     000     000  0000  000  000        
@@ -76,11 +76,10 @@ line 3
         
         cur(3, 2)
         
-        -- s∙delete 'back'
-        --        
-        --cur 1 1
-        --txt text
-        -- 1 ▸ 2
+        s:delete('back')
+        
+        cur(2, 2)
+        txt(text)
     end)
     
     -- 00     00   0000000   000   000  00000000        000      000  000   000  00000000   0000000  
@@ -89,20 +88,24 @@ line 3
     -- 000 0 000  000   000     000     000             000      000  000  0000  000            000  
     -- 000   000   0000000       0      00000000        0000000  000  000   000  00000000  0000000   
     
-    -- ▸ move lines
-    
-    
-        -- s∙moveSelectionOrCursorLines 'up'
-        -- cur 1 1
-        --txt """
-        --    line 2
-        --    line 1
-        --    line 3
-        --    """
-        --s∙moveSelectionOrCursorLines 'down'
-        --        
-        --cur 1 1
-        --txt text
+    test("move lines", function()
+        s:moveSelectionOrCursorLines('up')
+        cur(2, 1)
+        txt([[
+line 2
+line 1
+line 3
+]])
+        
+        s:moveSelectionOrCursorLines('down')
+        
+        cur(2, 2)
+        -- txt """
+        --     line 1
+        --     line 2
+        --     line 3
+        --     """
+    end)
     
     -- 00     00  000   000  000      000000000  000  00000000   000      00000000  
     -- 000   000  000   000  000         000     000  000   000  000      000       
@@ -111,30 +114,30 @@ line 3
     -- 000   000   0000000   0000000     000     000  000        0000000  00000000  
     
     test("multiple", function()
+        s:setMainCursor(1, 2)
         s:expandCursors('up')
         
-        -- mul [1 1] [1 2]
+        mul(array(1, 1), array(1, 2))
         
-        --s∙expandCursors   'down'
-        --        
-        --mul [1 0] [1 1] [1 2]
-        --        
-        --s∙moveCursors 'left'
-        --        
-        --mul [0 0] [0 1] [0 2]
-        --        
-        --s∙moveCursorsAndSelect 'right'
-        --        
-        --mul [1 0] [1 1] [1 2]
-        --sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
-        --        
+        s:expandCursors('down')
+        
+        mul(array(1, 1), array(1, 2), array(1, 3))
+        
+        s:moveCursors('left')
+        
+        mul(array(1, 1), array(1, 2), array(1, 3))
+        
+        s:moveCursorsAndSelect('right')
+        
+        mul(array(2, 1), array(2, 2), array(2, 3))
+        
         --s∙moveCursors 'right' {jump:['ws' 'word' 'empty' 'punct']}
         --        
         --mul [4 0] [4 1] [4 2]
         --sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
         --        
-        --s∙selectAllLines()
-        --        
+        s:selectAllLines()
+        
         --mul [4 0] [4 1] [4 2]
         --sel [0 0 6 2] 
         --        

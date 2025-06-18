@@ -207,9 +207,9 @@ class editor extends draw
             ⮐  true
         
         if valid event.char
-            log "INSERT #{event.char}"
+            # log "INSERT #{event.char}"
             @state∙insert event.char
-            log "INSERTED #{event.char}"
+            # log "INSERTED #{event.char}"
             if @complete
                 @complete∙complete()
             ⮐  true

@@ -97,7 +97,7 @@ function belt.static.indexOfPosInPositions(pos, posl)
 
 function belt.static.lineIndicesForPositions(posl) 
         local set = array()
-        for _, pos in ipairs(posl) do 
+        for pos in posl:each() do 
             if not set:has(pos[2]) then 
                 set:push(pos[2])
             end
@@ -563,6 +563,7 @@ function belt.static.lineIndicesForRangesOrPositions(rngs, posl)
         local indices = belt.lineIndicesForRanges(rngs)
         if empty(indices) then 
             indices = belt.lineIndicesForPositions(posl)
+            write("lineIndicesForRangesOrPositions", indices)
         end
         
         return indices

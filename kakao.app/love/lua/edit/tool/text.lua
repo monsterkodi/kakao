@@ -610,7 +610,7 @@ function text.static.splitLineRanges(lines, rngs, includeEmpty)
 
 
 function text.static.isLinesPosInside(lines, pos) 
-    return (((pos[2] <= lines:len()) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
+    return ((((1 <= pos[2]) and (pos[2] <= lines:len())) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
     end
 
 function text.static.isLinesPosOutside(lines, pos) 
@@ -709,7 +709,8 @@ function text.static.wordAtPos(lines, pos)
 
 
 function text.static.chunkBeforePos(lines, pos) 
-        local before = array.slice(lines[pos[2]], 1, (pos[1] - 1))
+        local line = lines[pos[2]]
+        local before = line:slice(1, (pos[1] - 1))
         local tcc = kseg.tailCountChunk(before)
         if (tcc > 0) then 
             return kseg.str(array.slice(before, ((before:len() - tcc) + 1)))

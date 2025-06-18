@@ -96,6 +96,7 @@ class array
     slice: first last ->
 
         s = @.class()
+            
         ⮐  s if first > @len
         if last == nil ➜ last = @len
         else last = min @len last
@@ -112,7 +113,7 @@ class array
 
         ⮐  s if first > a∙len()
         if last == nil ➜ last = a∙len()
-        else last = min @len last
+        else last = min a∙len() last
         ⮐  s if last < 1 or last < first
         for i in first...last+1
             s∙push a[i]

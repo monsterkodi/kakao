@@ -98,7 +98,7 @@ class draw extends view
             # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
             
             if si > line∙len()
-                write ◌c "#{@name} break!"
+                # write ◌c "#{@name} break!"
                 break 
             
             fg = syntax∙getColor ci y
@@ -244,16 +244,18 @@ class draw extends view
         fg = @color.cursor.fg
 
         bg = mode.themeColor @state 'cursor.multi' @color.cursor.multi
-
         # bg = color.darken(bg) if not @cells.screen.t.hasFocus
-        
-        for ci cursor in ipairs s.cursors
- 
+
+        cursors = s.cursors∙arr()
+
+        for cursor in cursors
+            
             if cursor != mc
             
                 if @isCursorVisible cursor
-                 
-                    @cells∙draw_rounded_multi_cursor cursor[1]-s.view[1] cursor[2]-s.view[2] bg
+                    x = cursor[1]-s.view[1]+1
+                    y = cursor[2]-s.view[2]+1
+                    @cells∙draw_rounded_multi_cursor x y bg
                         
         if @isCursorVisible mc
              

@@ -466,7 +466,7 @@ class text
             split += belt.splitLineRange(lines rng includeEmpty)
         split
         
-    @isLinesPosInside:  lines pos -> pos[2] <= lines∙len() and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
+    @isLinesPosInside:  lines pos -> 1 <= pos[2] and pos[2] <= lines∙len() and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
     @isLinesPosOutside: lines pos -> not belt.isLinesPosInside lines pos 
     
     @isValidLineIndex:   lines li -> 1 <= li and li <= lines∙len()
@@ -530,7 +530,8 @@ class text
         
     @chunkBeforePos: lines pos ->
         
-        before = array.slice(lines[pos[2]] 1 pos[1]-1)
+        line = lines[pos[2]]
+        before = line∙slice(1 pos[1]-1)
         tcc = kseg.tailCountChunk before
         if tcc > 0
             ⮐  kseg.str array.slice(before before∙len()-tcc+1)

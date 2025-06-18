@@ -68,7 +68,7 @@ class belt
     @lineIndicesForPositions: posl ->
         
         set = []
-        for pos in posl
+        for pos in posl∙each()
             if not set∙has pos[2]
                 set∙push pos[2]
         set
@@ -350,6 +350,7 @@ class belt
         indices = @lineIndicesForRanges rngs
         if empty indices
             indices = @lineIndicesForPositions posl 
+            write "lineIndicesForRangesOrPositions" indices
         indices
 
     @lineIndicesForRangesAndPositions: rngs posl ->

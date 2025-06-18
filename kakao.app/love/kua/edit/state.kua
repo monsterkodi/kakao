@@ -86,7 +86,7 @@ class state extends events
             'end'                               ➜ ⮐  @singleCursorAtEndOfLine()
                                                      
             'ctrl+h'                            ➜ ⮐  @setMainCursor 1 1
-            'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines∙len()-1]∙len() @s.lines∙len()-1
+            'ctrl+j'                            ➜ ⮐  @setMainCursor @s.lines[@s.lines∙len()]∙len() @s.lines∙len()
                                                      
             'alt+d'                             ➜ ⮐  @delete 'next' true
             'shift+ctrl+k' 'entf'               ➜ ⮐  @delete 'next'
@@ -179,15 +179,23 @@ class state extends events
         
         main = opt.main
 
-        if main is array ➜ main = belt.indexOfPosInPositions main cursors
-        if main is "number" and main < 0 ➜ main = cursors.len+main-1
+        if empty cursors 
+            log "empty cursors?" cursors
+            cursors = [[1 1]]
+
+
+        if main is "table" ➜ main = belt.indexOfPosInPositions main cursors
+        if main is "number" and main < 0 ➜ main = cursors∙len()+main-1
 
         mainCursor = @mainCursor()
-        if main
-            mainCursor = cursors[clamp(1, cursors.len, main)]
+        
+        if main and main > 0
+            mainCursor = cursors[clamp(1 cursors∙len() main)]
             # mainCursor = copy cursors[clamp 0 cursors.len-1 main]
 
         cursors = belt.normalizePositions cursors @s.lines∙len()
+        write "CURSORS" cursors
+        
         @s = @s∙set 'cursors' cursors
 
         main = -1
@@ -701,7 +709,7 @@ class state extends events
     
     allCursors: -> 
 
-        @s.cursors∙mut()
+        @s.cursors∙arr()
     
     # 00000000  000   000  00000000    0000000   000   000  0000000    
     # 000        000 000   000   000  000   000  0000  000  000   000  
@@ -719,6 +727,7 @@ class state extends events
             newCursors∙push c
             newCursors∙push [c[1] c[2]+dy]
         mc = belt.traversePositionsInDirection newCursors @mainCursor() dir
+        log "EXPAND" mc
         @setCursors newCursors {main:mc adjust:'topBotDelta'}
         
     contractCursors: dir ->
@@ -787,7 +796,7 @@ class state extends events
         
         cursors = @allCursors()
         lines   = @s.lines
-        for ci c in ipairs cursors
+        for ci c in cursors
             
             line = lines[c[2]]
             
@@ -803,6 +812,7 @@ class state extends events
                 'ind'       ➜ c[1] = belt.numIndent(line)
                 'ind_eol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] < ind ➜  ind ➜  kseg.width(line)
                 'ind_bol'   ➜ ind  = belt.numIndent(line); c[1] = if c[1] > ind ➜  ind ➜  1
+                
         main   = @s.main
         adjust = opt.adjust or 'topBotDelta'
         
@@ -1373,7 +1383,9 @@ class state extends events
     moveSelectionOrCursorLines: dir ->
         
         indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
-        
+        write "moveSelectionOrCursorLines selections " @s.selections
+        write "moveSelectionOrCursorLines cursors " @s.cursors
+        write "moveSelectionOrCursorLines indices " indices
         (lines selections cursors) = belt.moveLineRangesAndPositionsAtIndicesInDirection @s.lines @s.selections @s.cursors indices dir
         
         @setLines lines
@@ -1467,7 +1479,7 @@ class state extends events
         ⮐  @deleteSelection() if ['back' 'next']∙has(typ) and valid @s.selections
 
         # lines = @s.lines∙map((l) -> l) # mutable copy
-        lines = @s.lines∙mut()
+        lines = @s.lines∙arr()
         
         cursors = @allCursors()
         

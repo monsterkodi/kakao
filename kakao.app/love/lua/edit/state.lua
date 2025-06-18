@@ -80,7 +80,7 @@ function state:handleKey(key, event)
         elseif (key == 'home') then return self:singleCursorAtIndentOrStartOfLine()
         elseif (key == 'end') then return self:singleCursorAtEndOfLine()
         elseif (key == 'ctrl+h') then return self:setMainCursor(1, 1)
-        elseif (key == 'ctrl+j') then return self:setMainCursor(self.s.lines[(self.s.lines:len() - 1)]:len(), (self.s.lines:len() - 1))
+        elseif (key == 'ctrl+j') then return self:setMainCursor(self.s.lines[self.s.lines:len()]:len(), self.s.lines:len())
         elseif (key == 'alt+d') then return self:delete('next', true)
         elseif (key == 'shift+ctrl+k') or (key == 'entf') then return self:delete('next')
         elseif (key == 'ctrl+k') then return self:delete('eol')
@@ -188,16 +188,24 @@ function state:setCursors(cursors, opt)
         
         local main = opt.main
         
-        if is(main, array) then main = belt.indexOfPosInPositions(main, cursors) end
-        if (is(main, "number") and (main < 0)) then main = ((#cursors + main) - 1) end
+        if empty(cursors) then 
+            print("empty cursors?", cursors)
+            cursors = array(array(1, 1))
+        end
+        
+        if is(main, "table") then main = belt.indexOfPosInPositions(main, cursors) end
+        if (is(main, "number") and (main < 0)) then main = ((cursors:len() + main) - 1) end
         
         local mainCursor = self:mainCursor()
-        if main then 
-            mainCursor = cursors[clamp(1, #cursors, main)]
+        
+        if (main and (main > 0)) then 
+            mainCursor = cursors[clamp(1, cursors:len(), main)]
             -- mainCursor = copy cursors[clamp 0 cursors.len-1 main]
         end
         
         cursors = belt.normalizePositions(cursors, self.s.lines:len())
+        write("CURSORS", cursors)
+        
         self.s = self.s:set('cursors', cursors)
         
         main = -1
@@ -795,7 +803,7 @@ function state:setMainCursorAndSelect(x, y)
 
 
 function state:allCursors() 
-        return self.s.cursors:mut()
+        return self.s.cursors:arr()
     end
 
 -- 00000000  000   000  00000000    0000000   000   000  0000000    
@@ -821,6 +829,7 @@ end)()
         end
         
         local mc = belt.traversePositionsInDirection(newCursors, self:mainCursor(), dir)
+        print("EXPAND", mc)
         return self:setCursors(newCursors, {main = mc, adjust = 'topBotDelta'})
     end
 
@@ -1657,7 +1666,9 @@ function state:joinLines()
 
 function state:moveSelectionOrCursorLines(dir) 
         local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
-        
+        write("moveSelectionOrCursorLines selections ", self.s.selections)
+        write("moveSelectionOrCursorLines cursors ", self.s.cursors)
+        write("moveSelectionOrCursorLines indices ", indices)
         local lines, selections, cursors = belt.moveLineRangesAndPositionsAtIndicesInDirection(self.s.lines, self.s.selections, self.s.cursors, indices, dir)
         
         self:setLines(lines)
@@ -1757,7 +1768,7 @@ function state:delete(typ, jump)
         if (array('back', 'next'):has(typ) and valid(self.s.selections)) then return self:deleteSelection() end
         
         -- lines = @s.lines∙map((l) -> l) # mutable copy
-        local lines = self.s.lines:mut()
+        local lines = self.s.lines:arr()
         
         local cursors = self:allCursors()
         

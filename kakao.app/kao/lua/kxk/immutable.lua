@@ -79,6 +79,11 @@ function immutable:__newindex(k, v)
     end
 
 
+function immutable:each() 
+    return array.each(self.__data)
+    end
+
+
 function immutable:slice(first, last) 
         local s = array()
         if (first > #self.__data) then return s end
@@ -105,6 +110,20 @@ function immutable:mut()
         for k, v in pairs(self.__data) do 
             if (type(v) == "table") then 
                 mutable[k] = v:mut()
+            else 
+                mutable[k] = v
+            end
+        end
+        
+        return mutable
+    end
+
+
+function immutable:arr() 
+        local mutable = array()
+        for k, v in pairs(self.__data) do 
+            if (type(v) == "table") then 
+                mutable[k] = v:arr()
             else 
                 mutable[k] = v
             end
