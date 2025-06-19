@@ -563,7 +563,6 @@ function belt.static.lineIndicesForRangesOrPositions(rngs, posl)
         local indices = belt.lineIndicesForRanges(rngs)
         if empty(indices) then 
             indices = belt.lineIndicesForPositions(posl)
-            write("lineIndicesForRangesOrPositions", indices)
         end
         
         return indices
@@ -653,10 +652,7 @@ function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl)
 
 function belt.static.mergeLineRanges(lines, rngs) 
         if empty(rngs) then return array() end --or not (rngs is array)
-        write("mergeLineRanges ", noon(rngs))
         rngs = belt.normalizeRanges(rngs)
-        write("mergeLineRanges ", rngs)
-        
         local mrgd = array()
         local tail = nil
         for s in rngs:each() do 

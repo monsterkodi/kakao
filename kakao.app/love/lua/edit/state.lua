@@ -469,9 +469,10 @@ function state:cut()
 function state:copy(opt) 
         opt = opt or ({})
         local text = self:textOfSelectionOrCursorLines()
-        write("COPY ", text)
-        print("COPY ", text)
-        -- love.system.setClipboardText text
+        if (text and (#text > 0)) then 
+            print("COPY", text)
+            love.system.setClipboardText(text)
+        end
         
         --switch os.platform()
         --        
@@ -1447,8 +1448,6 @@ function state:selectAllLines()
         if (allsel == self.s.selections) then 
             return self:deselect()
         else 
-            write("selectAllLines", noon(self.s.lines))
-            write("selectAllLines", noon(allsel))
             return self:setSelections(allsel)
         end
     end

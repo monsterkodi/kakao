@@ -350,7 +350,6 @@ class belt
         indices = @lineIndicesForRanges rngs
         if empty indices
             indices = @lineIndicesForPositions posl 
-            write "lineIndicesForRangesOrPositions" indices
         indices
 
     @lineIndicesForRangesAndPositions: rngs posl ->
@@ -422,10 +421,7 @@ class belt
     @mergeLineRanges: lines rngs ->
         
         ⮐  [] if empty(rngs) #or not (rngs is array)
-        write "mergeLineRanges " noon(rngs)
         rngs = @normalizeRanges rngs
-        write "mergeLineRanges " rngs
-        
         mrgd = []
         tail = nil
         for s in rngs∙each()

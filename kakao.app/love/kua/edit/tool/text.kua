@@ -27,14 +27,14 @@ class text
         
         pattern = "\\x1b\\[([:;]?%d+)m"
         
-        for line,li in belt.linesForText(text)
+        for line li in belt.linesForText(text)
             
             ansisub = m c x ->
                 
                 cs = c.split(';')∙map((c) -> ⮐  floor(c))
 
                 l = m.len
-                switch cs[0]
+                switch cs[1]
                     38
                         colors[li] ?= []
                         if cs.len == 5 
@@ -108,9 +108,9 @@ class text
                 if
                     y == rng[1]
                         if 
-                            y == rng[3] ➜ l∙push(lines[y]∙slice(rng[0] rng[2]))
-                                        ➜ l∙push(lines[y]∙slice(rng[0]))
-                    y == rng[3] ➜ l∙push(lines[y]∙slice(1 rng[2]))
+                            y == rng[3] ➜ l∙push(lines[y]∙slice(rng[1] rng[3]))
+                                        ➜ l∙push(lines[y]∙slice(rng[1]))
+                    y == rng[3] ➜ l∙push(lines[y]∙slice(1 rng[3]))
                                 ➜ l∙push(lines[y])
                                 
                 l∙push('\n') if y < rng[3]
@@ -120,25 +120,23 @@ class text
     @segsForLineSpan: lines span ->
         
         l = []
-        ⮐  l if empty lines or empty span
+        ⮐  l if empty(lines) or empty(span)
         y = span[1]
         ⮐  l if belt.isInvalidLineIndex lines y
-        lines[y]∙slice span[0] span[2]-1
+        lines[y]∙slice span[1] span[3]
         
     @segsForPositions: lines posl ->
         
         l = []
-        ⮐  l if empty lines or empty posl
-        for pos in posl
-            ⮐  l if belt.isInvalidLineIndex lines pos[1]
-            segi = kseg.segiAtWidth lines[pos[1]] pos[0]
-            l∙push lines[pos[1]][segi]
+        ⮐  l if empty(lines) or empty(posl)
+        for pos in posl∙each()
+            ⮐  l if belt.isInvalidLineIndex lines pos[2]
+            segi = kseg.segiAtWidth lines[pos[2]] pos[1]
+            l∙push lines[pos[2]][segi]
         l
 
     @textForLineRange: lines rng ->
     
-        write "textForLineRange " lines rng
-         
         ⮐  '' if empty(lines) or empty(rng)
          
         l = []
@@ -154,13 +152,10 @@ class text
                                 ➜ l∙push lines[y]
          
         s = kseg.str l
-        write "textForLineRange " s l lines rng
         s
         
     @textForLineRanges: lines rngs ->
         
-        write "textForLineRanges " lines rngs
-        write "textForLineRanges " empty lines
         ⮐  '' if empty lines
         
         text = ''
@@ -171,7 +166,6 @@ class text
         
     @textForSpans: lines spans ->
     
-        write "textForSpans " lines spans
         belt.textForLineRanges lines belt.rangesForSpans(spans)
                 
     @lineSpansForText: lines text ->
@@ -189,8 +183,8 @@ class text
         
         spans
         
-    @textFromBolToPos: lines pos -> lines[pos[1]]∙slice(1 pos[0])
-    @textFromPosToEol: lines pos -> lines[pos[1]]∙slice(pos[0])
+    @textFromBolToPos: lines pos -> lines[pos[1]]∙slice(1 pos[1])
+    @textFromPosToEol: lines pos -> lines[pos[1]]∙slice(pos[1])
     
     @isOnlyWhitespace: text -> string.match kseg.str(text) "^%s+$"
     
@@ -409,18 +403,18 @@ class text
     @beforeAndAfterForPos: lines pos ->
         
         line   = lines[pos[1]]
-        before = line∙slice 1 pos[0]
-        after  = line∙slice pos[0]
+        before = line∙slice 1 pos[1]
+        after  = line∙slice pos[1]
         (before after)
     
     @joinLineColumns: lineCols ->
 
-        numLines = lineCols[0].len
+        numLines = lineCols[1].len
         numCols  = lineCols.len
         lines = []
-        for lidx in 0...numLines
+        for lidx in 1...numLines+1
             line = ''
-            for cidx in 0...numCols
+            for cidx in 1...numCols+1
                 line += lineCols[cidx][lidx]
             lines∙push line
         lines
@@ -429,7 +423,7 @@ class text
         
         spans = []
         for idx col in ipairs cols
-            prv = if idx > 0 ➜ cols[idx-1] ➜ 0
+            prv = if idx > 1 ➜ cols[idx-1] ➜ 1
             spans∙push string.sub(text prv col)
         spans∙push string.sub(text col)
         spans
@@ -437,12 +431,12 @@ class text
     @splitLinesAtCols: lines cols ->
 
         cls = []
-        for i in 0..cols.len
+        for i in 1..cols.len
             cls∙push []
         
-        for _ line in ipairs lines 
+        for line in lines∙each()
             spans = belt.splitTextAtCols line cols
-            for span,idx in spans
+            for idx span in spans
                 cls[idx]∙push span
         cls
     
@@ -499,8 +493,8 @@ class text
         ⮐  if belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestChunk lines[y] x
         if r
-            if 0 <= r[0] < r[1]
-                ⮐  [r[0] y r[1] y]
+            if 1 <= r[1] < r[2]
+                ⮐  [r[1] y r[2] y]
                 
     @rangeOfClosestChunkLeftToPos: lines pos ->
         
@@ -509,8 +503,8 @@ class text
         ⮐  if belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestChunk array.slice(lines[y] 1 x) x
         if r
-            if 0 <= r[0] < r[1]
-                ⮐  [r[0] y r[1] y]
+            if 1 <= r[1] < r[2]
+                ⮐  [r[1] y r[2] y]
 
     @rangeOfClosestChunkRightToPos: lines pos ->
         
@@ -519,8 +513,8 @@ class text
         ⮐  if belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestChunk array.slice(lines[y] x) x
         if r
-            if 0 <= r[0] < r[1]
-                ⮐  [r[0] y r[1] y]
+            if 1 <= r[1] < r[2]
+                ⮐  [r[1] y r[2] y]
                 
     # 000   000   0000000   00000000   0000000    
     # 000 0 000  000   000  000   000  000   000  
@@ -603,10 +597,10 @@ class text
         ⮐  if x < 0 or belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestWord array.slice(lines[y] x) 0
         if r
-            if 0 == r[0] and r[0] < r[1]
+            if 1 == r[1] and r[1] < r[2]
+                ⮐  [x, y, r[2]+x, y]
+            if r[1] > 1 
                 ⮐  [x, y, r[1]+x, y]
-            if r[0] > 0 
-                ⮐  [x, y, r[0]+x, y]
             
         [x y lines[y]∙len() y]   
         

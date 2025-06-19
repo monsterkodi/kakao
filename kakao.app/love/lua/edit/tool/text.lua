@@ -46,24 +46,24 @@ function text.static.colorSeglsForText(text)
 end)
                 
                 local l = #m
-                if (cs[0] == 38) then 
+                if (cs[1] == 38) then 
                         colors[li] = colors[li] or (array())
                         if (#cs == 5) then 
                             colors[li]:push({x = x, l = l, fg = string.sub(cs, 2, 4)})
                         else 
                             colors[li]:push({x = x, l = l, fg = color.ansi256[cs[2]]})
                         end
-                elseif (cs[0] == 48) then 
+                elseif (cs[1] == 48) then 
                         colors[li] = colors[li] or (array())
                         if (#cs == 5) then 
                             colors[li]:push({x = x, l = l, bg = string.sub(cs, 2, 4)})
                         else 
                             colors[li]:push({x = x, l = l, bg = color.ansi256[cs[2]]})
                         end
-                elseif (cs[0] == 39) then 
+                elseif (cs[1] == 39) then 
                         colors[li] = colors[li] or (array())
                         colors[li]:push({x = x, l = l, fg = -1})
-                elseif (cs[0] == 49) then 
+                elseif (cs[1] == 49) then 
                         colors[li] = colors[li] or (array())
                         colors[li]:push({x = x, l = l, bg = -1})
                 end
@@ -136,10 +136,10 @@ function text.static.seglsForLineRange(lines, rng)
         for y in iter(rng[1], rng[3]) do 
             if not belt.isInvalidLineIndex(lines, y) then 
                 if (y == rng[1]) then 
-                        if (y == rng[3]) then l:push(lines[y]:slice(rng[0], rng[2]))
-                        else l:push(lines[y]:slice(rng[0]))
+                        if (y == rng[3]) then l:push(lines[y]:slice(rng[1], rng[3]))
+                        else l:push(lines[y]:slice(rng[1]))
                         end
-                elseif (y == rng[3]) then l:push(lines[y]:slice(1, rng[2]))
+                elseif (y == rng[3]) then l:push(lines[y]:slice(1, rng[3]))
                 else l:push(lines[y])
                 end
                 
@@ -153,20 +153,20 @@ function text.static.seglsForLineRange(lines, rng)
 
 function text.static.segsForLineSpan(lines, span) 
         local l = array()
-        if empty((lines or empty), span) then return l end
+        if (empty(lines) or empty(span)) then return l end
         local y = span[1]
         if belt.isInvalidLineIndex(lines, y) then return l end
-        return lines[y]:slice(span[0], (span[2] - 1))
+        return lines[y]:slice(span[1], span[3])
     end
 
 
 function text.static.segsForPositions(lines, posl) 
         local l = array()
-        if empty((lines or empty), posl) then return l end
-        for _, pos in ipairs(posl) do 
-            if belt.isInvalidLineIndex(lines, pos[1]) then return l end
-            local segi = kseg.segiAtWidth(lines[pos[1]], pos[0])
-            l:push(lines[pos[1]][segi])
+        if (empty(lines) or empty(posl)) then return l end
+        for pos in posl:each() do 
+            if belt.isInvalidLineIndex(lines, pos[2]) then return l end
+            local segi = kseg.segiAtWidth(lines[pos[2]], pos[1])
+            l:push(lines[pos[2]][segi])
         end
         
         return l
@@ -174,8 +174,6 @@ function text.static.segsForPositions(lines, posl)
 
 
 function text.static.textForLineRange(lines, rng) 
-        write("textForLineRange ", lines, rng)
-        
         if (empty(lines) or empty(rng)) then return '' end
         
         local l = array()
@@ -193,14 +191,11 @@ function text.static.textForLineRange(lines, rng)
         end
         
         local s = kseg.str(l)
-        write("textForLineRange ", s, l, lines, rng)
         return s
     end
 
 
 function text.static.textForLineRanges(lines, rngs) 
-        write("textForLineRanges ", lines, rngs)
-        write("textForLineRanges ", empty, lines)
         if empty(lines) then return '' end
         
         local text = ''
@@ -214,7 +209,6 @@ function text.static.textForLineRanges(lines, rngs)
 
 
 function text.static.textForSpans(lines, spans) 
-        write("textForSpans ", lines, spans)
         return belt.textForLineRanges(lines, belt.rangesForSpans(spans))
     end
 
@@ -238,11 +232,11 @@ function text.static.lineSpansForText(lines, text)
 
 
 function text.static.textFromBolToPos(lines, pos) 
-    return lines[pos[1]]:slice(1, pos[0])
+    return lines[pos[1]]:slice(1, pos[1])
     end
 
 function text.static.textFromPosToEol(lines, pos) 
-    return lines[pos[1]]:slice(pos[0])
+    return lines[pos[1]]:slice(pos[1])
     end
 
 
@@ -520,19 +514,19 @@ function text.static.diffLines(oldLines, newLines)
 
 function text.static.beforeAndAfterForPos(lines, pos) 
         local line = lines[pos[1]]
-        local before = line:slice(1, pos[0])
-        local after = line:slice(pos[0])
+        local before = line:slice(1, pos[1])
+        local after = line:slice(pos[1])
         return before, after
     end
 
 
 function text.static.joinLineColumns(lineCols) 
-        local numLines = #lineCols[0]
+        local numLines = #lineCols[1]
         local numCols = #lineCols
         local lines = array()
-        for lidx = 0, numLines-1 do 
+        for lidx = 1, (numLines + 1)-1 do 
             local line = ''
-            for cidx = 0, numCols-1 do 
+            for cidx = 1, (numCols + 1)-1 do 
                 line = line + (lineCols[cidx][lidx])
             end
             
@@ -547,9 +541,9 @@ function text.static.splitTextAtCols(text, cols)
         local spans = array()
         for idx, col in ipairs(cols) do 
             local prv = (function () 
-    if (idx > 0) then 
+    if (idx > 1) then 
     return cols[(idx - 1)] else 
-    return 0
+    return 1
                   end
 end)()
             spans:push(string.sub(text, prv, col))
@@ -562,13 +556,13 @@ end)()
 
 function text.static.splitLinesAtCols(lines, cols) 
         local cls = array()
-        for i in iter(0, #cols) do 
+        for i in iter(1, #cols) do 
             cls:push(array())
         end
         
-        for _, line in ipairs(lines) do 
+        for line in lines:each() do 
             local spans = belt.splitTextAtCols(line, cols)
-            for span, idx in ipairs(spans) do 
+            for idx, span in ipairs(spans) do 
                 cls[idx]:push(span)
             end
         end
@@ -665,8 +659,8 @@ function text.static.rangeOfClosestChunkToPos(lines, pos)
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kstr.rangeOfClosestChunk(lines[y], x)
         if r then 
-            if ((0 <= r[0]) < r[1]) then 
-                return array(r[0], y, r[1], y)
+            if ((1 <= r[1]) < r[2]) then 
+                return array(r[1], y, r[2], y)
             end
         end
     end
@@ -678,8 +672,8 @@ function text.static.rangeOfClosestChunkLeftToPos(lines, pos)
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kstr.rangeOfClosestChunk(array.slice(lines[y], 1, x), x)
         if r then 
-            if ((0 <= r[0]) < r[1]) then 
-                return array(r[0], y, r[1], y)
+            if ((1 <= r[1]) < r[2]) then 
+                return array(r[1], y, r[2], y)
             end
         end
     end
@@ -691,8 +685,8 @@ function text.static.rangeOfClosestChunkRightToPos(lines, pos)
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kstr.rangeOfClosestChunk(array.slice(lines[y], x), x)
         if r then 
-            if ((0 <= r[0]) < r[1]) then 
-                return array(r[0], y, r[1], y)
+            if ((1 <= r[1]) < r[2]) then 
+                return array(r[1], y, r[2], y)
             end
         end
     end
@@ -798,12 +792,12 @@ function text.static.rangeOfWordOrWhitespaceRightToPos(lines, pos)
         if ((x < 0) or belt.isInvalidLineIndex(lines, y)) then return end
         local r = kstr.rangeOfClosestWord(array.slice(lines[y], x), 0)
         if r then 
-            if ((0 == r[0]) and (r[0] < r[1])) then 
-                return array(x, y, (r[1] + x), y)
+            if ((1 == r[1]) and (r[1] < r[2])) then 
+                return array(x, y, (r[2] + x), y)
             end
             
-            if (r[0] > 0) then 
-                return array(x, y, (r[0] + x), y)
+            if (r[1] > 1) then 
+                return array(x, y, (r[1] + x), y)
             end
         end
         

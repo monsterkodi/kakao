@@ -405,9 +405,9 @@ class state extends events
     
         opt ?= {}
         text = @textOfSelectionOrCursorLines()
-        write "COPY " text
-        log "COPY " text
-        # love.system.setClipboardText text
+        if text and text.len > 0
+            log "COPY" text
+            love.system.setClipboardText text
 
         #switch os.platform()
         #
@@ -1200,8 +1200,6 @@ class state extends events
         if allsel == @s.selections
             @deselect()
         else
-            write "selectAllLines" noon(@s.lines)
-            write "selectAllLines" noon(allsel)
             @setSelections allsel
         
     # 00     00   0000000   00000000   00000000  
