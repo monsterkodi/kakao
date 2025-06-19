@@ -404,26 +404,30 @@ class state extends events
     copy: opt ->
     
         opt ?= {}
+        text = @textOfSelectionOrCursorLines()
+        write "COPY " text
+        log "COPY " text
+        # love.system.setClipboardText text
 
-        switch os.platform()
-
-            'darwin'
-
-                prcs = child_process.spawn 'pbcopy'
-                prcs.stdin.write @textOfSelectionOrCursorLines()
-                prcs.stdin.close()
-
-            'linux'
-
-                prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
-                prcs.stdin.write @textOfSelectionOrCursorLines()
-                prcs.stdin.close()
-
-            'win32'
-
-                prcs = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
-                prcs.stdin.write @textOfSelectionOrCursorLines()
-                prcs.stdin.close()
+        #switch os.platform()
+        #
+        #    'darwin'
+        #
+        #        prcs = child_process.spawn 'pbcopy'
+        #        prcs.stdin.write @textOfSelectionOrCursorLines()
+        #        prcs.stdin.close()
+        #
+        #    'linux'
+        #
+        #        prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
+        #        prcs.stdin.write @textOfSelectionOrCursorLines()
+        #        prcs.stdin.close()
+        #
+        #    'win32'
+        #
+        #        prcs = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
+        #        prcs.stdin.write @textOfSelectionOrCursorLines()
+        #        prcs.stdin.close()
                 
         @deselect() if opt.deselect != false
 
@@ -434,24 +438,26 @@ class state extends events
     # 000        000   000  0000000      000     00000000
 
     paste: ->
+    
+        @insert love.system.getClipboardText()
 
-        switch os.platform()
-
-            'darwin'
-
-                @insert child_process.execSync('pbpaste').toString("utf8")
-
-            'linux'
-
-                text = child_process.execSync('xsel -o --clipboard')
-
-                log 'paste\n' noon(text.toString("utf8"))
-
-                @insert text.toString("utf8")
-
-            'win32'
-
-                @insert child_process.execSync("#{slash.cwd()}/../../bin/utf8clip.exe").toString("utf8")
+        #switch os.platform()
+        #
+        #    'darwin'
+        #
+        #        @insert child_process.execSync('pbpaste').toString("utf8")
+        #
+        #    'linux'
+        #
+        #        text = child_process.execSync('xsel -o --clipboard')
+        #
+        #        log 'paste\n' noon(text.toString("utf8"))
+        #
+        #        @insert text.toString("utf8")
+        #
+        #    'win32'
+        #
+        #        @insert child_process.execSync("#{slash.cwd()}/../../bin/utf8clip.exe").toString("utf8")
 
     #  0000000   0000000  00000000    0000000   000      000          000   000  000  00000000  000   000  
     # 000       000       000   000  000   000  000      000          000   000  000  000       000 0 000  
@@ -892,18 +898,18 @@ class state extends events
         if from[2] > to[2] or from[2] == to[2] and from[1] > to[1]
             (from to) = (to from)
 
-        to[2]   = clamp 0 @s.lines∙len()-1 to[2]
-        from[2] = clamp 0 @s.lines∙len()-1 from[2]
+        to[2]   = clamp 1 @s.lines∙len() to[2]
+        from[2] = clamp 1 @s.lines∙len() from[2]
             
-        to[1]   = clamp 0 @s.lines[to[2]]∙len() to[1]
-        from[1] = clamp 0 @s.lines[from[2]]∙len() from[1]
+        to[1]   = clamp 1 @s.lines[to[2]]∙len()+1 to[1]
+        from[1] = clamp 1 @s.lines[from[2]]∙len()+1 from[1]
         
         selections∙push [from[1] from[2] to[1] to[2]]
         
         @setSelections selections
         
-    allSelections: -> @s.selections
-    allHighlights: -> @s.highlights
+    allSelections: -> @s.selections∙arr()
+    allHighlights: -> @s.highlights∙arr()
         
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     
@@ -1233,10 +1239,14 @@ class state extends events
     textOfSelection: -> belt.textForLineRanges @s.lines @s.selections
     selectedText:    -> belt.textForLineRanges @s.lines @s.selections
     
-    selectionsOrCursorLineRanges: -> @s.selections or belt.lineRangesForPositions(@s.lines @s.cursors true)
+    selectionsOrCursorLineRanges: -> 
+        if @s.selections∙len() > 0 
+            @s.selections 
+        else
+            belt.lineRangesForPositions @s.lines @s.cursors true
     
     textOfSelectionOrCursorLines: -> 
-        
+
         belt.textForLineRanges @s.lines @selectionsOrCursorLineRanges()
 
     isSingleLineSelected: ->

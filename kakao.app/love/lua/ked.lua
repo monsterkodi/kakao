@@ -26,6 +26,10 @@ local KED = class("KED")
 function KED:init() 
         self.version = '0.1.0'
         
+        self.args = {
+            new = true
+            }
+        
         self.session = session(self.args)
         self.logfile = logfile()
         
@@ -82,15 +86,16 @@ function KED:init()
         
         -- ked_session.set 'ked▸args' @args
         -- 
-        -- if valid @args.options
-        --     @loadFile @args.options[0]
-        -- elif @args.fresh
-        --     @hideEditor()
-        --     @menu.show true
-        -- elif @args.new
-        --     @newFile()
-        
-        self.menu:show(true)
+        if valid(self.args.options) then 
+            self:loadFile(self.args.options[1])
+        elseif self.args.fresh then 
+            self:hideEditor()
+            self.menu.show(true)
+        elseif self.args.new then 
+            self:newFile()
+            
+            -- @menu∙show true
+        end
         return self
     end
 
@@ -522,9 +527,9 @@ function KED:onKey(key, event)
         for handler in self.keyHandlers:each() do 
             -- ●▸ on key
             if not handler:hidden() then 
-                print("handler", handler.name)
+                -- log "handler" handler.name
                 result = handler:onKey(key, event)
-                print("result", result)
+                -- log "result" result
                 if result then 
                     break
                 end

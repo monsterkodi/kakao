@@ -277,7 +277,7 @@ function draw:drawCursors()
         local cursors = s.cursors:arr()
         
         for _, cursor in ipairs(cursors) do 
-            if (cursor ~= mc) then 
+            if not cursor:eql(mc) then 
                 if self:isCursorVisible(cursor) then 
                     local x = ((cursor[1] - s.view[1]) + 1)
                     local y = ((cursor[2] - s.view[2]) + 1)

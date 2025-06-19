@@ -19,7 +19,7 @@ class array
     
     @from: a -> array(unpack(a))
     @str:  a -> noon(a)
-    
+    arr:  -> array.from @
     each: -> i=0; -> i+=1; (@[i] i)
     @each: a -> i=0; -> i+=1; (a[i] i)
     
@@ -28,7 +28,7 @@ class array
     map: f ->
     
         t = @.class()
-        for i v in ipairs @
+        for i v in @
             t[i] = f v
         t
         
@@ -49,7 +49,7 @@ class array
     filter: f ->
     
         t = @.class()
-        for i v in ipairs @
+        for i v in @
             if f v i
                 t∙push v
         t
@@ -83,9 +83,8 @@ class array
             for d in 1..n
                 @remove i
         a = @.class(...)
-        if a.len > 0
-            while a.len > 0
-                @insert i a∙pop()
+        while a.len > 0
+            @insert i a∙pop()
         @
         
     slice: first last ->
@@ -117,28 +116,40 @@ class array
     keydict: key ->
 
         t = {}
-        for i v in ipairs @
+        for i v in @
             t[v[key]] = v
         t
     
     indexdict: ->
 
         t = {}
-        for i v in ipairs @
+        for i v in @
             t[v] = i
         t
                     
     indexof: e ->
     
-        for i v in ipairs @
+        for i v in @
             if v == e ➜ ⮐  i 
         -1
 
     find: e ->
     
-        for i v in ipairs @
+        for i v in @
             if v == e ➜ ⮐  i 
         -1
+        
+    eql: o ->
+    
+        ⮐  false if @len != o.len
+        for i v in @
+            if v != o[i]
+                if v is array
+                    if not v∙eql o[i]
+                        ⮐  false
+                else
+                    ⮐  false 
+        true
         
     rnd: -> @[math.random(@len)]
     

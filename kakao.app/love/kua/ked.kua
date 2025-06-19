@@ -24,6 +24,10 @@ class KED
 
         @version = '0.1.0'
         
+        @args = {
+            new: true
+            }
+        
         @session = session @args
         @logfile = logfile()
         
@@ -80,15 +84,15 @@ class KED
         
         # ked_session.set 'ked▸args' @args
         # 
-        # if valid @args.options
-        #     @loadFile @args.options[0]
-        # elif @args.fresh
-        #     @hideEditor()
-        #     @menu.show true
-        # elif @args.new
-        #     @newFile()
+        if valid @args.options
+            @loadFile @args.options[1]
+        elif @args.fresh
+            @hideEditor()
+            @menu.show true
+        elif @args.new
+            @newFile()
         
-        @menu∙show true
+            # @menu∙show true
             
     showEditor: -> 
     
@@ -467,9 +471,9 @@ class KED
         for handler in @keyHandlers∙each()
             # ●▸ on key
             if not handler∙hidden()
-                log "handler" handler.name
+                # log "handler" handler.name
                 result = handler∙onKey key event
-                log "result" result
+                # log "result" result
                 if result
                     break 
             # ●▪ on key

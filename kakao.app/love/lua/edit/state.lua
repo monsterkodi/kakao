@@ -468,20 +468,30 @@ function state:cut()
 
 function state:copy(opt) 
         opt = opt or ({})
+        local text = self:textOfSelectionOrCursorLines()
+        write("COPY ", text)
+        print("COPY ", text)
+        -- love.system.setClipboardText text
         
-        if (os.platform() == 'darwin') then 
-                local prcs = child_process.spawn('pbcopy')
-                prcs.stdin.write(self:textOfSelectionOrCursorLines())
-                prcs.stdin.close()
-        elseif (os.platform() == 'linux') then 
-                local prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
-                prcs.stdin.write(self:textOfSelectionOrCursorLines())
-                prcs.stdin.close()
-        elseif (os.platform() == 'win32') then 
-                local prcs = child_process.spawn("" .. tostring(slash.cwd()) .. "/../../bin/utf8clip.exe")
-                prcs.stdin.write(self:textOfSelectionOrCursorLines())
-                prcs.stdin.close()
-        end
+        --switch os.platform()
+        --        
+        --    'darwin'
+        --        
+        --        prcs = child_process.spawn 'pbcopy'
+        --        prcs.stdin.write @textOfSelectionOrCursorLines()
+        --        prcs.stdin.close()
+        --        
+        --    'linux'
+        --        
+        --        prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
+        --        prcs.stdin.write @textOfSelectionOrCursorLines()
+        --        prcs.stdin.close()
+        --        
+        --    'win32'
+        --        
+        --        prcs = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
+        --        prcs.stdin.write @textOfSelectionOrCursorLines()
+        --        prcs.stdin.close()
         
         if (opt.deselect ~= false) then 
     return self:deselect()
@@ -496,17 +506,25 @@ function state:copy(opt)
 
 
 function state:paste() 
-        if (os.platform() == 'darwin') then 
-                return self:insert(child_process.execSync('pbpaste').toString("utf8"))
-        elseif (os.platform() == 'linux') then 
-                local text = child_process.execSync('xsel -o --clipboard')
-                
-                print('paste\n', noon(text.toString("utf8")))
-                
-                return self:insert(text.toString("utf8"))
-        elseif (os.platform() == 'win32') then 
-                return self:insert(child_process.execSync("" .. tostring(slash.cwd()) .. "/../../bin/utf8clip.exe").toString("utf8"))
-        end
+        self:insert(love.system.getClipboardText())
+        
+        --switch os.platform()
+        --        
+        --    'darwin'
+        --        
+        --        @insert child_process.execSync('pbpaste').toString("utf8")
+        --        
+        --    'linux'
+        --        
+        --        text = child_process.execSync('xsel -o --clipboard')
+        --        
+        --        log 'paste\n' noon(text.toString("utf8"))
+        --        
+        --        @insert text.toString("utf8")
+        --        
+        --    'win32'
+        --        
+        return --        @insert child_process.execSync("#{slash.cwd()}/../../bin/utf8clip.exe").toString("utf8")
     end
 
 --  0000000   0000000  00000000    0000000   000      000          000   000  000  00000000  000   000  
@@ -1032,11 +1050,11 @@ function state:select(from, to)
             local from, to = to, from
         end
         
-        to[2] = clamp(0, (self.s.lines:len() - 1), to[2])
-        from[2] = clamp(0, (self.s.lines:len() - 1), from[2])
+        to[2] = clamp(1, self.s.lines:len(), to[2])
+        from[2] = clamp(1, self.s.lines:len(), from[2])
         
-        to[1] = clamp(0, self.s.lines[to[2]]:len(), to[1])
-        from[1] = clamp(0, self.s.lines[from[2]]:len(), from[1])
+        to[1] = clamp(1, (self.s.lines[to[2]]:len() + 1), to[1])
+        from[1] = clamp(1, (self.s.lines[from[2]]:len() + 1), from[1])
         
         selections:push(array(from[1], from[2], to[1], to[2]))
         
@@ -1045,11 +1063,11 @@ function state:select(from, to)
 
 
 function state:allSelections() 
-    return self.s.selections
+    return self.s.selections:arr()
     end
 
 function state:allHighlights() 
-    return self.s.highlights
+    return self.s.highlights:arr()
     end
 
 -- 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
@@ -1480,7 +1498,11 @@ function state:selectedText()
 
 
 function state:selectionsOrCursorLineRanges() 
-    return (self.s.selections or belt.lineRangesForPositions(self.s.lines, self.s.cursors, true))
+        if (self.s.selections:len() > 0) then 
+            return self.s.selections
+        else 
+            return belt.lineRangesForPositions(self.s.lines, self.s.cursors, true)
+        end
     end
 
 

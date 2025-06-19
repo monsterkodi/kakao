@@ -43,6 +43,9 @@ function array.static.str(a)
     return noon(a)
     end
 
+function array:arr() 
+    return array.from(self)
+    end
 
 function array:each() 
           local i = 0 ; return function () 
@@ -151,10 +154,8 @@ function array:splice(i, n, ...)
         end
         
         local a = self.class(...)
-        if (#a > 0) then 
-            while (#a > 0) do 
-                self:insert(i, a:pop())
-            end
+        while (#a > 0) do 
+            self:insert(i, a:pop())
         end
         
         return self
@@ -233,6 +234,24 @@ function array:find(e)
         end
         
         return -1
+    end
+
+
+function array:eql(o) 
+        if (#self ~= #o) then return false end
+        for i, v in ipairs(self) do 
+            if (v ~= o[i]) then 
+                if is(v, array) then 
+                    if not v:eql(o[i]) then 
+                        return false
+                    end
+                else 
+                    return false
+                end
+            end
+        end
+        
+        return true
     end
 
 

@@ -174,7 +174,9 @@ function text.static.segsForPositions(lines, posl)
 
 
 function text.static.textForLineRange(lines, rng) 
-        if empty((lines or empty), rng) then return '' end
+        write("textForLineRange ", lines, rng)
+        
+        if (empty(lines) or empty(rng)) then return '' end
         
         local l = array()
         
@@ -191,15 +193,18 @@ function text.static.textForLineRange(lines, rng)
         end
         
         local s = kseg.str(l)
+        write("textForLineRange ", s, l, lines, rng)
         return s
     end
 
 
 function text.static.textForLineRanges(lines, rngs) 
+        write("textForLineRanges ", lines, rngs)
+        write("textForLineRanges ", empty, lines)
         if empty(lines) then return '' end
         
         local text = ''
-        for _, rng in ipairs(rngs) do 
+        for rng in rngs:each() do 
             text = text .. (belt.textForLineRange(lines, rng))
             text = text .. '\n'
         end
@@ -209,6 +214,7 @@ function text.static.textForLineRanges(lines, rngs)
 
 
 function text.static.textForSpans(lines, spans) 
+        write("textForSpans ", lines, spans)
         return belt.textForLineRanges(lines, belt.rangesForSpans(spans))
     end
 
@@ -311,14 +317,14 @@ function text.static.lineRangeAtPos(lines, pos)
 
 function text.static.lineRangesForPositions(lines, posl, append) 
         local rngs = belt.lineIndicesForPositions(posl):map(function (y) 
-    if lines[y]:len() then 
-    return array(0, y, lines[y]:len(), y) else 
-    return array(0, y, 0, (y + 1))
+    if (lines[y]:len() > 0) then 
+    return array(1, y, (lines[y]:len() + 1), y) else 
+    return array(1, y, 1, (y + 1))
                                                              end
 end)
-        if valid((rngs and append)) then 
-            rngs[-1][2] = 0
-            rngs[-1][3] = rngs[-1][3] + 1
+        if (valid(rngs) and append) then 
+            rngs[rngs:len()][2] = 1
+            rngs[rngs:len()][3] = rngs[rngs:len()][3] + 1
         end
         
         return rngs

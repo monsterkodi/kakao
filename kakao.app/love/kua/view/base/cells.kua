@@ -324,8 +324,16 @@ class cells
         xo = @x*cw
         yo = @y*ch
         
-        love.graphics.setColor 255 255 0
-        love.graphics.rectangle("fill", xo+(x-1)*cw, yo+(y-1)*ch, cw, ch) 
+        line_x = xo + (x-1)*cw
+        line_y = yo + (y-1)*ch + ch/2
+        lr = round cw/6
+        lw = lr * 2
+        
+        love.graphics.setColor fg[1] fg[2] fg[3]
+        
+        love.graphics.rectangle "fill" line_x-lr line_y-ch/2+lr lw ch-lw
+        love.graphics.circle    "fill" line_x line_y-ch/2+lr lr
+        love.graphics.circle    "fill" line_x line_y+ch/2-lr lr
         
     draw_rounded_multi_cursor: x y fg ->
     
@@ -335,8 +343,16 @@ class cells
         xo = @x*cw
         yo = @y*ch
         
-        love.graphics.setColor 255 0 0
-        love.graphics.rectangle("fill", xo+(x-1)*cw, yo+(y-1)*ch, cw, ch) 
+        line_x = xo + (x-1)*cw
+        line_y = yo + (y-1)*ch + ch/2
+        lr = round cw/10
+        lw = lr * 2
+        
+        love.graphics.setColor fg[1] fg[2] fg[3]
+        
+        love.graphics.rectangle "fill" line_x-lr line_y-ch/2 lw ch
+        # love.graphics.circle    "fill" line_x line_y-ch/2 lr
+        # love.graphics.circle    "fill" line_x line_y+ch/2 lr
         
     img: x y name fg zLayer=1000 xe ye ->
     
@@ -353,7 +369,7 @@ class cells
     adjustContrastForHighlight: x y highlightColor ->
         
         ofg = @get_fg x y
-        if valid ofg and valid highlightColor
+        if valid(ofg) and valid(highlightColor)
             @set_fg x y color.adjustForBackground(ofg highlightColor)        
                         
     # ████████   ████████  ███   ███  ███████    ████████  ████████ 

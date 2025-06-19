@@ -66,14 +66,6 @@ function immutable:__index(k)
     return self.__data[k]
     end
 
-function immutable:__pairs() 
-                     write("PAIRS") ; return pairs(self.__data)
-    end
-
-function immutable:__ipairs() 
-                     write("IIIIIIIIIPAIRS") ; return ipairs(self.__data)
-    end
-
 function immutable:__newindex(k, v) 
     return error("Cannot modify immutable. trying to set " .. tostring(k) .. " " .. tostring(v) .. "")
     end
@@ -119,10 +111,12 @@ function immutable:mut()
     end
 
 
-function immutable:arr() 
+function immutable:arr(deep) 
+        deep = deep or true
+        
         local mutable = array()
         for k, v in pairs(self.__data) do 
-            if (type(v) == "table") then 
+            if ((type(v) == "table") and deep) then 
                 mutable[k] = v:arr()
             else 
                 mutable[k] = v
@@ -144,18 +138,18 @@ function immutable:mod()
 
 
 function immutable:set(k, v) 
-        local new__data = self:mod()
+        local newdata = self:mod()
         if (type(k) == "table") then 
             for k, v in pairs(tbl) do 
-                new__data[k] = v
+                newdata[k] = v
             end
         else 
-            new__data[k] = v
+            newdata[k] = v
         end
         
         -- write "SET #{k} #{v}"
-        -- write "IMM #{dict.str(new__data)}"
-        return immutable(new__data)
+        -- write "IMM #{dict.str(newdata)}"
+        return immutable(newdata)
     end
 
 return immutable

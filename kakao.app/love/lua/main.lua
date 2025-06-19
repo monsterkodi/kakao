@@ -3,9 +3,20 @@ ked = require "ked"
 
 
 function love.load() 
-    _G.fontWidth = 12
+    local width, height = love.window.getDesktopDimensions()
+    
+    love.window.setMode(width, height, {
+        highdpi = true, 
+        usedpiscale = false, 
+        resizable = true
+        })
+    
+    love.graphics.setDefaultFilter("nearest", "nearest")
+    
+    _G.fontWidth = 24
     _G.font = love.graphics.setNewFont("font.ttf", (fontWidth * 2))
     _G.count = 0
+    
     --love.window.maximize()
     love.keyboard.setKeyRepeat(true)
     
@@ -18,7 +29,6 @@ end
 function love.draw() 
     count = count + 1
     local _, _, w, h = love.window.getSafeArea()
-    local scale = love.window.getDPIScale()
     
     local lg = love.graphics
     
@@ -34,7 +44,7 @@ function love.draw()
     ked:draw(cols, rows, cw, ch)
     
     lg.setColor(0.2, 0.2, 0.2)
-    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(scale) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * cw), (h - (ch * 2)))
+    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * cw), (h - (ch * 2)))
     
     return nil
 end
@@ -72,12 +82,18 @@ function love.keypressed(key, scancode, isrepeat)
            elseif (key == "up") or (key == "down") or (key == "right") or (key == "esc") or (key == "delete") or (key == "left") then 
     return ""
            else 
-    return (((#mods == 0) and key) or "")
+                    if (#mods == 0) then 
+                        return key
+                    elseif (mods == "shift+") then 
+                        return string.upper(key)
+                    else 
+                        return ""
+                    end
            end
 end)()
     
     local event = {["repeat"] = isrepeat, combo = combo, char = char}
-    print("\x1b[0m\x1b[33m", " ", dict.str(event))
+    write("\x1b[0m\x1b[33m", " ", dict.str(event), "\x1b[0m\x1b[34m", scancode)
     ked:onKey(combo, event)
     return true
 end

@@ -47,8 +47,6 @@ class immutable
         s
     
     __index:    k    -> @__data[k]
-    __pairs:         -> write "PAIRS" ; pairs(@__data)
-    __ipairs:        -> write "IIIIIIIIIPAIRS" ; ipairs(@__data)
     __newindex: k v  -> error("Cannot modify immutable. trying to set #{k} #{v}")
 
     each: -> array.each @__data
@@ -76,11 +74,11 @@ class immutable
                 mutable[k] = v
         mutable
         
-    arr: ->    
+    arr: deep=true ->    
     
         mutable = []
         for k v of @__data
-            if type(v) == "table" 
+            if type(v) == "table" and deep
                 mutable[k] = v∙arr()
             else
                 mutable[k] = v
@@ -94,14 +92,15 @@ class immutable
         modifiable
 
     set: k v ->
-        new__data = @mod()
+    
+        newdata = @mod()
         if type(k) == "table"
             for k v of tbl
-                new__data[k] = v
+                newdata[k] = v
         else
-            new__data[k] = v
+            newdata[k] = v
         # write "SET #{k} #{v}"
-        # write "IMM #{dict.str(new__data)}"
-        immutable new__data
+        # write "IMM #{dict.str(newdata)}"
+        immutable newdata
 
 ⮐  immutable

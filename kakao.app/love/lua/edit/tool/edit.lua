@@ -145,8 +145,10 @@ function edit.static.insertSurroundAtRanges(lines, rngs, trigger, pair)
 
 
 function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl) 
-        if is(lines.mod, "function") then 
-            lines = lines:mod()
+        if is(lines.arr, "function") then 
+            lines = lines:arr(false)
+        else 
+            lines = array.from(lines)
         end
         
         posl = array.from(posl)
@@ -162,7 +164,7 @@ function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl)
                 return lines, posl
             end
             
-            if ((rng[2] > #lines) or (rng[4] > #lines)) then 
+            if ((rng[2] > lines:len()) or (rng[4] > lines:len())) then 
                 write("range out of bounds?", rng)
                 return lines, posl
             end
@@ -172,7 +174,7 @@ function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl)
             if (rng[2] == rng[4]) then 
                 -- write ◌y "RNG -------------------------------- #{rng}"
                 
-                if ((rng[1] == 1) and (rng[3] > #lines[rng[2]])) then 
+                if ((rng[1] == 1) and (rng[3] > lines[rng[2]]:len())) then 
                     lines:splice(rng[2], 1)
                 else 
                     local slcl = lines[rng[2]]:slice(1, (rng[1] - 1))
@@ -187,7 +189,7 @@ function edit.static.deleteLineRangesAndAdjustPositions(lines, rngs, posl)
                 end
             else 
                 local partialLast = false
-                if (rng[3] == #lines[rng[4]]) then 
+                if (rng[3] == lines[rng[4]]:len()) then 
                     lines:splice(rng[4], 1)
                 else 
                     lines:splice(rng[4], 1, lines[rng[4]]:slice(rng[3]))

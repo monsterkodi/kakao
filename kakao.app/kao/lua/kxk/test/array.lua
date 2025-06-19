@@ -256,6 +256,32 @@ end)
         test.cmp(a:is(nil), false)
     end)
     
+    test("eql", function()
+        local a = array()
+        test.cmp(a:len(), 0)
+        test.cmp(a:eql(array()), true)
+        test.cmp(a:eql(array(1)), false)
+        
+        a = array(1)
+        test.cmp(a:eql(array()), false)
+        test.cmp(a:eql(array(1)), true)
+        test.cmp(a:eql({1}), true)
+        test.cmp(a:eql({a = 1}), false)
+        test.cmp(a:eql(array(2)), false)
+        test.cmp(a:eql(array(1, 1)), false)
+        
+        a = array(1, 2, 3)
+        
+        test.cmp(a:eql(array(1, 2, 3)), true)
+        test.cmp(a:eql(array(1, 2, 3, 4)), false)
+        test.cmp(a:eql(array(1, 2)), false)
+        test.cmp(a:eql(array(3, 2, 1)), false)
+        
+        a = array(1, array(2, array(3)))
+        test.cmp(a:eql(array(1, array(2, array(3)))), true)
+        test.cmp(a:eql(array(1, array(2, array(1)))), false)
+    end)
+    
     test("iter", function()
         local a = array()
         for i in iter(4, 0) do a:push(i) end

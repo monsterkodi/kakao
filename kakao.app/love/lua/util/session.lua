@@ -34,7 +34,7 @@ function session:init(opt)
         self.sep = (opt.separator or '▸')
         
         self.dir = slash.absolute("~/.config/ked/sessions/")
-        print('session/dir' .. self.dir)
+        write('session/dir' .. self.dir)
         self.file = slash.path(self.dir, "" .. tostring(self.name) .. ".noon")
         
         -- if not opt.fresh

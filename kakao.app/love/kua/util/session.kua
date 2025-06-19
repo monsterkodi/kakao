@@ -32,7 +32,7 @@ class session extends events
         @sep  = opt.separator or '▸'
         
         @dir  = slash.absolute "~/.config/ked/sessions/"
-        log 'session/dir' & @dir
+        write 'session/dir' & @dir
         @file = slash.path @dir "#{@name}.noon"
         
         # if not opt.fresh

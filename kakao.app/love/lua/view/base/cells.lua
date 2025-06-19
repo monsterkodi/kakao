@@ -440,8 +440,16 @@ function cells:draw_rounded_cursor(x, y, fg)
         local xo = (self.x * cw)
         local yo = (self.y * ch)
         
-        love.graphics.setColor(255, 255, 0)
-        return love.graphics.rectangle("fill", (xo + ((x - 1) * cw)), (yo + ((y - 1) * ch)), cw, ch)
+        local line_x = (xo + ((x - 1) * cw))
+        local line_y = ((yo + ((y - 1) * ch)) + (ch / 2))
+        local lr = round((cw / 6))
+        local lw = (lr * 2)
+        
+        love.graphics.setColor(fg[1], fg[2], fg[3])
+        
+        love.graphics.rectangle("fill", (line_x - lr), ((line_y - (ch / 2)) + lr), lw, (ch - lw))
+        love.graphics.circle("fill", line_x, ((line_y - (ch / 2)) + lr), lr)
+        return love.graphics.circle("fill", line_x, ((line_y + (ch / 2)) - lr), lr)
     end
 
 
@@ -452,8 +460,16 @@ function cells:draw_rounded_multi_cursor(x, y, fg)
         local xo = (self.x * cw)
         local yo = (self.y * ch)
         
-        love.graphics.setColor(255, 0, 0)
-        return love.graphics.rectangle("fill", (xo + ((x - 1) * cw)), (yo + ((y - 1) * ch)), cw, ch)
+        local line_x = (xo + ((x - 1) * cw))
+        local line_y = ((yo + ((y - 1) * ch)) + (ch / 2))
+        local lr = round((cw / 10))
+        local lw = (lr * 2)
+        
+        love.graphics.setColor(fg[1], fg[2], fg[3])
+        
+        love.graphics.rectangle("fill", (line_x - lr), (line_y - (ch / 2)), lw, ch)
+        -- love.graphics.circle    "fill" line_x line_y-ch/2 lr
+        return -- love.graphics.circle    "fill" line_x line_y+ch/2 lr
     end
 
 
@@ -474,7 +490,7 @@ function cells:img(x, y, name, fg, zLayer, xe, ye)
 
 function cells:adjustContrastForHighlight(x, y, highlightColor) 
         local ofg = self:get_fg(x, y)
-        if valid((ofg and valid), highlightColor) then 
+        if (valid(ofg) and valid(highlightColor)) then 
             return self:set_fg(x, y, color.adjustForBackground(ofg, highlightColor))
         end
     end

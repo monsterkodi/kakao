@@ -122,8 +122,10 @@ class edit
     
     @deleteLineRangesAndAdjustPositions: lines rngs posl ->
         
-        if lines.mod is "function"
-            lines = lines∙mod()
+        if lines.arr is "function"
+            lines = lines∙arr false
+        else
+            lines = array.from lines
             
         posl = array.from posl
         
@@ -138,7 +140,7 @@ class edit
                 write "nil range at index #{ri}?"
                 ⮐  (lines posl)
             
-            if rng[2] > lines.len or rng[4] > lines.len
+            if rng[2] > lines∙len() or rng[4] > lines∙len()
                 write "range out of bounds?" rng
                 ⮐  (lines posl)
             
@@ -148,7 +150,7 @@ class edit
                 
                 # write ◌y "RNG -------------------------------- #{rng}"
                 
-                if rng[1] == 1 and rng[3] > lines[rng[2]].len
+                if rng[1] == 1 and rng[3] > lines[rng[2]]∙len()
                     lines∙splice rng[2] 1
                 else
                     slcl = lines[rng[2]]∙slice(1 rng[1]-1)
@@ -163,7 +165,7 @@ class edit
                     
             else
                 partialLast = false        
-                if rng[3] == lines[rng[4]].len                   
+                if rng[3] == lines[rng[4]]∙len()
                     lines∙splice rng[4] 1                           
                 else
                     lines∙splice rng[4] 1 lines[rng[4]]∙slice(rng[3])

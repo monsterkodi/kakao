@@ -250,7 +250,7 @@ class draw extends view
 
         for cursor in cursors
             
-            if cursor != mc
+            if not cursor∙eql mc
             
                 if @isCursorVisible cursor
                     x = cursor[1]-s.view[1]+1
