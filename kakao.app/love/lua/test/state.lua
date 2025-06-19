@@ -100,11 +100,11 @@ line 3
         s:moveSelectionOrCursorLines('down')
         
         cur(2, 2)
-        -- txt """
-        --     line 1
-        --     line 2
-        --     line 3
-        --     """
+        txt([[
+line 1
+line 2
+line 3
+]])
     end)
     
     -- 00     00  000   000  000      000000000  000  00000000   000      00000000  
@@ -131,15 +131,14 @@ line 3
         
         mul(array(2, 1), array(2, 2), array(2, 3))
         
-        --s∙moveCursors 'right' {jump:['ws' 'word' 'empty' 'punct']}
-        --        
-        --mul [4 0] [4 1] [4 2]
-        --sel [0 0 1 0] [0 1 1 1] [0 2 1 2]
-        --        
+        s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        mul(array(5, 1), array(5, 2), array(5, 3))
+        
         s:selectAllLines()
         
-        --mul [4 0] [4 1] [4 2]
-        --sel [0 0 6 2] 
+        mul(array(5, 1), array(5, 2), array(5, 3))
+        -- sel [[1 1 1 4]] 
         --        
         --s∙selectAllLines()
         --        

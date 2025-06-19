@@ -204,7 +204,6 @@ function state:setCursors(cursors, opt)
         end
         
         cursors = belt.normalizePositions(cursors, self.s.lines:len())
-        write("CURSORS", cursors)
         
         self.s = self.s:set('cursors', cursors)
         
@@ -1425,11 +1424,13 @@ function state:selectCursorLines()
 
 
 function state:selectAllLines() 
-        local allsel = array(array(1, 1, kseg.width(self.s.lines[self.s.lines:len()]), self.s.lines:len()))
+        local allsel = array(array(1, 1, (kseg.width(self.s.lines[self.s.lines:len()]) + 1), self.s.lines:len()))
         
         if (allsel == self.s.selections) then 
             return self:deselect()
         else 
+            write("selectAllLines", noon(self.s.lines))
+            write("selectAllLines", noon(allsel))
             return self:setSelections(allsel)
         end
     end
@@ -1666,9 +1667,6 @@ function state:joinLines()
 
 function state:moveSelectionOrCursorLines(dir) 
         local indices = belt.lineIndicesForRangesOrPositions(self.s.selections, self.s.cursors)
-        write("moveSelectionOrCursorLines selections ", self.s.selections)
-        write("moveSelectionOrCursorLines cursors ", self.s.cursors)
-        write("moveSelectionOrCursorLines indices ", indices)
         local lines, selections, cursors = belt.moveLineRangesAndPositionsAtIndicesInDirection(self.s.lines, self.s.selections, self.s.cursors, indices, dir)
         
         self:setLines(lines)
@@ -1780,7 +1778,6 @@ function state:delete(typ, jump)
         if (typ == 'back') then 
             for _, cursor in ipairs(cursors) do 
                 local rng = belt.rangeOfWhitespaceLeftToPos(lines, cursor)
-                write("WS RNG " .. tostring(rng) .. " " .. tostring(cursor) .. " " .. tostring(lines[cursor[2]]:slice(cursor[1])) .. "")
                 minBeforeWs = min(minBeforeWs, (rng[3] - rng[1]))
             end
         end
@@ -1795,7 +1792,7 @@ function state:delete(typ, jump)
             
             local remove = 1
             local dc = 0
-            write("DELETE " .. tostring(minBeforeWs) .. " " .. tostring(line) .. "")
+            
             if (typ == 'eol') then line = line:slice(1, x)
             elseif (typ == 'back') then 
                     if (x == 1) then 

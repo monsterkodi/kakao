@@ -8,9 +8,60 @@ use kxk/kxk
         d = {a:1 b:2}
         dict.size d ▸ 2
         
+        a = [1 2 3]
+        dict.size a ▸ 0
+        a∙len() ▸ 3
+        
+        i = immutable a
+        dict.size i ▸ 0
+        i∙len() ▸ 3
+        
+        dict.size post ▸ 1
+        
     ▸ isdict
     
         dict.isdict {a:1 b:2} ▸ true
         dict.isdict {"1":2}   ▸ true
         dict.isdict {a b}     ▸ false
         dict.isdict {}        ▸ false
+        
+    ▸ iskey
+    
+        f = ->
+    
+        dict.iskey "a"     ▸ true
+        dict.iskey "_a"    ▸ true
+        dict.iskey "__x"   ▸ false
+        dict.iskey "class" ▸ false
+        dict.iskey f       ▸ false
+        dict.iskey []      ▸ false
+
+    ▸ iter
+    
+        k = kseg "abc"
+        for k v in dict.iter k
+            switch k
+                1 ➜ v ▸ "a"
+                2 ➜ v ▸ "b"
+                3 ➜ v ▸ "c"
+                
+    ▸ keys
+    
+        d = {a:1 b:2}
+        k = dict.keys(d)
+        k∙sort() 
+        k ▸ ["a" "b"]
+    
+    ▸ values
+    
+        d = {a:1 b:2}
+        v = dict.values(d)
+        v∙sort()
+        v ▸ [1 2]
+    
+    ▸ str
+    
+        d = {a:1 b:2}
+        dict.str d ▸ """
+            a   1
+            b   2"""

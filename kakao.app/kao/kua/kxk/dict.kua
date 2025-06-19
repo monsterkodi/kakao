@@ -8,32 +8,37 @@
 
 class dict
 
+    @iskey: k -> type(k) == "string" and k != "class" and string.sub(k 1 2) != "__"
+    
+    @iter: d ->
+        
+        k = nil
+        -> 
+            k = next(d k)
+            while k and (type(@[k]) == "function" or not dict.iskey(k))
+                k = next(d k)
+            (k d[k])
+
     @size: d ->
     
         s = 0
-        for k v in pairs d
-            if k != "class" and type(k) == "string" and string.sub(k 1 2) != "__"
-                s += 1
+        for _ in dict.iter d
+            s += 1
         s
     
-    @str: d ->
+    @str: d -> noon(d)
     
-        s = ""
-        for k v in pairs d
-            s &= k & ":"  & $v & " "
-        kstr.pop s
-        
     @keys: d ->
     
         a = []
-        for k _ in pairs d
+        for k _ in dict.iter d
             a∙push k
         a
 
     @values: d ->
     
         a = []
-        for _ v in pairs d
+        for _ v in dict.iter d
             a∙push v
         a
     

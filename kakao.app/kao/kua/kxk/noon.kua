@@ -43,25 +43,27 @@ class noon
                     buf += "<v>" 
                 else            
                     visited∙push o
-                    if o.len > 0 or o.class == array
+                    if o.len > 0 or o is array
                         buf += ind != '' and arry and '.' or ''
                         if o.len and ind != ''
                             buf += '\n' 
-                        for i v in ipairs o
+                        for i v in o
                             buf += ind
                             noon.toString v buf ind&indstr true visited
                             if i < o.len ➜ buf += ("\n") 
                     else
                         buf += (arry and '.\n') or ((ind != '') and '\n' or '')
                         maxKey = 2
+                        
                         keys = []
-                        for k v in pairs o
+                        ks = dict.keys o
+                        ks∙sort()
+                        for k in ks
                             ek = escape k true
-                            keys∙push [ek v]
-                            maxKey = math.max maxKey ek.len
-                        maxKey = math.min maxKey 32
-                        keys∙sort((a b) -> a[1] < b[1]) 
-    
+                            keys∙push [ek o[k]]
+                            maxKey = max maxKey ek.len
+                        maxKey = min maxKey 32
+                        
                         for k i in keys∙each()
                             buf += ind
                             if type(k[2]) == "table"

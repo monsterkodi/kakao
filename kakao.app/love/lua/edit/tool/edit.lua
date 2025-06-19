@@ -395,13 +395,13 @@ end)()
 
 
 function edit.static.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(lines, blocks, rngs, posl, dir) 
-        if ((empty(blocks) or ((dir == 'down') and (blocks[#blocks][4] > #lines))) or ((dir == 'up') and (blocks[1][2] <= 0))) then 
+        if ((empty(blocks) or ((dir == 'down') and (blocks[blocks:len()][4] > lines:len()))) or ((dir == 'up') and (blocks[1][2] <= 1))) then 
             return lines, rngs, posl
         end
         
-        local newLines = lines --.asMutable()
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newLines = lines:arr()
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         local rs, re = (function () 
     if (dir == 'down') then 
@@ -465,9 +465,9 @@ end)()
 function edit.static.toggleCommentsInLineRangesAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines --.asMutable()
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newLines = lines:arr()
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         local comStart = kseg('#')
         local minIndent = Infinity
@@ -497,7 +497,7 @@ function edit.static.toggleCommentsInLineRangesAtIndices(lines, rngs, posl, indi
     return 0
                     end
 end)()
-                local newLine = kseg.join(indent, line:slice((#comStart + d)))
+                local newLine = kseg.join(indent, line:slice((comStart:len() + d)))
             end
             
             newLines:splice(index, 1, newLine)
@@ -531,29 +531,27 @@ end)
 function edit.static.deindentLineRangesAndPositionsAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines:map(function (l) 
-    return l
-end)
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newLines = lines:arr()
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         for _, index in ipairs(indices) do 
             local indent, line = belt.splitLineIndent(newLines[index])
             
             if #indent then 
-                local sc = min(4, #indent)
+                local sc = min(4, indent:len())
                 newLines:splice(index, 1, kseg.join(indent:slice(sc), line))
                 
                 for _, pos in ipairs(newPosl) do 
-                    if (pos[1] == index) then 
-                        pos[0] = max(0, (pos[0] - sc))
+                    if (pos[2] == index) then 
+                        pos[1] = max(1, (pos[1] - sc))
                     end
                 end
                 
                 for _, rng in ipairs(newRngs) do 
-                    if (rng[1] == index) then 
-                        rng[0] = max(0, (rng[0] - sc))
-                        rng[2] = max(0, (rng[2] - sc))
+                    if (rng[2] == index) then 
+                        rng[1] = max(1, (rng[1] - sc))
+                        rng[3] = max(1, (rng[3] - sc))
                     end
                 end
             end
@@ -572,11 +570,9 @@ end)
 function edit.static.indentLineRangesAndPositionsAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines:map(function (l) 
-    return l
-end)
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newLines = lines:arr()
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         for _, index in ipairs(indices) do 
             local indent, line = belt.splitLineIndent(newLines[index])
@@ -584,15 +580,15 @@ end)
             newLines[index] = kseg.join(kseg.rep(4), newLines[index])
             
             for _, pos in ipairs(newPosl) do 
-                if (pos[1] == index) then 
-                    pos[0] = pos[0] + 4
+                if (pos[2] == index) then 
+                    pos[1] = pos[1] + 4
                 end
             end
             
             for _, rng in ipairs(newRngs) do 
-                if (rng[1] == index) then 
-                    rng[0] = rng[0] + 4
-                    rng[2] = rng[2] + 4
+                if (rng[2] == index) then 
+                    rng[1] = rng[1] + 4
+                    rng[3] = rng[3] + 4
                 end
             end
         end

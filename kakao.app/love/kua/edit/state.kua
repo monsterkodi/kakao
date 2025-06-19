@@ -194,7 +194,6 @@ class state extends events
             # mainCursor = copy cursors[clamp 0 cursors.len-1 main]
 
         cursors = belt.normalizePositions cursors @s.lines∙len()
-        write "CURSORS" cursors
         
         @s = @s∙set 'cursors' cursors
 
@@ -1190,11 +1189,13 @@ class state extends events
         
     selectAllLines: ->
         
-        allsel = [[1 1 kseg.width(@s.lines[@s.lines∙len()]) @s.lines∙len()]]
+        allsel = [[1 1 kseg.width(@s.lines[@s.lines∙len()])+1 @s.lines∙len()]]
         
         if allsel == @s.selections
             @deselect()
         else
+            write "selectAllLines" noon(@s.lines)
+            write "selectAllLines" noon(allsel)
             @setSelections allsel
         
     # 00     00   0000000   00000000   00000000  
@@ -1383,9 +1384,6 @@ class state extends events
     moveSelectionOrCursorLines: dir ->
         
         indices = belt.lineIndicesForRangesOrPositions @s.selections @s.cursors
-        write "moveSelectionOrCursorLines selections " @s.selections
-        write "moveSelectionOrCursorLines cursors " @s.cursors
-        write "moveSelectionOrCursorLines indices " indices
         (lines selections cursors) = belt.moveLineRangesAndPositionsAtIndicesInDirection @s.lines @s.selections @s.cursors indices dir
         
         @setLines lines
@@ -1490,7 +1488,6 @@ class state extends events
         if typ == 'back'
             for cursor in cursors
                 rng = belt.rangeOfWhitespaceLeftToPos lines cursor
-                write "WS RNG #{rng} #{cursor} #{lines[cursor[2]]∙slice(cursor[1])}"
                 minBeforeWs = min minBeforeWs rng[3]-rng[1]
                 
         for ci in cursors.len..1
@@ -1504,7 +1501,7 @@ class state extends events
             
             remove = 1
             dc = 0
-            write "DELETE #{minBeforeWs} #{line}"
+
             switch typ
                 
                 'eol'  ➜ line = line∙slice(1 x)

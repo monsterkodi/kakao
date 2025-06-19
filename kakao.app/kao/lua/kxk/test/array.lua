@@ -12,7 +12,7 @@ test("array", function()
     test("from", function()
         test.cmp(array.from({1, 2, 3}), array(1, 2, 3))
         test.cmp(type(array.from({1, 2, 3})), "table")
-        test.cmp(array.from({1, 2, 3}):str(), ".\n    1    1\n    2    2\n    3    3")
+        test.cmp(array.from({1, 2, 3}):str(), "1\n2\n3")
         
         local a = array(1, 2, 3)
         local b = array.from(a)

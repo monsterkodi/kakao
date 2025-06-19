@@ -652,13 +652,14 @@ function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl)
 
 
 function belt.static.mergeLineRanges(lines, rngs) 
-        if (empty(rngs) or not is(rngs, array)) then return array() end
-        
+        if empty(rngs) then return array() end --or not (rngs is array)
+        write("mergeLineRanges ", noon(rngs))
         rngs = belt.normalizeRanges(rngs)
+        write("mergeLineRanges ", rngs)
         
         local mrgd = array()
         local tail = nil
-        for i, s in ipairs(rngs) do 
+        for s in rngs:each() do 
             if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < lines[tail[4]]:len())))) then 
                     mrgd:push(s)
                     tail = s

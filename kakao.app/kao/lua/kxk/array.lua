@@ -22,12 +22,7 @@ end
 
 
 function array:__tostring() 
-        local s = "."
-        for i, v in ipairs(self) do 
-            s = s .. ("\n" .. "    " .. tostring(i) .. "    " .. tostring(v))
-        end
-        
-        return s
+    return noon(self)
     end
 
 
@@ -45,7 +40,7 @@ function array.static.from(a)
     end
 
 function array.static.str(a) 
-    return tostring(array.from(a))
+    return noon(a)
     end
 
 

@@ -55,7 +55,7 @@ end)
                     buf = buf + "<v>"
                 else 
                     visited:push(o)
-                    if ((#o > 0) or (o.class == array)) then 
+                    if ((#o > 0) or is(o, array)) then 
                         buf = buf + (((((ind ~= '') and arry) and '.') or ''))
                         if (#o and (ind ~= '')) then 
                             buf = buf + '\n'
@@ -69,17 +69,17 @@ end)
                     else 
                         buf = buf + (((arry and '.\n') or (((ind ~= '') and '\n') or '')))
                         local maxKey = 2
+                        
                         local keys = array()
-                        for k, v in pairs(o) do 
+                        local ks = dict.keys(o)
+                        ks:sort()
+                        for _, k in ipairs(ks) do 
                             local ek = escape(k, true)
-                            keys:push(array(ek, v))
-                            maxKey = math.max(maxKey, #ek)
+                            keys:push(array(ek, o[k]))
+                            maxKey = max(maxKey, #ek)
                         end
                         
-                        maxKey = math.min(maxKey, 32)
-                        keys:sort(function (a, b) 
-    return (a[1] < b[1])
-end)
+                        maxKey = min(maxKey, 32)
                         
                         for k, i in keys:each() do 
                             buf = buf + ind

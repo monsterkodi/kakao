@@ -421,13 +421,14 @@ class belt
     
     @mergeLineRanges: lines rngs ->
         
-        ⮐  [] if empty(rngs) or not (rngs is array)
-        
+        ⮐  [] if empty(rngs) #or not (rngs is array)
+        write "mergeLineRanges " noon(rngs)
         rngs = @normalizeRanges rngs
+        write "mergeLineRanges " rngs
         
         mrgd = []
         tail = nil
-        for i s in ipairs rngs
+        for s in rngs∙each()
             if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]]∙len())
                     mrgd∙push s
                     tail = s

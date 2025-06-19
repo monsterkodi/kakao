@@ -324,12 +324,12 @@ class edit
     
     @cloneLineBlockRangesAndMoveRangesAndPositionsInDirection: lines blocks rngs posl dir ->
         
-        if empty(blocks) or dir == 'down' and blocks[^1][4] > lines.len or dir == 'up' and blocks[1][2] <= 0
+        if empty(blocks) or dir == 'down' and blocks[blocks∙len()][4] > lines∙len() or dir == 'up' and blocks[1][2] <= 1
             ⮐  (lines rngs posl)
         
-        newLines = lines #.asMutable()
-        newRngs  = rngs #.asMutable()
-        newPosl  = posl #.asMutable()
+        newLines = lines∙arr()
+        newRngs  = rngs∙arr()
+        newPosl  = posl∙arr()
         
         (rs re) = switch dir
             'down' ➜ (blocks.len 1)
@@ -373,9 +373,9 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices
         
-        newLines = lines #.asMutable()
-        newRngs  = rngs #.asMutable()
-        newPosl  = posl #.asMutable()
+        newLines = lines∙arr()
+        newRngs  = rngs∙arr()
+        newPosl  = posl∙arr()
         
         comStart  = kseg '#'
         minIndent = Infinity
@@ -399,7 +399,7 @@ class edit
                 newLine = kseg.join comIndent comment indent ' ' line
             else
                 d = if line[comStart.len] == ' ' ➜ 1 ➜ 0
-                newLine = kseg.join indent line∙slice(comStart.len+d)
+                newLine = kseg.join indent line∙slice(comStart∙len()+d)
             newLines∙splice index 1 newLine
         
         (newLines newRngs newPosl)
@@ -426,9 +426,9 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices  
         
-        newLines = lines∙map((l) -> l)
-        newRngs  = rngs #.asMutable()
-        newPosl  = posl #.asMutable()
+        newLines = lines∙arr()
+        newRngs  = rngs∙arr()
+        newPosl  = posl∙arr()
         
         for index in indices
             
@@ -436,17 +436,17 @@ class edit
         
             if indent.len
                 
-                sc = min 4 indent.len
+                sc = min 4 indent∙len()
                 newLines∙splice index 1 kseg.join(indent∙slice(sc) line)
                 
                 for pos in newPosl
-                    if pos[1] == index 
-                        pos[0] = max 0 pos[0] - sc
+                    if pos[2] == index 
+                        pos[1] = max 1 pos[1] - sc
                         
                 for rng in newRngs
-                    if rng[1] == index 
-                        rng[0] = max 0 rng[0] - sc
-                        rng[2] = max 0 rng[2] - sc
+                    if rng[2] == index 
+                        rng[1] = max 1 rng[1] - sc
+                        rng[3] = max 1 rng[3] - sc
         
         (newLines newRngs newPosl)
 
@@ -460,9 +460,9 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices  
         
-        newLines = lines∙map((l) -> l)
-        newRngs  = rngs #.asMutable()
-        newPosl  = posl #.asMutable()
+        newLines = lines∙arr()
+        newRngs  = rngs∙arr()
+        newPosl  = posl∙arr()
         
         for index in indices
             
@@ -471,13 +471,13 @@ class edit
             newLines[index] = kseg.join kseg.rep(4) newLines[index]
             
             for pos in newPosl
-                if pos[1] == index 
-                    pos[0] += 4
+                if pos[2] == index 
+                    pos[1] += 4
                     
             for rng in newRngs
-                if rng[1] == index 
-                    rng[0] += 4
-                    rng[2] += 4
+                if rng[2] == index 
+                    rng[1] += 4
+                    rng[3] += 4
         
         (newLines newRngs newPosl)
         

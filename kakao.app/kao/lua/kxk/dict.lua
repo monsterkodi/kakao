@@ -11,12 +11,28 @@ local dict = class("dict")
     
 
 
+function dict.static.iskey(k) 
+    return (((type(k) == "string") and (k ~= "class")) and (string.sub(k, 1, 2) ~= "__"))
+    end
+
+
+function dict.static.iter(d) 
+        local k = nil
+        return function () 
+            k = next(d, k)
+            while (k and ((type(dict[k]) == "function") or not dict.iskey(k))) do 
+                k = next(d, k)
+            end
+            
+            return k, d[k]
+        end
+    end
+
+
 function dict.static.size(d) 
         local s = 0
-        for k, v in pairs(d) do 
-            if (((k ~= "class") and (type(k) == "string")) and (string.sub(k, 1, 2) ~= "__")) then 
-                s = s + 1
-            end
+        for _ in dict.iter(d) do 
+            s = s + 1
         end
         
         return s
@@ -24,18 +40,13 @@ function dict.static.size(d)
 
 
 function dict.static.str(d) 
-        local s = ""
-        for k, v in pairs(d) do 
-            s = s .. (k .. ":" .. tostring(v) .. " ")
-        end
-        
-        return kstr.pop(s)
+    return noon(d)
     end
 
 
 function dict.static.keys(d) 
         local a = array()
-        for k, _ in pairs(d) do 
+        for k, _ in dict.iter(d) do 
             a:push(k)
         end
         
@@ -45,7 +56,7 @@ function dict.static.keys(d)
 
 function dict.static.values(d) 
         local a = array()
-        for _, v in pairs(d) do 
+        for _, v in dict.iter(d) do 
             a:push(v)
         end
         
