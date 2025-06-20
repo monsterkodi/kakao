@@ -88,17 +88,17 @@ function draw extends view
         syntax = @state.syntax
         view   = @state.s.view
     
-        linel = kseg.width(line) - view[0]
+        linel = kseg.width(line) - view[1] + 1
         
         c = 0
-        firstIndex = kseg.indexAtWidth line view[0] # check if leftmost grapheme is 
-        firstSegi  = kseg.segiAtWidth line view[0]  # cut in half, if yes, start at
+        firstIndex = kseg.indexAtWidth line view[1] # check if leftmost grapheme is 
+        firstSegi  = kseg.segiAtWidth line view[1]  # cut in half, if yes, start at
         c = 1 if firstIndex != firstSegi            # one column to the right 
         
         x = 0
         while x < @cells.cols
             
-            ci = x+view[0]
+            ci = x+view[1]
             si = kseg.indexAtWidth line ci
             
             # log "draw #{@name} #{ci} #{si} #{view} #{r3 kseg.str(line)} #{row} #{@cells.cols} #{@cells.rows} #{y} #{lines.length}"
@@ -139,15 +139,15 @@ function draw extends view
     
     drawRowBackground: row linel ->
         
-        if row+view[1] == @state.mainCursor()[1]
+        if row+view[1]-1 == @state.mainCursor()[2]
             if linel > 0
-                @cells.bg_rect 0 row linel row @color.cursor.main
+                @cells.bg_rect 1 row linel row @color.cursor.main
             if linel < @cells.cols
-                @cells.bg_fill max(0 linel) row -1 row @color.cursor.empty
+                @cells.bg_fill max(1 linel) row -1 row @color.cursor.empty
         else
             if linel > 0
-                @cells.bg_rect 0 row linel row @color.bg
-            @cells.bg_fill max(0 linel) row -1 row @color.empty
+                @cells.bg_rect 1 row linel row @color.bg
+            @cells.bg_fill max(1 linel) row -1 row @color.empty
             
     # 000000000  00000000    0000000   000  000      000  000   000   0000000   
     #    000     000   000  000   000  000  000      000  0000  000  000        

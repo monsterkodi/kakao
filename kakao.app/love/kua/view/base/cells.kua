@@ -49,14 +49,16 @@ class cells
     
     add: x y char fg bg ->
         
-        if @outside(x y) ➜ ⮐  math.huge
+        if @outside(x y) 
+            log ":OUTSIDE" x, y
+            ⮐  math.huge
         
         w = 1
         if w > 1
             if char.length > 4
                 char = '\x1b]66;w=2;' + char + '\x07'
             @set x   y char fg bg
-            @set x+1 y null fg bg
+            @set x+1 y nil  fg bg
             ⮐  2
         else
             @set x y char fg bg
@@ -112,6 +114,8 @@ class cells
 
         if @inside x y
             ⮐  @c[y][x].char
+        else
+            log ":OUTSIDE"
         ''
 
     get_fg: x y ->
@@ -141,11 +145,10 @@ class cells
     isInsideEvent:   evt -> @isInsidePos  @posForEvent(evt)
     isOutsideEvent:  evt -> @isOutsidePos @posForEvent(evt)
         
-    posForScreen:    x y -> (x y) = belt.pos(x y); [x-(@x-1) y-(@y-1)]
-    screenForPos:    x y -> (x y) = belt.pos(x y); [x+(@x-1) y+(@y-1)]
+    posForScreen:    x y -> (x y) = belt.pos(x y); [x-@x+1 y-@y+1]
+    screenForPos:    x y -> (x y) = belt.pos(x y); [x+@x-1 y+@y-1]
     posForEvent:     evt -> 
-    
-        @posForScreen int(evt.x/_G.screen.cw) int(evt.y/_G.screen.ch)
+        @posForScreen ceil(evt.x/_G.screen.cw) ceil(evt.y/_G.screen.ch)
         
     # 0000000     0000000           00000000   00000000   0000000  000000000  
     # 000   000  000                000   000  000       000          000     
@@ -174,7 +177,7 @@ class cells
     # ███       ███  ███████  ███████
 
     bg_fill: x1 y1 x2 y2 bg ->
-    
+
         if x1 < 0 ➜ x1 = @cols + x1 
         if x2 < 0 ➜ x2 = @cols + x2 
 
@@ -184,14 +187,14 @@ class cells
         ⮐  if x1 > x2
         
         for row in y1..y2
-            if row < @rows
+            if row <= @rows
                 for col in x1..x2
-                    if col < @cols
+                    if col <= @cols
                         @set_bg   col row bg
                         @set_char col row ' '
                         
     fill_rect: x1 y1 x2 y2 char fg bg ->
-        
+        log "FILLRECT"
         x1 = clamp 0 @cols-1 x1
         y1 = clamp 0 @rows-1 y1
         if x2 < 0 ➜ x2 = @cols + x2 
@@ -202,11 +205,11 @@ class cells
                 @set col row char fg bg
                 
     fill_row: row x1 x2 char fg bg ->
-        
-        ⮐  if x1 < 0 and x2 < 0
+        log "FILLROW"
+        ⮐  if x1 < 1 and x2 < 1
 
-        x1 = clamp 0 @cols-1 x1
-        x2 = clamp 0 @cols-1 x2
+        x1 = clamp 1 @cols x1
+        x2 = clamp 1 @cols x2
         
         ⮐  if x2 < x1
         
@@ -214,11 +217,11 @@ class cells
             @set col row char fg bg
 
     fill_col: col y1 y2 char fg bg ->
-        
-        ⮐  if y1 < 0 and y2 < 0
 
-        y1 = clamp 0 @rows-1 y1
-        y2 = clamp 0 @rows-1 y2
+        ⮐  if y1 < 1 and y2 < 1
+
+        y1 = clamp 1 @rows y1
+        y2 = clamp 1 @rows y2
         
         ⮐  if y2 < y1
         
@@ -233,8 +236,8 @@ class cells
 
     draw_frame: x1 y1 x2 y2 opt ->
 
-        ⮐  if x1 < 0 and x2 < 0
-        ⮐  if y1 < 0 and y2 < 0
+        ⮐  if x1 < 1 and x2 < 1
+        ⮐  if y1 < 1 and y2 < 1
         
         if x2 < 0 ➜ x2 = @cols + 1 + x2 
         if y2 < 0 ➜ y2 = @rows + 1 + y2 
@@ -321,8 +324,8 @@ class cells
         cw = _G.screen.cw
         ch = _G.screen.ch
         
-        xo = @x*cw
-        yo = @y*ch
+        xo = (@x-1)*cw
+        yo = (@y-1)*ch
         
         line_x = xo + (x-1)*cw
         line_y = yo + (y-1)*ch + ch/2
@@ -340,8 +343,8 @@ class cells
         cw = _G.screen.cw
         ch = _G.screen.ch
         
-        xo = @x*cw
-        yo = @y*ch
+        xo = (@x-1)*cw
+        yo = (@y-1)*ch
         
         line_x = xo + (x-1)*cw
         line_y = yo + (y-1)*ch + ch/2
@@ -385,13 +388,13 @@ class cells
         cw = _G.screen.cw
         ch = _G.screen.ch
         
-        xo = @x*cw
-        yo = @y*ch
+        xo = (@x-1)*cw
+        yo = (@y-1)*ch
+        
         for y in 1..@rows
+            # log "LINE #{y}" @c[y]∙len()
             for x in 1..@cols
                 char = @c[y][x].char
-                # if char != " "
-                #     log "CELLS RENDER" x, y, char
                     
                 if @c[y][x].bg and @c[y][x].bg.len > 0
                     lg.setColor @c[y][x].bg[1]/255 @c[y][x].bg[2]/255 @c[y][x].bg[3]/255

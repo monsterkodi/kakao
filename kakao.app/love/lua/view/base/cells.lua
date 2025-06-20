@@ -83,7 +83,10 @@ function cells:outside(x, y)
 
 
 function cells:add(x, y, char, fg, bg) 
-        if self:outside(x, y) then return math.huge end
+        if self:outside(x, y) then 
+            print(":OUTSIDE", x, y)
+            return math.huge
+        end
         
         local w = 1
         if (w > 1) then 
@@ -92,7 +95,7 @@ function cells:add(x, y, char, fg, bg)
             end
             
             self:set(x, y, char, fg, bg)
-            self:set((x + 1), y, null, fg, bg)
+            self:set((x + 1), y, nil, fg, bg)
             return 2
         else 
             self:set(x, y, char, fg, bg)
@@ -168,6 +171,8 @@ function cells:set_fg_bg(x, y, fg, bg)
 function cells:get_char(x, y) 
         if self:inside(x, y) then 
             return self.c[y][x].char
+        else 
+            print(":OUTSIDE")
         end
         
         return ''
@@ -226,15 +231,15 @@ function cells:isOutsideEvent(evt)
 
 
 function cells:posForScreen(x, y) 
-                     local x, y = belt.pos(x, y) ; return array((x - (self.x - 1)), (y - (self.y - 1)))
+                     local x, y = belt.pos(x, y) ; return array(((x - self.x) + 1), ((y - self.y) + 1))
     end
 
 function cells:screenForPos(x, y) 
-                     local x, y = belt.pos(x, y) ; return array((x + (self.x - 1)), (y + (self.y - 1)))
+                     local x, y = belt.pos(x, y) ; return array(((x + self.x) - 1), ((y + self.y) - 1))
     end
 
 function cells:posForEvent(evt) 
-        return self:posForScreen(int((evt.x / _G.screen.cw)), int((evt.y / _G.screen.ch)))
+        return self:posForScreen(ceil((evt.x / _G.screen.cw)), ceil((evt.y / _G.screen.ch)))
     end
 
 -- 0000000     0000000           00000000   00000000   0000000  000000000  
@@ -279,9 +284,9 @@ function cells:bg_fill(x1, y1, x2, y2, bg)
         if (x1 > x2) then return end
         
         for row in iter(y1, y2) do 
-            if (row < self.rows) then 
+            if (row <= self.rows) then 
                 for col in iter(x1, x2) do 
-                    if (col < self.cols) then 
+                    if (col <= self.cols) then 
                         self:set_bg(col, row, bg)
                         self:set_char(col, row, ' ')
                     end
@@ -292,6 +297,7 @@ function cells:bg_fill(x1, y1, x2, y2, bg)
 
 
 function cells:fill_rect(x1, y1, x2, y2, char, fg, bg) 
+        print("FILLRECT")
         x1 = clamp(0, (self.cols - 1), x1)
         y1 = clamp(0, (self.rows - 1), y1)
         if (x2 < 0) then x2 = (self.cols + x2) end
@@ -306,10 +312,11 @@ function cells:fill_rect(x1, y1, x2, y2, char, fg, bg)
 
 
 function cells:fill_row(row, x1, x2, char, fg, bg) 
-        if ((x1 < 0) and (x2 < 0)) then return end
+        print("FILLROW")
+        if ((x1 < 1) and (x2 < 1)) then return end
         
-        x1 = clamp(0, (self.cols - 1), x1)
-        x2 = clamp(0, (self.cols - 1), x2)
+        x1 = clamp(1, self.cols, x1)
+        x2 = clamp(1, self.cols, x2)
         
         if (x2 < x1) then return end
         
@@ -320,10 +327,10 @@ function cells:fill_row(row, x1, x2, char, fg, bg)
 
 
 function cells:fill_col(col, y1, y2, char, fg, bg) 
-        if ((y1 < 0) and (y2 < 0)) then return end
+        if ((y1 < 1) and (y2 < 1)) then return end
         
-        y1 = clamp(0, (self.rows - 1), y1)
-        y2 = clamp(0, (self.rows - 1), y2)
+        y1 = clamp(1, self.rows, y1)
+        y2 = clamp(1, self.rows, y2)
         
         if (y2 < y1) then return end
         
@@ -340,8 +347,8 @@ function cells:fill_col(col, y1, y2, char, fg, bg)
 
 
 function cells:draw_frame(x1, y1, x2, y2, opt) 
-        if ((x1 < 0) and (x2 < 0)) then return end
-        if ((y1 < 0) and (y2 < 0)) then return end
+        if ((x1 < 1) and (x2 < 1)) then return end
+        if ((y1 < 1) and (y2 < 1)) then return end
         
         if (x2 < 0) then x2 = ((self.cols + 1) + x2) end
         if (y2 < 0) then y2 = ((self.rows + 1) + y2) end
@@ -437,8 +444,8 @@ function cells:draw_rounded_cursor(x, y, fg)
         local cw = _G.screen.cw
         local ch = _G.screen.ch
         
-        local xo = (self.x * cw)
-        local yo = (self.y * ch)
+        local xo = ((self.x - 1) * cw)
+        local yo = ((self.y - 1) * ch)
         
         local line_x = (xo + ((x - 1) * cw))
         local line_y = ((yo + ((y - 1) * ch)) + (ch / 2))
@@ -457,8 +464,8 @@ function cells:draw_rounded_multi_cursor(x, y, fg)
         local cw = _G.screen.cw
         local ch = _G.screen.ch
         
-        local xo = (self.x * cw)
-        local yo = (self.y * ch)
+        local xo = ((self.x - 1) * cw)
+        local yo = ((self.y - 1) * ch)
         
         local line_x = (xo + ((x - 1) * cw))
         local line_y = ((yo + ((y - 1) * ch)) + (ch / 2))
@@ -508,13 +515,13 @@ function cells:render()
         local cw = _G.screen.cw
         local ch = _G.screen.ch
         
-        local xo = (self.x * cw)
-        local yo = (self.y * ch)
+        local xo = ((self.x - 1) * cw)
+        local yo = ((self.y - 1) * ch)
+        
         for y in iter(1, self.rows) do 
+            -- log "LINE #{y}" @c[y]∙len()
             for x in iter(1, self.cols) do 
                 local char = self.c[y][x].char
-                -- if char != " "
-                --     log "CELLS RENDER" x, y, char
                 
                 if (self.c[y][x].bg and (#self.c[y][x].bg > 0)) then 
                     lg.setColor((self.c[y][x].bg[1] / 255), (self.c[y][x].bg[2] / 255), (self.c[y][x].bg[3] / 255))

@@ -192,22 +192,30 @@ XYZ
     end)
     
     test("mergeLineRanges", function()
-        local lines = array('1234567890', '1234567890', '1234567890')
+        local lines = kseg.segls([[
+1234567890
+1234567890
+1234567890]])
         
-        test.cmp(belt.mergeLineRanges(lines, array(array(0, 0, 9, 9), array(1, 1, 2, 2))), array(array(0, 0, 9, 9)))
-        test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 2, 2), array(0, 0, 9, 9))), array(array(0, 0, 9, 9)))
-        test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 2, 2), array(0, 0, 9, 9), array(0, 0, 10, 0), array(0, 8, 9, 9))), array(array(0, 0, 9, 9)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 10, 10), array(2, 2, 3, 3))), array(array(1, 1, 10, 10)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(2, 2, 3, 3), array(1, 1, 10, 10))), array(array(1, 1, 10, 10)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(2, 2, 3, 3), array(1, 1, 10, 10), array(1, 1, 11, 1), array(1, 9, 10, 10))), array(array(1, 1, 10, 10)))
         
-        test.cmp(belt.mergeLineRanges(lines, array(array(4, 0, 6, 0), array(8, 0, 10, 0))), array(array(4, 0, 6, 0), array(8, 0, 10, 0)))
-        test.cmp(belt.mergeLineRanges(lines, array(array(4, 0, 6, 0), array(7, 0, 10, 0))), array(array(4, 0, 6, 0), array(7, 0, 10, 0)))
-        test.cmp(belt.mergeLineRanges(lines, array(array(4, 0, 6, 0), array(6, 0, 10, 0))), array(array(4, 0, 10, 0)))
-        test.cmp(belt.mergeLineRanges(lines, array(array(4, 0, 6, 0), array(5, 0, 10, 0))), array(array(4, 0, 10, 0)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(5, 1, 7, 1), array(9, 1, 11, 1))), array(array(5, 1, 7, 1), array(9, 1, 11, 1)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(5, 1, 7, 1), array(8, 1, 11, 1))), array(array(5, 1, 7, 1), array(8, 1, 11, 1)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(5, 1, 7, 1), array(7, 1, 11, 1))), array(array(5, 1, 11, 1)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(5, 1, 7, 1), array(6, 1, 11, 1))), array(array(5, 1, 11, 1)))
         
-        test.cmp(belt.mergeLineRanges(lines, array(array(4, 1, 10, 1), array(0, 2, 4, 2))), array(array(4, 1, 4, 2)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(5, 1, 11, 2), array(1, 3, 5, 3))), array(array(5, 1, 5, 3)))
+        
+        test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 10, 1), array(1, 2, 10, 2), array(1, 3, 10, 3))), array(array(1, 1, 10, 1), array(1, 2, 10, 2), array(1, 3, 10, 3)))
+        test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 11, 1), array(1, 2, 11, 2), array(1, 3, 11, 3))), array(array(1, 1, 11, 3)))
+        
+        test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 9, 1), array(1, 2, 9, 2), array(1, 3, 9, 3), array(9, 1, 10, 1), array(9, 2, 10, 2), array(9, 3, 10, 3))), array(array(1, 1, 10, 1), array(1, 2, 10, 2), array(1, 3, 10, 3)))
     end)
     
     test("rangeOfClosestWordToPos", function()
-        local lines = array('1 2  3   4', '   ab ghij')
+        local lines = kseg.segls("1 2  3   4\n   ab ghij")
         
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(1, 1)), array(1, 1, 2, 1))
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(2, 1)), array(3, 1, 4, 1))
@@ -245,8 +253,7 @@ XYZ
     end)
     
     test("rangeOfWordOrWhitespaceLeftToPos", function()
-        local lines = array('1 2  3   4', '   ab  ghij')
-        local segls = kseg.segls(lines:join('\n'))
+        local segls = kseg.segls("1 2  3   4\n   ab  ghij")
         
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(1, 1)), array(1, 1, 1, 1))
         test.cmp(belt.rangeOfWordOrWhitespaceLeftToPos(segls, array(2, 1)), array(1, 1, 2, 1))
@@ -296,19 +303,19 @@ XYZ
     end)
     
     test("isFullLineRange", function()
-        local lines = array('', '124', 'abcdef')
+        local segls = kseg.segls('\n124\nabcdef')
         
-        test.cmp(belt.isFullLineRange(lines, array(1, 1, 1, 2)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 1, 1, 1)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 2, 4, 2)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 2, 6, 2)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 2, 3, 2)), false)
-        test.cmp(belt.isFullLineRange(lines, array(2, 2, 4, 2)), false)
-        test.cmp(belt.isFullLineRange(lines, array(2, 3, 4, 3)), false)
-        test.cmp(belt.isFullLineRange(lines, array(1, 3, 14, 3)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 3, 7, 3)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 2, 1, 3)), true)
-        test.cmp(belt.isFullLineRange(lines, array(1, 3, 6, 3)), false)
+        test.cmp(belt.isFullLineRange(segls, array(1, 1, 1, 2)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 1, 1, 1)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 2, 4, 2)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 2, 6, 2)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 2, 3, 2)), false)
+        test.cmp(belt.isFullLineRange(segls, array(2, 2, 4, 2)), false)
+        test.cmp(belt.isFullLineRange(segls, array(2, 3, 4, 3)), false)
+        test.cmp(belt.isFullLineRange(segls, array(1, 3, 14, 3)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 3, 7, 3)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 2, 1, 3)), true)
+        test.cmp(belt.isFullLineRange(segls, array(1, 3, 6, 3)), false)
     end)
     
     -- 0000000    000       0000000    0000000  000   000   0000000  
@@ -361,7 +368,7 @@ line 6
     -- 0000000   000        000   000  000   000  
     
     test("isSpanLineRange", function()
-        local lines = array('', '124', 'abcdef')
+        local lines = kseg.segls('\n124\nabcdef')
         
         test.cmp(belt.isSpanLineRange(lines, array(1, 1, 1, 1)), false)
         test.cmp(belt.isSpanLineRange(lines, array(1, 2, 4, 2)), false)
@@ -480,7 +487,7 @@ abc
     end)
     
     test("splitLineRanges", function()
-        local lines = belt.linesForText([[
+        local lines = belt.seglsForText([[
 1
 
 12
@@ -508,7 +515,7 @@ def]])
     end)
     
     test("rangesForLinesSplitAtPositions ", function()
-        local lines = belt.linesForText([[
+        local lines = belt.seglsForText([[
 123
 456
 
@@ -536,7 +543,7 @@ def]])
     test("widthOfLines", function()
         --       12345678901234567890123456789012345678901234567890 
         local text = "ｔｈｅ　ｑｕｉｃｋ　ｂｒｏｗｎ　ｆｏｘ　ｊｕｍｐｓ"
-        local lines = belt.linesForText(text)
+        local lines = belt.seglsForText(text)
         
         test.cmp(belt.widthOfLines(lines), 50)
     end)
@@ -597,7 +604,7 @@ def
     -- ███   ███  ████████  ███████      ███     ████████  ███████       ███        ███   ███  ███  ███   ███  ███████ 
     
     test("rangesOfNestedPairsAtPositions", function()
-        local lines = belt.linesForText([[
+        local lines = belt.seglsForText([[
 01234567
 
 '45""6'
@@ -615,7 +622,7 @@ def
     end)
     
     test("spansOfNestedPairsAtPositions", function()
-        local lines = belt.linesForText([[
+        local lines = belt.seglsForText([[
 01234567
 
 '45""6'

@@ -190,15 +190,15 @@ class gutter extends view
                         fg = sc
                     else
                         df = if @state.hasFocus ➜ 1 ➜ 0.5
-                        # if
-                        #     y == mainCursor[1] ➜ fg = color.darken(@color.cursor_main df)
-                        #     hasCursor          ➜ fg = @color.cursor_multi
-                        #     spansel            ➜ fg = @color.selection
-                        #     selected           ➜ fg = @color.selection_line
-                        #     highlighted        ➜ fg = @color.highlight
+                        if
+                            y == mainCursor[2] ➜ fg = color.darken(@color.cursor_main df)
+                            hasCursor          ➜ fg = @color.cursor_multi
+                            spansel            ➜ fg = @color.selection
+                            selected           ➜ fg = @color.selection_line
+                            highlighted        ➜ fg = @color.highlight
 
-                        # if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
-                        #     fg = color.darken fg 
+                        if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
+                            fg = color.darken fg 
                     
                     bg = @color.bg
                     
@@ -211,7 +211,7 @@ class gutter extends view
                                  
                     # if selected and not @cells.screen.t.hasFocus
                     #     bg = color.darken bg 
-                    cr = if (y < @state.s.lines∙len()) ➜ c ➜ ' '
+                    cr = if (y <= @state.s.lines∙len()) ➜ c ➜ ' '
 
                     @cells∙set col row cr fg bg
                     

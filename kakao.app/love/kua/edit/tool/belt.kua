@@ -423,7 +423,7 @@ class belt
         mrgd = []
         tail = nil
         for s in rngs∙each()
-            if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]]∙len())
+            if empty(mrgd) or s[2] > tail[4]+1 or s[2] == tail[4] and s[1] > tail[3] or s[2] == tail[4]+1 and (s[1] > 1 or tail[3] < lines[tail[4]]∙len()+1)
                     mrgd∙push s
                     tail = s
             else if s[4] > tail[4] or s[4] == tail[4] and s[3] > tail[3]

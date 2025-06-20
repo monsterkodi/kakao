@@ -49,7 +49,7 @@ function draw:draw()
             self:drawLine(lines[y], y, row)
         end
         
-        self:drawTrailingRows()
+        -- @drawTrailingRows()        
         self:drawHighlights()
         self:drawSelections()
         
@@ -124,7 +124,6 @@ function draw:drawLine(line, y, row)
             x = x + cw
             
             if (x <= self.cells.cols) then 
-                -- log "drawChar" c, row, ch, @cells
                 c = c + (self.cells:add(c, row, ch, fg, bg))
             end
             
@@ -225,7 +224,7 @@ function draw:drawSelections()
         --     spanbg = color.darken spanbg
         --     linebg = color.darken linebg
         
-        for si, selection in ipairs(self.state.s.selections) do 
+        for selection, si in self.state.s.selections:each() do 
             local bg = (function () 
     if belt.isSpanLineRange(self.state.s.lines, selection) then 
     return spanbg else 
@@ -234,11 +233,11 @@ function draw:drawSelections()
 end)()
             
             for li in iter(selection[2], selection[4]) do 
-                local y = (li - self.state.s.view[2])
+                local y = ((li - self.state.s.view[2]) + 1)
                 
-                if (y >= self.cells.rows) then break end
+                if (y > self.cells.rows) then break end
                 
-                local xs = 0
+                local xs = 1
                 if (li == selection[2]) then 
                     xs = selection[1]
                 end
@@ -247,12 +246,13 @@ end)()
                 if (li == selection[4]) then 
                     xe = selection[3]
                 else 
-                    xe = kseg.width(self.state.s.lines[li])
+                    xe = (kseg.width(self.state.s.lines[li]) + 2)
                 end
                 
                 for x = xs, xe-1 do 
-                    self.cells:set_bg((x - self.state.s.view[1]), y, bg)
-                    self.cells:adjustContrastForHighlight((x - self.state.s.view[1]), y, bg)
+                    -- log " " si, " " selection, li, y, @cells.rows, xs, xe, x-@state.s.view[1]
+                    self.cells:set_bg(((x - self.state.s.view[1]) + 1), y, bg)
+                    -- @cells∙adjustContrastForHighlight x-@state.s.view[1] y bg
                 end
             end
         end

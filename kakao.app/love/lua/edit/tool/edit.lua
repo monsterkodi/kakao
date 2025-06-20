@@ -265,7 +265,7 @@ function edit.static.moveCursorsInSameLineBy(cursors, cursor, delta)
 
 function edit.static.addLinesBelowPositionsToRanges(lines, posl, rngs) 
         local newp = array()
-        local newr = rngs --.asMutable()
+        local newr = rngs:arr()
         
         
         function addLineAtIndex(c, i) 
@@ -323,7 +323,7 @@ function edit.static.removeLinesAtPositionsFromRanges(lines, posl, rngs)
 
 
 function edit.static.rangeForJoiningLine(lines, idx) 
-    return array(#lines[idx], idx, 0, (idx + 1))
+    return array((lines[idx]:len() + 1), idx, 1, (idx + 1))
     end
 
 
@@ -639,7 +639,7 @@ function edit.static.extendLineRangesByMovingPositionsInDirection(lines, rngs, p
             if (dir == 'left') or (dir == 'right') then nc = belt.numCharsFromPosToWordOrPunctInDirection(lines, pos, dir, opt) ; pos[1] = pos[1] + nc
             elseif (dir == 'up') then pos[2] = pos[2] - 1
             elseif (dir == 'down') then pos[2] = pos[2] + 1
-            elseif (dir == 'eol') then pos[1] = #line
+            elseif (dir == 'eol') then pos[1] = line:len()
             elseif (dir == 'bol') then pos[1] = 1
             elseif (dir == 'bof') then pos[1] = 1 ; pos[2] = 1
             elseif (dir == 'eof') then pos[2] = lines:len() ; pos[1] = lines[lines:len()]:len()
@@ -660,7 +660,7 @@ end)()
             if (dir == 'left') then rng[1] = (rng[1] + nc)
             elseif (dir == 'right') then rng[3] = (rng[3] + nc)
             elseif (dir == 'up') then rng[2] = max(1, (rng[2] - 1))
-            elseif (dir == 'down') then rng[3] = min(lines:len(), (rng[4] + 1))
+            elseif (dir == 'down') then rng[4] = min(lines:len(), (rng[4] + 1))
             elseif (dir == 'eol') then rng[3] = Infinity
             elseif (dir == 'bol') then rng[1] = 1
             elseif (dir == 'bof') then rng[1] = 1 ; rng[2] = 1
@@ -680,11 +680,11 @@ end)()
             end
             
             if (rng[2] <= lines:len()) then 
-                rng[1] = clamp(1, lines[rng[2]]:len(), rng[1])
+                rng[1] = clamp(1, (lines[rng[2]]:len() + 1), rng[1])
             end
             
             if (rng[4] <= lines:len()) then 
-                rng[3] = clamp(1, lines[rng[4]]:len(), rng[3])
+                rng[3] = clamp(1, (lines[rng[4]]:len() + 1), rng[3])
             end
         end
         

@@ -466,7 +466,7 @@ class text
             split += belt.splitLineRange(lines rng includeEmpty)
         split
         
-    @isLinesPosInside:  lines pos -> 1 <= pos[2] and pos[2] <= lines∙len() and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])
+    @isLinesPosInside:  lines pos -> 1 <= pos[2] and pos[2] <= lines∙len() and 1 <= pos[1] and pos[1] <= kseg.width(lines[pos[2]])+1
     @isLinesPosOutside: lines pos -> not belt.isLinesPosInside lines pos 
     
     @isValidLineIndex:   lines li -> 1 <= li and li <= lines∙len()
@@ -476,7 +476,7 @@ class text
         
     @isFullLineRange: lines rng -> (1 <= rng[2] and rng[2] <= rng[4] and rng[4] <= lines∙len()) and (rng[1] == 1) and (rng[2] == rng[4] and rng[3] > lines[rng[4]]∙len() or rng[3] == 1 and rng[2] < rng[4])
     
-    @isSpanLineRange: lines rng -> (1 <= rng[2] and rng[2] == rng[4] and rng[4] < lines∙len()) and (rng[1] > 1 or rng[3] < lines[rng[2]]∙len())
+    @isSpanLineRange: lines rng -> (1 <= rng[2] and rng[2] == rng[4] and rng[4] <= lines∙len()) and (rng[1] > 1 or rng[3] <= lines[rng[2]]∙len())
         
     @rangeOfLine: lines y -> [1 y kseg.width(lines[y]) y]
     

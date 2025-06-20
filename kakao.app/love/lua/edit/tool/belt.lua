@@ -654,7 +654,7 @@ function belt.static.mergeLineRanges(lines, rngs)
         local mrgd = array()
         local tail = nil
         for s in rngs:each() do 
-            if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < lines[tail[4]]:len())))) then 
+            if (((empty(mrgd) or (s[2] > (tail[4] + 1))) or ((s[2] == tail[4]) and (s[1] > tail[3]))) or ((s[2] == (tail[4] + 1)) and ((s[1] > 1) or (tail[3] < (lines[tail[4]]:len() + 1))))) then 
                     mrgd:push(s)
                     tail = s
             else if ((s[4] > tail[4]) or ((s[4] == tail[4]) and (s[3] > tail[3]))) then 

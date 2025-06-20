@@ -160,10 +160,10 @@ function KED:arrange(si)
         local dcw = 0
         local fcw = 0
         
-        self.dircol:layout(0, 0, dcw, si.rows)
-        self.status:layout(dcw, 0, (si.cols - dcw), 1)
-        self.funcol:layout((si.cols - fcw), 1, fcw, (si.rows - 1))
-        return self.editor:layout(dcw, 1, ((si.cols - dcw) - fcw), (si.rows - 1))
+        self.dircol:layout(1, 1, dcw, si.rows)
+        self.status:layout(dcw, 1, (si.cols - dcw), 1)
+        self.funcol:layout((si.cols - fcw), 2, fcw, (si.rows - 1))
+        return self.editor:layout(dcw, 2, ((si.cols - dcw) - fcw), (si.rows - 1))
     end
 
 --  ███████   ███   ███  ███  █████████
@@ -205,10 +205,8 @@ function KED:newFile()
         self.status:setFile('')
         
         self.editor.state.syntax.ext = 'txt'
-        self.editor.state:loadLines(array('hello world!1', 'hello world!2', 'hello world!3'))
-        
-        -- @t.setCursor 0 0
-        -- @t.setTitle 'kėd'
+        -- @editor.state∙loadLines ['hello world! line 1' 'hello world! line 2' 'hello world! line 3']
+        self.editor.state:loadSegls(kseg.segls("hello world! line 1\nhello world! line 2\nhello world! line 3"))
         
         if self.editor.mapscr then 
             self.editor.mapscr:reload()

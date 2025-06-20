@@ -610,7 +610,7 @@ function text.static.splitLineRanges(lines, rngs, includeEmpty)
 
 
 function text.static.isLinesPosInside(lines, pos) 
-    return ((((1 <= pos[2]) and (pos[2] <= lines:len())) and (1 <= pos[1])) and (pos[1] <= kseg.width(lines[pos[2]])))
+    return ((((1 <= pos[2]) and (pos[2] <= lines:len())) and (1 <= pos[1])) and (pos[1] <= (kseg.width(lines[pos[2]]) + 1)))
     end
 
 function text.static.isLinesPosOutside(lines, pos) 
@@ -638,7 +638,7 @@ function text.static.isFullLineRange(lines, rng)
 
 
 function text.static.isSpanLineRange(lines, rng) 
-    return ((((1 <= rng[2]) and (rng[2] == rng[4])) and (rng[4] < lines:len())) and ((rng[1] > 1) or (rng[3] < lines[rng[2]]:len())))
+    return ((((1 <= rng[2]) and (rng[2] == rng[4])) and (rng[4] <= lines:len())) and ((rng[1] > 1) or (rng[3] <= lines[rng[2]]:len())))
     end
 
 

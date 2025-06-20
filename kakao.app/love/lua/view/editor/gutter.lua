@@ -227,15 +227,16 @@ function gutter:draw()
     return 0.5
                              end
 end)()
-                        -- if
-                        --     y == mainCursor[1] ➜ fg = color.darken(@color.cursor_main df)
-                        --     hasCursor          ➜ fg = @color.cursor_multi
-                        --     spansel            ➜ fg = @color.selection
-                        --     selected           ➜ fg = @color.selection_line
-                        --     highlighted        ➜ fg = @color.highlight
+                        if (y == mainCursor[2]) then fg = color.darken(self.color.cursor_main, df)
+                        elseif hasCursor then fg = self.color.cursor_multi
+                        elseif spansel then fg = self.color.selection
+                        elseif selected then fg = self.color.selection_line
+                        elseif highlighted then fg = self.color.highlight
+                        end
                         
-                        -- if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
-                        --     fg = color.darken fg 
+                        if (((selected or hasCursor) or highlighted) and not self.cells.screen.t.hasFocus) then 
+                            fg = color.darken(fg)
+                        end
                     end
                     
                     local bg = self.color.bg
@@ -252,7 +253,7 @@ end)()
                     -- if selected and not @cells.screen.t.hasFocus
                     --     bg = color.darken bg 
                     local cr = (function () 
-    if (y < self.state.s.lines:len()) then 
+    if (y <= self.state.s.lines:len()) then 
     return c else 
     return ' '
                          end

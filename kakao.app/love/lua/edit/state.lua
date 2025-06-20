@@ -198,11 +198,10 @@ function state:setCursors(cursors, opt)
         if is(main, "table") then main = belt.indexOfPosInPositions(main, cursors) end
         if (is(main, "number") and (main < 0)) then main = ((cursors:len() + main) - 1) end
         
-        local mainCursor = self:mainCursor()
+        local mc = self:mainCursor()
         
         if (main and (main > 0)) then 
-            mainCursor = cursors[clamp(1, cursors:len(), main)]
-            -- mainCursor = copy cursors[clamp 0 cursors.len-1 main]
+            mc = cursors[clamp(1, cursors:len(), main)]
         end
         
         cursors = belt.normalizePositions(cursors, self.s.lines:len())
@@ -211,7 +210,7 @@ function state:setCursors(cursors, opt)
         
         main = -1
         for idx, cur in ipairs(cursors) do 
-            if (cur == mainCursor) then 
+            if cur:eql(mc) then 
                 main = idx
                 break
             end
@@ -849,7 +848,7 @@ end)()
         end
         
         local mc = belt.traversePositionsInDirection(newCursors, self:mainCursor(), dir)
-        print("EXPAND", mc)
+        
         return self:setCursors(newCursors, {main = mc, adjust = 'topBotDelta'})
     end
 
@@ -912,15 +911,15 @@ function state:delCursorsInRange(rng)
 
 function state:moveCursors(dir, opt) 
         if is(dir, array) then 
-            if (dir[0] == 'bos') then 
+            if (dir[1] == 'bos') then 
                     if self:moveCursorsToStartOfSelections() then return end
-                    dir = dir:slice(1)
-            elseif (dir[0] == 'eos') then 
+                    dir = dir:slice(2)
+            elseif (dir[1] == 'eos') then 
                     if self:moveCursorsToEndOfSelections() then return end
-                    dir = dir:slice(1)
+                    dir = dir:slice(2)
             end
             
-            dir = dir[0]
+            dir = dir[1]
         end
         
         opt = opt or ({})
@@ -939,20 +938,20 @@ function state:moveCursors(dir, opt)
             if (dir == 'left') or (dir == 'right') then c[1] = c[1] + (belt.numCharsFromPosToWordOrPunctInDirection(lines, c, dir, opt))
             elseif (dir == 'up') then c[2] = c[2] - (opt.count)
             elseif (dir == 'down') then c[2] = c[2] + (opt.count)
-            elseif (dir == 'eol') then c[1] = kseg.width(self.s.lines[c[2]])
-            elseif (dir == 'bol') then c[1] = 0
-            elseif (dir == 'bof') then c[1] = 0 ; c[2] = 0
-            elseif (dir == 'eof') then c[2] = (self.s.lines:len() - 1) ; c[1] = kseg.width(line)
+            elseif (dir == 'eol') then c[1] = (kseg.width(self.s.lines[c[2]]) + 1)
+            elseif (dir == 'bol') then c[1] = 1
+            elseif (dir == 'bof') then c[1] = 1 ; c[2] = 1
+            elseif (dir == 'eof') then c[2] = (self.s.lines:len() - 1) ; c[1] = (kseg.width(line) + 1)
             elseif (dir == 'ind') then c[1] = belt.numIndent(line)
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; c[1] = (function () 
-    if (c[1] < ind) then 
-    return ind else 
-    return kseg.width(line)
+    if (c[1] <= ind) then 
+    return (ind + 1) else 
+    return (kseg.width(line) + 1)
                                                                   end
 end)()
             elseif (dir == 'ind_bol') then local ind = belt.numIndent(line) ; c[1] = (function () 
-    if (c[1] > ind) then 
-    return ind else 
+    if (c[1] > (ind + 1)) then 
+    return (ind + 1) else 
     return 1
                                                                   end
 end)()
@@ -1000,8 +999,8 @@ function state:moveCursorsToEndOfSelections()
 function state:moveCursorsToEndOfLines() 
         local cursors = self:allCursors()
         
-        for i, cur in ipairs(cursors) do 
-            cur[2] = belt.lineRangeAtPos(self.s.lines, cur)[3]
+        for _, cur in ipairs(cursors) do 
+            cur[1] = belt.lineRangeAtPos(self.s.lines, cur)[3]
         end
         
         self:setCursors(cursors)
@@ -1038,7 +1037,6 @@ end)
 
 function state:moveCursorsAndSelect(dir, opt) 
         local selections, cursors = belt.extendLineRangesByMovingPositionsInDirection(self.s.lines, self.s.selections, self.s.cursors, dir, opt)
-        
         self:setSelections(selections)
         return self:setCursors(cursors, {adjust = 'topBotDelta'})
     end
@@ -1446,9 +1444,6 @@ function state:selectCursorLines()
 
 function state:selectAllLines() 
         local allsel = array(array(1, 1, (kseg.width(self.s.lines[self.s.lines:len()]) + 1), self.s.lines:len()))
-        -- write ◌r allsel allsel.class
-        -- write ◌g @s.selections @s.selections.class
-        -- write ◌b allsel∙eql(@s.selections)
         if allsel:eql(self.s.selections) then 
             return self:deselect()
         else 
@@ -1679,7 +1674,7 @@ function state:joinLines()
         
         local idxs = belt.lineIndicesForPositions(self.s.cursors)
         local rngs = belt.rangesForJoiningLines(self.s.lines, idxs)
-        
+        write("JOINLINES RNGS ", rngs)
         return self:deleteRanges(rngs, self:allCursors())
     end
 
@@ -1790,13 +1785,12 @@ function state:deindentSelectedOrCursorLines()
 function state:delete(typ, jump) 
         if (array('back', 'next'):has(typ) and valid(self.s.selections)) then return self:deleteSelection() end
         
-        -- lines = @s.lines∙map((l) -> l) # mutable copy
         local lines = self.s.lines:arr()
         
         local cursors = self:allCursors()
         
-        if (((#cursors == 1) and array('back', 'next'):has(typ)) and belt.isLinesPosOutside(lines, cursors[1])) then 
-            return self:setMainCursor(kseg.width(lines[cursors[1][2]]), cursors[1][2])
+        if (((cursors:len() == 1) and array('back', 'next'):has(typ)) and belt.isLinesPosOutside(lines, cursors[1])) then 
+            return self:setMainCursor((kseg.width(lines[cursors[1][2]]) + 1), cursors[1][2])
         end
         
         local minBeforeWs = Infinity
@@ -1816,15 +1810,15 @@ function state:delete(typ, jump)
             local line = lines[y]
             
             local remove = 1
-            local dc = 0
+            local dc = 1
             
             if (typ == 'eol') then line = line:slice(1, x)
             elseif (typ == 'back') then 
                     if (x == 1) then 
-                        if (#cursors == 1) then 
+                        if (cursors:len() == 1) then 
                             if (y <= 1) then return end
                             y = y - 1
-                            x = kseg.width(lines[y])
+                            x = (kseg.width(lines[y]) + 1)
                             remove = 2
                             line = (lines[y] + line)
                             cursor[1] = x
@@ -1835,23 +1829,19 @@ function state:delete(typ, jump)
                             local rng = belt.rangeOfWordOrWhitespaceLeftToPos(lines, cursor)
                             if rng then 
                                 dc = (rng[3] - rng[1])
-                            else 
-                                dc = 1
                             end
                         else 
                             if (minBeforeWs > 1) then 
-                                dc = (((x - 1) % 4) + 1)
+                                dc = ((x - 1) % 4)
                                 if (dc == 0) then 
                                     dc = 4
                                 end
                                 
                                 dc = min(minBeforeWs, dc)
-                            else 
-                                dc = 1
                             end
                         end
                         
-                        if (x <= kseg.width(line)) then 
+                        if (x <= (kseg.width(line) + 1)) then 
                             -- segi = kseg.indexAtWidth line x
                             local segi = kseg.segiAtWidth(line, x)
                             line = (line:slice(1, ((segi - dc) - 1)) + line:slice(segi))
@@ -1860,7 +1850,7 @@ function state:delete(typ, jump)
             elseif (typ == 'next') then 
                     if (x == kseg.width(lines[y])) then 
                         if (#cursors == 1) then 
-                            if (y >= #lines) then return end
+                            if (y > #lines) then return end
                             x = kseg.width(lines[y])
                             remove = 2
                             line = (line + lines[(y + 1)])

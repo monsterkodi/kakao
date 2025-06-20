@@ -114,6 +114,14 @@ line 3
         s:moveCursors('left', {jump = array('ws', 'word', 'empty', 'punct')})
         
         cur(7, 2)
+        
+        s:moveCursors(array('bos', 'ind_bol'))
+        
+        cur(1, 2)
+        
+        s:moveCursors(array('eos', 'ind_eol'))
+        
+        cur(7, 2)
     end)
     
     -- 00     00   0000000   000   000  00000000        000      000  000   000  00000000   0000000  
@@ -219,8 +227,7 @@ line 3
         s:moveCursorsAndSelect('left', {jump = array('word')})
         
         mul(array(1, 1), array(1, 2), array(1, 3))
-        -- sel [1 1 6 1] [1 2 6 2] [1 3 6 3]
-        -- sel [1 1 6 3]
+        sel(array(1, 1, 6, 1), array(1, 2, 6, 2), array(1, 3, 6, 3))
         
         --s∙insert '\n' 
         --        
@@ -383,64 +390,100 @@ line 3
     -- 0000000    00000000  0000000  00000000     000     00000000        0000000    000   000   0000000  000   000  
     
     test("delete back", function()
-        --s.syntax.ext = 'kode'
-        --s∙loadLines belt.linesForText("1234567890")
-        --        
-        --s∙setMainCursor 1 1 
-        --s∙delete 'back'
-        --txt "1234567890"
-        --mul [1 1]
-        --        
-        --s∙setMainCursor 2 1 
-        --s∙delete 'back'
-        --txt "234567890"
-        --mul [1 1]
-        --        
-        --s∙setMainCursor 5 1 
-        --s∙delete 'back'
-        --txt "23467890"
-        --mul [4 1]
-        --        
-        --s∙delete 'back'
-        --txt "2367890"
-        --mul [3 1]
-        --        
-        --text = """
-        --    xxxx            1
-        --    xxxx         .  2
-        --    xxxx    .       3
-        --    """
-        --        
-        --s∙loadLines belt.linesForText(text)
-        --        
-        --s∙setMainCursor 17 1 
-        --s∙expandCursors 'down'
-        --s∙expandCursors 'down'
-        --        
-        --mul [17 1] [17 2] [17 3]
+        s.syntax.ext = 'kode'
+        s:loadLines(belt.linesForText("1234567890"))
         
-        -- s∙delete 'back'
-        -- mul [15 1] [15 2] [15 3]
-        -- txt """
-        --     xxxx          1
-        --     xxxx         .2
-        --     xxxx    .     3
-        --     """
+        s:setMainCursor(1, 1)
+        s:delete('back')
+        txt("1234567890")
+        mul(array(1, 1))
         
-        --s∙delete 'back'
-        --mul [13 1] [13 2] [13 3]
-        --        
-        --s∙delete 'back'
-        --mul [12 1] [12 2] [12 3]
-        --        
-        --s∙delete 'back'
-        --mul [9 1] [9 2] [9 3]
-        --        
-        --s∙delete 'back'
-        --mul [8 1] [8 2] [8 3]
-        --        
-        --s∙delete 'back'
-        --mul [4 1] [4 2] [4 3]
+        s:setMainCursor(2, 1)
+        s:delete('back')
+        txt("234567890")
+        mul(array(1, 1))
+        
+        s:setMainCursor(5, 1)
+        s:delete('back')
+        txt("23467890")
+        mul(array(4, 1))
+        
+        s:delete('back')
+        txt("2367890")
+        mul(array(3, 1))
+        
+        s:loadSegls(kseg.segls("xxxx         .  2"))
+        s:setMainCursor(17, 1)
+        s:delete('back')
+        mul(array(15, 1))
+        txt("xxxx         .2")
+        
+        text = [[
+xxxx            1
+xxxx         .  2
+xxxx    .       3
+]]
+        
+        s:loadLines(belt.linesForText(text))
+        
+        s:setMainCursor(17, 1)
+        s:expandCursors('down')
+        s:expandCursors('down')
+        
+        mul(array(17, 1), array(17, 2), array(17, 3))
+        
+        s:delete('back')
+        mul(array(15, 1), array(15, 2), array(15, 3))
+        txt([[
+xxxx          1
+xxxx         .2
+xxxx    .     3
+]])
+        
+        s:delete('back')
+        mul(array(14, 1), array(14, 2), array(14, 3))
+        
+        txt([[
+xxxx         1
+xxxx         2
+xxxx    .    3
+]])
+        
+        s:delete('back')
+        mul(array(13, 1), array(13, 2), array(13, 3))
+        
+        txt([[
+xxxx        1
+xxxx        2
+xxxx    .   3
+]])
+        
+        s:delete('back')
+        mul(array(10, 1), array(10, 2), array(10, 3))
+        
+        txt([[
+xxxx     1
+xxxx     2
+xxxx    .3
+]])
+        
+        s:delete('back')
+        mul(array(9, 1), array(9, 2), array(9, 3))
+        
+        txt([[
+xxxx    1
+xxxx    2
+xxxx    3
+]])
+        
+        s:delete('back')
+        mul(array(5, 1), array(5, 2), array(5, 3))
+        
+        txt([[
+xxxx1
+xxxx2
+xxxx3
+]])
     end)
     
     --  0000000  000       0000000   000   000  00000000         000      000  000   000  00000000   0000000  
@@ -449,60 +492,61 @@ line 3
     -- 000       000      000   000  000  0000  000              000      000  000  0000  000            000  
     --  0000000  0000000   0000000   000   000  00000000         0000000  000  000   000  00000000  0000000   
     
-    --▸ cloneSelectionAndCursorLines
-    --    
-    --    text = """
-    --        line 1
-    --        line 2
-    --        line 3
-    --        """
-    --    s∙loadLines belt.linesForText(text)
-    --    s∙cloneSelectionAndCursorLines 'down'
-    --    
-    --    txt """
-    --        line 1
-    --        line 1
-    --        line 2
-    --        line 3
-    --        """
-    --        
-    --    mul [1 1]
-    --        
-    --    s∙expandCursors 'down'
-    --    
-    --    mul [1 1] [1 2]
-    --    
-    --    s∙cloneSelectionAndCursorLines 'down'
-    --     
-    --    txt """
-    --        line 1
-    --        line 1
-    --        line 2
-    --        line 1
-    --        line 2
-    --        line 3
-    --        """
-    --        
-    --    mul [1 3] [1 4] 
-    --    
-    --    s∙expandCursors 'down'
-    --    s∙moveCursors 'right'
-    --    
-    --    mul [1 3] [1 4] [1 5] 
-    --    
-    --    s∙cloneSelectionAndCursorLines 'down'
-    --    
-    --    txt """
-    --        line 1
-    --        line 1
-    --        line 2
-    --        line 1
-    --        line 2
-    --        line 3
-    --        line 1
-    --        line 2
-    --        line 3
-    --        """
+    test("cloneSelectionAndCursorLines", function()
+        text = [[
+line 1
+line 2
+line 3
+]]
+        
+        s:loadLines(belt.linesForText(text))
+        s:cloneSelectionAndCursorLines('down')
+        
+        txt([[
+line 1
+line 1
+line 2
+line 3
+]])
+        
+        mul(array(1, 2))
+        
+        s:expandCursors('down')
+        
+        mul(array(1, 2), array(1, 3))
+        
+        s:cloneSelectionAndCursorLines('down')
+        
+        txt([[
+line 1
+line 1
+line 2
+line 1
+line 2
+line 3
+]])
+        
+        mul(array(1, 4), array(1, 5))
+        
+        s:expandCursors('down')
+        s:moveCursors('right')
+        
+        mul(array(2, 4), array(2, 5), array(2, 6))
+        
+        s:cloneSelectionAndCursorLines('down')
+        
+        txt([[
+line 1
+line 1
+line 2
+line 1
+line 2
+line 3
+line 1
+line 2
+line 3
+]])
+    end)
     
     -- 0000000    00000000  000            00000000    0000000   000   000   0000000   00000000   0000000  
     -- 000   000  000       000            000   000  000   000  0000  000  000        000       000       
@@ -510,35 +554,35 @@ line 3
     -- 000   000  000       000            000   000  000   000  000  0000  000   000  000            000  
     -- 0000000    00000000  0000000        000   000  000   000  000   000   0000000   00000000  0000000   
     
-    --▸ deleteRanges
-    --    
-    --    text = """
-    --        line 1
-    --        line 2
-    --        line 3
-    --        """
-    --        
-    --    s∙loadLines belt.linesForText(text)
-    --    s∙deleteRanges [[1 1 3 1]] 
-    --    
-    --    txt """
-    --        ne 1
-    --        line 2
-    --        line 3
-    --        """
-    --        
-    --    s∙deleteRanges [[3 1 3 2]]
-    --    
-    --    txt """
-    --        nene 2
-    --        line 3
-    --        """
-    --        
-    --    s∙deleteRanges [[7 1 1 2]]
-    --    
-    --    txt """
-    --        nene 2line 3
-    --        """
+    test("deleteRanges", function()
+        text = [[
+line 1
+line 2
+line 3
+]]
+        
+        s:loadLines(belt.linesForText(text))
+        s:deleteRanges(array(array(1, 1, 3, 1)))
+        
+        txt([[
+ne 1
+line 2
+line 3
+]])
+        
+        s:deleteRanges(array(array(3, 1, 3, 2)))
+        
+        txt([[
+nene 2
+line 3
+]])
+        
+        s:deleteRanges(array(array(7, 1, 1, 2)))
+        
+        txt([[
+nene 2line 3
+]])
+    end)
     
     --       000   0000000   000  000   000        000      000  000   000  00000000   0000000  
     --       000  000   000  000  0000  000        000      000  0000  000  000       000       
@@ -553,12 +597,14 @@ line 2
 line 3
 ]]
         
-        -- s∙loadLines belt.linesForText(text)            
-        -- s∙joinLines()
+        s:loadLines(belt.linesForText(text))
+        s:setMainCursor(1, 1)
+        mul(array(1, 1))
+        s:joinLines()
         
-        -- txt """
-        --     line 1line 2
-        --     line 3
-        --     """
+        txt([[
+line 1line 2
+line 3
+]])
     end)
     end)
