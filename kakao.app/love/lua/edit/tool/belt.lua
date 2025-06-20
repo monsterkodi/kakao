@@ -596,8 +596,8 @@ function belt.static.frontmostSpans(spans)
 function belt.static.lineIndicesForRange(rng) 
         local indices = array()
         
-        for li in iter(rng[1], rng[3]) do 
-            if ((li ~= rng[3]) or (rng[2] > 0)) then 
+        for li in iter(rng[2], rng[4]) do 
+            if ((li ~= rng[4]) or (rng[3] > 1)) then 
                 indices:push(li)
             end
         end
@@ -625,18 +625,16 @@ function belt.static.lineIndicesForRanges(rngs)
 
 function belt.static.blockRangesForRangesAndPositions(lines, rngs, posl) 
         local blocks = array()
-        
         local indices = belt.lineIndicesForRangesAndPositions(rngs, posl)
-        
         if empty(indices) then return blocks end
         
-        local block = array(1, indices[1], 0, 0)
-        for index, ii in ipairs(indices) do 
-            block[3] = index
+        local block = array(1, indices[1], 1, 1)
+        for ii, index in ipairs(indices) do 
+            block[4] = index
             if (indices[(ii + 1)] ~= (index + 1)) then 
-                block[2] = lines[index]:len()
+                block[3] = (lines[index]:len() + 1)
                 blocks:push(block)
-                block = array(1, indices[(ii + 1)], 0, 0)
+                block = array(1, indices[(ii + 1)], 1, 1)
             end
         end
         

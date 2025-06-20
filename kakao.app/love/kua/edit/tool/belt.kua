@@ -374,8 +374,8 @@ class belt
         
         indices = []
         
-        for li in rng[1]..rng[3]
-            if li != rng[3] or rng[2] > 0
+        for li in rng[2]..rng[4]
+            if li != rng[4] or rng[3] > 1
                 indices∙push li
         
         indices
@@ -398,18 +398,16 @@ class belt
     @blockRangesForRangesAndPositions: lines rngs posl ->
         
         blocks = []
-        
         indices = @lineIndicesForRangesAndPositions rngs posl
-        
         ⮐  blocks if empty indices
         
-        block = [1 indices[1] 0 0]
-        for index ii in indices
-            block[3] = index
+        block = [1 indices[1] 1 1]
+        for ii index in indices
+            block[4] = index
             if indices[ii+1] != index+1
-                block[2] = lines[index]∙len()
+                block[3] = lines[index]∙len()+1
                 blocks∙push block
-                block = [1 indices[ii+1] 0 0]
+                block = [1 indices[ii+1] 1 1]
         blocks
                 
     # 00     00  00000000  00000000    0000000   00000000  

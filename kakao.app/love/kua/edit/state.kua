@@ -45,7 +45,6 @@ class state extends events
             'ctrl+alt+down'                     ➜ ⮐  @singleCursorPage 'down'
             'shift+ctrl+alt+up'                 ➜ ⮐  @moveCursors 'up'    {count:16}
             'shift+ctrl+alt+down'               ➜ ⮐  @moveCursors 'down'  {count:16}
-                
                                                      
             'cmd+left'  'ctrl+left'             ➜ ⮐  @moveCursors ['bos' 'ind_bol']
             'cmd+right' 'ctrl+right'            ➜ ⮐  @moveCursors ['eos' 'ind_eol']
@@ -784,6 +783,7 @@ class state extends events
     # 000   000   0000000       0      00000000  
     
     moveCursors: dir opt ->
+    
         if dir is array
             switch dir[0]
                 'bos' ➜ 

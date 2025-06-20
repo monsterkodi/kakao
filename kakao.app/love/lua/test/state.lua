@@ -82,6 +82,40 @@ line 3
         txt(text)
     end)
     
+    test("moveCursors", function()
+        s:loadSegls(belt.seglsForText(text))
+        
+        s:setMainCursor(2, 2)
+        
+        s:moveCursors('left')
+        
+        cur(1, 2)
+        
+        s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        cur(5, 2)
+        
+        s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        cur(6, 2)
+        
+        s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        cur(7, 2)
+        
+        s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        cur(8, 2)
+        
+        s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        cur(9, 2)
+        
+        s:moveCursors('left', {jump = array('ws', 'word', 'empty', 'punct')})
+        
+        cur(7, 2)
+    end)
+    
     -- 00     00   0000000   000   000  00000000        000      000  000   000  00000000   0000000  
     -- 000   000  000   000  000   000  000             000      000  0000  000  000       000       
     -- 000000000  000   000   000 000   0000000         000      000  000 0 000  0000000   0000000   
@@ -89,6 +123,9 @@ line 3
     -- 000   000   0000000       0      00000000        0000000  000  000   000  00000000  0000000   
     
     test("move lines", function()
+        s:loadSegls(belt.seglsForText(text))
+        s:setMainCursor(2, 2)
+        
         s:moveSelectionOrCursorLines('up')
         cur(2, 1)
         txt([[

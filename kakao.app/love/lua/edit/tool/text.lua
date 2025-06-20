@@ -841,8 +841,8 @@ function text.static.jumpDelta(line, px, dx, jump)
             return (ci - px)
         else 
             local ci = (px - 1)
-            if (ci < 0) then return 0 end
-            if ((ci >= line:len()) and (jump:find('empty') >= 1)) then return ((line:len() - ci) - 1) end
+            if (ci < 1) then return 0 end
+            if ((ci > line:len()) and (jump:find('empty') >= 1)) then return (line:len() - ci) end
             local cat = belt.categoryForChar(belt.lineChar(line, ci))
             if (jump:find(cat) < 1) then return dx end
             while (((1 <= ci) and (ci <= line:len())) and (belt.categoryForChar(belt.lineChar(line, ci)) == cat)) do 

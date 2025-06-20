@@ -64,96 +64,95 @@ XYZ
     -- 000   000  000   000  000 0 000  000        
     --  0000000    0000000   000   000  000        
     
-    --▸ jumpDelta
-    --    
-    --    line = '1  '
-    --    
-    --    belt.jumpDelta line 0  1 ['empty'] ▸ 1
-    --    belt.jumpDelta line 1  1 ['empty'] ▸ 1
-    --    belt.jumpDelta line 2  1 ['empty'] ▸ 1
-    --    belt.jumpDelta line 3  1 ['empty'] ▸ 1
-    --    belt.jumpDelta line 4  1 ['empty'] ▸ 1
-    --    
-    --    line = '    a = b ->  '
-    --    
-    --    belt.jumpDelta line 0  1 ['ws'] ▸  4
-    --    belt.jumpDelta line 1  1 ['ws'] ▸  3
-    --    belt.jumpDelta line 2  1 ['ws'] ▸  2
-    --    belt.jumpDelta line 3  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 4  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 5  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 6  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 7  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 8  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 9  1 ['ws'] ▸  1
-    --    belt.jumpDelta line 10 1 ['ws'] ▸  1
-    --    belt.jumpDelta line 11 1 ['ws'] ▸  1
-    --    belt.jumpDelta line 12 1 ['ws'] ▸  2
-    --           
-    --    line = '  ab += cd ;;  '
-    --    
-    --    belt.jumpDelta line 0   1 ['word'] ▸  1
-    --    belt.jumpDelta line 1   1 ['word'] ▸  1
-    --    belt.jumpDelta line 2   1 ['word'] ▸  2
-    --    belt.jumpDelta line 3   1 ['word'] ▸  1
-    --    belt.jumpDelta line 4   1 ['word'] ▸  1
-    --    belt.jumpDelta line 5   1 ['word'] ▸  1
-    --    belt.jumpDelta line 6   1 ['word'] ▸  1
-    --    belt.jumpDelta line 7   1 ['word'] ▸  1
-    --    belt.jumpDelta line 8   1 ['word'] ▸  2
-    --    belt.jumpDelta line 9   1 ['word'] ▸  1
-    --    belt.jumpDelta line 10  1 ['word'] ▸  1
-    --    belt.jumpDelta line 11  1 ['word'] ▸  1
-    --    
-    --    belt.jumpDelta line 0   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 1   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 2   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 3   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 4   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 5   1 ['punct'] ▸  2
-    --    belt.jumpDelta line 6   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 7   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 8   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 9   1 ['punct'] ▸  1
-    --    belt.jumpDelta line 10  1 ['punct'] ▸  1
-    --    belt.jumpDelta line 11  1 ['punct'] ▸  2
-    --    
-    --    belt.jumpDelta line 0   1 ['ws' 'word' 'punct'] ▸  2
-    --    belt.jumpDelta line 1   1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 2   1 ['ws' 'word' 'punct'] ▸  2
-    --    belt.jumpDelta line 3   1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 4   1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 5   1 ['ws' 'word' 'punct'] ▸  2
-    --    belt.jumpDelta line 6   1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 7   1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 8   1 ['ws' 'word' 'punct'] ▸  2
-    --    belt.jumpDelta line 9   1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 10  1 ['ws' 'word' 'punct'] ▸  1
-    --    belt.jumpDelta line 11  1 ['ws' 'word' 'punct'] ▸  2
-    --    
-    --    belt.jumpDelta line 0   -1 ['ws' 'word' 'punct'] ▸   0
-    --    belt.jumpDelta line 1   -1 ['ws' 'word' 'punct'] ▸  -1
-    --    belt.jumpDelta line 2   -1 ['ws' 'word' 'punct'] ▸  -2
-    --    belt.jumpDelta line 3   -1 ['ws' 'word' 'punct'] ▸  -1
-    --    belt.jumpDelta line 4   -1 ['ws' 'word' 'punct'] ▸  -2
-    --    belt.jumpDelta line 5   -1 ['ws' 'word' 'punct'] ▸  -1
-    --    belt.jumpDelta line 6   -1 ['ws' 'word' 'punct'] ▸  -1
-    --    belt.jumpDelta line 7   -1 ['ws' 'word' 'punct'] ▸  -2
-    --    belt.jumpDelta line 8   -1 ['ws' 'word' 'punct'] ▸  -1
-    --    belt.jumpDelta line 9   -1 ['ws' 'word' 'punct'] ▸  -1
-    --    belt.jumpDelta line 10  -1 ['ws' 'word' 'punct'] ▸  -2
-    --    belt.jumpDelta line 11  -1 ['ws' 'word' 'punct'] ▸  -1
-    --    
-    --    line = '  '
-    --    
-    --    belt.jumpDelta line 5  -1 ['empty'] ▸ -3
-    --    belt.jumpDelta line 4  -1 ['empty'] ▸ -2
-    --    belt.jumpDelta line 3  -1 ['empty'] ▸ -1
-    --    
-    --    belt.jumpDelta line 5  -1 ['ws'] ▸ -1
-    --    belt.jumpDelta line 4  -1 ['ws'] ▸ -1
-    --    belt.jumpDelta line 3  -1 ['ws'] ▸ -1
-    --    belt.jumpDelta line 2  -1 ['ws'] ▸ -2
+    test("jumpDelta", function()
+        local line = kseg('1  ')
+        
+        test.cmp(belt.jumpDelta(line, 1, 1, array('empty')), 1)
+        test.cmp(belt.jumpDelta(line, 2, 1, array('empty')), 1)
+        test.cmp(belt.jumpDelta(line, 3, 1, array('empty')), 1)
+        test.cmp(belt.jumpDelta(line, 4, 1, array('empty')), 1)
+        
+        line = kseg('    a = b ->  ')
+        
+        test.cmp(belt.jumpDelta(line, 1, 1, array('ws')), 4)
+        test.cmp(belt.jumpDelta(line, 2, 1, array('ws')), 3)
+        test.cmp(belt.jumpDelta(line, 3, 1, array('ws')), 2)
+        test.cmp(belt.jumpDelta(line, 4, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 5, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 6, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 7, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 8, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 9, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 10, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 11, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 12, 1, array('ws')), 1)
+        test.cmp(belt.jumpDelta(line, 13, 1, array('ws')), 2)
+        
+        line = kseg('  ab += cd ;;  ')
+        
+        test.cmp(belt.jumpDelta(line, 1, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 2, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 3, 1, array('word')), 2)
+        test.cmp(belt.jumpDelta(line, 4, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 5, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 6, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 7, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 8, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 9, 1, array('word')), 2)
+        test.cmp(belt.jumpDelta(line, 10, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 11, 1, array('word')), 1)
+        test.cmp(belt.jumpDelta(line, 12, 1, array('word')), 1)
+        
+        test.cmp(belt.jumpDelta(line, 1, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 2, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 3, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 4, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 5, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 6, 1, array('punct')), 2)
+        test.cmp(belt.jumpDelta(line, 7, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 8, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 9, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 10, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 11, 1, array('punct')), 1)
+        test.cmp(belt.jumpDelta(line, 12, 1, array('punct')), 2)
+        
+        test.cmp(belt.jumpDelta(line, 1, 1, array('ws', 'word', 'punct')), 2)
+        test.cmp(belt.jumpDelta(line, 2, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 3, 1, array('ws', 'word', 'punct')), 2)
+        test.cmp(belt.jumpDelta(line, 4, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 5, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 6, 1, array('ws', 'word', 'punct')), 2)
+        test.cmp(belt.jumpDelta(line, 7, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 8, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 9, 1, array('ws', 'word', 'punct')), 2)
+        test.cmp(belt.jumpDelta(line, 10, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 11, 1, array('ws', 'word', 'punct')), 1)
+        test.cmp(belt.jumpDelta(line, 12, 1, array('ws', 'word', 'punct')), 2)
+        
+        test.cmp(belt.jumpDelta(line, 1, -1, array('ws', 'word', 'punct')), 0)
+        test.cmp(belt.jumpDelta(line, 2, -1, array('ws', 'word', 'punct')), -1)
+        test.cmp(belt.jumpDelta(line, 3, -1, array('ws', 'word', 'punct')), -2)
+        test.cmp(belt.jumpDelta(line, 4, -1, array('ws', 'word', 'punct')), -1)
+        test.cmp(belt.jumpDelta(line, 5, -1, array('ws', 'word', 'punct')), -2)
+        test.cmp(belt.jumpDelta(line, 6, -1, array('ws', 'word', 'punct')), -1)
+        test.cmp(belt.jumpDelta(line, 7, -1, array('ws', 'word', 'punct')), -1)
+        test.cmp(belt.jumpDelta(line, 8, -1, array('ws', 'word', 'punct')), -2)
+        test.cmp(belt.jumpDelta(line, 9, -1, array('ws', 'word', 'punct')), -1)
+        test.cmp(belt.jumpDelta(line, 10, -1, array('ws', 'word', 'punct')), -1)
+        test.cmp(belt.jumpDelta(line, 11, -1, array('ws', 'word', 'punct')), -2)
+        test.cmp(belt.jumpDelta(line, 12, -1, array('ws', 'word', 'punct')), -1)
+        
+        line = kseg('  ')
+        
+        test.cmp(belt.jumpDelta(line, 6, -1, array('empty')), -3)
+        test.cmp(belt.jumpDelta(line, 5, -1, array('empty')), -2)
+        test.cmp(belt.jumpDelta(line, 4, -1, array('empty')), -1)
+        
+        test.cmp(belt.jumpDelta(line, 6, -1, array('ws')), -1)
+        test.cmp(belt.jumpDelta(line, 5, -1, array('ws')), -1)
+        test.cmp(belt.jumpDelta(line, 4, -1, array('ws')), -1)
+        test.cmp(belt.jumpDelta(line, 3, -1, array('ws')), -2)
+    end)
     
     test("isPosInsideRange", function()
         test.cmp(belt.isPosInsideRange(array(1, 1), array(1, 1, 2, 1)), true)
@@ -338,21 +337,21 @@ line 1
 line 2
 ]])
         
-        -- belt.blockRangesForRangesAndPositions lines [] [[1 1] [1 2]]    ▸ [[1 1 7 2]]
-        --belt.blockRangesForRangesAndPositions lines [[1 1 6 2]] [[1 1]] ▸ [[1 1 7 2]]
-        --belt.blockRangesForRangesAndPositions lines [[1 2 6 2]] [[1 1]] ▸ [[1 1 7 2]]
+        test.cmp(belt.blockRangesForRangesAndPositions(lines, array(), array(array(1, 1), array(1, 2))), array(array(1, 1, 7, 2)))
+        test.cmp(belt.blockRangesForRangesAndPositions(lines, array(array(1, 1, 6, 2)), array(array(1, 1))), array(array(1, 1, 7, 2)))
+        test.cmp(belt.blockRangesForRangesAndPositions(lines, array(array(1, 2, 6, 2)), array(array(1, 1))), array(array(1, 1, 7, 2)))
         
-        --lines = kseg.segls """
-        --    line 1
-        --    line 2
-        --    line 3
-        --    line 4
-        --    line 5
-        --    line 6
-        --    """
-        --    
-        --belt.blockRangesForRangesAndPositions lines [] [[1 1] [1 2] [1 3]] ▸ [[0 1 6 3]]
-        --belt.blockRangesForRangesAndPositions lines [] [[6 5] [4 3] [2 1]] ▸ [[0 1 6 1] [0 3 6 3] [0 5 6 5]]
+        lines = kseg.segls([[
+line 1
+line 2
+line 3
+line 4
+line 5
+line 6
+]])
+        
+        test.cmp(belt.blockRangesForRangesAndPositions(lines, array(), array(array(1, 1), array(1, 2), array(1, 3))), array(array(1, 1, 7, 3)))
+        test.cmp(belt.blockRangesForRangesAndPositions(lines, array(), array(array(6, 5), array(4, 3), array(2, 1))), array(array(1, 1, 7, 1), array(1, 3, 7, 3), array(1, 5, 7, 5)))
     end)
     
     --  0000000  00000000    0000000   000   000  

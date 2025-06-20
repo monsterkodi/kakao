@@ -632,8 +632,8 @@ class text
             ci - px
         else
             ci = px - 1
-            ⮐  0 if ci < 0
-            if ci >= line∙len() and jump∙find('empty') >= 1 ➜ ⮐  line∙len() - ci - 1
+            ⮐  0 if ci < 1
+            if ci > line∙len() and jump∙find('empty') >= 1 ➜ ⮐  line∙len() - ci
             cat = belt.categoryForChar belt.lineChar(line ci)
             ⮐  dx if jump∙find(cat) < 1
             while 1 <= ci and ci <= line∙len() and belt.categoryForChar(belt.lineChar(line ci)) == cat
