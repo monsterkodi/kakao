@@ -79,7 +79,7 @@ class editor extends draw
             
         if @mapscr
             if @name == 'editor'
-                mw = math.min(12 math.floor(w/10))
+                mw = min 12 floor(w/10)
             else
                 mw = 12
             m = if @mapscr.visible() ➜ mw ➜ 0

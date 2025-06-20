@@ -146,7 +146,7 @@ class KED
         
         dcw = 0
         fcw = 0
-                
+
         @dircol∙layout 1             1     dcw               si.rows  
         @status∙layout dcw           1     si.cols-dcw       1        
         @funcol∙layout si.cols-fcw   2     fcw               si.rows-1

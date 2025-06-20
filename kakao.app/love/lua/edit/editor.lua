@@ -88,7 +88,7 @@ function editor:layout(x, y, w, h)
         
         if self.mapscr then 
             if (self.name == 'editor') then 
-                local mw = math.min(12, math.floor((w / 10)))
+                local mw = min(12, floor((w / 10)))
             else 
                 local mw = 12
             end

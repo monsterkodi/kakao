@@ -65,7 +65,7 @@ function draw:draw()
         end
         
         if self.gutter then self.gutter:draw() end
-        if self.mapscr then self.mapscr:draw() end
+        -- if @mapscr ➜ @mapscr∙draw()
         if self.scroll then self.scroll:draw() end
         
         return mode.postDraw(self.state)

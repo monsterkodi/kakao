@@ -58,7 +58,7 @@ class draw extends view
             @complete∙drawPopup()
         
         if @gutter ➜ @gutter∙draw()
-        if @mapscr ➜ @mapscr∙draw()
+        # if @mapscr ➜ @mapscr∙draw()
         if @scroll ➜ @scroll∙draw()
         
         mode.postDraw @state

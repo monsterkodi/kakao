@@ -47,13 +47,13 @@ function scroll:onMouse(event)
         if (event.type == 'press') then 
                 if self.hover then 
                     self.doDrag = true
-                    post.emit('pointer', 'grabbing')
+                    post:emit('pointer', 'grabbing')
                     return self:scrollToPixel(event.pixel)
                 end
         elseif (event.type == 'drag') then 
                 if self.doDrag then 
                     self.hover = true
-                    post.emit('pointer', 'grab')
+                    post:emit('pointer', 'grab')
                     return self:scrollToPixel(event.pixel)
                 end
                 
@@ -87,12 +87,12 @@ function scroll:isActive()
 function scroll:scrollToPixel(pixel) 
         local csz = self.screen:size()
         
-        local view = self.state.s.view --.asMutable()
+        local view = self.state.s.view:arr()
         
         local rowf = ((pixel[2] / csz[2]) - self.cells.y)
-        view[2] = floor(((rowf * ((#self.state.s.lines - self.cells.rows) + 1)) / (self.cells.rows - 1)))
+        view[2] = floor(((rowf * ((self.state.s.lines:len() - self.cells.rows) + 1)) / (self.cells.rows - 1)))
         
-        local maxY = (#self.state.s.lines - self.cells.rows)
+        local maxY = (self.state.s.lines:len() - self.cells.rows)
         
         if (maxY > 1) then 
             view[2] = min(maxY, view[2])
@@ -100,11 +100,11 @@ function scroll:scrollToPixel(pixel)
         
         view[2] = max(1, view[2])
         
-        if (view == self.state.s.view) then return true end
+        if view:eql(self.state.s.view) then return true end
         
         self.state:setView(view)
         
-        return {redraw = true}
+        return true
     end
 
 -- 0000000    00000000    0000000   000   000  
@@ -119,8 +119,9 @@ function scroll:draw()
         local ch = _G.screen.ch
         
         local rows = self.cells.rows
-        
-        self.cells:fill_col(1, 1, rows, ' ', nil, self.color.bg)
+        -- log "DRAW" @cells.cols, rows
+        -- @cells∙fill_col 1 1 rows ' ' nil @color.bg
+        self.cells:fill_col(1, 1, rows, 'x', array(55, 0, 0), array(255, 0, 0))
         
         -- lnum = @state.s.lines.len
         -- 
@@ -139,7 +140,9 @@ function scroll:draw()
         -- squares∙place x int(y+w/2) w h-w fg
         -- 
         -- sircels∙place x y     w (ky or {fg: @color.dot}) 1111
-        return -- sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*cw-1) or {fg: @color.dot}) 1111
+        -- sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*cw-1) or {fg: @color.dot}) 1111
+        
+        return self:render()
     end
 
 return scroll

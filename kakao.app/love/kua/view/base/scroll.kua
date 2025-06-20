@@ -44,14 +44,14 @@ class scroll extends view
             
                 if @hover
                     @doDrag = true
-                    post.emit 'pointer''grabbing' 
+                    post∙emit 'pointer''grabbing' 
                     ⮐  @scrollToPixel event.pixel
                     
             'drag'
             
                 if @doDrag
                     @hover = true
-                    post.emit 'pointer''grab' 
+                    post∙emit 'pointer''grab' 
                     ⮐  @scrollToPixel event.pixel
                     
                 @hover = false
@@ -79,22 +79,22 @@ class scroll extends view
     
         csz = @screen∙size()
 
-        view = @state.s.view #.asMutable()
+        view = @state.s.view∙arr()
         
         rowf = pixel[2]/csz[2]-@cells.y
-        view[2] = floor(rowf * (@state.s.lines.len - @cells.rows + 1)  / (@cells.rows-1))
+        view[2] = floor(rowf * (@state.s.lines∙len() - @cells.rows + 1)  / (@cells.rows-1))
         
-        maxY = @state.s.lines.len - @cells.rows
+        maxY = @state.s.lines∙len() - @cells.rows
         
         if maxY > 1
             view[2] = min maxY view[2] 
         view[2] = max 1 view[2]
         
-        ⮐  true if view == @state.s.view
+        ⮐  true if view∙eql @state.s.view
         
         @state∙setView view 
         
-        {redraw:true}
+        true
         
     # 0000000    00000000    0000000   000   000  
     # 000   000  000   000  000   000  000 0 000  
@@ -108,8 +108,9 @@ class scroll extends view
         ch = _G.screen.ch        
         
         rows = @cells.rows
-        
-        @cells∙fill_col 1 1 rows ' ' nil @color.bg
+        # log "DRAW" @cells.cols, rows
+        # @cells∙fill_col 1 1 rows ' ' nil @color.bg
+        @cells∙fill_col 1 1 rows 'x' [55 0 0] [255 0 0]
         
         # lnum = @state.s.lines.len
         # 
@@ -129,5 +130,7 @@ class scroll extends view
         # 
         # sircels∙place x y     w (ky or {fg: @color.dot}) 1111
         # sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*cw-1) or {fg: @color.dot}) 1111
+        
+        @render()
 
 ⮐  scroll
