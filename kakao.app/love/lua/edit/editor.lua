@@ -161,7 +161,7 @@ function editor:onWheel(event)
         if (event.dir == 'up') or (event.dir == 'down') or (event.dir == 'left') or (event.dir == 'right') then self.state:scrollView(event.dir, steps)
         end
         
-        return {redraw = true}
+        return true
     end
 
 --  0000000  000   000  00000000    0000000   0000000   00000000   
@@ -196,7 +196,7 @@ function editor:isCursorVisible(mc)
 function editor:grabFocus() 
         if self:hidden() then self:show() end
         post:emit('focus', self.name)
-        return self:redraw()
+        return -- @redraw()
     end
 
 
@@ -215,11 +215,6 @@ function editor:onFocus(name)
 -- 0000000    0000000   000   000  0000000    000000000  000000000  
 -- 000   000  000       000   000  000   000  000   000  000   000  
 -- 000   000  00000000  0000000    000   000  000   000  00     00  
-
-
-function editor:redraw() 
-    return post:emit('redraw')
-    end
 
 -- 000   000  00000000  000   000  
 -- 000  000   000        000 000   

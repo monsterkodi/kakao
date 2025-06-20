@@ -360,8 +360,8 @@ class fileeditor extends editor
             if y < @dragStart[1] 
                 start = [@dragStart[2] @dragStart[1]]
             
-            if @state.select start [x y]
-                @redraw()
+            # if @state.select start [x y]
+            #     @redraw()
             ⮐ 
         # super event
         @

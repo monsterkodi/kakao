@@ -548,19 +548,20 @@ function state:scrollView(dir, steps)
         elseif (dir == 'down') then sy = steps
         end
         
-        local view = self.s.view:mut()
+        local view = self.s.view:arr()
         
         view[1] = view[1] + sx
         view[2] = view[2] + sy
         
-        view[2] = clamp(1, math.max(1, (self.s.lines:len() - self.cells.rows)), view[2])
+        view[2] = clamp(1, max(1, (self.s.lines:len() - self.cells.rows)), view[2])
         
-        local maxOffsetX = math.max(1, ((self.maxLineWidth - self.cells.cols) + 2))
-        maxOffsetX = math.max(maxOffsetX, ((self:mainCursor()[1] - self.cells.cols) + 2))
+        local maxOffsetX = max(1, ((self.maxLineWidth - self.cells.cols) + 2))
+        maxOffsetX = max(maxOffsetX, ((self:mainCursor()[1] - self.cells.cols) + 2))
         view[1] = clamp(1, maxOffsetX, view[1])
         
-        if (view == self.s.view) then return end
+        if view:eql(self.s.view) then return end
         
+        print("SETVIEW SCROLLVIEW", view)
         return self:setView(view)
     end
 
@@ -574,7 +575,7 @@ function state:scrollView(dir, steps)
 function state:adjustViewForMainCursor(opt) 
         opt = opt or ({})
         
-        if ((self.cells.cols <= 0) or (self.cells.rows <= 0)) then return end
+        if ((self.cells.cols < 1) or (self.cells.rows < 1)) then return end
         
         if (opt.adjust == false) then return end
         
@@ -582,7 +583,7 @@ function state:adjustViewForMainCursor(opt)
         local x = mc[1]
         local y = mc[2]
         
-        local view = self.s.view:mut()
+        local view = self.s.view:arr()
         
         local topBotDelta = 7
         local topDelta = 7
@@ -592,7 +593,7 @@ function state:adjustViewForMainCursor(opt)
             view[2] = (y - topDelta)
         elseif ((opt.adjust == 'topBotDeltaGrow') and opt.mc) then 
             local dtt = (y - view[2])
-            local dtb = (y - (view[2] + self.cells.rows))
+            local dtb = (((y - view[2]) - self.cells.rows) - 1)
             if (dtt < 0) then 
                 view[2] = (y - topDelta)
             elseif (dtb > 0) then 
@@ -623,24 +624,25 @@ function state:adjustViewForMainCursor(opt)
             view[1] = math.max(1, ((x - self.cells.cols) + 2)) -- adding one for wide graphemes
         end
         
-        if (view == self.s.view) then return end
+        if view:eql(self.s.view) then return end
         
         return self:setView(view)
     end
 
 
 function state:initView() 
-        local view = self.s.view:mut()
+        local view = self.s.view:arr()
         
-        view[2] = clamp(1, math.max(1, (self.s.lines:len() - self.cells.rows)), view[2])
-        view[1] = math.max(1, (view[1] or 1))
+        view[2] = clamp(1, max(1, ((self.s.lines:len() - self.cells.rows) + 1)), view[2])
+        view[1] = max(1, (view[1] or 1))
         
         return self:setView(view)
     end
 
 
 function state:setView(view) 
-        if (self.s.view == view) then return end
+        if ((self.s.view[1] == view[1]) and (self.s.view[2] == view[2])) then return end
+        
         self:set('view', view)
         self:emit('view.changed', self.s.view)
         return self

@@ -63,9 +63,9 @@ class KED
         # @editor.state.hasFocus = true
         # @editor.funtree = @funcol.funtree
         
-        post∙on 'redraw'        @redraw        @
-        post∙on 'window.focus'  @redraw        @
-        post∙on 'window.blur'   @redraw        @
+        # post∙on 'redraw'        @redraw        @
+        # post∙on 'window.focus'  @redraw        @
+        # post∙on 'window.blur'   @redraw        @
         post∙on 'input.popup'   @onInputPopup  @
         post∙on 'view.size'     @onViewSize    @
         post∙on 'quicky'        @onQuicky      @
@@ -148,9 +148,9 @@ class KED
         fcw = 0
 
         @dircol∙layout 1             1     dcw               si.rows  
-        @status∙layout dcw           1     si.cols-dcw       1        
+        @status∙layout 1+dcw         1     si.cols-dcw       1        
         @funcol∙layout si.cols-fcw   2     fcw               si.rows-1
-        @editor∙layout dcw           2     si.cols-dcw-fcw   si.rows-1
+        @editor∙layout 1+dcw         2     si.cols-dcw-fcw   si.rows-1
         
     #  ███████   ███   ███  ███  █████████
     # ███   ███  ███   ███  ███     ███   
@@ -199,7 +199,7 @@ class KED
         
         @editor∙grabFocus()
         
-        @redraw()
+        # @redraw()
             
     # ████████  ███  ███      ████████   ███████  ███   ███   ███████   ███   ███   ███████   ████████
     # ███       ███  ███      ███       ███       ███   ███  ███   ███  ████  ███  ███        ███     
@@ -328,7 +328,7 @@ class KED
         post∙emit "file.loaded" @currentFile
         
         @showEditor()
-        @redraw()
+        # @redraw()
         
         @indexer∙index @currentFile
         prjcts.index   @currentFile
@@ -358,7 +358,7 @@ class KED
         if valid @currentFile
             slash.write @currentFile text
             @editor.state∙clearHistory() # lazy way to 'undirty' :> no undo after save :(
-            @redraw()
+            # @redraw()
             @saveSessionFile @currentFile 'saved'
             
     saveSessionFile: file typ ->
@@ -378,7 +378,7 @@ class KED
     onPaste: text -> 
     
         @editor.state∙insert text
-        @redraw()
+        # @redraw()
                                     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -487,7 +487,7 @@ class KED
     onViewSize: name side delta ->
         
         @viewSizeDelta = {name:name side:side delta:delta}
-        @redraw()
+        # @redraw()
         
     onResize: cols rows size cellsz -> 
     
@@ -506,7 +506,7 @@ class KED
         
         squares.onResize cols rows size cellsz
         sircels.onResize cols rows size cellsz
-        @redraw()
+        # @redraw()
         @editor.mapscr.onResize()
         
     # ███  ███   ███  ████████   ███   ███  █████████       ████████    ███████   ████████   ███   ███  ████████ 
@@ -523,7 +523,7 @@ class KED
         @input.grabFocus()
         @input.orig = opt.text
         @input.cb = opt.cb
-        @redraw()
+        # @redraw()
         
     onInputAction: action event ->
     
@@ -544,9 +544,9 @@ class KED
     # ███   ███  ███   ███  ███   ███  ███   ███
     # ███████    ███   ███  ███   ███  ██     ██
 
-    redraw: ->    
-        
-        ⮐  if @quitting
+    # redraw: ->    
+    #     
+    #     ⮐  if @quitting
 
     draw: cols rows cw ch ->
             

@@ -92,6 +92,7 @@ class scroll extends view
         
         ⮐  true if view∙eql @state.s.view
         
+        log "SCROLLLVEW" view
         @state∙setView view 
         
         true
@@ -106,31 +107,25 @@ class scroll extends view
 
         cw = _G.screen.cw        
         ch = _G.screen.ch        
+
+        xo = (@cells.x-1)*cw
+        yo = (@cells.y-1)*ch
         
+        love.graphics.setColor @color.bg[1]/255 @color.bg[2]/255 @color.bg[3]/255
+        love.graphics.rectangle "fill" xo+1 yo+1 @cells.cols*cw @cells.rows*ch
+
         rows = @cells.rows
-        # log "DRAW" @cells.cols, rows
-        # @cells∙fill_col 1 1 rows ' ' nil @color.bg
-        @cells∙fill_col 1 1 rows 'x' [55 0 0] [255 0 0]
+        lnum = @state.s.lines∙len()
         
-        # lnum = @state.s.lines.len
-        # 
-        # ⮐  if lnum <= rows
-        # 
-        # kh = ((rows*rows) / lnum) * ch
-        # ky = ((rows*ch-kh) * @state.s.view[2] / (lnum-rows)) 
-
-        # fg = if @hover ➜ @color.hover ➜ @color.knob
+        if lnum > rows
         
-        # x  = @cells.x*cw
-        # y  = int @cells.y*ch+ky
-        # w  = int cw/2
-        # h  = int kh
-        
-        # squares∙place x int(y+w/2) w h-w fg
-        # 
-        # sircels∙place x y     w (ky or {fg: @color.dot}) 1111
-        # sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*cw-1) or {fg: @color.dot}) 1111
-        
-        @render()
-
+            kh = ((rows*rows) / lnum) * ch
+            ky = int((rows*ch-kh) * (@state.s.view[2]-1) / (lnum-rows)) 
+            
+            fg = if @hover ➜ @color.hover ➜ @color.knob
+            love.graphics.setColor fg[1]/255 fg[2]/255 fg[3]/255
+            love.graphics.rectangle "fill" xo+1 yo+ky+1 int(cw/2) int(kh)
+            # love.graphics.circle    "fill" line_x line_y-ch/2+lr lr
+            # love.graphics.circle    "fill" line_x line_y+ch/2-lr lr
+            
 ⮐  scroll

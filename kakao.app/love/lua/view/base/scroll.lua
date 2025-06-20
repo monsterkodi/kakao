@@ -102,6 +102,7 @@ function scroll:scrollToPixel(pixel)
         
         if view:eql(self.state.s.view) then return true end
         
+        print("SCROLLLVEW", view)
         self.state:setView(view)
         
         return true
@@ -118,31 +119,30 @@ function scroll:draw()
         local cw = _G.screen.cw
         local ch = _G.screen.ch
         
+        local xo = ((self.cells.x - 1) * cw)
+        local yo = ((self.cells.y - 1) * ch)
+        
+        love.graphics.setColor((self.color.bg[1] / 255), (self.color.bg[2] / 255), (self.color.bg[3] / 255))
+        love.graphics.rectangle("fill", (xo + 1), (yo + 1), (self.cells.cols * cw), (self.cells.rows * ch))
+        
         local rows = self.cells.rows
-        -- log "DRAW" @cells.cols, rows
-        -- @cells∙fill_col 1 1 rows ' ' nil @color.bg
-        self.cells:fill_col(1, 1, rows, 'x', array(55, 0, 0), array(255, 0, 0))
+        local lnum = self.state.s.lines:len()
         
-        -- lnum = @state.s.lines.len
-        -- 
-        -- ⮐  if lnum <= rows
-        -- 
-        -- kh = ((rows*rows) / lnum) * ch
-        -- ky = ((rows*ch-kh) * @state.s.view[2] / (lnum-rows)) 
-        
-        -- fg = if @hover ➜ @color.hover ➜ @color.knob
-        
-        -- x  = @cells.x*cw
-        -- y  = int @cells.y*ch+ky
-        -- w  = int cw/2
-        -- h  = int kh
-        
-        -- squares∙place x int(y+w/2) w h-w fg
-        -- 
-        -- sircels∙place x y     w (ky or {fg: @color.dot}) 1111
-        -- sircels∙place x y+h-w w ((y+h < (@cells.y+rows)*cw-1) or {fg: @color.dot}) 1111
-        
-        return self:render()
+        if (lnum > rows) then 
+            local kh = (((rows * rows) / lnum) * ch)
+            local ky = int(((((rows * ch) - kh) * (self.state.s.view[2] - 1)) / (lnum - rows)))
+            
+            local fg = (function () 
+    if self.hover then 
+    return self.color.hover else 
+    return self.color.knob
+                 end
+end)()
+            love.graphics.setColor((fg[1] / 255), (fg[2] / 255), (fg[3] / 255))
+            love.graphics.rectangle("fill", (xo + 1), ((yo + ky) + 1), int((cw / 2)), int(kh))
+            -- love.graphics.circle    "fill" line_x line_y-ch/2+lr lr
+            return -- love.graphics.circle    "fill" line_x line_y+ch/2-lr lr
+        end
     end
 
 return scroll

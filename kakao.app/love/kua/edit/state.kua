@@ -163,6 +163,7 @@ class state extends events
         @
 
     setSelections: selections -> 
+    
         sels = belt.mergeLineRanges(@s.lines selections)
         @set "selections" sels
         
@@ -477,19 +478,20 @@ class state extends events
             'up'    ➜ sy = -steps
             'down'  ➜ sy =  steps
 
-        view = @s.view∙mut()
+        view = @s.view∙arr()
 
         view[1] += sx
         view[2] += sy
 
-        view[2] = clamp 1 math.max(1 @s.lines∙len()-@cells.rows) view[2]
+        view[2] = clamp 1 max(1 @s.lines∙len()-@cells.rows) view[2]
 
-        maxOffsetX = math.max 1 @maxLineWidth-@cells.cols+2
-        maxOffsetX = math.max maxOffsetX @mainCursor()[1]-@cells.cols+2
+        maxOffsetX = max 1 @maxLineWidth-@cells.cols+2
+        maxOffsetX = max maxOffsetX @mainCursor()[1]-@cells.cols+2
         view[1] = clamp 1 maxOffsetX view[1]
         
-        ⮐  if view == @s.view
+        ⮐  if view∙eql @s.view
 
+        log "SETVIEW SCROLLVIEW" view
         @setView view
 
     #  0000000   0000000          000  000   000   0000000  000000000       000   000  000  00000000  000   000  
@@ -502,7 +504,7 @@ class state extends events
         
         opt ?= {}
         
-        ⮐  if @cells.cols <= 0 or @cells.rows <= 0
+        ⮐  if @cells.cols < 1 or @cells.rows < 1
         
         ⮐  if opt.adjust == false
 
@@ -510,20 +512,20 @@ class state extends events
         x = mc[1]
         y = mc[2]
 
-        view = @s.view∙mut()
+        view = @s.view∙arr()
 
         topBotDelta = 7
         topDelta = 7
         botDelta = max topDelta floor(@cells.rows/2)
         
         if opt.adjust == 'topDelta'
-
+            
             view[2] = y - topDelta
             
         elif opt.adjust == 'topBotDeltaGrow' and opt.mc
         
             dtt = y-view[2]
-            dtb = y-(view[2]+@cells.rows)
+            dtb = y-view[2]-@cells.rows-1
             if dtt < 0 
                 view[2] = y - topDelta
             elif dtb > 0
@@ -547,22 +549,23 @@ class state extends events
         if not @skipAdjustViewForMainCursor
             view[1] = math.max 1 x - @cells.cols + 2 # adding one for wide graphemes
         
-        ⮐  if view == @s.view
-        
+        ⮐  if view∙eql @s.view
+
         @setView view
 
     initView: ->
 
-        view = @s.view∙mut()
+        view = @s.view∙arr()
         
-        view[2] = clamp 1 math.max(1 @s.lines∙len()-@cells.rows) view[2]
-        view[1] = math.max 1 view[1] or 1
+        view[2] = clamp 1 max(1 @s.lines∙len()-@cells.rows+1) view[2]
+        view[1] = max 1 view[1] or 1
 
         @setView view
 
     setView: view ->
         
-        ⮐  if @s.view == view
+        ⮐  if @s.view[1] == view[1] and @s.view[2] == view[2]
+
         @set 'view' view
         @emit 'view.changed' @s.view
         @

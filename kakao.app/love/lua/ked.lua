@@ -65,9 +65,9 @@ function KED:init()
         -- @editor.state.hasFocus = true
         -- @editor.funtree = @funcol.funtree
         
-        post:on('redraw', self.redraw, self)
-        post:on('window.focus', self.redraw, self)
-        post:on('window.blur', self.redraw, self)
+        -- post∙on 'redraw'        @redraw        @
+        -- post∙on 'window.focus'  @redraw        @
+        -- post∙on 'window.blur'   @redraw        @
         post:on('input.popup', self.onInputPopup, self)
         post:on('view.size', self.onViewSize, self)
         post:on('quicky', self.onQuicky, self)
@@ -161,9 +161,9 @@ function KED:arrange(si)
         local fcw = 0
         
         self.dircol:layout(1, 1, dcw, si.rows)
-        self.status:layout(dcw, 1, (si.cols - dcw), 1)
+        self.status:layout((1 + dcw), 1, (si.cols - dcw), 1)
         self.funcol:layout((si.cols - fcw), 2, fcw, (si.rows - 1))
-        return self.editor:layout(dcw, 2, ((si.cols - dcw) - fcw), (si.rows - 1))
+        return self.editor:layout((1 + dcw), 2, ((si.cols - dcw) - fcw), (si.rows - 1))
     end
 
 --  ███████   ███   ███  ███  █████████
@@ -218,7 +218,7 @@ function KED:newFile()
         
         self.editor:grabFocus()
         
-        return self:redraw()
+        return -- @redraw()
     end
 
 -- ████████  ███  ███      ████████   ███████  ███   ███   ███████   ███   ███   ███████   ████████
@@ -361,7 +361,7 @@ function KED:loadFile(p, row, col, view)
         post:emit("file.loaded", self.currentFile)
         
         self:showEditor()
-        self:redraw()
+        -- @redraw()
         
         self.indexer:index(self.currentFile)
         prjcts.index(self.currentFile)
@@ -393,7 +393,7 @@ function KED:saveFile()
         if valid(self.currentFile) then 
             slash.write(self.currentFile, text)
             self.editor.state:clearHistory() -- lazy way to 'undirty' :> no undo after save :(
-            self:redraw()
+            -- @redraw()
             return self:saveSessionFile(self.currentFile, 'saved')
         end
     end
@@ -419,7 +419,7 @@ function KED:saveAs()
 
 function KED:onPaste(text) 
         self.editor.state:insert(text)
-        return self:redraw()
+        return -- @redraw()
     end
 
 -- 00     00   0000000   000   000   0000000  00000000  
@@ -549,7 +549,7 @@ function KED:onKey(key, event)
 
 function KED:onViewSize(name, side, delta) 
         self.viewSizeDelta = {name = name, side = side, delta = delta}
-        return self:redraw()
+        return -- @redraw()
     end
 
 
@@ -570,7 +570,7 @@ function KED:onResize(cols, rows, size, cellsz)
         
         squares.onResize(cols, rows, size, cellsz)
         sircels.onResize(cols, rows, size, cellsz)
-        self:redraw()
+        -- @redraw()
         return self.editor.mapscr.onResize()
     end
 
@@ -588,7 +588,7 @@ function KED:onInputPopup(opt)
         self.input.grabFocus()
         self.input.orig = opt.text
         self.input.cb = opt.cb
-        return self:redraw()
+        return -- @redraw()
     end
 
 
@@ -615,12 +615,9 @@ function KED:onInputAction(action, event)
 -- ███   ███  ███   ███  ███   ███  ███   ███
 -- ███████    ███   ███  ███   ███  ██     ██
 
-
-function KED:redraw() 
-        if self.quitting then 
-    return
-           end
-    end
+-- redraw: ->    
+--     
+--     ⮐  if @quitting
 
 
 function KED:draw(cols, rows, cw, ch) 

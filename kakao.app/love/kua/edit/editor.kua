@@ -70,7 +70,7 @@ class editor extends draw
                 @scroll∙layout x+w-sr y   s   h 
             else
                 sl = s
-                @scroll∙layout x      y   s   h 
+                @scroll∙layout x    y   s   h 
             
         if @gutter
 
@@ -139,7 +139,7 @@ class editor extends draw
         switch event.dir
             'up' 'down' 'left' 'right' ➜ @state∙scrollView(event.dir steps) 
             
-        {redraw:true}
+        true
             
     #  0000000  000   000  00000000    0000000   0000000   00000000   
     # 000       000   000  000   000  000       000   000  000   000  
@@ -171,7 +171,7 @@ class editor extends draw
     
         @show() if @hidden()
         post∙emit 'focus' @name
-        @redraw()
+        # @redraw()
         
     hasFocus: ->
         
@@ -187,8 +187,6 @@ class editor extends draw
     # 000   000  000       000   000  000   000  000   000  000   000  
     # 000   000  00000000  0000000    000   000  000   000  00     00  
     
-    redraw: -> post∙emit 'redraw'
-                    
     # 000   000  00000000  000   000  
     # 000  000   000        000 000   
     # 0000000    0000000     00000    

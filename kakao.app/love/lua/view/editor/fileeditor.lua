@@ -387,10 +387,8 @@ function fileeditor:onWheel(event)
                 start = array(self.dragStart[2], self.dragStart[1])
             end
             
-            if self.state.select(start, array(x, y)) then 
-                self:redraw()
-            end
-            
+            -- if @state.select start [x y]
+            --     @redraw()
             return
         end
         
