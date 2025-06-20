@@ -138,7 +138,7 @@ class brckts
             if valid @state.s.selections
                 @state∙surroundSelection event.char brckts.surround[event.char]
             else            
-                @state∙insert brckts.surround[event.char][1]+brckts.surround[event.char][2]
+                @state∙insert brckts.surround[event.char][1] & brckts.surround[event.char][2]
                 @state∙moveCursors 'left' 
                 
             @state∙ende()
@@ -159,7 +159,7 @@ class brckts
             nsegl = belt.segsForPositions @state.s.lines @state.s.cursors # collect all graphemes at the cursors
             nsegs = util.uniq nsegl                                       # get set of graphemes
             
-            for _ seg in ipairs nsegs
+            for seg in nsegs
             
                 if brckts.surround[event.char][2] == event.char # if entering closing bracket         # should check if this condition 
                     if seg == event.char                        # and it is already there             # is true for all cursors 
@@ -169,12 +169,12 @@ class brckts
                 if not ['' undefined ' ' '}' ']' ')']∙has seg   # if any cursor is not at a space or eol or on a closing bracket
                     ⮐  "unhandled"                              # abort the insertion
 
-            for _ pos in ipairs @state.s.cursors
+            for pos in @state.s.cursors
                 if belt.isUnbalancedPosition @state.s.lines pos event.char
                     ⮐  "unhandled"
                     
-            @state∙insert brckts.surround[event.char][1]+brckts.surround[event.char][2] # insert empty bracket pair
-            @state∙moveCursors 'left'                                                   # move cursors inside pair
+            @state∙insert brckts.surround[event.char][1] & brckts.surround[event.char][2] # insert empty bracket pair
+            @state∙moveCursors 'left'                                                     # move cursors inside pair
             ⮐  
 
         'unhandled'

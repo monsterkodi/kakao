@@ -149,7 +149,7 @@ function brckts:handleKey(key, event)
             if valid(self.state.s.selections) then 
                 self.state:surroundSelection(event.char, brckts.surround[event.char])
             else 
-                self.state:insert((brckts.surround[event.char][1] + brckts.surround[event.char][2]))
+                self.state:insert(brckts.surround[event.char][1] .. brckts.surround[event.char][2])
                 self.state:moveCursors('left')
             end
             
@@ -190,7 +190,7 @@ function brckts:handleKey(key, event)
                 end
             end
             
-            self.state:insert((brckts.surround[event.char][1] + brckts.surround[event.char][2])) -- insert empty bracket pair
+            self.state:insert(brckts.surround[event.char][1] .. brckts.surround[event.char][2]) -- insert empty bracket pair
             self.state:moveCursors('left') -- move cursors inside pair
             return
         end

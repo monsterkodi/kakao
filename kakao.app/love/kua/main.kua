@@ -46,7 +46,7 @@ love.draw = ->
     ked∙draw cols rows cw ch
     
     lg.setColor 0.2 0.2 0.2 
-    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 2*cw h-ch*2
+    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
     
     nil
     
@@ -89,7 +89,29 @@ love.keypressed = key scancode isrepeat ->
                     if mods.len == 0 
                         key 
                     elif mods == "shift+"
-                        string.upper key
+                        switch key
+                            "1" ➜ "!"
+                            "2" ➜ "@"
+                            "3" ➜ "#"
+                            "4" ➜ "$"
+                            "5" ➜ "%"
+                            "6" ➜ "^"
+                            "7" ➜ "&"
+                            "8" ➜ "*"
+                            "9" ➜ "("
+                            "0" ➜ ")"
+                            "-" ➜ "_"
+                            "=" ➜ "+"
+                            "[" ➜ "{"
+                            "]" ➜ "}"
+                            "\\" ➜ "|"
+                            ";" ➜ ":"
+                            "'" ➜ '"'
+                            "," ➜ "<"
+                            "." ➜ ">"
+                            "/" ➜ "?"
+                            "`" ➜ "~"
+                                ➜ string.upper key
                     else
                         ""
     event = {"repeat":isrepeat combo:combo char:char}

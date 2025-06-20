@@ -1676,7 +1676,7 @@ function state:joinLines()
         
         local idxs = belt.lineIndicesForPositions(self.s.cursors)
         local rngs = belt.rangesForJoiningLines(self.s.lines, idxs)
-        write("JOINLINES RNGS ", rngs)
+        
         return self:deleteRanges(rngs, self:allCursors())
     end
 

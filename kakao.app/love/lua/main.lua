@@ -46,7 +46,7 @@ function love.draw()
     ked:draw(cols, rows, cw, ch)
     
     lg.setColor(0.2, 0.2, 0.2)
-    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (2 * cw), (h - (ch * 2)))
+    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (6 * cw), 0)
     
     return nil
 end
@@ -87,7 +87,51 @@ function love.keypressed(key, scancode, isrepeat)
                     if (#mods == 0) then 
                         return key
                     elseif (mods == "shift+") then 
-                        return string.upper(key)
+                        if (key == "1") then 
+    return "!"
+                        elseif (key == "2") then 
+    return "@"
+                        elseif (key == "3") then 
+    return "#"
+                        elseif (key == "4") then 
+    return "$"
+                        elseif (key == "5") then 
+    return "%"
+                        elseif (key == "6") then 
+    return "^"
+                        elseif (key == "7") then 
+    return "&"
+                        elseif (key == "8") then 
+    return "*"
+                        elseif (key == "9") then 
+    return "("
+                        elseif (key == "0") then 
+    return ")"
+                        elseif (key == "-") then 
+    return "_"
+                        elseif (key == "=") then 
+    return "+"
+                        elseif (key == "[") then 
+    return "{"
+                        elseif (key == "]") then 
+    return "}"
+                        elseif (key == "\\") then 
+    return "|"
+                        elseif (key == ";") then 
+    return ":"
+                        elseif (key == "'") then 
+    return '"'
+                        elseif (key == ",") then 
+    return "<"
+                        elseif (key == ".") then 
+    return ">"
+                        elseif (key == "/") then 
+    return "?"
+                        elseif (key == "`") then 
+    return "~"
+                        else 
+    return string.upper(key)
+                        end
                     else 
                         return ""
                     end

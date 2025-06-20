@@ -743,7 +743,7 @@ class state extends events
         
         cursors = @allCursors()
         newCursors = []
-        for ci c in ipairs cursors
+        for ci c in cursors
             nbup = belt.positionsContain cursors belt.positionInDirection(c 'down')
             nbdn = belt.positionsContain cursors belt.positionInDirection(c 'up')
             solo = not (nbup or nbdn)
@@ -1382,7 +1382,7 @@ class state extends events
         
         idxs = belt.lineIndicesForPositions @s.cursors
         rngs = belt.rangesForJoiningLines @s.lines idxs
-        write "JOINLINES RNGS " rngs
+
         @deleteRanges rngs @allCursors()
         
     # ██     ██   ███████   ███   ███  ████████
