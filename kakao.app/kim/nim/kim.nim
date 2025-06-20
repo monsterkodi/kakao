@@ -270,7 +270,7 @@ proc watch(paths : seq[string]) =
                     love = true
                 if (exitCode != 0): 
                     fail = true
-            if ((not fail and love) and false): 
+            if ((not fail and love) and 1): 
                 if loveProc: 
                     loveProc.close()
                 var (output, exitCode) = execCmdEx("killall love")

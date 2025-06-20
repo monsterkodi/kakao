@@ -5,11 +5,13 @@ ked = require "ked"
 function love.load() 
     local width, height = love.window.getDesktopDimensions()
     
-    love.window.setMode(width, height, {
+    love.window.setMode((width / 2), height, {
         highdpi = true, 
         usedpiscale = false, 
         resizable = true
         })
+    
+    love.window.setPosition(0, 0)
     
     love.graphics.setDefaultFilter("nearest", "nearest")
     

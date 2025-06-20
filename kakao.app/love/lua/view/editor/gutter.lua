@@ -117,7 +117,7 @@ function gutter:clearChanges()
 function gutter:onGitDiff(diff) 
         self:clearChanges()
         
-        for change in diff.changes do 
+        for _, change in ipairs(diff.changes) do 
             local firstLine = change.line
             
             local mod = (change.mod or array())
@@ -164,7 +164,7 @@ function gutter:drawGitScroll()
         local oy = (self.cells.y * ch)
         local pixelsPerRow = clamp(0, ch, ((ch * self.cells.rows) / #self.state.s.lines))
         
-        for gb in self.gitBlocks do 
+        for _, gb in ipairs(self.gitBlocks) do 
             local sy = int(((gb[0] * pixelsPerRow) + oy))
             
             if (gb[1] <= 0) then 
@@ -252,7 +252,7 @@ end)()
                     -- if selected and not @cells.screen.t.hasFocus
                     --     bg = color.darken bg 
                     local cr = (function () 
-    if (y < #self.state.s.lines) then 
+    if (y < self.state.s.lines:len()) then 
     return c else 
     return ' '
                          end
@@ -263,8 +263,8 @@ end)()
             end
         end
         
-        self:drawPreviews()
-        self:drawGitScroll()
+        -- @drawPreviews()
+        -- @drawGitScroll()
         return self:render()
     end
 

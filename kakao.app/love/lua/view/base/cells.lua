@@ -510,10 +510,11 @@ function cells:render()
         
         local xo = (self.x * cw)
         local yo = (self.y * ch)
-        
         for y in iter(1, self.rows) do 
             for x in iter(1, self.cols) do 
                 local char = self.c[y][x].char
+                -- if char != " "
+                --     log "CELLS RENDER" x, y, char
                 
                 if (self.c[y][x].bg and (#self.c[y][x].bg > 0)) then 
                     lg.setColor((self.c[y][x].bg[1] / 255), (self.c[y][x].bg[2] / 255), (self.c[y][x].bg[3] / 255))

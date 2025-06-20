@@ -265,13 +265,13 @@ class fileeditor extends editor
                     
                 else
                     
-                    x = col + @state.s.view[1]
-                    y = row + @state.s.view[2]
+                    x = col + @state.s.view[1] - 1
+                    y = row + @state.s.view[2] - 1
                     
                     if event.cmd or event.ctrl
                         word = belt.wordAtPos @state.s.lines [x y]
                         if word
-                            log "jumpToWord #{word}" event
+                            # log "jumpToWord #{word}" event
                             if @jumpToWord word
                                 ⮐ 
 

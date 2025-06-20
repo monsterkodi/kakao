@@ -288,13 +288,13 @@ function fileeditor:onMouse(event)
                     
                     return true
                 else 
-                    local x = (col + self.state.s.view[1])
-                    local y = (row + self.state.s.view[2])
+                    local x = ((col + self.state.s.view[1]) - 1)
+                    local y = ((row + self.state.s.view[2]) - 1)
                     
                     if (event.cmd or event.ctrl) then 
                         local word = belt.wordAtPos(self.state.s.lines, array(x, y))
                         if word then 
-                            print("jumpToWord " .. tostring(word) .. "", event)
+                            -- log "jumpToWord #{word}" event
                             if self:jumpToWord(word) then 
                                 return
                             end
