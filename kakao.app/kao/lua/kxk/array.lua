@@ -34,6 +34,16 @@ function array:len()
     return #self
     end
 
+function array.static.num(a) 
+        if (#a > 0) then 
+                return #a
+        elseif (type(a["len"]) == "function") then 
+                return a:len()
+        else 
+    return 0
+        end
+    end
+
 
 function array.static.from(a) 
     return array(unpack(a))
@@ -238,7 +248,7 @@ function array:find(e)
 
 
 function array:eql(o) 
-        if (#self ~= #o) then return false end
+        if (#self ~= array.num(o)) then return false end
         for i, v in ipairs(self) do 
             if (v ~= o[i]) then 
                 if is(v, array) then 

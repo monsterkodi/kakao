@@ -163,7 +163,10 @@ class state extends events
         @swapState()
         @
 
-    setSelections: selections -> @set 'selections' belt.mergeLineRanges(@s.lines selections)
+    setSelections: selections -> 
+        sels = belt.mergeLineRanges(@s.lines selections)
+        @set "selections" sels
+        
     setHighlights: highlights -> @set 'highlights' belt.normalizeSpans(highlights)
 
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000
@@ -316,7 +319,7 @@ class state extends events
          # oldLines = @s.lines
          
          # write "--- changeLinesSegls #{@s.class} #{@s}"
-         write ◌m "--> " @segls
+         # write ◌m "--> " @segls
          
          @s = @s∙set 'lines' @segls
          
@@ -1196,8 +1199,10 @@ class state extends events
     selectAllLines: ->
         
         allsel = [[1 1 kseg.width(@s.lines[@s.lines∙len()])+1 @s.lines∙len()]]
-        
-        if allsel == @s.selections
+        # write ◌r allsel allsel.class
+        # write ◌g @s.selections @s.selections.class
+        # write ◌b allsel∙eql(@s.selections)
+        if allsel∙eql @s.selections
             @deselect()
         else
             @setSelections allsel
@@ -1331,9 +1336,8 @@ class state extends events
         if valid @s.selections
             ⮐  @indentSelectedLines() if text == '\t'
             @deleteSelection()
-            
         (lines cursors) = belt.insertTextAtPositions @s.lines text @s.cursors
-
+        
         @clearHighlights()
 
         @setLines   lines
@@ -1543,7 +1547,6 @@ class state extends events
                         if x <= kseg.width(line)
                             # segi = kseg.indexAtWidth line x
                             segi = kseg.segiAtWidth line x
-                            write "X #{x} #{kseg.width(line)} #{dc} #{segi}"
                             line = line∙slice(1 segi-dc-1) + line∙slice(segi)
 
                 'next'

@@ -11,6 +11,8 @@ class dict
     @iskey: k -> type(k) == "string" and k != "class" and string.sub(k 1 2) != "__"
     
     @iter: d ->
+    
+        if d.class == immutable ➜ ⮐  dict.iter d.__data
         
         k = nil
         -> 

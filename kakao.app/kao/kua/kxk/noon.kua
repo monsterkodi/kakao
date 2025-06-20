@@ -43,14 +43,15 @@ class noon
                     buf += "<v>" 
                 else            
                     visited∙push o
-                    if o.len > 0 or o is array
+                    if o.len > 0 or type(o["len"]) == "function" and o∙len() > 0
+                        l = o.len > 0 and o.len or o∙len()
                         buf += ind != '' and arry and '.' or ''
-                        if o.len and ind != ''
+                        if ind != ''
                             buf += '\n' 
-                        for i v in o
+                        for v i in array.each o
                             buf += ind
                             noon.toString v buf ind&indstr true visited
-                            if i < o.len ➜ buf += ("\n") 
+                            if i < l ➜ buf += ("\n") 
                     else
                         buf += (arry and '.\n') or ((ind != '') and '\n' or '')
                         maxKey = 2

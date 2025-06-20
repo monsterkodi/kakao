@@ -53,12 +53,7 @@ function immutable:init(tbl)
 
 
 function immutable:__tostring() 
-        local s = ""
-        for k, v in pairs(self.__data) do 
-            s = s .. "" .. tostring(k) .. " " .. tostring(v) .. "\n"
-        end
-        
-        return s
+    return noon(self.__data)
     end
 
 

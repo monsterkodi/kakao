@@ -108,8 +108,29 @@ line 3
     end)
     
     test("insert", function()
+        s:loadSegls(belt.seglsForText(text))
+        s:setMainCursor(1, 2)
         s:insert("\n")
         cur(1, 3)
+        
+        txt([[
+line 1
+
+line 2
+line 3
+]])
+        
+        s:loadSegls(belt.seglsForText(text))
+        s:setMainCursor(6, 2)
+        s:insert("\n")
+        cur(1, 3)
+        
+        txt([[
+line 1
+line 
+2
+line 3
+]])
     end)
     
     -- 00     00  000   000  000      000000000  000  00000000   000      00000000  
@@ -119,6 +140,8 @@ line 3
     -- 000   000   0000000   0000000     000     000  000        0000000  00000000  
     
     test("multiple", function()
+        s:loadSegls(belt.seglsForText(text))
+        
         s:setMainCursor(1, 2)
         s:expandCursors('up')
         
@@ -135,27 +158,32 @@ line 3
         s:moveCursorsAndSelect('right')
         
         mul(array(2, 1), array(2, 2), array(2, 3))
+        sel(array(1, 1, 2, 1), array(1, 2, 2, 2), array(1, 3, 2, 3))
         
         s:moveCursors('right', {jump = array('ws', 'word', 'empty', 'punct')})
         
         mul(array(5, 1), array(5, 2), array(5, 3))
+        sel(array(1, 1, 2, 1), array(1, 2, 2, 2), array(1, 3, 2, 3))
         
         s:selectAllLines()
         
         mul(array(5, 1), array(5, 2), array(5, 3))
-        -- sel [[1 1 1 4]] 
-        --        
-        --s∙selectAllLines()
-        --        
-        --mul [4 0] [4 1] [4 2]
-        --sel()
-        --        
-        --s∙moveCursors 'right'
-        --s∙moveCursorsAndSelect 'left' {jump:['word']}
-        --s∙moveCursorsAndSelect 'left' {jump:['word']}
-        --        
-        --mul [0 0] [0 1] [0 2]   
-        --sel [0 0 5 0] [0 1 5 1] [0 2 5 2]
+        sel(array(1, 1, 1, 4))
+        
+        s:selectAllLines()
+        
+        mul(array(5, 1), array(5, 2), array(5, 3))
+        sel()
+        
+        s:moveCursors('right')
+        s:moveCursorsAndSelect('left', {jump = array('word')})
+        sel(array(5, 1, 6, 1), array(5, 2, 6, 2), array(5, 3, 6, 3))
+        
+        s:moveCursorsAndSelect('left', {jump = array('word')})
+        
+        mul(array(1, 1), array(1, 2), array(1, 3))
+        -- sel [1 1 6 1] [1 2 6 2] [1 3 6 3]
+        -- sel [1 1 6 3]
         
         --s∙insert '\n' 
         --        

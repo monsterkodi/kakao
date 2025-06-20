@@ -251,6 +251,7 @@ use kxk/kxk
     
         a = []
         a∙len()     ▸ 0
+        []∙len()    ▸ 0
         a∙eql []    ▸ true
         a∙eql [1]   ▸ false
         

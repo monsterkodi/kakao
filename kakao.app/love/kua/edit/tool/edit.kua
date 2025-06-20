@@ -67,12 +67,12 @@ class edit
                                 # write "PUSH |#{insl}|"
                                 before∙push indent + insl
                         if x-1 > posLineIndent
-                            newpl∙push [kseg.width(before[before∙len()]) newls∙len()+before∙len()-1]
+                            newpl∙push [kseg.width(before[before∙len()])+1 newls∙len()+before∙len()]
                             before∙push before∙pop() + after∙shift()
                         else
                             after∙unshift indent + after∙shift()
                             before∙pop() if text == '\n'
-                            newpl∙push [kseg.width(indent) newls∙len()+before∙len()] 
+                            newpl∙push [kseg.width(indent)+1 newls∙len()+before∙len()+1] 
                     newls += before
                             
                 else

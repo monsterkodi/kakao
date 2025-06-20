@@ -55,16 +55,17 @@ end)
                     buf = buf + "<v>"
                 else 
                     visited:push(o)
-                    if ((#o > 0) or is(o, array)) then 
+                    if ((#o > 0) or ((type(o["len"]) == "function") and (o:len() > 0))) then 
+                        local l = (((#o > 0) and #o) or o:len())
                         buf = buf + (((((ind ~= '') and arry) and '.') or ''))
-                        if (#o and (ind ~= '')) then 
+                        if (ind ~= '') then 
                             buf = buf + '\n'
                         end
                         
-                        for i, v in ipairs(o) do 
+                        for v, i in array.each(o) do 
                             buf = buf + ind
                             noon.toString(v, buf, ind .. indstr, true, visited)
-                            if (i < #o) then buf = buf + ("\n") end
+                            if (i < l) then buf = buf + ("\n") end
                         end
                     else 
                         buf = buf + (((arry and '.\n') or (((ind ~= '') and '\n') or '')))

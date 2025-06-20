@@ -17,6 +17,8 @@ function dict.static.iskey(k)
 
 
 function dict.static.iter(d) 
+        if (d.class == immutable) then return dict.iter(d.__data) end
+        
         local k = nil
         return function () 
             k = next(d, k)

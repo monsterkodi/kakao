@@ -168,8 +168,10 @@ function state:set(item, arg)
 
 
 function state:setSelections(selections) 
-    return self:set('selections', belt.mergeLineRanges(self.s.lines, selections))
+        local sels = belt.mergeLineRanges(self.s.lines, selections)
+        return self:set("selections", sels)
     end
+
 
 function state:setHighlights(highlights) 
     return self:set('highlights', belt.normalizeSpans(highlights))
@@ -346,7 +348,7 @@ function state:changeLinesSegls()
          -- oldLines = @s.lines
          
          -- write "--- changeLinesSegls #{@s.class} #{@s}"
-         write("\x1b[0m\x1b[35m", "--> ", self.segls)
+         -- write ◌m "--> " @segls
          
          self.s = self.s:set('lines', self.segls)
          
@@ -1444,8 +1446,10 @@ function state:selectCursorLines()
 
 function state:selectAllLines() 
         local allsel = array(array(1, 1, (kseg.width(self.s.lines[self.s.lines:len()]) + 1), self.s.lines:len()))
-        
-        if (allsel == self.s.selections) then 
+        -- write ◌r allsel allsel.class
+        -- write ◌g @s.selections @s.selections.class
+        -- write ◌b allsel∙eql(@s.selections)
+        if allsel:eql(self.s.selections) then 
             return self:deselect()
         else 
             return self:setSelections(allsel)
@@ -1850,7 +1854,6 @@ function state:delete(typ, jump)
                         if (x <= kseg.width(line)) then 
                             -- segi = kseg.indexAtWidth line x
                             local segi = kseg.segiAtWidth(line, x)
-                            write("X " .. tostring(x) .. " " .. tostring(kseg.width(line)) .. " " .. tostring(dc) .. " " .. tostring(segi) .. "")
                             line = (line:slice(1, ((segi - dc) - 1)) + line:slice(segi))
                         end
                     end

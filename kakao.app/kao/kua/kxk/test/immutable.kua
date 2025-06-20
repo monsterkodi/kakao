@@ -116,32 +116,32 @@ use kxk.kxk
         
         segls = {{"l" "i" "n" "e" " " "1"} {"l" "i" "n" "e" " " "2"}}
         ia = immutable({segls:segls})
-        ia.segls[1] ▸ immutable(kseg("line 1"))
-        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "1"])
-        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "1"})
+        ia.segls[1]             ▸ immutable(kseg("line 1"))
+        ia.segls[1]             ▸ immutable(["l" "i" "n" "e" " " "1"])
+        ia.segls[1]             ▸ immutable({"l" "i" "n" "e" " " "1"})
         
         segls = [["l" "i" "n" "e" " " "3"] ["l" "i" "n" "e" " " "4"]]
         ia = immutable({segls:segls})
-        ia.segls[1] ▸ immutable(kseg("line 3"))
-        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "3"])
-        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "3"})
+        ia.segls[1]             ▸ immutable(kseg("line 3"))
+        ia.segls[1]             ▸ immutable(["l" "i" "n" "e" " " "3"])
+        ia.segls[1]             ▸ immutable({"l" "i" "n" "e" " " "3"})
 
         segls = kseg.segls "line 5\nline 6\nline 7"
         ia = immutable({segls:segls})
-        ia.segls[1] ▸ immutable(kseg("line 5"))
-        ia.segls[1] ▸ immutable(["l" "i" "n" "e" " " "5"])
-        ia.segls[1] ▸ immutable({"l" "i" "n" "e" " " "5"})
+        ia.segls[1]             ▸ immutable(kseg("line 5"))
+        ia.segls[1]             ▸ immutable(["l" "i" "n" "e" " " "5"])
+        ia.segls[1]             ▸ immutable({"l" "i" "n" "e" " " "5"})
         
     ▸ slice
     
         arr = immutable({1 2 3})
-        arr∙slice 1 2 ▸ [1 2]
-        arr∙slice 1 3 ▸ [1 2 3]
+        arr∙slice 1 2           ▸ [1 2]
+        arr∙slice 1 3           ▸ [1 2 3]
         arr ▸ immutable({1 2 3})
 
         arr = immutable([1 2 3])
-        arr∙slice 1 2 ▸ [1 2]
-        arr∙slice 1 3 ▸ [1 2 3]
+        arr∙slice 1 2           ▸ [1 2]
+        arr∙slice 1 3           ▸ [1 2 3]
         arr ▸ immutable({1 2 3})
         
     ▸ bypassing immutability

@@ -40,11 +40,7 @@ class immutable
                     
         rawset @ "__data" d
             
-    $: -> 
-        s = ""
-        for k v of @__data
-            s &= "#{k} #{v}\n"
-        s
+    $: -> noon @__data
     
     __index:    k    -> @__data[k]
     __newindex: k v  -> error("Cannot modify immutable. trying to set #{k} #{v}")

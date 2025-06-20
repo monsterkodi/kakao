@@ -96,8 +96,29 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
             
     ▸ insert
     
+        s∙loadSegls belt.seglsForText(text)
+        s∙setMainCursor 1 2
         s∙insert "\n"
         cur 1 3
+        
+        txt """
+            line 1
+            
+            line 2
+            line 3
+            """
+
+        s∙loadSegls belt.seglsForText(text)
+        s∙setMainCursor 6 2
+        s∙insert "\n"
+        cur 1 3
+        
+        txt """
+            line 1
+            line 
+            2
+            line 3
+            """
         
     # 00     00  000   000  000      000000000  000  00000000   000      00000000  
     # 000   000  000   000  000         000     000  000   000  000      000       
@@ -107,6 +128,8 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
     
     ▸ multiple
     
+        s∙loadSegls belt.seglsForText(text)
+        
         s∙setMainCursor 1 2
         s∙expandCursors   'up'
         
@@ -123,27 +146,32 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
         s∙moveCursorsAndSelect 'right'
         
         mul [2 1] [2 2] [2 3]
+        sel [1 1 2 1] [1 2 2 2] [1 3 2 3]
         
         s∙moveCursors 'right' {jump:['ws' 'word' 'empty' 'punct']}
         
         mul [5 1] [5 2] [5 3]
+        sel [1 1 2 1] [1 2 2 2] [1 3 2 3]
+        
+        s∙selectAllLines()
+         
+        mul [5 1] [5 2] [5 3]
+        sel [1 1 1 4]
 
         s∙selectAllLines()
         
         mul [5 1] [5 2] [5 3]
-        # sel [[1 1 1 4]] 
-        #
-        #s∙selectAllLines()
-        #
-        #mul [4 0] [4 1] [4 2]
-        #sel()
-        #
-        #s∙moveCursors 'right'
-        #s∙moveCursorsAndSelect 'left' {jump:['word']}
-        #s∙moveCursorsAndSelect 'left' {jump:['word']}
-        #
-        #mul [0 0] [0 1] [0 2]   
-        #sel [0 0 5 0] [0 1 5 1] [0 2 5 2]
+        sel()
+         
+        s∙moveCursors 'right'
+        s∙moveCursorsAndSelect 'left' {jump:['word']}
+        sel [5 1 6 1] [5 2 6 2] [5 3 6 3]
+        
+        s∙moveCursorsAndSelect 'left' {jump:['word']}
+        
+        mul [1 1] [1 2] [1 3]
+        # sel [1 1 6 1] [1 2 6 2] [1 3 6 3]
+        # sel [1 1 6 3]
         
         #s∙insert '\n' 
         #

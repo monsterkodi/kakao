@@ -78,12 +78,12 @@ function edit.static.insertTextAtPositions(lines, text, posl)
                         end
                         
                         if ((x - 1) > posLineIndent) then 
-                            newpl:push(array(kseg.width(before[before:len()]), ((newls:len() + before:len()) - 1)))
+                            newpl:push(array((kseg.width(before[before:len()]) + 1), (newls:len() + before:len())))
                             before:push((before:pop() + after:shift()))
                         else 
                             after:unshift((indent + after:shift()))
                             if (text == '\n') then before:pop() end
-                            newpl:push(array(kseg.width(indent), (newls:len() + before:len())))
+                            newpl:push(array((kseg.width(indent) + 1), ((newls:len() + before:len()) + 1)))
                         end
                     end
                     

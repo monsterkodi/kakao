@@ -259,6 +259,7 @@ end)
     test("eql", function()
         local a = array()
         test.cmp(a:len(), 0)
+        test.cmp(array():len(), 0)
         test.cmp(a:eql(array()), true)
         test.cmp(a:eql(array(1)), false)
         

@@ -9,6 +9,13 @@
 kxk = require "kxk.kxk"
 belt = require "edit.tool.belt"
 
+
+function sp(rsp, s, p) 
+    local rs, rp = unpack(rsp)
+    test.cmp(rs, kseg.segls(s))
+    return test.cmp(rp, p)
+end
+
 test("tool edit", function()
     -- █████████   ███████    ███████    ███████   ███      ████████   ███████   ███████   ██     ██  ██     ██  ████████  ███   ███  █████████
     --    ███     ███   ███  ███        ███        ███      ███       ███       ███   ███  ███   ███  ███   ███  ███       ████  ███     ███   
@@ -47,21 +54,21 @@ code = 'yes' # trailing
 1234567890
 abcdefghij]])
         
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 6, 1)), array(array(6, 2))), lines, array(array(5, 1)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 7, 1)), array(array(6, 2))), array(kseg('123457890'), kseg('abcdefghij')), array(array(5, 1)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 6, 2)), array(array(6, 2))), array(kseg('12345fghij')), array(array(6, 1)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(2, 2, 3, 2)), array(array(1, 2))), array(kseg('1234567890'), kseg('acdefghij')), array(array(1, 2)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 2, 2, 2)), array(array(1, 2))), array(kseg('1234567890'), kseg('bcdefghij')), array(array(1, 2)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 4, 2)), array(array(4, 2))), array(kseg('12345defghij')), array(array(5, 0)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(4, 1, 6, 2)), array(array(4, 2))), array(kseg('123fghij')), array(array(3, 0)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 6, 1)), array(array(6, 2)))}, lines, array(array(6, 2)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 7, 1)), array(array(6, 2)))}, "123457890\nabcdefghij", array(array(6, 2)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 6, 2)), array(array(6, 2)))}, '12345fghij', array(array(6, 1)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(2, 2, 3, 2)), array(array(1, 2)))}, '1234567890\nacdefghij', array(array(1, 2)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 2, 2, 2)), array(array(1, 2)))}, '1234567890\nbcdefghij', array(array(1, 2)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(6, 1, 4, 2)), array(array(4, 2)))}, '12345defghij', array(array(6, 1)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(4, 1, 6, 2)), array(array(4, 2)))}, '123fghij', array(array(4, 1)))
         
         lines = belt.seglsForText([[
 line 1
 line 2
 line 3]])
         
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 1, 7, 2)), array(array(7, 1), array(7, 2))), array(kseg(), kseg('line 3')), array(array(1, 1)))
-        test.cmp(belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 1, 1, 3)), array(array(7, 1), array(7, 2))), array(kseg('line 3')), array(array(1, 1)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 1, 7, 2)), array(array(7, 1), array(7, 2)))}, "\nline 3", array(array(1, 1)))
+        sp({belt.deleteLineRangesAndAdjustPositions(lines, array(array(1, 1, 1, 3)), array(array(7, 1), array(7, 2)))}, "line 3", array(array(1, 1)))
     end)
     
     -- 000  000   000   0000000  00000000  00000000   000000000  
@@ -78,16 +85,12 @@ line 3]])
 line 1
 line 2]]
             
-            test.cmp(belt.insertTextAtPositions(lines, '', array(array(1, 1))), kseg.segls('line 1\nline 2'), array(array(1, 1)))
-            test.cmp(belt.insertTextAtPositions(lines, 'X', array(array(1, 1))), kseg.segls('Xline 1\nline 2'), array(array(2, 1)))
-            test.cmp(belt.insertTextAtPositions(lines, 'a ', array(array(1, 1), array(1, 2))), kseg.segls('a line 1\na line 2'), array(array(3, 1), array(3, 2)))
-            
-            test.cmp(belt.insertTextAtPositions(lines, 'x', array(array(1, 1), array(3, 1))), kseg.segls('xlixne 1\nline 2'), array(array(2, 1), array(5, 1)))
-            test.cmp(belt.insertTextAtPositions(lines, 'x', array(array(1, 1), array(3, 1), array(7, 1))), kseg.segls('xlixne 1x\nline 2'), array(array(2, 1), array(5, 1), array(10, 1)))
-            test.cmp(belt.insertTextAtPositions(lines, 'z', array(array(1, 1), array(3, 1), array(7, 1), array(2, 2), array(3, 2), array(5, 2))), kseg.segls('zlizne 1z\nlziznez 2'), array(array(2, 1), array(5, 1), array(10, 1), array(3, 2), array(5, 2), array(8, 2)))
-            
-            test.cmp(belt.insertTextAtPositions(lines, 'ｔ', array(array(1, 1))), kseg.segls('ｔline 1\nline 2'), array(array(3, 1)))
-            test.cmp(belt.insertTextAtPositions(kseg.segls('ｔline 1\nline 2'), 'ｔ', array(array(3, 1))), kseg.segls('ｔｔline 1\nline 2'), array(array(5, 1)))
+            sp({belt.insertTextAtPositions(lines, '', array(array(1, 1)))}, "line 1\nline 2", array(array(1, 1)))
+            sp({belt.insertTextAtPositions(lines, 'X', array(array(1, 1)))}, "Xline 1\nline 2", array(array(2, 1)))
+            sp({belt.insertTextAtPositions(lines, 'a ', array(array(1, 1), array(1, 2)))}, "a line 1\na line 2", array(array(3, 1), array(3, 2)))
+            sp({belt.insertTextAtPositions(lines, 'x', array(array(1, 1), array(3, 1)))}, "xlixne 1\nline 2", array(array(2, 1), array(5, 1)))
+            sp({belt.insertTextAtPositions(lines, 'x', array(array(1, 1), array(3, 1), array(7, 1)))}, "xlixne 1x\nline 2", array(array(2, 1), array(5, 1), array(10, 1)))
+            sp({belt.insertTextAtPositions(lines, 'z', array(array(1, 1), array(3, 1), array(7, 1), array(2, 2), array(3, 2), array(5, 2)))}, "zlizne 1z\nlziznez 2", array(array(2, 1), array(5, 1), array(10, 1), array(3, 2), array(5, 2), array(8, 2)))
     end)
         
         test("multiple lines into single cursor", function()
@@ -120,16 +123,24 @@ line 2]]
             
                 [[
 line 1
+line 2
+line 3]]
+            
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(2, 2)))}, "line 1\nl\nine 2\nline 3", array(array(1, 3)))
+            
+            lines = belt.seglsForText
+            
+                [[
+line 1
 line 2]]
             
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(3, 1))), kseg.segls('li\nne 1\nline 2'), array(array(1, 2)))
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(7, 1))), kseg.segls('line 1\n\nline 2'), array(array(1, 2)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(3, 1)))}, "li\nne 1\nline 2", array(array(1, 2)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(7, 1)))}, "line 1\n\nline 2", array(array(1, 2)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(1, 2)))}, "line 1\n\nline 2", array(array(1, 3)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(3, 2)))}, "line 1\nli\nne 2", array(array(1, 3)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(7, 2)))}, "line 1\nline 2\n", array(array(1, 3)))
             
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(1, 2))), kseg.segls('line 1\n\nline 2'), array(array(1, 3)))
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(3, 2))), kseg.segls('line 1\nli\nne 2'), array(array(1, 3)))
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(7, 2))), kseg.segls('line 1\nline 2\n'), array(array(1, 3)))
-            
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(1, 1), array(1, 2))), kseg.segls('\nline 1\n\nline 2'), array(array(1, 2), array(1, 4)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(1, 1), array(1, 2)))}, "\nline 1\n\nline 2", array(array(1, 2), array(1, 4)))
             
             lines = belt.seglsForText([[
 ◆1
@@ -143,7 +154,7 @@ line 2]]
 ◆3
 ◆4]])
             
-            test.cmp(belt.insertTextAtPositions(lines, '\n', array(array(2, 1), array(2, 2), array(2, 3), array(2, 4))), kseg.segls('◆\n1\n◆\n2\n◆\n3\n◆\n4'), array(array(1, 2), array(1, 4), array(1, 6), array(1, 8)))
+            sp({belt.insertTextAtPositions(lines, '\n', array(array(2, 1), array(2, 2), array(2, 3), array(2, 4)))}, "◆\n1\n◆\n2\n◆\n3\n◆\n4", array(array(1, 2), array(1, 4), array(1, 6), array(1, 8)))
     end)
         
         test("into indented lines", function()

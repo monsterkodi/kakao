@@ -80,19 +80,7 @@ function test.static.cmp(a, b)
                         end
                         
                         -- ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
-                        local as = ""
-                        for k, v in pairs(a) do 
-                            as = as .. (k .. "  " .. tostring(v) .. "\n")
-                        end
-                        
-                        as = kstr.pop(as)
-                        local bs = ""
-                        for k, v in pairs(b) do 
-                            bs = bs .. (k .. "  " .. tostring(v) .. "\n")
-                        end
-                        
-                        bs = kstr.pop(bs)
-                        return fail("\x1b[0m\x1b[90m\x1b[2m", "table value mismatch at ", "\x1b[0m\x1b[34m", key, "\n", "\x1b[0m\x1b[33m", as, "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", bs)
+                        return fail("\x1b[0m\x1b[90m\x1b[2m", "table value mismatch at ", "\x1b[0m\x1b[34m", key, "\n", "\x1b[0m\x1b[33m", noon(a), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", noon(b))
                     end
                 end
                 

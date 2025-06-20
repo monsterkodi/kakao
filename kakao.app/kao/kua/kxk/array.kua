@@ -16,6 +16,13 @@ class array
 
     str: -> $@
     len: -> @len
+    @num:  a -> 
+        if 
+            a.len > 0 
+                a.len 
+            type(a["len"]) == "function"
+                a∙len()
+            ➜ 0
     
     @from: a -> array(unpack(a))
     @str:  a -> noon(a)
@@ -140,8 +147,7 @@ class array
         -1
         
     eql: o ->
-    
-        ⮐  false if @len != o.len
+        ⮐  false if @len != array.num(o)
         for i v in @
             if v != o[i]
                 if v is array
