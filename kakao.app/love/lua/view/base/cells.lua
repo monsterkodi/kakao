@@ -257,7 +257,7 @@ function cells:bg_rect(x1, y1, x2, y2, bg)
         if (y2 < 0) then y2 = (self.rows + y2) end
         
         for row in iter(y1, y2) do 
-            if (row < self.rows) then 
+            if (row <= self.rows) then 
                 for col in iter(x1, x2) do 
                     if (col < self.cols) then 
                         self:set_bg(col, row, bg)

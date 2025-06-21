@@ -244,8 +244,8 @@ class fileeditor extends editor
 
                     @state∙deselect() if not event.shift and event.button=='left'
                     
-                    x = col + @state.s.view[1]
-                    y = row + @state.s.view[2]
+                    x = col + @state.s.view[1] - 1
+                    y = row + @state.s.view[2] - 1
                     
                     @state∙clearHighlights()
                     
@@ -268,6 +268,7 @@ class fileeditor extends editor
                     x = col + @state.s.view[1] - 1
                     y = row + @state.s.view[2] - 1
                     
+                    
                     if event.cmd or event.ctrl
                         word = belt.wordAtPos @state.s.lines [x y]
                         if word
@@ -277,6 +278,8 @@ class fileeditor extends editor
 
                     @dragStart = [x y x]
                                         
+                    log "FILEDITOR DRAG START" @dragStart
+                    
                     @state∙deselect()     if not event.shift and event.button=='left'
                     @state∙clearCursors() if not event.alt
 
@@ -296,13 +299,10 @@ class fileeditor extends editor
             
                 if @dragStart
                     
-                    x = col + @state.s.view[1]
-                    y = row + @state.s.view[2]
+                    x = col + @state.s.view[1] - 1
+                    y = row + @state.s.view[2] - 1
                     
-                    start = [@dragStart[0] @dragStart[1]]
-                    
-                    if y < @dragStart[1] 
-                        start = [@dragStart[2] @dragStart[1]]
+                    start = [@dragStart[1] @dragStart[2]]
                     
                     if event.shift ➜ @state∙addRangeToSelectionWithMainCursorAtEnd belt.rangeFromStartToEnd(start [x y])
                     else             @state∙select start [x y]

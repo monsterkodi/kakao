@@ -893,7 +893,7 @@ class state extends events
         @setCursors cursors {adjust:'topBotDelta'}
 
     select: from to ->
-        
+    
         selections = []
         
         @setMainCursor to[1] to[2]

@@ -267,8 +267,8 @@ function fileeditor:onMouse(event)
                 if (event.count > 1) then 
                     if (not event.shift and (event.button == 'left')) then self.state:deselect() end
                     
-                    local x = (col + self.state.s.view[1])
-                    local y = (row + self.state.s.view[2])
+                    local x = ((col + self.state.s.view[1]) - 1)
+                    local y = ((row + self.state.s.view[2]) - 1)
                     
                     self.state:clearHighlights()
                     
@@ -303,6 +303,8 @@ function fileeditor:onMouse(event)
                     
                     self.dragStart = array(x, y, x)
                     
+                    print("FILEDITOR DRAG START", self.dragStart)
+                    
                     if (not event.shift and (event.button == 'left')) then self.state:deselect() end
                     if not event.alt then self.state:clearCursors() end
                     
@@ -322,14 +324,10 @@ function fileeditor:onMouse(event)
                 end
         elseif (event.type == 'drag') then 
                 if self.dragStart then 
-                    local x = (col + self.state.s.view[1])
-                    local y = (row + self.state.s.view[2])
+                    local x = ((col + self.state.s.view[1]) - 1)
+                    local y = ((row + self.state.s.view[2]) - 1)
                     
-                    local start = array(self.dragStart[0], self.dragStart[1])
-                    
-                    if (y < self.dragStart[1]) then 
-                        start = array(self.dragStart[2], self.dragStart[1])
-                    end
+                    local start = array(self.dragStart[1], self.dragStart[2])
                     
                     if event.shift then self.state:addRangeToSelectionWithMainCursorAtEnd(belt.rangeFromStartToEnd(start, array(x, y)))
                     else self.state:select(start, array(x, y))

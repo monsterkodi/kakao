@@ -147,12 +147,12 @@ end)()
         return _G.font
     end
     
-    if (combo == "cmd+-") then setFontWidth(max(8, (fontWidth - 1)))
+    if (combo == "cmd+-") then setFontWidth(max(14, (fontWidth - 1)))
     elseif (combo == "cmd+=") then setFontWidth(min(128, (fontWidth + 1)))
     elseif (combo == "cmd+0") then setFontWidth()
     else 
                     local event = {["repeat"] = isrepeat, combo = combo, char = char}
-                    print("key", dict.str(event), "\x1b[0m\x1b[34m", scancode)
+                    -- log "key", dict.str(event), ◌b, scancode
                     ked:onKey(combo, event)
     end
     
@@ -173,12 +173,26 @@ end)()
 end
 
 
+function love.mousereleased(x, y, button, istouch, presses) 
+    button = (function () 
+    if (button == 1) then 
+    return "left" else 
+    return "right"
+             end
+end)()
+    local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    local event = {x = x, y = y, type = "release", button = button, count = 1, cell = cell}
+    return ked:onMouse(event)
+end
+
+
 function love.mousemoved(x, y) 
-    local button = "right"
+    local button = ""
     local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
     _G.mouseCell = cell
     local typ = "move"
     if love.mouse.isDown(1) then 
+        button = "right"
         typ = "drag"
     end
     
