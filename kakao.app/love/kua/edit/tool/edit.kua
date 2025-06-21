@@ -233,18 +233,18 @@ class edit
 
             range = belt.rangeOfLine lines i
             if belt.isEmptyRange range
-                range[1] += 1 
+                range[2] += 1 
             newr∙push range
             newp∙push belt.endOfRange(range)
             
-        for c in posl
-            if not belt.rangesContainLine(rngs c[1])
-                addLineAtIndex c c[1]
-            elif c[1] < lines.len-1
-                addLineAtIndex c c[1]+1 
+        for c in posl∙each()
+            if not belt.rangesContainLine(rngs c[2])
+                addLineAtIndex c c[2]
+            elif c[2] < lines∙len()
+                addLineAtIndex c c[2]+1 
 
         ⮐  (posl rngs) if empty newp
-        
+
         (newp newr)
     
     # 00000000   00000000  00     00   0000000   000   000  00000000     00000000   000   000   0000000    0000000    

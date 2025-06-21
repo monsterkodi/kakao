@@ -32,6 +32,7 @@ _G.empty = v ->
     
 _G.valid = v -> not empty v
     
+_G.abs      = math.abs
 _G.max      = math.max
 _G.min      = math.min
 _G.int      = math.floor

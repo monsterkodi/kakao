@@ -24,7 +24,12 @@ class array
                 a∙len()
             ➜ 0
     
-    @from: a -> array(unpack(a))
+    @from: a -> 
+        
+        if a.class == immutable
+            ⮐  a∙arr()
+        array unpack(a)
+        
     @str:  a -> noon(a)
     arr:  -> array.from @
     each: -> i=0; -> i+=1; (@[i] i)

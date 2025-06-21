@@ -271,18 +271,18 @@ function edit.static.addLinesBelowPositionsToRanges(lines, posl, rngs)
         function addLineAtIndex(c, i) 
             local range = belt.rangeOfLine(lines, i)
             if belt.isEmptyRange(range) then 
-                range[1] = range[1] + 1
+                range[2] = range[2] + 1
             end
             
             newr:push(range)
             return newp:push(belt.endOfRange(range))
         end
         
-        for _, c in ipairs(posl) do 
-            if not belt.rangesContainLine(rngs, c[1]) then 
-                addLineAtIndex(c, c[1])
-            elseif (c[1] < (#lines - 1)) then 
-                addLineAtIndex(c, (c[1] + 1))
+        for c in posl:each() do 
+            if not belt.rangesContainLine(rngs, c[2]) then 
+                addLineAtIndex(c, c[2])
+            elseif (c[2] < lines:len()) then 
+                addLineAtIndex(c, (c[2] + 1))
             end
         end
         

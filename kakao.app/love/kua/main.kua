@@ -19,6 +19,7 @@ love.load = ->
     _G.fontWidth = 24
     _G.font  = love.graphics.setNewFont "font.ttf" fontWidth*2
     _G.count = 0
+    _G.mouseClick = []
     
     #love.window.maximize()
     love.keyboard.setKeyRepeat true
@@ -132,27 +133,41 @@ love.keypressed = key scancode isrepeat ->
 love.mousepressed = x y button istouch presses ->
 
     button = if button == 1 ➜ "left" ➜ "right"
-    cell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
-    event = {x:x y:y type:"press" button:button count:1 cell:cell}
+    _G.mouseCell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    
+    count = 1
+    if _G.mouseClick[button]
+        click = _G.mouseClick[button]
+        if abs(x-click.x) < 10 and abs(y-click.y) < 10 
+            if love.timer.getTime() - click.time < 300
+                count = click.count+1
+    
+    _G.mouseClick[button] = {
+        x:      x
+        y:      y
+        count:  count
+        time:   love.timer.getTime()}
+        
+    event = {x:x y:y type:"press" button:button count:mouseClick[button].count cell:mouseCell}
+    # log "EVENT" noon(event)
     ked∙onMouse event
 
 love.mousereleased = x y button istouch presses ->
 
     button = if button == 1 ➜ "left" ➜ "right"
-    cell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
-    event = {x:x y:y type:"release" button:button count:1 cell:cell}
+    _G.mouseCell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    event = {x:x y:y type:"release" button:button count:1 cell:mouseCell}
     ked∙onMouse event
 
 love.mousemoved = x y ->
 
     button = ""
-    cell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
-    _G.mouseCell = cell
+    _G.mouseCell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
     typ = "move"
     if love.mouse.isDown(1)
         button = "right"
         typ = "drag"
-    event = {x:x y:y type:typ button:button cell:cell}
+    event = {x:x y:y type:typ button:button cell:mouseCell}
     ked∙onMouse event
     
 love.wheelmoved = x y ->

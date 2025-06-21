@@ -886,7 +886,7 @@ end)()
 
 
 function state:addCursor(x, y) 
-        local pos = belt.pos(x, y)
+        local pos = array(x, y)
         local cursors = self:allCursors()
         cursors:push(pos)
         return self:setCursors(cursors, {main = -1})
@@ -1045,6 +1045,9 @@ function state:moveCursorsAndSelect(dir, opt)
 
 
 function state:select(from, to) 
+        -- log "SELECT" from
+        -- log "TO    " to
+        
         local selections = array()
         
         self:setMainCursor(to[1], to[2])
@@ -1382,7 +1385,7 @@ function state:addSpanToSelection(span)
 
 
 function state:selectChunk(x, y) 
-        local rng = belt.rangeOfClosestChunkToPos(self.s.lines, belt.pos(x, y))
+        local rng = belt.rangeOfClosestChunkToPos(self.s.lines, array(x, y))
         if rng then 
             self:addRangeToSelectionWithMainCursorAtEnd(rng)
         end
@@ -1398,7 +1401,7 @@ function state:selectChunk(x, y)
 
 
 function state:selectWord(x, y) 
-        local rng = belt.rangeOfClosestWordToPos(self.s.lines, belt.pos(x, y))
+        local rng = belt.rangeOfClosestWordToPos(self.s.lines, array(x, y))
         if rng then 
             self:addRangeToSelectionWithMainCursorAtEnd(rng)
         end
@@ -1415,8 +1418,8 @@ function state:selectWord(x, y)
 
 function state:selectLine(y) 
         y = y or (self:mainCursor()[2])
-        if ((1 <= y) and (y <= self.s.lines:len())) then 
-            self:select(array(1, y), array(self.s.lines[y]:len(), y))
+        if ((1 <= y) and (y <= (self.s.lines:len() + 1))) then 
+            self:select(array(1, y), array((self.s.lines[y]:len() + 1), y))
         end
         
         return self

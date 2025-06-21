@@ -43,6 +43,7 @@ function _G.valid(v)
     return not empty(v)
 end
 
+_G.abs = math.abs
 _G.max = math.max
 _G.min = math.min
 _G.int = math.floor

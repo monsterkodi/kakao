@@ -258,8 +258,9 @@ class fileeditor extends editor
                         @state∙selectLine y
                         
                     @state∙highlightSelection()
-                        
-                    @dragStart = copy @state.s.selections[1]
+                    
+                    if @state.s.selections∙len() > 0
+                        @dragStart = array.from @state.s.selections[1]
                     
                     ⮐  true
                     
@@ -278,8 +279,6 @@ class fileeditor extends editor
 
                     @dragStart = [x y x]
                                         
-                    log "FILEDITOR DRAG START" @dragStart
-                    
                     @state∙deselect()     if not event.shift and event.button=='left'
                     @state∙clearCursors() if not event.alt
 

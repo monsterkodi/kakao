@@ -422,7 +422,7 @@ end)
 
 
 function belt.static.rangesContainLine(rngs, lineIndex) 
-        for _, rng in ipairs(rngs) do 
+        for rng in rngs:each() do 
             if ((rng[2] <= lineIndex) and (lineIndex <= rng[4])) then return true end
         end
         

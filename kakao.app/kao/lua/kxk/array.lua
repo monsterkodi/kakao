@@ -46,8 +46,13 @@ function array.static.num(a)
 
 
 function array.static.from(a) 
-    return array(unpack(a))
+        if (a.class == immutable) then 
+            return a:arr()
+        end
+        
+        return array(unpack(a))
     end
+
 
 function array.static.str(a) 
     return noon(a)

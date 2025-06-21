@@ -762,7 +762,7 @@ class state extends events
     
     addCursor: x y ->
         
-        pos = belt.pos x y
+        pos = [x y]
         cursors = @allCursors()
         cursors∙push pos
         @setCursors cursors {main:-1}
@@ -893,6 +893,9 @@ class state extends events
         @setCursors cursors {adjust:'topBotDelta'}
 
     select: from to ->
+    
+        # log "SELECT" from
+        # log "TO    " to
     
         selections = []
         
@@ -1148,7 +1151,8 @@ class state extends events
     #  0000000  000   000   0000000   000   000  000   000  
     
     selectChunk: x y ->
-        rng = belt.rangeOfClosestChunkToPos @s.lines belt.pos(x y)
+    
+        rng = belt.rangeOfClosestChunkToPos @s.lines [x y]
         if rng
             @addRangeToSelectionWithMainCursorAtEnd rng
         @
@@ -1160,7 +1164,8 @@ class state extends events
     # 00     00   0000000   000   000  0000000    
     
     selectWord: x y ->
-        rng = belt.rangeOfClosestWordToPos @s.lines belt.pos(x y)
+    
+        rng = belt.rangeOfClosestWordToPos @s.lines [x y]
         if rng
             @addRangeToSelectionWithMainCursorAtEnd rng
         @
@@ -1174,8 +1179,8 @@ class state extends events
     selectLine: y ->
         
         y ?= @mainCursor()[2]
-        if 1 <= y and y <= @s.lines∙len()
-            @select [1 y] [@s.lines[y]∙len() y]
+        if 1 <= y and y <= @s.lines∙len()+1
+            @select [1 y] [@s.lines[y]∙len()+1 y]
         @
         
     selectPrevLine: y ->

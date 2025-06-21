@@ -267,7 +267,7 @@ class belt
     
     @rangesContainLine: rngs lineIndex -> 
         
-        for rng in rngs
+        for rng in rngs∙each()
             ⮐  true if rng[2] <= lineIndex and lineIndex <= rng[4]
         false
         

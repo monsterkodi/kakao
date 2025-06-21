@@ -643,7 +643,7 @@ function text.static.isSpanLineRange(lines, rng)
 
 
 function text.static.rangeOfLine(lines, y) 
-    return array(1, y, kseg.width(lines[y]), y)
+    return array(1, y, (kseg.width(lines[y]) + 1), y)
     end
 
 --  0000000  000   000  000   000  000   000  000   000  

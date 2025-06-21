@@ -18,6 +18,7 @@ function love.load()
     _G.fontWidth = 24
     _G.font = love.graphics.setNewFont("font.ttf", (fontWidth * 2))
     _G.count = 0
+    _G.mouseClick = array()
     
     --love.window.maximize()
     love.keyboard.setKeyRepeat(true)
@@ -167,8 +168,27 @@ function love.mousepressed(x, y, button, istouch, presses)
     return "right"
              end
 end)()
-    local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
-    local event = {x = x, y = y, type = "press", button = button, count = 1, cell = cell}
+    _G.mouseCell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    
+    local count = 1
+    if _G.mouseClick[button] then 
+        local click = _G.mouseClick[button]
+        if ((abs((x - click.x)) < 10) and (abs((y - click.y)) < 10)) then 
+            if ((love.timer.getTime() - click.time) < 300) then 
+                count = (click.count + 1)
+            end
+        end
+    end
+    
+    _G.mouseClick[button] = {
+        x = x, 
+        y = y, 
+        count = count, 
+        time = love.timer.getTime()
+        }
+    
+    local event = {x = x, y = y, type = "press", button = button, count = mouseClick[button].count, cell = mouseCell}
+    -- log "EVENT" noon(event)
     return ked:onMouse(event)
 end
 
@@ -180,23 +200,22 @@ function love.mousereleased(x, y, button, istouch, presses)
     return "right"
              end
 end)()
-    local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
-    local event = {x = x, y = y, type = "release", button = button, count = 1, cell = cell}
+    _G.mouseCell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    local event = {x = x, y = y, type = "release", button = button, count = 1, cell = mouseCell}
     return ked:onMouse(event)
 end
 
 
 function love.mousemoved(x, y) 
     local button = ""
-    local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
-    _G.mouseCell = cell
+    _G.mouseCell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
     local typ = "move"
     if love.mouse.isDown(1) then 
         button = "right"
         typ = "drag"
     end
     
-    local event = {x = x, y = y, type = typ, button = button, cell = cell}
+    local event = {x = x, y = y, type = typ, button = button, cell = mouseCell}
     return ked:onMouse(event)
 end
 

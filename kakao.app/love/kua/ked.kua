@@ -164,7 +164,7 @@ class KED
         
         # @session.save()
         
-        log ◌d "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━ " ◌g @session.name, ◌d " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+        log ◌d "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━" ◌g @session.name, ◌d "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
         
         if msg != nil
            if msg.stack

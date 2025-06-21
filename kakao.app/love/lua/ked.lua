@@ -178,7 +178,7 @@ function KED:quit(msg)
         
         -- @session.save()
         
-        print("\x1b[0m\x1b[90m", "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ", "\x1b[0m\x1b[32m", self.session.name, "\x1b[0m\x1b[90m", " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+        print("\x1b[0m\x1b[90m", "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "\x1b[0m\x1b[32m", self.session.name, "\x1b[0m\x1b[90m", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         
         if (msg ~= nil) then 
            if msg.stack then 

@@ -284,7 +284,9 @@ function fileeditor:onMouse(event)
                     
                     self.state:highlightSelection()
                     
-                    self.dragStart = copy(self.state.s.selections[1])
+                    if (self.state.s.selections:len() > 0) then 
+                        self.dragStart = array.from(self.state.s.selections[1])
+                    end
                     
                     return true
                 else 
@@ -302,8 +304,6 @@ function fileeditor:onMouse(event)
                     end
                     
                     self.dragStart = array(x, y, x)
-                    
-                    print("FILEDITOR DRAG START", self.dragStart)
                     
                     if (not event.shift and (event.button == 'left')) then self.state:deselect() end
                     if not event.alt then self.state:clearCursors() end
