@@ -95,9 +95,9 @@ class pair
     @rangesOfNestedPairsAtPositions: lines posl ->
         
         rngs = []
-        # for pos in posl
-        #     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
-        #         rngs∙push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
+        for pos in posl∙each()
+            for pair in pepe.pairlAtCol(kseg.str(lines[pos[2]]) pos[1])
+                rngs∙push [pair.rng[1] pos[2] pair.rng[2] pos[2]]
         rngs
 
     @spansOfNestedPairsAtPositions: lines posl ->
@@ -106,28 +106,28 @@ class pair
         brackets = []
         strings  = []
         
-        # for pos in posl
-        #     
-        #     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
-        #         open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.len]
-        #         close = [pair.rng[1] pos[1] pair.rng[1]+pair.ende.len]
-        #         spans∙push open
-        #         spans∙push close
-        #         
-        #         if pair.start == '"' or pair.start == "'"
-        #             strings∙push open
-        #             strings∙push close
-        #         else
-        #             brackets∙push open
-        #             brackets∙push close
+        for pos in posl∙each()
+            
+            for pair in pepe.pairlAtCol(kseg.str(lines[pos[2]]) pos[1])
+                open  = [pair.rng[1] pos[2] pair.rng[1]+pair.start.len]
+                close = [pair.rng[2] pos[2] pair.rng[2]+pair.ende.len]
+                spans∙push open
+                spans∙push close
+                
+                if pair.start == '"' or pair.start == "'"
+                    strings∙push open
+                    strings∙push close
+                else
+                    brackets∙push open
+                    brackets∙push close
                 
         [spans brackets strings]
 
     @rangesOfPairsSurroundingPositions: lines pairl posl ->
 
         rngs = []
-        for pos in posl
-            for pair in pairl
+        for pos in posl∙each()
+            for pair in pairl∙each()
                 if kstr.endsWith(belt.chunkBeforePos(lines pos) pair[1]) and kstr.startsWith(belt.chunkAfterPos(lines pos) pair[2])
                     rngs∙push [pos[1] - pair[1].len pos[2] pos[1] + pair[2].len pos[2]]
         rngs
@@ -135,7 +135,7 @@ class pair
     @stringDelimiterSpansForPositions: lines posl ->
         
         spans = []
-        for pos in posl
+        for pos in posl∙each()
             srng = belt.rangeOfStringSurroundingRange lines [pos[1] pos[2] pos[1] pos[2]]
             if srng
                 spans∙push [srng[1] srng[2] srng[1]+1]
@@ -156,7 +156,7 @@ class pair
     @openCloseSpansForPositions: lines posl ->
 
         spans = []
-        for pos in posl
+        for pos in posl∙each()
             sps = @openCloseSpansForPosition lines pos
             if sps
                 spans += sps
@@ -231,7 +231,7 @@ class pair
         ap    = [max(bp[1]+1 pos[1]) pos[2]]
         cnt   = 0
         
-        while ap[2] < lines.len
+        while ap[2] < lines∙len()
             
             next = lines[ap[2]][ap[1]]
             if clos∙has next
@@ -247,7 +247,7 @@ class pair
                 stack∙push next
 
             ap[1] += 1
-            if ap[1] > lines[ap[2]].len
+            if ap[1] > lines[ap[2]]∙len()
                 ap[1] = 1
                 ap[2] += 1
             cnt += 1
@@ -256,7 +256,7 @@ class pair
 
         # log "lastOpen #{lastOpen} firstClose #{firstClose}" 
         if not lastOpen or not firstClose
-            if pos[2] > lines.len ➜ log "pos[2] too large" ; ⮐  
+            if pos[2] > lines∙len() ➜ log "pos[2] too large" ; ⮐  
             ⮐  if empty lines[pos[2]]
             # if pos[1]-1 > lines[pos[2]].len ➜ log "pos[1]-1 #{pos} too large #{lines[pos[2]].len}" ; ⮐  
             # if lines[pos[2]].len > opns.len ➜ log "lines[pos[2]] #{lines[pos[2]].len} too large for revs #{revs.len}" ; ⮐  

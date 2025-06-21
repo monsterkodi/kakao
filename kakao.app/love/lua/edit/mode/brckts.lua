@@ -39,32 +39,27 @@ function brckts:init(state)
 
 
 function brckts:cursorsSet() 
-        if #self.state.s.selections then 
-            if (self.allSpans == self.state.s.highlights) then 
-                self.state:setHighlights(array())
-            end
-            
-            return
-        end
-        
-        if #self.state.s.highlights then 
-            if (not self.allSpans == self.state.s.highlights) then return end -- .asMutable() # from the previous brckts highlight
-        end
-        
-        local spans, openClose, strings = belt.spansOfNestedPairsAtPositions(self.state.s.lines, self.state.s.cursors)
-        
-        if empty(spans) then 
-            self.openCloseSpans = belt.openCloseSpansForPositions(self.state.s.lines, self.state.s.cursors)
-            self.stringDelimiterSpans = belt.stringDelimiterSpansForPositions(self.state.s.cursors)
-            spans = (self.openCloseSpans + self.stringDelimiterSpans)
-        else 
-            self.openCloseSpans = openClose
-            self.stringDelimiterSpans = strings
-        end
-        
-        self.state:setHighlights(spans)
-        
-        self.allSpans = self.state.s.highlights return -- .asMutable()
+        --if @state.s.selections∙len() > 0
+        --    if @allSpans∙eql(@state.s.highlights)
+        --        @state∙setHighlights []
+        --    ⮐  
+        --    
+        --if @state.s.highlights∙len() > 0
+        --    ⮐  if not @allSpans∙eql(@state.s.highlights)
+        --        
+        --(spans openClose strings) = belt.spansOfNestedPairsAtPositions(@state.s.lines @state.s.cursors)
+        --        
+        --if empty spans
+        --    @openCloseSpans       = belt.openCloseSpansForPositions @state.s.lines @state.s.cursors
+        --    @stringDelimiterSpans = belt.stringDelimiterSpansForPositions          @state.s.cursors
+        --    spans = @openCloseSpans + @stringDelimiterSpans
+        --else
+        --    @openCloseSpans       = openClose
+        --    @stringDelimiterSpans = strings
+        --        
+        --@state∙setHighlights spans
+        --        
+        return --@allSpans = @state.s.highlights∙arr()
     end
 
 --  ███████  ███   ███   ███████   ████████ 
@@ -127,8 +122,8 @@ function brckts:handleKey(key, event)
                 end
         elseif (key == 'delete') then 
                 if empty(self.state.s.selections) then 
-                    local pairs = util.uniq(dict.values(brckts.surround))
-                    local rngs = belt.rangesOfPairsSurroundingPositions(self.state.s.lines, pairs, self.state.s.cursors)
+                    local srrd = util.uniq(dict.values(brckts.surround))
+                    local rngs = belt.rangesOfPairsSurroundingPositions(self.state.s.lines, srrd, self.state.s.cursors)
                     if valid(rngs) then 
                         self.state:setSelections(rngs)
                         self.state:deleteSelection()

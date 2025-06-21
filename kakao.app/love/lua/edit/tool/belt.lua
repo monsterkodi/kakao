@@ -409,7 +409,6 @@ function belt.static.prevSpanBeforePos(spans, pos)
 
 function belt.static.normalizeSpans(spans) 
         if empty(spans) then return array() end
-        
         spans = spans:map(function (a) 
     if (a[1] > a[3]) then 
     return array(a[3], a[2], a[1]) else 

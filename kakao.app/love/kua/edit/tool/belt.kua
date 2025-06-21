@@ -263,7 +263,6 @@ class belt
     @normalizeSpans: spans ->
         
         ⮐  [] if empty spans
-        
         spans = spans∙map((a) -> if a[1] > a[3] ➜ [a[3] a[2] a[1]] ➜ a)
         spans∙sort((a b) -> if a[2] == b[2] ➜ a[1] < b[1] else a[2] < b[2])
         spans = spans∙filter((a) -> a[1] != a[3])

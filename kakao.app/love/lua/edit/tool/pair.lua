@@ -119,9 +119,12 @@ function pair.static.positionsAndRangesOutsideStrings(lines, rngs, posl)
 
 function pair.static.rangesOfNestedPairsAtPositions(lines, posl) 
         local rngs = array()
-        -- for pos in posl
-        --     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
-        --         rngs∙push [pair.rng[0] pos[1] pair.rng[1] pos[1]]
+        for pos in posl:each() do 
+            for pair in pepe.pairlAtCol(kseg.str(lines[pos[2]]), pos[1]) do 
+                rngs:push(array(pair.rng[1], pos[2], pair.rng[2], pos[2]))
+            end
+        end
+        
         return rngs
     end
 
@@ -131,20 +134,22 @@ function pair.static.spansOfNestedPairsAtPositions(lines, posl)
         local brackets = array()
         local strings = array()
         
-        -- for pos in posl
-        --     
-        --     for pair in pepe.pairlAtCol(kseg.str(lines[pos[1]]) pos[0])
-        --         open  = [pair.rng[0] pos[1] pair.rng[0]+pair.start.len]
-        --         close = [pair.rng[1] pos[1] pair.rng[1]+pair.ende.len]
-        --         spans∙push open
-        --         spans∙push close
-        --         
-        --         if pair.start == '"' or pair.start == "'"
-        --             strings∙push open
-        --             strings∙push close
-        --         else
-        --             brackets∙push open
-        --             brackets∙push close
+        for pos in posl:each() do 
+            for pair in pepe.pairlAtCol(kseg.str(lines[pos[2]]), pos[1]) do 
+                local open = array(pair.rng[1], pos[2], (pair.rng[1] + #pair.start))
+                local close = array(pair.rng[2], pos[2], (pair.rng[2] + #pair.ende))
+                spans:push(open)
+                spans:push(close)
+                
+                if ((pair.start == '"') or (pair.start == "'")) then 
+                    strings:push(open)
+                    strings:push(close)
+                else 
+                    brackets:push(open)
+                    brackets:push(close)
+                end
+            end
+        end
         
         return array(spans, brackets, strings)
     end
@@ -152,8 +157,8 @@ function pair.static.spansOfNestedPairsAtPositions(lines, posl)
 
 function pair.static.rangesOfPairsSurroundingPositions(lines, pairl, posl) 
         local rngs = array()
-        for _, pos in ipairs(posl) do 
-            for _, pair in ipairs(pairl) do 
+        for pos in posl:each() do 
+            for pair in pairl:each() do 
                 if (kstr.endsWith(belt.chunkBeforePos(lines, pos), pair[1]) and kstr.startsWith(belt.chunkAfterPos(lines, pos), pair[2])) then 
                     rngs:push(array((pos[1] - #pair[1]), pos[2], (pos[1] + #pair[2]), pos[2]))
                 end
@@ -166,7 +171,7 @@ function pair.static.rangesOfPairsSurroundingPositions(lines, pairl, posl)
 
 function pair.static.stringDelimiterSpansForPositions(lines, posl) 
         local spans = array()
-        for _, pos in ipairs(posl) do 
+        for pos in posl:each() do 
             local srng = belt.rangeOfStringSurroundingRange(lines, array(pos[1], pos[2], pos[1], pos[2]))
             if srng then 
                 spans:push(array(srng[1], srng[2], (srng[1] + 1)))
@@ -192,7 +197,7 @@ function pair.static.stringDelimiterSpansForPositions(lines, posl)
 
 function pair.static.openCloseSpansForPositions(lines, posl) 
         local spans = array()
-        for _, pos in ipairs(posl) do 
+        for pos in posl:each() do 
             local sps = pair.openCloseSpansForPosition(lines, pos)
             if sps then 
                 spans = spans + sps
@@ -282,7 +287,7 @@ function pair.static.openCloseSpansForPosition(lines, pos)
         local ap = array(max((bp[1] + 1), pos[1]), pos[2])
         local cnt = 0
         
-        while (ap[2] < #lines) do 
+        while (ap[2] < lines:len()) do 
             local next = lines[ap[2]][ap[1]]
             if clos:has(next) then 
                 if (#stack > 0) then 
@@ -300,7 +305,7 @@ function pair.static.openCloseSpansForPosition(lines, pos)
             end
             
             ap[1] = ap[1] + 1
-            if (ap[1] > #lines[ap[2]]) then 
+            if (ap[1] > lines[ap[2]]:len()) then 
                 ap[1] = 1
                 ap[2] = ap[2] + 1
             end
@@ -313,7 +318,7 @@ function pair.static.openCloseSpansForPosition(lines, pos)
         
         -- log "lastOpen #{lastOpen} firstClose #{firstClose}" 
         if (not lastOpen or not firstClose) then 
-            if (pos[2] > #lines) then print("pos[2] too large") ; return end
+            if (pos[2] > lines:len()) then print("pos[2] too large") ; return end
             if empty(lines[pos[2]]) then return end
             -- if pos[1]-1 > lines[pos[2]].len ➜ log "pos[1]-1 #{pos} too large #{lines[pos[2]].len}" ; ⮐  
             -- if lines[pos[2]].len > opns.len ➜ log "lines[pos[2]] #{lines[pos[2]].len} too large for revs #{revs.len}" ; ⮐  
