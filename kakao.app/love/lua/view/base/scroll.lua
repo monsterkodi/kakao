@@ -48,13 +48,13 @@ function scroll:onMouse(event)
                 if self.hover then 
                     self.doDrag = true
                     post:emit('pointer', 'grabbing')
-                    return self:scrollToPixel(event.pixel)
+                    return self:scrollToPixel(event.y)
                 end
         elseif (event.type == 'drag') then 
                 if self.doDrag then 
                     self.hover = true
                     post:emit('pointer', 'grab')
-                    return self:scrollToPixel(event.pixel)
+                    return self:scrollToPixel(event.y)
                 end
                 
                 self.hover = false
@@ -84,12 +84,12 @@ function scroll:isActive()
 -- 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
 
 
-function scroll:scrollToPixel(pixel) 
-        local csz = self.screen:size()
+function scroll:scrollToPixel(pixelY) 
+        local ch = _G.screen.ch
         
         local view = self.state.s.view:arr()
         
-        local rowf = ((pixel[2] / csz[2]) - self.cells.y)
+        local rowf = ((pixelY / ch) - self.cells.y)
         view[2] = floor(((rowf * ((self.state.s.lines:len() - self.cells.rows) + 1)) / (self.cells.rows - 1)))
         
         local maxY = (self.state.s.lines:len() - self.cells.rows)

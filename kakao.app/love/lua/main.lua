@@ -127,7 +127,7 @@ function love.keypressed(key, scancode, isrepeat)
     return ">"
                         elseif (key == "/") then 
     return "?"
-                        elseif (key == "`") then 
+                        elseif (key == '`') then 
     return "~"
                         else 
     return string.upper(key)
@@ -138,9 +138,24 @@ function love.keypressed(key, scancode, isrepeat)
            end
 end)()
     
-    local event = {["repeat"] = isrepeat, combo = combo, char = char}
-    write("\x1b[0m\x1b[33m", " ", dict.str(event), "\x1b[0m\x1b[34m", scancode)
-    ked:onKey(combo, event)
+    
+    function setFontWidth(fw) 
+        fw = fw or 24
+        
+        _G.fontWidth = fw
+        _G.font = love.graphics.setNewFont("font.ttf", (fontWidth * 2))
+        return _G.font
+    end
+    
+    if (combo == "cmd+-") then setFontWidth(max(8, (fontWidth - 1)))
+    elseif (combo == "cmd+=") then setFontWidth(min(128, (fontWidth + 1)))
+    elseif (combo == "cmd+0") then setFontWidth()
+    else 
+                    local event = {["repeat"] = isrepeat, combo = combo, char = char}
+                    print("key", dict.str(event), "\x1b[0m\x1b[34m", scancode)
+                    ked:onKey(combo, event)
+    end
+    
     return true
 end
 
@@ -160,7 +175,28 @@ end
 
 function love.mousemoved(x, y) 
     local button = "right"
-    local event = {x = x, y = y, type = "move", button = button}
+    local cell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    _G.mouseCell = cell
+    local typ = "move"
+    if love.mouse.isDown(1) then 
+        typ = "drag"
+    end
+    
+    local event = {x = x, y = y, type = typ, button = button, cell = cell}
+    return ked:onMouse(event)
+end
+
+
+function love.wheelmoved(x, y) 
+    local dir = ''
+    if (y > 0) then dir = 'up'
+    elseif (y < 0) then dir = 'down'
+    elseif (x < 0) then dir = 'left'
+    elseif (x > 0) then dir = 'right'
+    end
+    
+    local event = {x = x, y = y, type = "wheel", cell = mouseCell, dir = dir}
+    print("WHEEL", noon(event))
     return ked:onMouse(event)
 end
 

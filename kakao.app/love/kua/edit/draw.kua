@@ -53,13 +53,13 @@ class draw extends view
             
         @render()
         
-        @drawCursors()
-        if @complete
-            @complete∙drawPopup()
-        
         if @gutter ➜ @gutter∙draw()
         # if @mapscr ➜ @mapscr∙draw()
         if @scroll ➜ @scroll∙draw()
+        
+        @drawCursors()
+        if @complete
+            @complete∙drawPopup()
         
         mode.postDraw @state
         
@@ -132,7 +132,7 @@ class draw extends view
     # 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
     # 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
     
-    drawRowBackground: row linel ->
+    # drawRowBackground: row linel ->
         
         # if row+@state.s.view[1] == @state∙mainCursor()[1]
         #     if linel > 0
@@ -286,16 +286,20 @@ class draw extends view
     
     drawColorPills: line row linel ->
     
-        # rngs = kstr.colorRanges kseg.str(line)
-        rngs = kstr.colorRanges line∙str()
-        if rngs
-            cx = max(0 linel)+1
-            for rng,idx in rngs
+        rngs = belt.colorRangesInLine line
+        if rngs∙len() > 0
+            cx = linel+2
+            for idx rng in rngs
+                clr = kstr.hexColor kseg.str(line∙slice(rng[1] rng[2]))
                 dta = 4
-                if idx == 0          ➜ @cells.set cx row '' rng.color @color.empty; cx += 1; dta -= 1
-                if idx == rngs.len-1 ➜ dta -= 1
-                @cells.bg_rect cx row cx+dta row rng.color; cx += dta
-                if idx == rngs.len-1 ➜ @cells.set cx row '' rng.color @color.empty
+                if idx == 1          
+                    @cells∙set cx row '' clr @color.empty 
+                    cx  += 1 
+                    dta -= 1
+                if idx == rngs∙len() ➜ dta -= 1
+                @cells∙bg_rect cx row cx+dta row clr
+                cx += dta
+                if idx == rngs∙len() ➜ @cells∙set cx row '' clr @color.empty
                     
     drawAsciiHeader: line row clss ->
         

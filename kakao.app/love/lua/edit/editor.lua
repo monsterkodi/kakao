@@ -137,12 +137,18 @@ function editor:onMouse(event)
 
 
 function editor:onWheel(event) 
-        if (event.cell[1] >= (self.cells.y + self.cells.rows)) then return end
+        print("EDITOR.ONWHEEL", event)
+        
+        if (event.cell[2] >= (self.cells.y + self.cells.rows)) then return end
         
         local inside = self.cells:isInsideEvent(event)
         inside = (inside or self.scroll.cells:isInsideEvent(event))
         inside = (inside or self.gutter.cells:isInsideEvent(event))
-        inside = (inside or self.mapscr.cells:isInsideEvent(event))
+        if self.mapscr then 
+            inside = (inside or self.mapscr.cells:isInsideEvent(event))
+        end
+        
+        print("EDITOR.ONWHEEL INSIDE", inside)
         
         if not inside then return end
         
@@ -157,6 +163,8 @@ function editor:onWheel(event)
         if event.shift then steps = steps * 2 end
         if event.ctrl then steps = steps * 2 end
         if event.alt then steps = steps * 2 end
+        
+        print("EDITOR.ONWHEEL", steps, event.dir)
         
         if (event.dir == 'up') or (event.dir == 'down') or (event.dir == 'left') or (event.dir == 'right') then self.state:scrollView(event.dir, steps)
         end

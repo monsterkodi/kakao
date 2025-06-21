@@ -212,4 +212,31 @@ function misc.static.indexOfExtremePositionInDirection(posl, dir, index)
         return exi
     end
 
+--  ███████   ███████   ███       ███████   ████████         ████████    ███████   ███   ███   ███████   ████████   ███████
+-- ███       ███   ███  ███      ███   ███  ███   ███        ███   ███  ███   ███  ████  ███  ███        ███       ███     
+-- ███       ███   ███  ███      ███   ███  ███████          ███████    █████████  ███ █ ███  ███  ████  ███████   ███████ 
+-- ███       ███   ███  ███      ███   ███  ███   ███        ███   ███  ███   ███  ███  ████  ███   ███  ███            ███
+--  ███████   ███████   ███████   ███████   ███   ███        ███   ███  ███   ███  ███   ███   ███████   ████████  ███████ 
+
+
+function misc.static.colorRangesInLine(line) 
+        local rngs = array()
+        if empty(line) then return rngs end
+        local len = line:len()
+        for i in iter(1, len) do 
+            local c = line[i]
+            if (c == "#") then 
+                if (((((i + 3) <= len) and tonumber(line[(i + 1)], 16)) and tonumber(line[(i + 2)], 16)) and tonumber(line[(i + 3)], 16)) then 
+                    if (((((i + 6) <= len) and tonumber(line[(i + 4)], 16)) and tonumber(line[(i + 5)], 16)) and tonumber(line[(i + 6)], 16)) then 
+                        rngs:push(array(i, (i + 6)))
+                    else 
+                        rngs:push(array(i, (i + 3)))
+                    end
+                end
+            end
+        end
+        
+        return rngs
+    end
+
 return misc

@@ -194,7 +194,7 @@ function kstr.scaleColor(s, f)
         s = kstr.hexColor(s)
     end
     
-    return kstr.hexColor(kstr.hexColor(s):map(function (v) clamp(0, 255, math.floor((f * v))) end))
+    return kstr.hexColor(kstr.hexColor(s):map(function (v) clamp(0, 255, floor((f * v))) end))
 end
 
 
@@ -227,15 +227,15 @@ function kstr.hexColor(s)
     end
     
     if is(s, array) then 
-        write("hexColor ARRAY ", s:slice(1, 3))
+        -- write "hexColor ARRAY " s∙slice(1 3) 
         local hs = s:slice(1, 3):map(function (v) 
     return kstr.lpad(2, kstr.hex(v), '0')
 end)
-        write("HS " .. tostring(hs) .. "")
+        -- write "HS #{hs}"
         hs = hs:join("")
         local h = '#' .. hs
         if ((#s > 3) and is(s[4], "number")) then 
-            print("SCALE")
+            -- log "SCALE"
             h = kstr.scaleColor(h, s[4])
         end
         

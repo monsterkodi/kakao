@@ -45,14 +45,14 @@ class scroll extends view
                 if @hover
                     @doDrag = true
                     post∙emit 'pointer''grabbing' 
-                    ⮐  @scrollToPixel event.pixel
+                    ⮐  @scrollToPixel event.y
                     
             'drag'
             
                 if @doDrag
                     @hover = true
                     post∙emit 'pointer''grab' 
-                    ⮐  @scrollToPixel event.pixel
+                    ⮐  @scrollToPixel event.y
                     
                 @hover = false
                 
@@ -75,13 +75,13 @@ class scroll extends view
     #      000  000       000   000  000   000  000      000         000     000   000  
     # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
     
-    scrollToPixel: pixel ->
+    scrollToPixel: pixelY ->
     
-        csz = @screen∙size()
+        ch = _G.screen.ch        
 
         view = @state.s.view∙arr()
         
-        rowf = pixel[2]/csz[2]-@cells.y
+        rowf = pixelY/ch-@cells.y
         view[2] = floor(rowf * (@state.s.lines∙len() - @cells.rows + 1)  / (@cells.rows-1))
         
         maxY = @state.s.lines∙len() - @cells.rows

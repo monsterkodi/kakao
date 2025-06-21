@@ -110,16 +110,27 @@ love.keypressed = key scancode isrepeat ->
                             "," ➜ "<"
                             "." ➜ ">"
                             "/" ➜ "?"
-                            "`" ➜ "~"
+                            '`' ➜ "~"
                                 ➜ string.upper key
                     else
                         ""
-    event = {"repeat":isrepeat combo:combo char:char}
-    write ◌y " " dict.str(event) ◌b scancode
-    ked∙onKey combo event
-    true
 
+    setFontWidth = fw=24 ->
+        _G.fontWidth = fw
+        _G.font  = love.graphics.setNewFont "font.ttf" fontWidth*2
+                        
+    switch combo
+        "cmd+-" ➜   setFontWidth max(8 fontWidth-1)
+        "cmd+=" ➜   setFontWidth min(128 fontWidth+1)
+        "cmd+0" ➜   setFontWidth()
+                ➜ 
+                    event = {"repeat":isrepeat combo:combo char:char}
+                    log "key", dict.str(event), ◌b, scancode
+                    ked∙onKey combo event
+    true
+    
 love.mousepressed = x y button istouch presses ->
+
     button = if button == 1 ➜ "left" ➜ "right"
     cell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
     event = {x:x y:y type:"press" button:button count:1 cell:cell}
@@ -128,7 +139,25 @@ love.mousepressed = x y button istouch presses ->
 love.mousemoved = x y ->
 
     button = "right"
-    event = {x:x y:y type:"move" button:button}
+    cell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    _G.mouseCell = cell
+    typ = "move"
+    if love.mouse.isDown(1)
+        typ = "drag"
+    event = {x:x y:y type:typ button:button cell:cell}
+    ked∙onMouse event
+    
+love.wheelmoved = x y ->
+
+    dir = ''
+    if
+        y > 0 ➜ dir = 'up'
+        y < 0 ➜ dir = 'down'
+        x < 0 ➜ dir = 'left'
+        x > 0 ➜ dir = 'right'
+    
+    event = {x:x y:y type:"wheel" cell:mouseCell dir:dir}
+    log "WHEEL" noon(event)
     ked∙onMouse event
     
 # love.keyreleased = key scancode ->

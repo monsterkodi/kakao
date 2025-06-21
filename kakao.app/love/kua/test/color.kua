@@ -64,6 +64,15 @@ use theme.color
         #
         #belt.colorSeglsForText "▸ #{color.fg_rgb([255 255 00])}#{color.fg_rgb()} ms" ▸ [[[{x:2 fg:[255 255 0] w:1}]] kseg.segls("▸  ms")]
         
+    ▸ colorRangesInLine
+    
+        belt.colorRangesInLine kseg("") ▸ []
+        belt.colorRangesInLine kseg("abc") ▸ []
+        belt.colorRangesInLine kseg("#abc") ▸ [[1 4]]
+        belt.colorRangesInLine kseg("123 #123456 456") ▸ [[5 11]]
+        belt.colorRangesInLine kseg("123 #123 #456 456") ▸ [[5 8] [10 13]]
+        # belt.colorRangesInLine kseg("123 #123#456 456") ▸ []
+        
     ▸ adjustForBackground
     
         color.adjustForBackground [255 255 0] [0 0 0]         ▸ [255 255 0]

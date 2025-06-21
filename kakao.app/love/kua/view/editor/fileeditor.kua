@@ -335,7 +335,7 @@ class fileeditor extends editor
     
     onWheel: event ->
         
-        ⮐  if event.cell[1] >= @cells.y + @cells.rows
+        ⮐  if event.cell[2] >= @cells.y + @cells.rows
         
         if @dragStart
             
@@ -344,7 +344,7 @@ class fileeditor extends editor
             if event.ctrl ➜ steps *= 2 
             if event.alt ➜ steps *= 2 
             
-            (x y) = @state.mainCursor()
+            (x y) = unpack @state∙mainCursor()
             
             switch event.dir
                 'up'    ➜ y -= steps    
@@ -352,18 +352,15 @@ class fileeditor extends editor
                 'left'  ➜ x -= 1    
                 'right' ➜ x += 1    
                 
-            y = clamp 0 @state.s.lines∙len()-1 y
-            x = clamp 0 @state.s.lines[y]∙len()-1 x
+            y = clamp 1 @state.s.lines∙len() y
+            # x = clamp 1 @state.s.lines[y]∙len() x
             
-            start = [@dragStart[0] @dragStart[1]]
+            start = [@dragStart[1] @dragStart[2]]
             
-            if y < @dragStart[1] 
+            if y < @dragStart[2] 
                 start = [@dragStart[2] @dragStart[1]]
-            
-            # if @state.select start [x y]
-            #     @redraw()
             ⮐ 
-        # super event
+        editor.onWheel @ event
         @
     
 ⮐  fileeditor

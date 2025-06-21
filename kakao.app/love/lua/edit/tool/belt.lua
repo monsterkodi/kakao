@@ -17,19 +17,6 @@ pair = require "edit.tool.pair"
 local belt = class("belt")
     
 
-
-function belt.static.sum(arrays) 
-        local sum = array()
-        for n = 0, #arrays[0]-1 do sum:push(0) end
-        for _, array in ipairs(arrays) do 
-            for n, i in ipairs(array) do 
-                sum[i] = sum[i] + n
-            end
-        end
-        
-        return sum
-    end
-
 -- 00000000    0000000    0000000
 -- 000   000  000   000  000     
 -- 00000000   000   000  0000000 

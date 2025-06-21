@@ -186,7 +186,6 @@ class state extends events
             log "empty cursors?" cursors
             cursors = [[1 1]]
 
-
         if main is "table" ➜ main = belt.indexOfPosInPositions main cursors
         if main is "number" and main < 0 ➜ main = cursors∙len()+main-1
 

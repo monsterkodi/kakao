@@ -15,15 +15,6 @@ use edit.tool.pair
 
 class belt
 
-    @sum: arrays -> 
-        
-        sum = []
-        for n in 0...arrays[0].len ➜ sum∙push 0
-        for array in arrays
-            for n,i in array
-                sum[i] += n
-        sum
-
     # 00000000    0000000    0000000
     # 000   000  000   000  000     
     # 00000000   000   000  0000000 

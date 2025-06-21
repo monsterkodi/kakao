@@ -172,4 +172,25 @@ class misc
         
         exi
 
+    #  ███████   ███████   ███       ███████   ████████         ████████    ███████   ███   ███   ███████   ████████   ███████
+    # ███       ███   ███  ███      ███   ███  ███   ███        ███   ███  ███   ███  ████  ███  ███        ███       ███     
+    # ███       ███   ███  ███      ███   ███  ███████          ███████    █████████  ███ █ ███  ███  ████  ███████   ███████ 
+    # ███       ███   ███  ███      ███   ███  ███   ███        ███   ███  ███   ███  ███  ████  ███   ███  ███            ███
+    #  ███████   ███████   ███████   ███████   ███   ███        ███   ███  ███   ███  ███   ███   ███████   ████████  ███████ 
+
+    @colorRangesInLine: line ->
+        
+        rngs = []
+        ⮐  rngs if empty line
+        len = line∙len()
+        for i in 1..len
+            c = line[i]
+            if c == "#"
+                if i+3 <= len and tonumber(line[i+1] 16) and tonumber(line[i+2] 16) and tonumber(line[i+3] 16)
+                    if i+6 <= len and tonumber(line[i+4] 16) and tonumber(line[i+5] 16) and tonumber(line[i+6] 16)
+                        rngs∙push [i i+6]
+                    else
+                        rngs∙push [i i+3]
+        rngs
+        
 ⮐  misc

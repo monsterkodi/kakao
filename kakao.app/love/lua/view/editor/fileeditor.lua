@@ -362,7 +362,7 @@ function fileeditor:onMouse(event)
 
 
 function fileeditor:onWheel(event) 
-        if (event.cell[1] >= (self.cells.y + self.cells.rows)) then return end
+        if (event.cell[2] >= (self.cells.y + self.cells.rows)) then return end
         
         if self.dragStart then 
             local steps = 1 -- should be 4 if not using a mouse pad -> config
@@ -370,7 +370,7 @@ function fileeditor:onWheel(event)
             if event.ctrl then steps = steps * 2 end
             if event.alt then steps = steps * 2 end
             
-            local x, y = self.state.mainCursor()
+            local x, y = unpack(self.state:mainCursor())
             
             if (event.dir == 'up') then y = y - steps
             elseif (event.dir == 'down') then y = y + steps
@@ -378,21 +378,19 @@ function fileeditor:onWheel(event)
             elseif (event.dir == 'right') then x = x + 1
             end
             
-            y = clamp(0, (self.state.s.lines:len() - 1), y)
-            x = clamp(0, (self.state.s.lines[y]:len() - 1), x)
+            y = clamp(1, self.state.s.lines:len(), y)
+            -- x = clamp 1 @state.s.lines[y]∙len() x
             
-            local start = array(self.dragStart[0], self.dragStart[1])
+            local start = array(self.dragStart[1], self.dragStart[2])
             
-            if (y < self.dragStart[1]) then 
+            if (y < self.dragStart[2]) then 
                 start = array(self.dragStart[2], self.dragStart[1])
             end
             
-            -- if @state.select start [x y]
-            --     @redraw()
             return
         end
         
-        -- super event
+        editor.onWheel(self, event)
         return self
     end
 

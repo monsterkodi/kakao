@@ -64,6 +64,15 @@ test("color", function()
         --        
         --belt.colorSeglsForText "▸ #{color.fg_rgb([255 255 00])}#{color.fg_rgb()} ms" ▸ [[[{x:2 fg:[255 255 0] w:1}]] kseg.segls("▸  ms")]
     
+    test("colorRangesInLine", function()
+        test.cmp(belt.colorRangesInLine(kseg("")), array())
+        test.cmp(belt.colorRangesInLine(kseg("abc")), array())
+        test.cmp(belt.colorRangesInLine(kseg("#abc")), array(array(1, 4)))
+        test.cmp(belt.colorRangesInLine(kseg("123 #123456 456")), array(array(5, 11)))
+        test.cmp(belt.colorRangesInLine(kseg("123 #123 #456 456")), array(array(5, 8), array(10, 13)))
+        -- belt.colorRangesInLine kseg("123 #123#456 456") ▸ []
+    end)
+    
     test("adjustForBackground", function()
         test.cmp(color.adjustForBackground(array(255, 255, 0), array(0, 0, 0)), array(255, 255, 0))
         test.cmp(color.adjustForBackground(array(255, 255, 0), array(200, 200, 0)), array(76, 77, 0))

@@ -11,6 +11,15 @@ view = require "view.base.view"
 
 local draw = class("draw", view)
     
+        -- if row+@state.s.view[1] == @state∙mainCursor()[1]
+        --     if linel > 0
+        --         @cells∙bg_rect 0 row linel row @color.cursor.main
+        --     if linel < @cells.cols
+        --         @cells∙bg_fill math.max(0 linel) row -1 row @color.cursor.empty
+        -- else
+        --     if linel > 0
+        --         @cells∙bg_rect 0 row linel row @color.bg
+        --     @cells∙bg_fill math.max(0 linel) row -1 row @color.empty
 
 
 function draw:init(name, features) 
@@ -59,14 +68,14 @@ function draw:draw()
         
         self:render()
         
+        if self.gutter then self.gutter:draw() end
+        -- if @mapscr ➜ @mapscr∙draw()
+        if self.scroll then self.scroll:draw() end
+        
         self:drawCursors()
         if self.complete then 
             self.complete:drawPopup()
         end
-        
-        if self.gutter then self.gutter:draw() end
-        -- if @mapscr ➜ @mapscr∙draw()
-        if self.scroll then self.scroll:draw() end
         
         return mode.postDraw(self.state)
     end
@@ -145,18 +154,7 @@ function draw:drawLine(line, y, row)
 -- 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
 -- 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
 
-
-function draw:drawRowBackground(row, linel) 
-        -- if row+@state.s.view[1] == @state∙mainCursor()[1]
-        --     if linel > 0
-        --         @cells∙bg_rect 0 row linel row @color.cursor.main
-        --     if linel < @cells.cols
-        --         @cells∙bg_fill math.max(0 linel) row -1 row @color.cursor.empty
-        -- else
-        --     if linel > 0
-        --         @cells∙bg_rect 0 row linel row @color.bg
-        return --     @cells∙bg_fill math.max(0 linel) row -1 row @color.empty
-    end
+-- drawRowBackground: row linel ->
 
 -- 000000000  00000000    0000000   000  000      000  000   000   0000000   
 --    000     000   000  000   000  000  000      000  0000  000  000        
@@ -318,16 +316,22 @@ function draw:drawCursors()
 
 
 function draw:drawColorPills(line, row, linel) 
-        -- rngs = kstr.colorRanges kseg.str(line)
-        local rngs = kstr.colorRanges(line:str())
-        if rngs then 
-            local cx = (max(0, linel) + 1)
-            for rng, idx in ipairs(rngs) do 
+        local rngs = belt.colorRangesInLine(line)
+        if (rngs:len() > 0) then 
+            local cx = (linel + 2)
+            for idx, rng in ipairs(rngs) do 
+                local clr = kstr.hexColor(kseg.str(line:slice(rng[1], rng[2])))
                 local dta = 4
-                if (idx == 0) then self.cells.set(cx, row, '', rng.color, self.color.empty) ; cx = cx + 1 ; dta = dta - 1 end
-                if (idx == (#rngs - 1)) then dta = dta - 1 end
-                self.cells.bg_rect(cx, row, (cx + dta), row, rng.color) ; cx = cx + dta
-                if (idx == (#rngs - 1)) then self.cells.set(cx, row, '', rng.color, self.color.empty) end
+                if (idx == 1) then 
+                    self.cells:set(cx, row, '', clr, self.color.empty)
+                    cx = cx + 1
+                    dta = dta - 1
+                end
+                
+                if (idx == rngs:len()) then dta = dta - 1 end
+                self.cells:bg_rect(cx, row, (cx + dta), row, clr)
+                cx = cx + dta
+                if (idx == rngs:len()) then self.cells:set(cx, row, '', clr, self.color.empty) end
             end
         end
     end
