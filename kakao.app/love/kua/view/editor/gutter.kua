@@ -197,7 +197,7 @@ class gutter extends view
                             selected           ➜ fg = @color.selection_line
                             highlighted        ➜ fg = @color.highlight
 
-                        if (selected or hasCursor or highlighted) and not @cells.screen.t.hasFocus  
+                        if (selected or hasCursor or highlighted) #and not @cells.screen.t.hasFocus  
                             fg = color.darken fg 
                     
                     bg = @color.bg

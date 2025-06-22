@@ -116,7 +116,7 @@ class funtree extends choices
         for idx item in ipairs @items
             if item.line-1 <= li and (idx >= @items.len-1 or @items[idx+1].line-1 > li)
                 @state∙setSelections [belt.rangeOfLine(@state.s.lines idx)]
-                @state∙setMainCursor 0 idx
+                @state∙setMainCursor 1 idx
                 ⮐  
                 
     nameOfCurrentFunc:      -> @current().name

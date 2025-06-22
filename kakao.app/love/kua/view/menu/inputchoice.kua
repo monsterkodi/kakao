@@ -102,9 +102,9 @@ class inputchoice extends view
         ⮐  if text == @choices.filterText
 
         @choices.filter text
-        @choices.state.selectLine 0
+        @choices.state.selectLine 1
 
-        @choices.state.setMainCursor 0 0
+        @choices.state.setMainCursor 1 1
         @choicesFiltered()
         @arrange()
         

@@ -121,7 +121,7 @@ class dirtree extends choices
                 
         ⮐  if empty items
         
-        for _ item in ipairs items
+        for item in items∙each()
             item.depth = 0
             @tilde item
 
@@ -129,7 +129,7 @@ class dirtree extends choices
         
         # log 'setRoot' opt
                     
-        @set items opt.index or 0
+        @set items opt.index or 1
         
         @restoreSessionState opt
         
@@ -315,7 +315,7 @@ class dirtree extends choices
         index = @items.indexOf dirItem
         
         numChildren = 0
-        while index+numChildren+1 < @items.length and @items[index+numChildren+1].path.startsWith dirItem.path
+        while index+numChildren+1 < @items∙len() and @items[index+numChildren+1].path.startsWith dirItem.path
             numChildren += 1
         
         kutil.replace @items index+1 numChildren []
@@ -344,7 +344,7 @@ class dirtree extends choices
     #      000  000          000     
     # 0000000   00000000     000     
     
-    set: items index=0 -> 
+    set: items index=1 -> 
         
         oldTop = @state.s.view[2]
         choices.set @ items 'tilde'
@@ -363,7 +363,7 @@ class dirtree extends choices
         @selectPrev()
         if @current().type == 'file'
             post∙emit 'quicky' @current().path 
-        @state∙setView [0 @state.s.view[1]-1]
+        @state∙setView [1 @state.s.view[1]-1]
 
     selectNextKeepOffset: ->
     
@@ -374,7 +374,7 @@ class dirtree extends choices
         @selectNext()
         if @current().type == 'file'
             post∙emit 'quicky' @current().path 
-        @state∙setView [0 @state.s.view[1]+1]
+        @state∙setView [1 @state.s.view[1]+1]
         
     selectOpenSiblingAboveOrParent: ->
     
@@ -383,7 +383,7 @@ class dirtree extends choices
         while index > 0 and @fuzzied[index].depth >= @current().depth and not @fuzzied[index].open
             index -= 1
         @state.selectLine index
-        @state.setMainCursor 0 index
+        @state.setMainCursor 1 index
         
     selectParent: ->
     
@@ -392,19 +392,19 @@ class dirtree extends choices
         while index > 0 and @fuzzied[index].depth >= @current().depth
             index -= 1
         @state.selectLine index
-        @state.setMainCursor 0 index
+        @state.setMainCursor 1 index
         
     drawSelections: ->
     
         li = @indexOfOpenFile()
         if li
             bg = theme.gutter.bg
-            y  = li-@state.s.view[1]
-            if y < @cells.rows and li < @state.s.lines.length
+            y  = li-@state.s.view[2]
+            if y < @cells.rows and li < @state.s.lines∙len()
                 xs = kseg.headCount(@state.s.lines[li] ' ')
-                @cells.set xs-1-@state.s.view[0] y '' bg @color.bg
+                @cells.set xs-1-@state.s.view[1] y '' bg @color.bg
                 for x in xs...@cells.cols
-                    @cells.set_bg x-@state.s.view[0] y bg
+                    @cells.set_bg x-@state.s.view[1] y bg
         
         choices.drawSelections @
                 

@@ -221,6 +221,7 @@ function draw:drawHighlights()
 function draw:drawSelections() 
         local spanbg = self.color.selection.span
         local linebg = self.color.selection.line
+        
         -- log "drawSelections-" @color.selection
         -- log "drawSelections+" spanbg, linebg
         -- if not @cells.screen.t.hasFocus
@@ -249,7 +250,7 @@ end)()
                 if (li == selection[4]) then 
                     xe = selection[3]
                 else 
-                    xe = (kseg.width(self.state.s.lines[li]) + 2)
+                    xe = (kseg.width(self.state.s.lines[li]) + 1)
                 end
                 
                 for x = xs, xe-1 do 

@@ -143,7 +143,7 @@ function dirtree:setRoot(path, opt)
         
         if empty(items) then return end
         
-        for _, item in ipairs(items) do 
+        for item in items:each() do 
             item.depth = 0
             self:tilde(item)
         end
@@ -152,7 +152,7 @@ function dirtree:setRoot(path, opt)
         
         -- log 'setRoot' opt
         
-        self:set(items, (opt.index or 0))
+        self:set(items, (opt.index or 1))
         
         self:restoreSessionState(opt)
         
@@ -346,7 +346,7 @@ function dirtree:closeDir(dirItem, opt)
         local index = self.items.indexOf(dirItem)
         
         local numChildren = 0
-        while ((((index + numChildren) + 1) < #self.items) and self.items[((index + numChildren) + 1)].path.startsWith(dirItem.path)) do 
+        while ((((index + numChildren) + 1) < self.items:len()) and self.items[((index + numChildren) + 1)].path.startsWith(dirItem.path)) do 
             numChildren = numChildren + 1
         end
         
@@ -382,7 +382,7 @@ function dirtree:dirItems(dir, info)
 
 
 function dirtree:set(items, index) 
-        index = index or 0
+        index = index or 1
         
         local oldTop = self.state.s.view[2]
         choices.set(self, items, 'tilde')
@@ -404,7 +404,7 @@ function dirtree:selectPrevKeepOffset()
             post:emit('quicky', self:current().path)
         end
         
-        return self.state:setView(array(0, (self.state.s.view[1] - 1)))
+        return self.state:setView(array(1, (self.state.s.view[1] - 1)))
     end
 
 
@@ -419,7 +419,7 @@ function dirtree:selectNextKeepOffset()
             post:emit('quicky', self:current().path)
         end
         
-        return self.state:setView(array(0, (self.state.s.view[1] + 1)))
+        return self.state:setView(array(1, (self.state.s.view[1] + 1)))
     end
 
 
@@ -431,7 +431,7 @@ function dirtree:selectOpenSiblingAboveOrParent()
         end
         
         self.state.selectLine(index)
-        return self.state.setMainCursor(0, index)
+        return self.state.setMainCursor(1, index)
     end
 
 
@@ -443,7 +443,7 @@ function dirtree:selectParent()
         end
         
         self.state.selectLine(index)
-        return self.state.setMainCursor(0, index)
+        return self.state.setMainCursor(1, index)
     end
 
 
@@ -451,12 +451,12 @@ function dirtree:drawSelections()
         local li = self:indexOfOpenFile()
         if li then 
             local bg = theme.gutter.bg
-            local y = (li - self.state.s.view[1])
-            if ((y < self.cells.rows) and (li < #self.state.s.lines)) then 
+            local y = (li - self.state.s.view[2])
+            if ((y < self.cells.rows) and (li < self.state.s.lines:len())) then 
                 local xs = kseg.headCount(self.state.s.lines[li], ' ')
-                self.cells.set(((xs - 1) - self.state.s.view[0]), y, '', bg, self.color.bg)
+                self.cells.set(((xs - 1) - self.state.s.view[1]), y, '', bg, self.color.bg)
                 for x = xs, self.cells.cols-1 do 
-                    self.cells.set_bg((x - self.state.s.view[0]), y, bg)
+                    self.cells.set_bg((x - self.state.s.view[1]), y, bg)
                 end
             end
         end
@@ -470,21 +470,21 @@ function dirtree:indexOfOpenFile()
         
         if empty(currentFile) then return end
         
-        for item, idx in self.fuzzied do 
+        for item, idx in ipairs(self.fuzzied) do 
             if (item.path == currentFile) then return idx end
         end
     end
 
 
 function dirtree:itemForPath(p) 
-        for item, idx in self.items do 
+        for item, idx in ipairs(self.items) do 
             if slash.samePath(item.path, p) then return item end
         end
     end
 
 
 function dirtree:itemIndexForPath(p) 
-        for item, idx in self.items do 
+        for item, idx in ipairs(self.items) do 
             if slash.samePath(item.path, p) then return idx end
         end
     end

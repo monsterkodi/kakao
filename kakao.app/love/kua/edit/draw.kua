@@ -204,6 +204,7 @@ class draw extends view
         
         spanbg = @color.selection.span
         linebg = @color.selection.line
+        
         # log "drawSelections-" @color.selection
         # log "drawSelections+" spanbg, linebg
         # if not @cells.screen.t.hasFocus
@@ -228,7 +229,7 @@ class draw extends view
                 if li == selection[4]
                     xe = selection[3]
                 else
-                    xe = kseg.width(@state.s.lines[li])+2
+                    xe = kseg.width(@state.s.lines[li])+1
                 
                 for x in xs...xe
                     # log " " si, " " selection, li, y, @cells.rows, xs, xe, x-@state.s.view[1]

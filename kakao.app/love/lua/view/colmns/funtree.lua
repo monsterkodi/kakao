@@ -142,7 +142,7 @@ function funtree:selectItemForLineIndex(li)
         for idx, item in ipairs(self.items) do 
             if (((item.line - 1) <= li) and ((idx >= (#self.items - 1)) or ((self.items[(idx + 1)].line - 1) > li))) then 
                 self.state:setSelections(array(belt.rangeOfLine(self.state.s.lines, idx)))
-                self.state:setMainCursor(0, idx)
+                self.state:setMainCursor(1, idx)
                 return
             end
         end

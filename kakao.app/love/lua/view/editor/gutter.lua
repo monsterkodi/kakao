@@ -234,7 +234,7 @@ end)()
                         elseif highlighted then fg = self.color.highlight
                         end
                         
-                        if (((selected or hasCursor) or highlighted) and not self.cells.screen.t.hasFocus) then 
+                        if ((selected or hasCursor) or highlighted) then 
                             fg = color.darken(fg)
                         end
                     end

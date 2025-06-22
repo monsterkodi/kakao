@@ -116,9 +116,9 @@ function inputchoice:onInputChange(text)
         if (text == self.choices.filterText) then return end
         
         self.choices.filter(text)
-        self.choices.state.selectLine(0)
+        self.choices.state.selectLine(1)
         
-        self.choices.state.setMainCursor(0, 0)
+        self.choices.state.setMainCursor(1, 1)
         self:choicesFiltered()
         return self:arrange()
     end

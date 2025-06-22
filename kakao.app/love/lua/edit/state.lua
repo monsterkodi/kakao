@@ -210,7 +210,7 @@ function state:setCursors(cursors, opt)
         self.s = self.s:set('cursors', cursors)
         
         main = -1
-        for idx, cur in ipairs(cursors) do 
+        for cur, idx in cursors:each() do 
             if cur:eql(mc) then 
                 main = idx
                 break
@@ -1013,7 +1013,7 @@ function state:moveCursorsToEndOfLines()
 
 
 function state:isAnyCursorInLine(y) 
-        for _, c in ipairs(self.s.cursors) do 
+        for c in self.s.cursors:each() do 
             if (c[2] == y) then return true end
         end
     end
@@ -1180,7 +1180,8 @@ function state:highlightSelection()
         if empty(self.s.selections) then return end
         
         local spans = array()
-        for rng, ri in self:allSelections():each() do 
+        local sels = self:allSelections()
+        for rng, ri in sels:each() do 
             if (rng[2] == rng[4]) then 
                 local text = belt.textForLineRange(self.s.lines, rng)
                 local tspan = belt.lineSpansForText(self.s.lines, text)
@@ -1214,7 +1215,7 @@ function state:selectAllHighlights()
         
         local selections = array()
         local cursors = array()
-        for si, span in ipairs(self.s.highlights) do 
+        for span in self.s.highlights:each() do 
             selections:push(belt.rangeForSpan(span))
             cursors:push(belt.endOfSpan(span))
         end
@@ -1347,7 +1348,7 @@ function state:deselectSpan(span)
         local rng = belt.rangeForSpan(span)
         
         local selections = self:allSelections()
-        for index, selection in ipairs(selections) do 
+        for selection, index in selections:each() do 
             if belt.isSameRange(selection, rng) then 
                 selections:splice(index, 1)
                 self:setSelections(selections)
@@ -1523,7 +1524,7 @@ function state:isSingleLineSelected()
 
 
 function state:isSelectedLine(y) 
-        for si, selection in ipairs(self.s.selections) do 
+        for selection in self.s.selections:each() do 
             if not ((selection[4] == y) and (selection[3] == 0)) then 
                 if ((selection[2] <= y) and (y <= selection[4])) then 
                     return true
@@ -1536,7 +1537,7 @@ function state:isSelectedLine(y)
 
 
 function state:isFullySelectedLine(y) 
-        for si, selection in ipairs(self.s.selections) do 
+        for selection in self.s.selections:each() do 
             if ((selection[2] <= y) and (y <= selection[4])) then 
                 return belt.isFullLineRange(self.s.lines, selection)
             end
@@ -1547,7 +1548,7 @@ function state:isFullySelectedLine(y)
 
 
 function state:isPartiallySelectedLine(y) 
-        for si, selection in ipairs(self.s.selections) do 
+        for selection in self.s.selections:each() do 
             if ((selection[2] <= y) and (y <= selection[4])) then 
                 return not belt.isFullLineRange(self.s.lines, selection)
             end
@@ -1558,7 +1559,7 @@ function state:isPartiallySelectedLine(y)
 
 
 function state:isSpanSelectedLine(y) 
-        for si, selection in ipairs(self.s.selections) do 
+        for selection in self.s.selections:each() do 
             if ((selection[2] <= y) and (y <= selection[4])) then 
                 local span = belt.isSpanLineRange(self.s.lines, selection)
                 if span then 
@@ -1574,7 +1575,7 @@ function state:isSpanSelectedLine(y)
 
 
 function state:isHighlightedLine(y) 
-        for hi, highlight in ipairs(self.s.highlights) do 
+        for highlight in self.s.highlights:each() do 
             if (highlight[2] == y) then return true end
         end
         
@@ -1809,7 +1810,7 @@ function state:delete(typ, jump)
             end
         end
         
-        for ci in iter(#cursors, 1) do 
+        for ci in iter(cursors:len(), 1) do 
             local cursor = cursors[ci]
             
             local x = cursor[1]
