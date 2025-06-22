@@ -76,8 +76,7 @@ function belt.static.removeDuplicatePositions(posl)
 
 
 function belt.static.indexOfPosInPositions(pos, posl) 
-        -- ⮐  -1 if empty posl
-        -- posl.findIndex (p) -> pos == p
+        if empty(posl) then return -1 end
         return posl:find(pos)
     end
 
@@ -136,8 +135,8 @@ function belt.static.neighborPositionInDirection(posl, pos, dir)
 
 
 function belt.static.positionsContain(posl, pos) 
-        for _, p in ipairs(posl) do 
-            if (p == pos) then return true end
+        for p in posl:each() do 
+            if p:eql(pos) then return true end
         end
         
         return false

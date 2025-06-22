@@ -296,7 +296,7 @@ function slash.isRelative(path)
 end
 
 function slash.isAbsolute(path) 
-    return ((#path > 0) and array('/', '~'):contains(path:sub(1, 1)))
+    return ((#path > 0) and array('/', '~'):has(path:sub(1, 1)))
 end
 
 function slash.isRoot(path) 
@@ -356,7 +356,7 @@ function slash.join(...)
 end
 
 function slash.contains(path, subpath) 
-    return array(unpack(slash.split(path))):contains(subpath)
+    return array(unpack(slash.split(path))):has(subpath)
 end
 
 -- ████████    ███████   ████████    ███████  ████████

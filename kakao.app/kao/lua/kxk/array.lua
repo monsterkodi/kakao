@@ -34,14 +34,19 @@ function array:len()
     return #self
     end
 
+
 function array.static.num(a) 
-        if (#a > 0) then 
-                return #a
-        elseif (type(a["len"]) == "function") then 
-                return a:len()
-        else 
-    return 0
+        if (type(a) == "table") then 
+            if (#a > 0) then 
+                    return #a
+            elseif (type(a["len"]) == "function") then 
+                    return a:len()
+            end
         end
+        
+        -- if type(a) == "string"
+        --     ⮐  a.len
+        return 0
     end
 
 
@@ -234,9 +239,41 @@ function array:indexdict()
     end
 
 
-function array:indexof(e) 
+function array:indexof(a) 
         for i, v in ipairs(self) do 
-            if (v == e) then return i end
+            local match = true
+            for j, w in ipairs(a) do 
+                if (self[((i + j) - 1)] ~= w) then 
+                    match = false
+                    break
+                end
+            end
+            
+            if match then 
+                return i
+            end
+        end
+        
+        return -1
+    end
+
+
+function array:rindexof(a) 
+        local al = array.num(a)
+        if (((#self > 0) and (al > 0)) and (al <= #self)) then 
+            for i in iter(((#self - al) + 1), 1) do 
+                local match = true
+                for w, j in array.each(a) do 
+                    if (self[((i + j) - 1)] ~= w) then 
+                        match = false
+                        break
+                    end
+                end
+                
+                if match then 
+                    return i
+                end
+            end
         end
         
         return -1
@@ -246,6 +283,19 @@ function array:indexof(e)
 function array:find(e) 
         for i, v in ipairs(self) do 
             if (v == e) then return i end
+            if (is(v, array) and v:eql(e)) then return i end
+        end
+        
+        return -1
+    end
+
+
+function array:rfind(e) 
+        if (#self > 0) then 
+            for i in iter(#self, 1) do 
+                if (self[i] == e) then return i end
+                if (is(self[i], array) and self[i]:eql(e)) then return i end
+            end
         end
         
         return -1
@@ -298,11 +348,11 @@ function array:shuffle()
 
 
 function array:has(e) 
-    return (self:indexof(e) >= 0)
+    return (self:find(e) >= 1)
     end
 
 function array:contains(e) 
-    return (self:indexof(e) >= 0)
+    return (self:indexof(e) >= 1)
     end
 
 

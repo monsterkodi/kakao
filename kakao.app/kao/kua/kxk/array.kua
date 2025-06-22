@@ -16,13 +16,17 @@ class array
 
     str: -> $@
     len: -> @len
-    @num:  a -> 
-        if 
-            a.len > 0 
-                a.len 
-            type(a["len"]) == "function"
-                a∙len()
-            ➜ 0
+    
+    @num: a -> 
+        if type(a) == "table"
+            if
+                a.len > 0 
+                    ⮐  a.len 
+                type(a["len"]) == "function"
+                    ⮐  a∙len()
+        # if type(a) == "string"
+        #     ⮐  a.len
+        0
     
     @from: a -> 
         
@@ -139,16 +143,45 @@ class array
             t[v] = i
         t
                     
-    indexof: e ->
+    indexof: a ->
     
         for i v in @
-            if v == e ➜ ⮐  i 
+            match = true
+            for j w in a
+                if @[i+j-1] != w 
+                    match = false
+                    break
+            if match
+                ⮐  i
+        -1
+        
+    rindexof: a ->
+    
+        al = array.num a
+        if @len > 0 and al > 0 and al <= @len 
+            for i in @len-al+1..1
+                match = true
+                for w j in array.each(a)
+                    if @[i+j-1] != w 
+                        match = false
+                        break
+                if match
+                    ⮐  i
         -1
 
     find: e ->
     
         for i v in @
             if v == e ➜ ⮐  i 
+            if v is array and v∙eql(e) ➜ ⮐  i
+        -1
+
+    rfind: e ->
+    
+        if @len > 0
+            for i in @len..1
+                if @[i] == e ➜ ⮐  i 
+                if @[i] is array and @[i]∙eql(e) ➜ ⮐  i
         -1
         
     eql: o ->
@@ -181,8 +214,8 @@ class array
         for i in 1..@len
             @swap i math.random(@len)
         
-    has:      e -> @indexof(e) >= 0
-    contains: e -> @indexof(e) >= 0
+    has:      e -> @find(e)    >= 1
+    contains: e -> @indexof(e) >= 1
     
     __add: a ->
     

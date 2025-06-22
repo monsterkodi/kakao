@@ -734,6 +734,8 @@ class state extends events
         for c in cursors
             newCursors∙push c
             newCursors∙push [c[1] c[2]+dy]
+            
+        newCursors = belt.sortPositions newCursors
         mc = belt.traversePositionsInDirection newCursors @mainCursor() dir
 
         @setCursors newCursors {main:mc adjust:'topBotDelta'}
@@ -893,10 +895,7 @@ class state extends events
         @setCursors cursors {adjust:'topBotDelta'}
 
     select: from to ->
-    
-        # log "SELECT" from
-        # log "TO    " to
-    
+        
         selections = []
         
         @setMainCursor to[1] to[2]

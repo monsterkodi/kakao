@@ -69,6 +69,16 @@ def]])
     test("construct", function()
         local s = kseg()
         test.cmp(s:str(), "")
+        test.cmp(s:len(), 0)
+        
+        s = kseg(" ")
+        test.cmp(s:str(), " ")
+        test.cmp(s:len(), 1)
+        
+        s = kseg("a")
+        test.cmp(s:str(), "a")
+        test.cmp(s:len(), 1)
+        test.cmp(s:has("a"), true)
         
         s = kseg("  ")
         test.cmp(s:str(), "  ")
@@ -123,9 +133,51 @@ def]])
     test("find", function()
         local s = kseg("a  b")
         test.cmp(s:find(" "), 2)
-        test.cmp(s:find("  "), 2)
-        test.cmp(s:find(" b"), 3)
         test.cmp(s:find("b"), 4)
+        
+        test.cmp(s:has("a"), true)
+        test.cmp(s:has("b"), true)
+        test.cmp(s:has(" "), true)
+        test.cmp(s:has("c"), false)
+    end)
+    
+    test("indexof", function()
+        local s = kseg("a  b")
+        test.cmp(s:indexof("  "), 2)
+        test.cmp(s:indexof(" b"), 3)
+        test.cmp(s:indexof(kseg("  ")), 2)
+        test.cmp(s:indexof(kseg(" b")), 3)
+    end)
+    
+    test("rindexof", function()
+        local s = kseg("a  b")
+        test.cmp(s:rindexof("  "), 2)
+        test.cmp(s:rindexof(" b"), 3)
+        test.cmp(s:rindexof(kseg("  ")), 2)
+        test.cmp(s:rindexof(kseg(" b")), 3)
+        
+        s = kseg("a  b  c")
+        test.cmp(s:rindexof(kseg("  ")), 5)
+    end)
+    
+    test("trim", function()
+        local s = kseg("abc")
+        test.cmp(s:trim(), kseg("abc"))
+        
+        s = kseg("abc")
+        test.cmp(s:trim("ac"), kseg("b"))
+        
+        s = kseg("abc")
+        test.cmp(s:rtrim("c"), kseg("ab"))
+        
+        s = kseg("abc")
+        test.cmp(s:trim("c"), kseg("ab"))
+        
+        s = kseg("abc")
+        test.cmp(s:trim("a"), kseg("bc"))
+        
+        s = kseg("  abc  ")
+        test.cmp(s:trim(), kseg("abc"))
     end)
     
     test("pop", function()

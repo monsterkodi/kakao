@@ -130,6 +130,18 @@ class strg
         @flatten()
         @frags[1]∙rfind c
         
+    indexof: s ->
+    
+        @flatten()
+        if s.class != kseg ➜ s = kseg(s)
+        @frags[1]∙indexof s
+
+    rindexof: s ->
+    
+        @flatten()
+        if s.class != kseg ➜ s = kseg(s)
+        @frags[1]∙rindexof s
+        
     slice: f t ->
     
         @flatten()

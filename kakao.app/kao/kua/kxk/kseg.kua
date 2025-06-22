@@ -222,6 +222,16 @@ class kseg extends array
         ⮐  false if @len < postfix.len
         
         @slice(@len-postfix.len+1)∙eql(postfix)
+        
+    indexof: s ->
+    
+        if s.class != kseg ➜ s = kseg s
+        array.indexof @ s
+
+    rindexof: s ->
+    
+        if s.class != kseg ➜ s = kseg s
+        array.rindexof @ s
 
     @startsWith: a prefix -> 
     
@@ -249,31 +259,31 @@ class kseg extends array
         if a.class != kseg ➜ a = kseg(a)
         a∙splitAtIndent()
     
-    find: c ->
-    
-        ⮐  -1 if @len <= 0
-        if c.class != kseg ➜ c = kseg(c)
-        ⮐  -1 if c.len >= @len
-        for i in 1..@len+1-c.len
-            for j in 1..c.len
-                if c[j] != @[i+j-1]
-                    break 
-                if j == c.len
-                    ⮐  i
-        -1
-
-    rfind: c ->
-    
-        ⮐  -1 if @len <= 0
-        if c.class != kseg ➜ c = kseg(c)
-        ⮐  -1 if c.len >= @len
-        for i in @len+1-c.len..1
-            for j in 1..c.len
-                if c[j] != @[i+j-1]
-                    break 
-                if j == c.len
-                    ⮐  i
-        -1
+    #find: c ->
+    #
+    #    ⮐  -1 if @len <= 0
+    #    if c.class != kseg ➜ c = kseg(c)
+    #    ⮐  -1 if c.len >= @len
+    #    for i in 1..@len+1-c.len
+    #        for j in 1..c.len
+    #            if c[j] != @[i+j-1]
+    #                break 
+    #            if j == c.len
+    #                ⮐  i
+    #    -1
+    #
+    #rfind: c ->
+    #
+    #    ⮐  -1 if @len <= 0
+    #    if c.class != kseg ➜ c = kseg(c)
+    #    ⮐  -1 if c.len >= @len
+    #    for i in @len+1-c.len..1
+    #        for j in 1..c.len
+    #            if c[j] != @[i+j-1]
+    #                break 
+    #            if j == c.len
+    #                ⮐  i
+    #    -1
                 
     @width: s ->
     

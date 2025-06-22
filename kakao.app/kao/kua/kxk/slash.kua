@@ -247,7 +247,7 @@ slash.path = (...) ->
     slash.normalize fpth
     
 slash.isRelative = path -> path.len == 0 or path.len > 0 and path∙sub(1 1) != '/' and path∙sub(1 1) != '~'
-slash.isAbsolute = path -> path.len > 0 and array('/' '~')∙contains(path∙sub(1 1))
+slash.isAbsolute = path -> path.len > 0 and array('/' '~')∙has(path∙sub(1 1))
 slash.isRoot     = path -> slash.normalize(path) == "/"
 
 slash.home = ... -> slash.path os.getenv("HOME") unpack({...})
@@ -282,7 +282,7 @@ slash.splitFile = path ->
 
 slash.split = path -> kstr.split path "/"
 slash.join  = ... -> table.concat {...} "/"
-slash.contains = path subpath -> array(unpack(slash.split(path)))∙contains subpath
+slash.contains = path subpath -> array(unpack(slash.split(path)))∙has subpath
         
 # ████████    ███████   ████████    ███████  ████████
 # ███   ███  ███   ███  ███   ███  ███       ███     

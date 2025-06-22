@@ -70,6 +70,16 @@ use kxk/kxk
         
         s = kseg()
         s∙str()                 ▸ ""
+        s∙len()                 ▸ 0
+
+        s = kseg(" ")
+        s∙str()                 ▸ " "
+        s∙len()                 ▸ 1
+
+        s = kseg("a")
+        s∙str()                 ▸ "a"
+        s∙len()                 ▸ 1
+        s∙has "a"               ▸ true
         
         s = kseg("  ")
         s∙str()                 ▸ "  "
@@ -124,9 +134,51 @@ use kxk/kxk
         
         s = kseg "a  b"
         s∙find " "              ▸ 2
-        s∙find "  "             ▸ 2
-        s∙find " b"             ▸ 3
         s∙find "b"              ▸ 4
+        
+        s∙has "a"               ▸ true
+        s∙has "b"               ▸ true
+        s∙has " "               ▸ true
+        s∙has "c"               ▸ false
+        
+    ▸ indexof
+    
+        s = kseg "a  b"
+        s∙indexof "  "          ▸ 2
+        s∙indexof " b"          ▸ 3
+        s∙indexof kseg("  ")    ▸ 2
+        s∙indexof kseg(" b")    ▸ 3
+
+    ▸ rindexof
+    
+        s = kseg "a  b"
+        s∙rindexof "  "          ▸ 2
+        s∙rindexof " b"          ▸ 3
+        s∙rindexof kseg("  ")    ▸ 2
+        s∙rindexof kseg(" b")    ▸ 3
+
+        s = kseg "a  b  c"
+        s∙rindexof kseg("  ")    ▸ 5
+        
+    ▸ trim
+        
+        s = kseg "abc"
+        s∙trim()                ▸ kseg "abc"
+
+        s = kseg "abc"
+        s∙trim("ac")            ▸ kseg "b"
+
+        s = kseg "abc"
+        s∙rtrim("c")            ▸ kseg "ab"
+
+        s = kseg "abc"
+        s∙trim("c")             ▸ kseg "ab"
+
+        s = kseg "abc"
+        s∙trim("a")             ▸ kseg "bc"
+
+        s = kseg "  abc  "
+        s∙trim()                ▸ kseg "abc"
 
     ▸ pop
     

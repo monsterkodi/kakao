@@ -178,6 +178,7 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
         s∙setMainCursor 1 2
         s∙expandCursors   'up'
         
+        s.s.main ▸ 1
         mul [1 1] [1 2]
         
         s∙expandCursors   'down'
@@ -216,6 +217,57 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
         
         mul [1 1] [1 2] [1 3]
         sel [1 1 6 1] [1 2 6 2] [1 3 6 3]
+        
+        
+    ▸ move and select
+    
+        s∙loadSegls belt.seglsForText("abcd\n  12")
+        s∙setMainCursor 1 1
+        
+        s∙moveCursorsAndSelect 'ind_eol'
+        mul [5 1]
+        sel [1 1 5 1]
+        
+        s∙moveCursorsAndSelect 'ind_bol'
+        mul [1 1]
+        sel [1 1 5 1]
+        
+        s∙deselect()
+        sel()
+        
+        s∙setMainCursor 1 2
+        s∙moveCursorsAndSelect 'ind_eol'
+        mul [3 2]
+        sel [1 2 3 2]
+
+        s∙deselect()
+        sel()
+        
+        s∙moveCursorsAndSelect 'ind_bol'
+        mul [1 2]
+        sel [1 2 3 2]
+        
+        s∙deselect()
+        s∙moveCursorsAndSelect 'bof'
+        mul [1 1]
+        sel [1 1 1 2]
+        
+        s∙moveCursorsAndSelect 'eof'
+        mul [5 2]
+        sel [1 1 5 2]
+        
+        s∙setMainCursor 1 2
+        s∙deselect()
+        s∙moveCursorsAndSelect 'eol'
+        mul [5 2]
+        sel [1 2 5 2]
+
+        s∙deselect()
+        sel()
+        
+        s∙moveCursorsAndSelect 'bol'
+        mul [1 2]
+        sel [1 2 5 2]
                     
     # 000   000  000   000  000   0000000   0000000   0000000    00000000  
     # 000   000  0000  000  000  000       000   000  000   000  000       
@@ -345,18 +397,16 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
     
     ▸ empty
     
-        # s.syntax.ext = 'kode'
-        # s∙loadLines belt.linesForText('')
-        # 
-        # txt ''
-        # cur 1 1
+        s.syntax.ext = 'kode'
+        s∙loadLines belt.linesForText('')
         
-        #s∙insert '\n'
-        #
-        #txt '\n'
-        #cur 1 2
-        #
-        #s.s.lines ▸ [[] []]
+        txt ''
+        cur 1 1
+        
+        s∙insert '\n'
+        
+        txt '\n'
+        cur 1 2        
         
     # 0000000    00000000  000      00000000  000000000  00000000        0000000     0000000    0000000  000   000  
     # 000   000  000       000      000          000     000             000   000  000   000  000       000  000   

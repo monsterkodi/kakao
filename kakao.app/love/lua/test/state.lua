@@ -190,6 +190,7 @@ line 3
         s:setMainCursor(1, 2)
         s:expandCursors('up')
         
+        test.cmp(s.s.main, 1)
         mul(array(1, 1), array(1, 2))
         
         s:expandCursors('down')
@@ -228,6 +229,56 @@ line 3
         
         mul(array(1, 1), array(1, 2), array(1, 3))
         sel(array(1, 1, 6, 1), array(1, 2, 6, 2), array(1, 3, 6, 3))
+    end)
+    
+    test("move and select", function()
+        s:loadSegls(belt.seglsForText("abcd\n  12"))
+        s:setMainCursor(1, 1)
+        
+        s:moveCursorsAndSelect('ind_eol')
+        mul(array(5, 1))
+        sel(array(1, 1, 5, 1))
+        
+        s:moveCursorsAndSelect('ind_bol')
+        mul(array(1, 1))
+        sel(array(1, 1, 5, 1))
+        
+        s:deselect()
+        sel()
+        
+        s:setMainCursor(1, 2)
+        s:moveCursorsAndSelect('ind_eol')
+        mul(array(3, 2))
+        sel(array(1, 2, 3, 2))
+        
+        s:deselect()
+        sel()
+        
+        s:moveCursorsAndSelect('ind_bol')
+        mul(array(1, 2))
+        sel(array(1, 2, 3, 2))
+        
+        s:deselect()
+        s:moveCursorsAndSelect('bof')
+        mul(array(1, 1))
+        sel(array(1, 1, 1, 2))
+        
+        s:moveCursorsAndSelect('eof')
+        mul(array(5, 2))
+        sel(array(1, 1, 5, 2))
+        
+        s:setMainCursor(1, 2)
+        s:deselect()
+        s:moveCursorsAndSelect('eol')
+        mul(array(5, 2))
+        sel(array(1, 2, 5, 2))
+        
+        s:deselect()
+        sel()
+        
+        s:moveCursorsAndSelect('bol')
+        mul(array(1, 2))
+        sel(array(1, 2, 5, 2))
     end)
     
     -- 000   000  000   000  000   0000000   0000000   0000000    00000000  
@@ -357,18 +408,16 @@ line 3
     -- 00000000  000   000  000           000        000     
     
     test("empty", function()
-        -- s.syntax.ext = 'kode'
-        -- s∙loadLines belt.linesForText('')
-        -- 
-        -- txt ''
-        -- cur 1 1
+        s.syntax.ext = 'kode'
+        s:loadLines(belt.linesForText(''))
         
-        --s∙insert '\n'
-        --        
-        --txt '\n'
-        --cur 1 2
-        --        
-        --s.s.lines ▸ [[] []]
+        txt('')
+        cur(1, 1)
+        
+        s:insert('\n')
+        
+        txt('\n')
+        cur(1, 2)
     end)
     
     -- 0000000    00000000  000      00000000  000000000  00000000        0000000     0000000    0000000  000   000  

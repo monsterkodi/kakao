@@ -23,8 +23,15 @@ use kxk/kxk
         strg("a  a")∙find("x")  ▸ -1
         strg("a  a")∙find("a")  ▸ 1
         strg("a  3")∙find(" ")  ▸ 2
-        strg("a  x")∙find("  ") ▸ 2
         strg("a  3")∙find("3")  ▸ 4
+        
+    ▸ indexof
+    
+        strg("a  x")∙indexof("  ") ▸ 2
+        
+    ▸ rindexof
+    
+        strg("a  x  b")∙rindexof("  ") ▸ 5
 
     ▸ rfind
 
@@ -32,7 +39,6 @@ use kxk/kxk
         strg("")∙rfind("x")      ▸ -1
         strg("a  3")∙rfind("a")  ▸ 1
         strg("a  3")∙rfind(" ")  ▸ 3
-        strg("a  x")∙rfind("  ") ▸ 2
         strg("3  3")∙rfind("3")  ▸ 4
         
     ▸ slice

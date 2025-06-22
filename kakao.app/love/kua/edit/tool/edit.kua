@@ -527,13 +527,13 @@ class edit
                 'right'     ➜ nc = belt.numCharsFromPosToWordOrPunctInDirection(lines pos dir opt); pos[1] += nc
                 'up'        ➜ pos[2] -= 1
                 'down'      ➜ pos[2] += 1
-                'eol'       ➜ pos[1] = line∙len()
+                'eol'       ➜ pos[1] = line∙len()+1
                 'bol'       ➜ pos[1] = 1
                 'bof'       ➜ pos[1] = 1; pos[2] = 1
-                'eof'       ➜ pos[2] = lines∙len(); pos[1] = lines[lines∙len()]∙len()
+                'eof'       ➜ pos[2] = lines∙len(); pos[1] = lines[lines∙len()]∙len()+1
 
-                'ind_bol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] > ind ➜ ind ➜ 1
-                'ind_eol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] < ind ➜ ind ➜ line∙len()
+                'ind_bol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1]-1 > ind ➜ ind+1 ➜ 1
+                'ind_eol'   ➜ ind = belt.numIndent(line); pos[1] = if pos[1] < ind ➜ ind+1 ➜ line∙len()+1
                 
             switch dir
                 'left'      ➜ rng[1] = rng[1]+nc
@@ -543,10 +543,10 @@ class edit
                 'eol'       ➜ rng[3] = Infinity
                 'bol'       ➜ rng[1] = 1
                 'bof'       ➜ rng[1] = 1; rng[2] = 1
-                'eof'       ➜ rng[4] = lines∙len(); rng[3] = lines[lines∙len()]∙len()
+                'eof'       ➜ rng[4] = lines∙len(); rng[3] = lines[lines∙len()]∙len()+1
 
-                'ind_bol'   ➜ ind = belt.numIndent(line); rng[1] = if rng[1] > ind ➜ ind ➜ 1
-                'ind_eol'   ➜ ind = belt.numIndent(line); rng[3] = if rng[3] < ind ➜ ind ➜ line∙len()
+                'ind_bol'   ➜ ind = belt.numIndent(line); rng[1] = if rng[1]-1 > ind ➜ ind+1 ➜ 1
+                'ind_eol'   ➜ ind = belt.numIndent(line); rng[3] = if rng[3] < ind ➜ ind+1 ➜ line∙len()+1
             
             if rng[2] <= lines∙len()
                 rng[1] = clamp 1 lines[rng[2]]∙len()+1 rng[1] 

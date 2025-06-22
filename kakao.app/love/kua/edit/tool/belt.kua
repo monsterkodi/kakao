@@ -52,8 +52,7 @@ class belt
         
     @indexOfPosInPositions: pos posl ->
         
-        # ⮐  -1 if empty posl
-        # posl.findIndex (p) -> pos == p
+        ⮐  -1 if empty(posl)
         posl∙find pos
         
     @lineIndicesForPositions: posl ->
@@ -82,7 +81,7 @@ class belt
 
         next = @neighborPositionInDirection posl pos dir
         while next
-            pos = next
+            pos  = next
             next = @neighborPositionInDirection posl pos dir
         pos
         
@@ -94,8 +93,8 @@ class belt
 
     @positionsContain: posl pos ->
         
-        for _ p in ipairs posl
-            ⮐  true if p == pos
+        for p in posl∙each()
+            ⮐  true if p∙eql(pos)
         false
         
     @positionsOutsideRange: posl rng ->

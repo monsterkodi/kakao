@@ -172,6 +172,20 @@ function strg:rfind(c)
     end
 
 
+function strg:indexof(s) 
+        self:flatten()
+        if (s.class ~= kseg) then s = kseg(s) end
+        return self.frags[1]:indexof(s)
+    end
+
+
+function strg:rindexof(s) 
+        self:flatten()
+        if (s.class ~= kseg) then s = kseg(s) end
+        return self.frags[1]:rindexof(s)
+    end
+
+
 function strg:slice(f, t) 
         self:flatten()
         local s = strg()

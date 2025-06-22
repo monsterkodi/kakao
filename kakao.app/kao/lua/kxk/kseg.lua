@@ -353,6 +353,18 @@ function kseg:endsWith(postfix)
     end
 
 
+function kseg:indexof(s) 
+        if (s.class ~= kseg) then s = kseg(s) end
+        return array.indexof(self, s)
+    end
+
+
+function kseg:rindexof(s) 
+        if (s.class ~= kseg) then s = kseg(s) end
+        return array.rindexof(self, s)
+    end
+
+
 function kseg.static.startsWith(a, prefix) 
         if (a.class ~= kseg) then a = kseg(a) end
         return a:startsWith(prefix)
@@ -386,45 +398,31 @@ function kseg.static.splitAtIndent(a)
         return a:splitAtIndent()
     end
 
-
-function kseg:find(c) 
-        if (#self <= 0) then return -1 end
-        if (c.class ~= kseg) then c = kseg(c) end
-        if (#c >= #self) then return -1 end
-        for i in iter(1, ((#self + 1) - #c)) do 
-            for j in iter(1, #c) do 
-                if (c[j] ~= self[((i + j) - 1)]) then 
-                    break
-                end
-                
-                if (j == #c) then 
-                    return i
-                end
-            end
-        end
-        
-        return -1
-    end
-
-
-function kseg:rfind(c) 
-        if (#self <= 0) then return -1 end
-        if (c.class ~= kseg) then c = kseg(c) end
-        if (#c >= #self) then return -1 end
-        for i in iter(((#self + 1) - #c), 1) do 
-            for j in iter(1, #c) do 
-                if (c[j] ~= self[((i + j) - 1)]) then 
-                    break
-                end
-                
-                if (j == #c) then 
-                    return i
-                end
-            end
-        end
-        
-        return -1
-    end
+--find: c ->
+--    
+--    ⮐  -1 if @len <= 0
+--    if c.class != kseg ➜ c = kseg(c)
+--    ⮐  -1 if c.len >= @len
+--    for i in 1..@len+1-c.len
+--        for j in 1..c.len
+--            if c[j] != @[i+j-1]
+--                break 
+--            if j == c.len
+--                ⮐  i
+--    -1
+--    
+--rfind: c ->
+--    
+--    ⮐  -1 if @len <= 0
+--    if c.class != kseg ➜ c = kseg(c)
+--    ⮐  -1 if c.len >= @len
+--    for i in @len+1-c.len..1
+--        for j in 1..c.len
+--            if c[j] != @[i+j-1]
+--                break 
+--            if j == c.len
+--                ⮐  i
+--    -1
 
 
 function kseg.static.width(s) 

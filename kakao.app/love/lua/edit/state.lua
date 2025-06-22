@@ -849,6 +849,7 @@ end)()
             newCursors:push(array(c[1], (c[2] + dy)))
         end
         
+        newCursors = belt.sortPositions(newCursors)
         local mc = belt.traversePositionsInDirection(newCursors, self:mainCursor(), dir)
         
         return self:setCursors(newCursors, {main = mc, adjust = 'topBotDelta'})
@@ -1045,9 +1046,6 @@ function state:moveCursorsAndSelect(dir, opt)
 
 
 function state:select(from, to) 
-        -- log "SELECT" from
-        -- log "TO    " to
-        
         local selections = array()
         
         self:setMainCursor(to[1], to[2])

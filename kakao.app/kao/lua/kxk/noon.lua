@@ -127,15 +127,14 @@ function noon.static.parse(s)
                 reslt:push(line:bool())
             else 
                 local ind = line:indent()
-                if ((ind > indnt) and (ind < line:len())) then 
-                    print("indent", indnt, ind, "▸" .. tostring(line) .. "◂")
-                else if ((ind < indnt) and (ind < line:len())) then 
-                    print("dedent", indnt, ind, line)
-                     end
-                end
-                
+                -- if ind > indnt and ind < line∙len()
+                --     write "indent " indnt, ind, "▸" & $line & "◂"
+                -- elif ind < indnt and ind < line∙len()
+                --     write "dedent " indnt, ind, line
+                -- else    
+                --     write "line " line
                 line:trim()
-                local ddi = line:find("  ")
+                local ddi = line:indexof("  ")
                 local lpi = line:rfind("|")
                 if ((ddi > 0) and (ddi > lpi)) then 
                     if not dict.isdict(reslt) then 

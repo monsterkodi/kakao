@@ -640,20 +640,20 @@ function edit.static.extendLineRangesByMovingPositionsInDirection(lines, rngs, p
             if (dir == 'left') or (dir == 'right') then nc = belt.numCharsFromPosToWordOrPunctInDirection(lines, pos, dir, opt) ; pos[1] = pos[1] + nc
             elseif (dir == 'up') then pos[2] = pos[2] - 1
             elseif (dir == 'down') then pos[2] = pos[2] + 1
-            elseif (dir == 'eol') then pos[1] = line:len()
+            elseif (dir == 'eol') then pos[1] = (line:len() + 1)
             elseif (dir == 'bol') then pos[1] = 1
             elseif (dir == 'bof') then pos[1] = 1 ; pos[2] = 1
-            elseif (dir == 'eof') then pos[2] = lines:len() ; pos[1] = lines[lines:len()]:len()
+            elseif (dir == 'eof') then pos[2] = lines:len() ; pos[1] = (lines[lines:len()]:len() + 1)
             elseif (dir == 'ind_bol') then local ind = belt.numIndent(line) ; pos[1] = (function () 
-    if (pos[1] > ind) then 
-    return ind else 
+    if ((pos[1] - 1) > ind) then 
+    return (ind + 1) else 
     return 1
                                                                    end
 end)()
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; pos[1] = (function () 
     if (pos[1] < ind) then 
-    return ind else 
-    return line:len()
+    return (ind + 1) else 
+    return (line:len() + 1)
                                                                    end
 end)()
             end
@@ -665,17 +665,17 @@ end)()
             elseif (dir == 'eol') then rng[3] = Infinity
             elseif (dir == 'bol') then rng[1] = 1
             elseif (dir == 'bof') then rng[1] = 1 ; rng[2] = 1
-            elseif (dir == 'eof') then rng[4] = lines:len() ; rng[3] = lines[lines:len()]:len()
+            elseif (dir == 'eof') then rng[4] = lines:len() ; rng[3] = (lines[lines:len()]:len() + 1)
             elseif (dir == 'ind_bol') then local ind = belt.numIndent(line) ; rng[1] = (function () 
-    if (rng[1] > ind) then 
-    return ind else 
+    if ((rng[1] - 1) > ind) then 
+    return (ind + 1) else 
     return 1
                                                                    end
 end)()
             elseif (dir == 'ind_eol') then local ind = belt.numIndent(line) ; rng[3] = (function () 
     if (rng[3] < ind) then 
-    return ind else 
-    return line:len()
+    return (ind + 1) else 
+    return (line:len() + 1)
                                                                    end
 end)()
             end
