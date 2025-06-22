@@ -361,7 +361,7 @@ function belt.static.endOfSpan(s)
 function belt.static.nextSpanAfterPos(spans, pos) 
         if empty(spans) then return end
         
-        if belt.isPosAfterSpan(pos, spans[#spans]) then 
+        if belt.isPosAfterSpan(pos, spans[spans:len()]) then 
             pos = array(1, 1)
         end
         
@@ -369,9 +369,9 @@ function belt.static.nextSpanAfterPos(spans, pos)
             return spans[1]
         end
         
-        for index, span in ipairs(spans) do 
+        for span, index in spans:each() do 
             if belt.isPosAfterSpan(pos, span) then 
-                if (((index + 1) <= #spans) and belt.isPosBeforeOrInsideSpan(pos, spans[(index + 1)])) then 
+                if (((index + 1) <= spans:len()) and belt.isPosBeforeOrInsideSpan(pos, spans[(index + 1)])) then 
                     return spans[(index + 1)]
                 end
             end
@@ -381,10 +381,10 @@ function belt.static.nextSpanAfterPos(spans, pos)
 
 function belt.static.prevSpanBeforePos(spans, pos) 
         if empty(spans) then return end
-        if belt.isPosBeforeSpan(pos, spans[1]) then return spans[#spans] end
-        if belt.isPosInsideSpan(pos, spans[1]) then return spans[#spans] end
+        if belt.isPosBeforeSpan(pos, spans[1]) then return spans[spans:len()] end
+        if belt.isPosInsideSpan(pos, spans[1]) then return spans[spans:len()] end
         
-        for index in iter(#spans, 1) do 
+        for index in iter(spans:len(), 1) do 
             local span = spans[index]
             if belt.isPosAfterSpan(pos, span) then 
                 return span

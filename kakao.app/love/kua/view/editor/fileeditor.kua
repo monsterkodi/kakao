@@ -283,7 +283,7 @@ class fileeditor extends editor
                     @state∙clearCursors() if not event.alt
 
                     if event.alt
-                        @state∙addCursor x y
+                        @state∙addCursor [x y]
                     else
                         if event.shift and @state.s.cursors.length == 1
                             @state∙setMainCursorAndSelect x y

@@ -309,7 +309,7 @@ function fileeditor:onMouse(event)
                     if not event.alt then self.state:clearCursors() end
                     
                     if event.alt then 
-                        self.state:addCursor(x, y)
+                        self.state:addCursor(array(x, y))
                     else 
                         if (event.shift and (#self.state.s.cursors == 1)) then 
                             self.state:setMainCursorAndSelect(x, y)

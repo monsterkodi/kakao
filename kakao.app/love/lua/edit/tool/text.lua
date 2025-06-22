@@ -215,14 +215,14 @@ function text.static.textForSpans(lines, spans)
 
 function text.static.lineSpansForText(lines, text) 
         local spans = array()
+        local ts = kseg(text)
         
-        for line, y in ipairs(lines) do 
-            line = kseg.str(line)
-            local x2 = 0
+        for line, y in lines:each() do 
+            local x2 = 1
             while true do 
-                local x1 = line.indexOf(text, x2)
-                if (x1 < 0) then break end
-                x2 = (x1 + #text)
+                local x1 = line:indexof(ts, x2)
+                if (x1 < 1) then break end
+                x2 = ((x1 + ts:len()) - 1)
                 spans:push(array(x1, y, x2))
             end
         end
@@ -733,6 +733,7 @@ function text.static.chunkAfterPos(lines, pos)
 
 function text.static.rangeOfClosestWordToPos(lines, pos) 
         local x, y = unpack(pos)
+        
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kseg.spanForClosestWordAtColumn(lines[y], x)
         if r then 

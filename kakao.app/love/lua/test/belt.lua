@@ -486,6 +486,19 @@ abc
         test.cmp(belt.lineRangesInRange(lines, array(1, 4, 1, 4)), array(array(1, 4, 4, 4)))
     end)
     
+    test("lineSpansForText", function()
+        local lines = belt.seglsForText([[
+1
+
+12
+abc
+]])
+        
+        test.cmp(belt.lineSpansForText(lines, "1"), array(array(1, 1, 2), array(1, 3, 2)))
+        test.cmp(belt.lineSpansForText(lines, "12"), array(array(1, 3, 3)))
+        test.cmp(belt.lineSpansForText(lines, "abc"), array(array(1, 4, 4)))
+    end)
+    
     test("splitLineRanges", function()
         local lines = belt.seglsForText([[
 1

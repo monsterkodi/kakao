@@ -87,6 +87,12 @@ function immutable:slice(first, last)
     end
 
 
+function immutable:indexof(s, i) 
+        if (s.class ~= kseg) then s = kseg(s) end
+        return array.indexof(self, s, i)
+    end
+
+
 function immutable:len() 
     return #self.__data
     end

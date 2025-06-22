@@ -171,16 +171,15 @@ class text
     @lineSpansForText: lines text ->
         
         spans = []
+        ts = kseg text
         
-        for line,y in lines
-            line = kseg.str line
-            x2 = 0
+        for line y in lines∙each()
+            x2 = 1
             while true
-                x1 = line.indexOf text x2
-                break if x1 < 0
-                x2 = x1+text.len
+                x1 = line∙indexof ts x2
+                break if x1 < 1
+                x2 = x1+ts∙len()-1
                 spans∙push [x1 y x2]
-        
         spans
         
     @textFromBolToPos: lines pos -> lines[pos[1]]∙slice(1 pos[1])
@@ -546,8 +545,9 @@ class text
         ''
     
     @rangeOfClosestWordToPos: lines pos ->
-        
+
         (x y) = unpack pos
+        
         ⮐  if belt.isInvalidLineIndex lines y
         r = kseg.spanForClosestWordAtColumn lines[y] x 
         if r

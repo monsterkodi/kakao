@@ -183,25 +183,30 @@ function draw:drawTrailingRows()
 function draw:drawHighlights() 
         local bg = self.color.highlight.bg
         local ul = self.color.highlight.ul
+        local bgc = bg
+        local ulc = ul
         -- bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        local vx, vy = unpack(self.state.s.view)
+        local vx = self.state.s.view[1]
+        local vy = self.state.s.view[2]
         
         for highlight in array.each(self.state.s.highlights) do 
-            local y = (highlight[1] - vy)
+            local y = ((highlight[2] - vy) + 1)
             
-            if (y >= self.cells.rows) then break end
+            if (y > self.cells.rows) then break end
             
             for x = highlight[1], highlight[3]-1 do 
-                local hlc = self.cells:get_char((x - vx), y)
-                if (hlc == '{') or (hlc == '[') or (hlc == '(') or (hlc == ')') or (hlc == ']') or (hlc == '}') then local ulc = self.color.highlight.bracket_ul ; local bgc = self.color.highlight.bracket
-                elseif (hlc == "'") or (hlc == '"') then local ulc = self.color.highlight.string_ul ; local bgc = self.color.highlight.string
-                else local ulc = ul ; local bgc = bg
+                local hlc = self.cells:get_char(((x - vx) + 1), y)
+                if (hlc == '{') or (hlc == '[') or (hlc == '(') or (hlc == ')') or (hlc == ']') or (hlc == '}') then ulc = self.color.highlight.bracket_ul ; bgc = self.color.highlight.bracket
+                elseif (hlc == "'") or (hlc == '"') then ulc = self.color.highlight.string_ul ; bgc = self.color.highlight.string
+                else ulc = ul ; bgc = bg
                 end
                 
-                self.cells:set_bg((x - vx), y, bgc)
-                self.cells:set_char((x - vx), y, (((color.ul_rgb(ulc) + '\x1b[4:1m') + hlc) + '\x1b[4:0m'))
-                self.cells:adjustContrastForHighlight((x - vx), y, bgc)
+                self.cells:set_bg(((x - vx) + 1), y, bgc)
+                -- @cells∙set_char x-vx y color.ul_rgb(ulc)+'\x1b[4:1m'+hlc+'\x1b[4:0m'
+                -- log "DRAW HL" x-vx+1, y, hlc, bgc
+                self.cells:set_char(((x - vx) + 1), y, hlc)
+                -- @cells∙adjustContrastForHighlight x-vx+1 y bgc
             end
         end
     end

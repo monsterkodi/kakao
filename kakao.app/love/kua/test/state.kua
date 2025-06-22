@@ -218,7 +218,6 @@ sel = (...) -> s∙allSelections() ▸ array.from({...})
         mul [1 1] [1 2] [1 3]
         sel [1 1 6 1] [1 2 6 2] [1 3 6 3]
         
-        
     ▸ move and select
     
         s∙loadSegls belt.seglsForText("abcd\n  12")

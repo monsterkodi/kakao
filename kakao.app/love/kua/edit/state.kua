@@ -167,7 +167,10 @@ class state extends events
         sels = belt.mergeLineRanges(@s.lines selections)
         @set "selections" sels
         
-    setHighlights: highlights -> @set 'highlights' belt.normalizeSpans(highlights)
+    setHighlights: highlights -> 
+    
+        spans = belt.normalizeSpans(highlights)
+        @set 'highlights' spans
 
     #  0000000  000   000  00000000    0000000   0000000   00000000    0000000
     # 000       000   000  000   000  000       000   000  000   000  000
@@ -762,9 +765,8 @@ class state extends events
     # 000   000  000   000  000   000  
     # 000   000  0000000    0000000    
     
-    addCursor: x y ->
+    addCursor: pos ->
         
-        pos = [x y]
         cursors = @allCursors()
         cursors∙push pos
         @setCursors cursors {main:-1}
@@ -995,9 +997,10 @@ class state extends events
         ⮐  if empty @s.selections
         
         spans = []
-        for ri rng in ipairs @allSelections()
+        for rng ri in @allSelections()∙each()
             if rng[2] == rng[4]
                 text  = belt.textForLineRange @s.lines rng
+                tspan = belt.lineSpansForText @s.lines text
                 spans += belt.lineSpansForText(@s.lines text)
         
         @setHighlights spans
@@ -1005,7 +1008,7 @@ class state extends events
     highlightText: text ->
         
         ⮐  if empty text
-        
+
         @setHighlights belt.lineSpansForText(@s.lines text)
     
     deselectCursorHighlight: ->
@@ -1061,7 +1064,10 @@ class state extends events
         @addNextHighlightToSelection()
 
     addCurrentOrPrevHighlightToSelection: ->            
+    
+        ⮐  if empty @s.highlights
         prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
+        log "addCurrentOrNextHighlightToSelection" prev
         if prev
             if not belt.rangesContainSpan @s.selections prev
                 @addSpanToSelection prev
@@ -1151,6 +1157,7 @@ class state extends events
     
     selectChunk: x y ->
     
+        (x y) = belt.pos x y
         rng = belt.rangeOfClosestChunkToPos @s.lines [x y]
         if rng
             @addRangeToSelectionWithMainCursorAtEnd rng
@@ -1164,6 +1171,7 @@ class state extends events
     
     selectWord: x y ->
     
+        (x y) = belt.pos x y
         rng = belt.rangeOfClosestWordToPos @s.lines [x y]
         if rng
             @addRangeToSelectionWithMainCursorAtEnd rng

@@ -239,18 +239,32 @@ function array:indexdict()
     end
 
 
-function array:indexof(a) 
-        for i, v in ipairs(self) do 
-            local match = true
-            for j, w in ipairs(a) do 
-                if (self[((i + j) - 1)] ~= w) then 
-                    match = false
-                    break
+function array:indexof(a, s) 
+    s = s or 1
+    
+    return array.indexof(self, a, s)
+    end
+
+
+function array.static.indexof(t, a, s) 
+        s = s or 1
+        
+        local al = array.num(a)
+        local sl = array.num(t)
+        
+        if (((sl > 0) and (al > 0)) and (s <= ((sl - al) + 1))) then 
+            for i in iter(s, sl) do 
+                local match = true
+                for j, w in ipairs(a) do 
+                    if (t[((i + j) - 1)] ~= w) then 
+                        match = false
+                        break
+                    end
                 end
-            end
-            
-            if match then 
-                return i
+                
+                if match then 
+                    return i
+                end
             end
         end
         

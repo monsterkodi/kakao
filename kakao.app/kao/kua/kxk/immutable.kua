@@ -58,6 +58,11 @@ class immutable
             s∙push @__data[i]
         s
 
+    indexof: s i ->
+    
+        if s.class != kseg ➜ s = kseg s
+        array.indexof @ s i
+
     len: -> @__data.len
 
     # mut: ->

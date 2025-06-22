@@ -166,28 +166,33 @@ class draw extends view
     
     drawHighlights: ->
                             
-        bg = @color.highlight.bg
-        ul = @color.highlight.ul
+        bg  = @color.highlight.bg
+        ul  = @color.highlight.ul
+        bgc = bg
+        ulc = ul
         # bg = color.darken(bg) if not @cells.screen.t.hasFocus
         
-        (vx vy) = unpack @state.s.view
+        vx = @state.s.view[1]
+        vy = @state.s.view[2]
         
         for highlight in array.each @state.s.highlights
             
-            y = highlight[1]-vy
+            y = highlight[2]-vy+1
             
-            break if y >= @cells.rows
+            break if y > @cells.rows
                 
             for x in highlight[1]...highlight[3]
-                hlc = @cells∙get_char x-vx y
+                hlc = @cells∙get_char x-vx+1 y
                 switch hlc
                     '{' '[' '(' ')' ']' '}' ➜ ulc = @color.highlight.bracket_ul ; bgc = @color.highlight.bracket
                     "'" '"'                 ➜ ulc = @color.highlight.string_ul  ; bgc = @color.highlight.string
                                             ➜ ulc = ul ; bgc = bg
                 
-                @cells∙set_bg x-vx y bgc
-                @cells∙set_char x-vx y color.ul_rgb(ulc)+'\x1b[4:1m'+hlc+'\x1b[4:0m'
-                @cells∙adjustContrastForHighlight x-vx y bgc
+                @cells∙set_bg x-vx+1 y bgc
+                # @cells∙set_char x-vx y color.ul_rgb(ulc)+'\x1b[4:1m'+hlc+'\x1b[4:0m'
+                # log "DRAW HL" x-vx+1, y, hlc, bgc
+                @cells∙set_char x-vx+1 y hlc
+                # @cells∙adjustContrastForHighlight x-vx+1 y bgc
                     
     #  0000000  00000000  000      00000000   0000000  000000000  000   0000000   000   000   0000000  
     # 000       000       000      000       000          000     000  000   000  0000  000  000       

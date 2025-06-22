@@ -353,9 +353,9 @@ function kseg:endsWith(postfix)
     end
 
 
-function kseg:indexof(s) 
+function kseg:indexof(s, i) 
         if (s.class ~= kseg) then s = kseg(s) end
-        return array.indexof(self, s)
+        return array.indexof(self, s, i)
     end
 
 

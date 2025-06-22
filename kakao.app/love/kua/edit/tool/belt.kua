@@ -228,24 +228,24 @@ class belt
         
         ⮐  if empty spans
         
-        if @isPosAfterSpan pos spans[^1]
+        if @isPosAfterSpan pos spans[spans∙len()]
             pos = [1 1]
         
         if @isPosBeforeSpan pos spans[1]
             ⮐  spans[1] 
             
-        for index span in spans
+        for span index in spans∙each()
             if @isPosAfterSpan pos span
-                if index+1 <= spans.len and @isPosBeforeOrInsideSpan pos spans[index+1]
+                if index+1 <= spans∙len() and @isPosBeforeOrInsideSpan pos spans[index+1]
                     ⮐  spans[index+1]
 
     @prevSpanBeforePos: spans pos ->
         
         ⮐  if empty spans
-        ⮐  spans[^1] if @isPosBeforeSpan pos spans[1]
-        ⮐  spans[^1] if @isPosInsideSpan pos spans[1]
+        ⮐  spans[spans∙len()] if @isPosBeforeSpan pos spans[1]
+        ⮐  spans[spans∙len()] if @isPosInsideSpan pos spans[1]
             
-        for index in spans.len..1
+        for index in spans∙len()..1
             span = spans[index]
             if @isPosAfterSpan pos span
                 ⮐  span

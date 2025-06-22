@@ -142,17 +142,23 @@ class array
         for i v in @
             t[v] = i
         t
+        
+    indexof: a s=1 -> array.indexof @ a s
                     
-    indexof: a ->
+    @indexof: t a s=1 ->
     
-        for i v in @
-            match = true
-            for j w in a
-                if @[i+j-1] != w 
-                    match = false
-                    break
-            if match
-                ⮐  i
+        al = array.num a
+        sl = array.num t
+        
+        if sl > 0 and al > 0 and s <= sl-al+1
+            for i in s..sl
+                match = true
+                for j w in a
+                    if t[i+j-1] != w 
+                        match = false
+                        break
+                if match
+                    ⮐  i
         -1
         
     rindexof: a ->

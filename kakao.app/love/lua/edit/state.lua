@@ -174,7 +174,8 @@ function state:setSelections(selections)
 
 
 function state:setHighlights(highlights) 
-    return self:set('highlights', belt.normalizeSpans(highlights))
+        local spans = belt.normalizeSpans(highlights)
+        return self:set('highlights', spans)
     end
 
 --  0000000  000   000  00000000    0000000   0000000   00000000    0000000
@@ -886,8 +887,7 @@ end)()
 -- 000   000  0000000    0000000    
 
 
-function state:addCursor(x, y) 
-        local pos = array(x, y)
+function state:addCursor(pos) 
         local cursors = self:allCursors()
         cursors:push(pos)
         return self:setCursors(cursors, {main = -1})
@@ -1180,9 +1180,10 @@ function state:highlightSelection()
         if empty(self.s.selections) then return end
         
         local spans = array()
-        for ri, rng in ipairs(self:allSelections()) do 
+        for rng, ri in self:allSelections():each() do 
             if (rng[2] == rng[4]) then 
                 local text = belt.textForLineRange(self.s.lines, rng)
+                local tspan = belt.lineSpansForText(self.s.lines, text)
                 spans = spans + (belt.lineSpansForText(self.s.lines, text))
             end
         end
@@ -1266,7 +1267,9 @@ function state:addCurrentOrNextHighlightToSelection()
 
 
 function state:addCurrentOrPrevHighlightToSelection() 
+        if empty(self.s.highlights) then return end
         local prev = belt.prevSpanBeforePos(self.s.highlights, self:mainCursor())
+        print("addCurrentOrNextHighlightToSelection", prev)
         if prev then 
             if not belt.rangesContainSpan(self.s.selections, prev) then 
                 self:addSpanToSelection(prev)
@@ -1383,6 +1386,7 @@ function state:addSpanToSelection(span)
 
 
 function state:selectChunk(x, y) 
+        local x, y = belt.pos(x, y)
         local rng = belt.rangeOfClosestChunkToPos(self.s.lines, array(x, y))
         if rng then 
             self:addRangeToSelectionWithMainCursorAtEnd(rng)
@@ -1399,6 +1403,7 @@ function state:selectChunk(x, y)
 
 
 function state:selectWord(x, y) 
+        local x, y = belt.pos(x, y)
         local rng = belt.rangeOfClosestWordToPos(self.s.lines, array(x, y))
         if rng then 
             self:addRangeToSelectionWithMainCursorAtEnd(rng)

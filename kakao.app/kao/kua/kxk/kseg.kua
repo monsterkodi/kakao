@@ -223,10 +223,10 @@ class kseg extends array
         
         @slice(@len-postfix.len+1)∙eql(postfix)
         
-    indexof: s ->
+    indexof: s i ->
     
         if s.class != kseg ➜ s = kseg s
-        array.indexof @ s
+        array.indexof @ s i
 
     rindexof: s ->
     
