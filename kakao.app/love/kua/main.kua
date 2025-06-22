@@ -46,8 +46,8 @@ love.draw = ->
     
     ked∙draw cols rows cw ch
     
-    lg.setColor 0.2 0.2 0.2 
-    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
+    # lg.setColor 0.2 0.2 0.2 
+    # lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
     
     nil
     

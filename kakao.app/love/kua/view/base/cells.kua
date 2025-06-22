@@ -383,6 +383,8 @@ class cells
 
     render: ->
     
+        ⮐  if @cols <= 0 or @rows <= 0
+    
         lg = love.graphics
         
         cw = _G.screen.cw
@@ -392,7 +394,6 @@ class cells
         yo = (@y-1)*ch
         
         for y in 1..@rows
-            # log "LINE #{y}" @c[y]∙len()
             for x in 1..@cols
                 char = @c[y][x].char
                     
@@ -403,7 +404,8 @@ class cells
                 if @c[y][x].fg.len > 0 and @c[y][x].fg is array
                     lg.setColor @c[y][x].fg[1]/255 @c[y][x].fg[2]/255 @c[y][x].fg[3]/255
                 
-                lg.print char xo+(x-1)*cw yo+(y-1)*ch
+                if char
+                    lg.print char xo+(x-1)*cw yo+(y-1)*ch
         @
                         
 ⮐  cells

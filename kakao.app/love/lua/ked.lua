@@ -202,7 +202,7 @@ function KED:quit(msg)
 function KED:newFile() 
         self.currentFile = nil
         
-        self.status:setFile('')
+        self.status:setFile('new')
         
         self.editor.state.syntax.ext = 'txt'
         -- @editor.state∙loadLines ['hello world! line 1' 'hello world! line 2' 'hello world! line 3']

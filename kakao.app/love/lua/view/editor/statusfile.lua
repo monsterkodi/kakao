@@ -27,7 +27,7 @@ function statusfile:init(name)
         self.syntax = syntax()
         self.syntax:setExt('noon')
         
-        self.rounded = ''
+        self.rounded = array('', '')
         return self
     end
 
@@ -41,7 +41,7 @@ function statusfile:init(name)
 function statusfile:draw() 
         if self:hidden() then return end
         
-        super()
+        -- view.draw @
         
         local bg = (function () 
     if self.hover then 
@@ -50,17 +50,19 @@ function statusfile:draw()
              end
 end)()
         
-        for ch, x in ipairs(self.rounded) do 
+        for x, ch in ipairs(self.rounded) do 
             if ((ch == '') or (ch == '')) then 
-                self.cells.set(x, 0, ch, bg, self.color.empty)
+                self.cells:set(x, 1, ch, bg, self.color.empty)
             else 
-                local fg = self.syntax.getColor(x, 0)
-                self.cells.set(x, 0, ch, fg, bg)
+                local fg = self.syntax:getColor(x, 1)
+                self.cells:set(x, 1, ch, fg, bg)
                 if self.hover then 
-                    self.cells.adjustContrastForHighlight(x, 0, bg)
+                    self.cells:adjustContrastForHighlight(x, 1, bg)
                 end
             end
         end
+        
+        return self:render()
     end
 
 --  0000000   0000000          000  000   000   0000000  000000000  
@@ -73,17 +75,17 @@ end)()
 function statusfile:adjustText() 
         self.file = self.file or ''
         self.pars = slash.parse(self.file)
-        self.syntax.clear()
-        self.syntax.setLines(array(('/' + self.pars.file)))
-        self.rounded = '' .. self.pars.file .. ''
+        self.syntax:clear()
+        self.syntax:setLines(array('/' .. self.pars.file))
+        self.rounded = ((array('') + kseg(self.pars.file)) + array(''))
         return self.rounded
     end
 
 
 function statusfile:set(file) 
-        if (self.file == trim(file)) then return end
+        if (self.file == kstr.trim(file)) then return end
         
-        self.file = trim(file)
+        self.file = kstr.trim(file)
         return self:adjustText()
     end
 

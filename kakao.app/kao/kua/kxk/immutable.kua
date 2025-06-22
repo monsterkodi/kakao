@@ -60,15 +60,15 @@ class immutable
 
     len: -> @__data.len
 
-    mut: ->
-        
-        mutable = {}
-        for k v of @__data
-            if type(v) == "table" 
-                mutable[k] = v∙mut()
-            else
-                mutable[k] = v
-        mutable
+    # mut: ->
+    #     
+    #     mutable = {}
+    #     for k v of @__data
+    #         if type(v) == "table" 
+    #             mutable[k] = v∙mut()
+    #         else
+    #             mutable[k] = v
+    #     mutable
         
     arr: deep=true ->    
     

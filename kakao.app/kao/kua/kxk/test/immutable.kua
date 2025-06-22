@@ -47,7 +47,7 @@ use kxk.kxk
     ▸ mutable
         
         ia = immutable({a:1})
-        ma = ia∙mut()
+        ma = ia∙mod()
         ia                      ▸ immutable({a:1})
         ma.a = 2
         ma                      ▸ {a:2}
@@ -110,7 +110,7 @@ use kxk.kxk
         ia = immutable(kseg("line 1"))
         ia[1] ▸ "l"
         ia[2] ▸ "i"
-        table.concat ia∙mut() "" ▸ "line 1"
+        table.concat ia∙arr() "" ▸ "line 1"
         
         ia∙len() ▸ 6
         

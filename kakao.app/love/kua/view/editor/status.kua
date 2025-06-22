@@ -62,15 +62,23 @@ class status extends view
         @statusfile∙on 'action' @onFileAction    @
         @filepos∙on    'action' @onFileposAction @
         
-        # post.on 'status.filepos' @onStatusFilepos
+        post∙on 'status.filepos' @onStatusFilepos
         
-    # onStatusFilepos: @fileposl @fileoffs -> 
-    # 
-    #     if @fileposl.length > 1
-    #         tilde = if @fileoffs ➜ @fileposl.length-@fileoffs-1 ➜ ''
-    #         @filepos.set tilde:"#{tilde}#{@fileposl.length-1}"
-    #     else
-    #         @filepos.set null 
+    onStatusFilepos: fileposl fileoffs -> 
+    
+        log "STATUS FILEPOS" fileposl
+        log "STATUS FILEOFF" fileoffs
+        
+        @fileposl = fileposl
+        @fileoffs = fileoffs
+    
+        if @filepos∙len() > 1
+            off = if @fileoffs ➜ @fileposl∙len()-@fileoffs-1 ➜ ''
+            tilde = "#{tilde}#{@fileposl∙len()-1}"
+            @filepos∙set({tilde:tilde})
+        else
+            @filepos∙set nil 
+        @
             
     onFileposAction: action item ->
     
@@ -109,15 +117,16 @@ class status extends view
                 
     droopCrumb: path crumb ->
 
-        clearTimeout @droopTimer
-        delete @droopTimer
+        # clearTimeout @droopTimer
+        # delete @droopTimer
     
         path = slash.untilde path
         files = slash.walk path {recursive:false}
-        x = @crumbs.cells.x+int((crumb.cols[1]+crumb.cols[0])/2)
+        x = @crumbs.cells.x + int((crumb.cols[2]+crumb.cols[1])/2)
         post∙emit 'droop.show' {files:files pos:[x @crumbs.cells.y+1]}
 
     onFileAction: action file ->
+    
         ⮐  if empty file
         log "onFileAction" action, file
         switch action
@@ -204,87 +213,82 @@ class status extends view
     
     draw: ->
         
-        ⮐  if @hidden() or empty @file
+        ⮐  if @hidden() #or empty @file
                 
-        x      = 0
-        y      = 0
+        @gutter ?= 4
+                
+        x      = 1
+        y      = 1
         cursor = @state∙mainCursor()
         cols   = @cells.cols
         fnl    = @file.len
         rdo    = @state∙hasRedo()
         dty    = @state∙isDirty()
+        fg     = [255 0 0]
+        bg     = [55 55 55]
         
         set = x char fg bg -> 
-            if fg is str ➜ fg = theme.status[fg]
-            if bg is str ➜ bg = theme.status[bg]
-            @cells.set x y char fg bg
+            if fg is "string" ➜ fg = theme.status[fg]
+            if bg is "string" ➜ bg = theme.status[bg]
+            @cells∙set x y char fg bg
             1
+            
         add = char fg bg -> x += set x char fg bg
         
-        add '' 'col' @color.gutter # column number ...
-        colno = rpad @gutter-1 "#{cursor[0]}"
+        add '' 'col' @color.gutter
+        colno = kstr.rpad @gutter-1 "#{cursor[1]}"
         for ci in 1...@gutter
-            fg = if cursor[0] ➜ 'fg' ➜ 'col_zero'
+            fg = if (cursor[1] > 1) ➜ 'fg' ➜ 'col_zero'
             if belt.isLinesPosOutside @state.s.lines cursor 
                 fg = 'col_empty' 
-            char = if (ci-1 < colno.length) ➜ colno[ci-1] ➜ ' '
+            char = if (ci-1 < colno.len) ➜ string.sub(colno ci-1 ci-1) ➜ ' '
             add char fg 'col'
-        add '' 'col' @color.gutter # column number end
+        add '' 'col' @color.gutter
               
-        @crumbs∙draw() # dir path
-        @statusfile∙draw() # file
+        @crumbs∙draw()
+        @statusfile∙draw()
         @filepos∙draw()
         
         x += @crumbs.rounded.len
         x += @statusfile.rounded.len
         x += @filepos.rounded.len
         
-        # dirty and redo indicators
         add '' 'dark'  'empty'
-        if dty ➜ add '' 'dirty' 'dark' 
+        if dty ➜ add ' ' 'dirty' 'dark' 
         if dty ➜ add ' ' 'dirty' 'dark' 
-        if rdo ➜ add '' 'redo'  'dark' 
+        if rdo ➜ add '➜' 'redo'  'dark' 
         add ' ' 'dark'  'dark'
         
-        if @state.s.cursors.len > 1
+        if @state.s.cursors∙len() > 1
 
-            cur = "#{@state.s.cursors.len}♦"
+            cur = "#{@state.s.cursors∙len()}♦"
              
-            for i in 0...cur.len
-                color = if (i<cur.len-1) ➜ 'cur' ➜ color.darken(theme.status.cur)
+            for i in 1..cur∙len()
+                color = if (i<cur∙len()) ➜ 'cur' ➜ color.darken(theme.status.cur)
                 add cur[i] color 'dark'
                 
-        if @state.s.selections.len
+        if @state.s.selections∙len()
 
-            sel = "#{@state.s.selections.len}≡"
+            sel = "#{@state.s.selections∙len()}≡"
              
-            for i in 0...sel.len
-                color = if (i<sel.len-1) ➜ 'sel' ➜ color.darken(theme.status.sel) 
+            for i in 1..sel∙len()
+                color = if (i<sel∙len()) ➜ 'sel' ➜ color.darken(theme.status.sel) 
                 add sel[i] color 'dark'
 
-        if @state.s.highlights.len
+        if @state.s.highlights∙len()
 
-            hil = "#{@state.s.highlights.len}❇"
+            hil = "#{@state.s.highlights∙len()}❇"
              
-            for i in 0...hil.len
-                color = if (i<hil.len-1) ➜ 'hil' ➜ color.darken(theme.status.hil) 
+            for i in 1..hil∙len()
+                color = if (i<hil∙len()) ➜ 'hil' ➜ color.darken(theme.status.hil) 
                 add hil[i] color 'dark'
                                 
         # fill to the right
         
-        for ci in x...cols-1
-            add ' ' null 'dark'
+        for ci in x...cols
+            add ' ' nil 'dark'
             
         add '' 'dark' @color.gutter 
-            
-        ci = clamp 0 3 floor((@time/(1000*1000)-8)/8)
-        ch = string.sub " •" ci # 
-        fg = [[32 32 32] [0 96 0] [255 0 0] [255 255 0]][ci]
-        # switch ch
-        #     '•' ➜ 1 #log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
-        #     '' ➜ 1 #log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
-        #     '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
-        set cols-2 ch fg 'dark'
         
         @render()
              

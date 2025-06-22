@@ -46,8 +46,8 @@ function love.draw()
     
     ked:draw(cols, rows, cw, ch)
     
-    lg.setColor(0.2, 0.2, 0.2)
-    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(count) .. " " .. tostring(love.timer.getFPS()) .. " ◂", (6 * cw), 0)
+    -- lg.setColor 0.2 0.2 0.2 
+    -- lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
     
     return nil
 end

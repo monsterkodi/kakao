@@ -184,7 +184,7 @@ class KED
         
         @currentFile = nil
 
-        @status∙setFile ''
+        @status∙setFile 'new'
     
         @editor.state.syntax.ext = 'txt'
         # @editor.state∙loadLines ['hello world! line 1' 'hello world! line 2' 'hello world! line 3']

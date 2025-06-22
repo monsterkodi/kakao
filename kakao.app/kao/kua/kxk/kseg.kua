@@ -12,6 +12,8 @@ class kseg extends array
                         for i seg in @codes(s)
                             @push seg
                 "table"
+                    # if s.class == kseg
+                    #     ⮐  s
                     for g in array.each s
                         @push g
                 ➜ 
@@ -99,11 +101,8 @@ class kseg extends array
         if s.len > 0 or s∙len() > 0
             ls = array.map(s, (c) -> ⮐  kseg.str(c))
             if type(s[1]) != "string"
-                # write "JOIN LINES " s.len " " s∙len() " " ls∙len()
                 ⮐  ls∙join("\n")
-            # write "JOIN LINE " s.len " " s∙len() " " ls∙len()
             ⮐  ls∙join("")
-        # write "PLAIN"
         $s
         
     rpad: l c=' ' ->  
@@ -208,37 +207,52 @@ class kseg extends array
 
     startsWith: prefix ->
         
-        ⮐  false if empty @ or empty prefix
-        segs = kseg prefix
-        ⮐  false if @len < segs.len
+        ⮐  false if empty(@) or empty(prefix)
+        if prefix.class != kseg
+            prefix = kseg prefix
+        ⮐  false if @len < prefix.len
         
-        @slice(1 segs.len)∙eql(segs)
+        @slice(1 prefix.len)∙eql(prefix)
     
     endsWith: postfix ->
         
-        ⮐  false if empty @ or empty postfix
-        segs = kseg postfix
-        ⮐  false if @len < segs.len
+        ⮐  false if empty(@) or empty(postfix)
+        if postfix.class != kseg
+            postfix = kseg postfix
+        ⮐  false if @len < postfix.len
         
-        @slice(@len-segs.len+1)∙eql(segs)
+        @slice(@len-postfix.len+1)∙eql(postfix)
 
-    @startsWith: prefix -> kseg(a)∙startsWith(prefix)
-    @endsWith: postfix -> kseg(a)∙endsWith(postfix)
+    @startsWith: a prefix -> 
+    
+        if a.class != kseg ➜ a = kseg(a)
+        a∙startsWith(prefix)
+        
+    @endsWith: a postfix -> 
+    
+        if a.class != kseg ➜ a = kseg(a)
+        a∙endsWith(postfix)
         
     indent: -> @lcount " "
-    @indent: a -> kseg(a)∙indent()
+    @indent: a -> 
+    
+        if a.class != kseg ➜ a = kseg(a)
+        a∙indent()
     
     splitAtIndent: ->
             
         i = @indent()
         (@slice(1 i-1) @slice(i))
         
-    @splitAtIndent: a -> kseg(a)∙splitAtIndent()
+    @splitAtIndent: a -> 
+    
+        if a.class != kseg ➜ a = kseg(a)
+        a∙splitAtIndent()
     
     find: c ->
     
         ⮐  -1 if @len <= 0
-        c = kseg c
+        if c.class != kseg ➜ c = kseg(c)
         ⮐  -1 if c.len >= @len
         for i in 1..@len+1-c.len
             for j in 1..c.len
@@ -251,7 +265,7 @@ class kseg extends array
     rfind: c ->
     
         ⮐  -1 if @len <= 0
-        c = kseg c
+        if c.class != kseg ➜ c = kseg(c)
         ⮐  -1 if c.len >= @len
         for i in @len+1-c.len..1
             for j in 1..c.len

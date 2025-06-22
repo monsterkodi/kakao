@@ -14,6 +14,8 @@ function kseg:init(s)
                         end
                     end
             elseif (type(s) == "table") then 
+                    -- if s.class == kseg
+                    --     ⮐  s
                     for g in array.each(s) do 
                         self:push(g)
                     end
@@ -139,15 +141,12 @@ function kseg.static.str(s)
     return kseg.str(c)
 end)
             if (type(s[1]) ~= "string") then 
-                -- write "JOIN LINES " s.len " " s∙len() " " ls∙len()
                 return ls:join("\n")
             end
             
-            -- write "JOIN LINE " s.len " " s∙len() " " ls∙len()
             return ls:join("")
         end
         
-        -- write "PLAIN"
         return tostring(s)
     end
 
@@ -331,29 +330,38 @@ function kseg.static.tailCountWord(a)
 
 
 function kseg:startsWith(prefix) 
-        if empty((self or empty), prefix) then return false end
-        local segs = kseg(prefix)
-        if (#self < #segs) then return false end
+        if (empty(self) or empty(prefix)) then return false end
+        if (prefix.class ~= kseg) then 
+            prefix = kseg(prefix)
+        end
         
-        return self:slice(1, #segs):eql(segs)
+        if (#self < #prefix) then return false end
+        
+        return self:slice(1, #prefix):eql(prefix)
     end
 
 
 function kseg:endsWith(postfix) 
-        if empty((self or empty), postfix) then return false end
-        local segs = kseg(postfix)
-        if (#self < #segs) then return false end
+        if (empty(self) or empty(postfix)) then return false end
+        if (postfix.class ~= kseg) then 
+            postfix = kseg(postfix)
+        end
         
-        return self:slice(((#self - #segs) + 1)):eql(segs)
+        if (#self < #postfix) then return false end
+        
+        return self:slice(((#self - #postfix) + 1)):eql(postfix)
     end
 
 
-function kseg.static.startsWith(prefix) 
-    return kseg(a):startsWith(prefix)
+function kseg.static.startsWith(a, prefix) 
+        if (a.class ~= kseg) then a = kseg(a) end
+        return a:startsWith(prefix)
     end
 
-function kseg.static.endsWith(postfix) 
-    return kseg(a):endsWith(postfix)
+
+function kseg.static.endsWith(a, postfix) 
+        if (a.class ~= kseg) then a = kseg(a) end
+        return a:endsWith(postfix)
     end
 
 
@@ -362,7 +370,8 @@ function kseg:indent()
     end
 
 function kseg.static.indent(a) 
-    return kseg(a):indent()
+        if (a.class ~= kseg) then a = kseg(a) end
+        return a:indent()
     end
 
 
@@ -373,13 +382,14 @@ function kseg:splitAtIndent()
 
 
 function kseg.static.splitAtIndent(a) 
-    return kseg(a):splitAtIndent()
+        if (a.class ~= kseg) then a = kseg(a) end
+        return a:splitAtIndent()
     end
 
 
 function kseg:find(c) 
         if (#self <= 0) then return -1 end
-        c = kseg(c)
+        if (c.class ~= kseg) then c = kseg(c) end
         if (#c >= #self) then return -1 end
         for i in iter(1, ((#self + 1) - #c)) do 
             for j in iter(1, #c) do 
@@ -399,7 +409,7 @@ function kseg:find(c)
 
 function kseg:rfind(c) 
         if (#self <= 0) then return -1 end
-        c = kseg(c)
+        if (c.class ~= kseg) then c = kseg(c) end
         if (#c >= #self) then return -1 end
         for i in iter(((#self + 1) - #c), 1) do 
             for j in iter(1, #c) do 

@@ -228,19 +228,6 @@ line 3
         
         mul(array(1, 1), array(1, 2), array(1, 3))
         sel(array(1, 1, 6, 1), array(1, 2, 6, 2), array(1, 3, 6, 3))
-        
-        --s∙insert '\n' 
-        --        
-        --mul [0 1] [0 3] [0 5]
-        --sel()
-        --txt """
-        --    
-        --    1
-        --    
-        --    2
-        --    
-        --    3
-        --    """    
     end)
     
     -- 000   000  000   000  000   0000000   0000000   0000000    00000000  
@@ -249,28 +236,29 @@ line 3
     -- 000   000  000  0000  000  000       000   000  000   000  000       
     --  0000000   000   000  000   0000000   0000000   0000000    00000000  
     
-    --▸ unicode
-    --    
-    --    text = """
-    --        s = "🧑🌾"
-    --        line 3
-    --        """
-    --    
-    --    s.syntax.ext = 'kode'
-    --    s∙loadSegls belt.seglsForText(text)
-    --            
-    --    txt text
-    --    
-    --    s∙toggleCommentAtSelectionOrCursorLines()
-    --    
-    --    txt """
-    --        # s = "🧑🌾"
-    --        line 3
-    --        """
-    --    s∙toggleCommentAtSelectionOrCursorLines()
-    --    
-    --    txt text
-    --    
+    test("unicode", function()
+        text = [[
+s = "🧑🌾"
+line 3
+]]
+        
+        s.syntax.ext = 'kode'
+        s:loadSegls(belt.seglsForText(text))
+        
+        txt(text)
+        
+        s:toggleCommentAtSelectionOrCursorLines()
+        
+        txt([[
+# s = "🧑🌾"
+line 3
+]])
+        
+        s:toggleCommentAtSelectionOrCursorLines()
+        
+        txt(text)
+    end)
+    
     --    ▸ selection
     --    
     --        text = """

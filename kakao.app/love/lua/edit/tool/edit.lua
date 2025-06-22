@@ -345,7 +345,7 @@ function edit.static.moveLineRangesAndPositionsAtIndicesInDirection(lines, rngs,
             return lines, rngs, posl
         end
         
-        local newLines = lines:arr()
+        local newLines = lines:arr(false)
         local newRngs = rngs:arr()
         local newPosl = posl:arr()
         
@@ -401,7 +401,7 @@ function edit.static.cloneLineBlockRangesAndMoveRangesAndPositionsInDirection(li
             return lines, rngs, posl
         end
         
-        local newLines = lines:arr()
+        local newLines = lines:arr(false)
         local newRngs = rngs:arr()
         local newPosl = posl:arr()
         
@@ -467,39 +467,42 @@ end)()
 function edit.static.toggleCommentsInLineRangesAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines:arr()
+        local newLines = lines:arr(false)
         local newRngs = rngs:arr()
         local newPosl = posl:arr()
         
         local comStart = kseg('#')
         local minIndent = Infinity
+        local newLine = array()
+        local comment = array()
+        local line = array()
         
-        for _, index in ipairs(indices) do 
+        for index in indices:each() do 
             local indent, line = belt.splitLineIndent(newLines[index])
             if not kseg.startsWith(line, comStart) then 
-                local comment = comStart
+                comment = comStart
                 minIndent = min(#indent, minIndent)
             end
         end
         
         local comIndent = ''
-        if comment then 
+        if (comment:len() > 0) then 
             comIndent = kseg.rep(minIndent)
         end
         
-        for _, index in ipairs(indices) do 
+        for index in indices:each() do 
             local indent, line = belt.splitLineIndent(newLines[index])
-            if comment then 
-                indent = kseg.rep((#indent - minIndent))
-                local newLine = kseg.join(comIndent, comment, indent, ' ', line)
+            if (comment:len() > 0) then 
+                indent = kseg.rep((indent:len() - minIndent))
+                newLine = kseg.join(comIndent, comment, indent, ' ', line)
             else 
                 local d = (function () 
-    if (line[#comStart] == ' ') then 
-    return 1 else 
-    return 0
+    if (line[(comStart:len() + 1)] == ' ') then 
+    return 2 else 
+    return 1
                     end
 end)()
-                local newLine = kseg.join(indent, line:slice((comStart:len() + d)))
+                newLine = kseg.join(indent, line:slice((comStart:len() + d)))
             end
             
             newLines:splice(index, 1, newLine)
@@ -512,11 +515,9 @@ end)()
 function edit.static.toggleCommentTypesInLineRangesAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines:map(function (l) 
-    return l
-end)
-        local newRngs = rngs --.asMutable()
-        local newPosl = posl --.asMutable()
+        local newLines = lines:arr(false)
+        local newRngs = rngs:arr()
+        local newPosl = posl:arr()
         
         print("todo: toggleCommentTypes " .. tostring(indices) .. "")
         
@@ -533,7 +534,7 @@ end)
 function edit.static.deindentLineRangesAndPositionsAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines:arr()
+        local newLines = lines:arr(false)
         local newRngs = rngs:arr()
         local newPosl = posl:arr()
         
@@ -572,7 +573,7 @@ function edit.static.deindentLineRangesAndPositionsAtIndices(lines, rngs, posl, 
 function edit.static.indentLineRangesAndPositionsAtIndices(lines, rngs, posl, indices) 
         if empty(indices) then return lines, rngs, posl end
         
-        local newLines = lines:arr()
+        local newLines = lines:arr(false)
         local newRngs = rngs:arr()
         local newPosl = posl:arr()
         

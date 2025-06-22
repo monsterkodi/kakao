@@ -288,7 +288,7 @@ class edit
         if empty(indices) or dir == 'down' and indices[indices∙len()] >= lines∙len() or dir == 'up' and indices[1] <= 1
             ⮐  (lines rngs posl)
         
-        newLines = lines∙arr()
+        newLines = lines∙arr(false)
         newRngs  = rngs∙arr()
         newPosl  = posl∙arr()
         
@@ -329,7 +329,7 @@ class edit
         if empty(blocks) or dir == 'down' and blocks[blocks∙len()][4] > lines∙len() or dir == 'up' and blocks[1][2] <= 1
             ⮐  (lines rngs posl)
         
-        newLines = lines∙arr()
+        newLines = lines∙arr(false)
         newRngs  = rngs∙arr()
         newPosl  = posl∙arr()
         
@@ -375,33 +375,36 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices
         
-        newLines = lines∙arr()
+        newLines = lines∙arr(false)
         newRngs  = rngs∙arr()
         newPosl  = posl∙arr()
         
         comStart  = kseg '#'
         minIndent = Infinity
+        newLine   = [] 
+        comment   = []
+        line      = []
              
-        for index in indices
-            
+        for index in indices∙each()
             (indent line) = belt.splitLineIndent newLines[index]
             if not kseg.startsWith(line comStart)
                 comment = comStart
                 minIndent = min indent.len minIndent
         
         comIndent = ''    
-        if comment
+        if comment∙len() > 0
             comIndent = kseg.rep(minIndent) 
-                
-        for _ index in ipairs indices
+        
+        for index in indices∙each()
             
             (indent line) = belt.splitLineIndent newLines[index]
-            if comment
-                indent  = kseg.rep indent.len-minIndent
+            if comment∙len() > 0
+                indent  = kseg.rep indent∙len()-minIndent
                 newLine = kseg.join comIndent comment indent ' ' line
             else
-                d = if line[comStart.len] == ' ' ➜ 1 ➜ 0
+                d = if line[comStart∙len()+1] == ' ' ➜ 2 ➜ 1
                 newLine = kseg.join indent line∙slice(comStart∙len()+d)
+                
             newLines∙splice index 1 newLine
         
         (newLines newRngs newPosl)
@@ -410,9 +413,9 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices
         
-        newLines = lines∙map((l) -> l)
-        newRngs  = rngs #.asMutable()
-        newPosl  = posl #.asMutable()
+        newLines = lines∙arr(false)
+        newRngs  = rngs∙arr()
+        newPosl  = posl∙arr()
         
         log "todo: toggleCommentTypes #{indices}"
         
@@ -428,7 +431,7 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices  
         
-        newLines = lines∙arr()
+        newLines = lines∙arr(false)
         newRngs  = rngs∙arr()
         newPosl  = posl∙arr()
         
@@ -462,7 +465,7 @@ class edit
         
         ⮐  (lines rngs posl) if empty indices  
         
-        newLines = lines∙arr()
+        newLines = lines∙arr(false)
         newRngs  = rngs∙arr()
         newPosl  = posl∙arr()
         

@@ -5,10 +5,10 @@
          ███     ███     ███   ███     ███     ███       
     ███████      ███     ███   ███     ███     ████████  
 
-    handles basic text editing for the editor
-    wraps text and editor state like cursors and selections 
+    handles state and text editing for the editor
+    wraps text segments, cursors and selections 
         in an immutable to simplify undo
-    delegates almost all text manipulation to pure functions
+    delegates text manipulation to pure functions
         in tool▸belt to simplify testing
 ###
 
@@ -357,7 +357,7 @@ class state extends events
         ⮐  if empty @r
         @h∙push @r∙pop()
         @s = @h[^1]
-        @syntax.setSegls @s.lines
+        @syntax∙setSegls @s.lines
 
     begin: -> @beginIndex = @h.len
 
@@ -584,7 +584,7 @@ class state extends events
         if @s.main < 1 or @s.main > @s.cursors∙len() 
             write ◌r "wrong mainCursor! " ◌m " main " @s.main ◌b " cursors " @s.cursors∙len() 
             ⮐  [1 1]
-        mc = @s.cursors[@s.main]∙mut()
+        mc = @s.cursors[@s.main]∙arr()
         if not mc
             write ◌r "no mainCursor!"
             # error "no mainCursor!"
@@ -1490,7 +1490,7 @@ class state extends events
                 
         ⮐  @deleteSelection() if ['back' 'next']∙has(typ) and valid @s.selections
 
-        lines = @s.lines∙arr()
+        lines = @s.lines∙arr(false)
         
         cursors = @allCursors()
         

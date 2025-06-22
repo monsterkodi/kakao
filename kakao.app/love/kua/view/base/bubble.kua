@@ -24,7 +24,7 @@ class bubble extends view
         @syntax = syntax()
         @syntax∙setExt 'noon'
         
-        @rounded = '' # ''
+        @rounded = [] # ''
         
         @setColor 'bg'    theme.hover.blur
         @setColor 'hover' theme.hover.bg 
@@ -40,28 +40,28 @@ class bubble extends view
         
         ⮐  if @hidden()
     
-        view.draw @
-            
         bg = if @hover ➜ @color.hover ➜ @color.bg 
         
-        for ch,x in @rounded
+        for x ch in @rounded
             if ch == '' or ch == ''
-                @cells.set x 0 ch bg @color.empty
+                @cells∙set x 1 ch bg @color.empty
             else
-                fg = @syntax.getColor x 0 ch
-                @cells.set x 0 ch fg bg 
+                fg = @syntax∙getColor x 0 ch
+                @cells∙set x 1 ch fg bg 
                 if @hover
-                    @cells.adjustContrastForHighlight(x 0 bg) 
+                    @cells∙adjustContrastForHighlight(x 1 bg) 
+                    
+        @render()
                 
     set: item ->
     
         @item = item
         
         if empty @item
-            @rounded = ''
+            @rounded = []
         else
             @syntax.setSegls @item.segls or [kseg(item.tilde)]
-            @rounded = '' & @item.tilde & ''
+            @rounded = [''] + kseg(item.tilde) + ['']
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       

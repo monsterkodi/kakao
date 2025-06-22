@@ -5,10 +5,10 @@
          ███     ███     ███   ███     ███     ███       
     ███████      ███     ███   ███     ███     ████████  
 
-    handles basic text editing for the editor
-    wraps text and editor state like cursors and selections 
+    handles state and text editing for the editor
+    wraps text segments, cursors and selections 
         in an immutable to simplify undo
-    delegates almost all text manipulation to pure functions
+    delegates text manipulation to pure functions
         in tool▸belt to simplify testing
 --]]
 
@@ -399,7 +399,7 @@ function state:redo()
         if empty(self.r) then return end
         self.h:push(self.r:pop())
         self.s = self.h[#self.h]
-        return self.syntax.setSegls(self.s.lines)
+        return self.syntax:setSegls(self.s.lines)
     end
 
 
@@ -667,7 +667,7 @@ function state:mainCursor()
             return array(1, 1)
         end
         
-        local mc = self.s.cursors[self.s.main]:mut()
+        local mc = self.s.cursors[self.s.main]:arr()
         if not mc then 
             write("\x1b[0m\x1b[31m", "no mainCursor!")
             -- error "no mainCursor!"
@@ -1790,7 +1790,7 @@ function state:deindentSelectedOrCursorLines()
 function state:delete(typ, jump) 
         if (array('back', 'next'):has(typ) and valid(self.s.selections)) then return self:deleteSelection() end
         
-        local lines = self.s.lines:arr()
+        local lines = self.s.lines:arr(false)
         
         local cursors = self:allCursors()
         

@@ -26,7 +26,7 @@ function bubble:init(name)
         self.syntax = syntax()
         self.syntax:setExt('noon')
         
-        self.rounded = '' -- ''
+        self.rounded = array() -- ''
         
         self:setColor('bg', theme.hover.blur)
         self:setColor('hover', theme.hover.bg)
@@ -44,8 +44,6 @@ function bubble:init(name)
 function bubble:draw() 
         if self:hidden() then return end
         
-        view.draw(self)
-        
         local bg = (function () 
     if self.hover then 
     return self.color.hover else 
@@ -53,17 +51,19 @@ function bubble:draw()
              end
 end)()
         
-        for ch, x in self.rounded do 
+        for x, ch in ipairs(self.rounded) do 
             if ((ch == '') or (ch == '')) then 
-                self.cells.set(x, 0, ch, bg, self.color.empty)
+                self.cells:set(x, 1, ch, bg, self.color.empty)
             else 
-                local fg = self.syntax.getColor(x, 0, ch)
-                self.cells.set(x, 0, ch, fg, bg)
+                local fg = self.syntax:getColor(x, 0, ch)
+                self.cells:set(x, 1, ch, fg, bg)
                 if self.hover then 
-                    self.cells.adjustContrastForHighlight(x, 0, bg)
+                    self.cells:adjustContrastForHighlight(x, 1, bg)
                 end
             end
         end
+        
+        return self:render()
     end
 
 
@@ -71,11 +71,11 @@ function bubble:set(item)
         self.item = item
         
         if empty(self.item) then 
-            self.rounded = ''
+            self.rounded = array()
             return self.rounded
         else 
             self.syntax.setSegls((self.item.segls or array(kseg(item.tilde))))
-            self.rounded = '' .. self.item.tilde .. ''
+            self.rounded = ((array('') + kseg(item.tilde)) + array(''))
             return self.rounded
         end
     end

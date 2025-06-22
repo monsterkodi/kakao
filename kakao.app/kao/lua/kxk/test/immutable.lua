@@ -58,7 +58,7 @@ end)
     
     test("mutable", function()
         local ia = immutable({a = 1})
-        local ma = ia:mut()
+        local ma = ia:mod()
         test.cmp(ia, immutable({a = 1}))
         ma.a = 2
         test.cmp(ma, {a = 2})
@@ -121,7 +121,7 @@ end)
         local ia = immutable(kseg("line 1"))
         test.cmp(ia[1], "l")
         test.cmp(ia[2], "i")
-        test.cmp(table.concat(ia:mut(), ""), "line 1")
+        test.cmp(table.concat(ia:arr(), ""), "line 1")
         
         test.cmp(ia:len(), 6)
         

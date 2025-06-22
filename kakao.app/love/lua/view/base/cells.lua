@@ -510,6 +510,8 @@ function cells:adjustContrastForHighlight(x, y, highlightColor)
 
 
 function cells:render() 
+        if ((self.cols <= 0) or (self.rows <= 0)) then return end
+        
         local lg = love.graphics
         
         local cw = _G.screen.cw
@@ -519,7 +521,6 @@ function cells:render()
         local yo = ((self.y - 1) * ch)
         
         for y in iter(1, self.rows) do 
-            -- log "LINE #{y}" @c[y]∙len()
             for x in iter(1, self.cols) do 
                 local char = self.c[y][x].char
                 
@@ -532,7 +533,9 @@ function cells:render()
                     lg.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))
                 end
                 
-                lg.print(char, (xo + ((x - 1) * cw)), (yo + ((y - 1) * ch)))
+                if char then 
+                    lg.print(char, (xo + ((x - 1) * cw)), (yo + ((y - 1) * ch)))
+                end
             end
         end
         

@@ -69,15 +69,28 @@ def]])
     test("construct", function()
         local s = kseg()
         test.cmp(s:str(), "")
+        
         s = kseg("  ")
         test.cmp(s:str(), "  ")
+        
         s = kseg(kseg("xx"))
         test.cmp(s:str(), "xx")
+        
         s = kseg(kseg(kseg("yy")))
         test.cmp(s:str(), "yy")
+        
         local st = strg("zz")
         s = kseg(strg("zz"))
         test.cmp(s:str(), "zz")
+        
+        s = kseg("abc")
+        local z = kseg(s)
+        test.cmp(s:str(), "abc")
+        test.cmp(z:str(), "abc")
+        test.cmp((s == z), false)
+        z:push("d")
+        test.cmp(s:str(), "abc")
+        test.cmp(z:str(), "abcd")
     end)
     
     test("startsWith", function()
@@ -87,6 +100,15 @@ def]])
         test.cmp(s:startsWith("a  b"), true)
         test.cmp(s:startsWith("a  bc"), false)
         test.cmp(s:startsWith("b"), false)
+        
+        s = kseg("# com")
+        test.cmp(s:startsWith(kseg("#")), true)
+        test.cmp(s:startsWith(kseg("# ")), true)
+        test.cmp(s:startsWith(kseg("# c")), true)
+        test.cmp(s:startsWith(kseg(" ")), false)
+        test.cmp(s:startsWith(kseg("c")), false)
+        
+        test.cmp(kseg.startsWith(s, kseg("#")), true)
     end)
     
     test("endsWith", function()

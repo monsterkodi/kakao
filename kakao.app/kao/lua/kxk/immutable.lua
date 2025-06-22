@@ -91,19 +91,15 @@ function immutable:len()
     return #self.__data
     end
 
-
-function immutable:mut() 
-        local mutable = {}
-        for k, v in pairs(self.__data) do 
-            if (type(v) == "table") then 
-                mutable[k] = v:mut()
-            else 
-                mutable[k] = v
-            end
-        end
-        
-        return mutable
-    end
+-- mut: ->
+--     
+--     mutable = {}
+--     for k v of @__data
+--         if type(v) == "table" 
+--             mutable[k] = v∙mut()
+--         else
+--             mutable[k] = v
+--     mutable
 
 
 function immutable:arr(deep) 

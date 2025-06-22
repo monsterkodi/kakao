@@ -71,17 +71,33 @@ function status:init(editor)
         self.statusfile:on('action', self.onFileAction, self)
         self.filepos:on('action', self.onFileposAction, self)
         
-        -- post.on 'status.filepos' @onStatusFilepos
+        post:on('status.filepos', self.onStatusFilepos)
         return self
     end
 
--- onStatusFilepos: @fileposl @fileoffs -> 
--- 
---     if @fileposl.length > 1
---         tilde = if @fileoffs ➜ @fileposl.length-@fileoffs-1 ➜ ''
---         @filepos.set tilde:"#{tilde}#{@fileposl.length-1}"
---     else
---         @filepos.set null 
+
+function status:onStatusFilepos(fileposl, fileoffs) 
+        print("STATUS FILEPOS", fileposl)
+        print("STATUS FILEOFF", fileoffs)
+        
+        self.fileposl = fileposl
+        self.fileoffs = fileoffs
+        
+        if (self.filepos:len() > 1) then 
+            local off = (function () 
+    if self.fileoffs then 
+    return ((self.fileposl:len() - self.fileoffs) - 1) else 
+    return ''
+                  end
+end)()
+            local tilde = "" .. tostring(tilde) .. "" .. tostring((self.fileposl:len() - 1)) .. ""
+            self.filepos:set({tilde = tilde})
+        else 
+            self.filepos:set(nil)
+        end
+        
+        return self
+    end
 
 
 function status:onFileposAction(action, item) 
@@ -127,12 +143,12 @@ function status:onCrumbsAction(action, path, event)
 
 
 function status:droopCrumb(path, crumb) 
-        clearTimeout(self.droopTimer)
-        delete(self.droopTimer)
+        -- clearTimeout @droopTimer
+        -- delete @droopTimer
         
         path = slash.untilde(path)
         local files = slash.walk(path, {recursive = false})
-        local x = (self.crumbs.cells.x + int(((crumb.cols[1] + crumb.cols[0]) / 2)))
+        local x = (self.crumbs.cells.x + int(((crumb.cols[2] + crumb.cols[1]) / 2)))
         return post:emit('droop.show', {files = files, pos = array(x, (self.crumbs.cells.y + 1))})
     end
 
@@ -234,21 +250,25 @@ function status:layout(x, y, w, h)
 
 
 function status:draw() 
-        if (self:hidden() or empty(self.file)) then return end
+        if self:hidden() then return end --or empty @file
         
-        local x = 0
-        local y = 0
+        self.gutter = self.gutter or 4
+        
+        local x = 1
+        local y = 1
         local cursor = self.state:mainCursor()
         local cols = self.cells.cols
         local fnl = #self.file
         local rdo = self.state:hasRedo()
         local dty = self.state:isDirty()
+        local fg = array(255, 0, 0)
+        local bg = array(55, 55, 55)
         
         
         function set(x, char, fg, bg) 
-            if is(fg, str) then fg = theme.status[fg] end
-            if is(bg, str) then bg = theme.status[bg] end
-            self.cells.set(x, y, char, fg, bg)
+            if is(fg, "string") then fg = theme.status[fg] end
+            if is(bg, "string") then bg = theme.status[bg] end
+            self.cells:set(x, y, char, fg, bg)
             return 1
         end
         
@@ -258,11 +278,11 @@ function status:draw()
     return x
         end
         
-        add('', 'col', self.color.gutter) -- column number ...
-        local colno = rpad((self.gutter - 1), "" .. tostring(cursor[0]) .. "")
+        add('', 'col', self.color.gutter)
+        local colno = kstr.rpad((self.gutter - 1), "" .. tostring(cursor[1]) .. "")
         for ci = 1, self.gutter-1 do 
-            local fg = (function () 
-    if cursor[0] then 
+            fg = (function () 
+    if (cursor[1] > 1) then 
     return 'fg' else 
     return 'col_zero'
                  end
@@ -273,36 +293,35 @@ end)()
             
             local char = (function () 
     if ((ci - 1) < #colno) then 
-    return colno[(ci - 1)] else 
+    return string.sub(colno, (ci - 1), (ci - 1)) else 
     return ' '
                    end
 end)()
             add(char, fg, 'col')
         end
         
-        add('', 'col', self.color.gutter) -- column number end
+        add('', 'col', self.color.gutter)
         
-        self.crumbs:draw() -- dir path
-        self.statusfile:draw() -- file
+        self.crumbs:draw()
+        self.statusfile:draw()
         self.filepos:draw()
         
         x = x + (#self.crumbs.rounded)
         x = x + (#self.statusfile.rounded)
         x = x + (#self.filepos.rounded)
         
-        -- dirty and redo indicators
         add('', 'dark', 'empty')
-        if dty then add('', 'dirty', 'dark') end
+        if dty then add(' ', 'dirty', 'dark') end
         if dty then add(' ', 'dirty', 'dark') end
-        if rdo then add('', 'redo', 'dark') end
+        if rdo then add('➜', 'redo', 'dark') end
         add(' ', 'dark', 'dark')
         
-        if (#self.state.s.cursors > 1) then 
-            local cur = "" .. tostring(#self.state.s.cursors) .. "♦"
+        if (self.state.s.cursors:len() > 1) then 
+            local cur = "" .. tostring(self.state.s.cursors:len()) .. "♦"
             
-            for i = 0, #cur-1 do 
+            for i in iter(1, cur:len()) do 
                 local color = (function () 
-    if (i < (#cur - 1)) then 
+    if (i < cur:len()) then 
     return 'cur' else 
     return color.darken(theme.status.cur)
                         end
@@ -311,12 +330,12 @@ end)()
             end
         end
         
-        if #self.state.s.selections then 
-            local sel = "" .. tostring(#self.state.s.selections) .. "≡"
+        if self.state.s.selections:len() then 
+            local sel = "" .. tostring(self.state.s.selections:len()) .. "≡"
             
-            for i = 0, #sel-1 do 
+            for i in iter(1, sel:len()) do 
                 local color = (function () 
-    if (i < (#sel - 1)) then 
+    if (i < sel:len()) then 
     return 'sel' else 
     return color.darken(theme.status.sel)
                         end
@@ -325,12 +344,12 @@ end)()
             end
         end
         
-        if #self.state.s.highlights then 
-            local hil = "" .. tostring(#self.state.s.highlights) .. "❇"
+        if self.state.s.highlights:len() then 
+            local hil = "" .. tostring(self.state.s.highlights:len()) .. "❇"
             
-            for i = 0, #hil-1 do 
+            for i in iter(1, hil:len()) do 
                 local color = (function () 
-    if (i < (#hil - 1)) then 
+    if (i < hil:len()) then 
     return 'hil' else 
     return color.darken(theme.status.hil)
                         end
@@ -341,20 +360,11 @@ end)()
         
         -- fill to the right
         
-        for ci = x, (cols - 1)-1 do 
-            add(' ', null, 'dark')
+        for ci = x, cols-1 do 
+            add(' ', nil, 'dark')
         end
         
         add('', 'dark', self.color.gutter)
-        
-        ci = clamp(0, 3, floor((((self.time / (1000 * 1000)) - 8) / 8)))
-        local ch = string.sub(" •", ci) -- 
-        local fg = array(array(32, 32, 32), array(0, 96, 0), array(255, 0, 0), array(255, 255, 0))[ci]
-        -- switch ch
-        --     '•' ➜ 1 #log "#{g1 ch} #{w3 kstr.time(BigInt(@time))}"
-        --     '' ➜ 1 #log "#{r3 ch} #{w3 kstr.time(BigInt(@time))}"
-        --     '' ➜ log "#{y5 ch} #{w3 kstr.time(BigInt(@time))}"
-        set((cols - 2), ch, fg, 'dark')
         
         return self:render()
     end

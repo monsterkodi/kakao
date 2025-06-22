@@ -70,15 +70,28 @@ use kxk/kxk
         
         s = kseg()
         s∙str()                 ▸ ""
+        
         s = kseg("  ")
         s∙str()                 ▸ "  "
+        
         s = kseg(kseg("xx"))
         s∙str()                 ▸ "xx"
+        
         s = kseg(kseg(kseg("yy")))
         s∙str()                 ▸ "yy"
+        
         st = strg("zz")
         s = kseg(strg("zz"))
         s∙str()                 ▸ "zz"
+        
+        s = kseg("abc")
+        z = kseg(s)
+        s∙str() ▸ "abc"
+        z∙str() ▸ "abc"
+        s == z  ▸ false
+        z∙push "d"
+        s∙str() ▸ "abc"
+        z∙str() ▸ "abcd"
         
     ▸ startsWith
     
@@ -88,6 +101,15 @@ use kxk/kxk
         s∙startsWith "a  b"     ▸ true
         s∙startsWith "a  bc"    ▸ false
         s∙startsWith "b"        ▸ false
+        
+        s = kseg "# com"
+        s∙startsWith kseg("#")  ▸ true
+        s∙startsWith kseg("# ") ▸ true
+        s∙startsWith kseg("# c") ▸ true
+        s∙startsWith kseg(" ")  ▸ false
+        s∙startsWith kseg("c")  ▸ false
+        
+        kseg.startsWith s kseg("#") ▸ true
         
     ▸ endsWith
     
