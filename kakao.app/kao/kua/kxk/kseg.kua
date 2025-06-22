@@ -338,10 +338,13 @@ class kseg extends array
         a
         
     spanForClosestWordAtColumn: c ->
+    
 
         segi  = @segiAtWidth c
-        left  = @slice 1 segi
-        right = @slice segi+1
+        left  = @slice 1 segi-1
+        right = @slice segi
+        
+        write "spanForClosestWordAtColumn " @ " " c " left|" left "| right|" right "|"
 
         ls = left∙tailCount ' '
         rs = right∙headCount ' '
@@ -354,13 +357,13 @@ class kseg extends array
         
         s = nil
         if 
-            ls == ll and rs == rl ➜ s = [c c]
-            ls == 0 and rs == 0   ➜ s = [c-lw+1 c+rw+1]
-            ls == ll              ➜ rcw = right∙slice(rs+1)∙headCountWord();   s = [ll+rs+1 ll+rs+rcw+1] 
-            rs == rl              ➜ tcw = left∙slice(1 ll-ls)∙tailCountWord(); s = [ll-ls-tcw+1 ll-ls+1] 
-            ls == rs              ➜ s = left∙spanForClosestWordAtColumn left.len
-            ls < rs               ➜ s = left∙spanForClosestWordAtColumn left.len
-            ls > rs               ➜ s = right∙spanForClosestWordAtColumn 1; s[1] += c; s[2] += c
+            ls == ll and rs == rl ➜ write "1!"; s = [c c]
+            ls == 0 and rs == 0   ➜ write "2!"; s = [c-lw c+rw]
+            ls == ll              ➜ write "3!"; rcw = right∙slice(rs+1)∙headCountWord();   s = [ll+rs+1 ll+rs+rcw+1] 
+            rs == rl              ➜ write "4!"; tcw = left∙slice(1 ll-ls)∙tailCountWord(); s = [ll-ls-tcw+1 ll-ls+1] 
+            ls == rs              ➜ write "5!"; s = left∙spanForClosestWordAtColumn left.len+1
+            ls < rs               ➜ write "6!"; s = left∙spanForClosestWordAtColumn left.len+1
+            ls > rs               ➜ write "7!"; s = right∙spanForClosestWordAtColumn 1; s[1] += c-1; s[2] += c-1
         s
         
     @spanForClosestWordAtColumn: a c -> kseg(a)∙spanForClosestWordAtColumn(c)

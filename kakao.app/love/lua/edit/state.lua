@@ -1183,9 +1183,12 @@ function state:highlightSelection()
         local sels = self:allSelections()
         for rng, ri in sels:each() do 
             if (rng[2] == rng[4]) then 
+                write("highlightSelection ", rng)
                 local text = belt.textForLineRange(self.s.lines, rng)
+                write("highlightSelection |", text, "|")
                 local tspan = belt.lineSpansForText(self.s.lines, text)
-                spans = spans + (belt.lineSpansForText(self.s.lines, text))
+                write("highlightSelection ", tspan)
+                spans = spans + tspan
             end
         end
         
@@ -1255,8 +1258,11 @@ function state:selectPrevHighlight()
 
 function state:addCurrentOrNextHighlightToSelection() 
         local prev = belt.prevSpanBeforePos(self.s.highlights, self:mainCursor())
+        -- log "ACORNHL" prev
         if prev then 
+            print("ACORNHL", noon(self.s.selections))
             if not belt.rangesContainSpan(self.s.selections, prev) then 
+                print("ACORNHL", prev)
                 self:addSpanToSelection(prev)
                 self:addCursor(belt.endOfSpan(prev))
                 return

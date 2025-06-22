@@ -146,7 +146,7 @@ class text
                 if
                     y == rng[2]
                         if 
-                            y == rng[4] ➜ l∙push lines[y]∙slice(rng[1] rng[3])
+                            y == rng[4] ➜ l∙push lines[y]∙slice(rng[1] rng[3]-1)
                                         ➜ l∙push lines[y]∙slice(rng[1])
                     y == rng[4] ➜ l∙push lines[y]∙slice(1 rng[3])
                                 ➜ l∙push lines[y]
@@ -169,7 +169,7 @@ class text
         belt.textForLineRanges lines belt.rangesForSpans(spans)
                 
     @lineSpansForText: lines text ->
-        
+    
         spans = []
         ts = kseg text
         
@@ -178,7 +178,8 @@ class text
             while true
                 x1 = line∙indexof ts x2
                 break if x1 < 1
-                x2 = x1+ts∙len()-1
+                x2 = x1+ts∙len()
+                write "SPAN" x1, text, ts∙len(), x2
                 spans∙push [x1 y x2]
         spans
         
@@ -550,6 +551,7 @@ class text
         
         ⮐  if belt.isInvalidLineIndex lines y
         r = kseg.spanForClosestWordAtColumn lines[y] x 
+        write "SPANFORCWORD " r, " ", x
         if r
             if 1 <= r[1] and r[1] < r[2]
                 ⮐  [r[1] y r[2] y]

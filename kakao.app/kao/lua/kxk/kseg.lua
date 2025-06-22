@@ -505,8 +505,10 @@ function kseg.static.rep(n, s)
 
 function kseg:spanForClosestWordAtColumn(c) 
         local segi = self:segiAtWidth(c)
-        local left = self:slice(1, segi)
-        local right = self:slice((segi + 1))
+        local left = self:slice(1, (segi - 1))
+        local right = self:slice(segi)
+        
+        write("spanForClosestWordAtColumn ", self, " ", c, " left|", left, "| right|", right, "|")
         
         local ls = left:tailCount(' ')
         local rs = right:headCount(' ')
@@ -518,13 +520,13 @@ function kseg:spanForClosestWordAtColumn(c)
         local rl = #right
         
         local s = nil
-        if ((ls == ll) and (rs == rl)) then s = array(c, c)
-        elseif ((ls == 0) and (rs == 0)) then s = array(((c - lw) + 1), ((c + rw) + 1))
-        elseif (ls == ll) then local rcw = right:slice((rs + 1)):headCountWord() ; s = array(((ll + rs) + 1), (((ll + rs) + rcw) + 1))
-        elseif (rs == rl) then local tcw = left:slice(1, (ll - ls)):tailCountWord() ; s = array((((ll - ls) - tcw) + 1), ((ll - ls) + 1))
-        elseif (ls == rs) then s = left:spanForClosestWordAtColumn(#left)
-        elseif (ls < rs) then s = left:spanForClosestWordAtColumn(#left)
-        elseif (ls > rs) then s = right:spanForClosestWordAtColumn(1) ; s[1] = s[1] + c ; s[2] = s[2] + c
+        if ((ls == ll) and (rs == rl)) then write("1!") ; s = array(c, c)
+        elseif ((ls == 0) and (rs == 0)) then write("2!") ; s = array((c - lw), (c + rw))
+        elseif (ls == ll) then write("3!") ; local rcw = right:slice((rs + 1)):headCountWord() ; s = array(((ll + rs) + 1), (((ll + rs) + rcw) + 1))
+        elseif (rs == rl) then write("4!") ; local tcw = left:slice(1, (ll - ls)):tailCountWord() ; s = array((((ll - ls) - tcw) + 1), ((ll - ls) + 1))
+        elseif (ls == rs) then write("5!") ; s = left:spanForClosestWordAtColumn((#left + 1))
+        elseif (ls < rs) then write("6!") ; s = left:spanForClosestWordAtColumn((#left + 1))
+        elseif (ls > rs) then write("7!") ; s = right:spanForClosestWordAtColumn(1) ; s[1] = s[1] + ((c - 1)) ; s[2] = s[2] + ((c - 1))
         end
         
         return s

@@ -30,6 +30,10 @@ function sel(...)
     return test.cmp(s:allSelections(), array.from({...}))
 end
 
+function hil(...) 
+    return test.cmp(s:allHighlights(), array.from({...}))
+end
+
 test("state", function()
     local text = [[
 line 1
@@ -643,5 +647,50 @@ line 3
 line 1line 2
 line 3
 ]])
+    end)
+    
+    test("selectWord", function()
+        text = [[
+line 1
+line 2
+line 3
+]]
+        
+        s:loadLines(belt.linesForText(text))
+        s:setMainCursor(1, 1)
+        s:selectWord(s:mainCursor())
+        mul(array(5, 1))
+        sel(array(1, 1, 5, 1))
+        
+        s:setMainCursor(4, 1)
+        mul(array(4, 1))
+        s:deselect()
+        sel()
+        s:selectWord(s:mainCursor())
+        mul(array(5, 1))
+        sel(array(1, 1, 5, 1))
+        
+        s:setMainCursor(5, 1)
+        mul(array(5, 1))
+        s:deselect()
+        sel()
+        s:selectWord(s:mainCursor())
+        mul(array(5, 1))
+        sel(array(1, 1, 5, 1))
+    end)
+    
+    test("selectWordAtCursor_highlightSelection_addNextHighlightToSelection", function()
+        text = [[
+line 1
+line 2
+line 3
+]]
+        
+        s:loadLines(belt.linesForText(text))
+        s:setMainCursor(1, 1)
+        s:selectWordAtCursor_highlightSelection_addNextHighlightToSelection()
+        mul(array(5, 1))
+        sel(array(1, 1, 5, 1))
+        hil(array(1, 1, 5), array(1, 2, 5), array(1, 3, 5))
     end)
     end)

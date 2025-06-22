@@ -116,20 +116,22 @@ function test.static.cmp(a, b)
 
 
 function test.static.run(files) 
-        -- log "test.run" array.str files
+        -- log "test.run" array.str(files)
         local success = true
-        for f, _ in pairs(files) do 
-            -- log "test" f
-            local output, ok, exitcode = slash.shell("luajit", f)
-            if ok then 
-                -- log output
-                -- log output, ok, exitcode
-                -- log "✔ " f
-                local a = 1
-            else 
-                print(output)
-                write("\x1b[0m\x1b[31m", "✘ ", "\x1b[0m\x1b[34m", slash.tilde(slash.dir(f)), "/", "\x1b[0m\x1b[38;2;160;160;240m", slash.name(f), "\x1b[0m\x1b[38;2;96;96;240m", ".", slash.ext(f))
-                success = false
+        if true then 
+            for f, _ in pairs(files) do 
+                -- log "test" f
+                local output, ok, exitcode = slash.shell("luajit", f)
+                if ok then 
+                    -- log output
+                    -- log output, ok, exitcode
+                    -- log "✔ " f
+                    local a = 1
+                else 
+                    print(output)
+                    write("\x1b[0m\x1b[31m", "✘ ", "\x1b[0m\x1b[34m", slash.tilde(slash.dir(f)), "/", "\x1b[0m\x1b[38;2;160;160;240m", slash.name(f), "\x1b[0m\x1b[38;2;96;96;240m", ".", slash.ext(f))
+                    success = false
+                end
             end
         end
         

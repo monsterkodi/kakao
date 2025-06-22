@@ -1000,9 +1000,12 @@ class state extends events
         sels = @allSelections()
         for rng ri in sels∙each()
             if rng[2] == rng[4]
+                write "highlightSelection " rng
                 text  = belt.textForLineRange @s.lines rng
+                write "highlightSelection |" text "|"
                 tspan = belt.lineSpansForText @s.lines text
-                spans += belt.lineSpansForText(@s.lines text)
+                write "highlightSelection " tspan
+                spans += tspan
         
         @setHighlights spans
         
@@ -1054,10 +1057,14 @@ class state extends events
                 @selectSpan prev
                 @setMainCursor belt.endOfSpan(prev)
             
-    addCurrentOrNextHighlightToSelection: ->            
+    addCurrentOrNextHighlightToSelection: ->
+    
         prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
+        # log "ACORNHL" prev
         if prev
+            log "ACORNHL" noon(@s.selections)
             if not belt.rangesContainSpan @s.selections prev
+                log "ACORNHL" prev
                 @addSpanToSelection prev
                 @addCursor belt.endOfSpan(prev)
                 ⮐ 

@@ -214,19 +214,32 @@ XYZ
         test.cmp(belt.mergeLineRanges(lines, array(array(1, 1, 9, 1), array(1, 2, 9, 2), array(1, 3, 9, 3), array(9, 1, 10, 1), array(9, 2, 10, 2), array(9, 3, 10, 3))), array(array(1, 1, 10, 1), array(1, 2, 10, 2), array(1, 3, 10, 3)))
     end)
     
+    test("textForLineRange", function()
+        local lines = kseg.segls("line 1\nline 2")
+        test.cmp(belt.textForLineRange(lines, array(1, 1, 5, 1)), "line")
+        test.cmp(belt.textForLineRange(lines, array(5, 1, 6, 1)), " ")
+        test.cmp(belt.textForLineRange(lines, array(1, 1, 1, 1)), "")
+        test.cmp(belt.textForLineRange(lines, array(1, 1, 2, 1)), "l")
+    end)
+    
     test("rangeOfClosestWordToPos", function()
         local lines = kseg.segls("1 2  3   4\n   ab ghij")
         
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(1, 1)), array(1, 1, 2, 1))
-        test.cmp(belt.rangeOfClosestWordToPos(lines, array(2, 1)), array(3, 1, 4, 1))
+        test.cmp(belt.rangeOfClosestWordToPos(lines, array(2, 1)), array(1, 1, 2, 1))
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(3, 1)), array(3, 1, 4, 1))
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(4, 1)), array(3, 1, 4, 1))
-        test.cmp(belt.rangeOfClosestWordToPos(lines, array(5, 1)), array(6, 1, 7, 1))
+        test.cmp(belt.rangeOfClosestWordToPos(lines, array(5, 1)), array(3, 1, 4, 1))
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(6, 1)), array(6, 1, 7, 1))
+        test.cmp(belt.rangeOfClosestWordToPos(lines, array(7, 1)), array(6, 1, 7, 1))
         
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(1, 2)), array(4, 2, 6, 2))
-        test.cmp(belt.rangeOfClosestWordToPos(lines, array(6, 2)), array(7, 2, 11, 2))
+        test.cmp(belt.rangeOfClosestWordToPos(lines, array(6, 2)), array(4, 2, 6, 2))
         test.cmp(belt.rangeOfClosestWordToPos(lines, array(7, 2)), array(7, 2, 11, 2))
+        
+        lines = kseg.segls("line 1\nline 2")
+        test.cmp(belt.rangeOfClosestWordToPos(lines, array(5, 1)), array(1, 1, 5, 1))
+        test.cmp(belt.rangeOfClosestWordToPos(lines, array(6, 1)), array(6, 1, 7, 1))
     end)
     
     test("rangeOfWhitespaceLeftToPos", function()
@@ -498,6 +511,10 @@ abc
         test.cmp(belt.lineSpansForText(lines, "12"), array(array(1, 3, 3)))
         test.cmp(belt.lineSpansForText(lines, "abc"), array(array(1, 4, 4)))
     end)
+    
+    --▸ rangesContainSpan
+    --    
+    --    belt.rangesContainSpan [] nil ▸ false
     
     test("splitLineRanges", function()
         local lines = belt.seglsForText([[

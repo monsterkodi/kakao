@@ -181,7 +181,7 @@ function text.static.textForLineRange(lines, rng)
         for y in iter(rng[2], rng[4]) do 
             if not belt.isInvalidLineIndex(lines, y) then 
                 if (y == rng[2]) then 
-                        if (y == rng[4]) then l:push(lines[y]:slice(rng[1], rng[3]))
+                        if (y == rng[4]) then l:push(lines[y]:slice(rng[1], (rng[3] - 1)))
                         else l:push(lines[y]:slice(rng[1]))
                         end
                 elseif (y == rng[4]) then l:push(lines[y]:slice(1, rng[3]))
@@ -222,7 +222,8 @@ function text.static.lineSpansForText(lines, text)
             while true do 
                 local x1 = line:indexof(ts, x2)
                 if (x1 < 1) then break end
-                x2 = ((x1 + ts:len()) - 1)
+                x2 = (x1 + ts:len())
+                write("SPAN", x1, text, ts:len(), x2)
                 spans:push(array(x1, y, x2))
             end
         end
@@ -736,6 +737,7 @@ function text.static.rangeOfClosestWordToPos(lines, pos)
         
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kseg.spanForClosestWordAtColumn(lines[y], x)
+        write("SPANFORCWORD ", r, " ", x)
         if r then 
             if ((1 <= r[1]) and (r[1] < r[2])) then 
                 return array(r[1], y, r[2], y)
