@@ -23,7 +23,7 @@ function text.static.joinLines(lines, join)
             lines = kstr.lines(lines)
         end
         
-        return lines.join(join)
+        return lines:join(join)
     end
 
 
@@ -281,7 +281,7 @@ function text.static.numIndentOfLines(lines)
 
 
 function text.static.lineIndentAtPos(lines, pos) 
-        return belt.numIndent(lines[pos[1]])
+        return belt.numIndent(lines[pos[2]])
     end
 
 
@@ -733,11 +733,9 @@ function text.static.chunkAfterPos(lines, pos)
 
 
 function text.static.rangeOfClosestWordToPos(lines, pos) 
-        local x, y = unpack(pos)
-        
+        local x, y = belt.pos(pos)
         if belt.isInvalidLineIndex(lines, y) then return end
         local r = kseg.spanForClosestWordAtColumn(lines[y], x)
-        write("SPANFORCWORD ", r, " ", x)
         if r then 
             if ((1 <= r[1]) and (r[1] < r[2])) then 
                 return array(r[1], y, r[2], y)
@@ -747,7 +745,7 @@ function text.static.rangeOfClosestWordToPos(lines, pos)
 
 
 function text.static.rangeOfWhitespaceLeftToPos(lines, pos) 
-        local x, y = unpack(pos)
+        local x, y = belt.pos(pos)
         
         y = clamp(1, lines:len(), y)
         x = clamp(1, (lines[y]:len() + 1), x)
@@ -757,7 +755,6 @@ function text.static.rangeOfWhitespaceLeftToPos(lines, pos)
         end
         
         local segi = kseg.segiAtWidth(lines[y], x)
-        -- segi = kseg.indexAtWidth lines[y] x
         local left = array.slice(lines[y], 1, (segi - 1))
         local tc = kseg.tailCount(left, ' ')
         if (tc > 0) then 
@@ -769,7 +766,7 @@ function text.static.rangeOfWhitespaceLeftToPos(lines, pos)
 
 
 function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos) 
-        local x, y = unpack(pos)
+        local x, y = belt.pos(pos)
         
         if ((x <= 0) or belt.isInvalidLineIndex(lines, y)) then return end
         
@@ -790,7 +787,7 @@ function text.static.rangeOfWordOrWhitespaceLeftToPos(lines, pos)
 
 
 function text.static.rangeOfWordOrWhitespaceRightToPos(lines, pos) 
-        local x, y = pos
+        local x, y = belt.pos(pos)
         
         if ((x < 0) or belt.isInvalidLineIndex(lines, y)) then return end
         local r = kstr.rangeOfClosestWord(array.slice(lines[y], x), 0)

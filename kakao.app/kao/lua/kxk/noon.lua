@@ -116,45 +116,66 @@ function noon.static.stringify(o)
 
 
 function noon.static.parse(s) 
+        if empty(s) then return array() end
         s = strg(s)
-        local reslt = array()
         local lines = s:lines()
-        local indnt = 0
-        for line in lines:each() do 
-            if (line:number() ~= nil) then 
+        return noon.parseLines(lines)
+    end
+
+
+function noon.static.parseLines(lines) 
+        local reslt = array()
+        local indnt = lines[1]:indent()
+        local lastkey = ""
+        while (lines:len() > 0) do 
+            local line = lines:shift()
+            if ((line:number() ~= nil) and is(reslt, array)) then 
                 reslt:push(line:number())
-            elseif (line:bool() ~= nil) then 
+            elseif ((line:bool() ~= nil) and is(reslt, array)) then 
                 reslt:push(line:bool())
             else 
                 local ind = line:indent()
-                -- if ind > indnt and ind < line∙len()
-                --     write "indent " indnt, ind, "▸" & $line & "◂"
-                -- elif ind < indnt and ind < line∙len()
-                --     write "dedent " indnt, ind, line
-                -- else    
-                --     write "line " line
-                line:trim()
-                local ddi = line:indexof("  ")
-                local lpi = line:rfind("|")
-                if ((ddi > 0) and (ddi > lpi)) then 
-                    if not dict.isdict(reslt) then 
-                        reslt = {}
+                if ((ind > indnt) and (ind < line:len())) then 
+                    local indlines = array()
+                    indlines:push(line:slice((ind + 1)))
+                    while ((lines:len() > 0) and (lines[1]:indent() >= ind)) do 
+                        indlines:push(lines:shift():slice((ind + 1)))
                     end
                     
-                    local k = tostring(line:slice(1, (ddi - 1)))
-                    local v = line:slice((ddi + 1))
-                    v = v:ltrim()
-                    if (v:number() ~= nil) then 
-                        v = v:number()
-                    elseif (v:bool() ~= nil) then 
-                        v = v:bool()
-                    else 
-                        v = tostring(v)
+                    if is(reslt, array) then 
+                        local d = {}
+                        for _, k in ipairs(reslt) do 
+                            d[tostring(k)] = ""
+                        end
+                        
+                        lastkey = tostring(reslt[reslt:len()])
+                        reslt = d
                     end
                     
-                    reslt[k] = v
+                    reslt[lastkey] = noon.parseLines(indlines)
                 else 
-                    if (line:num() > 0) then 
+                    line:trim()
+                    local ddi = line:indexof("  ")
+                    local lpi = line:rfind("|")
+                    local fpi = line:find("|")
+                    if (((ddi > 0) and (ddi > lpi)) and ((lpi > fpi) or (lpi < 1))) then 
+                        if is(reslt, array) then 
+                            reslt = {}
+                        end
+                        
+                        local k = tostring(line:slice(1, (ddi - 1)))
+                        local v = line:slice((ddi + 1))
+                        v = v:ltrim()
+                        if (v:number() ~= nil) then 
+                            v = v:number()
+                        elseif (v:bool() ~= nil) then 
+                            v = v:bool()
+                        else 
+                            v = tostring(v)
+                        end
+                        
+                        reslt[k] = v
+                    else if (line:num() > 0) then 
                         if (line[line:num()] == "|") then 
                             line:pop()
                         end
@@ -163,7 +184,12 @@ function noon.static.parse(s)
                             line:shift()
                         end
                         
-                        reslt:push(tostring(line))
+                        if is(reslt, array) then 
+                            reslt:push(tostring(line))
+                        else 
+                            lastkey = tostring(line)
+                        end
+                         end
                     end
                 end
             end

@@ -19,7 +19,7 @@ local salt = class("salt")
 
 function salt.static.isSaltedLine(line) 
         local trimmed = kseg.trim(kseg.trim(kseg.trim(line), '#'))
-        if (trimmed[0] in '█0') then 
+        if ((trimmed[1] == '█') or (trimmed[1] == '0')) then 
             return (#kseg.collectGraphemes(trimmed) <= 3)
         end
     end
@@ -32,7 +32,7 @@ function salt.static.isSaltedLine(line)
 
 
 function salt.static.findPositionsForSaltInsert(lines, pos) 
-        local y = pos[1]
+        local y = pos[2]
         if not salt.isSaltedLine(lines[y]) then return end
         
         local sy = y
@@ -50,7 +50,7 @@ function salt.static.findPositionsForSaltInsert(lines, pos)
         local posl = array()
         if ((ey - sy) >= 4) then 
             for y in iter(sy, (sy + 4)) do 
-                posl.push(array(pos[0], y))
+                posl:push(array(pos[1], y))
             end
         end
         
@@ -66,19 +66,449 @@ function salt.static.findPositionsForSaltInsert(lines, pos)
 
 function salt.static.insertAsciiHeaderForPositionsAndRanges(lines, posl, ranges) 
         if empty(ranges) then 
-            ranges = posl.map(method (p) 
-    return salt.rangeOfClosestWordToPos(lines, p)
+            ranges = array.map(posl, function (p) 
+    return belt.rangeOfClosestWordToPos(lines, p)
 end)
         end
         
-        local text = salt.joinLines(salt.textForLineRanges(lines, ranges), ' ')
+        local text = belt.joinLines(belt.textForLineRanges(lines, ranges), ' ')
         
-        local indt = lpad(salt.lineIndentAtPos(lines, posl[0]))
+        local indt = kstr.lpad(belt.lineIndentAtPos(lines, posl[1]))
         
-        local salt = (salter(text, (prepend:indt + '# ')) + '\n')
+        local salt = salt.saltize(text, {prepend = indt, '# '}) .. '\n'
         
-        array(lines, posl) = salt.insertTextAtPositions(lines, salt, array(array(0, posl[0][1])))
-        return array(lines, posl, array())
+        local lines, posl = belt.insertTextAtPositions(lines, salt, array(array(1, posl[1][2])))
+        return lines, posl, array()
     end
+
+
+function salt.static.saltize(text, opt) 
+        opt = opt or ({})
+        opt.char = opt.char or '█'
+        opt.prepend = opt.prepend or ''
+        
+        local s = kseg()
+        if #text then 
+            s = kseg(kstr.trim(string.lower(text)))
+        end
+        
+        local cs = array()
+        for _, c in ipairs(s) do 
+            if salterFont[c] then 
+                cs:push(salterFont[c])
+            end
+        end
+        
+        local zs = array()
+        for r in iter(1, 5) do 
+            local zr = opt.prepend
+            for _, c in ipairs(cs) do 
+                zr = zr .. (c[r] .. "  ")
+            end
+            
+            zs:push(zr)
+        end
+        
+        return zs:join('\n')
+    end
+
+_G.salterFont = noon.parse([[
+0   
+    | ██████ |
+    |███  ███|
+    |██    ██|
+    |███  ███|
+    | ██████ |
+1   
+    |   ███
+    | █████
+    |██████
+    |   ███
+    |   ███
+2   
+    |█████ |
+    |   ███|
+    |  ███ |
+    | ███  |
+    |██████|
+3   
+    |██████ |
+    |    ███|
+    |  ████ |
+    |    ███|
+    |██████ |
+4   
+    |███  ███
+    |███  ███
+    |████████
+    |     ███
+    |     ███
+5   
+    |███████ |
+    |███     |
+    |███████ |
+    |     ███|
+    |███████ |
+6   
+    |  ███   |
+    | ███    |
+    |███████ |
+    |███  ███|
+    | ██████ |
+7   
+    |███████|
+    |   ███ |
+    |  ███  |
+    | ███   |
+    |███    |
+8   
+    | ██████ |
+    |███  ███|
+    |  ████  |
+    |███  ███|
+    | ██████ |
+9   
+    | ██████ |
+    |███  ███|
+    | ██████ |
+    |   ███  |
+    |  ███   |
+!   
+    |███|
+    |███|
+    |███|
+    |   |
+    |███|
+?   
+    |█████ |
+    |   ███|
+    | ███  |
+    |      |
+    | ███  |
+-   
+    |      |
+    |      |
+    |██████|
+    |      |
+    |      |
++   
+    |      |
+    |  ██  |
+    |██████|
+    |  ██  |
+    |      |
+_   
+    |      |
+    |      |
+    |      |
+    |      |
+    |██████|
+=   
+    |      |
+    |██████|
+    |      |
+    |██████|
+    |      |
+/   
+    |    ███|
+    |   ███ |
+    |  ███  |
+    | ███   |
+    |███    |
+\   
+    |███    |
+    | ███   |
+    |  ███  |
+    |   ███ |
+    |    ███|    
+>   
+    |███    |
+    |  ███  |
+    |    ███|
+    |  ███  |
+    |███    |
+<   
+    |    ███|
+    |  ███  |
+    |███    |
+    |  ███  |
+    |    ███|    
+^   
+    |  ███  |
+    | ██ ██ |
+    |██   ██|
+    |       |
+    |       |    
+[
+    |█████|
+    |███  |
+    |███  |
+    |███  |
+    |█████|
+]   
+    |█████|
+    |  ███|
+    |  ███|
+    |  ███|
+    |█████|    
+(
+    | ████|
+    |███  |
+    |██   |
+    |███  |
+    | ████|
+)   
+    |████ |
+    |  ███|
+    |   ██|
+    |  ███|
+    |████ |    
+{
+    |  ████|
+    |  ██  |
+    |███   |
+    |  ██  |
+    |  ████|
+}   
+    |████  |
+    |  ██  |
+    |   ███|
+    |  ██  |
+    |████  |    
+"
+    |███  ███|
+    |███  ███|
+    |        |
+    |        |
+    |        |
+'
+    |███|
+    |███|
+    |   |
+    |   |
+    |   |
+|#|  
+    | ██  ██ |
+    |████████|
+    | ██  ██ |
+    |████████|
+    | ██  ██ |
+*  
+    | █ ██ █ |
+    |████████|
+    | ██████ |
+    |████████|
+    | █ ██ █ |
+$  
+    | ██████ |
+    |██ ██   |
+    |███████ |
+    |   ██ ██|
+    | ██████ |
+@  
+    | ██████ |
+    |████████|
+    |███  ███|
+    |████████|
+    | ██████ |
+%
+    |██   ██ |
+    |██  ██  |
+    |   ██   |
+    |  ██  ██|
+    | ██   ██|
+&
+    | ████   |
+    |██  ██  |
+    | ████ ██|
+    |██  ███ |
+    | █████ █|
+:   
+    |███|
+    |███|
+    |   |
+    |███|
+    |███|
+;   
+    |███|
+    |███|
+    |   |
+    |███|
+    |  █|
+.   
+    |   |
+    |   |
+    |   |
+    |███|
+    |███|
+,   
+    |   |
+    |   |
+    |   |
+    |███|
+    |  █|
+| |  
+    |    |
+    |    |
+    |    |
+    |    |
+    |    |
+a   
+    | ███████ |
+    |███   ███|
+    |█████████|
+    |███   ███|
+    |███   ███|
+b   
+    |███████  |
+    |███   ███|
+    |███████  |
+    |███   ███|
+    |███████  |
+c   
+    | ███████|
+    |███     |
+    |███     |
+    |███     |
+    | ███████|
+d   
+    |███████  |
+    |███   ███|
+    |███   ███|
+    |███   ███|
+    |███████  |
+e   
+    |████████|
+    |███     |
+    |███████ |
+    |███     |
+    |████████|
+f   
+    |████████|
+    |███     |
+    |██████  |
+    |███     |
+    |███     |
+g   
+    | ███████ |
+    |███      |
+    |███  ████|
+    |███   ███|
+    | ███████ |
+h   
+    |███   ███
+    |███   ███
+    |█████████
+    |███   ███
+    |███   ███
+i   
+    |███
+    |███
+    |███
+    |███
+    |███
+j   
+    |      ███|
+    |      ███|
+    |      ███|
+    |███   ███|
+    | ███████ |
+k   
+    |███   ███|
+    |███  ███ |
+    |███████  |
+    |███  ███ |
+    |███   ███|
+l   
+    |███    |
+    |███    |
+    |███    |
+    |███    |
+    |███████|
+m   
+    |██     ██
+    |███   ███
+    |█████████
+    |███ █ ███
+    |███   ███
+n   
+    |███   ███
+    |████  ███
+    |███ █ ███
+    |███  ████
+    |███   ███
+o   
+    | ███████ |
+    |███   ███|
+    |███   ███|
+    |███   ███|
+    | ███████ |
+p   
+    |████████ |
+    |███   ███|
+    |████████ |
+    |███      |
+    |███      |
+q   
+    | ███████ |
+    |███   ███|
+    |███ ██ ██|
+    |███ ████ |
+    | █████ ██|
+r   
+    |████████ |
+    |███   ███|
+    |███████  |
+    |███   ███|
+    |███   ███|
+s   
+    | ███████|
+    |███     |
+    |███████ |
+    |     ███|
+    |███████ |
+t   
+    |█████████|
+    |   ███   |
+    |   ███   |
+    |   ███   |
+    |   ███   |
+u   
+    |███   ███|
+    |███   ███|
+    |███   ███|
+    |███   ███|
+    | ███████ |
+v   
+    |███   ███|
+    |███   ███|
+    | ███ ███ |
+    |   ███   |
+    |    █    |
+w   
+    |███   ███
+    |███ █ ███
+    |█████████
+    |███   ███
+    |██     ██
+x   
+    |███   ███|
+    | ███ ███ |
+    |  █████  |
+    | ███ ███ |
+    |███   ███|
+y   
+    |███   ███|
+    | ███ ███ |
+    |  █████  |
+    |   ███   |
+    |   ███   |
+z   
+    |███████|
+    |   ███ |
+    |  ███  |
+    | ███   |
+    |███████|
+]])
 
 return salt

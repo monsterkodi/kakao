@@ -324,19 +324,25 @@ a 1
 ||
 ]]), array(',', '.', ';', ':', '~', '!', '?', '@', '#', ''))
         
-        --noon.parse("""
-        --key
-        --    ,
-        --    .
-        --    ;
-        --    :
-        --    ~
-        --    !
-        --    ?
-        --    @
-        --    |#
-        --    ||
-        --""")  ▸ {key:[',' '.' ';' ':' '~' '!' '?' '@' '#' '']}
+        test.cmp(noon.parse([[
+key
+    value 1
+    value 2
+]]), {key = array('value 1', 'value 2')})
+        
+        test.cmp(noon.parse([[
+key
+    ,
+    .
+    ;
+    :
+    ~
+    !
+    ?
+    @
+    |#
+    ||
+]]), {key = array(',', '.', ';', ':', '~', '!', '?', '@', '#', '')})
     end)
     
     test("object", function()
@@ -347,6 +353,23 @@ a
 b
 c  3
 ]]), {c = 3})
+        
+        test.cmp(noon.parse([[
+0   
+    | 000000 |
+    |000  000|
+    |00    00|
+    |000  000|
+    | 000000 |
+1   
+    |   000
+    | 00000
+    |000000
+    |   000
+    |   000]]), {
+        ["0"] = array(" 000000 ", "000  000", "00    00", "000  000", " 000000 "), 
+        ["1"] = array("   000", " 00000", "000000", "   000", "   000")
+        })
     end)
     
     test("spaces", function()
@@ -354,12 +377,6 @@ c  3
         local p = noon.parse([[
 a  1
 b  2]])
-        
-        -- for k v in pairs p
-        --     log k, v
-        
-        -- { a: 0 b: 2 } ▸ o
-        -- { b: 2 } ▸ {a: 0 b: 2}
         
         test.cmp(noon.parse([[
 a  1
@@ -592,11 +609,11 @@ key      value   with    some    spaces   .
     --        a: 1
     --        '#': ['#', ' #']
     
-    --▸ empty string
-    --    
-    --    noon.parse('')  ▸ ''
-    --    noon.parse(' ') ▸ ''
-    --    noon.parse()    ▸ ''
+    test("empty string", function()
+        test.cmp(noon.parse(''), array())
+        test.cmp(noon.parse(' '), array())
+        test.cmp(noon.parse(), array())
+    end)
     
     --▸ failure
     --    

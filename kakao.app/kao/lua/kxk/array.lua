@@ -44,8 +44,6 @@ function array.static.num(a)
             end
         end
         
-        -- if type(a) == "string"
-        --     ⮐  a.len
         return 0
     end
 
@@ -97,17 +95,10 @@ function array:map(f)
 
 function array.static.map(a, f) 
         local t = array()
-        if (#a > 0) then 
-            for i in iter(1, #a) do 
+        local n = array.num(a)
+        if (n > 0) then 
+            for i in iter(1, n) do 
                 t[i] = f(a[i])
-            end
-        elseif (a:len() > 0) then 
-            for i in iter(1, a:len()) do 
-                t[i] = f(a[i])
-            end
-        else 
-            for i, v in ipairs(a) do 
-                t[i] = f(v)
             end
         end
         

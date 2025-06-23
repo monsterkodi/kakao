@@ -6,16 +6,12 @@
 
 
 local salter = class("salter")
-    salter.static.syms = array()
+    
 
 
 function salter:init(state) 
         self.state = state
         self.name = 'salter'
-        
-        if empty(salter.syms) then 
-            salter.syms = dict.keys(salterFont)
-        end
         
         self:start()
         return self
@@ -31,8 +27,8 @@ function salter:init(state)
 function salter.static.checkCursorsSet(state) 
         if not state.allowedModes then return end
         if not state.allowedModes.salter then return end
-        if (#state.s.cursors ~= 1) then return end
-        if #state.s.selections then return end
+        if (state.s.cursors:len() ~= 1) then return end
+        if (state.s.selections:len() > 0) then return end
         
         local cursors = belt.findPositionsForSaltInsert(state.s.lines, state:mainCursor())
         if valid(cursors) then 
@@ -96,11 +92,11 @@ function salter:stop()
 
 
 function salter:findCursors() 
-    return belt:findPositionsForSaltInsert(self.state.s.lines, self.state:mainCursor())
+    return belt.findPositionsForSaltInsert(self.state.s.lines, self.state:mainCursor())
     end
 
 function salter:isSaltedLine(y) 
-    return belt:isSaltedLine(self.state.s.lines[y])
+    return belt.isSaltedLine(self.state.s.lines[y])
     end
 
 
@@ -108,7 +104,7 @@ function salter:cursorsSet()
         local cursors = self:findCursors()
         
         if valid(cursors) then 
-            if self.state.s.cursors(eql, cursors) then 
+            if self.state.s.cursors:eql(cursors) then 
                 return true
             else 
                 return self.state:setCursors(cursors)
@@ -136,7 +132,7 @@ function salter:deleteSelection()
         self.state:moveCursors('bol')
         self.state:delete('eol')
         state:setCursors().init(function (idx) 
-    return array(0, idx)
+    return array(1, idx)
 end)
         
         self.state:deselect()

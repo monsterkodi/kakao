@@ -88,46 +88,65 @@ class noon
     
     @parse: s ->
     
+        ⮐  [] if empty s
         s = strg s
-        reslt = []
         lines = s∙lines()
-        indnt = 0
-        for line in lines∙each()
-            if line∙number() != nil
+        @parseLines lines
+        
+    @parseLines: lines ->
+    
+        reslt = []
+        indnt = lines[1]∙indent()
+        lastkey = ""
+        while lines∙len() > 0
+            line = lines∙shift()
+            if line∙number() != nil and reslt is array
                 reslt∙push line∙number()
-            elif line∙bool() != nil
+            elif line∙bool() != nil and reslt is array
                 reslt∙push line∙bool()
             else
                 ind = line∙indent()
-                # if ind > indnt and ind < line∙len()
-                #     write "indent " indnt, ind, "▸" & $line & "◂"
-                # elif ind < indnt and ind < line∙len()
-                #     write "dedent " indnt, ind, line
-                # else    
-                #     write "line " line
-                line∙trim()
-                ddi = line∙indexof "  "
-                lpi = line∙rfind "|"
-                if ddi > 0 and ddi > lpi
-                    if not dict.isdict reslt
-                        reslt = {}
-                    k = $line∙slice 1 ddi-1
-                    v = line∙slice ddi+1
-                    v = v∙ltrim()
-                    if v∙number() != nil
-                        v = v∙number()
-                    elif v∙bool() != nil
-                        v = v∙bool()
-                    else
-                        v = $v
-                    reslt[k] = v
-                else
-                    if line∙num() > 0
+                if ind > indnt and ind < line∙len()
+                    indlines = []
+                    indlines∙push line∙slice(ind+1)
+                    while lines∙len() > 0 and lines[1]∙indent() >= ind
+                        indlines∙push lines∙shift()∙slice(ind+1)
+                    if reslt is array
+                        d = {}
+                        for k in reslt
+                            d[$k] = ""
+                        lastkey = $reslt[reslt∙len()]
+                        reslt = d
+
+                    reslt[lastkey] = noon.parseLines(indlines)
+                else    
+                    
+                    line∙trim()
+                    ddi = line∙indexof "  "
+                    lpi = line∙rfind "|"
+                    fpi = line∙find  "|"
+                    if ddi > 0 and ddi > lpi and (lpi > fpi or lpi < 1)
+                        if reslt is array
+                            reslt = {}
+                        k = $line∙slice 1 ddi-1
+                        v = line∙slice ddi+1
+                        v = v∙ltrim()
+                        if v∙number() != nil
+                            v = v∙number()
+                        elif v∙bool() != nil
+                            v = v∙bool()
+                        else
+                            v = $v
+                        reslt[k] = v
+                    else if line∙num() > 0
                         if line[line∙num()] == "|"
                             line∙pop()
                         if line[1] == "|"
                             line∙shift()
-                        reslt∙push $line
+                        if reslt is array
+                            reslt∙push $line
+                        else
+                            lastkey = $line
         # for o p in pairs reslt
         #     write "reslt " o " " p
         reslt

@@ -80,7 +80,7 @@ function test.static.cmp(a, b)
                         end
                         
                         -- ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
-                        return fail("\x1b[0m\x1b[90m\x1b[2m", "table value mismatch at ", "\x1b[0m\x1b[34m", key, "\n", "\x1b[0m\x1b[33m", noon(a), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", noon(b))
+                        return fail("\x1b[0m\x1b[90m\x1b[2m", "table value mismatch at ", "\x1b[0m\x1b[34m", k, "\n", "\x1b[0m\x1b[33m", noon(a), "\x1b[0m\x1b[31m", "\n!=\n", "\x1b[0m\x1b[32m", noon(b))
                     end
                 end
                 

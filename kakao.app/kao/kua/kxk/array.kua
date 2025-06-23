@@ -24,8 +24,6 @@ class array
                     ⮐  a.len 
                 type(a["len"]) == "function"
                     ⮐  a∙len()
-        # if type(a) == "string"
-        #     ⮐  a.len
         0
     
     @from: a -> 
@@ -51,15 +49,10 @@ class array
     @map: a f ->
     
         t = []
-        if a.len > 0 
-            for i in 1..a.len
-                t[i] = f a[i]
-        elif a∙len() > 0 
-            for i in 1..a∙len()
-                t[i] = f a[i]
-        else
-            for i v in a
-                t[i] = f v
+        n = array.num a
+        if n > 0 
+            for i in 1..n
+                t[i] = f(a[i])
         t
     
     filter: f ->

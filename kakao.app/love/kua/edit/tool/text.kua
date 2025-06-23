@@ -14,7 +14,7 @@ class text
         
         if lines is "string"
             lines = kstr.lines lines
-        lines.join join
+        lines∙join join
         
     @seglsForText: t ->
 
@@ -213,7 +213,7 @@ class text
         
     @lineIndentAtPos: lines pos -> 
 
-        belt.numIndent lines[pos[1]]
+        belt.numIndent lines[pos[2]]
         
     @indentLines: lines num=4 ->
         
@@ -547,18 +547,16 @@ class text
     
     @rangeOfClosestWordToPos: lines pos ->
 
-        (x y) = unpack pos
-        
+        (x y) = belt.pos pos
         ⮐  if belt.isInvalidLineIndex lines y
         r = kseg.spanForClosestWordAtColumn lines[y] x 
-        write "SPANFORCWORD " r, " ", x
         if r
             if 1 <= r[1] and r[1] < r[2]
                 ⮐  [r[1] y r[2] y]
                 
     @rangeOfWhitespaceLeftToPos: lines pos ->
         
-        (x y) = unpack pos
+        (x y) = belt.pos pos
         
         y = clamp 1 lines∙len() y
         x = clamp 1 lines[y]∙len()+1 x
@@ -567,7 +565,6 @@ class text
             ⮐  [x y x y] 
         
         segi = kseg.segiAtWidth lines[y] x
-        # segi = kseg.indexAtWidth lines[y] x
         left = array.slice(lines[y] 1 segi-1)
         tc = kseg.tailCount left ' '
         if tc > 0
@@ -577,7 +574,7 @@ class text
 
     @rangeOfWordOrWhitespaceLeftToPos: lines pos ->
         
-        (x y) = unpack pos
+        (x y) = belt.pos pos
         
         ⮐  if x <= 0 or belt.isInvalidLineIndex lines y
         
@@ -594,7 +591,7 @@ class text
 
     @rangeOfWordOrWhitespaceRightToPos: lines pos ->
         
-        (x y) = pos
+        (x y) = belt.pos pos
         
         ⮐  if x < 0 or belt.isInvalidLineIndex lines y
         r = kstr.rangeOfClosestWord array.slice(lines[y] x) 0

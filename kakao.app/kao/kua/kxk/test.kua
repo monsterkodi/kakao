@@ -58,7 +58,7 @@ class test
                         if type(k) == "number"
                             key = kstr.index k
                         # ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y [unpack(a)] ◌r "\n!=\n" ◌g [unpack(b)]
-                        ⮐  fail ◌d- "table value mismatch at " ◌b key "\n" ◌y noon(a) ◌r "\n!=\n" ◌g noon(b)
+                        ⮐  fail ◌d- "table value mismatch at " ◌b k "\n" ◌y noon(a) ◌r "\n!=\n" ◌g noon(b)
                 # else if v != b[k]
                 #     ⮐  fail ◌d- "table ??? " ◌b $k "\n" ◌y $[unpack(a)] ◌r "!=\n" ◌g $[unpack(b)]
             true

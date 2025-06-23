@@ -12,6 +12,7 @@ use edit.tool.edit
 use edit.tool.misc
 use edit.tool.text
 use edit.tool.pair
+use edit.tool.salt
 
 class belt
 
@@ -22,7 +23,9 @@ class belt
     # 000         0000000   0000000 
 
     @pos: x y -> 
-        if x is array and y == nil 
+    
+        n = array.num(x)
+        if n >= 2
             ⮐  (x[1] x[2])
         (x y)
     
@@ -65,7 +68,7 @@ class belt
         
     @positionInDirection: pos dir ->
         
-        (x y) = unpack pos
+        (x y) = belt.pos pos
         
         switch dir
             'up'    ➜ [x, y-1]
@@ -422,7 +425,7 @@ class belt
 
 # merge methods of sibling modules into tool/belt 
         
-for _ mod in ipairs [text cell edit misc pair]
+for _ mod in ipairs [text cell edit misc pair salt]
     belt∙include mod
 
 ⮐  belt

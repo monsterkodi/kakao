@@ -12,6 +12,7 @@ edit = require "edit.tool.edit"
 misc = require "edit.tool.misc"
 text = require "edit.tool.text"
 pair = require "edit.tool.pair"
+salt = require "edit.tool.salt"
 
 
 local belt = class("belt")
@@ -25,7 +26,8 @@ local belt = class("belt")
 
 
 function belt.static.pos(x, y) 
-        if (is(x, array) and (y == nil)) then 
+        local n = array.num(x)
+        if (n >= 2) then 
             return x[1], x[2]
         end
         
@@ -94,7 +96,7 @@ function belt.static.lineIndicesForPositions(posl)
 
 
 function belt.static.positionInDirection(pos, dir) 
-        local x, y = unpack(pos)
+        local x, y = belt.pos(pos)
         
         if (dir == 'up') then 
     return array(x, (y - 1))
@@ -654,7 +656,7 @@ function belt.static.mergeLineRanges(lines, rngs)
 
 -- merge methods of sibling modules into tool/belt 
 
-for _, mod in ipairs(array(text, cell, edit, misc, pair)) do 
+for _, mod in ipairs(array(text, cell, edit, misc, pair, salt)) do 
     belt:include(mod)
 end
 
