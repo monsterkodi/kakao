@@ -522,12 +522,16 @@ function cells:render()
         
         for y in iter(1, self.rows) do 
             for x in iter(1, self.cols) do 
-                local char = self.c[y][x].char
-                
                 if (self.c[y][x].bg and (#self.c[y][x].bg > 0)) then 
                     lg.setColor((self.c[y][x].bg[1] / 255), (self.c[y][x].bg[2] / 255), (self.c[y][x].bg[3] / 255))
                     lg.rectangle("fill", (xo + ((x - 1) * cw)), (yo + ((y - 1) * ch)), cw, ch)
                 end
+            end
+        end
+        
+        for y in iter(1, self.rows) do 
+            for x in iter(1, self.cols) do 
+                local char = self.c[y][x].char
                 
                 if ((#self.c[y][x].fg > 0) and is(self.c[y][x].fg, array)) then 
                     lg.setColor((self.c[y][x].fg[1] / 255), (self.c[y][x].fg[2] / 255), (self.c[y][x].fg[3] / 255))

@@ -89,13 +89,17 @@ function unype:init()
         self.font = 'crazy'
         
         local fonts = noon.parse(fontlist)
-        
+        -- log "FONTS" noon(fonts)
         if empty(unype.map) then 
-            local def = fonts.default.join(' ')
+            local def = kseg(fonts.default:join(' '))
+            -- log "DEF" def
             for font, text in pairs(fonts) do 
+                -- log "FONT" font, type(text), text.class
                 if (font ~= 'default') then 
                     unype.map[font] = {}
-                    for idx, char in ipairs(kseg(text.join(' '))) do 
+                    local txt = kseg(text:join(' '))
+                    -- log "TXT" txt
+                    for idx, char in ipairs(txt) do 
                         if (def[idx] ~= ' ') then 
                             unype.map[font][def[idx]] = char
                         end
@@ -103,8 +107,10 @@ function unype:init()
                 end
             end
             
-            unype.map['full width'][' '] = '　'
+            unype.map["full width"][' '] = '　'
         end
+        
+        print(noon(unype.map))
         return self
     end
 
@@ -116,6 +122,7 @@ function unype:init()
 
 
 function unype:insert(text) 
+        print(self.font, text, type(unype.map[self.font][text]))
         return (unype.map[self.font][text] or text)
     end
 

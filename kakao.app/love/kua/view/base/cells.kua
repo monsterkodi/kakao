@@ -395,11 +395,13 @@ class cells
         
         for y in 1..@rows
             for x in 1..@cols
-                char = @c[y][x].char
-                    
                 if @c[y][x].bg and @c[y][x].bg.len > 0
                     lg.setColor @c[y][x].bg[1]/255 @c[y][x].bg[2]/255 @c[y][x].bg[3]/255
                     lg.rectangle "fill" xo+(x-1)*cw yo+(y-1)*ch cw ch
+        
+        for y in 1..@rows
+            for x in 1..@cols
+                char = @c[y][x].char
                 
                 if @c[y][x].fg.len > 0 and @c[y][x].fg is array
                     lg.setColor @c[y][x].fg[1]/255 @c[y][x].fg[2]/255 @c[y][x].fg[3]/255

@@ -89,17 +89,22 @@ class unype
         @font = 'crazy'
         
         fonts = noon.parse fontlist
-        
+        # log "FONTS" noon(fonts)
         if empty unype.map
-            def = fonts.default.join ' '
-            for font text in pairs fonts
+            def = kseg fonts.default∙join(' ')
+            # log "DEF" def
+            for font text of fonts
+                # log "FONT" font, type(text), text.class
                 if font != 'default'
                     unype.map[font] = {}
-                    for idx char in ipairs kseg(text.join(' '))
+                    txt = kseg text∙join( ' ')
+                    # log "TXT" txt
+                    for idx char in txt
                         if def[idx] != ' '
                             unype.map[font][def[idx]] = char
                         
-            unype.map['full width'][' '] = '　'
+            unype.map["full width"][' '] = '　'
+        log noon(unype.map)
     
     # ███  ███   ███   ███████  ████████  ████████   █████████
     # ███  ████  ███  ███       ███       ███   ███     ███   
@@ -108,7 +113,7 @@ class unype
     # ███  ███   ███  ███████   ████████  ███   ███     ███   
 
     insert: text ->
-    
+        log @font, text, type(unype.map[@font][text])
         unype.map[@font][text] or text
 
     #  0000000   0000000   000       0000000   00000000   

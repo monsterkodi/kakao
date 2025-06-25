@@ -2,6 +2,17 @@ kxk = require "kxk.kxk"
 ked = require "ked"
 
 
+function setFontWidth(fw) 
+    fw = fw or 24
+    
+    _G.fontWidth = fw
+    _G.font = love.graphics.setNewFont("fonts/Twilio.ttf", (fontWidth * 2))
+    local fb1 = love.graphics.newFont("fonts/Helvetica.ttf", (fontWidth * 2))
+    local fb2 = love.graphics.newFont("fonts/Menlo.ttf", (fontWidth * 2))
+    return _G.font:setFallbacks(fb1, fb2)
+end
+
+
 function love.load() 
     local width, height = love.window.getDesktopDimensions()
     
@@ -15,8 +26,8 @@ function love.load()
     
     love.graphics.setDefaultFilter("nearest", "nearest")
     
-    _G.fontWidth = 24
-    _G.font = love.graphics.setNewFont("font.ttf", (fontWidth * 2))
+    setFontWidth(24)
+    
     _G.count = 0
     _G.mouseClick = array()
     
@@ -48,6 +59,8 @@ function love.draw()
     
     -- lg.setColor 0.2 0.2 0.2 
     -- lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
+    
+    -- log "hasGlyphs", _G.font∙hasGlyphs("⮐➜▸∙◌○◇□✔✘●◆▪◼■△┬")
     
     return nil
 end
@@ -138,15 +151,6 @@ function love.keypressed(key, scancode, isrepeat)
                     end
            end
 end)()
-    
-    
-    function setFontWidth(fw) 
-        fw = fw or 24
-        
-        _G.fontWidth = fw
-        _G.font = love.graphics.setNewFont("font.ttf", (fontWidth * 2))
-        return _G.font
-    end
     
     if (combo == "cmd+-") then setFontWidth(max(14, (fontWidth - 1)))
     elseif (combo == "cmd+=") then setFontWidth(min(128, (fontWidth + 1)))

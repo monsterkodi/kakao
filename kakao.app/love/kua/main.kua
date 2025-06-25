@@ -2,6 +2,14 @@
 use kxk.kxk
 use ked
 
+setFontWidth = fw=24 ->
+
+    _G.fontWidth = fw
+    _G.font  = love.graphics.setNewFont "fonts/Twilio.ttf" fontWidth*2
+    fb1 = love.graphics.newFont "fonts/Helvetica.ttf"      fontWidth*2
+    fb2 = love.graphics.newFont "fonts/Menlo.ttf"          fontWidth*2
+    _G.font∙setFallbacks(fb1, fb2)
+
 love.load = ->
 
     (width height) = love.window.getDesktopDimensions()
@@ -16,8 +24,8 @@ love.load = ->
     
     love.graphics.setDefaultFilter "nearest" "nearest"
 
-    _G.fontWidth = 24
-    _G.font  = love.graphics.setNewFont "font.ttf" fontWidth*2
+    setFontWidth 24
+    
     _G.count = 0
     _G.mouseClick = []
     
@@ -28,7 +36,7 @@ love.load = ->
     
     nil
 
-love.draw = ->
+love.draw = ->       
 
     count += 1
     (_ _ w h) = love.window.getSafeArea()
@@ -49,6 +57,8 @@ love.draw = ->
     # lg.setColor 0.2 0.2 0.2 
     # lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
     
+    # log "hasGlyphs", _G.font∙hasGlyphs("⮐➜▸∙◌○◇□✔✘●◆▪◼■△┬")
+    
     nil
     
 love.quit = ->
@@ -57,7 +67,7 @@ love.quit = ->
     false
     
 love.keypressed = key scancode isrepeat ->
-
+    
     mods = ""
     switch key 
         "escape"    ➜ key = "esc"
@@ -115,10 +125,6 @@ love.keypressed = key scancode isrepeat ->
                                 ➜ string.upper key
                     else
                         ""
-
-    setFontWidth = fw=24 ->
-        _G.fontWidth = fw
-        _G.font  = love.graphics.setNewFont "font.ttf" fontWidth*2
                         
     switch combo
         "cmd+-" ➜   setFontWidth max(14 fontWidth-1)
