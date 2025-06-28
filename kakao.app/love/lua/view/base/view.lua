@@ -154,7 +154,9 @@ function view:onMouseEnter(event)
 
 
 function view:handleHover(event) 
-        local inside = (not event.handled and self.cells:isInsideEvent(event))
+        -- inside = not event.handled and @cells∙isInsideEvent event
+        local inside = self.cells:isInsideEvent(event)
+        
         if (self.hover and not inside) then 
             self.hover = false
             self:onMouseLeave(event)

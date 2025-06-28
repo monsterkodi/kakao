@@ -207,8 +207,8 @@ class dircol extends view
     
         ⮐  if @hidden() or @collapsed() or not @active
         
-        if view.onMouse(@ event)   ➜ ⮐  true
         if @knob∙onMouse(event)    ➜ ⮐  true
+        if view.onMouse(@ event)   ➜ ⮐  true
         if @crumbs∙onMouse(event)  ➜ ⮐  true
         if @dirtree∙onMouse(event) ➜ ⮐  true
         

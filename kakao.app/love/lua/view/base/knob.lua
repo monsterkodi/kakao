@@ -20,7 +20,7 @@ function knob:init(name)
         self:setColor('fg', theme.knob.fg)
         self:setColor('bg', theme.knob.bg)
         
-        self.parentName = string.sub(self.name, 1, -5)
+        self.parentName = string.sub(self.name, 1, -6)
         self.frameSide = 'right'
         self.maxWidth = 68
         self.pointerType = 'ew-resize'
@@ -39,7 +39,7 @@ function knob:onMouse(event)
         
         if (event.type == 'press') then 
                 if self.hover then 
-                    post.emit('pointer', 'grabbing')
+                    post:emit('pointer', 'grabbing')
                     self.doDrag = true
                     return true
                 end
@@ -57,9 +57,9 @@ function knob:onMouse(event)
                             end
 end)()
                     
-                    post.emit('pointer', 'grabbing')
+                    post:emit('pointer', 'grabbing')
                     if delta then 
-                        post.emit('view.size', self.parentName, self.frameSide, delta)
+                        post:emit('view.size', self.parentName, self.frameSide, delta)
                     end
                     
                     return true
@@ -69,7 +69,7 @@ end)()
         elseif (event.type == 'release') then 
                 if self.doDrag then 
                     if self.hover then 
-                        post.emit('pointer', self.pointerType)
+                        post:emit('pointer', self.pointerType)
                     end
                     
                     self.doDrag = nil
@@ -90,7 +90,10 @@ end)()
 function knob:draw() 
         if not self.hover then return end
         
-        return self.cells.fill_col(0, 0, (self.cells.rows - 1), '|', self.color.fg, self.color.bg)
+        self.cells:fill_col(1, 1, self.cells.rows, '|', self.color.fg, self.color.bg)
+        -- log "DRAW" @name
+        
+        return self.cells:render()
     end
 
 return knob

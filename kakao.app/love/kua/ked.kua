@@ -63,7 +63,6 @@ class KED
         # @editor.state.hasFocus = true
         # @editor.funtree = @funcol.funtree
         
-        # post∙on 'redraw'        @redraw        @
         # post∙on 'window.focus'  @redraw        @
         # post∙on 'window.blur'   @redraw        @
         post∙on 'input.popup'   @onInputPopup  @
@@ -76,7 +75,7 @@ class KED
         post∙on 'file.change'   @onFileChange  @
         
         @contextHandlers = [                                                                               @editor         @dircol @funcol ]
-        @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor @status @dircol @funcol ]
+        @mouseHandlers   = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @status @dircol @funcol @editor ]
         @wheelHandlers   = [                 @finder @searcher @differ @quicky @browse @droop       @macro @editor         @dircol @funcol ]
         @keyHandlers     = [ @input @context @finder @searcher @differ @quicky @browse @droop @menu @macro @editor         @dircol @funcol ]
         
@@ -144,8 +143,14 @@ class KED
 
     arrange: si ->
         
-        dcw = 10
-        fcw = 0
+        dcw = @dircol.cells.cols > 0 and @dircol.cells.cols or 10
+        fcw = @funcol.cells.cols > 0 and @funcol.cells.cols or 10
+        
+        if @viewSizeDelta
+            if 
+                @viewSizeDelta.name == @dircol.name ➜ dcw = @dircol.cells.cols + @viewSizeDelta.delta
+                @viewSizeDelta.name == @funcol.name ➜ fcw = @funcol.cells.cols + @viewSizeDelta.delta
+            @viewSizeDelta = nil
 
         @dircol∙layout 1             1     dcw               si.rows  
         @status∙layout 1+dcw         1     si.cols-dcw       1        
@@ -384,7 +389,6 @@ class KED
     onPaste: text -> 
     
         @editor.state∙insert text
-        # @redraw()
                                     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -493,7 +497,6 @@ class KED
     onViewSize: name side delta ->
         
         @viewSizeDelta = {name:name side:side delta:delta}
-        # @redraw()
         
     onResize: cols rows size cellsz -> 
     
@@ -510,9 +513,9 @@ class KED
             @dircol.hide()
             @funcol.hide()
         
-        squares.onResize cols rows size cellsz
-        sircels.onResize cols rows size cellsz
-        # @redraw()
+        # squares.onResize cols rows size cellsz
+        # sircels.onResize cols rows size cellsz
+
         @editor.mapscr.onResize()
         
     # ███  ███   ███  ████████   ███   ███  █████████       ████████    ███████   ████████   ███   ███  ████████ 

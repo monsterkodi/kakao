@@ -105,7 +105,9 @@ class view extends events
         
     handleHover: event ->
         
-        inside = not event.handled and @cells∙isInsideEvent event
+        # inside = not event.handled and @cells∙isInsideEvent event
+        inside = @cells∙isInsideEvent event
+
         if @hover and not inside
             @hover = false
             @onMouseLeave event

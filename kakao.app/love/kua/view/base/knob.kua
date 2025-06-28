@@ -18,7 +18,7 @@ class knob extends view
         @setColor 'fg' theme.knob.fg
         @setColor 'bg' theme.knob.bg
         
-        @parentName  = string.sub @name 1 -5
+        @parentName  = string.sub @name 1 -6
         @frameSide   = 'right'
         @maxWidth    = 68
         @pointerType = 'ew-resize'
@@ -38,7 +38,7 @@ class knob extends view
             'press'
             
                 if @hover
-                    post.emit 'pointer' 'grabbing'
+                    post∙emit 'pointer' 'grabbing'
                     @doDrag = true
                     ⮐  true
                     
@@ -53,9 +53,9 @@ class knob extends view
                         'left'  ➜ -col
                         'right' ➜ col
                     
-                    post.emit 'pointer' 'grabbing'
+                    post∙emit 'pointer' 'grabbing'
                     if delta
-                        post.emit 'view.size' @parentName @frameSide delta
+                        post∙emit 'view.size' @parentName @frameSide delta
                         
                     ⮐  true
                     
@@ -65,7 +65,7 @@ class knob extends view
             
                 if @doDrag
                     if @hover
-                        post.emit 'pointer' @pointerType 
+                        post∙emit 'pointer' @pointerType 
                     @doDrag = nil
                     ⮐  true
         @hover
@@ -79,7 +79,10 @@ class knob extends view
     draw: ->
     
         ⮐  if not @hover
+
+        @cells∙fill_col 1 1 @cells.rows '|' @color.fg @color.bg
+        # log "DRAW" @name
         
-        @cells.fill_col 0 0 @cells.rows-1 '|' @color.fg @color.bg
+        @cells∙render()
 
 ⮐  knob

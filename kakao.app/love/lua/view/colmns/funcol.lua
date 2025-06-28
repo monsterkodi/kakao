@@ -36,9 +36,9 @@ function funcol:init(editor, features)
         
         self.knob:setColor('bg', self.funtree.color.bg)
         
-        post:on('funcol.resize', self.onFuncolResize)
-        post:on('funcol.toggle', self.onFuncolToggle)
-        post:on('session.merge', self.onSessionMerge)
+        post:on('funcol.resize', self.onFuncolResize, self)
+        post:on('funcol.toggle', self.onFuncolToggle, self)
+        post:on('session.merge', self.onSessionMerge, self)
         return self
     end
 
@@ -64,7 +64,6 @@ function funcol:onSessionMerge(recent)
 function funcol:layout(x, y, w, h) 
         self.funtree:layout(x, y, w, h)
         self.knob:layout(x, y, 1, h)
-        
         view.layout(self, x, y, w, h)
         return self
     end
@@ -79,13 +78,10 @@ function funcol:layout(x, y, w, h)
 function funcol:draw() 
         if ((self:hidden() or self:collapsed()) or not self.active) then return end
         
-        self.cells:fill_rect(0, 1, -1, -1, ' ', nil, theme.funtree.bg)
-        self.cells:fill_rect(0, 0, -1, 0, ' ', nil, theme.gutter.bg)
-        
+        self.cells:fill_rect(1, 2, -1, -1, ' ', nil, theme.funtree.bg)
+        self.cells:fill_rect(1, 1, -1, 1, ' ', nil, theme.gutter.bg)
         self.funtree:draw()
         self.knob:draw()
-        
-        view.draw(self)
         return self
     end
 
@@ -118,8 +114,15 @@ function funcol:onFuncolToggle()
         if not (self:visible() and self:collapsed()) then self:toggle() end
         self.active = self:visible()
         ked_session:set('funcol▸active', self.active)
-        local cols = max(16, int((self.cells.screen.cols / 6)))
-        return -- post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
+        -- cols = max 16 int(@cells.screen.cols / 6)
+        local cols = 16
+        local size = (function () 
+    if self:hidden() then 
+    return -self.cells.cols else 
+    return (cols - self.cells.cols)
+               end
+end)()
+        return post:emit('view.size', self.name, 'left', size)
     end
 
 -- 00     00   0000000   000   000   0000000  00000000  
@@ -130,10 +133,11 @@ function funcol:onFuncolToggle()
 
 
 function funcol:onMouse(event) 
+        if self.knob:onMouse(event) then return true end
+        
         if ((self:hidden() or self:collapsed()) or not self.active) then return end
         
         if view.onMouse(self, event) then return true end
-        if self.knob:onMouse(event) then return true end
         if self.funtree:onMouse(event) then 
     return true
         end

@@ -34,9 +34,9 @@ class funcol extends view
         
         @knob∙setColor 'bg'               @funtree.color.bg
         
-        post∙on 'funcol.resize' @onFuncolResize
-        post∙on 'funcol.toggle' @onFuncolToggle
-        post∙on 'session.merge' @onSessionMerge
+        post∙on 'funcol.resize' @onFuncolResize @
+        post∙on 'funcol.toggle' @onFuncolToggle @
+        post∙on 'session.merge' @onSessionMerge @
         
     onSessionMerge: recent ->
     
@@ -58,7 +58,6 @@ class funcol extends view
         
         @funtree∙layout x y w h
         @knob∙layout    x y 1 h
-                
         view.layout @ x y w h
         @
         
@@ -72,13 +71,10 @@ class funcol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells∙fill_rect 0 1 -1 -1 ' ' nil theme.funtree.bg
-        @cells∙fill_rect 0 0 -1  0 ' ' nil theme.gutter.bg
-        
+        @cells∙fill_rect 1 2 -1 -1 ' ' nil theme.funtree.bg
+        @cells∙fill_rect 1 1 -1  1 ' ' nil theme.gutter.bg
         @funtree∙draw()
         @knob∙draw()
-    
-        view.draw @
         @
         
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
@@ -105,8 +101,10 @@ class funcol extends view
         @toggle() if not (@visible() and @collapsed())
         @active = @visible()
         ked_session∙set 'funcol▸active' @active
-        cols = max 16 int(@cells.screen.cols / 6)
-        # post.emit 'view.size' @name 'left' (@hidden() ? -@cells.cols : cols-@cells.cols)
+        # cols = max 16 int(@cells.screen.cols / 6)
+        cols = 16
+        size = if @hidden() ➜ -@cells.cols ➜  cols-@cells.cols
+        post∙emit 'view.size' @name 'left' size
         
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -116,10 +114,11 @@ class funcol extends view
   
     onMouse: event ->
     
-        ⮐  if @hidden() or @collapsed() or not @active
-        
-        if view.onMouse @ event   ➜ ⮐  true
         if @knob∙onMouse event    ➜ ⮐  true
+        
+        ⮐  if @hidden() or @collapsed() or not @active
+
+        if view.onMouse @ event   ➜ ⮐  true
         if @funtree∙onMouse event ➜ ⮐  true
         
     # 000   000  000   000  00000000  00000000  000      

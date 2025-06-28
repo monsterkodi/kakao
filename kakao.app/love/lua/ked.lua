@@ -65,7 +65,6 @@ function KED:init()
         -- @editor.state.hasFocus = true
         -- @editor.funtree = @funcol.funtree
         
-        -- post∙on 'redraw'        @redraw        @
         -- post∙on 'window.focus'  @redraw        @
         -- post∙on 'window.blur'   @redraw        @
         post:on('input.popup', self.onInputPopup, self)
@@ -78,7 +77,7 @@ function KED:init()
         post:on('file.change', self.onFileChange, self)
         
         self.contextHandlers = array(self.editor, self.dircol, self.funcol)
-        self.mouseHandlers = array(self.input, self.context, self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.menu, self.macro, self.editor, self.status, self.dircol, self.funcol)
+        self.mouseHandlers = array(self.input, self.context, self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.menu, self.macro, self.status, self.dircol, self.funcol, self.editor)
         self.wheelHandlers = array(self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.macro, self.editor, self.dircol, self.funcol)
         self.keyHandlers = array(self.input, self.context, self.finder, self.searcher, self.differ, self.quicky, self.browse, self.droop, self.menu, self.macro, self.editor, self.dircol, self.funcol)
         
@@ -157,8 +156,16 @@ function KED:onSessionLoaded()
 
 
 function KED:arrange(si) 
-        local dcw = 10
-        local fcw = 0
+        local dcw = (((self.dircol.cells.cols > 0) and self.dircol.cells.cols) or 10)
+        local fcw = (((self.funcol.cells.cols > 0) and self.funcol.cells.cols) or 10)
+        
+        if self.viewSizeDelta then 
+            if (self.viewSizeDelta.name == self.dircol.name) then dcw = (self.dircol.cells.cols + self.viewSizeDelta.delta)
+            elseif (self.viewSizeDelta.name == self.funcol.name) then fcw = (self.funcol.cells.cols + self.viewSizeDelta.delta)
+            end
+            
+            self.viewSizeDelta = nil
+        end
         
         self.dircol:layout(1, 1, dcw, si.rows)
         self.status:layout((1 + dcw), 1, (si.cols - dcw), 1)
@@ -425,8 +432,7 @@ function KED:saveAs()
 
 
 function KED:onPaste(text) 
-        self.editor.state:insert(text)
-        return -- @redraw()
+        return self.editor.state:insert(text)
     end
 
 -- 00     00   0000000   000   000   0000000  00000000  
@@ -556,7 +562,7 @@ function KED:onKey(key, event)
 
 function KED:onViewSize(name, side, delta) 
         self.viewSizeDelta = {name = name, side = side, delta = delta}
-        return -- @redraw()
+        return self.viewSizeDelta
     end
 
 
@@ -575,9 +581,9 @@ function KED:onResize(cols, rows, size, cellsz)
             self.funcol.hide()
         end
         
-        squares.onResize(cols, rows, size, cellsz)
-        sircels.onResize(cols, rows, size, cellsz)
-        -- @redraw()
+        -- squares.onResize cols rows size cellsz
+        -- sircels.onResize cols rows size cellsz
+        
         return self.editor.mapscr.onResize()
     end
 

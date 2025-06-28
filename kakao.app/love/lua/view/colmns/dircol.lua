@@ -232,8 +232,8 @@ function dircol:onToggle()
 function dircol:onMouse(event) 
         if ((self:hidden() or self:collapsed()) or not self.active) then return end
         
-        if view.onMouse(self, event) then return true end
         if self.knob:onMouse(event) then return true end
+        if view.onMouse(self, event) then return true end
         if self.crumbs:onMouse(event) then return true end
         if self.dirtree:onMouse(event) then 
     return true
