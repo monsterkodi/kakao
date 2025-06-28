@@ -2,13 +2,80 @@
 use kxk.kxk
 use ked
 
-setFontWidth = fw=24 ->
+class ScrollWheel
+
+    vel_x:   0
+    vel_y:   0
+    inert_x: 0
+    inert_y: 0
+    damp:    0.95
+    
+    update: dt ->
+    
+        if @vel_x == 0 and @vel_y == 0 and @inert_x == 0 and @inert_y == 0
+            ⮐  
+
+        if @vel_y * @inert_y < 0
+            @stop()
+            
+        if @vel_y == 0
+            @vel_y = clamp -3 3 int(@inert_y)
+            @inert_y *= @damp
+            if abs(@inert_y) < 1
+                @inert_y = 0
+
+        if @vel_x == 0
+            @vel_x = clamp -6 6 int(@inert_x)
+            @inert_x *= @damp
+            if abs(@inert_x) < 1
+                @inert_x = 0
+        
+        mx = clamp -6 6 int(@vel_x)
+        my = clamp -3 3 int(@vel_y)
+        ax = abs(mx)
+        ay = abs(my)
+    
+        dir = ''
+        if
+            abs(my) >= abs(mx) and my > 0 ➜ dir = 'up'   ; ax = 0
+            abs(my) >= abs(mx) and my < 0 ➜ dir = 'down' ; ax = 0
+            abs(mx) > abs(my)  and mx < 0 ➜ dir = 'left'
+            abs(mx) > abs(my)  and mx > 0 ➜ dir = 'right'
+
+        if dir != ''
+            event = {x:ax y:ay type:"wheel" cell:mouseCell dir:dir}
+            ked∙onMouse event
+        
+        @vel_x -= mx
+        @vel_y -= my
+        
+        @inert_x += @vel_x
+        @inert_y += @vel_y
+        
+        @vel_x = 0
+        @vel_y = 0
+        
+    stop: ->
+    
+        @vel_x = 0
+        @vel_y = 0
+        @inert_x    = 0
+        @inert_y    = 0
+        
+    impulse: x y -> 
+
+        @vel_x = x
+        @vel_y = y
+
+setFontWidth = fw ->
 
     _G.fontWidth = fw
     _G.font  = love.graphics.setNewFont "fonts/Twilio.ttf" fontWidth*2
     fb1 = love.graphics.newFont "fonts/Helvetica.ttf"      fontWidth*2
     fb2 = love.graphics.newFont "fonts/Menlo.ttf"          fontWidth*2
     _G.font∙setFallbacks(fb1, fb2)
+    
+screenCell = x y -> [int(x/_G.screen.cw)+1 int(y/_G.screen.ch)+1]
 
 love.load = ->
 
@@ -24,10 +91,12 @@ love.load = ->
     
     love.graphics.setDefaultFilter "nearest" "nearest"
 
-    setFontWidth 24
+    setFontWidth 20
     
     _G.count = 0
     _G.mouseClick = []
+    
+    _G.scrollWheel = ScrollWheel()
     
     #love.window.maximize()
     love.keyboard.setKeyRepeat true
@@ -54,12 +123,17 @@ love.draw = ->
     
     ked∙draw cols rows cw ch
     
-    # lg.setColor 0.2 0.2 0.2 
-    # lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
+    lg.setColor 0.2 0.2 0.2 
+    
+    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{love.timer.getFPS()} #{floor(scrollWheel.vel_y)} #{floor(scrollWheel.inert_y)} ◂" 16*cw 0
     
     # log "hasGlyphs", _G.font∙hasGlyphs("⮐➜▸∙◌○◇□✔✘●◆▪◼■△┬")
     
     nil
+    
+love.update = dt ->
+
+    scrollWheel∙update dt
     
 love.quit = ->
 
@@ -139,7 +213,9 @@ love.keypressed = key scancode isrepeat ->
 love.mousepressed = x y button istouch presses ->
 
     button = if button == 1 ➜ "left" ➜ "right"
-    _G.mouseCell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    _G.mouseCell = screenCell x y
+    
+    scrollWheel∙stop()
     
     count = 1
     if _G.mouseClick[button]
@@ -161,14 +237,23 @@ love.mousepressed = x y button istouch presses ->
 love.mousereleased = x y button istouch presses ->
 
     button = if button == 1 ➜ "left" ➜ "right"
-    _G.mouseCell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    _G.mouseCell = screenCell x y
     event = {x:x y:y type:"release" button:button count:1 cell:mouseCell}
+    # log "EVENT" noon(event)
     ked∙onMouse event
+    
+love.touchpressed = id x y ->
+
+    log "TOUCH DOWN" x, y
+    
+love.touchreleased = id x y ->
+
+    log "TOUCH UP" x, y
 
 love.mousemoved = x y ->
 
     button = ""
-    _G.mouseCell = [int(x/_G.screen.cw) int(y/_G.screen.ch)]
+    _G.mouseCell = screenCell x y
     typ = "move"
     if love.mouse.isDown(1)
         button = "right"
@@ -178,17 +263,8 @@ love.mousemoved = x y ->
     
 love.wheelmoved = x y ->
 
-    dir = ''
-    if
-        y > 0 ➜ dir = 'up'
-        y < 0 ➜ dir = 'down'
-        x < 0 ➜ dir = 'left'
-        x > 0 ➜ dir = 'right'
-    
-    event = {x:x y:y type:"wheel" cell:mouseCell dir:dir}
-    log "WHEEL" noon(event)
-    ked∙onMouse event
-    
+    scrollWheel∙impulse x y
+
 # love.keyreleased = key scancode ->
 # 
 #     log 'keyreleased ' key, " " scancode

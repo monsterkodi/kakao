@@ -255,7 +255,7 @@ class state extends events
         @r = []
         
         @maxLineWidth = belt.widthOfLines @s.lines
-        
+
         @pushState()
         
     loadLines: lines -> 
@@ -471,8 +471,8 @@ class state extends events
 
     scrollView: dir steps=1 ->
 
-        sx = 1 
-        sy = 1
+        sx = 0 
+        sy = 0
 
         switch dir
             'left'  ➜ sx = -1
@@ -491,9 +491,10 @@ class state extends events
         maxOffsetX = max maxOffsetX @mainCursor()[1]-@cells.cols+2
         view[1] = clamp 1 maxOffsetX view[1]
         
+        # log "SETVIEW SCROLLVIEW" view, @maxLineWidth
+        
         ⮐  if view∙eql @s.view
 
-        log "SETVIEW SCROLLVIEW" view
         @setView view
 
     #  0000000   0000000          000  000   000   0000000  000000000       000   000  000  00000000  000   000  
@@ -773,7 +774,7 @@ class state extends events
         
     addCursors: cursors ->
         
-        @setCursors @allCursors().concat(cursors)
+        @setCursors @allCursors() + cursors
         
     delCursorsInRange: rng ->
         

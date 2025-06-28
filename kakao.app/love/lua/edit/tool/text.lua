@@ -400,7 +400,7 @@ function text.static.seglsForRange(lines, rng)
 function text.static.indexOfLongestLine(lines) 
         local maxIndex = 0
         local maxLength = 0
-        for index, line in ipairs(lines) do 
+        for line, index in lines:each() do 
             local w = kseg.width(line)
             if (w > maxLength) then 
                 maxLength = w

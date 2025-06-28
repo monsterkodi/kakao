@@ -540,8 +540,8 @@ function state:paste()
 function state:scrollView(dir, steps) 
         steps = steps or 1
         
-        local sx = 1
-        local sy = 1
+        local sx = 0
+        local sy = 0
         
         if (dir == 'left') then sx = -1
         elseif (dir == 'right') then sx = 1
@@ -560,9 +560,10 @@ function state:scrollView(dir, steps)
         maxOffsetX = max(maxOffsetX, ((self:mainCursor()[1] - self.cells.cols) + 2))
         view[1] = clamp(1, maxOffsetX, view[1])
         
+        -- log "SETVIEW SCROLLVIEW" view, @maxLineWidth
+        
         if view:eql(self.s.view) then return end
         
-        print("SETVIEW SCROLLVIEW", view)
         return self:setView(view)
     end
 
@@ -895,7 +896,7 @@ function state:addCursor(pos)
 
 
 function state:addCursors(cursors) 
-        return self:setCursors(self:allCursors().concat(cursors))
+        return self:setCursors((self:allCursors() + cursors))
     end
 
 

@@ -137,7 +137,7 @@ function editor:onMouse(event)
 
 
 function editor:onWheel(event) 
-        print("EDITOR.ONWHEEL", event)
+        -- log "EDITOR.ONWHEEL" event
         
         if (event.cell[2] >= (self.cells.y + self.cells.rows)) then return end
         
@@ -148,7 +148,7 @@ function editor:onWheel(event)
             inside = (inside or self.mapscr.cells:isInsideEvent(event))
         end
         
-        print("EDITOR.ONWHEEL INSIDE", inside)
+        -- log "EDITOR.ONWHEEL INSIDE" inside
         
         if not inside then return end
         
@@ -159,12 +159,16 @@ function editor:onWheel(event)
             end
         end
         
-        local steps = 1 -- should be 4 if not using a mouse pad -> config
+        local steps = 0
+        if (event.dir == 'up') or (event.dir == 'down') then steps = event.y
+        else steps = event.x
+        end
+        
         if event.shift then steps = steps * 2 end
         if event.ctrl then steps = steps * 2 end
         if event.alt then steps = steps * 2 end
         
-        print("EDITOR.ONWHEEL", steps, event.dir)
+        -- log "EDITOR.ONWHEEL" steps, event.dir
         
         if (event.dir == 'up') or (event.dir == 'down') or (event.dir == 'left') or (event.dir == 'right') then self.state:scrollView(event.dir, steps)
         end

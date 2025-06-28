@@ -50,7 +50,7 @@ class cells
     add: x y char fg bg ->
         
         if @outside(x y) 
-            log ":OUTSIDE" x, y
+            log "cells∙add OUTSIDE" x, y
             ⮐  math.huge
         
         w = 1
@@ -114,8 +114,6 @@ class cells
 
         if @inside x y
             ⮐  @c[y][x].char
-        else
-            log ":OUTSIDE"
         ''
 
     get_fg: x y ->
@@ -147,8 +145,8 @@ class cells
         
     posForScreen:    x y -> (x y) = belt.pos(x y); [x-@x+1 y-@y+1]
     screenForPos:    x y -> (x y) = belt.pos(x y); [x+@x-1 y+@y-1]
-    posForEvent:     evt -> 
-        @posForScreen ceil(evt.x/_G.screen.cw) ceil(evt.y/_G.screen.ch)
+    posForEvent:     evt -> @posForScreen evt.cell
+        # @posForScreen ceil(evt.x/_G.screen.cw) ceil(evt.y/_G.screen.ch)
         
     # 0000000     0000000           00000000   00000000   0000000  000000000  
     # 000   000  000                000   000  000       000          000     

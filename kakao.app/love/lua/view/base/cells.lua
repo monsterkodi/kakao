@@ -16,6 +16,7 @@ theme = require "theme.theme"
 
 local cells = class("cells")
     
+        -- @posForScreen ceil(evt.x/_G.screen.cw) ceil(evt.y/_G.screen.ch)
 
 
 function cells:init() 
@@ -84,7 +85,7 @@ function cells:outside(x, y)
 
 function cells:add(x, y, char, fg, bg) 
         if self:outside(x, y) then 
-            print(":OUTSIDE", x, y)
+            print("cells∙add OUTSIDE", x, y)
             return math.huge
         end
         
@@ -171,8 +172,6 @@ function cells:set_fg_bg(x, y, fg, bg)
 function cells:get_char(x, y) 
         if self:inside(x, y) then 
             return self.c[y][x].char
-        else 
-            print(":OUTSIDE")
         end
         
         return ''
@@ -239,7 +238,7 @@ function cells:screenForPos(x, y)
     end
 
 function cells:posForEvent(evt) 
-        return self:posForScreen(ceil((evt.x / _G.screen.cw)), ceil((evt.y / _G.screen.ch)))
+    return self:posForScreen(evt.cell)
     end
 
 -- 0000000     0000000           00000000   00000000   0000000  000000000  

@@ -2,14 +2,95 @@ kxk = require "kxk.kxk"
 ked = require "ked"
 
 
+local ScrollWheel = class("ScrollWheel")
+    ScrollWheel.vel_x = 0
+    ScrollWheel.vel_y = 0
+    ScrollWheel.inert_x = 0
+    ScrollWheel.inert_y = 0
+    ScrollWheel.damp = 0.95
+
+
+function ScrollWheel:update(dt) 
+        if ((((self.vel_x == 0) and (self.vel_y == 0)) and (self.inert_x == 0)) and (self.inert_y == 0)) then 
+            return
+        end
+        
+        if ((self.vel_y * self.inert_y) < 0) then 
+            self:stop()
+        end
+        
+        if (self.vel_y == 0) then 
+            self.vel_y = clamp(-3, 3, int(self.inert_y))
+            self.inert_y = self.inert_y * (self.damp)
+            if (abs(self.inert_y) < 1) then 
+                self.inert_y = 0
+            end
+        end
+        
+        if (self.vel_x == 0) then 
+            self.vel_x = clamp(-6, 6, int(self.inert_x))
+            self.inert_x = self.inert_x * (self.damp)
+            if (abs(self.inert_x) < 1) then 
+                self.inert_x = 0
+            end
+        end
+        
+        local mx = clamp(-6, 6, int(self.vel_x))
+        local my = clamp(-3, 3, int(self.vel_y))
+        local ax = abs(mx)
+        local ay = abs(my)
+        
+        local dir = ''
+        if ((abs(my) >= abs(mx)) and (my > 0)) then dir = 'up' ; ax = 0
+        elseif ((abs(my) >= abs(mx)) and (my < 0)) then dir = 'down' ; ax = 0
+        elseif ((abs(mx) > abs(my)) and (mx < 0)) then dir = 'left'
+        elseif ((abs(mx) > abs(my)) and (mx > 0)) then dir = 'right'
+        end
+        
+        if (dir ~= '') then 
+            local event = {x = ax, y = ay, type = "wheel", cell = mouseCell, dir = dir}
+            ked:onMouse(event)
+        end
+        
+        self.vel_x = self.vel_x - mx
+        self.vel_y = self.vel_y - my
+        
+        self.inert_x = self.inert_x + (self.vel_x)
+        self.inert_y = self.inert_y + (self.vel_y)
+        
+        self.vel_x = 0
+        self.vel_y = 0
+        return self.vel_y
+    end
+
+
+function ScrollWheel:stop() 
+        self.vel_x = 0
+        self.vel_y = 0
+        self.inert_x = 0
+        self.inert_y = 0
+        return self.inert_y
+    end
+
+
+function ScrollWheel:impulse(x, y) 
+        self.vel_x = x
+        self.vel_y = y
+        return self.vel_y
+    end
+
+
 function setFontWidth(fw) 
-    fw = fw or 24
-    
     _G.fontWidth = fw
     _G.font = love.graphics.setNewFont("fonts/Twilio.ttf", (fontWidth * 2))
     local fb1 = love.graphics.newFont("fonts/Helvetica.ttf", (fontWidth * 2))
     local fb2 = love.graphics.newFont("fonts/Menlo.ttf", (fontWidth * 2))
     return _G.font:setFallbacks(fb1, fb2)
+end
+
+
+function screenCell(x, y) 
+    return array((int((x / _G.screen.cw)) + 1), (int((y / _G.screen.ch)) + 1))
 end
 
 
@@ -26,10 +107,12 @@ function love.load()
     
     love.graphics.setDefaultFilter("nearest", "nearest")
     
-    setFontWidth(24)
+    setFontWidth(20)
     
     _G.count = 0
     _G.mouseClick = array()
+    
+    _G.scrollWheel = ScrollWheel()
     
     --love.window.maximize()
     love.keyboard.setKeyRepeat(true)
@@ -57,12 +140,18 @@ function love.draw()
     
     ked:draw(cols, rows, cw, ch)
     
-    -- lg.setColor 0.2 0.2 0.2 
-    -- lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{count} #{love.timer.getFPS()} ◂" 6*cw 0
+    lg.setColor(0.2, 0.2, 0.2)
+    
+    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(love.timer.getFPS()) .. " " .. tostring(floor(scrollWheel.vel_y)) .. " " .. tostring(floor(scrollWheel.inert_y)) .. " ◂", (16 * cw), 0)
     
     -- log "hasGlyphs", _G.font∙hasGlyphs("⮐➜▸∙◌○◇□✔✘●◆▪◼■△┬")
     
     return nil
+end
+
+
+function love.update(dt) 
+    return scrollWheel:update(dt)
 end
 
 
@@ -172,7 +261,9 @@ function love.mousepressed(x, y, button, istouch, presses)
     return "right"
              end
 end)()
-    _G.mouseCell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    _G.mouseCell = screenCell(x, y)
+    
+    scrollWheel:stop()
     
     local count = 1
     if _G.mouseClick[button] then 
@@ -204,15 +295,26 @@ function love.mousereleased(x, y, button, istouch, presses)
     return "right"
              end
 end)()
-    _G.mouseCell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    _G.mouseCell = screenCell(x, y)
     local event = {x = x, y = y, type = "release", button = button, count = 1, cell = mouseCell}
+    -- log "EVENT" noon(event)
     return ked:onMouse(event)
+end
+
+
+function love.touchpressed(id, x, y) 
+    return print("TOUCH DOWN", x, y)
+end
+
+
+function love.touchreleased(id, x, y) 
+    return print("TOUCH UP", x, y)
 end
 
 
 function love.mousemoved(x, y) 
     local button = ""
-    _G.mouseCell = array(int((x / _G.screen.cw)), int((y / _G.screen.ch)))
+    _G.mouseCell = screenCell(x, y)
     local typ = "move"
     if love.mouse.isDown(1) then 
         button = "right"
@@ -225,16 +327,7 @@ end
 
 
 function love.wheelmoved(x, y) 
-    local dir = ''
-    if (y > 0) then dir = 'up'
-    elseif (y < 0) then dir = 'down'
-    elseif (x < 0) then dir = 'left'
-    elseif (x > 0) then dir = 'right'
-    end
-    
-    local event = {x = x, y = y, type = "wheel", cell = mouseCell, dir = dir}
-    print("WHEEL", noon(event))
-    return ked:onMouse(event)
+    return scrollWheel:impulse(x, y)
 end
 
 -- love.keyreleased = key scancode ->

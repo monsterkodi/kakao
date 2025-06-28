@@ -206,7 +206,14 @@ function KED:newFile()
         
         self.editor.state.syntax.ext = 'txt'
         -- @editor.state∙loadLines ['hello world! line 1' 'hello world! line 2' 'hello world! line 3']
-        self.editor.state:loadSegls(kseg.segls("hello world! line 1\nhello world! line 2\nhello world! line 3\n#f00 #0f0 #00f"))
+        
+        local segls = kseg.segls("hello world! line 1\nhello world! line 2\nhello world! line 3\n#f00 #0f0 #00f")
+        
+        for i in iter(1, 1000) do 
+            segls:unshift(kseg("line " .. tostring(i)))
+        end
+        
+        self.editor.state:loadSegls(segls)
         
         if self.editor.mapscr then 
             self.editor.mapscr:reload()

@@ -293,7 +293,7 @@ class text
         
         maxIndex = 0
         maxLength = 0
-        for index line in ipairs lines
+        for line index in lines∙each()
             w = kseg.width line
             if w > maxLength
                 maxLength = w
