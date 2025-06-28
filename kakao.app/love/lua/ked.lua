@@ -103,16 +103,16 @@ function KED:init()
 function KED:showEditor() 
         self.editor:show()
         self.status:show()
-        -- @dircol∙show()
-        return -- @funcol∙show()
+        self.dircol:show()
+        return self.funcol:show()
     end
 
 
 function KED:hideEditor() 
         self.editor:hide()
         self.status:hide()
-        -- @dircol∙hide()
-        return -- @funcol∙hide()
+        self.dircol:hide()
+        return self.funcol:hide()
     end
 
 -- 00000000   000   000  000   000  
@@ -157,7 +157,7 @@ function KED:onSessionLoaded()
 
 
 function KED:arrange(si) 
-        local dcw = 0
+        local dcw = 10
         local fcw = 0
         
         self.dircol:layout(1, 1, dcw, si.rows)
@@ -621,10 +621,6 @@ function KED:onInputAction(action, event)
 -- ███   ███  ███████    █████████  █████████
 -- ███   ███  ███   ███  ███   ███  ███   ███
 -- ███████    ███   ███  ███   ███  ██     ██
-
--- redraw: ->    
---     
---     ⮐  if @quitting
 
 
 function KED:draw(cols, rows, cw, ch) 

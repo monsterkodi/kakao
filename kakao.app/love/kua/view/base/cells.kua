@@ -192,9 +192,9 @@ class cells
                         @set_char col row ' '
                         
     fill_rect: x1 y1 x2 y2 char fg bg ->
-        log "FILLRECT"
-        x1 = clamp 0 @cols-1 x1
-        y1 = clamp 0 @rows-1 y1
+
+        x1 = clamp 1 @cols x1
+        y1 = clamp 1 @rows y1
         if x2 < 0 ➜ x2 = @cols + x2 
         if y2 < 0 ➜ y2 = @rows + y2 
         
@@ -203,7 +203,7 @@ class cells
                 @set col row char fg bg
                 
     fill_row: row x1 x2 char fg bg ->
-        log "FILLROW"
+
         ⮐  if x1 < 1 and x2 < 1
 
         x1 = clamp 1 @cols x1

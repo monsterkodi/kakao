@@ -410,21 +410,21 @@ class dirtree extends choices
                 
     indexOfOpenFile: ->
     
-        currentFile = ked_session.get 'editor▸file'
+        currentFile = ked_session∙get 'editor▸file'
         
         ⮐  if empty currentFile
         
-        for item,idx in @fuzzied
+        for idx item in @fuzzied
             ⮐  idx if item.path == currentFile
             
     itemForPath: p ->
         
-        for item,idx in @items
+        for idx item in @items
             ⮐  item if slash.samePath item.path p
 
     itemIndexForPath: p ->
         
-        for item,idx in @items
+        for idx item in @items
             ⮐  idx if slash.samePath item.path p
             
     # 000   000  00000000  000   0000000   000   000  000000000  

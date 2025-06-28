@@ -296,9 +296,8 @@ function cells:bg_fill(x1, y1, x2, y2, bg)
 
 
 function cells:fill_rect(x1, y1, x2, y2, char, fg, bg) 
-        print("FILLRECT")
-        x1 = clamp(0, (self.cols - 1), x1)
-        y1 = clamp(0, (self.rows - 1), y1)
+        x1 = clamp(1, self.cols, x1)
+        y1 = clamp(1, self.rows, y1)
         if (x2 < 0) then x2 = (self.cols + x2) end
         if (y2 < 0) then y2 = (self.rows + y2) end
         
@@ -311,7 +310,6 @@ function cells:fill_rect(x1, y1, x2, y2, char, fg, bg)
 
 
 function cells:fill_row(row, x1, x2, char, fg, bg) 
-        print("FILLROW")
         if ((x1 < 1) and (x2 < 1)) then return end
         
         x1 = clamp(1, self.cols, x1)

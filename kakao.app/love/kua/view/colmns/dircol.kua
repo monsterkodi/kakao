@@ -102,15 +102,13 @@ class dircol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells∙fill_rect 0 1 -1 -1 ' ' null @dirtree.color.bg
-        @cells∙fill_rect 0 0 -1  0 ' ' null @crumbs.color.empty
+        @cells∙fill_rect 1 2 -1 -1 ' ' null @dirtree.color.bg
+        @cells∙fill_rect 1 1 -1  1 ' ' null @crumbs.color.empty
         
         @crumbs∙draw()
         @dirtree∙draw()
         @knob∙draw()
     
-        super()
-        
     #  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████
     # ███       ███   ███  ████  ███     ███     ███        ███ ███      ███   
     # ███       ███   ███  ███ █ ███     ███     ███████     █████       ███   

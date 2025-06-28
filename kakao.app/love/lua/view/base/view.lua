@@ -88,7 +88,7 @@ function view:hide()
             end
         end
         
-        return {redraw = true}
+        return true
     end
 
 

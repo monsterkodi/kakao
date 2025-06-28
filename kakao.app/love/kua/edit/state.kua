@@ -410,28 +410,7 @@ class state extends events
         opt ?= {}
         text = @textOfSelectionOrCursorLines()
         if text and text.len > 0
-            log "COPY" text
             love.system.setClipboardText text
-
-        #switch os.platform()
-        #
-        #    'darwin'
-        #
-        #        prcs = child_process.spawn 'pbcopy'
-        #        prcs.stdin.write @textOfSelectionOrCursorLines()
-        #        prcs.stdin.close()
-        #
-        #    'linux'
-        #
-        #        prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
-        #        prcs.stdin.write @textOfSelectionOrCursorLines()
-        #        prcs.stdin.close()
-        #
-        #    'win32'
-        #
-        #        prcs = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
-        #        prcs.stdin.write @textOfSelectionOrCursorLines()
-        #        prcs.stdin.close()
                 
         @deselect() if opt.deselect != false
 
@@ -444,24 +423,6 @@ class state extends events
     paste: ->
     
         @insert love.system.getClipboardText()
-
-        #switch os.platform()
-        #
-        #    'darwin'
-        #
-        #        @insert child_process.execSync('pbpaste').toString("utf8")
-        #
-        #    'linux'
-        #
-        #        text = child_process.execSync('xsel -o --clipboard')
-        #
-        #        log 'paste\n' noon(text.toString("utf8"))
-        #
-        #        @insert text.toString("utf8")
-        #
-        #    'win32'
-        #
-        #        @insert child_process.execSync("#{slash.cwd()}/../../bin/utf8clip.exe").toString("utf8")
 
     #  0000000   0000000  00000000    0000000   000      000          000   000  000  00000000  000   000  
     # 000       000       000   000  000   000  000      000          000   000  000  000       000 0 000  
@@ -490,8 +451,6 @@ class state extends events
         maxOffsetX = max 1 @maxLineWidth-@cells.cols+2
         maxOffsetX = max maxOffsetX @mainCursor()[1]-@cells.cols+2
         view[1] = clamp 1 maxOffsetX view[1]
-        
-        # log "SETVIEW SCROLLVIEW" view, @maxLineWidth
         
         ⮐  if view∙eql @s.view
 
@@ -1061,11 +1020,8 @@ class state extends events
     addCurrentOrNextHighlightToSelection: ->
     
         prev = belt.prevSpanBeforePos @s.highlights @mainCursor()
-        # log "ACORNHL" prev
         if prev
-            log "ACORNHL" noon(@s.selections)
             if not belt.rangesContainSpan @s.selections prev
-                log "ACORNHL" prev
                 @addSpanToSelection prev
                 @addCursor belt.endOfSpan(prev)
                 ⮐ 

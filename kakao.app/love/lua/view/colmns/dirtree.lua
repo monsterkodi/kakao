@@ -466,25 +466,25 @@ function dirtree:drawSelections()
 
 
 function dirtree:indexOfOpenFile() 
-        local currentFile = ked_session.get('editor▸file')
+        local currentFile = ked_session:get('editor▸file')
         
         if empty(currentFile) then return end
         
-        for item, idx in ipairs(self.fuzzied) do 
+        for idx, item in ipairs(self.fuzzied) do 
             if (item.path == currentFile) then return idx end
         end
     end
 
 
 function dirtree:itemForPath(p) 
-        for item, idx in ipairs(self.items) do 
+        for idx, item in ipairs(self.items) do 
             if slash.samePath(item.path, p) then return item end
         end
     end
 
 
 function dirtree:itemIndexForPath(p) 
-        for item, idx in ipairs(self.items) do 
+        for idx, item in ipairs(self.items) do 
             if slash.samePath(item.path, p) then return idx end
         end
     end

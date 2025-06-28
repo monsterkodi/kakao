@@ -27,7 +27,7 @@ class view extends events
         @color  = {}
         @feats  = {}
         if features
-            for _ f in ipairs features
+            for f in features
                 @feats[f] = true 
         
         @isVisible = true
@@ -73,8 +73,7 @@ class view extends events
                 view.currentPopup = nil
                 # log "view popup.hide #{@name}" 
                 post∙emit 'popup.hide' @name
-        
-        {redraw:true}
+        true
         
     arrange: ->    
     hidden:  -> not @visible()

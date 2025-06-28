@@ -58,7 +58,7 @@ function crumbs:draw()
         if empty(self.rounded) then return end
         
         local colors = array()
-        for i = 0, #self.split-1 do 
+        for i in iter(1, #self.split) do 
             if (i == self.hoverIndex) then 
                 colors.push(self.color.hover)
             else 
@@ -66,7 +66,7 @@ function crumbs:draw()
             end
         end
         
-        for x = 0, #self.rounded-1 do 
+        for x in iter(1, #self.rounded) do 
             local si = self:splitIndexAtCol(x)
             local bg = colors[si]
             local ch = self.rounded[x]
@@ -74,7 +74,7 @@ function crumbs:draw()
             if ((ch == '') or (ch == '')) then 
                 local fg = bg
                 bg = (function () 
-    if (si > 0) then 
+    if (si > 1) then 
     return colors[(si - 1)] else 
     return self.color.empty_left
                      end
@@ -83,17 +83,17 @@ end)()
                     bg = self.color.empty_right
                 end
                 
-                self.cells.set(x, 0, ch, fg, bg)
+                self.cells:set(x, 1, ch, fg, bg)
             else 
                 if (si == self.hoverIndex) then 
                     local fg = color.adjustForBackground(self.color.fg, bg)
                 elseif (si < (#self.split - 1)) then 
-                    local fg = color.darken(self.color.fg, math.min(1, ((si + 3) / #self.split)))
+                    local fg = color.darken(self.color.fg, min(1, ((si + 3) / #self.split)))
                 else 
                     local fg = color.brighten(self.color.fg)
                 end
                 
-                self.cells.set(x, 0, ch, fg, bg)
+                self.cells:set(x, 1, ch, fg, bg)
             end
         end
     end
@@ -107,7 +107,7 @@ end)()
 
 function crumbs:splitIndexAtCol(col) 
         local sl = 0
-        for si = 0, #self.split-1 do 
+        for si in iter(1, #self.split) do 
             sl = sl + ((#self.split[si] + 2))
             if (sl > col) then 
                 return si
@@ -121,7 +121,7 @@ function crumbs:splitIndexAtCol(col)
 function crumbs:colsAtSplitIndex(idx) 
         local ei = 0
         
-        for i in iter(0, idx) do 
+        for i in iter(1, idx) do 
             if (i < idx) then 
                 si = si + ((#self.split[i] + 2))
             end

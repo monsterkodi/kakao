@@ -98,15 +98,15 @@ class KED
     
         @editor∙show()
         @status∙show()
-        # @dircol∙show()
-        # @funcol∙show()
+        @dircol∙show()
+        @funcol∙show()
 
     hideEditor: -> 
     
         @editor∙hide()
         @status∙hide()
-        # @dircol∙hide()
-        # @funcol∙hide()
+        @dircol∙hide()
+        @funcol∙hide()
         
     # 00000000   000   000  000   000  
     # 000   000  000   000  0000  000  
@@ -144,7 +144,7 @@ class KED
 
     arrange: si ->
         
-        dcw = 0
+        dcw = 10
         fcw = 0
 
         @dircol∙layout 1             1     dcw               si.rows  
@@ -549,10 +549,6 @@ class KED
     # ███   ███  ███████    █████████  █████████
     # ███   ███  ███   ███  ███   ███  ███   ███
     # ███████    ███   ███  ███   ███  ██     ██
-
-    # redraw: ->    
-    #     
-    #     ⮐  if @quitting
 
     draw: cols rows cw ch ->
             

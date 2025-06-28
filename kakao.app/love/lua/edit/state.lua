@@ -472,29 +472,8 @@ function state:copy(opt)
         opt = opt or ({})
         local text = self:textOfSelectionOrCursorLines()
         if (text and (#text > 0)) then 
-            print("COPY", text)
             love.system.setClipboardText(text)
         end
-        
-        --switch os.platform()
-        --        
-        --    'darwin'
-        --        
-        --        prcs = child_process.spawn 'pbcopy'
-        --        prcs.stdin.write @textOfSelectionOrCursorLines()
-        --        prcs.stdin.close()
-        --        
-        --    'linux'
-        --        
-        --        prcs = child_process.spawn("xsel", {"-i", "--clipboard"})
-        --        prcs.stdin.write @textOfSelectionOrCursorLines()
-        --        prcs.stdin.close()
-        --        
-        --    'win32'
-        --        
-        --        prcs = child_process.spawn "#{slash.cwd()}/../../bin/utf8clip.exe"
-        --        prcs.stdin.write @textOfSelectionOrCursorLines()
-        --        prcs.stdin.close()
         
         if (opt.deselect ~= false) then 
     return self:deselect()
@@ -509,25 +488,7 @@ function state:copy(opt)
 
 
 function state:paste() 
-        self:insert(love.system.getClipboardText())
-        
-        --switch os.platform()
-        --        
-        --    'darwin'
-        --        
-        --        @insert child_process.execSync('pbpaste').toString("utf8")
-        --        
-        --    'linux'
-        --        
-        --        text = child_process.execSync('xsel -o --clipboard')
-        --        
-        --        log 'paste\n' noon(text.toString("utf8"))
-        --        
-        --        @insert text.toString("utf8")
-        --        
-        --    'win32'
-        --        
-        return --        @insert child_process.execSync("#{slash.cwd()}/../../bin/utf8clip.exe").toString("utf8")
+        return self:insert(love.system.getClipboardText())
     end
 
 --  0000000   0000000  00000000    0000000   000      000          000   000  000  00000000  000   000  
@@ -559,8 +520,6 @@ function state:scrollView(dir, steps)
         local maxOffsetX = max(1, ((self.maxLineWidth - self.cells.cols) + 2))
         maxOffsetX = max(maxOffsetX, ((self:mainCursor()[1] - self.cells.cols) + 2))
         view[1] = clamp(1, maxOffsetX, view[1])
-        
-        -- log "SETVIEW SCROLLVIEW" view, @maxLineWidth
         
         if view:eql(self.s.view) then return end
         
@@ -1259,11 +1218,8 @@ function state:selectPrevHighlight()
 
 function state:addCurrentOrNextHighlightToSelection() 
         local prev = belt.prevSpanBeforePos(self.s.highlights, self:mainCursor())
-        -- log "ACORNHL" prev
         if prev then 
-            print("ACORNHL", noon(self.s.selections))
             if not belt.rangesContainSpan(self.s.selections, prev) then 
-                print("ACORNHL", prev)
                 self:addSpanToSelection(prev)
                 self:addCursor(belt.endOfSpan(prev))
                 return

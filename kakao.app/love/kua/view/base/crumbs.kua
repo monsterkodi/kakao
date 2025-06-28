@@ -52,13 +52,13 @@ class crumbs extends view
         ⮐  if empty @rounded
             
         colors = []
-        for i in 0...@split.length
+        for i in 1..@split.len
             if i == @hoverIndex
                 colors.push @color.hover
             else
                 colors.push color.darken(@color.bg 0.4+0.6*(i+1)/@split.length)
         
-        for x in 0...@rounded.length 
+        for x in 1..@rounded.len
             
             si = @splitIndexAtCol x
             bg = colors[si]
@@ -66,19 +66,19 @@ class crumbs extends view
             
             if ch == '' or ch == ''
                 fg = bg
-                bg = if si > 0 ➜ colors[si-1] ➜ @color.empty_left
-                if x == @rounded.length-1
+                bg = if si > 1 ➜ colors[si-1] ➜ @color.empty_left
+                if x == @rounded.len-1
                     bg = @color.empty_right 
-                @cells.set x 0 ch fg bg
+                @cells∙set x 1 ch fg bg
             else
                 if si == @hoverIndex
                     fg = color.adjustForBackground @color.fg bg 
                 elif si < @split.length-1
-                    fg = color.darken(@color.fg, math.min(1, (si+3)/@split.length))
+                    fg = color.darken(@color.fg, min(1, (si+3)/@split.len))
                 else
                     fg = color.brighten @color.fg
                 
-                @cells.set x 0 ch fg bg 
+                @cells∙set x 1 ch fg bg 
                 
     #  0000000  00000000   000      000  000000000  000  000   000  0000000    00000000  000   000  
     # 000       000   000  000      000     000     000  0000  000  000   000  000        000 000   
@@ -89,8 +89,8 @@ class crumbs extends view
     splitIndexAtCol: col ->
 
         sl = 0
-        for si in 0...@split.length
-            sl += @split[si].length + 2
+        for si in 1..@split.len
+            sl += @split[si].len + 2
             if sl > col
                 ⮐  si
         @split.length-1
@@ -99,7 +99,7 @@ class crumbs extends view
     
         si = ei = 0
         
-        for i in 0..idx
+        for i in 1..idx
             if i < idx
                 si += @split[i].length + 2
             ei += @split[i].length + 2

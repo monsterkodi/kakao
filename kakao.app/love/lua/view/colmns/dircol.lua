@@ -114,14 +114,12 @@ function dircol:layout(x, y, w, h)
 function dircol:draw() 
         if ((self:hidden() or self:collapsed()) or not self.active) then return end
         
-        self.cells:fill_rect(0, 1, -1, -1, ' ', null, self.dirtree.color.bg)
-        self.cells:fill_rect(0, 0, -1, 0, ' ', null, self.crumbs.color.empty)
+        self.cells:fill_rect(1, 2, -1, -1, ' ', null, self.dirtree.color.bg)
+        self.cells:fill_rect(1, 1, -1, 1, ' ', null, self.crumbs.color.empty)
         
         self.crumbs:draw()
         self.dirtree:draw()
-        self.knob:draw()
-        
-        return super()
+        return self.knob:draw()
     end
 
 --  ███████   ███████   ███   ███  █████████  ████████  ███   ███  █████████

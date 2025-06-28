@@ -150,8 +150,7 @@ function choices:drawSelections()
         
         if (y > self.cells.rows) then return end
         
-        -- xs = max sel[1] kseg.headCount(@state.s.lines[li] ' ')
-        local xs = max(sel[1], (self.state.s.lines[li]:indent() + 1))
+        local xs = max(sel[1], kseg.headCount(self.state.s.lines[li], ' '))
         if (xs == 1) then 
             xs = xs + (self.frontRoundOffset)
         end

@@ -124,8 +124,7 @@ class choices extends editor
         
         ⮐  if y > @cells.rows
         
-        # xs = max sel[1] kseg.headCount(@state.s.lines[li] ' ')
-        xs = max sel[1] @state.s.lines[li]∙indent()+1
+        xs = max sel[1] kseg.headCount(@state.s.lines[li] ' ')
         if xs == 1
             xs += @frontRoundOffset 
 
