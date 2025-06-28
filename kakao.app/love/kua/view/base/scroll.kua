@@ -34,7 +34,7 @@ class scroll extends view
     
     onMouse: event ->
         
-        (col row) = @eventPos event
+        (col row) = unpack @eventPos(event)
         
         view.onMouse @ event
         
@@ -67,7 +67,7 @@ class scroll extends view
         
     isActive: ->
         
-        @state.s.lines.length > @cells.rows
+        @state.s.lines∙len() > @cells.rows
         
     #  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
     # 000       000       000   000  000   000  000      000         000     000   000  
@@ -92,7 +92,6 @@ class scroll extends view
         
         ⮐  true if view∙eql @state.s.view
         
-        log "SCROLLLVEW" view
         @state∙setView view 
         
         true

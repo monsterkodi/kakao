@@ -77,8 +77,9 @@ class choices extends editor
         @filterText = ''
         
         lines = @items
-        if @key ➜ lines = @items∙map((i)->@extract(i))
-        log "#{@name} set lines" lines
+        log "CHOICES #{@name} set lines #{key} " lines
+        if @key ➜ lines = @items∙map((i) -> ⮐  @extract(i))
+        log "CHOICES #{@name} set lines #{key} " lines
         @state∙loadLines lines
         @
         
@@ -147,7 +148,7 @@ class choices extends editor
         if cc is "string"
             if opt.trim == 'front'
                 cc = kstr.ltrim cc
-            else if opt.trim != false 
+            elif opt.trim != false 
                 cc = kstr.trim cc
         cc
         
@@ -165,9 +166,9 @@ class choices extends editor
     nextRow: ->
         
         y = @state∙mainCursor()[2]
-        while y < @state.s.lines.len
+        while y < @state.s.lines∙len()
             y += 1
-            if kseg.trim(@state.s.lines[y]).len >= 1
+            if kseg.trim(@state.s.lines[y])∙len() >= 1
                 ⮐  y 
         
     prevRow: ->
@@ -175,7 +176,7 @@ class choices extends editor
         y = @state∙mainCursor()[2]
         while y > 1
             y -= 1
-            if kseg.trim(@state.s.lines[y]).len >= 1
+            if kseg.trim(@state.s.lines[y])∙len() >= 1
                 ⮐  y 
             
     pageUpRow: ->
@@ -186,16 +187,16 @@ class choices extends editor
         while y > 1 and empty kseg.trim(@state.s.lines[y])
             y -= 1
             
-        if empty kseg.trim(@state.s.lines[y]) and y < @state.s.lines.len
+        if empty kseg.trim(@state.s.lines[y]) and y < @state.s.lines∙len()
             y += 1
         y
     
     pageDownRow: ->
     
         y = @state∙mainCursor()[2] + @cells.rows - 1
-        y = min y @state.s.lines.len
+        y = min y @state.s.lines∙len()
         
-        while y < @state.s.lines.len and empty kseg.trim(@state.s.lines[y])
+        while y < @state.s.lines∙len() and empty kseg.trim(@state.s.lines[y])
             y += 1
             
         if empty kseg.trim(@state.s.lines[y]) and y > 1
@@ -212,7 +213,7 @@ class choices extends editor
     
         ⮐  if not row
         ⮐  if not row is "number"
-        ⮐  if row < 1 or row > @state.s.lines.len
+        ⮐  if row < 1 or row > @state.s.lines∙len()
     
         @state∙setSelections [belt.rangeOfLine(@state.s.lines row)]
         @state∙setMainCursor 1 row

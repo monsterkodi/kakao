@@ -43,7 +43,6 @@ end)()
         local h = ((c + 2) + ih)
         local x = self.pos[1]
         local y = self.pos[2]
-        print("nummChoices", c, x, y, w, h, ih, iz)
         
         self.input:layout((x + 2), (y + 1), (w - 4), iz)
         self.choices:layout((x + 1), ((y + 1) + ih), (w - 2), c)

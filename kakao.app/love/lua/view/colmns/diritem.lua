@@ -43,8 +43,7 @@ function diritem.static.symbolName(item)
         if item.modified then name = name .. ' ✔' end
         if item.added then name = name .. ' ✚' end
         
-        -- non-breakable space ▾ that prevents icons from growing in some fonts
-        return diritem.symbol(item) .. '\x00A0' .. name
+        return diritem.symbol(item) .. " " .. name
     end
 
 return diritem

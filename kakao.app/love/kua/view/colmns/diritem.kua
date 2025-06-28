@@ -45,7 +45,6 @@ class diritem
         if item.modified ➜ name &= ' ✔' 
         if item.added    ➜ name &= ' ✚' 
                 
-        # non-breakable space ▾ that prevents icons from growing in some fonts
-        @symbol(item) & '\x00A0' & name
+        @symbol(item) & " " & name
 
 ⮐  diritem

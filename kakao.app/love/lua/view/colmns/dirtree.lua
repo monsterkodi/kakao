@@ -91,7 +91,7 @@ function dirtree:onGitStatus(status)
         
         if redraw then 
             self:set(self.items, self:currentIndex())
-            return post.emit('redraw')
+            return post:emit('redraw')
         end
     end
 
@@ -111,13 +111,13 @@ function dirtree:onFileChange(info)
                     end
                 end
                 
-                self:setRoot(self.currentRoot, {redraw = true, index = self.currentIndex()})
+                self:setRoot(self.currentRoot, {index = self.currentIndex()})
             end
             
             if array('remove', 'deleted'):has(info.change) then 
                 for _, item in ipairs(self.items) do 
                     if (item.path == info.path) then 
-                        self:setRoot(self.currentRoot, {redraw = true, index = self.currentIndex()})
+                        self:setRoot(self.currentRoot, {index = self.currentIndex()})
                         return
                     end
                 end
@@ -150,15 +150,9 @@ function dirtree:setRoot(path, opt)
         
         -- items∙sort((a b) -> @weight(a) - @weight(b))
         
-        -- log 'setRoot' opt
-        
         self:set(items, (opt.index or 1))
         
-        self:restoreSessionState(opt)
-        
-        if opt.redraw then 
-            return post:emit('redraw')
-        end
+        return self:restoreSessionState(opt)
     end
 
 -- 00000000   00000000   0000000  000000000   0000000   00000000   00000000  
@@ -198,7 +192,7 @@ function dirtree:onSessionMerge(recent)
 function dirtree:setState(state) 
         if empty(state) then return end
         
-        return ked_session.set(self.name, state)
+        return ked_session:set(self.name, state)
     end
 
 --  0000000    0000000  000000000  000   0000000   000   000  
@@ -209,10 +203,11 @@ function dirtree:setState(state)
 
 
 function dirtree:emitAction(action, choice, event) 
+        print("DIRTREE emitAction", action)
         if (action == 'hover') then 
             self:grabFocus()
             if ((event.alt or event.cmd) and (choice.type == 'file')) then 
-                post.emit('quicky', choice.path)
+                post:emit('quicky', choice.path)
             end
             
             return
@@ -220,7 +215,7 @@ function dirtree:emitAction(action, choice, event)
         
         if (action == 'cmd+delete') then 
             if (choice.type == 'file') then 
-                post.emit('file.trash', choice.path)
+                post:emit('file.trash', choice.path)
             end
             
             return
@@ -228,37 +223,37 @@ function dirtree:emitAction(action, choice, event)
         
         if (choice.type == 'dir') then 
                 if (action == 'click') or (action == 'space') then 
-                        if ((action == 'click') and event.mods) then return post.emit('dircol.root', choice.path) end
+                        if ((action == 'click') and event.mods) then return post:emit('dircol.root', choice.path) end
                         
-                        if not choice.open then self:openDir(choice, {redraw = true})
+                        if not choice.open then self:openDir(choice)
                         else self:closeDir(choice)
                         end
                         
                         return
                 elseif (action == 'right') then 
-                        if not choice.open then self:openDir(choice, {redraw = true})
+                        if not choice.open then self:openDir(choice)
                         else self:selectNextKeepOffset()
                         end
                         
                         return
                 elseif (action == 'left') then 
-                        if choice.open then self:closeDir(choice, {redraw = true})
+                        if choice.open then self:closeDir(choice)
                         else self:selectPrevKeepOffset()
                         end
                         
                         return
                 elseif (action == 'delete') or (action == 'esc') then 
                         if not choice.open then self:selectOpenSiblingAboveOrParent() end
-                        if choice.open then self:closeDir(choice, {redraw = true}) end
+                        if choice.open then self:closeDir(choice) end
                         return
-                elseif (action == 'doubleclick') or (action == 'return') then return post.emit('dircol.root', choice.path)
+                elseif (action == 'doubleclick') or (action == 'return') then return post:emit('dircol.root', choice.path)
                 end
         elseif (choice.type == 'file') then 
                 if (action == 'left') then return self:selectPrevKeepOffset()
                 elseif (action == 'right') then return self:selectNextKeepOffset()
                 elseif (action == 'delete') or (action == 'esc') then return self:selectParent()
-                elseif (action == 'drag') or (action == 'space') then return post.emit('quicky', choice.path)
-                elseif (action == 'click') or (action == 'return') then return post.emit('file.open', choice.path)
+                elseif (action == 'drag') or (action == 'space') then return post:emit('quicky', choice.path)
+                elseif (action == 'click') or (action == 'return') then return post:emit('file.open', choice.path)
                 end
         end
         
@@ -272,7 +267,7 @@ function dirtree:emitAction(action, choice, event)
 --  0000000   000        00000000  000   000  0000000    000  000   000  
 
 
-function dirtree:openDir(dirItem, opt, ○) 
+function dirtree:openDir(dirItem, opt) 
         if empty(dirItem) then return end
         if dirItem.open then return end
         
@@ -280,11 +275,11 @@ function dirtree:openDir(dirItem, opt, ○)
         
         dirItem.open = true
         
-        local items = ○(self.dirItems, dirItem.path, 'dirtree.openDir')
+        local items = self:dirItems(dirItem.path, 'dirtree.openDir')
         
         dirItem.tilde = dirItem.tilde.replace(icons.dir_close, icons.dir_open)
         
-        local state = ked_session.get(self.name, {})
+        local state = ked_session:get(self.name, {})
         
         local depth = (dirItem.depth + 1)
         for _, item in ipairs(items) do 
@@ -300,28 +295,28 @@ function dirtree:openDir(dirItem, opt, ○)
             end
         end
         
-        items.sort(function (a, b) 
-    return (self:weight(a) - self:weight(b))
+        items:sort(function (a, b) 
+    return (self:weight(a) < self:weight(b))
 end)
         
-        local index = self.items.indexOf(dirItem)
+        local index = self.items:indexof(dirItem)
         
         kutil.insert(self.items, (index + 1), items)
         
         if opt.index then 
             index = opt.index
         elseif opt.select then 
-            index = self.items.indexOf(opt.select)
+            index = self.items:indexof(opt.select)
         end
         
         self:set(self.items, index)
         
-        ked_session.set("" .. tostring(self.name) .. "▸open▸" .. tostring(dirItem.path) .. "", '✔')
+        ked_session:set("" .. tostring(self.name) .. "▸open▸" .. tostring(dirItem.path) .. "", '✔')
         
         git.status(dirItem.path)
         
         if opt.redraw then 
-            post.emit('redraw')
+            post:emit('redraw')
         end
         
         return self
@@ -354,10 +349,10 @@ function dirtree:closeDir(dirItem, opt)
         
         self:set(self.items, index)
         
-        ked_session.del("" .. tostring(self.name) .. "▸open▸" .. tostring(dirItem.path) .. "")
+        ked_session:del("" .. tostring(self.name) .. "▸open▸" .. tostring(dirItem.path) .. "")
         
         if opt.redraw then 
-            post.emit('redraw')
+            post:emit('redraw')
         end
         
         return self
@@ -386,6 +381,7 @@ function dirtree:set(items, index)
         
         local oldTop = self.state.s.view[2]
         choices.set(self, items, 'tilde')
+        -- log "DIRTREE SET" items
         self.state:setView(array(1, oldTop))
         self.state:selectLine(index)
         return self.state:setMainCursor(1, index)
@@ -409,7 +405,7 @@ function dirtree:selectPrevKeepOffset()
 
 
 function dirtree:selectNextKeepOffset() 
-        if ((self:current().type == 'file') and (ked_session.get('editor▸file') ~= self:current().path)) then 
+        if ((self:current().type == 'file') and (ked_session:get('editor▸file') ~= self:current().path)) then 
             post:emit('quicky', self:current().path)
             return
         end
@@ -454,9 +450,9 @@ function dirtree:drawSelections()
             local y = (li - self.state.s.view[2])
             if ((y < self.cells.rows) and (li < self.state.s.lines:len())) then 
                 local xs = kseg.headCount(self.state.s.lines[li], ' ')
-                self.cells.set(((xs - 1) - self.state.s.view[1]), y, '', bg, self.color.bg)
+                self.cells:set(((xs - 1) - self.state.s.view[1]), y, '', bg, self.color.bg)
                 for x = xs, self.cells.cols-1 do 
-                    self.cells.set_bg((x - self.state.s.view[1]), y, bg)
+                    self.cells:set_bg((x - self.state.s.view[1]), y, bg)
                 end
             end
         end

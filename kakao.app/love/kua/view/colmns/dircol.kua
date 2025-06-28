@@ -50,7 +50,6 @@ class dircol extends view
         post∙on 'session.merge' @onSessionMerge @
         
         root = ked_session∙get 'dircol▸root' slash.cwd()
-        
         @setRoot root
         
     onCrumbsAction: action path ->
@@ -84,13 +83,14 @@ class dircol extends view
         ⮐  if empty path
     
         path = slash.tilde path
+
         @crumbs∙set path
-        @dirtree∙setRoot path {redraw:true}
+        @dirtree∙setRoot path
         
         ked_session∙set 'dircol▸root' path
         
     layout: x y w h ->
-        
+    
         @crumbs∙layout  x     y   w   1
         @dirtree∙layout x     y+1 w h-1
         @knob∙layout    x+w-1 y+1 1 h-1
@@ -102,8 +102,8 @@ class dircol extends view
         
         ⮐  if @hidden() or @collapsed() or not @active
         
-        @cells∙fill_rect 1 2 -1 -1 ' ' null @dirtree.color.bg
-        @cells∙fill_rect 1 1 -1  1 ' ' null @crumbs.color.empty
+        @cells∙fill_rect 1 2 -1 -1 ' ' nil @dirtree.color.bg
+        @cells∙fill_rect 1 1 -1  1 ' ' nil @crumbs.color.empty
         
         @crumbs∙draw()
         @dirtree∙draw()

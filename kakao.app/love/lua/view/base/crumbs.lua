@@ -220,7 +220,7 @@ function crumbs:onMouseLeave(event)
 
 
 function crumbs:onMouse(event) 
-        local col, row = self:eventPos(event)
+        local col, row = unpack(self:eventPos(event))
         
         -- super event
         
@@ -235,18 +235,18 @@ function crumbs:onMouse(event)
         
         if (event.type == 'press') then 
                 local si = self:splitIndexAtCol(col)
-                if ((0 <= self.hoverIndex) < #self.split) then 
+                if ((1 <= self.hoverIndex) and (self.hoverIndex <= #self.split)) then 
                     local path = self:pathAtSplitIndex(self.hoverIndex)
                     self:emit('action', 'click', path, event)
                 end
                 
-                return {redraw = true}
+                return true
         elseif (event.type == 'move') then 
                 local index = self:splitIndexAtCol(col)
                 if (self.hoverIndex ~= index) then 
                     self.hoverIndex = index
                     self:emit('action', 'enter', self:pathAtSplitIndex(index), {index = index, cols = self.colsAtSplitIndex(index)})
-                    return {redraw = true}
+                    return true
                 end
         end
         

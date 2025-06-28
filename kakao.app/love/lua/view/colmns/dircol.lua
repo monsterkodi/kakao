@@ -52,7 +52,6 @@ function dircol:init(editor, features)
         post:on('session.merge', self.onSessionMerge, self)
         
         local root = ked_session:get('dircol▸root', slash.cwd())
-        
         self:setRoot(root)
         return self
     end
@@ -94,8 +93,9 @@ function dircol:setRoot(path)
         if empty(path) then return end
         
         path = slash.tilde(path)
+        
         self.crumbs:set(path)
-        self.dirtree:setRoot(path, {redraw = true})
+        self.dirtree:setRoot(path)
         
         return ked_session:set('dircol▸root', path)
     end
@@ -114,8 +114,8 @@ function dircol:layout(x, y, w, h)
 function dircol:draw() 
         if ((self:hidden() or self:collapsed()) or not self.active) then return end
         
-        self.cells:fill_rect(1, 2, -1, -1, ' ', null, self.dirtree.color.bg)
-        self.cells:fill_rect(1, 1, -1, 1, ' ', null, self.crumbs.color.empty)
+        self.cells:fill_rect(1, 2, -1, -1, ' ', nil, self.dirtree.color.bg)
+        self.cells:fill_rect(1, 1, -1, 1, ' ', nil, self.crumbs.color.empty)
         
         self.crumbs:draw()
         self.dirtree:draw()

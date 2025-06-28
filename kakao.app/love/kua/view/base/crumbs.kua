@@ -172,7 +172,7 @@ class crumbs extends view
 
     onMouse: event ->
         
-        (col row) = @eventPos event
+        (col row) = unpack @eventPos(event)
         
         # super event
         
@@ -187,10 +187,10 @@ class crumbs extends view
             'press' 
                 
                 si = @splitIndexAtCol col
-                if 0 <= @hoverIndex < @split.length
+                if 1 <= @hoverIndex and @hoverIndex <= @split.len
                     path = @pathAtSplitIndex @hoverIndex
                     @emit 'action' 'click' path event
-                ⮐  {redraw:true}
+                ⮐  true
                 
             'move'
             
@@ -198,7 +198,7 @@ class crumbs extends view
                 if @hoverIndex != index
                     @hoverIndex = index
                     @emit 'action' 'enter' @pathAtSplitIndex(index) {index:index cols:@colsAtSplitIndex(index)}
-                    ⮐  {redraw:true}
+                    ⮐  true
 
         @hover
                     

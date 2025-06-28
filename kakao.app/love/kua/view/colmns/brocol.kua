@@ -6,15 +6,15 @@
     ███████    ███   ███   ███████    ███████   ███████   ███████  
 ###
 
-use ../../../kxk ▪ slash post kstr
-use ../../../kxk ◆ nfs
-use ../../theme  ◆ icons 
-use ../menu      ◆ choices
-use              ◆ diritem
+# use ../../../kxk ▪ slash post kstr
+# use ../../../kxk ◆ nfs
+# use ../../theme  ◆ icons 
+# use ../menu      ◆ choices
+# use              ◆ diritem
 
-import rgxs from './quicky.json' with { type: "json" }
+# import rgxs from './quicky.json' with { type: "json" }
 
-function brocol extends choices
+class brocol extends choices
 
     @: screen name ->
         
@@ -34,7 +34,7 @@ function brocol extends choices
         
         ⮐  if @hidden()
         
-        [col row] = @eventPos event
+        (col row) = unpack @eventPos(event)
         
         ret = super event
         
@@ -49,7 +49,7 @@ function brocol extends choices
             items =○ nfs.list dir recursive:false
         catch err
             @clear()
-            post.emit 'redraw'
+            post∙emit 'redraw'
             ⮐ 
 
         for item in items
@@ -66,13 +66,13 @@ function brocol extends choices
             w += kstr.weight(p.file)
             w
             
-        items.sort (a b) -> weight(a) - weight(b)
+        items∙sort((a b) -> ⮐  weight(a) < weight(b))
         
-        items.unshift(tilde:'')
+        items∙unshift(tilde:'')
             
         @set items 'tilde'
         @state.setView [0 0]
         
-        post.emit 'redraw'
+        post∙emit 'redraw'
         
-export brocol
+⮐   brocol

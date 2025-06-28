@@ -94,8 +94,9 @@ function choices:set(items, key)
         self.filterText = ''
         
         local lines = self.items
-        if self.key then lines = self.items:map(function (i) self:extract(i) end) end
-        print("" .. tostring(self.name) .. " set lines", lines)
+        print("CHOICES " .. tostring(self.name) .. " set lines " .. tostring(key) .. " ", lines)
+        if self.key then lines = self.items:map(function (i) return self:extract(i) end) end
+        print("CHOICES " .. tostring(self.name) .. " set lines " .. tostring(key) .. " ", lines)
         self.state:loadLines(lines)
         return self
     end
@@ -185,9 +186,8 @@ function choices:current(opt)
         if is(cc, "string") then 
             if (opt.trim == 'front') then 
                 cc = kstr.ltrim(cc)
-            else if (opt.trim ~= false) then 
+            elseif (opt.trim ~= false) then 
                 cc = kstr.trim(cc)
-                 end
             end
         end
         
@@ -217,9 +217,9 @@ function choices:hasPrev()
 
 function choices:nextRow() 
         local y = self.state:mainCursor()[2]
-        while (y < #self.state.s.lines) do 
+        while (y < self.state.s.lines:len()) do 
             y = y + 1
-            if (#kseg.trim(self.state.s.lines[y]) >= 1) then 
+            if (kseg.trim(self.state.s.lines[y]):len() >= 1) then 
                 return y
             end
         end
@@ -230,7 +230,7 @@ function choices:prevRow()
         local y = self.state:mainCursor()[2]
         while (y > 1) do 
             y = y - 1
-            if (#kseg.trim(self.state.s.lines[y]) >= 1) then 
+            if (kseg.trim(self.state.s.lines[y]):len() >= 1) then 
                 return y
             end
         end
@@ -245,7 +245,7 @@ function choices:pageUpRow()
             y = y - 1
         end
         
-        if empty((kseg.trim(self.state.s.lines[y]) and (y < #self.state.s.lines))) then 
+        if empty((kseg.trim(self.state.s.lines[y]) and (y < self.state.s.lines:len()))) then 
             y = y + 1
         end
         
@@ -255,9 +255,9 @@ function choices:pageUpRow()
 
 function choices:pageDownRow() 
         local y = ((self.state:mainCursor()[2] + self.cells.rows) - 1)
-        y = min(y, #self.state.s.lines)
+        y = min(y, self.state.s.lines:len())
         
-        while ((y < #self.state.s.lines) and empty(kseg.trim(self.state.s.lines[y]))) do 
+        while ((y < self.state.s.lines:len()) and empty(kseg.trim(self.state.s.lines[y]))) do 
             y = y + 1
         end
         
@@ -278,7 +278,7 @@ function choices:pageDownRow()
 function choices:select(row) 
         if not row then return end
         if is(not row, "number") then return end
-        if ((row < 1) or (row > #self.state.s.lines)) then return end
+        if ((row < 1) or (row > self.state.s.lines:len())) then return end
         
         self.state:setSelections(array(belt.rangeOfLine(self.state.s.lines, row)))
         self.state:setMainCursor(1, row)

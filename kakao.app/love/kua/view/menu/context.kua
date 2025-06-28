@@ -34,7 +34,6 @@ class context extends inputchoice
         h = c + 2 + ih
         x = @pos[1]
         y = @pos[2]
-        log "nummChoices" c, x, y, w, h, ih, iz
         
         @input∙layout    x+2   y+1      w-4  iz
         @choices∙layout  x+1   y+1+ih   w-2  c

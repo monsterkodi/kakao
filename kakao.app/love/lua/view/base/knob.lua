@@ -47,7 +47,7 @@ function knob:onMouse(event)
                 if self.doDrag then 
                     self.hover = true
                     
-                    local col, row = self:eventPos(event)
+                    local col, row = unpack(self:eventPos(event))
                     
                     local delta = (function () 
     if (self.frameSide == 'left') then 

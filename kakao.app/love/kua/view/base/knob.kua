@@ -47,7 +47,7 @@ class knob extends view
                 if @doDrag
                     @hover = true
                     
-                    (col row) = @eventPos event
+                    (col row) = unpack @eventPos(event)
                     
                     delta = switch @frameSide
                         'left'  ➜ -col

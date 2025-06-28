@@ -40,7 +40,7 @@ function scroll:init(state, side)
 
 
 function scroll:onMouse(event) 
-        local col, row = self:eventPos(event)
+        local col, row = unpack(self:eventPos(event))
         
         view.onMouse(self, event)
         
@@ -74,7 +74,7 @@ function scroll:onMouse(event)
 
 
 function scroll:isActive() 
-        return (#self.state.s.lines > self.cells.rows)
+        return (self.state.s.lines:len() > self.cells.rows)
     end
 
 --  0000000   0000000  00000000    0000000   000      000      000000000   0000000   
@@ -102,7 +102,6 @@ function scroll:scrollToPixel(pixelY)
         
         if view:eql(self.state.s.view) then return true end
         
-        print("SCROLLLVEW", view)
         self.state:setView(view)
         
         return true
