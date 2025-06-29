@@ -462,18 +462,20 @@ function choices:onMouse(event)
                     if ((dx * 2) >= dy) then return end
                 end
                 
+                local index = ((row + self.state.s.view[2]) - 1)
+                
                 if (event.type == 'move') then 
-                            return self:hoverChoiceAtIndex((row + self.state.s.view[2]), event)
+                            return self:hoverChoiceAtIndex(index, event)
                 elseif (event.type == 'press') then 
                         if (event.count == 2) then 
-                            return self:doubleClickChoiceAtIndex((row + self.state.s.view[2]), event)
+                            return self:doubleClickChoiceAtIndex(index, event)
                         else 
                             self.dragStart = array(col, row)
-                            return self:clickChoiceAtIndex((row + self.state.s.view[2]), event)
+                            return self:clickChoiceAtIndex(index, event)
                         end
                 elseif (event.type == 'drag') then 
                             if self.dragStart then 
-                                return self:dragChoiceAtIndex((row + self.state.s.view[2]), event)
+                                return self:dragChoiceAtIndex(index, event)
                             end
                 elseif (event.type == 'release') then 
                             self.dragStart = nil

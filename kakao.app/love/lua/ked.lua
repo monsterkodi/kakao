@@ -54,7 +54,7 @@ function KED:init()
         -- @differ   = differ    @editor
         self.status = status(self.editor)
         self.context = context()
-        -- @input    = input()
+        self.input = input("rename_input")
         
         -- @input.on 'action' @onInputAction
         
@@ -156,7 +156,7 @@ function KED:onSessionLoaded()
 
 
 function KED:arrange(si) 
-        local dcw = (((self.dircol.cells.cols > 0) and self.dircol.cells.cols) or 10)
+        local dcw = (((self.dircol.cells.cols > 0) and self.dircol.cells.cols) or 20)
         local fcw = (((self.funcol.cells.cols > 0) and self.funcol.cells.cols) or 10)
         
         if self.viewSizeDelta then 
@@ -324,11 +324,16 @@ function KED:loadFile(p, row, col, view)
         
         if not exists then 
             warn("ked.loadFile - file doesn't exist! " .. tostring(self.loadingFile) .. "")
+            print(dict.str(slash.stat(self.loadingFile)))
+            local mode = slash.stat(self.loadingFile).mode
+            print(string.format("%x", mode))
+            print(bit.band(mode, 0x4000))
+            print(bit.band(mode, 0x8000))
             self.loadingFile = nil
             return
         end
         
-        self.loadingFile = slash.resolveSymlink(self.loadingFile)
+        -- @loadingFile = slash.resolveSymlink @loadingFile
         
         if empty(self.loadingFile) then 
             error("ked.loadFile - " .. tostring(absFile) .. " resolved to empty!")
@@ -339,7 +344,10 @@ function KED:loadFile(p, row, col, view)
         
         local readingFile = self.loadingFile
         
+        print("LOADNG", type(self.loadingFile))
+        
         local text = slash.readText(self.loadingFile)
+        print("READ TEXT", text)
         
         if (self.loadingFile ~= readingFile) then 
             -- warn 'another file started loading, skip editor update'
@@ -354,18 +362,18 @@ function KED:loadFile(p, row, col, view)
         
         self.status:setFile(slash.tilde(self.currentFile))
         
-        if (text == undefined) then 
-            text = '○ binary ○'
+        if (text == nil) then 
+            text = "○ binary ○"
         end
         
-        local colors, segls = belt.colorSeglsForText(text)
+        -- (colors segls) = belt.colorSeglsForText text
+        -- 
+        -- if valid colors
+        --     @editor.state.syntax∙setColors colors
+        -- else
+        self.editor.state.syntax:setExt(slash.ext(self.currentFile))
         
-        if valid(colors) then 
-            self.editor.state.syntax:setColors(colors)
-        else 
-            self.editor.state.syntax:setExt(slash.ext(self.currentFile))
-        end
-        
+        local segls = kseg.segls(text)
         self.editor.state:loadSegls(segls)
         self.editor:setCurrentFile(self.currentFile)
         ked_session:set("editor▸file", self.currentFile)
@@ -375,21 +383,19 @@ function KED:loadFile(p, row, col, view)
         post:emit("file.loaded", self.currentFile)
         
         self:showEditor()
-        -- @redraw()
         
-        self.indexer:index(self.currentFile)
-        prjcts.index(self.currentFile)
-        git.diff(self.currentFile)
-        watcher.watch(self.currentFile)
+        -- @indexer∙index @currentFile
+        -- prjcts.index   @currentFile
+        -- git.diff       @currentFile
+        -- watcher.watch  @currentFile
         
         -- @t.setTitle slash.file(@status.file)
         
-        self:saveSessionFile(self.currentFile, 'loaded')
+        -- @saveSessionFile @currentFile 'loaded'        
         
-        local gitDir = git.dir(self.currentFile)
-        if gitDir then 
-            watcher.watch(slash.path(gitDir, '.git/refs/heads'), {recursive = false})
-        end
+        -- gitDir = git.dir @currentFile
+        -- if gitDir
+        --     watcher.watch slash.path(gitDir '.git/refs/heads') {recursive: false}
         
         return self
     end
@@ -595,13 +601,14 @@ function KED:onResize(cols, rows, size, cellsz)
 
 
 function KED:onInputPopup(opt) 
-        self.input.set(opt.text)
-        self.input.state.moveCursors('eol')
-        self.input.layout(opt.x, opt.y, opt.w, 1)
-        self.input.grabFocus()
+        print("onInputPopup", opt)
+        self.input:set(opt.text)
+        self.input.state:moveCursors('eol')
+        self.input:layout(opt.x, opt.y, opt.w, 1)
+        self.input:grabFocus()
         self.input.orig = opt.text
         self.input.cb = opt.cb
-        return -- @redraw()
+        return self.input.cb
     end
 
 
@@ -645,10 +652,6 @@ function KED:draw(cols, rows, cw, ch)
              self.funcol:draw()
         end
         
-        -- for y in 1..rows
-        --     for x in 1..cols
-        --         @screen∙set x y string.sub($x 1 1) [50 0 0] 
-        
         self.menu:draw()
         self.macro:draw()
         -- @quicky∙draw()
@@ -658,7 +661,7 @@ function KED:draw(cols, rows, cw, ch)
         -- @searcher∙draw()
         -- @differ∙draw()
         self.context:draw()
-        return -- @input∙draw()
+        return self.input:draw()
     end
 
 return KED

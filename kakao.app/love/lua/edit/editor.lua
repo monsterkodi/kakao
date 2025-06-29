@@ -207,8 +207,7 @@ function editor:isCursorVisible(mc)
 
 function editor:grabFocus() 
         if self:hidden() then self:show() end
-        post:emit('focus', self.name)
-        return -- @redraw()
+        return post:emit('focus', self.name)
     end
 
 
@@ -218,6 +217,7 @@ function editor:hasFocus()
 
 
 function editor:onFocus(name) 
+        -- log "onFocus" name, @name
         self.state.hasFocus = (name == self.name)
         return self.state.hasFocus
     end

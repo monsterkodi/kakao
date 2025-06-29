@@ -45,8 +45,7 @@ class fileeditor extends editor
     setCurrentFile: currentFile ->
     
         @currentFile = currentFile
-        @cells.meta_clear()
-        @gutter.clearChanges()
+        @gutter∙clearChanges()
         
     onFuntreeLoaded: ->
         

@@ -130,16 +130,22 @@ function dircol:draw()
 
 
 function dircol:onContext(event) 
-        return context:show(event.cell, self.onContextChoice, array(" ", " ", " "))
+        
+        function onChoice(choice) 
+    return self:onContextChoice(choice)
+        end
+        
+        return context.show(event.cell, onChoice, array(" ", " ", " "))
     end
 
 
 function dircol:onContextChoice(choice) 
         local current = self.dirtree:current()
+        print("onContextChoice", choice, current)
         if current then 
             if (choice == '') then 
                     return self:rename()
-            elseif (choice == '') then 
+            elseif (choice == '') then 
                     local dir = current.path
                     if (current.type == 'file') then 
                         dir = slash.dir(dir)
@@ -233,9 +239,9 @@ function dircol:onMouse(event)
         if ((self:hidden() or self:collapsed()) or not self.active) then return end
         
         if self.knob:onMouse(event) then return true end
-        if view.onMouse(self, event) then return true end
         if self.crumbs:onMouse(event) then return true end
-        if self.dirtree:onMouse(event) then 
+        if self.dirtree:onMouse(event) then return true end
+        if view.onMouse(self, event) then 
     return true
         end
     end

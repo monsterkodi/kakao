@@ -37,8 +37,7 @@ function fileeditor:init(name)
 
 function fileeditor:setCurrentFile(currentFile) 
         self.currentFile = currentFile
-        self.cells.meta_clear()
-        return self.gutter.clearChanges()
+        return self.gutter:clearChanges()
     end
 
 

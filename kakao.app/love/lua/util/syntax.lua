@@ -93,7 +93,7 @@ function syntax:partialUpdate(segls)
         
         local newHash = {}
         
-        for segl, idx in segls do 
+        for segl, idx in ipairs(segls) do 
             local hsh = kseg.hash(segl)
             if self.hash[hsh] then 
                 newHash[hsh] = self.hash[hsh]
@@ -120,7 +120,7 @@ function syntax:addSegl(segl, ext)
 
 function syntax:appendSegls(segls, ext) 
         -- @diss = @diss.concat kulur.dissect(segls ext)
-        for segl in segls do 
+        for _, segl in ipairs(segls) do 
             self:addSegl(segl, ext)
         end
     end
@@ -164,7 +164,7 @@ function syntax:getColor(x, y)
         
             -- log "syntax.getColor - no syntax color for '#{clss}'" # @diss[y] 
         
-        return (theme.syntax[clss] or array(255, 0, 0))
+        return (theme.syntax[clss] or array(155, 155, 155))
     end
 
 --  ███████   ███   ███   ███████  ███

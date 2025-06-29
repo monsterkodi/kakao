@@ -277,7 +277,7 @@ function dirtree:openDir(dirItem, opt)
         
         local items = self:dirItems(dirItem.path, 'dirtree.openDir')
         
-        dirItem.tilde = dirItem.tilde.replace(icons.dir_close, icons.dir_open)
+        dirItem.tilde = string.gsub(dirItem.tilde, icons.dir_close, icons.dir_open)
         
         local state = ked_session:get(self.name, {})
         
@@ -285,13 +285,15 @@ function dirtree:openDir(dirItem, opt)
         for _, item in ipairs(items) do 
             item.depth = depth
             self:tilde(item)
-            if ((item.type == 'dir') and state.open[item.path]) then 
-                if empty((opt.select and empty), opt.index) then 
-                    opt.select = dirItem
+            if state.open then 
+                if ((item.type == 'dir') and state.open[item.path]) then 
+                    if empty((opt.select and empty), opt.index) then 
+                        opt.select = dirItem
+                    end
+                    
+                    opt.redraw = true
+                    self:openDir(item, opt)
                 end
-                
-                opt.redraw = true
-                self:openDir(item, opt)
             end
         end
         
@@ -299,9 +301,12 @@ function dirtree:openDir(dirItem, opt)
     return (self:weight(a) < self:weight(b))
 end)
         
-        local index = self.items:indexof(dirItem)
+        local index = self.items:findWith(function (i) 
+    return (i.path == dirItem.path)
+end)
         
-        kutil.insert(self.items, (index + 1), items)
+        print("SPLICE INDEX", index)
+        self.items:splice((index + 1), 0, unpack(items))
         
         if opt.index then 
             index = opt.index
@@ -313,12 +318,7 @@ end)
         
         ked_session:set("" .. tostring(self.name) .. "▸open▸" .. tostring(dirItem.path) .. "", '✔')
         
-        git.status(dirItem.path)
-        
-        if opt.redraw then 
-            post:emit('redraw')
-        end
-        
+        -- git.status dirItem.path
         return self
     end
 
@@ -336,25 +336,22 @@ function dirtree:closeDir(dirItem, opt)
         
         dirItem.open = false
         
-        dirItem.tilde = dirItem.tilde.replace(icons.dir_open, icons.dir_close)
+        dirItem.tilde = string.gsub(dirItem.tilde, icons.dir_open, icons.dir_close)
         
-        local index = self.items.indexOf(dirItem)
+        local index = self.items:findWith(function (i) 
+    return (i.path == dirItem.path)
+end)
         
         local numChildren = 0
-        while ((((index + numChildren) + 1) < self.items:len()) and self.items[((index + numChildren) + 1)].path.startsWith(dirItem.path)) do 
+        while ((((index + numChildren) + 1) < self.items:len()) and kstr.startsWith(self.items[((index + numChildren) + 1)].path, dirItem.path)) do 
             numChildren = numChildren + 1
         end
         
-        kutil.replace(self.items, (index + 1), numChildren, array())
+        self.items:splice((index + 1), numChildren)
         
         self:set(self.items, index)
         
         ked_session:del("" .. tostring(self.name) .. "▸open▸" .. tostring(dirItem.path) .. "")
-        
-        if opt.redraw then 
-            post:emit('redraw')
-        end
-        
         return self
     end
 
@@ -381,7 +378,6 @@ function dirtree:set(items, index)
         
         local oldTop = self.state.s.view[2]
         choices.set(self, items, 'tilde')
-        -- log "DIRTREE SET" items
         self.state:setView(array(1, oldTop))
         self.state:selectLine(index)
         return self.state:setMainCursor(1, index)

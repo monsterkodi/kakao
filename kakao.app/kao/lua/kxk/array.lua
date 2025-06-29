@@ -285,6 +285,15 @@ function array:rindexof(a)
     end
 
 
+function array:findWith(f) 
+        for i, v in ipairs(self) do 
+            if f(v) then return i end
+        end
+        
+        return -1
+    end
+
+
 function array:find(e) 
         for i, v in ipairs(self) do 
             if (v == e) then return i end

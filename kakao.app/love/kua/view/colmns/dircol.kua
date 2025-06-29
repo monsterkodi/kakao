@@ -117,15 +117,17 @@ class dircol extends view
 
     onContext: event ->
     
-        context∙show event.cell @onContextChoice [
+        onChoice = choice -> @onContextChoice choice
+    
+        context.show event.cell onChoice [
             " " 
-            " " 
+            " " 
             " " 
             ]
                 
     onContextChoice: choice ->
-    
         current = @dirtree∙current()
+        log "onContextChoice" choice, current
         if current
             
             switch choice
@@ -133,7 +135,7 @@ class dircol extends view
                 ''
                     @rename()
                     
-                ''
+                ''
                     dir = current.path
                     if current.type == 'file'
                         dir = slash.dir dir
@@ -208,9 +210,9 @@ class dircol extends view
         ⮐  if @hidden() or @collapsed() or not @active
         
         if @knob∙onMouse(event)    ➜ ⮐  true
-        if view.onMouse(@ event)   ➜ ⮐  true
         if @crumbs∙onMouse(event)  ➜ ⮐  true
         if @dirtree∙onMouse(event) ➜ ⮐  true
+        if view.onMouse(@ event)   ➜ ⮐  true
         
     # 000   000  000   000  00000000  00000000  000      
     # 000 0 000  000   000  000       000       000      

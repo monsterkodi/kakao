@@ -480,9 +480,9 @@ function slash.stat(path)
     if (ffi.C.stat64(path, sbuf) == 0) then 
         local mode = tonumber(sbuf.st_mode)
         local typ = "?"
-        if bit.band(mode, 0x4000) then typ = "dir"
-        elseif bit.band(mode, 0x8000) then typ = "file"
-        elseif bit.band(mode, 0xa000) then typ = "link"
+        if (bit.band(mode, 0x4000) ~= 0) then typ = "dir"
+        elseif (bit.band(mode, 0x8000) ~= 0) then typ = "file"
+        elseif (bit.band(mode, 0xa000) ~= 0) then typ = "link"
         end
         
         return {
@@ -606,6 +606,24 @@ end
 
 function slash.samePath(p1, p2) 
     return (slash.untilde(p1) == slash.untilde(p2))
+end
+
+
+function slash.readText(path) 
+    local file = io.open(path, "r")
+    if not file then return end
+    local content = file:read("*a")
+    file:close()
+    return content
+end
+
+
+function slash.writeText(path, text) 
+    local file = io.open(path, "w")
+    if not file then return end
+    local content = file:write(text)
+    file:close()
+    return true
 end
 
 return slash

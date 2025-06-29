@@ -125,7 +125,7 @@ love.draw = ->
     
     lg.setColor 0.2 0.2 0.2 
     
-    lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{love.timer.getFPS()} #{floor(scrollWheel.vel_y)} #{floor(scrollWheel.inert_y)} ◂" 16*cw 0
+    # lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{love.timer.getFPS()} #{floor(scrollWheel.vel_y)} #{floor(scrollWheel.inert_y)} ◂" 16*cw 0
     
     # log "hasGlyphs", _G.font∙hasGlyphs("⮐➜▸∙◌○◇□✔✘●◆▪◼■△┬")
     

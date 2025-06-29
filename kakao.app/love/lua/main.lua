@@ -142,7 +142,7 @@ function love.draw()
     
     lg.setColor(0.2, 0.2, 0.2)
     
-    lg.print("" .. tostring(cols) .. " " .. tostring(rows) .. " " .. tostring(w) .. " " .. tostring(h) .. " " .. tostring(cw) .. " " .. tostring(ch) .. " " .. tostring(love.timer.getFPS()) .. " " .. tostring(floor(scrollWheel.vel_y)) .. " " .. tostring(floor(scrollWheel.inert_y)) .. " ◂", (16 * cw), 0)
+    -- lg.print "#{cols} #{rows} #{w} #{h} #{cw} #{ch} #{love.timer.getFPS()} #{floor(scrollWheel.vel_y)} #{floor(scrollWheel.inert_y)} ◂" 16*cw 0
     
     -- log "hasGlyphs", _G.font∙hasGlyphs("⮐➜▸∙◌○◇□✔✘●◆▪◼■△┬")
     

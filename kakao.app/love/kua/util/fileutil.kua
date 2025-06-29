@@ -6,10 +6,10 @@
       ███       ███  ███████  ████████   ███████      ███     ███  ███████  
 ###
 
-use ../../kxk ▪ post slash
-use ../../kxk ◆ nfs salter
+# use ../../kxk ▪ post slash
+# use ../../kxk ◆ nfs salter
 
-function fileutil
+class fileutil
 
     # move these to some config! 𝖘𝜏⊚𝔭 ⫙⊚⩗𝚒∩𝚐 𝜏𝖍𝚒𝖘 𝕒ɼ𝕒⊚𝓊∩⫐, 𝒹𝕒⫙⫙𝚒𝜏!
     @indexFileExtensions:  [ 'kode' 'mm' 'zig' 'cc' 'c' 'h' 'hpp' 'cpp' 'nim' 'kim' 'lua' 'kua'] 
@@ -52,9 +52,11 @@ function fileutil
 
     @swapLastDir: path from to ->
 
-        lastIndex = path.lastIndexOf "/#{from}/"
-        if lastIndex >= 0
-            path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
+        lastIndex = path.rfind "/#{from}/"
+        if lastIndex >= 1
+            newp = kstr.slice(path 1 lastIndex) & to & kstr.slice(path lastIndex+("/#{from}").len)
+            log "swapLastDir" path, newp
+            ⮐  newp
         path
         
     # █████████  ████████    ███████    ███████  ███   ███
@@ -63,9 +65,9 @@ function fileutil
     #    ███     ███   ███  ███   ███       ███  ███   ███
     #    ███     ███   ███  ███   ███  ███████   ███   ███
 
-    @trash: path ○->
+    @trash: path ->
     
-        ○ nfs.trash path
+        nfs.trash path
         
     #  ███████  ███       ███████    ███████   ███████
     # ███       ███      ███   ███  ███       ███     
@@ -73,15 +75,15 @@ function fileutil
     # ███       ███      ███   ███       ███       ███
     #  ███████  ███████  ███   ███  ███████   ███████ 
 
-    @class: name ○->
+    @class: name ->
     
-        currentDir = slash.dir ked_session.get('editor▸file')
+        currentDir = slash.dir ked_session∙get('editor▸file')
         currentDir ?= process.cwd()
         file       = slash.path currentDir "#{name}.kode"
-        
-        ○ nfs.write file """
+        header     = salter(name prepend:'    ')
+        nfs.write file """
             ###
-            #{salter(name prepend:'    ')}
+            #{header}
             ###
             
             function #{name}
@@ -92,7 +94,7 @@ function fileutil
             
             """ 
             
-        post.emit 'file.open' file 6 'eol'
+        post∙emit 'file.open' file 6 'eol'
         
     # ███   ███  ████████  ███   ███        ████████   ███████   ███      ███████    ████████  ████████ 
     # ████  ███  ███       ███ █ ███        ███       ███   ███  ███      ███   ███  ███       ███   ███
@@ -100,12 +102,12 @@ function fileutil
     # ███  ████  ███       ███   ███        ███       ███   ███  ███      ███   ███  ███       ███   ███
     # ███   ███  ████████  ██     ██        ███        ███████   ███████  ███████    ████████  ███   ███
 
-    @newFolder: parent ○->
+    @newFolder: parent ->
     
         dir = slash.path parent 'new_folder'
-        res =○ nfs.mkdir dir
+        res = nfs.mkdir dir
         if res == dir
-            post.emit 'redraw'
+            post∙emit 'redraw'
         
     # ████████   ████████  ███   ███   ███████   ██     ██  ████████
     # ███   ███  ███       ████  ███  ███   ███  ███   ███  ███     
@@ -113,11 +115,11 @@ function fileutil
     # ███   ███  ███       ███  ████  ███   ███  ███ █ ███  ███     
     # ███   ███  ████████  ███   ███  ███   ███  ███   ███  ████████
 
-    @rename: oldPath newPath ○->
+    @rename: oldPath newPath ->
         
         ⮐  if oldPath == newPath
         
-        res =○ nfs.move oldPath newPath
+        res = nfs.move oldPath newPath
         if res != newPath
             error "rename failed! #{res}"
         
@@ -126,4 +128,4 @@ post.on 'file.class'      fileutil.class
 post.on 'file.rename'     fileutil.rename
 post.on 'file.new_folder' fileutil.newFolder
 
-export fileutil
+⮐  fileutil

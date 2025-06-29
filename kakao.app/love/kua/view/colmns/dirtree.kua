@@ -257,7 +257,7 @@ class dirtree extends choices
         
         items = @dirItems dirItem.path 'dirtree.openDir'
         
-        dirItem.tilde = dirItem.tilde.replace icons.dir_close icons.dir_open 
+        dirItem.tilde = string.gsub dirItem.tilde icons.dir_close icons.dir_open 
             
         state = ked_session∙get @name {}
         
@@ -265,17 +265,19 @@ class dirtree extends choices
         for item in items
             item.depth = depth
             @tilde item
-            if item.type == 'dir' and state.open[item.path]
-                if empty opt.select and empty opt.index
-                    opt.select = dirItem
-                opt.redraw = true
-                @openDir item opt
+            if state.open
+                if item.type == 'dir' and state.open[item.path]
+                    if empty opt.select and empty opt.index
+                        opt.select = dirItem
+                    opt.redraw = true
+                    @openDir item opt
         
         items∙sort((a b) -> ⮐  @weight(a) < @weight(b))
         
-        index = @items∙indexof dirItem
+        index = @items∙findWith((i) -> i.path == dirItem.path)
         
-        kutil.insert @items index+1 items
+        log "SPLICE INDEX" index
+        @items∙splice index+1 0 unpack(items)
         
         if opt.index
             index = opt.index
@@ -286,10 +288,7 @@ class dirtree extends choices
         
         ked_session∙set "#{@name}▸open▸#{dirItem.path}" '✔'
         
-        git.status dirItem.path
-        
-        if opt.redraw
-            post∙emit 'redraw' 
+        # git.status dirItem.path
         @
         
     #  0000000  000       0000000    0000000  00000000  0000000    000  00000000   
@@ -306,22 +305,19 @@ class dirtree extends choices
         
         dirItem.open = false
         
-        dirItem.tilde = dirItem.tilde.replace icons.dir_open icons.dir_close
+        dirItem.tilde = string.gsub dirItem.tilde icons.dir_open icons.dir_close
         
-        index = @items.indexOf dirItem
+        index = @items∙findWith((i) -> i.path == dirItem.path)
         
         numChildren = 0
-        while index+numChildren+1 < @items∙len() and @items[index+numChildren+1].path.startsWith dirItem.path
+        while index+numChildren+1 < @items∙len() and kstr.startsWith(@items[index+numChildren+1].path dirItem.path)
             numChildren += 1
         
-        kutil.replace @items index+1 numChildren []
+        @items∙splice index+1 numChildren
         
         @set @items index
         
         ked_session∙del "#{@name}▸open▸#{dirItem.path}"
-        
-        if opt.redraw
-            post∙emit 'redraw'
         @
                 
     # 000  000000000  00000000  00     00   0000000  
@@ -344,7 +340,6 @@ class dirtree extends choices
         
         oldTop = @state.s.view[2]
         choices.set @ items 'tilde'
-        # log "DIRTREE SET" items
         @state∙setView [1 oldTop]
         @state∙selectLine index
         @state∙setMainCursor 1 index

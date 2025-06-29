@@ -106,7 +106,7 @@ class syntax
     getClass: x y ->
         if @diss and @diss[y]
             for dss in @diss[y]
-                if dss.start <= x < dss.start+dss.length
+                if dss.start <= x < dss.start+dss.len
                     ⮐  dss.clss
         'text'
         
@@ -128,7 +128,7 @@ class syntax
         # if empty theme.syntax[clss] and not clss.endsWith 'italic'
             # log "syntax.getColor - no syntax color for '#{clss}'" # @diss[y] 
         
-        theme.syntax[clss] or [255 0 0]
+        theme.syntax[clss] or [155 155 155]
         
     #  ███████   ███   ███   ███████  ███
     # ███   ███  ████  ███  ███       ███

@@ -364,22 +364,24 @@ class choices extends editor
                     dy = abs event.delta[2]
                     ⮐  if dx*2 >= dy
                 
+                index = row + @state.s.view[2] - 1
+                
                 switch event.type
                     
                     'move'  
-                            ⮐  @hoverChoiceAtIndex row + @state.s.view[2] event
+                            ⮐  @hoverChoiceAtIndex index event
                             
                     'press' 
                     
                         if event.count == 2
-                            ⮐  @doubleClickChoiceAtIndex row + @state.s.view[2] event
+                            ⮐  @doubleClickChoiceAtIndex index event
                         else
                             @dragStart = [col row]
-                            ⮐  @clickChoiceAtIndex row + @state.s.view[2] event
+                            ⮐  @clickChoiceAtIndex index event
                             
                     'drag'
                             if @dragStart
-                                ⮐  @dragChoiceAtIndex row + @state.s.view[2] event
+                                ⮐  @dragChoiceAtIndex index event
                                 
                     'release'
                             @dragStart = nil

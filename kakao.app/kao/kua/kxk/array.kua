@@ -168,6 +168,12 @@ class array
                     ⮐  i
         -1
 
+    findWith: f ->
+    
+        for i v in @
+            if f(v) ➜ ⮐  i
+        -1
+
     find: e ->
     
         for i v in @
