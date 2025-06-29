@@ -260,9 +260,8 @@ class KED
         
         ⮐  if valid @loadingFile
         
-        if slash.isAbsolute path
-            file = path
-        else
+        file = path
+        if not slash.isAbsolute path
             file = slash.absolute path slash.dir(@currentFile)
         
         ⮐  if slash.samePath(file @currentFile)
@@ -277,7 +276,9 @@ class KED
 
     loadFile: p row col view ->
     
-        log "ked.loadFile #{p} #{row} #{col} #{noon(view)}"
+        # log "ked.loadFile #{p} #{row} #{col} #{noon(view)}"
+        
+        ⮐  if not p
         
         absFile = p
         if slash.isAbsolute p
@@ -293,11 +294,6 @@ class KED
         
         if not exists
             warn "ked.loadFile - file doesn't exist! #{@loadingFile}"
-            log dict.str slash.stat(@loadingFile)
-            mode = slash.stat(@loadingFile).mode
-            log string.format "%x" mode
-            log bit.band mode 0x4000
-            log bit.band mode 0x8000
             @loadingFile = nil
             ⮐ 
         
@@ -311,10 +307,7 @@ class KED
         
         readingFile = @loadingFile
         
-        log "LOADNG" type(@loadingFile)
-        
         text = slash.readText @loadingFile
-        log "READ TEXT" text
         
         if @loadingFile != readingFile
             # warn 'another file started loading, skip editor update'
@@ -342,7 +335,6 @@ class KED
         @editor.state∙loadSegls segls
         @editor∙setCurrentFile @currentFile     
         ked_session∙set "editor▸file" @currentFile
-        
         mode.fileLoaded @editor.state @currentFile row col view
         
         post∙emit "file.loaded" @currentFile

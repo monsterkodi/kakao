@@ -358,7 +358,7 @@ class fileeditor extends editor
             if y < @dragStart[2] 
                 start = [@dragStart[2] @dragStart[1]]
             ⮐ 
+            
         editor.onWheel @ event
-        @
     
 ⮐  fileeditor

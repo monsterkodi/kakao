@@ -15,10 +15,6 @@
         - recent file history
 ###
 
-# use ../../kxk ◆ noon events slash post nfs sds
-# use ../../kxk/util ▪ isEqual defaults sessionId
-# use ◆ frecent
-
 class session extends events
 
     @: opt ->
@@ -39,7 +35,7 @@ class session extends events
         #     @loadAndMerge()
         #     @cleanSessions()
         
-    keypath: key -> key.split @sep
+    keypath: key -> kstr.split key @sep
     
     #  0000000   00000000  000000000
     # 000        000          000   
@@ -49,8 +45,7 @@ class session extends events
         
     get: key value ->
         
-        ⮐  value if not key.split
-        clone sds.get @data @keypath(key) value
+        sds.get @data @keypath(key) value
          
     #  0000000  00000000  000000000  
     # 000       000          000     
@@ -66,13 +61,13 @@ class session extends events
         ⮐  @del(key) if empty value
 
         @data ?= {}
-        # sds∙set @data @keypath(key) value
+        sds.set @data @keypath(key) value
         @delayedSave()
         
     del: key -> 
     
         ⮐  if not @data
-        # sds∙del @data @keypath(key)
+        sds.del @data @keypath(key)
         @delayedSave()
         
     delayedSave: ->

@@ -71,7 +71,7 @@ function status:init(editor)
         self.statusfile:on('action', self.onFileAction, self)
         self.filepos:on('action', self.onFileposAction, self)
         
-        post:on('status.filepos', self.onStatusFilepos)
+        -- post∙on 'status.filepos' @onStatusFilepos @
         return self
     end
 
@@ -83,7 +83,7 @@ function status:onStatusFilepos(fileposl, fileoffs)
         self.fileposl = fileposl
         self.fileoffs = fileoffs
         
-        if (self.filepos:len() > 1) then 
+        if (self.fileposl:len() > 1) then 
             local off = (function () 
     if self.fileoffs then 
     return ((self.fileposl:len() - self.fileoffs) - 1) else 
@@ -107,11 +107,11 @@ function status:onFileposAction(action, item)
     return post:emit('filepos.swapPrevious')
         elseif (action == 'enter') then 
                 if (#filepos.fileposl > 1) then 
-                    local files = filepos.fileposl.map(function (fp) 
+                    local files = filepos.fileposl:map(function (fp) 
     return fp[0]
 end)
-                    files = files.reverse()
-                    if (filepos.offset == 0) then files.shift() end
+                    -- files = files.reverse()
+                    if (filepos.offset == 0) then files:shift() end
                     return -- post∙emit 'droop.show' files:files pos:[@filepos.cells.x+int(@filepos.cells.cols/2) @filepos.cells.y+1]
                 end
         end

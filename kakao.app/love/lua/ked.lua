@@ -288,10 +288,9 @@ function KED:openFile(path, row, col, view)
 function KED:onQuicky(path) 
         if valid(self.loadingFile) then return end
         
-        if slash.isAbsolute(path) then 
-            local file = path
-        else 
-            local file = slash.absolute(path, slash.dir(self.currentFile))
+        local file = path
+        if not slash.isAbsolute(path) then 
+            file = slash.absolute(path, slash.dir(self.currentFile))
         end
         
         if slash.samePath(file, self.currentFile) then return end
@@ -307,7 +306,9 @@ function KED:onQuicky(path)
 
 
 function KED:loadFile(p, row, col, view) 
-        print("ked.loadFile " .. tostring(p) .. " " .. tostring(row) .. " " .. tostring(col) .. " " .. tostring(noon(view)) .. "")
+        -- log "ked.loadFile #{p} #{row} #{col} #{noon(view)}"
+        
+        if not p then return end
         
         local absFile = p
         if slash.isAbsolute(p) then 
@@ -324,11 +325,6 @@ function KED:loadFile(p, row, col, view)
         
         if not exists then 
             warn("ked.loadFile - file doesn't exist! " .. tostring(self.loadingFile) .. "")
-            print(dict.str(slash.stat(self.loadingFile)))
-            local mode = slash.stat(self.loadingFile).mode
-            print(string.format("%x", mode))
-            print(bit.band(mode, 0x4000))
-            print(bit.band(mode, 0x8000))
             self.loadingFile = nil
             return
         end
@@ -344,10 +340,7 @@ function KED:loadFile(p, row, col, view)
         
         local readingFile = self.loadingFile
         
-        print("LOADNG", type(self.loadingFile))
-        
         local text = slash.readText(self.loadingFile)
-        print("READ TEXT", text)
         
         if (self.loadingFile ~= readingFile) then 
             -- warn 'another file started loading, skip editor update'
@@ -377,7 +370,6 @@ function KED:loadFile(p, row, col, view)
         self.editor.state:loadSegls(segls)
         self.editor:setCurrentFile(self.currentFile)
         ked_session:set("editor▸file", self.currentFile)
-        
         mode.fileLoaded(self.editor.state, self.currentFile, row, col, view)
         
         post:emit("file.loaded", self.currentFile)

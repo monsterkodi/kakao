@@ -137,7 +137,7 @@ function editor:onMouse(event)
 
 
 function editor:onWheel(event) 
-        -- log "EDITOR.ONWHEEL" event
+        -- log "EDITOR.ONWHEEL" @name, event
         
         if (event.cell[2] >= (self.cells.y + self.cells.rows)) then return end
         
@@ -148,7 +148,7 @@ function editor:onWheel(event)
             inside = (inside or self.mapscr.cells:isInsideEvent(event))
         end
         
-        -- log "EDITOR.ONWHEEL INSIDE" inside
+        -- log "EDITOR.ONWHEEL INSIDE" @name, inside
         
         if not inside then return end
         

@@ -387,8 +387,7 @@ function fileeditor:onWheel(event)
             return
         end
         
-        editor.onWheel(self, event)
-        return self
+        return editor.onWheel(self, event)
     end
 
 return fileeditor

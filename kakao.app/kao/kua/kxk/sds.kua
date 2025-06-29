@@ -1,0 +1,111 @@
+###
+     0000000  0000000     0000000
+    000       000   000  000     
+    0000000   000   000  0000000 
+         000  000   000       000
+    0000000   0000000    0000000 
+###
+
+class sds
+
+    #  0000000   00000000  000000000
+    # 000        000          000
+    # 000  0000  0000000      000
+    # 000   000  000          000
+    #  0000000   00000000     000
+    
+    # accepts an object and a keypath as a list or string and a value
+    # returns the value at keypath or undefined
+    
+    @get: o keypath default ->
+    
+        ⮐  default if not o
+    
+        if keypath is "string"
+            keypath = kstr.split keypath '▸' 
+    
+        ⮐  default if keypath∙len() <= 0
+        
+        kp = array.from keypath
+    
+        while kp∙len() >= 1
+            k = kp∙shift()
+            if array.isarr o
+                o = o[tonumber(k)]
+            else
+                o = o[k]
+            ⮐  default if not o
+        o
+        
+    #  0000000  00000000  000000000
+    # 000       000          000   
+    # 0000000   0000000      000   
+    #      000  000          000   
+    # 0000000   00000000     000   
+    
+    # accepts an object, a keypath as an array or string and a value
+    # returns the object with value set at keypath
+    
+    @set: obj keypath value ->
+        
+        if keypath is "string"
+            keypath = kstr.split keypath '▸' 
+        
+        kp = array.from keypath
+        
+        o = obj
+            
+        while kp∙len() > 1
+            k = kp∙shift()
+            if array.isarr o
+                k = int k
+            if o[k]
+                o = o[k]
+            else
+                if o is "table"
+                    o[k] = {}
+                    o = o[k]
+                
+        if kp∙len() == 1 and o
+            k = kp[1]
+            if array.isarr o
+                k = int k
+            o[k] = value
+        else
+            warn 'no keypath?' kp, keypath
+        obj
+    
+    ###
+    0000000    00000000  000      
+    000   000  000       000      
+    000   000  0000000   000      
+    000   000  000       000      
+    0000000    00000000  0000000  
+    ###
+    
+    # accepts an object and a keypath as an array or string
+    # returns the object with value removed at keypath
+    
+    @del: obj keypath ->
+        
+        if keypath is "string"
+            keypath = kstr.split keypath '▸' 
+        
+        kp = array.from keypath
+        
+        o = obj
+        
+        while kp∙len() > 1
+            k = kp∙shift()
+            o = o[k]
+            break if not o  
+                
+        if kp∙len() == 1 and o
+            if o is array
+                o∙splice int(kp[1]) 1
+            elif o is "table"
+                o[kp[1]] = nil
+        obj
+
+⮐  sds
+    

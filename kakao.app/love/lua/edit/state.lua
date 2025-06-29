@@ -288,7 +288,6 @@ function state:loadSegls(segls)
         return self:setSegls(segls)
     end
 
--- clearSingle: -> @clearSegls [[]]
 
 function state:clearSingle() 
     return self:clearSegls(kseg.segls(""))

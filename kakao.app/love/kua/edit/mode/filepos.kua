@@ -51,16 +51,16 @@ class filepos
             fposl = filepos.fileposl
             
             if empty fposl
-                fposl.push [file curview]
+                fposl∙push [file curview]
             else
                 
-                if filepos.offset and fposl.len > 1 and fposl[fposl.len-1-filepos.offset][0] == file
-                    fposl[fposl.len-1-filepos.offset][1] = curview
+                if filepos.offset > 0 and fposl.len > 1 and fposl[fposl.len-filepos.offset][1] == file
+                    fposl[fposl.len-filepos.offset][1] = curview
                 else    
-                    if filepos.offset and fposl[fposl.len-1-filepos.offset][0] != file
+                    if filepos.offset > 0 and fposl[fposl.len-filepos.offset][1] != file
                         filepos.offset = 0
-                    kutil.pullIf(fposl, (fp) -> fp[0] == file)
-                    fposl.push [file curview]
+                    # kutil.pullIf(fposl, (fp) -> fp[1] == file)
+                    fposl∙push [file curview]
                 
             # for fp in fposl
             #     log "○ #{b6 slash.file(fp[0])} #{fp[1][0]} #{fp[1][1]} #{fp[1][2]} #{fp[1][3]}"

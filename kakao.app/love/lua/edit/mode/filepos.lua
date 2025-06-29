@@ -53,19 +53,17 @@ function filepos:cursorsSet()
             local fposl = filepos.fileposl
             
             if empty(fposl) then 
-                fposl.push(array(file, curview))
+                fposl:push(array(file, curview))
             else 
-                if ((filepos.offset and (#fposl > 1)) and (fposl[((#fposl - 1) - filepos.offset)][0] == file)) then 
-                    fposl[((#fposl - 1) - filepos.offset)][1] = curview
+                if (((filepos.offset > 0) and (#fposl > 1)) and (fposl[(#fposl - filepos.offset)][1] == file)) then 
+                    fposl[(#fposl - filepos.offset)][1] = curview
                 else 
-                    if (filepos.offset and (fposl[((#fposl - 1) - filepos.offset)][0] ~= file)) then 
+                    if ((filepos.offset > 0) and (fposl[(#fposl - filepos.offset)][1] ~= file)) then 
                         filepos.offset = 0
                     end
                     
-                    kutil.pullIf(fposl, function (fp) 
-    return (fp[0] == file)
-end)
-                    fposl.push(array(file, curview))
+                    -- kutil.pullIf(fposl, (fp) -> fp[1] == file)
+                    fposl:push(array(file, curview))
                 end
             end
             

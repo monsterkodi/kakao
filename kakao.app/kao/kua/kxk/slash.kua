@@ -461,9 +461,10 @@ slash.readText   = path ->
 
     file = io.open path "r"
     ⮐  if not file
-    content = file∙read "*a"
+    text = file∙read "*a"
     file∙close()
-    content
+    ⮐  if text∙find "\x00"
+    text
 
 slash.writeText  = path text -> 
 

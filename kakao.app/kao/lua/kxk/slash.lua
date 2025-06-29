@@ -612,9 +612,10 @@ end
 function slash.readText(path) 
     local file = io.open(path, "r")
     if not file then return end
-    local content = file:read("*a")
+    local text = file:read("*a")
     file:close()
-    return content
+    if text:find("\x00") then return end
+    return text
 end
 
 

@@ -94,9 +94,9 @@ function choices:set(items, key)
         self.filterText = ''
         
         local lines = self.items
-        print("CHOICES " .. tostring(self.name) .. " set lines " .. tostring(key) .. " ", lines)
+        -- log "CHOICES #{@name} set lines #{key} " lines
         if self.key then lines = self.items:map(function (i) return self:extract(i) end) end
-        print("CHOICES " .. tostring(self.name) .. " set lines " .. tostring(key) .. " ", lines)
+        -- log "CHOICES #{@name} set lines #{key} " lines
         self.state:loadLines(lines)
         return self
     end
@@ -136,8 +136,7 @@ function choices:drawSelections()
         end
         
         -- fg = if @hasFocus() ➜ @color.hover.bg ➜ @color.hover.blur
-        -- fg = @color.hover
-        local fg = array(255, 255, 0)
+        local fg = self.color.hover.bg
         
         -- if not @cells.screen.t.hasFocus
         --     fg = color.darken fg
@@ -156,9 +155,9 @@ function choices:drawSelections()
             xs = xs + (self.frontRoundOffset)
         end
         
-        self.cells:set_ch_fg(1, y, '', fg)
+        self.cells:set_ch_fg(xs, y, '', fg)
         
-        for x in iter(xs, sel[3]) do 
+        for x in iter((xs + 1), sel[3]) do 
             self.cells:set_bg(((x - self.state.s.view[1]) + 1), y, fg)
             -- @cells∙adjustContrastForHighlight x-@state.s.view[1] y fg
         end
@@ -216,7 +215,7 @@ function choices:hasPrev()
 
 
 function choices:nextRow() 
-        local y = self.state:mainCursor()[2]
+        local y = self:currentIndex()
         while (y < self.state.s.lines:len()) do 
             y = y + 1
             if (kseg.trim(self.state.s.lines[y]):len() >= 1) then 
@@ -227,7 +226,7 @@ function choices:nextRow()
 
 
 function choices:prevRow() 
-        local y = self.state:mainCursor()[2]
+        local y = self:currentIndex()
         while (y > 1) do 
             y = y - 1
             if (kseg.trim(self.state.s.lines[y]):len() >= 1) then 
@@ -238,7 +237,7 @@ function choices:prevRow()
 
 
 function choices:pageUpRow() 
-        local y = ((self.state:mainCursor()[2] - self.cells.rows) + 1)
+        local y = ((self:currentIndex() - self.cells.rows) + 1)
         y = max(y, 1)
         
         while ((y > 1) and empty(kseg.trim(self.state.s.lines[y]))) do 
@@ -254,7 +253,7 @@ function choices:pageUpRow()
 
 
 function choices:pageDownRow() 
-        local y = ((self.state:mainCursor()[2] + self.cells.rows) - 1)
+        local y = ((self:currentIndex() + self.cells.rows) - 1)
         y = min(y, self.state.s.lines:len())
         
         while ((y < self.state.s.lines:len()) and empty(kseg.trim(self.state.s.lines[y]))) do 
@@ -506,7 +505,7 @@ function choices:emitAction(action, choice, event)
 
 
 function choices:onKey(key, event) 
-        -- log "#{@name} onKey #{key} combo #{event.combo}"
+        -- log "CHOICES EMIT ACTION #{@name} onKey #{key} combo #{event.combo}"
         
         if (event.combo == 'up') or (event.combo == 'down') or (event.combo == 'pageup') or (event.combo == 'pagedown') then 
                 self:moveSelection(event.combo)
@@ -519,8 +518,6 @@ function choices:onKey(key, event)
         
         if (event.combo == 'esc') or (event.combo == 'left') or (event.combo == 'right') or (event.combo == 'space') or (event.combo == 'delete') or (event.combo == 'return') then self:emitAction(event.combo, self:current(), event)
         end
-        
-        self:emitAction(event.combo, self:current(), event)
         
         -- not calling super here effectively disables all text-editing
         return true

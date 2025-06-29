@@ -83,8 +83,8 @@ function ScrollWheel:impulse(x, y)
 function setFontWidth(fw) 
     _G.fontWidth = fw
     _G.font = love.graphics.setNewFont("fonts/Twilio.ttf", (fontWidth * 2))
-    local fb1 = love.graphics.newFont("fonts/Helvetica.ttf", (fontWidth * 2))
-    local fb2 = love.graphics.newFont("fonts/Menlo.ttf", (fontWidth * 2))
+    local fb1 = love.graphics.newFont("fonts/Meslo.ttf", (fontWidth * 2))
+    local fb2 = love.graphics.newFont("fonts/Helvetica.ttf", (fontWidth * 2))
     return _G.font:setFallbacks(fb1, fb2)
 end
 

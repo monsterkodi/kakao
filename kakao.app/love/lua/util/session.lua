@@ -15,10 +15,6 @@
         - recent file history
 --]]
 
--- use ../../kxk ◆ noon events slash post nfs sds
--- use ../../kxk/util ▪ isEqual defaults sessionId
--- use ◆ frecent
-
 
 local session = class("session", events)
     
@@ -45,7 +41,7 @@ function session:init(opt)
 
 
 function session:keypath(key) 
-    return key.split(self.sep)
+    return kstr.split(key, self.sep)
     end
 
 --  0000000   00000000  000000000
@@ -56,8 +52,7 @@ function session:keypath(key)
 
 
 function session:get(key, value) 
-        if not key.split then return value end
-        return clone(sds.get, self.data, self:keypath(key), value)
+        return sds.get(self.data, self:keypath(key), value)
     end
 
 --  0000000  00000000  000000000  
@@ -74,14 +69,14 @@ function session:set(key, value)
         if empty(value) then return self:del(key) end
         
         self.data = self.data or ({})
-        -- sds∙set @data @keypath(key) value
+        sds.set(self.data, self:keypath(key), value)
         return self:delayedSave()
     end
 
 
 function session:del(key) 
         if not self.data then return end
-        -- sds∙del @data @keypath(key)
+        sds.del(self.data, self:keypath(key))
         return self:delayedSave()
     end
 

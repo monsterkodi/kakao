@@ -77,9 +77,9 @@ class choices extends editor
         @filterText = ''
         
         lines = @items
-        log "CHOICES #{@name} set lines #{key} " lines
+        # log "CHOICES #{@name} set lines #{key} " lines
         if @key ➜ lines = @items∙map((i) -> ⮐  @extract(i))
-        log "CHOICES #{@name} set lines #{key} " lines
+        # log "CHOICES #{@name} set lines #{key} " lines
         @state∙loadLines lines
         @
         
@@ -110,8 +110,7 @@ class choices extends editor
             ⮐  editor.drawSelections @
         
         # fg = if @hasFocus() ➜ @color.hover.bg ➜ @color.hover.blur
-        # fg = @color.hover
-        fg = [255 255 0]
+        fg = @color.hover.bg
         
         # if not @cells.screen.t.hasFocus
         #     fg = color.darken fg
@@ -129,9 +128,9 @@ class choices extends editor
         if xs == 1
             xs += @frontRoundOffset 
 
-        @cells∙set_ch_fg 1 y '' fg
+        @cells∙set_ch_fg xs y '' fg
         
-        for x in xs..sel[3]
+        for x in xs+1..sel[3]
             @cells∙set_bg x-@state.s.view[1]+1 y fg
             # @cells∙adjustContrastForHighlight x-@state.s.view[1] y fg
             
@@ -165,7 +164,7 @@ class choices extends editor
 
     nextRow: ->
         
-        y = @state∙mainCursor()[2]
+        y = @currentIndex()
         while y < @state.s.lines∙len()
             y += 1
             if kseg.trim(@state.s.lines[y])∙len() >= 1
@@ -173,7 +172,7 @@ class choices extends editor
         
     prevRow: ->
 
-        y = @state∙mainCursor()[2]
+        y = @currentIndex()
         while y > 1
             y -= 1
             if kseg.trim(@state.s.lines[y])∙len() >= 1
@@ -181,7 +180,7 @@ class choices extends editor
             
     pageUpRow: ->
     
-        y = @state∙mainCursor()[2] - @cells.rows + 1
+        y = @currentIndex() - @cells.rows + 1
         y = max y 1 
         
         while y > 1 and empty kseg.trim(@state.s.lines[y])
@@ -193,7 +192,7 @@ class choices extends editor
     
     pageDownRow: ->
     
-        y = @state∙mainCursor()[2] + @cells.rows - 1
+        y = @currentIndex() + @cells.rows - 1
         y = min y @state.s.lines∙len()
         
         while y < @state.s.lines∙len() and empty kseg.trim(@state.s.lines[y])
@@ -235,7 +234,7 @@ class choices extends editor
         
     selectPageUp:   -> @select @pageUpRow()
     selectPageDown: -> @select @pageDownRow()
-    selectNext: -> @select @nextRow()
+    selectNext:     -> @select @nextRow()
     selectPrev: -> 
         row = @prevRow()
         if empty row
@@ -406,7 +405,7 @@ class choices extends editor
     
     onKey: key event ->
     
-        # log "#{@name} onKey #{key} combo #{event.combo}"
+        # log "CHOICES EMIT ACTION #{@name} onKey #{key} combo #{event.combo}"
         
         switch event.combo        
             'up' 
@@ -430,8 +429,6 @@ class choices extends editor
             'delete'
             'return' ➜ @emitAction event.combo @current() event
             
-        @emitAction event.combo @current() event
-                        
         # not calling super here effectively disables all text-editing
         true
          

@@ -62,7 +62,7 @@ class status extends view
         @statusfile∙on 'action' @onFileAction    @
         @filepos∙on    'action' @onFileposAction @
         
-        post∙on 'status.filepos' @onStatusFilepos
+        # post∙on 'status.filepos' @onStatusFilepos @
         
     onStatusFilepos: fileposl fileoffs -> 
     
@@ -72,7 +72,7 @@ class status extends view
         @fileposl = fileposl
         @fileoffs = fileoffs
     
-        if @filepos∙len() > 1
+        if @fileposl∙len() > 1
             off = if @fileoffs ➜ @fileposl∙len()-@fileoffs-1 ➜ ''
             tilde = "#{tilde}#{@fileposl∙len()-1}"
             @filepos∙set({tilde:tilde})
@@ -87,9 +87,9 @@ class status extends view
             'click' ➜ post∙emit 'filepos.swapPrevious'
             'enter'
                 if filepos.fileposl.length > 1
-                    files = filepos.fileposl.map((fp) -> ⮐  fp[0])
-                    files = files.reverse()
-                    files.shift() if filepos.offset == 0
+                    files = filepos.fileposl∙map((fp) -> ⮐  fp[0])
+                    # files = files.reverse()
+                    files∙shift() if filepos.offset == 0
                     # post∙emit 'droop.show' files:files pos:[@filepos.cells.x+int(@filepos.cells.cols/2) @filepos.cells.y+1]
         
     onCrumbsAction: action path event ->

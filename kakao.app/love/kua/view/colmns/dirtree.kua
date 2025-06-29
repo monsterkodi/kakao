@@ -173,7 +173,6 @@ class dirtree extends choices
     
     emitAction: action choice event  ->
     
-        log "DIRTREE emitAction" action
         if action == 'hover'
             @grabFocus()
             if (event.alt or event.cmd) and choice.type == 'file'
@@ -276,7 +275,6 @@ class dirtree extends choices
         
         index = @items∙findWith((i) -> i.path == dirItem.path)
         
-        log "SPLICE INDEX" index
         @items∙splice index+1 0 unpack(items)
         
         if opt.index
@@ -361,12 +359,12 @@ class dirtree extends choices
     
         if @current().type == 'file' and ked_session∙get('editor▸file') != @current().path
             post∙emit 'quicky' @current().path
-            ⮐  
-        
+            ⮐ 
+
         @selectNext()
         if @current().type == 'file'
             post∙emit 'quicky' @current().path 
-        @state∙setView [1 @state.s.view[1]+1]
+        @state∙setView [1 @state.s.view[2]+1]
         
     selectOpenSiblingAboveOrParent: ->
     

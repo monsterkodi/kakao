@@ -117,7 +117,7 @@ class editor extends draw
     
     onWheel: event ->
     
-        # log "EDITOR.ONWHEEL" event
+        # log "EDITOR.ONWHEEL" @name, event
         
         ⮐  if event.cell[2] >= @cells.y + @cells.rows
                 
@@ -127,7 +127,7 @@ class editor extends draw
         if @mapscr
             inside = inside or @mapscr.cells∙isInsideEvent(event)
         
-        # log "EDITOR.ONWHEEL INSIDE" inside
+        # log "EDITOR.ONWHEEL INSIDE" @name, inside
         
         ⮐  if not inside
 

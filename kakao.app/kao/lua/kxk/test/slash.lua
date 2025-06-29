@@ -86,9 +86,9 @@ test("slash", function()
     
     test("parse", function()
         test.cmp(slash.parse("/a/b/c.txt"), {dir = "/a/b", name = "c", ext = "txt", file = "c.txt", path = "/a/b/c.txt"})
-        -- slash.parse "/a/b/c"       ▸ {dir: "/a/b" name: "c" ext: ""    file: "c"     path:"/a/b/c"    }
-        -- slash.parse "/a/b/c/"      ▸ {dir: "/a/b" name: "c" ext: ""    file: "c"     path:"/a/b/c"    }
-        -- slash.parse "/a"           ▸ {dir: "/"    name: "a" ext: ""    file: "a"     path:"/a"        }
+        test.cmp(slash.parse("/a/b/c"), {dir = "/a/b", name = "c", ext = "", file = "c", path = "/a/b/c"})
+        test.cmp(slash.parse("/a/b/c/"), {dir = "/a/b", name = "c", ext = "", file = "c", path = "/a/b/c"})
+        test.cmp(slash.parse("/a"), {dir = "", name = "a", ext = "", file = "a", path = "/a"})
     end)
     
     -- 0000000    000  00000000   
@@ -98,13 +98,13 @@ test("slash", function()
     -- 0000000    000  000   000  
     
     test("dir", function()
-        -- slash.dir "/some/path/file.txt"         ▸ "/some/path"
-        -- slash.dir "/some/dir"                   ▸ "/some"
-        -- slash.dir "/some/dir/"                  ▸ "/some"
+        test.cmp(slash.dir("/some/path/file.txt"), "/some/path")
+        test.cmp(slash.dir("/some/dir"), "/some")
+        test.cmp(slash.dir("/some/dir/"), "/some")
         test.cmp(slash.dir("some/dir/"), "some")
         test.cmp(slash.dir("some/dir"), "some")
-        -- slash.dir "/some/"                      ▸ "/"
-        -- slash.dir "/some"                       ▸ "/"
+        test.cmp(slash.dir("/some/"), "")
+        test.cmp(slash.dir("/some"), "")
         test.cmp(slash.dir("./rel"), ".")
         test.cmp(slash.dir("./rel/ative"), "./rel")
         test.cmp(slash.dir("../.."), "..")
@@ -112,8 +112,8 @@ test("slash", function()
         test.cmp(slash.dir(".."), "")
         test.cmp(slash.dir("./"), "")
         test.cmp(slash.dir("../"), "")
-        -- slash.dir "~"                           ▸ slash.dir slash.home()
-        -- slash.dir "~/"                          ▸ slash.dir slash.home()
+        test.cmp(slash.dir("~"), slash.dir(slash.home()))
+        test.cmp(slash.dir("~/"), slash.dir(slash.home()))
     end)
     
     -- 000   000   0000000   00     00  00000000  
@@ -245,13 +245,14 @@ test("slash", function()
     -- 000   000  00000000  0000000  000   000     000     000      0      00000000  
     
     -- ▸ relative
-    -- 
+    
     --     slash.relative "\\test\\some\\path.txt" "\\test\\some\\other\\path" ▸ "../../path.txt"
     --     slash.relative "/Users/kodi/s/konrad/app/js/coffee.js" "/Users/kodi/s/konrad" ▸ "app/js/coffee.js"
     --     slash.relative "/some/path/on.c" "/path/on.d" ▸ "../../some/path/on.c"
     --     slash.relative "\\some\\path\\on.c" "\\path\\on.d" ▸ "../../some/path/on.c"
     --     slash.relative "\\some\\path" "/some/path" ▸ "."
-    --     slash.relative "/Users/kodi/s/kakao/kakao.app/js/bin/kode/returner.js" "/Users/kodi/s/kakao/kakao.app/js/bin/kode/test" ▸ "../returner.js"
+    
+        -- slash.relative "/Users/kodi/s/kakao/kakao.app/js/bin/kode/returner.js" "/Users/kodi/s/kakao/kakao.app/js/bin/kode/test" ▸ "../returner.js"
     
     test("absolute", function()
         test.cmp(slash.absolute("/some/path"), "/some/path")
@@ -266,7 +267,6 @@ test("slash", function()
     -- 0000000   000        0000000  000     000     
     
     test("split", function()
-        -- slash.split "/c/users/home/"            ▸ ["" "c" "users" "home"]
         test.cmp(slash.split("d/users/home"), array("d", "users", "home"))
         test.cmp(slash.split("c:/some/path"), array("c:", "some", "path"))
         test.cmp(slash.split("~/home/path"), array("~", "home", "path"))
@@ -318,6 +318,7 @@ test("slash", function()
         test.cmp((slash.isDir(slash.cwd()) ~= nil), true)
         test.cmp(slash.isFile(slash.cwd()), nil)
         test.cmp(slash.isLink(slash.cwd()), nil)
-        test.cmp((slash.isDir("/Users/kodi/s/kakao/kakao.app/kao/lua/kxk/test/kstr.lua") ~= nil), true)
+        test.cmp((slash.isDir("/Users/kodi/s/kakao/kakao.app/kao/lua/kxk/test/kstr.lua") == nil), true)
+        test.cmp((slash.isDir("/Users/kodi/s/kakao/kakao.app/kao/lua/kxk/test") ~= nil), true)
     end)
     end)

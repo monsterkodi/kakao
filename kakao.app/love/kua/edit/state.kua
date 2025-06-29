@@ -270,7 +270,6 @@ class state extends events
         @clearEmpty()
         @setSegls segls
 
-    # clearSingle: -> @clearSegls [[]]
     clearSingle: -> @clearSegls kseg.segls("")
     clearEmpty:  -> @clearSegls [  ]
     clearSegls: segls ->

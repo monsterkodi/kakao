@@ -203,7 +203,6 @@ function dirtree:setState(state)
 
 
 function dirtree:emitAction(action, choice, event) 
-        print("DIRTREE emitAction", action)
         if (action == 'hover') then 
             self:grabFocus()
             if ((event.alt or event.cmd) and (choice.type == 'file')) then 
@@ -305,7 +304,6 @@ end)
     return (i.path == dirItem.path)
 end)
         
-        print("SPLICE INDEX", index)
         self.items:splice((index + 1), 0, unpack(items))
         
         if opt.index then 
@@ -411,7 +409,7 @@ function dirtree:selectNextKeepOffset()
             post:emit('quicky', self:current().path)
         end
         
-        return self.state:setView(array(1, (self.state.s.view[1] + 1)))
+        return self.state:setView(array(1, (self.state.s.view[2] + 1)))
     end
 
 
