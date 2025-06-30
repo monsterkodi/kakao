@@ -11,15 +11,6 @@ view = require "view.base.view"
 
 local draw = class("draw", view)
     
-        -- if row+@state.s.view[1] == @state∙mainCursor()[1]
-        --     if linel > 0
-        --         @cells∙bg_rect 0 row linel row @color.cursor.main
-        --     if linel < @cells.cols
-        --         @cells∙bg_fill math.max(0 linel) row -1 row @color.cursor.empty
-        -- else
-        --     if linel > 0
-        --         @cells∙bg_rect 0 row linel row @color.bg
-        --     @cells∙bg_fill math.max(0 linel) row -1 row @color.empty
 
 
 function draw:init(name, features) 
@@ -58,7 +49,7 @@ function draw:draw()
             self:drawLine(lines[y], y, row)
         end
         
-        -- @drawTrailingRows()        
+        self:drawTrailingRows()
         self:drawHighlights()
         self:drawSelections()
         
@@ -69,7 +60,7 @@ function draw:draw()
         self:render()
         
         if self.gutter then self.gutter:draw() end
-        -- if @mapscr ➜ @mapscr∙draw()
+        if self.mapscr then self.mapscr:draw() end
         if self.scroll then self.scroll:draw() end
         
         self:drawCursors()
@@ -140,7 +131,7 @@ function draw:drawLine(line, y, row)
             --     bg = @color.bg
         end
         
-        -- @drawRowBackground row linel
+        self:drawRowBackground(row, linel)
         
         if checkColor then self:drawColorPills(line, row, linel) end
         if headerClass then 
@@ -154,7 +145,18 @@ function draw:drawLine(line, y, row)
 -- 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
 -- 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
 
--- drawRowBackground: row linel ->
+
+function draw:drawRowBackground(row, linel) 
+        -- if row+@state.s.view[2]-1 == @state∙mainCursor()[2]
+        --     # if linel >= 1
+        --     #     @cells∙bg_rect 1 row linel row @color.cursor.main
+        --     if linel <= @cells.cols
+        --         @cells∙bg_fill math.max(1 linel) row -1 row @color.cursor.empty
+        -- else
+        -- if linel > 1
+        --     @cells∙bg_rect 1 row linel row @color.bg
+        return self.cells:bg_fill(math.max(1, (linel + 1)), row, self.cells.cols, row, self.color.empty)
+    end
 
 -- 000000000  00000000    0000000   000  000      000  000   000   0000000   
 --    000     000   000  000   000  000  000      000  0000  000  000        
@@ -165,11 +167,10 @@ function draw:drawLine(line, y, row)
 
 function draw:drawTrailingRows() 
         -- fill empty rows below last line
-        local vl = (self.state.s.lines:len() - self.state.s.view[2])
-        if (vl >= self.cells.rows) then return end
-        
-        for row = vl, self.cells.rows-1 do 
-            self.cells:bg_fill(0, row, -1, row, self.color.empty)
+        local vl = ((self.state.s.lines:len() - self.state.s.view[2]) + 2)
+        if (vl > self.cells.rows) then return end
+        for row in iter(vl, self.cells.rows) do 
+            self.cells:bg_fill(1, row, self.cells.cols, row, self.color.empty)
         end
     end
 

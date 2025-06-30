@@ -142,8 +142,14 @@ function editor:onWheel(event)
         if (event.cell[2] >= (self.cells.y + self.cells.rows)) then return end
         
         local inside = self.cells:isInsideEvent(event)
-        inside = (inside or self.scroll.cells:isInsideEvent(event))
-        inside = (inside or self.gutter.cells:isInsideEvent(event))
+        if self.scroll then 
+            inside = (inside or self.scroll.cells:isInsideEvent(event))
+        end
+        
+        if self.gutter then 
+            inside = (inside or self.gutter.cells:isInsideEvent(event))
+        end
+        
         if self.mapscr then 
             inside = (inside or self.mapscr.cells:isInsideEvent(event))
         end

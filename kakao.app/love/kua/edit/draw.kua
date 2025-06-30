@@ -44,7 +44,7 @@ class draw extends view
             
             @drawLine lines[y] y row
             
-        # @drawTrailingRows()        
+        @drawTrailingRows()        
         @drawHighlights()
         @drawSelections()
         
@@ -54,7 +54,7 @@ class draw extends view
         @render()
         
         if @gutter ➜ @gutter∙draw()
-        # if @mapscr ➜ @mapscr∙draw()
+        if @mapscr ➜ @mapscr∙draw()
         if @scroll ➜ @scroll∙draw()
         
         @drawCursors()
@@ -121,7 +121,7 @@ class draw extends view
             # if clss == 'invert_bg'
             #     bg = @color.bg
                 
-        # @drawRowBackground row linel
+        @drawRowBackground row linel
                 
         if checkColor  ➜ @drawColorPills  line row linel       
         if headerClass ➜ @drawAsciiHeader line row headerClass 
@@ -132,17 +132,17 @@ class draw extends view
     # 000   000  000   000  000   000       000   000  000   000  000       000  000   000   000  000   000  000   000  
     # 000   000   0000000   00     00       0000000    000   000   0000000  000   000   0000000   000   000  0000000    
     
-    # drawRowBackground: row linel ->
+    drawRowBackground: row linel ->
         
-        # if row+@state.s.view[1] == @state∙mainCursor()[1]
-        #     if linel > 0
-        #         @cells∙bg_rect 0 row linel row @color.cursor.main
-        #     if linel < @cells.cols
-        #         @cells∙bg_fill math.max(0 linel) row -1 row @color.cursor.empty
+        # if row+@state.s.view[2]-1 == @state∙mainCursor()[2]
+        #     # if linel >= 1
+        #     #     @cells∙bg_rect 1 row linel row @color.cursor.main
+        #     if linel <= @cells.cols
+        #         @cells∙bg_fill math.max(1 linel) row -1 row @color.cursor.empty
         # else
-        #     if linel > 0
-        #         @cells∙bg_rect 0 row linel row @color.bg
-        #     @cells∙bg_fill math.max(0 linel) row -1 row @color.empty
+        # if linel > 1
+        #     @cells∙bg_rect 1 row linel row @color.bg
+        @cells∙bg_fill math.max(1 linel+1) row @cells.cols row @color.empty
             
     # 000000000  00000000    0000000   000  000      000  000   000   0000000   
     #    000     000   000  000   000  000  000      000  0000  000  000        
@@ -152,11 +152,10 @@ class draw extends view
     
     drawTrailingRows: ->
         # fill empty rows below last line
-        vl = @state.s.lines∙len() - @state.s.view[2]
-        ⮐  if vl >= @cells.rows 
-
-        for row in vl...@cells.rows
-            @cells∙bg_fill 0 row -1 row @color.empty         
+        vl = @state.s.lines∙len() - @state.s.view[2] + 2
+        ⮐  if vl > @cells.rows 
+        for row in vl..@cells.rows
+            @cells∙bg_fill 1 row @cells.cols row @color.empty         
                 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       

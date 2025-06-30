@@ -41,11 +41,11 @@ class choices extends editor
         editor.setColor @ key color
     
         if key == 'bg'
-            @setColor        'empty' @color.bg
+            @setColor         'empty' @color.bg
             if @gutter
-                @gutter∙setColor 'bg'    @color.bg
+                @gutter∙setColor 'bg' @color.bg
             if @scroll
-                @scroll∙setColor 'bg'    @color.bg
+                @scroll∙setColor 'bg' @color.bg
 
     extract: item -> 
     
@@ -130,11 +130,11 @@ class choices extends editor
 
         @cells∙set_ch_fg xs y '' fg
         
-        for x in xs+1..sel[3]
+        for x in xs+1...sel[3]
             @cells∙set_bg x-@state.s.view[1]+1 y fg
             @cells∙adjustContrastForHighlight x-@state.s.view[1]+1 y fg
             
-        @cells∙set_ch_fg sel[3]+2-@state.s.view[1] y '' fg
+        @cells∙set_ch_fg sel[3]+1-@state.s.view[1] y '' fg
 
     numChoices:  -> @items.len
     numFiltered: -> @fuzzied.len
