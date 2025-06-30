@@ -85,12 +85,13 @@ end)()
                 
                 self.cells:set(x, 1, ch, fg, bg)
             else 
+                local fg = self.color.fg
                 if (si == self.hoverIndex) then 
-                    local fg = color.adjustForBackground(self.color.fg, bg)
-                elseif (si < (#self.split - 1)) then 
-                    local fg = color.darken(self.color.fg, min(1, ((si + 3) / #self.split)))
+                    fg = color.adjustForBackground(self.color.fg, bg)
+                elseif (si < #self.split) then 
+                    fg = color.darken(self.color.fg, min(1, ((si + 3) / #self.split)))
                 else 
-                    local fg = color.brighten(self.color.fg)
+                    fg = color.brighten(self.color.fg)
                 end
                 
                 self.cells:set(x, 1, ch, fg, bg)
@@ -124,7 +125,6 @@ function crumbs:colsAtSplitIndex(idx)
         local si = 0
         local ei = 0
         
-        print("colsAtSplitIndex " .. tostring(idx) .. "", self.split, type(self.split), #self.split)
         for i in iter(1, idx) do 
             if (i < idx) then 
                 si = si + ((#self.split[i] + 2))
@@ -138,11 +138,8 @@ function crumbs:colsAtSplitIndex(idx)
 
 
 function crumbs:pathAtSplitIndex(idx) 
-        -- log "PATH AT SPLIT INDEX #{idx}" @split
-        -- log "PATH AT SPLIT ROOT #{idx}" @root
         local path = slash.path(unpack(self.split:slice(1, idx)))
-        -- path = slash.path @root path
-        print("PATH AT SPLIT PATH " .. tostring(idx) .. "", path)
+        path = slash.path(self.root, path)
         if ((string.sub(path, 1, 1) ~= "~") and (string.sub(path, 1, 1) ~= "/")) then 
             path = '/' .. path
         end
@@ -176,26 +173,26 @@ function crumbs:adjustText()
         end
         
         self.root = array()
-        self.rounded = array('')
+        self.rounded = self.split:join(' ')
         
-        while (#self.split > 0) do 
+        while ((#self.split > 1) and (#kseg(self.rounded) > (self.cells.cols - 2))) do 
             local s = self.split:shift()
             self.root:push(s)
-            self.rounded = self.rounded + (kseg(s))
-            self.rounded:push(' ')
+            self.rounded = self.split:join(' ')
         end
         
-        self.split = slash.split(self.path)
+        self.rounded = kseg(self.rounded)
+        self.rounded:unshift("")
         self.root = self.root:join('/')
         
-        local padding = (function () 
-    if self.padLast then 
-    return kstr.lpad(((self.cells.cols - 2) - #self.rounded)) else 
-    return ''
-                  end
-end)()
+        if self.padLast then 
+            print(self.padLast)
+            for i = 1, ((self.cells.cols - 1) - #self.rounded)-1 do 
+                self.rounded:push(" ")
+            end
+        end
         
-        return self.rounded:push('')
+        return self.rounded:push("")
     end
 
 

@@ -1,0 +1,38 @@
+
+use kxk/kxk
+
+▸ matchr
+
+    ▸ config
+        
+        rgxs = """
+            ([^/%s]+)(%.noon)
+                file_noon    
+                file_ext_noon
+            ([^/%s]+)(%.kode)
+                file_kode    
+                file_ext_kode
+            """
+
+        cfg = matchr.config rgxs
+        
+        (a b c) = string.match "testfile.noon" "([^/%s]+)(%.noon)"
+        
+        a ▸ "testfile"
+        b ▸ ".noon"
+        c ▸ nil
+        
+        groups = matchr.match "testfile.noon" "([^/%s]+)(%.noon)"
+        groups.len ▸ 2
+        
+        groups[0] ▸ nil
+        groups[1] ▸ "testfile"
+        groups[2] ▸ ".noon"
+        groups[3] ▸ nil
+        
+        matchr.ranges cfg "testfile.noon" ▸ [{clss: "file_noon" length:8 match:"testfile" start:1},
+                                             {clss: "file_ext_noon" length:5 match:".noon" start:9} ]
+                                             
+        matchr.ranges cfg "test.kode"     ▸ [{clss: "file_kode" length:4 match:"test" start:1},
+                                             {clss: "file_ext_kode" length:5 match:".kode" start:5} ]
+                                             

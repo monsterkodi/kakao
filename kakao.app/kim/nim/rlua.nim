@@ -6,6 +6,7 @@
 import pars
 import klss
 import vars
+var kuaFile : string
 
 type Rlua = ref object of RootObj
     code: string
@@ -175,8 +176,8 @@ proc ▸operation(this : Rlua, n : Node) =
 
 proc ▸literal(this : Rlua, n : Node) = 
         case n.token.str:
-            of "●dir": this.add("currentSourcePath().split(\"/\")[0..^2].join(\"/\")")
-            of "●file": this.add("currentSourcePath()")
+            of "●dir": this.add('"' & slash.dir(kuaFile) & '"')
+            of "●file": this.add('"' & kuaFile & '"')
             else: this.tok(n)
 
 proc ▸let(this : Rlua, n : Node) = 
@@ -638,6 +639,7 @@ proc renderLua*(code : string, autovar = true) : string =
 
 proc renderLuaFile*(file : string) : string = 
     profileScope(file)
+    kuaFile = file
     var fileOut = file.swapLastPathComponentAndExt("kua", "lua")
     var kuaCode = file.read()
     var luaCode = renderLua(kuaCode)

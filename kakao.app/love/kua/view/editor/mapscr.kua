@@ -8,7 +8,7 @@
     scrollable source map to the right of the fileeditor
 ###
 
-use                 ◆ mapview
+# use                 ◆ mapview
 
 class mapscr extends mapview
 
@@ -16,7 +16,7 @@ class mapscr extends mapview
         
         mapview.init @ @editor.state
         
-        @state.on 'view.changed' @drawKnob
+        @state∙on 'view.changed' @drawKnob @
         
         @pointerType = 'pointer'
         
@@ -34,18 +34,21 @@ class mapscr extends mapview
         @setColor 'selection' theme.selection.map
         @setColor 'fullysel'  theme.selection.mapfully
         
-        @screen.t.on 'preResize' @clearImages
+        @screen.t∙on 'preResize' @clearImages @
         
-        post.on 'greet.show' @hide
-        post.on 'greet.hide' @show
-        post.on 'popup.hide' @show
-        post.on 'popup.show' (name) => 
-            @hide() if name in ['differ' 'searcher']  
-            @show() if name in ['finder']
+        post∙on 'greet.show' @hide @
+        post∙on 'greet.hide' @show @
+        post∙on 'popup.hide' @show @
+        post∙on 'popup.show' @onPopup @
         
-        @editor.state.on 'lines.changed' @onLinesChanged
+        @editor.state∙on 'lines.changed' @onLinesChanged @
         
         @calcView()
+        
+    onPopup: name ->
+    
+        @hide() if name in ['differ' 'searcher']  
+        @show() if name in ['finder']
         
     # ███      ███  ███   ███  ████████   ███████         ███████  ███   ███   ███████   ███   ███   ███████   ████████  ███████  
     # ███      ███  ████  ███  ███       ███             ███       ███   ███  ███   ███  ████  ███  ███        ███       ███   ███
@@ -53,7 +56,7 @@ class mapscr extends mapview
     # ███      ███  ███  ████  ███            ███        ███       ███   ███  ███   ███  ███  ████  ███   ███  ███       ███   ███
     # ███████  ███  ███   ███  ████████  ███████          ███████  ███   ███  ███   ███  ███   ███   ███████   ████████  ███████  
 
-    onLinesChanged: diff =>
+    onLinesChanged: diff ->
         
         if diff.del.length == 0 == diff.chg.length
             @reload()
@@ -70,8 +73,8 @@ class mapscr extends mapview
                     @updateLine cli
                 @updateFromLine minLine
         
-    getSegls:  => @state.segls
-    getSyntax: => @state.syntax
+    getSegls:  -> @state.segls
+    getSyntax: -> @state.syntax
     
     # 00     00   0000000   000   000   0000000  00000000  
     # 000   000  000   000  000   000  000       000       
@@ -79,9 +82,9 @@ class mapscr extends mapview
     # 000 0 000  000   000  000   000       000  000       
     # 000   000   0000000    0000000   0000000   00000000  
     
-    onMouse: event =>
+    onMouse: event ->
         
-        super event
+        mapview.onMouse @ event
         
         switch event.type
             
@@ -114,7 +117,7 @@ class mapscr extends mapview
     # 000   000  000            000  000   000     000       
     # 000   000  00000000  0000000   000  0000000  00000000  
     
-    onResize: =>
+    onResize: ->
         
         @csz = @cells.screen.t.cellsz
         
@@ -129,7 +132,7 @@ class mapscr extends mapview
     #      000  000       000   000  000   000  000      000         000     000   000  
     # 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
     
-    scrollToPixel: pixel =>
+    scrollToPixel: pixel ->
         
         view = @state.s.view.asMutable()
         
@@ -193,7 +196,7 @@ class mapscr extends mapview
            @mapY + @lineOffset(pos[1])
        ]
     
-    maxLinesToLoad: => 2000
+    maxLinesToLoad: -> 2000
     
     ###
     ███████    ████████    ███████   ███   ███
@@ -203,11 +206,11 @@ class mapscr extends mapview
     ███████    ███   ███  ███   ███  ██     ██
     ###
     
-    draw: =>
+    draw: ->
     
         ⮐  if @hidden() or @collapsed()
         
-        super()
+        mapview.draw @
         
         if @csz
         
@@ -220,7 +223,7 @@ class mapscr extends mapview
     # ███  ███ █ ███  ███   ███  ███   ███  ███            ███
     # ███  ███   ███  ███   ███   ███████   ████████  ███████ 
 
-    drawImages: =>
+    drawImages: ->
         
         t = @cells.screen.t
         
@@ -243,7 +246,7 @@ class mapscr extends mapview
     # ███  ███   ███  ████  ███   ███  ███   ███
     # ███   ███  ███   ███   ███████   ███████  
 
-    drawKnob: =>
+    drawKnob: ->
     
         @calcView()
                 
@@ -253,13 +256,13 @@ class mapscr extends mapview
         
         @cells.screen.t.placeImageOverlay @knobId @cells.x @cells.y ky @mapWidth @knobHeight
 
-    hide: =>
+    hide: ->
     
         ⮐  if @hidden()
         
         @cells.screen.t.hideImageOverlay @knobId
         
-        super()
+        mapview.hide @
         
     #  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████
     # ███       ███   ███  ███   ███  ███       ███   ███  ███   ███  ███     
@@ -267,7 +270,7 @@ class mapscr extends mapview
     # ███       ███   ███  ███   ███       ███  ███   ███  ███   ███       ███
     #  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████ 
 
-    drawCursors: =>
+    drawCursors: ->
         
         for pos,idx in @state.s.cursors
         
@@ -295,7 +298,7 @@ class mapscr extends mapview
     # 000   000  000  000   000  000   000  000      000  000   000  000   000     000          000  
     # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
     
-    drawHighlights: =>
+    drawHighlights: ->
         
         mc = @state.mainCursor()
         

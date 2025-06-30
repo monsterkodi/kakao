@@ -26,7 +26,9 @@ class syntax
         
     setExt: ext -> @ext = ext; @ansi = false
     
-    setRgxs: rgxs -> @config = matchr.config rgxs 'u'
+    setRgxs: rgxs -> 
+        @config = matchr.config rgxs
+        # log "setRgxs" @config
     
     setLines: lines -> @setSegls kseg.segls(lines) 
     
@@ -39,16 +41,18 @@ class syntax
     # ███████   ████████   ███████   ███████  ███████ 
 
     setSegls: segls ->
-        
-        # if valid @config
-        #     @diss = []
-        #     for segs in segls
-        #         dss = matchr.ranges(@config kseg.str(segs) 'u')
-        #         for ds in dss
-        #             if ds.clss is arr
-        #                 ds.clss = trim ds.clss.map(kstr.trim).join(' ') 
-        #         @diss.push dss
-        #     # log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
+    
+        if valid @config
+            @diss = []
+            for segs in segls
+                dss = matchr.ranges(@config kseg.str(segs))
+                log "SEGS" kseg.str(segs)
+                log "DSS" dss
+                for ds in dss
+                    if ds.clss is array
+                        ds.clss = trim ds.clss∙map(kstr.trim).join(' ') 
+                @diss.push dss
+            # log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
         # else
         #     ⮐  if @partialUpdate segls
         # 

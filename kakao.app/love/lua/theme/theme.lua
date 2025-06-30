@@ -115,7 +115,46 @@ syntax = {
     text = "#fff", 
     ["text file"] = "#eee", 
     punct = "#555", 
-    template = "#555"
+    template = "#555", 
+    file = "#aaa", 
+    ext = "#444", 
+    dir_leaf = "#aaf", 
+    ["text dir"] = "#88f", 
+    dir = "#66d", 
+    ["punct dir"] = "#55a", 
+    dir_punct = "#226", 
+    file_log = "#bbf", 
+    file_txt = "#aaf", 
+    file_text = "#aaf", 
+    file_styl = "#f08", 
+    file_mov = "#b05", 
+    file_css = "#a04", 
+    file_pug = "#a5a", 
+    file_html = "#838", 
+    file_md = "#f4f", 
+    file_py = "#e0e", 
+    file_json = "#d0d", 
+    file_plist = "#c0c", 
+    file_cast = "#b0b", 
+    file_js = "#a0a", 
+    file_toml = "#909", 
+    file_kode = "#dc0", 
+    file_noon = "#f3a", 
+    file_cpp = "#cbb", 
+    file_nim = "#cbb", 
+    file_lua = "#baa", 
+    file_kim = "#0e0", 
+    file_kua = "#0e0", 
+    file_mm = "#0d0", 
+    file_h = "#090", 
+    file_png = "#0a0", 
+    file_gif = "#070", 
+    file_jpg = "#060", 
+    file_icns = "#060", 
+    file_jpeg = "#060", 
+    file_bmp = "#050", 
+    file_tiff = "#040", 
+    file_image = "#030"
     }
 }
 
@@ -152,7 +191,7 @@ function setVibrant(vf, lf)
     lf = lf or 1.0
     
     vf = clamp(0, 1, vf)
-    for key, val in full_vibrant do 
+    for key, val in ipairs(full_vibrant) do 
         if is(val, array) then 
             local c = color.saturate(val, vf, lf)
             theme[key][0] = c[0]

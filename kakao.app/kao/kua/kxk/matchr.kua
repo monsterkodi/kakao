@@ -1,0 +1,310 @@
+###
+00     00   0000000   000000000   0000000  000   000  00000000 
+000   000  000   000     000     000       000   000  000   000
+000000000  000000000     000     000       000000000  0000000  
+000 0 000  000   000     000     000       000   000  000   000
+000   000  000   000     000      0000000  000   000  000   000
+###
+
+#  0000000   0000000   000   000  00000000  000   0000000 
+# 000       000   000  0000  000  000       000  000      
+# 000       000   000  000 0 000  000000    000  000  0000
+# 000       000   000  000  0000  000       000  000   000
+#  0000000   0000000   000   000  000       000   0000000 
+
+# convert the patterns object to a list of [RegExp(key), value] pairs
+
+class matchr
+
+    @config: patterns flags -> 
+    
+        if patterns is "string"
+            patterns = noon.parse patterns
+    
+        rgxs = []
+        for p a of patterns
+            rgxs∙push [p a]
+        rgxs
+
+    @sortRanges: rgs ->
+        
+        rgs∙sort((a b) ->
+            if a.start == b.start
+                a.index < b.index
+            else
+                a.start < b.start)
+        rgs
+    
+    ###
+        00000000    0000000   000   000   0000000   00000000   0000000
+        000   000  000   000  0000  000  000        000       000     
+        0000000    000000000  000 0 000  000  0000  0000000   0000000 
+        000   000  000   000  000  0000  000   000  000            000
+        000   000  000   000  000   000   0000000   00000000  0000000 
+    
+        accepts a list of [regexp, value(s)] pairs and a string
+        
+        returns a list of objects with information about the matches:
+            
+            match: the matched substring
+            start: position of match in str
+            clss:  the value for the match
+            index: index of the regexp
+          
+            the objects are sorted by start and index
+            
+            if the regexp has capture groups then 
+                the value for the match of the nth group is
+                    the nth item of values(s) if value(s) is an array
+                    the nth [key, value] pair if value(s) is an object
+    ###
+    
+    @pack: (...) -> 
+        n = select("#", ...)
+        r = []
+        for i in 1...n
+            r∙push select(i, ...)
+        r
+        
+    @match: s p ->
+        
+        matchr.pack string.match(s p)
+    
+    @ranges: regexes text flags ->
+        
+        if not regexes is array
+            if regexes is "string"
+                regexes = [[regexes, 'found']]
+            else
+                regexes = [[regexes, 'found']]
+        elif valid(regexes) and not regexes[1] is array
+            regexes = [regexes]
+    
+        rgs = []
+        
+        return rgs if not text or empty regexes
+        
+        for r in 1..regexes.len
+            
+            reg = regexes[r][1]
+            
+            if not reg
+                error 'no reg?', regexes, text, flags
+                ⮐  rgs
+            
+            arg = regexes[r][2]
+            i = 1
+            s = text
+    
+            while s.len
+                
+                match = matchr.match s reg
+                
+                write "STRING " s
+                
+                break if not match
+                
+                write "MATCHES #{match.len} " match
+                
+                for i in 1...match.len+1
+                    write "MATCH #{i}. " match[i]
+                
+                if match.len == 1
+                    
+                    if match[1].len > 0
+                        start = match.index + i
+                        rgs∙push {
+                            start: start
+                            match: match[1]
+                            length: match[1].len
+                            clss:  arg
+                            index: r }
+                        
+                    i += match.index + max(1, match[1].len)
+                    s = text∙slice i
+                    
+                elif match.len > 1
+                    
+                    gs = 0
+                    
+                    for j in 1..match.len
+                        value = arg[j]
+                        # if value is array and j < value.len then value = value[j]
+                        # elif value is obj and j < dict.keys(value).len 
+                        #     value = [dict.keys(value)[j], value[dict.keys(value)[j]]]
+                        # break if not match[j+1]
+                        # gi = kstr.find kstr.slice(match[1] gs) match[j+1]
+                        start = i #+ gs + gi
+                        rgs∙push {
+                            start:  start
+                            length: match[j].len
+                            match:  match[j]
+                            clss:   value}
+                            
+                        # gs += match[j+1].len
+                        i += match[j].len
+                    s = kstr.slice text i
+                    
+                else
+                     break
+    
+        matchr.sortRanges rgs        
+    
+    ###
+        0000000    000   0000000   0000000  00000000   0000000  000000000
+        000   000  000  000       000       000       000          000   
+        000   000  000  0000000   0000000   0000000   000          000   
+        000   000  000       000       000  000       000          000   
+        0000000    000  0000000   0000000   00000000   0000000     000   
+     
+        accepts a list of ranges
+        returns a list of objects:
+        
+            match: the matched substring
+            start: position of match in str
+            clss:  string of classnames joined with a space
+           
+            with none of the [start, start+match.len] ranges overlapping
+    ###
+    
+    @dissect: ranges opt={join:false} -> 
+        
+        if ranges.len < 1
+            ⮐  [] 
+        
+        di = [] # collect a list of positions where a match starts or ends
+        for rg in ranges
+            di∙push [rg.start, rg.index]
+            di∙push [rg.start + rg.match.len, rg.index]
+            
+        # sort the start/end positions by x or index
+        di∙sort((a,b) ->
+            if a[1]==b[1] 
+                a[2]-b[2]
+            else
+                a[1]-b[1])
+                
+        d = [] 
+        si = -1
+    
+        for dps in di          
+            if dps[1] > si     
+                si = dps[1]
+                d∙push {
+                    start: si
+                    cls:   []}
+    
+        p = 0
+        for ri in 1..ranges.len
+            rg = ranges[ri]
+            while d[p].start < rg.start 
+                p += 1 
+            pn = p
+            while d[pn].start < rg.start+rg.match.len
+                if rg.clss
+                    if not rg.clss.split
+                        for r in rg.clss
+                            if r.split
+                                for c in r∙split '.' 
+                                    if d[pn].cls∙indexof(c) < 0
+                                        d[pn].cls∙push c 
+                    else 
+                        for c in rg.clss.split '.' 
+                            if d[pn].cls∙indexof(c) < 0
+                                d[pn].cls∙push c 
+                if pn+1 < d.len
+                    if not d[pn].match
+                        d[pn].match = rg.match.substr d[pn].start-rg.start, d[pn+1].start-d[pn].start
+                    pn += 1
+                else
+                    if not d[pn].match
+                        d[pn].match = rg.match.substr d[pn].start-rg.start
+                    break
+                    
+        d = d∙filter((i) -> ⮐  i.match.trim().len)
+        
+        for i in d
+            i.clss = i.cls∙join ' '
+            i.cls = nil
+            
+        if d.len > 1
+            for i in d.len-1..1
+                if d[i].start + d[i].match.len == d[i+1].start
+                    if d[i].clss == d[i+1].clss
+                        d[i].match += d[i+1].match
+                        d∙splice i+1 1
+        d
+    
+    ###
+        00     00  00000000  00000000    0000000   00000000  
+        000   000  000       000   000  000        000       
+        000000000  0000000   0000000    000  0000  0000000   
+        000 0 000  000       000   000  000   000  000       
+        000   000  00000000  000   000   0000000   00000000  
+     
+        merges two sorted lists of dissections
+    ###
+        
+    merge: dssA dssB ->
+        
+        result = []
+        A = dssA∙shift()
+        B = dssB∙shift()
+        
+        while A and B
+    
+            if A.start+A.match.len < B.start
+                result∙push A
+                A = dssA∙shift()
+                
+            elif B.start+B.match.len < A.start
+                result∙push B
+                B = dssB∙shift()
+                
+            elif A.start < B.start
+                d = B.start-A.start
+                result∙push {
+                    start: A.start
+                    clss:  A.clss
+                    match: A.match∙slice(1, d) }
+                A.start += d
+                A.match = A.match∙slice d
+                
+            elif B.start < A.start
+                d = A.start-B.start
+                result∙push {
+                    start: B.start
+                    clss:  B.clss
+                    match: B.match∙slice(1, d) }
+                B.start += d
+                B.match = B.match∙slice d
+                
+            elif A.start == B.start
+                d = A.match.len - B.match.len
+                clss = A.clss & " " & B.clss
+                match = if d >= 0 ➜ B.match ➜ A.match
+                result∙push {
+                    start: A.start
+                    clss:  clss
+                    match: match }
+                if d > 0
+                    A.match = A.match∙slice B.match.len
+                    A.start += B.match.len
+                    B = dssB∙shift()
+                elif d < 0
+                    B.match = B.match∙slice A.match.len
+                    B.start += A.match.len
+                    A = dssA∙shift()
+                else
+                    A = dssA∙shift()
+                    B = dssB∙shift()
+            
+        if B and not A
+            result += [B] 
+            result += dssB 
+        if A and not B
+            result += [A]
+            result += dssA 
+        result
+
+⮐  matchr    

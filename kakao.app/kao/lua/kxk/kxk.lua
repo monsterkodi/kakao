@@ -149,5 +149,6 @@ _G.events = require("kxk.events")
 _G.util = require("kxk.util")
 _G.noon = require("kxk.noon")
 _G.sds = require("kxk.sds")
+_G.matchr = require("kxk.matchr")
 
 return {}

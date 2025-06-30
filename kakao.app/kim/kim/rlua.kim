@@ -6,6 +6,8 @@
 
 use pars klss vars
 
+kuaFile ◇ string
+
 class Rlua
     
     code    : string
@@ -196,8 +198,8 @@ class Rlua
     ▸literal: ◇Node n -> 
     
         switch n.token.str
-            "●dir"  ➜ @add "currentSourcePath().split(\"/\")[0..^2].join(\"/\")"
-            "●file" ➜ @add "currentSourcePath()"
+            "●dir"  ➜ @add '"' & slash.dir(kuaFile) & '"'
+            "●file" ➜ @add '"' & kuaFile & '"'
                     ➜ @tok n
         
     ▸let: ◇Node n -> 
@@ -742,7 +744,7 @@ renderLua* = ◇string code autovar=true ➜string ->
 renderLuaFile* = ◇string file ➜string ->
 
     profileScope file
-
+    kuaFile = file
     fileOut = file.swapLastPathComponentAndExt "kua" "lua"
     kuaCode = file.read()
     luaCode = renderLua kuaCode

@@ -6,18 +6,47 @@
 0000000    000  000   000     000     000   000  00000000  00000000
 ###
 
-# import rgxs from './quicky.json' with { type: "json" }
-
 use view.colmns.diritem
 use view.menu.choices
+
+class dirSyntax
+
+    @: tree -> @tree = tree    
+    clear: ->
+    setLines: lines ->
+    setSegls: segls ->
+    getChar:  x y char -> char
+    getClass: x y -> ''
+        
+    #  ███████   ███████   ███       ███████   ████████ 
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    # ███       ███   ███  ███      ███   ███  ███████  
+    # ███       ███   ███  ███      ███   ███  ███   ███
+    #  ███████   ███████   ███████   ███████   ███   ███
+
+    getColor: x y ->
+    
+        item = @tree.items[y]
+        ext  = slash.ext item.name
+        segs = kseg item.tilde
+        trim = kseg.trim segs
+        clr  = [255 200 0]
+        if 
+            trim[1] == icons.dir_open
+                clr = theme.syntax.dir
+            trim[1] == icons.dir_close
+                clr = theme.syntax.dir
+            theme.syntax["file_#{ext}"]
+                clr = theme.syntax["file_#{ext}"]
+        clr
 
 class dirtree extends choices
 
     @: name features ->
         
         choices.init @ name features
-                        
-        # @state.syntax.setRgxs rgxs
+        
+        @state.syntax = dirSyntax @
         
         post∙on 'session.merge' @onSessionMerge @
         post∙on 'file.change'   @onFileChange   @
@@ -389,12 +418,12 @@ class dirtree extends choices
         li = @indexOfOpenFile()
         if li
             bg = theme.gutter.bg
-            y  = li-@state.s.view[2]
-            if y < @cells.rows and li < @state.s.lines∙len()
+            y  = li-@state.s.view[2]+1
+            if y <= @cells.rows and li <= @state.s.lines∙len()
                 xs = kseg.headCount(@state.s.lines[li] ' ')
-                @cells∙set xs-1-@state.s.view[1] y '' bg @color.bg
+                @cells∙set xs+1-@state.s.view[1] y '' bg @color.bg
                 for x in xs...@cells.cols
-                    @cells∙set_bg x-@state.s.view[1] y bg
+                    @cells∙set_bg x+2-@state.s.view[1] y bg
         
         choices.drawSelections @
                 

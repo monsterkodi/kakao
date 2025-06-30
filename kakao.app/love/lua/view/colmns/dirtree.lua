@@ -6,10 +6,62 @@
 0000000    000  000   000     000     000   000  00000000  00000000
 --]]
 
--- import rgxs from './quicky.json' with { type: "json" }
-
 diritem = require "view.colmns.diritem"
 choices = require "view.menu.choices"
+
+
+local dirSyntax = class("dirSyntax")
+    
+
+
+function dirSyntax:init(tree) 
+    self.tree = tree
+    return self
+    end
+
+function dirSyntax:clear() 
+    
+    end
+
+function dirSyntax:setLines(lines) 
+    
+    end
+
+function dirSyntax:setSegls(segls) 
+    
+    end
+
+function dirSyntax:getChar(x, y, char) 
+    return char
+    end
+
+function dirSyntax:getClass(x, y) 
+    return ''
+    end
+
+--  ███████   ███████   ███       ███████   ████████ 
+-- ███       ███   ███  ███      ███   ███  ███   ███
+-- ███       ███   ███  ███      ███   ███  ███████  
+-- ███       ███   ███  ███      ███   ███  ███   ███
+--  ███████   ███████   ███████   ███████   ███   ███
+
+
+function dirSyntax:getColor(x, y) 
+        local item = self.tree.items[y]
+        local ext = slash.ext(item.name)
+        local segs = kseg(item.tilde)
+        local trim = kseg.trim(segs)
+        local clr = array(255, 200, 0)
+        if (trim[1] == icons.dir_open) then 
+                clr = theme.syntax.dir
+        elseif (trim[1] == icons.dir_close) then 
+                clr = theme.syntax.dir
+        elseif theme.syntax["file_" .. tostring(ext) .. ""] then 
+                clr = theme.syntax["file_" .. tostring(ext) .. ""]
+        end
+        
+        return clr
+    end
 
 
 local dirtree = class("dirtree", choices)
@@ -19,7 +71,7 @@ local dirtree = class("dirtree", choices)
 function dirtree:init(name, features) 
         choices.init(self, name, features)
         
-        -- @state.syntax.setRgxs rgxs
+        self.state.syntax = dirSyntax(self)
         
         post:on('session.merge', self.onSessionMerge, self)
         post:on('file.change', self.onFileChange, self)
@@ -441,12 +493,12 @@ function dirtree:drawSelections()
         local li = self:indexOfOpenFile()
         if li then 
             local bg = theme.gutter.bg
-            local y = (li - self.state.s.view[2])
-            if ((y < self.cells.rows) and (li < self.state.s.lines:len())) then 
+            local y = ((li - self.state.s.view[2]) + 1)
+            if ((y <= self.cells.rows) and (li <= self.state.s.lines:len())) then 
                 local xs = kseg.headCount(self.state.s.lines[li], ' ')
-                self.cells:set(((xs - 1) - self.state.s.view[1]), y, '', bg, self.color.bg)
+                self.cells:set(((xs + 1) - self.state.s.view[1]), y, '', bg, self.color.bg)
                 for x = xs, self.cells.cols-1 do 
-                    self.cells:set_bg((x - self.state.s.view[1]), y, bg)
+                    self.cells:set_bg(((x + 2) - self.state.s.view[1]), y, bg)
                 end
             end
         end

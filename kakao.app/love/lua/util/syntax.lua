@@ -37,8 +37,8 @@ function syntax:setExt(ext)
 
 
 function syntax:setRgxs(rgxs) 
-    self.config = matchr.config(rgxs, 'u')
-    return self.config
+        self.config = matchr.config(rgxs)
+        return -- log "setRgxs" @config
     end
 
 
@@ -59,15 +59,24 @@ function syntax:setColors(colors)
 
 
 function syntax:setSegls(segls) 
-        -- if valid @config
-        --     @diss = []
-        --     for segs in segls
-        --         dss = matchr.ranges(@config kseg.str(segs) 'u')
-        --         for ds in dss
-        --             if ds.clss is arr
-        --                 ds.clss = trim ds.clss.map(kstr.trim).join(' ') 
-        --         @diss.push dss
-        --     # log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
+        if valid(self.config) then 
+            self.diss = array()
+            for _, segs in ipairs(segls) do 
+                local dss = matchr.ranges(self.config, kseg.str(segs))
+                print("SEGS", kseg.str(segs))
+                print("DSS", dss)
+                for _, ds in ipairs(dss) do 
+                    if is(ds.clss, array) then 
+                        ds.clss = trim(ds.clss:map(kstr.trim).join(' '))
+                    end
+                end
+                
+                self.diss.push(dss)
+            end
+            
+            -- log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
+        end
+        
         -- else
         --     ⮐  if @partialUpdate segls
         -- 

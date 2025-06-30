@@ -20,10 +20,10 @@ class crumbs extends view
         @pointerType = 'pointer'
         @rounded = []
         
-        @setColor 'hover'       theme.hover.bg
-        @setColor 'bg'          theme.crumbs.bg
-        @setColor 'fg'          theme.crumbs.fg
-        @setColor 'empty'       theme.editor.bg
+        @setColor 'hover'  theme.hover.bg
+        @setColor 'bg'     theme.crumbs.bg
+        @setColor 'fg'     theme.crumbs.fg
+        @setColor 'empty'  theme.editor.bg
         
     setColor: key color ->
         
@@ -71,13 +71,14 @@ class crumbs extends view
                     bg = @color.empty_right 
                 @cells∙set x 1 ch fg bg
             else
+                fg = @color.fg
                 if si == @hoverIndex
                     fg = color.adjustForBackground @color.fg bg 
-                elif si < @split.len-1
+                elif si < @split.len
                     fg = color.darken(@color.fg, min(1, (si+3)/@split.len))
                 else
                     fg = color.brighten @color.fg
-                
+                    
                 @cells∙set x 1 ch fg bg 
         @render()
                 
@@ -101,7 +102,6 @@ class crumbs extends view
         si = 0
         ei = 0
         
-        log "colsAtSplitIndex #{idx}" @split, type(@split), @split.len
         for i in 1..idx
             if i < idx
                 si += @split[i].len + 2
@@ -110,11 +110,9 @@ class crumbs extends view
         [si ei]
         
     pathAtSplitIndex: idx ->
-        # log "PATH AT SPLIT INDEX #{idx}" @split
-        # log "PATH AT SPLIT ROOT #{idx}" @root
+    
         path = slash.path unpack(@split∙slice(1, idx))
-        # path = slash.path @root path
-        log "PATH AT SPLIT PATH #{idx}" path
+        path = slash.path @root path
         if string.sub(path 1 1) != "~" and string.sub(path 1 1) != "/"
             path = '/' & path 
         path
@@ -142,20 +140,23 @@ class crumbs extends view
                 @split∙unshift('/') 
         
         @root = []
-        @rounded = ['']
+        @rounded = @split∙join ' '
 
-        while @split.len > 0 
+        while @split.len > 1 and kseg(@rounded).len > @cells.cols - 2
             s = @split∙shift()
             @root∙push s
-            @rounded += kseg s
-            @rounded∙push ' '
-            
-        @split = slash.split @path
+            @rounded = @split∙join ' '
+
+        @rounded = kseg @rounded
+        @rounded∙unshift ""
         @root = @root∙join '/'
         
-        padding = if @padLast ➜ kstr.lpad(@cells.cols-2-@rounded.len) ➜ ''
+        if @padLast
+            log @padLast
+            for i in 1...@cells.cols-1-@rounded.len
+                @rounded∙push " "
         
-        @rounded∙push ''
+        @rounded∙push ""
             
     set: path ->
     

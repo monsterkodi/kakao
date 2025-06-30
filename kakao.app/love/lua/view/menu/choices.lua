@@ -159,7 +159,7 @@ function choices:drawSelections()
         
         for x in iter((xs + 1), sel[3]) do 
             self.cells:set_bg(((x - self.state.s.view[1]) + 1), y, fg)
-            -- @cells∙adjustContrastForHighlight x-@state.s.view[1] y fg
+            self.cells:adjustContrastForHighlight(((x - self.state.s.view[1]) + 1), y, fg)
         end
         
         return self.cells:set_ch_fg(((sel[3] + 2) - self.state.s.view[1]), y, '', fg)

@@ -8,94 +8,17 @@
     scrollable source map to the right of the fileeditor
 --]]
 
- = require ""
+-- use                 ◆ mapview
 
 
 local mapscr = class("mapscr", mapview)
-    mapscr.onLinesChanged = diff(method () 
-        if ((#diff.del == 0) == #diff.chg) then 
-            reload().init()
-        else 
-            if (#diff.chg and ((#diff.del == 0) == #diff.ins)) then 
-                for cli in diff.chg do 
-                    @updateLine cli
-                end
-            else 
-                minLine = #@state.s.lines
-                minLine = min minLine if #diff.ins then diff.ins[0] end
-                minLine = min minLine if #diff.del then diff.del[0] end
-                for cli in diff.chg do 
-                    if (cli >= minLine) then break end
-                    @updateLine cli
-                end
-                
-                @updateFromLine minLine
-            end
-        end
-    end)
     
-    mapscr.onMouse = event(method () 
-        super event
-        
-        if (event.type == 'press') then 
-                if @hover then 
-                    @doDrag = true
-                    post.emit 'pointer' 'grabbing'
-                    return @scrollToPixel event.pixel
-                end
-        elseif (event.type == 'drag') then 
-                if @doDrag then 
-                    post.emit 'pointer' 'grab'
-                    return @scrollToPixel event.pixel
-                end
-                
-                @hover = false
-        elseif (event.type == 'release') then 
-                if @doDrag then 
-                    delete @doDrag
-                    post.emit 'pointer' if @hover then 'pointer' end
-                    return true
-                end
-        end
-        
-        @hover
-    end)
-    
-    mapscr.scrollToPixel = pixel(method () 
-        view = @state.s.view.asMutable()
-        
-        li = (@topLine + int(((pixel[1] - @mapY) / @pixelsPerRow)))
-        
-        view[1] = li
-        view[1] = view[1] - 5 -- offset so that clicking inside a header scrolls it into view
-        
-        maxY = (#@state.s.lines - @cells.rows)
-        view[1] = min maxY if (maxY > 0) then view[1] end
-        view[1] = max 0 view[1]
-        
-        mc = @state.mainCursor()
-        
-        if view then eql end @state.s.view
-        
-            if (li ~= mc[1]) then 
-                @state.setCursors array(array(mc[0], (li + 5))) main:0 adjust:false
-                return redraw:true
-            end
-            
-            return
-        
-        @state.setView view
-        @state.setCursors array(array(mc[0], (li + 5))) main:0 adjust:false
-        
-        drawKnob().init()
-        redraw:true
-    end)
 
 
 function mapscr:init(@editor) 
         mapview.init(self, self.editor.state)
         
-        self.state.on('view.changed', self.drawKnob)
+        self.state:on('view.changed', self.drawKnob, self)
         
         self.pointerType = 'pointer'
         
@@ -113,22 +36,25 @@ function mapscr:init(@editor)
         self:setColor('selection', theme.selection.map)
         self:setColor('fullysel', theme.selection.mapfully)
         
-        self.screen.t.on('preResize', self.clearImages)
+        self.screen.t:on('preResize', self.clearImages, self)
         
-        post.on('greet.show', self.hide)
-        post.on('greet.hide', self.show)
-        post.on('popup.hide', self.show)
-        post.on('popup.show', method (name) 
-            if (name in array('differ', 'searcher')) then self:hide() end
-            if (name in array('finder')) then 
-    return self:show()
-                    end
-        end)
+        post:on('greet.show', self.hide, self)
+        post:on('greet.hide', self.show, self)
+        post:on('popup.hide', self.show, self)
+        post:on('popup.show', self.onPopup, self)
         
-        self.editor.state.on('lines.changed', self.onLinesChanged)
+        self.editor.state:on('lines.changed', self.onLinesChanged, self)
         
         self:calcView()
         return self
+    end
+
+
+function mapscr:onPopup(name) 
+        if (name in array('differ', 'searcher')) then self:hide() end
+        if (name in array('finder')) then 
+    return self:show()
+                end
     end
 
 -- ███      ███  ███   ███  ████████   ███████         ███████  ███   ███   ███████   ███   ███   ███████   ████████  ███████  
@@ -138,11 +64,34 @@ function mapscr:init(@editor)
 -- ███████  ███  ███   ███  ████████  ███████          ███████  ███   ███  ███   ███  ███   ███   ███████   ████████  ███████  
 
 
-method mapscr:getSegls() 
+function mapscr:onLinesChanged(diff) 
+        if ((#diff.del == 0) == #diff.chg) then 
+            return self:reload()
+        else 
+            if (#diff.chg and ((#diff.del == 0) == #diff.ins)) then 
+                for _, cli in ipairs(diff.chg) do 
+                    self:updateLine(cli)
+                end
+            else 
+                local minLine = #self.state.s.lines
+                minLine = min(minLine, if #diff.ins then diff.ins[0] end)
+                minLine = min(minLine, if #diff.del then diff.del[0] end)
+                for _, cli in ipairs(diff.chg) do 
+                    if (cli >= minLine) then break end
+                    self:updateLine(cli)
+                end
+                
+                return self:updateFromLine(minLine)
+            end
+        end
+    end
+
+
+function mapscr:getSegls() 
     return self.state.segls
     end
 
-method mapscr:getSyntax() 
+function mapscr:getSyntax() 
     return self.state.syntax
     end
 
@@ -152,6 +101,34 @@ method mapscr:getSyntax()
 -- 000 0 000  000   000  000   000       000  000       
 -- 000   000   0000000    0000000   0000000   00000000  
 
+
+function mapscr:onMouse(event) 
+        mapview.onMouse(self, event)
+        
+        if (event.type == 'press') then 
+                if self.hover then 
+                    self.doDrag = true
+                    post.emit('pointer', 'grabbing')
+                    return self:scrollToPixel(event.pixel)
+                end
+        elseif (event.type == 'drag') then 
+                if self.doDrag then 
+                    post.emit('pointer', 'grab')
+                    return self:scrollToPixel(event.pixel)
+                end
+                
+                self.hover = false
+        elseif (event.type == 'release') then 
+                if self.doDrag then 
+                    delete(self.doDrag)
+                    post.emit('pointer', if self.hover then 'pointer' end)
+                    return true
+                end
+        end
+        
+        return self.hover
+    end
+
 -- 00000000   00000000   0000000  000  0000000  00000000  
 -- 000   000  000       000       000     000   000       
 -- 0000000    0000000   0000000   000    000    0000000   
@@ -159,7 +136,7 @@ method mapscr:getSyntax()
 -- 000   000  00000000  0000000   000  0000000  00000000  
 
 
-method mapscr:onResize() 
+function mapscr:onResize() 
         self.csz = self.cells.screen.t.cellsz
         
         if empty(self.csz) then return end
@@ -174,6 +151,37 @@ method mapscr:onResize()
 -- 0000000   000       0000000    000   000  000      000         000     000   000  
 --      000  000       000   000  000   000  000      000         000     000   000  
 -- 0000000    0000000  000   000   0000000   0000000  0000000     000      0000000   
+
+
+function mapscr:scrollToPixel(pixel) 
+        local view = self.state.s.view.asMutable()
+        
+        local li = (self.topLine + int(((pixel[1] - self.mapY) / self.pixelsPerRow)))
+        
+        view[1] = li
+        view[1] = view[1] - 5 -- offset so that clicking inside a header scrolls it into view
+        
+        local maxY = (#self.state.s.lines - self.cells.rows)
+        view[1] = min(maxY, if (maxY > 0) then view[1] end)
+        view[1] = max(0, view[1])
+        
+        local mc = self.state.mainCursor()
+        
+        if view(eql, self.state.s.view) then 
+            if (li ~= mc[1]) then 
+                self.state.setCursors(array(array(mc[0], (li + 5))), main:0, adjust:false)
+                return redraw:true
+            end
+            
+            return
+        end
+        
+        self.state.setView(view)
+        self.state.setCursors(array(array(mc[0], (li + 5))), main:0, adjust:false)
+        
+        self:drawKnob()
+        return redraw:true
+    end
 
 --  ███████   ███████   ███       ███████  ███   ███  ███  ████████  ███   ███
 -- ███       ███   ███  ███      ███       ███   ███  ███  ███       ███ █ ███
@@ -218,7 +226,7 @@ function mapscr:pixelPos(pos)
     end
 
 
-method mapscr:maxLinesToLoad() 
+function mapscr:maxLinesToLoad() 
     return 2000
     end
 
@@ -231,10 +239,10 @@ method mapscr:maxLinesToLoad()
     --]]
 
 
-method mapscr:draw() 
+function mapscr:draw() 
         if (self:hidden() or self:collapsed()) then return end
         
-        super()
+        mapview.draw(self)
         
         if self.csz then 
             self:drawCursors()
@@ -249,7 +257,7 @@ method mapscr:draw()
 -- ███  ███   ███  ███   ███   ███████   ████████  ███████ 
 
 
-method mapscr:drawImages() 
+function mapscr:drawImages() 
         local t = self.cells.screen.t
         
         if empty(((t.pixels or self:hidden()) or self:collapsed())) then return end
@@ -277,7 +285,7 @@ method mapscr:drawImages()
 -- ███   ███  ███   ███   ███████   ███████  
 
 
-method mapscr:drawKnob() 
+function mapscr:drawKnob() 
         self:calcView()
         
         if empty(((self.csz or self:hidden()) or self:collapsed())) then return end
@@ -288,12 +296,12 @@ method mapscr:drawKnob()
     end
 
 
-method mapscr:hide() 
+function mapscr:hide() 
         if self:hidden() then return end
         
         self.cells.screen.t.hideImageOverlay(self.knobId)
         
-        return super()
+        return mapview.hide(self)
     end
 
 --  ███████  ███   ███  ████████    ███████   ███████   ████████    ███████
@@ -303,8 +311,8 @@ method mapscr:hide()
 --  ███████   ███████   ███   ███  ███████    ███████   ███   ███  ███████ 
 
 
-method mapscr:drawCursors() 
-        for pos, idx in self.state.s.cursors do 
+function mapscr:drawCursors() 
+        for pos, idx in ipairs(self.state.s.cursors) do 
             array(sx, sy) = self:pixelPos(pos)
             
             if ((sy < self.mapY) or (sy >= self.mapBot)) then continue end
@@ -334,7 +342,7 @@ method mapscr:drawCursors()
 -- 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     0000000   
 
 
-method mapscr:drawHighlights() 
+function mapscr:drawHighlights() 
         local mc = self.state.mainCursor()
         
         local xoff = (self.mapX + self.mapWidth)

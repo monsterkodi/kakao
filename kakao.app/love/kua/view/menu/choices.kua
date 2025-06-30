@@ -103,7 +103,7 @@ class choices extends editor
     drawCursors: ->
         
     drawSelections: ->
-        
+    
         ⮐  if empty @state.s.selections
         
         if not @roundedSelections
@@ -132,7 +132,7 @@ class choices extends editor
         
         for x in xs+1..sel[3]
             @cells∙set_bg x-@state.s.view[1]+1 y fg
-            # @cells∙adjustContrastForHighlight x-@state.s.view[1] y fg
+            @cells∙adjustContrastForHighlight x-@state.s.view[1]+1 y fg
             
         @cells∙set_ch_fg sel[3]+2-@state.s.view[1] y '' fg
 
