@@ -134,9 +134,9 @@ function fileutil.static.rename(oldPath, newPath)
         end
     end
 
-post.on('file.trash', fileutil.trash)
-post.on('file.class', fileutil.class)
-post.on('file.rename', fileutil.rename)
-post.on('file.new_folder', fileutil.newFolder)
+post:on('file.trash', fileutil.trash)
+post:on('file.class', fileutil.class)
+post:on('file.rename', fileutil.rename)
+post:on('file.new_folder', fileutil.newFolder)
 
 return fileutil

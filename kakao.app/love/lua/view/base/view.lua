@@ -68,7 +68,6 @@ function view:show()
             end
             
             view.currentPopup = self
-            -- log "view popup.show #{@name}" 
             post:emit('popup.show', self.name)
         end
         
@@ -83,7 +82,6 @@ function view:hide()
         if self.isPopup then 
             if (self == view.currentPopup) then 
                 view.currentPopup = nil
-                -- log "view popup.hide #{@name}" 
                 post:emit('popup.hide', self.name)
             end
         end

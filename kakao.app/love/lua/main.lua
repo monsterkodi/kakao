@@ -243,7 +243,7 @@ end)()
     
     if (combo == "cmd+-") then setFontWidth(max(14, (fontWidth - 1)))
     elseif (combo == "cmd+=") then setFontWidth(min(128, (fontWidth + 1)))
-    elseif (combo == "cmd+0") then setFontWidth()
+    elseif (combo == "cmd+0") then setFontWidth(20)
     else 
                     local event = {["repeat"] = isrepeat, combo = combo, char = char}
                     -- log "key", dict.str(event), ◌b, scancode

@@ -29,7 +29,7 @@ function dircol:init(editor, features)
         self.crumbs = crumbs("" .. tostring(self.name) .. "_crumbs")
         self.dirtree = dirtree("" .. tostring(self.name) .. "_dirtree", array('scroll'))
         
-        self.crumbs:on('action', self.onCrumbsAction)
+        self.crumbs:on('action', self.onCrumbsAction, self)
         
         local bg = theme.dirtree.bg
         
@@ -67,7 +67,7 @@ function dircol:onCrumbsAction(action, path)
 function dircol:onSessionMerge(recent) 
         if empty(recent.dircol) then return end
         
-        local args = ked_session.get('ked▸args', {})
+        local args = ked_session:get('ked▸args', {})
         if valid(args.options) then 
             print("dircol.onSessionMerge - use first options dir " .. tostring(slash.dir(args.options[0])) .. "")
             local root = slash.dir(args.options[0])
@@ -85,7 +85,7 @@ function dircol:onSessionMerge(recent)
             self:show()
         end
         
-        return ked_session.set('dircol', recent.dircol)
+        return ked_session:set('dircol', recent.dircol)
     end
 
 
@@ -201,7 +201,7 @@ function dircol:rename()
         function cb(res) 
             if self.hover then self.dirtree:grabFocus() end
             if (res ~= fileName) then 
-                return post.emit('file.rename', current.path, slash.path(slash.dir(current.path), res))
+                return post:emit('file.rename', current.path, slash.path(slash.dir(current.path), res))
             end
         end
         

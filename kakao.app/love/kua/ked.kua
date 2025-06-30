@@ -515,8 +515,8 @@ class KED
         
         # squares.onResize cols rows size cellsz
         # sircels.onResize cols rows size cellsz
-
-        @editor.mapscr.onResize()
+        if @editor.mapscr
+            @editor.mapscr∙onResize()
         
     # ███  ███   ███  ████████   ███   ███  █████████       ████████    ███████   ████████   ███   ███  ████████ 
     # ███  ████  ███  ███   ███  ███   ███     ███          ███   ███  ███   ███  ███   ███  ███   ███  ███   ███

@@ -27,7 +27,7 @@ class dircol extends view
         @crumbs  = crumbs  "#{@name}_crumbs"
         @dirtree = dirtree "#{@name}_dirtree" ['scroll']
         
-        @crumbs∙on 'action' @onCrumbsAction
+        @crumbs∙on 'action' @onCrumbsAction @
         
         bg = theme.dirtree.bg
         
@@ -61,7 +61,7 @@ class dircol extends view
         
         ⮐  if empty recent.dircol
         
-        args = ked_session.get 'ked▸args' {}
+        args = ked_session∙get 'ked▸args' {}
         if valid args.options
             log "dircol.onSessionMerge - use first options dir #{slash.dir args.options[0]}"
             root = slash.dir args.options[0]
@@ -76,7 +76,7 @@ class dircol extends view
             @active = true
             @show()
             
-        ked_session.set 'dircol' recent.dircol
+        ked_session∙set 'dircol' recent.dircol
             
     setRoot: path ->
     
@@ -181,7 +181,7 @@ class dircol extends view
         cb = (res) ->
             if @hover ➜ @dirtree∙grabFocus() 
             if res != fileName
-                post.emit 'file.rename' current.path slash.path(slash.dir(current.path) res)
+                post∙emit 'file.rename' current.path slash.path(slash.dir(current.path) res)
         post∙emit 'input.popup' {text:fileName x:x y:y w:w cb:cb}
     
     # █████████   ███████    ███████    ███████   ███      ████████

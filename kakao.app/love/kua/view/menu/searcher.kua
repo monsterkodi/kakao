@@ -8,18 +8,18 @@
     searches in multiple files provided by index▸prjcts
 ###
 
-use ../../../kxk    ▪ post kseg slash
-use ../../../kxk    ◆ nfs
-use ../../edit/tool ◆ belt
-use ../../index     ◆ prjcts
-use ../base         ◆ view
-use                 ◆ finder searcherfile
+# use ../../../kxk    ▪ post kseg slash
+# use ../../../kxk    ◆ nfs
+# use ../../edit/tool ◆ belt
+# use ../../index     ◆ prjcts
+# use ../base         ◆ view
+# use                 ◆ finder searcherfile
 
 class searcher extends finder
 
-    @: @screen @editor name='searcher' ->
+    @: @editor name='searcher' ->
 
-        super @screen @editor name
+        super @editor name
         
         if @name == 'searcher'
             post.on 'searcher.show' @show
@@ -42,9 +42,9 @@ class searcher extends finder
             int(@editor.cells.rows-3)
         ]
 
-    arrange: =>
+    arrange: ->
 
-        super()    
+        finder.arrange @
     
         for sfil in @sfils
             y = @choices.cells.y - @choices.state.s.view[1] + sfil.lineIndex
@@ -60,7 +60,7 @@ class searcher extends finder
 
         ⮐  if @hidden()
 
-        super()
+        finder.draw @
         
         for sfil in @sfils
             if @choices.state.s.view[1] <= sfil.lineIndex < @choices.state.s.view[1]+@choices.cells.rows
@@ -72,14 +72,14 @@ class searcher extends finder
     # ███ █ ███  ███   ███  ███   ███       ███  ███     
     # ███   ███   ███████    ███████   ███████   ████████
 
-    onMouse: event =>
+    onMouse: event ->
 
         ⮐  if @hidden()
         
         for sfil in @sfils
             ret = sfil.onMouse event ; ⮐ ret if ret?.redraw
         
-        super event
+        finder.onMouse @ event
         
     # ███       ███████    ███████   ███████    ████████  ███████  
     # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
@@ -87,7 +87,7 @@ class searcher extends finder
     # ███      ███   ███  ███   ███  ███   ███  ███       ███   ███
     # ███████   ███████   ███   ███  ███████    ████████  ███████  
 
-    onFileLoaded: file =>
+    onFileLoaded: file ->
     
         ⮐  if @hidden()
     
@@ -99,8 +99,8 @@ class searcher extends finder
     
         post∙emit 'editor.highlight' @textToHighlight
         
-        delete @fileToHighlight
-        delete @textToHighlight
+        @fileToHighlight = nil
+        @textToHighlight = nil
         
     # ████████  ██     ██  ███  █████████        ████████  ███  ███      ████████         ███████   ████████   ████████  ███   ███
     # ███       ███   ███  ███     ███           ███       ███  ███      ███             ███   ███  ███   ███  ███       ████  ███
@@ -125,7 +125,7 @@ class searcher extends finder
 
     highlightTextAndEmitRedraw: text ->
     
-        @choices.state.highlightText text
+        @choices.state∙highlightText text
         post∙emit 'redraw'
         
     #  0000000  000   000   0000000   000   000  
@@ -134,7 +134,7 @@ class searcher extends finder
     #      000  000   000  000   000  000   000  
     # 0000000   000   000   0000000   00     00  
     
-    show: text ○=>
+    show: text ->
     
         # log "searcher show |#{text}|"
         
@@ -143,68 +143,69 @@ class searcher extends finder
         # log g4("#{r6 'searcher'} '#{text}'")
         
         if empty text
-            @input.grabFocus()
-            ⮐  super()
+            @input∙grabFocus()
+            ⮐  finder.show @
         
-        editorFile = ked_session.get 'editor▸file'
+        editorFile = ked_session∙get 'editor▸file'
         
         dir   = prjcts.dir   editorFile
         files = prjcts.files editorFile
 
-        # log "searcher - search #{files.length} files in #{dir} for |#{text}|"
+        # log "searcher - search #{files.len} files in #{dir} for |#{text}|"
         
-        view.prototype.show.call @ # bypass finder to avoid reading selection or cursor word again
+        view.show @ # bypass finder to avoid reading selection or cursor word again
         
-        @input.grabFocus()
-        @choices.clearEmpty()        
+        @input∙grabFocus()
+        @choices∙clearEmpty()        
         @sfils = []
         
-        for file,idx in files
+        for idx file in files
                     
-            filet =○ nfs.readText file
+            filet = slash.readText file
             
             segls = kseg.segls filet
             spans = belt.lineSpansForText segls text
             
-            if idx == files.length-1
+            if idx == files.len-1
                 log y6('▸▸▸ searcher done')
                 @highlightTextAndEmitRedraw text
             
-            continue if empty spans
+            if valid spans
             
-            front = belt.frontmostSpans spans
-            ext = slash.ext file
-            
-            items = []
-            items.push line:'' 
-
-            sfil = new searcherfile @screen "#{@name}_sfil_#{idx}"
-            sfil.lineIndex = @choices.items.length+1
-            sfil.set slash.relative(file dir)            
-            @sfils.push sfil
-
-            items.push
-                line:  '●'
-                type:  'file'
-                path:  file
-                row:   0
-                col:   0
+                front = belt.frontmostSpans spans
+                ext = slash.ext file
                 
-            for span in front
-                if items[-1].row != span[1]-1
-                    items.push line:''
-                items.push
-                    line:  ' ' + kseg.str(segls[span[1]])
+                items = []
+                items∙push line:'' 
+                
+                sfil = searcherfile @screen "#{@name}_sfil_#{idx}"
+                sfil.lineIndex = @choices.items.len+1
+                sfil∙set slash.relative(file dir)            
+                @sfils∙push sfil
+                
+                items∙push {
+                    line:  '●'
+                    type:  'file'
                     path:  file
-                    row:   span[1]
-                    col:   span[2]
-            
-            @choices.append items ext # this is quite expensive, maybe need to queue this with a delay?
-            
-            ⮐  if @hidden()
-            
-            if idx == files.length-1
-                @highlightTextAndEmitRedraw text
+                    row:   1
+                    col:   1}
+                    
+                for span in front
+                    if items[^1].row != span[1]-1
+                        items∙push {line:''}
+                    items.push {
+                        line:  ' ' + kseg.str(segls[span[1]])
+                        path:  file
+                        row:   span[1]
+                        col:   span[2]}
+                
+                # this is quite expensive, maybe need to queue this with a delay?
+                @choices∙append items ext 
+                
+                ⮐  if @hidden()
+                
+                if idx == files.len-1
+                    @highlightTextAndEmitRedraw text
                 
     #  0000000   00000000   00000000   000      000   000  
     # 000   000  000   000  000   000  000       000 000   
@@ -214,9 +215,9 @@ class searcher extends finder
         
     apply: choice ->
         
-        ⮐  @emitFileOpen(choice) if choice?.path
+        ⮐  @emitFileOpen(choice) if choice.path
         
-        super choice
+        finder.apply @ choice
                                     
     # ███  ███   ███  ████████   ███   ███  █████████       ███████    ███████  █████████  ███   ███████   ███   ███
     # ███  ████  ███  ███   ███  ███   ███     ███         ███   ███  ███          ███     ███  ███   ███  ████  ███
@@ -234,6 +235,6 @@ class searcher extends finder
             'right'  ➜ ⮐  
             'change' ➜ ⮐  
             
-        super action text
+        finder.onInputAction @ action text
 
 ⮐  searcher

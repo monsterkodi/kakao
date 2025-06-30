@@ -29,9 +29,9 @@ class filepos
         
         @fileLoaded ked_session∙get("editor▸file") 
         
-        post∙on 'filepos.goBackward'   @goBackward
-        post∙on 'filepos.goForward'    @goForward
-        post∙on 'filepos.swapPrevious' @swapPrevious
+        post∙on 'filepos.goBackward'   @goBackward   @
+        post∙on 'filepos.goForward'    @goForward    @
+        post∙on 'filepos.swapPrevious' @swapPrevious @
         
         post∙emit 'redraw'
         

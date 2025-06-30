@@ -123,9 +123,9 @@ class fileutil
         if res != newPath
             error "rename failed! #{res}"
         
-post.on 'file.trash'      fileutil.trash
-post.on 'file.class'      fileutil.class
-post.on 'file.rename'     fileutil.rename
-post.on 'file.new_folder' fileutil.newFolder
+post∙on 'file.trash'      fileutil.trash
+post∙on 'file.class'      fileutil.class
+post∙on 'file.rename'     fileutil.rename
+post∙on 'file.new_folder' fileutil.newFolder
 
 ⮐  fileutil

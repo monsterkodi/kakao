@@ -20,7 +20,7 @@ function crumbs:init(name)
         view.init(self, name)
         
         self.pointerType = 'pointer'
-        self.rounded = ''
+        self.rounded = array()
         
         self:setColor('hover', theme.hover.bg)
         self:setColor('bg', theme.crumbs.bg)
@@ -60,13 +60,13 @@ function crumbs:draw()
         local colors = array()
         for i in iter(1, #self.split) do 
             if (i == self.hoverIndex) then 
-                colors.push(self.color.hover)
+                colors:push(self.color.hover)
             else 
-                colors.push(color.darken(self.color.bg, (0.4 + ((0.6 * (i + 1)) / #self.split))))
+                colors:push(color.darken(self.color.bg, (0.4 + ((0.6 * (i + 1)) / #self.split))))
             end
         end
         
-        for x in iter(1, #self.rounded) do 
+        for x in iter(1, self.rounded:len()) do 
             local si = self:splitIndexAtCol(x)
             local bg = colors[si]
             local ch = self.rounded[x]
@@ -79,7 +79,7 @@ function crumbs:draw()
     return self.color.empty_left
                      end
 end)()
-                if (x == (#self.rounded - 1)) then 
+                if (x == self.rounded:len()) then 
                     bg = self.color.empty_right
                 end
                 
@@ -96,6 +96,8 @@ end)()
                 self.cells:set(x, 1, ch, fg, bg)
             end
         end
+        
+        return self:render()
     end
 
 --  0000000  00000000   000      000  000000000  000  000   000  0000000    00000000  000   000  
@@ -107,20 +109,22 @@ end)()
 
 function crumbs:splitIndexAtCol(col) 
         local sl = 0
-        for si in iter(1, #self.split) do 
+        for si = 1, (#self.split + 1)-1 do 
             sl = sl + ((#self.split[si] + 2))
-            if (sl > col) then 
+            if (sl >= col) then 
                 return si
             end
         end
         
-        return (#self.split - 1)
+        return #self.split
     end
 
 
 function crumbs:colsAtSplitIndex(idx) 
+        local si = 0
         local ei = 0
         
+        print("colsAtSplitIndex " .. tostring(idx) .. "", self.split, type(self.split), #self.split)
         for i in iter(1, idx) do 
             if (i < idx) then 
                 si = si + ((#self.split[i] + 2))
@@ -134,9 +138,12 @@ function crumbs:colsAtSplitIndex(idx)
 
 
 function crumbs:pathAtSplitIndex(idx) 
-        local path = slash.path(unpack(self.split.slice(1, idx)))
-        path = slash.path(self.root, path)
-        if ((path[1] ~= "~") and (path[1] ~= "/")) then 
+        -- log "PATH AT SPLIT INDEX #{idx}" @split
+        -- log "PATH AT SPLIT ROOT #{idx}" @root
+        local path = slash.path(unpack(self.split:slice(1, idx)))
+        -- path = slash.path @root path
+        print("PATH AT SPLIT PATH " .. tostring(idx) .. "", path)
+        if ((string.sub(path, 1, 1) ~= "~") and (string.sub(path, 1, 1) ~= "/")) then 
             path = '/' .. path
         end
         
@@ -156,7 +163,7 @@ function crumbs:adjustText()
         self.path = self.path or ''
         
         if (self.path == '') then 
-            self.rounded = ''
+            self.rounded = array()
             return
         end
         
@@ -169,14 +176,16 @@ function crumbs:adjustText()
         end
         
         self.root = array()
+        self.rounded = array('')
         
-        self.rounded = self.split:join(' ')
-        
-        while ((#self.split > 1) and (#self.rounded > (self.cells.cols - 2))) do 
-            self.root:push(self.split:shift())
-            self.rounded = self.split:join(' ')
+        while (#self.split > 0) do 
+            local s = self.split:shift()
+            self.root:push(s)
+            self.rounded = self.rounded + (kseg(s))
+            self.rounded:push(' ')
         end
         
+        self.split = slash.split(self.path)
         self.root = self.root:join('/')
         
         local padding = (function () 
@@ -186,8 +195,7 @@ function crumbs:adjustText()
                   end
 end)()
         
-        self.rounded = '' .. self.rounded .. padding .. ''
-        return self.rounded
+        return self.rounded:push('')
     end
 
 
@@ -214,15 +222,16 @@ function crumbs:visible()
 
 
 function crumbs:onMouseLeave(event) 
-        local index = self.hoverIndex
-        return self:emit('action', 'leave', self:pathAtSplitIndex(index), {index = index, cols = self.colsAtSplitIndex(index)})
+        if not self.hoverIndex then return end
+        local path = self:pathAtSplitIndex(self.hoverIndex)
+        local cols = self:colsAtSplitIndex(self.hoverIndex)
+        local dict = {index = self.hoverIndex, cols = cols}
+        return self:emit('action', 'leave', path, dict)
     end
 
 
 function crumbs:onMouse(event) 
-        local col, row = unpack(self:eventPos(event))
-        
-        -- super event
+        view.onMouse(self, event)
         
         if not self.hover then 
             if self.hoverIndex then 
@@ -232,6 +241,8 @@ function crumbs:onMouse(event)
             
             return
         end
+        
+        local col, row = unpack(self:eventPos(event))
         
         if (event.type == 'press') then 
                 local si = self:splitIndexAtCol(col)
@@ -245,7 +256,10 @@ function crumbs:onMouse(event)
                 local index = self:splitIndexAtCol(col)
                 if (self.hoverIndex ~= index) then 
                     self.hoverIndex = index
-                    self:emit('action', 'enter', self:pathAtSplitIndex(index), {index = index, cols = self.colsAtSplitIndex(index)})
+                    local cols = self:colsAtSplitIndex(index)
+                    local path = self:pathAtSplitIndex(index)
+                    local dict = {index = index, cols = cols}
+                    self:emit('action', 'enter', path, dict)
                     return true
                 end
         end

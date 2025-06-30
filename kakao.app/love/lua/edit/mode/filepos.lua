@@ -30,9 +30,9 @@ function filepos:init(state)
         
         self:fileLoaded(ked_session:get("editor▸file"))
         
-        post:on('filepos.goBackward', self.goBackward)
-        post:on('filepos.goForward', self.goForward)
-        post:on('filepos.swapPrevious', self.swapPrevious)
+        post:on('filepos.goBackward', self.goBackward, self)
+        post:on('filepos.goForward', self.goForward, self)
+        post:on('filepos.swapPrevious', self.swapPrevious, self)
         
         post:emit('redraw')
         return self

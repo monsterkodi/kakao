@@ -18,7 +18,7 @@ class crumbs extends view
         view.init @, name
         
         @pointerType = 'pointer'
-        @rounded = ''
+        @rounded = []
         
         @setColor 'hover'       theme.hover.bg
         @setColor 'bg'          theme.crumbs.bg
@@ -54,11 +54,11 @@ class crumbs extends view
         colors = []
         for i in 1..@split.len
             if i == @hoverIndex
-                colors.push @color.hover
+                colors∙push @color.hover
             else
-                colors.push color.darken(@color.bg 0.4+0.6*(i+1)/@split.length)
-        
-        for x in 1..@rounded.len
+                colors∙push color.darken(@color.bg 0.4+0.6*(i+1)/@split.length)
+
+        for x in 1..@rounded∙len()
             
             si = @splitIndexAtCol x
             bg = colors[si]
@@ -67,18 +67,19 @@ class crumbs extends view
             if ch == '' or ch == ''
                 fg = bg
                 bg = if si > 1 ➜ colors[si-1] ➜ @color.empty_left
-                if x == @rounded.len-1
+                if x == @rounded∙len()
                     bg = @color.empty_right 
                 @cells∙set x 1 ch fg bg
             else
                 if si == @hoverIndex
                     fg = color.adjustForBackground @color.fg bg 
-                elif si < @split.length-1
+                elif si < @split.len-1
                     fg = color.darken(@color.fg, min(1, (si+3)/@split.len))
                 else
                     fg = color.brighten @color.fg
                 
                 @cells∙set x 1 ch fg bg 
+        @render()
                 
     #  0000000  00000000   000      000  000000000  000  000   000  0000000    00000000  000   000  
     # 000       000   000  000      000     000     000  0000  000  000   000  000        000 000   
@@ -87,30 +88,34 @@ class crumbs extends view
     # 0000000   000        0000000  000     000     000  000   000  0000000    00000000  000   000  
     
     splitIndexAtCol: col ->
-
+    
         sl = 0
-        for si in 1..@split.len
+        for si in 1...@split.len+1
             sl += @split[si].len + 2
-            if sl > col
+            if sl >= col
                 ⮐  si
-        @split.length-1
+        @split.len
         
     colsAtSplitIndex: idx ->
     
-        si = ei = 0
+        si = 0
+        ei = 0
         
+        log "colsAtSplitIndex #{idx}" @split, type(@split), @split.len
         for i in 1..idx
             if i < idx
-                si += @split[i].length + 2
-            ei += @split[i].length + 2
+                si += @split[i].len + 2
+            ei += @split[i].len + 2
     
         [si ei]
         
     pathAtSplitIndex: idx ->
-    
-        path = slash.path unpack(@split.slice(1, idx))
-        path = slash.path @root path
-        if path[1] != "~" and path[1] != "/"
+        # log "PATH AT SPLIT INDEX #{idx}" @split
+        # log "PATH AT SPLIT ROOT #{idx}" @root
+        path = slash.path unpack(@split∙slice(1, idx))
+        # path = slash.path @root path
+        log "PATH AT SPLIT PATH #{idx}" path
+        if string.sub(path 1 1) != "~" and string.sub(path 1 1) != "/"
             path = '/' & path 
         path
         
@@ -127,7 +132,7 @@ class crumbs extends view
         @path ?= ''
         
         if @path == ''
-            @rounded = ''
+            @rounded = []
             ⮐  
                                   
         @split = slash.split @path
@@ -137,18 +142,20 @@ class crumbs extends view
                 @split∙unshift('/') 
         
         @root = []
-        
-        @rounded = @split∙join ' '
-        
-        while @split.length > 1 and @rounded.length > @cells.cols-2
-            @root∙push @split∙shift()
-            @rounded = @split∙join ' '
+        @rounded = ['']
+
+        while @split.len > 0 
+            s = @split∙shift()
+            @root∙push s
+            @rounded += kseg s
+            @rounded∙push ' '
             
+        @split = slash.split @path
         @root = @root∙join '/'
         
         padding = if @padLast ➜ kstr.lpad(@cells.cols-2-@rounded.len) ➜ ''
         
-        @rounded = '' & @rounded & padding & ''
+        @rounded∙push ''
             
     set: path ->
     
@@ -166,22 +173,25 @@ class crumbs extends view
     # 000   000   0000000    0000000   0000000   00000000  
 
     onMouseLeave: event ->
-     
-        index = @hoverIndex
-        @emit 'action' 'leave' @pathAtSplitIndex(index) {index:index cols:@colsAtSplitIndex(index)}
+
+        ⮐  if not @hoverIndex     
+        path = @pathAtSplitIndex @hoverIndex
+        cols = @colsAtSplitIndex @hoverIndex
+        dict = {index:@hoverIndex cols:cols}
+        @emit 'action' 'leave' path dict
 
     onMouse: event ->
         
-        (col row) = unpack @eventPos(event)
-        
-        # super event
+        view.onMouse @ event
         
         if not @hover
             if @hoverIndex
                 @hoverIndex = nil
                 ⮐  true
             ⮐ 
-
+            
+        (col row) = unpack @eventPos(event)
+        
         switch event.type
             
             'press' 
@@ -197,7 +207,10 @@ class crumbs extends view
                 index = @splitIndexAtCol col
                 if @hoverIndex != index
                     @hoverIndex = index
-                    @emit 'action' 'enter' @pathAtSplitIndex(index) {index:index cols:@colsAtSplitIndex(index)}
+                    cols = @colsAtSplitIndex(index)
+                    path = @pathAtSplitIndex(index)
+                    dict = {index:index cols:cols}
+                    @emit 'action' 'enter' path dict
                     ⮐  true
 
         @hover

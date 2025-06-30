@@ -21,9 +21,9 @@ function dirtree:init(name, features)
         
         -- @state.syntax.setRgxs rgxs
         
-        post:on('session.merge', self.onSessionMerge)
-        post:on('file.change', self.onFileChange)
-        post:on('git.status', self.onGitStatus)
+        post:on('session.merge', self.onSessionMerge, self)
+        post:on('file.change', self.onFileChange, self)
+        post:on('git.status', self.onGitStatus, self)
         
         self.frontRoundOffset = 0
         return self

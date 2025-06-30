@@ -35,7 +35,7 @@ function complete:init(editor)
             self.choices.scroll:setColor('dot', self.color.scroll)
         end
         
-        self.choices:on('action', self.onChoicesAction)
+        self.choices:on('action', self.onChoicesAction, self)
         
         self.visible = false
         return self
@@ -269,7 +269,7 @@ function complete:preDrawLines(lines)
         
         local word = self:currentWord()
         lines = lines.asMutable()
-        for pos in self.editor.state.s.cursors do 
+        for _, pos in ipairs(self.editor.state.s.cursors) do 
             kutil.replace(lines[pos[1]], pos[0], 0, kseg(string.sub(word, #self.turd)))
         end
         
@@ -289,7 +289,7 @@ function complete:drawCompletion()
         
         local word = self:currentWord()
         
-        for pos in self.editor.state.s.cursors do 
+        for _, pos in ipairs(self.editor.state.s.cursors) do 
             local cx = (pos[0] - self.editor.state.s.view[0])
             local cy = (pos[1] - self.editor.state.s.view[1])
             

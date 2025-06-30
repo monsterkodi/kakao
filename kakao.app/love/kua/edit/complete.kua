@@ -32,7 +32,7 @@ class complete
             @choices.scroll∙setColor 'knob'  @color.scroll
             @choices.scroll∙setColor 'dot'   @color.scroll
         
-        @choices∙on 'action' @onChoicesAction
+        @choices∙on 'action' @onChoicesAction @
         
         @visible = false
 

@@ -58,7 +58,6 @@ class view extends events
                 view.currentPopup = nil
                 popu∙hide()
             view.currentPopup = @
-            # log "view popup.show #{@name}" 
             post∙emit 'popup.show' @name
         
         @arrange()
@@ -71,7 +70,6 @@ class view extends events
         if @isPopup
             if @ == view.currentPopup
                 view.currentPopup = nil
-                # log "view popup.hide #{@name}" 
                 post∙emit 'popup.hide' @name
         true
         

@@ -203,7 +203,7 @@ love.keypressed = key scancode isrepeat ->
     switch combo
         "cmd+-" ➜   setFontWidth max(14 fontWidth-1)
         "cmd+=" ➜   setFontWidth min(128 fontWidth+1)
-        "cmd+0" ➜   setFontWidth()
+        "cmd+0" ➜   setFontWidth 20
                 ➜ 
                     event = {"repeat":isrepeat combo:combo char:char}
                     # log "key", dict.str(event), ◌b, scancode

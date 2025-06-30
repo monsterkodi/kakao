@@ -581,8 +581,9 @@ function KED:onResize(cols, rows, size, cellsz)
         
         -- squares.onResize cols rows size cellsz
         -- sircels.onResize cols rows size cellsz
-        
-        return self.editor.mapscr.onResize()
+        if self.editor.mapscr then 
+            return self.editor.mapscr:onResize()
+        end
     end
 
 -- ███  ███   ███  ████████   ███   ███  █████████       ████████    ███████   ████████   ███   ███  ████████ 

@@ -19,9 +19,9 @@ class dirtree extends choices
                         
         # @state.syntax.setRgxs rgxs
         
-        post∙on 'session.merge' @onSessionMerge
-        post∙on 'file.change'   @onFileChange
-        post∙on 'git.status'    @onGitStatus
+        post∙on 'session.merge' @onSessionMerge @
+        post∙on 'file.change'   @onFileChange   @
+        post∙on 'git.status'    @onGitStatus    @
         
         @frontRoundOffset = 0
         
