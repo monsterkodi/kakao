@@ -366,6 +366,12 @@ def]])
         test.cmp(kseg.headCountChunk(kseg("  ")), 0)
     end)
     
+    test("detab", function()
+        test.cmp(kseg.detab("a\tb"), kseg("a   b"))
+        test.cmp(kseg.detab("ab\tc"), kseg("ab  c"))
+        test.cmp(kseg.detab("abc\td"), kseg("abc d"))
+    end)
+    
     test("spanForClosestWordAtColumn", function()
         test.cmp(kseg.spanForClosestWordAtColumn(kseg('abc def'), 1), array(1, 4))
         test.cmp(kseg.spanForClosestWordAtColumn(kseg('abc def'), 2), array(1, 4))
@@ -383,5 +389,13 @@ def]])
         test.cmp(kseg.spanForClosestWordAtColumn(kseg('xy   '), 3), array(1, 3))
         
         test.cmp(kseg.spanForClosestWordAtColumn("   aa123   ", 1), array(4, 9))
+    end)
+    
+    test("words", function()
+        test.cmp(kseg.words("b+=1"), array({word = "b", index = 1, segl = kseg("b")}, {word = "1", index = 4, segl = kseg("1")}))
+    end)
+    
+    test("chunks", function()
+        test.cmp(kseg.chunks("a+=1"), array({chunk = "a+=1", index = 1, segl = kseg("a+=1")}))
     end)
     end)

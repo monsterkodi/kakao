@@ -139,7 +139,16 @@ end
 
 
 function kstr.find(s, c) 
-    return (string.find(s, c, 1, true) or -1)
+    if (((s and c) and (#s > 0)) and (#c > 0)) then 
+        return (string.find(s, c, 1, true) or -1)
+    end
+    
+    return -1
+end
+
+
+function kstr.has(s, c) 
+    return (kstr.find(s, c) > 0)
 end
 
 

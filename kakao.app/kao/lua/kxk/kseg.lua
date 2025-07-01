@@ -159,6 +159,13 @@ function kseg:rpad(l, c)
     end
 
 
+function kseg.static.rpad(s, l, c) 
+    c = c or ' '
+    
+    return kseg(s):rpad(l, c)
+    end
+
+
 function kseg:rtrim(c) 
         c = c or " \n"
         
@@ -188,6 +195,29 @@ function kseg.static.trim(s, c)
     c = c or " \n"
     
     return kseg(s):trim(c)
+    end
+
+
+function kseg.static.detab(s, tw) 
+        tw = tw or 4
+        
+        local a = kseg(s)
+        
+        if empty(a) then return a end
+        
+        local i = 1
+        while (i <= #a) do 
+            if (a[i] == '\t') then 
+                local n = (tw - ((i - 1) % tw))
+                local spcs = kseg.rep(n)
+                a:splice(i, 1, spcs)
+                i = i + n
+            else 
+                i = i + 1
+            end
+        end
+        
+        return a
     end
 
 
@@ -439,6 +469,16 @@ function kseg.static.width(s)
         return w
     end
 
+
+function kseg:widthAtSegi(segi) 
+    return kseg.width(self:slice(1, segi))
+    end
+
+
+function kseg.static.widthAtSegi(s, segi) 
+    return kseg(s):widthAtSegi(segi)
+    end
+
 -- index of current segment if column cuts segment
 
 
@@ -508,7 +548,7 @@ function kseg:spanForClosestWordAtColumn(c)
         local left = self:slice(1, (segi - 1))
         local right = self:slice(segi)
         
-        write("spanForClosestWordAtColumn ", self, " ", c, " left|", left, "| right|", right, "|")
+        -- write "spanForClosestWordAtColumn " @ " " c " left|" left "| right|" right "|"
         
         local ls = left:tailCount(' ')
         local rs = right:headCount(' ')
@@ -520,13 +560,13 @@ function kseg:spanForClosestWordAtColumn(c)
         local rl = #right
         
         local s = nil
-        if ((ls == ll) and (rs == rl)) then write("1!") ; s = array(c, c)
-        elseif ((ls == 0) and (rs == 0)) then write("2!") ; s = array((c - lw), (c + rw))
-        elseif (ls == ll) then write("3!") ; local rcw = right:slice((rs + 1)):headCountWord() ; s = array(((ll + rs) + 1), (((ll + rs) + rcw) + 1))
-        elseif (rs == rl) then write("4!") ; local tcw = left:slice(1, (ll - ls)):tailCountWord() ; s = array((((ll - ls) - tcw) + 1), ((ll - ls) + 1))
-        elseif (ls == rs) then write("5!") ; s = left:spanForClosestWordAtColumn((#left + 1))
-        elseif (ls < rs) then write("6!") ; s = left:spanForClosestWordAtColumn((#left + 1))
-        elseif (ls > rs) then write("7!") ; s = right:spanForClosestWordAtColumn(1) ; s[1] = s[1] + ((c - 1)) ; s[2] = s[2] + ((c - 1))
+        if ((ls == ll) and (rs == rl)) then s = array(c, c)
+        elseif ((ls == 0) and (rs == 0)) then s = array((c - lw), (c + rw))
+        elseif (ls == ll) then local rcw = right:slice((rs + 1)):headCountWord() ; s = array(((ll + rs) + 1), (((ll + rs) + rcw) + 1))
+        elseif (rs == rl) then local tcw = left:slice(1, (ll - ls)):tailCountWord() ; s = array((((ll - ls) - tcw) + 1), ((ll - ls) + 1))
+        elseif (ls == rs) then s = left:spanForClosestWordAtColumn((#left + 1))
+        elseif (ls < rs) then s = left:spanForClosestWordAtColumn((#left + 1))
+        elseif (ls > rs) then s = right:spanForClosestWordAtColumn(1) ; s[1] = s[1] + ((c - 1)) ; s[2] = s[2] + ((c - 1))
         end
         
         return s
@@ -535,6 +575,110 @@ function kseg:spanForClosestWordAtColumn(c)
 
 function kseg.static.spanForClosestWordAtColumn(a, c) 
     return kseg(a):spanForClosestWordAtColumn(c)
+    end
+
+--[[
+         0000000  000   000  000   000  000   000  000   000   0000000  
+        000       000   000  000   000  0000  000  000  000   000       
+        000       000000000  000   000  000 0 000  0000000    0000000   
+        000       000   000  000   000  000  0000  000  000        000  
+         0000000  000   000   0000000   000   000  000   000  0000000   
+         
+        returns chunks for any
+    
+        chunk:
+            chunk: string           # string without any whitespace (joined graphemes)
+            index: int              # start index in the grapheme list of any
+            segl:  list of strings  # list of graphemes without any whitespace
+    --]]
+
+
+function kseg.static.chunks(any) 
+        
+        function filt(s) 
+    return not kstr.has(' \t\r\n', s)
+        end
+        return kseg.infos(any, 'chunk', filt)
+    end
+
+--[[
+        000   000   0000000   00000000   0000000     0000000  
+        000 0 000  000   000  000   000  000   000  000       
+        000000000  000   000  0000000    000   000  0000000   
+        000   000  000   000  000   000  000   000       000  
+        00     00   0000000   000   000  0000000    0000000   
+        
+        returns words for any
+    
+        word:
+            word:  string           # string without any whitespace or punctuation
+            index: int              # index in the grapheme list of any
+            segl:  list of strings  # list of graphemes without any whitespace or punctuation
+    --]]
+
+
+function kseg.static.words(any) 
+        
+        function filt(s) 
+    return string.match(s, "^%w+$")
+        end
+        return kseg.infos(any, 'word', filt)
+    end
+
+--[[
+        000  000   000  00000000   0000000    0000000  
+        000  0000  000  000       000   000  000       
+        000  000 0 000  000000    000   000  0000000   
+        000  000  0000  000       000   000       000  
+        000  000   000  000        0000000   0000000   
+        
+        list of infos for any, key and a test function
+    
+        each info has these properties:
+            key:   string           # string where each grapheme satisfies the test
+            index: int              # index in the grapheme list of any
+            segl:  list of strings  # list of graphemes where each grapheme satisfies the test
+        
+        any can be:
+            a string
+            a list of strings
+            a list of list of strings
+    --]]
+
+
+function kseg.static.infos(any, key, filt) 
+        if empty(any) then return array() end
+        
+        local infos = array()
+        local info = nil
+        local turd = true
+        
+        for g, i in kseg(any):each() do 
+            if turd then 
+                if filt(g) then 
+                    info = {}
+                    info[key] = g
+                    info.index = i
+                    info.segl = kseg(g)
+                    turd = false
+                end
+            else 
+                if not filt(g) then 
+                    turd = true
+                    info[key] = kseg.str(info.segl)
+                    infos:push(info)
+                else 
+                    info.segl:push(g)
+                end
+            end
+        end
+        
+        if not turd then 
+            info[key] = kseg.str(info.segl)
+            infos:push(info)
+        end
+        
+        return infos
     end
 
 -- https://github.com/joshuarubin/wcwidth9            

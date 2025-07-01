@@ -299,6 +299,16 @@ end)
         test.cmp(a:rfind(4), -1)
     end)
     
+    test("findWith", function()
+        local a = array(1, 2, 3, 4)
+        test.cmp(a:findWith(function (i) return (i > 2) end), 3)
+    end)
+    
+    test("pullWith", function()
+        local a = array(1, 2, 3, 4)
+        test.cmp(a:pullWith(function (i) return (i > 2) end), array(1, 2))
+    end)
+    
     test("indexof", function()
         local a = array(1, 2, 3, 1, 2, 3)
         test.cmp(a:indexof(array(2, 3)), 2)

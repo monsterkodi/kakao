@@ -32,6 +32,7 @@ function noon.static.toString(o, buf, ind, arry, visited)
         
         
         function escape(k, arry) 
+            if not k then return '' end
             if (kstr.find(k, '\n') >= 1) then 
                 local sp = array(unpack(kstr.split(k, '\n')))
                 local es = sp:map(function (s) 

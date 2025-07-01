@@ -294,6 +294,19 @@ function array:findWith(f)
     end
 
 
+function array:pullWith(f) 
+        if (#self > 0) then 
+            for i in iter(#self, 1) do 
+                if f(self[i]) then 
+                    self:splice(i, 1)
+                end
+            end
+        end
+        
+        return self
+    end
+
+
 function array:find(e) 
         for i, v in ipairs(self) do 
             if (v == e) then return i end
