@@ -366,6 +366,12 @@ use kxk/kxk
         kseg.headCountChunk kseg("abc  ") ▸ 3
         kseg.headCountChunk kseg("  ") ▸ 0
         
+    ▸ detab
+    
+        kseg.detab("a\tb")      ▸ kseg("a   b")
+        kseg.detab("ab\tc")     ▸ kseg("ab  c")
+        kseg.detab("abc\td")    ▸ kseg("abc d")
+        
     ▸ spanForClosestWordAtColumn
     
         kseg.spanForClosestWordAtColumn kseg('abc def') 1 ▸ [1 4]        
@@ -384,5 +390,14 @@ use kxk/kxk
         kseg.spanForClosestWordAtColumn kseg('xy   ')   3 ▸ [1 3]        
                                                         
         kseg.spanForClosestWordAtColumn "   aa123   "   1 ▸ [4 9]
+        
+    ▸ words
+    
+        kseg.words("b+=1")  ▸ [{word:"b" index:1 segl:kseg("b")} {word:"1" index:4 segl:kseg("1")}]
+
+    ▸ chunks
+    
+        kseg.chunks("a+=1") ▸ [{chunk:"a+=1" index:1 segl:kseg("a+=1")}]
+        
         
         

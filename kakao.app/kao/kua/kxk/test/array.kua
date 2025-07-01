@@ -290,6 +290,16 @@ use kxk/kxk
         a∙rfind 3 ▸ 6
         a∙rfind 4 ▸ -1
         
+    ▸ findWith
+    
+        a = [1 2 3 4]
+        a∙findWith((i) -> ⮐  i > 2) ▸ 3
+
+    ▸ pullWith
+    
+        a = [1 2 3 4]
+        a∙pullWith((i) -> ⮐  i > 2) ▸ [1 2]
+        
     ▸ indexof
     
         a = [1 2 3 1 2 3]

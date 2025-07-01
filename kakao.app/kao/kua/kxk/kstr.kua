@@ -70,7 +70,13 @@ kstr.split = s sep limit ->
     
 kstr.lines = s -> kstr.split s "\n"
 
-kstr.find = s c -> string.find(s c 1 true) or -1
+kstr.find = s c -> 
+
+    if s and c and s.len > 0 and c.len > 0
+        ⮐  string.find(s c 1 true) or -1
+    -1
+    
+kstr.has = s c -> kstr.find(s c) > 0
     
 kstr.rfind = s c ->
 
@@ -97,7 +103,6 @@ kstr.count = s c ->
         if kstr.find(c s∙sub(i i)) >= 0
             cnt += 1
     cnt
-    
     
 kstr.hex = s -> 
     

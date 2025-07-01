@@ -806,7 +806,10 @@ class Parser
             switch_default = @thenBlock()
             if switch_default == nil
                 ⮐  @error "Expected default value" token
-        
+                
+        if switch_cases.len == 0
+            ⮐  @error("Missing switch cases", token)
+            
         Node token:token kind:●switch switch_value:switch_value switch_cases:switch_cases switch_default:switch_default
                     
     lArrayAccess: ◇Node array_owner ➜Node ->

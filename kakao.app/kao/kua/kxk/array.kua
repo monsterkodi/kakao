@@ -173,6 +173,14 @@ class array
         for i v in @
             if f(v) ➜ ⮐  i
         -1
+        
+    pullWith: f ->
+    
+        if @len > 0
+            for i in @len..1
+                if f(@[i])
+                    @splice i 1
+        @
 
     find: e ->
     

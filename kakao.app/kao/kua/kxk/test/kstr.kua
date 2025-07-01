@@ -77,17 +77,24 @@ use kxk/kxk
 
     ▸ find
     
-        kstr.find "123.56"     "." ▸ 4
-        kstr.find ".23.56"     "." ▸ 1
-        kstr.find "some.ext"   "e" ▸ 4
-        kstr.find "abc"        "d" ▸ -1
+        kstr.find nil ""            ▸ -1
+        kstr.find nil nil           ▸ -1
+        kstr.find "" ""             ▸ -1
+        kstr.find "abc" ""          ▸ -1
+        kstr.find "123.56"     nil  ▸ -1
+        kstr.find "123.56"     "."  ▸ 4
+        kstr.find ".23.56"     "."  ▸ 1
+        kstr.find "some.ext"   "e"  ▸ 4
+        kstr.find "abc"        "d"  ▸ -1
+        kstr.find "abc"        "bc" ▸ 2
         
     ▸ rfind
     
-        kstr.rfind "123.56"     "." ▸ 4
-        kstr.rfind ".23.56"     "." ▸ 4
-        kstr.rfind "some.ext"   "e" ▸ 6
-        kstr.find "abc"         "d" ▸ -1
+        kstr.rfind "123.56"     "."  ▸ 4
+        kstr.rfind ".23.56"     "."  ▸ 4
+        kstr.rfind "some.ext"   "e"  ▸ 6
+        kstr.find "abc"         "d"  ▸ -1
+        kstr.find "abc"         "bc" ▸ 2
         
     ▸ count
     
@@ -99,6 +106,14 @@ use kxk/kxk
         kstr.count  "123...321"         "1"     ▸ 2
         kstr.count "123.321.123.312"    "1"     ▸ 4
         kstr.count "123.321.123.312"    "12"    ▸ 8
+        
+    ▸ has
+    
+        kstr.has "abc" "a"  ▸ true
+        kstr.has "abc" "b"  ▸ true
+        kstr.has "abc" "c"  ▸ true
+        kstr.has "abc" "d"  ▸ false
+        kstr.has "abc" "bc" ▸ true
         
     ▸ stripol
     

@@ -109,6 +109,8 @@ class kseg extends array
         while @len < l ➜ @push c
         @
         
+    @rpad: s l c=' ' -> kseg(s)∙rpad(l c)
+        
     rtrim: c=" \n" ->
         s = kseg(c) 
         while @len > 0 and s∙has(@[^1]) ➜ @pop()
@@ -122,6 +124,23 @@ class kseg extends array
     trim: c=" \n" -> @rtrim(c)∙ltrim(c)
     
     @trim: s c=" \n" -> kseg(s)∙trim(c)
+    
+    @detab: s tw=4 ->
+        
+        a = kseg(s)
+        
+        ⮐  a if empty a
+        
+        i = 1
+        while i <= a.len
+            if a[i] == '\t'
+                n = tw-((i-1)%tw)
+                spcs = kseg.rep(n)
+                a∙splice i 1 spcs
+                i += n
+            else
+                i += 1
+        a
     
     @join: ... ->
         
@@ -295,6 +314,10 @@ class kseg extends array
             w += wcwidth kseg.codepoint(seg)
         w
 
+    widthAtSegi: segi -> kseg.width @slice(1 segi)
+
+    @widthAtSegi: s segi -> kseg(s)∙widthAtSegi(segi)
+    
     # index of current segment if column cuts segment
     
     segiAtWidth: w -> 
@@ -344,7 +367,7 @@ class kseg extends array
         left  = @slice 1 segi-1
         right = @slice segi
         
-        write "spanForClosestWordAtColumn " @ " " c " left|" left "| right|" right "|"
+        # write "spanForClosestWordAtColumn " @ " " c " left|" left "| right|" right "|"
 
         ls = left∙tailCount ' '
         rs = right∙headCount ' '
@@ -357,16 +380,105 @@ class kseg extends array
         
         s = nil
         if 
-            ls == ll and rs == rl ➜ write "1!"; s = [c c]
-            ls == 0 and rs == 0   ➜ write "2!"; s = [c-lw c+rw]
-            ls == ll              ➜ write "3!"; rcw = right∙slice(rs+1)∙headCountWord();   s = [ll+rs+1 ll+rs+rcw+1] 
-            rs == rl              ➜ write "4!"; tcw = left∙slice(1 ll-ls)∙tailCountWord(); s = [ll-ls-tcw+1 ll-ls+1] 
-            ls == rs              ➜ write "5!"; s = left∙spanForClosestWordAtColumn left.len+1
-            ls < rs               ➜ write "6!"; s = left∙spanForClosestWordAtColumn left.len+1
-            ls > rs               ➜ write "7!"; s = right∙spanForClosestWordAtColumn 1; s[1] += c-1; s[2] += c-1
+            ls == ll and rs == rl ➜ s = [c c]
+            ls == 0 and rs == 0   ➜ s = [c-lw c+rw]
+            ls == ll              ➜ rcw = right∙slice(rs+1)∙headCountWord();   s = [ll+rs+1 ll+rs+rcw+1] 
+            rs == rl              ➜ tcw = left∙slice(1 ll-ls)∙tailCountWord(); s = [ll-ls-tcw+1 ll-ls+1] 
+            ls == rs              ➜ s = left∙spanForClosestWordAtColumn left.len+1
+            ls < rs               ➜ s = left∙spanForClosestWordAtColumn left.len+1
+            ls > rs               ➜ s = right∙spanForClosestWordAtColumn 1; s[1] += c-1; s[2] += c-1
         s
         
     @spanForClosestWordAtColumn: a c -> kseg(a)∙spanForClosestWordAtColumn(c)
+
+    ###
+         0000000  000   000  000   000  000   000  000   000   0000000  
+        000       000   000  000   000  0000  000  000  000   000       
+        000       000000000  000   000  000 0 000  0000000    0000000   
+        000       000   000  000   000  000  0000  000  000        000  
+         0000000  000   000   0000000   000   000  000   000  0000000   
+         
+        returns chunks for any
+    
+        chunk:
+            chunk: string           # string without any whitespace (joined graphemes)
+            index: int              # start index in the grapheme list of any
+            segl:  list of strings  # list of graphemes without any whitespace
+    ###
+    
+    @chunks: any ->
+    
+        filt = s -> not kstr.has(' \t\r\n' s)
+        kseg.infos any 'chunk' filt
+        
+    ###
+        000   000   0000000   00000000   0000000     0000000  
+        000 0 000  000   000  000   000  000   000  000       
+        000000000  000   000  0000000    000   000  0000000   
+        000   000  000   000  000   000  000   000       000  
+        00     00   0000000   000   000  0000000    0000000   
+        
+        returns words for any
+    
+        word:
+            word:  string           # string without any whitespace or punctuation
+            index: int              # index in the grapheme list of any
+            segl:  list of strings  # list of graphemes without any whitespace or punctuation
+    ###
+    
+    @words: any ->
+        filt = s -> string.match s "^%w+$"
+        kseg.infos any 'word' filt
+        
+    ###
+        000  000   000  00000000   0000000    0000000  
+        000  0000  000  000       000   000  000       
+        000  000 0 000  000000    000   000  0000000   
+        000  000  0000  000       000   000       000  
+        000  000   000  000        0000000   0000000   
+        
+        list of infos for any, key and a test function
+    
+        each info has these properties:
+            key:   string           # string where each grapheme satisfies the test
+            index: int              # index in the grapheme list of any
+            segl:  list of strings  # list of graphemes where each grapheme satisfies the test
+        
+        any can be:
+            a string
+            a list of strings
+            a list of list of strings
+    ###
+        
+    @infos: any key filt ->
+        
+        ⮐  [] if empty any
+        
+        infos = []
+        info = nil
+        turd = true
+        
+        for g i in kseg(any)∙each()
+            if turd
+                if filt(g)
+                    info = {}
+                    info[key]  = g
+                    info.index = i 
+                    info.segl  = kseg(g)
+                    turd = false
+            else
+                if not filt(g)
+                    turd = true
+                    info[key] = kseg.str info.segl
+                    infos∙push info
+                else
+                    info.segl∙push g
+                    
+        if not turd
+            info[key] = kseg.str info.segl
+            infos∙push info
+    
+        infos
         
 # https://github.com/joshuarubin/wcwidth9            
             

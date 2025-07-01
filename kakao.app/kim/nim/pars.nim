@@ -668,6 +668,8 @@ proc rSwitch(this : Parser) : Node =
             switch_default = this.thenBlock()
             if (switch_default == nil): 
                 return this.error("Expected default value", token)
+        if (switch_cases.len == 0): 
+            return this.error("Missing switch cases", token)
         Node(token: token, kind: ●switch, switch_value: switch_value, switch_cases: switch_cases, switch_default: switch_default)
 
 proc lArrayAccess(this : Parser, array_owner : Node) : Node = 

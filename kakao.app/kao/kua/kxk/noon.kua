@@ -22,7 +22,7 @@ class noon
     @toString: o buf ind="" arry=false visited=[] ->
         
         escape = k arry ->
-            
+            ⮐  '' if not k
             if kstr.find(k '\n') >= 1
             
                 sp = [unpack(kstr.split(k '\n'))]
