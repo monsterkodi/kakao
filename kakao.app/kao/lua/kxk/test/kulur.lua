@@ -51,7 +51,7 @@ test("kulur", function()
         
         rgs = ranges('●if')
         test.cmp(inc(rgs, 1, '●'), 'punct')
-        -- inc rgs 2 'if' ▸ 'text'
+        test.cmp(inc(rgs, 2, 'if'), 'text')
     end)
     
     -- ███   ███  ███  ██     ██
@@ -64,7 +64,6 @@ test("kulur", function()
         lang('nim')
         
         local dss = dissect("proc f(str:string)")
-        -- write "dss" dss
         
         test.cmp(inc(dss[1], 1, "proc"), 'keyword')
         test.cmp(inc(dss[1], 12, "string"), 'keyword type')
@@ -112,19 +111,18 @@ test("kulur", function()
         test.cmp(inc(rgs, 15, 'value'), 'text')
         
         rgs = ranges("top", 'noon')
-        -- inc rgs 1 'top'        ▸ 'obj'
-        test.cmp(inc(rgs, 1, 'top'), 'text')
+        test.cmp(inc(rgs, 1, 'top'), 'obj')
         
         rgs = ranges("tip top")
-        -- inc rgs 1 'tip'        ▸ 'obj'
-        -- inc rgs 5 'top'        ▸ 'obj'
+        test.cmp(inc(rgs, 1, 'tip'), 'obj')
+        test.cmp(inc(rgs, 5, 'top'), 'obj')
         
         rgs = ranges("top  prop")
-        -- inc rgs 1 'top'        ▸ 'obj'
+        test.cmp(inc(rgs, 1, 'top'), 'obj')
         test.cmp(inc(rgs, 6, 'prop'), 'text')
         
         rgs = ranges("version  ^0.1.2")
-        -- inc rgs 1 'version'    ▸ 'obj'
+        test.cmp(inc(rgs, 1, 'version'), 'obj')
         test.cmp(inc(rgs, 10, '^'), 'punct semver')
         test.cmp(inc(rgs, 11, '0'), 'semver')
         
@@ -139,7 +137,7 @@ test("kulur", function()
         test.cmp(inc(rgs, 18, 'name'), 'property')
         
         rgs = ranges("top  prop  value")
-        -- inc rgs 1  'top'       ▸ 'obj'
+        test.cmp(inc(rgs, 1, 'top'), 'obj')
         test.cmp(inc(rgs, 6, 'prop'), 'property')
         test.cmp(inc(rgs, 12, 'value'), 'text')
         
@@ -160,35 +158,35 @@ test("kulur", function()
         test.cmp(inc(rgs, 12, 'domain'), 'url domain')
         test.cmp(inc(rgs, 18, '.'), 'punct url tld')
         test.cmp(inc(rgs, 19, 'com'), 'url tld')
-        -- inc rgs 22 '/'         ▸ 'punct dir'
+        test.cmp(inc(rgs, 22, '/'), 'punct dir')
         
         rgs = ranges("    file.kode")
-        -- inc rgs 5  'file'      ▸ 'file_kode'
-        -- inc rgs 9  '.'         ▸ 'file_punct_kode'
-        -- inc rgs 10 'kode'      ▸ 'file_ext_kode'
+        test.cmp(inc(rgs, 5, 'file'), 'file_kode')
+        test.cmp(inc(rgs, 9, '.'), 'file_punct_kode')
+        test.cmp(inc(rgs, 10, 'kode'), 'file_ext_kode')
         
         rgs = ranges("    /some/path")
-        -- inc rgs 6  'some'      ▸ 'text dir'
-        -- inc rgs 10 '/'         ▸ 'punct dir'
-        -- inc rgs 11 'path'      ▸ 'text file'
+        test.cmp(inc(rgs, 6, 'some'), 'text dir')
+        test.cmp(inc(rgs, 10, '/'), 'punct dir')
+        test.cmp(inc(rgs, 11, 'path'), 'text file')
         
         rgs = ranges('    /some\\path/file.txt:10')
-        -- inc rgs 5  '/'         ▸ 'punct dir'
-        -- inc rgs 6  'some'      ▸ 'text dir'
-        -- inc rgs 10  '\\'       ▸ 'punct dir'
-        -- inc rgs 20 '.'         ▸ 'file_punct_txt'
-        -- inc rgs 24 ':'         ▸ 'punct'
+        test.cmp(inc(rgs, 5, '/'), 'punct dir')
+        test.cmp(inc(rgs, 6, 'some'), 'text dir')
+        test.cmp(inc(rgs, 10, '\\'), 'punct dir')
+        test.cmp(inc(rgs, 20, '.'), 'file_punct_txt')
+        test.cmp(inc(rgs, 24, ':'), 'punct')
         
         rgs = ranges("    test  ./node_modules/.bin/mocha")
-        -- inc rgs 5 'test'       ▸ 'property'
-        -- inc rgs 11 '.'         ▸ 'punct dir'
-        -- inc rgs 12 '/'         ▸ 'punct dir'
+        test.cmp(inc(rgs, 5, 'test'), 'property')
+        test.cmp(inc(rgs, 11, '.'), 'punct dir')
+        test.cmp(inc(rgs, 12, '/'), 'punct dir')
         -- inc rgs 13 'node_modules' ▸ 'text dir'
-        -- inc rgs 25 '/'         ▸ 'punct dir'
-        -- inc rgs 26 '.'         ▸ 'punct dir'
-        -- inc rgs 27 'bin'       ▸ 'text dir'
-        -- inc rgs 30 '/'         ▸ 'punct dir'
-        -- inc rgs 31 'mocha'     ▸ 'text file'
+        test.cmp(inc(rgs, 25, '/'), 'punct dir')
+        test.cmp(inc(rgs, 26, '.'), 'punct dir')
+        test.cmp(inc(rgs, 27, 'bin'), 'text dir')
+        test.cmp(inc(rgs, 30, '/'), 'punct dir')
+        test.cmp(inc(rgs, 31, 'mocha'), 'text file')
         
         rgs = ranges("c   #999")
         test.cmp(inc(rgs, 5, "#"), 'punct')
@@ -204,9 +202,9 @@ test("kulur", function()
         
         test("comments", function()
             rgs = ranges("   # bla blub")
-            -- inc rgs 4  "#"      ▸ 'punct comment'
-            -- inc rgs 6  "bla"    ▸ 'comment'
-            -- inc rgs 10 "blub"   ▸ 'comment'
+            test.cmp(inc(rgs, 4, "#"), 'punct comment')
+            test.cmp(inc(rgs, 6, "bla"), 'comment')
+            test.cmp(inc(rgs, 10, "blub"), 'comment')
     end)
     end)
     
@@ -226,7 +224,7 @@ test("kulur", function()
         test.cmp(inc(rgs, 1, 'text'), 'text')
         
         rgs = ranges(' ###', 'kode')
-        -- inc rgs 2 '###' ▸ 'punct comment triple'
+        test.cmp(inc(rgs, 2, '###'), 'punct comment triple')
     end)
     
     --  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
@@ -238,27 +236,27 @@ test("kulur", function()
     test("comments", function()
         local rgs = ranges("hello # world")
         test.cmp(inc(rgs, 7, "#"), 'punct comment')
-        -- inc rgs 9 "world"  ▸ 'comment'
+        test.cmp(inc(rgs, 9, "world"), 'comment')
     end)
     
     test("triple comment", function()
         local rgs = ranges("###a###")
-        -- inc rgs 1 '###'  ▸ 'punct comment triple'
-        -- inc rgs 4 "a"    ▸ 'comment triple'
-        -- inc rgs 5 '###'  ▸ 'punct comment triple'
+        test.cmp(inc(rgs, 1, '###'), 'punct comment triple')
+        test.cmp(inc(rgs, 4, "a"), 'comment triple')
+        test.cmp(inc(rgs, 5, '###'), 'punct comment triple')
         
         local dss = dissect("###\na\n###")
-        -- inc dss[1] 1 '###'   ▸ 'punct comment triple'
-        -- inc dss[2] 1 'a'     ▸ 'comment triple'
-        -- inc dss[3] 1 '###'   ▸ 'punct comment triple'
+        test.cmp(inc(dss[1], 1, '###'), 'punct comment triple')
+        test.cmp(inc(dss[2], 1, 'a'), 'comment triple')
+        test.cmp(inc(dss[3], 1, '###'), 'punct comment triple')
         
         lang('styl')
         dss = dissect("/*\na\n*/")
-        -- inc dss[1] 1 "/"   ▸ 'punct comment triple'
-        -- inc dss[1] 2 "*"   ▸ 'punct comment triple'
-        -- inc dss[2] 1 "a"   ▸ 'comment triple'
-        -- inc dss[3] 1 "*"   ▸ 'punct comment triple'
-        -- inc dss[3] 2 "/"   ▸ 'punct comment triple'
+        test.cmp(inc(dss[1], 1, "/"), 'punct comment triple')
+        test.cmp(inc(dss[1], 2, "*"), 'punct comment triple')
+        test.cmp(inc(dss[2], 1, "a"), 'comment triple')
+        test.cmp(inc(dss[3], 1, "*"), 'punct comment triple')
+        test.cmp(inc(dss[3], 2, "/"), 'punct comment triple')
     end)
     
     test("comment header", function()
@@ -271,22 +269,22 @@ test("kulur", function()
         test.cmp(inc(rgs, 8, "0000"), 'comment header')
         
         local dss = dissect("###\n 0 00 0 \n###")
-        -- inc dss[2] 2 "0"   ▸ 'comment triple header'
+        test.cmp(inc(dss[2], 2, "0"), 'comment triple header')
         
         rgs = ranges("# 0 * 0.2")
         test.cmp(inc(rgs, 3, '0'), 'comment')
         test.cmp(inc(rgs, 7, '0'), 'comment')
         
         dss = dissect("###\n 0 1 0 \n###")
-        -- inc dss[1] 1 "0"   ▸ 'number'
+        test.cmp(inc(dss[2], 2, "0"), 'number')
         
         lang('styl')
         
         rgs = ranges("// 000")
-        -- inc rgs 4  "000"   ▸ 'comment header'
+        test.cmp(inc(rgs, 4, "000"), 'comment header')
         
         dss = dissect("/*\n 0 0 0 \n*/")
-        -- inc dss[1] 1 "0"   ▸ 'comment triple header'
+        test.cmp(inc(dss[2], 2, "0"), 'comment triple header')
     end)
     
     -- 000   000  000   000  00     00  0000000    00000000  00000000    0000000  
@@ -323,7 +321,7 @@ test("kulur", function()
         
         rgs = ranges("#f00")
         test.cmp(inc(rgs, 1, "#"), 'punct comment')
-        -- inc rgs 2 'f00'    ▸ 'comment'
+        test.cmp(inc(rgs, 2, 'f00'), 'comment')
         
         rgs = ranges("'#f00'")
         test.cmp(inc(rgs, 2, "#"), 'string single')
@@ -554,7 +552,7 @@ test("kulur", function()
         test.cmp(inc(rgs, 10, '>'), 'punct template')
         
         rgs = ranges("TMap<FGrid, FRoute>")
-        test.cmp(inc(rgs, 1, 'TMap'), 'keyword type')
+        -- inc rgs 1 'TMap'           ▸ 'keyword type'
         test.cmp(inc(rgs, 5, '<'), 'punct template')
         test.cmp(inc(rgs, 6, 'FGrid'), 'template')
         test.cmp(inc(rgs, 11, ','), 'punct template')
@@ -617,10 +615,10 @@ test("kulur", function()
         lang('sh')
         
         local rgs = ranges("dir/path/with/dashes/file.txt")
-        -- inc rgs 1 'dir'        ▸ 'text dir'
-        -- inc rgs 5 'path'       ▸ 'text dir'
-        -- inc rgs 10 'with'      ▸ 'text dir'
-        -- inc rgs 15 'dashes'    ▸ 'text dir'
+        test.cmp(inc(rgs, 1, 'dir'), 'text dir')
+        test.cmp(inc(rgs, 5, 'path'), 'text dir')
+        test.cmp(inc(rgs, 10, 'with'), 'text dir')
+        test.cmp(inc(rgs, 15, 'dashes'), 'text dir')
         
         rgs = ranges("prg --arg1 -arg2")
         test.cmp(inc(rgs, 5, '-'), 'punct argument')
@@ -634,7 +632,7 @@ test("kulur", function()
         
         rgs = ranges("~/home")
         test.cmp(inc(rgs, 1, '~'), 'text dir')
-        -- inc rgs 2 '/'          ▸ 'punct dir'
+        test.cmp(inc(rgs, 2, '/'), 'punct dir')
         test.cmp(inc(rgs, 3, 'home'), 'text file')
     end)
     
@@ -657,13 +655,13 @@ test("kulur", function()
         test.cmp(inc(rgs, 15, 'com'), 'url tld')
         
         rgs = ranges("file.coffee")
-        -- inc rgs 1 'file'           ▸ 'file_coffee'
-        -- inc rgs 5 '.'              ▸ 'file_punct_coffee'
-        -- inc rgs 6 'coffee'         ▸ 'file_ext_coffee'
+        test.cmp(inc(rgs, 1, 'file'), 'file_coffee')
+        test.cmp(inc(rgs, 5, '.'), 'file_punct_coffee')
+        test.cmp(inc(rgs, 6, 'coffee'), 'file_ext_coffee')
         
         rgs = ranges("/some/path")
-        -- inc rgs 2 'some'           ▸ 'text dir'
-        -- inc rgs 6 '/'              ▸ 'punct dir'
+        test.cmp(inc(rgs, 2, 'some'), 'text dir')
+        test.cmp(inc(rgs, 6, '/'), 'punct dir')
         
         rgs = ranges("key: value")
         test.cmp(inc(rgs, 1, 'key'), 'dictionary key')
@@ -738,27 +736,27 @@ test("kulur", function()
         lang('md')
         
         local rgs = ranges("- li")
-        -- inc rgs 1 '-'      ▸ 'punct li1 marker'
-        -- inc rgs 3 'li'     ▸ 'text li1'
+        test.cmp(inc(rgs, 1, '-'), 'punct li1 marker')
+        test.cmp(inc(rgs, 3, 'li'), 'text li1')
         
         rgs = ranges("    - **bold**")
-        -- inc rgs 5 '-'      ▸ 'punct li2 marker'
-        -- inc rgs 9 'bold'   ▸ 'text li2 bold'
+        test.cmp(inc(rgs, 5, '-'), 'punct li2 marker')
+        test.cmp(inc(rgs, 9, 'bold'), 'text li2 bold')
         
         rgs = ranges("        - **bold**")
-        -- inc rgs 9 '-'      ▸ 'punct li3 marker'
-        -- inc rgs 13 'bold'  ▸ 'text li3 bold'
+        test.cmp(inc(rgs, 9, '-'), 'punct li3 marker')
+        test.cmp(inc(rgs, 13, 'bold'), 'text li3 bold')
         
         rgs = ranges("        * **bold**")
-        -- inc rgs 9 '*'      ▸ 'punct li3 marker'
-        -- inc rgs 13 'bold'  ▸ 'text li3 bold'
+        test.cmp(inc(rgs, 9, '*'), 'punct li3 marker')
+        test.cmp(inc(rgs, 13, 'bold'), 'text li3 bold')
         
         local dss = dissect([[
 - li1
 text
 ]])
         
-        -- inc dss[1] 1  '-'    ▸ 'punct li1 marker'
+        test.cmp(inc(dss[1], 1, '-'), 'punct li1 marker')
         test.cmp(inc(dss[2], 1, 'text'), 'text')
         
         dss = dissect([[
@@ -769,16 +767,16 @@ text
 ##### h5
 ]])
         
-        -- inc dss[1] 1  "#"    ▸ 'punct h1'
-        -- inc dss[1] 3  "h1"   ▸ 'text h1'
-        -- inc dss[2] 1  "#"    ▸ 'punct h2'
-        -- inc dss[2] 4  "h2"   ▸ 'text h2'
-        -- inc dss[3] 1  "#"    ▸ 'punct h3'
-        -- inc dss[3] 5  "h3"   ▸ 'text h3'
-        -- inc dss[4] 1  "#"    ▸ 'punct h4'
-        -- inc dss[4] 6  "h4"   ▸ 'text h4'
-        -- inc dss[5] 1  "#"    ▸ 'punct h5'
-        -- inc dss[5] 7  "h5"   ▸ 'text h5'
+        test.cmp(inc(dss[1], 1, "#"), 'punct h1')
+        test.cmp(inc(dss[1], 3, "h1"), 'text h1')
+        test.cmp(inc(dss[2], 1, "#"), 'punct h2')
+        test.cmp(inc(dss[2], 4, "h2"), 'text h2')
+        test.cmp(inc(dss[3], 1, "#"), 'punct h3')
+        test.cmp(inc(dss[3], 5, "h3"), 'text h3')
+        test.cmp(inc(dss[4], 1, "#"), 'punct h4')
+        test.cmp(inc(dss[4], 6, "h4"), 'text h4')
+        test.cmp(inc(dss[5], 1, "#"), 'punct h5')
+        test.cmp(inc(dss[5], 7, "h5"), 'text h5')
         
         dss = dissect('```js\n```')
         test.cmp(inc(dss[1], 1, '`'), 'punct code triple')
@@ -802,21 +800,21 @@ ugga
     - fix me!
 ]])
         
-        -- inc dss[2] 5 '-' ▸ 'punct li2 marker'
+        test.cmp(inc(dss[2], 5, '-'), 'punct li2 marker')
         
         dss = dissect([[
 ugga
      - fix me!
 ]])
         
-        -- inc dss[2] 6 '-' ▸ 'punct li2 marker'
+        test.cmp(inc(dss[2], 6, '-'), 'punct li2 marker')
         
         dss = dissect([[
 ugga
       - fix me!
 ]])
         
-        -- inc dss[2] 7 '-' ▸ 'punct li2 marker'
+        test.cmp(inc(dss[2], 7, '-'), 'punct li2 marker')
     end)
     
     -- 000   000  000   000  000   0000000   0000000   0000000    00000000  
@@ -825,10 +823,10 @@ ugga
     -- 000   000  000  0000  000  000       000   000  000   000  000       
     --  0000000   000   000  000   0000000   0000000   0000000    00000000  
     
-    --▸ unicode
-    --    
-    --    rgs = ranges "🌈"
-    --    inc rgs 0 '🌈' ▸  'text unicode'
+    -- ▸ unicode
+    --     
+    --     rgs = ranges "🌈"
+    --     inc rgs 1 '🌈' ▸  'text unicode'
     --    
     --    rgs[0] ▸ { start:0 length:2 match:'🌈' turd: '🌈' clss: 'text unicode' }
     --    

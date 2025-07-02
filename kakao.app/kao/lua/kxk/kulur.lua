@@ -6,18 +6,19 @@
 000   000   0000000   0000000   0000000   000   000
 --]]
 
--- use kxk/kxk
 extlang = require "kxk/extlang"
 
---swtch =
---    pug:
---        script: next:'.' to:'js' indent:1
---    md:
---        coffeescript: turd:'```' to:'coffee' end:'```' add:'code triple'
---        javascript:   turd:'```' to:'js'     end:'```' add:'code triple'
---        
---for ext in exts
---    swtch.md[ext] = turd:'```' to:ext end:'```' add:'code triple'
+local swtch = {
+    pug = {script = {next = '.', to = 'js', indent = 1}}, 
+    md = {
+            coffeescript = {turd = '```', to = 'coffee', ende = '```', add = 'code triple'}, 
+            javascript = {turd = '```', to = 'js', ende = '```', add = 'code triple'}
+            }
+    }
+
+for _, ext in ipairs(extlang.exts) do 
+    swtch.md[ext] = {turd = '```', to = ext, ende = '```', add = 'code triple'}
+end
 
 local SPACE = "%s"
 local HEADER = "^[0█]+$"
@@ -176,7 +177,7 @@ local extTop = {}
 local stackTop = {}
 local notCode = false -- shortcut for top of stack not in codeTypes
 local topType = ''
-local ext = ''
+ext = ''
 local chunk = {}
 local chunkIndex = 1
 
@@ -192,7 +193,7 @@ function fillComment(n)
         addValue(i, 'comment')
     end
     
-    if (chunkIndex < (#line.chunks - n)) then 
+    if (chunkIndex <= (#line.chunks - n)) then 
         local restChunks = line.chunks:slice((chunkIndex + n))
         local mightBeHeader = true
         for _, c in ipairs(restChunks) do 
@@ -216,7 +217,7 @@ end
 function hashComment() 
     if (stackTop and (topType ~= 'regexp triple')) then return end
     if (stackTop and (stackTop.lineno == line.number)) then 
-        return -- comments inside triple regexp only valid on internal lines?
+        return
     end
     
     if (chunk.match == "#") then 
@@ -228,7 +229,7 @@ end
 function noonComment() 
     if stackTop then return end
     
-    if ((chunk.match == "#") and (chunkIndex == 0)) then 
+    if ((chunk.match == "#") and (chunkIndex == 1)) then 
         return fillComment(1)
     end
 end
@@ -248,9 +249,10 @@ function blockComment()
     
     local typ = 'comment triple'
     
-    if ((topType and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
+    if (((topType ~= '') and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
     
     local head = string.sub(chunk.turd, 1, 3)
+    
     if (head == '###') then 
         if (topType == typ) then 
             popStack()
@@ -268,7 +270,7 @@ function nimComment()
     
     local typ = 'comment triple'
     
-    if ((topType and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
+    if (((topType ~= '') and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
     
     local head = string.sub(chunk.turd, 1, 2)
     if ((head == "#[") or (heaad == "]#")) then 
@@ -297,7 +299,7 @@ function luaComment()
     
     local typ = 'comment triple'
     
-    -- ⮐  if topType and topType not in ['interpolation' type]
+    if (((topType ~= '') and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
     
     local head = string.sub(chunk.turd, 1, 4)
     if ((head == "--[[") or (head == "--]]")) then 
@@ -317,9 +319,9 @@ function starComment()
     
     local typ = 'comment triple'
     
-    if (topType and (topType ~= typ)) then return end
+    if ((topType ~= '') and (topType ~= typ)) then return end
     
-    if ((string.sub(chunk.turd, 1, 2) == '/*') and not topType) then 
+    if ((string.sub(chunk.turd, 1, 2) == '/*') and (topType == '')) then 
         pushStack({type = typ, strong = true})
         return addValues(2, typ)
     end
@@ -538,7 +540,7 @@ function kodePunct()
         end
         
         if (kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) then 
-            local prevEnd = (prev.start + #prev)
+            local prevEnd = (prev.start + prev.length)
             if ((chunk.match == '(') and (prevEnd == chunk.start)) then 
                 return thisCall()
             elseif (prevEnd < chunk.start) then 
@@ -569,7 +571,7 @@ function kodeWord()
     if notCode then return end
     
     if (chunk.match == 'use') then 
-        if (getChunk(1).start > (chunk.start + #chunk)) then 
+        if (getChunk(1).start > (chunk.start + chunk.length)) then 
             setValue(0, 'keyword require')
             return 1
         else 
@@ -586,7 +588,7 @@ function kodeWord()
         end
         
         if (prev.match == '▸') then 
-            if empty(getChunk, -2) then 
+            if not getChunk(-2) then 
                 for c in line.chunks:slice(chunkIndex) do 
                     c.clss = 'section'
                 end
@@ -631,7 +633,7 @@ function kodeWord()
             return 1
         end
         
-        if ((kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) and ((prev.start + #prev) < chunk.start)) then 
+        if ((kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) and ((prev.start + prev.length) < chunk.start)) then 
             local prevPrev = getChunk(-2)
             if ((chunkIndex == 1) or (prevPrev and array('return', '=', '⮐'):has(prevPrev.match))) then 
                 return thisCall()
@@ -681,7 +683,7 @@ function coffeePunct()
         end
         
         if (kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) then 
-            local prevEnd = (prev.start + #prev)
+            local prevEnd = (prev.start + prev.length)
             if ((chunk.match == '(') and (prevEnd == chunk.start)) then 
                 return thisCall()
             elseif (prevEnd < chunk.start) then 
@@ -726,7 +728,7 @@ function coffeeWord()
             return 1
         end
         
-        if ((kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) and ((prev.start + #prev) < chunk.start)) then 
+        if ((kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) and ((prev.start + prev.length) < chunk.start)) then 
             return thisCall()
         end
     end
@@ -810,11 +812,11 @@ end
 function noonProp() 
     local prev = getChunk(-1)
     if prev then 
-        if (((prev.start + #prev) + 1) < chunk.start) then 
+        if (((prev.start + prev.length) + 1) < chunk.start) then 
             if (prev.clss ~= 'obj') then 
                 local i = (chunkIndex - 1)
                 while (i >= 1) do 
-                    if ((i < (chunkIndex - 1)) and (((line.chunks[i].start + #line.chunks[i]) + 1) < line.chunks[(i + 1)].start)) then 
+                    if ((i < (chunkIndex - 1)) and (((line.chunks[i].start + line.chunks[i].length) + 1) < line.chunks[(i + 1)].start)) then 
                         break
                     end
                     
@@ -845,7 +847,7 @@ end
 
 
 function noonWord() 
-    if (chunk.start == 0) then 
+    if (chunk.start == 1) then 
         setValue(0, 'obj')
         return 1
     end
@@ -877,23 +879,21 @@ function urlPunct()
         if (chunk.match == '.') then 
             if ((((not kstr.startsWith(prev.clss, 'number') and (prev.clss ~= 'semver')) and not kstr.has('\\./', prev.match)) and not string.match(prev.match, "%d+")) and empty(topType)) then 
                 local next = getChunk(1)
-                if next then 
-                    if (next.start == (chunk.start + #chunk)) then 
-                        local fileext = next.match
-                        if not kstr.has('\\./*+', fileext) then 
-                            setValue(-1, ('file_' + fileext))
-                            setValue(0, ('file_punct_' + fileext))
-                            setValue(1, ('file_ext_' + fileext))
-                            return 2
-                        end
+                if (next and (next.start == (chunk.start + chunk.length))) then 
+                    local fileext = next.match
+                    if not kstr.has('\\./*+', fileext) then 
+                        setValue(-1, 'file_' .. fileext)
+                        setValue(0, 'file_punct_' .. fileext)
+                        setValue(1, 'file_ext_' .. fileext)
+                        return 2
                     end
                 end
             end
         end
         
         if (chunk.match == '/') then 
-            for i in iter(chunkIndex, 0) do 
-                if ((line.chunks[i].start + #line.chunks[i]) < line.chunks[(i + 1)].start) then break end
+            for i in iter(chunkIndex, 1) do 
+                if ((line.chunks[i].start + line.chunks[i].length) < line.chunks[(i + 1)].start) then break end
                 if kstr.endsWith(line.chunks[i].clss, 'dir') then break end
                 if kstr.startsWith(line.chunks[i].clss, 'url') then break end
                 if (line.chunks[i].match == '"') then break end
@@ -917,7 +917,7 @@ function urlWord()
     if prev then 
         if ((prev.match == '\\') or (prev.match == '/')) then 
             local next = getChunk(1)
-            if ((not next or (next.start > (chunk.start + #chunk))) or not kstr.has('\\./', next.match)) then 
+            if ((not next or (next.start > (chunk.start + chunk.length))) or not kstr.has('\\./', next.match)) then 
                 return addValue(0, 'file')
             end
         end
@@ -1086,10 +1086,10 @@ function regexp()
         
         if chunkIndex then 
             prev = getChunk(-1)
-            local next = (getChunk + 1)
+            local next = getChunk(1)
             if ((not kstr.startsWith(prev.clss, 'punct') and not kstr.startsWith(prev.clss, 'keyword')) or kstr.has(")]", prev.match)) then 
-                if (((prev.start + #prev) < chunk.start) and (next.start > (chunk.start + 1))) then return end
-                if (((prev.start + #prev) == chunk.start) and (next.start == (chunk.start + 1))) then return end
+                if (((prev.start + prev.length) < chunk.start) and (next.start > (chunk.start + 1))) then return end
+                if (((prev.start + prev.length) == chunk.start) and (next.start == (chunk.start + 1))) then return end
             end
             
             if (next.match == '=') then return end
@@ -1109,7 +1109,7 @@ function tripleRegexp()
     
     local typ = 'regexp triple'
     
-    if ((topType and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
+    if (((topType ~= '') and (topType ~= 'interpolation')) and (topType ~= typ)) then return end
     if (string.sub(chunk.turd, 1, 3) == '///') then 
         if (topType == typ) then 
             popStack()
@@ -1147,9 +1147,8 @@ end)()
         
         if (chunk.match == "'") then 
             local next = getChunk(1)
-            
             if (next and array('s', 'd', 't', 'll', 're'):has(next.match)) then 
-                if (next.start == (chunk.start + #chunk)) then 
+                if (next.start == (chunk.start + chunk.length)) then 
                     local scnd = getChunk(2)
                     if (not scnd or (scnd.match ~= "'")) then 
                         return stacked()
@@ -1389,7 +1388,7 @@ end
 
 
 function mdPunct() 
-    if (chunkIndex == 0) then 
+    if (chunkIndex == 1) then 
         if (((#chunk.turd <= 1) and kstr.has('-*', chunk.match)) and (getChunk(1).start > (chunk.start + 1))) then 
             local typ = array('li1', 'li2', 'li3', 'li4', 'li5')[(int((chunk.start / 4)) + 1)]
             pushStack({merge = true, fill = true, type = typ})
@@ -1512,7 +1511,7 @@ end
 function spaced() 
     local prev = getChunk(-1)
     if prev then 
-        return ((prev.start + #prev) < chunk.start)
+        return ((prev.start + prev.length) < chunk.start)
     end
     
     return false
@@ -1525,8 +1524,7 @@ function keyword()
     if not extlang.lang[ext] then return end
     
     local prev = getChunk(-1)
-    
-    if (extlang.lang[ext][chunk.match] and (not prev or ((prev.match ~= '.') and ((spaced() or array('@', '['):has(prev.match)) or (prev.clss ~= 'punct'))))) then 
+    if (extlang.lang[ext][chunk.match] and (not prev or ((prev.match ~= '.') and ((spaced() or array('@', '[', ':'):has(prev.match)) or (prev.clss ~= 'punct'))))) then 
         chunk.clss = extlang.lang[ext][chunk.match]
         return
     end
@@ -1602,24 +1600,24 @@ end
 function shPunct() 
     if notCode then return end
     
-    if ((chunk.match == '/') and ((getChunk(-1).start + #getChunk(-1)) == chunk.start)) then 
+    if ((chunk.match == '/') and ((getChunk(-1).start + getChunk(-1).length) == chunk.start)) then 
         return addValue(-1, 'dir')
     end
     
-    if (((chunk.turd == '--') and (getChunk(2).start == (chunk.start + 2))) and ((getChunk(-1).start + #getChunk(-1)) < chunk.start)) then 
+    if (((chunk.turd == '--') and (getChunk(2).start == (chunk.start + 2))) and ((getChunk(-1).start + getChunk(-1).length) < chunk.start)) then 
         addValue(0, 'argument')
         addValue(1, 'argument')
         setValue(2, 'argument')
         return 3
     end
     
-    if (((chunk.match == '-') and (getChunk(1).start == (chunk.start + 1))) and ((getChunk(-1).start + #getChunk(-1)) < chunk.start)) then 
+    if (((chunk.match == '-') and (getChunk(1).start == (chunk.start + 1))) and ((getChunk(-1).start + getChunk(-1).length) < chunk.start)) then 
         addValue(0, 'argument')
         setValue(1, 'argument')
         return 2
     end
     
-    if ((chunk.match == '~') and (not getChunk(-1) or ((getChunk(-1).start + #getChunk(-1)) < chunk.start))) then 
+    if ((chunk.match == '~') and (not getChunk(-1) or ((getChunk(-1).start + getChunk(-1).length) < chunk.start))) then 
         setValue(0, 'text dir')
         return 1
     end
@@ -1670,7 +1668,12 @@ function popExt()
     extTop = extStack[#extStack]
     
     stackTop = stack[#stack]
-    topType = stackTop.type
+    if stackTop then 
+        topType = stackTop.type
+    else 
+        topType = ''
+    end
+    
     notCode = (stackTop and not codeTypes:has(topType))
     return notCode
 end
@@ -1709,9 +1712,10 @@ end
 
 function setValue(d, value) 
     if line then 
-        if ((1 <= (chunkIndex + d)) and ((chunkIndex + d) <= #line.chunks)) then 
-            line.chunks[(chunkIndex + d)].clss = value
-            return line.chunks[(chunkIndex + d)].clss
+        local i = (chunkIndex + d)
+        if ((1 <= i) and (i <= #line.chunks)) then 
+            line.chunks[i].clss = value
+            return line.chunks[i].clss
         end
     end
 end
@@ -1735,8 +1739,9 @@ end
 
 function addValue(d, value) 
     if line then 
-        if ((1 <= (chunkIndex + d)) and ((chunkIndex + d) <= #line.chunks)) then 
-            line.chunks[(chunkIndex + d)].clss = line.chunks[(chunkIndex + d)].clss .. (' ' .. value)
+        local i = (chunkIndex + d)
+        if ((1 <= i) and (i <= #line.chunks)) then 
+            line.chunks[i].clss = line.chunks[i].clss .. (' ' .. value)
         end
     end
     
@@ -1954,15 +1959,20 @@ function blocked(lines)
                         end
                     end
                 else 
-                    --if not notCode
-                    --    if mtch = swtch[line.ext]?[chunk.match]
-                    --        if mtch.turd
-                    --            turdChunk = getChunk -mtch.turd.len
-                    --            if mtch.turd == (turdChunk.turd ? turdChunk.match)
-                    --                # push a new extension onto the stack, ext will change on start of next line
-                    --                pushExt mtch
-                    --        elif mtch.next and getChunk(1).match == mtch.next
-                    --            pushExt mtch
+                    if (not notCode and swtch[line.ext]) then 
+                        local mtch = swtch[line.ext][chunk.match]
+                        if mtch then 
+                            if mtch.turd then 
+                                local turdChunk = getChunk(-#mtch.turd)
+                                if (mtch.turd == (turdChunk.turd or turdChunk.match)) then 
+                                    -- push a new extension onto the stack, ext will change on start of next line
+                                    pushExt(mtch)
+                                end
+                            elseif (mtch.next and (getChunk(1).match == mtch.next)) then 
+                                pushExt(mtch)
+                            end
+                        end
+                    end
                     
                     for _, hnd in ipairs(handl.word) do 
                         local advance = hnd()
@@ -2057,7 +2067,7 @@ function kolorizeChunks(chunks)
         end
         
         clrzd = clrzd .. (kolorize(chunks[i]))
-        c = c + (#chunks[i])
+        c = c + (chunks[i].length)
     end
     
     return clrzd
