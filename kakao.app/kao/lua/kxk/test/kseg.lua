@@ -307,6 +307,16 @@ def]])
         -- kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  4 ▸ 3
     end)
     
+    test("widthAtSegi", function()
+        test.cmp(kseg.widthAtSegi("", 1), 0)
+        test.cmp(kseg.widthAtSegi("a", 1), 0)
+        test.cmp(kseg.widthAtSegi("a", 2), 1)
+        test.cmp(kseg.widthAtSegi("a", 3), 1)
+        
+        test.cmp(kseg.widthAtSegi(kseg('🧑🧑'), 1), 0)
+        test.cmp(kseg.widthAtSegi(kseg('🧑🧑'), 2), 2)
+    end)
+    
     test("eql", function()
         test.cmp((kseg("abc") == kseg("abc")), false)
         

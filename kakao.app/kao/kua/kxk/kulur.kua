@@ -6,10 +6,6 @@
 000   000   0000000   0000000   0000000   000   000
 ###
 
-# use ../kxk/kseg
-# use ../kxk/klor
-# use ./extlang ▪ exts lang
-
 use kxk/kxk
 use kxk/extlang
 
@@ -96,7 +92,7 @@ chunked = segls ext ->
 
         pushLastWord = ->
             
-            if lastWord != nil
+            if lastWord
                 chnks.chunks∙push {start:kseg.widthAtSegi(segs lastWordIndex) length:kseg.width(lastWord) match:kseg.str(lastWord) clss:'text'}
                 lastWord = nil
                 lastWordIndex = -1
@@ -119,8 +115,8 @@ chunked = segls ext ->
                     
                     turd = ''
                     
-                    write ◌c noon(chnk)
-                    write ◌m chnk.segl.class
+                    # write ◌c noon(chnk)
+                    # write ◌m chnk.segl.class
                     
                     for t in chnk.segl∙slice(segIndex)∙each()
 
@@ -148,7 +144,7 @@ chunked = segls ext ->
                     
         pushLastWord()
 
-        if chnks.chunks.len
+        if chnks.chunks.len > 0
             l = chnks.chunks[^1]
             chnks.chars = l.start + l.len
 
@@ -165,14 +161,13 @@ chunked = segls ext ->
 extStack   = []
 stack      = []
 handl      = []
-extTop     = nil
-stackTop   = nil
+extTop     = {}
+stackTop   = {}
 notCode    = false # shortcut for top of stack not in codeTypes
 topType    = ''
 ext        = ''
-line       = nil
-chunk      = nil
-chunkIndex = 0
+chunk      = {}
+chunkIndex = 1
 
 #  0000000   0000000   00     00  00     00  00000000  000   000  000000000
 # 000       000   000  000   000  000   000  000       0000  000     000
@@ -189,7 +184,7 @@ fillComment = n ->
         mightBeHeader = true
         for c in restChunks
             c.clss = 'comment'
-            if mightBeHeader and not HEADER.test c.match
+            if mightBeHeader and not string.match(c.match HEADER)
                 mightBeHeader = false
         if mightBeHeader
             for c in restChunks
@@ -310,9 +305,10 @@ funcArgs = ->
     # turd = chunk.turd[0] == '○' ? chunk.turd[1..2] : chunk.turd[0..1]
     # if turd[0] in '=-' and turd[1] == '>'
     if (kturd[1] == '=' or kturd[1] == '-') and kturd[2] == '>'
-        ⮐  if kstr.has ':)' getChunk(-1).match
-        if ['text''dictionary key']∙has(line.chunks[0].clss) and kstr.has(':=' line.chunks[1].match)
-            for ch in line.chunks∙slice(2 chunkIndex)
+        prev = getChunk(-1)
+        ⮐  if prev and kstr.has(':)' prev.match)
+        if ['text''dictionary key']∙has(line.chunks[1].clss) and kstr.has(':=' line.chunks[2].match)
+            for ch in line.chunks∙slice(2 chunkIndex)∙each()
                 if ['function call' 'text']∙has ch.clss
                     ch.clss = 'function argument'
     ⮐ 
@@ -331,13 +327,14 @@ dashArrow = ->
     # log 'dashArrow chunk' chunkIndex, chunk
 
     markFunc = ->
-        if line.chunks[0].clss == 'text'
-            if line.chunks[1].match == '=' and line.chunks[2].match != '>'
-                line.chunks[0].clss = 'function'
-                line.chunks[1].clss &= ' function'
-            elif line.chunks[1].match == ':'
-                line.chunks[0].clss = 'method'
-                line.chunks[1].clss &= ' method'
+    
+        if line.chunks[1].clss == 'text'
+            if line.chunks[2].match == '=' and line.chunks[3].match != '>'
+                line.chunks[1].clss = 'function'
+                line.chunks[2].clss &= ' function'
+            elif line.chunks[2].match == ':'
+                line.chunks[1].clss = 'method'
+                line.chunks[2].clss &= ' method'
 
     if chunk.turd
         
@@ -346,13 +343,13 @@ dashArrow = ->
             addValue 0 'function async'
             addValue 1 'function tail'
             addValue 2 'function head'
-            if line.chunks[0].clss == 'dictionary key' or string.sub(line.chunks[0].turd 1 2) == '@:'
-                line.chunks[0].clss = 'method'
-                line.chunks[1].clss = 'punct method'
-            elif line.chunks[0].match == '@' and line.chunks[1].clss == 'dictionary key'
-                line.chunks[0].clss = 'punct method class'
-                line.chunks[1].clss = 'method class'
-                line.chunks[2].clss = 'punct method class'
+            if line.chunks[1].clss == 'dictionary key' or line.chunks[1].turd and string.sub(line.chunks[1].turd 1 2) == '@:'
+                line.chunks[1].clss = 'method'
+                line.chunks[2].clss = 'punct method'
+            elif line.chunks[1].match == '@' and line.chunks[2].clss == 'dictionary key'
+                line.chunks[1].clss = 'punct method class'
+                line.chunks[2].clss = 'method class'
+                line.chunks[3].clss = 'punct method class'
             ⮐  3
             
         if kstr.startsWith chunk.turd '○=>'
@@ -360,27 +357,27 @@ dashArrow = ->
             addValue 0 'function bound async'
             addValue 1 'function bound tail'
             addValue 2 'function bound head'
-            if line.chunks[0].clss == 'dictionary key'
-                line.chunks[0].clss = 'method'
-                line.chunks[1].clss = 'punct method'
+            if line.chunks[1].clss == 'dictionary key'
+                line.chunks[1].clss = 'method'
+                line.chunks[2].clss = 'punct method'
             ⮐  3
 
         if kstr.startsWith chunk.turd '->'
             markFunc()
-            if line.chunks[0].clss == 'dictionary key' or string.sub(line.chunks[0].turd 1 2) == '@:'
-                line.chunks[0].clss = 'method'
-                line.chunks[1].clss = 'punct method'
-            elif line.chunks[0].match == '@' and line.chunks[1].clss == 'dictionary key'
-                line.chunks[0].clss = 'punct method class'
-                line.chunks[1].clss = 'method class'
-                line.chunks[2].clss = 'punct method class'
+            if line.chunks[1].clss == 'dictionary key' or line.chunks[1].turd and string.sub(line.chunks[1].turd 1 2) == '@:'
+                line.chunks[1].clss = 'method'
+                line.chunks[2].clss = 'punct method'
+            elif line.chunks[1].match == '@' and line.chunks[2].clss == 'dictionary key'
+                line.chunks[1].clss = 'punct method class'
+                line.chunks[2].clss = 'method class'
+                line.chunks[3].clss = 'punct method class'
             ⮐  addAndJoinValues 2 'function'
 
         if kstr.startsWith chunk.turd '=>'
             markFunc()
-            if line.chunks[0].clss == 'dictionary key'
-                line.chunks[0].clss = 'method'
-                line.chunks[1].clss = 'punct method'
+            if line.chunks[1].clss == 'dictionary key'
+                line.chunks[1].clss = 'method'
+                line.chunks[2].clss = 'punct method'
             ⮐  addAndJoinValues 2 'function bound'
 
 cppPointer = ->
@@ -396,7 +393,7 @@ cppPointer = ->
 commentHeader = ->
 
     if topType == 'comment triple'
-        if HEADER.test chunk.match
+        if string.match chunk.match HEADER
             chunk.clss = 'comment triple header'
             ⮐  1
 
@@ -446,7 +443,7 @@ kodePunct = ->
     prev = getChunk -1
     if prev
         
-        if prev.clss.endsWith('require') and chunk.match != '"'
+        if kstr.endsWith(prev.clss 'require') and chunk.match != '"'
             setValue 0 'punct require'
             ⮐  1
 
@@ -462,7 +459,8 @@ kodePunct = ->
             if chunk.match == '(' and prevEnd == chunk.start
                 ⮐  thisCall()
             elif prevEnd < chunk.start # spaced
-                if chunkIndex == 1 or ['⮐' '=' 'return']∙has(getChunk(-2).match)
+                prevPrev = getChunk(-2)
+                if chunkIndex == 1 or prevPrev and ['⮐' '=' 'return']∙has(prevPrev.match)
                     if kstr.has '@[({"\'' chunk.match
                         ⮐  thisCall()
                     elif kstr.has '+-/' chunk.match
@@ -518,15 +516,15 @@ kodeWord = ->
             addValue  0 'this'
             ⮐  1
             
-        if prev.clss.endsWith 'require'
+        if kstr.endsWith prev.clss 'require'
             addValue 0 'require'
-            if prev.clss.endsWith('punct require') and kstr.has('▪◆●' prev.match)
+            if kstr.endsWith(prev.clss 'punct require') and kstr.has('▪◆●' prev.match)
                 addValue 0 'string'
             elif chunkIndex == line.chunks.len-1
                 addValue 0 'string'
             ⮐  1
 
-        if prev.clss.endsWith 'require string'
+        if kstr.endsWith prev.clss 'require string'
             addValue 0 'require string'
             ⮐  1
                                     
@@ -630,11 +628,11 @@ cppWord = ->
     p = property()
     
     if p then ⮐  p
+    prevPrev = getChunk(-2)
+    if prevPrev and prevPrev.turd == '::'
 
-    if getChunk(-2).turd == '::'
-
-        prevPrev = getChunk -3
-        if prevPrev
+        prevPrevPrev = getChunk -3
+        if prevPrevPrev
             setValue -3 'punct obj'
             addValue -2 'obj'
             addValue -1 'obj'
@@ -648,7 +646,7 @@ cppWord = ->
         setValue  1 'punct template'
         ⮐  2
 
-    if string.match chunk.match[1] "[A-Z]"
+    if chunk.match[1] and string.match(chunk.match[1] "[A-Z]")
         switch chunk.match[0]
             'T'
                 if getmatch(1) == '<'
@@ -681,7 +679,7 @@ noonProp = ->
         if prev.start+prev.len+1 < chunk.start
             if prev.clss != 'obj'
                 i = chunkIndex-1
-                while i >= 0
+                while i >= 1
                     if i < chunkIndex-1 and line.chunks[i].start+line.chunks[i].len+1 < line.chunks[i+1].start
                         break
                     if line.chunks[i].clss == 'text' or line.chunks[i].clss == 'obj'
@@ -745,7 +743,7 @@ urlPunct = ->
 
             for i in chunkIndex..0
                 break if line.chunks[i].start+line.chunks[i].len < line.chunks[i+1].start
-                break if line.chunks[i].clss.endsWith 'dir'
+                break if kstr.endsWith line.chunks[i].clss 'dir'
                 break if kstr.startsWith line.chunks[i].clss 'url'
                 break if line.chunks[i].match == '"'
                 if kstr.startsWith line.chunks[i].clss 'punct'
@@ -796,11 +794,11 @@ dictionary = ->
     if chunk.match == ':' and not kstr.startsWith(chunk.turd '::')
         prev = getChunk -1
         if prev
-            if ['string' 'number' 'text' 'keyword']∙has(prev.clss.split(' ')[1])
+            if ['string' 'number' 'text' 'keyword']∙has(kstr.split(prev.clss ' ')[1])
                 setValue -1 'dictionary key'
                 setValue  0 'punct dictionary'
                 ⮐  1
-            if prev.match == '*' and ['text' 'keyword']∙has(getChunk(-2).clss.split(' ')[1])
+            if prev.match == '*' and ['text' 'keyword']∙has(kstr.split(getChunk(-2).clss ' ')[1])
                 setValue -1 'dictionary key'
                 setValue -2 'dictionary key'
                 setValue  0 'punct dictionary'
@@ -834,7 +832,7 @@ jsonWord = ->
     prev = getChunk -1
     if prev and (topType == 'string double' or topType == 'string single')
         if kstr.has '"^~=' prev.match
-            if NUMBER.test(getmatch(0)) and getmatch(1) == '.' and NUMBER.test(getmatch(2)) and getmatch(3) == '.' and NUMBER.test(getmatch(4))
+            if string.match(getmatch(0) NUMBER) and getmatch(1) == '.' and string.match(getmatch(2) NUMBER) and getmatch(3) == '.' and string.match(getmatch(4) NUMBER)
                 if kstr.has '^~=' prev.match
                     setValue -1 'punct semver' 
                     if getmatch(-2) == '>'
@@ -852,7 +850,7 @@ jsonWord = ->
 # 000   000  000       000   000  000        000 000   000
 # 000   000  00000000   0000000   00000000  000   000  000
 
-escape = ->
+kescape = ->
 
     if chunk.match == '\\' and (kstr.startsWith(topType 'regexp') or kstr.startsWith(topType 'string'))
         if chunkIndex == 0 or not getChunk(-1).escape
@@ -866,7 +864,6 @@ escape = ->
                 if topType == 'string double' and getChunk(1).match == '"'
                     setValue 0 topType
                     ⮐  1
-                
                 ⮐  stacked()
     0
 
@@ -874,7 +871,8 @@ regexp = ->
 
     ⮐  if kstr.startsWith topType 'string'
 
-    if getChunk(-1).escape then ⮐ stacked()
+    prev = getChunk(-1)
+    if prev and prev.escape then ⮐  stacked()
 
     if chunk.match == '/'
 
@@ -896,7 +894,7 @@ regexp = ->
         pushStack {type:'regexp'}
         ⮐  addValue 0 'regexp start'
 
-    escape()
+    kescape()
 
 tripleRegexp = ->
 
@@ -935,7 +933,7 @@ simpleString = ->
         if chunk.match == "'"
             next = getChunk 1
             
-            if ['s' 'd' 't' 'll' 're']∙has next.match
+            if next and ['s' 'd' 't' 'll' 're']∙has next.match
                 if next.start == chunk.start + chunk.len
                     scnd = getChunk 2
                     if not scnd or scnd.match != "'"
@@ -959,8 +957,8 @@ simpleString = ->
         pushStack {strong:true type:typ}
         addValue 0 typ
         ⮐  1
-
-    escape()
+        
+    kescape()
 
 tripleString = ->
 
@@ -981,7 +979,7 @@ tripleString = ->
 
         ⮐  addValues 3 typ
 
-    escape()
+    kescape()
     
 luaString = ->
 
@@ -1006,7 +1004,7 @@ luaString = ->
 
         ⮐  addValues 2 typ
 
-    escape()
+    kescape()
 
 # 000   000  000   000  00     00  0000000    00000000  00000000
 # 0000  000  000   000  000   000  000   000  000       000   000
@@ -1109,7 +1107,7 @@ cssWord = ->
         if prev.match == "#"
 
             if chunk.match.len == 3 or chunk.match.len == 6
-                if HEX.test chunk.match
+                if string.match chunk.match HEX
                     addValue -1 'number hex'
                     setValue  0 'number hex'
                     ⮐  1
@@ -1164,23 +1162,23 @@ mdPunct = ->
         if string.sub(chunk.turd 1 2) == '**'
 
             typ = 'bold'
-            if topType.endsWith typ
+            if kstr.endsWith topType typ
                 addValues 2 topType
                 popStack()
                 ⮐  2
 
-            if stackTop.merge
+            if stackTop and stackTop.merge
                 typ = stackTop.type & ' ' & typ 
             pushStack {merge:true type:typ}
             ⮐  addValues 2 typ
 
         typ = 'italic'
-        if topType.endsWith typ
+        if kstr.endsWith topType typ
             addValue 0 topType
             popStack()
             ⮐  1
 
-        if stackTop.merge
+        if stackTop and stackTop.merge
             typ = stackTop.type & ' ' & typ
         pushStack {merge:true type:typ}
         addValue 0 typ
@@ -1200,12 +1198,12 @@ mdPunct = ->
             ⮐  addValues 3 typ
 
         typ = 'code'
-        if topType.endsWith typ
+        if kstr.endsWith topType typ
             addValue 0 topType
             popStack()
             ⮐  1
 
-        if stackTop.merge
+        if stackTop and stackTop.merge
             typ = stackTop.type & ' ' & typ 
 
         pushStack {merge:true type:typ}
@@ -1369,7 +1367,7 @@ actExt = ->
 popExt = ->
     stack = extTop.stack
     line.ext = extTop.start.ext
-    extStack.pop()
+    extStack∙pop()
     extTop = extStack[^1]
 
     stackTop = stack[^1]
@@ -1383,10 +1381,14 @@ pushStack = o ->
     notCode = not codeTypes∙has(topType)
 
 popStack = ->
-    stack.pop()
+    stack∙pop()
     stackTop = stack[^1]
-    topType = stackTop.type
-    notCode = stackTop and not codeTypes∙has(topType)
+    if stackTop
+        topType = stackTop.type
+        notCode = not codeTypes∙has(topType)
+    else
+        topType = ''
+        notCode = false
 
 getChunk = d ->
  
@@ -1396,10 +1398,14 @@ getChunk = d ->
 setValue = d value -> 
 
     if line
-        if 1 <= chunkIndex+d <= line.chunks.len 
+        if 1 <= chunkIndex+d and chunkIndex+d <= line.chunks.len 
             line.chunks[chunkIndex+d].clss = value
         
-getValue = d -> getChunk(d).clss or ''
+getValue = d -> 
+    chnk = getChunk(d)
+    if chnk
+        chnk.clss or ''
+    
 getmatch = d -> 
     chnk = getChunk(d)
     if chnk
@@ -1420,9 +1426,9 @@ addAndJoinValues = n value ->
 
     line.chunks[chunkIndex].clss &= ' ' & value
     for i in 1...n
-        line.chunks[chunkIndex].match += line.chunks[chunkIndex+i].match
+        line.chunks[chunkIndex].match &= line.chunks[chunkIndex+i].match
         line.chunks[chunkIndex]["length"] += 1
-    line.chunks.splice chunkIndex+1 n-1
+    line.chunks∙splice chunkIndex+1 n-1
     1
 
 handlers = {
@@ -1506,9 +1512,8 @@ blocked = lines ->
     notCode    = false # shortcut for top of stack not in codeTypes
     topType    = ''
     ext        = ''
-    line       = nil
     chunk      = nil
-    chunkIndex = 0
+    chunkIndex = 1
     
     # 000      000  000   000  00000000   0000000
     # 000      000  0000  000  000       000
@@ -1516,7 +1521,15 @@ blocked = lines ->
     # 000      000  000  0000  000            000
     # 0000000  000  000   000  00000000  0000000
 
-    for line in lines
+    write "BLOCKED LINES " lines
+    for l in lines
+        write "BLOCKED L " l
+        _G.line = l
+        write "BLOCKED LINE " _G.line
+        write "BLOCKED LINE " line
+    
+        if not line
+            write ◌r "DAFUK? NOLINE"
 
         continue = false
         if stackTop
@@ -1525,7 +1538,7 @@ blocked = lines ->
 
                 mightBeHeader = true
                 for chunk in line.chunks
-                    if not HEADER.test chunk.match
+                    if not string.match chunk.match HEADER
                         mightBeHeader = false
                         break
                 if mightBeHeader
@@ -1613,7 +1626,12 @@ blocked = lines ->
 # 000        000   000  000   000       000  000       
 # 000        000   000  000   000  0000000   00000000  
 
-parse = segls ext='kode' -> blocked(chunked(segls ext))
+parse = segls ext='kode' -> 
+
+    lines = chunked(segls ext)
+    write "PARSE " lines
+    write "PARSE " line    
+    blocked(lines)
 
 # 000   000   0000000   000       0000000   00000000   000  0000000  00000000  
 # 000  000   000   000  000      000   000  000   000  000     000   000       
@@ -1633,17 +1651,17 @@ kolorize = chunk ->
         else
             ⮐  kolor[cn](chunk.match)
             
-    if chunk.clss.endsWith 'file'
+    if kstr.endsWith chunk.clss 'file'
         w8 chunk.match
-    elif chunk.clss.endsWith 'ext'
+    elif kstr.endsWith chunk.clss 'ext'
         w3 chunk.match
     elif kstr.startsWith chunk.clss 'punct'
-        if LI.test chunk.clss
+        if string.match chunk.clss LI
             kolorize {match:chunk.match, clss:chunk.clss.replace(LI ' ')}
         else
             w2 chunk.match
     else
-        if LI.test chunk.clss
+        if string.match chunk.clss LI
             kolorize {match:chunk.match, clss:chunk.clss.replace(LI ' ')}
         else
             chunk.match
@@ -1672,7 +1690,7 @@ syntax = arg ->
     text = arg.text
     ext  = arg.ext or 'coffee'
 
-    lines = text.split NEWLINE
+    lines = kstr.lines text
     rngs  = parse(lines ext)∙map((l) -> l.chunks)
     
     clines = []
@@ -1694,7 +1712,7 @@ dissect = segls ext='kode' ->
     ⮐  [] if empty segls
 
     segls = kseg.segls segls
-    parse(segls ext).map (l) -> l.chunks
+    parse(segls ext)∙map((l) -> l.chunks)
     
 ranges = str ext='kode' ->
     

@@ -25,9 +25,11 @@ function dissect(c)
 end
 
 function inc(rgs, start, match) 
-    for _, r in ipairs(rgs) do 
-        if ((r.start == start) and (r.match == match)) then 
-            return r.clss
+    if rgs then 
+        for _, r in ipairs(rgs) do 
+            if ((r.start == start) and (r.match == match)) then 
+                return r.clss
+            end
         end
     end
     
@@ -35,22 +37,6 @@ function inc(rgs, start, match)
 end
 
 test("kulur", function()
-    -- ███   ███  ███  ██     ██
-    -- ████  ███  ███  ███   ███
-    -- ███ █ ███  ███  █████████
-    -- ███  ████  ███  ███ █ ███
-    -- ███   ███  ███  ███   ███
-    
-    test("nim", function()
-        lang('nim')
-        
-        local dss = dissect("proc f(str:string)")
-        -- log "dss" dss
-        
-        test.cmp(inc(dss[0], 0, "proc"), 'keyword')
-        -- inc dss[0] 5 "string" ▸ 'text' # should be type
-    end)
-    
     -- ███   ███  ███  ██     ██
     -- ███  ███   ███  ███   ███
     -- ███████    ███  █████████
@@ -61,11 +47,27 @@ test("kulur", function()
         lang('kim')
         
         local rgs = ranges('if')
-        test.cmp(inc(rgs, 0, 'if'), 'keyword')
+        test.cmp(inc(rgs, 1, 'if'), 'keyword')
         
         rgs = ranges('●if')
-        test.cmp(inc(rgs, 0, '●'), 'punct')
-        test.cmp(inc(rgs, 1, 'if'), 'text')
+        test.cmp(inc(rgs, 1, '●'), 'punct')
+        -- inc rgs 2 'if' ▸ 'text'
+    end)
+    
+    -- ███   ███  ███  ██     ██
+    -- ████  ███  ███  ███   ███
+    -- ███ █ ███  ███  █████████
+    -- ███  ████  ███  ███ █ ███
+    -- ███   ███  ███  ███   ███
+    
+    test("nim", function()
+        lang('nim')
+        
+        local dss = dissect("proc f(str:string)")
+        -- write "dss" dss
+        
+        test.cmp(inc(dss[1], 1, "proc"), 'keyword')
+        test.cmp(inc(dss[1], 12, "string"), 'keyword type')
     end)
     
     -- 000   000   0000000   0000000    00000000  

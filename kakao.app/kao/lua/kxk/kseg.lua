@@ -469,9 +469,15 @@ function kseg.static.width(s)
         return w
     end
 
+-- number of columns occupied by segments with index smaller than segi
+
 
 function kseg:widthAtSegi(segi) 
-    return kseg.width(self:slice(1, segi))
+        if (segi > 1) then 
+            return kseg.width(self:slice(1, (segi - 1)))
+        end
+        
+        return 0
     end
 
 

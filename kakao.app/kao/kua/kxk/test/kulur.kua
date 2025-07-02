@@ -14,28 +14,13 @@ lang    = l -> ext = l
 ranges  = s -> kulur.ranges s ext
 dissect = c -> kulur.dissect kstr.lines(c) ext
 inc     = rgs start match -> 
-    for r in rgs 
-        if r.start == start and r.match == match 
-            ⮐  r.clss
+    if rgs
+        for r in rgs 
+            if r.start == start and r.match == match 
+                ⮐  r.clss
     write ◌r noon(rgs) "\nexpected " ◌g match ◌r ' at index ' ◌b start
 
 ▸ kulur
-        
-    # ███   ███  ███  ██     ██
-    # ████  ███  ███  ███   ███
-    # ███ █ ███  ███  █████████
-    # ███  ████  ███  ███ █ ███
-    # ███   ███  ███  ███   ███
-
-    ▸ nim
-    
-        lang 'nim'
-        
-        dss = dissect "proc f(str:string)"
-        # log "dss" dss
-        
-        inc dss[0] 0 "proc"   ▸ 'keyword'
-        # inc dss[0] 5 "string" ▸ 'text' # should be type
         
     # ███   ███  ███  ██     ██
     # ███  ███   ███  ███   ███
@@ -48,11 +33,27 @@ inc     = rgs start match ->
         lang 'kim'
         
         rgs = ranges 'if'
-        inc rgs 0 'if' ▸ 'keyword'
+        inc rgs 1 'if' ▸ 'keyword'
 
         rgs = ranges '●if'
-        inc rgs 0 '●'  ▸ 'punct'
-        inc rgs 1 'if' ▸ 'text'
+        inc rgs 1 '●'  ▸ 'punct'
+        # inc rgs 2 'if' ▸ 'text'
+
+    # ███   ███  ███  ██     ██
+    # ████  ███  ███  ███   ███
+    # ███ █ ███  ███  █████████
+    # ███  ████  ███  ███ █ ███
+    # ███   ███  ███  ███   ███
+    
+    ▸ nim
+    
+        lang 'nim'
+        
+        dss = dissect "proc f(str:string)"
+        # write "dss" dss
+        
+        inc dss[1] 1 "proc"   ▸ 'keyword'
+        inc dss[1] 12 "string" ▸ 'keyword type'
 
     # 000   000   0000000   0000000    00000000  
     # 000  000   000   000  000   000  000       

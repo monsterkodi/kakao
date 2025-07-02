@@ -314,7 +314,12 @@ class kseg extends array
             w += wcwidth kseg.codepoint(seg)
         w
 
-    widthAtSegi: segi -> kseg.width @slice(1 segi)
+    # number of columns occupied by segments with index smaller than segi
+
+    widthAtSegi: segi -> 
+        if segi > 1
+            ⮐  kseg.width @slice(1 segi-1)
+        0
 
     @widthAtSegi: s segi -> kseg(s)∙widthAtSegi(segi)
     

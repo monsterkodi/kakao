@@ -306,6 +306,16 @@ use kxk/kxk
         # kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  2 ▸ 2
         # kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  3 ▸ 2
         # kseg.indexAtWidth kseg('🧑‍🌾🧑‍🌾')  4 ▸ 3
+      
+    ▸ widthAtSegi
+    
+        kseg.widthAtSegi ""  1 ▸ 0
+        kseg.widthAtSegi "a" 1 ▸ 0
+        kseg.widthAtSegi "a" 2 ▸ 1
+        kseg.widthAtSegi "a" 3 ▸ 1
+        
+        kseg.widthAtSegi kseg('🧑🧑') 1 ▸ 0
+        kseg.widthAtSegi kseg('🧑🧑') 2 ▸ 2
         
     ▸ eql
 
