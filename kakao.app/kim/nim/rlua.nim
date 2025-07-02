@@ -199,7 +199,8 @@ proc ▸postOp(this : Rlua, n : Node) =
         this.tok(n)
 
 proc ▸propertyAccess(this : Rlua, n : Node) = 
-        if (n.property.token.str in @["len", "length"]): 
+        # if n.property.token.str in ["len" "length"]
+        if (n.property.token.str == "len"): 
             this.add("#")
             this.rnd(n.owner)
         else: 

@@ -150,5 +150,6 @@ _G.util = require("kxk.util")
 _G.noon = require("kxk.noon")
 _G.sds = require("kxk.sds")
 _G.matchr = require("kxk.matchr")
+_G.kulur = require("kxk.kulur")
 
 return {}

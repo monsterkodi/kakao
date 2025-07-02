@@ -6,7 +6,7 @@
 000   000   0000000   0000000   0000000   000   000
 ###
 
-use kxk/kxk
+# use kxk/kxk
 use kxk/extlang
 
 #swtch =
@@ -61,7 +61,7 @@ chunked = segls ext ->
     if not extlang.exts∙has(ext)
         ext = 'txt' 
 
-    write ◌y "CHUNKED " ext
+    # write ◌y "CHUNKED " ext
 
     lineno = 0
     chunkd = []
@@ -77,76 +77,72 @@ chunked = segls ext ->
             
         chunkd∙push chnks            
 
-        if empty segs
-            write ◌b "CONTINUE"
-        # continue 
+        if valid segs
         
-        chunks = kseg.chunks kseg.detab(segs)
-
-        if empty chunks
-            write ◌m "CONTINUE"
-        # continue 
-        
-        lastWord = nil
-        lastWordIndex = -1
-
-        pushLastWord = ->
+            chunks = kseg.chunks kseg.detab(segs)
             
-            if lastWord
-                chnks.chunks∙push {start:kseg.widthAtSegi(segs lastWordIndex) length:kseg.width(lastWord) match:kseg.str(lastWord) clss:'text'}
+            if valid chunks
+            
                 lastWord = nil
                 lastWordIndex = -1
-        
-        for chnk in chunks
-            
-            pushLastWord()
-            
-            for segIndex s in chnk.segl
                 
-                isUniko = ch -> 
-                    ⮐  false if kstr.has '■▪◆●○▸➜⮐' ch 
-                    ⮐  true if ch.len > 1
-                    false
+                pushLastWord = ->
+                    
+                    if lastWord
+                        chnks.chunks∙push {start:kseg.widthAtSegi(segs lastWordIndex) length:kseg.width(lastWord) match:kseg.str(lastWord) clss:'text'}
+                        lastWord = nil
+                        lastWordIndex = -1
                 
-                m = string.match s PUNCT
-                if m
-
+                for chnk in chunks
+                    
                     pushLastWord()
                     
-                    turd = ''
-                    
-                    # write ◌c noon(chnk)
-                    # write ◌m chnk.segl.class
-                    
-                    for t in chnk.segl∙slice(segIndex)∙each()
-
-                        if string.match t PUNCT
-                            turd &= t
+                    for segIndex s in chnk.segl
+                        
+                        isUniko = ch -> 
+                            ⮐  false if kstr.has '■▪◆●○▸➜⮐' ch 
+                            ⮐  true if ch.len > 1
+                            false
+                        
+                        m = string.match s PUNCT
+                        if m
+                
+                            pushLastWord()
+                            
+                            turd = ''
+                            
+                            # write ◌c noon(chnk)
+                            # write ◌m chnk.segl.class
+                            
+                            for t in chnk.segl∙slice(segIndex)∙each()
+                
+                                if string.match t PUNCT
+                                    turd &= t
+                                else
+                                    break
+                
+                            clss = 'punct'
+                
+                            if isUniko s
+                                clss = 'text unicode'
+                            else
+                                clss = 'punct' 
+                                if [','';''{''}''('')']∙has(s)
+                                    clss &= ' minor'
+                
+                            chnks.chunks∙push {start:kseg.widthAtSegi(segs chnk.index+segIndex) length:kseg.width(s) match:s turd:turd clss:clss}
                         else
-                            break
-    
-                    clss = 'punct'
-    
-                    if isUniko s
-                        clss = 'text unicode'
-                    else
-                        clss = 'punct' 
-                        if [','';''{''}''('')']∙has(s)
-                            clss &= ' minor'
-
-                    chnks.chunks∙push {start:kseg.widthAtSegi(segs chnk.index+segIndex) length:kseg.width(s) match:s turd:turd clss:clss}
-                else
-                    if lastWord == nil
-                        lastWord = []
-                        lastWordIndex = chnk.index+segIndex
-
-                    lastWord∙push s
-                    
-        pushLastWord()
-
-        if chnks.chunks.len > 0
-            l = chnks.chunks[^1]
-            chnks.chars = l.start + l.len
+                            if lastWord == nil
+                                lastWord = []
+                                lastWordIndex = chnk.index+segIndex
+                
+                            lastWord∙push s
+                            
+                pushLastWord()
+                
+                if chnks.chunks.len > 0
+                    l = chnks.chunks[^1]
+                    chnks.chars = l.start + l.len
 
     chunkd
     
@@ -529,7 +525,8 @@ kodeWord = ->
             ⮐  1
                                     
         if (kstr.startsWith(prev.clss 'text') or prev.clss == 'property') and prev.start+prev.len < chunk.start # spaced
-            if chunkIndex == 1 or ['return' '=' '⮐']∙has(getChunk(-2).match)
+            prevPrev = getChunk(-2)
+            if chunkIndex == 1 or prevPrev and ['return' '=' '⮐']∙has(prevPrev.match)
                 ⮐  thisCall()
             
 #  0000000   0000000   00000000  00000000  00000000  00000000
@@ -986,7 +983,8 @@ luaString = ->
     ⮐  if not chunk.turd or chunk.turd.len < 2
     ⮐  if ['regexp''string single''string double']∙has topType
 
-    if getChunk(-1).escape then ⮐  stacked()
+    prev = getChunk(-1)
+    if prev and prev.escape then ⮐  stacked()
 
     head = string.sub(chunk.turd 1 2)
     typ = switch head
@@ -1521,12 +1519,12 @@ blocked = lines ->
     # 000      000  000  0000  000            000
     # 0000000  000  000   000  00000000  0000000
 
-    write "BLOCKED LINES " lines
+    # write "BLOCKED LINES " lines
     for l in lines
-        write "BLOCKED L " l
+        # write "BLOCKED L " l
         _G.line = l
-        write "BLOCKED LINE " _G.line
-        write "BLOCKED LINE " line
+        # write "BLOCKED LINE " _G.line
+        # write "BLOCKED LINE " line
     
         if not line
             write ◌r "DAFUK? NOLINE"
@@ -1629,8 +1627,8 @@ blocked = lines ->
 parse = segls ext='kode' -> 
 
     lines = chunked(segls ext)
-    write "PARSE " lines
-    write "PARSE " line    
+    # write "PARSE " lines
+    # write "PARSE " line    
     blocked(lines)
 
 # 000   000   0000000   000       0000000   00000000   000  0000000  00000000  

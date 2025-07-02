@@ -479,7 +479,6 @@ class Parser
         list_values ◇ seq[Node]
         @explicit += 1
         while @tok notin stop
-            log "TOK " @tok, " " @current.str
             if @tok == ◂eof
                 ⮐  @error "'for' without 'in' or 'of' (eof detected)!" token
             if @current.line != token.line

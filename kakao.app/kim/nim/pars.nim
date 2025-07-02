@@ -407,7 +407,6 @@ proc parseNamesUntil(this : Parser, stop : set[tok]) : Node =
         var list_values : seq[Node]
         (this.explicit += 1)
         while (this.tok notin stop): 
-            echo("TOK ", this.tok, " ", this.current.str)
             if (this.tok == ◂eof): 
                 return this.error("'for' without 'in' or 'of' (eof detected)!", token)
             if (this.current.line != token.line): 

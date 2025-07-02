@@ -6,10 +6,6 @@
 0000000      000     000   000     000     000   000  000   000
 ###
 
-# use ../../kxk   ◆ matchr kstr kseg
-# use ../../kolor ◆ kulur
-# use ../theme    ◆ theme
-
 class syntax
 
     @: name -> 
@@ -53,16 +49,16 @@ class syntax
                         ds.clss = trim ds.clss∙map(kstr.trim).join(' ') 
                 @diss.push dss
             # log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
-        # else
-        #     ⮐  if @partialUpdate segls
-        # 
-        #     @clear()
-        #     
-        #     @diss = kulur.dissect segls @ext
-        #     for segl,idx in segls
-        #         hsh = kseg.hash(segl)
-        #         @hash[hsh] = @diss[idx]
-        #         @liha[idx] = hsh
+        else
+            # ⮐  if @partialUpdate segls
+        
+            @clear()
+            
+            @diss = kulur.dissect segls @ext
+            # for idx segl in segls
+            #     hsh = kseg.hash(segl)
+            #     @hash[hsh] = @diss[idx]
+            #     @liha[idx] = hsh
             
     # ███   ███  ████████   ███████     ███████   █████████  ████████
     # ███   ███  ███   ███  ███   ███  ███   ███     ███     ███     
@@ -108,9 +104,11 @@ class syntax
     #  ███████  ███████  ███   ███  ███████   ███████ 
 
     getClass: x y ->
+    
         if @diss and @diss[y]
-            for dss in @diss[y]
-                if dss.start <= x < dss.start+dss.len
+            for dss in @diss[y]∙each()
+                if dss.start <= x and x < dss.start+dss.length
+                    # log "DISS " dss.start, x, dss.start+dss.length, dss.clss
                     ⮐  dss.clss
         'text'
         
@@ -123,16 +121,22 @@ class syntax
     getColor: x y ->
         
         if @ansi ➜ ⮐  @getAnsiColor x y
-        
-        if x is num
+        clss = x
+        if not (clss is "string")
             clss = @getClass x y
-        else
-            clss = x
         
         # if empty theme.syntax[clss] and not clss.endsWith 'italic'
             # log "syntax.getColor - no syntax color for '#{clss}'" # @diss[y] 
-        
-        theme.syntax[clss] or [155 155 155]
+        # if clss is "string"
+        #     log "COLOR #{clss}" theme.syntax[clss] 
+        if theme.syntax[clss]
+            # log type(theme.syntax[clss])
+            # log theme.syntax[clss][1]
+            # log theme.syntax[clss][2]
+            # log theme.syntax[clss][3]
+            theme.syntax[clss]
+        else 
+            [155 155 155]
         
     #  ███████   ███   ███   ███████  ███
     # ███   ███  ████  ███  ███       ███

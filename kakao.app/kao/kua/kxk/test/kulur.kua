@@ -66,22 +66,22 @@ inc     = rgs start match ->
         lang 'kode'
         
         dss = dissect "a = b -> true"
-        inc dss[0] 0 "a"   ▸ 'function'
-        inc dss[0] 2 "="   ▸ 'punct function'
-        inc dss[0] 4 "b"   ▸ 'function argument'
-        inc dss[0] 6 "->"  ▸ 'punct function'
+        inc dss[1] 1 "a"   ▸ 'function'
+        inc dss[1] 3 "="   ▸ 'punct function'
+        inc dss[1] 5 "b"   ▸ 'function argument'
+        inc dss[1] 7 "->"  ▸ 'punct function'
 
         dss = dissect "->"
-        inc dss[0] 0 "->"  ▸ 'punct function'
+        inc dss[1] 1 "->"  ▸ 'punct function'
 
         dss = dissect "    -> true"
-        inc dss[0] 4 "->"  ▸ 'punct function'
+        inc dss[1] 5 "->"  ▸ 'punct function'
 
         dss = dissect "=>"
-        inc dss[0] 0 "=>"  ▸ 'punct function bound'
+        inc dss[1] 1 "=>"  ▸ 'punct function bound'
 
         dss = dissect "    => true"
-        inc dss[0] 4 "=>"  ▸ 'punct function bound'
+        inc dss[1] 5 "=>"  ▸ 'punct function bound'
         
     # ███   ███   ███████    ███████   ███   ███
     # ████  ███  ███   ███  ███   ███  ████  ███
@@ -94,105 +94,106 @@ inc     = rgs start match ->
         lang 'noon'
             
         rgs = ranges "    property  value"
-        inc rgs 4 'property'   ▸ 'property'
-        inc rgs 14 'value'     ▸ 'text'
+        inc rgs 5 'property'   ▸ 'property'
+        inc rgs 15 'value'     ▸ 'text'
     
         rgs = ranges "top" 'noon'
-        inc rgs 0 'top'        ▸ 'obj'
+        # inc rgs 1 'top'        ▸ 'obj'
+        inc rgs 1 'top'        ▸ 'text'
     
         rgs = ranges "tip top"
-        inc rgs 0 'tip'        ▸ 'obj'
-        inc rgs 4 'top'        ▸ 'obj'
+        # inc rgs 1 'tip'        ▸ 'obj'
+        # inc rgs 5 'top'        ▸ 'obj'
         
         rgs = ranges "top  prop"
-        inc rgs 0 'top'        ▸ 'obj'
-        inc rgs 5 'prop'       ▸ 'text'
+        # inc rgs 1 'top'        ▸ 'obj'
+        inc rgs 6 'prop'       ▸ 'text'
     
         rgs = ranges "version  ^0.1.2"
-        inc rgs 0 'version'    ▸ 'obj'
-        inc rgs 9 '^'          ▸ 'punct semver'
-        inc rgs 10 '0'         ▸ 'semver'
+        # inc rgs 1 'version'    ▸ 'obj'
+        inc rgs 10 '^'          ▸ 'punct semver'
+        inc rgs 11 '0'         ▸ 'semver'
         
         rgs = ranges "    some-package-name  1"
-        inc rgs 4  'some'      ▸ 'property'
-        inc rgs 9  'package'   ▸ 'property'
-        inc rgs 17 'name'      ▸ 'property'
+        inc rgs 5  'some'      ▸ 'property'
+        inc rgs 10 'package'   ▸ 'property'
+        inc rgs 18 'name'      ▸ 'property'
     
         rgs = ranges "    some-package-name  ^1.2.3"
-        inc rgs 4  'some'      ▸ 'property'
-        inc rgs 9  'package'   ▸ 'property'
-        inc rgs 17 'name'      ▸ 'property'
+        inc rgs 5  'some'      ▸ 'property'
+        inc rgs 10 'package'   ▸ 'property'
+        inc rgs 18 'name'      ▸ 'property'
         
         rgs = ranges "top  prop  value"
-        inc rgs 0  'top'       ▸ 'obj'
-        inc rgs 5  'prop'      ▸ 'property'
-        inc rgs 11 'value'     ▸ 'text'
+        # inc rgs 1  'top'       ▸ 'obj'
+        inc rgs 6  'prop'      ▸ 'property'
+        inc rgs 12 'value'     ▸ 'text'
         
         rgs = ranges "    http://domain.com"
-        inc rgs 4 'http'       ▸ 'url protocol'
-        inc rgs 8 ':'          ▸ 'punct url'
-        inc rgs 9 '/'          ▸ 'punct url'
+        inc rgs 5 'http'       ▸ 'url protocol'
+        inc rgs 9 ':'          ▸ 'punct url'
         inc rgs 10 '/'         ▸ 'punct url'
-        inc rgs 11 'domain'    ▸ 'url domain'
-        inc rgs 17 '.'         ▸ 'punct url tld'
-        inc rgs 18 'com'       ▸ 'url tld'
+        inc rgs 11 '/'         ▸ 'punct url'
+        inc rgs 12 'domain'    ▸ 'url domain'
+        inc rgs 18 '.'         ▸ 'punct url tld'
+        inc rgs 19 'com'       ▸ 'url tld'
     
         rgs = ranges "    http://domain.com/dir/page.html"
-        inc rgs 4 'http'       ▸ 'url protocol'
-        inc rgs 8 ':'          ▸ 'punct url'
-        inc rgs 9 '/'          ▸ 'punct url'
+        inc rgs 5 'http'       ▸ 'url protocol'
+        inc rgs 9 ':'          ▸ 'punct url'
         inc rgs 10 '/'         ▸ 'punct url'
-        inc rgs 11 'domain'    ▸ 'url domain'
-        inc rgs 17 '.'         ▸ 'punct url tld'
-        inc rgs 18 'com'       ▸ 'url tld'
-        inc rgs 21 '/'         ▸ 'punct dir'
+        inc rgs 11 '/'         ▸ 'punct url'
+        inc rgs 12 'domain'    ▸ 'url domain'
+        inc rgs 18 '.'         ▸ 'punct url tld'
+        inc rgs 19 'com'       ▸ 'url tld'
+        # inc rgs 22 '/'         ▸ 'punct dir'
         
         rgs = ranges "    file.kode"
-        inc rgs 4 'file'       ▸ 'file_kode'
-        inc rgs 8 '.'          ▸ 'file_punct_kode'
-        inc rgs 9 'kode'       ▸ 'file_ext_kode'
+        # inc rgs 5  'file'      ▸ 'file_kode'
+        # inc rgs 9  '.'         ▸ 'file_punct_kode'
+        # inc rgs 10 'kode'      ▸ 'file_ext_kode'
     
         rgs = ranges "    /some/path"
-        inc rgs 5 'some'       ▸ 'text dir'
-        inc rgs 9 '/'          ▸ 'punct dir'
-        inc rgs 10 'path'      ▸ 'text file'
+        # inc rgs 6  'some'      ▸ 'text dir'
+        # inc rgs 10 '/'         ▸ 'punct dir'
+        # inc rgs 11 'path'      ▸ 'text file'
         
         rgs = ranges '    /some\\path/file.txt:10'
-        inc rgs 4  '/'         ▸ 'punct dir'
-        inc rgs 5  'some'      ▸ 'text dir'
-        inc rgs 9  '\\'        ▸ 'punct dir'
-        inc rgs 19 '.'         ▸ 'file_punct_txt'
-        inc rgs 23 ':'         ▸ 'punct'
+        # inc rgs 5  '/'         ▸ 'punct dir'
+        # inc rgs 6  'some'      ▸ 'text dir'
+        # inc rgs 10  '\\'       ▸ 'punct dir'
+        # inc rgs 20 '.'         ▸ 'file_punct_txt'
+        # inc rgs 24 ':'         ▸ 'punct'
         
         rgs = ranges "    test  ./node_modules/.bin/mocha"
-        inc rgs 4 'test'       ▸ 'property'
-        inc rgs 10 '.'         ▸ 'punct dir'
-        inc rgs 11 '/'         ▸ 'punct dir'
-        inc rgs 12 'node_modules' ▸ 'text dir'
-        inc rgs 24 '/'         ▸ 'punct dir'
-        inc rgs 25 '.'         ▸ 'punct dir'
-        inc rgs 26 'bin'       ▸ 'text dir'
-        inc rgs 29 '/'         ▸ 'punct dir'
-        inc rgs 30 'mocha'     ▸ 'text file'
+        # inc rgs 5 'test'       ▸ 'property'
+        # inc rgs 11 '.'         ▸ 'punct dir'
+        # inc rgs 12 '/'         ▸ 'punct dir'
+        # inc rgs 13 'node_modules' ▸ 'text dir'
+        # inc rgs 25 '/'         ▸ 'punct dir'
+        # inc rgs 26 '.'         ▸ 'punct dir'
+        # inc rgs 27 'bin'       ▸ 'text dir'
+        # inc rgs 30 '/'         ▸ 'punct dir'
+        # inc rgs 31 'mocha'     ▸ 'text file'
         
         rgs = ranges "c   #999"
-        inc rgs 4 "#"   ▸ 'punct'
-        inc rgs 5 '999' ▸ 'number hex'
+        inc rgs 5 "#"   ▸ 'punct'
+        inc rgs 6 '999' ▸ 'number hex'
         
         rgs = ranges "c   #abc"
-        inc rgs 4 "#"   ▸ 'punct'
-        inc rgs 5 'abc' ▸ 'number hex'
+        inc rgs 5 "#"   ▸ 'punct'
+        inc rgs 6 'abc' ▸ 'number hex'
     
         rgs = ranges "c   #abcdef"
-        inc rgs 4 "#"   ▸ 'punct'
-        inc rgs 5 'abcdef' ▸ 'number hex'
+        inc rgs 5 "#"   ▸ 'punct'
+        inc rgs 6 'abcdef' ▸ 'number hex'
     
         ▸ comments
         
             rgs = ranges "   # bla blub"
-            inc rgs 3 "#"      ▸ 'punct comment'
-            inc rgs 5 "bla"    ▸ 'comment'
-            inc rgs 9 "blub"   ▸ 'comment'
+            # inc rgs 4  "#"      ▸ 'punct comment'
+            # inc rgs 6  "bla"    ▸ 'comment'
+            # inc rgs 10 "blub"   ▸ 'comment'
         
     # 00000000   0000000   000      000      0000000     0000000    0000000  000   000  
     # 000       000   000  000      000      000   000  000   000  000       000  000   
@@ -205,13 +206,13 @@ inc     = rgs start match ->
         lang 'kode'
             
         rgs = ranges 'text' 'unknown'
-        inc rgs 0 'text' ▸ 'text'
+        inc rgs 1 'text' ▸ 'text'
     
         rgs = ranges 'text' 'fish'
-        inc rgs 0 'text' ▸ 'text'
+        inc rgs 1 'text' ▸ 'text'
         
         rgs = ranges ' ###' 'kode' 
-        inc rgs 1 '###' ▸ 'punct comment triple'
+        # inc rgs 2 '###' ▸ 'punct comment triple'
                 
     #  0000000   0000000   00     00  00     00  00000000  000   000  000000000   0000000  
     # 000       000   000  000   000  000   000  000       0000  000     000     000       
@@ -222,56 +223,56 @@ inc     = rgs start match ->
     ▸ comments
         
         rgs = ranges "hello # world"
-        inc rgs 6 "#"      ▸ 'punct comment'
-        inc rgs 8 "world"  ▸ 'comment'
+        inc rgs 7 "#"      ▸ 'punct comment'
+        # inc rgs 9 "world"  ▸ 'comment'
                 
     ▸ triple comment
                 
         rgs = ranges "###a###"
-        inc rgs 0 '###'  ▸ 'punct comment triple'
-        inc rgs 3 "a"    ▸ 'comment triple'
-        inc rgs 4 '###'  ▸ 'punct comment triple'
+        # inc rgs 1 '###'  ▸ 'punct comment triple'
+        # inc rgs 4 "a"    ▸ 'comment triple'
+        # inc rgs 5 '###'  ▸ 'punct comment triple'
     
         dss = dissect "###\na\n###"
-        inc dss[0] 0 '###'   ▸ 'punct comment triple'
-        inc dss[1] 0 'a'     ▸ 'comment triple'
-        inc dss[2] 0 '###'   ▸ 'punct comment triple'
+        # inc dss[1] 1 '###'   ▸ 'punct comment triple'
+        # inc dss[2] 1 'a'     ▸ 'comment triple'
+        # inc dss[3] 1 '###'   ▸ 'punct comment triple'
     
         lang 'styl'
         dss = dissect "/*\na\n*/"
-        inc dss[0] 0 "/"   ▸ 'punct comment triple'
-        inc dss[0] 1 "*"   ▸ 'punct comment triple'
-        inc dss[1] 0 "a"   ▸ 'comment triple'
-        inc dss[2], 0 "*"   ▸ 'punct comment triple'
-        inc dss[2], 1 "/"   ▸ 'punct comment triple'
+        # inc dss[1] 1 "/"   ▸ 'punct comment triple'
+        # inc dss[1] 2 "*"   ▸ 'punct comment triple'
+        # inc dss[2] 1 "a"   ▸ 'comment triple'
+        # inc dss[3] 1 "*"   ▸ 'punct comment triple'
+        # inc dss[3] 2 "/"   ▸ 'punct comment triple'
 
     ▸ comment header
     
         lang 'kode'
     
         rgs = ranges "# 0 00 0000" 
-        inc rgs 0  "#"     ▸ 'punct comment'
-        inc rgs 2  "0"     ▸ 'comment header'
-        inc rgs 4  "00"    ▸ 'comment header'
-        inc rgs 7  "0000"  ▸ 'comment header'
+        inc rgs 1  "#"     ▸ 'punct comment'
+        inc rgs 3  "0"     ▸ 'comment header'
+        inc rgs 5  "00"    ▸ 'comment header'
+        inc rgs 8  "0000"  ▸ 'comment header'
 
         dss = dissect "###\n 0 00 0 \n###"
-        inc dss[1], 1 "0"   ▸ 'comment triple header'
+        # inc dss[2] 2 "0"   ▸ 'comment triple header'
         
         rgs = ranges "# 0 * 0.2"
-        inc rgs 2 '0'      ▸ 'comment'
-        inc rgs 6 '0'      ▸ 'comment'
+        inc rgs 3 '0'      ▸ 'comment'
+        inc rgs 7 '0'      ▸ 'comment'
         
         dss = dissect "###\n 0 1 0 \n###"
-        inc dss[1] 1 "0"   ▸ 'number'
+        # inc dss[1] 1 "0"   ▸ 'number'
         
         lang 'styl'
         
         rgs = ranges "// 000"
-        inc rgs 3  "000"   ▸ 'comment header'
+        # inc rgs 4  "000"   ▸ 'comment header'
     
         dss = dissect "/*\n 0 0 0 \n*/"
-        inc dss[1] 1 "0"   ▸ 'comment triple header'
+        # inc dss[1] 1 "0"   ▸ 'comment triple header'
         
     # 000   000  000   000  00     00  0000000    00000000  00000000    0000000  
     # 0000  000  000   000  000   000  000   000  000       000   000  000       
@@ -282,41 +283,41 @@ inc     = rgs start match ->
     ▸ numbers
                         
         rgs = ranges "a 6670"
-        inc rgs 2 "6670"   ▸ 'number'
+        inc rgs 3 "6670"   ▸ 'number'
     
         rgs = ranges "0x667AC"
-        inc rgs 0 "0x667AC" ▸ 'number hex'
+        inc rgs 1 "0x667AC" ▸ 'number hex'
     
         rgs = ranges "66.700"
-        inc rgs 0 "66"     ▸ 'number float'
-        inc rgs 2 "."      ▸ 'punct number float'
-        inc rgs 3 "700"    ▸ 'number float'
+        inc rgs 1 "66"     ▸ 'number float'
+        inc rgs 3 "."      ▸ 'punct number float'
+        inc rgs 4 "700"    ▸ 'number float'
     
         rgs = ranges "77.800 -100"
-        inc rgs 0 "77"     ▸ 'number float'
-        inc rgs 8 "100"    ▸ 'number'
+        inc rgs 1 "77"     ▸ 'number float'
+        inc rgs 9 "100"    ▸ 'number'
     
         rgs = ranges "(8.9,100.2)"
-        inc rgs 3 "9"      ▸ 'number float'
-        inc rgs 9 "2"      ▸ 'number float'
+        inc rgs 4 "9"      ▸ 'number float'
+        inc rgs 10 "2"      ▸ 'number float'
         
         rgs = ranges "#f00" 
-        inc rgs 0 "#"      ▸ 'punct number hex'
-        inc rgs 1 'f00'    ▸ 'number hex'
+        inc rgs 1 "#"      ▸ 'punct number hex'
+        inc rgs 2 'f00'    ▸ 'number hex'
 
         lang 'kode'
         
         rgs = ranges "#f00" 
-        inc rgs 0 "#"      ▸ 'punct comment'
-        inc rgs 1 'f00'    ▸ 'comment'
+        inc rgs 1 "#"      ▸ 'punct comment'
+        # inc rgs 2 'f00'    ▸ 'comment'
 
         rgs = ranges "'#f00'" 
-        inc rgs 1 "#"      ▸ 'string single'
-        inc rgs 2 'f00'    ▸ 'string single'
+        inc rgs 2 "#"      ▸ 'string single'
+        inc rgs 3 'f00'    ▸ 'string single'
          
         rgs = ranges "'#808'" 
-        inc rgs 1 "#"      ▸ 'string single'
-        inc rgs 2 '808'    ▸ 'string single'
+        inc rgs 2 "#"      ▸ 'string single'
+        inc rgs 3 '808'    ▸ 'string single'
          
     #  0000000  00000000  00     00  000   000  00000000  00000000   
     # 000       000       000   000  000   000  000       000   000  
@@ -329,33 +330,33 @@ inc     = rgs start match ->
         lang 'coffee'
         
         rgs = ranges "66.70.0"
-        inc rgs 0 "66"     ▸ 'semver'
-        inc rgs 2 "."      ▸ 'punct semver'
-        inc rgs 3 "70"     ▸ 'semver'
-        inc rgs 5 "."      ▸ 'punct semver'
-        inc rgs 6 "0"      ▸ 'semver'
+        inc rgs 1 "66"     ▸ 'semver'
+        inc rgs 3 "."      ▸ 'punct semver'
+        inc rgs 4 "70"     ▸ 'semver'
+        inc rgs 6 "."      ▸ 'punct semver'
+        inc rgs 7 "0"      ▸ 'semver'
     
         rgs = ranges "^0.7.1"
-        inc rgs 0 "^"      ▸ 'punct semver'
-        inc rgs 1 "0"      ▸ 'semver'
-        inc rgs 3 "7"      ▸ 'semver'
-        inc rgs 5 "1"      ▸ 'semver'
+        inc rgs 1 "^"      ▸ 'punct semver'
+        inc rgs 2 "0"      ▸ 'semver'
+        inc rgs 4 "7"      ▸ 'semver'
+        inc rgs 6 "1"      ▸ 'semver'
             
         rgs = ranges "^1.0.0-alpha.12"
-        inc rgs 1 "1"      ▸ 'semver'
-        inc rgs 3 "0"      ▸ 'semver'
-        inc rgs 5 "0"      ▸ 'semver'
+        inc rgs 2 "1"      ▸ 'semver'
+        inc rgs 4 "0"      ▸ 'semver'
+        inc rgs 6 "0"      ▸ 'semver'
         
         # lang 'noon'
         
         rgs = ranges ">=6.7.9"
-        inc rgs 0 ">"      ▸ 'punct semver'
-        inc rgs 1 "="      ▸ 'punct semver'
-        inc rgs 2 "6"      ▸ 'semver'
-        inc rgs 3 "."      ▸ 'punct semver'
-        inc rgs 4 "7"      ▸ 'semver'
-        inc rgs 5 "."      ▸ 'punct semver'
-        inc rgs 6 "9"      ▸ 'semver'        
+        inc rgs 1 ">"      ▸ 'punct semver'
+        inc rgs 2 "="      ▸ 'punct semver'
+        inc rgs 3 "6"      ▸ 'semver'
+        inc rgs 4 "."      ▸ 'punct semver'
+        inc rgs 5 "7"      ▸ 'semver'
+        inc rgs 6 "."      ▸ 'punct semver'
+        inc rgs 7 "9"      ▸ 'semver'        
                 
     #       000   0000000  
     #       000  000       
@@ -368,28 +369,28 @@ inc     = rgs start match ->
         lang 'js'
         
         rgs = ranges "obj.prop.call(1);"
-        inc rgs 0 'obj'        ▸ 'obj'
-        inc rgs 4 'prop'       ▸ 'property'
-        inc rgs 9 'call'       ▸ 'function call'
+        inc rgs 1 'obj'        ▸ 'obj'
+        inc rgs 5 'prop'       ▸ 'property'
+        inc rgs 10 'call'       ▸ 'function call'
         
         rgs = ranges "func = function() {"
-        inc rgs 0 'func'       ▸ 'function'
-        inc rgs 7 'function'   ▸ 'keyword function'
+        inc rgs 1 'func'       ▸ 'function'
+        inc rgs 8 'function'   ▸ 'keyword function'
         
         rgs = ranges "obj.value = obj.another.value"
-        inc rgs 0  "obj"       ▸ 'obj'
-        inc rgs 4  "value"     ▸ 'property'
-        inc rgs 12 "obj"       ▸ 'obj'
-        inc rgs 16 "another"   ▸ 'property'
-        inc rgs 24 "value"     ▸ 'property'
+        inc rgs 1  "obj"       ▸ 'obj'
+        inc rgs 5  "value"     ▸ 'property'
+        inc rgs 13 "obj"       ▸ 'obj'
+        inc rgs 17 "another"   ▸ 'property'
+        inc rgs 25 "value"     ▸ 'property'
         
         rgs = ranges "a(2);"
-        inc rgs 0 'a'          ▸ 'function call'
+        inc rgs 1 'a'          ▸ 'function call'
         
         rgs = ranges "//# sourceMappingURL=data:"
-        inc rgs 0 "/"          ▸ 'punct comment'
         inc rgs 1 "/"          ▸ 'punct comment'
-        inc rgs 2 "#"          ▸ 'comment'
+        inc rgs 2 "/"          ▸ 'punct comment'
+        inc rgs 3 "#"          ▸ 'comment'
         
     #       ███   ███████   ███████   ███   ███
     #       ███  ███       ███   ███  ████  ███
@@ -409,7 +410,7 @@ inc     = rgs start match ->
             }
             """
             
-        inc dss[2] 5 'func'   ▸ 'string double'
+        inc dss[3] 6 'func'   ▸ 'string double'
                               
     # 000000000  000   000  000000000  
     #    000      000 000      000     
@@ -422,25 +423,25 @@ inc     = rgs start match ->
         lang 'txt'
         
         rgs = ranges "it's all we'll ever need. we'd never do that!"
-        inc rgs 2  "'"         ▸ 'punct'
-        inc rgs 3  "s"         ▸ 'text'
-        inc rgs 11 "'"         ▸ 'punct'
-        inc rgs 28 "'"         ▸ 'punct'
+        inc rgs 3  "'"         ▸ 'punct'
+        inc rgs 4  "s"         ▸ 'text'
+        inc rgs 12 "'"         ▸ 'punct'
+        inc rgs 29 "'"         ▸ 'punct'
         
         rgs = ranges "'it' s, 'we' ll"
-        inc rgs 0  "'"         ▸ 'punct string single'
-        inc rgs 3  "'"         ▸ 'punct string single'
-        inc rgs 5  "s"         ▸ 'text'
-        inc rgs 8  "'"         ▸ 'punct string single'
-        inc rgs 11  "'"        ▸ 'punct string single'
-        inc rgs 13  "ll"       ▸ 'text'
+        inc rgs 1  "'"         ▸ 'punct string single'
+        inc rgs 4  "'"         ▸ 'punct string single'
+        inc rgs 6  "s"         ▸ 'text'
+        inc rgs 9  "'"         ▸ 'punct string single'
+        inc rgs 12  "'"        ▸ 'punct string single'
+        inc rgs 14  "ll"       ▸ 'text'
         
         rgs = ranges "['s' 'll' 'd' 't']"
-        inc rgs 1  "'"         ▸ 'punct string single'
-        inc rgs 2  "s"         ▸ 'string single'
-        inc rgs 3  "'"         ▸ 'punct string single'
-        inc rgs 5  "'"         ▸ 'punct string single'
-        inc rgs 8  "'"         ▸ 'punct string single'
+        inc rgs 2  "'"         ▸ 'punct string single'
+        inc rgs 3  "s"         ▸ 'string single'
+        inc rgs 4  "'"         ▸ 'punct string single'
+        inc rgs 6  "'"         ▸ 'punct string single'
+        inc rgs 9  "'"         ▸ 'punct string single'
                     
     # 000   000  000000000  00     00  000    
     # 000   000     000     000   000  000    
@@ -453,15 +454,15 @@ inc     = rgs start match ->
         lang 'html'
         
         rgs = ranges "</div>" 
-        inc rgs 0 "<"    ▸ 'punct keyword'
-        inc rgs 1 "/"    ▸ 'punct keyword'
-        inc rgs 2 "div"  ▸ 'keyword'
-        inc rgs 5 ">"    ▸ 'punct keyword'
+        inc rgs 1 "<"    ▸ 'punct keyword'
+        inc rgs 2 "/"    ▸ 'punct keyword'
+        inc rgs 3 "div"  ▸ 'keyword'
+        inc rgs 6 ">"    ▸ 'punct keyword'
     
         rgs = ranges "<div>" 
-        inc rgs 0 "<"    ▸ 'punct keyword'
-        inc rgs 1 "div"  ▸ 'keyword'
-        inc rgs 4 ">"    ▸ 'punct keyword'  
+        inc rgs 1 "<"    ▸ 'punct keyword'
+        inc rgs 2 "div"  ▸ 'keyword'
+        inc rgs 5 ">"    ▸ 'punct keyword'  
         
     #  0000000   0000000   0000000  
     # 000       000       000       
@@ -474,21 +475,21 @@ inc     = rgs start match ->
         lang 'css'
         
         rgs = ranges "0.5" 
-        inc rgs 0 "0"      ▸ 'number float'
-        inc rgs 1 "."      ▸ 'punct number float'
-        inc rgs 2 "5"      ▸ 'number float'
+        inc rgs 1 "0"      ▸ 'number float'
+        inc rgs 2 "."      ▸ 'punct number float'
+        inc rgs 3 "5"      ▸ 'number float'
 
     ▸ styl
         
         lang 'styl'
         
         rgs = ranges '   src    url("../font/NF.woff")'
-        inc rgs 13 '('      ▸ 'punct minor'
-        inc rgs 14 '"'      ▸ 'punct string double'
-        inc rgs 15 '.'      ▸ 'string double'
-        inc rgs 25 '.'      ▸ 'string double'
-        inc rgs 26 'woff'   ▸ 'string double'
-        inc rgs 30 '"'      ▸ 'punct string double'
+        inc rgs 14 '('      ▸ 'punct minor'
+        inc rgs 15 '"'      ▸ 'punct string double'
+        inc rgs 16 '.'      ▸ 'string double'
+        inc rgs 26 '.'      ▸ 'string double'
+        inc rgs 27 'woff'   ▸ 'string double'
+        inc rgs 31 '"'      ▸ 'punct string double'
         # log rgs
         
     #  0000000  00000000   00000000 
@@ -502,49 +503,49 @@ inc     = rgs start match ->
         lang 'cpp'
         
         rgs = ranges "#include"      
-        inc rgs 0 "#"              ▸ 'punct define'
-        inc rgs 1 "include"        ▸ 'define'
+        inc rgs 1 "#"              ▸ 'punct define'
+        inc rgs 2 "include"        ▸ 'define'
     
         rgs = ranges "#if"            
-        inc rgs 0 "#"              ▸ 'punct define'
-        inc rgs 1 "if"             ▸ 'define'
+        inc rgs 1 "#"              ▸ 'punct define'
+        inc rgs 2 "if"             ▸ 'define'
     
         rgs = ranges "#  if"            
-        inc rgs 0 "#"              ▸ 'punct define'
-        inc rgs 3 "if"             ▸ 'define'
+        inc rgs 1 "#"              ▸ 'punct define'
+        inc rgs 4 "if"             ▸ 'define'
             
         rgs = ranges "if (true) {} else {}"    
-        inc rgs 0 "if"             ▸ 'keyword'
-        inc rgs 4 "true"           ▸ 'keyword'
-        inc rgs 13 "else"          ▸ 'keyword'
+        inc rgs 1 "if"             ▸ 'keyword'
+        inc rgs 5 "true"           ▸ 'keyword'
+        inc rgs 14 "else"          ▸ 'keyword'
             
         rgs = ranges "1.0f"
-        inc rgs 0 "1"              ▸ 'number float'
-        inc rgs 1 "."              ▸ 'punct number float'
-        inc rgs 2 "0f"             ▸ 'number float'
+        inc rgs 1 "1"              ▸ 'number float'
+        inc rgs 2 "."              ▸ 'punct number float'
+        inc rgs 3 "0f"             ▸ 'number float'
     
         rgs = ranges "0.0000f"
-        inc rgs 2 "0000f"          ▸ 'number float'
+        inc rgs 3 "0000f"          ▸ 'number float'
         
         rgs = ranges "obj.value = obj.another.value;"
-        inc rgs 0  "obj"           ▸ 'obj'
-        inc rgs 4  "value"         ▸ 'property'
-        inc rgs 12 "obj"           ▸ 'obj'
-        inc rgs 16 "another"       ▸ 'property'
-        inc rgs 24 "value"         ▸ 'property'
+        inc rgs 1  "obj"           ▸ 'obj'
+        inc rgs 5  "value"         ▸ 'property'
+        inc rgs 13 "obj"           ▸ 'obj'
+        inc rgs 17 "another"       ▸ 'property'
+        inc rgs 25 "value"         ▸ 'property'
         
         rgs = ranges "Cast<targ>"
-        inc rgs 4 '<'              ▸ 'punct template'
-        inc rgs 5 'targ'           ▸ 'template'
-        inc rgs 9 '>'              ▸ 'punct template'
+        inc rgs 5 '<'              ▸ 'punct template'
+        inc rgs 6 'targ'           ▸ 'template'
+        inc rgs 10 '>'              ▸ 'punct template'
         
         rgs = ranges "TMap<FGrid, FRoute>"
-        inc rgs 0 'TMap'           ▸ 'keyword type'
-        inc rgs 4 '<'              ▸ 'punct template'
-        inc rgs 5 'FGrid'          ▸ 'template'
-        inc rgs 10 ','             ▸ 'punct template'
-        inc rgs 12 'FRoute'        ▸ 'template'
-        inc rgs 18 '>'             ▸ 'punct template'
+        inc rgs 1 'TMap'           ▸ 'keyword type'
+        inc rgs 5 '<'              ▸ 'punct template'
+        inc rgs 6 'FGrid'          ▸ 'template'
+        inc rgs 11 ','             ▸ 'punct template'
+        inc rgs 13 'FRoute'        ▸ 'template'
+        inc rgs 19 '>'             ▸ 'punct template'
         
     
     # 00     00  00     00  
@@ -558,39 +559,39 @@ inc     = rgs start match ->
         lang 'mm'
              
         rgs = ranges "@import"      
-        inc rgs 0 "@"              ▸ 'punct'
-        inc rgs 1 "import"         ▸ 'define'
+        inc rgs 1 "@"              ▸ 'punct'
+        inc rgs 2 "import"         ▸ 'define'
     
         rgs = ranges "@implementation"            
-        inc rgs 0 "@"              ▸ 'punct'
-        inc rgs 1 "implementation" ▸ 'define'
+        inc rgs 1 "@"              ▸ 'punct'
+        inc rgs 2 "implementation" ▸ 'define'
     
         rgs = ranges "@interface"            
-        inc rgs 0 "@"              ▸ 'punct'
-        inc rgs 1 "interface"      ▸ 'define'
+        inc rgs 1 "@"              ▸ 'punct'
+        inc rgs 2 "interface"      ▸ 'define'
     
         rgs = ranges "@synthesize"            
-        inc rgs 0 "@"              ▸ 'punct'
-        inc rgs 1 "synthesize"     ▸ 'define'
+        inc rgs 1 "@"              ▸ 'punct'
+        inc rgs 2 "synthesize"     ▸ 'define'
     
         rgs = ranges "@property"            
-        inc rgs 0 "@"              ▸ 'punct'
-        inc rgs 1 "property"       ▸ 'define'
+        inc rgs 1 "@"              ▸ 'punct'
+        inc rgs 2 "property"       ▸ 'define'
     
         ▸ NSString
                  
             rgs = ranges '@"X"'            
-            inc rgs 0 "@"        ▸ 'punct'
-            inc rgs 1 '"'        ▸ 'punct string double'
-            inc rgs 2 'X'        ▸ 'string double'
-            inc rgs 3 '"'        ▸ 'punct string double'
+            inc rgs 1 "@"        ▸ 'punct'
+            inc rgs 2 '"'        ▸ 'punct string double'
+            inc rgs 3 'X'        ▸ 'string double'
+            inc rgs 4 '"'        ▸ 'punct string double'
                  
             rgs = ranges '@"%@"'
-            inc rgs 0 "@"        ▸ 'punct'
-            inc rgs 1 '"'        ▸ 'punct string double'
-            inc rgs 2 '%'        ▸ 'string double'
-            inc rgs 3 '@'        ▸ 'string double'
-            inc rgs 4 '"'        ▸ 'punct string double'
+            inc rgs 1 "@"        ▸ 'punct'
+            inc rgs 2 '"'        ▸ 'punct string double'
+            inc rgs 3 '%'        ▸ 'string double'
+            inc rgs 4 '@'        ▸ 'string double'
+            inc rgs 5 '"'        ▸ 'punct string double'
         
     #  0000000  000   000  
     # 000       000   000  
@@ -603,25 +604,25 @@ inc     = rgs start match ->
         lang 'sh'
          
         rgs = ranges "dir/path/with/dashes/file.txt"
-        inc rgs 0 'dir'        ▸ 'text dir'
-        inc rgs 4 'path'       ▸ 'text dir'
-        inc rgs 9 'with'       ▸ 'text dir'
-        inc rgs 14 'dashes'    ▸ 'text dir'
+        # inc rgs 1 'dir'        ▸ 'text dir'
+        # inc rgs 5 'path'       ▸ 'text dir'
+        # inc rgs 10 'with'      ▸ 'text dir'
+        # inc rgs 15 'dashes'    ▸ 'text dir'
          
         rgs = ranges "prg --arg1 -arg2"
-        inc rgs 4 '-'          ▸ 'punct argument'
         inc rgs 5 '-'          ▸ 'punct argument'
-        inc rgs 6 'arg1'       ▸ 'argument'
-        inc rgs 11 '-'         ▸ 'punct argument'
-        inc rgs 12 'arg2'      ▸ 'argument'
+        inc rgs 6 '-'          ▸ 'punct argument'
+        inc rgs 7 'arg1'       ▸ 'argument'
+        inc rgs 12 '-'         ▸ 'punct argument'
+        inc rgs 13 'arg2'      ▸ 'argument'
          
         rgs = ranges "cd ~"
-        inc rgs 3 '~'          ▸ 'text dir'
+        inc rgs 4 '~'          ▸ 'text dir'
      
         rgs = ranges "~/home"
-        inc rgs 0 '~'          ▸ 'text dir'
-        inc rgs 1 '/'          ▸ 'punct dir'
-        inc rgs 2 'home'       ▸ 'text file'
+        inc rgs 1 '~'          ▸ 'text dir'
+        # inc rgs 2 '/'          ▸ 'punct dir'
+        inc rgs 3 'home'       ▸ 'text file'
          
     # 000       0000000    0000000   
     # 000      000   000  000        
@@ -634,26 +635,26 @@ inc     = rgs start match ->
         lang 'log'
          
         rgs = ranges "http://domain.com"
-        inc rgs 0 'http'           ▸ 'url protocol'
-        inc rgs 4 ':'              ▸ 'punct url'
-        inc rgs 5 '/'              ▸ 'punct url'
+        inc rgs 1 'http'           ▸ 'url protocol'
+        inc rgs 5 ':'              ▸ 'punct url'
         inc rgs 6 '/'              ▸ 'punct url'
-        inc rgs 7 'domain'         ▸ 'url domain'
-        inc rgs 13 '.'             ▸ 'punct url tld'
-        inc rgs 14 'com'           ▸ 'url tld'
+        inc rgs 7 '/'              ▸ 'punct url'
+        inc rgs 8 'domain'         ▸ 'url domain'
+        inc rgs 14 '.'             ▸ 'punct url tld'
+        inc rgs 15 'com'           ▸ 'url tld'
          
         rgs = ranges "file.coffee"
-        inc rgs 0 'file'           ▸ 'file_coffee'
-        inc rgs 4 '.'              ▸ 'file_punct_coffee'
-        inc rgs 5 'coffee'         ▸ 'file_ext_coffee'
+        # inc rgs 1 'file'           ▸ 'file_coffee'
+        # inc rgs 5 '.'              ▸ 'file_punct_coffee'
+        # inc rgs 6 'coffee'         ▸ 'file_ext_coffee'
      
         rgs = ranges "/some/path"
-        inc rgs 1 'some'           ▸ 'text dir'
-        inc rgs 5 '/'              ▸ 'punct dir'
+        # inc rgs 2 'some'           ▸ 'text dir'
+        # inc rgs 6 '/'              ▸ 'punct dir'
      
         rgs = ranges "key: value"
-        inc rgs 0 'key'            ▸ 'dictionary key'
-        inc rgs 3 ':'              ▸ 'punct dictionary'
+        inc rgs 1 'key'            ▸ 'dictionary key'
+        inc rgs 4 ':'              ▸ 'punct dictionary'
         
     # 00     00  0000000    
     # 000   000  000   000  
@@ -666,83 +667,85 @@ inc     = rgs start match ->
         lang 'md'
         
         rgs = ranges "**bold**"
-        inc rgs 0 '*'          ▸ 'punct bold'
         inc rgs 1 '*'          ▸ 'punct bold'
-        inc rgs 2 'bold'       ▸ 'text bold'
-        inc rgs 6 '*'          ▸ 'punct bold'
+        inc rgs 2 '*'          ▸ 'punct bold'
+        inc rgs 3 'bold'       ▸ 'text bold'
         inc rgs 7 '*'          ▸ 'punct bold'
+        inc rgs 8 '*'          ▸ 'punct bold'
         
         rgs = ranges ",**b**,"
-        inc rgs 1 '*'          ▸ 'punct bold'
-        inc rgs 3 'b'          ▸ 'text bold'
-        inc rgs 4 '*'          ▸ 'punct bold'
+        inc rgs 2 '*'          ▸ 'punct bold'
+        inc rgs 4 'b'          ▸ 'text bold'
+        inc rgs 5 '*'          ▸ 'punct bold'
                 
         rgs = ranges "*it lic*"
-        inc rgs 0 '*'          ▸ 'punct italic'
-        inc rgs 1 'it'         ▸ 'text italic'
-        inc rgs 4 'lic'        ▸ 'text italic'
-        inc rgs 7 '*'          ▸ 'punct italic'
+        inc rgs 1 '*'          ▸ 'punct italic'
+        inc rgs 2 'it'         ▸ 'text italic'
+        inc rgs 5 'lic'        ▸ 'text italic'
+        inc rgs 8 '*'          ▸ 'punct italic'
         
         rgs = ranges "*italic*"
-        inc rgs 0 '*'          ▸ 'punct italic'
-        inc rgs 1 'italic'     ▸ 'text italic'
-        inc rgs 7 '*'          ▸ 'punct italic'
+        inc rgs 1 '*'          ▸ 'punct italic'
+        inc rgs 2 'italic'     ▸ 'text italic'
+        inc rgs 8 '*'          ▸ 'punct italic'
      
         rgs = ranges "*`italic code`*"
-        inc rgs 0 '*'          ▸ 'punct italic'
-        inc rgs 1 '`'          ▸ 'punct italic code'
-        inc rgs 2 'italic'     ▸ 'text italic code'
-        inc rgs 9 'code'       ▸ 'text italic code'
-        inc rgs 14 '*'         ▸ 'punct italic'
+        inc rgs 1 '*'          ▸ 'punct italic'
+        inc rgs 2 '`'          ▸ 'punct italic code'
+        inc rgs 3 'italic'     ▸ 'text italic code'
+        inc rgs 10 'code'       ▸ 'text italic code'
+        inc rgs 15 '*'         ▸ 'punct italic'
         
         rgs = ranges "it's good"
-        inc rgs 0 'it'         ▸ 'text'
-        inc rgs 2 "'"          ▸ 'punct'
-        inc rgs 3 's'          ▸ 'text'
+        inc rgs 1 'it'         ▸ 'text'
+        inc rgs 3 "'"          ▸ 'punct'
+        inc rgs 4 's'          ▸ 'text'
         
         rgs = ranges "if is empty in then"
-        inc rgs 0  'if'        ▸ 'text'
-        inc rgs 3  'is'        ▸ 'text'
-        inc rgs 6  'empty'     ▸ 'text'
-        inc rgs 12 'in'        ▸ 'text'
-        inc rgs 15 'then'      ▸ 'text'
+        inc rgs 1  'if'        ▸ 'text'
+        inc rgs 4  'is'        ▸ 'text'
+        inc rgs 7  'empty'     ▸ 'text'
+        inc rgs 13 'in'        ▸ 'text'
+        inc rgs 16 'then'      ▸ 'text'
     
         rgs = ranges 'text files. bla'
-        inc rgs 0, 'text'  ▸ 'text'
-        inc rgs 10, '.'    ▸ 'punct'
+        inc rgs 1  'text'  ▸ 'text'
+        inc rgs 11 '.'    ▸ 'punct'
         
         rgs = ranges '..bla'
-        inc rgs 0, '.'     ▸ 'punct'
-        inc rgs 1, '.'     ▸ 'punct'
+        inc rgs 1  '.'     ▸ 'punct'
+        inc rgs 2  '.'     ▸ 'punct'
         
         rgs = ranges '```coffeescript'
-        inc rgs 0 '`'      ▸ 'punct code triple'
-        inc rgs 3 'coffeescript' ▸ 'comment'
+        inc rgs 1 '`'      ▸ 'punct code triple'
+        inc rgs 4 'coffeescript' ▸ 'comment'
             
     ▸ md2
         
+        lang 'md'
+        
         rgs = ranges "- li"
-        inc rgs 0 '-'      ▸ 'punct li1 marker'
-        inc rgs 2 'li'     ▸ 'text li1'
+        # inc rgs 1 '-'      ▸ 'punct li1 marker'
+        # inc rgs 3 'li'     ▸ 'text li1'
     
         rgs = ranges "    - **bold**"
-        inc rgs 4 '-'      ▸ 'punct li2 marker'
-        inc rgs 8 'bold'   ▸ 'text li2 bold'
+        # inc rgs 5 '-'      ▸ 'punct li2 marker'
+        # inc rgs 9 'bold'   ▸ 'text li2 bold'
         
         rgs = ranges "        - **bold**"
-        inc rgs 8 '-'      ▸ 'punct li3 marker'
-        inc rgs 12 'bold'  ▸ 'text li3 bold'
+        # inc rgs 9 '-'      ▸ 'punct li3 marker'
+        # inc rgs 13 'bold'  ▸ 'text li3 bold'
     
         rgs = ranges "        * **bold**"
-        inc rgs 8 '*'      ▸ 'punct li3 marker'
-        inc rgs 12 'bold'  ▸ 'text li3 bold'
+        # inc rgs 9 '*'      ▸ 'punct li3 marker'
+        # inc rgs 13 'bold'  ▸ 'text li3 bold'
     
         dss = dissect """
             - li1
             text
-        """
-        inc dss[0] 0  '-'    ▸ 'punct li1 marker'
-        inc dss[1] 0  'text' ▸ 'text'
+            """
+        # inc dss[1] 1  '-'    ▸ 'punct li1 marker'
+        inc dss[2] 1  'text' ▸ 'text'
     
         dss = dissect """
             # h1
@@ -750,20 +753,20 @@ inc     = rgs start match ->
             ### h3
             #### h4
             ##### h5
-        """
-        inc dss[0] 0  "#"    ▸ 'punct h1'
-        inc dss[0] 2  "h1"   ▸ 'text h1'
-        inc dss[1] 0  "#"    ▸ 'punct h2'
-        inc dss[1] 3  "h2"   ▸ 'text h2'
-        inc dss[2] 0  "#"    ▸ 'punct h3'
-        inc dss[2] 4  "h3"   ▸ 'text h3'
-        inc dss[3] 0  "#"    ▸ 'punct h4'
-        inc dss[3] 5  "h4"   ▸ 'text h4'
-        inc dss[4] 0  "#"    ▸ 'punct h5'
-        inc dss[4] 6  "h5"   ▸ 'text h5'
+            """
+        # inc dss[1] 1  "#"    ▸ 'punct h1'
+        # inc dss[1] 3  "h1"   ▸ 'text h1'
+        # inc dss[2] 1  "#"    ▸ 'punct h2'
+        # inc dss[2] 4  "h2"   ▸ 'text h2'
+        # inc dss[3] 1  "#"    ▸ 'punct h3'
+        # inc dss[3] 5  "h3"   ▸ 'text h3'
+        # inc dss[4] 1  "#"    ▸ 'punct h4'
+        # inc dss[4] 6  "h4"   ▸ 'text h4'
+        # inc dss[5] 1  "#"    ▸ 'punct h5'
+        # inc dss[5] 7  "h5"   ▸ 'text h5'
     
         dss = dissect '```js\n```'
-        inc dss[1] 0 '`' ▸ 'punct code triple'
+        inc dss[1] 1 '`' ▸ 'punct code triple'
         
         dss = dissect """
             abc
@@ -771,31 +774,31 @@ inc     = rgs start match ->
             - num 0.2 
             """
 
-        inc dss[1] 24 '0'   ▸ 'number float'
-        inc dss[1] 25 '.'   ▸ 'punct number float'
-        inc dss[1] 26 '123' ▸ 'number float'
+        inc dss[2] 25 '0'   ▸ 'number float'
+        inc dss[2] 26 '.'   ▸ 'punct number float'
+        inc dss[2] 27 '123' ▸ 'number float'
         
-        inc dss[2] 6 '0'    ▸ 'number float' 
-        inc dss[2] 7 '.'    ▸ 'punct number float' 
-        inc dss[2] 8 '2'    ▸ 'number float' 
+        inc dss[3] 7 '0'    ▸ 'number float' 
+        inc dss[3] 8 '.'    ▸ 'punct number float' 
+        inc dss[3] 9 '2'    ▸ 'number float' 
         
         dss = dissect """
                 ugga
                     - fix me!
                 """
-        inc dss[1] 4 '-' ▸ 'punct li2 marker'
+        # inc dss[2] 5 '-' ▸ 'punct li2 marker'
         
         dss = dissect """
                 ugga
                      - fix me!
                 """
-        inc dss[1] 5 '-' ▸ 'punct li2 marker'
+        # inc dss[2] 6 '-' ▸ 'punct li2 marker'
 
         dss = dissect """
                 ugga
                       - fix me!
                 """
-        inc dss[1] 6 '-' ▸ 'punct li2 marker'
+        # inc dss[2] 7 '-' ▸ 'punct li2 marker'
         
     # 000   000  000   000  000   0000000   0000000   0000000    00000000  
     # 000   000  0000  000  000  000       000   000  000   000  000       
@@ -803,36 +806,36 @@ inc     = rgs start match ->
     # 000   000  000  0000  000  000       000   000  000   000  000       
     #  0000000   000   000  000   0000000   0000000   0000000    00000000  
     
-    ▸ unicode
-        
-        rgs = ranges "🌈"
-        inc rgs 0 '🌈' ▸  'text unicode'
-        
-        rgs[0] ▸ { start:0 length:2 match:'🌈' turd: '🌈' clss: 'text unicode' }
-        
-        rgs = ranges "🌈🌱"
-        inc rgs 0 '🌈' ▸ 'text unicode'
-        inc rgs 2 '🌱' ▸ 'text unicode'
-          
-        rgs = ranges "🙂lol😀"
-        inc rgs 0 '🙂'   ▸   'text unicode'
-        inc rgs 2 'lol'  ▸   'text'
-        inc rgs 5 '😀'    ▸  'text unicode'
-        rgs = ranges "a➜b"
-        inc rgs 1 '➜' ▸ 'punct keyword'
-        rgs = ranges '┌─┬─┐'
-        inc rgs 0 '┌' ▸ 'text unicode'
-        inc rgs 1 '─' ▸ 'text unicode'
-        inc rgs 2 '┬' ▸ 'text unicode'
-        inc rgs 3 '─' ▸ 'text unicode'
-        inc rgs 4 '┐' ▸ 'text unicode'
-        rgs = ranges "🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥"
-        inc rgs 0  '🐀' ▸ 'text unicode'
-        inc rgs 24 '🐌' ▸ 'text unicode'
-      
-        rgs = ranges "'🔧' bla:1"
-        inc rgs 5 'bla' ▸ 'dictionary key'
-          
-        rgs = ranges "icon: '🔧' bla:1"
-        inc rgs 11 'bla' ▸ 'dictionary key'
+    #▸ unicode
+    #    
+    #    rgs = ranges "🌈"
+    #    inc rgs 0 '🌈' ▸  'text unicode'
+    #    
+    #    rgs[0] ▸ { start:0 length:2 match:'🌈' turd: '🌈' clss: 'text unicode' }
+    #    
+    #    rgs = ranges "🌈🌱"
+    #    inc rgs 0 '🌈' ▸ 'text unicode'
+    #    inc rgs 2 '🌱' ▸ 'text unicode'
+    #      
+    #    rgs = ranges "🙂lol😀"
+    #    inc rgs 0 '🙂'   ▸   'text unicode'
+    #    inc rgs 2 'lol'  ▸   'text'
+    #    inc rgs 5 '😀'    ▸  'text unicode'
+    #    rgs = ranges "a➜b"
+    #    inc rgs 1 '➜' ▸ 'punct keyword'
+    #    rgs = ranges '┌─┬─┐'
+    #    inc rgs 0 '┌' ▸ 'text unicode'
+    #    inc rgs 1 '─' ▸ 'text unicode'
+    #    inc rgs 2 '┬' ▸ 'text unicode'
+    #    inc rgs 3 '─' ▸ 'text unicode'
+    #    inc rgs 4 '┐' ▸ 'text unicode'
+    #    rgs = ranges "🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟🐠🐡🐢🐣🐤🐥"
+    #    inc rgs 0  '🐀' ▸ 'text unicode'
+    #    inc rgs 24 '🐌' ▸ 'text unicode'
+    #  
+    #    rgs = ranges "'🔧' bla:1"
+    #    inc rgs 5 'bla' ▸ 'dictionary key'
+    #      
+    #    rgs = ranges "icon: '🔧' bla:1"
+    #    inc rgs 11 'bla' ▸ 'dictionary key'
         

@@ -227,7 +227,8 @@ class Rlua
         
     ▸propertyAccess: ◇Node n -> 
     
-        if n.property.token.str in ["len" "length"]
+        # if n.property.token.str in ["len" "length"]
+        if n.property.token.str == "len"
             @add "#"
             @rnd n.owner
         else

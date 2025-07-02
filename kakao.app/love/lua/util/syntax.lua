@@ -6,10 +6,6 @@
 0000000      000     000   000     000     000   000  000   000
 --]]
 
--- use ../../kxk   ◆ matchr kstr kseg
--- use ../../kolor ◆ kulur
--- use ../theme    ◆ theme
-
 
 local syntax = class("syntax")
     
@@ -74,19 +70,18 @@ function syntax:setSegls(segls)
                 self.diss.push(dss)
             end
             
-            -- log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
+            return -- log "#{@name} diss" @diss if @name == "funcol_funtree.state.syntax"
+        else 
+            -- ⮐  if @partialUpdate segls
+            
+            self:clear()
+            
+            self.diss = kulur.dissect(segls, self.ext)
+            -- for idx segl in segls
+            --     hsh = kseg.hash(segl)
+            --     @hash[hsh] = @diss[idx]
+            return --     @liha[idx] = hsh
         end
-        
-        -- else
-        --     ⮐  if @partialUpdate segls
-        -- 
-        --     @clear()
-        --     
-        --     @diss = kulur.dissect segls @ext
-        --     for segl,idx in segls
-        --         hsh = kseg.hash(segl)
-        --         @hash[hsh] = @diss[idx]
-        return --         @liha[idx] = hsh
     end
 
 -- ███   ███  ████████   ███████     ███████   █████████  ████████
@@ -97,7 +92,7 @@ function syntax:setSegls(segls)
 
 
 function syntax:partialUpdate(segls) 
-        if (#self.diss ~= #segls) then return end
+        if (self.diss.length ~= segls.length) then return end
         if empty(self.hash) then return end
         
         local newHash = {}
@@ -143,8 +138,9 @@ function syntax:appendSegls(segls, ext)
 
 function syntax:getClass(x, y) 
         if (self.diss and self.diss[y]) then 
-            for dss in self.diss[y] do 
-                if ((dss.start <= x) < (dss.start + #dss)) then 
+            for dss in self.diss[y]:each() do 
+                if ((dss.start <= x) and (x < (dss.start + dss.length))) then 
+                    -- log "DISS " dss.start, x, dss.start+dss.length, dss.clss
                     return dss.clss
                 end
             end
@@ -162,18 +158,25 @@ function syntax:getClass(x, y)
 
 function syntax:getColor(x, y) 
         if self.ansi then return self:getAnsiColor(x, y) end
-        
-        if is(x, num) then 
-            local clss = self:getClass(x, y)
-        else 
-            local clss = x
+        local clss = x
+        if not is(clss, "string") then 
+            clss = self:getClass(x, y)
         end
         
         -- if empty theme.syntax[clss] and not clss.endsWith 'italic'
         
             -- log "syntax.getColor - no syntax color for '#{clss}'" # @diss[y] 
-        
-        return (theme.syntax[clss] or array(155, 155, 155))
+        -- if clss is "string"
+        --     log "COLOR #{clss}" theme.syntax[clss] 
+        if theme.syntax[clss] then 
+            -- log type(theme.syntax[clss])
+            -- log theme.syntax[clss][1]
+            -- log theme.syntax[clss][2]
+            -- log theme.syntax[clss][3]
+            return theme.syntax[clss]
+        else 
+            return array(155, 155, 155)
+        end
     end
 
 --  ███████   ███   ███   ███████  ███

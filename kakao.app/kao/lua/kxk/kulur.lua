@@ -6,7 +6,7 @@
 000   000   0000000   0000000   0000000   000   000
 --]]
 
-kxk = require "kxk/kxk"
+-- use kxk/kxk
 extlang = require "kxk/extlang"
 
 --swtch =
@@ -63,7 +63,7 @@ function chunked(segls, ext)
         ext = 'txt'
     end
     
-    write("\x1b[0m\x1b[33m", "CHUNKED ", ext)
+    -- write ◌y "CHUNKED " ext
     
     local lineno = 0
     local chunkd = array()
@@ -80,89 +80,81 @@ function chunked(segls, ext)
         
         chunkd:push(chnks)
         
-        if empty(segs) then 
-            write("\x1b[0m\x1b[34m", "CONTINUE")
-        end
-        
-        -- continue 
-        
-        local chunks = kseg.chunks(kseg.detab(segs))
-        
-        if empty(chunks) then 
-            write("\x1b[0m\x1b[35m", "CONTINUE")
-        end
-        
-        -- continue 
-        
-        local lastWord = nil
-        local lastWordIndex = -1
-        
-        
-        function pushLastWord() 
-            if lastWord then 
-                chnks.chunks:push({start = kseg.widthAtSegi(segs, lastWordIndex), length = kseg.width(lastWord), match = kseg.str(lastWord), clss = 'text'})
-                lastWord = nil
-                lastWordIndex = -1
-                return lastWordIndex
-            end
-        end
-        
-        for _, chnk in ipairs(chunks) do 
-            pushLastWord()
+        if valid(segs) then 
+            local chunks = kseg.chunks(kseg.detab(segs))
             
-            for segIndex, s in ipairs(chnk.segl) do 
+            if valid(chunks) then 
+                local lastWord = nil
+                local lastWordIndex = -1
                 
-                function isUniko(ch) 
-                    if kstr.has('■▪◆●○▸➜⮐', ch) then return false end
-                    if (#ch > 1) then return true end
-                    return false
+                
+                function pushLastWord() 
+                    if lastWord then 
+                        chnks.chunks:push({start = kseg.widthAtSegi(segs, lastWordIndex), length = kseg.width(lastWord), match = kseg.str(lastWord), clss = 'text'})
+                        lastWord = nil
+                        lastWordIndex = -1
+                        return lastWordIndex
+                    end
                 end
                 
-                local m = string.match(s, PUNCT)
-                if m then 
+                for _, chnk in ipairs(chunks) do 
                     pushLastWord()
                     
-                    local turd = ''
-                    
-                    -- write ◌c noon(chnk)
-                    -- write ◌m chnk.segl.class
-                    
-                    for t in chnk.segl:slice(segIndex):each() do 
-                        if string.match(t, PUNCT) then 
-                            turd = turd .. t
+                    for segIndex, s in ipairs(chnk.segl) do 
+                        
+                        function isUniko(ch) 
+                            if kstr.has('■▪◆●○▸➜⮐', ch) then return false end
+                            if (#ch > 1) then return true end
+                            return false
+                        end
+                        
+                        local m = string.match(s, PUNCT)
+                        if m then 
+                            pushLastWord()
+                            
+                            local turd = ''
+                            
+                            -- write ◌c noon(chnk)
+                            -- write ◌m chnk.segl.class
+                            
+                            for t in chnk.segl:slice(segIndex):each() do 
+                                if string.match(t, PUNCT) then 
+                                    turd = turd .. t
+                                else 
+                                    break
+                                end
+                            end
+                            
+                            local clss = 'punct'
+                            
+                            if isUniko(s) then 
+                                clss = 'text unicode'
+                            else 
+                                clss = 'punct'
+                                if array(',', ';', '{', '}', '(', ')'):has(s) then 
+                                    clss = clss .. ' minor'
+                                end
+                            end
+                            
+                            chnks.chunks:push({start = kseg.widthAtSegi(segs, (chnk.index + segIndex)), length = kseg.width(s), match = s, turd = turd, clss = clss})
                         else 
-                            break
+                            if (lastWord == nil) then 
+                                lastWord = array()
+                                lastWordIndex = (chnk.index + segIndex)
+                            end
+                            
+                            lastWord:push(s)
                         end
                     end
-                    
-                    local clss = 'punct'
-                    
-                    if isUniko(s) then 
-                        clss = 'text unicode'
-                    else 
-                        clss = 'punct'
-                        if array(',', ';', '{', '}', '(', ')'):has(s) then 
-                            clss = clss .. ' minor'
-                        end
-                    end
-                    
-                    chnks.chunks:push({start = kseg.widthAtSegi(segs, (chnk.index + segIndex)), length = kseg.width(s), match = s, turd = turd, clss = clss})
-                else 
-                    if (lastWord == nil) then 
-                        lastWord = array()
-                        lastWordIndex = (chnk.index + segIndex)
-                    end
-                    
-                    lastWord:push(s)
+                end
+                
+                pushLastWord()
+                
+                if (#chnks.chunks > 0) then 
+                    local l = chnks.chunks[#chnks.chunks]
+                    chnks.chars = (l.start + #l)
                 end
             end
-        end
-        
-        pushLastWord()
-        
-        if (#chnks.chunks > 0) then 
-            local l = chnks.chunks[#chnks.chunks]
-            chnks.chars = (l.start + #l)
         end
     end
     
@@ -640,7 +632,8 @@ function kodeWord()
         end
         
         if ((kstr.startsWith(prev.clss, 'text') or (prev.clss == 'property')) and ((prev.start + #prev) < chunk.start)) then 
-            if ((chunkIndex == 1) or array('return', '=', '⮐'):has(getChunk(-2).match)) then 
+            local prevPrev = getChunk(-2)
+            if ((chunkIndex == 1) or (prevPrev and array('return', '=', '⮐'):has(prevPrev.match))) then 
                 return thisCall()
             end
         end
@@ -1220,7 +1213,8 @@ function luaString()
     if (not chunk.turd or (#chunk.turd < 2)) then return end
     if array('regexp', 'string single', 'string double'):has(topType) then return end
     
-    if getChunk(-1).escape then return stacked() end
+    local prev = getChunk(-1)
+    if (prev and prev.escape) then return stacked() end
     
     local head = string.sub(chunk.turd, 1, 2)
     local typ = (function () 
@@ -1867,12 +1861,12 @@ function blocked(lines)
     -- 000      000  000  0000  000            000
     -- 0000000  000  000   000  00000000  0000000
     
-    write("BLOCKED LINES ", lines)
+    -- write "BLOCKED LINES " lines
     for _, l in ipairs(lines) do 
-        write("BLOCKED L ", l)
+        -- write "BLOCKED L " l
         _G.line = l
-        write("BLOCKED LINE ", _G.line)
-        write("BLOCKED LINE ", line)
+        -- write "BLOCKED LINE " _G.line
+        -- write "BLOCKED LINE " line
         
         if not line then 
             write("\x1b[0m\x1b[31m", "DAFUK? NOLINE")
@@ -2004,8 +1998,8 @@ function parse(segls, ext)
     ext = ext or 'kode'
     
     local lines = chunked(segls, ext)
-    write("PARSE ", lines)
-    write("PARSE ", line)
+    -- write "PARSE " lines
+    -- write "PARSE " line    
     return blocked(lines)
 end
 

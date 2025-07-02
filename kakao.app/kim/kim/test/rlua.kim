@@ -432,7 +432,7 @@ template v(a:string, b:string) = testCmp(a, renderLua(a, true),  b, instantiatio
     ▸ len
     
         t "x = a.len"                                   "x = #a"
-        t "x = a.length"                                "x = #a"
+        t "x = a.length"                                "x = a.length"
         
     ▸ tables
     

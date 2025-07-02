@@ -349,7 +349,7 @@ end
         t("s = \"\"\"\nl1 #" & "{1+2}\nl2 #" & "{2-3}\"\"\"", "s = [[\nl1 ]] .. tostring((1 + 2)) .. [[\nl2 ]] .. tostring((2 - 3)) .. [[]]")
     test "len": 
         t("x = a.len", "x = #a")
-        t("x = a.length", "x = #a")
+        t("x = a.length", "x = a.length")
     test "tables": 
         t("t = {'a': 1}", "t = {['a'] = 1}")
     test "semicolon": 
