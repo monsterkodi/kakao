@@ -87,18 +87,15 @@ function editor:layout(x, y, w, h)
         end
         
         if self.mapscr then 
+            local mw = 12
             if (self.name == 'editor') then 
-                local mw = min(12, floor((w / 10)))
-            else 
-                local mw = 12
+                mw = min(12, floor((w / 10)))
             end
             
-            m = (function () 
-    if self.mapscr.visible() then 
-    return mw else 
-    return 0
-                end
-end)()
+            if self.mapscr:visible() then 
+                m = mw
+            end
+            
             self.mapscr:layout((((x + w) - sr) - m), y, mw, h)
         end
         

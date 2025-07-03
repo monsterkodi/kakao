@@ -8,6 +8,7 @@
 
 editor = require "edit.editor"
 context = require "view.menu.context"
+mapscr = require "view.editor.mapscr"
 
 
 local fileeditor = class("fileeditor", editor)
@@ -19,9 +20,10 @@ function fileeditor:init(name)
         
         editor.init(self, name, features)
         
-        -- if @feats.mapscr
-        --     @mapscr = mapscr @
-        --     @mapscr.show()
+        if self.feats.mapscr then 
+            self.mapscr = mapscr(self)
+            self.mapscr:show()
+        end
         
         post:on('editor.highlight', self.state.highlightText, self.state)
         post:on('goto.line', self.onGotoLine, self)
@@ -164,7 +166,7 @@ function fileeditor:jumpToWord(word)
                 local currentFile = ked_session.get('editor▸file')
                 for fun, idx in ipairs(fnc) do 
                     if (fun.file == currentFile) then 
-                        fnc = fnc[((idx + 1) % #fnc)]
+                        fnc = fnc[((idx + 1) % fnc.length)]
                         break
                     end
                 end
@@ -310,7 +312,7 @@ function fileeditor:onMouse(event)
                     if event.alt then 
                         self.state:addCursor(array(x, y))
                     else 
-                        if (event.shift and (#self.state.s.cursors == 1)) then 
+                        if (event.shift and (self.state.s.cursors.length == 1)) then 
                             self.state:setMainCursorAndSelect(x, y)
                         else 
                             self.state:setMainCursor(x, y)

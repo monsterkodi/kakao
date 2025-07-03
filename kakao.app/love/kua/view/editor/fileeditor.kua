@@ -8,6 +8,7 @@
 
 use edit.editor
 use view.menu.context
+use view.editor.mapscr
 
 class fileeditor extends editor
 
@@ -27,11 +28,11 @@ class fileeditor extends editor
             'uniko' 
             ]
         
-        editor.init @, name, features
+        editor.init @ name features
         
-        # if @feats.mapscr
-        #     @mapscr = mapscr @
-        #     @mapscr.show()
+        if @feats.mapscr
+            @mapscr = mapscr @
+            @mapscr∙show()
         
         post∙on 'editor.highlight' @state.highlightText @state
         post∙on 'goto.line'        @onGotoLine          @

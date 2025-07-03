@@ -13,100 +13,27 @@ view = require "view.base.view"
 
 
 local mapview = class("mapview", view)
-    mapview.layout = x(y, w, h, method () 
-        resized = ((((x ~= @cells.x) or (y ~= @cells.y)) or (w ~= @cells.cols)) or (h ~= @cells.rows))
-        super x y w h
-        
-        if hidden().init() then return end
-        
-        if (@redraw or resized) then 
-            if @redraw then createImages().init() end
-            delete @redraw
-            drawImages().init()
-        end
-    end)
     
-    mapview.setSyntaxSegls = ext(@segls, method () 
-        @syntax = new syntax
-        @syntax.setExt ext
-        @syntax.setSegls @segls
-        
-        @redraw = true
-    end)
-    
-    mapview.updateLine = y(data, method () 
-        data = data or (lineData().init())
-        if empty then return end data
-        id = (@imgId + y)
-        @imageForLine data getSegls().init()[y] y
-        t = @cells.screen.t
-        t.deleteImage id
-        t.sendImageData data id (#data / 3) 1
-        t.placeLineImage id @cells.x (@cells.y + @rowOffset) (y * @pixelsPerRow) @pixelsPerRow
-    end)
-    
-    mapview.updateFromLine = y(method () 
-        if data = lineData().init() then 
-            for li = y, #@state.s.lines-1 do 
-                @updateLine li data
-            end
-        end
-        
-        while (#@images > #@state.s.lines) do 
-            print('pooping')
-            @cells.screen.t.deleteImage @images.pop()
-        end
-    end)
-    
-    mapview.imageForLine = data(line, y, syntax, method () 
-        
-        method charPixels(x, rgb) 
-            for xr in iter(0, @pixelsPerCol) do 
-                data[((((x * @pixelsPerCol) + xr) * 3) + 0)] = rgb[0]
-                data[((((x * @pixelsPerCol) + xr) * 3) + 1)] = rgb[1]
-                data[((((x * @pixelsPerCol) + xr) * 3) + 2)] = rgb[2]
-            end
-        end
-        
-        w = (#data / 3)
-        maxX = (w / @pixelsPerCol)
-        syntax = getSyntax().init()
-        
-        for x = 0, #line-1 do 
-            if (x > maxX) then break end
-            
-            ch = line[x]
-            
-            if valid then (ch and (ch ~= ' '))
-            elseif f = 0.7 then 
-                if (ch in '0█') then 
-                    clss = syntax.getClass x y
-                    if ('header' in clss) then 
-                        f = 2.0
-                    end
-                end
-                
-                rgb = syntax.getColor x y
-                function (rgb = rgb.map(v)) clamp(0, 255, int((f * v))) end
-                
-                charPixels x rgb
-            else 
-                charPixels x @color.bg
-            end
-        end
-        
-        for x = #line, maxX-1 do 
-            charPixels x @color.bg
-        end
-    end)
+         --⮐  if empty @images
+         --         
+         --if process.env.TERM == 'xterm-kitty'
+         --    @cells.screen.t.deleteImagesInRange @images[0] @images[-1]
+         --else
+         --    for id in @images
+         --        @cells.screen.t.deleteImage id
+         --         
+         --@images = []
 
 
-function mapview:init(@state) 
-        view.init(self, (self.state.owner() + '.mapview'))
+function mapview:init(state) 
+        self.state = state
         
-        self:setColor('bg', theme.quicky.bg)
+        view.init(self, self.state:owner() .. '.mapview')
         
-        self.imgId = kstr.hash(self.state.name) .. ~0xffff
+        -- @setColor 'bg' theme.quicky.bg
+        self:setColor('bg', array(100, 100, 100))
+        
+        -- @imgId  = kstr.hash(@state.name) & ~0xffff
         self.rowOffset = 0
         self.images = array()
         self.cells.cols = 12
@@ -124,48 +51,58 @@ function mapview:init(@state)
 -- 0000000   000   000   0000000   00     00  
 
 
-method mapview:reload() 
-        self:createImages()
+function mapview:reload() 
+        -- @createImages()
         return self:drawImages()
     end
 
 
-method mapview:show() 
-        return super()
+function mapview:show() 
+        return view.show(self)
     end
 
 
-method mapview:hide() 
+function mapview:hide() 
         if self:hidden() then return end
         
-        self.cells.screen.t.hideImagesInRange(self.images[0], self.images[-1])
+        -- @cells.screen.t.hideImagesInRange @images[0] @images[-1]
         
-        return super()
+        return view.hide(self)
     end
 
+-- clearImages: ->
 
-method mapview:clearImages() 
-        if empty(self.images) then return end
+
+function mapview:layout(x, y, w, h) 
+        local resized = ((((x ~= self.cells.x) or (y ~= self.cells.y)) or (w ~= self.cells.cols)) or (h ~= self.cells.rows))
+        view.layout(self, x, y, w, h)
         
-        if (process.env.TERM == 'xterm-kitty') then 
-            self.cells.screen.t.deleteImagesInRange(self.images[0], self.images[-1])
-        else 
-            for id in self.images do 
-                self.cells.screen.t.deleteImage(id)
-            end
+        if self:hidden() then return end
+        
+        if (self.redraw or resized) then 
+            -- @createImages() if @redraw
+            -- delete @redraw
+            return self:drawImages()
         end
-        
-        self.images = array()
-        return self.images
     end
 
 
-method mapview:getSegls() 
+function mapview:getSegls() 
     return self.segls
     end
 
-method mapview:getSyntax() 
+function mapview:getSyntax() 
     return self.syntax
+    end
+
+function mapview:setSyntaxSegls(ext, segls) 
+        self.segls = segls
+        self.syntax = syntax()
+        self.syntax.setExt(ext)
+        self.syntax.setSegls(self.segls)
+        
+        self.redraw = true
+        return self.redraw
     end
 
 -- 000  00     00   0000000    0000000   00000000   0000000  
@@ -175,40 +112,40 @@ method mapview:getSyntax()
 -- 000  000   000  000   000   0000000   00000000  0000000   
 
 
-method mapview:maxLinesToLoad() 
+function mapview:maxLinesToLoad() 
     return (((self.cells.rows - self.rowOffset) * self.csz[1]) / self.pixelsPerRow)
     end
 
 
-method mapview:createImages() 
-        local t = self.cells.screen.t
-        if empty(t.cellsz) then return end
+function mapview:createImages() 
+        -- t = @cells.screen.t
+        -- ⮐  if empty t.cellsz
         
-        self.csz = t.cellsz
+        -- @csz = t.cellsz
         
-        self:clearImages()
+        -- @clearImages()
         
         -- prof.start @state.name+'.map'
         
-        local w = (self.cells.cols * self.csz[0])
-        local bytes = (w * 3)
-        
-        if (bytes <= 0) then return end
-        
-        local lines = self:getSegls()
-        
-        local data = Buffer.alloc(bytes)
-        
-        local maxY = self:maxLinesToLoad()
-        
-        for line, y in lines do 
-            self:imageForLine(data, line, y)
-            local id = (self.imgId + y)
-            self.images.push(id)
-            t.sendImageData(data, id, w, 1)
-            if (y > maxY) then break end
-        end
-        
+        --w = @cells.cols * @csz[0]
+        --bytes = w*3
+        --        
+        --⮐  if bytes <= 0
+        --        
+        --lines = @getSegls()
+        --        
+        --data  = Buffer.alloc bytes
+        --        
+        --maxY  = @maxLinesToLoad()
+        --        
+        --for line,y in lines
+        --    
+        --    @imageForLine data line y
+        --    id = @imgId+y
+        --    @images.push id
+        --    t.sendImageData data id w 1
+        --    break if y > maxY
+        --        
         return -- prof.end @state.name+'.map'
     end
 
@@ -218,15 +155,72 @@ method mapview:createImages()
 -- ███   ███  ███        ███   ███  ███   ███     ███     ███     
 --  ███████   ███        ███████    ███   ███     ███     ████████
 
-
-method mapview:lineData() 
-        local w = (self.cells.cols * self.cells.screen.t.cellsz[0])
-        local bytes = (w * 3)
-        
-        if (bytes <= 0) then return end
-        
-        return Buffer.alloc(bytes)
-    end
+--lineData: ->
+--    
+--    w = @cells.cols * @cells.screen.t.cellsz[0]
+--    bytes = w*3
+--    
+--    ⮐  if bytes <= 0
+--    
+--    Buffer.alloc bytes
+--    
+--updateLine: y data -> 
+--    
+--    data ?= @lineData()        
+--    ⮐  if empty data
+--    id = @imgId+y
+--    @imageForLine data @getSegls()[y] y
+--    t = @cells.screen.t
+--    t.deleteImage id
+--    t.sendImageData data id data.length/3 1
+--    t.placeLineImage id @cells.x @cells.y+@rowOffset y*@pixelsPerRow @pixelsPerRow
+--    
+--updateFromLine: y ->
+--    
+--    if data = @lineData()
+--        
+--        for li in y...@state.s.lines.length
+--            @updateLine li data
+--            
+--    while @images.length > @state.s.lines.length
+--        log 'pooping'
+--        @cells.screen.t.deleteImage @images.pop()
+--        
+--imageForLine: data line y syntax ->
+--    
+--    charPixels = x rgb ->
+--    
+--        for xr in 0..@pixelsPerCol
+--            data[(x*@pixelsPerCol+xr)*3+0] = rgb[0]
+--            data[(x*@pixelsPerCol+xr)*3+1] = rgb[1]
+--            data[(x*@pixelsPerCol+xr)*3+2] = rgb[2]
+--            
+--    w      = data.length / 3
+--    maxX   = w/@pixelsPerCol
+--    syntax = @getSyntax()
+--    
+--    for x in 0...line.length
+--        
+--        break if x > maxX
+--                            
+--        ch = line[x]
+--        
+--        if valid ch and ch != ' '
+--         
+--            f = 0.7
+--            if ch in '0█'
+--                clss = syntax.getClass x y
+--                if 'header' in clss
+--                    f = 2.0
+--            rgb = syntax.getColor x y
+--            rgb = rgb.map (v) -> clamp(0 255 int(f*v))
+--             
+--            charPixels x rgb
+--        else
+--            charPixels x @color.bg
+--                
+--    for x in line.length...maxX
+--        charPixels x @color.bg        
 
 -- 0000000    00000000    0000000   000   000  
 -- 000   000  000   000  000   000  000 0 000  
@@ -235,27 +229,28 @@ method mapview:lineData()
 -- 0000000    000   000  000   000  00     00  
 
 
-method mapview:drawImages() 
-        local t = self.cells.screen.t
+function mapview:drawImages() 
+        -- t = @cells.screen.t
         
-        if empty(((t.pixels or self:hidden()) or self:collapsed())) then return end
+        -- ⮐  if @hidden() or @collapsed()
+        -- ⮐  if empty t.pixels or 
         
         -- @csz = t.cellsz # should have been set in createImages 
         
-        for id, y in self.images do 
-            t.placeLineImage(id, self.cells.x, (self.cells.y + self.rowOffset), (y * self.pixelsPerRow), self.pixelsPerRow)
-        end
+        -- for id,y in @images
         
+            -- t.placeLineImage id @cells.x @cells.y+@rowOffset y*@pixelsPerRow @pixelsPerRow
         return self
     end
 
 
-method mapview:draw() 
+function mapview:draw() 
+        print("DRAW")
         if (self:hidden() or self:collapsed()) then return end
         
         -- @csz = @cells.screen.t.cellsz
         
-        self.cells.fill_rect(0, 0, (self.cells.cols - 1), (self.cells.rows - 1), ' ', null, self.color.bg)
+        self.cells:fill_rect(1, 1, self.cells.cols, self.cells.rows, ' ', nil, self.color.bg)
         
         return self:drawImages()
     end

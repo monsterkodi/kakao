@@ -9,10 +9,13 @@
 ###
 
 # use                 ◆ mapview
+use view.editor.mapview
 
 class mapscr extends mapview
 
-    @: @editor ->
+    @: editor ->
+    
+        @editor = editor
         
         mapview.init @ @editor.state
         
@@ -20,9 +23,9 @@ class mapscr extends mapview
         
         @pointerType = 'pointer'
         
-        @knobId = @imgId+0xeeee
+        # @knobId = @imgId+0xeeee
         
-        @topLine    = 0 # index of first visible line
+        @topLine    = 1 # index of first visible line
         @botLine    = 0 # index of last visible line
         @knobHeight = 0 # height of the knob in pixels
         @mapWidth   = 0 # width of the map in pixels
@@ -34,7 +37,7 @@ class mapscr extends mapview
         @setColor 'selection' theme.selection.map
         @setColor 'fullysel'  theme.selection.mapfully
         
-        @screen.t∙on 'preResize' @clearImages @
+        # @screen.t∙on 'preResize' @clearImages @
         
         post∙on 'greet.show' @hide @
         post∙on 'greet.hide' @show @
@@ -47,8 +50,8 @@ class mapscr extends mapview
         
     onPopup: name ->
     
-        @hide() if name in ['differ' 'searcher']  
-        @show() if name in ['finder']
+        @hide() if ['differ' 'searcher']∙has(name)
+        @show() if name == 'finder'
         
     # ███      ███  ███   ███  ████████   ███████         ███████  ███   ███   ███████   ███   ███   ███████   ████████  ███████  
     # ███      ███  ████  ███  ███       ███             ███       ███   ███  ███   ███  ████  ███  ███        ███       ███   ███
@@ -66,8 +69,10 @@ class mapscr extends mapview
                     @updateLine cli
             else
                 minLine = @state.s.lines.length
-                minLine = min minLine diff.ins[0] if diff.ins.length
-                minLine = min minLine diff.del[0] if diff.del.length
+                if diff.ins.length
+                    minLine = min minLine diff.ins[1] 
+                if diff.del.length
+                    minLine = min minLine diff.del[1] 
                 for cli in diff.chg
                     break if cli >= minLine
                     @updateLine cli
@@ -92,13 +97,13 @@ class mapscr extends mapview
             
                 if @hover
                     @doDrag = true
-                    post.emit 'pointer''grabbing'
+                    post∙emit 'pointer''grabbing'
                     ⮐  @scrollToPixel event.pixel
                     
             'drag'
             
                 if @doDrag
-                    post.emit 'pointer''grab'
+                    post∙emit 'pointer''grab'
                     ⮐  @scrollToPixel event.pixel
                     
                 @hover = false
@@ -106,8 +111,9 @@ class mapscr extends mapview
             'release'
             
                 if @doDrag
-                    delete @doDrag 
-                    post.emit 'pointer''pointer' if @hover
+                    @doDrag = nil
+                    if @hover
+                        post∙emit 'pointer''pointer' 
                     ⮐  true
         @hover
     
@@ -119,9 +125,9 @@ class mapscr extends mapview
     
     onResize: ->
         
-        @csz = @cells.screen.t.cellsz
+        # @csz = @cells.screen.t.cellsz
         
-        ⮐  if empty @csz
+        # ⮐  if empty @csz
         
         @calcView()
         @redraw = true
@@ -134,30 +140,31 @@ class mapscr extends mapview
     
     scrollToPixel: pixel ->
         
-        view = @state.s.view.asMutable()
+        view = @state.s.view∙arr()
         
-        li   = @topLine + int((pixel[1] - @mapY) / @pixelsPerRow)
+        li   = @topLine + int((pixel[2] - @mapY) / @pixelsPerRow)
         
-        view[1] = li
-        view[1] -= 5 # offset so that clicking inside a header scrolls it into view
+        view[2] = li
+        view[2] -= 5 # offset so that clicking inside a header scrolls it into view
         
-        maxY = @state.s.lines.length - @cells.rows
-        view[1] = min maxY view[1] if maxY > 0
-        view[1] = max 0 view[1]
+        maxY = @state.s.lines∙len() - @cells.rows
+        if maxY > 0
+            view[2] = min maxY view[2] 
+        view[2] = max 1 view[2]
         
         mc = @state.mainCursor()
         
         if view eql @state.s.view
-            if li != mc[1]
-                @state.setCursors [[mc[0] li+5]] main:0 adjust:false
-                ⮐  redraw:true
+            if li != mc[2]
+                @state.setCursors [[mc[1] li+5]] {main:1 adjust:false}
+                ⮐  true
             ⮐  
         
         @state.setView view
-        @state.setCursors [[mc[0] li+5]] main:0 adjust:false
+        @state.setCursors [[mc[1] li+5]] {main:1 adjust:false}
         
         @drawKnob()
-        redraw:true
+        true
         
     #  ███████   ███████   ███       ███████  ███   ███  ███  ████████  ███   ███
     # ███       ███   ███  ███      ███       ███   ███  ███  ███       ███ █ ███
@@ -166,35 +173,34 @@ class mapscr extends mapview
     #  ███████  ███   ███  ███████   ███████      █      ███  ████████  ██     ██
 
     calcView: ->
-    
-        @mapX       = @cells.x*@csz[0]
-        @mapY       = @cells.y*@csz[1]
         
-        @mapHeight  = @cells.rows * @csz[1]
-        @mapWidth   = @cells.cols * @csz[0]
+        cw = _G.screen.cw
+        ch = _G.screen.ch
+        
+        @mapX       = @cells.x*cw
+        @mapY       = @cells.y*ch
+        
+        @mapHeight  = @cells.rows * ch
+        @mapWidth   = @cells.cols * cw
         
         @mapBot     = @mapY + @mapHeight - @pixelsPerRow
         
         @linesInMap = int @mapHeight / @pixelsPerRow
         @knobHeight = @state.cells.rows * @pixelsPerRow
         
-        editorLinesHeight = @state.s.lines.length * @pixelsPerRow
-        if editorLinesHeight > @mapHeight and @state.s.view[1] > 0
-            maxOffset  = @state.s.lines.length - @linesInMap
-            viewFactor = @state.s.view[1] / (@state.s.lines.length - @cells.rows)
+        editorLinesHeight = @state.s.lines∙len() * @pixelsPerRow
+        if editorLinesHeight > @mapHeight and @state.s.view[2] > 0
+            maxOffset  = @state.s.lines∙len() - @linesInMap
+            viewFactor = @state.s.view[2] / (@state.s.lines∙len() - @cells.rows)
             @topLine   = int viewFactor * maxOffset
         else
-            @topLine = 0 
+            @topLine = 1 
             
-        @botLine = min @state.s.lines.length-1 @topLine+@linesInMap 
+        @botLine = min @state.s.lines∙len() @topLine+@linesInMap 
 
     lineOffset: y -> (y-@topLine)*@pixelsPerRow
         
-    pixelPos: pos -> 
-       [
-           @mapX + pos[0]*@pixelsPerCol
-           @mapY + @lineOffset(pos[1])
-       ]
+    pixelPos: pos -> (@mapX + pos[1]*@pixelsPerCol, @mapY + @lineOffset(pos[2]))
     
     maxLinesToLoad: -> 2000
     
@@ -207,7 +213,7 @@ class mapscr extends mapview
     ###
     
     draw: ->
-    
+        
         ⮐  if @hidden() or @collapsed()
         
         mapview.draw @
@@ -216,6 +222,8 @@ class mapscr extends mapview
         
             @drawCursors()    
             @drawHighlights() 
+            
+        @render()
 
     # ███  ██     ██   ███████    ███████   ████████   ███████
     # ███  ███   ███  ███   ███  ███        ███       ███     
@@ -225,18 +233,19 @@ class mapscr extends mapview
 
     drawImages: ->
         
-        t = @cells.screen.t
+        # t = @cells.screen.t
         
-        ⮐  if empty t.pixels or @hidden() or @collapsed()
+        ⮐  if @hidden() or @collapsed()
         
         for y in @topLine..@botLine
-            id = @images[y]
-            t.placeLineImage id @cells.x @cells.y @lineOffset(y) @pixelsPerRow
+            log "draw map line #{y}"
+            # id = @images[y]
+            # t.placeLineImage id @cells.x @cells.y @lineOffset(y) @pixelsPerRow
             
-        if @topLine
-            t.hideImagesInRange @images[0] @images[@topLine-1]
-        if @botLine < @images.length
-            t.hideImagesInRange @images[@botLine] @images[-1]
+        # if @topLine
+        #     t.hideImagesInRange @images[1] @images[@topLine-1]
+        # if @botLine < @images.length
+        #     t.hideImagesInRange @images[@botLine] @images[-1]
         
         @drawKnob()
                 
@@ -252,15 +261,15 @@ class mapscr extends mapview
                 
         ⮐  if empty @csz or @hidden() or @collapsed()
         
-        ky = @lineOffset @state.s.view[1]
+        ky = @lineOffset @state.s.view[2]
         
-        @cells.screen.t.placeImageOverlay @knobId @cells.x @cells.y ky @mapWidth @knobHeight
+        # @cells.screen.t.placeImageOverlay @knobId @cells.x @cells.y ky @mapWidth @knobHeight
 
     hide: ->
     
         ⮐  if @hidden()
         
-        @cells.screen.t.hideImageOverlay @knobId
+        # @cells.screen.t.hideImageOverlay @knobId
         
         mapview.hide @
         
@@ -272,25 +281,24 @@ class mapscr extends mapview
 
     drawCursors: ->
         
-        for pos,idx in @state.s.cursors
+        for idx pos in @state.s.cursors
         
-            [sx sy] = @pixelPos pos 
+            (sx sy) = @pixelPos pos 
             
-            continue if sy < @mapY or sy >= @mapBot
-            continue if sx < @mapX or sx >= @mapX + @mapWidth
+            if sy >= @mapY and sy <= @mapBot and sx >= @mapX and sx <= @mapX + @mapWidth
         
-            if idx == @state.s.main
-                fg = theme.cursor.main
-                sw = @pixelsPerCol*2
-                sx -= int @pixelsPerCol/2
-            else
-                fg = theme.cursor.multi
-                sw = @pixelsPerCol
+                if idx == @state.s.main
+                    fg = theme.cursor.main
+                    sw = @pixelsPerCol*2
+                    sx -= int @pixelsPerCol/2
+                else
+                    fg = theme.cursor.multi
+                    sw = @pixelsPerCol
+                    
+                # squares.place sx sy sw @pixelsPerRow fg
                 
-            squares.place sx sy sw @pixelsPerRow fg
-            
-            if idx == @state.s.main
-                squares.place @cells.x*@csz[0]+@mapWidth-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
+                # if idx == @state.s.main
+                #     squares.place @cells.x*@csz[0]+@mapWidth-@pixelsPerCol*4 sy @pixelsPerCol*4 @pixelsPerRow fg 2002
 
     # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000   0000000  
     # 000   000  000  000        000   000  000      000  000        000   000     000     000       
@@ -300,29 +308,31 @@ class mapscr extends mapview
     
     drawHighlights: ->
         
-        mc = @state.mainCursor()
+        mc = @state∙mainCursor()
         
         xoff = @mapX + @mapWidth
         selw = @pixelsPerCol*16
         hlw  = @pixelsPerCol*8
-    
-        for li in belt.lineIndicesForRanges @state.s.selections
+        sels = @state.s.selections∙arr()
+        for li in belt.lineIndicesForRanges(sels)∙each()
                 
-            sy = @mapY + @lineOffset(li) 
-            continue if sy < @mapY or sy >= @mapBot
+            sy = @mapY + @lineOffset(li)
             
-            if @state.isSpanSelectedLine li 
-                clr = @color.selection
-            else
-                clr = @color.fullysel
-                
-            squares.place xoff-selw sy selw @pixelsPerRow clr 2000
+            if sy >= @mapY and sy <= @mapBot
+            
+                if @state.isSpanSelectedLine li 
+                    clr = @color.selection
+                else
+                    clr = @color.fullysel
+                    
+                # squares.place xoff-selw sy selw @pixelsPerRow clr 2000
     
-        for li in belt.lineIndicesForSpans @state.s.highlights
+        hils = @state.s.highlights∙arr()
+        for li in belt.lineIndicesForSpans(hils)∙each()
         
             sy = @mapY + @lineOffset(li) 
-            continue if sy < @mapY or sy >= @mapBot
-            
-            squares.place xoff-hlw sy hlw @pixelsPerRow @color.highlight 2001
+            if sy >= @mapY and sy <= @mapBot
+                _ = nil
+                # squares.place xoff-hlw sy hlw @pixelsPerRow @color.highlight 2001
 
 ⮐  mapscr

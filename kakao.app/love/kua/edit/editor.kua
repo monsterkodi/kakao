@@ -78,11 +78,12 @@ class editor extends draw
             @gutter∙layout    x+sl    y   g   h
             
         if @mapscr
+            mw = 12
             if @name == 'editor'
                 mw = min 12 floor(w/10)
-            else
-                mw = 12
-            m = if @mapscr.visible() ➜ mw ➜ 0
+                
+            if @mapscr∙visible()
+                m = mw
             @mapscr∙layout x+w-sr-m  y  mw   h
             
         @cells∙layout x+sl+g  y   w-s-g-m    h
